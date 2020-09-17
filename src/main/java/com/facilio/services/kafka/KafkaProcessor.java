@@ -2,6 +2,7 @@ package com.facilio.services.kafka;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -36,7 +37,7 @@ public class KafkaProcessor extends FacilioProcessor {
     @Override
     public void processRecords(List<FacilioRecord> records) {
         for (FacilioRecord record : records) {
-//            LOGGER.info(" getting messages via kafka Record Id is : "+record.getId());
+           System.out.println(" getting messages via kafka Record Id is : "+record.getId());
             try {
                 if (!dataProcessorUtil.processRecord(record)) {
                     LOGGER.info("Exception while processing ->" + record.getData());
@@ -54,4 +55,16 @@ public class KafkaProcessor extends FacilioProcessor {
     	return metaData.offset();
     }
     
+    public void seek(String orgDomain,long offset) {
+    	try {
+    		if(StringUtils.isEmpty(orgDomain) && offset < 0) {
+        		throw new IllegalArgumentException("Toipc shouldn't be null and offset must be greater than zero.");
+        	}
+    		getConsumer().seek(orgDomain, offset);
+    	}catch(Exception e) {
+    		LOGGER.info("Exception occurred while seeking method  ",e);
+    		throw e;
+    	}
+    	
+    }
 }

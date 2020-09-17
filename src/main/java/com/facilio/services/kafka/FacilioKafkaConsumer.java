@@ -3,6 +3,8 @@ package com.facilio.services.kafka;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.services.procon.consumer.FacilioConsumer;
 import com.facilio.services.procon.message.FacilioRecord;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -96,7 +98,14 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
             consumer.subscribe(Collections.singletonList(topic));
         }
     }
-
+    
+    public void seek(String topic,long offset) {
+    	if(topicPartition == null) {
+            topicPartition = new TopicPartition(topic, 0);
+            consumer.seek(topicPartition, offset);
+        }
+    }
+    
     public void close() {
         consumer.close();
         LOGGER.info("Closed kafka consumer");

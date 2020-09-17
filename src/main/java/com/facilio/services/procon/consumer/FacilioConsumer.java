@@ -13,6 +13,8 @@ public interface FacilioConsumer {
     void commit(FacilioRecord record);
 
     void subscribe(String topic);
-
+    
+    void seek(String topic,long offset);
+    
     void close();
 }

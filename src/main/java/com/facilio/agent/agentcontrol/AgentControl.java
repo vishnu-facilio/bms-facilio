@@ -17,6 +17,7 @@ import com.facilio.agent.module.AgentFieldFactory;
 import com.facilio.agent.module.AgentModuleFactory;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.actions.AgentActionV2;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -48,16 +49,49 @@ public class AgentControl extends AgentActionV2 {
 
 	public String agentAction() {
 		try {
-			String topicName = getTopic();
-			KafkaProcessor processor = new KafkaProcessor(orgId, topicName);
-			long recordId = processor.send(agentName,createRecord());
-			LOGGER.info("Agent control action recordId :"+recordId + " topic name is "+topicName);
+//			String topicName = getTopic();
+//			KafkaProcessor processor = new KafkaProcessor(orgId, topicName);
+//			long recordId = processor.send(agentName,createRecord());
+//			LOGGER.info("Agent control action recordId :"+recordId + " topic name is "+topicName);
+			Map<Long,Long> orgVsRecordId = new HashMap<>();
+			orgVsRecordId.put(146L, 2637929L);
+			if(!FacilioProperties.isProduction()) {
+				orgVsRecordId.forEach((orgId,recordId)->{
+					LOGGER.info("kafka msg seek orgID :"+orgId +" recordId : "+recordId);
+					String topicName;
+					try {
+						topicName = getTopic();
+						KafkaProcessor processor = new KafkaProcessor(orgId, topicName);
+						processor.seek(topicName,recordId);
+					} catch (Exception e) {
+						LOGGER.error("Exception occurred while agent resume ",e);
+					}
+				});
+			}
 		}catch(Exception e) {
 			LOGGER.error("Exception occurred while agent enable/disable action..",e);
 		}
 		return SUCCESS;
 	}
-
+	
+	public void resumeKafkaMsg() throws Exception {
+		Map<Long,Long> orgVsRecordId = new HashMap<>();
+		orgVsRecordId.put(146L, 2637929L);
+		if(!FacilioProperties.isProduction()) {
+			orgVsRecordId.forEach((orgId,recordId)->{
+				setOrgId(orgId);
+				String topicName;
+				try {
+					topicName = getTopic();
+					KafkaProcessor processor = new KafkaProcessor(orgId, topicName);
+					processor.seek(topicName,recordId);
+				} catch (Exception e) {
+					LOGGER.error("Exception occurred while agent resume ",e);
+				}
+			});
+		}
+	}
+	
 	public void updateAgent(long recordId) throws SQLException {
 
 		Map<String, Object> prop = new HashMap<>();
