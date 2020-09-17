@@ -43,7 +43,21 @@ Map cardLayout(Map params) {
         baselineValueMap["value"] = baselineCardValue;
         currentVal = 0;
         previousVal = 0;
-        if (enumMap != null) {
+        if (fieldMapInfo.dataTypeEnum == "BOOLEAN") {
+            if (cardValue == true && fieldMapInfo.trueVal != null) {
+                valueMap["value"] = fieldMapInfo.trueVal;
+            }
+            else if (cardValue == false && fieldMapInfo.falseVal != null) {
+                valueMap["value"] = fieldMapInfo.falseVal;
+            }
+            if (baselineCardValue == true && fieldMapInfo.trueVal != null) {
+                baselineValueMap["value"] = fieldMapInfo.trueVal;
+            }
+            else if (baselineCardValue == false && fieldMapInfo.falseVal != null) {
+                baselineValueMap["value"] = fieldMapInfo.falseVal;
+            }
+        }
+        else if (enumMap != null) {
             if (cardValue != null && enumMap.get(cardValue) != null) {
                 valueMap["value"] = enumMap.get(cardValue);
             }

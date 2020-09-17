@@ -35,7 +35,15 @@ Map cardLayout(Map params) {
 
         valueMap = {};
         valueMap["value"] = cardValue;
-        if (enumMap != null) {
+        if (fieldMapInfo.dataTypeEnum == "BOOLEAN") {
+            if (cardValue == true && fieldMapInfo.trueVal != null) {
+                valueMap["value"] = fieldMapInfo.trueVal;
+            }
+            else if (cardValue == false && fieldMapInfo.falseVal != null) {
+                valueMap["value"] = fieldMapInfo.falseVal;
+            }
+        }
+        else if (enumMap != null) {
             if (cardValue != null && enumMap.get(cardValue) != null) {
                 valueMap["value"] = enumMap.get(cardValue);
             }
