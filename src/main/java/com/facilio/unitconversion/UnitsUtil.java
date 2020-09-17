@@ -53,6 +53,9 @@ public class UnitsUtil {
 		if(value == null ) {
 			return null;
 		}
+		if(from.getMetric().getMetricId() == Metric.CURRENCY.getMetricId()) {
+			return Double.parseDouble(value.toString());
+		}
 		if(from.equals(to)) {
 			return Double.parseDouble(value.toString());
 		}
@@ -76,6 +79,9 @@ public class UnitsUtil {
 	public static Double convert(Object value,int from,int to) {
 		if(value == null ) {
 			return null;
+		}
+		if(from < 0 || to < 0) {
+			return Double.parseDouble(value.toString());
 		}
 		return convert(value,Unit.valueOf(from),Unit.valueOf(to));
 	}
