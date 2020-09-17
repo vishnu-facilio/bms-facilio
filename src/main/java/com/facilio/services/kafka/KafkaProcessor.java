@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections4.MapUtils;
-import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -21,7 +19,7 @@ public class KafkaProcessor extends FacilioProcessor {
 
 
     private static final Logger LOGGER = LogManager.getLogger(KafkaProcessor.class.getName());
-    private static Map<Long,Long> PROP = getRecordValue();
+    private static final Map<Long,Long> PROP = new HashMap<>();
     private DataProcessorUtil dataProcessorUtil;
 
     public KafkaProcessor(long orgId, String topic) {
@@ -34,15 +32,14 @@ public class KafkaProcessor extends FacilioProcessor {
         setEventType("processor");
         dataProcessorUtil = new DataProcessorUtil(orgId, topic);
         LOGGER.info("Initializing processor " + topic);
-        if(!FacilioProperties.isProduction()) {
-        	if(PROP.containsKey(orgId)) {
+        initMap();
+        if(!FacilioProperties.isProduction() && PROP.containsKey(orgId)) {
         	Long offset = PROP.get(orgId);
-        		if(offset != null) {
-        			LOGGER.info("Kafka seek method called ......orgid : "+orgId +"  offset :"+offset);
-        			getConsumer().seek(topic, offset);
-        			LOGGER.info("Kafka seek method completed");
-        		}
-        	}
+        	FacilioRecord record = new FacilioRecord(topic, new JSONObject());
+        	record.setId(offset);
+        	LOGGER.info("Kafka commit method called ......orgid : "+orgId +"  offset :"+offset);
+        	getConsumer().commit(record);
+        	LOGGER.info("Kafka commit method completed");
         }
     }
 
@@ -68,11 +65,7 @@ public class KafkaProcessor extends FacilioProcessor {
 //    	return metaData.offset();
 //    }
     
-    private static Map<Long,Long> getRecordValue(){
-    	if(PROP == null) {
-    		PROP = new HashMap<Long, Long>();
-    		PROP.put(146L, 2637929L);
-    	}
-    	return PROP;
+    private static void initMap(){
+    	PROP.put(146L, 2637929L);
     }
 }

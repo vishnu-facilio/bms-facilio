@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.util.FacilioUtil;
+
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.Level;
@@ -42,6 +44,7 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.devicepoints.DevicePointsUtil;
 import com.facilio.events.context.EventRuleContext;
@@ -447,7 +450,18 @@ public class DataProcessorUtil {
 
     public static boolean checkIfDuplicate(long recordId) {
         try {
-            boolean isDuplicateMessage = isDuplicate(recordId);
+        	Map<String,Object> prop = getRecord(recordId);
+        	boolean flag = false;
+        	boolean isDuplicateMessage = false;
+        	if(prop != null && prop.containsKey(AgentKeys.MSG_STATUS) && prop.containsValue(AgentKeys.MSG_STATUS)) {
+        		Long statusValue =  (Long) prop.get(AgentKeys.MSG_STATUS);
+        		if(statusValue == 1L) {
+        			isDuplicateMessage= true;
+        		}else if(statusValue == 0L){
+        			flag = true;
+        		}
+        	}
+        	 
             if (isDuplicateMessage) {
                 if (isRestarted) {
                     LOGGER.info(" Duplicate message received but can be processed due to server-restart " + recordId);
@@ -458,7 +472,11 @@ public class DataProcessorUtil {
                 }
             } else {
                 boolean originalFlag = false;
-                originalFlag = addAgentMessage(recordId);
+                if(flag) {
+                	originalFlag = updateAgentStartTime(recordId);
+                }else {
+                	originalFlag = addAgentMessage(recordId);
+                }
                 if (!originalFlag) {
                     LOGGER.info("tried adding duplicate message " + recordId);
                     return true;
@@ -484,7 +502,27 @@ public class DataProcessorUtil {
             throw new Exception(" Agent name can't be null");
         }
     }
-
+    
+    private static boolean updateAgentStartTime(long recordId) throws SQLException {
+    	Map<String, Object> map = new HashMap<>();
+        map.put(AgentKeys.RECORD_ID, recordId);
+        map.put(AgentKeys.START_TIME, System.currentTimeMillis());
+        List<FacilioField> fields = FieldFactory.getAgentMessageFields();
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+        FacilioModule messageModule = ModuleFactory.getAgentMessageModule();
+        
+        GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+        		.fields(fields)
+        		.table(messageModule.getTableName())
+        		.andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentKeys.RECORD_ID), String.valueOf(recordId), NumberOperators.EQUALS));
+       int count = builder.update(map);
+       if(count > 0) {
+    	   LOGGER.info("Agent Msg startTime updated for record Id : "+recordId);
+    	   return true;
+       }
+       return false;
+    }
+    
     private void processLog(JSONObject object, Long agentId) {
         JSONObject payLoad = (JSONObject) object.clone();
         if ((payLoad.containsKey(AgentKeys.COMMAND_STATUS) || payLoad.containsKey(AgentKeys.CONTENT))) {
@@ -627,8 +665,7 @@ public class DataProcessorUtil {
      * @return true if not present and false if present
      * @throws Exception
      */
-    public static boolean isDuplicate(long recordId) {
-        boolean isNew = true;
+    public static Map<String,Object> getRecord(long recordId) {
         try {
             Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getAgentMessageFields());
             FacilioModule messageModule = ModuleFactory.getAgentMessageModule();
@@ -639,13 +676,13 @@ public class DataProcessorUtil {
                     .select(fieldMap.values())
                     .andCriteria(criteria);
             List<Map<String, Object>> rows = builder.get();
-            if (((rows == null) || (rows.isEmpty()))) {
-                isNew = false;
+            if (CollectionUtils.isNotEmpty(rows)) {
+                return rows.get(0);
             }
         } catch (Exception e) {
             LOGGER.info("Exception Occurred ", e);
         }
-        return isNew;
+        return null;
     }
 
     public static boolean markMessageProcessed(long recordId) {
