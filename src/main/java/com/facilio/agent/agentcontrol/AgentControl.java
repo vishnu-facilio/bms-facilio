@@ -102,7 +102,7 @@ public class AgentControl extends AgentActionV2 {
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(AGENT_FIELDS).get(AgentConstants.ID),String.valueOf(agentId),NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(AGENT_FIELDS).get(AgentConstants.IS_DISABLE),String.valueOf(false),BooleanOperators.IS))
 				.fetchFirst();
-		return MapUtils.isNotEmpty(selectBuilder)?Boolean.parseBoolean((selectBuilder.get(AgentConstants.IS_DISABLE).toString())):false;
+		return MapUtils.isNotEmpty(selectBuilder)?true:false;
 	}
 
 	public void updateAgentDisable(long recordId) throws Exception {
