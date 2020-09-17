@@ -1,5 +1,6 @@
 package com.facilio.services.kafka;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +21,7 @@ public class KafkaProcessor extends FacilioProcessor {
 
 
     private static final Logger LOGGER = LogManager.getLogger(KafkaProcessor.class.getName());
-    private static final Map<Long,Long> PROP = getRecordValue();
+    private static Map<Long,Long> PROP = getRecordValue();
     private DataProcessorUtil dataProcessorUtil;
 
     public KafkaProcessor(long orgId, String topic) {
@@ -34,14 +35,12 @@ public class KafkaProcessor extends FacilioProcessor {
         dataProcessorUtil = new DataProcessorUtil(orgId, topic);
         LOGGER.info("Initializing processor " + topic);
         if(!FacilioProperties.isProduction()) {
-        	if(MapUtils.isNotEmpty(PROP)){
-        	final long offset = PROP.get(orgId);
-        		if(offset > 0) {
+        	if(PROP.containsKey(orgId)) {
+        	Long offset = PROP.get(orgId);
+        		if(offset != null) {
         			LOGGER.info("Kafka seek method called ......orgid : "+orgId +"  offset :"+offset);
         			getConsumer().seek(topic, offset);
         			LOGGER.info("Kafka seek method completed");
-        		}else {
-        			LOGGER.info("offset is null ......"+offset);
         		}
         	}
         }
@@ -70,7 +69,10 @@ public class KafkaProcessor extends FacilioProcessor {
 //    }
     
     private static Map<Long,Long> getRecordValue(){
-    	PROP.put(146L, 2637929L);
+    	if(PROP == null) {
+    		PROP = new HashMap<Long, Long>();
+    		PROP.put(146L, 2637929L);
+    	}
     	return PROP;
     }
 }

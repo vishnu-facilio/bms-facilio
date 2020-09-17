@@ -611,7 +611,7 @@ public class AdminAction extends ActionSupport {
 			obj.setAgentName(agentName);
 			obj.setOrgId(orgId);
 			obj.setAction(action);
-			obj.agentAction();
+//			obj.agentAction();
 		}
 		
 		return SUCCESS;
