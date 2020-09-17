@@ -62,6 +62,8 @@ public class PageFactory {
 			case ContextNames.READING_ALARM:
 			case ContextNames.NEW_READING_ALARM:
 				return  ReadingAlarmPageFactory.getReadingAlarmPage((ReadingAlarm) record, module);
+			case ContextNames.MULTIVARIATE_ANOMALY_ALARM:
+				return  MultiVariateAnomalyAlarmPageFactory.getMultiVariateAnomalyAlarmPage((MultiVariateAnomalyAlarm) record, module);
 			case ContextNames.OPERATION_ALARM:
 				return  OperationalAlarmPageFactory.getOperationalAlarmPage((OperationAlarmContext) record, module);
 			case ContextNames.AGENT_ALARM:
