@@ -48,6 +48,7 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
         props.put("group.instance.id", client);
         props.put("client.id", client);
         props.put("max.poll.interval.ms",3000000);
+        props.put("max.poll.records", 10);
         return props;
     }
 
