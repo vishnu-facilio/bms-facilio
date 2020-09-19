@@ -16,6 +16,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.beans.ModuleBean;
@@ -315,7 +316,9 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 				context.put("id", point.get("id"));
 				context.put(ContextNames.FIELD_ID, point.get(AgentConstants.FIELD_ID));
 				context.put(ContextNames.PARENT_ID, point.get(AgentConstants.RESOURCE_ID));
-				FacilioTimer.scheduleInstantJob("datamigration","MigrateReadingData", context);
+				if(AccountUtil.getCurrentOrg().getId() != 78l) {
+					FacilioTimer.scheduleInstantJob("datamigration","MigrateReadingData", context);
+				}
 			}
 		}
 		

@@ -139,15 +139,10 @@ public class CommissionAction extends FacilioAction{
 	
 	public String publishLog() throws Exception {
 		
-		if(AccountUtil.getCurrentOrg().getId() != 78l) {
-			FacilioChain chain = TransactionChainFactory.getPublishCommissioningChain();
-			FacilioContext context = chain.getContext();
-			context.put(ContextNames.ID, id);
-			chain.execute();
-		}
-		else {
-			throw new IllegalArgumentException("Migration disabled for RMZ");
-		}
+		FacilioChain chain = TransactionChainFactory.getPublishCommissioningChain();
+		FacilioContext context = chain.getContext();
+		context.put(ContextNames.ID, id);
+		chain.execute();
 		setResult(ContextNames.RESULT, "success");
 		return SUCCESS;
 	}
