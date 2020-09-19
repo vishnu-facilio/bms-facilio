@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -137,13 +138,17 @@ public class CommissionAction extends FacilioAction{
 	}
 	
 	public String publishLog() throws Exception {
-		FacilioChain chain = TransactionChainFactory.getPublishCommissioningChain();
-		FacilioContext context = chain.getContext();
-		context.put(ContextNames.ID, id);
 		
-		chain.execute();
+		if(AccountUtil.getCurrentOrg().getId() != 78l) {
+			FacilioChain chain = TransactionChainFactory.getPublishCommissioningChain();
+			FacilioContext context = chain.getContext();
+			context.put(ContextNames.ID, id);
+			chain.execute();
+		}
+		else {
+			throw new IllegalArgumentException("Migration disabled for RMZ");
+		}
 		setResult(ContextNames.RESULT, "success");
-		
 		return SUCCESS;
 	}
 	

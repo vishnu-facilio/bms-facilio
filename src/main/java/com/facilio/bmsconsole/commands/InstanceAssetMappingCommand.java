@@ -9,6 +9,7 @@ import java.util.Set;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -89,8 +90,10 @@ public class InstanceAssetMappingCommand extends FacilioCommand implements PostT
 		
 		if (CollectionUtils.isNotEmpty(modelledContexts)) {
 			// TODO handle multiple mappings in MigrateReadingData
-			for(FacilioContext context: modelledContexts) {
-				FacilioTimer.scheduleInstantJob("MigrateReadingData", context);
+			if(AccountUtil.getCurrentOrg().getId() != 78l) {
+				for(FacilioContext context: modelledContexts) {
+					FacilioTimer.scheduleInstantJob("MigrateReadingData", context);	
+				}
 			}
 		}
 		
