@@ -21,7 +21,7 @@ public class DefaultBroadcaster {
         return broadcaster;
     }
 
-    protected void push(Message message) throws IOException {
+    protected void pushToLiveSession(Message message) {
         message = Processor.getInstance().filterOutgoingMessage(message);
         BaseHandler handler = Processor.getInstance().getHandler(message.getTopic());
         message = handler.processOutgoingMessage(message);
@@ -86,6 +86,6 @@ public class DefaultBroadcaster {
     }
 
     public void broadcast(Message data) throws IOException {
-        push(data);
+        pushToLiveSession(data);
     }
 }

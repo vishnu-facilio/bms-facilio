@@ -98,6 +98,7 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
 
     @Override
     protected void incomingMessage(Message message) {
-        // read incoming message
+        // read incoming message from kafka servers
+        pushToLiveSession(message);
     }
 }
