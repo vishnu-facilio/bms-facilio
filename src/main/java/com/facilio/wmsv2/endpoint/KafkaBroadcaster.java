@@ -25,6 +25,11 @@ import java.util.concurrent.TimeUnit;
 
 public class KafkaBroadcaster extends AbstractBroadcaster {
 
+    private static KafkaBroadcaster broadcaster = new KafkaBroadcaster();
+    public static DefaultBroadcaster getBroadcaster() {
+        return broadcaster;
+    }
+
     private static FacilioProducer producer;
     private static String kinesisNotificationTopic = "notifications-new";
 
