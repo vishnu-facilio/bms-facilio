@@ -6,7 +6,6 @@ import com.facilio.wmsv2.message.Message;
 import org.apache.commons.collections.CollectionUtils;
 
 import javax.websocket.EncodeException;
-import javax.websocket.Session;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;

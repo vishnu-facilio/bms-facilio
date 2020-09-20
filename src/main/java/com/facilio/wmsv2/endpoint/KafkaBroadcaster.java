@@ -98,6 +98,6 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
 
     @Override
     protected void incomingMessage(Message message) {
-
+        // read incoming message
     }
 }
