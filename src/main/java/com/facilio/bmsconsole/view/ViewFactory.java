@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.view;
 
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.*;
@@ -25,10 +24,12 @@ import com.facilio.modules.fields.*;
 import com.facilio.time.DateTimeUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.log4j.Logger;
 
 import java.util.*;
 
 public class ViewFactory {
+	   private static final Logger LOGGER = Logger.getLogger(ViewFactory.class.getName());
 
 	private static Map<String, Map<String, FacilioView>> views = Collections.unmodifiableMap(initializeViews());
 	private static Map<String, Map<String, List<String>>> groupViews = Collections
@@ -1018,15 +1019,23 @@ public class ViewFactory {
 		groupDetails.put("moduleName", FacilioConstants.ContextNames.AGENT_ALARM);
 		groupDetails.put("views", agentAlarms);
 		groupVsViews.add(groupDetails);
-		if(!FacilioProperties.isProduction()) {
-		ArrayList<String> mlmvaAlarms = new ArrayList<String>();
-		mlmvaAlarms.add("mlmvaAlarms");
-		groupDetails = new HashMap<>();
-		groupDetails.put("name", "multivariateAnomalyAlarmViews");
-		groupDetails.put("displayName", "MultivariateAomaly Alarm");
-		groupDetails.put("moduleName", FacilioConstants.ContextNames.MULTIVARIATE_ANOMALY_ALARM);
-		groupDetails.put("views", mlmvaAlarms);
-		groupVsViews.add(groupDetails);}
+		
+		try {
+			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTIVARIATE_ANOMALY_ALARM)) {
+			ArrayList<String> mlmvaAlarms = new ArrayList<String>();
+			mlmvaAlarms.add("mlmvaAlarms");
+			groupDetails = new HashMap<>();
+			groupDetails.put("name", "multivariateAnomalyAlarmViews");
+			groupDetails.put("displayName", "MultivariateAnomaly Alarms");
+			groupDetails.put("moduleName", FacilioConstants.ContextNames.MULTIVARIATE_ANOMALY_ALARM);
+			groupDetails.put("views", mlmvaAlarms);
+			groupVsViews.add(groupDetails);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			LOGGER.info("exception mlmvaalarms", e);
+			
+		}
 
 		groupDetails = new HashMap<>();
 		groupDetails.put("name", "customalarms");
