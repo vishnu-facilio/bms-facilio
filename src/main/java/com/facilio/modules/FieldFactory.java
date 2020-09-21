@@ -2083,7 +2083,8 @@ public class FieldFactory {
 
         fields.add(getIdField(module));
         fields.addAll(getBaseScoringFields());
-        fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.NUMBER));
+//        fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.NUMBER));
+        fields.add(getField("namedCriteriaId", "NAMED_CRITERIA_ID", module, FieldType.NUMBER));
 
         return fields;
     }

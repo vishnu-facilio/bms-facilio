@@ -7,7 +7,10 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import org.apache.commons.collections4.CollectionUtils;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -18,6 +21,22 @@ public class NamedCriteriaAPI {
     public static long addNamedCriteria(NamedCriteria namedCriteria) throws Exception {
         if (namedCriteria == null) {
             return -1;
+        }
+
+        NamedCriteria.Type type = namedCriteria.getTypeEnum();
+        switch (type) {
+            case CRITERIA:
+                if (namedCriteria.getCriteria() == null || namedCriteria.getCriteria().isEmpty()) {
+                    throw new IllegalArgumentException("Criteria cannot be empty");
+                }
+                namedCriteria.setCriteriaId(CriteriaAPI.addCriteria(namedCriteria.getCriteria()));
+                break;
+
+            case WORKFLOW:
+                break;
+
+            default:
+                throw new IllegalArgumentException("Not a valid named criteria type");
         }
 
         GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
@@ -36,7 +55,9 @@ public class NamedCriteriaAPI {
                 .table(ModuleFactory.getNamedCriteriaModule().getTableName())
                 .select(FieldFactory.getNamedCriteriaFields())
                 .andCondition(CriteriaAPI.getIdCondition(id, ModuleFactory.getNamedCriteriaModule()));
-        return FieldUtil.getAsBeanFromMap(builder.fetchFirst(), NamedCriteria.class);
+        NamedCriteria namedCriteria = FieldUtil.getAsBeanFromMap(builder.fetchFirst(), NamedCriteria.class);
+        populateChildren(Collections.singletonList(namedCriteria));
+        return namedCriteria;
     }
 
     public static Map<Long, NamedCriteria> getCriteriaAsMap(List<Long> ids) throws Exception {
@@ -45,6 +66,41 @@ public class NamedCriteriaAPI {
                 .select(FieldFactory.getNamedCriteriaFields())
                 .andCondition(CriteriaAPI.getIdCondition(ids, ModuleFactory.getNamedCriteriaModule()));
         List<NamedCriteria> namedCriteriaList = FieldUtil.getAsBeanListFromMapList(builder.get(), NamedCriteria.class);
+        populateChildren(namedCriteriaList);
         return namedCriteriaList.stream().collect(Collectors.toMap(NamedCriteria::getId, Function.identity()));
+    }
+
+    private static void populateChildren(List<NamedCriteria> namedCriteriaList) throws Exception {
+        if (CollectionUtils.isEmpty(namedCriteriaList)) {
+            return;
+        }
+
+        List<Long> criteriaIds = new ArrayList<>();
+        List<Long> workflowIds = new ArrayList<>();
+        for (NamedCriteria namedCriteria : namedCriteriaList) {
+            switch (namedCriteria.getTypeEnum()) {
+                case CRITERIA:
+                    criteriaIds.add(namedCriteria.getCriteriaId());
+                    break;
+
+                case WORKFLOW:
+//                    workflowIds.add(namedCriteria.getWorkflowId());
+                    // todo yet to implement
+                    break;
+            }
+        }
+
+        Map<Long, Criteria> criteriaMap = CriteriaAPI.getCriteriaAsMap(criteriaIds);
+        for (NamedCriteria namedCriteria : namedCriteriaList) {
+            switch (namedCriteria.getTypeEnum()) {
+                case CRITERIA:
+                    namedCriteria.setCriteria(criteriaMap.get(namedCriteria.getCriteriaId()));
+                    break;
+
+                case WORKFLOW:
+                    // todo yet to implement
+                    break;
+            }
+        }
     }
 }

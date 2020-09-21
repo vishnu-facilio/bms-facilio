@@ -5,6 +5,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.workflowv2.util.WorkflowV2API;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
 
@@ -37,7 +38,7 @@ public class NamedCriteria {
     private Type type;
     public int getType() {
         if (type != null) {
-            return type.ordinal();
+            return type.getIndex();
         }
         return -1;
     }
@@ -45,7 +46,7 @@ public class NamedCriteria {
         return type;
     }
     public void setType(int type) {
-
+        this.type = Type.valueOf(type);
     }
     public void setType(Type type) {
         this.type = type;
@@ -96,6 +97,10 @@ public class NamedCriteria {
             throw new IllegalArgumentException("Type in named criteria cannot be empty");
         }
 
+        if (StringUtils.isEmpty(name)) {
+            throw new IllegalArgumentException("Name cannot be empty for named criteria");
+        }
+
         switch (type) {
             case CRITERIA:
                 if (criteria == null || criteria.isEmpty()) {
@@ -126,7 +131,7 @@ public class NamedCriteria {
         }
 
         public static Type valueOf(int index) {
-            if (index >= 1 && Type.values().length <= index) {
+            if (index >= 1 && index <= Type.values().length) {
                 return Type.values()[index - 1];
             }
             return null;
