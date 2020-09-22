@@ -762,7 +762,7 @@ public class FacilioAuthAction extends FacilioAction {
 		addAuthCookies(authtoken, portalUser, isDeviceUser, request, false);
 	}
 	
-	private void addAuthCookies(String authtoken, boolean portalUser, boolean isDeviceUser, HttpServletRequest request, boolean isMobile) {
+	private void addAuthCookies(String authtoken, boolean portalUser, boolean isDeviceUser, HttpServletRequest request, boolean isMobile) throws Exception {
 		HttpServletResponse response = ServletActionContext.getResponse();
 		Cookie cookie = new Cookie("fc.idToken.facilio", authtoken);
 
@@ -776,7 +776,18 @@ public class FacilioAuthAction extends FacilioAction {
 		if (isMobile) {
 			JSONObject jsonObject = new JSONObject();
 			jsonObject.put("token", authtoken);
-			jsonObject.put("homePath", "/app/mobile/entry");
+			AppDomain appDomain = IAMAppUtil.getAppDomain(request.getServerName());
+			boolean isCustomDomain = AppDomain.DomainType.valueOf(appDomain.getDomainType()) == AppDomain.DomainType.CUSTOM;
+			if (isCustomDomain) {
+				AccountSSO sso = IAMOrgUtil.getAccountSSO(appDomain.getOrgId());
+				if (sso != null && sso.getIsActive()) {
+					jsonObject.put("homePath", "/app/mobile/entry");
+				} else {
+					jsonObject.put("homePath", "/app/mobile/login");
+				}
+			} else {
+				jsonObject.put("homePath", "/app/mobile/login");
+			}
 			Cookie mobileTokenCookie = new Cookie("fc.mobile.idToken.facilio", new AESEncryption().encrypt(jsonObject.toJSONString()));
 			setTempCookieProperties(mobileTokenCookie, false);
 			response.addCookie(mobileTokenCookie);
