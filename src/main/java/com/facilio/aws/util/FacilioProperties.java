@@ -101,6 +101,12 @@ public class FacilioProperties {
     private static String esDomain;
     private static String esIndex;
 
+    private static String mobileMainAppScheme;
+    private static String mobileServiceportalAppScheme;
+    private static String mobileTenantportalAppScheme;
+    private static String mobileVendorportalAppScheme;
+    private static String mobileClientportalAppScheme;
+
     static {
         loadProperties();
     }
@@ -168,6 +174,13 @@ public class FacilioProperties {
                 clientAppDomain = PROPERTIES.getProperty("clientportal.domain");
                 vendorAppDomain = PROPERTIES.getProperty("vendorportal.domain");
                 occupantAppDomain = PROPERTIES.getProperty("occupantportal.domain");
+
+                mobileMainAppScheme = PROPERTIES.getProperty("mobile.mainapp.scheme");
+                mobileServiceportalAppScheme = PROPERTIES.getProperty("mobile.serviceportal.scheme");
+                mobileTenantportalAppScheme = PROPERTIES.getProperty("mobile.tenantportal.scheme");
+                mobileVendorportalAppScheme = PROPERTIES.getProperty("mobile.vendorportal.scheme");
+                mobileClientportalAppScheme = PROPERTIES.getProperty("mobile.clientportal.scheme");
+
 
                 esDomain = PROPERTIES.getProperty("es.domain");
                 esIndex = PROPERTIES.getProperty("es.index");
@@ -514,4 +527,43 @@ public class FacilioProperties {
         return clientAppDomain;
     }
 
+    public static String getMobileMainAppScheme() {
+        return mobileMainAppScheme;
+    }
+
+    public static String getMobileServiceportalAppScheme() {
+        return mobileServiceportalAppScheme;
+    }
+
+    public static String getMobileTenantportalAppScheme() {
+        return mobileTenantportalAppScheme;
+    }
+
+    public static void setMobileTenantportalAppScheme(String mobileTenantportalAppScheme) {
+        FacilioProperties.mobileTenantportalAppScheme = mobileTenantportalAppScheme;
+    }
+
+    public static String getMobileVendorportalAppScheme() {
+        return mobileVendorportalAppScheme;
+    }
+
+    public static void setMobileVendorportalAppScheme(String mobileVendorportalAppScheme) {
+        FacilioProperties.mobileVendorportalAppScheme = mobileVendorportalAppScheme;
+    }
+
+    public static String getMobileClientportalAppScheme() {
+        return mobileClientportalAppScheme;
+    }
+
+    public static void setMobileClientportalAppScheme(String mobileClientportalAppScheme) {
+        FacilioProperties.mobileClientportalAppScheme = mobileClientportalAppScheme;
+    }
+
+    public static void setMobileServiceportalAppScheme(String mobileServiceportalAppScheme) {
+        FacilioProperties.mobileServiceportalAppScheme = mobileServiceportalAppScheme;
+    }
+
+    public static void setMobileMainAppScheme(String mobileMainAppScheme) {
+        FacilioProperties.mobileMainAppScheme = mobileMainAppScheme;
+    }
 }

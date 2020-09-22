@@ -21,7 +21,7 @@ public class AccountException extends FacilioException {
 	}
 	
 	public String getMessage() {
-		return "[" + getErrorCode().toString() + "] " + super.getMessage();
+		return super.getMessage();
 	}
 	
 	public String toString() {

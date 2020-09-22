@@ -393,11 +393,12 @@ public class FacilioAuthAction extends FacilioAction {
 			AppDomain appDomainObj = IAMAppUtil.getAppDomain(request.getServerName());
 			String scheme = "";
 			if (appDomainObj.getAppDomainTypeEnum() == AppDomainType.FACILIO) {
+				String mainAppscheme = FacilioProperties.getMobileMainAppScheme();
 				if (appDomainObj.getDomainType() == AppDomain.DomainType.DEFAULT.getIndex()) {
-					scheme = "facilio";
+					scheme = mainAppscheme;
 				} else {
 					Organization org = IAMOrgUtil.getOrg(appDomainObj.getOrgId());
-					scheme = org.getDomain();
+					scheme = org.getDomain()+"-"+mainAppscheme;
 				}
 				Cookie schemeCookie = new Cookie("fc.mobile.scheme", scheme);
 				setTempCookieProperties(schemeCookie, false);
@@ -481,6 +482,7 @@ public class FacilioAuthAction extends FacilioAction {
 		
 		JSONObject payload = FederatedIdentityUtil.verifyGooogeIdToken(idToken);
 		HttpServletRequest request = ServletActionContext.getRequest();
+		HttpServletResponse response = ServletActionContext.getResponse();
 
 		String isWebView = FacilioCookie.getUserCookie(request, "fc.isWebView");
 		
