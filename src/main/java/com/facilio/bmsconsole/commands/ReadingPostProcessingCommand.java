@@ -35,10 +35,10 @@ public class ReadingPostProcessingCommand extends FacilioCommand {
             Map<String, String> orgInfoMap = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.FORK_READING_POST_PROCESSING);
             boolean forkPostProcessing = orgInfoMap == null ? false : Boolean.parseBoolean(orgInfoMap.get(FacilioConstants.OrgInfoKeys.FORK_READING_POST_PROCESSING));
             if (forkPostProcessing) {
-                publishReadingChangeMessage(context);
+                // publishReadingChangeMessage(context);
             }
         }
-        else {
+        else if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 146 ){
             publishReadingChangeMessage(context);
         }
         LOGGER.debug("Post processing completed");
