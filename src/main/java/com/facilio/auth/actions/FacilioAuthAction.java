@@ -719,7 +719,7 @@ public class FacilioAuthAction extends FacilioAction {
 		return SUCCESS;
 	}
 
-	public String loadWebView() {
+	public String loadWebView() throws Exception {
 		HttpServletRequest request = ServletActionContext.getRequest();
 		HttpServletResponse response = ServletActionContext.getResponse();
 		String authtoken = request.getParameter("authtoken");
@@ -758,7 +758,7 @@ public class FacilioAuthAction extends FacilioAction {
 		return null;
 	}
 
-	private void addAuthCookies(String authtoken, boolean portalUser, boolean isDeviceUser, HttpServletRequest request) {
+	private void addAuthCookies(String authtoken, boolean portalUser, boolean isDeviceUser, HttpServletRequest request) throws Exception {
 		addAuthCookies(authtoken, portalUser, isDeviceUser, request, false);
 	}
 	
