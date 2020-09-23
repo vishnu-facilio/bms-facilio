@@ -1025,10 +1025,8 @@ public class ViewFactory {
 		groupDetails.put("views", agentAlarms);
 		groupVsViews.add(groupDetails);
 
-		try {
-			LOGGER.info("outside mlmvaalarms");
-			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTIVARIATE_ANOMALY_ALARM)) {
-				LOGGER.info("inside mlmvaalarms");
+		try {	
+			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTIVARIATE_ANOMALY_ALARM)) {	
 			ArrayList<String> mlmvaAlarms = new ArrayList<String>();
 			mlmvaAlarms.add("mlmvaAlarms");
 			groupDetails = new HashMap<>();
@@ -1037,7 +1035,6 @@ public class ViewFactory {
 			groupDetails.put("moduleName", FacilioConstants.ContextNames.MULTIVARIATE_ANOMALY_ALARM);
 			groupDetails.put("views", mlmvaAlarms);
 			groupVsViews.add(groupDetails);
-			LOGGER.info("completed mlmvaalarms");
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
