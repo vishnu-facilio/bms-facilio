@@ -34,8 +34,10 @@ public class ViewFactory {
 	private static Map<String, Map<String, FacilioView>> views = Collections.unmodifiableMap(initializeViews());
 	private static Map<String, Map<String, List<String>>> groupViews = Collections
 			.unmodifiableMap(initializeGroupViews()); // TODO remove
-	private static Map<String, List<Map<String, Object>>> groupVsViews = Collections
-			.unmodifiableMap(initializeGroupVsViews());
+	//private static Map<String, List<Map<String, Object>>> groupVsViews = Collections
+	//		 -                       .unmodifiableMap(initializeGroupVsViews());
+
+	private static Map<String, List<Map<String, Object>>> groupVsViews;
 
 	public static FacilioView getView(FacilioModule module, String viewName, ModuleBean modBean) throws Exception {
 		String moduleName;
@@ -110,6 +112,7 @@ public class ViewFactory {
 	}
 
 	public static Map<String, List<String>> getGroupViews(String moduleName1) {
+		
 		Map<String, List<String>> moduleViews1 = new LinkedHashMap<>();
 		if (groupViews.containsKey(moduleName1)) {
 			moduleViews1.putAll(groupViews.get(moduleName1));
@@ -119,6 +122,8 @@ public class ViewFactory {
 	}
 
 	public static List<Map<String, Object>> getGroupVsViews(String moduleName) {
+		groupVsViews = Collections
+				.unmodifiableMap(initializeGroupVsViews());
 		List<Map<String, Object>> moduleGroups = new ArrayList<>();
 		if (groupVsViews.containsKey(moduleName)) {
 			moduleGroups.addAll(groupVsViews.get(moduleName));
@@ -1019,11 +1024,11 @@ public class ViewFactory {
 		groupDetails.put("moduleName", FacilioConstants.ContextNames.AGENT_ALARM);
 		groupDetails.put("views", agentAlarms);
 		groupVsViews.add(groupDetails);
-		LOGGER.info("outside mlmvaalarms");
+
 		try {
+			LOGGER.info("outside mlmvaalarms");
 			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTIVARIATE_ANOMALY_ALARM)) {
 				LOGGER.info("inside mlmvaalarms");
-
 			ArrayList<String> mlmvaAlarms = new ArrayList<String>();
 			mlmvaAlarms.add("mlmvaAlarms");
 			groupDetails = new HashMap<>();
@@ -1037,10 +1042,8 @@ public class ViewFactory {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			LOGGER.info("exception mlmvaalarms" +e);
-			
 		}
-		LOGGER.info("groupVsViews "+groupVsViews);
-
+		
 		groupDetails = new HashMap<>();
 		groupDetails.put("name", "customalarms");
 		groupDetails.put("displayName", "Custom Views");
