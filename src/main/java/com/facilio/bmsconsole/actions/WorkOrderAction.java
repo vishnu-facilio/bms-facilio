@@ -945,6 +945,27 @@ public class WorkOrderAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public String fetchPreventiveMaintenanceDetails() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID, id.get(0));
+
+		FacilioChain pmSummary = FacilioChainFactory.fetchPreventiveMaintenanceDetailsChain();
+		pmSummary.execute(context);
+
+		setPreventivemaintenance((PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE));
+		setWorkorder((WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER));
+		setTaskList((Map<Long, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP));
+		setPreRequestList((Map<Long, List<TaskContext>>) context.get(FacilioConstants.ContextNames.PRE_REQUEST_MAP));
+		setListOfTasks((List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST));
+		setListOfPreRequests((List<TaskContext>) context.get(FacilioConstants.ContextNames.PRE_REQUEST_LIST));
+		setPrerequisiteApproverTemplates((List<PrerequisiteApproversTemplate>) context.get(FacilioConstants.ContextNames.PREREQUISITE_APPROVER_TEMPLATES));
+		setSectionTemplates((List<TaskSectionTemplate>) context.get(FacilioConstants.ContextNames.TASK_SECTIONS));
+		setPreRequestSectionTemplates((List<TaskSectionTemplate>) context.get(FacilioConstants.ContextNames.PRE_REQUEST_SECTIONS));
+		setReminders((List<PMReminder>) context.get(FacilioConstants.ContextNames.PM_REMINDERS));
+		return SUCCESS;
+	}
+	
 	public String getPreventiveMaintenanceReadings() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, pmId);
