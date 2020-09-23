@@ -54,7 +54,7 @@ public class FacilioServerEndpoint
     private static final String SESSION_SOURCE = "source";
     private static final String AUTH_TOKEN = "token";
 
-    private DefaultBroadcaster broadcaster = DefaultBroadcaster.getBroadcaster();
+    private DefaultBroadcaster broadcaster = null;
     private Processor processor = Processor.getInstance();
 
 //    private Session session;
