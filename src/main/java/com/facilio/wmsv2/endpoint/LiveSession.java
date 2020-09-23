@@ -18,7 +18,8 @@ public class LiveSession {
 	private long orgId;
 	private User user;
 	private Session session;
-	private com.facilio.wms.endpoints.LiveSession.LiveSessionType liveSessionType;
+	private LiveSessionType liveSessionType;
+	private LiveSessionSource liveSessionSource;
 	private long createdTime;
 	private long lastMsgTime;
 
@@ -54,12 +55,21 @@ public class LiveSession {
 		return -1;
 	}
 	
-	public com.facilio.wms.endpoints.LiveSession.LiveSessionType getLiveSessionType() {
+	public LiveSessionType getLiveSessionType() {
 		return liveSessionType;
 	}
 	
-	public LiveSession setLiveSessionType(com.facilio.wms.endpoints.LiveSession.LiveSessionType liveSessionType) {
+	public LiveSession setLiveSessionType(LiveSessionType liveSessionType) {
 		this.liveSessionType = liveSessionType;
+		return this;
+	}
+	
+	public LiveSessionSource getLiveSessionSource() {
+		return liveSessionSource;
+	}
+	
+	public LiveSession setLiveSessionSource(LiveSessionSource liveSessionSource) {
+		this.liveSessionSource = liveSessionSource;
 		return this;
 	}
 
@@ -133,5 +143,20 @@ public class LiveSession {
 			user = currentAccount.getUser();
 		}
 		return this;
+	}
+	
+	public static enum LiveSessionType {
+		APP,
+		DEVICE,
+		REMOTE_SCREEN,
+		SERVICE_PORTAL,
+		TENANT_PORTAL,
+		VENDOR_PORTAL;
+	}
+	
+	public static enum LiveSessionSource {
+		WEB,
+		MOBILE,
+		TABLET;
 	}
 }

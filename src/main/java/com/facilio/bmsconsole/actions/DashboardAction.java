@@ -6894,5 +6894,55 @@ public class DashboardAction extends FacilioAction {
 		this.fetchAlarmInfo = fetchAlarmInfo;
 	}
 	
+	private JSONArray liveUpdateFields;
+	
+	public void setLiveUpdateFields(JSONArray liveUpdateFields) {
+		this.liveUpdateFields = liveUpdateFields;
+	}
+	
+	public JSONArray getLiveUpdateFields() {
+		return this.liveUpdateFields;
+	}
+	
+	public String fetchLiveUpdateFields() throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", AccountUtil.getCurrentOrg().getId());
+		
+		JSONArray modifiedLiveUpdateFields = new JSONArray();
+		
+		if (getLiveUpdateFields() != null) {
+			for (int i=0; i < getLiveUpdateFields().size(); i++) {
+				HashMap jobj = (HashMap) getLiveUpdateFields().get(i);
+				
+				if (jobj.containsKey("fieldName") && jobj.containsKey("moduleName")) {
+					String fieldName = (String) jobj.get("fieldName");
+					String moduleName = (String) jobj.get("moduleName");
+					Long parentId = Long.parseLong(jobj.get("parentId").toString());
+					
+					FacilioField field = modBean.getField(fieldName, moduleName);
+					if (field != null) {
+						JSONObject modifiedField = new JSONObject();
+						modifiedField.put("parentId", parentId);
+						modifiedField.put("fieldId", field.getId());
+						
+						modifiedLiveUpdateFields.add(modifiedField);
+					}
+				}
+				if (jobj.containsKey("fieldId")) {
+					Long fieldId = Long.parseLong(jobj.get("fieldId").toString());
+					Long parentId = Long.parseLong(jobj.get("parentId").toString());
+					
+					JSONObject modifiedField = new JSONObject();
+					modifiedField.put("parentId", parentId);
+					modifiedField.put("fieldId", fieldId);
+					
+					modifiedLiveUpdateFields.add(modifiedField);
+				}
+			}
+		}
+		
+		setResult("liveUpdateFields", modifiedLiveUpdateFields);
+		return SUCCESS;
+	}
 	// data part ends
 }

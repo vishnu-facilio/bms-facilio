@@ -3,11 +3,18 @@ package com.facilio.wmsv2.endpoint;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.IAMAccount;
+import com.facilio.accounts.dto.IAMUser;
+import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
+import com.facilio.bmsconsole.context.ConnectedDeviceContext;
+import com.facilio.bmsconsole.util.DevicesUtil;
 import com.facilio.iam.accounts.impl.IAMUserBeanImpl;
 import com.facilio.iam.accounts.util.IAMUserUtil;
+import com.facilio.iam.accounts.util.IAMUtil;
+import com.facilio.screen.context.RemoteScreenContext;
+import com.facilio.screen.util.ScreenUtil;
 import com.facilio.wms.endpoints.FacilioServerConfigurator;
-import com.facilio.wms.endpoints.LiveSession.LiveSessionType;
+import com.facilio.wmsv2.endpoint.LiveSession.LiveSessionType;
 import com.facilio.wmsv2.handler.BaseHandler;
 import com.facilio.wmsv2.handler.Processor;
 import com.facilio.wmsv2.message.Message;
@@ -16,6 +23,7 @@ import com.facilio.wmsv2.message.MessageEncoder;
 
 import javax.websocket.*;
 import javax.websocket.server.HandshakeRequest;
+import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.List;
@@ -28,7 +36,7 @@ import java.util.logging.Logger;
  * @author Shivaraj
  */
 @ServerEndpoint(
-        value="/websocket/connect",
+        value="/websocket/connect/{id}",
         configurator = FacilioServerConfigurator.class,
         decoders = MessageDecoder.class,
         encoders = MessageEncoder.class
@@ -39,7 +47,7 @@ public class FacilioServerEndpoint
     
     private static final String HANDSHAKE_REQUEST = "handshakereq";
     private static final String SESSION_TYPE = "type";
-//    private static final String SESSION_SOURCE = "source";
+    private static final String SESSION_SOURCE = "source";
     private static final String AUTH_TOKEN = "token";
 
     private DefaultBroadcaster broadcaster = DefaultBroadcaster.getBroadcaster();
@@ -53,9 +61,9 @@ public class FacilioServerEndpoint
 	}
 
     @OnOpen
-    public void onOpen(Session session) throws Exception
+    public void onOpen(Session session, @PathParam("id") long id) throws Exception
     {
-    	LiveSession liveSession = validateSession(session);
+    	LiveSession liveSession = validateSession(id, session);
     	if (liveSession != null) {
     		log.log(Level.INFO, "Session started => " + liveSession);
 
@@ -67,7 +75,7 @@ public class FacilioServerEndpoint
     	}
     }
     
-    private LiveSession validateSession(Session session) throws Exception {
+    private LiveSession validateSession(Long id, Session session) throws Exception {
     	
     	HandshakeRequest hreq = (HandshakeRequest) session.getUserProperties().get(HANDSHAKE_REQUEST);
 		
@@ -76,69 +84,58 @@ public class FacilioServerEndpoint
 		
 		if (headers != null || params != null) {
 		
-			String idToken = null;
-			String deviceToken = null;
 			LiveSessionType sessionType = LiveSessionType.APP;
-//			LiveSession.LiveSessionSource sessionSource = LiveSession.LiveSessionSource.WEB;
-			
-			List<String> cookieValues = headers.get("cookie");
-			if (cookieValues != null && cookieValues.size() > 0) {
-				for (String cookie : cookieValues.get(0).split(";")) {
-					if (cookie.split("=").length > 1) {
-						String key = cookie.split("=")[0].trim();
-						String value = cookie.split("=")[1].trim();
-						
-						if ("fc.idToken.facilio".equals(key)) {
-							idToken = value;
-						}
-						else if ("fc.deviceTokenNew".equals(key)) {
-							deviceToken = value;
-						}
-					}
-				}
-			}
-			
-			List<String> authHeader = headers.get("Authorization");
-			if (authHeader != null && authHeader.size() > 0) {
-				if (authHeader.get(0).startsWith("Bearer facilio ")) {
-					idToken = authHeader.get(0).replace("Bearer facilio ", "");
-				}
-				else if (authHeader.get(0).startsWith("Bearer device ")) {
-					deviceToken = authHeader.get(0).replace("Bearer device ", "");
-				}
-			}
+			LiveSession.LiveSessionSource sessionSource = LiveSession.LiveSessionSource.WEB;
 			
 			if (params.containsKey(SESSION_TYPE)) {
 				sessionType = LiveSessionType.valueOf(params.get(SESSION_TYPE).get(0));
 			}
+			
+			if (params.containsKey(SESSION_SOURCE)) {
+				sessionSource = LiveSession.LiveSessionSource.valueOf(params.get(SESSION_SOURCE).get(0));
+			}
 
-			if (params.containsKey(AUTH_TOKEN) && sessionType != null) {
+			/*if (params.containsKey(AUTH_TOKEN) && sessionType != null) {
 				if (sessionType == LiveSessionType.DEVICE) {
 					deviceToken = params.get(AUTH_TOKEN).get(0);
 				}
 				else {
 					idToken = params.get(AUTH_TOKEN).get(0);
 				}
-			}
+			}*/
 			
-			Account currentAccount = null;
-			System.out.println("idToken present: "+ (idToken != null ? true : false));
-			if (idToken != null) {
-				IAMAccount iamAccount = IAMUserUtil.verifiyFacilioTokenv3(idToken, false, "web");
-				if (iamAccount == null) {
-					throw new Exception("Invalid auth!");
-				}
-				currentAccount = new Account(iamAccount.getOrg(), new User(iamAccount.getUser()));
-			}
-			else if (deviceToken != null) {
-				DecodedJWT verifiedJwt = IAMUserBeanImpl.validateJWT(deviceToken, "auth0");
-				if (verifiedJwt == null) {
-					throw new Exception("Invalid auth!");
+			Organization org = null;
+			User user = null;
+			
+			if (sessionType == LiveSessionType.REMOTE_SCREEN) {
+				RemoteScreenContext remoteScreen = ScreenUtil.getRemoteScreen(id);
+				if (remoteScreen != null) {
+					org = IAMUtil.getOrgBean().getOrgv2(remoteScreen.getOrgId());
 				}
 			}
+			else if (sessionType == LiveSessionType.DEVICE) {
+				ConnectedDeviceContext connectedDevice = DevicesUtil.getConnectedDevice(id);
+				if (connectedDevice != null) {
+					org = IAMUtil.getOrgBean().getOrgv2(connectedDevice.getOrgId());
+				}
+			}
+			else {
+				List<IAMUser> users = IAMUtil.getUserBean().getUserDataForUidsv3(id+"", 0, false);
+				if (users != null && !users.isEmpty()) {
+					IAMUser iamUser = users.get(0);
+					user = new User(iamUser);
+					org = IAMUtil.getOrgBean().getOrgv2(iamUser.getOrgId());
+				}
+			}
 			
-			LiveSession liveSession = new LiveSession().setId(session.getId()).setCurrentAccount(currentAccount).setSession(session).setCreatedTime(System.currentTimeMillis()).setLiveSessionType(sessionType);
-			return liveSession;
+			if (org != null || user != null) {
+				Account currentAccount = new Account(org, user);
+				LiveSession liveSession = new LiveSession().setId(session.getId()).setCurrentAccount(currentAccount).setSession(session).setCreatedTime(System.currentTimeMillis()).setLiveSessionType(sessionType);
+				return liveSession;
+			}
+			else {
+				throw new Exception("Invalid user!");
+			}
 		}
 		else {
 			throw new Exception("Invalid params!");

@@ -1,7 +1,7 @@
 package com.facilio.wmsv2.message;
 
 import com.facilio.modules.FieldUtil;
-import com.facilio.wms.endpoints.LiveSession.LiveSessionType;
+import com.facilio.wmsv2.endpoint.LiveSession.LiveSessionType;
 import com.facilio.wmsv2.endpoint.LiveSession;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.log4j.LogManager;

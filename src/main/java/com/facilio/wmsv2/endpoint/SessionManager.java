@@ -1,5 +1,6 @@
 package com.facilio.wmsv2.endpoint;
 
+import com.facilio.wmsv2.endpoint.LiveSession.LiveSessionType;
 import com.facilio.wmsv2.handler.BaseHandler;
 import com.facilio.wmsv2.handler.Processor;
 import com.facilio.wmsv2.message.Message;
@@ -36,7 +37,7 @@ public class SessionManager {
 		return liveSessions.values();
 	}
 	
-	public Collection<LiveSession> getLiveSessions(com.facilio.wms.endpoints.LiveSession.LiveSessionType liveSessionType) {
+	public Collection<LiveSession> getLiveSessions(LiveSessionType liveSessionType) {
 		
 		List<LiveSession> sessionList = new ArrayList<>();
 		
@@ -62,7 +63,7 @@ public class SessionManager {
 		return sessionList;
 	}
 	
-	public Collection<LiveSession> getLiveSessions(com.facilio.wms.endpoints.LiveSession.LiveSessionType liveSessionType, long id) {
+	public Collection<LiveSession> getLiveSessions(LiveSessionType liveSessionType, long id) {
 		
 		List<LiveSession> sessionList = new ArrayList<>();
 		

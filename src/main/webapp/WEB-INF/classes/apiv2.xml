@@ -150,6 +150,11 @@
 			class="com.facilio.bmsconsole.actions.DashboardAction"
 			method="v2getDashboardListWithFolder">
 		</action>
+		
+		<action name="fetchLiveUpdateFields"
+			class="com.facilio.bmsconsole.actions.DashboardAction"
+			method="fetchLiveUpdateFields">
+		</action>
 
 		<action name="sendMail"
 			class="com.facilio.bmsconsole.actions.CommonAction"

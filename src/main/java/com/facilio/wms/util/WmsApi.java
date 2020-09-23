@@ -41,6 +41,8 @@ public class WmsApi
 	private static String kinesisNotificationTopic = "notifications";
 	
 	private static String WEBSOCKET_URL = "ws://localhost:8080/websocket";
+	private static String NEW_WEBSOCKET_URL = "ws://localhost:8080/websocket/connect";
+	
 	private static Map<String, FacilioClientEndpoint> FACILIO_CLIENT_ENDPOINTS = new HashMap<>();
 	private static FacilioProducer producer;
 	
@@ -49,6 +51,7 @@ public class WmsApi
 			String socketUrl = FacilioProperties.getConfig("wms.domain");
 			if (socketUrl != null) {
 				WEBSOCKET_URL = "wss://"+socketUrl+"/websocket";
+				NEW_WEBSOCKET_URL = "wss://"+socketUrl+"/websocket/connect";
 			}
 			if(FacilioProperties.isProduction()) {
 				kinesisNotificationTopic = "production-"+ kinesisNotificationTopic;
@@ -92,6 +95,10 @@ public class WmsApi
 	
 	public static String getWebsocketEndpoint(long id, LiveSessionType liveSessionType, LiveSessionSource liveSessionSource) {
 		return WEBSOCKET_URL + "/" + id + "?" + "type=" + liveSessionType.name() + "&source=" + liveSessionSource.name();
+	}
+	
+	public static String getNewWebsocketEndpoint(long id, LiveSessionType liveSessionType, LiveSessionSource liveSessionSource) {
+		return NEW_WEBSOCKET_URL + "/" + id + "?" + "type=" + liveSessionType.name() + "&source=" + liveSessionSource.name();
 	}
 	
 	public static void sendEvent(long to, WmsEvent event) throws IOException, EncodeException

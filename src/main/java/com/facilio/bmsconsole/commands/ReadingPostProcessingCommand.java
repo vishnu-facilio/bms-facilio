@@ -38,7 +38,7 @@ public class ReadingPostProcessingCommand extends FacilioCommand {
                 // publishReadingChangeMessage(context);
             }
         }
-        else if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 146 ){
+        else if (AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getId() == 146 || AccountUtil.getCurrentOrg().getId() == 155) ){
             publishReadingChangeMessage(context);
         }
         LOGGER.debug("Post processing completed");
