@@ -354,7 +354,11 @@ public class FacilioAuthAction extends FacilioAction {
 
 	public String loginWithUserNameAndPassword() throws Exception {
 		validateLoginv3();
-		setWebViewCookies();
+		HttpServletRequest request = ServletActionContext.getRequest();
+		String isWebView = FacilioCookie.getUserCookie(request, "fc.isWebView");
+		if ("true".equalsIgnoreCase(isWebView)) {
+			setWebViewCookies();
+		}
 		return SUCCESS;
 	}
 
@@ -381,30 +385,33 @@ public class FacilioAuthAction extends FacilioAction {
 		setUsername(emailFromDigest);
 		validateLoginv3();
 
-		setWebViewCookies();
+		HttpServletRequest request = ServletActionContext.getRequest();
+		String isWebView = FacilioCookie.getUserCookie(request, "fc.isWebView");
+		if ("true".equalsIgnoreCase(isWebView)) {
+			setWebViewCookies();
+		}
 		return SUCCESS;
 	}
 
 	public void setWebViewCookies() throws Exception {
 		HttpServletRequest request = ServletActionContext.getRequest();
 		HttpServletResponse response = ServletActionContext.getResponse();
-		String isWebView = FacilioCookie.getUserCookie(request, "fc.isWebView");
-		if ("true".equalsIgnoreCase(isWebView)) {
-			AppDomain appDomainObj = IAMAppUtil.getAppDomain(request.getServerName());
-			String scheme = "";
-			if (appDomainObj.getAppDomainTypeEnum() == AppDomainType.FACILIO) {
-				String mainAppscheme = FacilioProperties.getMobileMainAppScheme();
-				if (appDomainObj.getDomainType() == AppDomain.DomainType.DEFAULT.getIndex()) {
-					scheme = mainAppscheme;
-				} else {
-					Organization org = IAMOrgUtil.getOrg(appDomainObj.getOrgId());
-					scheme = org.getDomain()+"-"+mainAppscheme;
-				}
-				Cookie schemeCookie = new Cookie("fc.mobile.scheme", scheme);
-				setTempCookieProperties(schemeCookie, false);
-				response.addCookie(schemeCookie);
+
+		AppDomain appDomainObj = IAMAppUtil.getAppDomain(request.getServerName());
+		String scheme = "";
+		if (appDomainObj.getAppDomainTypeEnum() == AppDomainType.FACILIO) {
+			String mainAppscheme = FacilioProperties.getMobileMainAppScheme();
+			if (appDomainObj.getDomainType() == AppDomain.DomainType.DEFAULT.getIndex()) {
+				scheme = mainAppscheme;
+			} else {
+				Organization org = IAMOrgUtil.getOrg(appDomainObj.getOrgId());
+				scheme = org.getDomain()+"-"+mainAppscheme;
 			}
+			Cookie schemeCookie = new Cookie("fc.mobile.scheme", scheme);
+			setTempCookieProperties(schemeCookie, false);
+			response.addCookie(schemeCookie);
 		}
+
 	}
 
 	public String validateLoginv3() {
@@ -647,17 +654,21 @@ public class FacilioAuthAction extends FacilioAction {
 				authtoken = IAMUserUtil.verifyLoginWithoutPassword(email, userAgent, userType, ipAddress, request.getServerName(), null);
 				setResult("token", authtoken);
 				setResult("username", email);
-
-				String isWebView = FacilioCookie.getUserCookie(request, "fc.isWebView");
-				
+				boolean isWebView = false;
 				if (relayState != null && (relayState.indexOf("http") >= 0)) {
 					setResult("url", relayState);
 				}
 				else {
-					setResult("url", SSOUtil.getLoginSuccessURL("true".equalsIgnoreCase(isWebView)));
+					if (relayState != null && "mobile".equals(relayState)) {
+						isWebView = true;
+						setWebViewCookies();
+						setResult("url", SSOUtil.getLoginSuccessURL(true));
+					} else {
+						setResult("url", SSOUtil.getLoginSuccessURL(false));
+					}
 				}
 	
-				addAuthCookies(authtoken, portalUser, false, request, "true".equalsIgnoreCase(isWebView) || "mobile".equals(userType));
+				addAuthCookies(authtoken, portalUser, false, request, isWebView || "mobile".equals(userType));
 			} 
 			catch (Exception e) {
 				LOGGER.log(Level.INFO, "Exception while validating sso signin, ", e);

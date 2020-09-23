@@ -160,7 +160,6 @@ public class FacilioSSOAction extends FacilioAction {
 			
 			JSONObject result = authAction.getResult();
 			if (result.containsKey("url")) {
-				authAction.setWebViewCookies();
 				response.sendRedirect((String) result.get("url"));
 				return SUCCESS;
 			}
