@@ -1,15 +1,29 @@
 package com.facilio.wmsv2.endpoint;
 
-import com.auth0.jwt.interfaces.DecodedJWT;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.websocket.EncodeException;
+import javax.websocket.OnClose;
+import javax.websocket.OnError;
+import javax.websocket.OnMessage;
+import javax.websocket.OnOpen;
+import javax.websocket.Session;
+import javax.websocket.server.HandshakeRequest;
+import javax.websocket.server.PathParam;
+import javax.websocket.server.ServerEndpoint;
+
 import com.facilio.accounts.dto.Account;
-import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.context.ConnectedDeviceContext;
 import com.facilio.bmsconsole.util.DevicesUtil;
-import com.facilio.iam.accounts.impl.IAMUserBeanImpl;
-import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.screen.util.ScreenUtil;
@@ -20,16 +34,6 @@ import com.facilio.wmsv2.handler.Processor;
 import com.facilio.wmsv2.message.Message;
 import com.facilio.wmsv2.message.MessageDecoder;
 import com.facilio.wmsv2.message.MessageEncoder;
-
-import javax.websocket.*;
-import javax.websocket.server.HandshakeRequest;
-import javax.websocket.server.PathParam;
-import javax.websocket.server.ServerEndpoint;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -59,6 +63,18 @@ public class FacilioServerEndpoint
 	public FacilioServerEndpoint() {
 		System.out.println("Initializing");
 	}
+	
+	private DefaultBroadcaster getBroadcaster() {
+		if (this.broadcaster == null) {
+			if (FacilioProperties.isDevelopment()) {
+				this.broadcaster = DefaultBroadcaster.getBroadcaster();
+			}
+			else {
+				this.broadcaster = KafkaBroadcaster.getBroadcaster();
+			}
+		}
+		return this.broadcaster;
+	}
 
     @OnOpen
     public void onOpen(Session session, @PathParam("id") long id) throws Exception
@@ -67,7 +83,7 @@ public class FacilioServerEndpoint
     	if (liveSession != null) {
     		log.log(Level.INFO, "Session started => " + liveSession);
 
-			SessionManager.getInstance().setBroadcaster(broadcaster);
+			SessionManager.getInstance().setBroadcaster(getBroadcaster());
 	        SessionManager.getInstance().addLiveSession(liveSession);
     	}
     	else {
@@ -120,12 +136,8 @@ public class FacilioServerEndpoint
 				}
 			}
 			else {
-				List<IAMUser> users = IAMUtil.getUserBean().getUserDataForUidsv3(id+"", 0, false);
-				if (users != null && !users.isEmpty()) {
-					IAMUser iamUser = users.get(0);
-					user = new User(iamUser);
-					org = IAMUtil.getOrgBean().getOrgv2(iamUser.getOrgId());
-				}
+				user = AccountUtil.getUserBean().getUserInternal(id, false);
+				org = IAMUtil.getOrgBean().getOrgv2(user.getOrgId());
 			}
 			
 			if (org != null || user != null) {
