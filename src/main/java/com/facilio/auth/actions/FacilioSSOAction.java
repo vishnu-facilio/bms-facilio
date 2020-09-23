@@ -87,7 +87,7 @@ public class FacilioSSOAction extends FacilioAction {
 		SAMLServiceProvider samlClient = new SAMLServiceProvider(SSOUtil.getSPMetadataURL(sso), SSOUtil.getSPAcsURL(sso), ssoConfig.getEntityId(), ssoConfig.getLoginUrl(), ssoConfig.getCertificate());
 		String samlRequest = samlClient.getSAMLRequest();
 		
-		String relayState = (getRelay() != null && getRelay().trim().isEmpty()) ? getRelay() : null;
+		String relayState = (getRelay() != null && !getRelay().trim().isEmpty()) ? getRelay() : null;
 
 		URIBuilder builder = new URIBuilder(ssoConfig.getLoginUrl());
 		builder.addParameter("SAMLRequest", samlRequest);
