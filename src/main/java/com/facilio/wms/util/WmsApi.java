@@ -120,6 +120,8 @@ public class WmsApi
 	public static void sendEventToRemoteScreen(long to, WmsEvent event) throws IOException, EncodeException
 	{
 		event.setSessionType(LiveSessionType.REMOTE_SCREEN);
+		event.setNamespace("remotescreen");
+		event.setAction("REFRESH");
 		
 		List<Long> toList = new ArrayList<>();
 		toList.add(to);
