@@ -2,7 +2,9 @@ package com.facilio.bmsconsole.context;
 
 import com.facilio.modules.fields.FacilioField;
 
-public class ResetCounterMetaContext{ 
+import java.io.Serializable;
+
+public class ResetCounterMetaContext implements Serializable {
 	/**
 	 * 
 	 */
