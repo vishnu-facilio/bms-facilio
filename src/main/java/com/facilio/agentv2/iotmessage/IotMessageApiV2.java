@@ -1,6 +1,21 @@
 package com.facilio.agentv2.iotmessage;
 
-import com.amazonaws.services.iot.client.*;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import com.amazonaws.services.iot.client.AWSIotConnectionStatus;
+import com.amazonaws.services.iot.client.AWSIotException;
+import com.amazonaws.services.iot.client.AWSIotMessage;
+import com.amazonaws.services.iot.client.AWSIotMqttClient;
+import com.amazonaws.services.iot.client.AWSIotQos;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.fw.constants.FacilioCommand;
@@ -16,22 +31,17 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.modules.*;
+import com.facilio.modules.BmsAggregateOperators;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.services.messageQueue.MessageQueueTopic;
 import com.facilio.wms.message.WmsPublishResponse;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 public class IotMessageApiV2 {
     private static final Logger LOGGER = LogManager.getLogger(IotMessageApiV2.class.getName());
@@ -234,7 +244,8 @@ public class IotMessageApiV2 {
         for (IotMessage message : data.getMessages()) {
             LogsApi.logIotCommand(agentId,message.getId(),data.getFacilioCommand(),Status.MESSAGE_SENT);
             message.getMessageData().put("msgid", message.getId());
-            publishIotMessage(AccountUtil.getCurrentOrg().getDomain(), message.getMessageData());
+            List<Map<String,Object>> topic = MessageQueueTopic.getTopics(Collections.singletonList(AccountUtil.getCurrentOrg().getOrgId()));
+            publishIotMessage(topic.get(0).get(AgentConstants.MESSAGE_TOPIC).toString(), message.getMessageData());
             //FacilioContext context = new FacilioContext();
             //context.put(FacilioConstants.ContextNames.PUBLISH_DATA, data);
             //FacilioTimer.scheduleInstantJob("PublishedDataChecker", context);

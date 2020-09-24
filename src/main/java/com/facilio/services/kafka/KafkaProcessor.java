@@ -1,9 +1,8 @@
 package com.facilio.services.kafka;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -19,7 +18,6 @@ public class KafkaProcessor extends FacilioProcessor {
 
 
     private static final Logger LOGGER = LogManager.getLogger(KafkaProcessor.class.getName());
-    private static final Map<Long,Long> PROP = new HashMap<>();
     private DataProcessorUtil dataProcessorUtil;
 
     public KafkaProcessor(long orgId, String topic) {
@@ -32,15 +30,6 @@ public class KafkaProcessor extends FacilioProcessor {
         setEventType("processor");
         dataProcessorUtil = new DataProcessorUtil(orgId, topic);
         LOGGER.info("Initializing processor " + topic);
-        initMap();
-        if(!FacilioProperties.isProduction() && PROP.containsKey(orgId)) {
-        	Long offset = PROP.get(orgId);
-        	FacilioRecord record = new FacilioRecord(topic, new JSONObject());
-        	record.setId(offset);
-        	LOGGER.info("Kafka commit method called ......orgid : "+orgId +"  offset :"+offset);
-        	getConsumer().commit(record);
-        	LOGGER.info("Kafka commit method completed");
-        }
     }
 
 
@@ -59,13 +48,10 @@ public class KafkaProcessor extends FacilioProcessor {
         }
     }
     
-//    public long send(String orgDomain,JSONObject data) {
-//    	FacilioRecord record= new FacilioRecord(orgDomain, data);
-//    	RecordMetadata metaData = (RecordMetadata) getProducer().putRecord(record);
-//    	return metaData.offset();
-//    }
-    
-    private static void initMap(){
-    	PROP.put(146L, 2637929L);
+    public long send(String orgDomain,JSONObject data) {
+    	FacilioRecord record= new FacilioRecord(orgDomain, data);
+    	RecordMetadata metaData = (RecordMetadata) getProducer().putRecord(record);
+    	return metaData.offset();
     }
+    
 }

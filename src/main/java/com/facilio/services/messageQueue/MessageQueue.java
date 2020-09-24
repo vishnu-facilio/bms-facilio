@@ -12,7 +12,7 @@ public abstract class MessageQueue {
     private static final HashSet<String> STREAMS = new HashSet<>();
     private static org.apache.log4j.Logger log = LogManager.getLogger(MessageQueue.class.getName());
     private static final HashSet<String> EXISTING_ORGS = new HashSet<>();
-
+    private static final List<Long> EMPTY_LIST = Collections.emptyList();
 
     private static Properties getLoggingProps(){
         Properties properties = new Properties();
@@ -48,7 +48,7 @@ public abstract class MessageQueue {
 //        PropertyConfigurator.configure(getLoggingProps());
 
         try {
-            List<Map<String,Object>> orgMessageTopics = MessageQueueTopic.getAllMessageTopics();
+            List<Map<String,Object>> orgMessageTopics = MessageQueueTopic.getTopics(EMPTY_LIST);
             if(CollectionUtils.isNotEmpty(orgMessageTopics)) {
 
                 for (Map<String, Object> org : orgMessageTopics) {
