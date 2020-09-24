@@ -4,19 +4,25 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.modules.FieldUtil;
 import com.facilio.server.ServerInfo;
 import com.facilio.services.kafka.FacilioKafkaProducer;
+import com.facilio.services.kafka.notification.NotificationProcessor;
 import com.facilio.services.procon.message.FacilioRecord;
 import com.facilio.services.procon.producer.FacilioProducer;
 import com.facilio.wmsv2.message.Message;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Executors;
@@ -24,6 +30,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class KafkaBroadcaster extends AbstractBroadcaster {
+
+    private static final Logger LOGGER = LogManager.getLogger(NotificationProcessor.class.getName());
 
     private static KafkaBroadcaster broadcaster = new KafkaBroadcaster();
     public static DefaultBroadcaster getBroadcaster() {
@@ -45,6 +53,8 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
         } else {
             kinesisNotificationTopic = FacilioProperties.getEnvironment() + "-" + kinesisNotificationTopic;
         }
+
+        LOGGER.debug("Notification topic: " + kinesisNotificationTopic);
 
         producer = new FacilioKafkaProducer(kinesisNotificationTopic);
 
@@ -71,11 +81,14 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
                         Message message = FieldUtil.getAsBeanFromJson((JSONObject) parser.parse(value), Message.class);
                         incomingMessage(message);
                     } catch (Exception ex) {
-
+                        LOGGER.debug("Exception while parsing data to JSON ", ex);
+                    }
+                    finally {
+                        consumer.commitSync(Collections.singletonMap(topicPartition, new OffsetAndMetadata(record.offset() + 1)));
                     }
                 }
             }
-        }, 0, 60 * 1000, TimeUnit.MILLISECONDS);
+        }, 0, 3, TimeUnit.SECONDS);
     }
 
     private Properties getProperties(String groupId) {
