@@ -38,12 +38,18 @@ public class AddOrUpdateReadingsCommand extends FacilioCommand {
 //		}
 		LOGGER.info(MessageFormat.format("Fork post processing --> {0}", forkPostProcessing));
 		if (forkPostProcessing) {
-			long time = System.currentTimeMillis();
-			FacilioTimer.scheduleInstantJob("rule", "ReadingPostProcessingJob", (FacilioContext) context);
+			try {
+				long time = System.currentTimeMillis();
+				FacilioTimer.scheduleInstantJob("rule", "ReadingPostProcessingJob", (FacilioContext) context);
 //			if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
 //				LOGGER.info(MessageFormat.format("Time taken to create instant job : {0}", (System.currentTimeMillis() - time)));
 //			}
-			LOGGER.debug(MessageFormat.format("Time taken to create instant job : {0}", (System.currentTimeMillis() - time)));
+				LOGGER.debug(MessageFormat.format("Time taken to create instant job : {0}", (System.currentTimeMillis() - time)));
+			}
+			catch (Exception e) {
+				LOGGER.error("Error occurred while creating instant job for post processing of reading", e);
+				CommonCommandUtil.emailException("AddOrUpdateReadingsCommand", "Post processing instant job failed", e);
+			}
 		}
 		else {
 			FacilioChain postProcessingChain = ReadOnlyChainFactory.readingPostProcessingChain();
