@@ -676,10 +676,10 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		if(objects.size() == 3) {
 			criteria = (Criteria)objects.get(2);
 		}
-		boolean isS3Value = true; 
-		if(FacilioProperties.isDevelopment()) {
-			isS3Value = false;
-		}
+		boolean isS3Value = false; 
+//		if(FacilioProperties.isDevelopment()) {
+//			isS3Value = false;
+//		}
 		WorkflowV2Util.fillCriteriaField(criteria, module.getName());
 		String fileUrl = ExportUtil.exportModule(FileInfo.FileFormat.XLS, module.getName(), viewName, null,criteria, isS3Value, false, 2000);
 		
