@@ -31,7 +31,7 @@ public class GetModuleListCommand extends FacilioCommand {
 		List<FacilioModule> moduleList = modBean.getModuleList(ModuleType.valueOf(moduleType), onlyCustom);
 		if(CollectionUtils.isNotEmpty(moduleList) && onlyCustom && (AccountUtil.getCurrentOrg().getOrgId() == 321l || AccountUtil.getCurrentOrg().getOrgId() == 173l)){
 			List<FacilioModule> splModules = moduleList.stream()
-					.filter(mod->mod.getName().equals("custom_tariff") || mod.getName().equals("custom_tenantbilling"))
+					.filter(mod->mod.getName().equals("custom_tenantcontract") || mod.getName().equals("custom_timesheetmanagement") || mod.getName().equals("custom_servicebilllineitems"))
 					.collect(Collectors.toList());
 
 			if(CollectionUtils.isNotEmpty(splModules)){
