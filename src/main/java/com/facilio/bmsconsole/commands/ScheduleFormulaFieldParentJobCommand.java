@@ -34,22 +34,23 @@ public class ScheduleFormulaFieldParentJobCommand extends FacilioCommand {
 		if(parentFormulaResourceIds != null && !parentFormulaResourceIds.isEmpty())
 		{
 			List<FormulaFieldResourceStatusContext> typedParentFormulaResourceStatusList = FormulaFieldResourceStatusAPI.getNotInProgressFormulaFieldResourceStatusByFrequencyAndIds(parentFormulaResourceIds, frequencyTypes);
-			if(typedParentFormulaResourceStatusList != null && !typedParentFormulaResourceStatusList.isEmpty())
-			{					
-				for(FormulaFieldResourceStatusContext typedParentFormulaResourceStatusContext :typedParentFormulaResourceStatusList)
-				{
-					typedParentFormulaResourceStatusContext.setStatus(FormulaFieldResourceStatusContext.Status.IN_QUEUE.getIntVal());
-					int rowsUpdated = FormulaFieldResourceStatusAPI.updateNotInProgressFormulaFieldResourceStatus(typedParentFormulaResourceStatusContext);	
-					if (rowsUpdated == 1)
+			if(typedParentFormulaResourceStatusList != null && !typedParentFormulaResourceStatusList.isEmpty()) {		
+				List<FormulaFieldResourceStatusContext> typedFormulaeForActiveResources = FormulaFieldResourceStatusAPI.checkForActiveResourcesInFormulae(typedParentFormulaResourceStatusList);
+				if (typedFormulaeForActiveResources != null && !typedFormulaeForActiveResources.isEmpty()) {
+					for(FormulaFieldResourceStatusContext typedParentFormulaResourceStatusContext :typedFormulaeForActiveResources)
 					{
-						LOGGER.info("Triggering parents for --"+ formulaResourceStatusContext.getId() + " parent --" +typedParentFormulaResourceStatusContext.getId());
-						System.out.println("Triggering parents for --"+ formulaResourceStatusContext.getId() + " parent --" +typedParentFormulaResourceStatusContext.getId());	
-						FacilioContext instantJobcontext = new FacilioContext();
-						instantJobcontext.put(FacilioConstants.ContextNames.FORMULA_RESOURCE_JOB_ID, typedParentFormulaResourceStatusContext.getId());
-						instantJobcontext.put(FacilioConstants.ContextNames.FORMULA_FREQUENCY_TYPES, frequencyTypes);
-						FacilioTimer.scheduleInstantJob("formula","FormulaFieldCalculatorJob", instantJobcontext);				
-					}
-				}	
+						typedParentFormulaResourceStatusContext.setStatus(FormulaFieldResourceStatusContext.Status.IN_QUEUE.getIntVal());
+						int rowsUpdated = FormulaFieldResourceStatusAPI.updateNotInProgressFormulaFieldResourceStatus(typedParentFormulaResourceStatusContext);	
+						if (rowsUpdated == 1)
+						{
+							LOGGER.info("Triggering parents for --"+ formulaResourceStatusContext.getId() + " parent --" +typedParentFormulaResourceStatusContext.getId());
+							FacilioContext instantJobcontext = new FacilioContext();
+							instantJobcontext.put(FacilioConstants.ContextNames.FORMULA_RESOURCE_JOB_ID, typedParentFormulaResourceStatusContext.getId());
+							instantJobcontext.put(FacilioConstants.ContextNames.FORMULA_FREQUENCY_TYPES, frequencyTypes);
+							FacilioTimer.scheduleInstantJob("formula","FormulaFieldCalculatorJob", instantJobcontext);				
+						}
+					}	
+				}
 			}				
 		}				
 	

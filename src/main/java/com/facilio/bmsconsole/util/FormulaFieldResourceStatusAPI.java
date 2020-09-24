@@ -15,6 +15,8 @@ import org.apache.log4j.Logger;
 import com.facilio.bmsconsole.commands.FormulaFieldJobCalculationCommand;
 import com.facilio.bmsconsole.context.FormulaFieldDependenciesContext;
 import com.facilio.bmsconsole.context.FormulaFieldResourceStatusContext;
+import com.facilio.bmsconsole.context.HistoricalLoggerContext;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.FormulaFieldResourceStatusContext;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -371,6 +373,34 @@ public class FormulaFieldResourceStatusAPI {
 			}
 			FormulaFieldResourceStatusAPI.updateIsLeafField(formulaFieldResourceStatusContextMap.get(formulaFieldResourceStatusId));					
 		}
+	}
+
+	public static List<FormulaFieldResourceStatusContext> checkForActiveResourcesInFormulae(List<FormulaFieldResourceStatusContext> formulaResourcesAtLeaf) throws Exception {
+		
+				
+		List<Long> resourceIdsIncludingNonDeleted = new ArrayList<Long>();
+		for(FormulaFieldResourceStatusContext formulaResourceAtLeaf:formulaResourcesAtLeaf) {	
+			resourceIdsIncludingNonDeleted.add(formulaResourceAtLeaf.getResourceId());
+		}
+		
+		List<ResourceContext> activeResources = ResourceAPI.getResources(resourceIdsIncludingNonDeleted, false);
+		List<FormulaFieldResourceStatusContext> formulaeForActiveResources = new ArrayList<FormulaFieldResourceStatusContext>();
+		
+		if(activeResources != null && !activeResources.isEmpty()) {			
+			List<Long> activeResourceIds = new ArrayList<Long>();
+			for(ResourceContext activeResource: activeResources) {	
+				activeResourceIds.add(activeResource.getId());
+			}
+			
+			for(FormulaFieldResourceStatusContext formulaResourceAtLeaf:formulaResourcesAtLeaf)
+			{
+				if(activeResourceIds.contains(formulaResourceAtLeaf.getResourceId())){
+					formulaeForActiveResources.add(formulaResourceAtLeaf);	
+				}
+			}
+		}
+		
+		return formulaeForActiveResources;
 	}
 
 }

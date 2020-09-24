@@ -3,7 +3,9 @@ package com.facilio.bmsconsole.jobs;
 import java.time.Month;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Level;
@@ -11,13 +13,17 @@ import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.FormulaFieldResourceStatusContext;
+import com.facilio.bmsconsole.context.HistoricalLoggerContext;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.FormulaFieldResourceStatusAPI;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.transaction.NewTransactionService;
+import com.facilio.modules.FieldUtil;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
@@ -34,16 +40,19 @@ public class FormulaLeafTriggerJob extends FacilioJob{
 
 		if(types != null && !types.isEmpty()) {
 			List<FormulaFieldResourceStatusContext> formulaResourcesAtLeaf = FormulaFieldResourceStatusAPI.getLeafFormulaFieldResourceStatusByFrequency(types);		
-			if (formulaResourcesAtLeaf != null && !formulaResourcesAtLeaf.isEmpty()) {			
-				for(FormulaFieldResourceStatusContext formulaResourceAtLeaf:formulaResourcesAtLeaf)
-				{		
-					formulaResourceAtLeaf.setStatus(FormulaFieldResourceStatusContext.Status.IN_QUEUE.getIntVal());
-					NewTransactionService.newTransactionWithReturn(() -> FormulaFieldResourceStatusAPI.updateCompletedFormulaFieldResourceStatus(formulaResourceAtLeaf));
-					
-					FacilioContext context = new FacilioContext();
-					context.put(FacilioConstants.ContextNames.FORMULA_RESOURCE_JOB_ID, formulaResourceAtLeaf.getId());
-					context.put(FacilioConstants.ContextNames.FORMULA_FREQUENCY_TYPES, types);
-					FacilioTimer.scheduleInstantJob("formula","FormulaFieldCalculatorJob", context);
+			if (formulaResourcesAtLeaf != null && !formulaResourcesAtLeaf.isEmpty()) {	
+				List<FormulaFieldResourceStatusContext> formulaeForActiveResources = FormulaFieldResourceStatusAPI.checkForActiveResourcesInFormulae(formulaResourcesAtLeaf);
+				if (formulaeForActiveResources != null && !formulaeForActiveResources.isEmpty()) {	
+					for(FormulaFieldResourceStatusContext activeFormulaResourceAtLeaf:formulaeForActiveResources)
+					{		
+						activeFormulaResourceAtLeaf.setStatus(FormulaFieldResourceStatusContext.Status.IN_QUEUE.getIntVal());
+						NewTransactionService.newTransactionWithReturn(() -> FormulaFieldResourceStatusAPI.updateCompletedFormulaFieldResourceStatus(activeFormulaResourceAtLeaf));
+						
+						FacilioContext context = new FacilioContext();
+						context.put(FacilioConstants.ContextNames.FORMULA_RESOURCE_JOB_ID, activeFormulaResourceAtLeaf.getId());
+						context.put(FacilioConstants.ContextNames.FORMULA_FREQUENCY_TYPES, types);
+						FacilioTimer.scheduleInstantJob("formula","FormulaFieldCalculatorJob", context);
+					}	
 				}		
 			}	
 		}
