@@ -4,7 +4,6 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.modules.FieldUtil;
 import com.facilio.server.ServerInfo;
 import com.facilio.services.kafka.FacilioKafkaProducer;
-import com.facilio.services.kafka.notification.NotificationProcessor;
 import com.facilio.services.procon.message.FacilioRecord;
 import com.facilio.services.procon.producer.FacilioProducer;
 import com.facilio.wmsv2.message.Message;
@@ -17,7 +16,6 @@ import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.log4j.Priority;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -31,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 
 public class KafkaBroadcaster extends AbstractBroadcaster {
 
-    private static final Logger LOGGER = LogManager.getLogger(NotificationProcessor.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(KafkaBroadcaster.class.getName());
 
     private static KafkaBroadcaster broadcaster = new KafkaBroadcaster();
     public static DefaultBroadcaster getBroadcaster() {
@@ -39,7 +37,7 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
     }
 
     private static FacilioProducer producer;
-    private static String kinesisNotificationTopic = "notifications-new";
+    private static String kinesisNotificationTopic;
 
     private KafkaConsumer<String, String> consumer;
     private TopicPartition topicPartition;
@@ -49,9 +47,9 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
 
     public KafkaBroadcaster() {
         if(FacilioProperties.isProduction()) {
-            kinesisNotificationTopic = "production-"+ kinesisNotificationTopic;
+            kinesisNotificationTopic = "production-notifications-new";
         } else {
-            kinesisNotificationTopic = FacilioProperties.getEnvironment() + "-" + kinesisNotificationTopic;
+            kinesisNotificationTopic = FacilioProperties.getEnvironment() + "-notifications-new";
         }
 
         LOGGER.debug("Notification topic: " + kinesisNotificationTopic);
@@ -111,6 +109,7 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
         dataMap.put("data", data);
 
         String partitionKey = kinesisNotificationTopic;
+        LOGGER.debug("Outgoing message: " + message);
         RecordMetadata future = (RecordMetadata)producer.putRecord(new FacilioRecord(partitionKey, dataMap));
     }
 
