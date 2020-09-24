@@ -1,11 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -57,6 +60,26 @@ public class GetModulesListCommand extends FacilioCommand {
 		List<FacilioModule> customModules = new ArrayList<>();
 
 		customModules.addAll(modBean.getModuleList(FacilioModule.ModuleType.BASE_ENTITY, true));
+		
+		
+		if(CollectionUtils.isNotEmpty(customModules) && (AccountUtil.getCurrentOrg().getOrgId() == 321l || AccountUtil.getCurrentOrg().getOrgId() == 173l)){
+			List<FacilioModule> splModules = customModules.stream()
+					.filter(mod->mod.getName().equals("custom_tenantcontract") || mod.getName().equals("custom_timesheetmanagement") || mod.getName().equals("custom_servicebilllineitems"))
+					.collect(Collectors.toList());
+
+			if(CollectionUtils.isNotEmpty(splModules)){
+				splModules.sort(new Comparator<FacilioModule>() {
+					@Override
+					public int compare(FacilioModule o1, FacilioModule o2) {
+						return Long.compare(o2.getModuleId(),o1.getModuleId());
+					}
+				});
+				customModules.removeAll(splModules);
+				customModules.addAll(0,splModules);
+			}
+		}
+		
+		
 
 		Map<String, List<FacilioModule>> modules = new HashMap<String, List<FacilioModule>>();
 		modules.put("systemModules", sytemModules);
