@@ -451,14 +451,13 @@ public class DataProcessorUtil {
     public static boolean checkIfDuplicate(long recordId) {
         try {
         	Map<String,Object> prop = getRecord(recordId);
-        	boolean flag = false;
+        	boolean flag = true;
         	boolean isDuplicateMessage = false;
-        	if(prop != null && prop.containsKey(AgentKeys.MSG_STATUS) && prop.containsValue(AgentKeys.MSG_STATUS)) {
-        		Long statusValue =  (Long) prop.get(AgentKeys.MSG_STATUS);
+        	if(prop != null) {
+        		Long statusValue =  (Long) prop.getOrDefault(AgentKeys.MSG_STATUS, 0L);
         		if(statusValue == 1L) {
-        			isDuplicateMessage= true;
-        		}else if(statusValue == 0L){
-        			flag = true;
+        			isDuplicateMessage = true;
+        			flag = false;
         		}
         	}
         	 
