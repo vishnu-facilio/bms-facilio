@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.text.MessageFormat;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -81,47 +82,51 @@ public class CalculatePostFormulaCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		if (reading.getReadings() != null && !reading.getReadings().isEmpty()) {
 			for (FormulaFieldContext formula : formulas) {
-				boolean isCurrentResourceAssociatedFormula = formula.getMatchedResourcesIds().contains(reading.getParentId());
-				if(AccountUtil.getCurrentOrg().getOrgId() == 343l && (formula.getId() == 1271l || formula.getId() == 1272l || formula.getId() == 1273l)) {
-					isCurrentResourceAssociatedFormula = true;
-				}
-				if (isCurrentResourceAssociatedFormula && containsDependentField(formula, reading, fieldMap)) {
-					String completedKey = null;
-					if (reading.isNewReading()) {
-						completedKey = formula.getId()+"|"+reading.getParentId();
+				try {
+					boolean isCurrentResourceAssociatedFormula = formula.getMatchedResourcesIds().contains(reading.getParentId());
+					if (AccountUtil.getCurrentOrg().getOrgId() == 343l && (formula.getId() == 1271l || formula.getId() == 1272l || formula.getId() == 1273l)) {
+						isCurrentResourceAssociatedFormula = true;
 					}
-					else {
-						long ttime = reading.getTtime();
-						ZonedDateTime zdt = DateTimeUtil.getDateTime(ttime);
-						zdt = zdt.truncatedTo(new SecondsChronoUnit(formula.getInterval() * 60));
-						long startTime = DateTimeUtil.getMillis(zdt, true);
-						long endTime = (startTime + (formula.getInterval() * 60 * 1000)) - 1;
-						completedKey = formula.getId()+"|"+reading.getParentId()+"|"+startTime+"|"+endTime;
-					}
-					
-					if (!completedFormulas.contains(completedKey)) {
-						FacilioContext context = new FacilioContext();
-						context.put(FacilioConstants.ContextNames.READING, reading);
-						context.put(FacilioConstants.ContextNames.FORMULA_FIELD, formula);
-						context.put(FacilioConstants.ContextNames.MODULE_FIELD_MAP, fieldMap);
-						
-						if (controllerTime != null) {
-							ControllerContext formulaController = getFormulaController(formula, completedKey);
-							context.put(FacilioConstants.ContextNames.CONTROLLER, formulaController);
-							context.put(FacilioConstants.ContextNames.CONTROLLER_TIME, controllerTime);
-							context.put(FacilioConstants.ContextNames.CONTROLLER_LEVEL, controllerLevel);
-							
-							formulaControllers.add(formulaController);
+					if (isCurrentResourceAssociatedFormula && containsDependentField(formula, reading, fieldMap)) {
+						String completedKey = null;
+						if (reading.isNewReading()) {
+							completedKey = formula.getId() + "|" + reading.getParentId();
+						} else {
+							long ttime = reading.getTtime();
+							ZonedDateTime zdt = DateTimeUtil.getDateTime(ttime);
+							zdt = zdt.truncatedTo(new SecondsChronoUnit(formula.getInterval() * 60));
+							long startTime = DateTimeUtil.getMillis(zdt, true);
+							long endTime = (startTime + (formula.getInterval() * 60 * 1000)) - 1;
+							completedKey = formula.getId() + "|" + reading.getParentId() + "|" + startTime + "|" + endTime;
 						}
-						
-						FacilioTimer.scheduleInstantJob("PostFormulaCalculationJob", context);
-						LOGGER.debug("Adding instant job for Post formula calculation for  : "+completedKey);
-						if(AccountUtil.getCurrentOrg().getOrgId() == 343l && (formula.getId() == 1271l || formula.getId() == 1272l || formula.getId() == 1273l)) {
-							LOGGER.info("Adding instant job for Post formula calculation for  : "+completedKey);
+
+						if (!completedFormulas.contains(completedKey)) {
+							FacilioContext context = new FacilioContext();
+							context.put(FacilioConstants.ContextNames.READING, reading);
+							context.put(FacilioConstants.ContextNames.FORMULA_FIELD, formula);
+							context.put(FacilioConstants.ContextNames.MODULE_FIELD_MAP, fieldMap);
+
+							if (controllerTime != null) {
+								ControllerContext formulaController = getFormulaController(formula, completedKey);
+								context.put(FacilioConstants.ContextNames.CONTROLLER, formulaController);
+								context.put(FacilioConstants.ContextNames.CONTROLLER_TIME, controllerTime);
+								context.put(FacilioConstants.ContextNames.CONTROLLER_LEVEL, controllerLevel);
+
+								formulaControllers.add(formulaController);
+							}
+
+							FacilioTimer.scheduleInstantJob("PostFormulaCalculationJob", context);
+							LOGGER.debug("Adding instant job for Post formula calculation for  : " + completedKey);
+							if (AccountUtil.getCurrentOrg().getOrgId() == 343l && (formula.getId() == 1271l || formula.getId() == 1272l || formula.getId() == 1273l)) {
+								LOGGER.info("Adding instant job for Post formula calculation for  : " + completedKey);
+							}
+
+							completedFormulas.add(completedKey);
 						}
-						
-						completedFormulas.add(completedKey);
 					}
+				} catch (Exception e) {
+					LOGGER.error(MessageFormat.format("Error occurred while calculating formula : {0} for resource : {1}", formula.getId(), reading.getParentId()));
+					throw e;
 				}
 			}
 		}
