@@ -182,6 +182,8 @@ public class LoginAction extends FacilioAction {
 		try {
 			String facilioToken = null;
 			String deviceType = request.getHeader("X-Device-Type");
+			boolean isMobile = !StringUtils.isNullOrEmpty(deviceType)
+					&& ("android".equalsIgnoreCase(deviceType) || "ios".equalsIgnoreCase(deviceType));
 			if (!StringUtils.isNullOrEmpty(deviceType)
 					&& ("android".equalsIgnoreCase(deviceType) || "ios".equalsIgnoreCase(deviceType))) {
 				if(org.apache.commons.lang3.StringUtils.isEmpty(mobileInstanceId) || mobileInstanceId.equals("null")) {
@@ -224,13 +226,15 @@ public class LoginAction extends FacilioAction {
 							AccountUtil.getUserBean().removeUserMobileSetting(mobileInstanceId);
 						}
 
-						boolean isSSOEnabled = IAMAppUtil.isSSoEnabled(request.getServerName(), AccountUtil.getCurrentOrg().getOrgId());
-					    if (isSSOEnabled) {
-						   String ssoLogoutRequestURL = SSOUtil.getSSOLogoutRequestURL();
-						   if (ssoLogoutRequestURL != null) {
-							   response.sendRedirect(ssoLogoutRequestURL);
-						   }
-					    }
+						if (!isMobile) {
+							boolean isSSOEnabled = IAMAppUtil.isSSoEnabled(request.getServerName(), AccountUtil.getCurrentOrg().getOrgId());
+							if (isSSOEnabled) {
+								String ssoLogoutRequestURL = SSOUtil.getSSOLogoutRequestURL();
+								if (ssoLogoutRequestURL != null) {
+									response.sendRedirect(ssoLogoutRequestURL);
+								}
+							}
+						}
 					}
 				}
 			}

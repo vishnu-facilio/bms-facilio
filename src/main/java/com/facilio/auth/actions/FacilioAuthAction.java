@@ -792,6 +792,7 @@ public class FacilioAuthAction extends FacilioAction {
 			if (isCustomDomain) {
 				AccountSSO sso = IAMOrgUtil.getAccountSSO(appDomain.getOrgId());
 				if (sso != null && sso.getIsActive()) {
+
 					jsonObject.put("homePath", "/app/mobile/entry");
 				} else {
 					jsonObject.put("homePath", "/app/mobile/login");
