@@ -45,21 +45,19 @@ public class AddOrUpdateScheduleInRecurringVisitorCommandV3 extends FacilioComma
 		String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<InviteVisitorContextV3> list = recordMap.get(moduleName);
-        if(CollectionUtils.isNotEmpty(list)) {
+        if(CollectionUtils.isNotEmpty(list) && moduleName.equals(FacilioConstants.ContextNames.RECURRING_INVITE_VISITOR)) {
             for(InviteVisitorContextV3 inviteVisitor : list) {
-            	if (inviteVisitor.isRecurring()) {
-            		RecurringInviteVisitorContextV3 recurringInviteContext = (RecurringInviteVisitorContextV3)inviteVisitor;
-            		if(recurringInviteContext != null && recurringInviteContext.getScheduleTrigger() != null) {
-            			if(recurringInviteContext.getScheduleTrigger().getId() > 0 || (recurringInviteContext.getScheduleId() != null && recurringInviteContext.getScheduleId() > 0)) {
-        					updateRecurringInviteScheduler(recurringInviteContext.getScheduleTrigger());
-        					scheduleBaseSchedulerJob(recurringInviteContext, moduleName);
-        				}
-        				else {
-        					addRecurringInviteScheduler(recurringInviteContext);
-        					scheduleBaseSchedulerJob(recurringInviteContext, moduleName);
-        				}
-            		}
-    			}
+        		RecurringInviteVisitorContextV3 recurringInviteContext = (RecurringInviteVisitorContextV3)inviteVisitor;
+        		if(recurringInviteContext != null && recurringInviteContext.getScheduleTrigger() != null) {
+        			if(recurringInviteContext.getScheduleTrigger().getId() > 0 || (recurringInviteContext.getScheduleId() != null && recurringInviteContext.getScheduleId() > 0)) {
+    					updateRecurringInviteScheduler(recurringInviteContext.getScheduleTrigger());
+    					scheduleBaseSchedulerJob(recurringInviteContext);
+    				}
+    				else {
+    					addRecurringInviteScheduler(recurringInviteContext);
+    					scheduleBaseSchedulerJob(recurringInviteContext);
+    				}
+        		}
             }
         }
 		
@@ -84,7 +82,7 @@ public class AddOrUpdateScheduleInRecurringVisitorCommandV3 extends FacilioComma
 		
 		scheduleTrigger.setId((Long) props.get("id"));
 		recurringInviteContext.setScheduleId(scheduleTrigger.getId());
-		 
+		recurringInviteContext.setIsRecurring(true);	 
 	}
 	
 	public void updateRecurringInviteScheduler(BaseScheduleContext baseScheduleContext) throws Exception {
@@ -95,14 +93,15 @@ public class AddOrUpdateScheduleInRecurringVisitorCommandV3 extends FacilioComma
 	   update.update(FieldUtil.getAsProperties(baseScheduleContext));
 	}
 	
-	public void scheduleBaseSchedulerJob(RecurringInviteVisitorContextV3 recurringInviteContext, String moduleName) throws Exception {
+	public void scheduleBaseSchedulerJob(RecurringInviteVisitorContextV3 recurringInviteContext) throws Exception {
 		int delay = 0;
 		long scheduleId = recurringInviteContext.getScheduleTrigger().getId();
     	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioStatus status = TicketAPI.getStatus(modBean.getModule(moduleName), "Upcoming");
-    	if(recurringInviteContext.getModuleState().getId() == status.getId()) {
+
+		FacilioStatus status = TicketAPI.getStatus(modBean.getModule(FacilioConstants.ContextNames.INVITE_VISITOR), "Upcoming");
+//    	if(recurringInviteContext.getModuleState().getId() == status.getId()) {
         	FacilioTimer.deleteJob(scheduleId, "BaseSchedulerJob");
     		FacilioTimer.scheduleOneTimeJobWithDelay(scheduleId, "BaseSchedulerJob", delay, "priority");
-    	}
+//    	}
 	}
 }

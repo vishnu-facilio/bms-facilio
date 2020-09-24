@@ -193,8 +193,6 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new PreFillInviteVisitorCommandV3()); 
         c.addCommand(new AddOrUpdateVisitorFromBaseVisitCommandV3());
         c.addCommand(new CheckForWatchListRecordBaseVisitCommandV3());
-		c.addCommand(new AddOrUpdateScheduleInRecurringVisitorCommandV3());
-
 
         return c;
     }
@@ -216,7 +214,6 @@ public class TransactionChainFactoryV3 {
 
         c.addCommand(new PutOldVisitRecordsInInviteVisitorContextCommandV3());
         c.addCommand(new AddOrUpdateVisitorFromBaseVisitCommandV3());
-		c.addCommand(new AddOrUpdateScheduleInRecurringVisitorCommandV3());
 
         return c;
     }
@@ -224,6 +221,28 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getInviteVisitorAfterSaveOnUpdateChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ChangeInviteVisitorStateCommandV3());
+        return c;
+    }
+    
+    public static FacilioChain getRecurringInviteVisitorBeforeSaveOnCreateChain() {
+        FacilioChain c = getDefaultChain();
+
+        c.addCommand(new PutOldVisitRecordsInInviteVisitorContextCommandV3());
+        c.addCommand(new AddNewVisitorWhileBaseVisitCommandV3());
+        c.addCommand(new PreFillInviteVisitorCommandV3()); 
+        c.addCommand(new AddOrUpdateVisitorFromBaseVisitCommandV3());
+        c.addCommand(new CheckForWatchListRecordBaseVisitCommandV3());
+		c.addCommand(new AddOrUpdateScheduleInRecurringVisitorCommandV3());
+        return c;
+    }
+    
+    public static FacilioChain getRecurringInviteVisitorBeforeSaveOnUpdateChain() {
+        FacilioChain c = getDefaultChain();
+
+        c.addCommand(new PutOldVisitRecordsInInviteVisitorContextCommandV3());
+        c.addCommand(new AddOrUpdateVisitorFromBaseVisitCommandV3());
+		c.addCommand(new AddOrUpdateScheduleInRecurringVisitorCommandV3());
+
         return c;
     }
 

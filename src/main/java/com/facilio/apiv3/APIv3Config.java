@@ -52,6 +52,7 @@ import com.facilio.bmsconsoleV3.commands.vendor.AddOrUpdateLocationForVendorComm
 import com.facilio.bmsconsoleV3.commands.vendor.LoadVendorLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorcontact.LoadVendorContactLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitor.LoadVisitorLookUpCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.GetScheduleTriggerForRecurringInviteCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlog.LoadRecordIdForPassCodeCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlog.ValidateBaseVisitDetailAndLogCommand;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.GetTriggerForRecurringLogCommandV3;
@@ -413,7 +414,24 @@ public class APIv3Config {
                     .showStateFlowList()
                 .summary()
                     .beforeFetch(new LoadVisitorLoggingLookupCommandV3())
-//                    .afterFetch(new GetTriggerForRecurringLogCommandV3())
+                .build();
+    }
+    
+    @Module("recurringinvitevisitor")
+    public static Supplier<V3Config> getRecurringInviteVisitor() {
+        return () -> new V3Config(RecurringInviteVisitorContextV3.class)
+                .create()
+                    .beforeSave(TransactionChainFactoryV3.getRecurringInviteVisitorBeforeSaveOnCreateChain())
+                    .afterTransaction(TransactionChainFactoryV3.getInviteVisitorAfterSaveOnCreateChain())
+                .update()
+                   .beforeSave(TransactionChainFactoryV3.getRecurringInviteVisitorBeforeSaveOnUpdateChain())
+                   .afterTransaction(TransactionChainFactoryV3.getInviteVisitorAfterSaveOnUpdateChain())
+                .list()
+                    .beforeFetch(ReadOnlyChainFactoryV3.getInviteVisitorLogBeforeFetchOnListChain())
+                    .showStateFlowList()
+                .summary()
+                    .beforeFetch(new LoadVisitorLoggingLookupCommandV3())
+                    .afterFetch(new GetScheduleTriggerForRecurringInviteCommandV3())
                 .build();
     }
     

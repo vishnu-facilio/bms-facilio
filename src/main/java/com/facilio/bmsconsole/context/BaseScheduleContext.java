@@ -118,7 +118,7 @@ public class BaseScheduleContext {
 			this.schedulerType = schedulerType;
 		}
 		
-	    public ScheduleTypeInterface getSchedulerType() {
+	    public ScheduleTypeInterface getSchedulerTypeHandler() {
 	        return schedulerType;
 	    }
 	}
