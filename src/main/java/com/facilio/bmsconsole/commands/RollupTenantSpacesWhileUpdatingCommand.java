@@ -26,7 +26,7 @@ public class RollupTenantSpacesWhileUpdatingCommand extends FacilioCommand{
     public boolean executeCommand(Context context) throws Exception {
         ArrayListMultimap<String, Long> recordList = (ArrayListMultimap<String, Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 
-        for (String key :recordList.keySet()) {
+        for (String key : recordList.keySet()) {
             if (key.equals(FacilioConstants.ContextNames.TENANT_UNIT_SPACE)) {
                 List<Long> unitSpaceIdsList = recordList.get(key);
                 if (CollectionUtils.isNotEmpty(unitSpaceIdsList)) {
@@ -35,26 +35,25 @@ public class RollupTenantSpacesWhileUpdatingCommand extends FacilioCommand{
 
                         //removing tenant from unit
                         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-                        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT);
-                        List<FacilioField> fields = modBean.getAllFields(module.getName());
 
                         FacilioModule unitModule = modBean.getModule(FacilioConstants.ContextNames.TENANT_UNIT_SPACE);
-                        List<FacilioField> unitFields = modBean.getAllFields(module.getName());
+                        List<FacilioField> unitFields = modBean.getAllFields(unitModule.getName());
+                        Map<String, FacilioField> unitFieldMap = FieldFactory.getAsMap(unitFields);
+                        FacilioField updatedFields = unitFieldMap.get("tenant");
+
 
                         for (TenantUnitSpaceContext record : records) {
-                            if (record.getTenant() != null ) {
-                                if (!record.isOccupied()) {
-                                    GenericUpdateRecordBuilder unitBuilder = new GenericUpdateRecordBuilder()
-                                            .table(unitModule.getTableName())
-                                            .fields(unitFields)
-                                            .andCondition(CriteriaAPI.getIdCondition(record.getId(), module));
+                            if (!record.isOccupied()) {
+                                UpdateRecordBuilder<TenantUnitSpaceContext> unitBuilder = new UpdateRecordBuilder<TenantUnitSpaceContext>()
+                                        .module(unitModule)
+                                        .fields(Collections.singletonList(updatedFields))
+                                        .andCondition(CriteriaAPI.getIdCondition(record.getId(), unitModule));
 
-                                    Map<String, Object> valueMap = new HashMap<>();
-                                    TenantContext tenant = new TenantContext();
-                                    tenant.setId(-99);
-                                    valueMap.put("tenant", FieldUtil.getAsProperties(tenant));
-                                    unitBuilder.update(valueMap);
-                                }
+                                Map<String, Object> valueMap = new HashMap<>();
+                                TenantContext tenant = new TenantContext();
+                                tenant.setId(-99);
+                                valueMap.put("tenant", FieldUtil.getAsProperties(tenant));
+                                unitBuilder.updateViaMap(valueMap);
                             }
                             markUnitTenantsExpired(record);
                         }
