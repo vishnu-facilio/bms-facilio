@@ -4041,6 +4041,7 @@ public class TransactionChainFactory {
 
 	public static FacilioChain getAddControllerChain() {
 		FacilioChain chain = getDefaultChain();
+        chain.addCommand(new AddRtuNetworkCommand());
 		chain.addCommand(new SetAssetCategoryCommand());
 		chain.addCommand(new GenericAddModuleDataCommand());
 		chain.addCommand(FacilioChainFactory.getCategoryReadingsChain());
@@ -4796,11 +4797,11 @@ public class TransactionChainFactory {
 	}
 
 
-	public static FacilioChain getAddRtuChain() {
+	/*public static FacilioChain getAddRtuChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new AddRtuNetworkCommand());
 		return chain;
-	}
+	}*/
 
 	public static FacilioChain createAgentChain() {
 		FacilioChain chain = getDefaultChain();

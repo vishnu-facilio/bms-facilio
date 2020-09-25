@@ -5,10 +5,13 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.device.Device;
 import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.iotmessage.ControllerMessenger;
+import com.facilio.agentv2.modbusrtu.ModbusRtuControllerContext;
+import com.facilio.agentv2.modbusrtu.RtuNetworkContext;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.custom.CustomController;
+import com.facilio.modules.FieldUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -18,6 +21,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.facilio.agent.controller.FacilioControllerType.MODBUS_RTU;
 
 public class ControllerUtilV2 {
 
@@ -77,7 +82,16 @@ public class ControllerUtilV2 {
                     controller.setAvailablePoints(0);
                     controller.setDeviceId(device.getId());
                     controller.setControllerType(device.getControllerType());
-                    long controllerId = ControllerApiV2.addController(controller);
+                    long controllerId = -1;
+                    if (controller.getControllerType() == MODBUS_RTU.asInt()) {
+                        ModbusRtuControllerContext rtuControllerContext = (ModbusRtuControllerContext) controller;
+                        JSONObject network = (JSONObject) controllerProps.get("network");
+                        RtuNetworkContext rtuNetworkContext = FieldUtil.getAsBeanFromJson(network, RtuNetworkContext.class);
+                        rtuControllerContext.setNetwork(rtuNetworkContext);
+                        controllerId = ControllerApiV2.addController(rtuControllerContext);
+                    } else {
+                        controllerId = ControllerApiV2.addController(controller);
+                    }
                     if (controllerId > 0) {
                     int updatedCount = FieldDeviceApi.updateDeviceConfigured(device.getId());
                     if(updatedCount > 0){

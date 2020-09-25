@@ -740,6 +740,7 @@ public class FacilioConstants {
 		public static final String OPC_UA_CONTROLLER_MODULE_NAME = "opcuacontroller";
 		public static final String MODBUS_TCP_CONTROLLER_MODULE_NAME = "modbustcpcontroller";
         public static final String MODBUS_RTU_CONTROLLER_MODULE_NAME = "modbusrtucontroller";
+        public static final String RTU_NETWORK = "rtuNetwork";
         public static final String MISC_CONTROLLER_MODULE_NAME = "misccontroller";
         public static final String REST_CONTROLLER_MODULE_NAME = "restcontroller";
         public static final String CUSTOM_CONTROLLER_MODULE_NAME = "customcontroller";

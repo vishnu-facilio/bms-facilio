@@ -1,15 +1,23 @@
 package com.facilio.agentv2.modbusrtu;
 
+import com.facilio.agentv2.AgentConstants;
+import com.facilio.bmsconsole.commands.EnableAnomalyDetectionCommand;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.eclipse.milo.opcua.sdk.client.model.nodes.objects.AggregateConfigurationNode;
+import org.json.simple.JSONObject;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -26,25 +34,20 @@ public class RtuNetworkContext {
     private String name;
     private Long agentId;
 
-    public static boolean addRtuNetwork(RtuNetworkContext rtuNetworkContext) {
+    /*public static boolean addRtuNetwork(RtuNetworkContext rtuNetworkContext) {
         try {
             return addRtuNetworkCommand(rtuNetworkContext);
         } catch (Exception e) {
             LOGGER.info("Exception while adding rtuNetworkContext ", e);
         }
         return false;
-    }
+    }*/
 
-    public static boolean addRtuNetworkCommand(RtuNetworkContext rtuNetworkContext) throws Exception {
+    public static long addRtuNetworkCommand(RtuNetworkContext rtuNetworkContext) throws Exception {
         GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
                 .table(MODULE.getTableName())
                 .fields(FieldFactory.getRtuNetworkFields());
-        long id = builder.insert(FieldUtil.getAsProperties(rtuNetworkContext));
-        if (id > 0) {
-            rtuNetworkContext.setId(id);
-            return true;
-        }
-        return false;
+        return builder.insert(FieldUtil.getAsProperties(rtuNetworkContext));
     }
 
     public static RtuNetworkContext getRtuNetworkContext(long id) {
@@ -62,6 +65,26 @@ public class RtuNetworkContext {
                 .table(MODULE.getTableName())
                 .select(FieldFactory.getRtuNetworkFields())
                 .andCondition(CriteriaAPI.getIdCondition(id, MODULE));
+        List<Map<String, Object>> results = builder.get();
+        if ((results != null) && (!results.isEmpty())) {
+            if (results.size() == 1) {
+                return FieldUtil.getAsBeanFromMap(results.get(0), RtuNetworkContext.class);
+            } else {
+                throw new Exception(" unexpected results cant get more than one record");
+            }
+        } else {
+            throw new Exception(" record null ");
+        }
+    }
+
+    public static RtuNetworkContext getRtuNetworkContext(long agentId, String port) throws Exception {
+
+        Map<String, FacilioField> fields = FieldFactory.getAsMap(FieldFactory.getRtuNetworkFields());
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(MODULE.getTableName())
+                .select(FieldFactory.getRtuNetworkFields())
+                .andCondition(CriteriaAPI.getCondition(fields.get(AgentConstants.AGENT_ID), Collections.singleton(agentId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(fields.get(AgentConstants.COM_PORT), port, StringOperators.IS));
         List<Map<String, Object>> results = builder.get();
         if ((results != null) && (!results.isEmpty())) {
             if (results.size() == 1) {
@@ -138,5 +161,14 @@ public class RtuNetworkContext {
         this.name = name;
     }
 
+    public JSONObject toJson() {
+        JSONObject object = new JSONObject();
+        object.put(AgentConstants.COM_PORT, comPort);
+        object.put(AgentConstants.NAME, name);
+        object.put(AgentConstants.PARITY, parity);
+        object.put(AgentConstants.STOP_BITS, stopBits);
+        object.put(AgentConstants.BAUD_RATE, baudRate);
+        return object;
+    }
 
 }

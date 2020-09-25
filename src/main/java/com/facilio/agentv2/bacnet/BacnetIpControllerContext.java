@@ -99,7 +99,7 @@ public class BacnetIpControllerContext extends Controller {
 
     public List<Condition>  getControllerConditions() throws Exception {
         List<Condition> conditions = new ArrayList<>();
-        Map<String, FacilioField> fieldsMap = getFieldsMap(getModuleName());// change it to static final
+        Map<String, FacilioField> fieldsMap = getFieldsMap(FacilioConstants.ContextNames.BACNET_IP_CONTROLLER_MODULE_NAME);// change it to static final
         if (AccountUtil.getCurrentOrg().getOrgId() == 152) {
             LOGGER.info("Module Name : " + getModuleName());
             LOGGER.info("Fields : " + fieldsMap);

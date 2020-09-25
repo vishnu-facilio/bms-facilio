@@ -42,6 +42,7 @@ public class AgentConstants
     public static final String SUBSCRIBED = "subscribed";
     public static final String THRESHOLD_JSON = "thresholdJson";
     public static final String UNIT = "unit";
+    public static final String NETWORK = "network";
 
     // BACNET constants
     public static final String INSTANCE_NUMBER = "instanceNumber";

@@ -90,7 +90,7 @@ public class RtuNetworkAction extends AgentIdAction {
         this.name = name;
     }
 
-    public String addRtuNetwork() {
+   /* public String addRtuNetwork() {
         try {
             LOGGER.info(" adding network  ");
             RtuNetworkContext rtuNetwork = new RtuNetworkContext();
@@ -120,5 +120,5 @@ public class RtuNetworkAction extends AgentIdAction {
             LOGGER.info(" Exception while adding rtuNetworkContxt ", e);
         }
         return SUCCESS;
-    }
+    }*/
 }

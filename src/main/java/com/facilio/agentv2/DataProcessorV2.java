@@ -156,8 +156,9 @@ public class DataProcessorV2
                 if (AckUtil.handleConfigurationAndSubscription(AckUtil.getMessageIdFromPayload(payload), controller, payload)) {
                     return true;
                 }
+            } else {
+                return AckUtil.processAgentAck(payload, agent.getId(), orgId);
             }
-             return AckUtil.processAgentAck(payload, agent.getId(), orgId);
         }catch (Exception e){
             LOGGER.info("Exception while processing ACK ",e);
         }
@@ -312,7 +313,7 @@ public class DataProcessorV2
                 throw new Exception("payload missing controllerType ");
             }
             int type = ((Number)payload.get(AgentConstants.CONTROLLER_TYPE)).intValue();
-            Device device = FieldDeviceApi.getDevice(agent.getId(), DeviceUtil.getControllerIdentifier(type,controllerJson));
+            Device device = FieldDeviceApi.getDevice(agent.getId(), DeviceUtil.getControllerIdentifier(agent, type, controllerJson));
             if (device != null) {
                 return PointsUtil.processPoints(payload, device);
             } else {

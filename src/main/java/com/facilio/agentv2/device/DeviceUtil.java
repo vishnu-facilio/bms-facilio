@@ -7,6 +7,7 @@ import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.controller.ControllerUtilV2;
+import com.facilio.agentv2.modbusrtu.RtuNetworkContext;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -59,7 +60,8 @@ public class DeviceUtil {
                 }
                 device.setSiteId(agent.getSiteId());
                 if (deviceJSON.containsKey(AgentConstants.CONTROLLER)) {
-                    device.setIdentifier( getControllerIdentifier(device.getControllerType(),(JSONObject) deviceJSON.get(AgentConstants.CONTROLLER)));
+                    JSONObject controllerJson = (JSONObject) deviceJSON.get(AgentConstants.CONTROLLER);
+                    device.setIdentifier(getControllerIdentifier(agent, device.getControllerType(), controllerJson));
                 } else {
                     LOGGER.info("Exception occurred, controller params found in device json -> " + payload);
                     device.setIdentifier(deviceJSON.toString());
@@ -82,8 +84,13 @@ public class DeviceUtil {
         }
     }
 
-    public static String getControllerIdentifier(int type, JSONObject jsonObject) {
+    public static String getControllerIdentifier(FacilioAgent agent, int type, JSONObject jsonObject) {
         try {
+            if (type == FacilioControllerType.MODBUS_RTU.asInt()) {
+                String comPort = jsonObject.get(AgentConstants.COM_PORT).toString();
+                RtuNetworkContext rtuNetworkContext = RtuNetworkContext.getRtuNetworkContext(agent.getId(), comPort);
+                jsonObject.put(AgentConstants.NETWORK, rtuNetworkContext);
+            }
             Controller controller = ControllerApiV2.makeControllerFromMap(jsonObject,FacilioControllerType.valueOf(type));
             return controller.getIdentifier();
         }catch (Exception e){
@@ -94,11 +101,14 @@ public class DeviceUtil {
 
     public static boolean addDevices(List<Device> devices) throws Exception {
         if (devices != null && !devices.isEmpty()) {
-            FieldDeviceApi.addFieldDevices(devices);
+
             try{
                 for (Device device : devices) {
-                    if(device.getControllerType() == FacilioControllerType.MODBUS_IP.asInt()){
+                    if (device.getControllerType() == FacilioControllerType.MODBUS_IP.asInt() || device.getControllerType() == FacilioControllerType.MODBUS_RTU.asInt()) {
+                        FieldDeviceApi.addFieldDevice(device);
                         ControllerUtilV2.fieldDeviceToController(device);
+                    } else {
+                        FieldDeviceApi.addFieldDevices(devices);
                     }
                 }
             }catch (Exception e){

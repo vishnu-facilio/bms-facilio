@@ -28,6 +28,8 @@ public class ModbusRtuControllerContext extends Controller {
     @JsonInclude
     private Long networkId = -1L;
 
+    private RtuNetworkContext network;
+
     @JsonInclude
     int slaveId = -1;
 
@@ -42,6 +44,14 @@ public class ModbusRtuControllerContext extends Controller {
 
     public ModbusRtuControllerContext() {
         setControllerType(FacilioControllerType.MODBUS_RTU.asInt());
+    }
+
+    public void setNetwork(RtuNetworkContext network) {
+        this.network = network;
+    }
+
+    public RtuNetworkContext getNetwork() {
+        return this.network;
     }
 
     public long getNetworkId() {
@@ -107,7 +117,7 @@ public class ModbusRtuControllerContext extends Controller {
         jsonObject.put(AgentConstants.ID, getId());
         jsonObject.put(AgentConstants.SLAVE_ID, getSlaveId());
         jsonObject.put(AgentConstants.IP_ADDRESS,0);
-        jsonObject.put(AgentConstants.NETWORK_ID, getNetworkId());
+        jsonObject.put("network", getNetwork().toJson());
         return jsonObject;
     }
 
@@ -122,7 +132,7 @@ public class ModbusRtuControllerContext extends Controller {
 
     @Override
     public String getIdentifier() {
-        return slaveId+IDENTIFIER_SEPERATER+networkId;
+        return slaveId + IDENTIFIER_SEPERATER + network.getComPort();
     }
 
 }

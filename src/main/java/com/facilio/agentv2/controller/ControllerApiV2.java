@@ -13,6 +13,7 @@ import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.agentv2.lonWorks.LonWorksControllerContext;
 import com.facilio.agentv2.misc.MiscController;
 import com.facilio.agentv2.modbusrtu.ModbusRtuControllerContext;
+import com.facilio.agentv2.modbusrtu.RtuNetworkContext;
 import com.facilio.agentv2.modbustcp.ModbusTcpControllerContext;
 import com.facilio.agentv2.niagara.NiagaraControllerContext;
 import com.facilio.agentv2.opcua.OpcUaControllerContext;
@@ -81,6 +82,11 @@ public class ControllerApiV2 {
                 if(controller.getControllerType() == FacilioControllerType.SYSTEM.asInt()){
                     context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
                 }
+                if (controller.getControllerType() == FacilioControllerType.MODBUS_RTU.asInt()) {
+                    RtuNetworkContext rtuNetworkContext = ((ModbusRtuControllerContext) controller).getNetwork();
+                    rtuNetworkContext.setAgentId(agent.getId());
+                    context.put(FacilioConstants.ContextNames.RTU_NETWORK, rtuNetworkContext);
+                }
                 String assetCategoryName = ControllerApiV2.getControllerModuleName(FacilioControllerType.valueOf(controller.getControllerType()));
                 AssetCategoryContext asset = AssetsAPI.getCategory(assetCategoryName);
                 controller.setCategory(asset);
@@ -109,10 +115,6 @@ public class ControllerApiV2 {
         } else {
             throw new Exception(" controller can't be null ");
         }
-    }
-
-    public static void main(String[] args) {
-        System.out.println(System.currentTimeMillis());
     }
 
 
@@ -168,7 +170,10 @@ public class ControllerApiV2 {
                 controller = FieldUtil.getAsBeanFromMap(map, BacnetIpControllerContext.class);
                 break;
             case MODBUS_RTU:
-                controller = FieldUtil.getAsBeanFromMap(map, ModbusRtuControllerContext.class);
+                ModbusRtuControllerContext rtuController = FieldUtil.getAsBeanFromMap(map, ModbusRtuControllerContext.class);
+                JSONObject network = (JSONObject) map.get(AgentConstants.NETWORK);
+                rtuController.setNetwork(FieldUtil.getAsBeanFromJson(network, RtuNetworkContext.class));
+                controller = rtuController;
                 break;
             case OPC_XML_DA:
                 controller = FieldUtil.getAsBeanFromMap(map, OpcXmlDaControllerContext.class);
