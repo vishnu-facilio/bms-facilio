@@ -35,7 +35,7 @@ public class PubSubPublishMessageCommand extends FacilioCommand {
 			while (readingKeys.hasNext()) {
 				String readingKey = readingKeys.next();
 				
-				if (AccountUtil.getCurrentOrg().getId() == 155) {
+				if (AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 343) {
 					try {
 						ReadingDataMeta rdm = currentReadingMap.get(readingKey);
 
