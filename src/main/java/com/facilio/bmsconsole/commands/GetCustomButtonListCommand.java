@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
@@ -11,6 +12,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
@@ -36,6 +38,7 @@ public class GetCustomButtonListCommand extends FacilioCommand {
         criteria.addAndCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
         List<WorkflowRuleContext> allCustomButtons = WorkflowRuleAPI.getExtendedWorkflowRules(ModuleFactory.getCustomButtonRuleModule(),
                         FieldFactory.getCustomButtonRuleFields(), criteria, null, null, CustomButtonRuleContext.class);
+        allCustomButtons = WorkflowRuleAPI.getWorkFlowsFromMapList(FieldUtil.getAsMapList(allCustomButtons, CustomButtonRuleContext.class), true, true);
         context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST, allCustomButtons);
         return false;
     }
