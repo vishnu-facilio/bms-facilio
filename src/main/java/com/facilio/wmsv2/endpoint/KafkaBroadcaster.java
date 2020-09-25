@@ -78,8 +78,8 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
                     String value = record.value();
                     try {
                         Message message = FieldUtil.getAsBeanFromJson((JSONObject) parser.parse(value), Message.class);
-                        incomingMessage(message);
                         LOGGER.error("Processing message: " + message);
+                        incomingMessage(message);
                     } catch (Exception ex) {
                         LOGGER.error("Exception while parsing data to JSON ", ex);
                     }
