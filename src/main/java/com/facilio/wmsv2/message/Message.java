@@ -3,12 +3,12 @@ package com.facilio.wmsv2.message;
 import com.facilio.modules.FieldUtil;
 import com.facilio.wmsv2.endpoint.LiveSession.LiveSessionType;
 import com.facilio.wmsv2.endpoint.LiveSession;
+import com.facilio.wmsv2.endpoint.SessionManager;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
-
-import javax.websocket.Session;
 
 /**
  * Created by Shivaraj on 16/05/2017.
@@ -95,6 +95,18 @@ public class Message
 	public Message setAction(String action) {
 		this.action = action;
 		return this;
+	}
+
+	public String getLiveSessionId() {
+		if (liveSession != null) {
+			return liveSession.getId();
+		}
+		return null;
+	}
+	public void setLiveSessionId(String uuid) {
+		if (StringUtils.isNotEmpty(uuid)) {
+			this.liveSession = SessionManager.getInstance().getLiveSession(uuid);
+		}
 	}
 
 	public LiveSession getLiveSession() {
