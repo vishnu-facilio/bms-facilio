@@ -77,6 +77,7 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
                 for (ConsumerRecord<String, String> record : records) {
                     String value = record.value();
                     try {
+                        LOGGER.error("Processing message: " + value);
                         Message message = FieldUtil.getAsBeanFromJson((JSONObject) parser.parse(value), Message.class);
                         LOGGER.error("Processing message: " + message);
                         incomingMessage(message);
@@ -107,12 +108,12 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
         JSONObject dataMap = new JSONObject();
         JSONObject data = message.toJson();
 
-        dataMap.put("timestamp", System.currentTimeMillis());
-        dataMap.put("data", data);
+//        dataMap.put("timestamp", System.currentTimeMillis());
+//        dataMap.put("data", data);
 
         String partitionKey = kinesisNotificationTopic;
         LOGGER.error("Outgoing message: " + message);
-        RecordMetadata future = (RecordMetadata)producer.putRecord(new FacilioRecord(partitionKey, dataMap));
+        RecordMetadata future = (RecordMetadata)producer.putRecord(new FacilioRecord(partitionKey, data));
     }
 
     @Override
