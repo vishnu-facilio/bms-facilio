@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
+import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -65,9 +66,16 @@ public class ImportFieldRollupCommand extends FacilioCommand {
                 LOGGER.info("Tenant Contact Roll Up Executed");
             }
             if (recordList != null && recordList.containsKey(FacilioConstants.ContextNames.TENANT_UNIT_SPACE)) {
-                FacilioChain c = TransactionChainFactory.getImportRollupTenantSpacesChain();
-                c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordList);
-                c.execute();
+                if (importProcessContext.getImportSetting() == ImportProcessContext.ImportSetting.INSERT.getValue()) {
+                    FacilioChain c = TransactionChainFactory.getImportRollupTenantSpacesChain();
+                    c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordList);
+                    c.execute();
+                }
+                else {
+                    FacilioChain c = TransactionChainFactory.getImportRollupTenantSpacesWhileUpdatingChain();
+                    c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordList);
+                    c.execute();
+                }
                 LOGGER.info("Tenant Unit Roll Up Executed");
             }
         }

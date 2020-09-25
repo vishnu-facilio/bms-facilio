@@ -5484,6 +5484,13 @@ public class TransactionChainFactory {
 		return c;
 	}
 
+	public static FacilioChain getImportRollupTenantSpacesWhileUpdatingChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new RollupTenantSpacesWhileUpdatingCommand());
+
+		return c;
+	}
+
 	public static FacilioChain getActivateAssetDepreciationChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new ActivateOrDeActivateAssetDepreciationCommand());
