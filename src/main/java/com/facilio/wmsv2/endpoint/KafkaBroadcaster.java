@@ -71,6 +71,7 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
         executor.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
+                LOGGER.error("Consumer Runnable");
                 final JSONParser parser = new JSONParser();
                 ConsumerRecords<String, String> records = consumer.poll(1000);
                 for (ConsumerRecord<String, String> record : records) {
@@ -79,7 +80,7 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
                         Message message = FieldUtil.getAsBeanFromJson((JSONObject) parser.parse(value), Message.class);
                         incomingMessage(message);
                     } catch (Exception ex) {
-                        LOGGER.debug("Exception while parsing data to JSON ", ex);
+                        LOGGER.error("Exception while parsing data to JSON ", ex);
                     }
                     finally {
                         consumer.commitSync(Collections.singletonMap(topicPartition, new OffsetAndMetadata(record.offset() + 1)));
@@ -109,7 +110,7 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
         dataMap.put("data", data);
 
         String partitionKey = kinesisNotificationTopic;
-        LOGGER.debug("Outgoing message: " + message);
+        LOGGER.error("Outgoing message: " + message);
         RecordMetadata future = (RecordMetadata)producer.putRecord(new FacilioRecord(partitionKey, dataMap));
     }
 
