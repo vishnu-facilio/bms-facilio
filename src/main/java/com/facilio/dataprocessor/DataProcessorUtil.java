@@ -451,36 +451,16 @@ public class DataProcessorUtil {
     public static boolean checkIfDuplicate(long recordId) {
         try {
         	Map<String,Object> prop = getRecord(recordId);
-        	boolean flag = false;
-        	boolean isDuplicateMessage = false;
-        	if(prop != null) {
-        		Long statusValue =  (Long) prop.getOrDefault(AgentKeys.MSG_STATUS, 0L);
-        		if(statusValue == 1L) {
-        			isDuplicateMessage = true;
-        		}
-        		else {
-        		    flag = true;
-                }
-        	}
-        	 
-            if (isDuplicateMessage) {
-                if (isRestarted) {
-                    LOGGER.info(" Duplicate message received but can be processed due to server-restart " + recordId);
-                    isRestarted = false;
-                } else {
-                    LOGGER.info(" Duplicate message received and cannot be reprocessed " + recordId);
-                    return true;
-                }
+            if(prop == null) {
+                addAgentMessage(recordId);
             } else {
-                boolean originalFlag = false;
-                if(flag) {
-                	originalFlag = updateAgentStartTime(recordId);
-                }else {
-                	originalFlag = addAgentMessage(recordId);
-                }
-                if (!originalFlag) {
-                    LOGGER.info("tried adding duplicate message " + recordId);
+                Long statusValue =  (Long) prop.getOrDefault(AgentKeys.MSG_STATUS, 0L);
+                if(statusValue == 1L) {
+                    LOGGER.info("Message already processed " + recordId);
                     return true;
+                } else {
+                    LOGGER.info("Reprocessing the failed message " + recordId);
+                    updateAgentStartTime(recordId);
                 }
             }
         } catch (Exception e1) {
