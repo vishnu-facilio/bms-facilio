@@ -49,13 +49,13 @@ public class AddOrUpdateScheduleInRecurringVisitorCommandV3 extends FacilioComma
             for(InviteVisitorContextV3 inviteVisitor : list) {
         		RecurringInviteVisitorContextV3 recurringInviteContext = (RecurringInviteVisitorContextV3)inviteVisitor;
         		if(recurringInviteContext != null && recurringInviteContext.getScheduleTrigger() != null) {
-        			if(recurringInviteContext.getScheduleTrigger().getId() > 0 || (recurringInviteContext.getScheduleId() != null && recurringInviteContext.getScheduleId() > 0)) {
+        			if((recurringInviteContext.getScheduleTrigger().getId() != null && recurringInviteContext.getScheduleTrigger().getId() > 0) || (recurringInviteContext.getScheduleId() != null && recurringInviteContext.getScheduleId() > 0)) {
     					updateRecurringInviteScheduler(recurringInviteContext.getScheduleTrigger());
-    					scheduleBaseSchedulerJob(recurringInviteContext);
+    					scheduleBaseSchedulerJob(recurringInviteContext, true);
     				}
     				else {
     					addRecurringInviteScheduler(recurringInviteContext);
-    					scheduleBaseSchedulerJob(recurringInviteContext);
+    					scheduleBaseSchedulerJob(recurringInviteContext, false);
     				}
         		}
             }
@@ -93,14 +93,16 @@ public class AddOrUpdateScheduleInRecurringVisitorCommandV3 extends FacilioComma
 	   update.update(FieldUtil.getAsProperties(baseScheduleContext));
 	}
 	
-	public void scheduleBaseSchedulerJob(RecurringInviteVisitorContextV3 recurringInviteContext) throws Exception {
+	public void scheduleBaseSchedulerJob(RecurringInviteVisitorContextV3 recurringInviteContext, boolean isUpdate) throws Exception {
 		int delay = 0;
 		long scheduleId = recurringInviteContext.getScheduleTrigger().getId();
     	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
 		FacilioStatus status = TicketAPI.getStatus(modBean.getModule(FacilioConstants.ContextNames.INVITE_VISITOR), "Upcoming");
 //    	if(recurringInviteContext.getModuleState().getId() == status.getId()) {
-        	FacilioTimer.deleteJob(scheduleId, "BaseSchedulerJob");
+			if(isUpdate) {
+	        	FacilioTimer.deleteJob(scheduleId, "BaseSchedulerJob");
+			}
     		FacilioTimer.scheduleOneTimeJobWithDelay(scheduleId, "BaseSchedulerJob", delay, "priority");
 //    	}
 	}

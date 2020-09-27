@@ -8511,8 +8511,9 @@ public class FieldFactory {
         List<FacilioField> fields = new ArrayList<>();
 
         fields.add(getIdField(module));
+        fields.add(getModuleIdField(module));
         fields.add(getField("recordId", "RECORD_ID", module, FieldType.NUMBER));
-        fields.add(getField("scheduleJson", "SCHEDULE_INFO", module, FieldType.STRING));
+        fields.add(getField("scheduleInfoJson", "SCHEDULE_INFO", module, FieldType.STRING));
         fields.add(getField("startTime", "START_TIME", module, FieldType.NUMBER));
         fields.add(getField("endTime", "END_TIME", module, FieldType.NUMBER));
         fields.add(getField("scheduleType", "SCHEDULE_TYPE", module, FieldType.NUMBER));

@@ -422,7 +422,7 @@ public class APIv3Config {
         return () -> new V3Config(RecurringInviteVisitorContextV3.class)
                 .create()
                     .beforeSave(TransactionChainFactoryV3.getRecurringInviteVisitorBeforeSaveOnCreateChain())
-                    .afterTransaction(TransactionChainFactoryV3.getInviteVisitorAfterSaveOnCreateChain())
+                    .afterTransaction(TransactionChainFactoryV3.getRecurringInviteVisitorAfterSaveOnCreateChain())
                 .update()
                    .beforeSave(TransactionChainFactoryV3.getRecurringInviteVisitorBeforeSaveOnUpdateChain())
                    .afterTransaction(TransactionChainFactoryV3.getInviteVisitorAfterSaveOnUpdateChain())

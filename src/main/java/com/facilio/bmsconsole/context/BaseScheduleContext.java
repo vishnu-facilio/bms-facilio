@@ -1,9 +1,11 @@
 package com.facilio.bmsconsole.context;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.mail.MethodNotSupportedException;
 
@@ -12,6 +14,8 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.PMTriggerContext.TriggerExectionSource;
+import com.facilio.bmsconsole.context.WorkflowRuleResourceLoggerContext.Status;
 import com.facilio.bmsconsole.context.sensor.SensorRuleType;
 import com.facilio.bmsconsole.context.sensor.SensorRuleTypeValidationInterface;
 import com.facilio.chain.FacilioChain;
@@ -33,7 +37,7 @@ import com.facilio.v3.util.ChainUtil;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
-public class BaseScheduleContext {
+public class BaseScheduleContext implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	private Long startTime; 
@@ -46,16 +50,17 @@ public class BaseScheduleContext {
 	private Long id;
 	private Long orgId;
 	
-	public ModuleBaseWithCustomFields fetchParent() throws Exception{
+	public List<Map<String, Object>> fetchParent() throws Exception{
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleId);
 		SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
 				.module(module)
 				.select(modBean.getAllFields(module.getName()))
+				.beanClass(ModuleBaseWithCustomFields.class)
 				.andCondition(CriteriaAPI.getIdCondition(recordId, module));
 		
-		ModuleBaseWithCustomFields parentRecord = selectBuilder.fetchFirst();
+		List<Map<String, Object>> parentRecord = selectBuilder.getAsProps();
 		return parentRecord;
 	}
 	
@@ -114,8 +119,8 @@ public class BaseScheduleContext {
 		private ScheduleType(){
 		}
 		
-		private ScheduleType(ScheduleTypeInterface baseScheduleContext){
-			this.schedulerType = schedulerType;
+		private ScheduleType(ScheduleTypeInterface schedulerInvokingType){
+			this.schedulerType = schedulerInvokingType;
 		}
 		
 	    public ScheduleTypeInterface getSchedulerTypeHandler() {
@@ -163,12 +168,23 @@ public class BaseScheduleContext {
 		this.generatedUptoTime = generatedUptoTime;
 	}
 
-	public ScheduleType getScheduleType() {
+	public ScheduleType getScheduleTypeEnum() {
 		return scheduleType;
 	}
 
+	public int getScheduleType() {
+		if (scheduleType != null) {
+			return scheduleType.getIndex();
+		}
+		return -1;
+	}
+	
 	public void setScheduleType(ScheduleType scheduleType) {
 		this.scheduleType = scheduleType;
+	}
+	
+	public void setScheduleType(int scheduleType) {
+		this.scheduleType = ScheduleType.valuOf(scheduleType);
 	}
 	
 	public ScheduleInfo getScheduleInfo() {
@@ -179,13 +195,13 @@ public class BaseScheduleContext {
 		this.scheduleInfo = scheduleInfo;
 	}
 	
-	public String getScheduleJson() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+	public String getScheduleInfoJson() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		if(scheduleInfo != null) {
 			return FieldUtil.getAsJSON(scheduleInfo).toJSONString();
 		}
 		return null;
 	}
-	public void setScheduleJson(String jsonString) throws JsonParseException, JsonMappingException, IOException, ParseException {
+	public void setScheduleInfoJson(String jsonString) throws JsonParseException, JsonMappingException, IOException, ParseException {
 		JSONParser parser = new JSONParser();
 		this.scheduleInfo = FieldUtil.getAsBeanFromJson((JSONObject)parser.parse(jsonString), ScheduleInfo.class);
 	}
@@ -205,4 +221,11 @@ public class BaseScheduleContext {
 	public void setOrgId(Long orgId) {
 		this.orgId = orgId;
 	}
+
+	@Override
+	public String toString() {
+		return "BaseScheduleContext [startTime=" + startTime + ", endTime=" + endTime + ", moduleId=" + moduleId
+				+ ", recordId=" + recordId + ", generatedUptoTime=" + generatedUptoTime + ", id=" + id + "]";
+	}
+	
 }

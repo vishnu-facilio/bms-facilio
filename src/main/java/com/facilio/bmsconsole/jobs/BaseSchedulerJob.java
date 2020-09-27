@@ -37,7 +37,7 @@ public class BaseSchedulerJob extends FacilioJob {
 			String jobName = (String) jc.getJobName();
 			BaseScheduleContext baseScheduleContext = getBaseScheduleContext(jobId);
 			if(baseScheduleContext != null) {	
-				List<ModuleBaseWithCustomFields> childRecords = baseScheduleContext.getScheduleType().getSchedulerTypeHandler().createRecords(baseScheduleContext);	
+				List<ModuleBaseWithCustomFields> childRecords = baseScheduleContext.getScheduleTypeEnum().getSchedulerTypeHandler().createRecords(baseScheduleContext);	
 				if(childRecords != null && !childRecords.isEmpty()) {
 					baseScheduleContext.saveRecords(childRecords);
 				}
@@ -46,8 +46,7 @@ public class BaseSchedulerJob extends FacilioJob {
 		}
 		catch(Exception e) {
 			LOGGER.severe("Error occurred in BaseSchedulerJob for jobId: "+jobId+ " Exception: " +e);
-			throw e;
-			
+			throw e;		
 		}
 	}
 	

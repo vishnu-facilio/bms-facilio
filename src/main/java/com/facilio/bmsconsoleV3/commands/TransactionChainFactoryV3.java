@@ -55,6 +55,7 @@ import com.facilio.bmsconsoleV3.commands.visitorlog.PreFillVisitorLogCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlog.PutOldVisitRecordsInInviteVisitorContextCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlog.PutOldVisitRecordsInVisitorLogContextCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlog.UpdateInviteVisitorStateInChangeSetCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.UpdateRecurringRecordIdForBaseScheduleTrigger;
 import com.facilio.bmsconsoleV3.commands.visitorlog.UpdateVisitorLogArrivedStateCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlog.VisitorFaceRecognitionForBaseVisitCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.*;
@@ -233,6 +234,18 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new AddOrUpdateVisitorFromBaseVisitCommandV3());
         c.addCommand(new CheckForWatchListRecordBaseVisitCommandV3());
 		c.addCommand(new AddOrUpdateScheduleInRecurringVisitorCommandV3());
+        return c;
+    }
+    
+    public static FacilioChain getRecurringInviteVisitorAfterSaveOnCreateChain() {
+        FacilioChain c = getDefaultChain();
+        
+        c.addCommand(new UpdateInviteVisitorStateInChangeSetCommandV3());
+        c.addCommand(new ChangeInviteVisitorStateCommandV3());
+		c.addCommand(new UpdateRecurringRecordIdForBaseScheduleTrigger());
+        c.addCommand(new ForkChainToInstantJobCommand()
+                .addCommand(new GenerateQrInviteUrlForBaseVisitCommandV3())
+                .addCommand(new VisitorFaceRecognitionForBaseVisitCommandV3()));
         return c;
     }
     
