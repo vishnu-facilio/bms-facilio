@@ -111,7 +111,7 @@ function validateForm() {
 					if ((request.getParameter("orgId") != null)) {
 						
 						long orgId = Long.parseLong(request.getParameter("orgId"));
-							List<Map<String,Object>> agentIds= AdminAction.getAgentList(orgId);
+							List<Map<String,Object>> agentIds= AdminAction.getAgentList(String.valueOf(orgId));
 							for (Map<String,Object> list : agentIds) {
 				%>
 				<option value="<%=list.get("id")%>"><%=list.get("displayName") %></option> 
