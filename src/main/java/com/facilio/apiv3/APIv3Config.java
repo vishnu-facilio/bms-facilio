@@ -574,7 +574,6 @@ public class APIv3Config {
                 .create().beforeSave(new SetLocalIdCommandV3()).afterSave(new UpdateAttachmentsParentIdCommandV3())
                 .update().afterSave(new UpdateAttachmentsParentIdCommandV3())
                 .list()
-                    .fetchRelations(FacilioConstants.ContextNames.Tenant.NEWS_AND_INFORMATION_NOTES, "parent")
                     .beforeFetch(new LoadNewsAndInformationLookupCommandV3())
                 .summary()
                     .beforeFetch(new LoadNewsAndInformationLookupCommandV3())
