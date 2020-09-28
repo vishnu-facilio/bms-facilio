@@ -533,6 +533,7 @@ public class ControllerApiV2 {
                     LOGGER.info("Exception while getting controller of type "+controllerType.asString()+" ",e);
                 }
             }
+            LOGGER.info("Controller type for Configured Points : "+controllerType.toString() + " value :"+controllerType.asInt());
             if (controllerData != null) {
                 try {
                     for (Map<String, Object> controllerDatum : controllerData) {
