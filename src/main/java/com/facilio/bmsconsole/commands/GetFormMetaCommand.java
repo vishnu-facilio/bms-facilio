@@ -211,7 +211,7 @@ public class GetFormMetaCommand extends FacilioCommand {
 			}
 			
 			if (value != null) {
-				formField.setValue(value);
+				formField.setValueObject(value);
 			}
 		}
 		

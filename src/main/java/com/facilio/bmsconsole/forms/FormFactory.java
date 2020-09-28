@@ -979,7 +979,7 @@ public class FormFactory {
 		fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.REQUIRED, 3, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 4, 1));
 		FormField urgency = new FormField("urgency", FieldDisplayType.URGENCY, "Urgency", Required.OPTIONAL, 5, 1);
-		urgency.setValue(WOUrgency.NOTURGENT.getValue());
+		urgency.setValueObject(WOUrgency.NOTURGENT.getValue());
 		fields.add(urgency);
 		fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachment", Required.OPTIONAL, 6, 1));
 		return Collections.unmodifiableList(fields);

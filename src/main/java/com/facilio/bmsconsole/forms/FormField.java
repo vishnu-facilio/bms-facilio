@@ -95,11 +95,10 @@ public class FormField implements Serializable {
 	public Object getValue() {
 		return value;
 	}
-	@JSON(deserialize = false)
-	public void setValue(Object value) {
+	public void setValue(String value) {
 		this.value = value;
 	}
-	public void setValue(String value) {
+	public void setValueObject(Object value) {
 		this.value = value;
 	}
 
