@@ -93,9 +93,13 @@ public class ColumnFactory {
 		// agent Alarm
 
 		columnMap.put("agentAlarm-default", getDefaultAgentAlarmColumns());
+		columnMap.put("multivariateanomalyalarm-default", getDefaultMultivariateAnomalyAlarmColumns());
+
+		
 
 		// operational Alarm
 		columnMap.put("operationalarm-default", getDefaultOperationalAlarmColumns());
+		
 
 
 		columnMap.put("mlAnomalyAlarm-default", getDefaultMlAnomalyAlarmColumns());
@@ -862,6 +866,20 @@ public class ColumnFactory {
 		columns.add(new ViewField("severity", "Severity"));
 		columns.add(new ViewField("subject", "Message"));
 		columns.add(new ViewField("agent", "Agent"));
+		columns.add(new ViewField("lastOccurredTime", "Last Reported Time"));
+		columns.add(new ViewField("acknowledgedBy", "Acknowledged By"));
+		columns.add(new ViewField("acknowledged", "Acknowledged"));
+		columns.add(new ViewField("noOfOccurrences", "Occurrences"));
+		columns.add(new ViewField("lastCreatedTime", "Last Occurred Time"));
+		return columns;
+	}
+	private static List<ViewField> getDefaultMultivariateAnomalyAlarmColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("severity", "Severity"));
+		columns.add(new ViewField("subject", "Message"));
+		columns.add(new ViewField("resource", "Asset"));
+		columns.add(new ViewField("source", "Source"));
+		//columns.add(new ViewField("condition", "Condition"));
 		columns.add(new ViewField("lastOccurredTime", "Last Reported Time"));
 		columns.add(new ViewField("acknowledgedBy", "Acknowledged By"));
 		columns.add(new ViewField("acknowledged", "Acknowledged"));

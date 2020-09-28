@@ -1031,7 +1031,7 @@ public class ViewFactory {
 			mlmvaAlarms.add("mlmvaAlarms");
 			groupDetails = new HashMap<>();
 			groupDetails.put("name", "multivariateAnomalyAlarmViews");
-			groupDetails.put("displayName", "MultivariateAnomaly Alarms");
+			groupDetails.put("displayName", "Insight Alarms");
 			groupDetails.put("moduleName", FacilioConstants.ContextNames.MULTIVARIATE_ANOMALY_ALARM);
 			groupDetails.put("views", mlmvaAlarms);
 			groupVsViews.add(groupDetails);
