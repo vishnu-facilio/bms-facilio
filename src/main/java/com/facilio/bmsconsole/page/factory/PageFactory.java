@@ -17,6 +17,7 @@ import com.facilio.bmsconsoleV3.context.announcement.PeopleAnnouncementContext;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.bmsconsoleV3.context.tenantEngagement.DealsAndOffersContext;
 import com.facilio.bmsconsoleV3.context.tenantEngagement.NeighbourhoodContext;
+import com.facilio.bmsconsoleV3.context.tenantEngagement.NewsAndInformationContext;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.DateOperators;
@@ -108,6 +109,8 @@ public class PageFactory {
 				return CommunityFeaturesPageFactory.getNeighbourhoodPageFactory((NeighbourhoodContext) record, module);
 			case ContextNames.Tenant.DEALS_AND_OFFERS:
 				return CommunityFeaturesPageFactory.getDealsAndOffersPageFactory((DealsAndOffersContext) record, module);
+			case ContextNames.Tenant.NEWS_AND_INFORMATION:
+				return CommunityFeaturesPageFactory.getNewsAndInformationPageFactory((NewsAndInformationContext)record, module);
 
 
 		}
