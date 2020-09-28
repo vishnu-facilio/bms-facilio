@@ -928,6 +928,13 @@
 				<param name="includeProperties">^preventivemaintenance.*,^workorder.*,taskList.*,sections.*,^reminders.*,^listOfTasks.*,^sectionTemplates.*,^preRequestList.*,^listOfPreRequests.*,^preRequestSectionTemplates.*,^prerequisiteApproverTemplates.*</param>
 			</result>
 		</action>
+		
+		<action name="fetchRelatedWorkorders"
+			class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="fetchRelatedWorkorderList">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_OWN,READ_TEAM</param>
+		</action>
 
 		<action name="getPreventiveMaintenanceReadings"
 				class="com.facilio.bmsconsole.actions.WorkOrderAction"

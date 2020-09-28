@@ -1238,6 +1238,12 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static FacilioChain fetchRelatedWorkordersChain() {
+		FacilioChain c = FacilioChain.getNonTransactionChain();
+		c.addCommand(new GetPMWorkOrders());
+		return c;
+	}
+	
 	public static FacilioChain fetchPreventiveMaintenanceDetailsChain() {
 		FacilioChain c = FacilioChain.getNonTransactionChain();
 		c.addCommand(new NewPreventiveMaintenanceSummaryCommand());

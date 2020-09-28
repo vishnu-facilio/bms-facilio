@@ -133,6 +133,16 @@ public class WorkOrderAction extends FacilioAction {
 	public void setVendorPortal(Boolean vendorPortal) {
 		this.vendorPortal = vendorPortal;
 	}
+	
+	private PreventiveMaintenance pm = new PreventiveMaintenance();
+
+	public PreventiveMaintenance getPm() {
+		return pm;
+	}
+
+	public void setPm(PreventiveMaintenance pm) {
+		this.pm = pm;
+	}
 
 	private ActionForm actionForm;
 
@@ -963,6 +973,20 @@ public class WorkOrderAction extends FacilioAction {
 		setSectionTemplates((List<TaskSectionTemplate>) context.get(FacilioConstants.ContextNames.TASK_SECTIONS));
 		setPreRequestSectionTemplates((List<TaskSectionTemplate>) context.get(FacilioConstants.ContextNames.PRE_REQUEST_SECTIONS));
 		setReminders((List<PMReminder>) context.get(FacilioConstants.ContextNames.PM_REMINDERS));
+		return SUCCESS;
+	}
+	
+	public String fetchRelatedWorkorderList() throws Exception {
+		FacilioContext context = new FacilioContext();
+		if (pmId > 0) {
+			pm.setId(pmId);
+		}
+		
+		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
+		FacilioChain workorders = FacilioChainFactory.fetchRelatedWorkordersChain();
+		workorders.execute(context);
+		pm =  (PreventiveMaintenance) (context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE));
+		setResult("workorders", pm.getWorkorders());
 		return SUCCESS;
 	}
 	
