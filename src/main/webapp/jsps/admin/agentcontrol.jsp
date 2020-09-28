@@ -61,8 +61,8 @@ function changeAction(){
 					
 					<option value="<%="topic"%>"<%=(request.getParameter("level") != null && request.getParameter("level").equals("topic")) ? "selected" : " "%>><%="Topic"%>
 						</option>
-					 <%-- <option value="<%="agent"%>"<%=(request.getParameter("level") != null && request.getParameter("level").equals("agent")) ? "selected" : " "%>><%="Agent"%>
-						</option> --%>
+					  <option value="<%="agent"%>"<%=(request.getParameter("level") != null && request.getParameter("level").equals("agent")) ? "selected" : " "%>><%="Agent"%>
+						</option> 
 				</select>	
 				<%if(request.getParameter("orgId") != null && (request.getParameter("level") != null && request.getParameter("level").equals("agent")) ){ %>
 		<label for="txtClassroomName">

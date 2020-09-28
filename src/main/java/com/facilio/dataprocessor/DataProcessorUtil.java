@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.util.FacilioUtil;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -44,7 +42,6 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.devicepoints.DevicePointsUtil;
 import com.facilio.events.context.EventRuleContext;
@@ -58,6 +55,7 @@ import com.facilio.service.FacilioService;
 import com.facilio.services.kinesis.ErrorDataProducer;
 import com.facilio.services.procon.message.FacilioRecord;
 import com.facilio.util.AckUtil;
+import com.facilio.util.FacilioUtil;
 import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
 
 public class DataProcessorUtil {
@@ -158,16 +156,17 @@ public class DataProcessorUtil {
             try {
                 if(payLoad.containsKey(AgentConstants.AGENT) && ( payLoad.get(AgentConstants.AGENT) != null ) ){
                     com.facilio.agentv2.FacilioAgent agentV2 = AgentApiV2.getAgent((String) payLoad.get(AgentConstants.AGENT));
-//                    if(AccountUtil.getCurrentOrg().getOrgId() == 152) {
-//                    	int value = Integer.parseInt(payLoad.get(AgentConstants.PUBLISH_TYPE).toString());
-//                    	if((value == PublishType.agentAction.getKey()) && payLoad.containsKey(AgentConstants.MESSAGE))  {
-//                    		agentDisableAction(recordId, payLoad, agentV2);
-//                    		return false;
-//                    	}else if(agentV2 != null && !AgentControl.isAgentEnabled(agentV2.getId())) {
-//                    		return false;
-//                    	}
-//                    }
                     if(agentV2 != null){
+                    	if(isStage) {
+                    		Boolean agentStatus = agentV2.getIsDisable();
+                    		if(payLoad.containsKey(AgentConstants.PUBLISH_TYPE)&& (PublishType.agentAction.getKey() == (Long) payLoad.get(AgentConstants.PUBLISH_TYPE))) {
+                    			makeEnableOrDisable(recordId, payLoad, agentV2);
+                    			return false;
+                    		}
+                    		if (agentStatus != null && agentStatus) {
+                    			return false;
+                    		}  
+                    	}
                     	agentMsgId = agentV2.getId();
                     	processorVersion = agentV2.getProcessorVersion();
                     }
@@ -393,7 +392,7 @@ public class DataProcessorUtil {
         // LOGGER.info(" processing successful");
         return true;
     }
-	private void agentDisableAction(long recordId, JSONObject payLoad, com.facilio.agentv2.FacilioAgent agentV2)
+	private void makeEnableOrDisable(long recordId, JSONObject payLoad, com.facilio.agentv2.FacilioAgent agentV2)
 			throws SQLException, Exception {
 		LOGGER.info("Agent Control called -- Data ProcessorUtil -- agent :"+ payLoad.get(AgentConstants.AGENT));
 		boolean disable =  (boolean) payLoad.get(AgentConstants.MESSAGE);

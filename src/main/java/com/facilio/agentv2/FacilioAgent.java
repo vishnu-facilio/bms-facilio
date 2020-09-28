@@ -34,8 +34,19 @@ public class FacilioAgent implements Serializable {
     private String displayName;
     private long createdTime = -1L;
     private long transformWorkflowId = -1;
+    @JsonInclude
+    private Boolean isDisable;
+    
 
-    public int getProcessorVersion() {
+	public Boolean getIsDisable() {
+		return isDisable;
+	}
+
+	public void setIsDisable(Boolean isDisable) {
+		this.isDisable = isDisable;
+	}
+
+	public int getProcessorVersion() {
         return processorVersion;
     }
 

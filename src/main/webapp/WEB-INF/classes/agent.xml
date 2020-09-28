@@ -180,7 +180,7 @@
                 <param name="bufferSize">1024</param>
             </result>
         </action>
-		<action name="agentAction" class="com.facilio.agent.agentcontrol.AgentControl" method="agentAction">
+		<action name="agentControl" class="com.facilio.agent.agentcontrol.AgentControl" method="sendToKafka">
 		</action>
 
     </package>

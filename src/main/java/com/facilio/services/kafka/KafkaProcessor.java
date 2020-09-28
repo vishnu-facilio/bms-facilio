@@ -1,7 +1,6 @@
 package com.facilio.services.kafka;
 
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -79,10 +78,12 @@ public class KafkaProcessor extends FacilioProcessor {
     	return MapUtils.isEmpty(builder.fetchFirst())?false:true;
 	}
 
+    public long sendMsgToKafka(String partitionKey,JSONObject data) {
+    	return send(partitionKey,data);
+    }
 
-	public long send(String orgDomain,JSONObject data) {
-    	FacilioRecord record= new FacilioRecord(orgDomain, data);
-    	RecordMetadata metaData = (RecordMetadata) getProducer().putRecord(record);
+    private long send(String partitionKey,JSONObject data) {
+    	RecordMetadata metaData = (RecordMetadata) getProducer().putRecord(new FacilioRecord(partitionKey, data));
     	return metaData.offset();
     }
     
