@@ -8,7 +8,7 @@ import java.util.Map;
 import com.facilio.cb.context.ChatBotDateContext;
 import com.facilio.cb.util.ChatBotDateTimeUtil;
 
-public enum TimeEnum implements ChatBotDateInterface {
+public enum TimeEnum implements CalenderAndClockInterface {
 	
 	MORNING(1,"MORNING") {
 

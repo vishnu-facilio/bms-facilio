@@ -8,7 +8,7 @@ import java.util.Map;
 import com.facilio.cb.context.ChatBotDateContext;
 import com.facilio.time.DateTimeUtil;
 
-public enum WeekEnum implements ChatBotDateInterface {
+public enum WeekEnum implements CalenderAndClockInterface {
 	
 	THIS(1,"THIS",false) {
 		@Override

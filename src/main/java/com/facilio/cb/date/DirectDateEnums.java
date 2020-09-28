@@ -7,7 +7,7 @@ import java.util.Map;
 import com.facilio.cb.context.ChatBotDateContext;
 import com.facilio.time.DateTimeUtil;
 
-public enum DirectDateEnums implements ChatBotDateInterface {
+public enum DirectDateEnums implements CalenderAndClockInterface {
 	
 	TODAY(2,"TODAY") {
 		@Override
@@ -72,7 +72,7 @@ public enum DirectDateEnums implements ChatBotDateInterface {
 			// TODO Auto-generated method stub
 			return 0;
 		}
-
+		
 	},
 	
 	;

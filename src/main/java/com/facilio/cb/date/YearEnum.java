@@ -7,7 +7,7 @@ import java.util.Map;
 
 import com.facilio.cb.context.ChatBotDateContext;
 
-public enum YearEnum implements ChatBotDateInterface {
+public enum YearEnum implements CalenderAndClockInterface {
 	
 	THIS(1,"THIS") {
 		@Override

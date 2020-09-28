@@ -7,7 +7,7 @@ import java.util.Map;
 
 import com.facilio.cb.context.ChatBotDateContext;
 
-public enum DayEnum implements ChatBotDateInterface {
+public enum DayEnum implements CalenderAndClockInterface {
 	
 	SUNDAY(1,"SUNDAY") {
 		@Override
