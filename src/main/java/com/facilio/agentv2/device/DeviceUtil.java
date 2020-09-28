@@ -90,7 +90,7 @@ public class DeviceUtil {
                 if (!jsonObject.containsKey(AgentConstants.NETWORK)) {
                     String comPort = jsonObject.get(AgentConstants.COM_PORT).toString();
                     RtuNetworkContext rtuNetworkContext = RtuNetworkContext.getRtuNetworkContext(agent.getId(), comPort);
-                    jsonObject.put(AgentConstants.NETWORK, rtuNetworkContext);
+                    jsonObject.put(AgentConstants.NETWORK, rtuNetworkContext.toJson());
                 }
             }
             Controller controller = ControllerApiV2.makeControllerFromMap(jsonObject,FacilioControllerType.valueOf(type));
