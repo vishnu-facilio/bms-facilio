@@ -1762,6 +1762,14 @@ public class FacilioConstants {
 
 		}
 
+		public static class FacilityBooking {
+			public static final String FACILITY = "facility";
+			public static final String FACILITY_ATTACHMENTS = "facilityattachments";
+			public static final String FACILITY_NOTES = "facilitynotes";
+
+
+		}
+
 		public static class Tenant {
 			public static final String ANNOUNCEMENT = "announcement";
 			public static final String ANNOUNCEMENT_ATTACHMENTS = "announcementattachments";
@@ -1774,6 +1782,7 @@ public class FacilioConstants {
 			public static final String NEWS_AND_INFORMATION = "newsandinformation";
 			public static final String NEWS_AND_INFORMATION_ATTACHMENTS = "newsandinformationattachments";
 			public static final String NEWS_AND_INFORMATION_SHARING = "newsandinformationsharing";
+			public static final String NEWS_AND_INFORMATION_NOTES = "newsandinformationnotes";
 
 			public static final String NEIGHBOURHOOD = "neighbourhood";
 			public static final String NEIGHBOURHOOD_ATTACHMENTS = "neighbourhoodattachments";

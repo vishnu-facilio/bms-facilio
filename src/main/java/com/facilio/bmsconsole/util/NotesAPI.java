@@ -86,12 +86,20 @@ public class NotesAPI {
 				.beanClass(NoteContext.class)
 				.maxLevel(0);
 
-		if (fieldMap.containsKey("parentId")) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(parentId), NumberOperators.EQUALS));
-		}
+		if (parentId > 0) {
 
-		if (fieldMap.containsKey("parent")) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("parent"), String.valueOf(parentId), NumberOperators.EQUALS));
+			Criteria criteria = new Criteria();
+			if (fieldMap.containsKey("parentId")) {
+				criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(parentId), NumberOperators.EQUALS));
+			}
+
+			if (fieldMap.containsKey("parent")) {
+				criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("parent"), String.valueOf(parentId), NumberOperators.EQUALS));
+			}
+
+			if(!criteria.isEmpty()){
+				selectBuilder.andCriteria(criteria);
+			}
 		}
 		
 		if (AccountUtil.getCurrentUser().isPortalUser()) {

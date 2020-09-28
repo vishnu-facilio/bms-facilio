@@ -3,6 +3,8 @@ package com.facilio.bmsconsoleV3.context.tenantEngagement;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.v3.context.V3Context;
 
+import java.util.List;
+
 public class NewsAndInformationContext extends V3Context {
 
     private static final long serialVersionUID = 1L;
@@ -75,5 +77,13 @@ public class NewsAndInformationContext extends V3Context {
         return null;
     }
 
+    private List<NewsAndInformationSharingContext> newsSharing;
 
+    public List<NewsAndInformationSharingContext> getNewsSharing() {
+        return newsSharing;
+    }
+
+    public void setNewsSharing(List<NewsAndInformationSharingContext> newssharing) {
+        this.newsSharing = newssharing;
+    }
 }
