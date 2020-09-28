@@ -31,14 +31,7 @@ public class ReadingPostProcessingCommand extends FacilioCommand {
 //            }
             executeFormulae(context);
         }
-        if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343l) {// Needs to be removed
-            Map<String, String> orgInfoMap = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.FORK_READING_POST_PROCESSING);
-            boolean forkPostProcessing = orgInfoMap == null ? false : Boolean.parseBoolean(orgInfoMap.get(FacilioConstants.OrgInfoKeys.FORK_READING_POST_PROCESSING));
-            if (forkPostProcessing) {
-                // publishReadingChangeMessage(context);
-            }
-        }
-        else if (AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getId() == 146 || AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 343) ){
+        if (AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getId() == 146 || AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 343) ){
             publishReadingChangeMessage(context);
         }
         LOGGER.debug("Post processing completed");
