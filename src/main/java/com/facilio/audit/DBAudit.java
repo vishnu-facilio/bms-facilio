@@ -210,7 +210,7 @@ public class DBAudit implements FacilioAudit {
 		} catch (Exception e) {
 			LOGGER.info("Exception while adding : ", e);
 		}
-		LOGGER.info("Audit entry add full time timetaken:::: "+(System.currentTimeMillis()-addStart));
+//		LOGGER.info("Audit entry add full time timetaken:::: "+(System.currentTimeMillis()-addStart));
 		return id;
 	}
 

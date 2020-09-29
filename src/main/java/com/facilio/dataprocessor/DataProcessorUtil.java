@@ -151,7 +151,6 @@ public class DataProcessorUtil {
             if (ruleList != null) {
                 eventRules = ruleList;
             }
-
             int processorVersion = 0;
             try {
                 if(payLoad.containsKey(AgentConstants.AGENT) && ( payLoad.get(AgentConstants.AGENT) != null ) ){
@@ -386,7 +385,7 @@ public class DataProcessorUtil {
                 	updateAgentMsg(prop,recordId);
                 }
             } catch (Exception e) {
-                LOGGER.info("record: " + recordId);
+                LOGGER.error("record: " + recordId);
             }
         }
         // LOGGER.info(" processing successful");

@@ -56,6 +56,7 @@ public class KafkaProcessor extends FacilioProcessor {
 				return;
 			}
 			for (FacilioRecord record : records) {
+				LOGGER.debug("Getting Kafka recordId : "+record.getId());
 				if (!dataProcessorUtil.processRecord(record)) {
 					LOGGER.error("Exception while processing ->" + record.getData());
 				}
