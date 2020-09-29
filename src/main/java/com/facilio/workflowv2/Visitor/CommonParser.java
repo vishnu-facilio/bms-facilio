@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.date.calenderandclock.CalenderAndClockInterface;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.BooleanOperators;
@@ -19,6 +20,7 @@ import com.facilio.db.criteria.operators.Operator;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.workflowv2.autogens.WorkflowV2BaseVisitor;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.Db_param_aggrContext;
@@ -32,6 +34,7 @@ import com.facilio.workflowv2.autogens.WorkflowV2Parser.Db_param_sortContext;
 import com.facilio.workflowv2.contexts.DBParamContext;
 import com.facilio.workflowv2.contexts.Value;
 import com.facilio.workflowv2.util.WorkflowV2Util;
+import com.google.api.client.util.DateTime;
 
 public abstract class CommonParser<T> extends WorkflowV2BaseVisitor<Value> {
 	
@@ -41,6 +44,19 @@ public abstract class CommonParser<T> extends WorkflowV2BaseVisitor<Value> {
 	
 	public Criteria fieldCriteria = null;
 	
+	long currentExecutionTime = -1;
+	
+	public long getCurrentExecutionTime() {
+		if(currentExecutionTime < 0) {
+			return DateTimeUtil.getCurrenTime();
+		}
+		return currentExecutionTime;
+	}
+
+	public void setCurrentExecutionTime(long currentExecutionTime) {
+		this.currentExecutionTime = currentExecutionTime;
+	}
+
 	@Override 
     public Value visitCondition_atom(WorkflowV2Parser.Condition_atomContext ctx) {
     	
@@ -65,6 +81,9 @@ public abstract class CommonParser<T> extends WorkflowV2BaseVisitor<Value> {
     		}
     		else if(operatorValue.asObject() instanceof DateRange) {
     			operator = DateOperators.BETWEEN;
+    		}
+    		else if(operatorValue.asObject() instanceof CalenderAndClockInterface) {
+    			operator = DateOperators.CALENDER_AND_CLOCK;
     		}
     		else if (operatorValue.asObject() instanceof List) {
     			operator = StringOperators.IS;
@@ -112,13 +131,17 @@ public abstract class CommonParser<T> extends WorkflowV2BaseVisitor<Value> {
     	if (operatorValue.asObject() instanceof List) {
     		value = StringUtils.join(operatorValue.asList(), ",");
 		}
-    	if (operatorValue.asObject() instanceof FacilioField) {
+    	else if (operatorValue.asObject() instanceof FacilioField) {
     		FacilioField field = operatorValue.asField();
     		value = field.getModule().getName()+"."+field.getName();
 		}
-    	if (operatorValue.asObject() instanceof BaseSpaceContext) {
+    	else if (operatorValue.asObject() instanceof BaseSpaceContext) {
     		BaseSpaceContext baseSpace = (BaseSpaceContext) operatorValue.asObject() ;
     		value = ""+baseSpace.getId();
+		}
+    	else if (operatorValue.asObject() instanceof CalenderAndClockInterface) {
+    		CalenderAndClockInterface calenderAndClock = (CalenderAndClockInterface) operatorValue.asObject();
+    		value = calenderAndClock.getFullName()+"."+getCurrentExecutionTime();
 		}
     	
     	condition.setValue(value);

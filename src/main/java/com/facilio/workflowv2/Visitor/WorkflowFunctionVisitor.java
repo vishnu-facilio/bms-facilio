@@ -16,6 +16,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ConnectionContext;
 import com.facilio.bmsconsole.util.ConnectionUtil;
+import com.facilio.date.calenderandclock.CalenderAndClockInterface;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -55,7 +56,15 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
 
     private Map<String, Value> varMemoryMap = new HashMap<String, Value>();
     
-    private Map<String, Object> globalVarMemoryMap = new HashMap<String, Object>();		// keeping this as <String, Object> since we have to move this to all sub functions;
+    private Map<String, Object> globalVarMemoryMap = new HashMap<String, Object>();				// keeping this as <String, Object> since we have to move this to all sub functions;
+    
+    private static Map<String, Object> systemVarMemoryMap = new HashMap<String, Object>();
+    
+    static {
+    	
+    	systemVarMemoryMap.put(CalenderAndClockInterface.CALENDER, CalenderAndClockInterface.CALENDER_MAP);
+    	systemVarMemoryMap.put(CalenderAndClockInterface.CLOCK, CalenderAndClockInterface.CLOCK_MAP);
+    }
     
     Workflow_Scope scope = Workflow_Scope.DEFAULT;
     
@@ -90,6 +99,9 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
     	}
     	else if (globalVarMemoryMap.containsKey(key)) {
     		return new Value(globalVarMemoryMap.get(key));
+    	}
+    	else if (systemVarMemoryMap.containsKey(key)) {
+    		return new Value(systemVarMemoryMap.get(key));
     	}
     	return null;
     }
@@ -181,7 +193,7 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
     		Value value = this.visit(ctx.atom());
     		
     		boolean ifScopeSetted = false;
-    		if(value.asObject() == null) {													// on error command this if
+    		if(value.asObject() == null) {
     			String scopeString = ctx.atom().getText();
     	    	
     	    	Workflow_Scope tempScope = Workflow_Scope.getNameMap().get(scopeString);
