@@ -509,25 +509,27 @@ public class ControllerApiV2 {
     	Long agentId = (Long) contextProps.get(AgentConstants.AGENT_ID);
     	return getControllerData(agentId, null, contextProps);
     }
-
+    
     public static List<Map<String, Object>> getControllerData(Long agentId, Long controllerId, FacilioContext contextProps) throws Exception {
-        List<Map<String, Object>> controllers = new ArrayList<>();
-        List<Map<String, Object>> controllerData = new ArrayList<>();
-
-        for (FacilioControllerType controllerType : FacilioControllerType.values()) {
-            FacilioChain getControllerChain = TransactionChainFactory.getControllerDataChain();
-            String moduleName = getControllerModuleName(controllerType);
-            if (moduleName == null) {
-                LOGGER.info(" module name is null for " + controllerType.asString());
-                continue;
-            }
-            FacilioContext context = getControllerChain.getContext();
-            context.put(FacilioConstants.ContextNames.PAGINATION,contextProps.get(FacilioConstants.ContextNames.PAGINATION));
-            context.put(AgentConstants.SEARCH_KEY, contextProps.get(AgentConstants.SEARCH_KEY));
-            context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-            context.put(AgentConstants.AGENT_ID, agentId);
-            context.put(AgentConstants.CONTROLLER_ID, controllerId);
-            context.put(AgentConstants.CONTROLLER_TYPE, contextProps.get(AgentConstants.CONTROLLER_TYPE));
+    	List<Map<String, Object>> controllers = new ArrayList<>();
+    	List<Map<String, Object>> controllerData = new ArrayList<>();
+    	Integer controllerTypeValue = (Integer) contextProps.get(AgentConstants.CONTROLLER_TYPE);
+    	if(controllerTypeValue == null) {
+    		throw new IllegalArgumentException("ControllerType should not be null : "+controllerTypeValue);
+    	}
+    	FacilioControllerType controllerType = FacilioControllerType.valueOf(controllerTypeValue);
+    	FacilioChain getControllerChain = TransactionChainFactory.getControllerDataChain();
+    	String moduleName = getControllerModuleName(controllerType);
+    	if (moduleName == null) {
+    		throw new IllegalArgumentException(" module name is null for " + controllerType.asString());
+    	}
+    	FacilioContext context = getControllerChain.getContext();
+    	context.put(FacilioConstants.ContextNames.PAGINATION,contextProps.get(FacilioConstants.ContextNames.PAGINATION));
+    	context.put(AgentConstants.SEARCH_KEY, contextProps.get(AgentConstants.SEARCH_KEY));
+    	context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+    	context.put(AgentConstants.AGENT_ID, agentId);
+    	context.put(AgentConstants.CONTROLLER_ID, controllerId);
+    	context.put(AgentConstants.CONTROLLER_TYPE, contextProps.get(AgentConstants.CONTROLLER_TYPE));
             try {
                 getControllerChain.execute();
                 controllerData = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
@@ -550,7 +552,7 @@ public class ControllerApiV2 {
                     LOGGER.info(" exception while object mapping ", e);
                 }
             }
-        }
+        
         return controllers;
     }
     
