@@ -4,12 +4,12 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-import com.facilio.cb.context.ChatBotDateContext;
 import com.facilio.cb.context.ChatBotIntentParam;
-import com.facilio.cb.date.DayEnum;
-import com.facilio.cb.date.MonthEnum;
-import com.facilio.cb.date.WeekEnum;
-import com.facilio.cb.date.YearEnum;
+import com.facilio.date.calenderandclock.CalenderAndClockContext;
+import com.facilio.date.calenderandclock.DayEnum;
+import com.facilio.date.calenderandclock.MonthEnum;
+import com.facilio.date.calenderandclock.WeekEnum;
+import com.facilio.date.calenderandclock.YearEnum;
 import com.facilio.time.DateTimeUtil;
 
 public class ChatBotDateTimeUtil {
@@ -25,7 +25,7 @@ public class ChatBotDateTimeUtil {
 	}
 	
 
-	public static long compute(ChatBotIntentParam param, ChatBotDateContext dateContext) throws Exception {
+	public static long compute(ChatBotIntentParam param, CalenderAndClockContext dateContext) throws Exception {
 
 		long returnMillisec = -1;
 		if (dateContext.getDate() != null) {

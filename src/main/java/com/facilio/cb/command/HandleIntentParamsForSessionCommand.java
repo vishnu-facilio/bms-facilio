@@ -9,7 +9,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
-import com.facilio.cb.context.ChatBotDateContext;
 import com.facilio.cb.context.ChatBotIntent;
 import com.facilio.cb.context.ChatBotIntentParam;
 import com.facilio.cb.context.ChatBotIntentParam.ML_Type;
@@ -18,6 +17,7 @@ import com.facilio.cb.context.ChatBotSession;
 import com.facilio.cb.util.ChatBotConstants;
 import com.facilio.cb.util.ChatBotDateTimeUtil;
 import com.facilio.cb.util.ChatBotUtil;
+import com.facilio.date.calenderandclock.CalenderAndClockContext;
 import com.facilio.modules.FieldUtil;
 
 public class HandleIntentParamsForSessionCommand extends FacilioCommand {
@@ -90,7 +90,7 @@ public class HandleIntentParamsForSessionCommand extends FacilioCommand {
 							Object value = null;
 							if(chatBotParam.getMlTypeEnum() == ML_Type.DATETIME) {
 								JSONObject cbDate = (JSONObject) json.get("value");
-								ChatBotDateContext cbDateContext = FieldUtil.getAsBeanFromJson(cbDate, ChatBotDateContext.class);
+								CalenderAndClockContext cbDateContext = FieldUtil.getAsBeanFromJson(cbDate, CalenderAndClockContext.class);
 								value = ChatBotDateTimeUtil.compute(chatBotParam, cbDateContext);
 							}
 							else {
