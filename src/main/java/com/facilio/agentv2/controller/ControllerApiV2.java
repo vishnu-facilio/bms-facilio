@@ -542,7 +542,7 @@ public class ControllerApiV2 {
                     }
                     controllers.addAll(controllerData);
                 } catch (Exception e) {
-                    LOGGER.info(" exception while object mapping ");
+                    LOGGER.info(" exception while object mapping ",e);
                 }
             }
         }
