@@ -323,50 +323,106 @@ public class ScoringRuleAPI extends WorkflowRuleAPI {
                 List<Long> baseScoreIds = baseScoringContexts.stream().filter(baseScore -> baseScore.getId() != nodeScore.getId()).map(BaseScoringContext::getId).collect(Collectors.toList());
 
                 FacilioModule module = workflowRule.getModule();
-                long fieldId = nodeScore.getFieldId();
-                LookupField field = (LookupField) modBean.getField(fieldId, nodeScore.getFieldModuleId());
 
-                if (field.getModule().isParentOrChildModule(module)) {
-                    // update all the child score
-                    SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<>()
-                            .module(module)
-                            .beanClass(FacilioConstants.ContextNames.getClassFromModule(module))
-                            .select(modBean.getAllFields(module.getName()))
-                            .andCondition(CriteriaAPI.getCondition(field, String.valueOf(moduleRecord.getId()), NumberOperators.EQUALS));
-                    List<? extends ModuleBaseWithCustomFields> records = selectBuilder.get();
-                    if (CollectionUtils.isNotEmpty(records)) {
-                        List<Long> recordIds = records.stream().map(ModuleBaseWithCustomFields::getId).collect(Collectors.toList());
-                        Map<Long, Map<Long, Float>> actualScoreMap = getActualScore(recordIds, module.getModuleId(), baseScoreIds);
+                switch (nodeScore.getNodeTypeEnum()) {
+                    case CURRENT_MODULE:
+                        // don't do anything
+                        break;
 
-                        for (ModuleBaseWithCustomFields record : records) {
-                            Map<Long, Float> scoreMap = actualScoreMap.get(record.getId());
-                            setBaseScoreValues(scoreMap, workflowRule.getBaseScoringContexts(), nodeScore, isDirty);
+                    case PARENT_MODULE: {
+                        long fieldId = nodeScore.getFieldId();
+                        LookupField field = (LookupField) modBean.getField(fieldId, nodeScore.getFieldModuleId());
 
-                            Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(module.getName(), record, placeHolders);
-                            WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(workflowRule, module.getName(), record, null, recordPlaceHolders, null);
+                        Object value = FieldUtil.getValue(moduleRecord, field);
+                        if (value instanceof ModuleBaseWithCustomFields) {
+                            ModuleBaseWithCustomFields emptyParentRecord = (ModuleBaseWithCustomFields) value;
+                            SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<>()
+                                    .module(module)
+                                    .beanClass(FacilioConstants.ContextNames.getClassFromModule(module))
+                                    .select(modBean.getAllFields(module.getName()))
+                                    .andCondition(CriteriaAPI.getIdCondition(emptyParentRecord.getId(), module));
+                            ModuleBaseWithCustomFields parentRecord = selectBuilder.fetchFirst();
+                            if (parentRecord != null) {
+                                Map<Long, Map<Long, Float>> actualScore = getActualScore(Collections.singletonList(parentRecord.getId()), parentRecord.getModuleId(), baseScoreIds);
+                                setBaseScoreValues(actualScore.get(parentRecord.getId()), workflowRule.getBaseScoringContexts(), nodeScore, isDirty);
+
+                                Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(module.getName(), parentRecord, placeHolders);
+                                WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(workflowRule, module.getName(), parentRecord, null, recordPlaceHolders, null);
+                            }
                         }
+                        break;
                     }
-                }
-                else if (field.getLookupModule().isParentOrChildModule(module)) {
-                    // update the parent score
-                    Object value = FieldUtil.getValue(moduleRecord, field);
-                    if (value instanceof ModuleBaseWithCustomFields) {
-                        ModuleBaseWithCustomFields emptyParentRecord = (ModuleBaseWithCustomFields) value;
+
+                    case SUB_MODULE: {
+                        long fieldId = nodeScore.getFieldId();
+                        LookupField field = (LookupField) modBean.getField(fieldId, nodeScore.getFieldModuleId());
+
                         SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<>()
                                 .module(module)
                                 .beanClass(FacilioConstants.ContextNames.getClassFromModule(module))
                                 .select(modBean.getAllFields(module.getName()))
-                                .andCondition(CriteriaAPI.getIdCondition(emptyParentRecord.getId(), module));
-                        ModuleBaseWithCustomFields parentRecord = selectBuilder.fetchFirst();
-                        if (parentRecord != null) {
-                            Map<Long, Map<Long, Float>> actualScore = getActualScore(Collections.singletonList(parentRecord.getId()), parentRecord.getModuleId(), baseScoreIds);
-                            setBaseScoreValues(actualScore.get(parentRecord.getId()), workflowRule.getBaseScoringContexts(), nodeScore, isDirty);
+                                .andCondition(CriteriaAPI.getCondition(field, String.valueOf(moduleRecord.getId()), NumberOperators.EQUALS));
+                        List<? extends ModuleBaseWithCustomFields> records = selectBuilder.get();
+                        if (CollectionUtils.isNotEmpty(records)) {
+                            List<Long> recordIds = records.stream().map(ModuleBaseWithCustomFields::getId).collect(Collectors.toList());
+                            Map<Long, Map<Long, Float>> actualScoreMap = getActualScore(recordIds, module.getModuleId(), baseScoreIds);
 
-                            Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(module.getName(), parentRecord, placeHolders);
-                            WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(workflowRule, module.getName(), parentRecord, null, recordPlaceHolders, null);
+                            for (ModuleBaseWithCustomFields record : records) {
+                                Map<Long, Float> scoreMap = actualScoreMap.get(record.getId());
+                                setBaseScoreValues(scoreMap, workflowRule.getBaseScoringContexts(), nodeScore, isDirty);
+
+                                Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(module.getName(), record, placeHolders);
+                                WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(workflowRule, module.getName(), record, null, recordPlaceHolders, null);
+                            }
                         }
+                        break;
                     }
                 }
+
+//                long fieldId = nodeScore.getFieldId();
+//                LookupField field = (LookupField) modBean.getField(fieldId, nodeScore.getFieldModuleId());
+//
+//                if (field.getModule().isParentOrChildModule(module)) {
+//                    // update all the child score
+//                    SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<>()
+//                            .module(module)
+//                            .beanClass(FacilioConstants.ContextNames.getClassFromModule(module))
+//                            .select(modBean.getAllFields(module.getName()))
+//                            .andCondition(CriteriaAPI.getCondition(field, String.valueOf(moduleRecord.getId()), NumberOperators.EQUALS));
+//                    List<? extends ModuleBaseWithCustomFields> records = selectBuilder.get();
+//                    if (CollectionUtils.isNotEmpty(records)) {
+//                        List<Long> recordIds = records.stream().map(ModuleBaseWithCustomFields::getId).collect(Collectors.toList());
+//                        Map<Long, Map<Long, Float>> actualScoreMap = getActualScore(recordIds, module.getModuleId(), baseScoreIds);
+//
+//                        for (ModuleBaseWithCustomFields record : records) {
+//                            Map<Long, Float> scoreMap = actualScoreMap.get(record.getId());
+//                            setBaseScoreValues(scoreMap, workflowRule.getBaseScoringContexts(), nodeScore, isDirty);
+//
+//                            Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(module.getName(), record, placeHolders);
+//                            WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(workflowRule, module.getName(), record, null, recordPlaceHolders, null);
+//                        }
+//                    }
+//                }
+//                else if (field.getLookupModule().isParentOrChildModule(module)) {
+//                    // update the parent score
+//                    Object value = FieldUtil.getValue(moduleRecord, field);
+//                    if (value instanceof ModuleBaseWithCustomFields) {
+//                        ModuleBaseWithCustomFields emptyParentRecord = (ModuleBaseWithCustomFields) value;
+//                        SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<>()
+//                                .module(module)
+//                                .beanClass(FacilioConstants.ContextNames.getClassFromModule(module))
+//                                .select(modBean.getAllFields(module.getName()))
+//                                .andCondition(CriteriaAPI.getIdCondition(emptyParentRecord.getId(), module));
+//                        ModuleBaseWithCustomFields parentRecord = selectBuilder.fetchFirst();
+//                        if (parentRecord != null) {
+//                            Map<Long, Map<Long, Float>> actualScore = getActualScore(Collections.singletonList(parentRecord.getId()), parentRecord.getModuleId(), baseScoreIds);
+//                            setBaseScoreValues(actualScore.get(parentRecord.getId()), workflowRule.getBaseScoringContexts(), nodeScore, isDirty);
+//
+//                            Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(module.getName(), parentRecord, placeHolders);
+//                            WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(workflowRule, module.getName(), parentRecord, null, recordPlaceHolders, null);
+//                        }
+//                    }
+//                }
             }
         }
     }

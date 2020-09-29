@@ -2095,6 +2095,8 @@ public class FieldFactory {
 
         fields.add(getIdField(module));
         fields.addAll(getBaseScoringFields());
+        fields.add(getField("name", "NAME", module, FieldType.STRING));
+        fields.add(getField("nodeType", "NODE_TYPE", module, FieldType.SYSTEM_ENUM));
         fields.add(getField("fieldId", "FIELD_ID", module, FieldType.NUMBER));
         fields.add(getField("fieldModuleId", "FIELD_MODULE_ID", module, FieldType.NUMBER));
         fields.add(getField("scoringFieldId", "SCORING_FIELD_ID", module, FieldType.NUMBER));
