@@ -6567,7 +6567,7 @@ public class FieldFactory {
         List<FacilioField> fields = new ArrayList<>();
         fields.add(getNameField(module));
         fields.add(getIdField(module));
-        fields.add(getNewAgentIdField(module));
+        fields.add(getField(AgentConstants.AGENT_ID, "AGENT_ID", module, FieldType.NUMBER));
         fields.add(getField(AgentConstants.COM_PORT, "COM_PORT", module, FieldType.STRING));
         fields.add(getField(AgentConstants.DATA_BITS, "DATA_BITS", module, FieldType.NUMBER));
         fields.add(getField(AgentConstants.STOP_BITS, "STOP_BITS", module, FieldType.NUMBER));

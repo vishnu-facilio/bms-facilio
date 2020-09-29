@@ -1,5 +1,7 @@
 package com.facilio.agentv2.commands;
 
+import com.facilio.agent.controller.FacilioControllerType;
+import com.facilio.agent.module.AgentModuleFactory;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
@@ -13,6 +15,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.v3.annotation.Module;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -59,12 +62,21 @@ public class GetControllerCommand extends AgentV2Command {
         allFields.add(FieldFactory.getNameField(ModuleFactory.getResourceModule()));
         context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, allFields);
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-                .select(allFields)
+
                 .table(controllerModule.getTableName())
                 .innerJoin(childTableModule.getTableName()).on(controllerModule.getTableName() + ".ID = " + childTableModule.getTableName() + ".ID")
                 .leftJoin(pointModule.getTableName()).on(controllerModule.getTableName() + ".ID = " + pointModule.getTableName() + "." + FieldFactory.getControllerIdField(pointModule).getColumnName())
                 .innerJoin(resourceModule.getTableName()).on(controllerModule.getTableName() + ".ID = " + resourceModule.getTableName() + ".ID")
                 .andCondition(CriteriaAPI.getCondition(FieldFactory.getSysDeletedTimeField(resourceModule), "NULL", CommonOperators.IS_EMPTY));
+
+        if (controllerType != FacilioControllerType.MODBUS_RTU.asInt()) {
+            selectRecordBuilder = selectRecordBuilder.select(allFields);
+        } else {
+            allFields.addAll(FieldFactory.getRtuNetworkFields());
+            selectRecordBuilder = selectRecordBuilder.select(allFields).innerJoin(ModuleFactory.getRtuNetworkModule().getTableName())
+                    .on(childTableModule.getTableName() + ".NETWORK_ID = " + ModuleFactory.getRtuNetworkModule().getTableName() + ".ID");
+        }
+
 
   /*      if(context.containsKey(AgentConstants.AGENT_ID)){
             selectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(controllerModule), String.valueOf(context.get(AgentConstants.AGENT_ID)), NumberOperators.EQUALS));

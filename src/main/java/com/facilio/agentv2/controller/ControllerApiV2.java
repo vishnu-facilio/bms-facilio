@@ -172,7 +172,12 @@ public class ControllerApiV2 {
             case MODBUS_RTU:
                 ModbusRtuControllerContext rtuController = FieldUtil.getAsBeanFromMap(map, ModbusRtuControllerContext.class);
                 JSONObject network = (JSONObject) map.get(AgentConstants.NETWORK);
-                rtuController.setNetwork(FieldUtil.getAsBeanFromJson(network, RtuNetworkContext.class));
+                if (network != null) {
+                    rtuController.setNetwork(FieldUtil.getAsBeanFromJson(network, RtuNetworkContext.class));
+                } else {
+                    RtuNetworkContext rtuNetworkContext = FieldUtil.getAsBeanFromMap(map, RtuNetworkContext.class);
+                    rtuController.setNetwork(rtuNetworkContext);
+                }
                 controller = rtuController;
                 break;
             case OPC_XML_DA:
@@ -542,7 +547,7 @@ public class ControllerApiV2 {
                     }
                     controllers.addAll(controllerData);
                 } catch (Exception e) {
-                    LOGGER.info(" exception while object mapping ",e);
+                    LOGGER.info(" exception while object mapping ", e);
                 }
             }
         }
