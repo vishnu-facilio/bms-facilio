@@ -44,6 +44,10 @@ public class ExecuteScoringRulesCommand extends ExecuteAllWorkflowsCommand {
                 boolean shouldAdd = true;
 
                 ScoringRuleContext scoringRuleContext = (ScoringRuleContext) workflowRuleContext;
+                if (scoringRuleContext.isDraft() || CollectionUtils.isEmpty(scoringRuleContext.getBaseScoringContexts())) {
+                    iterator.remove();
+                    continue;
+                }
                 List<BaseScoringContext> baseScoringContexts = scoringRuleContext.getBaseScoringContexts();
                 for (BaseScoringContext baseScoringContext : baseScoringContexts) {
                     if (baseScoringContext instanceof NodeScoringContext) {
