@@ -26,6 +26,7 @@ public class GetFieldsByAccessType extends FacilioCommand {
         if (moduleName == null || moduleName.isEmpty()) {
             throw new IllegalArgumentException("Module is mandatory");
         }
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 
         List<FacilioField> selectedFields = FieldUtil.getFieldsByAccessType(accessType, moduleName);
 

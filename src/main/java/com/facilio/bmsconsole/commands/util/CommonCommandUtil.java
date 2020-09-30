@@ -1015,7 +1015,7 @@ public class CommonCommandUtil {
 	private static long calculateAccessType(FacilioField.AccessType... accessTypes) {
 		long result = 0;
 		for (FacilioField.AccessType accessType: accessTypes) {
-			result += accessType.getIntVal();
+			result += accessType.getVal();
 		}
 		return result;
 	}

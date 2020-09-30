@@ -1947,7 +1947,7 @@ public class FacilioChainFactory {
 	}
 
 	public static FacilioChain getFieldsByAccessType() {
-		FacilioChain c = FacilioChain.getTransactionChain();
+		FacilioChain c = FacilioChain.getTransactionChain(); // Why does this needs transaction chain?
 		c.addCommand(new GetFieldsByAccessType());
 		return c;
 	}

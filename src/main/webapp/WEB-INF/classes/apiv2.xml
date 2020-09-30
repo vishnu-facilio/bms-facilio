@@ -2673,8 +2673,7 @@
 		</action>
 		<action name="getCustomFilter"
 			class="com.facilio.bmsconsole.actions.CustomFilterAction" method="getCustomFilters">
-		</action> 
-
+		</action>
 	</package>
 	
 	<package name="quickFilterApiv2" namespace="/api/v2/quick/filter"
@@ -2691,9 +2690,23 @@
 		</action>
 		<action name="getQuickFilter"
 			class="com.facilio.bmsconsole.actions.QuickFilterAction" method="getQuickFiltersList">
-		</action> 
-
+		</action>
 	</package>
+
+	<package name="advancedFilterFieldsApiv2" namespace="/api/v2/filter/advanced/fields"
+			 extends="v2Api">
+		<action name="*"
+				class="com.facilio.bmsconsole.actions.AdvancedFilterAction" method="fetchFilterableFields">
+			<param name="module">{1}</param>
+		</action>
+	</package>
+<!--	<package name="advancedFilterOperatorsApiv2" namespace="/api/v2/filter/advanced/operators"-->
+<!--			 extends="v2Api">-->
+<!--		<action name="*"-->
+<!--				class="com.facilio.bmsconsole.actions.AdvancedFilterAction" method="fetchOperators">-->
+<!--			<param name="dataType">{1}</param>-->
+<!--		</action>-->
+<!--	</package>-->
 
 	<package name="assetListApiv2" namespace="/api/v2/assets/view"
 		extends="v2Api">

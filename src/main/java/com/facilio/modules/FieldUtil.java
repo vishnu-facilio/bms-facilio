@@ -586,12 +586,8 @@ public class FieldUtil {
         List<FacilioField> selectedFields = new ArrayList<>();
         for (FacilioField field: allFields) {
             long fieldAccessType = field.getAccessType();
-            if (fieldAccessType < 0) {
-                fieldAccessType = 0;
-            }
-
-            if ((fieldAccessType & accessType) == accessType) {
-                selectedFields.add(field);
+            if (fieldAccessType < 0 || (fieldAccessType & accessType) == accessType) { //Changing the behaviour to return the field anyway if no field access is present
+				selectedFields.add(field);
             }
         }
         return selectedFields;

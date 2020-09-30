@@ -128,6 +128,10 @@ public class FacilioConstants {
 
 	}
 
+	public static class Filters {
+		public static final String FILTER_FIELDS = "filterFields";
+	}
+
 	public static class ContextNames {
 		public static final String FIELD_ACCESS_TYPE = "fieldAccessType";
 		public static final String OPERATION_ALARM = "operationalarm";
@@ -1759,6 +1763,7 @@ public class FacilioConstants {
 			public static final String BUDGET_NOTES = "budgetnotes";
 			public static final String BUDGET_AMOUNT = "budgetamount";
 			public static final String BUDGET_MONTHLY_AMOUNT = "budgetmonthlyamount";
+
 
 		}
 
