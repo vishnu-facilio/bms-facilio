@@ -5,6 +5,8 @@ import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.v3.context.V3Context;
 
+import java.util.List;
+
 public class FacilityContext extends V3Context {
 
     private String name;
@@ -221,5 +223,35 @@ public class FacilityContext extends V3Context {
             return isMultiBookingPerSlotAllowed.booleanValue();
         }
         return false;
+    }
+
+    private List<FacilityAmenitiesContext> amenities;
+
+    public List<FacilityAmenitiesContext> getAmenities() {
+        return amenities;
+    }
+
+    public void setAmenities(List<FacilityAmenitiesContext> amenities) {
+        this.amenities = amenities;
+    }
+
+    private List<WeekDayAvailability> weekDayAvailabilities;
+
+    public List<WeekDayAvailability> getWeekDayAvailabilities() {
+        return weekDayAvailabilities;
+    }
+
+    public void setWeekDayAvailabilities(List<WeekDayAvailability> weekDayAvailabilities) {
+        this.weekDayAvailabilities = weekDayAvailabilities;
+    }
+
+    private List<FacilitySpecialAvailabilityContext> facilitySpecialAvailabilities;
+
+    public List<FacilitySpecialAvailabilityContext> getFacilitySpecialAvailabilities() {
+        return facilitySpecialAvailabilities;
+    }
+
+    public void setFacilitySpecialAvailabilities(List<FacilitySpecialAvailabilityContext> facilitySpecialAvailabilities) {
+        this.facilitySpecialAvailabilities = facilitySpecialAvailabilities;
     }
 }

@@ -34,6 +34,10 @@ import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.Announcem
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnnouncementContext;
 import com.facilio.bmsconsoleV3.context.budget.*;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PoAssociatedTermsContext;
+import com.facilio.bmsconsoleV3.context.facilitybooking.FacilityAmenitiesContext;
+import com.facilio.bmsconsoleV3.context.facilitybooking.FacilityContext;
+import com.facilio.bmsconsoleV3.context.facilitybooking.FacilitySpecialAvailabilityContext;
+import com.facilio.bmsconsoleV3.context.facilitybooking.WeekDayAvailability;
 import com.facilio.bmsconsoleV3.context.quotation.*;
 import com.facilio.bmsconsoleV3.context.communityfeatures.*;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitChecklistContext;
@@ -1821,6 +1825,9 @@ public class FacilioConstants {
 			public static final String FACILITY = "facility";
 			public static final String FACILITY_ATTACHMENTS = "facilityattachments";
 			public static final String FACILITY_NOTES = "facilitynotes";
+			public static final String FACILITY_AMENITIES = "facilityamenity";
+			public static final String FACILITY_WEEKDAY_AVAILABILITY = "facilityWeekdayAvailability";
+			public static final String FACILITY_SPECIAL_AVAILABILITY = "facilitySpecialAvailability";
 
 
 		}
@@ -2156,9 +2163,12 @@ public class FacilioConstants {
 			classMap.put(Budget.BUDGET, BudgetContext.class);
 			classMap.put(Budget.BUDGET_AMOUNT, BudgetAmountContext.class);
 			classMap.put(Budget.BUDGET_MONTHLY_AMOUNT, BudgetMonthlyAmountContext.class);
-
-
 			classMap.put(TRANSACTION, V3TransactionContext.class);
+
+			classMap.put(FacilityBooking.FACILITY, FacilityContext.class);
+			classMap.put(FacilityBooking.FACILITY_AMENITIES, FacilityAmenitiesContext.class);
+			classMap.put(FacilityBooking.FACILITY_WEEKDAY_AVAILABILITY, WeekDayAvailability.class);
+			classMap.put(FacilityBooking.FACILITY_SPECIAL_AVAILABILITY, FacilitySpecialAvailabilityContext.class);
 
 			return classMap;
 		}

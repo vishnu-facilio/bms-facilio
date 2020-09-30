@@ -34,6 +34,8 @@ import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.Fi
 import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.FillNewsRelatedModuleDataInListCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.LoadNewsAndInformationLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.employee.UpdateEmployeePeopleAppPortalAccessCommandV3;
+import com.facilio.bmsconsoleV3.commands.facility.FillFacilityDetailsCommandV3;
+import com.facilio.bmsconsoleV3.commands.facility.LoadFacilityLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.imap.UpdateLatestMessageUIDCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
@@ -68,6 +70,7 @@ import com.facilio.bmsconsoleV3.context.communityfeatures.*;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnnouncementContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
+import com.facilio.bmsconsoleV3.context.facilitybooking.FacilityContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
@@ -728,6 +731,22 @@ public class APIv3Config {
                 .afterDelete(new RollUpTransactionAmountCommand())
                 .build();
     }
+
+
+    @Module("facility")
+    public static Supplier<V3Config> getFacility() {
+        return () -> new V3Config(FacilityContext.class)
+                .create().beforeSave(new SetLocalIdCommandV3())
+                .update()
+                .delete()
+                .list()
+                    .beforeFetch(new LoadFacilityLookupCommandV3())
+                .summary()
+                    .afterFetch(new FillFacilityDetailsCommandV3())
+                .build();
+    }
+
+
 
 
 }
