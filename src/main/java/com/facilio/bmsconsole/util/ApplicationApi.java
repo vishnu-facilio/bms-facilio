@@ -90,18 +90,12 @@ public class ApplicationApi {
             appLinkName = FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP;
         }
         
-        if(AccountUtil.getCurrentOrg().getId() == 1l || AccountUtil.getCurrentOrg().getId() == 350l) {
-    		LOGGER.log(Level.ERROR, "appLinkName -- "+appLinkName);
-    	}
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getApplicationModule().getTableName()).select(FieldFactory.getApplicationFields())
                 .andCondition(CriteriaAPI.getCondition("LINK_NAME", "linkName", appLinkName, StringOperators.IS));
         List<ApplicationContext> applications = FieldUtil.getAsBeanListFromMapList(builder.get(),
                 ApplicationContext.class);
         
-        if(AccountUtil.getCurrentOrg().getId() == 1l || AccountUtil.getCurrentOrg().getId() == 350l) {
-    		LOGGER.log(Level.ERROR, "applications result -- "+applications);
-    	}
         if (applications != null && !applications.isEmpty()) {
             return applications.get(0);
         }

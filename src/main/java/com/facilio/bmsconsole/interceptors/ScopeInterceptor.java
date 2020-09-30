@@ -110,10 +110,6 @@ public class ScopeInterceptor extends AbstractInterceptor {
                     }
                     if (StringUtils.isNotEmpty(appLinkName)) {
                     	
-                    	if(AccountUtil.getCurrentOrg().getId() == 1l || AccountUtil.getCurrentOrg().getId() == 350l) {
-                    		LOGGER.log(Level.ERROR, "appLinkName -- "+appLinkName);
-                    	}
-                    	
                         ApplicationContext application = ApplicationApi.getApplicationForLinkName(appLinkName);
                         if (application != null) {
                             appId = application.getId();
