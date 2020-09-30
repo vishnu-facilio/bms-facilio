@@ -262,6 +262,30 @@ public class KPIUtil {
 		return getKPIValue(kpi, null);
 	}
 	
+	public static Map<String, Object> getKPIRecord(KPIContext kpi) throws Exception {
+		FacilioModule module = kpi.getModule();
+		FacilioField dateField = kpi.getDateField();
+		
+		SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
+				.module(module)
+				.andCriteria(kpi.getCriteria())
+				;
+		if (kpi.getSiteId() != -1) {
+			builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(module), String.valueOf(kpi.getSiteId()), NumberOperators.EQUALS));
+		}
+		if (dateField != null) {
+			builder.andCondition(CriteriaAPI.getCondition(dateField, kpi.getDateValue(), kpi.getDateOperatorEnum()));
+		}
+		builder.limit(10);
+		
+		List<Map<String, Object>> props = builder.getAsProps();
+		
+		if (CollectionUtils.isNotEmpty(props)) {
+			return props.get(0);
+		}
+		return null;
+	}
+	
 	public static Object getKPIValue(KPIContext kpi, String baselineName) throws Exception {
 		FacilioModule module = kpi.getModule();
 		FacilioField dateField = kpi.getDateField();
