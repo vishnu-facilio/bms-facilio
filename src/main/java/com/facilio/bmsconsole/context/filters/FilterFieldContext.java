@@ -29,17 +29,17 @@ public class FilterFieldContext {
         return field == null ? null : field.getDisplayName();
     }
 
-    public FieldType getDataTypeEnum() {
-        return field == null ? null : field.getDataTypeEnum();
+    public String getDataType() {
+        return field == null ? null : field.getDataTypeEnum().name();
     }
-    public Integer getDataType() {
+    public Integer getDataTypeCode() {
         return field == null ? null : field.getDataType();
     }
 
-    public FacilioField.FieldDisplayType getDisplayTypeEnum() {
-        return field == null ? null : field.getDisplayType();
+    public String getDisplayType() {
+        return field == null ? null : field.getDisplayType().name();
     }
-    public Integer getDisplayType() {
+    public Integer getDisplayTypeCode() {
         return field == null ? null : field.getDisplayTypeInt();
     }
 

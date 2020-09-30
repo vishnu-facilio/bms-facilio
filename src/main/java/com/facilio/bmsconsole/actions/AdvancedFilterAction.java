@@ -24,4 +24,21 @@ public class AdvancedFilterAction extends FacilioAction {
         setResult("fields", filterableFields.getContext().get(FacilioConstants.Filters.FILTER_FIELDS));
         return SUCCESS;
     }
+
+    public String getDataType() {
+        return dataType;
+    }
+    public void setDataType(String dataType) {
+        this.dataType = dataType;
+    }
+    private String dataType;
+
+    public String fetchOperators() throws Exception {
+        FacilioChain filterOperators = ReadOnlyChainFactory.getFilterOperators();
+        filterOperators.getContext().put(FacilioConstants.Filters.FILTER_DATA_TYPE, dataType);
+        filterOperators.execute();
+
+        setResult("operators", filterOperators.getContext().get(FacilioConstants.Filters.FILTER_OPERATORS));
+        return SUCCESS;
+    }
 }

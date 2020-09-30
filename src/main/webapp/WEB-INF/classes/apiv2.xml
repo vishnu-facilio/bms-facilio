@@ -2700,13 +2700,18 @@
 			<param name="module">{1}</param>
 		</action>
 	</package>
-<!--	<package name="advancedFilterOperatorsApiv2" namespace="/api/v2/filter/advanced/operators"-->
-<!--			 extends="v2Api">-->
-<!--		<action name="*"-->
-<!--				class="com.facilio.bmsconsole.actions.AdvancedFilterAction" method="fetchOperators">-->
-<!--			<param name="dataType">{1}</param>-->
-<!--		</action>-->
-<!--	</package>-->
+	<package name="advancedFilterOperatorsApiv2" namespace="/api/v2/filter/advanced/operators"
+			 extends="v2Api">
+		<action name="*"
+				class="com.facilio.bmsconsole.actions.AdvancedFilterAction" method="fetchOperators">
+			<param name="dataType">{1}</param>
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+			</result>
+		</action>
+	</package>
 
 	<package name="assetListApiv2" namespace="/api/v2/assets/view"
 		extends="v2Api">

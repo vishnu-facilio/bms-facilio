@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.commands.anomaly.FormatAnomalyMetricsCommand;
 import com.facilio.bmsconsole.commands.anomaly.GetAnomalyDeviationAndWastageCommand;
 import com.facilio.bmsconsole.commands.anomaly.GetAnomalyMetricsCommand;
 import com.facilio.bmsconsole.commands.anomaly.GetEnergyByCDDCommand;
+import com.facilio.bmsconsole.commands.filters.FetchOperatorsForFiltersCommand;
 import com.facilio.bmsconsole.commands.filters.HandleFilterFieldsCommand;
 import com.facilio.bmsconsole.commands.reservation.FetchAttendeesCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
@@ -2586,6 +2587,13 @@ public class ReadOnlyChainFactory {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(FacilioChainFactory.getFieldsByAccessType());
 		chain.addCommand(new HandleFilterFieldsCommand());
+
+		return chain;
+	}
+
+	public static FacilioChain getFilterOperators() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new FetchOperatorsForFiltersCommand());
 
 		return chain;
 	}

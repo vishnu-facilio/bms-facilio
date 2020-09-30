@@ -129,7 +129,9 @@ public class FacilioConstants {
 	}
 
 	public static class Filters {
+		public static final String FILTER_DATA_TYPE = "filterDataType";
 		public static final String FILTER_FIELDS = "filterFields";
+		public static final String FILTER_OPERATORS = "filterOperators";
 	}
 
 	public static class ContextNames {
