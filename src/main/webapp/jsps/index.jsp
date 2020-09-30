@@ -99,10 +99,6 @@
 <% } else {%>
 	<link rel="icon" href="<%=staticUrl%>/statics/favicon.png" type="image/x-icon">
 <% }%>
-  <!--<link rel="icon" href="<%=staticUrl%>/statics/favicon.png" type="image/x-icon">
-    <link rel="icon" href="<%=staticUrl%>/statics/machinestalk.ico" type="image/x-icon"> -->
-
-    <link rel="manifest" href="<%=staticUrl%>/statics/manifest.json">
 
     <style>
       .app-spinner {
