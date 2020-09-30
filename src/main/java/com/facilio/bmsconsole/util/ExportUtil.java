@@ -9,8 +9,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -24,7 +22,6 @@ import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.actions.CommonAction;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -57,8 +54,6 @@ import com.facilio.time.DateTimeUtil;
 
 public class ExportUtil {
 	
-	private static final Logger LOGGER = Logger.getLogger(CommonAction.class.getName());
-	
 	public static String exportData(FileFormat fileFormat, FacilioModule facilioModule, List<ViewField> fields, List<? extends ModuleBaseWithCustomFields> records, boolean isS3Url) throws Exception {
 		String fileUrl = null;
 		if(fileFormat == FileFormat.XLS){
@@ -85,9 +80,6 @@ public class ExportUtil {
 	public static String exportDataAsXLS(FacilioModule facilioModule, List<ViewField> fields, List<? extends ModuleBaseWithCustomFields> records, boolean isS3Url) throws Exception
 	{
 		try(HSSFWorkbook workbook = new HSSFWorkbook();){
-			
-			LOGGER.log(Level.INFO, "XLS WORK STARTED");
-			
 			HSSFSheet sheet = workbook.createSheet(facilioModule.getDisplayName());
 			HSSFRow rowhead = sheet.createRow((short) 0);
 			
@@ -106,8 +98,7 @@ public class ExportUtil {
 			
 			Map<String, List<Long>> modVsIds= getModuleVsLookupIds(fields, records);
 			Map<String, Map<Long,Object>> modVsData= getModuleData(modVsIds);
-			
-			LOGGER.log(Level.INFO, "XLS DATA FILLING STARTED");
+	
 	
 			int rowCount = 1;
 			for(ModuleBaseWithCustomFields record : records)
@@ -142,12 +133,7 @@ public class ExportUtil {
 				}
 				rowCount++;
 			}
-			
-			LOGGER.log(Level.INFO, "XLS DATA FILLING DONE");
 			autoSizeColumns(sheet);
-			
-			
-			LOGGER.log(Level.INFO, "XLS ADD FILE STARTED");
 			
 			String fileName = facilioModule.getDisplayName() + ".xls";
 			String filePath = getRootFilePath(fileName);
@@ -163,8 +149,6 @@ public class ExportUtil {
 			if (isS3Url) {
 				return fs.getOrgiDownloadUrl(fileId);
 			}
-			
-			LOGGER.log(Level.INFO, "XLS ADD FILE DONE");
 	
 			return fs.getDownloadUrl(fileId);
 		}
@@ -648,13 +632,6 @@ public class ExportUtil {
 		List<ModuleBaseWithCustomFields> records = (List<ModuleBaseWithCustomFields>) context
 				.get(FacilioConstants.ContextNames.RECORD_LIST);
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
-		
-		if(records != null) {
-			LOGGER.log(Level.SEVERE,"DATA FETCHED -- "+records.size());
-		}
-		else {
-			LOGGER.log(Level.SEVERE,"DATA NULL -- "+records);
-		}
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<ViewField> viewFields = new ArrayList<ViewField>();
@@ -765,8 +742,6 @@ public class ExportUtil {
 			}
 			
 		}
-		
-		LOGGER.log(Level.INFO, "EXPORT CALLED WITH DATA");
 		return exportData(fileFormat, modBean.getModule(moduleName), viewFields, records, isS3Value);
 	}
 	

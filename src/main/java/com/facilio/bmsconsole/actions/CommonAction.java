@@ -2,8 +2,6 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -22,8 +20,6 @@ import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class CommonAction extends FacilioAction {
-	
-	private static final Logger LOGGER = Logger.getLogger(CommonAction.class.getName());
 	
 	/**
 	 * 
@@ -61,8 +57,6 @@ public class CommonAction extends FacilioAction {
 	}
 	public String exportModule() throws Exception {
 		
-		LOGGER.log(Level.INFO, "started");
-		
 		FacilioChain exportModule = TransactionChainFactory.getExportModuleChain();
 		FacilioContext context= exportModule.getContext();
 		context.put(FacilioConstants.ContextNames.FILE_FORMAT, FileFormat.getFileFormat(type));
@@ -83,8 +77,6 @@ public class CommonAction extends FacilioAction {
 		exportModule.execute();
 		
 		fileUrl = (String) context.get(FacilioConstants.ContextNames.FILE_URL);
-		
-		LOGGER.log(Level.INFO, "done - "+fileUrl);
 		return SUCCESS;
 	}
 	
