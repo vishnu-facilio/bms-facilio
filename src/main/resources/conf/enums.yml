@@ -123,6 +123,13 @@ enums:
 
   - name: AppLayoutType
     enumClassName: com.facilio.bmsconsole.context.ApplicationLayoutContext$AppLayoutType
+    
+  - name: FacilityType
+    enumClassName: com.facilio.bmsconsoleV3.context.facilitybooking.FacilityContext$FacilityType
+
+  - name: SpecialType
+    enumClassName: com.facilio.bmsconsoleV3.context.facilitybooking.FacilitySpecialAvailabilityContext$SpecialType
+
 
   - name: SensorRuleType
     enumClassName: com.facilio.bmsconsole.context.sensor.SensorRuleType
