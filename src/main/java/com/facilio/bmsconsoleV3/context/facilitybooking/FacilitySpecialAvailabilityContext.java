@@ -6,9 +6,8 @@ import com.facilio.v3.context.V3Context;
 public class FacilitySpecialAvailabilityContext extends V3Context {
 
     private FacilityContext facility;
-    private Long specialDate;
-    private Long startTime;
-    private Long endTime;
+    private Long startDateTime;
+    private Long endDateTime;
     private Double cost;
 
     private SpecialType specialType;
@@ -56,35 +55,27 @@ public class FacilitySpecialAvailabilityContext extends V3Context {
         this.facility = facility;
     }
 
-    public Long getSpecialDate() {
-        return specialDate;
-    }
-
-    public void setSpecialDate(Long specialDate) {
-        this.specialDate = specialDate;
-    }
-
-    public Long getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(Long startTime) {
-        this.startTime = startTime;
-    }
-
-    public Long getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(Long endTime) {
-        this.endTime = endTime;
-    }
-
     public Double getCost() {
         return cost;
     }
 
     public void setCost(Double cost) {
         this.cost = cost;
+    }
+
+    public Long getStartDateTime() {
+        return startDateTime;
+    }
+
+    public void setStartDateTime(Long startDateTime) {
+        this.startDateTime = startDateTime;
+    }
+
+    public Long getEndDateTime() {
+        return endDateTime;
+    }
+
+    public void setEndDateTime(Long endDateTime) {
+        this.endDateTime = endDateTime;
     }
 }
