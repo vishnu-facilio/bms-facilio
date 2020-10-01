@@ -208,10 +208,12 @@ public class UserAction extends FacilioAction {
 	}
 
 	public String deleteUser() throws Exception {
-		
-		HttpServletRequest request = ServletActionContext.getRequest(); 
-		
-		if(AccountUtil.getUserBean().deleteUser(user.getOuid(), true)) {
+		FacilioChain deleteUser = TransactionChainFactory.deleteUserChain();
+		deleteUser.getContext().put(FacilioConstants.ContextNames.USER, user);
+		deleteUser.getContext().put(FacilioConstants.ContextNames.USER_OPERATION, "deleting user");
+		deleteUser.execute();
+		boolean result = (boolean) deleteUser.getContext().getOrDefault(FacilioConstants.ContextNames.RESULT, false);
+		if(result) {
 	    	setUserId(user.getOuid());
 	    	return SUCCESS;
 	    }
@@ -593,6 +595,8 @@ public class UserAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.USER, user);
 		FacilioChain updateStatus = TransactionChainFactory.updateUserStatusChain();
 		updateStatus.getContext().put(FacilioConstants.ContextNames.USER, user);
+		updateStatus.getContext().put(FacilioConstants.ContextNames.USER_OPERATION, "status change");
+		updateStatus.getContext().put(FacilioConstants.ContextNames.USER_STATUS, user.getUserStatus());
 		updateStatus.execute();
 		boolean result = (boolean) updateStatus.getContext().getOrDefault(FacilioConstants.ContextNames.RESULT, false);
 		if (result) {
