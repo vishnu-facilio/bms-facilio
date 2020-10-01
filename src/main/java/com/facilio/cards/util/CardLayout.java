@@ -173,10 +173,10 @@ public enum CardLayout {
 					cardValue = KPIUtil.getKPIValue(kpiContext);
 					
 					kpi = KPIUtil.getKPI(kpiId);
-					
+					fields = KPIUtil.getKPIModuleFIelds(kpiContext);
+
 					if (subText != null && !subText.trim().isEmpty()) {
 					listData = KPIUtil.getKPIList(kpiContext, null);
-					fields = KPIUtil.getKPIModuleFIelds(kpiContext);
 					}
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
