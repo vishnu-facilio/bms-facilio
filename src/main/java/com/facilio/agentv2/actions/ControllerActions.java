@@ -33,24 +33,6 @@ public class ControllerActions extends AgentActionV2 {
         this.controllerId = controllerId;
     }
 
-    public Integer getControllerType() { return controllerType; }
-
-    public void setControllerType(Integer controllerType) { this.controllerType = controllerType; }
-
-    @NotNull
-    @Min(value = 0,message = "Controller type can't be less than 1")
-    private Integer controllerType;
-
-    private Long agentId =-1l;
-
-    public Long getAgentId() {
-		return agentId;
-	}
-
-	public void setAgentId(Long agentId) {
-		this.agentId = agentId;
-	}
-
 	public String getControllerUsingId() {
         try {
             List<Map<String, Object>> controller = ControllerApiV2.getControllerData(null,getControllerId(),constructListContext(new FacilioContext()));
