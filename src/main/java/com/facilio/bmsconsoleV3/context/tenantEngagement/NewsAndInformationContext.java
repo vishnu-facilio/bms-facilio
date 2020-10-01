@@ -1,6 +1,9 @@
 package com.facilio.bmsconsoleV3.context.tenantEngagement;
 
+import com.facilio.bmsconsole.context.AttachmentContext;
+import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.modules.FacilioEnum;
+import com.facilio.v3.context.AttachmentV3Context;
 import com.facilio.v3.context.V3Context;
 
 import java.util.List;
@@ -85,5 +88,25 @@ public class NewsAndInformationContext extends V3Context {
 
     public void setNewsSharing(List<NewsAndInformationSharingContext> newssharing) {
         this.newsSharing = newssharing;
+    }
+
+    private List<NoteContext> noteList;
+
+    public List<NoteContext> getNoteList() {
+        return noteList;
+    }
+
+    public void setNoteList(List<NoteContext> noteList) {
+        this.noteList = noteList;
+    }
+
+    private List<AttachmentContext> attachmentList;
+
+    public List<AttachmentContext> getAttachmentList() {
+        return attachmentList;
+    }
+
+    public void setAttachmentList(List<AttachmentContext> attachmentList) {
+        this.attachmentList = attachmentList;
     }
 }

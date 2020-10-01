@@ -23,7 +23,7 @@ public class ValidateChartOfAccountTypeCommandV3 extends FacilioCommand {
 
         if(CollectionUtils.isNotEmpty(chartOfAccounts)) {
             for(ChartOfAccountContext chartOfAccountContext : chartOfAccounts){
-               if(chartOfAccountContext == null){
+               if(chartOfAccountContext.getType() == null){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Chart of account should be associated to an account type");
                 }
             }

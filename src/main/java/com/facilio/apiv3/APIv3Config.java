@@ -28,6 +28,7 @@ import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.FillNei
 import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.NeighbourhoodAddLocationCommand;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.NeighbourhoodFillLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.FillNewsAndInformationDetailsCommandV3;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.FillNewsCommentsCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.LoadNewsAndInformationLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.employee.UpdateEmployeePeopleAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.imap.UpdateLatestMessageUIDCommandV3;
@@ -575,6 +576,7 @@ public class APIv3Config {
                 .update().afterSave(new UpdateAttachmentsParentIdCommandV3())
                 .list()
                     .beforeFetch(new LoadNewsAndInformationLookupCommandV3())
+                    .afterFetch(new FillNewsCommentsCommandV3())
                 .summary()
                     .beforeFetch(new LoadNewsAndInformationLookupCommandV3())
                     .afterFetch(new FillNewsAndInformationDetailsCommandV3())
