@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
 
+import com.facilio.accounts.dto.Role;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
@@ -21,6 +23,12 @@ public class AddUserCommand extends FacilioCommand {
 		User user = (User) context.get(FacilioConstants.ContextNames.USER);
 		boolean isEmailverificationNeeded = (Boolean)context.getOrDefault(FacilioConstants.ContextNames.IS_EMAIL_VERIFICATION_NEEDED, true);
 		if ( (user != null) && (AccountUtil.getCurrentOrg() != null)) {
+
+			if (user.getRoleId() > 0) {
+				Role role = AccountUtil.getRoleBean().getRole(user.getRoleId());
+				FacilioUtil.throwIllegalArgumentException(role == null || role.getName().equals(AccountConstants.DefaultRole.SUPER_ADMIN), "Invalid role specified for user");
+			}
+
 			user.setUserType(AccountConstants.UserType.USER.getValue());
 			long appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
 			AppDomain appDomainObj = ApplicationApi.getAppDomainForApplication(appId);

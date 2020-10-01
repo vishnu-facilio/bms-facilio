@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.facilio.accounts.dto.*;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -18,14 +20,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.bean.RoleBean;
 import com.facilio.accounts.bean.UserBean;
-import com.facilio.accounts.dto.Account;
-import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.AppDomain.AppDomainType;
-import com.facilio.accounts.dto.IAMAccount;
-import com.facilio.accounts.dto.IAMUser;
-import com.facilio.accounts.dto.Organization;
-import com.facilio.accounts.dto.User;
-import com.facilio.accounts.dto.UserMobileSetting;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountConstants.GroupMemberRole;
 import com.facilio.accounts.util.AccountEmailTemplate;
@@ -73,6 +68,12 @@ public class UserBeanImpl implements UserBean {
 
 	@Override
 	public boolean updateUser(User user) throws Exception {
+
+		if (user.getRoleId() > 0) {
+			Role role = AccountUtil.getRoleBean().getRole(user.getRoleId());
+			FacilioUtil.throwIllegalArgumentException(role == null || role.getName().equals(AccountConstants.DefaultRole.SUPER_ADMIN), "Invalid role specified for user");
+		}
+
 		if(IAMUserUtil.updateUser(user, AccountUtil.getCurrentOrg().getOrgId())) {
 			return updateUserEntry(user);
 		}
@@ -127,6 +128,12 @@ public class UserBeanImpl implements UserBean {
 	@Override
 	public void createUser(long orgId, User user, String identifier, boolean isEmailVerificationNeeded, boolean isSelfSignup) throws Exception {
 		try {
+
+			if (user.getRoleId() > 0) {
+				Role role = AccountUtil.getRoleBean().getRole(user.getRoleId());
+				FacilioUtil.throwIllegalArgumentException(role == null || role.getName().equals(AccountConstants.DefaultRole.SUPER_ADMIN), "Invalid role specified for user");
+			}
+
 			user.setUserStatus(true);
 		
 			if(IAMUserUtil.addUser(user, orgId, identifier) > 0) {
