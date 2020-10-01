@@ -560,36 +560,45 @@ public class AdminAction extends ActionSupport {
 		return FacilioService.runAsServiceWihReturn(() -> getOrgsList());
 	}
 
-	public String addAgentVersion() {
+	public String addAgentVersion() throws Exception {
 		HttpServletRequest request = ServletActionContext.getRequest();
 		String version = request.getParameter("version");
 		String user = request.getParameter("user");
 		String description = request.getParameter("desc");
 		String url = request.getParameter("url");
+		FacilioService.runAsService(()->addAgent(version, user, description, url));
+		return SUCCESS;
+	}
+
+	private void addAgent(String version, String user, String description, String url) {
 		AgentVersionAction context = new AgentVersionAction();
 		context.setVersion(version);
 		context.setDescription(description);
 		context.setCreatedBy(user);
 		context.setFileName(url);
 		context.addAgentVersion();
-		return SUCCESS;
 	}
 	
-	public String upgradeAgentVersion() {
+	public String upgradeAgentVersion() throws Exception {
 		HttpServletRequest request = ServletActionContext.getRequest();
 		long versionId = Long.parseLong(request.getParameter("version"));
 		long agentId = Long.parseLong(request.getParameter("agentId"));
+		FacilioService.runAsService(()->upgradeAgent(versionId, agentId));
+		return SUCCESS;
+	}
+
+	private void upgradeAgent(long versionId, long agentId) {
 		VersionLogAction context = new VersionLogAction();
 		context.setAgentId(agentId);
 		context.setVersionId(versionId);
 		context.upgradeAgent();
-		return SUCCESS;
 	}
+	
 	public static List<Map<String,Object>> getAgentVersions() throws Exception{
 		Boolean isLatestVersion=false;
 		FacilioContext context = new FacilioContext();
     	context.put(AgentConstants.IS_LATEST_VERSION, isLatestVersion);
-		return AgentVersionApi.listAgentVersions(context);
+		return FacilioService.runAsServiceWihReturn(() -> AgentVersionApi.listAgentVersions(context));
 	}
 	
 	public static List<Map<String, Object>> getAgentList(String orgId) throws Exception{

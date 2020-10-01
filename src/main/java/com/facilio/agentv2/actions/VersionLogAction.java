@@ -4,6 +4,8 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.service.FacilioService;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -42,13 +44,9 @@ public class VersionLogAction extends AgentIdAction {
 
     public String upgradeAgent() {
         try {
-            FacilioChain chain = TransactionChainFactory.upgradeAgentChain();
-            FacilioContext context = chain.getContext();
-            context.put(AgentConstants.VERSION_ID, versionId);
-            context.put(AgentConstants.AGENT_ID, getAgentId());
-            chain.execute();
-            setResult(AgentConstants.DATA, SUCCESS);
-            ok();
+        	FacilioService.runAsService(()-> upgradeAgentVersion());
+        	setResult(AgentConstants.DATA, SUCCESS);
+        	ok();
         } catch (Exception e) {
             LOGGER.info("Exception while upgrading agent version", e);
             setResult(AgentConstants.EXCEPTION, e.getMessage());
@@ -56,4 +54,12 @@ public class VersionLogAction extends AgentIdAction {
         }
         return SUCCESS;
     }
+
+	private void upgradeAgentVersion() throws Exception {
+		FacilioChain chain = TransactionChainFactory.upgradeAgentChain();
+		FacilioContext context = chain.getContext();
+		context.put(AgentConstants.VERSION_ID, versionId);
+		context.put(AgentConstants.AGENT_ID, getAgentId());
+		chain.execute();
+	}
 }

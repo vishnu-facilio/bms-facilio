@@ -13,7 +13,7 @@
  List<Organization> org = null;
  OrgBean bean =  AccountUtil.getOrgBean();
  org = bean.getOrgs();
- List<Map<String , Object>> orgList = AdminAction.getOrgsList();
+ List<Map<String , Object>> orgList = AdminAction.getAgentOrgs();
  List<Map<String , Object>> agentVersions = AdminAction.getAgentVersions();
  long text=-1L;
  %>   

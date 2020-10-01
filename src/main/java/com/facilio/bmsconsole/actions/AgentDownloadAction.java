@@ -106,41 +106,46 @@ public class AgentDownloadAction extends ActionSupport {
     public String downloadAgent() throws Exception {
         try {
             LOGGER.info("Download Agent called agent Id :"+agentId);
-            String path = null;
-          
-            if(StringUtils.isNotEmpty(getToken())) {
-            	path = getExeUrl(getToken());
-            }
-            else {
-            	FacilioContext context = new FacilioContext();
-            	context.put(AgentConstants.IS_LATEST_VERSION, true);
-            	List<Map<String,Object>> prop = AgentVersionApi.listAgentVersions(context);
-            	path = prop.get(0).get(AgentConstants.URL).toString();
-            	version = prop.get(0).get(AgentConstants.VERSION).toString();
-            }
-            LOGGER.info("Agent Download " + path);
-            File file = downloadExeFrom(path);
-            if (file==null){
-                LOGGER.info("File is null");
-                return "error";
-            }
-            else {
-                LOGGER.info("FilePath " + file.getAbsolutePath());
-            }
-            fileInputStream = new FileInputStream(file);
-            if(StringUtils.isNotEmpty(getToken())) {
-            	FacilioService.runAsService(() -> AgentVersionApi.markVersionLogUpdated(getToken()));
-            }else {
-            	String fileName = "agent-"+version+".exe";
-            	setFilename(fileName);
-            	setContentType("application/x-download");
-            }
+            FacilioService.runAsService(()->downloadAgentUrl());
             return SUCCESS;
         }catch (Exception ex){
             LOGGER.info(ex.getMessage());
             return "error";
         }
     }
+
+	private String downloadAgentUrl() throws Exception, FileNotFoundException {
+		String path = null;
+        
+		if(StringUtils.isNotEmpty(getToken())) {
+			path = getExeUrl(getToken());
+		}
+		else {
+			FacilioContext context = new FacilioContext();
+			context.put(AgentConstants.IS_LATEST_VERSION, true);
+			List<Map<String,Object>> prop = FacilioService.runAsServiceWihReturn(() -> AgentVersionApi.listAgentVersions(context));
+			path = prop.get(0).get(AgentConstants.URL).toString();
+			version = prop.get(0).get(AgentConstants.VERSION).toString();
+		}
+		LOGGER.info("Agent Download " + path);
+		File file = downloadExeFrom(path);
+		if (file==null){
+		    LOGGER.info("File is null");
+		    return "error";
+		}
+		else {
+		    LOGGER.info("FilePath " + file.getAbsolutePath());
+		}
+		fileInputStream = new FileInputStream(file);
+		if(StringUtils.isNotEmpty(getToken())) {
+			FacilioService.runAsService(() -> AgentVersionApi.markVersionLogUpdated(getToken()));
+		}else {
+			String fileName = "agent-"+version+".exe";
+			setFilename(fileName);
+			setContentType("application/x-download");
+		}
+		return SUCCESS;
+	}
 
 	private File downloadExeFrom(String url) throws Exception {
         if (FacilioProperties.isProduction()) {
