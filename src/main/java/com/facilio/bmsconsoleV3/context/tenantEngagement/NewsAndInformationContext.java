@@ -80,14 +80,14 @@ public class NewsAndInformationContext extends V3Context {
         return null;
     }
 
-    private List<NewsAndInformationSharingContext> newsSharing;
+    private List<NewsAndInformationSharingContext> newsandinformationsharing;
 
-    public List<NewsAndInformationSharingContext> getNewsSharing() {
-        return newsSharing;
+    public List<NewsAndInformationSharingContext> getNewsandinformationsharing() {
+        return newsandinformationsharing;
     }
 
-    public void setNewsSharing(List<NewsAndInformationSharingContext> newssharing) {
-        this.newsSharing = newssharing;
+    public void setNewsandinformationsharing(List<NewsAndInformationSharingContext> newsandinformationsharing) {
+        this.newsandinformationsharing = newsandinformationsharing;
     }
 
     private List<NoteContext> noteList;

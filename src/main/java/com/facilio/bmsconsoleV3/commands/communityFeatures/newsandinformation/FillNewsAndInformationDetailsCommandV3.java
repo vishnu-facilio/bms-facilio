@@ -25,7 +25,7 @@ public class FillNewsAndInformationDetailsCommandV3 extends FacilioCommand {
                 if (news != null) {
                     List<NewsAndInformationSharingContext> list = (List<NewsAndInformationSharingContext>) AnnouncementAPI.getSharingInfo(news, FacilioConstants.ContextNames.Tenant.NEWS_AND_INFORMATION_SHARING, "newsAndInformation");
                     if (CollectionUtils.isNotEmpty(list)) {
-                        news.setNewsSharing(list);
+                        news.setNewsandinformationsharing(list);
                     }
                 }
             }
