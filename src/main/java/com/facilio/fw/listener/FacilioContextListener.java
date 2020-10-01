@@ -27,6 +27,7 @@ import com.facilio.agent.integration.queue.AgentIntegrationQueueFactory;
 import com.facilio.tasker.FacilioInstantJobScheduler;
 import com.facilio.v3.RESTAPIHandler;
 import com.facilio.v3.util.ChainUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -114,8 +115,8 @@ public class FacilioContextListener implements ServletContextListener {
 			initializeDB();
 			ServerInfo.registerServer();
 
-			if( !FacilioProperties.isDevelopment()) {
-				new Thread(new NotificationProcessor()).start();
+			if( !FacilioProperties.isDevelopment() && StringUtils.isNotEmpty(FacilioProperties.getKafkaConsumer())) {
+				 new Thread(new NotificationProcessor()).start();
 			}
 
 			BeanFactory.initBeans();
