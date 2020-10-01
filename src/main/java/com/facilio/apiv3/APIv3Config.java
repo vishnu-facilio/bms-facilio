@@ -1,10 +1,8 @@
 package com.facilio.apiv3;
 
 import com.facilio.activity.AddActivitiesCommand;
-import com.facilio.apiv3.sample.*;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.context.AssetDepreciationContext;
-import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.*;
@@ -28,7 +26,7 @@ import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.FillNei
 import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.NeighbourhoodAddLocationCommand;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.NeighbourhoodFillLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.FillNewsAndInformationDetailsCommandV3;
-import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.FillNewsCommentsCommandV3;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.FillNewsRelatedModuleDataInListCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.LoadNewsAndInformationLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.employee.UpdateEmployeePeopleAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.imap.UpdateLatestMessageUIDCommandV3;
@@ -73,7 +71,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
-import com.facilio.v3.commands.DefaultInit;
 
 import java.util.function.Supplier;
 
@@ -576,7 +573,7 @@ public class APIv3Config {
                 .update().afterSave(new UpdateAttachmentsParentIdCommandV3())
                 .list()
                     .beforeFetch(new LoadNewsAndInformationLookupCommandV3())
-                    .afterFetch(new FillNewsCommentsCommandV3())
+                    .afterFetch(new FillNewsRelatedModuleDataInListCommandV3())
                 .summary()
                     .beforeFetch(new LoadNewsAndInformationLookupCommandV3())
                     .afterFetch(new FillNewsAndInformationDetailsCommandV3())
