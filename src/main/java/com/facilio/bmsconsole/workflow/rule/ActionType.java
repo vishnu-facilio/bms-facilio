@@ -38,6 +38,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -1197,20 +1198,31 @@ public enum ActionType {
 		{
 
 			try {
-			WorkflowContext workflowContext = WorkflowUtil.getWorkflowContext((Long)obj.get("resultWorkflowId"));
-			workflowContext.setLogNeeded(true);
-
-			Map<String, Object> props = FieldUtil.getAsProperties(currentRecord);
-
-			List<Object> currentRecordList = new ArrayList<>();
-			currentRecordList.add(props);
-
-			context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflowContext);
-			context.put(WorkflowV2Util.WORKFLOW_PARAMS, currentRecordList);
-
-			FacilioChain chain = TransactionChainFactory.getExecuteWorkflowChain();
-
-			chain.execute(context);
+				WorkflowContext workflowContext = WorkflowUtil.getWorkflowContext((Long)obj.get("resultWorkflowId"));
+				workflowContext.setLogNeeded(true);
+	
+				Map<String, Object> props = FieldUtil.getAsProperties(currentRecord);
+	
+				List<Object> currentRecordList = new ArrayList<>();
+				currentRecordList.add(props);
+	
+				context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflowContext);
+				context.put(WorkflowV2Util.WORKFLOW_PARAMS, currentRecordList);
+	
+				FacilioChain chain = TransactionChainFactory.getExecuteWorkflowChain();
+				
+				chain.execute(context);
+				
+				if(AccountUtil.getCurrentOrg().getId() == 78l && currentRule.getId() == 355619l &&  currentRecord instanceof WorkOrderContext) {
+					
+					WorkOrderContext currentWo = ((WorkOrderContext)currentRecord);
+					if(currentWo.getId() > 0) {
+						LOGGER.info("currentWo.getId() --- "+currentWo.getId());
+						WorkOrderContext wo = WorkOrderAPI.getWorkOrder(currentWo.getId());
+						LOGGER.info("wo --- "+wo);
+						currentWo.setPriority(wo.getPriority());
+					}
+				}
 			}
 			catch (Exception e) {
 				LOGGER.error("Exception occurred on workflow Action", e);
