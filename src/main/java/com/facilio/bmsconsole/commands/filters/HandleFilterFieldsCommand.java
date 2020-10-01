@@ -21,7 +21,7 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
         return false;
     }
 
-    private List<FilterFieldContext> createFilterFields (String moduleName, List<FacilioField> fields) { // Have to check how special handling can be done here
+    private List<FilterFieldContext> createFilterFields (String moduleName, List<FacilioField> fields) { // Have to check how special handling can be done here for each module. These shouldn't be required once FieldAccessSpecifiers are migrated
         List<FilterFieldContext> filterFields = null;
         if (CollectionUtils.isNotEmpty(fields)) {
             filterFields = new ArrayList<>();
@@ -36,6 +36,14 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
     }
 
     private FilterFieldContext createFilterField(FacilioField field) { // We can do special handling here also maybe
-        return new FilterFieldContext(field);
+        switch (field.getName()) {
+            case "stateFlowId" :
+            case "slaPolicyId" :
+            case "approvalFlowId" :
+            case "formId" :
+                return null;
+            default:
+                return new FilterFieldContext(field);
+        }
     }
 }
