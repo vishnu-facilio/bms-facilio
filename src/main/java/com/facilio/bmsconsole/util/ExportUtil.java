@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -21,6 +22,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
@@ -273,7 +275,7 @@ public class ExportUtil {
 	        	for(ViewField vf : fields)
 	    		{
 	    			String displayName = vf.getColumnDisplayName() != null && !vf.getColumnDisplayName().isEmpty() ? vf.getColumnDisplayName() : vf.getField().getDisplayName();
-	        		str.append(displayName);
+	        		str.append(escapeCsv(displayName));
 	        		str.append(',');
 	        	}
 	        	writer.append(StringUtils.stripEnd(str.toString(), ","));
@@ -308,7 +310,7 @@ public class ExportUtil {
 		    				if(val!=null) {
 		    					value=val;
 		    				}
-		    				str.append(value.toString());
+		    				str.append(escapeCsv(value.toString()));
 		    			}
 		    			else
 		    			{
@@ -332,6 +334,24 @@ public class ExportUtil {
 		    return fs.getDownloadUrl(fileId);
         	}
     }
+	
+	private static String escapeCsv(String value) {
+		if (value != null) {
+			value = value.trim();
+			value = StringEscapeUtils.escapeCsv(value);
+			
+			try {
+				if (AccountUtil.isFeatureEnabled(FeatureLicense.ETISALAT)) {
+					if (value.startsWith("=") || value.startsWith("+") || value.startsWith("-") || value.startsWith("@") || value.startsWith("\"") || value.startsWith("'") || value.startsWith(",")) {
+						value = value.substring(1);
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return value;
+	}
 	
 	@SuppressWarnings("unchecked")
 	public static String exportDataAsCSV(String name, Map<String,Object> table, boolean isS3Url) throws Exception
@@ -361,7 +381,7 @@ public class ExportUtil {
 	        				}
 	    				}
 	    			}
-	    			str.append(header);
+	    			str.append(escapeCsv(header));
 	    			str.append(',');
 	    		}
 	        	writer.append(StringUtils.stripEnd(str.toString(), ","));
@@ -399,13 +419,14 @@ public class ExportUtil {
 	    					if(value instanceof Double) {
 	    						value = BigDecimal.valueOf((Double)value).toPlainString();
 	    					}
-	    					str.append("\""+value+"\"").append(',');
+	    					str.append(escapeCsv(value.toString())).append(',');
 	    	    			}
 	    			}
 	    			
 	    			writer.append(StringUtils.stripEnd(str.toString(), ","));
 		    		writer.append('\n');
 	    		}
+	    		
 	        	writer.flush();
 	        	writer.close();
 	        	
