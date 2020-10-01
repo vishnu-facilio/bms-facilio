@@ -273,19 +273,73 @@ public class KPIUtil {
 		if (kpi.getSiteId() != -1) {
 			builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(module), String.valueOf(kpi.getSiteId()), NumberOperators.EQUALS));
 		}
+
 		if (dateField != null) {
 			builder.andCondition(CriteriaAPI.getCondition(dateField, kpi.getDateValue(), kpi.getDateOperatorEnum()));
 		}
-		builder.limit(10);
 		
-		List<Map<String, Object>> props = builder.getAsProps();
 		
-		if (CollectionUtils.isNotEmpty(props)) {
-			return props.get(0);
-		}
+			List<Map<String, Object>> props = builder.getAsProps();
+			
+			if (CollectionUtils.isNotEmpty(props)) {
+				return props.get(0);
+			}
+		
 		return null;
 	}
 	
+	public static Object getKPIList(KPIContext kpi, String baselineName) throws Exception {
+		FacilioModule module = kpi.getModule();
+		String moduleName =  kpi.getModuleName();
+		FacilioField dateField = kpi.getDateField();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+		List<FacilioField> fields = modBean.getAllFields(moduleName);
+
+		SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
+				.module(module)
+				.select(fields)
+				.andCriteria(kpi.getCriteria());
+		if (kpi.getSiteId() != -1) {
+			builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(module), String.valueOf(kpi.getSiteId()), NumberOperators.EQUALS));
+		}
+//		
+//		if (kpi.getAggr() != -1) {
+//			builder.aggregate(kpi.getAggrEnum(), kpi.getMetric());
+//		}
+//		else {
+//			builder.aggregate(CommonAggregateOperator.COUNT, FieldFactory.getIdField(module));
+//		}
+		
+		// This condition should be last
+		if (dateField != null) {
+			builder.andCondition(CriteriaAPI.getCondition(dateField, kpi.getDateValue(), kpi.getDateOperatorEnum()));
+		}
+		else if (baselineName != null) {
+			throw new IllegalArgumentException("Date range is mandatory for baseline");
+		}
+		
+		
+		Object obj = null;
+		List<Map<String, Object>> props = builder.getAsProps();
+		
+		if (CollectionUtils.isNotEmpty(props)) {
+			obj = props.get(0);
+		}
+	
+		
+		return obj;
+	}
+	public static Object getKPIModuleFIelds(KPIContext kpi) throws Exception {
+		String moduleName =  kpi.getModuleName();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+		List<FacilioField> fields = modBean.getAllFields(moduleName);
+
+	
+		
+		return fields;
+	}
 	public static Object getKPIValue(KPIContext kpi, String baselineName) throws Exception {
 		FacilioModule module = kpi.getModule();
 		FacilioField dateField = kpi.getDateField();

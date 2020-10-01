@@ -115,6 +115,7 @@ public enum CardLayout {
 			String kpiType = (String) cardParams.get("kpiType");
 			String dateRange = (String) cardParams.get("dateRange");
 			String dateField = (String) cardParams.get("dateField");
+			String subText = (String) cardParams.get("subText");
 			 
 			Long kpiId;
 			Long parentId;
@@ -134,6 +135,8 @@ public enum CardLayout {
 			}
 			
 			Object cardValue = null;
+			Object listData = null;
+			Object fields = null;
 			Object kpi = null;
 			String period = null;
 			
@@ -167,9 +170,14 @@ public enum CardLayout {
 					}
 					
 					
-					
 					cardValue = KPIUtil.getKPIValue(kpiContext);
+					
 					kpi = KPIUtil.getKPI(kpiId);
+					
+					if (subText != null && !subText.trim().isEmpty()) {
+					listData = KPIUtil.getKPIList(kpiContext, null);
+					fields = KPIUtil.getKPIModuleFIelds(kpiContext);
+					}
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					LOGGER.log(Level.WARNING, "Exception in getKPIValue::: ", e);
@@ -188,6 +196,8 @@ public enum CardLayout {
 			jobj.put("value", cardValue);
 			jobj.put("unit", null);
 			jobj.put("kpi", kpi);
+			jobj.put("moduleData", listData);
+			jobj.put("fields", fields);
 			
 			JSONObject returnValue = new JSONObject();
 			returnValue.put("title", title);
