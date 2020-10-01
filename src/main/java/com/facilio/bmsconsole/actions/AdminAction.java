@@ -54,6 +54,8 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fs.FileInfo;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.LRUCache;
@@ -550,9 +552,8 @@ public class AdminAction extends ActionSupport {
 
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().select(fields)
 				.table(IAMAccountConstants.getOrgModule().getTableName())
-				.innerJoin(ModuleFactory.getNewAgentModule().getTableName()).on("Agent.ORGID=Organizations.ORGID")
-				.groupBy("Agent.ORGID");
-		return builder.get();
+				.andCondition(CriteriaAPI.getCondition(IAMAccountConstants.getOrgDeletedTimeField(), String.valueOf(-1), NumberOperators.EQUALS));
+				return builder.get();
 	}
 	
 	public static List<Map<String, Object>> getAgentOrgs() throws Exception {
