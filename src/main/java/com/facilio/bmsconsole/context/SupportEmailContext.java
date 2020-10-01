@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context;
 import com.facilio.modules.FacilioEnum;
+import org.apache.struts2.json.annotations.JSON;
 
 import java.io.Serializable;
 
@@ -142,6 +143,7 @@ public class SupportEmailContext implements  Serializable{
 
 	private String password;
 
+	@JSON(serialize=false)
 	public String getPassword() {
 		return password;
 	}
