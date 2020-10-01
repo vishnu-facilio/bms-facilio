@@ -131,12 +131,6 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Command getUpdateUserCommand() {
-		FacilioChain c = FacilioChain.getTransactionChain();
-		c.addCommand(new UpdateUserCommand());
-		return c;
-	}
-	
 	public static Command getAddUserMobileSettingCommand() {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new AddUserMobileSettingCommand());

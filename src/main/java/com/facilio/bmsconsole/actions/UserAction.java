@@ -544,7 +544,12 @@ public class UserAction extends FacilioAction {
 	}
 	
 	public String updateUser() throws Exception {
-		if(AccountUtil.getUserBean().updateUser(user)) {
+		FacilioChain updateUser = TransactionChainFactory.updateUserChain();
+		updateUser.getContext().put(FacilioConstants.ContextNames.USER, user);
+		updateUser.getContext().put(FacilioConstants.ContextNames.USER_OPERATION, "updating user");
+		updateUser.execute();
+		boolean result = (boolean) updateUser.getContext().getOrDefault(FacilioConstants.ContextNames.RESULT, false);
+		if(result) {
 			return SUCCESS;
 		}
 		return ERROR;

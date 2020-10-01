@@ -5734,6 +5734,13 @@ public class TransactionChainFactory {
 		c.addCommand(new DeleteUserCommand());
 		return c;
 	}
+
+	public static FacilioChain updateUserChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new ValidateUserCommand());
+		c.addCommand(new UpdateUserCommand());
+		return c;
+	}
 }
 
 
