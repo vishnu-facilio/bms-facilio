@@ -5721,6 +5721,12 @@ public class TransactionChainFactory {
 		chain.addCommand(new AddOrUpdateDailyWeatherDataCommand());
 		return chain;
 	}
+
+	public static FacilioChain updateUserStatusChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new UpdateUserStatusCommand());
+		return c;
+	}
 }
 
 

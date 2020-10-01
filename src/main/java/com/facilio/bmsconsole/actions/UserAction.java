@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
@@ -586,21 +587,17 @@ public class UserAction extends FacilioAction {
 	}
 
 	public String changeStatus() throws Exception {
-		HttpServletRequest request = ServletActionContext.getRequest(); 
-		
+		HttpServletRequest request = ServletActionContext.getRequest();
+
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.USER, user);
-		if(user.getUserStatus()) {
-			if(AccountUtil.getUserBean().enableUser(AccountUtil.getCurrentOrg().getOrgId(), user.getUid())) {
-				setResult(FacilioConstants.ContextNames.ROWS_UPDATED, true);
-				return SUCCESS;
-			}
-		}
-		else {
-			if(AccountUtil.getUserBean().disableUser(AccountUtil.getCurrentOrg().getOrgId(), user.getUid())) {
-				setResult(FacilioConstants.ContextNames.ROWS_UPDATED, true);
-				return SUCCESS;
-			}
+		FacilioChain updateStatus = TransactionChainFactory.updateUserStatusChain();
+		updateStatus.getContext().put(FacilioConstants.ContextNames.USER, user);
+		updateStatus.execute();
+		boolean result = (boolean) updateStatus.getContext().getOrDefault(FacilioConstants.ContextNames.RESULT, false);
+		if (result) {
+			setResult(FacilioConstants.ContextNames.ROWS_UPDATED, true);
+			return SUCCESS;
 		}
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, false);
 		return ERROR;
