@@ -9100,6 +9100,16 @@ public class FieldFactory {
 		 return fields;
 	 }
 
+	 public static List<FacilioField> getLiveSessionFields() {
+         List<FacilioField> list = new ArrayList<>();
+         FacilioModule module = ModuleFactory.getLiveSessionModule();
+
+         list.add(getIdField(module));
+//         list.add();
+
+         return list;
+     }
+
     public static List<FacilioField> getTransactionWorkflowRuleFields() {
         FacilioModule module = ModuleFactory.getTransactionRuleModule();
         List<FacilioField> list = new ArrayList<>();

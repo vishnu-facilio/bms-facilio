@@ -4151,6 +4151,14 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getLiveSessionModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("live_session");
+		module.setDisplayName("Live Session");
+		module.setTableName("Live_Sessions");
+		return module;
+	}
+
 	public static FacilioModule getTransactionRuleModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("transaction_rule");
