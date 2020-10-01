@@ -90,23 +90,23 @@ public class NewsAndInformationContext extends V3Context {
         this.newsandinformationsharing = newsandinformationsharing;
     }
 
-    private List<NoteContext> noteList;
+    private List<NoteContext> newsandinformationnotes;
 
-    public List<NoteContext> getNoteList() {
-        return noteList;
+    private List<AttachmentContext> newsandinformationattachments;
+
+    public List<NoteContext> getNewsandinformationnotes() {
+        return newsandinformationnotes;
     }
 
-    public void setNoteList(List<NoteContext> noteList) {
-        this.noteList = noteList;
+    public void setNewsandinformationnotes(List<NoteContext> newsandinformationnotes) {
+        this.newsandinformationnotes = newsandinformationnotes;
     }
 
-    private List<AttachmentContext> attachmentList;
-
-    public List<AttachmentContext> getAttachmentList() {
-        return attachmentList;
+    public List<AttachmentContext> getNewsandinformationattachments() {
+        return newsandinformationattachments;
     }
 
-    public void setAttachmentList(List<AttachmentContext> attachmentList) {
-        this.attachmentList = attachmentList;
+    public void setNewsandinformationattachments(List<AttachmentContext> newsandinformationattachments) {
+        this.newsandinformationattachments = newsandinformationattachments;
     }
 }
