@@ -38,6 +38,7 @@ import com.facilio.bmsconsoleV3.context.facilitybooking.FacilityAmenitiesContext
 import com.facilio.bmsconsoleV3.context.facilitybooking.FacilityContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.FacilitySpecialAvailabilityContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.WeekDayAvailability;
+import com.facilio.bmsconsoleV3.context.facilitybooking.*;
 import com.facilio.bmsconsoleV3.context.quotation.*;
 import com.facilio.bmsconsoleV3.context.communityfeatures.*;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitChecklistContext;
@@ -1828,7 +1829,9 @@ public class FacilioConstants {
 			public static final String FACILITY_AMENITIES = "facilityamenity";
 			public static final String FACILITY_WEEKDAY_AVAILABILITY = "facilityWeekdayAvailability";
 			public static final String FACILITY_SPECIAL_AVAILABILITY = "facilitySpecialAvailability";
-
+			public static final String FACILITY_BOOKING = "facilitybooking";
+			public static final String FACILITY_BOOKING_EXTERNAL_ATTENDEE = "facilityBookingExternalAttendee";
+			public static final String FACILITY_BOOKING_INTERNAL_ATTENDEE = "facilityBookingInternalAttendee";
 
 		}
 
@@ -2069,8 +2072,9 @@ public class FacilioConstants {
 			classMap.put(VISITOR_INVITE_REL, InviteVisitorRelContext.class);
 			classMap.put(VISITOR_TYPE,VisitorTypeContext.class);
 			
-			classMap.put(Reservation.RESERVATION, ReservationContext.class);
 			classMap.put(ModuleNames.DEVICES, DeviceContext.class);
+
+			classMap.put(Reservation.RESERVATION, ReservationContext.class);
 			classMap.put(Reservation.RESERVATIONS_INTERNAL_ATTENDEE, InternalAttendeeContext.class);
 			classMap.put(Reservation.RESERVATIONS_EXTERNAL_ATTENDEE, ExternalAttendeeContext.class);
 			
@@ -2169,6 +2173,9 @@ public class FacilioConstants {
 			classMap.put(FacilityBooking.FACILITY_AMENITIES, FacilityAmenitiesContext.class);
 			classMap.put(FacilityBooking.FACILITY_WEEKDAY_AVAILABILITY, WeekDayAvailability.class);
 			classMap.put(FacilityBooking.FACILITY_SPECIAL_AVAILABILITY, FacilitySpecialAvailabilityContext.class);
+			classMap.put(FacilityBooking.FACILITY_BOOKING, V3FacilityBookingContext.class);
+			classMap.put(FacilityBooking.FACILITY_BOOKING_EXTERNAL_ATTENDEE, V3ExternalAttendeeContext.class);
+			classMap.put(FacilityBooking.FACILITY_BOOKING_INTERNAL_ATTENDEE, V3InternalAttendeeContext.class);
 
 			return classMap;
 		}
