@@ -374,6 +374,9 @@ public class AgentAction extends AgentActionV2 {
         try {
             if ((controllerType != null) && (controllerType > -1)) {
                 getPointRequest.ofType(FacilioControllerType.valueOf(controllerType));
+                if(controllerType == 1) {
+                	getPointRequest.withCriteria(getBacNetIpInstanceFilter());
+                }
             }
             if ((deviceId != null)&&(deviceId > 0)) {
                 getPointRequest.withDeviceId(deviceId);
@@ -434,6 +437,9 @@ public class AgentAction extends AgentActionV2 {
         try {
             if ((controllerType != null) && (controllerType > -1)) {
                 getPointRequest.ofType(FacilioControllerType.valueOf(controllerType));
+                if(controllerType == 1) {
+                	getPointRequest.withCriteria(getBacNetIpInstanceFilter());
+                }
             }
             if ((deviceId != null)&&(deviceId > 0)) {
                 getPointRequest.withDeviceId(deviceId);
@@ -803,4 +809,9 @@ public class AgentAction extends AgentActionV2 {
     	return criteria;
 	}
 
+	private Criteria getBacNetIpInstanceFilter() {
+		Criteria criteria = new Criteria();
+    	criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(FieldFactory.getBACnetIPPointFields()).get(AgentConstants.INSTANCE_TYPE), String.valueOf(7), NumberOperators.LESS_THAN_EQUAL));
+    	return criteria;
+	}
 }
