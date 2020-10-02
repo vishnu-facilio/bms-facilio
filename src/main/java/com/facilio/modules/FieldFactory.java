@@ -1404,6 +1404,9 @@ public class FieldFactory {
         List<String> specialModuleList = new ArrayList<String>(Arrays.asList("safetyPlan", "hazard", "precaution"));
 
         switch (fieldName) {
+        	case "siteId":
+            return getSiteIdField();
+        
             case "sysCreatedTime":
                 return getField("sysCreatedTime", module != null && specialModuleList.contains(module.getName()) ? "Created Time" : "System Created Time", "SYS_CREATED_TIME", module, FieldType.DATE_TIME);
             case "sysModifiedTime":

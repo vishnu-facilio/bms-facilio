@@ -390,7 +390,8 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 			List<Map<String, Object>> props = new ArrayList<>();
 			for(ViewField field: columns)
 			{
-				if (field.getFieldId() == -1 && StringUtils.isEmpty(field.getFieldName())) {
+				FacilioField fieldDetails = field.getField();
+				if (field.getFieldId() == -1 && StringUtils.isEmpty(field.getFieldName()) && (fieldDetails.getFieldId() == -1 && StringUtils.isEmpty(fieldDetails.getName()))) {
 					throw new IllegalArgumentException("column field is required");
 				}
 				field.setViewId(viewId);
