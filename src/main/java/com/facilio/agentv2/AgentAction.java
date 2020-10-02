@@ -2,7 +2,6 @@ package com.facilio.agentv2;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -12,7 +11,6 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.collections4.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -41,22 +39,15 @@ import com.facilio.agentv2.sqlitebuilder.SqliteBridge;
 import com.facilio.agentv2.upgrade.AgentVersionApi;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
-import com.facilio.beans.ModuleCRUDBeanImpl;
 import com.facilio.bmsconsole.actions.AdminAction;
 import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.iam.accounts.util.IAMAccountConstants;
-import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.fields.FacilioField;
 import com.facilio.service.FacilioService;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
@@ -65,7 +56,10 @@ import com.facilio.services.messageQueue.MessageQueueTopic;
 
 public class AgentAction extends AgentActionV2 {
     private static final Logger LOGGER = LogManager.getLogger(AgentAction.class.getName());
-   /* public String createPolicy(){
+
+    private String instanceType;
+    
+    /* public String createPolicy(){
             CreateKeysAndCertificateResult cert = AwsUtil.signUpIotToKinesis(AccountUtil.getCurrentOrg().getDomain(), AccountUtil.getCurrentOrg().getDomain(), "facilio");
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("cert arn",cert.getCertificateArn());
@@ -76,7 +70,17 @@ public class AgentAction extends AgentActionV2 {
         return SUCCESS;
     }*/
 
-    public String listAgents() {
+   
+
+	public String getInstanceType() {
+		return instanceType;
+	}
+
+	public void setInstanceType(String instanceType) {
+		this.instanceType = instanceType;
+	}
+
+	public String listAgents() {
         try {
             FacilioContext context = new FacilioContext();
             constructListContext(context);
@@ -376,6 +380,9 @@ public class AgentAction extends AgentActionV2 {
             } else if ((controllerId != null) && (controllerId > 0)) {
                 getPointRequest.withControllerId(controllerId);
             }
+            if(StringUtils.isNotEmpty(instanceType)) {
+            	getPointRequest.withCriteria(getInstanceTypeFilter());
+            }
             if(StringUtils.isNotEmpty(getQuerySearch())) {
             	getPointRequest.setSerarchPointName(getQuerySearch());
             }
@@ -402,6 +409,9 @@ public class AgentAction extends AgentActionV2 {
                 getPointRequest.withDeviceId(deviceId);
             } else if ((controllerId != null) && (controllerId > 0)) {
                 getPointRequest.withControllerId(controllerId);
+            }
+            if(StringUtils.isNotEmpty(instanceType)) {
+            	getPointRequest.withCriteria(getInstanceTypeFilter());
             }
             if(StringUtils.isNotEmpty(getQuerySearch())) {
             	getPointRequest.setSerarchPointName(getQuerySearch());
@@ -430,6 +440,9 @@ public class AgentAction extends AgentActionV2 {
             } else if ((controllerId != null) && (controllerId > 0)) {
                 getPointRequest.withControllerId(controllerId);
             }
+            if(StringUtils.isNotEmpty(instanceType)) {
+            	getPointRequest.withCriteria(getInstanceTypeFilter());
+            }
             if(StringUtils.isNotEmpty(getQuerySearch())) {
             	getPointRequest.setSerarchPointName(getQuerySearch());
             }
@@ -457,7 +470,9 @@ public class AgentAction extends AgentActionV2 {
             } else if ((controllerId != null) && (controllerId > 0)) {
                 getPointRequest.withControllerId(controllerId);
             }
-            
+            if(StringUtils.isNotEmpty(instanceType)) {
+            	getPointRequest.withCriteria(getInstanceTypeFilter());
+            }
             if(StringUtils.isNotEmpty(getQuerySearch())) {
             	getPointRequest.setSerarchPointName(getQuerySearch());
             }
@@ -780,4 +795,12 @@ public class AgentAction extends AgentActionV2 {
 		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD");
 		bean.disableOrEnableAgent(getAgentId(), getDisable());
 	} 
+
+	private Criteria getInstanceTypeFilter() {
+		String[] instanceTypeList = instanceType.split(","); 
+    	Criteria criteria = new Criteria();
+    	criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(FieldFactory.getBACnetIPPointFields()).get(AgentConstants.INSTANCE_TYPE), StringUtils.join(instanceTypeList, ","), NumberOperators.EQUALS));
+    	return criteria;
+	}
+
 }
