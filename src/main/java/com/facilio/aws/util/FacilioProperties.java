@@ -37,6 +37,7 @@ public class FacilioProperties {
     private static final Properties PROPERTIES = new Properties();
     private static boolean productionEnvironment = false;
     private static boolean developmentEnvironment = true;
+    private static boolean securityFilterEnabled = false;
     private static boolean scheduleServer = false;
     private static boolean isSmtp = false;
     private static String region;
@@ -125,6 +126,7 @@ public class FacilioProperties {
                 productionEnvironment = ("demo".equalsIgnoreCase(environment) || "production".equalsIgnoreCase(environment));
                 developmentEnvironment = "development".equalsIgnoreCase(environment);
                 isOnpremise = "true".equals(PROPERTIES.getProperty("onpremise", "false").trim());
+                securityFilterEnabled = Boolean.parseBoolean(PROPERTIES.getProperty("security.filter", "false").trim());
                 scheduleServer = "true".equals(getConfig("schedulerServer"));
                 messageProcessor = "true".equalsIgnoreCase(PROPERTIES.getProperty("messageProcessor"));
                 userServer = !scheduleServer;
@@ -359,6 +361,10 @@ public class FacilioProperties {
 
     public static boolean isOnpremise() {
         return isOnpremise;
+    }
+
+    public static boolean isSecurtiyFilterEnabled() {
+        return securityFilterEnabled;
     }
 
     public static String getIotEndPoint() { return iotEndPoint; }

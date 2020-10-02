@@ -50,7 +50,7 @@ public class SecurityFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) res;
 
         String requestUri = request.getRequestURI();
-        if (FacilioProperties.isProduction() && !isWhiteListedUri(requestUri)) {
+        if ((FacilioProperties.isProduction() || FacilioProperties.isSecurtiyFilterEnabled()) && !isWhiteListedUri(requestUri)) {
             String csrfCookieToken = FacilioCookie.getUserCookie(request, FacilioCookie.CSRF_TOKEN_COOKIE);
             if (StringUtils.isNotEmpty(csrfCookieToken)) {
                 String csrfHeaderToken = request.getHeader(CSRF_HEADER);
