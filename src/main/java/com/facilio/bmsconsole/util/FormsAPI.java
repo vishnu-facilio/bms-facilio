@@ -617,6 +617,23 @@ public class FormsAPI {
 		return formField;
 	}
 	
+	public static FormField getFormFieldFromId(Long id) throws Exception {
+		GenericSelectRecordBuilder fieldSelectBuilder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getFormFieldsModule().getTableName())
+				.select(FieldFactory.getFormFieldsFields())
+				.andCondition(CriteriaAPI.getIdCondition(id, ModuleFactory.getFormFieldsModule()));
+		
+		List<Map<String, Object>> props = fieldSelectBuilder.get();
+		
+		if(props != null && !props.isEmpty()) {
+			FormField field = FieldUtil.getAsBeanFromMap(props.get(0), FormField.class);
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			field.setField(modBean.getField(field.getFieldId()));
+			return field;
+		}
+		return null;
+	}
+	
 	public static Map<String, FacilioForm> getFormsAsMap (String moduleName,List<Integer> formTypes,Boolean fetchExtendedModuleForms,Boolean fetchDisabledForms) throws Exception {
 		List<FacilioForm> forms = getDBFormList(moduleName, formTypes, fetchExtendedModuleForms, fetchDisabledForms);
 		Map<String, FacilioForm> formMap = new LinkedHashMap<>();

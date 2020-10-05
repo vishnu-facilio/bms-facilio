@@ -43,6 +43,10 @@ public class FormRuleAPI {
 	
 	public static final String FORM_DATA = "formRuleFormData";
 	
+	public static final String VALUE_FILLED_FIELD_IDS = "valueFiledFields";
+	
+	public static final String FORM_DATA_FOR_NEXT_ROUND = "formDataForNextRound";
+	
 	public static final String JSON_RESULT_FIELDID_STRING = "fieldId";
 	public static final String JSON_RESULT_ACTION_STRING = "action";
 	public static final String JSON_RESULT_ACTION_NAME_STRING = "actionName";

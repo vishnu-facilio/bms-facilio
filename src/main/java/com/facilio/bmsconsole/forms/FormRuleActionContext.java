@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.facilio.bmsconsole.util.FormRuleAPI;
 import com.facilio.chain.FacilioContext;
+import com.facilio.workflows.context.WorkflowContext;
 
 public class FormRuleActionContext {
 	long id = -1;
@@ -11,6 +12,15 @@ public class FormRuleActionContext {
 	long formRuleId = -1;
 	FormActionType actionType;
 	FormRuleContext ruleContext;
+	long workflowId = -1;
+	public long getWorkflowId() {
+		return workflowId;
+	}
+
+	public void setWorkflowId(long workflowId) {
+		this.workflowId = workflowId;
+	}
+
 	public FormRuleContext getRuleContext() {
 		return ruleContext;
 	}

@@ -3822,6 +3822,13 @@ public class TransactionChainFactory {
 			c.addCommand(new DeleteAlarmCommand());
 			return c;
 		}
+		
+		public static FacilioChain getExecuteFormActionRecursivelyRules() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(getExecuteFormActionRules());
+			c.addCommand(new ExecuteFormActionRulesForNextRoundCommand());
+			return c;
+		}
 
 		public static FacilioChain getExecuteFormActionRules() {
 			FacilioChain c = getDefaultChain();
@@ -3829,6 +3836,8 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteFormActionRulesCommand());
 			return c;
 		}
+		
+		
 		
 		public static FacilioChain getAddHistoricalVMCalculationChain() {
 			FacilioChain c = getDefaultChain();

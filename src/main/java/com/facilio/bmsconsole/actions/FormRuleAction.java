@@ -161,7 +161,7 @@ public class FormRuleAction extends FacilioAction {
 
 	public String executeFormActionRules() throws Exception {
 		
-		FacilioChain c = TransactionChainFactory.getExecuteFormActionRules();
+		FacilioChain c = TransactionChainFactory.getExecuteFormActionRecursivelyRules();
 		
 		Context context = c.getContext();
 		

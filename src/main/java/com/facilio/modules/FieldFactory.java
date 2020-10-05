@@ -393,7 +393,7 @@ public class FieldFactory {
         fields.add(getIdField(module));
         fields.add(getField("formRuleId", "FORM_RULE_ID", module, FieldType.LOOKUP));
         fields.add(getField("actionType", "ACTION_TYPE", module, FieldType.NUMBER));
-
+        fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.NUMBER));
         return fields;
     }
     
