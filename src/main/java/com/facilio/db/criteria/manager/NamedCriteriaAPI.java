@@ -7,6 +7,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
@@ -33,6 +34,10 @@ public class NamedCriteriaAPI {
                 break;
 
             case WORKFLOW:
+                if (namedCriteria.getWorkflowContext() == null) {
+                    throw new IllegalArgumentException("Workflow cannot be empty");
+                }
+                namedCriteria.setWorkflowId(WorkflowUtil.addWorkflow(namedCriteria.getWorkflowContext()));
                 break;
 
             default:
@@ -76,7 +81,6 @@ public class NamedCriteriaAPI {
         }
 
         List<Long> criteriaIds = new ArrayList<>();
-        List<Long> workflowIds = new ArrayList<>();
         for (NamedCriteria namedCriteria : namedCriteriaList) {
             switch (namedCriteria.getTypeEnum()) {
                 case CRITERIA:
@@ -84,8 +88,7 @@ public class NamedCriteriaAPI {
                     break;
 
                 case WORKFLOW:
-//                    workflowIds.add(namedCriteria.getWorkflowId());
-                    // todo yet to implement
+                    namedCriteria.setWorkflowContext(WorkflowUtil.getWorkflowContext(namedCriteria.getWorkflowId()));
                     break;
             }
         }
@@ -95,10 +98,6 @@ public class NamedCriteriaAPI {
             switch (namedCriteria.getTypeEnum()) {
                 case CRITERIA:
                     namedCriteria.setCriteria(criteriaMap.get(namedCriteria.getCriteriaId()));
-                    break;
-
-                case WORKFLOW:
-                    // todo yet to implement
                     break;
             }
         }

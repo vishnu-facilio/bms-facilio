@@ -1,8 +1,11 @@
 package com.facilio.db.criteria.manager;
 
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.FacilioEnum;
+import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2API;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
@@ -81,13 +84,30 @@ public class NamedCriteria {
         this.workflowId = workflowId;
     }
 
+    private WorkflowContext workflowContext;
+    public WorkflowContext getWorkflowContext() throws Exception {
+        if (workflowContext == null) {
+            if (workflowId > 0) {
+                workflowContext = WorkflowUtil.getWorkflowContext(workflowId);
+            }
+        }
+        return workflowContext;
+    }
+    public void setWorkflowContext(WorkflowContext workflowContext) {
+        this.workflowContext = workflowContext;
+    }
+
     public boolean evaluate(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
         switch (type) {
             case CRITERIA:
                 return getCriteria().computePredicate(placeHolders).evaluate(record);
 
             case WORKFLOW:
-
+                Object result = workflowContext.executeWorkflow();
+                if (result != null && result instanceof Boolean) {
+                    return (Boolean) result;
+                }
+                break;
         }
         return false;
     }
@@ -105,6 +125,12 @@ public class NamedCriteria {
             case CRITERIA:
                 if (criteria == null || criteria.isEmpty()) {
                     throw new IllegalArgumentException("Criteria cannot be empty");
+                }
+                break;
+
+            case WORKFLOW:
+                if (workflowContext == null) {
+                    throw new IllegalArgumentException("Workflow cannot be empty");
                 }
                 break;
         }
