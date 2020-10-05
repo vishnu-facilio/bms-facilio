@@ -19,7 +19,7 @@ import com.facilio.services.filestore.PublicFileUtil;
 
 public class PdfUtil {
 
-    private static final String NODE = "/usr/bin/node";
+    private static final String NODE = FacilioProperties.getNodeJSLocation();
     private static final String RENDER_PUPETTEER_JS = FacilioProperties.getPdfjsLocation() + "/puppeteer-render.js";
     private static final Logger LOGGER = LogManager.getLogger(PdfUtil.class.getName());
 

@@ -52,6 +52,7 @@ public class FacilioProperties {
     private static String environment;
     private static String kafkaProducer;
     private static String kafkaConsumer;
+    private static String nodejs;
     private static String pdfjs;
     private static String anomalyTempDir;
     private static String anomalyCheckServiceURL;
@@ -138,6 +139,7 @@ public class FacilioProperties {
                 allowedAppDomains = PROPERTIES.getProperty("allowedapp.domains");
                 kafkaProducer = PROPERTIES.getProperty("kafka.producer");
                 kafkaConsumer = PROPERTIES.getProperty("kafka.consumer");
+                nodejs = PROPERTIES.getProperty("nodejs");
                 isSmtp = "smtp".equalsIgnoreCase(PROPERTIES.getProperty("email.type"));
                 isServicesEnabled="enabled".equalsIgnoreCase(PROPERTIES.getProperty("services.isEnabled"));
                 emailClient = PROPERTIES.getProperty("service.email");
@@ -288,6 +290,13 @@ public class FacilioProperties {
 
     public static String getKafkaConsumer() {
         return kafkaConsumer;
+    }
+    
+    public static String getNodeJSLocation() {
+    	if (nodejs != null && !nodejs.trim().isEmpty()) {
+    		return nodejs;
+    	}
+    	return "/usr/bin/node";
     }
 
     public static boolean isSmtp() {
