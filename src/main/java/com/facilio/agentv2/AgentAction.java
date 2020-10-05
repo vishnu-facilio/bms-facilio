@@ -38,6 +38,7 @@ import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.agentv2.sqlitebuilder.SqliteBridge;
 import com.facilio.agentv2.upgrade.AgentVersionApi;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.bacnet.BACNetUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.actions.AdminAction;
 import com.facilio.chain.FacilioContext;
@@ -56,7 +57,21 @@ import com.facilio.services.messageQueue.MessageQueueTopic;
 
 public class AgentAction extends AgentActionV2 {
     private static final Logger LOGGER = LogManager.getLogger(AgentAction.class.getName());
+    private static final List<Integer> FILTER_INSTANCES = new ArrayList<>();
 
+    static {
+    	FILTER_INSTANCES.add(BACNetUtil.InstanceType.ANALOG_INPUT.ordinal());//0
+    	FILTER_INSTANCES.add(BACNetUtil.InstanceType.ANALOG_OUTPUT.ordinal());
+    	FILTER_INSTANCES.add(BACNetUtil.InstanceType.ANALOG_VALUE.ordinal());
+    	FILTER_INSTANCES.add(BACNetUtil.InstanceType.BINARY_INPUT.ordinal());
+    	FILTER_INSTANCES.add(BACNetUtil.InstanceType.BINARY_OUTPUT.ordinal());
+    	FILTER_INSTANCES.add(BACNetUtil.InstanceType.BINARY_VALUE.ordinal());
+    	FILTER_INSTANCES.add(BACNetUtil.InstanceType.CALENDAR.ordinal());
+    	FILTER_INSTANCES.add(BACNetUtil.InstanceType.COMMAND.ordinal());//7
+    	FILTER_INSTANCES.add(BACNetUtil.InstanceType.MULTI_STATE_INPUT.ordinal());//13
+    	FILTER_INSTANCES.add(BACNetUtil.InstanceType.MULTI_STATE_OUTPUT.ordinal());
+    	FILTER_INSTANCES.add(BACNetUtil.InstanceType.MULTI_STATE_VALUE.ordinal());//19
+    }
     private String instanceType;
     
     /* public String createPolicy(){
@@ -374,7 +389,7 @@ public class AgentAction extends AgentActionV2 {
         try {
             if ((controllerType != null) && (controllerType > -1)) {
                 getPointRequest.ofType(FacilioControllerType.valueOf(controllerType));
-                if(controllerType == 1) {
+                if(controllerType == FacilioControllerType.BACNET_IP.asInt()) {
                 	getPointRequest.withCriteria(getBacNetIpInstanceFilter());
                 }
             }
@@ -437,7 +452,7 @@ public class AgentAction extends AgentActionV2 {
         try {
             if ((controllerType != null) && (controllerType > -1)) {
                 getPointRequest.ofType(FacilioControllerType.valueOf(controllerType));
-                if(controllerType == 1) {
+                if(controllerType == FacilioControllerType.BACNET_IP.asInt()) {
                 	getPointRequest.withCriteria(getBacNetIpInstanceFilter());
                 }
             }
@@ -811,7 +826,8 @@ public class AgentAction extends AgentActionV2 {
 
 	private Criteria getBacNetIpInstanceFilter() {
 		Criteria criteria = new Criteria();
-    	criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(FieldFactory.getBACnetIPPointFields()).get(AgentConstants.INSTANCE_TYPE), String.valueOf(7), NumberOperators.LESS_THAN_EQUAL));
+    	criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(FieldFactory.getBACnetIPPointFields()).get(AgentConstants.INSTANCE_TYPE), StringUtils.join(FILTER_INSTANCES,","), NumberOperators.EQUALS));
     	return criteria;
 	}
+
 }
