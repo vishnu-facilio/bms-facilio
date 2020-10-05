@@ -2693,6 +2693,17 @@
 		</action>
 	</package>
 
+	<package name="advancedFilterApiv2" namespace="/api/v2/filter/advanced"
+			 extends="v2Api">
+		<action name="operators"
+				class="com.facilio.bmsconsole.actions.AdvancedFilterAction" method="fetchOperators">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+			</result>
+		</action>
+	</package>
 	<package name="advancedFilterFieldsApiv2" namespace="/api/v2/filter/advanced/fields"
 			 extends="v2Api">
 		<action name="*"
