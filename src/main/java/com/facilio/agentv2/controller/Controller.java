@@ -64,7 +64,7 @@ public abstract class Controller extends AssetContext {
     private long deletedTime = -1;
 
     @JsonIgnore
-    private static Map<String, FacilioField> fieldsMap;
+    private Map<String, FacilioField> fieldsMap;
 
     @JsonInclude
     private long deviceId=-1;
@@ -212,17 +212,12 @@ public abstract class Controller extends AssetContext {
 
     @JsonIgnore
     public static Map<String, FacilioField> getFieldsMap(String moduleName) throws Exception {
-        if (fieldsMap != null) {
-            return fieldsMap;
-        }
+        
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         if (moduleName != null) {
-            List<FacilioField> fields = modBean.getAllFields(moduleName);
-            Map<String, FacilioField> fieldsMap1 = FieldFactory.getAsMap(fields);
-            fieldsMap = fieldsMap1;
-            return fieldsMap;
+            return FieldFactory.getAsMap(modBean.getAllFields(moduleName));
         } else {
-            throw new Exception(" module name cant be null");
+            throw new IllegalArgumentException(" module name cant be null");
         }
     }
 
