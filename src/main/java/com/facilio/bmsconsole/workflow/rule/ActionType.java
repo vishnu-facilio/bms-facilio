@@ -1213,16 +1213,6 @@ public enum ActionType {
 				
 				chain.execute(context);
 				
-				if(AccountUtil.getCurrentOrg().getId() == 78l && currentRule.getId() == 355619l &&  currentRecord instanceof WorkOrderContext) {
-					
-					WorkOrderContext currentWo = ((WorkOrderContext)currentRecord);
-					if(currentWo.getId() > 0) {
-						LOGGER.info("currentWo.getId() --- "+currentWo.getId());
-						WorkOrderContext wo = WorkOrderAPI.getWorkOrder(currentWo.getId());
-						LOGGER.info("wo --- "+wo);
-						currentWo.setPriority(wo.getPriority());
-					}
-				}
 			}
 			catch (Exception e) {
 				LOGGER.error("Exception occurred on workflow Action", e);
