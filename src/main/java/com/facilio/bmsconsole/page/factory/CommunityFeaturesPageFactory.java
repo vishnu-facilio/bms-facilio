@@ -97,16 +97,11 @@ public class CommunityFeaturesPageFactory extends PageFactory {
 
         Page.Section tab1Sec1 = page.new Section();
         tab1.addSection(tab1Sec1);
-        if (StringUtils.isNotEmpty(record.getDescription())) {
-            PageWidget previewWidget = new PageWidget(PageWidget.WidgetType.RICH_TEXT_PREVIEW);
-            previewWidget.addToLayoutParams(tab1Sec1, 24, 6);
-            previewWidget.addToWidgetParams("fieldKey", "description");
-            tab1Sec1.addWidget(previewWidget);
-        }
 
         PageWidget secDetailsWidget = new PageWidget(PageWidget.WidgetType.NEWS_AND_INFORMATION);
         secDetailsWidget.addToLayoutParams(tab1Sec1, 24, 6);
         secDetailsWidget.setTitle("News & Information Details");
+        secDetailsWidget.addToWidgetParams("fieldKey", "description");
         tab1Sec1.addWidget(secDetailsWidget);
 
         if(AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomain.AppDomainType.FACILIO) {
