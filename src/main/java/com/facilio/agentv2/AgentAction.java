@@ -402,7 +402,7 @@ public class AgentAction extends AgentActionV2 {
             	getPointRequest.withCriteria(getInstanceTypeFilter());
             }
             if(StringUtils.isNotEmpty(getQuerySearch())) {
-            	getPointRequest.setSerarchPointName(getQuerySearch());
+            	getPointRequest.querySearch(AgentConstants.COL_NAME, getQuerySearch());
             }
             getPointRequest.pagination(constructListContext(new FacilioContext()));
             List<Map<String, Object>> points = getPointRequest.getPointsData();
@@ -432,7 +432,7 @@ public class AgentAction extends AgentActionV2 {
             	getPointRequest.withCriteria(getInstanceTypeFilter());
             }
             if(StringUtils.isNotEmpty(getQuerySearch())) {
-            	getPointRequest.setSerarchPointName(getQuerySearch());
+            	getPointRequest.querySearch(AgentConstants.COL_NAME, getQuerySearch());
             }
             getPointRequest.pagination(constructListContext(new FacilioContext()));
             List<Map<String, Object>> points = getPointRequest.getPointsData();
@@ -465,7 +465,7 @@ public class AgentAction extends AgentActionV2 {
             	getPointRequest.withCriteria(getInstanceTypeFilter());
             }
             if(StringUtils.isNotEmpty(getQuerySearch())) {
-            	getPointRequest.setSerarchPointName(getQuerySearch());
+            	getPointRequest.querySearch(AgentConstants.COL_NAME, getQuerySearch());
             }
             getPointRequest.pagination(constructListContext(new FacilioContext()));
             List<Map<String, Object>> points = getPointRequest.getPointsData();
@@ -495,7 +495,7 @@ public class AgentAction extends AgentActionV2 {
             	getPointRequest.withCriteria(getInstanceTypeFilter());
             }
             if(StringUtils.isNotEmpty(getQuerySearch())) {
-            	getPointRequest.setSerarchPointName(getQuerySearch());
+            	getPointRequest.querySearch(AgentConstants.COL_NAME, getQuerySearch());
             }
             getPointRequest.pagination(constructListContext(new FacilioContext()));
             List<Map<String, Object>> points = getPointRequest.getPointsData();

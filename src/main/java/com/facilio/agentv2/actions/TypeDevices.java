@@ -1,6 +1,8 @@
 package com.facilio.agentv2.actions;
 
+import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.agentv2.point.Point;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
@@ -8,6 +10,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.BmsAggregateOperators;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
@@ -28,7 +31,6 @@ import java.util.Map;
 public class TypeDevices extends DeviceIdActions {
 
     private static final Logger LOGGER = LogManager.getLogger(TypeDevices.class.getName());
-
 
     public Integer getControllerType() { return controllerType; }
 
@@ -75,30 +77,11 @@ public class TypeDevices extends DeviceIdActions {
 
     public String getCommissionedPointsCount(){
         try{
-            Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getPointFields());
-            Criteria criteria = new Criteria();
-            criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.RESOURCE_ID), "NULL", CommonOperators.IS_NOT_EMPTY));
-            criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.ASSET_CATEGORY_ID), "NULL", CommonOperators.IS_NOT_EMPTY));
-            criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.FIELD_ID), "NULL", CommonOperators.IS_NOT_EMPTY));
-            criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.POINT_TYPE), String.valueOf(getControllerType()), NumberOperators.EQUALS));
-            criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.DEVICE_ID), String.valueOf(getDeviceId()), NumberOperators.EQUALS));
-            
-            GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-                    .select(new HashSet<>())
-                    .table(ModuleFactory.getPointModule().getTableName())
-                    .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, fieldMap.get(AgentConstants.ID))
-                    .andCriteria(criteria);
-            if (StringUtils.isNotEmpty(querySearch)) {
-            	selectRecordBuilder.andCustomWhere("NAME = ? OR NAME LIKE ?", querySearch, "%"+querySearch + "%");
-    		}
-            List<Map<String, Object>> result = selectRecordBuilder.get();
-            LOGGER.info(" query "+selectRecordBuilder.toString());
-            LOGGER.info(" count is "+result.get(0));
-            long count = (long) result.get(0).get(AgentConstants.ID);
+            long count = getPointCount(PointStatus.COMMISSIONED);
             setResult(AgentConstants.DATA,count);
             ok();
         }catch (Exception e){
-            LOGGER.info("Exception while getting conf points count ",e);
+            LOGGER.info("Exception while getting commissioned points count ",e);
             internalError();
         }
         return SUCCESS;
@@ -106,27 +89,11 @@ public class TypeDevices extends DeviceIdActions {
 
     public String getConfiguredPointsCount(){
         try{
-            Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getPointFields());
-            Criteria criteria = new Criteria();
-            criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.CONFIGURE_STATUS), String.valueOf(3), NumberOperators.EQUALS));
-            criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.POINT_TYPE), String.valueOf(getControllerType()), NumberOperators.EQUALS));
-            criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.DEVICE_ID), String.valueOf(getDeviceId()), NumberOperators.EQUALS));
-            GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-                    .select(new HashSet<>())
-                    .table(ModuleFactory.getPointModule().getTableName())
-                    .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, fieldMap.get(AgentConstants.ID))
-                    .andCriteria(criteria);
-            if (StringUtils.isNotEmpty(querySearch)) {
-            	selectRecordBuilder.andCustomWhere("NAME = ? OR NAME LIKE ?", querySearch, "%"+querySearch + "%");
-    		}
-            List<Map<String, Object>> result = selectRecordBuilder.get();
-            LOGGER.info(" query "+selectRecordBuilder.toString());
-            LOGGER.info(" count is "+result.get(0));
-            long count = (long) result.get(0).get(AgentConstants.ID);
+            long count = getPointCount(PointStatus.CONFIGURED);
             setResult(AgentConstants.DATA,count);
             ok();
         }catch (Exception e){
-            LOGGER.info("Exception while getting conf points count ",e);
+            LOGGER.info("Exception while getting configured points count ",e);
             internalError();
         }
         return SUCCESS;
@@ -134,27 +101,11 @@ public class TypeDevices extends DeviceIdActions {
 
     public String getUnConfiguredPointsCount(){
         try{
-            Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getPointFields());
-            Criteria criteria = new Criteria();
-            criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.CONFIGURE_STATUS), String.valueOf(3), NumberOperators.NOT_EQUALS));
-            criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.POINT_TYPE), String.valueOf(getControllerType()), NumberOperators.EQUALS));
-            criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.DEVICE_ID), String.valueOf(getDeviceId()), NumberOperators.EQUALS));
-            GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-                    .select(new HashSet<>())
-                    .table(ModuleFactory.getPointModule().getTableName())
-                    .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, fieldMap.get(AgentConstants.ID))
-                    .andCriteria(criteria);
-            if (StringUtils.isNotEmpty(querySearch)) {
-            	selectRecordBuilder.andCustomWhere("NAME = ? OR NAME LIKE ?", querySearch, "%"+querySearch + "%");
-    		}
-            List<Map<String, Object>> result = selectRecordBuilder.get();
-            LOGGER.info(" query "+selectRecordBuilder.toString());
-            LOGGER.info(" count is "+result.get(0));
-            long count = (long) result.get(0).get(AgentConstants.ID);
+            long count = getPointCount(PointStatus.UNCONFIRURED);
             setResult(AgentConstants.DATA,count);
             ok();
         }catch (Exception e){
-            LOGGER.info("Exception while getting conf points count ",e);
+            LOGGER.info("Exception while getting Unconfigured points count ",e);
             internalError();
         }
         return SUCCESS;
@@ -162,30 +113,49 @@ public class TypeDevices extends DeviceIdActions {
 
     public String getSubscribedPointsCount(){
         try{
-            Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getPointFields());
-            Criteria criteria = new Criteria();
-            criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.SUBSCRIBE_STATUS), String.valueOf(3), NumberOperators.EQUALS));
-            criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.POINT_TYPE), String.valueOf(getControllerType()), NumberOperators.EQUALS));
-            criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.DEVICE_ID), String.valueOf(getDeviceId()), NumberOperators.EQUALS));
-            GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-                    .select(new HashSet<>())
-                    .table(ModuleFactory.getPointModule().getTableName())
-                    .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, fieldMap.get(AgentConstants.ID))
-                    .andCriteria(criteria);
-            if (StringUtils.isNotEmpty(querySearch)) {
-            	selectRecordBuilder.andCustomWhere("NAME = ? OR NAME LIKE ?", querySearch, "%"+querySearch + "%");
-    		}
-            List<Map<String, Object>> result = selectRecordBuilder.get();
-            LOGGER.info(" query "+selectRecordBuilder.toString());
-            LOGGER.info(" count is "+result.get(0));
-            long count = (long) result.get(0).get(AgentConstants.ID);
+            long count = getPointCount(PointStatus.SUBSCRIBED);
             setResult(AgentConstants.DATA,count);
             ok();
         }catch (Exception e){
-            LOGGER.info("Exception while getting conf points count ",e);
+            LOGGER.info("Exception while getting Subscribed points count ",e);
             internalError();
         }
         return SUCCESS;
     }
+    
+	private long getPointCount(PointStatus status) throws Exception {
+		try {
+			GetPointRequest point = new GetPointRequest();
+			point.ofType(FacilioControllerType.valueOf(getControllerType()));
+			point.withDeviceId(getDeviceId());
+			point.count();
+			switch (status) {
+			case SUBSCRIBED:
+				point.filterSubsctibedPoints();
+				break;
+			case COMMISSIONED:
+				point.filterCommissionedPoints();
+				break;
+			case CONFIGURED:
+				point.filterConfigurePoints();
+				break;
+			case UNCONFIRURED:
+				point.filterUnConfigurePoints();
+				break;
+			default:
+				throw new IllegalArgumentException("Point status is not satisfied");
+			}
+			if(StringUtils.isNotEmpty(querySearch)) {
+				point.querySearch(AgentConstants.COL_NAME, querySearch);
+			}
+			List<Map<String, Object>> result = point.getPointsData();
+			return (long) result.get(0).get(AgentConstants.ID);
+		} catch (Exception e) {
+			throw e;
+		}
+	}
 
+	public enum PointStatus {
+		UNCONFIRURED, CONFIGURED, SUBSCRIBED, COMMISSIONED
+	}
 }

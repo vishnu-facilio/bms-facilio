@@ -1,5 +1,16 @@
 package com.facilio.agentv2.point;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.aws.util.FacilioProperties;
@@ -10,40 +21,25 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
-import java.util.*;
 
 public class GetPointRequest {
     private static final Logger LOGGER = LogManager.getLogger(GetPointRequest.class.getName());
 
-    private List<FacilioField> fields = FieldFactory.getPointFields();
-    private final FacilioModule pointModule = ModuleFactory.getPointModule();
+    private static final List<FacilioField> POINT_FIELDS = FieldFactory.getPointFields();
+    private static final FacilioModule POINT_MODULE = ModuleFactory.getPointModule();
+    private static final  Map<String, FacilioField> POINT_MAP = FieldFactory.getAsMap(POINT_FIELDS);
+
     private GenericSelectRecordBuilder selectRecordBuilder = null;
     private Criteria criteria = new Criteria();
     private FacilioControllerType controllerType = null;
     private int limit = 50 ;
     private int offset = 0;
     private String orderBy;
-    private String serarchPointName;
-    
-    public String getSerarchPointName() {
-		return serarchPointName;
-	}
-
-
-	public void setSerarchPointName(String serarchPointName) {
-		this.serarchPointName = serarchPointName;
-	}
-
 
 	public GetPointRequest ofType(FacilioControllerType controllerType) throws Exception {
         if (controllerType != null) {
@@ -74,7 +70,7 @@ public class GetPointRequest {
     
     public GetPointRequest withControllerIds(List<Long> controllerIds) throws Exception {
         if (CollectionUtils.isNotEmpty(controllerIds)) {
-            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(pointModule), controllerIds, NumberOperators.EQUALS));
+            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(POINT_MODULE), controllerIds, NumberOperators.EQUALS));
             return this;
         } else {
             throw new Exception(" controller ids cannot be empty");
@@ -82,32 +78,28 @@ public class GetPointRequest {
     }
 
     public GetPointRequest filterConfigurePoints() {
-        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.CONFIGURE_STATUS), String.valueOf(3), NumberOperators.EQUALS));
+        criteria.addAndCondition(CriteriaAPI.getCondition(POINT_MAP.get(AgentConstants.CONFIGURE_STATUS), String.valueOf(3), NumberOperators.EQUALS));
         return this;
     }
 
     public GetPointRequest filterUnConfigurePoints() {
-        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.CONFIGURE_STATUS), String.valueOf(3), NumberOperators.NOT_EQUALS));
+        criteria.addAndCondition(CriteriaAPI.getCondition(POINT_MAP.get(AgentConstants.CONFIGURE_STATUS), String.valueOf(3), NumberOperators.NOT_EQUALS));
         return this;
     }
 
     public GetPointRequest filterUnSubscribePoints() {
-        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.SUBSCRIBE_STATUS), String.valueOf(3), NumberOperators.NOT_EQUALS));
+        criteria.addAndCondition(CriteriaAPI.getCondition(POINT_MAP.get(AgentConstants.SUBSCRIBE_STATUS), String.valueOf(3), NumberOperators.NOT_EQUALS));
         return this;
     }
 
     public GetPointRequest filterSubsctibedPoints() {
-        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.SUBSCRIBE_STATUS), String.valueOf(3), NumberOperators.EQUALS));
+        criteria.addAndCondition(CriteriaAPI.getCondition(POINT_MAP.get(AgentConstants.SUBSCRIBE_STATUS), String.valueOf(3), NumberOperators.EQUALS));
         return this;
     }
 
     public GetPointRequest forController(long controllerId) throws Exception {
         if(controllerId > 0){
-            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(pointModule), String.valueOf(controllerId),NumberOperators.EQUALS));
+            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(POINT_MODULE), String.valueOf(controllerId),NumberOperators.EQUALS));
         }else {
             throw new Exception(" controller id can't be less than 1");
         }
@@ -119,7 +111,7 @@ public class GetPointRequest {
     }
     public GetPointRequest fromIds(List<Long> ids) throws Exception {
         if( (ids != null) && ( ! ids.isEmpty()) ){
-            criteria.addAndCondition(CriteriaAPI.getIdCondition(ids,pointModule));
+            criteria.addAndCondition(CriteriaAPI.getIdCondition(ids,POINT_MODULE));
         }else {
             throw new Exception(" controller id can't be less than 1");
         }
@@ -127,21 +119,30 @@ public class GetPointRequest {
     }
 
     public GetPointRequest filterCommissionedPoints() {
-        Map<String, FacilioField> asMap = FieldFactory.getAsMap(fields);
-        criteria.addAndCondition(CriteriaAPI.getCondition(asMap.get(AgentConstants.RESOURCE_ID), CommonOperators.IS_NOT_EMPTY));
-        criteria.addAndCondition(CriteriaAPI.getCondition(asMap.get(AgentConstants.FIELD_ID), CommonOperators.IS_NOT_EMPTY));
+        criteria.addAndCondition(CriteriaAPI.getCondition(POINT_MAP.get(AgentConstants.RESOURCE_ID), CommonOperators.IS_NOT_EMPTY));
+        criteria.addAndCondition(CriteriaAPI.getCondition(POINT_MAP.get(AgentConstants.FIELD_ID), CommonOperators.IS_NOT_EMPTY));
         return this;
     }
     
     public GetPointRequest filterUnMappedPoints() {
-        Map<String, FacilioField> asMap = FieldFactory.getAsMap(fields);
         Criteria filterCriteria= new Criteria(); 
-        filterCriteria.addOrCondition(CriteriaAPI.getCondition(asMap.get(AgentConstants.RESOURCE_ID), CommonOperators.IS_EMPTY));
-        filterCriteria.addOrCondition(CriteriaAPI.getCondition(asMap.get(AgentConstants.FIELD_ID), CommonOperators.IS_EMPTY));
+        filterCriteria.addOrCondition(CriteriaAPI.getCondition(POINT_MAP.get(AgentConstants.RESOURCE_ID), CommonOperators.IS_EMPTY));
+        filterCriteria.addOrCondition(CriteriaAPI.getCondition(POINT_MAP.get(AgentConstants.FIELD_ID), CommonOperators.IS_EMPTY));
         filterCriteria.andCriteria(filterCriteria);
         return this;
     }
+    
+    public GetPointRequest count() throws Exception {
+    	selectRecordBuilder.select(new ArrayList<>());
+    	selectRecordBuilder.aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, POINT_MAP.get(AgentConstants.ID));
+    	return this;
+    }
 
+    public GetPointRequest querySearch(String column,String value) {
+    	selectRecordBuilder.andCustomWhere(column +"= ? OR"+ column +"LIKE ?", value, "%"+value+"%");
+    	return this;
+    }
+    
     public List<Point> getPoints() throws Exception {
         return PointsAPI.getPointFromRows(getPointsData());
     }
@@ -152,9 +153,7 @@ public class GetPointRequest {
 
     public List<Map<String, Object>> getPointsData() throws Exception {
         List<Map<String, Object>> data = new ArrayList<>();
-        if(StringUtils.isNotEmpty(serarchPointName)) {
-        	selectRecordBuilder.andCustomWhere("NAME = ? OR NAME LIKE ?",serarchPointName, "%"+serarchPointName +"%");
-        }
+       
         if(selectRecordBuilder == null){
             for (FacilioControllerType controllerType : FacilioControllerType.values()) {
                 try{
@@ -217,19 +216,19 @@ public class GetPointRequest {
     public GetPointRequest initBuilder(List<FacilioField> fields) {
 		this.selectRecordBuilder = getPointBuilder();
 		if (fields == null) {
-			fields = new ArrayList<>(this.fields);
+			fields = new ArrayList<>(POINT_FIELDS);
 		}
 		this.selectRecordBuilder.select(fields);
 		return this;
 }
     
     private GenericSelectRecordBuilder getPointBuilder() {
-    		return new GenericSelectRecordBuilder().table(pointModule.getTableName());
+    		return new GenericSelectRecordBuilder().table(POINT_MODULE.getTableName());
     }
 
     private GenericSelectRecordBuilder loadBuilder(FacilioControllerType controllerType) throws Exception {
         GenericSelectRecordBuilder builder = getPointBuilder();
-        List<FacilioField> fields = new ArrayList<>(this.fields);
+        List<FacilioField> fields = new ArrayList<>(POINT_FIELDS);
         switch (controllerType) {
             case MODBUS_RTU:
                 fields.addAll(FieldFactory.getModbusRtuPointFields());
@@ -300,7 +299,7 @@ public class GetPointRequest {
 
     public GetPointRequest withDeviceId(long deviceId) throws Exception {
         if(deviceId > 0){
-            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getFieldDeviceId(pointModule), String.valueOf(deviceId),NumberOperators.EQUALS));
+            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getFieldDeviceId(POINT_MODULE), String.valueOf(deviceId),NumberOperators.EQUALS));
         }else {
             throw new Exception(" controller id can't be less than 1");
         }

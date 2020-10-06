@@ -245,4 +245,6 @@ public class AgentConstants
     
     public static final String MESSAGE = "message";
     public static final String AGENT_ACTION = "agentAction";
+
+    public static final String COL_NAME = "NAME";
 }
