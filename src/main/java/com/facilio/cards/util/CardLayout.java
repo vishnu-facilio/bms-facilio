@@ -26,6 +26,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.services.filestore.FileStore;
+import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -139,6 +140,7 @@ public enum CardLayout {
 			Object fields = null;
 			Object kpi = null;
 			String period = null;
+			JSONArray variables = null;
 			
 			if ("module".equalsIgnoreCase(kpiType)) {
 				try {
@@ -175,6 +177,19 @@ public enum CardLayout {
 					kpi = KPIUtil.getKPI(kpiId);
 					fields = KPIUtil.getKPIModuleFIelds(kpiContext);
 
+					listData = KPIUtil.getKPIList(kpiContext, null);
+					
+					if (listData != null) {
+						variables = new JSONArray();
+						
+						Map<String, Object> record = (Map<String, Object>) listData;
+						List<FacilioField> moduleFields = (List<FacilioField>) fields;
+						for (FacilioField field : moduleFields) {
+							Object value = record.get(field.getName());
+							
+							variables.add(getVariable(field.getName(), field.getDisplayName(), field.getDataTypeEnum().name(), value, null));
+						}
+					}
 					if (subText != null && !subText.trim().isEmpty()) {
 					listData = KPIUtil.getKPIList(kpiContext, null);
 					}
@@ -204,10 +219,13 @@ public enum CardLayout {
 			returnValue.put("value", jobj);
 			
 			if(period != null) {
-			returnValue.put("period", period);
+				returnValue.put("period", period);
 			}
 			if (imageId != null) {
 				returnValue.put("image", imageId);
+			}
+			if (variables != null && variables.size() > 0) {
+				returnValue.put("variables", variables);
 			}
 			
 			return returnValue;
@@ -508,6 +526,7 @@ public enum CardLayout {
 	
 	public Object getResult(WidgetCardContext cardContext) throws Exception {
 		
+		Object returnValue = null;
 		if (cardContext.getScriptMode() == WidgetCardContext.ScriptMode.CUSTOM_SCRIPT) {
 			
 			WorkflowContext workflow = new WorkflowContext();
@@ -530,11 +549,103 @@ public enum CardLayout {
 			
 			workflowChain.execute();
 			
-			return workflow.getReturnValue();
+			returnValue = workflow.getReturnValue();
 		}
 		else {
-			return this.execute(cardContext);
+			returnValue = this.execute(cardContext);
 		}
+		return getCardResultWithVariables(cardContext, returnValue);
+	}
+	
+	private Object getCardResultWithVariables(WidgetCardContext cardContext, Object cardResult) {
+		try {
+			if (cardResult != null) {
+				JSONArray variables = new JSONArray();
+				
+				Map cardResultMap = (Map) cardResult;
+				if (cardResultMap.containsKey("title")) {
+					variables.add(getVariable("title", "Title", "STRING", cardResultMap.get("title"), null));
+				}
+				if (cardResultMap.containsKey("value")) {
+					variables.add(getVariable("value", "Value", (Map) cardResultMap.get("value")));
+				}
+				if (cardResultMap.containsKey("baselineValue")) {
+					variables.add(getVariable("baselineValue", "Baseline Value", (Map) cardResultMap.get("baselineValue")));
+				}
+				if (cardResultMap.containsKey("values")) {
+					Object values = cardResultMap.get("values");
+					if (values instanceof JSONArray) {
+						JSONArray valuesList = (JSONArray) values;
+						for (int i = 0; i< valuesList.size(); i++) {
+							JSONObject val = (JSONObject) valuesList.get(i);
+							String name = val.containsKey("name") ? (String) val.get("name") : (String) val.get("aggregation");
+							variables.add(getVariable(name, name, val));
+						}
+					}
+					else if (values instanceof List) {
+						List valuesList = (List) values;
+						for (int i = 0; i< valuesList.size(); i++) {
+							Map val = (Map) valuesList.get(i);
+							String name = val.containsKey("name") ? (String) val.get("name") : (String) val.get("aggregation");
+							variables.add(getVariable(name, name, val));
+						}
+					}
+				}
+				if (cardResultMap.containsKey("variables")) {
+					List cardVariables = (List) cardResultMap.get("variables");
+					variables.addAll(cardVariables);
+				}
+				
+				JSONObject cardParams = cardContext.getCardParams();
+				String dateRange = (String) cardParams.get("dateRange");
+				
+				if (cardContext.getCardFilters() != null ) {//db timeline filters
+					
+					JSONObject timeLineFilters = (JSONObject) cardContext.getCardFilters();
+					String dateValueString = (String)timeLineFilters.get("dateValueString");
+					
+					long startTime = Long.parseLong(dateValueString.split(",")[0]);
+					long endTime = Long.parseLong(dateValueString.split(",")[1]);
+					
+					variables.add(getVariable("startTime", "Start Time", "DATE_TIME", startTime, null));
+					variables.add(getVariable("endTime", "End Time", "DATE_TIME", endTime, null));
+				}
+				else if (dateRange != null) {
+					DateOperators dateOperator = (DateOperators) DateOperators.getAllOperators().get(dateRange);
+					DateRange dateRangeObj = dateOperator.getRange(null);
+					
+					variables.add(getVariable("startTime", "Start Time", "DATE_TIME", dateRangeObj.getStartTime(), null));
+					variables.add(getVariable("endTime", "End Time", "DATE_TIME", dateRangeObj.getEndTime(), null));
+				}
+				
+				variables.add(getVariable("currentTime", "Current Time", "DATE_TIME", System.currentTimeMillis(), null));
+				
+				cardResultMap.put("variables", variables);
+				return cardResultMap;
+			}
+		}
+		catch (Exception e) {
+			LOGGER.log(Level.WARNING, "Exception occurred in get variables", e);
+		}
+		return cardResult;
+	}
+	
+	private static JSONObject getVariable(String name, String displayName, String dataType, Object value, String unit) {
+		JSONObject variable = new JSONObject();
+		variable.put("name", name);
+		variable.put("displayName", displayName);
+		variable.put("dataType", dataType);
+		variable.put("value", value);
+		variable.put("unit", unit);
+		return variable;
+	}
+	
+	private static JSONObject getVariable(String name, String displayName, Map value) {
+		JSONObject variable = new JSONObject();
+		variable.put("name", name);
+		variable.put("displayName", displayName);
+		variable.putAll(value);
+		return variable;
 	}
 	
 	private static final Map<String, CardLayout> cardLayoutMap = Collections.unmodifiableMap(initCardLayoutMap());
