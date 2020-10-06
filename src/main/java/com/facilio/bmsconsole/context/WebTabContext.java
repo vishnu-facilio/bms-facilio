@@ -229,4 +229,14 @@ public class WebTabContext implements Serializable {
     public void setSpecialTypeModules(List<String> specialTypeModules) {
         this.specialTypeModules = specialTypeModules;
     }
+
+    private int order = -1;
+
+    public int getOrder() {
+        return order;
+    }
+
+    public void setOrder(int order) {
+        this.order = order;
+    }
 }

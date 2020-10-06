@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.modules.*;
 import com.twilio.rest.api.v2010.account.Application;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -33,10 +34,6 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.iam.accounts.util.IAMUserUtil;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.ValueGenerator;
 import com.facilio.modules.fields.FacilioField;
 import org.json.simple.JSONObject;
 
@@ -190,8 +187,10 @@ public class ApplicationApi {
     }
 
     public static List<WebTabContext> getWebTabsForWebGroup(long webTabGroupId) throws Exception {
+        List<FacilioField> fields = FieldFactory.getWebTabFields();
+        fields.add(FieldFactory.getField("order", "TAB_ORDER", ModuleFactory.getWebTabWebGroupModule(), FieldType.NUMBER));
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .table(ModuleFactory.getWebTabModule().getTableName()).select(FieldFactory.getWebTabFields())
+                .table(ModuleFactory.getWebTabModule().getTableName()).select(fields)
                 .innerJoin(ModuleFactory.getWebTabWebGroupModule().getTableName())
                 .on("WebTab_WebGroup.WEBTAB_ID = WebTab.ID")
                 .andCondition(CriteriaAPI.getCondition("WebTab_WebGroup.WEBTAB_GROUP_ID", "groupId", String.valueOf(webTabGroupId), NumberOperators.EQUALS));

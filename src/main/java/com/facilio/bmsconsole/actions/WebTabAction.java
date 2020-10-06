@@ -136,7 +136,7 @@ public class WebTabAction extends FacilioAction {
     public String associateTabToGroupTab() throws Exception {
         FacilioChain chain = TransactionChainFactory.getCreateAndAssociateTabGroupChain();
         FacilioContext context = chain.getContext();
-        context.put(FacilioConstants.ContextNames.WEB_TABS, getTabList());
+        context.put(FacilioConstants.ContextNames.WEB_TABS,  getTabList());
         context.put(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID, getTabGroupId());
         chain.execute();
         return SUCCESS;
