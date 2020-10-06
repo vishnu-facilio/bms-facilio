@@ -65,6 +65,7 @@ public class FacilioFileStore extends FileStore {
 			addComppressedFile(namespace, fileId, fileName, file, contentType);
 			return addFile(namespace, fileId, fileName, contentInBytes, contentType);
 		} catch (Exception e){
+			log.info("Exception occurred ", e);
 			return -1;
 		}
 	}
@@ -159,6 +160,7 @@ public class FacilioFileStore extends FileStore {
 		}
 		
 		Integer statusCode = postFile(namespace, fileId, fileName, contentType, content);
+		log.info("StatusCode for add -- "+statusCode);
 		if (statusCode == 200) {
 			String filePath = getRootPath(namespace) + File.separator + fileId + "-" + fileName;
 			updateFileEntry(namespace, fileId, fileName, filePath, content.length, contentType);
