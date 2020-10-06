@@ -180,18 +180,20 @@ public enum CardLayout {
 					listData = KPIUtil.getKPIList(kpiContext, null);
 					
 					if (listData != null) {
-						variables = new JSONArray();
-						
-						Map<String, Object> record = (Map<String, Object>) listData;
-						List<FacilioField> moduleFields = (List<FacilioField>) fields;
-						for (FacilioField field : moduleFields) {
-							Object value = record.get(field.getName());
+						try {
+							variables = new JSONArray();
 							
-							variables.add(getVariable(field.getName(), field.getDisplayName(), field.getDataTypeEnum().name(), value, null));
+							Map<String, Object> record = (Map<String, Object>) listData;
+							List<FacilioField> moduleFields = (List<FacilioField>) fields;
+							for (FacilioField field : moduleFields) {
+								Object value = record.get(field.getName());
+								
+								variables.add(getVariable(field.getName(), field.getDisplayName(), field.getDataTypeEnum().name(), value, null));
+							}
 						}
-					}
-					if (subText != null && !subText.trim().isEmpty()) {
-					listData = KPIUtil.getKPIList(kpiContext, null);
+						catch (Exception e) {
+							e.printStackTrace();
+						}
 					}
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
