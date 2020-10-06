@@ -1,16 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Context;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount30;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -19,13 +13,18 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
+import com.facilio.v3.V3Builder.V3Config;
+import com.facilio.v3.util.ChainUtil;
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang.StringUtils;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class AddFieldsCommand extends FacilioCommand {
 	
@@ -59,10 +58,9 @@ public class AddFieldsCommand extends FacilioCommand {
 					List<FacilioField> counterFields = new ArrayList<>();
 					
 					for(FacilioField field : module.getFields()) {
-						
-						setColumnName(field, existingColumns);
-						
+
 						field.setModule(cloneMod);
+						setColumnName(field, existingColumns);
 						constructFieldName(field, module, allowSameName);
 						long fieldId = modBean.addField(field);
 						field.setFieldId(fieldId);
@@ -116,9 +114,20 @@ public class AddFieldsCommand extends FacilioCommand {
 				existingColumns.put(dataType, existingColumnNames);
 			}
 			if(field.getColumnName() == null || field.getColumnName().isEmpty()) {
-				String newColumnName = getColumnNameForNewField(dataType, existingColumnNames);
-				if(newColumnName == null) {
-					throw new Exception("No more columns available.");
+				V3Config v3Config = ChainUtil.getV3Config(field.getModule().getName());
+				String newColumnName;
+				if (v3Config != null) {
+					if (v3Config.getCustomFieldsCount() != null) {
+						newColumnName = v3Config.getCustomFieldsCount().getNewColumnNameForFieldType(dataType.getTypeAsInt(), existingColumnNames);
+
+					} else {
+						throw new IllegalArgumentException("No column available for the Field type");
+					}
+				} else {
+					newColumnName = new ModuleCustomFieldCount30().getNewColumnNameForFieldType(dataType.getTypeAsInt(), existingColumnNames);
+				}
+				if (StringUtils.isEmpty(newColumnName)) {
+					throw new IllegalArgumentException("No more column available for the Field type");
 				}
 				field.setColumnName(newColumnName);
 			}
@@ -188,21 +197,5 @@ public class AddFieldsCommand extends FacilioCommand {
 		}
 		return existingColumns;
 	}
-	
-	private String getColumnNameForNewField(FieldType type, List<String> existingColumns) throws Exception {
-		String[] columns = type.getColumnNames();
-		if(columns != null && columns.length > 0) {
-			if(existingColumns == null || existingColumns.size() == 0) {
-				return columns[0];
-			}
-			else {
-				for(String column : columns) {
-					if(!existingColumns.contains(column)) {
-						return column;
-					}
-				}
-			}
-		}
-		return null;
-	}
+
 }

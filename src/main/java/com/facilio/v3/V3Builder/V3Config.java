@@ -1,5 +1,6 @@
 package com.facilio.v3.V3Builder;
 
+import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldsCount;
 import org.apache.commons.chain.Command;
 
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ public class V3Config implements V3Builder {
     private DeleteHandler deleteHandler;
     private ListHandler listHandler;
     private SummaryHandler summaryHandler;
+    private ModuleCustomFieldsCount customFieldsCount;
 
     public SummaryHandler getSummaryHandler() {
         return summaryHandler;
@@ -52,8 +54,9 @@ public class V3Config implements V3Builder {
         this.createHandler = createHandler;
     }
 
-    public V3Config(Class bean) {
+    public V3Config(Class bean, ModuleCustomFieldsCount customFieldsCount) {
         this.beanClass = bean;
+        this.customFieldsCount = customFieldsCount;
     }
 
     public UpdateHandler update() {
@@ -105,6 +108,10 @@ public class V3Config implements V3Builder {
 
     public Class getBeanClass() {
         return beanClass;
+    }
+
+    public ModuleCustomFieldsCount getCustomFieldsCount() {
+        return customFieldsCount;
     }
 
     public void setBeanClass(Class beanClass) {

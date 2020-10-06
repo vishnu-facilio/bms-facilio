@@ -5,26 +5,28 @@ import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.context.AssetDepreciationContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
-import com.facilio.bmsconsoleV3.commands.*;
-import com.facilio.bmsconsoleV3.commands.communityFeatures.FillAudienceSharingInfoCommandV3;
-import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.AnnouncementFillDetailsCommandV3;
-import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.DeleteChildAnnouncementsCommand;
-import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.LoadAnnouncementLookupCommandV3;
-import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.LoadPeopleAnnouncementLookupCommand;
+import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
+import com.facilio.bmsconsoleV3.commands.RollUpTransactionAmountCommand;
+import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
+import com.facilio.bmsconsoleV3.commands.UpdateAttachmentsParentIdCommandV3;
 import com.facilio.bmsconsoleV3.commands.budget.*;
 import com.facilio.bmsconsoleV3.commands.client.AddAddressForClientLocationCommandV3;
 import com.facilio.bmsconsoleV3.commands.client.LoadClientLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.client.UpdateAddressForClientLocationCommandV3;
 import com.facilio.bmsconsoleV3.commands.client.UpdateClientIdInSiteCommandV3;
 import com.facilio.bmsconsoleV3.commands.clientcontact.LoadClientContactLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.FillAudienceSharingInfoCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.admindocuments.FillAdminDocumentsSharingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.admindocuments.LoadAdminDocumentsLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.AnnouncementFillDetailsCommandV3;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.DeleteChildAnnouncementsCommand;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.LoadAnnouncementLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.LoadPeopleAnnouncementLookupCommand;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.contactdirectory.ContactDirectoryFillLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.contactdirectory.FillContactDirectorySharingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.dealsandoffers.DealsAndOffersFillLookupFields;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.dealsandoffers.FillDealsAndOffersSharingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.FillNeighbourhoodSharingInfoCommand;
-import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.NeighbourhoodAddLocationCommand;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.NeighbourhoodFillLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.FillNewsAndInformationDetailsCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.FillNewsRelatedModuleDataInListCommandV3;
@@ -56,18 +58,19 @@ import com.facilio.bmsconsoleV3.commands.watchlist.GetLogsForWatchListCommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.LoadWorkorderLookupsAfterFetchcommandV3;
 import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.bmsconsoleV3.context.*;
-import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementContext;
-import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnnouncementContext;
 import com.facilio.bmsconsoleV3.context.budget.AccountTypeContext;
 import com.facilio.bmsconsoleV3.context.budget.BudgetContext;
 import com.facilio.bmsconsoleV3.context.budget.ChartOfAccountContext;
+import com.facilio.bmsconsoleV3.context.communityfeatures.*;
+import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementContext;
+import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnnouncementContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
-import com.facilio.bmsconsoleV3.context.communityfeatures.*;
 import com.facilio.bmsconsoleV3.context.workpermit.V3WorkPermitContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistCategoryContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistContext;
+import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount30;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
@@ -108,7 +111,7 @@ public class APIv3Config {
 
     @Module("assetdepreciation")
     public static Supplier<V3Config> getAssetDepreciation() {
-        return () -> new V3Config(AssetDepreciationContext.class)
+        return () -> new V3Config(AssetDepreciationContext.class, null)
                 .create()
                     .beforeSave(new ValidateAssetDepreciationCommand())
                 .summary()
@@ -118,7 +121,7 @@ public class APIv3Config {
 
     @Module("quote")
     public static Supplier<V3Config> getQuotation() {
-        return () -> new V3Config(QuotationContext.class)
+        return () -> new V3Config(QuotationContext.class, new ModuleCustomFieldCount30())
 
                 .create()
                 .beforeSave(TransactionChainFactoryV3.getQuotationBeforeSaveChain())
@@ -142,7 +145,7 @@ public class APIv3Config {
 
     @Module("tax")
     public static Supplier<V3Config> getTax() {
-        return () -> new V3Config(TaxContext.class)
+        return () -> new V3Config(TaxContext.class, null)
 
                 .create()
                 .beforeSave(new TaxValidationCommand())
@@ -170,7 +173,7 @@ public class APIv3Config {
 
     @Module("insurance")
     public static Supplier<V3Config> getInsurance() {
-        return () -> new V3Config(V3InsuranceContext.class)
+        return () -> new V3Config(V3InsuranceContext.class, new ModuleCustomFieldCount30())
                 .create()
                     .beforeSave(new AssociateVendorToInsuranceCommandV3())
                     .afterSave(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand())
@@ -184,7 +187,7 @@ public class APIv3Config {
     
     @Module("storeRoom")
     public static Supplier<V3Config> getStoreRoom() {
-        return () -> new V3Config(V3StoreRoomContext.class)
+        return () -> new V3Config(V3StoreRoomContext.class, null)
                 .create()
                     .afterSave(new UpdateServingSitesinStoreRoomCommandV3())
                 .update()
@@ -198,7 +201,7 @@ public class APIv3Config {
     
     @Module("watchlist")
     public static Supplier<V3Config> getWatchList() {
-        return () -> new V3Config(V3WatchListContext.class)
+        return () -> new V3Config(V3WatchListContext.class, null)
                 .create()
                 	.beforeSave(new CheckForExisitingWatchlistRecordsCommandV3())
                 .update()
@@ -210,7 +213,7 @@ public class APIv3Config {
     
     @Module("client")
     public static Supplier<V3Config> getClient() {
-        return () -> new V3Config(V3ClientContext.class)
+        return () -> new V3Config(V3ClientContext.class, new ModuleCustomFieldCount30())
                 .create()
             		.beforeSave(new AddAddressForClientLocationCommandV3())
                     .afterSave(TransactionChainFactoryV3.getAddClientsAfterSaveChain())
@@ -226,7 +229,7 @@ public class APIv3Config {
     
     @Module("purchaserequest")
     public static Supplier<V3Config> getPurchaseRequest() {
-        return () -> new V3Config(V3PurchaseRequestContext.class)
+        return () -> new V3Config(V3PurchaseRequestContext.class, null)
                 .create()
             		.beforeSave(new PreFillAddPurchaseRequestCommand())
                     .afterSave(TransactionChainFactoryV3.getAddPurchaseRequestAfterSaveChain())
@@ -244,7 +247,7 @@ public class APIv3Config {
     
     @Module("itemTypes")
     public static Supplier<V3Config> getItemTypes() {
-        return () -> new V3Config(V3ItemTypesContext.class)
+        return () -> new V3Config(V3ItemTypesContext.class, null)
                 .create()
                 	.afterSave(TransactionChainFactoryV3.getItemOrToolTypesAfterSaveChain())
                 .update()
@@ -259,7 +262,7 @@ public class APIv3Config {
     
     @Module("itemTypesStatus")
     public static Supplier<V3Config> getItemTypesStatus() {
-        return () -> new V3Config(V3ItemTypesStatusContext.class)
+        return () -> new V3Config(V3ItemTypesStatusContext.class, null)
                 .create()
         			.afterSave(new ExecuteAllWorkflowsCommand())
                 .update()
@@ -270,7 +273,7 @@ public class APIv3Config {
     
     @Module("itemTypesCategory")
     public static Supplier<V3Config> getItemTypesCategory() {
-        return () -> new V3Config(V3ItemTypesCategoryContext.class)
+        return () -> new V3Config(V3ItemTypesCategoryContext.class, null)
                 .create()
         			.afterSave(new ExecuteAllWorkflowsCommand())
                 .update()
@@ -281,7 +284,7 @@ public class APIv3Config {
     
     @Module("toolTypes")
     public static Supplier<V3Config> getToolTypes() {
-        return () -> new V3Config(V3ToolTypesContext.class)
+        return () -> new V3Config(V3ToolTypesContext.class, null)
                 .create()
             		.afterSave(TransactionChainFactoryV3.getItemOrToolTypesAfterSaveChain())
                 .update()
@@ -296,7 +299,7 @@ public class APIv3Config {
     
     @Module("toolTypesStatus")
     public static Supplier<V3Config> getToolTypesStatus() {
-        return () -> new V3Config(V3ToolTypesStatusContext.class)
+        return () -> new V3Config(V3ToolTypesStatusContext.class, null)
                 .create()
                 	.afterSave(new ExecuteAllWorkflowsCommand())
                 .update()
@@ -307,7 +310,7 @@ public class APIv3Config {
     
     @Module("toolTypesCategory")
     public static Supplier<V3Config> getToolTypesCategory() {
-        return () -> new V3Config(V3ToolTypesCategoryContext.class)
+        return () -> new V3Config(V3ToolTypesCategoryContext.class, null)
                 .create()
             		.afterSave(new ExecuteAllWorkflowsCommand())
                 .update()
@@ -318,7 +321,7 @@ public class APIv3Config {
 
     @Module("visitorlogging")
     public static Supplier<V3Config> getVisitorLogging() {
-        return () -> new V3Config(V3VisitorLoggingContext.class)
+        return () -> new V3Config(V3VisitorLoggingContext.class, new ModuleCustomFieldCount30())
                 .create()
                     .beforeSave(TransactionChainFactoryV3.getVisitorLoggingBeforeSaveOnCreateChain())
                     .afterTransaction(TransactionChainFactoryV3.getVisitorLoggingAfterSaveOnCreateChain())
@@ -336,7 +339,7 @@ public class APIv3Config {
 
     @Module("visitor")
     public static Supplier<V3Config> getVisitor() {
-        return () -> new V3Config(V3VisitorContext.class)
+        return () -> new V3Config(V3VisitorContext.class, null)
                 .create()
                   .beforeSave(TransactionChainFactoryV3.getVisitorBeforeSaveOnAddChain())
                   .afterSave(TransactionChainFactoryV3.getVisitorAfterSaveOnAddChain())
@@ -351,7 +354,7 @@ public class APIv3Config {
 
     @Module("vendors")
     public static Supplier<V3Config> getVendor() {
-        return () -> new V3Config(V3VendorContext.class)
+        return () -> new V3Config(V3VendorContext.class, new ModuleCustomFieldCount30())
                 .create()
                   .beforeSave(new AddOrUpdateLocationForVendorCommandV3())
                   .afterSave(TransactionChainFactoryV3.getVendorsAfterSaveChain())
@@ -370,7 +373,7 @@ public class APIv3Config {
 
     @Module("tenant")
     public static Supplier<V3Config> getTenant() {
-        return () -> new V3Config(V3TenantContext.class)
+        return () -> new V3Config(V3TenantContext.class, new ModuleCustomFieldCount30())
                 .create()
                   .beforeSave(new ValidateTenantSpaceCommandV3())
                   .afterSave(TransactionChainFactoryV3.getTenantAfterSaveChain())
@@ -387,7 +390,7 @@ public class APIv3Config {
 
     @Module("workorder")
     public static Supplier<V3Config> getWorkorder() {
-        return () -> new V3Config(V3WorkOrderContext.class)
+        return () -> new V3Config(V3WorkOrderContext.class, new ModuleCustomFieldCount30())
                 .create()
                   .beforeSave(TransactionChainFactoryV3.getWorkorderBeforeSaveChain())
                   .afterSave(TransactionChainFactoryV3.getWorkorderAfterSaveChain())
@@ -404,7 +407,7 @@ public class APIv3Config {
 
     @Module("tenantcontact")
     public static Supplier<V3Config> getTenantContact() {
-        return () -> new V3Config(V3TenantContactContext.class)
+        return () -> new V3Config(V3TenantContactContext.class, new ModuleCustomFieldCount30())
                 .create()
                     .beforeSave(TransactionChainFactoryV3.getTenantContactBeforeSaveChain())
                     .afterSave(TransactionChainFactoryV3.getTenantContactAfterSaveChain())
@@ -420,7 +423,7 @@ public class APIv3Config {
 
     @Module("vendorcontact")
     public static Supplier<V3Config> getVendorContact() {
-        return () -> new V3Config(V3VendorContactContext.class)
+        return () -> new V3Config(V3VendorContactContext.class, new ModuleCustomFieldCount30())
                 .create()
                     .beforeSave(TransactionChainFactoryV3.getVendorContactBeforeSaveChain())
                     .afterSave(TransactionChainFactoryV3.getVendorContactAfterSaveChain())
@@ -436,7 +439,7 @@ public class APIv3Config {
 
     @Module("employee")
     public static Supplier<V3Config> getEmployee() {
-        return () -> new V3Config(V3EmployeeContext.class)
+        return () -> new V3Config(V3EmployeeContext.class, new ModuleCustomFieldCount30())
                 .create()
                     .beforeSave(TransactionChainFactoryV3.getEmployeeBeforeSaveChain())
                     .afterSave(new UpdateEmployeePeopleAppPortalAccessCommandV3())
@@ -450,7 +453,7 @@ public class APIv3Config {
 
     @Module("clientcontact")
     public static Supplier<V3Config> getClientContact() {
-        return () -> new V3Config(V3ClientContactContext.class)
+        return () -> new V3Config(V3ClientContactContext.class, new ModuleCustomFieldCount30())
                 .create()
                     .beforeSave(TransactionChainFactoryV3.getClientContactBeforeSaveChain())
                     .afterSave(TransactionChainFactoryV3.getClientContactAfterSaveChain())
@@ -465,7 +468,7 @@ public class APIv3Config {
     }
     @Module("workpermit")
     public static Supplier<V3Config> getWorkPermit() {
-        return () -> new V3Config(V3WorkPermitContext.class)
+        return () -> new V3Config(V3WorkPermitContext.class, new ModuleCustomFieldCount30())
                 .create()
                 .beforeSave(TransactionChainFactoryV3.getWorkPermitBeforeSaveOnCreateChain())
                 .afterSave(TransactionChainFactoryV3.getWorkPermitAfterSaveOnCreateChain())
@@ -485,7 +488,7 @@ public class APIv3Config {
     }
     @Module("workpermittypechecklist")
     public static Supplier<V3Config> getWorkPermitTypeChecklist() {
-        return () -> new V3Config(WorkPermitTypeChecklistContext.class)
+        return () -> new V3Config(WorkPermitTypeChecklistContext.class, new ModuleCustomFieldCount30())
                 .create()
                 .beforeSave(new WorkPermitTypeChecklistValidationCommand())
 
@@ -499,7 +502,7 @@ public class APIv3Config {
 
     @Module("workpermittypechecklistcategory")
     public static Supplier<V3Config> getWorkPermitTypeChecklistCategory() {
-        return () -> new V3Config(WorkPermitTypeChecklistCategoryContext.class)
+        return () -> new V3Config(WorkPermitTypeChecklistCategoryContext.class, null)
                 .create()
                 .beforeSave(new WorkPermitChecklistCategoryValidationCommand())
 
@@ -514,7 +517,7 @@ public class APIv3Config {
     }
     @Module("customMailMessages")
     public static Supplier<V3Config> getCustomMailMessages() {
-        return () -> new V3Config(V3MailMessageContext.class)
+        return () -> new V3Config(V3MailMessageContext.class, null)
                 .create()
                 .afterTransaction(new UpdateLatestMessageUIDCommandV3())
                 .update()
@@ -522,7 +525,7 @@ public class APIv3Config {
     }
     @Module("usernotification")
     public static Supplier<V3Config> getUsernotification() {
-        return () -> new V3Config(UserNotificationContext.class)
+        return () -> new V3Config(UserNotificationContext.class, null)
                 .create()
                     .afterSave(TransactionChainFactoryV3.getUserNotifactionBeforeSaveChain())
      
@@ -538,7 +541,7 @@ public class APIv3Config {
 
     @Module("audience")
     public static Supplier<V3Config> getAudience() {
-        return () -> new V3Config(AudienceContext.class)
+        return () -> new V3Config(AudienceContext.class, null)
                 .create()
                 .update()
                 .list()
@@ -551,7 +554,7 @@ public class APIv3Config {
 
     @Module("announcement")
     public static Supplier<V3Config> getAnnouncement() {
-        return () -> new V3Config(AnnouncementContext.class)
+        return () -> new V3Config(AnnouncementContext.class, new ModuleCustomFieldCount30())
                 .create()
                     .beforeSave(TransactionChainFactoryV3.getCreateAnnouncementBeforeSaveChain())
                     .afterSave(new UpdateAttachmentsParentIdCommandV3())
@@ -570,7 +573,7 @@ public class APIv3Config {
 
     @Module("peopleannouncement")
     public static Supplier<V3Config> getPeopleAnnouncement() {
-        return () -> new V3Config(PeopleAnnouncementContext.class)
+        return () -> new V3Config(PeopleAnnouncementContext.class, null)
                 .create()
                 .update()
                 .list()
@@ -582,7 +585,7 @@ public class APIv3Config {
 
     @Module("newsandinformation")
     public static Supplier<V3Config> getNewsAndInformation() {
-        return () -> new V3Config(NewsAndInformationContext.class)
+        return () -> new V3Config(NewsAndInformationContext.class, new ModuleCustomFieldCount30())
                 .create()
                     .beforeSave(TransactionChainFactoryV3.getCreateNewsAndInformationBeforeSaveChain())
                     .afterSave(new UpdateAttachmentsParentIdCommandV3())
@@ -600,7 +603,7 @@ public class APIv3Config {
 
     @Module("neighbourhood")
     public static Supplier<V3Config> getNeighbourhood() {
-        return () -> new V3Config(NeighbourhoodContext.class)
+        return () -> new V3Config(NeighbourhoodContext.class, new ModuleCustomFieldCount30())
                 .create()
                     .beforeSave(TransactionChainFactoryV3.getCreateNeighbourhoodBeforeSaveChain())
                     .afterSave(new UpdateAttachmentsParentIdCommandV3())
@@ -617,7 +620,7 @@ public class APIv3Config {
 
     @Module("dealsandoffers")
     public static Supplier<V3Config> getDealsAndOffers() {
-        return () -> new V3Config(DealsAndOffersContext.class)
+        return () -> new V3Config(DealsAndOffersContext.class, new ModuleCustomFieldCount30())
                 .create()
                     .beforeSave(TransactionChainFactoryV3.getCreateDealsBeforeSaveChain())
                     .afterSave(new UpdateAttachmentsParentIdCommandV3())
@@ -634,7 +637,7 @@ public class APIv3Config {
 
     @Module("contactdirectory")
     public static Supplier<V3Config> getContactDirectory() {
-        return () -> new V3Config(ContactDirectoryContext.class)
+        return () -> new V3Config(ContactDirectoryContext.class, new ModuleCustomFieldCount30())
                 .create()
                     .beforeSave(TransactionChainFactoryV3.getCreateContactDirectoryBeforeSaveChain())
                     .afterSave(new UpdateAttachmentsParentIdCommandV3())
@@ -651,7 +654,7 @@ public class APIv3Config {
 
     @Module("admindocuments")
     public static Supplier<V3Config> getAdminDocuments() {
-        return () -> new V3Config(AdminDocumentsContext.class)
+        return () -> new V3Config(AdminDocumentsContext.class, new ModuleCustomFieldCount30())
                 .create()
                     .beforeSave(TransactionChainFactoryV3.getCreateAdminDocumentsBeforeSaveChain())
                 .update()
@@ -666,7 +669,7 @@ public class APIv3Config {
 
     @Module("accounttype")
     public static Supplier<V3Config> getAccountType() {
-        return () -> new V3Config(AccountTypeContext.class)
+        return () -> new V3Config(AccountTypeContext.class, new ModuleCustomFieldCount30())
                 .update()
                 .summary()
                 .build();
@@ -674,7 +677,7 @@ public class APIv3Config {
 
     @Module("chartofaccount")
     public static Supplier<V3Config> getChartOfAccount() {
-        return () -> new V3Config(ChartOfAccountContext.class)
+        return () -> new V3Config(ChartOfAccountContext.class, new ModuleCustomFieldCount30())
                 .create().beforeSave(TransactionChainFactoryV3.getCreateChartOfAccountBeforeSaveChain())
                 .update()
                 .list()
@@ -686,7 +689,7 @@ public class APIv3Config {
 
     @Module("budget")
     public static Supplier<V3Config> getBudget() {
-        return () -> new V3Config(BudgetContext.class)
+        return () -> new V3Config(BudgetContext.class, new ModuleCustomFieldCount30())
                 .create().
                         beforeSave(TransactionChainFactoryV3.getCreateBudgetBeforeSaveChain())
                         .afterSave(new AddOrUpdateMonthlyBudgetAmountCommandV3())
@@ -703,7 +706,7 @@ public class APIv3Config {
 
     @Module("transaction")
     public static Supplier<V3Config> getTransaction() {
-        return () -> new V3Config(V3TransactionContext.class)
+        return () -> new V3Config(V3TransactionContext.class, null)
                 .create().
                  afterSave(new RollUpTransactionAmountCommand())
                 .update()
