@@ -1375,7 +1375,7 @@ public class FieldFactory {
         return field;
     }
 
-    public static List<FacilioField> getSystemPointFields(FacilioModule module) {
+    public static List<FacilioField> getSystemPointFields(FacilioModule module) { // Why is it point fields?
         List<FacilioField> fields = new ArrayList<>();
 
         fields.add(getSystemField("sysCreatedTime", module));

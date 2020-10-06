@@ -4,9 +4,13 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.FacilioUtil;
+import com.facilio.v3.util.ChainUtil;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.List;
 
@@ -18,17 +22,23 @@ public class GetFieldsByAccessType extends FacilioCommand {
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = null;
         if (moduleId != null && moduleId > 0) {
-            FacilioModule module = modBean.getModule(moduleId);
-            moduleName = module.getName();
+            module = modBean.getModule(moduleId);
         }
-
-        if (moduleName == null || moduleName.isEmpty()) {
-            throw new IllegalArgumentException("Module is mandatory");
+        else {
+            FacilioUtil.throwIllegalArgumentException(StringUtils.isEmpty(moduleName), "Invalid module name/ ID");
+            module = modBean.getModule(moduleName);
         }
+        FacilioUtil.throwIllegalArgumentException(module == null, "Invalid module name/ ID");
+        moduleName = module.getName();
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 
         List<FacilioField> selectedFields = FieldUtil.getFieldsByAccessType(accessType, moduleName);
+
+        if (ChainUtil.getV3Config(moduleName) == null && FieldUtil.isSystemFieldsPresent(module)) {
+            selectedFields.addAll(FieldFactory.getSystemPointFields(module));
+        }
 
         context.put(FacilioConstants.ContextNames.FIELDS, selectedFields);
         return false;

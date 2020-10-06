@@ -37,7 +37,7 @@ public class FilterFieldContext {
     }
 
     public String getDisplayType() {
-        return field == null ? null : field.getDisplayType().name();
+        return field == null ? null : field.getDisplayType() == null ? null : field.getDisplayType().name();
     }
     public Integer getDisplayTypeCode() {
         return field == null ? null : field.getDisplayTypeInt();

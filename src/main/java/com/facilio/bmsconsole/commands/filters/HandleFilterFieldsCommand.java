@@ -36,6 +36,13 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
     }
 
     private FilterFieldContext createFilterField(FacilioField field) { // We can do special handling here also maybe
+        switch (field.getDataTypeEnum()) {
+            case FILE:
+            case ID:
+            case MISC:
+                return null;
+        }
+
         switch (field.getName()) {
             case "stateFlowId" :
             case "slaPolicyId" :
