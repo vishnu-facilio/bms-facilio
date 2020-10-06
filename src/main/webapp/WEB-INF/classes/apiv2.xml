@@ -5764,9 +5764,15 @@
 				class="com.facilio.bmsconsole.actions.WebTabAction" method="addOrUpdateTabGroup" />
 		<action name="delete"
 				class="com.facilio.bmsconsole.actions.WebTabAction" method="deleteTabGroup" />
-		<action name="list"
-				class="com.facilio.bmsconsole.actions.WebTabAction" method="getAllWebTabGroup" />
 	</package>
+	<package name="applicationlayout" namespace="/api/v2/applicationlayout"
+			 extends="v2Api">
+		<action name="addOrUpdate"
+				class="com.facilio.bmsconsole.actions.WebTabAction" method="addOrUpdateApplicationLayout" />
+		<action name="list"
+				class="com.facilio.bmsconsole.actions.WebTabAction" method="getApplicationLayoutList" />
+	</package>
+
 	<package name="webtab" namespace="/api/v2/tab"
 			 extends="v2Api">
 		<action name="addOrUpdate"
@@ -5775,6 +5781,10 @@
 				class="com.facilio.bmsconsole.actions.WebTabAction" method="deleteTab" />
 		<action name="list"
 				class="com.facilio.bmsconsole.actions.WebTabAction" method="getTabList" />
+		<action name="associate"
+				class="com.facilio.bmsconsole.actions.WebTabAction" method="associateTabToGroupTab" />
+		<action name="disassociate"
+				class="com.facilio.bmsconsole.actions.WebTabAction" method="disAssociateTabToGroupTab" />
 	</package>
 
 	<package name="tabPermissions" namespace="/api/v2/tab/permissions"

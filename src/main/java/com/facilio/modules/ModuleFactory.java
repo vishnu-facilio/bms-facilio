@@ -3537,6 +3537,14 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getApplicationLayoutModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("applicationlayout");
+		module.setDisplayName("Application Layout");
+		module.setTableName("Application_Layout");
+		return module;
+	}
+
 	public static FacilioModule getWebTabGroupModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("webTabGroup");
@@ -3550,6 +3558,14 @@ public class ModuleFactory {
 		module.setName("webTab");
 		module.setDisplayName("WebTab");
 		module.setTableName("WebTab");
+		return module;
+	}
+
+	public static FacilioModule getWebTabWebGroupModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("webTabWdbGroup");
+		module.setDisplayName("WebTab WebGroup");
+		module.setTableName("WebTab_WebGroup");
 		return module;
 	}
 

@@ -29,12 +29,12 @@ public class WebTabContext implements Serializable {
         this.name = name;
     }
 
-    private long groupId;
-    public long getGroupId() {
-        return groupId;
+    private long applicationId;
+    public long getApplicationId() {
+        return applicationId;
     }
-    public void setGroupId(long groupId) {
-        this.groupId = groupId;
+    public void setApplicationId(long applicationId) {
+        this.applicationId = applicationId;
     }
 
     private String route;
@@ -60,14 +60,6 @@ public class WebTabContext implements Serializable {
     }
     public void setType(Type type) {
         this.type = type;
-    }
-
-    private int order;
-    public int getOrder() {
-        return order;
-    }
-    public void setOrder(int order) {
-        this.order = order;
     }
 
     private JSONObject config;
@@ -180,14 +172,6 @@ public class WebTabContext implements Serializable {
         this.modules = modules;
     }
 
-    private long appId;
-    public long getAppId() {
-		return appId;
-	}
-    public void setAppId(long appId) {
-		this.appId = appId;
-	}
-    
     private long permissionVal;
     public long getPermissionVal() {
 		return permissionVal;
@@ -214,26 +198,24 @@ public class WebTabContext implements Serializable {
         this.featureLicense = featureLicense;
     }
 
-    public WebTabContext(String name, String route, Type type, int order, List<Long> moduleIds, long appId, JSONObject config) {
+    public WebTabContext(String name, String route, Type type, List<Long> moduleIds, long appId, JSONObject config) {
         this.name = name;
         this.route = route;
         this.type = type;
-        this.order = order;
         this.moduleIds = moduleIds;
-        this.appId = appId;
+        this.applicationId = appId;
         this.config = config;
     }
 
     public WebTabContext() {
     }
 
-    public WebTabContext(String name, String route, Type type, int order, List<Long> moduleIds, long appId, JSONObject config, long featureLicense) {
+    public WebTabContext(String name, String route, Type type, List<Long> moduleIds, long appId, JSONObject config, long featureLicense) {
         this.name = name;
         this.route = route;
         this.type = type;
-        this.order = order;
         this.moduleIds = moduleIds;
-        this.appId = appId;
+        this.applicationId = appId;
         this.config = config;
         this.featureLicense = featureLicense;
     }

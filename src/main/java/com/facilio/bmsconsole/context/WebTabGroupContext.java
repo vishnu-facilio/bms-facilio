@@ -29,14 +29,6 @@ public class WebTabGroupContext implements Serializable {
         this.route = route;
     }
 
-    private long appId = -1;
-    public long getAppId() {
-        return appId;
-    }
-    public void setAppId(long appId) {
-        this.appId = appId;
-    }
-
     private int iconType = -1;
     public int getIconType() {
         return iconType;
@@ -52,7 +44,7 @@ public class WebTabGroupContext implements Serializable {
     public void setOrder(int order) {
         this.order = order;
     }
-    
+
     private List<WebTabContext> webTabs;
     public List<WebTabContext> getWebTabs() {
 		return webTabs;
@@ -74,20 +66,30 @@ public class WebTabGroupContext implements Serializable {
         this.featureLicense = featureLicense;
     }
 
-    public WebTabGroupContext(String name, String route, long appId, int iconType, int order) {
+    public WebTabGroupContext(String name, String route, long layout, int iconType, int order) {
         this.name = name;
         this.route = route;
-        this.appId = appId;
+        this.layoutId = layout;
         this.iconType = iconType;
         this.order = order;
     }
 
-    public WebTabGroupContext(String name, String route, long appId, int iconType, int order, long license) {
+    public WebTabGroupContext(String name, String route, long layout, int iconType, int order, long license) {
         this.name = name;
         this.route = route;
-        this.appId = appId;
+        this.layoutId = layout;
         this.iconType = iconType;
         this.order = order;
         this.featureLicense = license;
+    }
+
+    private long layoutId = -1;
+
+    public long getLayoutId() {
+        return layoutId;
+    }
+
+    public void setLayoutId(long layoutId) {
+        this.layoutId = layoutId;
     }
 }

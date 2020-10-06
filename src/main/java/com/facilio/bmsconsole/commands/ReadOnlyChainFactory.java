@@ -2053,6 +2053,13 @@ public class ReadOnlyChainFactory {
 		return chain;
 	}
 
+	public static FacilioChain getAllApplicationLayoutChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetAllApplicationLayoutsCommand());
+		return chain;
+	}
+
+
 	public static FacilioChain getAllTabChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetAllWebTabCommand());

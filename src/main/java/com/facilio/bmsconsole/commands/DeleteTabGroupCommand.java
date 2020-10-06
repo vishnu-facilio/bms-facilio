@@ -29,9 +29,9 @@ public class DeleteTabGroupCommand extends FacilioCommand {
 
     private boolean checkTabForGroup(long id) throws Exception {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .table(ModuleFactory.getWebTabModule().getTableName())
-                .select(FieldFactory.getWebTabFields())
-                .andCondition(CriteriaAPI.getCondition("GROUP_ID", "groupId", String.valueOf(id), NumberOperators.EQUALS));
+                .table(ModuleFactory.getWebTabWebGroupModule().getTableName())
+                .select(FieldFactory.getWebTabWebGroupFields())
+                .andCondition(CriteriaAPI.getCondition("WEBTAB_GROUP_ID", "groupId", String.valueOf(id), NumberOperators.EQUALS));
         return builder.fetchFirst() != null;
     }
 }

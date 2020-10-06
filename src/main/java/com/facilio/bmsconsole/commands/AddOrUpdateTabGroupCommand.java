@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.bmsconsole.context.ApplicationLayoutContext;
 import com.facilio.bmsconsole.context.WebTabGroupContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -8,6 +9,7 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
@@ -18,6 +20,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 
 public class AddOrUpdateTabGroupCommand extends FacilioCommand {
@@ -31,7 +34,7 @@ public class AddOrUpdateTabGroupCommand extends FacilioCommand {
             }
 
             if (tabGroup.getId() <= 0) {
-                int lastOrderNumber = getLastOrderNumber(tabGroup.getAppId());
+                int lastOrderNumber = getLastOrderNumber(tabGroup.getLayoutId());
                 tabGroup.setOrder(lastOrderNumber + 1);
             }
             else {
@@ -39,7 +42,7 @@ public class AddOrUpdateTabGroupCommand extends FacilioCommand {
             }
 
             if (checkRouteAlreadyFound(tabGroup)) {
-                throw new IllegalArgumentException("Route is already found for this app");
+                throw new IllegalArgumentException("Route is already found for this layout");
             }
 
             if (tabGroup.getId() > 0) {
@@ -53,7 +56,7 @@ public class AddOrUpdateTabGroupCommand extends FacilioCommand {
                 GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
                         .table(ModuleFactory.getWebTabGroupModule().getTableName())
                         .fields(FieldFactory.getWebTabGroupFields());
-                long id = builder.insert(FieldUtil.getAsProperties(tabGroup));
+                long id = builder.insert(FieldUtil.getAsMapList(Collections.singletonList(tabGroup), WebTabGroupContext.class).get(0));
                 context.put(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID, id);
             }
 
@@ -75,25 +78,26 @@ public class AddOrUpdateTabGroupCommand extends FacilioCommand {
             builder.andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(tabGroup.getId()), NumberOperators.NOT_EQUALS));
         }
 
-        if (tabGroup.getAppId() == -1) {
-            builder.andCondition(CriteriaAPI.getCondition("APP_ID", "appId", "", CommonOperators.IS_EMPTY));
+        if (tabGroup.getLayoutId() <= 0) {
+            builder.andCondition(CriteriaAPI.getCondition("LAYOUT_ID", "layoutId", "", CommonOperators.IS_EMPTY));
         }
         else {
-            builder.andCondition(CriteriaAPI.getCondition("APP_ID", "appId", String.valueOf(tabGroup.getAppId()), NumberOperators.EQUALS));
+            builder.andCondition(CriteriaAPI.getCondition("LAYOUT_ID", "layoutId", String.valueOf(tabGroup.getLayoutId()), NumberOperators.EQUALS));
         }
         Map<String, Object> map = builder.fetchFirst();
         return map != null;
     }
 
-    private int getLastOrderNumber(long appId) throws Exception {
+    private int getLastOrderNumber(long layoutId) throws Exception {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getWebTabGroupModule().getTableName())
                 .select(Arrays.asList(FieldFactory.getField("order", "MAX(TABGROUP_ORDER)", FieldType.NUMBER)));
-        if (appId == -1) {
-            builder.andCondition(CriteriaAPI.getCondition("APP_ID", "appId", "", CommonOperators.IS_EMPTY));
+
+        if (layoutId <= 0) {
+            builder.andCondition(CriteriaAPI.getCondition("LAYOUT_ID", "layoutId", "", CommonOperators.IS_EMPTY));
         }
         else {
-            builder.andCondition(CriteriaAPI.getCondition("APP_ID", "appId", String.valueOf(appId), NumberOperators.EQUALS));
+            builder.andCondition(CriteriaAPI.getCondition("LAYOUT_ID", "layoutId", String.valueOf(layoutId), NumberOperators.EQUALS));
         }
         Map<String, Object> map = builder.fetchFirst();
         if (MapUtils.isNotEmpty(map)) {

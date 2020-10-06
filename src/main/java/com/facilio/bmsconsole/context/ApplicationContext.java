@@ -180,4 +180,14 @@ public class ApplicationContext implements Serializable{
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
+	private List<ApplicationLayoutContext> layouts;
+
+	public List<ApplicationLayoutContext> getLayouts() {
+		return layouts;
+	}
+
+	public void setLayouts(List<ApplicationLayoutContext> layouts) {
+		this.layouts = layouts;
+	}
 }

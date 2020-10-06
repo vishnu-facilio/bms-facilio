@@ -8346,9 +8346,21 @@ public class FieldFactory {
         fields.add(getField("isDefault", "IS_DEFAULT", module, FieldType.BOOLEAN));
         fields.add(getField("domainType", "DOMAIN_TYPE", module, FieldType.NUMBER));
         fields.add(getField("linkName", "LINK_NAME", module, FieldType.STRING));
-        fields.add(getField("layoutType", "LAYOUT_TYPE", module, FieldType.NUMBER));
         fields.add(getField("scopingId", "SCOPING_ID", module, FieldType.NUMBER));
         fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
+
+        return fields;
+    }
+
+    public static List<FacilioField> getApplicationLayoutFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getApplicationLayoutModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("layoutDeviceType", "DEVICE_TYPE", module, FieldType.SYSTEM_ENUM));
+        fields.add(getField("applicationId", "APPLICATION_ID", module, FieldType.NUMBER));
+        fields.add(getField("appLayoutType", "LAYOUT_TYPE", module, FieldType.SYSTEM_ENUM));
+        fields.add(getField("appType", "APP_TYPE", module, FieldType.STRING));
 
         return fields;
     }
@@ -8362,7 +8374,8 @@ public class FieldFactory {
         fields.add(getField("iconType", "ICON_TYPE", module, FieldType.NUMBER));
         fields.add(getField("route", "ROUTE", module, FieldType.STRING));
         fields.add(getField("order", "TABGROUP_ORDER", module, FieldType.NUMBER));
-        fields.add(getField("appId", "APP_ID", module, FieldType.NUMBER));
+        FacilioField layoutField = getField("layoutId", "LAYOUT_ID", module, FieldType.NUMBER);
+        fields.add(layoutField);
         fields.add(getField("featureLicense", "FEATURE_LICENSE", module, FieldType.STRING));
 
 
@@ -8375,12 +8388,23 @@ public class FieldFactory {
 
         fields.add(getIdField(module));
         fields.add(getField("name", "NAME", module, FieldType.STRING));
-        fields.add(getField("groupId", "GROUP_ID", module, FieldType.NUMBER));
+        fields.add(getField("applicationId", "APPLICATION_ID", module, FieldType.NUMBER));
         fields.add(getField("type", "TYPE", module, FieldType.NUMBER));
-        fields.add(getField("order", "TAB_ORDER", module, FieldType.NUMBER));
         fields.add(getField("route", "ROUTE", module, FieldType.STRING));
         fields.add(getField("config", "CONFIG", module, FieldType.STRING));
         fields.add(getField("featureLicense", "FEATURE_LICENSE", module, FieldType.STRING));
+
+        return fields;
+    }
+
+    public static List<FacilioField> getWebTabWebGroupFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getWebTabWebGroupModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("webTabId", "WEBTAB_ID", module, FieldType.NUMBER));
+        fields.add(getField("webTabGroupId", "WEBTAB_GROUP_ID", module, FieldType.NUMBER));
+        fields.add(getField("order", "TAB_ORDER", module, FieldType.NUMBER));
 
         return fields;
     }

@@ -25,11 +25,8 @@ public class GetAllWebTabCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		Long tabGroupId = (Long) context.get(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID);
 		if (tabGroupId != null && tabGroupId > 0) {
-			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-					.table(ModuleFactory.getWebTabModule().getTableName()).select(FieldFactory.getWebTabFields())
-					.andCondition(CriteriaAPI.getCondition("GROUP_ID", "groupId", String.valueOf(tabGroupId),
-							NumberOperators.EQUALS));
-			List<WebTabContext> tabs = FieldUtil.getAsBeanListFromMapList(builder.get(), WebTabContext.class);
+
+			List<WebTabContext> tabs = ApplicationApi.getWebTabsForWebGroup(tabGroupId);
 			if (tabs != null && !tabs.isEmpty()) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				for (WebTabContext tab : tabs) {

@@ -117,3 +117,10 @@ enums:
 
   - name: TransactionTypes
     enumClassName: com.facilio.bmsconsoleV3.context.V3TransactionContext$TransactionTypes
+
+  - name: LayoutDeviceType
+    enumClassName: com.facilio.bmsconsole.context.ApplicationLayoutContext$LayoutDeviceType
+
+  - name: AppLayoutType
+    enumClassName: com.facilio.bmsconsole.context.ApplicationLayoutContext$AppLayoutType
+

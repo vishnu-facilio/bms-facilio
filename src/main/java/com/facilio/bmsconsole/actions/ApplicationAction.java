@@ -8,6 +8,7 @@ import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.bmsconsole.context.ApplicationLayoutContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -87,6 +88,26 @@ public class ApplicationAction extends FacilioAction {
 
 	private String moduleName;
 
+	private String appName;
+
+	public String getAppName() {
+		return appName;
+	}
+
+	public void setAppName(String appName) {
+		this.appName = appName;
+	}
+
+	private Boolean fetchAllLayouts = false;
+
+	public Boolean getFetchAllLayouts() {
+		return fetchAllLayouts;
+	}
+
+	public void setFetchAllLayouts(Boolean fetchAllLayouts) {
+		this.fetchAllLayouts = fetchAllLayouts;
+	}
+
 	public String addOrUpdateApplication() throws Exception {
 		FacilioChain chain = TransactionChainFactory.getAddOrUpdateApplication();
 		FacilioContext context = chain.getContext();
@@ -130,6 +151,8 @@ public class ApplicationAction extends FacilioAction {
 		FacilioChain chain = ReadOnlyChainFactory.getApplicationDetails();
 		FacilioContext context = chain.getContext();
 		context.put(FacilioConstants.ContextNames.APPLICATION_ID, appId);
+		context.put(FacilioConstants.ContextNames.LAYOUT_APP_TYPE, appName);
+		context.put(FacilioConstants.ContextNames.FETCH_ALL_LAYOUTS, fetchAllLayouts);
 
 		HttpServletRequest request = ServletActionContext.getRequest();
 		if(request.getAttribute("facilio.app.name") != null) {

@@ -164,6 +164,7 @@ public class FacilioConstants {
 		public static final String CLIENT_FILTER_CRITERIA = "clientFilterCriteria";
 		public static final String WEB_TAB_GROUP = "webTabGroup";
 		public static final String WEB_TAB_GROUPS = "webTabGroups";
+		public static final String WEB_TAB_WEB_GROUP = "webTabWebGroups";
 		public static final String WEB_TAB_GROUP_ID = "webTabGroupId";
 		public static final String WEB_TAB = "webTab";
 		public static final String WEB_TABS = "webTabs";
@@ -175,7 +176,12 @@ public class FacilioConstants {
 		public static final String VISITOR_PHOTO = "visitorPhoto";
 
 		public static final String APPLICATION = "application";
+		public static final String APPLICATION_LAYOUT = "applicationLayout";
 		public static final String APPLICATION_ID = "applicationId";
+		public static final String LAYOUT_APP_TYPE = "layoutAppType";
+		public static final String FETCH_ALL_LAYOUTS = "fetchAllLayouts";
+		public static final String LAYOUT_ID = "layoutId";
+
 		public static final String FETCH_NON_APP_USERS = "fetchNonAppUsers";
 
 		public static final String APP_ID = "appId";

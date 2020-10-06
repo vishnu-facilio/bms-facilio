@@ -4753,6 +4753,25 @@ public class TransactionChainFactory {
 		return chain;
 	}
 
+	public static FacilioChain getCreateAndAssociateTabGroupChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new CreateWebTabWebGroupCommand());
+		chain.addCommand(new AssociateTabGroupCommand());
+		return chain;
+	}
+
+	public static FacilioChain getDisAssociateTabGroupChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new DisAssociateTabGroupCommand());
+		return chain;
+	}
+
+	public static FacilioChain getAddOrUpdateApplicationLayoutChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddOrUpdateApplicationLayoutCommand());
+		return chain;
+	}
+
 	public static FacilioChain getAddNewPermissionChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new AddNewPermissionCommand());
