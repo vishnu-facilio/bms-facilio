@@ -37,25 +37,7 @@ public class ApplicationLayoutContext implements Serializable {
         this.applicationId = applicationId;
     }
 
-    private AppLayoutType appLayoutType;
-    public int getAppLayoutType() {
-        if (appLayoutType != null) {
-            return appLayoutType.getIndex();
-        }
-        return -1;
-    }
-    public void setAppLayoutType(int type) {
-        this.appLayoutType = AppLayoutType.valueOf(type);
-    }
-    public AppLayoutType getAppLayoutTypeEnum() {
-        return appLayoutType;
-    }
-    public void setAppLayoutType(AppLayoutType type) {
-        this.appLayoutType = type;
-    }
-
-
-    public enum AppLayoutType implements FacilioEnum{
+    public enum AppLayoutType implements FacilioEnum {
         SINGLE("Single"),
         DUAL("Dual");
 
@@ -83,12 +65,31 @@ public class ApplicationLayoutContext implements Serializable {
             return getName();
         }
         public static AppLayoutType valueOf (int value) {
-            if (value >= 0 && value < values().length) {
-                return values() [value];
+            if (value > 0 && value <= values().length) {
+                return values()[value - 1];
             }
             return null;
         }
     }
+
+    private AppLayoutType appLayoutType;
+    public int getAppLayoutType() {
+        if (appLayoutType != null) {
+            return appLayoutType.getIndex();
+        }
+        return -1;
+    }
+    public void setAppLayoutType(int type) {
+        this.appLayoutType = AppLayoutType.valueOf(type);
+    }
+    public AppLayoutType getAppLayoutTypeEnum() {
+        return appLayoutType;
+    }
+    public void setAppLayoutType(AppLayoutType type) {
+        this.appLayoutType = type;
+    }
+
+
 
     public enum LayoutDeviceType implements FacilioEnum {
         WEB("Web"),
@@ -118,8 +119,8 @@ public class ApplicationLayoutContext implements Serializable {
             return getName();
         }
         public static LayoutDeviceType valueOf (int value) {
-            if (value >= 0 && value < values().length) {
-                return values() [value];
+            if (value > 0 && value <= values().length) {
+                return values()[value - 1];
             }
             return null;
         }
