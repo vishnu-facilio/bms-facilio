@@ -4158,4 +4158,12 @@ public class ModuleFactory {
 		module.setTableName("Transaction_Rule_Config");
 		return module;
 	}
+
+    public static FacilioModule getAgentFileLogModule() {
+        FacilioModule module = new FacilioModule();
+        module.setName("agentFileLog");
+        module.setDisplayName("Agent File Log");
+        module.setTableName("Agent_Files_Update_Log");
+        return module;
+    }
 }

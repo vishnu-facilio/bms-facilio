@@ -9108,5 +9108,19 @@ public class FieldFactory {
         list.add(getField("configJson", "TRANSACTION_CONFIG_JSON", module, FieldType.STRING));
         return list;
     }
+
+    public static Collection<FacilioField> getAgentFileLogFields() {
+        FacilioModule module = ModuleFactory.getAgentFileLogModule();
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getField("id", "ID", module, FieldType.NUMBER));
+        fields.add(getField("orgId", "ORGID", module, FieldType.NUMBER));
+        fields.add(getField("agentId", "AGENT_ID", module, FieldType.NUMBER));
+        fields.add(getField("fileName", "FILE_NAME", module, FieldType.STRING));
+        fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("updatedTime", "UPDATED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("fileId", "FILE_ID", module, FieldType.NUMBER));
+        fields.add(getField("authKey", "AUTH_KEY", module, FieldType.STRING));
+        return fields;
+    }
 }
 

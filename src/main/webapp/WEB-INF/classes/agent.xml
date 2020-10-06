@@ -11,6 +11,33 @@
     <constant name="struts.xwork.chaining.copyFieldErrors" value="true"/>
     <constant name="struts.xwork.chaining.copyMessages" value="true"/>
 
+    <package name="agentFilesDownloadApi" namespace="/api/agent/downloads" extends="json-default">
+
+        <interceptors>
+            <interceptor name="agentDownloadInterceptor"
+                         class="com.facilio.bmsconsole.interceptors.AgentFileDownloadInterceptor">
+            </interceptor>
+
+            <interceptor-stack name="downloadInterceptorStack">
+                <interceptor-ref name="agentDownloadInterceptor"/>
+                <interceptor-ref name="defaultStack"/>
+            </interceptor-stack>
+        </interceptors>
+
+        <action name="file" class="com.facilio.bmsconsole.actions.AgentFileDownloadAction" method="downloadFile">
+            <interceptor-ref name="downloadInterceptorStack"/>
+            <result name="success" type="stream">
+                <param name="contentType">application/octet-stream</param>
+                <param name="inputName">fileInputStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="invalidToken" type="json">
+                <param name="includeProperties">errorStatus</param>
+            </result>
+        </action>
+
+    </package>
     <package name="agentDownloadApi" namespace="/api/agent/download" extends="json-default">
 
         <interceptors>
