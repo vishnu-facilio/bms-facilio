@@ -40,6 +40,7 @@ import com.facilio.energystar.command.*;
 import com.facilio.events.commands.NewEventsToAlarmsConversionCommand;
 import com.facilio.events.commands.NewExecuteEventRulesCommand;
 import com.facilio.events.constants.EventConstants;
+import com.facilio.modules.fields.relations.CalculateDependencyCommand;
 import com.facilio.mv.command.*;
 import com.facilio.workflows.command.*;
 import org.apache.commons.chain.Context;
@@ -1181,6 +1182,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ReadingUnitAndInputConversionCommand());
 			c.addCommand(new EnergyDataDeltaCalculationCommand());
 			c.addCommand(new CalculateDeltaCommand());
+			c.addCommand(new CalculateDependencyCommand());
 			c.addCommand(new CalculateAggregatedEnergyConsumptionCommand());
 			c.addCommand(new CalculatePreFormulaCommand());
 			c.addCommand(new ExecuteValidationRule());

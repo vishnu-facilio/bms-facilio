@@ -1,19 +1,30 @@
 package com.facilio.modules.fields.relations;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
 import org.apache.http.MethodNotSupportedException;
 
-public class BaseRelation {
+public class BaseRelationContext {
     private long id = -1;
     public long getId() {
         return id;
     }
     public void setId(long id) {
         this.id = id;
+    }
+
+    private long baseFieldModuleId = -1;
+    public long getBaseFieldModuleId() {
+        return baseFieldModuleId;
+    }
+    public void setBaseFieldModuleId(long baseFieldModuleId) {
+        this.baseFieldModuleId = baseFieldModuleId;
     }
 
     private long baseFieldId = -1;
@@ -25,11 +36,23 @@ public class BaseRelation {
     }
 
     private FacilioField baseField;
-    public FacilioField getBaseField() {
+    public FacilioField getBaseField() throws Exception {
+        if (baseField == null) {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            baseField = modBean.getField(baseFieldId, baseFieldModuleId);
+        }
         return baseField;
     }
     public void setBaseField(FacilioField baseField) {
         this.baseField = baseField;
+    }
+
+    private long derivedFieldModuleId = -1;
+    public long getDerivedFieldModuleId() {
+        return derivedFieldModuleId;
+    }
+    public void setDerivedFieldModuleId(long derivedFieldModuleId) {
+        this.derivedFieldModuleId = derivedFieldModuleId;
     }
 
     private long derivedFieldId = -1;
@@ -41,7 +64,11 @@ public class BaseRelation {
     }
 
     private FacilioField derivedField;
-    public FacilioField getDerivedField() {
+    public FacilioField getDerivedField() throws Exception {
+        if (derivedField == null) {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            derivedField = modBean.getField(derivedFieldId, derivedFieldModuleId);
+        }
         return derivedField;
     }
     public void setDerivedField(FacilioField derivedField) {
@@ -58,12 +85,31 @@ public class BaseRelation {
     public void setType(int type) {
         this.type = Type.valueOf(type);
     }
+    public Type getTypeEnum() {
+        return type;
+    }
+    public void setType(Type type) {
+        this.type = type;
+    }
 
     protected boolean olderReading(ReadingContext reading, ReadingDataMeta previousRDM) {
         if (reading.getId()!=-1 || (reading.getTtime() != -1 && reading.getTtime() < previousRDM.getTtime())) {
             return true;
         }
         return false;
+    }
+
+    protected final void validateType(FacilioField field, FieldType... typesSupported) {
+        for (FieldType fieldType : typesSupported) {
+            if (field.getDataTypeEnum() == fieldType) {
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Fields of type " + field.getDataTypeEnum().getTypeAsString() + " is not supported");
+    }
+
+    public void validate() throws Exception {
+        throw new MethodNotSupportedException("Should override this method");
     }
 
     protected Object getReadingValue(FacilioField baseField, ReadingDataMeta previousRDM) {
@@ -83,7 +129,8 @@ public class BaseRelation {
     }
 
     public enum Type implements FacilioEnum {
-        DELTA("Delta")
+        DELTA("Delta"),
+        TIME_DELTA("Time Delta"),
         ;
 
         private String name;

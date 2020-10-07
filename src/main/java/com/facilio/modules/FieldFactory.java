@@ -6256,6 +6256,31 @@ public class FieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getBaseFieldRelationFields() {
+        FacilioModule module = ModuleFactory.getBaseFieldRelationModule();
+        List<FacilioField> list = new ArrayList<>();
+
+        list.add(getIdField(module));
+        list.add(getField("baseFieldModuleId", "BASE_FIELD_MODULE_ID", module, FieldType.NUMBER));
+        list.add(getField("baseFieldId", "BASE_FIELD_ID", module, FieldType.NUMBER));
+        list.add(getField("derivedFieldModuleId", "DERIVED_FIELD_MODULE_ID", module, FieldType.NUMBER));
+        list.add(getField("derivedFieldId", "DERIVED_FIELD_ID", module, FieldType.NUMBER));
+        list.add(getField("type", "TYPE", module, FieldType.NUMBER));
+
+        return list;
+    }
+
+    public static List<FacilioField> getTimeDeltaFieldRelationFields() {
+        FacilioModule module = ModuleFactory.getTimeDeltaFieldRelation();
+        List<FacilioField> list = new ArrayList<>();
+
+        list.add(getIdField(module));
+        list.addAll(getBaseFieldRelationFields());
+        list.add(getField("unit", "UNIT", module, FieldType.NUMBER));
+
+        return list;
+    }
+
     public static List<FacilioField> getServicePortalFields() {
         FacilioModule module = ModuleFactory.getServicePortalModule();
         List<FacilioField> fields = new ArrayList<>();

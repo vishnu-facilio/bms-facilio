@@ -2043,6 +2043,23 @@ public class ModuleFactory {
 
 	}
 
+	public static FacilioModule getBaseFieldRelationModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("baseFieldRelation");
+		module.setDisplayName("Base Field Relation");
+		module.setTableName("Base_Field_Relation");
+		return module;
+	}
+
+	public static FacilioModule getTimeDeltaFieldRelation() {
+		FacilioModule module = new FacilioModule();
+		module.setExtendModule(getBaseFieldRelationModule());
+		module.setName("timeDeltaFieldRelation");
+		module.setDisplayName("Time Delta Field Relation");
+		module.setTableName("TimeDelta_Field_Relation");
+		return module;
+	}
+
 	public static FacilioModule getServicePortalModule() {
 		FacilioModule enpi = new FacilioModule();
 		enpi.setName("serviceportal");
