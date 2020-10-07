@@ -74,6 +74,11 @@ public class UserBeanImpl implements UserBean {
 			FacilioUtil.throwIllegalArgumentException(role == null || role.getName().equals(AccountConstants.DefaultRole.SUPER_ADMIN), "Invalid role specified for user");
 		}
 
+		//Preventing the following props from updating
+		user.setEmail(null);
+		user.setUserName(null);
+		user.setPassword(null);
+
 		if(IAMUserUtil.updateUser(user, AccountUtil.getCurrentOrg().getOrgId())) {
 			return updateUserEntry(user);
 		}
