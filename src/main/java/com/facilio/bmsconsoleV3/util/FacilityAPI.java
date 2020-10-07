@@ -76,4 +76,5 @@ public class FacilityAPI {
             facility.setFacilitySpecialAvailabilities(list);
         }
     }
+
 }

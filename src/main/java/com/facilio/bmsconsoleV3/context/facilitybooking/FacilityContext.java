@@ -254,4 +254,14 @@ public class FacilityContext extends V3Context {
     public void setFacilitySpecialAvailabilities(List<FacilitySpecialAvailabilityContext> facilitySpecialAvailabilities) {
         this.facilitySpecialAvailabilities = facilitySpecialAvailabilities;
     }
+
+    private List<SlotContext> slots;
+
+    public List<SlotContext> getSlots() {
+        return slots;
+    }
+
+    public void setSlots(List<SlotContext> slots) {
+        this.slots = slots;
+    }
 }

@@ -1832,7 +1832,7 @@ public class FacilioConstants {
 			public static final String FACILITY_BOOKING = "facilitybooking";
 			public static final String FACILITY_BOOKING_EXTERNAL_ATTENDEE = "facilityBookingExternalAttendee";
 			public static final String FACILITY_BOOKING_INTERNAL_ATTENDEE = "facilityBookingInternalAttendee";
-
+			public static final String FACILITY_ID = "facilityId";
 		}
 
 		public static class Tenant {
