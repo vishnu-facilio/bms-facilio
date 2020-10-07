@@ -338,17 +338,26 @@ public class ExportUtil {
 	private static String escapeCsv(String value) {
 		if (value != null) {
 			value = value.trim();
-			value = StringEscapeUtils.escapeCsv(value);
-			
 			try {
 				if (AccountUtil.isFeatureEnabled(FeatureLicense.ETISALAT)) {
-					if (value.startsWith("=") || value.startsWith("+") || value.startsWith("-") || value.startsWith("@") || value.startsWith("\"") || value.startsWith("'") || value.startsWith(",")) {
-						value = value.substring(1);
+					int count = 0;
+					while (true) {
+						count++;
+						if (count > 100) {
+							break;
+						}
+						if (value.startsWith("=") || value.startsWith("+") || value.startsWith("-") || value.startsWith("@") || value.startsWith("\"") || value.startsWith("'") || value.startsWith(",")) {
+							value = value.substring(1);
+						}
+						else {
+							break;
+						}
 					}
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			value = StringEscapeUtils.escapeCsv(value);
 		}
 		return value;
 	}
