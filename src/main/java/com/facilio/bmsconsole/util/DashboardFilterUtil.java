@@ -109,14 +109,24 @@ public class DashboardFilterUtil {
 			
 			
 			for (DashboardUserFilterContext filter : dashboardUserFilters) {
+				
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				
+				if(filter.getFieldId()>0)
+				{
 				filter.setField(modBean.getField(filter.getFieldId()));
+				}
+				if(filter.getModuleId()>0)
+				{
+					filter.setModule(modBean.getModule(filter.getModuleId()));
+				}
+				
 				if(filter.getCriteriaId()>0)
 				{
 				filter.setCriteria(CriteriaAPI.getCriteria(filter.getCriteriaId()));
 				}
 				
-				filter.setWidgetFieldMap(getUserFilterToWidgetColumnMapping(filter.getId()));
+				//filter.setWidgetFieldMap(getUserFilterToWidgetColumnMapping(filter.getId()));
 
 			}
 			return dashboardUserFilters;

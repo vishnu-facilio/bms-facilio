@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.context;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -9,6 +10,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
@@ -16,11 +18,27 @@ import com.facilio.util.FacilioUtil;
 
 public class DashboardUserFilterContext extends ModuleBaseWithCustomFields {
 
-	private Map<Long,FacilioField> widgetFieldMap;
+	private Map<Long,FacilioField> widgetFieldMap=new HashMap<Long, FacilioField>();
+	private long moduleId=-1;
+	private FacilioModule module;
+	
+	
 	
 	
 	// default values is type string to handle  ,'all' ,'others' cases
 		
+	public FacilioModule getModule() {
+		return module;
+	}
+	public void setModule(FacilioModule module) {
+		this.module = module;
+	}
+	public long getModuleId() {
+		return moduleId;
+	}
+	public void setModuleId(long moduleId) {
+		this.moduleId = moduleId;
+	}
 	public static enum ComponentType implements FacilioEnum {
 		 SINGLE_SELECT("Select option"),MULTI_SELECT("Multiple options");
 
@@ -114,7 +132,7 @@ public class DashboardUserFilterContext extends ModuleBaseWithCustomFields {
 	}
 	private static final long serialVersionUID = 1L;
 	ComponentType componentType;
-	long fieldId;
+	long fieldId=-1;
 	
 	Boolean isOthersOptionEnabled;
 	String label;
