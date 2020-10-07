@@ -84,6 +84,8 @@ public class FacilioProperties {
     private static String pythonPath;
     private static String allowedAppDomains;
 
+    private static String wmsBroadcaster;
+
     private static String emailClient;
     private static String fileStore;
     private static boolean isServicesEnabled;
@@ -203,6 +205,8 @@ public class FacilioProperties {
 
                 esDomain = PROPERTIES.getProperty("es.domain");
                 esIndex = PROPERTIES.getProperty("es.index");
+
+                wmsBroadcaster = PROPERTIES.getProperty("wms.broadcaster");
 
                 if(PROPERTIES.containsKey("iot.endpoint.port")) {
                     try {
@@ -599,5 +603,12 @@ public class FacilioProperties {
 
     public static void setMobileMainAppScheme(String mobileMainAppScheme) {
         FacilioProperties.mobileMainAppScheme = mobileMainAppScheme;
+    }
+
+    public static String getWmsBroadcaster() {
+        if (StringUtils.isEmpty(wmsBroadcaster)) {
+            wmsBroadcaster = "default";
+        }
+        return wmsBroadcaster;
     }
 }
