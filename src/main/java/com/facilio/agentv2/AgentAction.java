@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -72,6 +73,11 @@ public class AgentAction extends AgentActionV2 {
     	FILTER_INSTANCES.add(BACNetUtil.InstanceType.MULTI_STATE_OUTPUT.ordinal());
     	FILTER_INSTANCES.add(BACNetUtil.InstanceType.MULTI_STATE_VALUE.ordinal());//19
     }
+
+    public static  List<Integer> getFilterInstances(){
+    	return FILTER_INSTANCES;
+    }
+    
     private String instanceType;
     
     /* public String createPolicy(){

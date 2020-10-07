@@ -13,9 +13,14 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 
 import com.facilio.agent.controller.FacilioControllerType;
+import com.facilio.agentv2.AgentAction;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.agentv2.point.Point;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.FieldFactory;
 
 public class TypeDevices extends DeviceIdActions {
 
@@ -171,6 +176,11 @@ public class TypeDevices extends DeviceIdActions {
 		}
 		if(StringUtils.isNotEmpty(querySearch)) {
 			point.querySearch(AgentConstants.COL_NAME, querySearch);
+		}
+		if(getControllerType() == FacilioControllerType.BACNET_IP.asInt()) {
+			Criteria criteria = new Criteria();
+	    	criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(FieldFactory.getBACnetIPPointFields()).get(AgentConstants.INSTANCE_TYPE), StringUtils.join(AgentAction.getFilterInstances(),","), NumberOperators.EQUALS));
+	    	point.withCriteria(criteria);
 		}
 	}
 	
