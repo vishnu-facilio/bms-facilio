@@ -4,10 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -17,7 +16,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.secretsmanager.AWSSecretsManager;
 import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
 import com.amazonaws.services.secretsmanager.model.GetSecretValueRequest;
@@ -109,6 +107,8 @@ public class FacilioProperties {
     private static String mobileVendorportalAppScheme;
     private static String mobileClientportalAppScheme;
 
+    private static int authTokenCookieLifespan = 7 * 24 * 60 * 60;
+
     static {
         loadProperties();
     }
@@ -185,6 +185,21 @@ public class FacilioProperties {
                 mobileVendorportalAppScheme = PROPERTIES.getProperty("mobile.vendorportal.scheme");
                 mobileClientportalAppScheme = PROPERTIES.getProperty("mobile.clientportal.scheme");
 
+                String cookieLifespanProp = PROPERTIES.getProperty("token.cookie.lifespan");
+                if (StringUtils.isNotEmpty(cookieLifespanProp)) {
+                    try {
+                        int timeout = Integer.parseInt(cookieLifespanProp);
+                        if (timeout > 0) {
+                            authTokenCookieLifespan = timeout * 60;
+                        }
+                        else {
+                            LOGGER.info(MessageFormat.format("Negative value ({0}) for 'user.token.timeout'. So using default timeout ({1})", timeout, authTokenCookieLifespan));
+                        }
+                    }
+                    catch (NumberFormatException e) {
+                        LOGGER.info(MessageFormat.format("Exception while parsing 'user.token.timeout' with value : {0}. So using default timeout ({1})",cookieLifespanProp, authTokenCookieLifespan));
+                    }
+                }
 
                 esDomain = PROPERTIES.getProperty("es.domain");
                 esIndex = PROPERTIES.getProperty("es.index");
@@ -356,6 +371,10 @@ public class FacilioProperties {
     }
 
     public static boolean isSentryEnabled() {return sentryEnabled;}
+
+    public static int getAuthTokenCookieLifespan() {
+        return authTokenCookieLifespan;
+    }
 
     public static String getDefaultAppDB() {
         if (StringUtils.isEmpty(defaultAppDB)) {

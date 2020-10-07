@@ -826,7 +826,7 @@ public class FacilioAuthAction extends FacilioAction {
 	}
 
 	private void setCookieProperties(Cookie cookie, boolean authModel) {
-		cookie.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
+		cookie.setMaxAge(FacilioProperties.getAuthTokenCookieLifespan()); // Making the cookie last 1 week only be default
 		cookie.setPath("/");
 		cookie.setHttpOnly(authModel);
 		if (!(FacilioProperties.isDevelopment() || FacilioProperties.isOnpremise())) {
