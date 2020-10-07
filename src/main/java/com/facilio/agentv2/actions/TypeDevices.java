@@ -1,32 +1,21 @@
 package com.facilio.agentv2.actions;
 
-import com.facilio.agent.controller.FacilioControllerType;
-import com.facilio.agentv2.AgentConstants;
-import com.facilio.agentv2.point.GetPointRequest;
-import com.facilio.agentv2.point.Point;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.criteria.Criteria;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.CommonOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.modules.BmsAggregateOperators;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.fields.FacilioField;
+import java.net.HttpURLConnection;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import java.net.HttpURLConnection;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import com.facilio.agent.controller.FacilioControllerType;
+import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.point.GetPointRequest;
+import com.facilio.agentv2.point.Point;
 
 public class TypeDevices extends DeviceIdActions {
 
@@ -54,7 +43,15 @@ public class TypeDevices extends DeviceIdActions {
 	public void setQuerySearch(String querySearch) {
 		this.querySearch = querySearch;
 	}
+	private String status;
 
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	
 	public String listDeviceTypePoints(){
         try{
             if(checkValue(getDeviceId()) && (getControllerType()>0)){
@@ -123,38 +120,60 @@ public class TypeDevices extends DeviceIdActions {
         return SUCCESS;
     }
     
+    public String getCount() {
+    	try {
+    		long count = getPointCount(PointStatus.valueOf(status));
+            setResult(AgentConstants.DATA,count);
+            ok();
+    	}catch(Exception e) {
+    		LOGGER.error("Exception while getting points count ",e);
+            internalError();
+    	}
+    	return SUCCESS;
+    }
+    
 	private long getPointCount(PointStatus status) throws Exception {
 		try {
 			GetPointRequest point = new GetPointRequest();
+			sanityCheck(point);
+			pointFilter(status, point);
 			point.ofType(FacilioControllerType.valueOf(getControllerType()));
-			point.withDeviceId(getDeviceId());
 			point.count();
-			switch (status) {
-			case SUBSCRIBED:
-				point.filterSubsctibedPoints();
-				break;
-			case COMMISSIONED:
-				point.filterCommissionedPoints();
-				break;
-			case CONFIGURED:
-				point.filterConfigurePoints();
-				break;
-			case UNCONFIRURED:
-				point.filterUnConfigurePoints();
-				break;
-			default:
-				throw new IllegalArgumentException("Point status is not satisfied");
-			}
-			if(StringUtils.isNotEmpty(querySearch)) {
-				point.querySearch(AgentConstants.COL_NAME, querySearch);
-			}
-			List<Map<String, Object>> result = point.getPointsData();
-			return (long) result.get(0).get(AgentConstants.ID);
+			return (long) point.getPointsData().get(0).getOrDefault(AgentConstants.ID, 0L);
 		} catch (Exception e) {
 			throw e;
 		}
 	}
 
+	private void pointFilter(PointStatus status, GetPointRequest point) throws Exception {
+		switch (status) {
+		case SUBSCRIBED:
+			point.filterSubsctibedPoints();
+			break;
+		case COMMISSIONED:
+			point.filterCommissionedPoints();
+			break;
+		case CONFIGURED:
+			point.filterConfigurePoints();
+			break;
+		case UNCONFIRURED:
+			point.filterUnConfigurePoints();
+			break;
+		default:
+			throw new IllegalArgumentException("Point status is not satisfied");
+		}
+	}
+
+	private void sanityCheck(GetPointRequest point) throws Exception {
+
+		if(getDeviceId() != null && getDeviceId() > 0) {
+			point.withDeviceId(getDeviceId());
+		}
+		if(StringUtils.isNotEmpty(querySearch)) {
+			point.querySearch(AgentConstants.COL_NAME, querySearch);
+		}
+	}
+	
 	public enum PointStatus {
 		UNCONFIRURED, CONFIGURED, SUBSCRIBED, COMMISSIONED
 	}
