@@ -3,9 +3,7 @@ package com.facilio.bmsconsole.commands.filters;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.filters.FilterOperator;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.operators.DateOperators;
-import com.facilio.db.criteria.operators.FieldOperator;
-import com.facilio.db.criteria.operators.Operator;
+import com.facilio.db.criteria.operators.*;
 import com.facilio.modules.FieldType;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
@@ -78,6 +76,7 @@ public class FetchOperatorsForFiltersCommand extends FacilioCommand {
         operators.put(DateOperators.NEXT_WEEK.getOperator(), DateOperators.NEXT_WEEK);
         operators.put(DateOperators.CURRENT_MONTH.getOperator(), DateOperators.CURRENT_MONTH);
         operators.put(DateOperators.LAST_MONTH.getOperator(), DateOperators.LAST_MONTH);
+        operators.put(DateOperators.BETWEEN.getOperator(), DateOperators.BETWEEN);
         return operators;
     }
 
@@ -93,7 +92,13 @@ public class FetchOperatorsForFiltersCommand extends FacilioCommand {
 
     private List<FilterOperator> createFilterOperator (Operator operator) {
 
-        if (operator instanceof FieldOperator) {
+        if (operator instanceof FieldOperator
+                || operator instanceof BuildingOperator
+                || operator instanceof UserOperators
+                || operator instanceof LookupOperator
+                || operator == EnumOperators.VALUE_IS
+                || operator == EnumOperators.VALUE_ISN_T
+        ) {
             return null;
         }
 
@@ -113,6 +118,9 @@ public class FetchOperatorsForFiltersCommand extends FacilioCommand {
                 }
                 case CURRENT_MONTH: {
                     return Collections.singletonList(new FilterOperator("This Month", String.valueOf(DateOperators.CURRENT_MONTH.getOperatorId()), DateOperators.CURRENT_MONTH.isValueNeeded()));
+                }
+                case BETWEEN: {
+                    return Collections.singletonList(new FilterOperator("Custom", String.valueOf(DateOperators.BETWEEN.getOperatorId()), DateOperators.BETWEEN.isValueNeeded()));
                 }
                 default:
                     return Collections.singletonList(new FilterOperator(operator));

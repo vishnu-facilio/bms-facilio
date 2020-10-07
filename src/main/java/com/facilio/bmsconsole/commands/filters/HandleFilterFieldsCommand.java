@@ -48,6 +48,7 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
             case "slaPolicyId" :
             case "approvalFlowId" :
             case "formId" :
+            case "siteId" :
                 return null;
             default:
                 return new FilterFieldContext(field);

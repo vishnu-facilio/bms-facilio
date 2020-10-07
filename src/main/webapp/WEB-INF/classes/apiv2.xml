@@ -2697,11 +2697,6 @@
 			 extends="v2Api">
 		<action name="operators"
 				class="com.facilio.bmsconsole.actions.AdvancedFilterAction" method="fetchOperators">
-			<result name="success" type="json">
-				<param name="enumAsBean">true</param>
-				<param name="ignoreHierarchy">false</param>
-				<param name="includeProperties">responseCode, ^result.*</param>
-			</result>
 		</action>
 	</package>
 	<package name="advancedFilterFieldsApiv2" namespace="/api/v2/filter/advanced/fields"
@@ -2716,11 +2711,6 @@
 		<action name="*"
 				class="com.facilio.bmsconsole.actions.AdvancedFilterAction" method="fetchOperators">
 			<param name="dataType">{1}</param>
-			<result name="success" type="json">
-				<param name="enumAsBean">true</param>
-				<param name="ignoreHierarchy">false</param>
-				<param name="includeProperties">responseCode, ^result.*</param>
-			</result>
 		</action>
 	</package>
 

@@ -6,6 +6,7 @@ import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.agent.AgentKeys;
 import com.facilio.agent.integration.AgentIntegrationKeys;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.tasker.tasks.EventUtil;
 import com.facilio.modules.fields.*;
@@ -1414,10 +1415,12 @@ public class FieldFactory {
             case "sysCreatedBy":
                 LookupField createdBy = (LookupField) getField("sysCreatedBy", module != null && specialModuleList.contains(module.getName()) ? "Created By" : "System Created By", "SYS_CREATED_BY", module, FieldType.LOOKUP);
                 createdBy.setSpecialType(FacilioConstants.ContextNames.USERS);
+                createdBy.setLookupModule(LookupSpecialTypeUtil.getModule(FacilioConstants.ContextNames.USERS));
                 return createdBy;
             case "sysModifiedBy":
                 LookupField modifiedBy = (LookupField) getField("sysModifiedBy", module != null && specialModuleList.contains(module.getName()) ? "Modified By" : "System Modified By", "SYS_MODIFIED_BY", module, FieldType.LOOKUP);
                 modifiedBy.setSpecialType(FacilioConstants.ContextNames.USERS);
+                modifiedBy.setLookupModule(LookupSpecialTypeUtil.getModule(FacilioConstants.ContextNames.USERS));
                 return modifiedBy;
         }
         return null;
