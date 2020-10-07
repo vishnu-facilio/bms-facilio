@@ -74,9 +74,7 @@ public class AgentAction extends AgentActionV2 {
     	FILTER_INSTANCES.add(BACNetUtil.InstanceType.MULTI_STATE_VALUE.ordinal());//19
     }
 
-    public static  List<Integer> getFilterInstances(){
-    	return FILTER_INSTANCES;
-    }
+    public static final String FILETR_JOIN = StringUtils.join(FILTER_INSTANCES, ",");
     
     private String instanceType;
     
@@ -832,7 +830,7 @@ public class AgentAction extends AgentActionV2 {
 
 	private Criteria getBacNetIpInstanceFilter() {
 		Criteria criteria = new Criteria();
-    	criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(FieldFactory.getBACnetIPPointFields()).get(AgentConstants.INSTANCE_TYPE), StringUtils.join(FILTER_INSTANCES,","), NumberOperators.EQUALS));
+    	criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(FieldFactory.getBACnetIPPointFields()).get(AgentConstants.INSTANCE_TYPE), FILETR_JOIN, NumberOperators.EQUALS));
     	return criteria;
 	}
 

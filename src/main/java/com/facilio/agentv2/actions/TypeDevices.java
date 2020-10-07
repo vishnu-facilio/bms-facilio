@@ -140,9 +140,9 @@ public class TypeDevices extends DeviceIdActions {
 	private long getPointCount(PointStatus status) throws Exception {
 		try {
 			GetPointRequest point = new GetPointRequest();
+			point.ofType(FacilioControllerType.valueOf(getControllerType()));
 			sanityCheck(point);
 			pointFilter(status, point);
-			point.ofType(FacilioControllerType.valueOf(getControllerType()));
 			point.count();
 			return (long) point.getPointsData().get(0).getOrDefault(AgentConstants.ID, 0L);
 		} catch (Exception e) {
@@ -179,7 +179,7 @@ public class TypeDevices extends DeviceIdActions {
 		}
 		if(getControllerType() == FacilioControllerType.BACNET_IP.asInt()) {
 			Criteria criteria = new Criteria();
-	    	criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(FieldFactory.getBACnetIPPointFields()).get(AgentConstants.INSTANCE_TYPE), StringUtils.join(AgentAction.getFilterInstances(),","), NumberOperators.EQUALS));
+	    	criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(FieldFactory.getBACnetIPPointFields()).get(AgentConstants.INSTANCE_TYPE), AgentAction.FILETR_JOIN, NumberOperators.EQUALS));
 	    	point.withCriteria(criteria);
 		}
 	}
