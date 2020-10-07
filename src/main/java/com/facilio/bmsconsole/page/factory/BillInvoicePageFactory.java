@@ -33,7 +33,7 @@ public class BillInvoicePageFactory extends PageFactory {
 		if (record == null) {
 			return page;
         }
-		
+
         
         PageWidget billDetails= new PageWidget(PageWidget.WidgetType.INVOICE_DETAILS);
         billDetails.addToLayoutParams(tab1Sec1, 24, 24);
@@ -43,16 +43,22 @@ public class BillInvoicePageFactory extends PageFactory {
 		card2.addToLayoutParams(tab1Sec1, 24, 24);
 		tab1Sec1.addWidget(card2);
         
-    	Tab tab2 = page.new Tab("Attachments");
+    	Tab tab2 = page.new Tab("Notes & Attachments");
 		page.addTab(tab2);
 		
 		Section tab2Sec1 = page.new Section();
 		tab2.addSection(tab2Sec1);
-         
-         PageWidget attachmentWidget = new PageWidget(PageWidget.WidgetType.ATTACHMENT);
-         attachmentWidget.addToLayoutParams(tab2Sec1, 24, 6);
-         attachmentWidget.setTitle("Attachments");
-         tab2Sec1.addWidget(attachmentWidget);
+
+		PageWidget notesWidget = new PageWidget(PageWidget.WidgetType.COMMENT);
+		notesWidget.addToLayoutParams(tab2Sec1, 24, 8);
+		notesWidget.setTitle("Notes");
+		tab2Sec1.addWidget(notesWidget);
+
+		PageWidget attachmentWidget = new PageWidget(PageWidget.WidgetType.ATTACHMENT);
+		attachmentWidget.addToLayoutParams(tab2Sec1, 24, 6);
+		attachmentWidget.setTitle("Attachments");
+		tab2Sec1.addWidget(attachmentWidget);
+
 		return page;
 	}
 }
