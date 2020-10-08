@@ -27,7 +27,7 @@ public class AnnouncementFillDetailsCommandV3 extends FacilioCommand {
                         CommunityFeaturesAPI.setAudienceSharingInfo(announcement.getAudience());
                     }
                     else {
-                        List<CommunitySharingInfoContext> list = (List<CommunitySharingInfoContext>) CommunityFeaturesAPI.getSharingInfo(announcement, FacilioConstants.ContextNames.Tenant.NEWS_AND_INFORMATION_SHARING, "newsAndInformation");
+                        List<CommunitySharingInfoContext> list = (List<CommunitySharingInfoContext>) CommunityFeaturesAPI.getSharingInfo(announcement, FacilioConstants.ContextNames.Tenant.ANNOUNCEMENTS_SHARING_INFO, "announcement");
                         if (CollectionUtils.isNotEmpty(list)) {
                             announcement.setAnnouncementsharing(list);
                         }
