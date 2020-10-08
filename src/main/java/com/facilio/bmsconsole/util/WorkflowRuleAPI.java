@@ -27,6 +27,7 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateTimeUtil;
+import com.facilio.wms.message.Message;
 import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowContext.WorkflowUIMode;
@@ -1025,7 +1026,11 @@ public class WorkflowRuleAPI {
 			FacilioField onSuccess = fields.get("onSuccess");
 
 			for(WorkflowRuleContext workflowRule : workflowRules) {
+				long startTime = System.currentTimeMillis();
 				boolean stopFurtherExecution = workflowRule.executeRuleAndChildren(workflowRule, module, record, changeSet, recordPlaceHolders, context, propagateError, parentRule, onSuccess, workflowRuleCacheMap, isParallelRuleExecution, eventTypes, ruleTypes);
+				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
+					LOGGER.info(MessageFormat.format("Time taken to execute rule : {0} is {1}", workflowRule.getName(), (System.currentTimeMillis() - startTime)));
+				}
 				if(stopFurtherExecution) {
 					break;
 				}
