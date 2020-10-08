@@ -905,8 +905,6 @@ public class ColumnFactory {
 		columns.add(new ViewField("severity", "Severity"));
 		columns.add(new ViewField("subject", "Message"));
 		columns.add(new ViewField("resource", "Asset"));
-		columns.add(new ViewField("source", "Source"));
-		columns.add(new ViewField("condition", "Condition"));
 		columns.add(new ViewField("lastOccurredTime", "Last Reported Time"));
 		columns.add(new ViewField("acknowledgedBy", "Acknowledged By"));
 		columns.add(new ViewField("acknowledged", "Acknowledged"));

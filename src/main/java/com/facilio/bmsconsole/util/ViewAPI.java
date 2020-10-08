@@ -549,8 +549,18 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 				if (columns == null || columns.isEmpty()) {
 					columns = view.getFields();
 					for(ViewField column: columns) {
-						Long fieldId = modBean.getField(column.getName(), moduleName).getFieldId();
-						column.setFieldId(fieldId);
+						if (StringUtils.isNotEmpty(column.getParentFieldName())) {
+							LookupField parentField = (LookupField) modBean.getField(column.getParentFieldName(), moduleName);
+							if (parentField != null && parentField.getLookupModule() != null) {
+								FacilioField childField = modBean.getField(column.getName(), parentField.getLookupModule().getName());
+								column.setFieldId(childField.getFieldId());
+								column.setParentField(parentField);
+							}
+						}
+						else {
+							Long fieldId = modBean.getField(column.getName(), moduleName).getFieldId();
+							column.setFieldId(fieldId);
+						}
 					}
 				}
 				List<SortField> sortFields = view.getSortFields();

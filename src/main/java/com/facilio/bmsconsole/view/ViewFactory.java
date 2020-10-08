@@ -628,7 +628,7 @@ public class ViewFactory {
 		views.put("invite_all", getAllVisitorInvitesView().setOrder(order++));
 		views.put("invite_myInvites", getActiveVisitorInvites().setOrder(order++));
 		views.put("invite_myExpired", getExpiredVisitorInvites().setOrder(order++)); // 3
-		viewsMap.put(FacilioConstants.ContextNames.VISITOR_INVITE, views);
+//		viewsMap.put(FacilioConstants.ContextNames.VISITOR_INVITE, views);
 		
 		order = 1;
 		views = new LinkedHashMap<>();
@@ -3462,7 +3462,7 @@ public class ViewFactory {
 		Criteria criteria = getStalePartsCriteria(ModuleFactory.getInventryModule());
 
 		FacilioField createdTime = new FacilioField();
-		createdTime.setName("createdTime");
+		createdTime.setName("sysCreatedTime");
 		createdTime.setDataType(FieldType.NUMBER);
 		createdTime.setColumnName("CREATED_TIME");
 		createdTime.setModule(ModuleFactory.getInventryModule());
@@ -3482,7 +3482,7 @@ public class ViewFactory {
 		Criteria criteria = getUnderstockedPartCriteria(ModuleFactory.getInventoryModule());
 
 		FacilioField createdTime = new FacilioField();
-		createdTime.setName("createdTime");
+		createdTime.setName("sysCreatedTime");
 		createdTime.setDataType(FieldType.NUMBER);
 		createdTime.setColumnName("CREATED_TIME");
 		createdTime.setModule(ModuleFactory.getInventoryModule());
@@ -4313,7 +4313,7 @@ public class ViewFactory {
 		Criteria criteria = getItemApprovalStateCriteria(ApprovalState.REQUESTED);
 
 		FacilioField createdTime = new FacilioField();
-		createdTime.setName("createdTime");
+		createdTime.setName("sysCreatedTime");
 		createdTime.setDataType(FieldType.NUMBER);
 		createdTime.setColumnName("CREATED_TIME");
 		createdTime.setModule(ModuleFactory.getItemTransactionsModule());
@@ -4322,7 +4322,7 @@ public class ViewFactory {
 		requestedItemApproval.setName("pendingitem");
 		requestedItemApproval.setDisplayName("Pending Item Approvals");
 		requestedItemApproval.setCriteria(criteria);
-		requestedItemApproval.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+//		requestedItemApproval.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 
 		requestedItemApproval.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
@@ -4334,7 +4334,7 @@ public class ViewFactory {
 		Criteria criteria = getAllItemApprovalStateCriteria();
 
 		FacilioField createdTime = new FacilioField();
-		createdTime.setName("createdTime");
+		createdTime.setName("sysCreatedTime");
 		createdTime.setDataType(FieldType.NUMBER);
 		createdTime.setColumnName("CREATED_TIME");
 		createdTime.setModule(ModuleFactory.getItemTransactionsModule());
@@ -4440,7 +4440,7 @@ public class ViewFactory {
 		Criteria criteria = getToolApprovalStateCriteria(ApprovalState.REQUESTED);
 
 		FacilioField createdTime = new FacilioField();
-		createdTime.setName("createdTime");
+		createdTime.setName("sysCreatedTime");
 		createdTime.setDataType(FieldType.NUMBER);
 		createdTime.setColumnName("CREATED_TIME");
 		createdTime.setModule(ModuleFactory.getToolTransactionsModule());
@@ -4460,7 +4460,7 @@ public class ViewFactory {
 		Criteria criteria = getAllToolApprovalStateCriteria();
 
 		FacilioField createdTime = new FacilioField();
-		createdTime.setName("createdTime");
+		createdTime.setName("sysCreatedTime");
 		createdTime.setDataType(FieldType.NUMBER);
 		createdTime.setColumnName("CREATED_TIME");
 		createdTime.setModule(ModuleFactory.getToolTransactionsModule());
@@ -5084,7 +5084,7 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Serial Numbers");
-		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+//		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return allView;
@@ -6258,9 +6258,9 @@ public class ViewFactory {
 		
 		FacilioModule visitorLogging = ModuleFactory.getVisitorLoggingModule();
 		FacilioField createdTime = new FacilioField();
-		createdTime.setName("sysCreatedTime");
+		createdTime.setName("checkInTime");
 		createdTime.setDataType(FieldType.DATE_TIME);
-		createdTime.setColumnName("SYS_CREATED_TIME");
+		createdTime.setColumnName("CHECKIN_TIME");
 		createdTime.setModule(visitorLogging);
 
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
@@ -6279,9 +6279,9 @@ public class ViewFactory {
 
 		FacilioModule visitorLogging = ModuleFactory.getVisitorLoggingModule();
 		FacilioField createdTime = new FacilioField();
-		createdTime.setName("sysCreatedTime");
+		createdTime.setName("checkInTime");
 		createdTime.setDataType(FieldType.DATE_TIME);
-		createdTime.setColumnName("SYS_CREATED_TIME");
+		createdTime.setColumnName("CHECKIN_TIME");
 		createdTime.setModule(visitorLogging);
 
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
@@ -6842,14 +6842,7 @@ public class ViewFactory {
 		criteria.addAndCondition(CriteriaAPI.getCondition(checkInTime, CommonOperators.IS_EMPTY));
 		view.setCriteria(criteria);
 		
-		FacilioModule visitorLogging = ModuleFactory.getVisitorLoggingModule();
-		FacilioField createdTime = new FacilioField();
-		createdTime.setName("sysCreatedtime");
-		createdTime.setDataType(FieldType.DATE_TIME);
-		createdTime.setColumnName("SYS_CREATED_TIME");
-		createdTime.setModule(visitorLogging);
-
-		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		List<SortField> sortFields = Arrays.asList(new SortField(checkInTime, false));
 		view.setSortFields(sortFields);
 		view.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
@@ -7021,9 +7014,9 @@ public class ViewFactory {
 		criteria.addAndCondition(getMyServiceRequestCondition());
 
 		FacilioField createdTime = new FacilioField();
-		createdTime.setName("sysCreatedtime");
+		createdTime.setName("dueDate");
 		createdTime.setDataType(FieldType.DATE_TIME);
-		createdTime.setColumnName("SYS_CREATED_TIME");
+		createdTime.setColumnName("DUE_DATE");
 		createdTime.setModule(serviceRequestsModule);
 
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
