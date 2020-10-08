@@ -101,6 +101,10 @@
 			<param-name>exclude</param-name>
 			<param-value>/internal/addFromMail,/api/v2/alarm/rules/updateNew,/api/v2/graphics/update,/api/dashboard/update,/api/v2/parseftl,/api/v2/module/data/customUpload,/api/v2/setup/scheduledaction/add,/api/v2/workflow/updateUserFunction</param-value>
 		</init-param>
+<!--		<init-param>-->
+<!--			<param-name>allowed-upload-types</param-name>-->
+<!--			<param-value>image/bmp,image/gif,image/jpeg,image/png,image/svg+xml,image/tiff,application/pdf,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document</param-value>-->
+<!--		</init-param>-->
 	</filter>
 
 	<filter>
