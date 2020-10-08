@@ -1,7 +1,7 @@
-package com.facilio.bmsconsoleV3.commands.announcement;
+package com.facilio.bmsconsoleV3.commands.communityFeatures.announcement;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
-import com.facilio.bmsconsoleV3.context.announcement.AnnouncementContext;
+import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;

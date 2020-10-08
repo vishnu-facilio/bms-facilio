@@ -2,14 +2,14 @@ package com.facilio.bmsconsoleV3.util;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
-import com.facilio.bmsconsole.context.InviteVisitorRelContext;
 import com.facilio.bmsconsole.context.TenantUnitSpaceContext;
 import com.facilio.bmsconsoleV3.context.CommunitySharingInfoContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.context.V3TenantContext;
-import com.facilio.bmsconsoleV3.context.announcement.AnnouncementContext;
-import com.facilio.bmsconsoleV3.context.announcement.AnnouncementSharingInfoContext;
-import com.facilio.bmsconsoleV3.context.announcement.PeopleAnnouncementContext;
+import com.facilio.bmsconsoleV3.context.communityfeatures.AudienceContext;
+import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementContext;
+import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementSharingInfoContext;
+import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnnouncementContext;
 import com.facilio.bmsconsoleV3.interfaces.BuildingTenantContacts;
 import com.facilio.bmsconsoleV3.interfaces.SiteTenantContacts;
 import com.facilio.chain.FacilioChain;
@@ -32,7 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 
-public class AnnouncementAPI {
+public class CommunityFeaturesAPI {
 
     public static List<Long> getBuildingTenants(Long buildingId) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -73,14 +73,14 @@ public class AnnouncementAPI {
         return builder.get();
     }
 
-    public static List<AnnouncementSharingInfoContext> getSharingInfo(Long id) throws Exception {
+    public static List<CommunitySharingInfoContext> getSharingInfo(Long id) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENTS_SHARING_INFO);
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
 
-        SelectRecordsBuilder<AnnouncementSharingInfoContext> builder = new SelectRecordsBuilder<AnnouncementSharingInfoContext>()
+        SelectRecordsBuilder<CommunitySharingInfoContext> builder = new SelectRecordsBuilder<CommunitySharingInfoContext>()
                 .module(module)
-                .beanClass(AnnouncementSharingInfoContext.class)
+                .beanClass(CommunitySharingInfoContext.class)
                 .select(modBean.getAllFields(module.getName()))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("announcement"), String.valueOf(id), NumberOperators.EQUALS))
                 ;
@@ -137,11 +137,18 @@ public class AnnouncementAPI {
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.Tenant.PEOPLE_ANNOUNCEMENTS);
-        announcement.setAnnouncementsharing(getSharingInfo(announcement.getId()));
+        //only if is needed..so condition can be removed once the client supports audience
+        if(announcement.getAudience() != null) {
+           announcement.setAnnouncementsharing(setAudienceSharingInfo(announcement.getAudience()));
+        }
+        else {
+            announcement.setAnnouncementsharing(getSharingInfo(announcement.getId()));
+        }
+
 
         if(CollectionUtils.isNotEmpty(announcement.getAnnouncementsharing())) {
             Map<Long, PeopleAnnouncementContext> pplMap = new HashMap<>();
-            for(AnnouncementSharingInfoContext sharingInfo : announcement.getAnnouncementsharing()){
+            for(CommunitySharingInfoContext sharingInfo : announcement.getAnnouncementsharing()){
                 List<V3PeopleContext> ppl = new ArrayList<>();
                 //handling only for building sharing type for now.. can be supported for others as well
                 if(sharingInfo.getSharingTypeEnum() == AnnouncementSharingInfoContext.SharingType.BUILDING) {
@@ -154,6 +161,7 @@ public class AnnouncementAPI {
                 if(CollectionUtils.isNotEmpty(ppl)){
                     for(V3PeopleContext person : ppl) {
                         PeopleAnnouncementContext pplAnnouncement = FieldUtil.cloneBean(announcement, PeopleAnnouncementContext.class);
+                        pplAnnouncement.setAudience(null);
                         pplAnnouncement.setIsRead(false);
                         pplAnnouncement.setPeople(person);
                         pplAnnouncement.setParentId(announcement.getId());
@@ -166,26 +174,6 @@ public class AnnouncementAPI {
             }
         }
 
-    }
-
-    public static void setSharingInfo(AnnouncementContext announcement) throws Exception {
-
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        String sharingModName = FacilioConstants.ContextNames.Tenant.ANNOUNCEMENTS_SHARING_INFO;
-        List<FacilioField> fields = modBean.getAllFields(sharingModName);
-        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
-        List<LookupField> fetchSupplementsList = Arrays.asList((LookupField) fieldsAsMap.get("sharedToSpace"));
-
-        SelectRecordsBuilder<AnnouncementSharingInfoContext> builder = new SelectRecordsBuilder<AnnouncementSharingInfoContext>()
-                .moduleName(sharingModName)
-                .select(fields)
-                .beanClass(AnnouncementSharingInfoContext.class)
-                .fetchSupplements(fetchSupplementsList)
-                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("announcement"), String.valueOf(announcement.getId()), NumberOperators.EQUALS));
-        List<AnnouncementSharingInfoContext> list = builder.get();
-        if (CollectionUtils.isNotEmpty(list)) {
-            announcement.setAnnouncementsharing(list);
-        }
     }
 
     public static List<? extends CommunitySharingInfoContext> getSharingInfo(V3Context record, String sharingModuleName, String parentFieldName) throws Exception {
@@ -205,4 +193,41 @@ public class AnnouncementAPI {
         return list;
 
     }
+
+    public static List<CommunitySharingInfoContext> setAudienceSharingInfo(AudienceContext audience) throws Exception {
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.Tenant.AUDIENCE_SHARING);
+        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+        List<LookupField> fetchSupplementsList = Arrays.asList((LookupField) fieldsAsMap.get("sharedToSpace"));
+
+        SelectRecordsBuilder<CommunitySharingInfoContext> builder = new SelectRecordsBuilder<CommunitySharingInfoContext>()
+                .moduleName(FacilioConstants.ContextNames.Tenant.AUDIENCE_SHARING)
+                .select(fields)
+                .beanClass(CommunitySharingInfoContext.class)
+                .fetchSupplements(fetchSupplementsList)
+                .andCondition(CriteriaAPI.getCondition("AUDIENCE_ID", "audienceId", String.valueOf(audience.getId()), NumberOperators.EQUALS));
+        List<CommunitySharingInfoContext> list = builder.get();
+        audience.setAudienceSharing(list);
+        return list;
+
+    }
+
+
+    public static void addAudience(AudienceContext audience) throws Exception {
+
+        audience.setId(-1);
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.Tenant.AUDIENCE);
+        V3RecordAPI.addRecord(false, Collections.singletonList(audience), module, modBean.getAllFields(FacilioConstants.ContextNames.Tenant.AUDIENCE));
+
+        for(CommunitySharingInfoContext sharing : audience.getAudienceSharing()){
+            sharing.setAudienceId(audience.getId());
+        }
+
+        FacilioModule sharingInfoModule = modBean.getModule(FacilioConstants.ContextNames.Tenant.AUDIENCE_SHARING);
+        V3RecordAPI.addRecord(false, audience.getAudienceSharing(), sharingInfoModule, modBean.getAllFields(FacilioConstants.ContextNames.Tenant.AUDIENCE_SHARING));
+
+    }
+
 }

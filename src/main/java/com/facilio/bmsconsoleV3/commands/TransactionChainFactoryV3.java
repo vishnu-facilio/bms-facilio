@@ -5,13 +5,19 @@ import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
-import com.facilio.bmsconsoleV3.commands.announcement.*;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.admindocuments.AddOrUpdateAdminDocumentsSharingCommandV3;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.AddOrUpdateAnnouncementSharingInfoCommandV3;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.*;
 import com.facilio.bmsconsoleV3.commands.budget.ValidateBudgetAmountCommandV3;
 import com.facilio.bmsconsoleV3.commands.budget.ValidateChartOfAccountTypeCommandV3;
 import com.facilio.bmsconsoleV3.commands.client.UpdateClientIdInSiteCommandV3;
 import com.facilio.bmsconsoleV3.commands.clientcontact.CheckForMandatoryClientIdCommandV3;
 import com.facilio.bmsconsoleV3.commands.clientcontact.UpdateClientAppPortalAccessCommandV3;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.contactdirectory.AddOrUpdateContactDirectorySharingCommandV3;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.dealsandoffers.AddOrUpdateDealsSharingInfoCommandV3;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.AddOrUpdateNeighbourhoodSharingCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.NeighbourhoodAddLocationCommand;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.AddOrUpdateNewsSharingCommandV3;
 import com.facilio.bmsconsoleV3.commands.employee.AddPeopleTypeForEmployeeCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.UpdatePeoplePrimaryContactCommandV3;
@@ -363,7 +369,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ValidatePublishAnnouncementActionCommandV3());
         c.addCommand(new ValidateCancelAnnouncementActionCommandV3());
-        c.addCommand(new CheckForSharingInfoCommandV3());
+        c.addCommand(new AddOrUpdateAnnouncementSharingInfoCommandV3());
         return c;
 
     }
@@ -371,7 +377,8 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getCreateAnnouncementBeforeSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SetLocalIdCommandV3());
-        c.addCommand(new CheckForSharingInfoCommandV3());
+       // c.addCommand(new CheckForSharingInfoCommandV3());
+        c.addCommand(new AddOrUpdateAnnouncementSharingInfoCommandV3());
         return c;
 
     }
@@ -401,6 +408,26 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SetLocalIdCommandV3());
         c.addCommand(new NeighbourhoodAddLocationCommand());
+        c.addCommand(new AddOrUpdateNeighbourhoodSharingCommandV3());
+
+        return c;
+
+    }
+
+    public static FacilioChain getCreateNeighbourhoodBeforeUpdateChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new NeighbourhoodAddLocationCommand());
+        c.addCommand(new AddOrUpdateAnnouncementSharingInfoCommandV3());
+
+        return c;
+
+    }
+
+    public static FacilioChain getCreateDealsBeforeSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SetLocalIdCommandV3());
+        c.addCommand(new AddOrUpdateDealsSharingInfoCommandV3());
+
         return c;
 
     }
@@ -421,5 +448,25 @@ public class TransactionChainFactoryV3 {
 
     }
 
+    public static FacilioChain getCreateNewsAndInformationBeforeSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SetLocalIdCommandV3());
+        c.addCommand(new AddOrUpdateNewsSharingCommandV3());
+        return c;
+    }
+
+    public static FacilioChain getCreateContactDirectoryBeforeSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SetLocalIdCommandV3());
+        c.addCommand(new AddOrUpdateContactDirectorySharingCommandV3());
+        return c;
+    }
+
+    public static FacilioChain getCreateAdminDocumentsBeforeSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SetLocalIdCommandV3());
+        c.addCommand(new AddOrUpdateAdminDocumentsSharingCommandV3());
+        return c;
+    }
 
 }

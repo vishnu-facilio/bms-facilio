@@ -1,9 +1,10 @@
 package com.facilio.bmsconsoleV3.commands.communityFeatures.admindocuments;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
-import com.facilio.bmsconsoleV3.context.tenantEngagement.AdminDocumentsContext;
-import com.facilio.bmsconsoleV3.context.tenantEngagement.AdminDocumentsSharingContext;
-import com.facilio.bmsconsoleV3.util.AnnouncementAPI;
+import com.facilio.bmsconsoleV3.context.CommunitySharingInfoContext;
+import com.facilio.bmsconsoleV3.context.communityfeatures.AdminDocumentsContext;
+import com.facilio.bmsconsoleV3.context.communityfeatures.AdminDocumentsSharingContext;
+import com.facilio.bmsconsoleV3.util.CommunityFeaturesAPI;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.CommandUtil;
 import org.apache.commons.chain.Context;
@@ -20,9 +21,14 @@ public class FillAdminDocumentsSharingInfoCommand extends FacilioCommand {
             for(Long recId : recordIds) {
                 AdminDocumentsContext record = (AdminDocumentsContext) CommandUtil.getModuleData(context, moduleName,recId);
                 if (record != null) {
-                    List<AdminDocumentsSharingContext> list = (List<AdminDocumentsSharingContext>) AnnouncementAPI.getSharingInfo(record, "admindocumentsharing", "adminDocument");
-                    if (CollectionUtils.isNotEmpty(list)) {
-                        record.setAdmindocumentsharing(list);
+                    if(record.getAudience() != null){
+                        CommunityFeaturesAPI.setAudienceSharingInfo(record.getAudience());
+                    }
+                    else {
+                        List<CommunitySharingInfoContext> list = (List<CommunitySharingInfoContext>) CommunityFeaturesAPI.getSharingInfo(record, "admindocumentsharing", "adminDocument");
+                        if (CollectionUtils.isNotEmpty(list)) {
+                            record.setAdmindocumentsharing(list);
+                        }
                     }
                 }
             }

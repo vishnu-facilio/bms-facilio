@@ -1,8 +1,8 @@
-package com.facilio.bmsconsoleV3.commands.announcement;
+package com.facilio.bmsconsoleV3.commands.communityFeatures.announcement;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
-import com.facilio.bmsconsoleV3.context.announcement.AnnouncementContext;
+import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -18,7 +18,7 @@ import org.apache.commons.collections4.MapUtils;
 import java.util.List;
 import java.util.Map;
 
-public class CancelParentChildAnnouncementsCommandV3 extends FacilioCommand {
+public class PublishAnnouncementCommandV3 extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         String moduleName = Constants.getModuleName(context);
@@ -30,11 +30,10 @@ public class CancelParentChildAnnouncementsCommandV3 extends FacilioCommand {
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENT);
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
 
-        if (CollectionUtils.isNotEmpty(announcements) && MapUtils.isNotEmpty(bodyParams) && bodyParams.containsKey("cancel")) {
+        if (CollectionUtils.isNotEmpty(announcements) && MapUtils.isNotEmpty(bodyParams) && bodyParams.containsKey("publish")) {
             FacilioContext jobContext =  new FacilioContext();
             jobContext.put(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENTS, announcements);
-            jobContext.put(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENT_ACTION, 2);
-
+            jobContext.put(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENT_ACTION, 1);
             FacilioTimer.scheduleInstantJob("AddOrUpdateChildAnnouncementsJob", jobContext);
         }
         return false;

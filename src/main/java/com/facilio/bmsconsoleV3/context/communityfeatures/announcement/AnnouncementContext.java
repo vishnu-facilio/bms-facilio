@@ -1,5 +1,7 @@
-package com.facilio.bmsconsoleV3.context.announcement;
+package com.facilio.bmsconsoleV3.context.communityfeatures.announcement;
 
+import com.facilio.bmsconsoleV3.context.CommunitySharingInfoContext;
+import com.facilio.bmsconsoleV3.context.communityfeatures.AudienceContext;
 import com.facilio.v3.context.V3Context;
 
 import java.util.List;
@@ -45,16 +47,6 @@ public class AnnouncementContext extends V3Context {
 
     public void setExpiryDate(Long expiryDate) {
         this.expiryDate = expiryDate;
-    }
-
-    private List<AnnouncementSharingInfoContext> announcementsharing;
-
-    public List<AnnouncementSharingInfoContext> getAnnouncementsharing() {
-        return announcementsharing;
-    }
-
-    public void setAnnouncementsharing(List<AnnouncementSharingInfoContext> announcementsharing) {
-        this.announcementsharing = announcementsharing;
     }
 
     public Integer getCategory() {
@@ -103,5 +95,25 @@ public class AnnouncementContext extends V3Context {
 
     public void setReadCount(Long readCount) {
         this.readCount = readCount;
+    }
+
+    private AudienceContext audience;
+
+    public AudienceContext getAudience() {
+        return audience;
+    }
+
+    public void setAudience(AudienceContext audience) {
+        this.audience = audience;
+    }
+
+    private List<CommunitySharingInfoContext> announcementsharing;
+
+    public List<CommunitySharingInfoContext> getAnnouncementsharing() {
+        return announcementsharing;
+    }
+
+    public void setAnnouncementsharing(List<CommunitySharingInfoContext> announcementsharing) {
+        this.announcementsharing = announcementsharing;
     }
 }

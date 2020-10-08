@@ -6,10 +6,11 @@ import com.facilio.bmsconsole.context.AssetDepreciationContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.*;
-import com.facilio.bmsconsoleV3.commands.announcement.AnnouncementFillDetailsCommandV3;
-import com.facilio.bmsconsoleV3.commands.announcement.DeleteChildAnnouncementsCommand;
-import com.facilio.bmsconsoleV3.commands.announcement.LoadAnnouncementLookupCommandV3;
-import com.facilio.bmsconsoleV3.commands.announcement.LoadPeopleAnnouncementLookupCommand;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.FillAudienceSharingInfoCommandV3;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.AnnouncementFillDetailsCommandV3;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.DeleteChildAnnouncementsCommand;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.LoadAnnouncementLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.LoadPeopleAnnouncementLookupCommand;
 import com.facilio.bmsconsoleV3.commands.budget.*;
 import com.facilio.bmsconsoleV3.commands.client.AddAddressForClientLocationCommandV3;
 import com.facilio.bmsconsoleV3.commands.client.LoadClientLookupCommandV3;
@@ -55,15 +56,15 @@ import com.facilio.bmsconsoleV3.commands.watchlist.GetLogsForWatchListCommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.LoadWorkorderLookupsAfterFetchcommandV3;
 import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.bmsconsoleV3.context.*;
-import com.facilio.bmsconsoleV3.context.announcement.AnnouncementContext;
-import com.facilio.bmsconsoleV3.context.announcement.PeopleAnnouncementContext;
+import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementContext;
+import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnnouncementContext;
 import com.facilio.bmsconsoleV3.context.budget.AccountTypeContext;
 import com.facilio.bmsconsoleV3.context.budget.BudgetContext;
 import com.facilio.bmsconsoleV3.context.budget.ChartOfAccountContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
-import com.facilio.bmsconsoleV3.context.tenantEngagement.*;
+import com.facilio.bmsconsoleV3.context.communityfeatures.*;
 import com.facilio.bmsconsoleV3.context.workpermit.V3WorkPermitContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistCategoryContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistContext;
@@ -535,12 +536,25 @@ public class APIv3Config {
                 .build();
     }
 
+    @Module("audience")
+    public static Supplier<V3Config> getAudience() {
+        return () -> new V3Config(AudienceContext.class)
+                .create()
+                .update()
+                .list()
+                  .afterFetch(new FillAudienceSharingInfoCommandV3())
+                .summary()
+                    .afterFetch(new FillAudienceSharingInfoCommandV3())
+                .delete()
+                .build();
+    }
+
     @Module("announcement")
     public static Supplier<V3Config> getAnnouncement() {
         return () -> new V3Config(AnnouncementContext.class)
                 .create()
-                .beforeSave(TransactionChainFactoryV3.getCreateAnnouncementBeforeSaveChain())
-                .afterSave(new UpdateAttachmentsParentIdCommandV3())
+                    .beforeSave(TransactionChainFactoryV3.getCreateAnnouncementBeforeSaveChain())
+                    .afterSave(new UpdateAttachmentsParentIdCommandV3())
                 .update()
                     .beforeSave(TransactionChainFactoryV3.getUpdateAnnouncementBeforeSaveChain())
                     .afterTransaction(TransactionChainFactoryV3.getUpdateAnnouncementAfterSaveChain())
@@ -569,8 +583,12 @@ public class APIv3Config {
     @Module("newsandinformation")
     public static Supplier<V3Config> getNewsAndInformation() {
         return () -> new V3Config(NewsAndInformationContext.class)
-                .create().beforeSave(new SetLocalIdCommandV3()).afterSave(new UpdateAttachmentsParentIdCommandV3())
-                .update().afterSave(new UpdateAttachmentsParentIdCommandV3())
+                .create()
+                    .beforeSave(TransactionChainFactoryV3.getCreateNewsAndInformationBeforeSaveChain())
+                    .afterSave(new UpdateAttachmentsParentIdCommandV3())
+                .update()
+                    .beforeSave(TransactionChainFactoryV3.getCreateNewsAndInformationBeforeSaveChain())
+                    .afterSave(new UpdateAttachmentsParentIdCommandV3())
                 .list()
                     .beforeFetch(new LoadNewsAndInformationLookupCommandV3())
                     .afterFetch(new FillNewsRelatedModuleDataInListCommandV3())
@@ -583,38 +601,61 @@ public class APIv3Config {
     @Module("neighbourhood")
     public static Supplier<V3Config> getNeighbourhood() {
         return () -> new V3Config(NeighbourhoodContext.class)
-                .create().beforeSave(TransactionChainFactoryV3.getCreateNeighbourhoodBeforeSaveChain()).afterSave(new UpdateAttachmentsParentIdCommandV3())
-                .update().beforeSave(new NeighbourhoodAddLocationCommand()).afterSave(new UpdateAttachmentsParentIdCommandV3())
-                .summary().beforeFetch(new NeighbourhoodFillLookupFieldsCommand()).afterFetch(new FillNeighbourhoodSharingInfoCommand())
-                .list().beforeFetch(new NeighbourhoodFillLookupFieldsCommand())
+                .create()
+                    .beforeSave(TransactionChainFactoryV3.getCreateNeighbourhoodBeforeSaveChain())
+                    .afterSave(new UpdateAttachmentsParentIdCommandV3())
+                .update()
+                    .beforeSave(TransactionChainFactoryV3.getCreateNeighbourhoodBeforeUpdateChain())
+                    .afterSave(new UpdateAttachmentsParentIdCommandV3())
+                .summary()
+                    .beforeFetch(new NeighbourhoodFillLookupFieldsCommand())
+                    .afterFetch(new FillNeighbourhoodSharingInfoCommand())
+                .list()
+                    .beforeFetch(new NeighbourhoodFillLookupFieldsCommand())
                 .build();
     }
 
     @Module("dealsandoffers")
     public static Supplier<V3Config> getDealsAndOffers() {
         return () -> new V3Config(DealsAndOffersContext.class)
-                .create().beforeSave(new SetLocalIdCommandV3()).afterSave(new UpdateAttachmentsParentIdCommandV3())
-                .update().afterSave(new UpdateAttachmentsParentIdCommandV3())
-                .summary().beforeFetch(new DealsAndOffersFillLookupFields()).afterFetch(new FillDealsAndOffersSharingInfoCommand())
-                .list().beforeFetch(new DealsAndOffersFillLookupFields())
+                .create()
+                    .beforeSave(TransactionChainFactoryV3.getCreateDealsBeforeSaveChain())
+                    .afterSave(new UpdateAttachmentsParentIdCommandV3())
+                .update()
+                    .beforeSave(TransactionChainFactoryV3.getCreateDealsBeforeSaveChain())
+                    .afterSave(new UpdateAttachmentsParentIdCommandV3())
+                .summary()
+                    .beforeFetch(new DealsAndOffersFillLookupFields())
+                    .afterFetch(new FillDealsAndOffersSharingInfoCommand())
+                .list()
+                    .beforeFetch(new DealsAndOffersFillLookupFields())
                 .build();
     }
 
     @Module("contactdirectory")
     public static Supplier<V3Config> getContactDirectory() {
         return () -> new V3Config(ContactDirectoryContext.class)
-                .create().beforeSave(new SetLocalIdCommandV3()).afterSave(new UpdateAttachmentsParentIdCommandV3())
-                .update().afterSave(new UpdateAttachmentsParentIdCommandV3())
-                .summary().beforeFetch(new ContactDirectoryFillLookupFieldsCommand()).afterFetch(new FillContactDirectorySharingInfoCommand())
-                .list().beforeFetch(new ContactDirectoryFillLookupFieldsCommand())
+                .create()
+                    .beforeSave(TransactionChainFactoryV3.getCreateContactDirectoryBeforeSaveChain())
+                    .afterSave(new UpdateAttachmentsParentIdCommandV3())
+                .update()
+                    .beforeSave(TransactionChainFactoryV3.getCreateContactDirectoryBeforeSaveChain())
+                    .afterSave(new UpdateAttachmentsParentIdCommandV3())
+                .summary()
+                    .beforeFetch(new ContactDirectoryFillLookupFieldsCommand())
+                    .afterFetch(new FillContactDirectorySharingInfoCommand())
+                .list()
+                    .beforeFetch(new ContactDirectoryFillLookupFieldsCommand())
                 .build();
     }
 
     @Module("admindocuments")
     public static Supplier<V3Config> getAdminDocuments() {
         return () -> new V3Config(AdminDocumentsContext.class)
-                .create().beforeSave(new SetLocalIdCommandV3())
+                .create()
+                    .beforeSave(TransactionChainFactoryV3.getCreateAdminDocumentsBeforeSaveChain())
                 .update()
+                    .beforeSave(TransactionChainFactoryV3.getCreateAdminDocumentsBeforeSaveChain())
                 .list()
                     .beforeFetch(new LoadAdminDocumentsLookupCommandV3())
                 .summary()

@@ -465,7 +465,8 @@ public class FieldUtil {
 					FacilioConstants.ContextNames.Tenant.CONTACT_DIRECTORY,
 					FacilioConstants.ContextNames.WO_SERVICE,
 					FacilioConstants.ContextNames.WO_LABOUR,
-					FacilioConstants.ContextNames.TRANSACTION
+					FacilioConstants.ContextNames.TRANSACTION,
+					FacilioConstants.ContextNames.Tenant.AUDIENCE
 				))
 			);
 

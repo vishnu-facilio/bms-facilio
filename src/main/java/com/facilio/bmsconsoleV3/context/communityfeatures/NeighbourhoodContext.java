@@ -1,6 +1,7 @@
-package com.facilio.bmsconsoleV3.context.tenantEngagement;
+package com.facilio.bmsconsoleV3.context.communityfeatures;
 
 import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsoleV3.context.CommunitySharingInfoContext;
 import com.facilio.v3.context.V3Context;
 
 import java.util.List;
@@ -12,13 +13,13 @@ public class NeighbourhoodContext extends V3Context {
     private Integer category;
     private LocationContext location;
     private Long activeDealsCount;
-    private List<NeighbourhoodSharingContext> neighbourhoodsharing;
+    private List<CommunitySharingInfoContext> neighbourhoodsharing;
 
-    public List<NeighbourhoodSharingContext> getNeighbourhoodsharing() {
+    public List<CommunitySharingInfoContext> getNeighbourhoodsharing() {
         return neighbourhoodsharing;
     }
 
-    public void setNeighbourhoodsharing(List<NeighbourhoodSharingContext> neighbourhoodsharing) {
+    public void setNeighbourhoodsharing(List<CommunitySharingInfoContext> neighbourhoodsharing) {
         this.neighbourhoodsharing = neighbourhoodsharing;
     }
 
@@ -63,6 +64,14 @@ public class NeighbourhoodContext extends V3Context {
         this.category = category;
     }
 
+    private AudienceContext audience;
 
+    public AudienceContext getAudience() {
+        return audience;
+    }
+
+    public void setAudience(AudienceContext audience) {
+        this.audience = audience;
+    }
 
 }

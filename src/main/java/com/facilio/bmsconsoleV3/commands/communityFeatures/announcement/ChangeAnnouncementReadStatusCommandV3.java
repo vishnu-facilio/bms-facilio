@@ -1,9 +1,8 @@
-package com.facilio.bmsconsoleV3.commands.announcement;
+package com.facilio.bmsconsoleV3.commands.communityFeatures.announcement;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
-import com.facilio.bmsconsoleV3.context.announcement.AnnouncementContext;
-import com.facilio.bmsconsoleV3.context.announcement.PeopleAnnouncementContext;
+import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnnouncementContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;

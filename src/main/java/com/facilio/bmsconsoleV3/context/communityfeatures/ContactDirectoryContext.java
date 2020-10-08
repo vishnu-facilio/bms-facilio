@@ -1,5 +1,6 @@
-package com.facilio.bmsconsoleV3.context.tenantEngagement;
+package com.facilio.bmsconsoleV3.context.communityfeatures;
 
+import com.facilio.bmsconsoleV3.context.CommunitySharingInfoContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.v3.context.V3Context;
 
@@ -10,14 +11,14 @@ public class ContactDirectoryContext extends V3Context {
     private V3PeopleContext people;
     private String description;
     private Integer category;
-    private List<ContactDirectorySharingContext> contactdirectorysharing;
+    private List<CommunitySharingInfoContext> contactdirectorysharing;
 
 
-    public List<ContactDirectorySharingContext> getContactdirectorysharing() {
+    public List<CommunitySharingInfoContext> getContactdirectorysharing() {
         return contactdirectorysharing;
     }
 
-    public void setContactdirectorysharing(List<ContactDirectorySharingContext> contactdirectorysharing) {
+    public void setContactdirectorysharing(List<CommunitySharingInfoContext> contactdirectorysharing) {
         this.contactdirectorysharing = contactdirectorysharing;
     }
 
@@ -43,5 +44,15 @@ public class ContactDirectoryContext extends V3Context {
 
     public void setCategory(Integer category) {
         this.category = category;
+    }
+
+    private AudienceContext audience;
+
+    public AudienceContext getAudience() {
+        return audience;
+    }
+
+    public void setAudience(AudienceContext audience) {
+        this.audience = audience;
     }
 }

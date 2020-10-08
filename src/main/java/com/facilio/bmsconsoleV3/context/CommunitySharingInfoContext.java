@@ -1,8 +1,7 @@
 package com.facilio.bmsconsoleV3.context;
 
 import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsoleV3.context.announcement.AnnouncementContext;
-import com.facilio.bmsconsoleV3.context.announcement.AnnouncementSharingInfoContext;
+import com.facilio.bmsconsoleV3.context.communityfeatures.AudienceContext;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.v3.context.V3Context;
 
@@ -67,4 +66,13 @@ public class CommunitySharingInfoContext extends V3Context {
         return null;
     }
 
+   private Long audienceId;
+
+    public Long getAudienceId() {
+        return audienceId;
+    }
+
+    public void setAudienceId(Long audienceId) {
+        this.audienceId = audienceId;
+    }
 }

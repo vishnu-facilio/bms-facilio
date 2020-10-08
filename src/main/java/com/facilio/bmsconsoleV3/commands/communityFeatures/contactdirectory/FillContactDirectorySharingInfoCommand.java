@@ -1,9 +1,10 @@
 package com.facilio.bmsconsoleV3.commands.communityFeatures.contactdirectory;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
-import com.facilio.bmsconsoleV3.context.tenantEngagement.ContactDirectoryContext;
-import com.facilio.bmsconsoleV3.context.tenantEngagement.ContactDirectorySharingContext;
-import com.facilio.bmsconsoleV3.util.AnnouncementAPI;
+import com.facilio.bmsconsoleV3.context.CommunitySharingInfoContext;
+import com.facilio.bmsconsoleV3.context.communityfeatures.ContactDirectoryContext;
+import com.facilio.bmsconsoleV3.context.communityfeatures.ContactDirectorySharingContext;
+import com.facilio.bmsconsoleV3.util.CommunityFeaturesAPI;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.CommandUtil;
 import org.apache.commons.chain.Context;
@@ -20,9 +21,14 @@ public class FillContactDirectorySharingInfoCommand extends FacilioCommand {
             for(Long recId : recordIds) {
                 ContactDirectoryContext record = (ContactDirectoryContext) CommandUtil.getModuleData(context, moduleName,recId);
                 if (record != null) {
-                    List<ContactDirectorySharingContext> list = (List<ContactDirectorySharingContext>) AnnouncementAPI.getSharingInfo(record, "contactdirectorysharing", "contactDirectory");
-                    if (CollectionUtils.isNotEmpty(list)) {
-                        record.setContactdirectorysharing(list);
+                    if(record.getAudience() != null){
+                        CommunityFeaturesAPI.setAudienceSharingInfo(record.getAudience());
+                    }
+                    else {
+                        List<CommunitySharingInfoContext> list = (List<CommunitySharingInfoContext>) CommunityFeaturesAPI.getSharingInfo(record, "contactdirectorysharing", "contactDirectory");
+                        if (CollectionUtils.isNotEmpty(list)) {
+                            record.setContactdirectorysharing(list);
+                        }
                     }
                 }
             }

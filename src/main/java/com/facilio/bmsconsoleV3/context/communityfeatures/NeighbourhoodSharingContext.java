@@ -1,4 +1,4 @@
-package com.facilio.bmsconsoleV3.context.tenantEngagement;
+package com.facilio.bmsconsoleV3.context.communityfeatures;
 
 import com.facilio.bmsconsoleV3.context.CommunitySharingInfoContext;
 

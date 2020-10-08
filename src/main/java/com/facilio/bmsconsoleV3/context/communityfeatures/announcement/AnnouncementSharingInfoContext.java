@@ -1,9 +1,7 @@
-package com.facilio.bmsconsoleV3.context.announcement;
+package com.facilio.bmsconsoleV3.context.communityfeatures.announcement;
 
-import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsoleV3.context.CommunitySharingInfoContext;
-import com.facilio.modules.FacilioEnum;
-import com.facilio.v3.context.V3Context;
+import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementContext;
 
 public class AnnouncementSharingInfoContext extends CommunitySharingInfoContext {
 

@@ -1,5 +1,6 @@
-package com.facilio.bmsconsoleV3.context.tenantEngagement;
+package com.facilio.bmsconsoleV3.context.communityfeatures;
 
+import com.facilio.bmsconsoleV3.context.CommunitySharingInfoContext;
 import com.facilio.v3.context.V3Context;
 
 import java.io.File;
@@ -14,14 +15,14 @@ public class AdminDocumentsContext extends V3Context {
     private String fileContentType;
     private String description;
     private String title;
-    private List<AdminDocumentsSharingContext> admindocumentsharing;
+    private List<CommunitySharingInfoContext> admindocumentsharing;
 
 
-    public List<AdminDocumentsSharingContext> getAdmindocumentsharing() {
+    public List<CommunitySharingInfoContext> getAdmindocumentsharing() {
         return admindocumentsharing;
     }
 
-    public void setAdmindocumentsharing(List<AdminDocumentsSharingContext> admindocumentsharing) {
+    public void setAdmindocumentsharing(List<CommunitySharingInfoContext> admindocumentsharing) {
         this.admindocumentsharing = admindocumentsharing;
     }
 
@@ -81,5 +82,15 @@ public class AdminDocumentsContext extends V3Context {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    private AudienceContext audience;
+
+    public AudienceContext getAudience() {
+        return audience;
+    }
+
+    public void setAudience(AudienceContext audience) {
+        this.audience = audience;
     }
 }

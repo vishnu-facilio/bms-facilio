@@ -107,7 +107,7 @@ enums:
     enumClassName: com.facilio.bmsconsoleV3.context.budget.AccountTypeContext$Group
 
   - name: NewsType
-    enumClassName: com.facilio.bmsconsoleV3.context.tenantEngagement.NewsAndInformationContext$Type
+    enumClassName: com.facilio.bmsconsoleV3.context.communityfeatures.NewsAndInformationContext$Type
     
   - name: FocalPointType
     enumClassName: com.facilio.bmsconsoleV3.context.budget.BudgetContext$FocalPointType

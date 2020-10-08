@@ -28,12 +28,12 @@ import com.facilio.bmsconsole.tenant.TenantSpaceContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.SLAWorkflowCommitmentRuleContext;
 import com.facilio.bmsconsoleV3.context.*;
-import com.facilio.bmsconsoleV3.context.announcement.AnnouncementContext;
-import com.facilio.bmsconsoleV3.context.announcement.AnnouncementSharingInfoContext;
-import com.facilio.bmsconsoleV3.context.announcement.PeopleAnnouncementContext;
+import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementContext;
+import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementSharingInfoContext;
+import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnnouncementContext;
 import com.facilio.bmsconsoleV3.context.budget.*;
 import com.facilio.bmsconsoleV3.context.quotation.*;
-import com.facilio.bmsconsoleV3.context.tenantEngagement.*;
+import com.facilio.bmsconsoleV3.context.communityfeatures.*;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitChecklistContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistCategoryContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistContext;
@@ -1817,6 +1817,10 @@ public class FacilioConstants {
 			public static final String ADMIN_DOCUMENTS = "admindocuments";
 			public static final String ADMIN_DOCUMENTS_NOTES = "admindocumentnotes";
 			public static final String ADMIN_DOCUMENTS_SHARING = "admindocumentsharing";
+
+			public static final String AUDIENCE = "audience";
+			public static final String AUDIENCE_SHARING = "audienceSharing";
+
 		}
 		
 		// etisalat changes
@@ -2100,6 +2104,9 @@ public class FacilioConstants {
 			classMap.put(Tenant.ADMIN_DOCUMENTS_SHARING, AdminDocumentsSharingContext.class);
 			classMap.put(Tenant.CONTACT_DIRECTORY, ContactDirectoryContext.class);
 			classMap.put(Tenant.CONTACT_DIRECTORY_SHARING, ContactDirectorySharingContext.class);
+			classMap.put(Tenant.AUDIENCE, AudienceContext.class);
+			classMap.put(Tenant.AUDIENCE_SHARING, CommunitySharingInfoContext.class);
+
 
 			classMap.put(Budget.ACCOUNT_TYPE, AccountTypeContext.class);
 			classMap.put(Budget.CHART_OF_ACCOUNT, ChartOfAccountContext.class);

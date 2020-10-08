@@ -1,7 +1,6 @@
-package com.facilio.bmsconsoleV3.commands.announcement;
+package com.facilio.bmsconsoleV3.commands.communityFeatures.announcement;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
-import com.facilio.bmsconsoleV3.context.announcement.AnnouncementContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.FacilioTimer;
@@ -10,7 +9,6 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
-import java.util.Map;
 
 public class DeleteChildAnnouncementsCommand extends FacilioCommand {
 

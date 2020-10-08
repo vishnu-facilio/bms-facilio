@@ -4,8 +4,7 @@ import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.context.V3TenantContactContext;
-import com.facilio.bmsconsoleV3.context.V3TenantContext;
-import com.facilio.bmsconsoleV3.util.AnnouncementAPI;
+import com.facilio.bmsconsoleV3.util.CommunityFeaturesAPI;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -27,7 +26,7 @@ public class SiteTenantContacts implements CommunitySharedPeople {
         }
         List<V3PeopleContext> users = new ArrayList<>();
         for(BuildingContext building : buildings) {
-            List<Long> tenantIds = AnnouncementAPI.getBuildingTenants(building.getId());
+            List<Long> tenantIds = CommunityFeaturesAPI.getBuildingTenants(building.getId());
             if(CollectionUtils.isEmpty(tenantIds)) {
                 continue;
             }

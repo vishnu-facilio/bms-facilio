@@ -1,7 +1,7 @@
 package com.facilio.bmsconsole.instant.jobs;
 
-import com.facilio.bmsconsoleV3.context.announcement.AnnouncementContext;
-import com.facilio.bmsconsoleV3.util.AnnouncementAPI;
+import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementContext;
+import com.facilio.bmsconsoleV3.util.CommunityFeaturesAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.job.InstantJob;
@@ -21,21 +21,21 @@ public class AddOrUpdateChildAnnouncementsJob extends InstantJob {
           if(action == 1){
               if(CollectionUtils.isNotEmpty(parentAnnouncements)){
                   for (AnnouncementContext announcement : parentAnnouncements) {
-                      AnnouncementAPI.addAnnouncementPeople(announcement);
+                      CommunityFeaturesAPI.addAnnouncementPeople(announcement);
                   }
               }
           }
           else if(action == 2) {
               if(CollectionUtils.isNotEmpty(parentAnnouncements)) {
                   for (AnnouncementContext announcement : parentAnnouncements) {
-                      AnnouncementAPI.cancelChildAnnouncements(announcement);
+                      CommunityFeaturesAPI.cancelChildAnnouncements(announcement);
                   }
               }
           }
           else if(action == 3) {
               List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
               if(CollectionUtils.isNotEmpty(recordIds)) {
-                  AnnouncementAPI.deleteChildAnnouncements(recordIds);
+                  CommunityFeaturesAPI.deleteChildAnnouncements(recordIds);
               }
           }
       }

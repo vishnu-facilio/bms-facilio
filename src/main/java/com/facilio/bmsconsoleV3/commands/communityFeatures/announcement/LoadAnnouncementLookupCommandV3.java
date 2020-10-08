@@ -1,4 +1,4 @@
-package com.facilio.bmsconsoleV3.commands.announcement;
+package com.facilio.bmsconsoleV3.commands.communityFeatures.announcement;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class LoadPeopleAnnouncementLookupCommand extends FacilioCommand {
+public class LoadAnnouncementLookupCommandV3 extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
@@ -26,10 +26,9 @@ public class LoadPeopleAnnouncementLookupCommand extends FacilioCommand {
         }
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
         List<LookupField> additionaLookups = new ArrayList<LookupField>();
-        LookupField sysCreatedBy = (LookupField) FieldFactory.getSystemField("sysCreatedBy", modBean.getModule(FacilioConstants.ContextNames.ANNOUNCEMENT));
+        LookupField sysCreatedBy = (LookupField) FieldFactory.getSystemField("sysCreatedBy", modBean.getModule(moduleName));
         additionaLookups.add(sysCreatedBy);
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS,additionaLookups);
-
         return false;
     }
 }

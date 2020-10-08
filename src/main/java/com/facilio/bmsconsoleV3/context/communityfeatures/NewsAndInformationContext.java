@@ -1,9 +1,9 @@
-package com.facilio.bmsconsoleV3.context.tenantEngagement;
+package com.facilio.bmsconsoleV3.context.communityfeatures;
 
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.NoteContext;
+import com.facilio.bmsconsoleV3.context.CommunitySharingInfoContext;
 import com.facilio.modules.FacilioEnum;
-import com.facilio.v3.context.AttachmentV3Context;
 import com.facilio.v3.context.V3Context;
 
 import java.util.List;
@@ -80,13 +80,13 @@ public class NewsAndInformationContext extends V3Context {
         return null;
     }
 
-    private List<NewsAndInformationSharingContext> newsandinformationsharing;
+    private List<CommunitySharingInfoContext> newsandinformationsharing;
 
-    public List<NewsAndInformationSharingContext> getNewsandinformationsharing() {
+    public List<CommunitySharingInfoContext> getNewsandinformationsharing() {
         return newsandinformationsharing;
     }
 
-    public void setNewsandinformationsharing(List<NewsAndInformationSharingContext> newsandinformationsharing) {
+    public void setNewsandinformationsharing(List<CommunitySharingInfoContext> newsandinformationsharing) {
         this.newsandinformationsharing = newsandinformationsharing;
     }
 
@@ -108,5 +108,15 @@ public class NewsAndInformationContext extends V3Context {
 
     public void setNewsandinformationattachments(List<AttachmentContext> newsandinformationattachments) {
         this.newsandinformationattachments = newsandinformationattachments;
+    }
+
+    private AudienceContext audience;
+
+    public AudienceContext getAudience() {
+        return audience;
+    }
+
+    public void setAudience(AudienceContext audience) {
+        this.audience = audience;
     }
 }

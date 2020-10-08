@@ -1,5 +1,6 @@
-package com.facilio.bmsconsoleV3.context.tenantEngagement;
+package com.facilio.bmsconsoleV3.context.communityfeatures;
 
+import com.facilio.bmsconsoleV3.context.CommunitySharingInfoContext;
 import com.facilio.v3.context.V3Context;
 
 import java.util.List;
@@ -12,14 +13,14 @@ public class DealsAndOffersContext extends V3Context {
     private Long expiryDate;
     private Long startDate;
     private Boolean active;
-    private List<DealsAndOffersSharingContext> dealsandofferssharing;
+    private List<CommunitySharingInfoContext> dealsandofferssharing;
     private String dealer;
 
-    public List<DealsAndOffersSharingContext> getDealsandofferssharing() {
+    public List<CommunitySharingInfoContext> getDealsandofferssharing() {
         return dealsandofferssharing;
     }
 
-    public void setDealsandofferssharing(List<DealsAndOffersSharingContext> dealsandofferssharing) {
+    public void setDealsandofferssharing(List<CommunitySharingInfoContext> dealsandofferssharing) {
         this.dealsandofferssharing = dealsandofferssharing;
     }
 
@@ -85,5 +86,15 @@ public class DealsAndOffersContext extends V3Context {
 
     public void setDealer(String dealer) {
         this.dealer = dealer;
+    }
+
+    private AudienceContext audience;
+
+    public AudienceContext getAudience() {
+        return audience;
+    }
+
+    public void setAudience(AudienceContext audience) {
+        this.audience = audience;
     }
 }

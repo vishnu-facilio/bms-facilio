@@ -1,4 +1,4 @@
-package com.facilio.bmsconsoleV3.context.announcement;
+package com.facilio.bmsconsoleV3.context.communityfeatures.announcement;
 
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 

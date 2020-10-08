@@ -1,9 +1,10 @@
 package com.facilio.bmsconsoleV3.commands.communityFeatures.dealsandoffers;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
-import com.facilio.bmsconsoleV3.context.tenantEngagement.DealsAndOffersContext;
-import com.facilio.bmsconsoleV3.context.tenantEngagement.DealsAndOffersSharingContext;
-import com.facilio.bmsconsoleV3.util.AnnouncementAPI;
+import com.facilio.bmsconsoleV3.context.CommunitySharingInfoContext;
+import com.facilio.bmsconsoleV3.context.communityfeatures.DealsAndOffersContext;
+import com.facilio.bmsconsoleV3.context.communityfeatures.DealsAndOffersSharingContext;
+import com.facilio.bmsconsoleV3.util.CommunityFeaturesAPI;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.CommandUtil;
 import org.apache.commons.chain.Context;
@@ -20,9 +21,14 @@ public class FillDealsAndOffersSharingInfoCommand extends FacilioCommand {
             for(Long recId : recordIds) {
                 DealsAndOffersContext record = (DealsAndOffersContext) CommandUtil.getModuleData(context, moduleName,recId);
                 if (record != null) {
-                    List<DealsAndOffersSharingContext> list = (List<DealsAndOffersSharingContext>) AnnouncementAPI.getSharingInfo(record, "dealsandofferssharing", "deals");
-                    if (CollectionUtils.isNotEmpty(list)) {
-                        record.setDealsandofferssharing(list);
+                    if(record.getAudience() != null){
+                        CommunityFeaturesAPI.setAudienceSharingInfo(record.getAudience());
+                    }
+                    else {
+                        List<CommunitySharingInfoContext> list = (List<CommunitySharingInfoContext>) CommunityFeaturesAPI.getSharingInfo(record, "dealsandofferssharing", "deals");
+                        if (CollectionUtils.isNotEmpty(list)) {
+                            record.setDealsandofferssharing(list);
+                        }
                     }
                 }
             }

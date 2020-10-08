@@ -3,15 +3,12 @@ package com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.util.AttachmentsAPI;
 import com.facilio.bmsconsole.util.NotesAPI;
-import com.facilio.bmsconsoleV3.context.budget.ChartOfAccountContext;
-import com.facilio.bmsconsoleV3.context.tenantEngagement.NewsAndInformationContext;
-import com.facilio.bmsconsoleV3.context.tenantEngagement.NewsAndInformationSharingContext;
-import com.facilio.bmsconsoleV3.util.AnnouncementAPI;
-import com.facilio.bmsconsoleV3.util.V3AttachmentAPI;
+import com.facilio.bmsconsoleV3.context.CommunitySharingInfoContext;
+import com.facilio.bmsconsoleV3.context.communityfeatures.NewsAndInformationContext;
+import com.facilio.bmsconsoleV3.context.communityfeatures.NewsAndInformationSharingContext;
+import com.facilio.bmsconsoleV3.util.CommunityFeaturesAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.context.Constants;
-import com.facilio.v3.exception.ErrorCode;
-import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -30,7 +27,15 @@ public class FillNewsRelatedModuleDataInListCommandV3 extends FacilioCommand {
             for(NewsAndInformationContext news : newsList) {
                 news.setNewsandinformationnotes(NotesAPI.fetchNotes(news.getId(), FacilioConstants.ContextNames.Tenant.NEWS_AND_INFORMATION_NOTES));
                 news.setNewsandinformationattachments(AttachmentsAPI.getAttachments(FacilioConstants.ContextNames.Tenant.NEWS_AND_INFORMATION_ATTACHMENTS, news.getId(), false));
-                news.setNewsandinformationsharing((List<NewsAndInformationSharingContext>)  AnnouncementAPI.getSharingInfo(news, FacilioConstants.ContextNames.Tenant.NEWS_AND_INFORMATION_SHARING, "newsAndInformation"));
+                if(news.getAudience() != null){
+                    CommunityFeaturesAPI.setAudienceSharingInfo(news.getAudience());
+                }
+                else {
+                    List<CommunitySharingInfoContext> list = (List<CommunitySharingInfoContext>) CommunityFeaturesAPI.getSharingInfo(news, FacilioConstants.ContextNames.Tenant.NEWS_AND_INFORMATION_SHARING, "newsAndInformation");
+                    if (CollectionUtils.isNotEmpty(list)) {
+                        news.setNewsandinformationsharing(list);
+                    }
+                }
             }
 
         }

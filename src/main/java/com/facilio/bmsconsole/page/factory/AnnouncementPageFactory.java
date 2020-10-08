@@ -2,7 +2,7 @@ package com.facilio.bmsconsole.page.factory;
 
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
-import com.facilio.bmsconsoleV3.context.announcement.AnnouncementContext;
+import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
 import org.apache.commons.lang.StringUtils;
