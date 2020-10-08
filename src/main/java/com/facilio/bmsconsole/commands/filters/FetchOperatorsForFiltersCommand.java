@@ -106,21 +106,21 @@ public class FetchOperatorsForFiltersCommand extends FacilioCommand {
             switch ((DateOperators) operator) {
                 case NEXT_N_DAYS: {
                     List<FilterOperator> operators = new ArrayList<>();
-                    operators.add(new FilterOperator("Next 2 Days", MessageFormat.format("2_{0}", DateOperators.NEXT_N_DAYS.getOperatorId()), false));
-                    operators.add(new FilterOperator("Next 7 Days", MessageFormat.format("7_{0}", DateOperators.NEXT_N_DAYS.getOperatorId()), false));
+                    operators.add(new FilterOperator("Next 2 Days", operator.getOperatorId(), false, "2"));
+                    operators.add(new FilterOperator("Next 7 Days", operator.getOperatorId(), false, "7"));
                     return operators;
                 }
-                case CURRENT_WEEK: {
-                    return Collections.singletonList(new FilterOperator("This Week", String.valueOf(DateOperators.CURRENT_WEEK.getOperatorId()), DateOperators.CURRENT_WEEK.isValueNeeded()));
+                case CURRENT_WEEK: { // Have to check with Krishna if operator name itself can be changed if they are not used in Scripts
+                    return Collections.singletonList(new FilterOperator("This Week", operator.getOperatorId(), operator.isValueNeeded()));
                 }
                 case LAST_N_WEEKS: {
-                    return Collections.singletonList(new FilterOperator("Last 2 Weeks", MessageFormat.format("2_{0}", DateOperators.LAST_N_WEEKS.getOperatorId()), false));
+                    return Collections.singletonList(new FilterOperator("Last 2 Weeks", operator.getOperatorId(), false, "2"));
                 }
                 case CURRENT_MONTH: {
-                    return Collections.singletonList(new FilterOperator("This Month", String.valueOf(DateOperators.CURRENT_MONTH.getOperatorId()), DateOperators.CURRENT_MONTH.isValueNeeded()));
+                    return Collections.singletonList(new FilterOperator("This Month", operator.getOperatorId(), operator.isValueNeeded()));
                 }
                 case BETWEEN: {
-                    return Collections.singletonList(new FilterOperator("Custom", String.valueOf(DateOperators.BETWEEN.getOperatorId()), DateOperators.BETWEEN.isValueNeeded()));
+                    return Collections.singletonList(new FilterOperator("Custom", operator.getOperatorId(), operator.isValueNeeded()));
                 }
                 default:
                     return Collections.singletonList(new FilterOperator(operator));

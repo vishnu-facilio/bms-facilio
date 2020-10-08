@@ -66,7 +66,7 @@ public class FilterFieldContext {
         return field == null ? null : field.getDisplayType() == null ? null : field.getDisplayType().name();
     }
 
-    public String getModuleName() {
+    public String getLookupModuleName() {
         return field == null ? null : field instanceof LookupField ? ((LookupField) field).getLookupModule().getName() : null;
     }
 
