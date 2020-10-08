@@ -36,10 +36,11 @@ import com.facilio.time.DateRange;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import java.util.*;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 ;
@@ -240,7 +241,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 			LOGGER.info("Date Props : "+dataProps);
 		}
 		if (dp.getLimit() != -1 && xValues == null) {
-			data.setxValues(getXValues(dataProps, dp.getxAxis().getFieldName()));
+			data.setxValues(getXValues(dataProps, dp.getxAxis().getFieldName(), dp.getxAxis().getDataTypeEnum()));
 			if (data.getxValues() == null || data.getxValues().isEmpty()) {
 				noMatch = true;
 			}
@@ -262,12 +263,15 @@ public class FetchReportDataCommand extends FacilioCommand {
 		return data;
 	}
 
-	private String getXValues (List<Map<String, Object>> props, String key) {
+	private String getXValues (List<Map<String, Object>> props, String key, FieldType type) {
 		if (props != null && !props.isEmpty()) {
 			StringJoiner xValues = new StringJoiner(",");
 			for (Map<String, Object> prop : props) {
 				Object val = prop.get(key);
 				if (val != null) {
+					if(val instanceof Map && type == FieldType.LOOKUP) {
+						val = ((Map) val).get("id");
+					}
 					xValues.add(val.toString());
 				}
 			}
@@ -484,13 +488,13 @@ public class FetchReportDataCommand extends FacilioCommand {
 			}
 
 			props = newSelect.get();
-			LOGGER.severe("SELECT BUILDER --- "+ newSelect);
+			LOGGER.debug("SELECT BUILDER --- "+ newSelect);
 		}
 		else {
 			props = newSelectBuilder.getAsProps();
 		}
 
-		 LOGGER.severe("SELECT BUILDER --- "+ newSelectBuilder);
+		 LOGGER.debug("SELECT BUILDER --- "+ newSelectBuilder);
 
 		 if(!FacilioProperties.isProduction() && AccountUtil.getCurrentOrg().getId() == 75l) {
 			 LOGGER.info("DATE FROM QUERY : "+props);

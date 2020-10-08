@@ -845,7 +845,12 @@ public class V2ReportAction extends FacilioAction {
 		reportContext.setUserFilters(userFilters, true);
 	}
 	
-	private void updateContext(FacilioContext context) {
+	private void updateContext(FacilioContext context) throws Exception {
+		JSONParser parser = new JSONParser();
+		JSONArray baseLineList = null;
+		if (baseLines != null && !baseLines.isEmpty()) {
+			baseLineList = (JSONArray) parser.parse(baseLines);
+		}
 		context.put("x-axis", xField);
 		context.put("date-field", dateField);
 		context.put("y-axis", yField);
@@ -857,6 +862,7 @@ public class V2ReportAction extends FacilioAction {
 		context.put("user-filters", userFilters);
 		context.put("chartState", chartState);
 		context.put("having", having);
+		context.put(FacilioConstants.ContextNames.BASE_LINE_LIST, FieldUtil.getAsBeanListFromJsonArray(baseLineList, ReportBaseLineContext.class));
 
 		context.put(FacilioConstants.Reports.MODULE_TYPE, moduleType);
 		

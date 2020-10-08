@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,6 +85,7 @@ public class ConstructReportData extends FacilioCommand {
 		Criteria criteria = (Criteria) context.get("criteria");
 		JSONArray sortFields = (JSONArray) context.get("sort_fields");
 		JSONArray havingJSON = (JSONArray) context.get("having");
+		CommonReportUtil.fetchBaseLines(reportContext, (List<ReportBaseLineContext>) context.get(FacilioConstants.ContextNames.BASE_LINE_LIST));
 		Integer sortOrder = null;
 		if (context.containsKey("sort_order")) {
 			sortOrder = ((Number) context.get("sort_order")).intValue();
@@ -329,7 +331,12 @@ public class ConstructReportData extends FacilioCommand {
 		aliases.put("actual", yField.getDisplayName());
 		dataPointContext.setAliases(aliases);
 		dataPointContext.setName(xField.getName());
-		
+		List<ReportBaseLineContext> baseLineList = reportContext.getBaseLines();
+		if (reportContext.getBaseLines() != null && !reportContext.getBaseLines().isEmpty()) {
+			for (ReportBaseLineContext reportBaseLine : reportContext.getBaseLines()) {
+				aliases.put((String)reportBaseLine.getBaseLine().getName(), yField.getDisplayName() + '-' +reportBaseLine.getBaseLine().getName());
+			}
+		}
 		reportContext.addDataPoint(dataPointContext);
 	}
 	
