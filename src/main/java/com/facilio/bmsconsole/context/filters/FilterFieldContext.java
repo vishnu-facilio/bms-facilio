@@ -26,7 +26,7 @@ public class FilterFieldContext {
                 options = new ArrayList<>();
                 for (EnumFieldValue value : values) {
                     if (value.isVisible()) { //Have to check if this is needed. What if user wants to check old records with deleted enum options
-                        options.add(new FilterFieldOptions(value.getValue(), String.valueOf(value.getIndex())));
+                        options.add(new FilterFieldOptions(String.valueOf(value.getIndex()), value.getValue()));
                     }
                 }
             }
@@ -87,8 +87,8 @@ public class FilterFieldContext {
         String label, value;
 
         FilterFieldOptions(String value, String label) {
-            this.label = label;
             this.value = value;
+            this.label = label;
         }
 
         public String getLabel() {
