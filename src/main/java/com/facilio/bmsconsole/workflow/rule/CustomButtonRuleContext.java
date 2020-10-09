@@ -17,9 +17,11 @@ public class CustomButtonRuleContext extends ApproverWorkflowRuleContext impleme
     private static final long serialVersionUID = 1L;
 
     private FacilioForm form;
+    @Override
     public FacilioForm getForm() {
         return form;
     }
+    @Override
     public void setForm(FacilioForm form) {
         this.form = form;
     }

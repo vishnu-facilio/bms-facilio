@@ -4,6 +4,7 @@ import com.facilio.bmsconsole.forms.FacilioForm;
 
 public interface FormInterface {
     FacilioForm getForm();
+    void setForm(FacilioForm facilioForm);
 
     long getFormId();
 

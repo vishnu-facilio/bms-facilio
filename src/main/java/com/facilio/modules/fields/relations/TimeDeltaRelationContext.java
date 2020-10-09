@@ -17,18 +17,30 @@ public class TimeDeltaRelationContext extends BaseRelationContext {
 
     @Override
     public Object calculateValue(ReadingContext reading, ReadingDataMeta previousRDM) throws Exception {
+        if (olderReading(reading, previousRDM)) {
+            // should not called for older reading..
+            return null;
+        }
+
         long ttime = previousRDM.getTtime();
         long actualTime = reading.getTtime();
 
-        long deltaInMillis = actualTime - ttime;
-        if (unit == TimeDeltaUnit.SECONDS) {
-            return (deltaInMillis / 1000);
+        Object currentReadingValue = reading.getReading(getBaseField().getName());
+        if (currentReadingValue instanceof Boolean) {
+            if ((Boolean) currentReadingValue) {
+                long deltaInMillis = actualTime - ttime;
+                if (unit == TimeDeltaUnit.SECONDS) {
+                    return (deltaInMillis / 1000);
+                }
+                return deltaInMillis;
+            }
         }
-        return deltaInMillis;
+        return 0;
     }
 
     @Override
     public void validate() throws Exception {
+        validateType(getBaseField(), FieldType.BOOLEAN);
         validateType(getDerivedField(), FieldType.DECIMAL, FieldType.NUMBER);
     }
 

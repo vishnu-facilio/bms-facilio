@@ -61,14 +61,18 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 					approverWorkflowRuleContext.setApprovers(SharingAPI.getSharing(approverWorkflowRuleContext.getId(), ModuleFactory.getApproversModule(), ApproverContext.class));
 				}
 
-				if (workflowRuleContext instanceof AbstractStateTransitionRuleContext) {
-					AbstractStateTransitionRuleContext abstractStateTransitionRuleContext = (AbstractStateTransitionRuleContext) workflowRuleContext;
-					if (abstractStateTransitionRuleContext.getFormId() > 0) {
+				if (workflowRuleContext instanceof FormInterface) {
+					FormInterface formInterface = (FormInterface) workflowRuleContext;
+					if (formInterface.getFormId() > 0) {
 						if (formIds == null) {
 							formIds = new ArrayList<>();
 						}
-						formIds.add(abstractStateTransitionRuleContext.getFormId());
+						formIds.add(formInterface.getFormId());
 					}
+				}
+
+				if (workflowRuleContext instanceof AbstractStateTransitionRuleContext) {
+					AbstractStateTransitionRuleContext abstractStateTransitionRuleContext = (AbstractStateTransitionRuleContext) workflowRuleContext;
 
 					if (abstractStateTransitionRuleContext.getTypeEnum() == TransitionType.FIELD_SCHEDULED) {
 						if (fieldWorkflowRuleIds == null) {
@@ -116,8 +120,8 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 					map.put(form.getId(), form);
 				}
 				for (WorkflowRuleContext workflowRuleContext : list) {
-					if (workflowRuleContext instanceof AbstractStateTransitionRuleContext) {
-						AbstractStateTransitionRuleContext stateFlowRule = (AbstractStateTransitionRuleContext) workflowRuleContext;
+					if (workflowRuleContext instanceof FormInterface) {
+						FormInterface stateFlowRule = (FormInterface) workflowRuleContext;
 						stateFlowRule.setForm(map.get(stateFlowRule.getFormId()));
 					}
 				}
