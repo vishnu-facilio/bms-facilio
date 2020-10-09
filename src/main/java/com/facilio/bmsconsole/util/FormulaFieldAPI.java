@@ -900,6 +900,7 @@ public class FormulaFieldAPI {
 		if (intervals != null && !intervals.isEmpty()) {
 			List<ReadingContext> readings = new ArrayList<>();
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			DateRange deleteRange = new DateRange(intervals.get(0).getStartTime(), intervals.get(intervals.size() - 1).getEndTime());
 			if (singleResourceId != -1) {
 				LOGGER.debug("Gonna perform optmised historical calculation for formula : "+formula.getId()+" for resource : "+singleResourceId);
 				if (formula.getMatchedResourcesIds().contains(singleResourceId)) {
@@ -910,7 +911,7 @@ public class FormulaFieldAPI {
 						LOGGER.error("optimisedWorkflow to String -- "+ WorkflowUtil.getXmlStringFromWorkflow(optimisedWorkflow));
 					}
 					LOGGER.debug("Time taken to generate optimised workflow : "+(System.currentTimeMillis() - workflowStarttime));
-					int deletedData = deleteOlderData(range.getStartTime(), range.getEndTime(), Collections.singletonList(singleResourceId), formula.getReadingField());
+					int deletedData = deleteOlderData(deleteRange.getStartTime(), deleteRange.getEndTime(), Collections.singletonList(singleResourceId), formula.getReadingField());
 					LOGGER.debug("Deleted rows for formula : "+formula.getName()+" between "+range+" is : "+deletedData);
 					Set<Object> xValues = new TreeSet<>(); 
 					long independentDataStarttime = System.currentTimeMillis();
@@ -924,7 +925,7 @@ public class FormulaFieldAPI {
 			}
 			else {
 				OptimisedFormulaCalculationWorkflow optimisedWorkflow = constructOptimisedWorkflowForHistoricalCalculation(formula.getWorkflow());
-				int deletedData = deleteOlderData(range.getStartTime(), range.getEndTime(), formula.getMatchedResourcesIds(), formula.getReadingField());
+				int deletedData = deleteOlderData(deleteRange.getStartTime(), deleteRange.getEndTime(), formula.getMatchedResourcesIds(), formula.getReadingField());
 				LOGGER.debug("Deleted rows for formula : "+formula.getName()+" between "+range+" is : "+deletedData);
 				Set<Object> xValues = new TreeSet<>(); 
 				Map<String,Object> wfParams = fetchIndependentParams(optimisedWorkflow.getMetas(), range, modBean, xValues);
@@ -1163,12 +1164,13 @@ public class FormulaFieldAPI {
 		LOGGER.debug(intervals);
 		if (intervals != null && !intervals.isEmpty()) {
 			List<ReadingContext> readings = new ArrayList<>();
+			DateRange deleteRange = new DateRange(intervals.get(0).getStartTime(), intervals.get(intervals.size() - 1).getEndTime());
 			boolean isSelfDependent = dependsOnSameModule(formula);
 			if (singleResourceId != -1) {
 				LOGGER.debug("Gonna calculate historical formula of : "+formula.getId()+" for resource : "+singleResourceId);
 				if (formula.getMatchedResourcesIds().contains(singleResourceId)) {
 					LOGGER.debug("Matched");
-					int deletedData = deleteOlderData(range.getStartTime(), range.getEndTime(), Collections.singletonList(singleResourceId), formula.getReadingField());
+					int deletedData = deleteOlderData(deleteRange.getStartTime(), deleteRange.getEndTime(), Collections.singletonList(singleResourceId), formula.getReadingField());
 					LOGGER.debug("Deleted rows for formula : "+formula.getName()+" between "+range+" is : "+deletedData);
 					
 					List<ReadingContext> currentReadings = FormulaFieldAPI.calculateFormulaReadings(singleResourceId, formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), formula.getTriggerTypeEnum() == TriggerType.SCHEDULE, isSelfDependent);
@@ -1178,7 +1180,7 @@ public class FormulaFieldAPI {
 				}
 			}
 			else {
-				int deletedData = deleteOlderData(range.getStartTime(), range.getEndTime(), formula.getMatchedResourcesIds(), formula.getReadingField());
+				int deletedData = deleteOlderData(deleteRange.getStartTime(), deleteRange.getEndTime(), formula.getMatchedResourcesIds(), formula.getReadingField());
 				LOGGER.debug("Deleted rows for formula : "+formula.getName()+" between "+range+" is : "+deletedData);
 				
 				for (Long resourceId : formula.getMatchedResourcesIds()) {
