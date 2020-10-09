@@ -46,6 +46,9 @@ public class PubSubManager {
 			JSONObject content = message.getContent();
 			String topic = (String) content.get("topic");
 			if ("readingChange".equalsIgnoreCase(topic)) {
+				if (orgId != 146) {
+					return;
+				}
 				String uniqueKey = (String) content.get("uniqueKey");
 				ArrayList readings = (ArrayList) content.get("readings");
 				
@@ -157,6 +160,9 @@ public class PubSubManager {
 			JSONObject content = message.getContent();
 			String topic = (String) content.get("topic");
 			if ("readingChange".equalsIgnoreCase(topic)) {
+				if (orgId != 146) {
+					return;
+				}
 				String uniqueKey = (String) content.get("uniqueKey");
 				ArrayList readings = (ArrayList) content.get("readings");
 				
