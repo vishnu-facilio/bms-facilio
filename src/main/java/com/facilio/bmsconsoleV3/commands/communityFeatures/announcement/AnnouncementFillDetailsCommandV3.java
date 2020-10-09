@@ -22,7 +22,6 @@ public class AnnouncementFillDetailsCommandV3 extends FacilioCommand {
             for(Long recId : recordIds) {
                 AnnouncementContext announcement = (AnnouncementContext) CommandUtil.getModuleData(context, FacilioConstants.ContextNames.Tenant.ANNOUNCEMENT, recId);
                 if (announcement != null) {
-                    //if check to be removed
                     if(announcement.getAudience() != null){
                         CommunityFeaturesAPI.setAudienceSharingInfo(announcement.getAudience());
                     }

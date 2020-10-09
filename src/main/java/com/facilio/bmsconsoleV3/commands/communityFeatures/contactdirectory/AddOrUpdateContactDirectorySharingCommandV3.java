@@ -4,9 +4,13 @@ import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.communityfeatures.AdminDocumentsContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.ContactDirectoryContext;
 import com.facilio.bmsconsoleV3.util.CommunityFeaturesAPI;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -20,24 +24,17 @@ public class AddOrUpdateContactDirectorySharingCommandV3 extends FacilioCommand 
 
         if(CollectionUtils.isNotEmpty(contacts)) {
             for(ContactDirectoryContext contact : contacts){
-                //uncomment the commented snippet & remove the existing uncommented after supporting audience in client
-
-//                if(contact.getAudience() == null){
-//                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Sharing Audience Information cannot be empty");
-//                }
-//                if(contact.getAudience().getId() > 0){
-//                    continue;
-//                }
-//                if(CollectionUtils.isEmpty(contact.getAudience().getAudienceSharing())){
-//                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid Sharing Audience Information");
-//                }
-//                CommunityFeaturesAPI.addAudience(contact.getAudience());
-//                contact.setAudience(contact.getAudience());
-
-                if(contact.getAudience() != null && contact.getAudience().getId() > 0){
+                Map<String, List<Map<String, Object>>> subforms = contact.getSubForm();
+                if(contact.getAudience() != null && MapUtils.isNotEmpty(subforms) && subforms.containsKey(FacilioConstants.ContextNames.Tenant.CONTACT_DIRECTORY_SHARING)){
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid Sharing Information. Can be  either audience or list of sharing info'");
+                }
+                else if(contact.getAudience() == null && (MapUtils.isEmpty(subforms) || !subforms.containsKey(FacilioConstants.ContextNames.Tenant.CONTACT_DIRECTORY_SHARING))){
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Sharing Information cannot be empty");
+                }
+                else if(contact.getAudience() != null && contact.getAudience().getId() > 0){
                     continue;
                 }
-                if(contact.getAudience() != null && CollectionUtils.isNotEmpty(contact.getAudience().getAudienceSharing())){
+                else if(contact.getAudience() != null && CollectionUtils.isNotEmpty(contact.getAudience().getAudienceSharing())){
                     CommunityFeaturesAPI.addAudience(contact.getAudience());
                     contact.setAudience(contact.getAudience());
                 }
