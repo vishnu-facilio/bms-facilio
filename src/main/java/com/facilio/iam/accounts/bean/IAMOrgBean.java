@@ -43,4 +43,10 @@ public interface IAMOrgBean {
 	public AccountSSO getAccountSSO(String orgDomain) throws Exception;
 	
 	public boolean deleteAccountSSO(long orgId) throws Exception;
+	
+	public Map<String,Boolean> getMfaSettings(long orgId) throws Exception;
+	
+	public void enableTotp(long orgId) throws Exception ;
+	
+	public void disableTotp(long orgId) throws Exception;
 }

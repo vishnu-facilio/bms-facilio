@@ -45,6 +45,12 @@ public class IAMOrgUtil {
 	public static void updateLoggerLevel(int level, long orgId) throws Exception {
 		FacilioService.runAsService(() -> IAMUtil.getOrgBean().updateLoggerLevel(level, orgId));
 	}
+	
+	public static Map<String,Boolean> getMfaSettings(long orgId) throws Exception{
+		
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getOrgBean().getMfaSettings(orgId)) ;
+		
+	}
 
 	private static final int DEFAULT_URL_TIMEOUT = 3600000;
 	public static Organization createOrgFromProps(Map<String, Object> prop) throws Exception {
@@ -75,5 +81,15 @@ public class IAMOrgUtil {
 	
 	public static boolean deleteAccountSSO(long orgId) throws Exception {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getOrgBean().deleteAccountSSO(orgId));
+	}
+
+	public static void enableTotp(long orgId) throws Exception{
+		FacilioService.runAsService(() -> IAMUtil.getOrgBean().enableTotp(orgId));
+		
+	}
+
+	public static void disableTotp(long orgId) throws Exception{
+		FacilioService.runAsService(() -> IAMUtil.getOrgBean().disableTotp(orgId));
+		
 	}
 }

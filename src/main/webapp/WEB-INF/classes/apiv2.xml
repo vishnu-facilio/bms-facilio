@@ -173,6 +173,12 @@
 			</result>
 		</action>
 	</package>
+	
+	<package name="MfaAuth" namespace="/api/v2/settings/org" extends="v2Api">
+	    <action name="mfa" class="com.facilio.bmsconsole.actions.SettingsMfa" method="getMfa" />
+	    <action name="totpenable" class="com.facilio.bmsconsole.actions.SettingsMfa" method="totpEnabled"/>
+	    <action name="totpdisabled" class="com.facilio.bmsconsole.actions.SettingsMfa" method="motpDisabled"/>
+	 </package>
 
 	<package name="internalV2" namespace="/v2/exception"
 		extends="v2Api">

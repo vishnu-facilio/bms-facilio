@@ -427,4 +427,45 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		builder.delete();
 		return true;
 	}
+
+	@Override
+	public Map<String, Boolean> getMfaSettings(long orgId) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(IAMAccountConstants.getOrgMfaFields())
+				.table(IAMAccountConstants.getMfaSettings().getTableName())
+		        .andCondition(CriteriaAPI.getCondition("OrgMFASettings.ORGID", "orgId",orgId + "", NumberOperators.EQUALS));
+		List<Map<String, Object>> props = selectBuilder.get();
+		if(props != null && !props.isEmpty()) {
+			
+			Map<String,Object> x = props.get(0);
+			Map<String,Boolean> result = new HashMap<>();
+			result.put("totpEnabled",(Boolean) x.get("totpEnabled"));
+			result.put("motpEnabled",(Boolean) x.get("motpEnabled"));
+			return result;
+			
+		}
+		return null;
+	}
+    private boolean changeMfaSettings(long orgId,boolean value,String type) throws Exception {
+		
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(IAMAccountConstants.getMfaSettings().getTableName())
+				.fields(IAMAccountConstants.getOrgMfaFields())
+				.andCondition(CriteriaAPI.getCondition("OrgMFASettings.ORGID", "orgId",orgId + "", NumberOperators.EQUALS));
+		
+		Map<String, Object> props = new HashMap<>(); 
+        props.put(type,value); 
+        updateBuilder.update(props); 
+		
+		return true;
+	}
+    public void enableTotp(long orgId) throws Exception {
+    	
+    	changeMfaSettings(orgId,true,"totpEnabled");
+   
+    }
+    public void disableTotp(long orgId) throws Exception{
+    	
+    	changeMfaSettings(orgId,false,"totpEnabled");
+    }
 }
