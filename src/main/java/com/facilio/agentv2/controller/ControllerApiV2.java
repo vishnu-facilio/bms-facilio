@@ -507,7 +507,8 @@ public class ControllerApiV2 {
 
     public static List<Map<String, Object>> getControllerDataForAgent(FacilioContext contextProps) throws Exception {
     	Long agentId = (Long) contextProps.get(AgentConstants.AGENT_ID);
-    	return getControllerData(agentId, null, contextProps);
+    	Integer controllerType = (Integer) contextProps.get(AgentConstants.CONTROLLER_TYPE);
+    	return controllerType != null ? getControllerData(agentId, null, contextProps): getControllersData(agentId, null, contextProps);
     }
     
     public static List<Map<String, Object>> getControllerData(Long agentId, Long controllerId, FacilioContext contextProps) throws Exception {
@@ -555,7 +556,50 @@ public class ControllerApiV2 {
         
         return controllers;
     }
-    
+// temp and need to remove future..
+    public static List<Map<String, Object>> getControllersData(Long agentId, Long controllerId, FacilioContext contextProps) throws Exception {
+        List<Map<String, Object>> controllers = new ArrayList<>();
+        List<Map<String, Object>> controllerData = new ArrayList<>();
+
+        for (FacilioControllerType controllerType : FacilioControllerType.values()) {
+            FacilioChain getControllerChain = TransactionChainFactory.getControllerDataChain();
+            String moduleName = getControllerModuleName(controllerType);
+            if (moduleName == null) {
+                LOGGER.info(" module name is null for " + controllerType.asString());
+                continue;
+            }
+            FacilioContext context = getControllerChain.getContext();
+            context.put(FacilioConstants.ContextNames.PAGINATION,contextProps.get(FacilioConstants.ContextNames.PAGINATION));
+            context.put(AgentConstants.SEARCH_KEY, contextProps.get(AgentConstants.SEARCH_KEY));
+            context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+            context.put(AgentConstants.AGENT_ID, agentId);
+            context.put(AgentConstants.CONTROLLER_ID, controllerId);
+            context.put(AgentConstants.CONTROLLER_TYPE, contextProps.get(AgentConstants.CONTROLLER_TYPE));
+            try {
+                getControllerChain.execute();
+                controllerData = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+            }catch (Exception e){
+                if(controllerType == FacilioControllerType.SYSTEM){
+                    LOGGER.info("Exception while fetching system controller "+e.getMessage());
+                }else {
+                    LOGGER.info("Exception while getting controller of type "+controllerType.asString()+" ",e);
+                }
+            }
+            LOGGER.info("Controller type for Configured Points : "+controllerType.toString() + " value :"+controllerType.asInt());
+            if (controllerData != null) {
+                try {
+                    for (Map<String, Object> controllerDatum : controllerData) {
+                        Controller controller = makeControllerFromMap(controllerDatum, controllerType);
+                        controllerDatum.put(AgentConstants.CONTROLLER, controller.getChildJSON());
+                    }
+                    controllers.addAll(controllerData);
+                } catch (Exception e) {
+                    LOGGER.info(" exception while object mapping ", e);
+                }
+            }
+        }
+        return controllers;
+    }    
     public static List<Map<String, Object>> getControllerFilterData() throws Exception {
         return getAgentControllerFilterData(null);
     }
