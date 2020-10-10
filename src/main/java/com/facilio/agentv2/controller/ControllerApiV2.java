@@ -556,12 +556,18 @@ public class ControllerApiV2 {
         
         return controllers;
     }
+   
 // temp and need to remove future..
     public static List<Map<String, Object>> getControllersData(Long agentId, Long controllerId, FacilioContext contextProps) throws Exception {
         List<Map<String, Object>> controllers = new ArrayList<>();
         List<Map<String, Object>> controllerData = new ArrayList<>();
-
-        for (FacilioControllerType controllerType : FacilioControllerType.values()) {
+        List<Map<String, Object>> filterTypes = FieldDeviceApi.getDeviceFilterData(agentId);
+        Set<FacilioControllerType> controllerTypes = new HashSet<>();
+        for(Map<String, Object> prop:filterTypes) {
+        	Integer value = (Integer) prop.get(AgentConstants.TYPE);
+        	controllerTypes.add(FacilioControllerType.valueOf(value));
+        }
+        for (FacilioControllerType controllerType : controllerTypes) {
             FacilioChain getControllerChain = TransactionChainFactory.getControllerDataChain();
             String moduleName = getControllerModuleName(controllerType);
             if (moduleName == null) {
