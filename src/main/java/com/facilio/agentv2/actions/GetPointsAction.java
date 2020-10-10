@@ -120,6 +120,7 @@ public class GetPointsAction extends AgentActionV2 {
 	public String getPoints() {
 		try {
 			setResult(AgentConstants.DATA, getPointsData(PointStatus.valueOf(status)));
+			ok();
 		} catch (Exception e) {
 			LOGGER.error("Exception  occurred while getting points ", e);
 			setResult(AgentConstants.EXCEPTION, e.getMessage());
