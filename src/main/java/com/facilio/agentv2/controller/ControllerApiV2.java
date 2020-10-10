@@ -557,7 +557,7 @@ public class ControllerApiV2 {
         return controllers;
     }
 
-    // temp and need to remove future..
+// temp and need to remove future..
     public static List<Map<String, Object>> getControllersData(Long agentId, Long controllerId, FacilioContext contextProps) throws Exception {
         List<Map<String, Object>> controllers = new ArrayList<>();
         List<Map<String, Object>> controllerData = new ArrayList<>();
@@ -580,7 +580,7 @@ public class ControllerApiV2 {
             context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
             context.put(AgentConstants.AGENT_ID, agentId);
             context.put(AgentConstants.CONTROLLER_ID, controllerId);
-            context.put(AgentConstants.CONTROLLER_TYPE, contextProps.get(AgentConstants.CONTROLLER_TYPE));
+            context.put(AgentConstants.CONTROLLER_TYPE, controllerType.asInt());
             try {
                 getControllerChain.execute();
                 controllerData = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
