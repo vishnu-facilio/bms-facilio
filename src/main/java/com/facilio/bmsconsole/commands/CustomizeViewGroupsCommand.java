@@ -63,6 +63,26 @@ public class CustomizeViewGroupsCommand extends FacilioCommand {
 						
 					}
 				}
+				else {
+					List<FacilioView> views = viewGroup.getViews();
+					if (views != null) {
+						for(FacilioView view : views) {
+							if (view.getGroupId() > 0 && view.getGroupId() != viewGroup.getId()) {
+								view.setGroupId(viewGroup.getId());
+								Map<String, Object> viewProp = FieldUtil.getAsProperties(view);
+								FacilioModule viewModule = ModuleFactory.getViewsModule();
+								GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+																				.table(viewModule.getTableName())
+																				.fields(FieldFactory.getViewFields())
+																				.andCondition(CriteriaAPI.getIdCondition(view.getId(), viewModule));
+								
+								updateBuilder.update(viewProp);
+								ViewAPI.customizeViews(viewGroup.getViews());
+							}
+						}
+						
+					}
+				}
 			}
 			
 			ViewAPI.customizeViewGroups(viewGroups);

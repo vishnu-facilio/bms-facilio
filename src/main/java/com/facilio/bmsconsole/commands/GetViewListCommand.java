@@ -71,12 +71,10 @@ public class GetViewListCommand extends FacilioCommand {
 		Map<Long, SharingContext<SingleSharingContext>> sharingMap = SharingAPI.getSharingMap(ModuleFactory.getViewSharingModule(), SingleSharingContext.class);
 		if (dbViews != null) {
 			for(FacilioView view: dbViews) {
-				if (view.getGroupId() < 1) {
 					viewMap.put(view.getName(), view);
 					if (sharingMap != null && sharingMap.containsKey(view.getId())) {
 						view.setViewSharing(sharingMap.get(view.getId()));
 					}
-				}
 			}
 		}
 		viewMap.entrySet().removeIf(enrty -> {
