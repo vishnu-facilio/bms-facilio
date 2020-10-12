@@ -129,9 +129,8 @@ public class LoadViewCommand extends FacilioCommand {
 					view.setViewSharing(SharingAPI.getSharing(view.getId(), ModuleFactory.getViewSharingModule(), SingleSharingContext.class));
 				}
 				
-				List<ViewField> columns = ColumnFactory.getColumns(moduleName, viewName);		
-				if (columns == null && module != null && module.isCustom()) {
-					columns = new ArrayList<>();
+				if (view.getFields() == null && module != null && module.isCustom()) {
+					List<ViewField> viewFields = new ArrayList<>();
 					if (modBean == null) {
 						modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					}
@@ -139,11 +138,11 @@ public class LoadViewCommand extends FacilioCommand {
 					for (FacilioField field : allFields) {
 							ViewField viewField = new ViewField(field.getName(), field.getDisplayName());
 						    viewField.setField(field);
-						    columns.add(viewField);	
+						    viewFields.add(viewField);	
 					}
-					if (columns != null) {
+					if (viewFields != null) {
 						List<ViewField> fieldsToRemove = new ArrayList<>();
-						for(ViewField column : columns) {
+						for(ViewField column : viewFields) {
 							if (column.getName().equals("stateFlowId")) {
 								fieldsToRemove.add(column);
 							}
@@ -151,9 +150,9 @@ public class LoadViewCommand extends FacilioCommand {
 								fieldsToRemove.add(column);
 							}
 						}
-						columns.removeAll(fieldsToRemove);
+						viewFields.removeAll(fieldsToRemove);
 					}
-					view.setFields(columns);
+					view.setFields(viewFields);
 				}
 			}
 		}
