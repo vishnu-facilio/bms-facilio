@@ -31,7 +31,8 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 	private JSONArray dataObject;
 	private Map<String, Object> orgDetails;
 	private long useCaseId;
-
+	private long workflowId;
+	
 	private String status;
 	private MLResponseContext mlResponse;
 
@@ -150,17 +151,24 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 
 	public void setMlResponse(MLResponseContext mlResponse) {
 		this.mlResponse = mlResponse;
+		setStatus(mlResponse.getMessage());
 	}
 
+	public long getWorkflowId() {
+		return workflowId;
+	}
+
+	public void setWorkflowId(long workflowId) {
+		this.workflowId = workflowId;
+	}
 
 	@Override
 	public String toString() {
-		return "MLServiceContext [modelName=" + modelName + ", readingVariables=" + readingVariables + ", assetDetails="
-				+ assetDetails + ", mlVariables=" + mlVariables + ", filteringMethod=" + filteringMethod
-				+ ", groupingMethod=" + groupingMethod + ", workflowInfo=" + workflowInfo + ", scenario=" + scenario
-				+ ", dataObject=" + dataObject + ", orgDetails=" + orgDetails + ", useCaseId=" + useCaseId + ", status="
-				+ status + ", mlResponse=" + mlResponse + "]";
+		return "MLServiceContext [modelName=" + modelName + ", scenario=" + scenario + ", readingVariables="
+				+ readingVariables + ", assetDetails=" + assetDetails + ", mlVariables=" + mlVariables
+				+ ", filteringMethod=" + filteringMethod + ", groupingMethod=" + groupingMethod + ", workflowInfo="
+				+ workflowInfo + ", dataObject=" + dataObject + ", orgDetails=" + orgDetails + ", useCaseId="
+				+ useCaseId + ", workflowId=" + workflowId + ", status=" + status + ", mlResponse=" + mlResponse + "]";
 	}
 
-	
 }

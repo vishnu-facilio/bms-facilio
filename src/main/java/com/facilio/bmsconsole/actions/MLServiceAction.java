@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.context.MLServiceContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.time.DateTimeUtil;
 
 public class MLServiceAction extends FacilioAction {
 	
@@ -16,22 +17,30 @@ public class MLServiceAction extends FacilioAction {
 
     private MLServiceContext modelInfo;
     
-    private static final long startTime = 1590980400000L;
-    private static final long endTime = 1590987600000L;
+    private static long startTime = 1590980400000L;
+    private static long endTime = 1590987600000L;
 //    private static final long usecase_id = 21876312873L;
+    private static final long DAYS_IN_MILLISECONDS = (long)(24*60*60*1000);
 
-    public String addMLModel() throws  Exception {
+    public String addMLModel() throws Exception {
     	
-    	LOGGER.info("MLModelAction api hit --> " + this.modelInfo);
+    	LOGGER.info("MLModelAction api hit modelInfo --> " + this.modelInfo);
+    	LOGGER.info("MLModelAction api hit startTime --> " + startTime);
+    	LOGGER.info("MLModelAction api hit endTime --> " + endTime);
+    	LOGGER.info("MLModelAction api hit getCurrenTime --> " + DateTimeUtil.getCurrenTime());
+    	
+    	LOGGER.info("MLServiceAction has been initiated..");
     	FacilioChain chain = FacilioChainFactory.addMLServiceChain();
         FacilioContext context = chain.getContext();
         
+        endTime = DateTimeUtil.getCurrenTime();
+        startTime = endTime - (90 * DAYS_IN_MILLISECONDS);
         context.put(FacilioConstants.ContextNames.START_TTIME, startTime);
         context.put(FacilioConstants.ContextNames.END_TTIME, endTime);
         context.put(FacilioConstants.ContextNames.ML_MODEL_INFO, this.modelInfo);
         chain.execute();
         
-    	setResult(FacilioConstants.ContextNames.RESULT, modelInfo.getMlResponse().getMessage());
+    	setResult(FacilioConstants.ContextNames.RESULT, modelInfo.getStatus());
         return SUCCESS;
     }
 

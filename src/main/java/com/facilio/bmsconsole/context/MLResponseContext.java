@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.context;
 
 import java.util.List;
-import java.util.Map;
 
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
@@ -73,11 +72,11 @@ public class MLResponseContext extends ModuleBaseWithCustomFields {
 	public void setResultData(List<Object> resultData) {
 		this.resultData = resultData;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "MLResponseContext [usecaseId=" + usecaseId + ", status=" + status + ", message=" + message + ", orgid="
 				+ orgid + ", assetid=" + assetid + ", resultData=" + resultData + ", moduleInfo=" + moduleInfo + "]";
 	}
-
+	
 }

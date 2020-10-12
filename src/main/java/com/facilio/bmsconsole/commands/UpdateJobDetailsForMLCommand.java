@@ -20,20 +20,18 @@ public class UpdateJobDetailsForMLCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 
-		MLServiceContext mlJobContext = (MLServiceContext) context.get(FacilioConstants.ContextNames.ML_MODEL_INFO);
+		MLServiceContext mlServiceContext = (MLServiceContext) context.get(FacilioConstants.ContextNames.ML_MODEL_INFO);
 		try {
 
-			LOGGER.info("Start of UpdateJobDetailsForMLCommand");
+			LOGGER.info("Start of UpdateJobDetailsForMLCommand for usecase id "+mlServiceContext.getUseCaseId());
 			//TODO : update ml api result in ml_models table
-			MLResponseContext mlResponse = mlJobContext.getMlResponse();
-			LOGGER.info("");
-			if (mlResponse.getStatus()) {
+			MLResponseContext mlResponse = mlServiceContext.getMlResponse();
+			if (mlResponse!=null && mlResponse.getStatus()) {
 				// initiate the ml jobs
 				FacilioChain chain = FacilioChainFactory.activateMLServiceChain();
 				FacilioContext chainContext = chain.getContext();
-				chainContext.put(FacilioConstants.ContextNames.ML_MODEL_INFO, mlJobContext);
+				chainContext.put(FacilioConstants.ContextNames.ML_MODEL_INFO, mlServiceContext);
 				chain.execute();
-
 			}
 
 		} catch (Exception e) {

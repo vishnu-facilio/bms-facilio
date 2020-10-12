@@ -25,8 +25,6 @@ public class MLContext extends ModuleBaseWithCustomFields
 	private Hashtable<Long,Hashtable<String,SortedMap<Long,Object>>> mlVariablesDataMap; // AssetID => Attribute Name => ttime,Attribute Value
 	private SortedMap<Long,Hashtable<String,Object>> mlCriteriaVariablesDataMap;
 	
-
-	
 	private String modelPath;
 	private long predictionLogModuleID;
 	private long predictionModuleID;
@@ -34,7 +32,6 @@ public class MLContext extends ModuleBaseWithCustomFields
 	private long ruleID;
 	private long predictionTime;
 	private String sequence;
-	
 	
 	private long executionEndTime;
 	private boolean isHistoric=false;

@@ -42,7 +42,8 @@ public class ConstructReadingForMLServiceCommand extends FacilioCommand {
 			
 			MLServiceContext mlServiceContext = (MLServiceContext) context.get(FacilioConstants.ContextNames.ML_MODEL_INFO);
 			
-			updateMLServiceInfo(mlServiceContext);
+			this.updateMLServiceInfo(mlServiceContext);
+			LOGGER.info("ML Usecase id "+mlServiceContext.getUseCaseId()+" initiated..");
 			
 			Long assetId = (Long) mlServiceContext.getAssetDetails().get(FacilioConstants.ContextNames.ASSET_ID);
 			Long startTime = (Long) context.get(FacilioConstants.ContextNames.START_TTIME);
@@ -148,10 +149,13 @@ public class ConstructReadingForMLServiceCommand extends FacilioCommand {
 	}
 
 	private void updateMLServiceInfo(MLServiceContext mlServiceContext) throws Exception {
+		long workflowId = getWorkFlowId(mlServiceContext.getWorkflowInfo());
+		mlServiceContext.setWorkflowId(workflowId);
+		
 		Map<String, Object> mlServiceRow = new HashMap<>();
 		mlServiceRow.put("orgId", AccountUtil.getCurrentOrg().getOrgId());
 		mlServiceRow.put("status", "Initiated..");
-		mlServiceRow.put("workflowId", getWorkFlowId(mlServiceContext.getWorkflowInfo()));
+		mlServiceRow.put("workflowId", String.valueOf(workflowId));
 		mlServiceRow.put("modelName", mlServiceContext.getModelName());
 		mlServiceRow.put("mlModelMeta", mlServiceContext.getReqJson().toString());
 		
@@ -159,11 +163,25 @@ public class ConstructReadingForMLServiceCommand extends FacilioCommand {
 		mlServiceContext.setUseCaseId(useCaseId);
 	}
 
-	private Object getWorkFlowId(Map<String, Object> workflowInfo) {
+	private long getWorkFlowId(Map<String, Object> workflowInfo) {
 		String namespace = (String) workflowInfo.get("namespace");
 		String function = (String) workflowInfo.get("function");
+		LOGGER.info("namespace ::"+namespace);
+		LOGGER.info("function ::"+function);
 		try {
 			WorkflowContext workflowContext = UserFunctionAPI.getWorkflowFunction(namespace, function);
+			LOGGER.info("workflowContext ::"+workflowContext);
+			LOGGER.info("getId ::"+workflowContext.getId());
+//			Map<String, Object> sample = new HashMap<>();
+//			JSONObject obj = new JSONObject();
+//			obj.put("firstname", "seeni");
+//			obj.put("lastname", "mohamed");
+//			obj.put("age", "28");
+//			sample.put("row", obj.toMap());
+////			sample.put("mes", "sending an req");
+//			LOGGER.info("before script row :: "+obj);
+//			Object resMap = WorkflowUtil.getResult(workflowContext.getId(), sample);
+//			LOGGER.info("after script row :: "+resMap);
 			return workflowContext.getId();
 		} catch (Exception e) {
 			LOGGER.error("Error while getting flow id for given namespace <"+namespace+"> and function <"+function+">");
@@ -174,7 +192,7 @@ public class ConstructReadingForMLServiceCommand extends FacilioCommand {
 //		sample.put("row", "seeni");
 //		Object resMap = WorkflowUtil.getResult(workflowContext.getId(), sample);
 //		LOGGER.info("after script row ::"+resMap);
-		return null;
+		return 0;
 	}
 	
 	private Map<String, Object> getOrgInfo() {

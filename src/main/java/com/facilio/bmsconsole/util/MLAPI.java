@@ -12,7 +12,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.ConstructReadingForMLServiceCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.MLAlarmOccurenceContext;
@@ -28,6 +27,7 @@ import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
@@ -42,13 +42,14 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.time.DateRange;
 
 public class MLAPI {
+	
+	private static final Logger LOGGER = Logger.getLogger(MLAPI.class.getName());
 
 	public static MLContext getSubMeterDetails (long mlAnomalyAlarmId) throws Exception {
 		
@@ -105,8 +106,7 @@ public class MLAPI {
 
 		StringBuilder durationAggrColumn = new StringBuilder("SUM(COALESCE(")
 				.append(clearedTimeFieldColumn).append(",").append(dateRange.getEndTime()).append(") - ")
-				.append(createdTimeFieldColumn).append(")")
-				;
+				.append(createdTimeFieldColumn).append(")");
 		FacilioField durationField = FieldFactory.getField("duration", durationAggrColumn.toString(), FieldType.NUMBER);
 
 //		selectFields.add(ruleField);
@@ -264,7 +264,6 @@ public class MLAPI {
 		FacilioTimer.scheduleCalendarJob(mlID, jobName, System.currentTimeMillis(), info, executorName);
 	}
 	
-	private static final Logger LOGGER = Logger.getLogger(MLAPI.class.getName());
 	public static long addMLServiceInfo(Map<String, Object> row) throws Exception {
 		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getMLServiceModule().getTableName())
@@ -275,12 +274,12 @@ public class MLAPI {
 	}
 	
 	public static void updateMLServiceInfo(long usecaseId, Map<String, Object> row) throws Exception {
-		
-		UpdateRecordBuilder builder = new UpdateRecordBuilder()
-				.module(ModuleFactory.getMLServiceModule())
+		GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+				.table(ModuleFactory.getMLServiceModule().getTableName())
 				.fields(FieldFactory.getMLServiceFields())
 				.andCondition(CriteriaAPI.getCondition("USECASE_ID", "useCaseId", String.valueOf(usecaseId), NumberOperators.EQUALS));
-		builder.updateViaMap(row);
+		builder.update(row);
+				
 	}
 	
 	public static List<Map<String, Object>> getReadingFields(long assetId, List<String> readingFields) throws Exception {

@@ -13,10 +13,24 @@ public class MLCustomModuleContext extends ModuleBaseWithCustomFields {
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	/**
+	 * 
+	 */
 	private String modelPath;
 	private Boolean moduleNeeded;
 	private String moduleName;
 	private Map<String, List<String>> fields;
+	private String parentModule;
+	private String type;
+	
+	/**
+	 * Internal usage variables
+	 */
+	private List<FacilioField> requestFields;
+	private List<FacilioField> responseFields;
+	private long mlReadingModuleId;
+	private long mlId;
+	
 	
 	public String getModelPath() {
 		return modelPath;
@@ -50,12 +64,6 @@ public class MLCustomModuleContext extends ModuleBaseWithCustomFields {
 		this.fields = fields;
 	}
 
-	@Override
-	public String toString() {
-		return "MLCustomModuleContext [modelPath=" + modelPath + ", moduleNeeded=" + moduleNeeded + ", moduleName="
-				+ moduleName + ", fields=" + fields + "]";
-	}
-	
 	public String getParentModule() {
 		return parentModule;
 	}
@@ -88,11 +96,31 @@ public class MLCustomModuleContext extends ModuleBaseWithCustomFields {
 		this.mlReadingModuleId = mlReadingModuleId;
 	}
 
-	private String parentModule;
-	private List<FacilioField> requestFields;
-	private List<FacilioField> responseFields;
-	private long mlReadingModuleId;
+	@Override
+	public String toString() {
+		return "MLCustomModuleContext [modelPath=" + modelPath + ", moduleNeeded=" + moduleNeeded + ", moduleName="
+				+ moduleName + ", fields=" + fields + ", parentModule=" + parentModule + ", requestFields="
+				+ requestFields + ", responseFields=" + responseFields + ", mlReadingModuleId=" + mlReadingModuleId
+				+ "]";
+	}
+
+	public long getMlId() {
+		return mlId;
+	}
+
+	public void setMlId(long mlId) {
+		this.mlId = mlId;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
 	
 	
+
 	
 }
