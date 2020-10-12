@@ -2,6 +2,8 @@ package com.facilio.agentv2.iotmessage;
 
 import java.util.List;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -14,11 +16,13 @@ import com.facilio.chain.FacilioContext;
 
 public class MessengerUtil
 {
+	private static final Logger LOGGER = LogManager.getLogger(MessengerUtil.class.getName());
 
 	public static JSONArray getPointsData(List<Point> points){
 		JSONArray array = new JSONArray();
 		points.forEach(point ->{
-            JSONObject pointJson = point.getChildJSON();
+			LOGGER.info("Json point value :"+point);
+			JSONObject pointJson = point.getChildJSON();
             pointJson.put(AgentConstants.NAME, point.getName());
 			 if((point.getThresholdJSON() != null) && (!point.getThresholdJSON().isEmpty())){
 				 pointJson.put("thresholdJson", point.getThresholdJSON());
