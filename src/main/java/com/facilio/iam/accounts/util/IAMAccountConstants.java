@@ -650,36 +650,36 @@ public class IAMAccountConstants {
 			return field;
 		}
 		public static List<FacilioField> getOrgMfaFields(){
-			FacilioModule module = getOrgModule();
+			FacilioModule module = getMfaSettings();
 			List<FacilioField> fields = new ArrayList<>();
-			
+
 			FacilioField orgId = new FacilioField();
 			orgId.setName("orgId");
 			orgId.setDataType(FieldType.NUMBER);
 			orgId.setColumnName("ORGID");
 			orgId.setModule(module);
 			fields.add(orgId);
-
-			FacilioField userMobileSettingId = new FacilioField();
-			userMobileSettingId.setName("totpEnabled");
-			userMobileSettingId.setDataType(FieldType.BOOLEAN);
-			userMobileSettingId.setColumnName("IS_TOTP_ENABLED");
-			userMobileSettingId.setModule(module);
-			fields.add(userMobileSettingId);
-
-			FacilioField mobileInstanceId = new FacilioField();
-			mobileInstanceId.setName("motpEnabled");
-			mobileInstanceId.setDataType(FieldType.BOOLEAN);
-			mobileInstanceId.setColumnName("IS_MOTP_ENABLED");
-			mobileInstanceId.setModule(module);
-			fields.add(mobileInstanceId);
 			
-			FacilioField orgMfaId = new FacilioField();
-			orgMfaId.setName("id");
-			orgMfaId.setDataType(FieldType.ID);
-			orgMfaId.setColumnName("ORG_MFASETTINGS_ID");
-			orgMfaId.setModule(module);
-			fields.add(orgMfaId);
+			FacilioField orgMfaSettingsId = new FacilioField();
+			orgMfaSettingsId.setName("orgMfaSettingsId");
+			orgMfaSettingsId.setDataType(FieldType.ID);
+			orgMfaSettingsId.setColumnName("ORG_MFASETTINGS_ID");
+			orgMfaSettingsId.setModule(module);
+			fields.add(orgMfaSettingsId);
+			
+			FacilioField totpEnabled = new FacilioField();
+			totpEnabled.setName("totpEnabled");
+			totpEnabled.setDataType(FieldType.BOOLEAN);
+			totpEnabled.setColumnName("IS_TOTP_ENABLED");
+			totpEnabled.setModule(module);
+			fields.add(totpEnabled);
+			
+			FacilioField motpEnabled = new FacilioField();
+			motpEnabled.setName("motpEnabled");
+			motpEnabled.setDataType(FieldType.BOOLEAN);
+			motpEnabled.setColumnName("IS_MOTP_ENABLED");
+			motpEnabled.setModule(module);
+			fields.add(motpEnabled);
 			
 			return fields;
 			
