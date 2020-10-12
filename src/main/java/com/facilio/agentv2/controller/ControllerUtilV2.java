@@ -192,6 +192,9 @@ public class ControllerUtilV2 {
                     GetControllerRequest getControllerRequest = new GetControllerRequest()
                             .withAgentId(agentId)
                             .ofType(controllerType);
+                    if (controllerType == MODBUS_RTU) {
+                        getControllerRequest.withControllerProperties(controllerJson, controllerType);
+                    }
                     controllers = getControllerRequest.getControllersMap();
                 }catch (Exception e){
                     LOGGER.info("Exception while getting controller og type "+controllerType.asString()+" for agent "+agentId);
