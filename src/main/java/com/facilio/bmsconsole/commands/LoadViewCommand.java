@@ -128,6 +128,33 @@ public class LoadViewCommand extends FacilioCommand {
 				if(view.getViewSharing() == null) {
 					view.setViewSharing(SharingAPI.getSharing(view.getId(), ModuleFactory.getViewSharingModule(), SingleSharingContext.class));
 				}
+				
+				List<ViewField> columns = ColumnFactory.getColumns(moduleName, viewName);		
+				if (columns == null && module != null && module.isCustom()) {
+					columns = new ArrayList<>();
+					if (modBean == null) {
+						modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					}
+					List<FacilioField> allFields = modBean.getAllFields(moduleName);
+					for (FacilioField field : allFields) {
+							ViewField viewField = new ViewField(field.getName(), field.getDisplayName());
+						    viewField.setField(field);
+						    columns.add(viewField);	
+					}
+					if (columns != null) {
+						List<ViewField> fieldsToRemove = new ArrayList<>();
+						for(ViewField column : columns) {
+							if (column.getName().equals("stateFlowId")) {
+								fieldsToRemove.add(column);
+							}
+							if (module.getStateFlowEnabled() != null && !module.getStateFlowEnabled() && column.getName().equals("moduleState")) {
+								fieldsToRemove.add(column);
+							}
+						}
+						columns.removeAll(fieldsToRemove);
+					}
+					view.setFields(columns);
+				}
 			}
 		}
 		else {
@@ -283,15 +310,16 @@ public class LoadViewCommand extends FacilioCommand {
 //		}
 		if (view.getFields() != null) {
 			for(int i=0;i<view.getFields().size();i++) {
-			String modulesName;
-			String fieldsName;
+			String modulesName = null;
+			String fieldsName = null;
 			if (view.getFields().get(i).getField() == null && view.getFields().get(i).getName() == null) {
 //				Temporary handling for Deyari
 			if (view.getFields().get(i).getFieldName() != null && view.getFields().get(i).getFieldName().equals("siteId") && (moduleName.equals("workorder") || moduleName.equals("asset") || moduleName.equals("tenant") || moduleName.equals("safetyPlan"))) {
 				modulesName = moduleName;
 				fieldsName	= view.getFields().get(i).getFieldName();
 			}
-			else {
+			else if (view.getFields().get(i).getFieldName() != null) {
+				System.out.println("view.getFields().get(i).getFieldName()" + view.getFields().get(i));
 				modulesName = FieldFactory.getSystemField(view.getFields().get(i).getFieldName(),module).getModule().getName();
 				fieldsName = view.getFields().get(i).getFieldName();
 			}

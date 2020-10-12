@@ -6073,7 +6073,7 @@ public class ViewFactory {
 		return criteria;
 	}
 
-	private static FacilioView getCustomModuleAllView(FacilioModule moduleObj) throws Exception {
+	public static FacilioView getCustomModuleAllView(FacilioModule moduleObj) throws Exception {
 		FacilioField createdTime = FieldFactory.getSystemField("sysCreatedTime", moduleObj);
 		
 		FacilioView allView = new FacilioView();
