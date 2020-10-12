@@ -5,12 +5,15 @@ import com.facilio.bmsconsoleV3.context.V3ClientContactContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.context.V3TenantContactContext;
 import com.facilio.bmsconsoleV3.context.V3VendorContactContext;
+import com.facilio.bmsconsoleV3.context.communityfeatures.ContactDirectoryContext;
+import com.facilio.bmsconsoleV3.util.CommunityFeaturesAPI;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -38,6 +41,16 @@ public class UpdatePeoplePrimaryContactCommandV3 extends FacilioCommand {
                     parentId = ((V3ClientContactContext)people).getClient().getId();
                     V3PeopleAPI.unMarkPrimaryContact(people, parentId);
                     V3PeopleAPI.rollUpModulePrimarycontactFields(parentId, FacilioConstants.ContextNames.CLIENT, people.getName(), people.getEmail(), people.getPhone());
+                }
+
+                //update Contact directory fields if people is associated
+                List<ContactDirectoryContext> contactList = CommunityFeaturesAPI.getContacts(people.getId());
+                if(CollectionUtils.isNotEmpty(contactList)){
+                    List<Long> ids = new ArrayList<>();
+                    for(ContactDirectoryContext contact : contactList){
+                        ids.add(contact.getId());
+                    }
+                    CommunityFeaturesAPI.updateContactDirectoryList(ids, people);
                 }
             }
         }

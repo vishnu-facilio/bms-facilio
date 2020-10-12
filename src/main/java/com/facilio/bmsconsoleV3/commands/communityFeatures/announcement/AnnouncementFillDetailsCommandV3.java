@@ -22,14 +22,15 @@ public class AnnouncementFillDetailsCommandV3 extends FacilioCommand {
             for(Long recId : recordIds) {
                 AnnouncementContext announcement = (AnnouncementContext) CommandUtil.getModuleData(context, FacilioConstants.ContextNames.Tenant.ANNOUNCEMENT, recId);
                 if (announcement != null) {
+                    List<CommunitySharingInfoContext> list = null;
                     if(announcement.getAudience() != null){
-                        CommunityFeaturesAPI.setAudienceSharingInfo(announcement.getAudience());
+                       list = CommunityFeaturesAPI.setAudienceSharingInfo(announcement.getAudience());
                     }
                     else {
-                        List<CommunitySharingInfoContext> list = (List<CommunitySharingInfoContext>) CommunityFeaturesAPI.getSharingInfo(announcement, FacilioConstants.ContextNames.Tenant.ANNOUNCEMENTS_SHARING_INFO, "announcement");
-                        if (CollectionUtils.isNotEmpty(list)) {
-                            announcement.setAnnouncementsharing(list);
-                        }
+                        list = (List<CommunitySharingInfoContext>) CommunityFeaturesAPI.getSharingInfo(announcement, FacilioConstants.ContextNames.Tenant.ANNOUNCEMENTS_SHARING_INFO, "announcement");
+                    }
+                    if (CollectionUtils.isNotEmpty(list)) {
+                        announcement.setAnnouncementsharing(list);
                     }
                 }
             }

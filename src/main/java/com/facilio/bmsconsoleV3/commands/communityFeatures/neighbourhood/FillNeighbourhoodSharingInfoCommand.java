@@ -21,14 +21,15 @@ public class FillNeighbourhoodSharingInfoCommand extends FacilioCommand {
             for(Long recId : recordIds) {
                 NeighbourhoodContext record = (NeighbourhoodContext) CommandUtil.getModuleData(context, moduleName,recId);
                 if (record != null) {
+                    List<CommunitySharingInfoContext> list = null;
                     if(record.getAudience() != null){
-                        CommunityFeaturesAPI.setAudienceSharingInfo(record.getAudience());
+                       list = CommunityFeaturesAPI.setAudienceSharingInfo(record.getAudience());
                     }
                     else {
-                        List<CommunitySharingInfoContext> list = (List<CommunitySharingInfoContext>) CommunityFeaturesAPI.getSharingInfo(record, "neighbourhoodsharing", "neighbourhood");
-                        if (CollectionUtils.isNotEmpty(list)) {
-                            record.setNeighbourhoodsharing(list);
-                        }
+                        list = (List<CommunitySharingInfoContext>) CommunityFeaturesAPI.getSharingInfo(record, "neighbourhoodsharing", "neighbourhood");
+                    }
+                    if (CollectionUtils.isNotEmpty(list)) {
+                        record.setNeighbourhoodsharing(list);
                     }
                 }
             }

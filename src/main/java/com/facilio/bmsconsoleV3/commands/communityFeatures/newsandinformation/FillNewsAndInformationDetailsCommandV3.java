@@ -22,14 +22,15 @@ public class FillNewsAndInformationDetailsCommandV3 extends FacilioCommand {
             for(Long recId : recordIds) {
                 NewsAndInformationContext news = (NewsAndInformationContext) CommandUtil.getModuleData(context, FacilioConstants.ContextNames.Tenant.NEWS_AND_INFORMATION, recId);
                 if (news != null) {
+                    List<CommunitySharingInfoContext> list = null;
                     if(news.getAudience() != null){
-                        CommunityFeaturesAPI.setAudienceSharingInfo(news.getAudience());
+                        list = CommunityFeaturesAPI.setAudienceSharingInfo(news.getAudience());
                     }
                     else {
-                        List<CommunitySharingInfoContext> list = (List<CommunitySharingInfoContext>) CommunityFeaturesAPI.getSharingInfo(news, FacilioConstants.ContextNames.Tenant.NEWS_AND_INFORMATION_SHARING, "newsAndInformation");
-                        if (CollectionUtils.isNotEmpty(list)) {
-                            news.setNewsandinformationsharing(list);
-                        }
+                        list = (List<CommunitySharingInfoContext>) CommunityFeaturesAPI.getSharingInfo(news, FacilioConstants.ContextNames.Tenant.NEWS_AND_INFORMATION_SHARING, "newsAndInformation");
+                    }
+                    if (CollectionUtils.isNotEmpty(list)) {
+                        news.setNewsandinformationsharing(list);
                     }
                 }
             }

@@ -2360,9 +2360,13 @@ public class FormFactory {
 
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("people", FieldDisplayType.LOOKUP_SIMPLE, "People", Required.REQUIRED, "people",1, 1));
-		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
-		fields.add(new FormField("category", FieldDisplayType.SELECTBOX, "Category", Required.OPTIONAL, 3, 1));
-		fields.add(new FormField("contactdirectorysharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 4, 1));
+		fields.add(new FormField("contactName", FieldDisplayType.TEXTBOX, "Contact Name", Required.REQUIRED, 2, 1));
+		fields.add(new FormField("contactEmail", FieldDisplayType.TEXTBOX, "Contact Email", Required.REQUIRED, 3, 1));
+		fields.add(new FormField("contactPhone", FieldDisplayType.TEXTBOX, "Contact Phone", Required.REQUIRED,4, 1));
+
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 5, 1));
+		fields.add(new FormField("category", FieldDisplayType.SELECTBOX, "Category", Required.OPTIONAL, 6, 1));
+		fields.add(new FormField("contactdirectorysharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 7, 1));
 		form.setFields(fields);
 
 		return form;

@@ -21,14 +21,15 @@ public class FillAdminDocumentsSharingInfoCommand extends FacilioCommand {
             for(Long recId : recordIds) {
                 AdminDocumentsContext record = (AdminDocumentsContext) CommandUtil.getModuleData(context, moduleName,recId);
                 if (record != null) {
+                    List<CommunitySharingInfoContext> list =null;
                     if(record.getAudience() != null){
-                        CommunityFeaturesAPI.setAudienceSharingInfo(record.getAudience());
+                        list = CommunityFeaturesAPI.setAudienceSharingInfo(record.getAudience());
                     }
                     else {
-                        List<CommunitySharingInfoContext> list = (List<CommunitySharingInfoContext>) CommunityFeaturesAPI.getSharingInfo(record, "admindocumentsharing", "adminDocument");
-                        if (CollectionUtils.isNotEmpty(list)) {
-                            record.setAdmindocumentsharing(list);
-                        }
+                        list = (List<CommunitySharingInfoContext>) CommunityFeaturesAPI.getSharingInfo(record, "admindocumentsharing", "adminDocument");
+                    }
+                    if (CollectionUtils.isNotEmpty(list)) {
+                        record.setAdmindocumentsharing(list);
                     }
                 }
             }

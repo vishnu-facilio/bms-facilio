@@ -5187,6 +5187,7 @@ public class TransactionChainFactory {
 		c.addCommand(SetTableNamesCommand.getForEmployee());
 		c.addCommand(new CheckForPeopleDuplicationCommand());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
+		c.addCommand(new UpdatePeoplePrimaryContactCommand());
 		c.addCommand(new UpdateEmployeePeopleAppPortalAccessCommand());
 
 
@@ -5199,6 +5200,7 @@ public class TransactionChainFactory {
 		c.addCommand(new CheckForPeopleDuplicationCommand());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		c.addCommand(new AddPeopleAccessCommand());
+		c.addCommand(new UpdateContactDirectoryCommand());
 
 
 		return c;

@@ -21,14 +21,15 @@ public class FillContactDirectorySharingInfoCommand extends FacilioCommand {
             for(Long recId : recordIds) {
                 ContactDirectoryContext record = (ContactDirectoryContext) CommandUtil.getModuleData(context, moduleName,recId);
                 if (record != null) {
+                    List<CommunitySharingInfoContext> list = null;
                     if(record.getAudience() != null){
-                        CommunityFeaturesAPI.setAudienceSharingInfo(record.getAudience());
+                       list = CommunityFeaturesAPI.setAudienceSharingInfo(record.getAudience());
                     }
                     else {
-                        List<CommunitySharingInfoContext> list = (List<CommunitySharingInfoContext>) CommunityFeaturesAPI.getSharingInfo(record, "contactdirectorysharing", "contactDirectory");
-                        if (CollectionUtils.isNotEmpty(list)) {
-                            record.setContactdirectorysharing(list);
-                        }
+                        list = (List<CommunitySharingInfoContext>) CommunityFeaturesAPI.getSharingInfo(record, "contactdirectorysharing", "contactDirectory");
+                    }
+                    if (CollectionUtils.isNotEmpty(list)) {
+                        record.setContactdirectorysharing(list);
                     }
                 }
             }

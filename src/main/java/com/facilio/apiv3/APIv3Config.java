@@ -445,7 +445,7 @@ public class APIv3Config {
                     .afterSave(new UpdateEmployeePeopleAppPortalAccessCommandV3())
                 .update()
                     .beforeSave(new CheckforPeopleDuplicationCommandV3())
-                    .afterSave(new UpdateEmployeePeopleAppPortalAccessCommandV3())
+                    .afterSave(TransactionChainFactoryV3.getUpdateEmployeeAfterUpdateChain())
                 .list()
                 .summary()
                 .build();

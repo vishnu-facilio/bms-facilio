@@ -1562,7 +1562,9 @@ public class ColumnFactory {
 	private static List<ViewField> getDefaultContactDirectoryColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 
-		columns.add(new ViewField("people", "People"));
+		columns.add(new ViewField("contactName", "Name"));
+		columns.add(new ViewField("contactEmail", "Email"));
+		columns.add(new ViewField("contactPhone", "Phone"));
 		columns.add(new ViewField("description", "Description"));
 		columns.add(new ViewField("category", "Category"));
 

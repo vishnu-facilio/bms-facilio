@@ -3,11 +3,13 @@ package com.facilio.bmsconsoleV3.util;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
+import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.context.TenantUnitSpaceContext;
 import com.facilio.bmsconsoleV3.context.CommunitySharingInfoContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.context.V3TenantContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.AudienceContext;
+import com.facilio.bmsconsoleV3.context.communityfeatures.ContactDirectoryContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementSharingInfoContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnnouncementContext;
@@ -16,6 +18,7 @@ import com.facilio.bmsconsoleV3.interfaces.SiteTenantContacts;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -209,7 +212,6 @@ public class CommunityFeaturesAPI {
                 .fetchSupplements(fetchSupplementsList)
                 .andCondition(CriteriaAPI.getCondition("AUDIENCE_ID", "audienceId", String.valueOf(audience.getId()), NumberOperators.EQUALS));
         List<CommunitySharingInfoContext> list = builder.get();
-        audience.setAudienceSharing(list);
         return list;
 
     }
@@ -231,6 +233,76 @@ public class CommunityFeaturesAPI {
 
         FacilioModule sharingInfoModule = modBean.getModule(FacilioConstants.ContextNames.Tenant.AUDIENCE_SHARING);
         V3RecordAPI.addRecord(false, audience.getAudienceSharing(), sharingInfoModule, modBean.getAllFields(FacilioConstants.ContextNames.Tenant.AUDIENCE_SHARING));
+
+    }
+
+    public static List<ContactDirectoryContext> getContacts(Long pplId) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.Tenant.CONTACT_DIRECTORY);
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
+        SelectRecordsBuilder<ContactDirectoryContext> builder = new SelectRecordsBuilder<ContactDirectoryContext>()
+                .module(module)
+                .beanClass(ContactDirectoryContext.class)
+                .select(modBean.getAllFields(module.getName()))
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("people"), String.valueOf(pplId), PickListOperators.IS))
+                ;
+
+        return builder.get();
+    }
+
+    public static void updateContactDirectoryList(List<Long> ids, PeopleContext people) throws Exception {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.Tenant.CONTACT_DIRECTORY);
+            List<FacilioField> fields = modBean.getAllFields(module.getName());
+            Map<String, FacilioField> contactFieldMap = FieldFactory.getAsMap(fields);
+            List<FacilioField> updatedfields = new ArrayList<FacilioField>();
+
+            FacilioField primaryEmailField = contactFieldMap.get("contactEmail");
+            FacilioField primaryPhoneField = contactFieldMap.get("contactPhone");
+            FacilioField primaryNameField = contactFieldMap.get("contactName");
+
+            updatedfields.add(primaryEmailField);
+            updatedfields.add(primaryPhoneField);
+            updatedfields.add(primaryNameField);
+
+            GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+                    .table(module.getTableName())
+                    .fields(updatedfields)
+                    .andCondition(CriteriaAPI.getIdCondition(ids, module));
+
+            Map<String, Object> value = new HashMap<>();
+            value.put("contactEmail", people.getEmail());
+            value.put("contactPhone", people.getPhone());
+            value.put("contactName", people.getName());
+            updateBuilder.update(value);
+
+    }
+
+    public static void updateContactDirectoryList(List<Long> ids, V3PeopleContext people) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.Tenant.CONTACT_DIRECTORY);
+        List<FacilioField> fields = modBean.getAllFields(module.getName());
+        Map<String, FacilioField> contactFieldMap = FieldFactory.getAsMap(fields);
+        List<FacilioField> updatedfields = new ArrayList<FacilioField>();
+
+        FacilioField primaryEmailField = contactFieldMap.get("contactEmail");
+        FacilioField primaryPhoneField = contactFieldMap.get("contactPhone");
+        FacilioField primaryNameField = contactFieldMap.get("contactName");
+
+        updatedfields.add(primaryEmailField);
+        updatedfields.add(primaryPhoneField);
+        updatedfields.add(primaryNameField);
+
+        GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+                .table(module.getTableName())
+                .fields(updatedfields)
+                .andCondition(CriteriaAPI.getIdCondition(ids, module));
+
+        Map<String, Object> value = new HashMap<>();
+        value.put("contactEmail", people.getEmail());
+        value.put("contactPhone", people.getPhone());
+        value.put("contactName", people.getName());
+        updateBuilder.update(value);
 
     }
 

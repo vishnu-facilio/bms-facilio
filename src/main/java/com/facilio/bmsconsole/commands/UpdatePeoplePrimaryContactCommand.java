@@ -1,7 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.chargebee.models.Contact;
+import com.facilio.bmsconsoleV3.context.communityfeatures.ContactDirectoryContext;
+import com.facilio.bmsconsoleV3.util.CommunityFeaturesAPI;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -37,6 +42,16 @@ public class UpdatePeoplePrimaryContactCommand extends FacilioCommand{
 					parentId = ((ClientContactContext)people).getClient().getId();
 					PeopleAPI.unMarkPrimaryContact(people, parentId);
 					PeopleAPI.rollUpModulePrimarycontactFields(parentId, FacilioConstants.ContextNames.CLIENT, people.getName(), people.getEmail(), people.getPhone());
+				}
+
+				//update Contact directory fields if people is associated
+				List<ContactDirectoryContext> contactList = CommunityFeaturesAPI.getContacts(people.getId());
+				if(CollectionUtils.isNotEmpty(contactList)){
+					List<Long> ids = new ArrayList<>();
+					for(ContactDirectoryContext contact : contactList){
+						ids.add(contact.getId());
+					}
+					CommunityFeaturesAPI.updateContactDirectoryList(ids, people);
 				}
 			}
 		}

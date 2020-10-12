@@ -27,14 +27,15 @@ public class FillNewsRelatedModuleDataInListCommandV3 extends FacilioCommand {
             for(NewsAndInformationContext news : newsList) {
                 news.setNewsandinformationnotes(NotesAPI.fetchNotes(news.getId(), FacilioConstants.ContextNames.Tenant.NEWS_AND_INFORMATION_NOTES));
                 news.setNewsandinformationattachments(AttachmentsAPI.getAttachments(FacilioConstants.ContextNames.Tenant.NEWS_AND_INFORMATION_ATTACHMENTS, news.getId(), false));
+                List<CommunitySharingInfoContext> list = null;
                 if(news.getAudience() != null){
-                    CommunityFeaturesAPI.setAudienceSharingInfo(news.getAudience());
+                    list = CommunityFeaturesAPI.setAudienceSharingInfo(news.getAudience());
                 }
                 else {
-                    List<CommunitySharingInfoContext> list = (List<CommunitySharingInfoContext>) CommunityFeaturesAPI.getSharingInfo(news, FacilioConstants.ContextNames.Tenant.NEWS_AND_INFORMATION_SHARING, "newsAndInformation");
-                    if (CollectionUtils.isNotEmpty(list)) {
-                        news.setNewsandinformationsharing(list);
-                    }
+                    list = (List<CommunitySharingInfoContext>) CommunityFeaturesAPI.getSharingInfo(news, FacilioConstants.ContextNames.Tenant.NEWS_AND_INFORMATION_SHARING, "newsAndInformation");
+                }
+                if (CollectionUtils.isNotEmpty(list)) {
+                    news.setNewsandinformationsharing(list);
                 }
             }
 
