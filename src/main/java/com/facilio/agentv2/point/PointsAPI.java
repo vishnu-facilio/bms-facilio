@@ -11,11 +11,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import com.facilio.modules.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.controller.FacilioControllerType;
@@ -48,6 +48,12 @@ import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.BmsAggregateOperators;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 
 public class PointsAPI {
@@ -280,6 +286,9 @@ public class PointsAPI {
                 Point p = PointsAPI.getPointFromJSON(point);
                 if (point.containsKey("configureStatus")) {
                     p.setConfigureStatus(Integer.parseInt(point.get("configureStatus").toString()));
+                }
+                if(point.containsKey("thresholdJson") && point.containsValue("thresholdJson")) {
+                	p.setThresholdJSON(point.get("thresholdJson").toString());
                 }
                 pointList.add(p);
             } catch (Exception e) {

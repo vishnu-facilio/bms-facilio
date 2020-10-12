@@ -46,6 +46,7 @@ public class ControllerMessenger {
             throw new Exception("Exception occurred, points map is empty");
         }
         long controllerId = (long) points.get(0).getControllerId();
+        LOGGER.info("Point Context value :"+points);
         return constructNewIotMessage(ControllerApiV2.getControllerFromDb(controllerId), command, points, null);
     }
 
