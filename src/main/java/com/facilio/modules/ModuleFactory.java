@@ -2060,6 +2060,14 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getDependencyJobDetailModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("dependencyJobDetail");
+		module.setDisplayName("Dependency Job Detail");
+		module.setTableName("Dependency_Job_Detail");
+		return module;
+	}
+
 	public static FacilioModule getServicePortalModule() {
 		FacilioModule enpi = new FacilioModule();
 		enpi.setName("serviceportal");

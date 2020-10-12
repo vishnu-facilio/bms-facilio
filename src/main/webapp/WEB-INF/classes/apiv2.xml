@@ -336,6 +336,11 @@
 				class="com.facilio.bmsconsole.actions.CustomButtonAction" method="getAvailableButtons" />
 	</package>
 
+	<package name="fieldRelation" namespace="/api/v2/fieldRelation" extends="v2Api">
+		<action name="runDependency"
+				class="com.facilio.bmsconsole.actions.FieldRelationAction" method="runDependencyHistory" />
+	</package>
+
 	<package name="ruleRoll" namespace="/api/v2/ruleRoleUp" extends="v2Api">
 		<action name="rule" class="com.facilio.bmsconsole.actions.RuleAction"
 				method="getRollup" />

@@ -6281,6 +6281,17 @@ public class FieldFactory {
         return list;
     }
 
+    public static List<FacilioField> getDependencyJobDetailFields() {
+        FacilioModule module = ModuleFactory.getDependencyJobDetailModule();
+        List<FacilioField> list = new ArrayList<>();
+        list.add(getIdField(module));
+        list.add(getField("assetId", "ASSET_ID", module, FieldType.NUMBER));
+        list.add(getField("fieldRelationId", "FIELD_RELATION_ID", module, FieldType.NUMBER));
+        list.add(getField("startTime", "START_TIME", module, FieldType.NUMBER));
+        list.add(getField("endTime", "END_TIME", module, FieldType.NUMBER));
+        return list;
+    }
+
     public static List<FacilioField> getServicePortalFields() {
         FacilioModule module = ModuleFactory.getServicePortalModule();
         List<FacilioField> fields = new ArrayList<>();

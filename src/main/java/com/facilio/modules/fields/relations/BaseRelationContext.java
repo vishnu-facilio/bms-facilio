@@ -92,7 +92,20 @@ public class BaseRelationContext {
         this.type = type;
     }
 
+    private boolean history;
+    public boolean isHistory() {
+        return history;
+    }
+    public void setHistory(boolean history) {
+        this.history = history;
+    }
+
     protected boolean olderReading(ReadingContext reading, ReadingDataMeta previousRDM) {
+        // when running for history, don't check for latest reading..
+        if (history) {
+            return false;
+        }
+
         if (reading.getId()!=-1 || (reading.getTtime() != -1 && reading.getTtime() < previousRDM.getTtime())) {
             return true;
         }

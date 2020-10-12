@@ -59,6 +59,8 @@
 	<job name="AssetRollupJob" classname="com.facilio.bmsconsole.jobs.AssetRollupJob" transactionTimeout="1800000" />
 	<job name="AssetRollupJob-OneTime" classname="com.facilio.bmsconsole.jobs.AssetRollupJob" transactionTimeout="1800000" />
 
+	<job name="runDependencyFieldHistory" classname="com.facilio.modules.fields.relations.RunDependencyHistoryJob" transactionTimeout="1800000" />
+
 	 <!-- Shift jobs -->
 	 <job name='StartShift' classname= 'com.facilio.bmsconsole.jobs.ShiftStartJob' transactionTimeout='300000'/>
 	 <job name='EndShift' classname= 'com.facilio.bmsconsole.jobs.ShiftEndJob' transactionTimeout='300000'/>

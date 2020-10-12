@@ -25,9 +25,9 @@ public class TimeDeltaRelationContext extends BaseRelationContext {
         long ttime = previousRDM.getTtime();
         long actualTime = reading.getTtime();
 
-        Object currentReadingValue = reading.getReading(getBaseField().getName());
-        if (currentReadingValue instanceof Boolean) {
-            if ((Boolean) currentReadingValue) {
+        Object prevReading = previousRDM.getValue();
+        if (prevReading instanceof Boolean) {
+            if ((Boolean) prevReading) {
                 long deltaInMillis = actualTime - ttime;
                 if (unit == TimeDeltaUnit.SECONDS) {
                     return (deltaInMillis / 1000);

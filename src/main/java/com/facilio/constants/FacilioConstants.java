@@ -1082,6 +1082,8 @@ public class FacilioConstants {
 		public static final String IS_HISTORICAL= "isHistorical";
 		public static final String RULE_JOB_TYPE= "ruleJobType";
 
+		public static final String FIELD_DEPENDENCY_ID = "fieldDependencyId";
+
 		public static final String DATE_OPERATOR = "dateOperator";
 		public static final String DATE_OPERATOR_VALUE = "dateOperatorValue";
 		

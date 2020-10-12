@@ -12,10 +12,7 @@ import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class RelationFieldUtil {
@@ -30,6 +27,19 @@ public class RelationFieldUtil {
         List<BaseRelationContext> baseRelations =
                 FieldUtil.getAsBeanListFromMapList(builder.get(), BaseRelationContext.class);
         return fetchExtended(baseRelations);
+    }
+
+    public static BaseRelationContext getFieldRelation(Long id) throws Exception {
+        if (id == null) {
+            throw new IllegalArgumentException("Invalid field relation id");
+        }
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getBaseFieldRelationModule().getTableName())
+                .select(FieldFactory.getBaseFieldRelationFields())
+                .andCondition(CriteriaAPI.getIdCondition(id, ModuleFactory.getBaseFieldRelationModule()));
+        BaseRelationContext baseRelation = FieldUtil.getAsBeanFromMap(builder.fetchFirst(), BaseRelationContext.class);
+        baseRelation = fetchExtended(Collections.singletonList(baseRelation)).get(0);
+        return baseRelation;
     }
 
     private static List<BaseRelationContext> fetchExtended(List<BaseRelationContext> baseRelations) throws Exception {
@@ -140,5 +150,20 @@ public class RelationFieldUtil {
             default:
                 throw new IllegalArgumentException("Invalid type");
         }
+    }
+
+    public static Map<String, Object> getDependencyJobDetails(long id) throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getDependencyJobDetailModule().getTableName())
+                .select(FieldFactory.getDependencyJobDetailFields())
+                .andCondition(CriteriaAPI.getIdCondition(id, ModuleFactory.getDependencyJobDetailModule()));
+        return builder.fetchFirst();
+    }
+
+    public static long addDependencyJobDetail(Map<String, Object> jobDetails) throws Exception {
+        GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+                .table(ModuleFactory.getDependencyJobDetailModule().getTableName())
+                .fields(FieldFactory.getDependencyJobDetailFields());
+        return builder.insert(jobDetails);
     }
 }
