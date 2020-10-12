@@ -1,16 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -26,6 +15,16 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.util.FacilioUtil;
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 public class CalculateDeltaCommand extends FacilioCommand {
 
@@ -60,9 +59,9 @@ public class CalculateDeltaCommand extends FacilioCommand {
 									if (val != null) {
 										ReadingDataMeta rdm = rdmMap.get(ReadingsAPI.getRDMKey(reading.getParentId(), field));
 
-										if (reading.getId()!=-1 || (reading.getTtime() != -1 && reading.getTtime() < rdm.getTtime())) {
+										if (reading.getId()!=-1 || (reading.getTtime() != -1 && reading.getTtime() < rdm.getTtime()) || (reading.getReading(field.getName()+"Delta") != null)) {
 											newRdmPairs.add(Pair.of(reading.getParentId(), fieldMap.get(field.getName()+"Delta")));
-											continue; //Not calculating delta for older values
+											continue; //Not calculating delta for older values or if value is present in the ReadingContext
 										}
 
 										Object deltaVal = null;
