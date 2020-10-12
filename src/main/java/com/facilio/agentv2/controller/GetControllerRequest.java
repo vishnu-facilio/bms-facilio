@@ -62,6 +62,7 @@ public class GetControllerRequest
 
     public GetControllerRequest withAgentId(long agentId) throws Exception {
         if (agentId > 0) {
+            context.put(AgentConstants.AGENT_ID, agentId);
             criteria.addAndCondition(CriteriaAPI.getCondition(FIELD_MAP.get(AgentConstants.AGENT_ID), String.valueOf(agentId), NumberOperators.EQUALS));
             context.put(FacilioConstants.ContextNames.FILTER_CRITERIA, criteria);
         }else {
@@ -90,6 +91,15 @@ public class GetControllerRequest
     public GetControllerRequest withControllerProperties(JSONObject controllerProperties, FacilioControllerType controllerType) throws Exception {
         if ((controllerProperties != null) && (!controllerProperties.isEmpty() && (controllerType != null) )){
             ofType(controllerType);
+            if (controllerType == FacilioControllerType.MODBUS_RTU) {
+                if (controllerProperties.containsKey(AgentConstants.NETWORK)) {
+                    context.put(AgentConstants.COM_PORT, ((JSONObject) controllerProperties.get(AgentConstants.NETWORK)).get(AgentConstants.COM_PORT).toString());
+                } else if (controllerProperties.containsKey(AgentConstants.COM_PORT)) {
+                    context.put(AgentConstants.COM_PORT, controllerProperties.get(AgentConstants.COM_PORT).toString());
+                } else {
+                    throw new RuntimeException("network or comport is missing in controller props");
+                }
+            }
             List<Condition> conditions = ControllerApiV2.getControllerCondition(controllerProperties, controllerType);
             if (!conditions.isEmpty()) {
                 criteria.addAndConditions(conditions);
@@ -112,6 +122,7 @@ public class GetControllerRequest
 
     public GetControllerRequest ofType(FacilioControllerType controllerType) throws Exception {
         if(controllerType != null){
+            context.put(AgentConstants.CONTROLLER_TYPE, controllerType);
             this.controllerType = controllerType;
         }else {
             throw new Exception(" FacilioControllerType cant be null ");

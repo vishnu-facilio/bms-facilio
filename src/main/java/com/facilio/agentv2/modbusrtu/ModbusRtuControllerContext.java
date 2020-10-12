@@ -117,7 +117,13 @@ public class ModbusRtuControllerContext extends Controller {
         jsonObject.put(AgentConstants.ID, getId());
         jsonObject.put(AgentConstants.SLAVE_ID, getSlaveId());
         jsonObject.put(AgentConstants.IP_ADDRESS,0);
-        jsonObject.put("network", getNetwork().toJson());
+        if (getNetwork() == null && networkId != -1) {
+            setNetwork(RtuNetworkContext.getRtuNetworkContext(networkId));
+        } else if (getNetwork() == null && networkId == -1) {
+            throw new RuntimeException("Both network id and network object is invalid");
+        }
+        jsonObject.put(AgentConstants.NETWORK, getNetwork().toJson());
+        jsonObject.put(AgentConstants.COM_PORT, getNetwork().toJson().get(AgentConstants.COM_PORT).toString());
         return jsonObject;
     }
 
@@ -126,7 +132,6 @@ public class ModbusRtuControllerContext extends Controller {
         List<Condition> conditions = new ArrayList<>();
         Map<String, FacilioField> fieldsMap = getFieldsMap(getModuleName());
         conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.SLAVE_ID), String.valueOf(getSlaveId()), NumberOperators.EQUALS));
-        conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.NETWORK_ID), String.valueOf(getNetworkId()),NumberOperators.EQUALS));
     return conditions;
     }
 

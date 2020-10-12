@@ -4075,6 +4075,7 @@ public class TransactionChainFactory {
 
 	public static FacilioChain getControllerChain() {
 		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetRtuNetworkCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
 		return chain;
 	}
