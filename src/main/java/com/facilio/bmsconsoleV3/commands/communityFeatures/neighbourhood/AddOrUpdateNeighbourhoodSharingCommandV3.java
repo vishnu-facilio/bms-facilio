@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.communityfeatures.DealsAndOffersContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.NeighbourhoodContext;
@@ -24,6 +25,9 @@ public class AddOrUpdateNeighbourhoodSharingCommandV3 extends FacilioCommand {
 
         if(CollectionUtils.isNotEmpty(neighbourhoods)) {
             for(NeighbourhoodContext neighbourhood : neighbourhoods){
+                if(AccountUtil.getCurrentSiteId() != -1) {
+                    neighbourhood.setSiteId(AccountUtil.getCurrentSiteId());
+                }
                 Map<String, List<Map<String, Object>>> subforms = neighbourhood.getSubForm();
                 if(neighbourhood.getAudience() != null && MapUtils.isNotEmpty(subforms) && subforms.containsKey(FacilioConstants.ContextNames.Tenant.NEIGHBOURHOOD_SHARING)){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid Sharing Information. Can be  either audience or list of sharing info'");

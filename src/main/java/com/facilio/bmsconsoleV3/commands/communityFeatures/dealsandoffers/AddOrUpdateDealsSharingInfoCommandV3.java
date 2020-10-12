@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.communityFeatures.dealsandoffers;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.communityfeatures.ContactDirectoryContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.DealsAndOffersContext;
@@ -24,6 +25,9 @@ public class AddOrUpdateDealsSharingInfoCommandV3 extends FacilioCommand {
 
         if(CollectionUtils.isNotEmpty(deals)) {
             for(DealsAndOffersContext deal : deals){
+                if(AccountUtil.getCurrentSiteId() != -1) {
+                    deal.setSiteId(AccountUtil.getCurrentSiteId());
+                }
                 Map<String, List<Map<String, Object>>> subforms = deal.getSubForm();
                 if(deal.getAudience() != null && MapUtils.isNotEmpty(subforms) && subforms.containsKey(FacilioConstants.ContextNames.Tenant.DEALS_AND_OFFERS_SHARING)){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid Sharing Information. Can be  either audience or list of sharing info'");

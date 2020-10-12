@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.communityfeatures.NewsAndInformationContext;
 import com.facilio.bmsconsoleV3.util.CommunityFeaturesAPI;
@@ -23,6 +24,9 @@ public class AddOrUpdateNewsSharingCommandV3 extends FacilioCommand {
 
         if(CollectionUtils.isNotEmpty(newsList)) {
             for(NewsAndInformationContext news : newsList){
+                if(AccountUtil.getCurrentSiteId() != -1) {
+                    news.setSiteId(AccountUtil.getCurrentSiteId());
+                }
                 Map<String, List<Map<String, Object>>> subforms = news.getSubForm();
                 if(news.getAudience() != null && MapUtils.isNotEmpty(subforms) && subforms.containsKey(FacilioConstants.ContextNames.Tenant.NEWS_AND_INFORMATION_SHARING)){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid Sharing Information. Can be  either audience or list of sharing info'");

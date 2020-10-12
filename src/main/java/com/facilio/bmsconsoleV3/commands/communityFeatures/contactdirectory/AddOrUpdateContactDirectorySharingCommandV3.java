@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.communityFeatures.contactdirectory;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.communityfeatures.AdminDocumentsContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.ContactDirectoryContext;
@@ -24,6 +25,9 @@ public class AddOrUpdateContactDirectorySharingCommandV3 extends FacilioCommand 
 
         if(CollectionUtils.isNotEmpty(contacts)) {
             for(ContactDirectoryContext contact : contacts){
+                if(AccountUtil.getCurrentSiteId() != -1) {
+                    contact.setSiteId(AccountUtil.getCurrentSiteId());
+                }
                 Map<String, List<Map<String, Object>>> subforms = contact.getSubForm();
                 if(contact.getAudience() != null && MapUtils.isNotEmpty(subforms) && subforms.containsKey(FacilioConstants.ContextNames.Tenant.CONTACT_DIRECTORY_SHARING)){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid Sharing Information. Can be  either audience or list of sharing info'");

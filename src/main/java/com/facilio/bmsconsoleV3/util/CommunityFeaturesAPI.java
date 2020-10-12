@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.util;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
 import com.facilio.bmsconsole.context.TenantUnitSpaceContext;
@@ -217,6 +218,9 @@ public class CommunityFeaturesAPI {
     public static void addAudience(AudienceContext audience) throws Exception {
 
         audience.setId(-1);
+        if(AccountUtil.getCurrentSiteId() != -1){
+            audience.setSiteId(AccountUtil.getCurrentSiteId());
+        }
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.Tenant.AUDIENCE);
         V3RecordAPI.addRecord(false, Collections.singletonList(audience), module, modBean.getAllFields(FacilioConstants.ContextNames.Tenant.AUDIENCE));

@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.communityFeatures.announcement;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementContext;
 import com.facilio.bmsconsoleV3.util.CommunityFeaturesAPI;
@@ -23,6 +24,9 @@ public class AddOrUpdateAnnouncementSharingInfoCommandV3 extends FacilioCommand 
 
         if(CollectionUtils.isNotEmpty(announcements)) {
             for(AnnouncementContext announcement : announcements){
+                if(AccountUtil.getCurrentSiteId() != -1) {
+                    announcement.setSiteId(AccountUtil.getCurrentSiteId());
+                }
                 Map<String, List<Map<String, Object>>> subforms = announcement.getSubForm();
                 if(announcement.getAudience() != null && MapUtils.isNotEmpty(subforms) && subforms.containsKey(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENTS_SHARING_INFO)){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid Sharing Information. Can be  either audience or list of sharing info'");

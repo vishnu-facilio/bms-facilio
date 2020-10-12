@@ -397,8 +397,16 @@ public class FieldUtil {
                     //FacilioConstants.ContextNames.EMPLOYEE,
                     FacilioConstants.ContextNames.QUOTE,
 					FacilioConstants.ContextNames.CUSTOM_MAIL_MESSAGE,
-					FacilioConstants.ContextNames.USER_NOTIFICATION
-			)));
+					FacilioConstants.ContextNames.USER_NOTIFICATION,
+					FacilioConstants.ContextNames.Tenant.ANNOUNCEMENT,
+					FacilioConstants.ContextNames.Tenant.NEWS_AND_INFORMATION,
+					FacilioConstants.ContextNames.Tenant.ADMIN_DOCUMENTS,
+					FacilioConstants.ContextNames.Tenant.CONTACT_DIRECTORY,
+					FacilioConstants.ContextNames.Tenant.NEIGHBOURHOOD,
+					FacilioConstants.ContextNames.Tenant.DEALS_AND_OFFERS,
+					FacilioConstants.ContextNames.Tenant.AUDIENCE
+
+					)));
 
 
 
