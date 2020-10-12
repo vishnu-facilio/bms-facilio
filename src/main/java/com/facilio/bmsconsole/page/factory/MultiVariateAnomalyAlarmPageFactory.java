@@ -24,7 +24,7 @@ public class MultiVariateAnomalyAlarmPageFactory extends PageFactory{
 		Section tab1Sec1 = page.new Section();
 		tab1.addSection(tab1Sec1);
 
-		addAlarmDetailsWidget(tab1Sec1);
+		//addAlarmDetailsWidget(tab1Sec1);
 		addMlAnomalyDetailsWidget(tab1Sec1);
 		addNoOfAnomalies(tab1Sec1);
 		addMeanTimeBetweenAnomalyCard(tab1Sec1);
