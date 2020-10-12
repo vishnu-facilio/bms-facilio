@@ -191,7 +191,25 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		
 		long orgId = (Long) props.get("id");
 		org.setId(orgId);
+		
+		initialiseOrgMfaSettings(orgId);
 		return org;
+	}
+	
+	public static void initialiseOrgMfaSettings(long orgId) throws Exception{
+		if(orgId <= 0) {
+			throw new IllegalArgumentException("Invalid orgId");
+		}
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(IAMAccountConstants.getMfaSettings().getTableName())
+				.fields(IAMAccountConstants.getOrgMfaFields());
+		Map<String,Object> props = new HashMap<>();
+		props.put("orgId", orgId);
+		props.put("totpEnabled",false);
+		props.put("motpEnabled",false);
+		insertBuilder.addRecord(props);
+		insertBuilder.save();
+		
 	}
 
 	@Override
