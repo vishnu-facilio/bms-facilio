@@ -20,12 +20,10 @@ public class MessengerUtil
 		points.forEach(point ->{
             JSONObject pointJson = point.getChildJSON();
             pointJson.put(AgentConstants.NAME, point.getName());
-            array.add(pointJson);
 			 if((point.getThresholdJSON() != null) && (!point.getThresholdJSON().isEmpty())){
-				 JSONObject thresholdJSON = new JSONObject();
-				 thresholdJSON.putAll(point.getThresholdJSON());
-				 array.add(thresholdJSON);
+				 pointJson.put("thresholdJson", point.getThresholdJSON());
 			 }		 
+			 array.add(pointJson);
 		});
 		return array;
 	}

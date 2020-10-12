@@ -122,7 +122,9 @@ public class ControllerMessenger {
 	            	case REMOVE:
 	            	case UNSUBSCRIBE:
 	            	case GET:
-	            		object.put(AgentConstants.POINTS, MessengerUtil.getPointsData(points));
+	            		JSONArray pointsArray = MessengerUtil.getPointsData(points);
+	            		LOGGER.info("Subscribe point JsonArray : "+pointsArray);
+	            		object.put(AgentConstants.POINTS, pointsArray);
 	            		break;
 	            		//
 	            	case SHUTDOWN:
