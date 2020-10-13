@@ -96,11 +96,12 @@ public class FetchRelationsCommand extends FacilioCommand {
                     ((Map) lookupFieldVsRecordMap.get(lookupFieldName)).putAll(props);
 
                     for (Map<String, Object> lookupModuleRecord : props.values()) {
-                        if (virtualFieldMap.get(lookupModuleRecord.get(lookupFieldName)) == null) {
-                            virtualFieldMap.put((Long) lookupModuleRecord.get(lookupFieldName), new ArrayList<>());
+                        long lookupId = (long) ((Map) lookupModuleRecord.get(lookupFieldName)).get("id");
+                        if (virtualFieldMap.get(lookupId) == null) {
+                            virtualFieldMap.put(lookupId, new ArrayList<>());
                         }
 
-                        virtualFieldMap.get(lookupModuleRecord.get(lookupFieldName)).add((Long) lookupModuleRecord.get("id"));
+                        virtualFieldMap.get(lookupId).add((Long) lookupModuleRecord.get("id"));
                     }
                 }
 
