@@ -28,7 +28,7 @@ public class SetValueAction extends PointIdAction
     }
 
     @NotNull
-    @Min(1)
+    @Min(0)
     private int controllerType;
 
     @NotNull

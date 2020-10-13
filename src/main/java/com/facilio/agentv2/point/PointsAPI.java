@@ -731,8 +731,10 @@ public class PointsAPI {
     }
 
     public static boolean setValue(long pointid, FacilioControllerType type, Object value) throws Exception {
-        GetPointRequest getPointRequest = new GetPointRequest().withId(pointid)
-                .ofType(type);
+        GetPointRequest getPointRequest = new GetPointRequest()
+        		.ofType(type)
+        		.withId(pointid)
+                ;
         Point point = getPointRequest.getPoint();
         if (point != null) {
             point.setValue(value);
