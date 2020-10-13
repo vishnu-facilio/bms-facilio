@@ -270,6 +270,10 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		org.setCountry(locale.getCountry());
 		org.setTimezone(timezone);
 		org.setCreatedTime(System.currentTimeMillis());
+
+		if (FacilioProperties.isProduction() && !FacilioProperties.isOnpremise()) {
+			org.setDbName("bms_3");
+		}
 		
 		return IAMUtil.getOrgBean().createOrgv2(org);
     }
