@@ -2569,12 +2569,21 @@ public class ReadOnlyChainFactory {
 		return chain;
 		
 	}
-	public static FacilioChain getFetchDashboardFilterChain()
+	
+	
+	public static FacilioChain getFetchDashboardFilterAndWidgetFilterMappingChain()
 	{
 		FacilioChain chain=getDefaultChain();
 		chain.addCommand(new FetchDashboardFilterCommand());
 		chain.addCommand(new GetDbTimeLineFilterToWidgetMapping());
 		chain.addCommand(new GetDbUserFilterToWidgetMapping());
+		return chain;
+	}
+	public static FacilioChain getFetchDashboardFilterChain()
+	
+	{
+		FacilioChain chain=getDefaultChain();
+		chain.addCommand(new FetchDashboardFilterCommand());
 		return chain;
 	}
 	public static FacilioChain getGenerateCriteriaFromFilterChain()

@@ -26,6 +26,7 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.DashboardContext;
@@ -55,6 +56,8 @@ import com.facilio.bmsconsole.context.ReportUserFilterContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SiteContext.SiteType;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.bmsconsole.context.SpaceFilteredDashboardSettings;
 import com.facilio.bmsconsole.context.UserWorkHourReading;
 import com.facilio.bmsconsole.context.WidgetChartContext;
@@ -1183,6 +1186,10 @@ public class DashboardUtil {
 					dashboard.setDashboardTabContexts(getDashboardTabs(dashboard.getId()));
 				}
 				
+				FacilioChain getDashboardFilterChain=ReadOnlyChainFactory.getFetchDashboardFilterChain();
+				FacilioContext getDashboardFilterContext=getDashboardFilterChain.getContext();
+				getDashboardFilterContext.put(FacilioConstants.ContextNames.DASHBOARD,dashboard);		
+				getDashboardFilterChain.execute();
 				dashboardMap.put(dashboard.getId(), dashboard);
 			}
 			List<DashboardContext> dashboards = new ArrayList<>();
