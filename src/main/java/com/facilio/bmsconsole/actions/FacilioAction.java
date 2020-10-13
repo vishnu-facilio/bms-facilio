@@ -160,7 +160,7 @@ public class FacilioAction extends ActionSupport {
 	public void setStackTrace(Exception e) {
 		if (e != null) {
 			LogManager.getLogger(this.getClass().getName()).error("Exception occured: - ", e);
-			if(!FacilioProperties.isProduction() || getFetchStackTrace()) {
+			if((!FacilioProperties.isProduction() && !FacilioProperties.isOnpremise()) || getFetchStackTrace()) {
 				this.stackTrace = ExceptionUtils.getStackTrace(e);
 				System.out.println(this.stackTrace);
 			}

@@ -781,15 +781,15 @@ public abstract class FileStore {
 			url.append(FacilioProperties.getServerName());
 		}
 		url.append("/api/v3/files/");
-		if(AccountUtil.getCurrentOrg() !=null) {
-			url.append("app/");
-		} else {
-			url.append("public/");
-		}
 		if(isDownload) {
-			url.append("download");
+			url.append("download/");
 		} else {
-			url.append("preview");
+			url.append("preview/");
+		}
+		if(AccountUtil.getCurrentOrg() !=null) {
+			url.append("app");
+		} else {
+			url.append("public");
 		}
 		url.append("?q=");
 		return url.toString()+token;

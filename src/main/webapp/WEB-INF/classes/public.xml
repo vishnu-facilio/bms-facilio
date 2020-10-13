@@ -17,40 +17,27 @@
 
 		<default-interceptor-ref name="defaultInterceptor" />		
 	</package>
-	
-	<package name="publicFilesv2" namespace="/api/public/v2/files" extends="publicApi">
+
+	<package name="publicFilesv3" namespace="/api/v3/files/public" extends="filePreview,publicApi"> <!-- Backward compatibility for urls saved in DB in Vistor QR -->
 		<action name="preview"
-			class="com.facilio.bmsconsole.actions.FileAction"
-			method="previewPublicFile">
+			class="com.facilio.bmsconsole.actions.V3FileAction"
+			method="previewFile">
 			<param name="permission">READ</param>
-			<result name="success" type="stream">
-				<param name="contentType">${contentType}</param>
-				<param name="inputName">downloadStream</param>
-				<param name="bufferSize">1024</param>
-			</result>
 		</action>
 	</package>
-	<package name="publicFilesv3" namespace="/api/v3/files/public" extends="publicApi">
-		<action name="preview"
-			class="com.facilio.bmsconsole.actions.V3FileAction"
-			method="previewFile">
+	<package name="publicFilesPreviewv3" namespace="/api/v3/files/preview" extends="filePreview,publicApi">
+		<action name="public"
+				class="com.facilio.bmsconsole.actions.V3FileAction"
+				method="previewFile">
 			<param name="permission">READ</param>
-			<result name="success" type="stream">
-				<param name="contentType">${contentType}</param>
-				<param name="inputName">downloadStream</param>
-				<param name="bufferSize">1024</param>
-			</result>
 		</action>
-		<action name="download"
-			class="com.facilio.bmsconsole.actions.V3FileAction"
-			method="previewFile">
+	</package>
+	<package name="publicFilesDownloadv3" namespace="/api/v3/files/download" extends="fileDownload,publicApi">
+		<action name="public"
+				class="com.facilio.bmsconsole.actions.V3FileAction"
+				method="previewFile">
 			<param name="permission">READ</param>
 			<param name="isDownload">true</param>
-			<result name="success" type="stream">
-				<param name="contentType">${contentType}</param>
-				<param name="inputName">downloadStream</param>
-				<param name="bufferSize">1024</param>
-			</result>
 		</action>
 	</package>
 </struts>

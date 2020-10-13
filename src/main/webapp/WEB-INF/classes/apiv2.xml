@@ -2752,19 +2752,18 @@
 		</action>
 	</package>
 
-	<package name="attachmentPreviewApi"
-		namespace="/api/v2/preview" extends="v2Api">
-		<global-results>
-			<result name="success" type="stream">
-				<param name="contentType">${contentType}</param>
-				<param name="inputName">downloadStream</param>
-				<param name="bufferSize">1024</param>
-			</result>
-		</global-results>
+	<package name="filePreviewApiv2"
+			 namespace="/api/v2/files/preview" extends="filePreview,v2Api">
+		<action name="*"
+				class="com.facilio.bmsconsole.actions.FileAction"
+				method="previewFile">
+			<param name="permission">READ</param>
+			<param name="fileID">{1}</param>
+		</action>
 	</package>
 
 	<package name="assetAttachmentApiv2"
-		namespace="/api/v2/assets/attachment" extends="attachmentPreviewApi">
+		namespace="/api/v2/assets/attachment" extends="filePreviewApiv2">
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.AttachmentAction"
 			method="previewAttachment">
@@ -2774,27 +2773,20 @@
 			<param name="module">assetattachments</param>
 		</action>
 	</package>
-
-	<package name="filePreviewApiv2"
-		namespace="/api/v2/files/preview" extends="attachmentPreviewApi">
-		<action name="*"
-			class="com.facilio.bmsconsole.actions.FileAction"
-			method="previewFile">
-			<param name="permission">READ</param>
-			<param name="fileID">{1}</param>
-		</action>
-	</package>
 	
 	<package name="newFilePreviewApiv2"
-		namespace="/api/v3/files/app" extends="attachmentPreviewApi">
-		<action name="preview"
+		namespace="/api/v3/files/preview" extends="filePreview,v2Api">
+		<action name="app"
 			class="com.facilio.bmsconsole.actions.V3FileAction"
 			method="previewFile">
 			<param name="permission">READ</param>
 		</action>
-		<action name="download"
-			class="com.facilio.bmsconsole.actions.V3FileAction"
-			method="previewFile">
+	</package>
+	<package name="newFileDownloadApiv2"
+			 namespace="/api/v3/files/download" extends="fileDownload,v2Api">
+		<action name="app"
+				class="com.facilio.bmsconsole.actions.V3FileAction"
+				method="previewFile">
 			<param name="permission">READ</param>
 			<param name="isDownload">true</param>
 		</action>
@@ -2807,19 +2799,13 @@
 		</action>
 	</package>
 	<package name="fileDownloadApiv2"
-		namespace="/api/v2/files/download" extends="v2Api">
+		namespace="/api/v2/files/download" extends="fileDownload,v2Api">
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.FileAction"
 			method="previewFile">
 			<param name="permission">READ</param>
 			<param name="fileID">{1}</param>
 			<param name="isDownload">true</param>
-			<result name="success" type="stream">
-				<param name="contentType">${contentType}</param>
-				<param name="contentDisposition">attachment;filename="${filename}"</param>
-				<param name="inputName">downloadStream</param>
-				<param name="bufferSize">1024</param>
-			</result>
 		</action>
 	</package>
 

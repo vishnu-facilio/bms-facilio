@@ -109,14 +109,7 @@
 			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 		</action> 
 	</package>
-	<package name="servicePreviewApiV2" namespace="/api/v2/service/files/preview" extends="newServicePortalApiV2">
-		<global-results>
-			<result name="success" type="stream">
-				<param name="contentType">${contentType}</param>
-				<param name="inputName">downloadStream</param>
-				<param name="bufferSize">1024</param>
-			</result>
-		</global-results>
+	<package name="servicePreviewApiV2" namespace="/api/v2/service/files/preview" extends="filePreview,newServicePortalApiV2">
 		<action name="*" class="com.facilio.bmsconsole.actions.FileAction" method="previewFile">
 			<param name="permission">READ</param>
 			<param name="fileID">{1}</param>
@@ -135,15 +128,7 @@
 			method="executeWorkflow">
 		</action>
 	</package>
-	<package name="serviceDownloadApiV2" namespace="/api/v2/service/files/download" extends="servicePortalApiV2">
-		<global-results>
-			<result name="success" type="stream">
-				<param name="contentType">${contentType}</param>
-				<param name="contentDisposition">attachment;filename="${filename}"</param>
-				<param name="inputName">downloadStream</param>
-				<param name="bufferSize">1024</param>
-			</result>
-		</global-results>
+	<package name="serviceDownloadApiV2" namespace="/api/v2/service/files/download" extends="fileDownload,servicePortalApiV2">
 		<action name="*" class="com.facilio.bmsconsole.actions.FileAction" method="previewFile">
 			<param name="permission">READ</param>
 			<param name="fileID">{1}</param>
@@ -458,14 +443,7 @@
 			<param name="workOrderId">{1}</param>
 		</action>
 	</package>
-	<package name="newServicePreviewApiV2" namespace="/api/service/v2/files/preview" extends="newServicePortalApiV2">
-		<global-results>
-			<result name="success" type="stream">
-				<param name="contentType">${contentType}</param>
-				<param name="inputName">downloadStream</param>
-				<param name="bufferSize">1024</param>
-			</result>
-		</global-results>
+	<package name="newServicePreviewApiV2" namespace="/api/service/v2/files/preview" extends="filePreview,newServicePortalApiV2">
 		<action name="*" class="com.facilio.bmsconsole.actions.FileAction" method="previewFile">
 			<param name="permission">READ</param>
 			<param name="fileID">{1}</param>
@@ -509,15 +487,7 @@
 			class="com.facilio.workflows.action.WorkflowAction"
 			method="getDefaultWorkflowResultV2"></action>
 	</package>
-	<package name="newServiceDownloadApiV2" namespace="/api/service/v2/files/download" extends="newServicePortalApiV2">
-		<global-results>
-			<result name="success" type="stream">
-				<param name="contentType">${contentType}</param>
-				<param name="contentDisposition">attachment;filename="${filename}"</param>
-				<param name="inputName">downloadStream</param>
-				<param name="bufferSize">1024</param>
-			</result>
-		</global-results>
+	<package name="newServiceDownloadApiV2" namespace="/api/service/v2/files/download" extends="fileDownload,newServicePortalApiV2">
 		<action name="*" class="com.facilio.bmsconsole.actions.FileAction" method="previewFile">
 			<param name="permission">READ</param>
 			<param name="fileID">{1}</param>

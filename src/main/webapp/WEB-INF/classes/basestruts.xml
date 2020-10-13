@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+        "http://struts.apache.org/dtds/struts-2.5.dtd">
+
+<struts>
+    <package name="filePreview" extends="struts-default,json-default" abstract="true">
+        <global-results>
+            <result name="success" type="stream">
+                <param name="contentType">${contentType}</param>
+                <param name="inputName">downloadStream</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="httpheader">
+                <param name="error">404</param>
+            </result>
+        </global-results>
+    </package>
+    <package name="fileDownload" extends="struts-default,json-default" abstract="true">
+        <global-results>
+            <result name="success" type="stream">
+                <param name="contentType">${contentType}</param>
+                <param name="contentDisposition">attachment;filename="${filename}"</param>
+                <param name="inputName">downloadStream</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="httpheader">
+                <param name="error">404</param>
+            </result>
+        </global-results>
+    </package>
+</struts>

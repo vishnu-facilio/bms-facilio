@@ -9,6 +9,8 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -21,6 +23,8 @@ import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 
 public class FileAction extends FacilioAction {
+
+	private static final Logger LOGGER = LogManager.getLogger(FileAction.class.getName());
 
 	/**
 	 * 
@@ -122,100 +126,55 @@ public class FileAction extends FacilioAction {
 		this.publicFileKey = publicFileKey;
 	}
 
-	public String previewPublicFile() throws Exception {
-		
-//		HttpServletResponse response = ServletActionContext.getResponse();
-//		
-//		if(publicFileKey != null) {
-//			
-//			PublicFileContext publicFileContext = PublicFileUtil.getPublicFileFromKey(publicFileKey);
-//			
-//			if(publicFileContext.getExpiresOn() <= DateTimeUtil.getCurrenTime()) {
-//				response.setStatus(404);
-//				return ERROR;
-//			}
-//			
-//			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", publicFileContext.getOrgId());
-//			
-//			fileInfo = bean.getFile(publicFileContext.getFileId());
-//			
-//			FileStore fs = FacilioFactory.getFileStore();
-//			
-//			if (fileInfo != null) {
-//				
-//				downloadStream = fs.readFile(fileInfo);
-//				 if (downloadStream != null) {
-//					String dateStamp = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss Z").format(new Date());
-//					response.setHeader("Last-Modified", dateStamp);
-//					if (getIsDownload()) {
-//						setContentType("application/x-download");
-//						setFilename(fileInfo.getFileName());
-//					}
-//					else {
-//						setContentType(fileInfo.getContentType());
-//					}
-//					return SUCCESS;
-//				} 
-//				else {
-//					throw new Exception("File not Found");
-//				}
-//			}
-//			else {
-//				response.setStatus(404);
-//			}
-//		}
-//		
-		return SUCCESS;
-	}
-
 	public String previewFile() throws Exception {
-		HttpServletRequest request = ServletActionContext.getRequest();
-		HttpServletResponse response = ServletActionContext.getResponse();
-		
-		if (request.getHeader("If-Modified-Since") == null) {
-			if (fileID > 0) {
-				FileStore fs = FacilioFactory.getFileStore();
-				FileInfo fileInfo = null;
-				if (width > 0 || height > 0) {
-					if (height <= 0) {
-						fileInfo = fs.getResizedFileInfo(fileID, width, width);
-					}
-					else {
-						fileInfo = fs.getResizedFileInfo(fileID, width, height);
-					}
-				}
-				if (fileInfo == null) {
-					fileInfo = fs.getFileInfo(fileID, isFetchOriginal());
-				}
-				if (fileInfo != null) {
-					
-					downloadStream = fs.readFile(fileInfo);
-					 if (downloadStream != null) {
-						String dateStamp = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss Z").format(new Date());
-						setLastModified(dateStamp);
-						setDayExpiry();
-						if (getIsDownload()) {
-							setContentType("application/x-download");
-							setFilename(fileInfo.getFileName());
+		try {
+			HttpServletRequest request = ServletActionContext.getRequest();
+			HttpServletResponse response = ServletActionContext.getResponse();
+
+			if (request.getHeader("If-Modified-Since") == null) {
+				if (fileID > 0) {
+					FileStore fs = FacilioFactory.getFileStore();
+					FileInfo fileInfo = null;
+					if (width > 0 || height > 0) {
+						if (height <= 0) {
+							fileInfo = fs.getResizedFileInfo(fileID, width, width);
+						} else {
+							fileInfo = fs.getResizedFileInfo(fileID, width, height);
 						}
-						else {
-							setContentType(fileInfo.getContentType());
+					}
+					if (fileInfo == null) {
+						fileInfo = fs.getFileInfo(fileID, isFetchOriginal());
+					}
+					if (fileInfo != null) {
+
+						downloadStream = fs.readFile(fileInfo);
+						if (downloadStream != null) {
+							String dateStamp = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss Z").format(new Date());
+							setLastModified(dateStamp);
+							setDayExpiry();
+							if (getIsDownload()) {
+								setContentType("application/x-download");
+								setFilename(fileInfo.getFileName());
+							} else {
+								setContentType(fileInfo.getContentType());
+							}
+							return SUCCESS;
+						} else {
+							throw new Exception("File not Found");
 						}
-						return SUCCESS;
-					} 
-					else {
-						throw new Exception("File not Found");
+					} else {
+						response.setStatus(HttpURLConnection.HTTP_NOT_FOUND);
 					}
 				}
-				else {
-					response.setStatus(HttpURLConnection.HTTP_NOT_FOUND);
-				}
+			} else {
+				response.setStatus(HttpURLConnection.HTTP_NOT_MODIFIED);
+				return NONE;
 			}
-		} else {
-			response.setStatus(HttpURLConnection.HTTP_NOT_MODIFIED);
-			return NONE;
 		}
-		throw new IllegalArgumentException("Cannot fetch file");
+		catch (Exception e) {
+			LOGGER.error("Error ocurred during file preview", e);
+		}
+		return ERROR;
 	}
 	
 	

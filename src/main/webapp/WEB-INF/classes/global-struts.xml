@@ -11,6 +11,7 @@
 	<constant name="struts.action.excludePattern" value="/websocket/.*" />
 	<constant name="struts.multipart.maxSize" value="15000000" />
 
+	<include file="basestruts.xml" />
 	<include file="baseapiv1.xml" />
 	<include file="admin.xml" />
 	<include file="sso.xml" />

@@ -3,12 +3,14 @@ package com.facilio.bmsconsole.actions;
 import java.io.InputStream;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
-import com.facilio.bmsconsole.context.FCUContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class V3FileAction extends FacilioAction {
+	private static final Logger LOGGER = LogManager.getLogger(V3FileAction.class.getName());
 
 	/**
 	 * 
@@ -84,24 +86,30 @@ public class V3FileAction extends FacilioAction {
 	}
 
 	public String previewFile() throws Exception {
-		FacilioChain chain = ReadOnlyChainFactory.getV3FilePreview();
-		FacilioContext context = chain.getContext();
-		context.put(FacilioConstants.ContextNames.FILE_TOKEN_STRING, q);
-		context.put(FacilioConstants.ContextNames.IS_DOWNLOAD, isDownload);
-		chain.execute();
-		setContentType((String) context.get(FacilioConstants.ContextNames.FILE_CONTENT_TYPE));
-		if (context.get(FacilioConstants.ContextNames.FILE_NAME) != null) {
-			setFilename((String) context.get(FacilioConstants.ContextNames.FILE_NAME));
+		try {
+			FacilioChain chain = ReadOnlyChainFactory.getV3FilePreview();
+			FacilioContext context = chain.getContext();
+			context.put(FacilioConstants.ContextNames.FILE_TOKEN_STRING, q);
+			context.put(FacilioConstants.ContextNames.IS_DOWNLOAD, isDownload);
+			chain.execute();
+			setContentType((String) context.get(FacilioConstants.ContextNames.FILE_CONTENT_TYPE));
+			if (context.get(FacilioConstants.ContextNames.FILE_NAME) != null) {
+				setFilename((String) context.get(FacilioConstants.ContextNames.FILE_NAME));
+			}
+			if (context.get(FacilioConstants.ContextNames.FILE_DOWNLOAD_STREAM) != null) {
+				setDownloadStream((InputStream) context.get(FacilioConstants.ContextNames.FILE_DOWNLOAD_STREAM));
+			}
+			int responseStatusCode = (int) context.getOrDefault(FacilioConstants.ContextNames.FILE_RESPONSE_STATUS, 200);
+			if (responseStatusCode == 404) {
+				return ERROR;
+			} else if (responseStatusCode == 304) {
+				return NONE;
+			}
+			return SUCCESS;
 		}
-		if(context.get(FacilioConstants.ContextNames.FILE_DOWNLOAD_STREAM)!=null) {
-			setDownloadStream((InputStream) context.get(FacilioConstants.ContextNames.FILE_DOWNLOAD_STREAM));
-		}
-		int responseStatusCode = (int) context.getOrDefault(FacilioConstants.ContextNames.FILE_RESPONSE_STATUS, 200);
-		if (responseStatusCode == 404) {
+		catch (Exception e) {
+			LOGGER.error("Error occurred in V3 file action", e);
 			return ERROR;
-		} else if (responseStatusCode == 304) {
-			return NONE;
-		} 
-		return SUCCESS;
+		}
 	}
 }
