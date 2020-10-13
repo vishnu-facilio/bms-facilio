@@ -11,7 +11,6 @@ http://www.w3.org/TR/html401/struct/global.html
         <directive name="useXHTML" value="false"/>
         <directive name="formatOutput" value="false"/>
         <directive name="embedStyleSheets" value="false"/>
-        <directive name="embedStyleSheets" value="false"/>
         <directive name="maxInputSize" value="5000000"/>
     </directives>
 
@@ -94,8 +93,8 @@ http://www.w3.org/TR/html401/struct/global.html
         <regexp name="angle" value="(-|\+)?([0-9]+(.[0-9]+)?)(deg|grads|rad)"/>
         <regexp name="time" value="([0-9]+(.[0-9]+)?)(ms|s)"/>
         <regexp name="frequency" value="([0-9]+(.[0-9]+)?)(hz|khz)"/>
-        <regexp name="length" value="((-|\+)?0|(-|\+)?([0-9]+(.[0-9]+)?)(em|ex|px|in|cm|mm|pt|pc))"/>
-        <regexp name="positiveLength" value="((\+)?0|(\+)?([0-9]+(.[0-9]+)?)(em|ex|px|in|cm|mm|pt|pc))"/>
+        <regexp name="length" value="((-|\+)?0|(-|\+)?([0-9]+(.[0-9]+)?)(em|rem|ex|px|in|cm|mm|pt|pc))"/>
+        <regexp name="positiveLength" value="((\+)?0|(\+)?([0-9]+(.[0-9]+)?)(em|rem|ex|px|in|cm|mm|pt|pc))"/>
         <regexp name="percentage" value="(-|\+)?([0-9]+(.[0-9]+)?)%"/>
         <regexp name="positivePercentage" value="(\+)?([0-9]+(.[0-9]+)?)%"/>
 
@@ -1784,93 +1783,65 @@ http://www.w3.org/TR/html401/struct/global.html
         <!--  end manual properties -->
     </css-rules>
 
-    <tag-rules>
-        <!-- rich text -->
+	<!-- rich text -->
+	<common-attributes>
+       	<attribute name="class">
+			<regexp-list>
+				<regexp name="htmlClass"/>
+			</regexp-list>
+        </attribute>
+        <!-- the "style" attribute will be validated by an inline stylesheet scanner, so no need to define anything here-->
+		<attribute name="style"/>
+	</common-attributes>
 
-        <tag name="div" action="validate">
-        	<attribute name="class">
+    <tag-rules>
+        <tag name="div" action="validate"/>
+        <tag name="i" action="validate"/>
+        <tag name="p" action="validate"/>
+        <tag name="b" action="validate"/>
+        <tag name="em" action="validate"/>
+        <tag name="s" action="validate"/>
+        <tag name="blockquote" action="validate"/>
+        <tag name="strong" action="validate"/>
+        <tag name="span" action="validate"/>
+
+        <tag name="br" action="validate"/>
+
+        <tag name="quote" action="validate"/>
+
+        <tag name="a" action="validate">
+			<attribute name="href">
+				<regexp-list>
+					<regexp value=".*"/>
+				</regexp-list>
+			</attribute>
+            <attribute name="nohref">
                 <regexp-list>
                     <regexp value=".*"/>
                 </regexp-list>
             </attribute>
-            <attribute name="style">
+            <attribute name="rel">
                 <regexp-list>
                     <regexp value=".*"/>
                 </regexp-list>
             </attribute>
-        </tag>
-        <tag name="i" action="validate">
-        	<attribute name="class">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-            <attribute name="style">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-        </tag>
-        <tag name="p" action="validate">
-        	<attribute name="class">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-            <attribute name="style">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-        </tag>
-        <tag name="b" action="validate">
-        	<attribute name="class">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-            <attribute name="style">
+            <attribute name="target">
                 <regexp-list>
                     <regexp value=".*"/>
                 </regexp-list>
             </attribute>
         </tag>
-        <tag name="em" action="validate">
-        	<attribute name="class">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-            <attribute name="style">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-        </tag>
-        <tag name="blockquote" action="validate">
-        	<attribute name="class">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-            <attribute name="style">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-        </tag>
-        <tag name="strong" action="validate">
-        	<attribute name="class">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-            <attribute name="style">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-        </tag>
+
+        <tag name="ul" action="validate"/>
+        <tag name="ol" action="validate"/>
+        <tag name="li" action="validate"/>
+
+        <tag name="h1"  action="validate"/>
+        <tag name="h2"  action="validate"/>
+        <tag name="h3"  action="validate"/>
+        <tag name="h4"  action="validate"/>
+        <tag name="h5"  action="validate"/>
+        <tag name="h6"  action="validate"/>
         <tag name="img" action="validate">
             <attribute name="src" action="validate">
                 <regexp-list>
@@ -1888,193 +1859,10 @@ http://www.w3.org/TR/html401/struct/global.html
                 </regexp-list>
             </attribute>
         </tag>
-        <tag name="span" action="validate">
-        	<attribute name="class">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-            <attribute name="style">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-        </tag>
-
-        <tag name="br" action="validate">
-        	<attribute name="class">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-            <attribute name="style">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-        </tag>
-
-        <tag name="quote" action="validate">
-        	<attribute name="class">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-            <attribute name="style">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-        </tag>
-
-        <tag name="a" action="validate">
-            <attribute name="href">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-            <attribute name="nohref">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-            <attribute name="rel">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-            <attribute name="target">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-            <attribute name="style">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-        </tag>
-
-        <tag name="ul" action="validate">
-        	<attribute name="class">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-            <attribute name="style">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-        </tag>
-        <tag name="ol" action="validate">
-        	<attribute name="class">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-            <attribute name="style">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-        </tag>
-        <tag name="li" action="validate">
-        	<attribute name="class">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-            <attribute name="style">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-        </tag>
-
-        <tag name="h1"  action="validate">
-            <attribute name="class">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-            <attribute name="style">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-        </tag>
-        <tag name="h2"  action="validate">
-            <attribute name="class">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-            <attribute name="style">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-        </tag>
-        <tag name="h3"  action="validate">
-            <attribute name="class">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-            <attribute name="style">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-        </tag>
-        <tag name="h4"  action="validate">
-            <attribute name="class">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-            <attribute name="style">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-        </tag>
-        <tag name="h5"  action="validate">
-            <attribute name="class">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-            <attribute name="style">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-        </tag>
-        <tag name="h6"  action="validate">
-            <attribute name="class">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-            <attribute name="style">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-        </tag>
-
 		<tag name="code" action="validate"/>
 		<tag name="style" action="validate"/>
 		<tag name="tt" action="validate"/>
-        <tag name="u"  action="validate">
-            <attribute name="class">
-                <regexp-list>
-                    <regexp value=".*"/>
-                </regexp-list>
-            </attribute>
-        </tag>
+        <tag name="u"  action="validate"/>
 
         <!-- workflow tags -->
 
