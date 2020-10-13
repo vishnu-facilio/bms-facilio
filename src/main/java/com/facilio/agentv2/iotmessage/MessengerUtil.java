@@ -21,13 +21,12 @@ public class MessengerUtil
 	public static JSONArray getPointsData(List<Point> points){
 		JSONArray array = new JSONArray();
 		points.forEach(point ->{
-			LOGGER.info("Json point value :"+point);
 			JSONObject pointJson = point.getChildJSON();
-            pointJson.put(AgentConstants.NAME, point.getName());
-			 if((point.getThresholdJSON() != null) && (!point.getThresholdJSON().isEmpty())){
-				 pointJson.put("thresholdJson", point.getThresholdJSON());
-			 }		 
-			 array.add(pointJson);
+			pointJson.put(AgentConstants.NAME, point.getName());
+			if(point.getThresholdJSON() !=null && !point.getThresholdJSON().isEmpty()) {
+				pointJson.put("thresholdJson", point.getThresholdJSON());
+			}
+			array.add(pointJson);
 		});
 		return array;
 	}
