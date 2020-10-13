@@ -886,7 +886,9 @@ public class ReportFactoryFields {
 						|| field.getDataTypeEnum() == FieldType.LOOKUP
 						|| field.getDataTypeEnum() == FieldType.SYSTEM_ENUM 
 						|| field.getDataTypeEnum() == FieldType.BOOLEAN
-						||(field.getDataTypeEnum() == FieldType.STRING 
+						||(field.getDataTypeEnum() == FieldType.STRING
+						|| field.getDataTypeEnum() == FieldType.DATE 
+						|| field.getDataTypeEnum() == FieldType.DATE_TIME
 						&& AccountUtil.isFeatureEnabled(FeatureLicense.ETISALAT))) 
 						|| field.isMainField()
 					) {
