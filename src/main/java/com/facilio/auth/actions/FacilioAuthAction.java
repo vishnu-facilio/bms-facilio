@@ -347,7 +347,9 @@ public class FacilioAuthAction extends FacilioAction {
 			Map<String, Object> loginModes = IAMUserUtil.getLoginModes(username, domain, appdomainObj);
 			setJsonresponse(loginModes);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.log(Level.INFO, "Exception while user lookup, ", e);
+			setJsonresponse("errorcode", "2");
+			return ERROR;
 		}
 		return SUCCESS;
 	}
