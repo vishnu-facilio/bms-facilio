@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.context.filters;
 
 import com.facilio.db.criteria.operators.FieldOperator;
 import com.facilio.db.criteria.operators.Operator;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.*;
 import org.apache.commons.collections4.CollectionUtils;
@@ -44,6 +45,10 @@ public class FilterFieldContext {
             }
             options.add(new FilterFieldOptions("false", falseVal));
         }
+        else if (field instanceof LookupField) {
+            FacilioModule lookup = ((LookupField) field).getLookupModule();
+            lookupModule = new FilterFieldLookupModule(lookup.getName(), lookup.getDisplayName());
+        }
     }
 
     public String getName() {
@@ -66,8 +71,9 @@ public class FilterFieldContext {
         return field == null ? null : field.getDisplayType() == null ? null : field.getDisplayType().name();
     }
 
-    public String getLookupModuleName() {
-        return field == null ? null : field instanceof LookupField ? ((LookupField) field).getLookupModule().getName() : null;
+    private FilterFieldLookupModule lookupModule;
+    public FilterFieldLookupModule getLookupModule() {
+        return lookupModule;
     }
 
     private List<FieldOperator> operators;
@@ -86,7 +92,7 @@ public class FilterFieldContext {
     public static class FilterFieldOptions {
         String label, value;
 
-        FilterFieldOptions(String value, String label) {
+        private FilterFieldOptions(String value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -96,6 +102,22 @@ public class FilterFieldContext {
         }
         public String getValue() {
             return value;
+        }
+    }
+
+    public static class FilterFieldLookupModule {
+        String name, displayName;
+
+        private FilterFieldLookupModule (String name, String displayName) {
+            this.name = name;
+            this.displayName = displayName;
+        }
+
+        public String getName() {
+            return name;
+        }
+        public  String getDisplayName() {
+            return displayName;
         }
     }
 

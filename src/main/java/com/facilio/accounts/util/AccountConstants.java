@@ -591,7 +591,7 @@ public class AccountConstants {
 	public static FacilioModule getAppOrgUserModule() {
 		FacilioModule orgModule = new FacilioModule();
 		orgModule.setName("users");
-		orgModule.setDisplayName("App Org Users");
+		orgModule.setDisplayName("Users");
 		orgModule.setTableName("ORG_Users");
 
 		return orgModule;
