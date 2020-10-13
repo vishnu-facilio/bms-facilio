@@ -120,15 +120,15 @@ public class PointsAPI {
     }
 
     public static Point getPointFromJSON(Map<String, Object> payload) throws Exception {
-//        if (containsValueCheck(AgentConstants.POINT_TYPE, payload)) {
+        if (containsValueCheck(AgentConstants.POINT_TYPE, payload)) {
             FacilioControllerType controllerType;
-            controllerType = FacilioControllerType.valueOf(1);
+            controllerType = FacilioControllerType.valueOf(JsonUtil.getInt(payload.get(AgentConstants.POINT_TYPE)));
             //LOGGER.info(" controller type for point is " + controllerType.asString());
-//            if (payload.containsKey(AgentConstants.PSEUDO)) {
-//                if (JsonUtil.getBoolean(payload.get(AgentConstants.PSEUDO))) {
-//                    controllerType = FacilioControllerType.MISC;
-//                }
-//            }
+            if (payload.containsKey(AgentConstants.PSEUDO)) {
+                if (JsonUtil.getBoolean(payload.get(AgentConstants.PSEUDO))) {
+                    controllerType = FacilioControllerType.MISC;
+                }
+            }
             switch (controllerType) {
                 case MODBUS_RTU:
                     return ModbusRtuPointContext.getPointFromMap(payload);
@@ -149,8 +149,8 @@ public class PointsAPI {
                 default:
                     throw new Exception("no implementation for " + controllerType.asString());
             }
-//        }
-//        throw new Exception("Point Type missing not defined -> " + payload);
+        }
+        throw new Exception("Point Type missing not defined -> " + payload);
     }
 
 
