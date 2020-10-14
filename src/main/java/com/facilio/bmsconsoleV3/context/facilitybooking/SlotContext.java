@@ -4,15 +4,24 @@ import com.facilio.v3.context.V3Context;
 
 public class SlotContext extends V3Context {
 
-    private Long slotTime;
+    private Long slotStartTime;
     private Double slotCost;
+    private Long slotEndTime;
 
-    public Long getSlotTime() {
-        return slotTime;
+    public Long getSlotStartTime() {
+        return slotStartTime;
     }
 
-    public void setSlotTime(Long slotTime) {
-        this.slotTime = slotTime;
+    public void setSlotStartTime(Long slotStartTime) {
+        this.slotStartTime = slotStartTime;
+    }
+
+    public Long getSlotEndTime() {
+        return slotEndTime;
+    }
+
+    public void setSlotEndTime(Long slotEndTime) {
+        this.slotEndTime = slotEndTime;
     }
 
     public Double getSlotCost() {

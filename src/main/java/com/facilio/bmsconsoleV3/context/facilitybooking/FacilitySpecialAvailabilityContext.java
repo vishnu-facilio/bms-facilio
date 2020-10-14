@@ -27,7 +27,7 @@ public class FacilitySpecialAvailabilityContext extends V3Context {
     }
 
     public static enum SpecialType implements FacilioEnum {
-        SPECIAL_COST, SPACIAL_AVAILABILITY, SPCIAL_UNAVAILABILITY;
+        SPECIAL_COST, SPACIAL_AVAILABILITY, SPECIAL_UNAVAILABILITY;
 
         @Override
         public int getIndex() {
