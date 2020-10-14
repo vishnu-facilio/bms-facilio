@@ -21,6 +21,11 @@ public class ModbusTcpPointContext extends Point {
     @Deprecated
     public ModbusTcpPointContext() { }
 
+    @Override
+    public String getIdentifier() {
+        return null;
+    }
+
 
     private long registerNumber = -1;
     private long registerType = -1;

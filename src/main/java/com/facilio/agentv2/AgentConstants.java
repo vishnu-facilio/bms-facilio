@@ -55,6 +55,7 @@ public class AgentConstants
     public static final String SECURITY_MODE = "securityMode";
     public static final String SECURITY_POLICY = "securityPolicy";
     public static final String IDENTIFIER = "identifier";
+    public static final String UA_POINT_IDENTIFIER = "uaPointIdentifier";
     public static final String NAMESPACE = "namespace";
 
 

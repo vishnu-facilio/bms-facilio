@@ -16,7 +16,7 @@ public class OpcUaPointContext extends Point {
 
 
     private int namespace;
-    private String identifier;
+    private String uaPointIdentifier;
 
     public int getNamespace() {
         return namespace;
@@ -26,10 +26,15 @@ public class OpcUaPointContext extends Point {
     }
 
     public String getIdentifier() {
-        return identifier;
+        return null;
     }
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
+
+    public String getUaPointIdentifier() {
+        return uaPointIdentifier;
+    }
+
+    public void setUaPointIdentifier(String identifier) {
+        this.uaPointIdentifier = identifier;
     }
 
     @Override
@@ -47,7 +52,7 @@ public class OpcUaPointContext extends Point {
         if (pointMap == null || pointMap.isEmpty()) {
             throw new Exception(" Map for controller can't be null or empty ->" + pointMap);
         }
-        if(containsValueCheck(AgentConstants.NAMESPACE, pointMap) && containsValueCheck(AgentConstants.IDENTIFIER, pointMap)){ //namespace
+        if (containsValueCheck(AgentConstants.NAMESPACE, pointMap) && containsValueCheck(AgentConstants.UA_POINT_IDENTIFIER, pointMap)) { //namespace
            /* OpcUaPoint point = new OpcUaPoint(agentId,controllerId);
             point.setNamespace(JsonUtil.getInt(pointMap.get(AgentConstants.NAMESPACE)));
             point.setIdentifier((String)pointMap.get(AgentConstants.IDENTIFIER));
@@ -56,7 +61,7 @@ public class OpcUaPointContext extends Point {
            jsonObject.putAll(pointMap);
            return FieldUtil.getAsBeanFromJson(jsonObject, OpcUaPointContext.class);
         }
-        throw  new  Exception("Mandatory fields like "+AgentConstants.NAMESPACE+" , "+AgentConstants.IDENTIFIER+"  might be missing from input parameter -> "+pointMap);
+        throw new Exception("Mandatory fields like " + AgentConstants.NAMESPACE + " , " + AgentConstants.UA_POINT_IDENTIFIER + "  might be missing from input parameter -> " + pointMap);
     }
 
     @Override
@@ -65,7 +70,7 @@ public class OpcUaPointContext extends Point {
         opcUsPointJSON.put(AgentConstants.ID,this.getId());
         opcUsPointJSON.put(AgentConstants.DEVICE_ID,getDeviceId());
         opcUsPointJSON.put(AgentConstants.NAMESPACE,this.getNamespace());
-        opcUsPointJSON.put(AgentConstants.IDENTIFIER,this.getIdentifier());
+        opcUsPointJSON.put(AgentConstants.UA_POINT_IDENTIFIER, this.getUaPointIdentifier());
         return opcUsPointJSON;
     }
 

@@ -21,6 +21,11 @@ public class SystemPointContext extends Point {
     public SystemPointContext() {
     }
 
+    @Override
+    public String getIdentifier() {
+        return null;
+    }
+
     public static Point getPointFromMap(Map<String, Object> payload) {
         return FieldUtil.getAsBeanFromMap(payload,SystemPointContext.class);
     }

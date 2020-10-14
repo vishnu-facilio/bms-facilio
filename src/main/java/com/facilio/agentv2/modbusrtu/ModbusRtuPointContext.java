@@ -25,6 +25,11 @@ public class ModbusRtuPointContext extends Point {
     @Deprecated
     private ModbusRtuPointContext() { }
 
+    @Override
+    public String getIdentifier() {
+        return null;
+    }
+
 
     public long getRegisterNumber() { return registerNumber; }
     public void setRegisterNumber(long registerNumber) {

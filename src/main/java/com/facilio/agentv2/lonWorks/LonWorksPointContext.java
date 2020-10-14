@@ -50,6 +50,11 @@ public class LonWorksPointContext extends Point {
     }
 
     @Override
+    public String getIdentifier() {
+        return null;
+    }
+
+    @Override
     public FacilioControllerType getControllerType() {
         return FacilioControllerType.LON_WORKS;
     }

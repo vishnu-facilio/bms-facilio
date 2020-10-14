@@ -112,7 +112,7 @@ public class PointMigrator {
             ModbusPoint agentPoint = new ModbusPoint(point.getControllerId());
             agentPoint.setOffset(point.getRegisterNumber());
             agentPoint.setModbusDatatype(point.getModbusDataType());
-            agentPoint.setFunctionCode(point.getRegisterType());
+            agentPoint.setRegisterType(point.getRegisterType());
             return agentPoint;
         }else {
             throw new Exception(" point cant be null ");
@@ -122,7 +122,7 @@ public class PointMigrator {
     private static FacilioJavaPoint getAgentModbusRtuPoint(ModbusRtuPointContext point) throws Exception {
         if(point != null){
             ModbusPoint agentPoint = new ModbusPoint(point.getControllerId());
-            agentPoint.setFunctionCode(point.getRegisterType());
+            agentPoint.setRegisterType(point.getRegisterType());
             agentPoint.setModbusDatatype(point.getModbusDataType());
             agentPoint.setOffset(point.getRegisterNumber());
             return agentPoint;
@@ -134,7 +134,7 @@ public class PointMigrator {
     private static FacilioJavaPoint getAgentOpcUaPoint(OpcUaPointContext point) throws Exception {
         if(point != null){
             OpcUaPoint agentPoint = new OpcUaPoint();
-            agentPoint.setIdentifier(point.getIdentifier());
+            agentPoint.setUaPointIdentifier(point.getUaPointIdentifier());
             agentPoint.setNamespace(point.getNamespace());
             toAgentPoint(agentPoint,point);
             return agentPoint;

@@ -21,6 +21,11 @@ public class MiscPoint extends Point {
     public MiscPoint() {
     }
 
+    @Override
+    public String getIdentifier() {
+        return null;
+    }
+
     public String getPath() { return path; }
     public void setPath(String path) { this.path = path;}
 

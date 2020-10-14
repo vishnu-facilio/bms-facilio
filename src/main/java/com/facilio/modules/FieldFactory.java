@@ -6581,7 +6581,7 @@ public class FieldFactory {
         fields.add(getFieldDeviceId(module));
         fields.add(getControllerIdField(module));
         fields.add(getField(AgentConstants.NAMESPACE, "NAME_SPACE", module, FieldType.NUMBER));
-        fields.add(getField(AgentConstants.IDENTIFIER, "IDENTIFIER", module, FieldType.STRING));
+        fields.add(getField(AgentConstants.UA_POINT_IDENTIFIER, "IDENTIFIER", module, FieldType.STRING));
         return fields;
     }
 

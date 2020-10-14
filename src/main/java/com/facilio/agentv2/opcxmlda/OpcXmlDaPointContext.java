@@ -31,6 +31,11 @@ public class  OpcXmlDaPointContext extends Point {
     @Deprecated
     public OpcXmlDaPointContext() { }
 
+    @Override
+    public String getIdentifier() {
+        return null;
+    }
+
     public static OpcXmlDaPointContext getPointFromMap(Map<String,Object> pointMap) throws Exception {
         if (pointMap == null || pointMap.isEmpty()) {
             throw new Exception(" Map for controller can't be null or empty ->" + pointMap);

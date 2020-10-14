@@ -18,6 +18,11 @@ public class NiagaraPointContext extends Point {
     @Deprecated
     public NiagaraPointContext() { }
 
+    @Override
+    public String getIdentifier() {
+        return null;
+    }
+
     public String getPath() { return path; }
     public void setPath(String path) { this.path = path; }
 

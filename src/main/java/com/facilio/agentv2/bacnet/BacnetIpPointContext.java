@@ -23,6 +23,11 @@ public class BacnetIpPointContext extends Point {
     }
 
     @Override
+    public String getIdentifier() {
+        return null;
+    }
+
+    @Override
     public FacilioControllerType getControllerType() {
         return FacilioControllerType.BACNET_IP;
     }
