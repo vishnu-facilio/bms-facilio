@@ -7,8 +7,6 @@
 <%@ page import="org.apache.log4j.LogManager" %>
 <%@ page import="org.apache.log4j.Logger" %>
 <%@ page import="java.util.List" %>
-<%@ page import="java.util.ArrayList" %>
-<%@ page import="com.facilio.modules.fields.relations.MigrationUtil" %>
 <%@ page import="org.apache.commons.collections4.CollectionUtils" %>
 <%@ page import="org.apache.commons.lang3.exception.ExceptionUtils" %>
 <%@ page import="com.facilio.beans.ModuleBean" %>
@@ -40,7 +38,6 @@
 
             // Have migration commands for each org
             // Transaction is only org level. If failed, have to continue from the last failed org and not from first
-            MigrationUtil.executeMigration();
 
             LOGGER.info("Completed For -- "+AccountUtil.getCurrentOrg().getId());
             response.getWriter().println("Completed For -- "+AccountUtil.getCurrentOrg().getId());
