@@ -3,6 +3,7 @@ package com.facilio.bmsconsoleV3.context.budget;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsoleV3.util.BudgetAPI;
 import com.facilio.v3.context.V3Context;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.text.DecimalFormat;
 
@@ -11,7 +12,9 @@ public class BudgetMonthlyAmountContext extends V3Context {
     private Long startDate;
     private ResourceContext resource;
     private ChartOfAccountContext account;
+
     private BudgetAmountContext budgetAmount;
+
     private  Double monthlyAmount;
 
     public BudgetAmountContext getBudgetAmount() {

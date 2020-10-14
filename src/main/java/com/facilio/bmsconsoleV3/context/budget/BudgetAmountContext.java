@@ -5,6 +5,7 @@ import com.facilio.bmsconsoleV3.util.BudgetAPI;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.v3.context.V3Context;
 import com.google.gson.JsonObject;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.text.DecimalFormat;
@@ -80,14 +81,14 @@ public class BudgetAmountContext extends V3Context {
         }
     }
 
-    private List<BudgetMonthlyAmountContext> monthlyAmountSplitUp;
+    private List<Map<String, Object>> monthlyAmountSplitUp;
 
-    public List<BudgetMonthlyAmountContext> getMonthlyAmountSplitUp() {
+    public List<Map<String, Object>> getMonthlyAmountSplitUp() {
         return monthlyAmountSplitUp;
     }
 
-    public void setMonthlyAmountSplitUp(List<BudgetMonthlyAmountContext> monthlyAmount) {
-        this.monthlyAmountSplitUp = monthlyAmount;
+    public void setMonthlyAmountSplitUp(List<Map<String, Object>> monthlyAmountSplitUp) {
+        this.monthlyAmountSplitUp = monthlyAmountSplitUp;
     }
 
     private BudgetContext budget;

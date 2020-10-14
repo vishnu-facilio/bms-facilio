@@ -9,16 +9,14 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class BudgetAPI {
 
@@ -46,7 +44,17 @@ public class BudgetAPI {
         if(CollectionUtils.isNotEmpty(budgetAmounts)){
             if(fetchSplitUp) {
                 for (BudgetAmountContext budgetAmount : budgetAmounts) {
-                    budgetAmount.setMonthlyAmountSplitUp(getMonthlySplitUp(budgetAmount.getId()));
+                    List<BudgetMonthlyAmountContext> splitList =  getMonthlySplitUp(budgetAmount.getId());
+                    if(CollectionUtils.isNotEmpty(splitList)) {
+                        List<Map<String, Object>> mapList = FieldUtil.getAsMapList(splitList, BudgetMonthlyAmountContext.class);
+                        for(Map<String, Object> map : mapList){
+                            map.remove("account");
+                            map.remove("resource");
+                            map.remove("budgetAmount");
+                            map.values().removeAll(Collections.singleton(null));
+                        }
+                        budgetAmount.setMonthlyAmountSplitUp(mapList);
+                    }
                 }
             }
             return budgetAmounts;

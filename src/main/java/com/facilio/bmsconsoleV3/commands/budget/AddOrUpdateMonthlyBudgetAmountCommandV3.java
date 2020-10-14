@@ -25,6 +25,8 @@ import com.facilio.v3.exception.RESTException;
 import com.facilio.v3.util.ChainUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.json.simple.JSONObject;
 
 import java.util.*;
 
@@ -54,7 +56,7 @@ public class AddOrUpdateMonthlyBudgetAmountCommandV3 extends FacilioCommand {
                     if(budgetAmnt.getMonthlyAmountSplitUp().size() < 12){
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid monthly split up");
                     }
-                    for (BudgetMonthlyAmountContext month : budgetAmnt.getMonthlyAmountSplitUp()) {
+                    for (BudgetMonthlyAmountContext month : FieldUtil.getAsBeanListFromMapList(budgetAmnt.getMonthlyAmountSplitUp(), BudgetMonthlyAmountContext.class)) {
                         month.setBudgetAmount(budgetAmnt);
                         month.setResource(budget.getFocalPointResource());
                         month.setAccount(budgetAmnt.getAccount());
