@@ -41,7 +41,7 @@ public class AddCVCommand extends FacilioCommand {
 			}
 			if(view.getIncludeParentCriteria()) {
 				FacilioView parentView = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
-				if (viewCriteria == null) {
+				if (viewCriteria == null && parentView != null) {
 					viewCriteria = parentView.getCriteria();
 				}
 				else if (parentView != null && parentView.getCriteria() != null) {
