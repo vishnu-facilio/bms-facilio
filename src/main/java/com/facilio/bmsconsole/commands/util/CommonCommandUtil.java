@@ -759,7 +759,7 @@ public class CommonCommandUtil {
 			}
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			if (moduleName == null || moduleName.isEmpty() || records == null || records.isEmpty()) {
-				LOGGER.log(Level.WARN, "Module Name / Records is null/ empty ==> "+moduleName+"==>"+records);
+				LOGGER.log(Level.DEBUG, "Module Name / Records is null/ empty ==> "+moduleName+"==>"+records);
 				return null;
 			}
 			
