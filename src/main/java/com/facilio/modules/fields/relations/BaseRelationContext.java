@@ -8,6 +8,7 @@ import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.http.MethodNotSupportedException;
 
 public class BaseRelationContext {
@@ -35,6 +36,7 @@ public class BaseRelationContext {
         this.baseFieldId = baseFieldId;
     }
 
+    @JsonIgnore
     private FacilioField baseField;
     public FacilioField getBaseField() throws Exception {
         if (baseField == null) {
@@ -63,6 +65,7 @@ public class BaseRelationContext {
         this.derivedFieldId = derivedFieldId;
     }
 
+    @JsonIgnore
     private FacilioField derivedField;
     public FacilioField getDerivedField() throws Exception {
         if (derivedField == null) {
