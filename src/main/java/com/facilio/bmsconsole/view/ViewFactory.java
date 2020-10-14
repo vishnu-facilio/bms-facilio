@@ -628,7 +628,7 @@ public class ViewFactory {
 		views.put("invite_all", getAllVisitorInvitesView().setOrder(order++));
 		views.put("invite_myInvites", getActiveVisitorInvites().setOrder(order++));
 		views.put("invite_myExpired", getExpiredVisitorInvites().setOrder(order++)); // 3
-//		viewsMap.put(FacilioConstants.ContextNames.VISITOR_INVITE, views);
+		viewsMap.put(FacilioConstants.ContextNames.VISITOR_INVITE, views);
 		
 		order = 1;
 		views = new LinkedHashMap<>();
