@@ -88,10 +88,10 @@ public class UriFilter implements Filter {
                 } else if (idx > 0) {
                     String appName = reqUri.substring(1, idx);
                     String newUri = reqUri.substring(idx);
-                    System.out.println("Facilio filter called : " + newUri);
+//                    System.out.println("Facilio filter called : " + newUri);
                     request.setAttribute(RequestUtil.REQUEST_APP_NAME, appName);
                     req.getRequestDispatcher(newUri).forward(request, response);
-                    System.out.println("Req completed");
+//                    System.out.println("Req completed");
                 } else {
                     chain.doFilter(request, response);
                 }
