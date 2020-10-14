@@ -37,6 +37,7 @@ public enum FacilioSystemFunctionNameSpace {
 	SCHEDULE(29,"schedule"),
 	CONNECTED_APP(30,"connectedApp"),
 	ML_NAMESPACE(31,"mlNameSpace"),
+	ORG_SPECIFIC(32,"orgSpecific"),
 	;
 	
 	

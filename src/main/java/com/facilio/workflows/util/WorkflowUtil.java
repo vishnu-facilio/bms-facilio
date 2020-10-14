@@ -97,6 +97,7 @@ import com.facilio.workflows.functions.FacilioMathFunction;
 import com.facilio.workflows.functions.FacilioModuleFunctions;
 import com.facilio.workflows.functions.FacilioNotificationFunctions;
 import com.facilio.workflows.functions.FacilioNumberFunctions;
+import com.facilio.workflows.functions.FacilioOrgSpecificFunctions;
 import com.facilio.workflows.functions.FacilioPsychrometricsFunction;
 import com.facilio.workflows.functions.FacilioReadingFunctions;
 import com.facilio.workflows.functions.FacilioResourceFunction;
@@ -2133,6 +2134,9 @@ public class WorkflowUtil {
 				case ML_NAMESPACE:
 					facilioWorkflowFunction = FacilioMLNameSpaceFunctions.getFacilioMLNameSpaceFunctions(functionName);
 					break;
+				case ORG_SPECIFIC:
+					facilioWorkflowFunction = FacilioOrgSpecificFunctions.getFacilioOrgSpecificFunctions(functionName);
+					break;
 					
 			}
 		}
@@ -2234,6 +2238,9 @@ public class WorkflowUtil {
 					break;
 				case ML_NAMESPACE:
 					facilioWorkflowFunction = new ArrayList<>( FacilioMLNameSpaceFunctions.getAllFunctions().values());
+					break;
+				case ORG_SPECIFIC:
+					facilioWorkflowFunction = new ArrayList<>( FacilioOrgSpecificFunctions.getAllFunctions().values());
 					break;
 			}
 		}
