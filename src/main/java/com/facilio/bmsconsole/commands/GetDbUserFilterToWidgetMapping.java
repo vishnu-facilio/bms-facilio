@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
@@ -32,6 +34,7 @@ import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.util.ReportUtil;
 
 public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
+    private static final Logger LOGGER = Logger.getLogger(GetDbTimeLineFilterToWidgetMapping.class.getName());
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -65,9 +68,15 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 				for (DashboardWidgetContext widget : widgets) {
 
 					long widgetId = widget.getId();
-
-					long widgetModuleId = DashboardFilterUtil.getModuleIdFromWidget(widget);
-
+					long widgetModuleId =-1;
+					try {
+					 widgetModuleId = DashboardFilterUtil.getModuleIdFromWidget(widget);
+					}
+					catch(Exception e)
+					{
+						LOGGER.log(Level.SEVERE,"Error occured  finding module for widget , ID="+widgetId+" Skipping   db userfilters",e);
+						continue;
+					}
 					boolean isCustomScript = DashboardFilterUtil.isCustomScriptWidget(widget);
 
 					for (DashboardUserFilterContext filter : userFilters) {

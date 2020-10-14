@@ -6716,10 +6716,18 @@ public class DashboardAction extends FacilioAction {
 			}
 		}
 		dashboard = DashboardUtil.getDashboardWithWidgets(linkName, moduleName);
+		
 		FacilioChain getDashboardFilterChain=ReadOnlyChainFactory.getFetchDashboardFilterAndWidgetFilterMappingChain();
 		FacilioContext getDashboardFilterContext=getDashboardFilterChain.getContext();
-		getDashboardFilterContext.put(FacilioConstants.ContextNames.DASHBOARD,getDashboard());		
-		getDashboardFilterChain.execute();
+		getDashboardFilterContext.put(FacilioConstants.ContextNames.DASHBOARD,getDashboard());
+		try {
+			getDashboardFilterChain.execute();
+		} catch (Exception e) {
+			LOGGER.log(Level.SEVERE, "Error occured  getting filters for dashboard ID="+dashboard.getId()+"setting filters to null" ,e);
+			dashboard.setDashboardFilter(null);
+		}
+		
+		
 		setDashboardJson(DashboardUtil.getDashboardResponseJson(dashboard));
 		return SUCCESS;
 	}
