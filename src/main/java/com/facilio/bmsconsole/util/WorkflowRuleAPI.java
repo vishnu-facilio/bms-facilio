@@ -144,8 +144,8 @@ public class WorkflowRuleAPI {
 				addExtendedProps(ModuleFactory.getStateFlowModule(), FieldFactory.getStateFlowFields(), ruleProps);
 				break;
 			case CUSTOM_BUTTON:
-				addExtendedProps(ModuleFactory.getCustomButtonRuleModule(), FieldFactory.getCustomButtonRuleFields(), ruleProps);
 				StateFlowRulesAPI.addOrUpdateFormDetails((CustomButtonRuleContext) rule);
+				addExtendedProps(ModuleFactory.getCustomButtonRuleModule(), FieldFactory.getCustomButtonRuleFields(), ruleProps);
 				break;
 			case ALARM_WORKFLOW_RULE:
 				addExtendedProps(ModuleFactory.getAlarmWorkflowRuleModule(), FieldFactory.getAlarmWorkflowRuleFields(), ruleProps);
