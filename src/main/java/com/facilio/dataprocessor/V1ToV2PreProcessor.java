@@ -18,8 +18,8 @@ import org.json.simple.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class v1ToV2PreProcessor implements AgentMessagePreProcessor {
-    private static final Logger LOGGER = LogManager.getLogger(v1ToV2PreProcessor.class.getName());
+public class V1ToV2PreProcessor implements AgentMessagePreProcessor {
+    private static final Logger LOGGER = LogManager.getLogger(V1ToV2PreProcessor.class.getName());
     public static final String PUBLISH_TYPE = "PUBLISH_TYPE";
 
     @Override

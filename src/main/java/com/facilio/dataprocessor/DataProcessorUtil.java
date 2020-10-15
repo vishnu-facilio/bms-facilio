@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.api.client.json.Json;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -136,11 +137,13 @@ public class DataProcessorUtil {
             catch (Exception e) {
                 LOGGER.info(MessageFormat.format("Error occurred while setting logger level for data processing. Logger Level prop = {0}. Exception msg => {1}", loggerLevel, e.getMessage()));
             }
+
             if (checkIfDuplicate(recordId)) {
                 LOGGER.info(" skipping record "+recordId);
                 return false;
             }
             JSONObject payLoad = record.getData();
+
             if ((payLoad != null) && (payLoad.isEmpty())) {
                 LOGGER.info(" Empty or null message received " + recordId);
                 updateAgentMessage(recordId,MessageStatus.DATA_EMPTY);
@@ -180,7 +183,7 @@ public class DataProcessorUtil {
             switch (processorVersion) {
                 case 1:
 //                    LOGGER.info("PreProcessor for V1 to V2 data");
-                    AgentMessagePreProcessor preProcessor = new v1ToV2PreProcessor();
+                    AgentMessagePreProcessor preProcessor = new V1ToV2PreProcessor();
                     List<JSONObject> messages = preProcessor.preProcess(payLoad);
                     boolean isEveryMessageProcessed = true;
                     for (JSONObject msg :
@@ -191,7 +194,15 @@ public class DataProcessorUtil {
                 case 2:
 //                    LOGGER.info(" new processor data ");
                     return sendToProcessorV2(payLoad,recordId);
-
+                case 3:
+                    AgentMessagePreProcessor wattSensePreProcessor = new WattsenseToV2();
+                    List<JSONObject> msgs = wattSensePreProcessor.preProcess(payLoad);
+                    isEveryMessageProcessed = true;
+                    for (JSONObject msg :
+                            msgs) {
+                        isEveryMessageProcessed = isEveryMessageProcessed && sendToProcessorV2(msg, recordId);
+                    }
+                    return isEveryMessageProcessed;
                 default:
 //                    LOGGER.info(" old processor data ");
                     // will divert to another class in future.

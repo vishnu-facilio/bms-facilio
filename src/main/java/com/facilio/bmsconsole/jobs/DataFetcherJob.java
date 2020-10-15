@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.jobs;
 
 import com.facilio.agent.integration.wattsense.WattsenseClient;
+import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.dataFetchers.DataFetcher;
 import com.facilio.dataFetchers.Wateruos;
@@ -20,11 +21,11 @@ public class DataFetcherJob extends FacilioJob {
             LOGGER.info("Calling Wattsense data fetcher");
         /*DataFetcher wateruos = new Wateruos();
         wateruos.process();*/
-            WattsenseClient client = new WattsenseClient();
+            FacilioAgent agent = AgentApiV2.getAgent(33L);
+            WattsenseClient client = new WattsenseClient(agent);
             client.setApiKey("XdwqbEv0aOgrVXBQZPD7Lxp5A89GP68wR064gW3eq4lz6JkKMwdYRmbyo2N1JR4Y");
             client.setSecretKey("YPreE3g20A8wX9dBVNYpL1QzvMW5QzM18QKZtoWleDbR6OKJa4yoxm7qr5PZkmRM");
             DataFetcher wattsenseDataFetcher = new WattsenseDataFetcher(client);
-            FacilioAgent agent = client.getAgent();
             LOGGER.info(agent);
             LOGGER.info(agent.getName());
             wattsenseDataFetcher.setAgent(agent);

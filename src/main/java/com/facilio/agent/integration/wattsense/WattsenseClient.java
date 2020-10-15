@@ -46,7 +46,7 @@ public class WattsenseClient
 {
     private static final Logger LOGGER = LogManager.getLogger(WattsenseClient.class.getName());
 
-
+    private FacilioAgent agent;
     private String clientId;
     private String certificateStoreId;
     private String mqttConnectionId;
@@ -66,12 +66,11 @@ public class WattsenseClient
 
     public FacilioAgent getAgent() {
         //select agent from wattsense table where api key = getApiKey()
-        try {
-            return AgentApiV2.getAgent(33L);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+        return agent;
+    }
+
+    public WattsenseClient(FacilioAgent agent) {
+        this.agent = agent;
     }
 
     private String apiKey;

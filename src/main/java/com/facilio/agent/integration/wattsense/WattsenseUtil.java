@@ -88,7 +88,7 @@ public class WattsenseUtil
                 LOGGER.info("Authentication params not proper");
                 return false;
             }
-            WattsenseClient wattsenseClient = new WattsenseClient();
+            WattsenseClient wattsenseClient = new WattsenseClient(null);
             wattsenseClient.setUserName(username);
 
             if (authenticate(username,password)) { // if status is 200 proceed
@@ -453,7 +453,7 @@ public class WattsenseUtil
     }
 
     public static WattsenseClient getWattsenseFromList(List<Map<String, Object>> rows){
-        WattsenseClient wattsenseClient = new WattsenseClient();
+        WattsenseClient wattsenseClient = new WattsenseClient(null);
         if(rows.isEmpty()){
             return wattsenseClient;
         }

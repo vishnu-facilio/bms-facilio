@@ -1,6 +1,8 @@
 package com.facilio.agentv2.actions;
 
 import com.facilio.agent.integration.wattsense.WattsenseClient;
+import com.facilio.agentv2.AgentApiV2;
+import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.device.Device;
@@ -27,15 +29,42 @@ public class WattsenseAction extends FacilioAction {
     }
 
     private long deviceId;
+    private long agentId;
+    private String apiKey;
+    private String secretKey;
 
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
+    }
+
+    public String getSecretKey() {
+        return secretKey;
+    }
+
+    public void setSecretKey(String secretKey) {
+        this.secretKey = secretKey;
+    }
+
+    public long getAgentId() {
+        return agentId;
+    }
+
+    public void setAgentId(long agentId) {
+        this.agentId = agentId;
+    }
 
     public String getDevices() {
         try {
             if (getDeviceId() == null) throw new Exception("Device ID is null");
             LOGGER.info("getting devices");
-            WattsenseClient client = new WattsenseClient();
-            client.setApiKey("XdwqbEv0aOgrVXBQZPD7Lxp5A89GP68wR064gW3eq4lz6JkKMwdYRmbyo2N1JR4Y");
-            client.setSecretKey("YPreE3g20A8wX9dBVNYpL1QzvMW5QzM18QKZtoWleDbR6OKJa4yoxm7qr5PZkmRM");
+            FacilioAgent agent = AgentApiV2.getAgent(getAgentId());
+            WattsenseClient client = new WattsenseClient(agent);
+            client.setApiKey(getApiKey());
+            client.setSecretKey(getSecretKey());
             List<Device> devices = client.getDevices();
             for (Device device : devices) {
                 long id = FieldDeviceApi.addFieldDevice(device);
@@ -54,10 +83,10 @@ public class WattsenseAction extends FacilioAction {
 
     public String discoverPoints() {
         LOGGER.info("Discovering points");
-        WattsenseClient client = new WattsenseClient();
-        client.setApiKey("XdwqbEv0aOgrVXBQZPD7Lxp5A89GP68wR064gW3eq4lz6JkKMwdYRmbyo2N1JR4Y");
-        client.setSecretKey("YPreE3g20A8wX9dBVNYpL1QzvMW5QzM18QKZtoWleDbR6OKJa4yoxm7qr5PZkmRM");
         try {
+            WattsenseClient client = new WattsenseClient(AgentApiV2.getAgent(getAgentId()));
+            client.setApiKey(getApiKey());
+            client.setSecretKey(getSecretKey());
             Device fieldDevice = FieldDeviceApi.getDevice(getDeviceId());
             if (fieldDevice != null) {
                 List<MiscPoint> points = client.getPoints(fieldDevice);
