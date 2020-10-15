@@ -7,10 +7,7 @@ import com.facilio.bmsconsole.commands.ExecuteWorkFlowsBusinessLogicInPostTransa
 import com.facilio.bmsconsole.commands.ValidateAssetDepreciationCommand;
 import com.facilio.bmsconsole.context.AssetDepreciationContext;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
-import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
-import com.facilio.bmsconsoleV3.commands.RollUpTransactionAmountCommand;
-import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
-import com.facilio.bmsconsoleV3.commands.UpdateAttachmentsParentIdCommandV3;
+import com.facilio.bmsconsoleV3.commands.*;
 import com.facilio.bmsconsoleV3.commands.budget.*;
 import com.facilio.bmsconsoleV3.commands.client.AddAddressForClientLocationCommandV3;
 import com.facilio.bmsconsoleV3.commands.client.LoadClientLookupCommandV3;
@@ -735,7 +732,7 @@ public class APIv3Config {
 
     @Module("facility")
     public static Supplier<V3Config> getFacility() {
-        return () -> new V3Config(FacilityContext.class)
+        return () -> new V3Config(FacilityContext.class, new ModuleCustomFieldCount30())
                 .create().beforeSave(new SetLocalIdCommandV3())
                 .update()
                 .delete()
