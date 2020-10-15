@@ -606,11 +606,13 @@ public enum CardLayout {
 					JSONObject timeLineFilters = (JSONObject) cardContext.getCardFilters();
 					String dateValueString = (String)timeLineFilters.get("dateValueString");
 					
-					long startTime = Long.parseLong(dateValueString.split(",")[0]);
-					long endTime = Long.parseLong(dateValueString.split(",")[1]);
+					if (dateValueString != null && !dateValueString.trim().isEmpty()) {
+						long startTime = Long.parseLong(dateValueString.split(",")[0]);
+						long endTime = Long.parseLong(dateValueString.split(",")[1]);
 					
-					variables.add(getVariable("startTime", "Start Time", "DATE_TIME", startTime, null));
-					variables.add(getVariable("endTime", "End Time", "DATE_TIME", endTime, null));
+						variables.add(getVariable("startTime", "Start Time", "DATE_TIME", startTime, null));
+						variables.add(getVariable("endTime", "End Time", "DATE_TIME", endTime, null));
+					}
 				}
 				else if (dateRange != null) {
 					DateOperators dateOperator = (DateOperators) DateOperators.getAllOperators().get(dateRange);
