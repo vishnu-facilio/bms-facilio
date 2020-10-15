@@ -92,7 +92,7 @@ public class AddCVCommand extends FacilioCommand {
 			}
 			view.setId(viewId);
 			
-			addViewSharing(view);
+			ViewAPI.addViewSharing(view);
 			
 			context.put(FacilioConstants.ContextNames.VIEWID, viewId);
 			
@@ -100,46 +100,4 @@ public class AddCVCommand extends FacilioCommand {
 		return false;
 	}
 
-	private void addViewSharing(FacilioView view) throws Exception {
-		SharingContext<SingleSharingContext> viewSharing = view.getViewSharing();
-		SharingAPI.deleteSharing(Collections.singletonList(view.getId()), ModuleFactory.getViewSharingModule());
-
-		//temp handling for apptype sharing for custom views..can be removed after supporting apptype sharing in ui
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		long modId = -1;
-		if(view.getId() > 0) {
-			FacilioView existingView = ViewAPI.getView(view.getId());
-			modId = existingView.getModuleId();
-		}
-		if(viewSharing == null) {
-			viewSharing = new SharingContext<>();
-		}
-		
-
-		if (viewSharing != null && !viewSharing.isEmpty()) {
-			FacilioView defaultView = ViewFactory.getView(modBean.getModule(modId > 0 ? modId : view.getModuleId()), view.getName(), modBean);
-			if(defaultView == null) {
-				SingleSharingContext defaultAppSharing = SharingAPI.getCurrentAppTypeSharingForCustomViews();
-				if (defaultAppSharing != null) {
-					viewSharing.add(defaultAppSharing);
-				}
-			}
-			else {
-				SharingContext<SingleSharingContext> appSharing = SharingAPI.getDefaultAppTypeSharing(defaultView);
-				if(CollectionUtils.isNotEmpty(appSharing)) {
-					viewSharing.addAll(appSharing);
-				}
-			}
-			
-			List<Long> orgUsersId = viewSharing.stream().filter(value -> value.getTypeEnum() == SharingType.USER)
-					.map(val -> val.getUserId()).collect(Collectors.toList());
-			if (CollectionUtils.isNotEmpty(orgUsersId) && !orgUsersId.contains(AccountUtil.getCurrentUser().getId())) {
-				SingleSharingContext newViewSharing = new SingleSharingContext(); 
-				newViewSharing.setUserId(AccountUtil.getCurrentUser().getId());
-				newViewSharing.setType(SharingType.USER);
-				viewSharing.add(newViewSharing);	
-			}
-			SharingAPI.addSharing(viewSharing, view.getId(), ModuleFactory.getViewSharingModule());
-		}
-	}
 }

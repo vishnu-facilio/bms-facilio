@@ -1,18 +1,24 @@
 package com.facilio.bmsconsole.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.SharingContext;
+import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.context.ViewGroups;
+import com.facilio.bmsconsole.context.SingleSharingContext.SharingType;
 import com.facilio.bmsconsole.view.ColumnFactory;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.FacilioView.ViewType;
@@ -298,6 +304,9 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 				
 				customizeViewSortColumns((long) viewProp.get("id"), defaultSortFileds);
 			}
+			
+			view.setId((long) viewProp.get("id"));
+			addViewSharing(view);
 			
 			return (long) viewProp.get("id");
 			
@@ -612,7 +621,51 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 				customizeViewSortColumns(viewId, sortFields);
 			}
 		}
+		
 		return viewId;
+	}
+	
+	public static void addViewSharing(FacilioView view) throws Exception {
+		SharingContext<SingleSharingContext> viewSharing = view.getViewSharing();
+		SharingAPI.deleteSharing(Collections.singletonList(view.getId()), ModuleFactory.getViewSharingModule());
+
+		//temp handling for apptype sharing for custom views..can be removed after supporting apptype sharing in ui
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		long modId = -1;
+		if(view.getId() > 0) {
+			FacilioView existingView = ViewAPI.getView(view.getId());
+			modId = existingView.getModuleId();
+		}
+		if(viewSharing == null) {
+			viewSharing = new SharingContext<>();
+		}
+		
+
+		if (viewSharing != null && !viewSharing.isEmpty()) {
+			FacilioView defaultView = ViewFactory.getView(modBean.getModule(modId > 0 ? modId : view.getModuleId()), view.getName(), modBean);
+			if(defaultView == null) {
+				SingleSharingContext defaultAppSharing = SharingAPI.getCurrentAppTypeSharingForCustomViews();
+				if (defaultAppSharing != null) {
+					viewSharing.add(defaultAppSharing);
+				}
+			}
+			else {
+				SharingContext<SingleSharingContext> appSharing = SharingAPI.getDefaultAppTypeSharing(defaultView);
+				if(CollectionUtils.isNotEmpty(appSharing)) {
+					viewSharing.addAll(appSharing);
+				}
+			}
+			
+			List<Long> orgUsersId = viewSharing.stream().filter(value -> value.getTypeEnum() == SharingType.USER)
+					.map(val -> val.getUserId()).collect(Collectors.toList());
+			if (CollectionUtils.isNotEmpty(orgUsersId) && !orgUsersId.contains(AccountUtil.getCurrentUser().getId())) {
+				SingleSharingContext newViewSharing = new SingleSharingContext(); 
+				newViewSharing.setUserId(AccountUtil.getCurrentUser().getId());
+				newViewSharing.setType(SharingType.USER);
+				viewSharing.add(newViewSharing);	
+			}
+			SharingAPI.addSharing(viewSharing, view.getId(), ModuleFactory.getViewSharingModule());
+		}
 	}
 	
 	private static void setCriteriaValue(Criteria criteria) throws Exception {
