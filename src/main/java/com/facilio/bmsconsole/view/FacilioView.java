@@ -27,7 +27,9 @@ public class FacilioView {
 		this.name = view.name;
 		this.displayName = view.displayName;
 		this.type = view.type;
-		this.viewSharing = view.viewSharing;
+		if (view.viewSharing != null) {
+			this.viewSharing = new SharingContext<>(view.viewSharing);
+		}
 		this.moduleId = view.moduleId;
 		this.groupId = view.groupId;
 		this.moduleName = view.moduleName;
