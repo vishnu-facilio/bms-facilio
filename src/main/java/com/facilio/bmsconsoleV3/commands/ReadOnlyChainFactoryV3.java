@@ -1,5 +1,7 @@
 package com.facilio.bmsconsoleV3.commands;
 
+import com.facilio.bmsconsoleV3.commands.facility.FillFacilityDetailsCommandV3;
+import com.facilio.bmsconsoleV3.commands.facility.GetFacilityAvailabilityCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.AddDefaultCriteriaForQuoteFetchCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.QuotationFillLookupFields;
 import com.facilio.bmsconsoleV3.commands.tenant.LoadTenantLookUpsCommandV3;
@@ -61,6 +63,13 @@ public class ReadOnlyChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new FetchUnSeenNotificationCommand());
         c.addCommand(new AddUserCriteriaMyNotification());
+        return c;
+    }
+
+    public static FacilioChain getFacilityAfterFetchChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FillFacilityDetailsCommandV3());
+        c.addCommand(new GetFacilityAvailabilityCommandV3());
         return c;
     }
 

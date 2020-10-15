@@ -67,6 +67,7 @@ import com.facilio.bmsconsoleV3.context.communityfeatures.*;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnnouncementContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
+import com.facilio.bmsconsoleV3.context.facilitybooking.AmenitiesContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.FacilityContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
@@ -739,7 +740,18 @@ public class APIv3Config {
                 .list()
                     .beforeFetch(new LoadFacilityLookupCommandV3())
                 .summary()
-                    .afterFetch(new FillFacilityDetailsCommandV3())
+                    .afterFetch(ReadOnlyChainFactoryV3.getFacilityAfterFetchChain())
+                .build();
+    }
+
+    @Module("amenity")
+    public static Supplier<V3Config> getAmenity() {
+        return () -> new V3Config(AmenitiesContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .update()
+                .delete()
+                .list()
+                .summary()
                 .build();
     }
 

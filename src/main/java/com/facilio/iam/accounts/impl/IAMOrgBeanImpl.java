@@ -192,7 +192,7 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		long orgId = (Long) props.get("id");
 		org.setId(orgId);
 		
-		initialiseOrgMfaSettings(orgId);
+		//initialiseOrgMfaSettings(orgId);
 		return org;
 	}
 	

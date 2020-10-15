@@ -3,11 +3,13 @@ package com.facilio.bmsconsoleV3.context.facilitybooking;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.v3.context.V3Context;
 
+import java.time.LocalTime;
+
 public class FacilitySpecialAvailabilityContext extends V3Context {
 
     private FacilityContext facility;
-    private Long startDateTime;
-    private Long endDateTime;
+    private Long startDate;
+    private Long endDate;
     private Double cost;
 
     private SpecialType specialType;
@@ -63,19 +65,79 @@ public class FacilitySpecialAvailabilityContext extends V3Context {
         this.cost = cost;
     }
 
-    public Long getStartDateTime() {
-        return startDateTime;
+    public java.lang.Long getStartDate() {
+        return startDate;
     }
 
-    public void setStartDateTime(Long startDateTime) {
-        this.startDateTime = startDateTime;
+    public void setStartDate(java.lang.Long startDate) {
+        this.startDate = startDate;
     }
 
-    public Long getEndDateTime() {
-        return endDateTime;
+    public java.lang.Long getEndDate() {
+        return endDate;
     }
 
-    public void setEndDateTime(Long endDateTime) {
-        this.endDateTime = endDateTime;
+    public void setEndDate(java.lang.Long endDate) {
+        this.endDate = endDate;
     }
+
+    private LocalTime startTime;
+
+    public LocalTime getStartTimeAsLocalTime() {
+        return startTime;
+    }
+
+    public LocalTime getStartTimeOrDefault() {
+        if (startTime != null) {
+            return startTime;
+        }
+        return LocalTime.MIN;
+    }
+
+    public String getStartTime() {
+        if (startTime != null) {
+            return startTime.toString();
+        }
+        return null;
+    }
+
+    public void setStartTime(LocalTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setStartTime(String value) {
+        if(value!=null&&value.trim().length()>0){
+            this.startTime = LocalTime.parse(value);
+        }
+    }
+
+    private LocalTime endTime;
+
+    public LocalTime getEndTimeAsLocalTime() {
+        return endTime;
+    }
+    public LocalTime getEndTimeOrDefault() {
+        if (endTime != null) {
+            return endTime;
+        }
+        return LocalTime.MAX;
+    }
+
+    public String getEndTime() {
+        if (endTime != null) {
+            return endTime.toString();
+        }
+        return null;
+    }
+
+    public void setEndTime(LocalTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public void setEndTime(String value) {
+        if(value!=null&&value.trim().length()>0){
+            this.endTime = LocalTime.parse(value);
+        }
+    }
+
 }

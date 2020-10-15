@@ -6,9 +6,11 @@ import com.facilio.bmsconsoleV3.util.FacilityAPI;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.CommandUtil;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
+import java.util.Map;
 
 public class FillFacilityDetailsCommandV3 extends FacilioCommand {
     @Override
@@ -20,8 +22,6 @@ public class FillFacilityDetailsCommandV3 extends FacilioCommand {
                  FacilityContext record = (FacilityContext) CommandUtil.getModuleData(context, moduleName,recId);
                 if (record != null) {
                     FacilityAPI.setFacilityAmenities(record);
-                    FacilityAPI.setFacilitySpecialAvailability(record);
-                    FacilityAPI.setFacilityWeekDayAvailability(record);
                 }
             }
         }
