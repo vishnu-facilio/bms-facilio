@@ -19,16 +19,16 @@ import java.util.List;
 
 public class WattsenseAction extends FacilioAction {
     private static final Logger LOGGER = LogManager.getLogger(WattsenseAction.class.getName());
+    private long deviceId;
 
-    public Long getDeviceId() {
+
+    public long getDeviceId() {
         return deviceId;
     }
 
     public void setDeviceId(long deviceId) {
         this.deviceId = deviceId;
     }
-
-    private long deviceId;
     private long agentId;
     private String apiKey;
     private String secretKey;
@@ -59,7 +59,6 @@ public class WattsenseAction extends FacilioAction {
 
     public String getDevices() {
         try {
-            if (getDeviceId() == null) throw new Exception("Device ID is null");
             LOGGER.info("getting devices");
             FacilioAgent agent = AgentApiV2.getAgent(getAgentId());
             WattsenseClient client = new WattsenseClient(agent);
