@@ -202,6 +202,7 @@ public class ReportFactoryFields {
 		selectedFields.add(fields.get("rotatingTool"));
 		selectedFields.add(fields.get("rotatingItem"));
 		selectedFields.add(fields.get("lastIssuedToUser"));
+		selectedFields.add(fields.get("connected"));
 		
 		
 		if(customFields.size() != 0) {
