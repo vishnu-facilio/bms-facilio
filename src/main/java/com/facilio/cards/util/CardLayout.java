@@ -233,6 +233,66 @@ public enum CardLayout {
 			return returnValue;
 		}
 	},
+	
+	GAUGE_LAYOUT_7 ("gauge_layout_7") {
+		@Override
+		protected Object execute(WidgetCardContext cardContext) throws Exception {
+			JSONObject cardParams = cardContext.getCardParams();
+			
+			String title = (String) cardParams.get("title");
+			String kpiType = (String) cardParams.get("kpiType");
+			String dateRange = (String) cardParams.get("dateRange");
+			String dateField = (String) cardParams.get("dateField");
+			String subText = (String) cardParams.get("subText");
+			
+			String maxSafeLimitType = (String) cardParams.get("maxSafeLimitType");
+			String centerTextType = (String) cardParams.get("centerTextType");
+
+			
+			 
+			Long kpiId;
+			Long parentId;
+			String yAggr;
+			
+			JSONObject maxValue = new JSONObject();
+			Map<String, Object> maxKpi = (Map<String, Object>) cardParams.get("maxSafeLimitKpi");
+			
+
+			JSONObject centerValue = new JSONObject();
+			Map<String, Object> centerKpi =  (Map<String, Object>)  cardParams.get("centerTextKpi");
+
+			List<Map<String, Object>> kpis = (List<Map<String, Object>>) cardParams.get("kpis");
+			List<Map<String, Object>>  kpiList = new ArrayList<>(); 
+			int i =0;
+            for (Map<String, Object> kpi : kpis) {
+            	kpiList.add(i, getKPIData(kpi,kpiType,cardContext));
+            	i++;
+            }
+            
+            
+  
+			JSONObject returnValue = new JSONObject();
+	         if (maxSafeLimitType.equals("kpi")) {
+	    			returnValue.put("maxValue", getKPIData(maxKpi,kpiType,cardContext));
+	            }
+	         else if (maxSafeLimitType.contentEquals("constant")) {
+	        	 maxValue.put("value", cardParams.get("maxSafeLimitConstant"));
+	        	 returnValue.put("maxValue",maxValue);
+	         }
+	         if (centerTextType.equals("kpi")) {
+	    			returnValue.put("centerValue", getKPIData(centerKpi,kpiType,cardContext));
+	            }
+	         else if (centerTextType.contentEquals("text")) {
+	        	 maxValue.put("value", cardParams.get("maxSafeLimitConstant"));
+	        	 returnValue.put("centerValue",centerValue);
+	         }
+			returnValue.put("title", title);
+			returnValue.put("values", kpiList);
+	
+			
+			return returnValue;
+		}
+	},
 	KPICARD_LAYOUT_2 ("kpicard_layout_2") {
 		@Override
 		protected Object execute(WidgetCardContext cardContext) throws Exception {
@@ -571,6 +631,12 @@ public enum CardLayout {
 				if (cardResultMap.containsKey("value")) {
 					variables.add(getVariable("value", "Value", (Map) cardResultMap.get("value")));
 				}
+				if (cardResultMap.containsKey("maxValue")) {
+					variables.add(getVariable("maxValue", "maxValue", (Map) cardResultMap.get("maxValue")));
+				}
+				if (cardResultMap.containsKey("centerValue")) {
+					variables.add(getVariable("centerValue", "centerValue", (Map) cardResultMap.get("centerValue")));
+				}
 				if (cardResultMap.containsKey("baselineValue")) {
 					variables.add(getVariable("baselineValue", "Baseline Value", (Map) cardResultMap.get("baselineValue")));
 				}
@@ -686,5 +752,111 @@ public enum CardLayout {
 	
 	public static Map<String, CardLayout> getAllCardLayouts() {
 		return cardLayoutMap;
+	}
+	public static Map<String, Object> getKPIData(Map<String, Object> kpi2, String kpiType, WidgetCardContext cardContext) {
+	
+		 
+		Long kpiId;
+		Long parentId;
+		String yAggr;
+
+
+		if (kpi2 instanceof JSONObject) {
+			JSONObject kpiConfig = (JSONObject) kpi2;
+			kpiId = (Long) kpiConfig.get("kpiId");
+			parentId = (Long) kpiConfig.get("parentId");
+			yAggr = (String) kpiConfig.get("yAggr");
+		} else if (kpi2 instanceof Map) {
+			Map<String, Object> kpiConfig = (Map<String, Object>) kpi2;
+			kpiId = (Long) kpiConfig.get("kpiId");
+			parentId = (Long) kpiConfig.get("parentId");
+			yAggr = (String) kpiConfig.get("yAggr");
+		} else {
+			throw new IllegalStateException();
+		}
+		
+		Object cardValue = null;
+		Object listData = null;
+		Object fields = null;
+		Object kpi = null;
+		String period = null;
+		String dateRange = (String) kpi2.get("dateRange");
+		JSONArray variables = null;
+		
+		if ("module".equalsIgnoreCase(kpiType)) {
+			try {
+				KPIContext kpiContext = KPIUtil.getKPI(kpiId, false);
+				if((cardContext).getCardUserFilters()!=null)//db lookup filters
+				{
+					FacilioChain generateCriteriaChain=ReadOnlyChainFactory.getGenerateCriteriaFromFilterChain();
+					FacilioContext generateCriteriaContext= generateCriteriaChain.getContext();
+					generateCriteriaContext.put(FacilioConstants.ContextNames.MODULE_NAME,kpiContext.getModuleName());
+					generateCriteriaContext.put(FacilioConstants.ContextNames.FILTERS, cardContext.getCardUserFilters());
+					generateCriteriaChain.execute();
+					Criteria cardFilterCriteria=(Criteria) generateCriteriaContext.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
+					kpiContext.getCriteria().andCriteria(cardFilterCriteria);
+				}
+				
+				
+				if (cardContext.getCardFilters() != null ) {//db timeline filters
+					
+					JSONObject timeLineFilters = (JSONObject) cardContext.getCardFilters();
+					
+						kpiContext.setDateOperator(DateOperators.BETWEEN);
+						kpiContext.setDateValue((String)timeLineFilters.get("dateValueString"));
+						period=(String) timeLineFilters.get("dateLabel");
+					
+					}
+				else if (dateRange != null) {
+					kpiContext.setDateOperator((DateOperators) DateOperators.getAllOperators().get(dateRange));
+					period=dateRange;
+				}
+				
+				
+				cardValue = KPIUtil.getKPIValue(kpiContext);
+				
+				kpi = KPIUtil.getKPI(kpiId);
+				fields = KPIUtil.getKPIModuleFIelds(kpiContext);
+
+				listData = KPIUtil.getKPIList(kpiContext, null);
+				
+				if (listData != null) {
+					try {
+						variables = new JSONArray();
+						
+						Map<String, Object> record = (Map<String, Object>) listData;
+						List<FacilioField> moduleFields = (List<FacilioField>) fields;
+						for (FacilioField field : moduleFields) {
+							Object value = record.get(field.getName());
+							
+							variables.add(getVariable(field.getName(), field.getDisplayName(), field.getDataTypeEnum().name(), value, null));
+						}
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				LOGGER.log(Level.WARNING, "Exception in getKPIValue::: ", e);
+			}
+		}
+		else if ("reading".equalsIgnoreCase(kpiType)) {
+			try {
+				cardValue = FormulaFieldAPI.getFormulaCurrentValue(kpiId, parentId);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				LOGGER.log(Level.WARNING, "Exception in get KPI Reading Value::: ", e);
+			}
+		}
+		
+		JSONObject jobj = new JSONObject();
+		jobj.put("value", cardValue);
+		jobj.put("unit", null);
+		jobj.put("kpi", kpi);
+		jobj.put("moduleData", listData);
+		jobj.put("fields", fields);
+		
+		return jobj;
 	}
 }
