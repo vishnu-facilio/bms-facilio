@@ -16,14 +16,14 @@ public class CloudAgent extends FacilioJob {
     public void execute(JobContext jc) throws Exception {
         long jobId = jc.getJobId();
         FacilioAgent agent = AgentApiV2.getAgent(jobId);
-        if (agent != null) {
+        if (agent != null && agent.getType().equals("rest")) {
             long workflowId = agent.getWorkflowId();
             List<JSONObject> payloads = getPayloadsFromWorkflow(workflowId);
             for (JSONObject payload : payloads) {
                 TimeSeriesAPI.processPayLoad(0, payload, null);
             }
         } else {
-            throw new FacilioException("agent is null");
+            throw new FacilioException("agent is null or invalid agent type");
         }
     }
 
