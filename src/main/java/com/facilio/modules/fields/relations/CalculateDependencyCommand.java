@@ -43,19 +43,22 @@ public class CalculateDependencyCommand extends FacilioCommand {
 
             List<ReadingContext> readings = entry.getValue();
             if (readings != null && !readings.isEmpty()) {
-                FacilioModule module = modBean.getModule(moduleName);
+//                FacilioModule module = modBean.getModule(moduleName); // Commenting out since it's not used
                 List<FacilioField> fields = modBean.getAllFields(moduleName);
-                Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+//                Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields); // Commenting out since it's not used
 
                 List<BaseRelationContext> relations = RelationFieldUtil.getAllRelations(fields);
                 if (CollectionUtils.isNotEmpty(relations)) {
                     for (ReadingContext reading : readings) {
                         for (BaseRelationContext relation : relations) {
-                            ReadingDataMeta previousRDM = previousRDMMap.get(ReadingsAPI.getRDMKey(reading.getParentId(), relation.getBaseField()));
-                            Object o = relation.calculateValue(reading, previousRDM);
-                            if (o != null) {
-                                reading.addReading(relation.getDerivedField().getName(), o);
-                                newRdmPairs.add(Pair.of(reading.getParentId(), relation.getDerivedField()));
+                            //Shouldn't we check if the base field has value first?
+                            if (relation.getBaseField() != null && reading.getReading(relation.getBaseField().getName()) != null) {
+                                ReadingDataMeta previousRDM = previousRDMMap.get(ReadingsAPI.getRDMKey(reading.getParentId(), relation.getBaseField()));
+                                Object o = relation.calculateValue(reading, previousRDM);
+                                if (o != null) {
+                                    reading.addReading(relation.getDerivedField().getName(), o);
+                                    newRdmPairs.add(Pair.of(reading.getParentId(), relation.getDerivedField()));
+                                }
                             }
                         }
                     }
