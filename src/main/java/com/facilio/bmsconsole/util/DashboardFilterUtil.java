@@ -116,9 +116,9 @@ public class DashboardFilterUtil {
 				{
 				filter.setField(modBean.getField(filter.getFieldId()));
 				}
-				if(filter.getModuleId()>0)
+				if(filter.getModuleName()!=null)
 				{
-					filter.setModule(modBean.getModule(filter.getModuleId()));
+					filter.setModule(modBean.getModule(filter.getModuleName()));
 				}
 				
 				if(filter.getCriteriaId()>0)

@@ -19,7 +19,15 @@ import com.facilio.util.FacilioUtil;
 public class DashboardUserFilterContext extends ModuleBaseWithCustomFields {
 
 	private Map<Long,FacilioField> widgetFieldMap=new HashMap<Long, FacilioField>();
-	private long moduleId=-1;
+//	private long moduleId=-1;
+	String moduleName;
+	public String getModuleName() {
+		return moduleName;
+	}
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
+
 	private FacilioModule module;
 	
 	
@@ -33,12 +41,12 @@ public class DashboardUserFilterContext extends ModuleBaseWithCustomFields {
 	public void setModule(FacilioModule module) {
 		this.module = module;
 	}
-	public long getModuleId() {
-		return moduleId;
-	}
-	public void setModuleId(long moduleId) {
-		this.moduleId = moduleId;
-	}
+//	public long getModuleId() {
+//		return moduleId;
+//	}
+//	public void setModuleId(long moduleId) {
+//		this.moduleId = moduleId;
+//	}
 	public static enum ComponentType implements FacilioEnum {
 		 SINGLE_SELECT("Select option"),MULTI_SELECT("Multiple options");
 
