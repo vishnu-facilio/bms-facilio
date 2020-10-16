@@ -50,41 +50,32 @@ public class GetFacilityAvailabilityCommandV3 extends FacilioCommand {
 
                 if(fetchAvailability) {
 
-                    Map<Long, SlotContext> slotMap = new HashMap<>();
+                    List<SlotContext> slotList = new ArrayList<>();
                     Map<Long, FacilitySpecialAvailabilityContext> unavailabilityMAp = new HashMap<>();
 
                     if (CollectionUtils.isNotEmpty(facilityContext.getFacilitySpecialAvailabilities())) {
                         for (FacilitySpecialAvailabilityContext splAvailability : facilityContext.getFacilitySpecialAvailabilities()) {
                             Long startTime = splAvailability.getStartDate();
+                            Calendar cal = Calendar.getInstance();
+                            cal.setTimeInMillis(startTime);
+
                             while (startTime <= splAvailability.getEndDate()) {
-                                Calendar c = Calendar.getInstance();
-                                c.setTimeInMillis(startTime);
-                                int date = c.get(Calendar.DATE);
-                                int month = c.get(Calendar.MONTH);
-                                int year = c.get(Calendar.YEAR);
-
-                                int startTimeInSecondsOfDay = splAvailability.getStartTimeAsLocalTime().toSecondOfDay();
-                                c.set(year, month, date, -1, -1, startTimeInSecondsOfDay);
-                                long startDateTimeOfDay = c.getTimeInMillis();
-
-                                int endTimeInSecondsOfDay = splAvailability.getEndTimeAsLocalTime().toSecondOfDay();
-                                Calendar endTime = Calendar.getInstance();
-                                endTime.set(year, month, date, -1, -1, endTimeInSecondsOfDay);
-                                long endDateTimeOfDay = endTime.getTimeInMillis();
+                                long startDateTimeOfDay = FacilityAPI.getCalendarTime(startTime, splAvailability.getStartTimeAsLocalTime().toSecondOfDay());
+                                long endDateTimeOfDay = FacilityAPI.getCalendarTime(startTime, splAvailability.getEndTimeAsLocalTime().toSecondOfDay());
 
                                 while (startDateTimeOfDay <= endDateTimeOfDay && startDateTimeOfDay <= endDateTime) {
                                     SlotContext slot = new SlotContext();
                                     slot.setSlotCost(splAvailability.getCost());
                                     slot.setSlotStartTime(startDateTimeOfDay);
                                     slot.setSlotEndTime(startDateTimeOfDay + facilityContext.getSlotDuration());
-                                    if (!FacilityAPI.checkForUnavailability(slot.getSlotStartTime(), slot.getSlotEndTime(), facilityContext.getFacilitySpecialAvailabilities()) && !slotMap.containsKey(slot.getSlotStartTime())) {
-                                        slotMap.put(slot.getSlotStartTime(), slot);
+                                    if (!FacilityAPI.checkForUnavailability(slot.getSlotStartTime(), slot.getSlotEndTime(), facilityContext.getFacilitySpecialAvailabilities()) && !FacilityAPI.checkExistingSlots(slotList, slot)) {
+                                        slotList.add(slot);
                                     }
                                     //need to consider the slot intervals before starting other slot
                                     startDateTimeOfDay = slot.getSlotEndTime();
                                 }
-                                c.add(Calendar.DATE, 1);
-                                startTime = c.getTimeInMillis();
+                                cal.add(Calendar.DATE, 1);
+                                startTime = cal.getTimeInMillis();
                             }
                         }
                     }
@@ -99,35 +90,26 @@ public class GetFacilityAvailabilityCommandV3 extends FacilioCommand {
                             }
                         }
                         Long startDay = startDateTime;
-                        while (startDay <= endDateTime) {
+                        Calendar cal = Calendar.getInstance();
+                        cal.setTimeInMillis(startDay);
 
-                            Calendar c = Calendar.getInstance();
-                            c.setTimeInMillis(startDay);
-                            int date = c.get(Calendar.DATE);
-                            int month = c.get(Calendar.MONTH);
-                            int year = c.get(Calendar.YEAR);
-                            int day = c.get(Calendar.DAY_OF_WEEK);
+                        while (startDay <= endDateTime) {
+                            int day = cal.get(Calendar.DAY_OF_WEEK);
 
                             if (weekDayMap.containsKey(day)) {
                                 List<WeekDayAvailability> weekDaysForDay = weekDayMap.get(day);
                                 if (CollectionUtils.isNotEmpty(weekDaysForDay)) {
                                     for (WeekDayAvailability wk : weekDaysForDay) {
-                                        int startTimeInSecondsOfDay = wk.getStartTimeAsLocalTime().toSecondOfDay();
-                                        c.set(year, month, date, -1, -1, startTimeInSecondsOfDay);
-                                        long startDateTimeOfDay = c.getTimeInMillis();
-
-                                        int endTimeInSecondsOfDay = wk.getEndTimeAsLocalTime().toSecondOfDay();
-                                        Calendar endTime = Calendar.getInstance();
-                                        endTime.set(year, month, date, -1, -1, endTimeInSecondsOfDay);
-                                        long endDateTimeOfDay = endTime.getTimeInMillis();
+                                        long startDateTimeOfDay = FacilityAPI.getCalendarTime(startDay, wk.getStartTimeAsLocalTime().toSecondOfDay());
+                                        long endDateTimeOfDay = FacilityAPI.getCalendarTime(startDay, wk.getEndTimeAsLocalTime().toSecondOfDay());
 
                                         while (startDateTimeOfDay <= endDateTimeOfDay && startDateTimeOfDay <= endDateTime) {
                                             SlotContext slot = new SlotContext();
                                             slot.setSlotCost(wk.getCost());
                                             slot.setSlotStartTime(startDateTimeOfDay);
                                             slot.setSlotEndTime(startDateTimeOfDay + facilityContext.getSlotDuration());
-                                            if (!FacilityAPI.checkForUnavailability(slot.getSlotStartTime(), slot.getSlotEndTime(), facilityContext.getFacilitySpecialAvailabilities()) && !slotMap.containsKey(slot.getSlotStartTime())) {
-                                                slotMap.put(slot.getSlotStartTime(), slot);
+                                            if (!FacilityAPI.checkForUnavailability(slot.getSlotStartTime(), slot.getSlotEndTime(), facilityContext.getFacilitySpecialAvailabilities()) && !FacilityAPI.checkExistingSlots(slotList, slot)) {
+                                                slotList.add(slot);
                                             }
                                             //need to consider the slot intervals before starting other slot
                                             startDateTimeOfDay = slot.getSlotEndTime();
@@ -135,14 +117,14 @@ public class GetFacilityAvailabilityCommandV3 extends FacilioCommand {
                                     }
                                 }
                             }
-                            c.add(Calendar.DAY_OF_MONTH, 1);
-                            startDay = c.getTimeInMillis();
+                            cal.add(Calendar.DAY_OF_MONTH, 1);
+                            startDay = cal.getTimeInMillis();
 
                         }
                     }
 
-                    if (MapUtils.isNotEmpty(slotMap)) {
-                        facilityContext.setSlots(new ArrayList<SlotContext>(slotMap.values()));
+                    if (CollectionUtils.isNotEmpty(slotList)) {
+                        facilityContext.setSlots(slotList);
                     }
                 }
             }

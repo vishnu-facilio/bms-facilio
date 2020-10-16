@@ -91,33 +91,33 @@ public class FacilityAPI {
                 if(unavailability.getSpecialTypeEnum() != FacilitySpecialAvailabilityContext.SpecialType.SPECIAL_UNAVAILABILITY) {
                     continue;
                 }
-                Long sDate = unavailability.getStartDate();
-                Long eDate = unavailability.getEndDate();
+                Long startTime = unavailability.getStartDate();
+                Calendar cal = Calendar.getInstance();
+                cal.setTimeInMillis(startTime);
 
-                Calendar c = Calendar.getInstance();
-                c.setTimeInMillis(sDate);
-                int date = c.get(Calendar.DATE);
-                int month = c.get(Calendar.MONTH);
-                int year = c.get(Calendar.YEAR);
-                int startTimeInSecondsOfDay = unavailability.getStartTimeAsLocalTime().toSecondOfDay();
-                c.set(year, month, date, -1, -1, startTimeInSecondsOfDay);
-                Long startTime = c.getTimeInMillis();
-                int endTimeInSecondsOfDay = unavailability.getEndTimeAsLocalTime().toSecondOfDay();
-                c.set(year, month, date, -1, -1, endTimeInSecondsOfDay);
-                Long endTime = c.getTimeInMillis();
+                while (startTime <= unavailability.getEndDate()) {
 
-                c.setTimeInMillis(eDate);
-                int end_date = c.get(Calendar.DATE);
-                int end_month = c.get(Calendar.MONTH);
-                int end_year = c.get(Calendar.YEAR);
-                int end_startTimeInSecondsOfDay = unavailability.getStartTimeAsLocalTime().toSecondOfDay();
-                c.set(end_year, end_month, end_date, -1, -1, end_startTimeInSecondsOfDay);
-                Long end_startTime = c.getTimeInMillis();
-                int end_endTimeInSecondsOfDay = unavailability.getEndTimeAsLocalTime().toSecondOfDay();
-                c.set(end_year, end_month, end_date, -1, -1, end_endTimeInSecondsOfDay);
-                Long end_endTime = c.getTimeInMillis();
+                    long startDateTimeOfDay = getCalendarTime(startTime, unavailability.getStartTimeAsLocalTime().toSecondOfDay());
+                    long endDateTimeOfDay = getCalendarTime(startTime, unavailability.getEndTimeAsLocalTime().toSecondOfDay());
 
-                if((slotStartTime >= startTime && slotEndTime <= endTime) || (slotStartTime >= end_startTime && slotEndTime <= end_endTime)) {
+                    if(slotStartTime >= startDateTimeOfDay && slotStartTime <= endDateTimeOfDay){
+                        return true;
+                    }
+
+                    cal.add(Calendar.DATE, 1);
+                    startTime = cal.getTimeInMillis();
+                }
+
+            }
+        }
+        return false;
+    }
+
+    public static Boolean checkExistingSlots(List<SlotContext> existingSlotList, SlotContext newSlot) throws Exception {
+
+        if (CollectionUtils.isNotEmpty(existingSlotList)) {
+            for(SlotContext slot : existingSlotList){
+                if((newSlot.getSlotStartTime() >= slot.getSlotStartTime() && newSlot.getSlotStartTime() <= slot.getSlotEndTime())) {
                     return true;
                 }
             }
@@ -125,5 +125,17 @@ public class FacilityAPI {
         return false;
     }
 
+    public static Long getCalendarTime(Long startTime, int secondsOfDay) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(startTime);
+        int date = cal.get(Calendar.DATE);
+        int month = cal.get(Calendar.MONTH);
+        int year = cal.get(Calendar.YEAR);
+
+        cal.set(year, month, date, -1, -1, secondsOfDay);
+        long startDateTimeOfDay = cal.getTimeInMillis();
+        return startDateTimeOfDay;
+
+    }
 
 }
