@@ -44,7 +44,11 @@ public class VersionLogAction extends AgentIdAction {
 
     public String upgradeAgent() {
         try {
-        	FacilioService.runAsService(()-> upgradeAgentVersion());
+        	FacilioChain chain = TransactionChainFactory.upgradeAgentChain();
+    		FacilioContext context = chain.getContext();
+    		context.put(AgentConstants.VERSION_ID, versionId);
+    		context.put(AgentConstants.AGENT_ID, getAgentId());
+    		chain.execute();
         	setResult(AgentConstants.DATA, SUCCESS);
         	ok();
         } catch (Exception e) {
@@ -54,12 +58,4 @@ public class VersionLogAction extends AgentIdAction {
         }
         return SUCCESS;
     }
-
-	private void upgradeAgentVersion() throws Exception {
-		FacilioChain chain = TransactionChainFactory.upgradeAgentChain();
-		FacilioContext context = chain.getContext();
-		context.put(AgentConstants.VERSION_ID, versionId);
-		context.put(AgentConstants.AGENT_ID, getAgentId());
-		chain.execute();
-	}
 }
