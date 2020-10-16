@@ -165,4 +165,7 @@
 	<!-- custom Mail messaging jobs-->
 	<job name='ImapJob' classname='com.facilio.bmsconsole.jobs.ImapJob' transactionTimeout='7200000' />
 
+    <!-- cloud agent job -->
+    <job name='CloudAgent' classname='com.facilio.bmsconsole.jobs.CloudAgent' transactionTimeout="7200000"/>
+
 </scheduler>

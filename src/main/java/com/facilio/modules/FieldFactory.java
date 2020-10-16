@@ -570,7 +570,7 @@ public class FieldFactory {
         fields.add(getField("isDisable", "IS_DISABLE", module, FieldType.BOOLEAN));
         fields.add(getField("lastActionModified", "LAST_ACTION_MODIFIED", module, FieldType.NUMBER));
         fields.add(getField("recordId", "RECORD_ID", module, FieldType.NUMBER));
-        
+        fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.NUMBER));
         return fields;
     }
 

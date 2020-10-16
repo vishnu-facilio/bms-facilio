@@ -36,9 +36,18 @@ public class FacilioAgent implements Serializable {
     private long transformWorkflowId = -1;
     @JsonInclude
     private Boolean isDisable;
-    
 
-	public Boolean getIsDisable() {
+    private long workflowId;
+
+    public long getWorkflowId() {
+        return workflowId;
+    }
+
+    public void setWorkflowId(long workflowId) {
+        this.workflowId = workflowId;
+    }
+
+    public Boolean getIsDisable() {
 		return isDisable;
 	}
 
@@ -218,6 +227,5 @@ public class FacilioAgent implements Serializable {
         }
         return payload;
     }
-
 
 }
