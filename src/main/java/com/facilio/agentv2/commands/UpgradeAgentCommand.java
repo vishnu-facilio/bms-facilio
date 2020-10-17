@@ -35,7 +35,7 @@ public class UpgradeAgentCommand extends AgentV2Command {
                     long orgIg = currentOrg.getOrgId();
                     FacilioAgent agent = AgentApiV2.getAgent(agentId);
                     LOGGER.info(agent.getId());
-                    FacilioService.runAsService(() -> AgentVersionApi.logAgentUpgrateRequest(agent, versionId, authKey, orgIg));
+                    AgentVersionApi.logAgentUpgrateRequest(agent, versionId, authKey, orgIg);
                     IotData iotData = AgentMessenger.sendAgentUpgradeCommand(agentId, version, url, authKey);
                     context.put(AgentConstants.DATA, iotData);
                 } else {
