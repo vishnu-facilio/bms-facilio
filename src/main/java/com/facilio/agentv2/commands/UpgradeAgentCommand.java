@@ -29,7 +29,7 @@ public class UpgradeAgentCommand extends AgentV2Command {
                     Organization currentOrg = AccountUtil.getCurrentOrg();
                     Objects.requireNonNull(currentOrg);
                     long orgIg = currentOrg.getOrgId();
-                    FacilioAgent agent = AgentApiV2.getAgent(agentId);
+                    FacilioAgent agent = FacilioService.runAsServiceWihReturn(() ->AgentApiV2.getAgent(agentId));
                     FacilioService.runAsService(() -> AgentVersionApi.logAgentUpgrateRequest(agent, versionId, authKey, orgIg));
                     IotData iotData = AgentMessenger.sendAgentUpgradeCommand(agentId, version, url, authKey);
                     context.put(AgentConstants.DATA, iotData);
