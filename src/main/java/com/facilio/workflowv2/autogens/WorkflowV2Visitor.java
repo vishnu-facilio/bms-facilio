@@ -1,4 +1,4 @@
-// Generated from /Users/krishna/git/bmsconsole/src/main/java/com/facilio/workflowv2/autogens/WorkflowV2.g4 by ANTLR 4.7.2
+// Generated from /home/facilio/git/bmsconsole/src/main/java/com/facilio/workflowv2/autogens/WorkflowV2.g4 by ANTLR 4.7.2
 package com.facilio.workflowv2.autogens;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -175,6 +175,13 @@ public interface WorkflowV2Visitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitNotExpr(WorkflowV2Parser.NotExprContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code calClockExpr}
+	 * labeled alternative in {@link WorkflowV2Parser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCalClockExpr(WorkflowV2Parser.CalClockExprContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code arithmeticFirstPrecedenceExpr}
 	 * labeled alternative in {@link WorkflowV2Parser#expr}.
 	 * @param ctx the parse tree
@@ -237,6 +244,32 @@ public interface WorkflowV2Visitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitRecursive_expr(WorkflowV2Parser.Recursive_exprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code calenderExpr}
+	 * labeled alternative in {@link WorkflowV2Parser#calender_clock_expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCalenderExpr(WorkflowV2Parser.CalenderExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code clockExpr}
+	 * labeled alternative in {@link WorkflowV2Parser#calender_clock_expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitClockExpr(WorkflowV2Parser.ClockExprContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link WorkflowV2Parser#calender_var}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCalender_var(WorkflowV2Parser.Calender_varContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link WorkflowV2Parser#clock_var}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitClock_var(WorkflowV2Parser.Clock_varContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link WorkflowV2Parser#recursive_expression}.
 	 * @param ctx the parse tree

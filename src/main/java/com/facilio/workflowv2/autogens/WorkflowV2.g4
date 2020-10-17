@@ -96,6 +96,7 @@ expr
  | expr op=(LTEQ | GTEQ | LT | GT | EQ | NEQ) expr     			    												#relationalExpr
  | expr op=(SINGLE_AND | SINGLE_OR) expr																			#booleanExpr
  | atom                                				    															#atomExpr
+ | calender_clock_expr																								#calClockExpr
  | stand_alone_expr																									#standAloneStatements
  | db_param																											#dbParamInitialization
  | criteria																											#criteriaInitialization
@@ -103,6 +104,22 @@ expr
  
 stand_alone_expr
  : atom (recursive_expression)+																						#recursive_expr
+ ;
+ 
+calender_clock_expr
+ : 'Calender.' calender_var																							#calenderExpr
+ | 'Clock.' clock_var																								#clockExpr	
+ ;
+ 
+calender_var
+ : VAR
+ | INT
+ ;
+ 
+clock_var
+ : VAR
+ | INT
+ | INT ':' INT
  ;
  
 recursive_expression

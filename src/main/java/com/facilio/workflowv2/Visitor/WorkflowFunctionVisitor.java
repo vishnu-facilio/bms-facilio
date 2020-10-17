@@ -16,6 +16,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ConnectionContext;
 import com.facilio.bmsconsole.util.ConnectionUtil;
+import com.facilio.date.calenderandclock.CalenderAndClockContext;
 import com.facilio.date.calenderandclock.CalenderAndClockInterface;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.BeanFactory;
@@ -33,7 +34,9 @@ import com.facilio.workflows.functions.FacilioSystemFunctionNameSpace;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.AtomContext;
+import com.facilio.workflowv2.autogens.WorkflowV2Parser.CalenderExprContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.Catch_statementContext;
+import com.facilio.workflowv2.autogens.WorkflowV2Parser.ClockExprContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.Function_paramContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.Recursive_expressionContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.Try_catchContext;
@@ -186,6 +189,23 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
     	return new Value(objects);
     }
     
+    @Override
+    public Value visitCalenderExpr(CalenderExprContext ctx) {
+    	// TODO Auto-generated method stub
+    	CalenderAndClockContext calContext = new CalenderAndClockContext();
+    	calContext.setName(CalenderAndClockInterface.CALENDER);
+    	calContext.setValue(ctx.calender_var().getText());
+    	return new Value(calContext);
+    }
+    
+    @Override
+    public Value visitClockExpr(ClockExprContext ctx) {
+    	// TODO Auto-generated method stub
+    	CalenderAndClockContext calContext = new CalenderAndClockContext();
+    	calContext.setName(CalenderAndClockInterface.CLOCK);
+    	calContext.setValue(ctx.clock_var().getText());
+    	return new Value(calContext);
+    }
     @Override 
     public Value visitRecursive_expr(WorkflowV2Parser.Recursive_exprContext ctx) {
     	try {

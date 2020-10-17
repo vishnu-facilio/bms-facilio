@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.date.calenderandclock.CalenderAndClockContext;
 import com.facilio.date.calenderandclock.CalenderAndClockInterface;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -82,7 +83,7 @@ public abstract class CommonParser<T> extends WorkflowV2BaseVisitor<Value> {
     		else if(operatorValue.asObject() instanceof DateRange) {
     			operator = DateOperators.BETWEEN;
     		}
-    		else if(operatorValue.asObject() instanceof CalenderAndClockInterface) {
+    		else if(operatorValue.asObject() instanceof CalenderAndClockContext) {
     			operator = DateOperators.CALENDER_AND_CLOCK;
     		}
     		else if (operatorValue.asObject() instanceof List) {
@@ -139,9 +140,10 @@ public abstract class CommonParser<T> extends WorkflowV2BaseVisitor<Value> {
     		BaseSpaceContext baseSpace = (BaseSpaceContext) operatorValue.asObject() ;
     		value = ""+baseSpace.getId();
 		}
-    	else if (operatorValue.asObject() instanceof CalenderAndClockInterface) {
-    		CalenderAndClockInterface calenderAndClock = (CalenderAndClockInterface) operatorValue.asObject();
-    		value = calenderAndClock.getFullName()+"."+getCurrentExecutionTime();
+    	else if (operatorValue.asObject() instanceof CalenderAndClockContext) {
+    		CalenderAndClockContext calenderAndClock = (CalenderAndClockContext) operatorValue.asObject();
+    		value = calenderAndClock.getName()+"."+calenderAndClock.getValue()+"."+getCurrentExecutionTime();
+    		//value = calenderAndClock.getFullName()+"."+getCurrentExecutionTime();
 		}
     	
     	condition.setValue(value);

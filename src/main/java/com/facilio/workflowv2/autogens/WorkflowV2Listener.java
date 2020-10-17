@@ -1,4 +1,4 @@
-// Generated from /Users/krishna/git/bmsconsole/src/main/java/com/facilio/workflowv2/autogens/WorkflowV2.g4 by ANTLR 4.7.2
+// Generated from /home/facilio/git/bmsconsole/src/main/java/com/facilio/workflowv2/autogens/WorkflowV2.g4 by ANTLR 4.7.2
 package com.facilio.workflowv2.autogens;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -284,6 +284,18 @@ public interface WorkflowV2Listener extends ParseTreeListener {
 	 */
 	void exitNotExpr(WorkflowV2Parser.NotExprContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code calClockExpr}
+	 * labeled alternative in {@link WorkflowV2Parser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterCalClockExpr(WorkflowV2Parser.CalClockExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code calClockExpr}
+	 * labeled alternative in {@link WorkflowV2Parser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitCalClockExpr(WorkflowV2Parser.CalClockExprContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code arithmeticFirstPrecedenceExpr}
 	 * labeled alternative in {@link WorkflowV2Parser#expr}.
 	 * @param ctx the parse tree
@@ -391,6 +403,50 @@ public interface WorkflowV2Listener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitRecursive_expr(WorkflowV2Parser.Recursive_exprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code calenderExpr}
+	 * labeled alternative in {@link WorkflowV2Parser#calender_clock_expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterCalenderExpr(WorkflowV2Parser.CalenderExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code calenderExpr}
+	 * labeled alternative in {@link WorkflowV2Parser#calender_clock_expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitCalenderExpr(WorkflowV2Parser.CalenderExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code clockExpr}
+	 * labeled alternative in {@link WorkflowV2Parser#calender_clock_expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterClockExpr(WorkflowV2Parser.ClockExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code clockExpr}
+	 * labeled alternative in {@link WorkflowV2Parser#calender_clock_expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitClockExpr(WorkflowV2Parser.ClockExprContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link WorkflowV2Parser#calender_var}.
+	 * @param ctx the parse tree
+	 */
+	void enterCalender_var(WorkflowV2Parser.Calender_varContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link WorkflowV2Parser#calender_var}.
+	 * @param ctx the parse tree
+	 */
+	void exitCalender_var(WorkflowV2Parser.Calender_varContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link WorkflowV2Parser#clock_var}.
+	 * @param ctx the parse tree
+	 */
+	void enterClock_var(WorkflowV2Parser.Clock_varContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link WorkflowV2Parser#clock_var}.
+	 * @param ctx the parse tree
+	 */
+	void exitClock_var(WorkflowV2Parser.Clock_varContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link WorkflowV2Parser#recursive_expression}.
 	 * @param ctx the parse tree
