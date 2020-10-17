@@ -5,17 +5,21 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
+import com.facilio.agentv2.actions.VersionLogAction;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.agentv2.iotmessage.IotData;
 import com.facilio.agentv2.upgrade.AgentVersionApi;
 import com.facilio.service.FacilioService;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.util.Map;
 import java.util.Objects;
 
 public class UpgradeAgentCommand extends AgentV2Command {
-    @Override
+	private static final Logger LOGGER = LogManager.getLogger(UpgradeAgentCommand.class.getName());
+	@Override
     public boolean executeCommand(Context context) throws Exception {
         if (containsCheck(AgentConstants.AGENT_ID, context)) {
             long agentId = (Long) context.get(AgentConstants.AGENT_ID);
@@ -29,7 +33,8 @@ public class UpgradeAgentCommand extends AgentV2Command {
                     Organization currentOrg = AccountUtil.getCurrentOrg();
                     Objects.requireNonNull(currentOrg);
                     long orgIg = currentOrg.getOrgId();
-                    FacilioAgent agent = FacilioService.runAsServiceWihReturn(() ->AgentApiV2.getAgent(agentId));
+                    FacilioAgent agent = AgentApiV2.getAgent(agentId);
+                    LOGGER.info(agent.getId());
                     FacilioService.runAsService(() -> AgentVersionApi.logAgentUpgrateRequest(agent, versionId, authKey, orgIg));
                     IotData iotData = AgentMessenger.sendAgentUpgradeCommand(agentId, version, url, authKey);
                     context.put(AgentConstants.DATA, iotData);
