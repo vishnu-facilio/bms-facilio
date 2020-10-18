@@ -149,13 +149,11 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 		return false;
 	}
 
-	// enum db user filters apply to only widgets of the same module
-	// must check if widget module is either same as filter module or one of its
-	// children
-	// Ex , ticketCategory field has module='ticket' but report_chart corresponding
-	// to workorders has module='workorder'
-	public FacilioField getFilterApplicableField(FacilioModule filterModule, FacilioModule widgetModule) {
+
+
+	public FacilioField getFilterApplicableField(FacilioModule filterModule, FacilioModule widgetModule){
 		
+		//see if module's lookup fields refrer to the filter's lookupmodule.
 		List<FacilioField> filterApplicableFields = widgetModule.getFields().stream().filter((FacilioField field) -> {
 			if (field.getDataTypeEnum() == FieldType.LOOKUP) {
 				LookupField lookupField = (LookupField) field;
@@ -165,13 +163,44 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 			}
 			return false;
 		}).collect(Collectors.toList());
+			
+//		 else traverse fields again and check if field's lookupModule is a parent of filter's lookupmodule
 
+		if(filterApplicableFields.size()==0)
+		{
+			filterApplicableFields=widgetModule.getFields().stream().filter((FacilioField field) -> {
+				if (field.getDataTypeEnum() == FieldType.LOOKUP) {
+					LookupField lookupField = (LookupField) field;
+					
+						try {
+							if(filterModule.getExtendedModuleIds().contains(lookupField.getLookupModule().getModuleId()))
+							{
+								return true;
+							}
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							LOGGER.log(Level.SEVERE, "Exception checking extended modules for lookup filter relation");
+							e.printStackTrace();
+						}
+//				
+				}
+				return false;
+			}).collect(Collectors.toList());
+				
+		}
+    
+		
 		if (filterApplicableFields != null && filterApplicableFields.size() > 0) {
 			return filterApplicableFields.get(0);
 		}
 		return null;
 	}
 
+	// enum db user filters apply to only widgets of the same module
+		// must check if widget module is either same as filter module or one of its
+		// children
+		// Ex , ticketCategory field has module='ticket' but report_chart corresponding
+		// to workorders has module='workorder'
 	public boolean isEnumFilterApplicableToWidget(FacilioModule filterModule, FacilioModule widgetModule)
 			throws Exception {
 
