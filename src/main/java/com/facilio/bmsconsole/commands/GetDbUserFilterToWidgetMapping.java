@@ -17,24 +17,13 @@ import com.facilio.bmsconsole.context.DashboardFilterContext;
 import com.facilio.bmsconsole.context.DashboardTabContext;
 import com.facilio.bmsconsole.context.DashboardUserFilterContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
-import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
-import com.facilio.bmsconsole.context.KPIContext;
-import com.facilio.bmsconsole.context.WidgetCardContext;
-import com.facilio.bmsconsole.context.WidgetChartContext;
-import com.facilio.bmsconsole.context.WidgetListViewContext;
 import com.facilio.bmsconsole.util.DashboardFilterUtil;
-import com.facilio.bmsconsole.util.KPIUtil;
-import com.facilio.cards.util.CardLayout;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.constants.FacilioConstants.ModuleNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import com.facilio.report.context.ReportContext;
-import com.facilio.report.context.ReportContext.ReportType;
-import com.facilio.report.util.ReportUtil;
 
 public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
     private static final Logger LOGGER = Logger.getLogger(GetDbTimeLineFilterToWidgetMapping.class.getName());
@@ -165,8 +154,8 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 		}).collect(Collectors.toList());
 			
 //		 else traverse fields again and check if field's lookupModule is a parent of filter's lookupmodule
-
-		if(filterApplicableFields.size()==0)
+		//moduleId=-1 ,special type modules, cannot inherit or be extended , so skip parent comparison
+		if(filterApplicableFields.size()==0&&filterModule.getModuleId()!=-1)
 		{
 			filterApplicableFields=widgetModule.getFields().stream().filter((FacilioField field) -> {
 				if (field.getDataTypeEnum() == FieldType.LOOKUP) {
