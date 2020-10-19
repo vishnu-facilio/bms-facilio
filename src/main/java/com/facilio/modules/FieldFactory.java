@@ -1409,18 +1409,24 @@ public class FieldFactory {
             return getSiteIdField();
         
             case "sysCreatedTime":
-                return getField("sysCreatedTime", module != null && specialModuleList.contains(module.getName()) ? "Created Time" : "System Created Time", "SYS_CREATED_TIME", module, FieldType.DATE_TIME);
+                FacilioField createdTime = getField("sysCreatedTime", module != null && specialModuleList.contains(module.getName()) ? "Created Time" : "System Created Time", "SYS_CREATED_TIME", module, FieldType.DATE_TIME);
+                createdTime.setDisplayType(FacilioField.FieldDisplayType.DATETIME);
+                return createdTime;
             case "sysModifiedTime":
-                return getField("sysModifiedTime", module != null && specialModuleList.contains(module.getName()) ? "Modified Time" : "System Modified Time", "SYS_MODIFIED_TIME", module, FieldType.DATE_TIME);
+                FacilioField modifiedTime = getField("sysModifiedTime", module != null && specialModuleList.contains(module.getName()) ? "Modified Time" : "System Modified Time", "SYS_MODIFIED_TIME", module, FieldType.DATE_TIME);
+                modifiedTime.setDisplayType(FacilioField.FieldDisplayType.DATETIME);
+                return modifiedTime;
             case "sysCreatedBy":
                 LookupField createdBy = (LookupField) getField("sysCreatedBy", module != null && specialModuleList.contains(module.getName()) ? "Created By" : "System Created By", "SYS_CREATED_BY", module, FieldType.LOOKUP);
                 createdBy.setSpecialType(FacilioConstants.ContextNames.USERS);
                 createdBy.setLookupModule(LookupSpecialTypeUtil.getModule(FacilioConstants.ContextNames.USERS));
+                createdBy.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
                 return createdBy;
             case "sysModifiedBy":
                 LookupField modifiedBy = (LookupField) getField("sysModifiedBy", module != null && specialModuleList.contains(module.getName()) ? "Modified By" : "System Modified By", "SYS_MODIFIED_BY", module, FieldType.LOOKUP);
                 modifiedBy.setSpecialType(FacilioConstants.ContextNames.USERS);
                 modifiedBy.setLookupModule(LookupSpecialTypeUtil.getModule(FacilioConstants.ContextNames.USERS));
+                modifiedBy.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
                 return modifiedBy;
         }
         return null;
