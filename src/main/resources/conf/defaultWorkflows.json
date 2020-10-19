@@ -834,7 +834,7 @@
 			  date = new NameSpace(\"date\");
 			  thisMonthRanges = date.getDateRange(\"Current Month\");
 			  lastMonthRanges = date.getDateRange(\"Last Month\");
-			  alarmoccurrenceModule = Module(\"anomalyalarmoccurrence\");
+			  alarmoccurrenceModule = Module(\"alarmoccurrence\");
 			  occurenceThisMonthCrit = null;
 			  occurenceLastMonthCrit = null;
 			  resMap = {};
