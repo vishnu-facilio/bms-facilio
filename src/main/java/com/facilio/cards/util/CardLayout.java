@@ -283,7 +283,7 @@ public enum CardLayout {
 	    			returnValue.put("centerValue", getKPIData(centerKpi,kpiType,cardContext));
 	            }
 	         else if (centerTextType.contentEquals("text")) {
-	        	 maxValue.put("value", cardParams.get("maxSafeLimitConstant"));
+				centerValue.put("value", cardParams.get("centerText"));
 	        	 returnValue.put("centerValue",centerValue);
 	         }
 			returnValue.put("title", title);
