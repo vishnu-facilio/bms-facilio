@@ -13,7 +13,6 @@ import org.json.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
-import com.facilio.bmsconsole.actions.MLResponseParser;
 import com.facilio.bmsconsole.context.MLResponseContext;
 import com.facilio.bmsconsole.context.MLServiceContext;
 import com.facilio.bmsconsole.util.MLAPI;
@@ -33,14 +32,16 @@ public class InitMLServiceCommand extends FacilioCommand {
 		try {
 			LOGGER.info("Start of InitMLModelCommand for usecase id "+mlServiceContext.getUseCaseId());
 
-			JSONObject postObj = mlServiceContext.getReqJson();
+			JSONObject postObj = new JSONObject();
+			postObj.put("modelvariables", mlServiceContext.getReqJson());
 			postObj.put("date", getCurrentDate(false));
 			postObj.put("predictedtime", predictedTime);
-			postObj.put("orgDetails", mlServiceContext.getOrgDetails());
+//			postObj.put("orgDetails", mlServiceContext.getOrgDetails());
 			postObj.put("data", mlServiceContext.getDataObject());
 			postObj.put("usecaseId", mlServiceContext.getUseCaseId());
 
-			String postURL= FacilioProperties.getMlModelBuildingApi();
+//			String postURL= FacilioProperties.getMlModelBuildingApi();
+			String postURL= FacilioProperties.getAnomalyPredictAPIURL() + "/trainingModel";
 			Map<String, String> headers = new HashMap<>();
 			LOGGER.info("whole data ::\n"+postObj.toString());
 
@@ -53,23 +54,22 @@ public class InitMLServiceCommand extends FacilioCommand {
 				mlServiceContext.setStatus(error);
 			} else {
 				LOGGER.info("\n\n\n\nmlresponse :: \n"+result);
-				int sleepTime = 2;
-				LOGGER.info("I am sleeping for next "+sleepTime+" sec");
-				Thread.sleep(1000 * sleepTime);
 				
 				JSONObject response = new JSONObject(result);
-				MLResponseContext  mlResponse = FieldUtil.getAsBeanFromMap(response.toMap(), MLResponseContext.class);
+				MLResponseContext mlResponse = FieldUtil.getAsBeanFromMap(response.toMap(), MLResponseContext.class);
 				
 				Map<String, Object> row = new HashMap<>();
 				row.put("status", mlResponse.getMessage());
 				MLAPI.updateMLServiceInfo(mlResponse.getUsecaseId(), row);
+				
 				LOGGER.info("\nML Status has been updated :: \n"+result);
 				mlServiceContext.setMlResponse(mlResponse);
 			}
 		}catch(Exception e){
 			if(!e.getMessage().contains("ML error")){
-				LOGGER.fatal("Error_JAVA "+ FacilioProperties.getMlModelBuildingApi() + " ML ID : "+mlServiceContext.getUseCaseId()+" FILE : GenerateMLModelCommand "+" ERROR MESSAGE : "+e);
-				throw e;
+				String error = "Error_JAVA "+ FacilioProperties.getMlModelBuildingApi() + " usecase ID : "+mlServiceContext.getUseCaseId()+" FILE : InitMLServiceCommand "+" ERROR MESSAGE : "+e;
+				LOGGER.fatal(error);
+				mlServiceContext.setStatus(error);
 			}
 		}
 		LOGGER.info("End of InitMLModelCommand for usecase id "+mlServiceContext.getUseCaseId());

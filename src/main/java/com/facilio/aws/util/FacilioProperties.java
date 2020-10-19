@@ -155,7 +155,7 @@ public class FacilioProperties {
                 anomalyRefreshWaitTimeInSeconds = PROPERTIES.getProperty("anomalyRefreshWaitTimeInSeconds","10");
                 anomalyDetectWaitTimeInSeconds = PROPERTIES.getProperty("anomalyDetectWaitTimeInSeconds","3");
                 anomalyPredictAPIURL = PROPERTIES.getProperty("anomalyPredictServiceURL","http://localhost:7444/api");
-                mlModelBuildingApi = PROPERTIES.getProperty("mlModelBuildingApiURL","http://localhost:7445/api/trainingModel");
+                mlModelBuildingApi = PROPERTIES.getProperty("mlModelBuildingApiURL","http://localhost:7444/api/trainingModel");
                 sysLogEnabled = "true".equals(PROPERTIES.getProperty("syslog.enabled", "false"));
                 sentryEnabled = "true".equals(PROPERTIES.getProperty( "sentry.enabled", "false"));
                 iotEndPoint = (String) PROPERTIES.get("iot.endpoint");

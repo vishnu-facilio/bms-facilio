@@ -99,7 +99,7 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 	}
 
 
-	private String convertIntoJson(Object elements) {
+	private String convertMapIntoString(Object elements) {
 		ObjectMapper objectMapper = new ObjectMapper();
 		try {
 			String json = objectMapper.writeValueAsString(elements);
@@ -111,25 +111,34 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 	}
 
 	private void addMLModelVariables(long mlID, MLServiceContext mlServiceContext, MLCustomModuleContext moduleContext, Long assetId) throws Exception {
+		//Already available variables
 		MLAPI.addMLModelVariables(mlID,"assetID",String.valueOf(assetId));
 		MLAPI.addMLModelVariables(mlID,"timezone",AccountUtil.getCurrentAccount().getTimeZone());
 		
-		MLAPI.addMLModelVariables(mlID,"workflowInfo",FieldUtil.getAsBeanFromMap(mlServiceContext.getWorkflowInfo(), String.class));
-		MLAPI.addMLModelVariables(mlID,"filteringMethod",FieldUtil.getAsBeanFromMap(mlServiceContext.getFilteringMethod(), String.class));
-		MLAPI.addMLModelVariables(mlID,"groupingMethod",FieldUtil.getAsBeanFromMap(mlServiceContext.getGroupingMethod(), String.class));
-		MLAPI.addMLModelVariables(mlID,"mlVariables",FieldUtil.getAsBeanFromMap(mlServiceContext.getMlVariables(), String.class));
-		MLAPI.addMLModelVariables(mlID,"readingVariables",JSONArray.toJSONString(mlServiceContext.getReadingVariables()));
+//		MLAPI.addMLModelVariables(mlID,"workflowInfo",FieldUtil.getAsBeanFromMap(mlServiceContext.getWorkflowInfo(), String.class));
+//		MLAPI.addMLModelVariables(mlID,"filteringMethod",JSONArray.toJSONString(mlServiceContext.getFilteringMethod()));
 //
-//		MLAPI.addMLModelVariables(mlID,"workflowInfo",convertIntoJson(mlServiceContext.getWorkflowInfo()));
-//		MLAPI.addMLModelVariables(mlID,"filteringMethod",convertIntoJson(mlServiceContext.getFilteringMethod()));
-//		MLAPI.addMLModelVariables(mlID,"groupingMethod",convertIntoJson(mlServiceContext.getGroupingMethod()));
-//		MLAPI.addMLModelVariables(mlID,"mlVariables",convertIntoJson(mlServiceContext.getMlVariables()));
-//		MLAPI.addMLModelVariables(mlID,"readingVariables",convertIntoJson(mlServiceContext.getReadingVariables()));
+		//ML service variables
+		MLAPI.addMLModelVariables(mlID,"workflowInfo",convertMapIntoString(mlServiceContext.getWorkflowInfo()));
+		MLAPI.addMLModelVariables(mlID,"filteringMethod",convertMapIntoString(mlServiceContext.getFilteringMethod()));
+		MLAPI.addMLModelVariables(mlID,"groupingMethod",convertMapIntoString(mlServiceContext.getGroupingMethod()));
+		MLAPI.addMLModelVariables(mlID,"mlVariables",convertMapIntoString(mlServiceContext.getMlVariables()));
+		MLAPI.addMLModelVariables(mlID,"readingVariables",convertMapIntoString(mlServiceContext.getReadingVariables()));
+		
+		//extra variables (duplicates)
+		MLAPI.addMLModelVariables(mlID,"modelName",mlServiceContext.getModelName());
+		MLAPI.addMLModelVariables(mlID,"scenario",mlServiceContext.getScenario());
+		MLAPI.addMLModelVariables(mlID,"assetDetails",convertMapIntoString(mlServiceContext.getAssetDetails()));
+		MLAPI.addMLModelVariables(mlID,"orgDetails",convertMapIntoString(mlServiceContext.getOrgDetails()));
 		
 		MLAPI.addMLModelVariables(mlID,"usecaseId",String.valueOf(mlServiceContext.getUseCaseId()));
 		if(moduleContext.getType().equals("prediction")) {
 			MLAPI.addMLModelVariables(mlID,"workflowId",String.valueOf(mlServiceContext.getWorkflowId()));
 		}
+		
+		int sleepTime = 10;
+		LOGGER.info("I am sleeping for next "+sleepTime+" sec");
+		Thread.sleep(1000 * sleepTime);
 	}
 
 

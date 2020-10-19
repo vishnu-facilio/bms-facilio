@@ -6,7 +6,6 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class MLServiceContext extends ModuleBaseWithCustomFields {
@@ -21,9 +20,9 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 	private List<String> readingVariables;
 	private Map<String, Object> assetDetails;
 	private Map<String, Object> mlVariables;
-    private Map<String, Object> filteringMethod;
     private Map<String, Object> groupingMethod;
     private Map<String, Object> workflowInfo;
+    private List<Map<String, Object>> filteringMethod;
     
     /**
      * Internal usage variables 
@@ -68,11 +67,11 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 		this.groupingMethod = groupingMethod;
 	}
 	
-	public Map<String, Object> getFilteringMethod() {
+	public List<Map<String, Object>> getFilteringMethod() {
 		return filteringMethod;
 	}
 
-	public void setFilteringMethod(Map<String, Object> filteringMethod) {
+	public void setFilteringMethod(List<Map<String, Object>> filteringMethod) {
 		this.filteringMethod = filteringMethod;
 	}
 
@@ -94,9 +93,10 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 	
 	public JSONObject getReqJson() {
 		JSONObject jsonRes = new JSONObject();
-		jsonRes.put("modelName", this.modelName);
+		jsonRes.put("modelName", 	this.modelName);
 		jsonRes.put("scenario", this.scenario);
 		jsonRes.put("assetDetails", this.assetDetails);
+		jsonRes.put("orgDetails", this.orgDetails);
 		jsonRes.put("readingVariables", this.readingVariables);
 		jsonRes.put("mlVariables", this.mlVariables);
 		jsonRes.put("filteringMethod", this.filteringMethod);
