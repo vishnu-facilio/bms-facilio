@@ -98,14 +98,29 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 						// them
 
 						else {
+							Map<Long,FacilioField> customAppliesToMapping= DashboardFilterUtil.getUserFilterToWidgetColumnMapping(filter.getId());
 							// Is filter TYPE enum(field obj present) or type lookup (module obj ) present
 							FacilioModule moduleForFilter = filter.getModule();
 							FacilioField fieldForFilter = filter.getField();
-
+									
 							if (moduleForFilter != null)// enum filter
 							{	moduleForFilter.setFields(modBean.getAllFields(moduleForFilter.getName()));
-								FacilioField filterApplicableField = getFilterApplicableField(moduleForFilter,
+								
+								FacilioField filterApplicableField; 
+							
+								//when there are more than one fields which have the same lookup -> users module filter-> workorder module,requestedBy,createdBy etc
+								//take from custom mapping else select first option	
+								if(customAppliesToMapping!=null&&customAppliesToMapping.containsKey(widgetId))
+								{
+									filterApplicableField=customAppliesToMapping.get(widgetId);
+								}
+								else
+								{
+								 filterApplicableField = getFilterApplicableField(moduleForFilter,
 										widgetModule);
+								 
+								}
+							
 								if (filterApplicableField != null) {
 									// add WIDGET->Widget-Field to apply filter in filter obj
 									filter.getWidgetFieldMap().put(widgetId, filterApplicableField);
@@ -114,6 +129,7 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 									this.addToWidgetUserFiltersMap(widgetId, filter.getId(), widgetUserFiltersMap);
 
 								}
+								
 							} else if (fieldForFilter != null) {
 								Boolean isFilterApplicableForWidget = this
 										.isEnumFilterApplicableToWidget(filter.getField().getModule(), widgetModule);
@@ -180,6 +196,8 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
     
 		
 		if (filterApplicableFields != null && filterApplicableFields.size() > 0) {
+			
+			
 			return filterApplicableFields.get(0);
 		}
 		return null;
