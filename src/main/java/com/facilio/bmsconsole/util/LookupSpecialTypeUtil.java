@@ -621,9 +621,13 @@ public class LookupSpecialTypeUtil {
 	}
 	
 	public static FacilioModule getModule(String specialType) {
-		if(FacilioConstants.ContextNames.USERS.equals(specialType) || FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
+		if(FacilioConstants.ContextNames.USERS.equals(specialType)) {
+			return AccountConstants.getAppOrgUserModule();
+		}
+		else if (FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
 			FacilioModule module = AccountConstants.getAppOrgUserModule();
 			module.setName(specialType);
+			module.setDisplayName("Requesters");
 			return module;
 		}
 		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
