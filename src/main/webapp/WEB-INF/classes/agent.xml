@@ -281,7 +281,7 @@
         </action>
 		<action name="getCount" class="com.facilio.agentv2.actions.TypeDevices" method="getCount"> <!--DONE-->
         </action>
-        <action name="PointsCount" class="com.facilio.agentv2.actions.GetPointsAction" method="getCount"> <!--DONE-->
+        <action name="pointscount" class="com.facilio.agentv2.actions.GetPointsAction" method="getCount"> <!--DONE-->
         </action>
         <action name="getPoints" class="com.facilio.agentv2.actions.GetPointsAction" method="getPoints"> <!--DONE-->
         </action>
