@@ -136,6 +136,28 @@ public enum FacilioMathFunction implements FacilioWorkflowFunctionInterface  {
 				throw new FunctionParamException("Required Object is null or empty");
 			}
 		}
+	},
+	SET_PRECISION_WITH_CEILING(9, "setPrecisionWithCeiling") {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			double val = Double.parseDouble(objects[0].toString());
+			int precision = Integer.parseInt(objects[1].toString());
+			
+			Double truncatedDouble = BigDecimal.valueOf(val)
+				    .setScale(precision, RoundingMode.CEILING)
+				    .doubleValue();
+			
+			return truncatedDouble;
+		}
+		
+		private void checkParam(Object... objects) throws Exception {
+			if(objects == null || objects.length < 2) {
+				throw new FunctionParamException("Required Object is null or empty");
+			}
+		}
 	}
 	;
 	
