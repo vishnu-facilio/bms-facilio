@@ -167,13 +167,10 @@ public class ReadingsAPI {
 			updateFields.add(fieldMap.get(fieldName));
 			if (fieldName.equals("readingType")) {
 				shouldUpdateReadingType = true;
+				updateFields.add(fieldMap.get("isControllable"));
+				updateFields.add(fieldMap.get("controlActionMode"));
 			}
 		}
-		if (shouldUpdateReadingType) {
-			updateFields.add(fieldMap.get("isControllable"));
-			updateFields.add(fieldMap.get("controlActionMode"));
-		}
-		
 		List<FacilioField> whereFields = new ArrayList<>();
 		whereFields.add(resourceIdField);
 		whereFields.add(fieldIdField);
@@ -190,6 +187,9 @@ public class ReadingsAPI {
 					prop.put("readingType", readingType);
 				}
 				setControllableprop(prop, readingType == ReadingType.WRITE.getValue());
+				
+				updateVal.addUpdateValue("isControllable",  prop.get("isControllable"));
+				updateVal.addUpdateValue("controlActionMode",  prop.get("controlActionMode"));
 			}
 			
 			for(String fieldName: fieldNamesToUpdate) {
