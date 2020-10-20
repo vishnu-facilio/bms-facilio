@@ -2880,6 +2880,14 @@ public class ModuleFactory {
 		return mlAssetVariablesModule;
 	}
 	
+	public static FacilioModule getMLServiceModule() {
+		FacilioModule mlServiceModule = new FacilioModule();
+		mlServiceModule.setName("mlService");
+		mlServiceModule.setDisplayName("MLService");
+		mlServiceModule.setTableName("ML_Service");
+		return mlServiceModule;
+	}
+	
 	public static FacilioModule getMLModelVariablesModule()
 	{
 		FacilioModule mlModelVariableModule = new FacilioModule();

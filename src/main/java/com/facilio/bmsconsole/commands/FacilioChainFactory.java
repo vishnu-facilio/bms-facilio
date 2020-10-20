@@ -2084,6 +2084,20 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static FacilioChain addMLServiceChain() {
+		FacilioChain c = FacilioChain.getNonTransactionChain();
+		c.addCommand(new ConstructReadingForMLServiceCommand());
+		c.addCommand(new InitMLServiceCommand());
+		c.addCommand(new UpdateJobDetailsForMLCommand());
+		return c;
+	}
+	
+	public static FacilioChain activateMLServiceChain() {
+		FacilioChain c = FacilioChain.getNonTransactionChain();
+		c.addCommand(new ActivateMLServiceCommand());
+		return c;
+	}
+	
 	public static FacilioChain addEnergyPredictionchain() {
 		FacilioChain c = FacilioChain.getNonTransactionChain();
 		c.addCommand(new AddEnergyPredictionCommand());

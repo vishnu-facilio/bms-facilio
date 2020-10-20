@@ -5985,6 +5985,20 @@ public class FieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getMinimalFieldsFields() {
+    	FacilioModule module = ModuleFactory.getFieldsModule();
+    	List<FacilioField> fields = new ArrayList<FacilioField>();
+    	fields.add(getField("fieldId", "FIELDID", module, FieldType.NUMBER));
+    	fields.add(getField("default", "IS_DEFAULT", module, FieldType.BOOLEAN));
+    	fields.add(getField("name", "NAME", module, FieldType.STRING));
+    	fields.add(getField("moduleId", "MODULEID", module, FieldType.NUMBER));
+    	fields.add(getField("mainField", "IS_MAIN_FIELD", module, FieldType.BOOLEAN));
+    	fields.add(getField("disabled", "DISABLED", module, FieldType.BOOLEAN));
+    	fields.add(getField("accessType", "ACCESS_TYPE", module, FieldType.NUMBER));
+    	fields.add(getField("isSystemUpdated", "isSystemUpdated", module, FieldType.BOOLEAN));
+    	return fields;
+    }
+    
     public static List<FacilioField> getResetCounterMetaFields() {
         FacilioModule module = ModuleFactory.getResetCounterMetaModule();
         List<FacilioField> fields = new ArrayList<>();
@@ -7577,6 +7591,19 @@ public class FieldFactory {
         fields.add(getField("variableKey", "VARIABLE_KEY", module, FieldType.STRING));
         fields.add(getField("variableValue", "VARIABLE_VALUE", module, FieldType.STRING));
 
+        return fields;
+    }
+    
+    public static List<FacilioField> getMLServiceFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getMLServiceModule();
+        fields.add(getField("useCaseId", "USECASE_ID", module, FieldType.NUMBER));
+//        fields.add(getField("orgId", "ORGID", module, FieldType.NUMBER));
+        fields.add(getField("mlId", "ML_ID", module, FieldType.NUMBER));
+        fields.add(getField("status", "STATUS", module, FieldType.STRING));
+        fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.NUMBER));
+        fields.add(getField("modelName", "MODEL_NAME", module, FieldType.STRING));
+        fields.add(getField("mlModelMeta", "ML_MODEL_META", module, FieldType.STRING));
         return fields;
     }
 
