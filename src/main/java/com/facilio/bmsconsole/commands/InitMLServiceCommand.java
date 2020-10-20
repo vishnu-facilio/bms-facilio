@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.context.MLServiceContext;
 import com.facilio.bmsconsole.util.MLAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class InitMLServiceCommand extends FacilioCommand {
 
@@ -55,8 +56,10 @@ public class InitMLServiceCommand extends FacilioCommand {
 			} else {
 				LOGGER.info("\n\n\n\nmlresponse :: \n"+result);
 				
-				JSONObject response = new JSONObject(result);
-				MLResponseContext mlResponse = FieldUtil.getAsBeanFromMap(response.toMap(), MLResponseContext.class);
+//				JSONObject response = new JSONObject(result);
+				Map<String,Object> response =
+				        new ObjectMapper().readValue(result, HashMap.class);
+				MLResponseContext mlResponse = FieldUtil.getAsBeanFromMap(response, MLResponseContext.class);
 				
 				Map<String, Object> row = new HashMap<>();
 				row.put("status", mlResponse.getMessage());

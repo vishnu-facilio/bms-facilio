@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -91,7 +92,7 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 		this.assetDetails = assetDetails;
 	}
 	
-	public JSONObject getReqJson() {
+	public JSONObject getReqJson() throws JSONException {
 		JSONObject jsonRes = new JSONObject();
 		jsonRes.put("modelName", 	this.modelName);
 		jsonRes.put("scenario", this.scenario);
