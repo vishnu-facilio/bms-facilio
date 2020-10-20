@@ -57,6 +57,15 @@
 			<param name="includeProperties">jsonresponse.*</param>
 		</result>
 	</action>
+	<action name="servicelookup" class="com.facilio.auth.actions.FacilioAuthAction" method="servicelookup">
+		<param name="auth">false</param>
+		<result name="success" type="json">
+			<param name="includeProperties">jsonresponse.*</param>
+		</result>
+		<result name="error" type="json">
+			<param name="includeProperties">jsonresponse.*</param>
+		</result>
+	</action>
   	
     <action name="faciliosubmit" class="com.facilio.auth.actions.FacilioAuthAction" method="validateLoginv3">
 		<param name="auth">false</param>
@@ -79,6 +88,15 @@
 	</action>
 
 	<action name="loginWithPasswordAndDigest" class="com.facilio.auth.actions.FacilioAuthAction" method="loginWithPasswordAndDigest">
+		<param name="auth">false</param>
+		<result name="success" type="json">
+			<param name="includeProperties">jsonresponse.*</param>
+		</result>
+		<result name="error" type="json">
+			<param name="includeProperties">jsonresponse.*</param>
+		</result>
+	</action>
+	<action name="serviceLoginWithPasswordAndDigest" class="com.facilio.auth.actions.FacilioAuthAction" method="serviceLoginWithPasswordAndDigest">
 		<param name="auth">false</param>
 		<result name="success" type="json">
 			<param name="includeProperties">jsonresponse.*</param>

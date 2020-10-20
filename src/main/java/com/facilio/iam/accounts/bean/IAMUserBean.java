@@ -137,4 +137,6 @@ public interface IAMUserBean {
 	public boolean deleteUserPhoto(long uid, long photoId) throws Exception;
 
 	public Map<String, Object> getLoginModes(String userName, String domain, AppDomain appDomain) throws Exception;
+
+	public Map<String, Object> getLoginModes(String userName, AppDomain.GroupType groupType) throws Exception;
 }

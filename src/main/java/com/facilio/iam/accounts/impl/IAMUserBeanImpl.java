@@ -559,6 +559,73 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
+	public Map<String, Object> getLoginModes(String userName, AppDomain.GroupType groupType) throws Exception {
+		if (StringUtils.isEmpty(userName)) {
+			throw new IllegalArgumentException("user name is missing");
+		}
+
+		final List<Map<String, Object>> userForUsername = getUserData(userName, groupType);
+		final long userPresent = 1;
+		final long userNotPresent = 2;
+		final Map<String, Object> result = new HashMap<>();
+
+		if (CollectionUtils.isEmpty(userForUsername)) {
+			result.put("code", userNotPresent);
+			result.put("message", "user not present");
+			return result;
+		}
+
+		result.put("code", userPresent);
+		result.put("message", "user present");
+
+		List<Long> orgIds = new ArrayList<>();
+		userForUsername.forEach(i -> orgIds.add((long) i.get("orgId")));
+
+		boolean hasPassword = hasPassword(userName);
+		if (orgIds.size() == 1) {
+			Organization org = IAMOrgUtil.getOrg(orgIds.get(0));
+			result.put("logo_url", org.getLogoUrl());
+		}
+
+		List<String> loginModes = new ArrayList<>();
+		if (hasPassword) {
+			loginModes.add("password");
+		}
+
+		if (hasGoogleLogin((Long) userForUsername.get(0).get("uid"))) {
+			loginModes.add("google");
+		}
+
+		List<AccountSSO> accountSSODetails = IAMOrgUtil.getAccountSSO(orgIds);
+		if (CollectionUtils.isNotEmpty(accountSSODetails)) {
+			loginModes.add("SAML");
+			AccountSSO accountSSO = accountSSODetails.get(0);
+
+			// should handle for multiple saml
+			long orgId = accountSSO.getOrgId();
+			String domainLoginURL = SSOUtil.getSSOEndpoint(IAMOrgUtil.getOrg(orgId).getDomain());
+			result.put("SSOURL", domainLoginURL);
+		}
+
+		List<String> domains = new ArrayList<>();
+		for (Long orgId: orgIds) {
+			Organization org = IAMOrgUtil.getOrg(orgId);
+			domains.add(org.getDomain());
+		}
+
+		result.put("domains", domains);
+		result.put("loginModes", loginModes);
+
+		String jwt = createJWT("id", "auth0", userName, System.currentTimeMillis());
+		result.put("digest", jwt);
+
+		long uid = (Long) userForUsername.get(0).get("uid");
+		insertTokenIntoSession(uid, null, jwt, IAMAccountConstants.SessionType.DIGEST_SESSION);
+
+		return result;
+	}
+
+	@Override
 	public Map<String, Object> getLoginModes(String userName, String domain, AppDomain appDomain) throws Exception {
 		if (StringUtils.isEmpty(userName)) {
 			throw new IllegalArgumentException("user name is missing");
@@ -1659,6 +1726,21 @@ public class IAMUserBeanImpl implements IAMUserBean {
 				.andCondition(CriteriaAPI.getCondition("Account_Users.USERNAME", "username", userName, StringOperators.IS));
 		List<Map<String, Object>> props = selectBuilder.get();
 		return (Boolean) props.get(0).get("password");
+	}
+
+	private List<Map<String, Object>> getUserData(String username, AppDomain.GroupType groupType) throws Exception {
+		List<FacilioField> fields = new ArrayList<>();
+		fields.addAll(IAMAccountConstants.getAccountsUserFields());
+		fields.addAll(IAMAccountConstants.getAccountsOrgUserFields());
+
+		GenericSelectRecordBuilder selectBuilder = getSelectBuilder(fields);
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "orgDeletedTime", "-1", NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.DELETED_TIME", "orgUserDeletedTime", "-1", NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USER_STATUS", "userStatus", "1", NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.USERNAME", "username", username, StringOperators.IS));
+
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.IDENTIFIER", "identifier", ""+groupType.getIndex()+"_", StringOperators.CONTAINS));
+		return selectBuilder.get();
 	}
 
 	private List<Map<String, Object>> getUserData(String username, long orgId, String identifier) throws Exception {
