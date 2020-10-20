@@ -1914,6 +1914,8 @@ public class FieldFactory {
         fields.add(getField("lowerBound", "LOWER_BOUND", module, FieldType.DECIMAL));
         fields.add(getField("alarmCategoryId", "ALARM_CATEGORY_ID", module, FieldType.LOOKUP));
         
+        fields.add(getField("dataModuleId", "DATA_MODULE_ID", module, FieldType.NUMBER));
+        
         SystemEnumField faultTypeField = (SystemEnumField) (getField("faultType", "FAULT_TYPE", module, FieldType.SYSTEM_ENUM));
         faultTypeField.setEnumName("FaultType");
         fields.add(faultTypeField);

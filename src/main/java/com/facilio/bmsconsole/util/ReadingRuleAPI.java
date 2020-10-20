@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.workflow.rule.*;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -45,13 +46,17 @@ import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateChangeSet;
+import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import com.facilio.workflows.context.ExpressionContext;
 
 ;
@@ -59,6 +64,10 @@ import com.facilio.workflows.context.ExpressionContext;
 public class ReadingRuleAPI extends WorkflowRuleAPI {
 	
 	private static final Logger LOGGER = LogManager.getLogger(ReadingRuleAPI.class.getName());
+	
+	private static final String ALARM_LOG_MODULE_TABLE_NAME = "AlarmLogData";
+	
+	public static final String ALARM_LOG_MODULE_FIELD_NAME = "alarmLog";
 	
 	protected static void addReadingRuleInclusionsExlusions(ReadingRuleContext rule) throws SQLException, RuntimeException {
 		if (rule.getAssetCategoryId() != -1) {
@@ -632,6 +641,43 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		
 		alarmRule.setParentRuleId(parentId);
 		
+		if(ruleType == RuleType.ALARM_TRIGGER_RULE) {
+			
+			FacilioChain addReadingChain = TransactionChainFactory.getAddCategoryReadingChain();
+			
+			FacilioContext context = addReadingChain.getContext();
+			context.put(FacilioConstants.ContextNames.PARENT_MODULE, FacilioConstants.ContextNames.ASSET_CATEGORY);
+			context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, ALARM_LOG_MODULE_TABLE_NAME);
+			context.put(FacilioConstants.ContextNames.READING_NAME, ALARM_LOG_MODULE_FIELD_NAME);
+			context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getAlarmLogBooleanFields());
+			context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
+			context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, alarmRule.getAssetCategoryId());
+			context.put(FacilioConstants.ContextNames.VALIDATION_RULES, null);
+			
+			addReadingChain.execute();
+			
+			
+			List<FacilioModule> modules = CommonCommandUtil.getModules(context);
+			
+			alarmRule.setDataModuleId(modules.get(0).getModuleId());
+			
+		}
+		
+	}
+	
+	private static List<FacilioField> getAlarmLogBooleanFields() {
+		
+		List<FacilioField> list = new ArrayList<FacilioField>();
+		BooleanField alarmLogField = new BooleanField();
+		alarmLogField.setName("alarmLog");
+		alarmLogField.setDataType(FieldType.BOOLEAN);
+		alarmLogField.setDisplayType(FieldDisplayType.DECISION_BOX);
+		alarmLogField.setTrueVal("Alarm Raised");
+		alarmLogField.setFalseVal("Alarm Not Raised");
+		
+		list.add(alarmLogField);
+		
+		return list;
 	}
 
 	private static void updateParentRuleId(long oldRuleId,long newRuleId) throws SQLException {

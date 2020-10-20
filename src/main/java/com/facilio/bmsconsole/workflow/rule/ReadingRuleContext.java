@@ -12,6 +12,7 @@ import java.util.Map;
 
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.enums.FaultType;
+import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.bmsconsole.util.*;
 import com.google.gson.JsonObject;
 import org.apache.commons.chain.Context;
@@ -26,6 +27,7 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.bmsconsole.util.ActionAPI;
@@ -51,6 +53,7 @@ import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.energystar.util.EnergyStarUtil;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.BaseLineContext;
@@ -79,6 +82,14 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 
 	private static final Logger LOGGER = LogManager.getLogger(ReadingRuleContext.class.getName());
 	
+	long dataModuleId = -1;
+	
+	public long getDataModuleId() {
+		return dataModuleId;
+	}
+	public void setDataModuleId(long dataModuleId) {
+		this.dataModuleId = dataModuleId;
+	}
 	List<ReadingRuleMetricContext> ruleMetrics;
 
 	public List<ReadingRuleMetricContext> getRuleMetrics() {
@@ -904,6 +915,37 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 				action.executeAction(placeHolders, context, this, record);
 			}
 		}
+		//addRuleLogEntry(record, Boolean.TRUE);
+	}
+	
+	private void addRuleLogEntry(Object record,boolean isTrueAction) throws Exception {
+		
+		if(dataModuleId > 0 && record instanceof ReadingContext) {
+			
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			
+			FacilioModule ruleDataModule = modBean.getModule(dataModuleId);
+			
+			ReadingContext readingContext = (ReadingContext) record;
+			
+			ReadingContext ruleLogReadingContext = new ReadingContext();
+			
+			ruleLogReadingContext.setModuleId(ruleDataModule.getModuleId());
+			ruleLogReadingContext.setParentId(readingContext.getParentId());
+			ruleLogReadingContext.setTtime(readingContext.getTtime());
+			
+			ruleLogReadingContext.setDatum(ReadingRuleAPI.ALARM_LOG_MODULE_FIELD_NAME, isTrueAction);
+			
+			FacilioChain addCurrentOccupancy = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
+			
+			FacilioContext newContext = addCurrentOccupancy.getContext();
+			newContext.put(FacilioConstants.ContextNames.MODULE_NAME, ruleDataModule.getName());
+			newContext.put(FacilioConstants.ContextNames.READINGS, Collections.singletonList(ruleLogReadingContext));
+			newContext.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.SYSTEM);
+			newContext.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
+			addCurrentOccupancy.execute();
+			
+		}
 	}
 	
 	@Override
@@ -929,6 +971,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 			context.put(FacilioConstants.ContextNames.WORKFLOW_ALARM_TRIGGER_RULES, this);
 			super.executeFalseActions(record, context, placeHolders);
 		}
+		//addRuleLogEntry(record, Boolean.FALSE);
 	}
 	public PreEventContext constructPreClearEvent(ReadingContext reading, ResourceContext resource) {
 
