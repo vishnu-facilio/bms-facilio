@@ -94,6 +94,7 @@ public class PointsUtil
                 pointJSON.put(AgentConstants.POINT_TYPE, device.getControllerType());
                 try {
                     Point point = PointsAPI.getPointFromJSON(pointJSON);
+                    setPointWritable(pointJSON,point);
                     if (point != null) {
                         if (point.getControllerId() > 0) {
                             point.setControllerId(-1);
@@ -129,20 +130,23 @@ public class PointsUtil
         return true;
     }
 
+    private static void setPointWritable(JSONObject pointJSON, Point point) {
+		// TODO Auto-generated method stub
+		if(pointJSON.containsKey(AgentConstants.WRITABLE)) {
+			Boolean value = Boolean.parseBoolean(pointJSON.get(AgentConstants.WRITABLE).toString());
+			if(value != null && value) {
+				point.setAgentWritable(value);
+			}else {
+				point.setAgentWritable(false);
+			}
+			
+		}
+	}
 
-
-    private static boolean containsValueCheck(String key, Map<String,Object> jsonObject){
+	private static boolean containsValueCheck(String key, Map<String,Object> jsonObject){
         if(jsonObject.containsKey(key) && ( jsonObject.get(key) != null) ){
             return true;
         }
         return false;
     }
-
-
-
-
-
-
-
-
 }

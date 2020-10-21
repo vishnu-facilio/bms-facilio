@@ -18,7 +18,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.agent.AgentType;
 import com.facilio.agent.controller.FacilioControllerType;
+import com.facilio.agent.controller.FacilioPointType;
 import com.facilio.agent.fw.constants.FacilioCommand;
 import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
@@ -923,7 +925,7 @@ public class PointsAPI {
         }
     }
     public static void applyBacnetDefaultWritableRule(Point point) {
-        if(point.getControllerType() == FacilioControllerType.BACNET_IP){
+        if((point.getControllerType() == FacilioControllerType.BACNET_IP) && (AgentType.valueOf(point.getPointType()) == AgentType.BACnet)){
             BacnetIpPointContext bacnetIpPoint = (BacnetIpPointContext) point;
             if(BACNetUtil.InstanceType.valueOf(bacnetIpPoint.getInstanceType()).isWritable()){
                 point.setWritable(true);
