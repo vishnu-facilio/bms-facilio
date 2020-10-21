@@ -16,6 +16,7 @@ public class AgentConstants
     public static final String NAME = "name";
     public static final String DATA_INTERVAL = "interval";
     public static final String WRITABLE = "writable";
+    public static final String AGENT_WRITABLE = "agentWritable";
     public static final String ACTIVE = "active";
     public static final String CONTROLLER_PROPS_AS_PROPSSTR = "propsStr";
     public static final String CONTROLLER_PROPS = "controllerProps";

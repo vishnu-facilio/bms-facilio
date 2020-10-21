@@ -927,6 +927,7 @@ public class PointsAPI {
             BacnetIpPointContext bacnetIpPoint = (BacnetIpPointContext) point;
             if(BACNetUtil.InstanceType.valueOf(bacnetIpPoint.getInstanceType()).isWritable()){
                 point.setWritable(true);
+                point.setAgentWritable(true);
             }
         }
     }

@@ -6507,6 +6507,7 @@ public class FieldFactory {
         fields.add(getPointResourceIdField(module));
         fields.add(getPointFieldIdField(module));
         fields.add(getField(AgentConstants.WRITABLE, "WRITABLE", module, FieldType.BOOLEAN));
+        fields.add(getField(AgentConstants.AGENT_WRITABLE, "AGENT_WRITABLE", module, FieldType.BOOLEAN));
         fields.add(getField(AgentConstants.THRESHOLD_JSON, "THRESHOLD_JSON", module, FieldType.STRING));
         fields.add(getField(AgentConstants.CREATED_TIME, "CREATED_TIME", module, FieldType.NUMBER));
         fields.add(getField(AgentConstants.MAPPED_TIME, "MAPPED_TIME", module, FieldType.NUMBER));

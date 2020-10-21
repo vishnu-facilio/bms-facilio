@@ -78,8 +78,9 @@ public class PointsUtil
                 throw new Exception(" pointJSON cant be empty");
             }
             Controller controller = null;
-            try {
-                GetControllerRequest getControllerRequest = new GetControllerRequest()
+            try {			// If controllerType is MODBUS_IP ,then need to set COntrollerId because it is a default configured Points.
+            				// otherthan MODBUS_IP then set controllerID null -- because unconfigured points
+            	GetControllerRequest getControllerRequest = new GetControllerRequest()
                         .forDevice(device.getId()).ofType(FacilioControllerType.MODBUS_IP);
                  controller = getControllerRequest.getController();
             }catch(Exception e){

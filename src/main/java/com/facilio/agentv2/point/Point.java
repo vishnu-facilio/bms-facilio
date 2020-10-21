@@ -55,8 +55,18 @@ public abstract class Point extends FacilioPoint{
     private long mappedTime;
     @JsonInclude
     private long deviceId;
+    @JsonInclude
+    private boolean agentWritable;
+    
+    public boolean isAgentWritable() {
+    	return agentWritable;
+    }
 
-  /*  private Integer subscribestatus = PointEnum.SubscribeStatus.UNSUBSCRIBED.getIndex();
+    public void setAgentWritable(boolean agentWritable) {
+    	this.agentWritable = agentWritable;
+    }
+
+	/*  private Integer subscribestatus = PointEnum.SubscribeStatus.UNSUBSCRIBED.getIndex();
     private Integer configureStatus = PointEnum.ConfigureStatus.UNCONFIGURED.getIndex();*/
     @JsonInclude
     private PointEnum.SubscribeStatus subscribeStatus = PointEnum.SubscribeStatus.UNSUBSCRIBED;
@@ -87,6 +97,7 @@ public abstract class Point extends FacilioPoint{
         pointJSON.put(AgentConstants.FIELD_ID,getFieldId());
         pointJSON.put(AgentConstants.IN_USE,isInUse());
         pointJSON.put(AgentConstants.WRITABLE,isWritable());
+        pointJSON.put(AgentConstants.AGENT_WRITABLE,isAgentWritable());
         pointJSON.put(AgentConstants.SUBSCRIBED,isSubscribed());
         pointJSON.put(AgentConstants.PSEUDO,isPseudo());
         pointJSON.put(AgentConstants.THRESHOLD_JSON,getThresholdJSON());
@@ -179,6 +190,9 @@ public abstract class Point extends FacilioPoint{
         }
         if(containsValueCheck(AgentConstants.WRITABLE,row)){
             setWritable(JsonUtil.getBoolean(row.get(AgentConstants.WRITABLE)));
+        }
+        if(containsValueCheck(AgentConstants.AGENT_WRITABLE,row)){
+            setAgentWritable(JsonUtil.getBoolean(row.get(AgentConstants.AGENT_WRITABLE)));
         }
         if (containsValueCheck(AgentConstants.IN_USE,row)){
             setInUse(JsonUtil.getBoolean(row.get(AgentConstants.IN_USE)));
