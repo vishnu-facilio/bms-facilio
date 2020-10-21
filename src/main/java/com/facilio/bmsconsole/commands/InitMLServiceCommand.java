@@ -44,12 +44,15 @@ public class InitMLServiceCommand extends FacilioCommand {
 //			String postURL= FacilioProperties.getMlModelBuildingApi();
 			String postURL= FacilioProperties.getAnomalyPredictAPIURL() + "/trainingModel";
 			Map<String, String> headers = new HashMap<>();
-			LOGGER.info("whole data ::\n"+postObj.toString());
+//			LOGGER.info("whole data ::\n"+postObj.toString());
 
 			headers.put("Content-Type", "application/json");
 			LOGGER.info(" Sending request to ML Server "+postURL+"::"+mlServiceContext.getUseCaseId());
 			String result = AwsUtil.doHttpPost(postURL, headers, null, postObj.toString(),300);
 			if(StringUtils.isEmpty(result) || result.contains("Internal Server Error")){
+				if(StringUtils.isEmpty(result)) {
+					result = "Server is not reachable";
+				}
 				String error = "Error_ML "+ postURL + " usecase ID : "+mlServiceContext.getUseCaseId()+" ERROR MESSAGE : "+"Response is not valid. RESULT : "+result;
 				LOGGER.fatal(error);
 				mlServiceContext.setStatus(error);

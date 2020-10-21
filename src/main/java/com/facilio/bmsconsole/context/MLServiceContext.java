@@ -168,8 +168,8 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 		return "MLServiceContext [modelName=" + modelName + ", scenario=" + scenario + ", readingVariables="
 				+ readingVariables + ", assetDetails=" + assetDetails + ", mlVariables=" + mlVariables
 				+ ", filteringMethod=" + filteringMethod + ", groupingMethod=" + groupingMethod + ", workflowInfo="
-				+ workflowInfo + ", dataObject=" + dataObject + ", orgDetails=" + orgDetails + ", useCaseId="
-				+ useCaseId + ", workflowId=" + workflowId + ", status=" + status + ", mlResponse=" + mlResponse + "]";
+				+ workflowInfo + ", orgDetails=" + orgDetails + ", useCaseId="
+				+ useCaseId + ", workflowId=" + workflowId + ", status=" + status + "]"; //excluding dataObject and MLResponse
 	}
 
 }
