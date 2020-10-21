@@ -69,6 +69,8 @@
 	
 	boolean isSutherland = request.getServerName().contains("sutherlandglobal.com");
 
+	boolean isEcholtech = request.getServerName().contains("echoltech.com");
+
 	JSONObject domainInfo = IAMAppUtil.getAppDomainInfo(request.getServerName());
 	
 	if (isSutherland) {
@@ -82,8 +84,8 @@
 	}
 	
 	String userAgent = request.getHeader("User-Agent");
-	String title = isBuildingstalk ? "BuildingsTalk" : isSutherland ? "Sutherland" : "Facilio";
-	String faviconPath = isBuildingstalk ? "/statics/machinestalk.ico" : isSutherland ? "/statics/sutherland.ico" : "/statics/favicon.png";
+	String title = isBuildingstalk ? "BuildingsTalk" : isSutherland ? "Sutherland" : isEcholtech ? "Echol" : "Facilio";
+	String faviconPath = isBuildingstalk ? "/statics/machinestalk.ico" : isSutherland ? "/statics/sutherland.ico" : isEcholtech ? "/statics/echoltech-ico.png" : "/statics/favicon.png";
 
     Map<String, String> placeHolderParams = new HashMap<>();
     placeHolderParams.put("domainInfo", domainInfo.toString());
