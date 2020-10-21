@@ -915,7 +915,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 				action.executeAction(placeHolders, context, this, record);
 			}
 		}
-		//addRuleLogEntry(record, Boolean.TRUE);
+		addRuleLogEntry(record, Boolean.TRUE);
 	}
 	
 	private void addRuleLogEntry(Object record,boolean isTrueAction) throws Exception {
@@ -936,14 +936,14 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 			
 			ruleLogReadingContext.setDatum(ReadingRuleAPI.ALARM_LOG_MODULE_FIELD_NAME, isTrueAction);
 			
-			FacilioChain addCurrentOccupancy = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
+			FacilioChain addRuleData = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
 			
-			FacilioContext newContext = addCurrentOccupancy.getContext();
+			FacilioContext newContext = addRuleData.getContext();
 			newContext.put(FacilioConstants.ContextNames.MODULE_NAME, ruleDataModule.getName());
 			newContext.put(FacilioConstants.ContextNames.READINGS, Collections.singletonList(ruleLogReadingContext));
 			newContext.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.SYSTEM);
 			newContext.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
-			addCurrentOccupancy.execute();
+			addRuleData.execute();
 			
 		}
 	}
@@ -971,7 +971,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 			context.put(FacilioConstants.ContextNames.WORKFLOW_ALARM_TRIGGER_RULES, this);
 			super.executeFalseActions(record, context, placeHolders);
 		}
-		//addRuleLogEntry(record, Boolean.FALSE);
+		addRuleLogEntry(record, Boolean.FALSE);
 	}
 	public PreEventContext constructPreClearEvent(ReadingContext reading, ResourceContext resource) {
 
