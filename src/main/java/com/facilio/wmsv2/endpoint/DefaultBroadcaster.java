@@ -1,5 +1,6 @@
 package com.facilio.wmsv2.endpoint;
 
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.wmsv2.handler.BaseHandler;
 import com.facilio.wmsv2.handler.Processor;
 import com.facilio.wmsv2.message.Message;
@@ -17,8 +18,23 @@ public class DefaultBroadcaster {
     private static final DefaultBroadcaster broadcaster = new DefaultBroadcaster();
     private final List<LiveSession> sessions = new ArrayList<>();
 
+    static DefaultBroadcaster getDefaultBroadcaster() {
+        String wmsBroadcaster = FacilioProperties.getWmsBroadcaster();
+        switch (wmsBroadcaster) {
+            case "kafka":
+                return KafkaBroadcaster.getBroadcaster();
+            case "default":
+            default:
+                return DefaultBroadcaster.getBroadcaster();
+        }
+    }
+
     static DefaultBroadcaster getBroadcaster() {
         return broadcaster;
+    }
+
+    protected DefaultBroadcaster() { // Making it singleton
+
     }
 
     protected void pushToLiveSession(Message message) {

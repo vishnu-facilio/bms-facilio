@@ -66,17 +66,7 @@ public class FacilioServerEndpoint
 	
 	private DefaultBroadcaster getBroadcaster() {
 		if (this.broadcaster == null) {
-			String wmsBroadcaster = FacilioProperties.getWmsBroadcaster();
-			switch (wmsBroadcaster) {
-				case "kafka":
-					this.broadcaster = KafkaBroadcaster.getBroadcaster();
-					break;
-
-				case "default":
-				default:
-					this.broadcaster = DefaultBroadcaster.getBroadcaster();
-					break;
-			}
+			this.broadcaster = DefaultBroadcaster.getDefaultBroadcaster();
 		}
 		return this.broadcaster;
 	}
