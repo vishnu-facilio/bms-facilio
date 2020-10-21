@@ -41,10 +41,10 @@ public class ConstructReadingForMLServiceCommand extends FacilioCommand {
 		try {
 			
 			MLServiceContext mlServiceContext = (MLServiceContext) context.get(FacilioConstants.ContextNames.ML_MODEL_INFO);
-			
+			mlServiceContext.setOrgDetails(getOrgInfo());
 			this.updateMLServiceInfo(mlServiceContext);
-			LOGGER.info("ML Usecase id "+mlServiceContext.getUseCaseId()+" initiated..");
 			
+			LOGGER.info("ML Usecase id "+mlServiceContext.getUseCaseId()+" initiated..");
 			Long assetId = (Long) mlServiceContext.getAssetDetails().get(FacilioConstants.ContextNames.ASSET_ID);
 			Long startTime = (Long) context.get(FacilioConstants.ContextNames.START_TTIME);
 			Long endTime = (Long) context.get(FacilioConstants.ContextNames.END_TTIME);
@@ -116,7 +116,7 @@ public class ConstructReadingForMLServiceCommand extends FacilioCommand {
 							}
 						}
 				}
-				LOGGER.info("props:: " + props);
+//				LOGGER.info("props:: " + props);
 				
 				String attributeName = variableField.getName();
 				JSONArray attributeArray = new JSONArray();
@@ -138,7 +138,6 @@ public class ConstructReadingForMLServiceCommand extends FacilioCommand {
 			}
 			
 			mlServiceContext.setDataObject(dataObject);
-			mlServiceContext.setOrgDetails(getOrgInfo());
 			LOGGER.info("end of GetReadingsForMLModelCommand");
 			return false;
 		}
@@ -150,12 +149,17 @@ public class ConstructReadingForMLServiceCommand extends FacilioCommand {
 
 	private void updateMLServiceInfo(MLServiceContext mlServiceContext) throws Exception {
 		long workflowId = getWorkFlowId(mlServiceContext.getWorkflowInfo());
-		mlServiceContext.setWorkflowId(workflowId);
+		LOGGER.info("workflowId :: "+workflowId);
+		
 		
 		Map<String, Object> mlServiceRow = new HashMap<>();
 		mlServiceRow.put("orgId", AccountUtil.getCurrentOrg().getOrgId());
 		mlServiceRow.put("status", "Initiated..");
-		mlServiceRow.put("workflowId", String.valueOf(workflowId));
+		if(workflowId!=0) { 
+			mlServiceContext.setWorkflowId(workflowId);
+			mlServiceRow.put("workflowId", String.valueOf(workflowId));
+			LOGGER.info("setting workflowId :: "+workflowId);
+		}
 		mlServiceRow.put("modelName", mlServiceContext.getModelName());
 		mlServiceRow.put("mlModelMeta", mlServiceContext.getReqJson().toString());
 		
