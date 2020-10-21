@@ -23,6 +23,10 @@ public class SessionManager {
 		}
 		return INSTANCE;
 	}
+
+	private SessionManager() {  // Making it singleton
+		broadcaster = DefaultBroadcaster.getDefaultBroadcaster();
+	}
 	
 	public void addLiveSession(LiveSession liveSession) {
 		this.liveSessions.put(liveSession.getId(), liveSession);

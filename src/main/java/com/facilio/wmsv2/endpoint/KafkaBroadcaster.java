@@ -45,7 +45,7 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
     // executors
     private ScheduledExecutorService executor = null;
 
-    public KafkaBroadcaster() {
+    private KafkaBroadcaster() { // Making it singleton
         if(FacilioProperties.isProduction()) {
             kinesisNotificationTopic = "production-notifications-new";
         } else {
