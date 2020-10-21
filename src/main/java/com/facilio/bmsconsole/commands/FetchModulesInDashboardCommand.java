@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.chain.Context;
 
@@ -20,6 +22,7 @@ import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.util.ReportUtil;
 
 public class FetchModulesInDashboardCommand extends FacilioCommand{
+    private static final Logger LOGGER = Logger.getLogger(FetchModulesInDashboardCommand.class.getName());
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -38,12 +41,21 @@ public class FetchModulesInDashboardCommand extends FacilioCommand{
 		 for(DashboardWidgetContext widget : dashboardWidgets)
 		 {
 			 
-				 	long widgetModuleId=DashboardFilterUtil.getModuleIdFromWidget(widget);
+			 try {
+				 long widgetModuleId=-1;
+				 widgetModuleId=DashboardFilterUtil.getModuleIdFromWidget(widget);
 				 	if(widgetModuleId!=-1)
 				 	{
 					 moduleIds.add(widgetModuleId);
 					 
 				 	}
+			 }
+			 catch(Exception e)
+			 {
+				 LOGGER.log(Level.SEVERE,"Error occured  finding module for widget , ID="+widget.getId()+" Skipping finding module from widget",e);
+			 }
+			 
+				 	
 			
 			
 		 }
