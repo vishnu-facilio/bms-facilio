@@ -32,6 +32,7 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 
 		Map<Long, List<Long>> widgetUserFiltersMap = new HashMap<>();
+		List<Long> customScriptWidgets=new ArrayList<>();
 
 		DashboardFilterContext dbFilter = (DashboardFilterContext) context
 				.get(FacilioConstants.ContextNames.DASHBOARD_FILTER);
@@ -62,6 +63,15 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 
 					long widgetId = widget.getId();
 					long widgetModuleId =-1;
+					boolean isCustomScript = DashboardFilterUtil.isCustomScriptWidget(widget);
+					// if custom script is enabled for widget, add widget to customScriptWidget list and skip futher processing
+					
+					if (isCustomScript) {												
+						customScriptWidgets.add(widgetId);
+							
+								continue;
+					}
+					
 					try {
 					 widgetModuleId = DashboardFilterUtil.getModuleIdFromWidget(widget);
 					}
@@ -73,6 +83,7 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 
 					JSONObject widgetSettings = widget.getWidgetSettings();
 					boolean isFilterExclude = (boolean) widgetSettings.get("excludeDbFilters");
+
 					if (isFilterExclude == true || widgetModuleId == -1) {// widgetModuleId=-1 implies widget has no
 																			// module associated with it , like TEXT,WEB
 																			// widget, reading widgets etc
@@ -81,23 +92,15 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 
 					FacilioModule widgetModule = modBean.getModule(widgetModuleId);
 					widgetModule.setFields(modBean.getAllFields(widgetModule.getName()));
-					boolean isCustomScript = DashboardFilterUtil.isCustomScriptWidget(widget);
+					
 
 					for (DashboardUserFilterContext filter : userFilters) {
-						// if custom script is enabled for widget, put all filters in filterMap
-						if (isCustomScript) {
-							if (!widgetUserFiltersMap.containsKey(widgetId)) {
-								widgetUserFiltersMap.put(widgetId, new ArrayList<Long>());
-							}
-							widgetUserFiltersMap.get(widgetId).add(filter.getId());
-							// CANNOT identify field for lookup filter for custom widget
-
-						}
+						
 
 						// for all other widget except custom script, map only the filters that apply to
 						// them
 
-						else {
+						
 							Map<Long,FacilioField> customAppliesToMapping= DashboardFilterUtil.getUserFilterToWidgetColumnMapping(filter.getId());
 							// Is filter TYPE enum(field obj present) or type lookup (module obj ) present
 							FacilioModule moduleForFilter = filter.getModule();
@@ -140,7 +143,7 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 								}
 							}
 
-						}
+						
 
 					}
 
@@ -148,6 +151,7 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 			}
 
 			dbFilter.setWidgetUserFiltersMap(widgetUserFiltersMap);
+			dbFilter.setCustomScriptWidgets(customScriptWidgets);
 
 		}
 

@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -23,9 +24,17 @@ public class DashboardFilterContext extends ModuleBaseWithCustomFields{
 	private String dateValue;
 	private String dateLabel;
 	private Map<Long,List<Long>> widgetUserFiltersMap;
+	private List<Long > customScriptWidgets=new ArrayList<>();
+	
 	
 	
 
+	public List<Long> getCustomScriptWidgets() {
+		return customScriptWidgets;
+	}
+	public void setCustomScriptWidgets(List<Long> customScriptWidgets) {
+		this.customScriptWidgets = customScriptWidgets;
+	}
 	public Map<Long, List<Long>> getWidgetUserFiltersMap() {
 		return widgetUserFiltersMap;
 	}

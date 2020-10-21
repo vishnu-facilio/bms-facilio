@@ -15,7 +15,6 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
-import com.facilio.util.FacilioUtil;
 
 public class ExecuteCardWorkflowCommand extends FacilioCommand {
 	
@@ -54,6 +53,7 @@ public class ExecuteCardWorkflowCommand extends FacilioCommand {
 			if (cardParams!=null) {
 				cardParams.put("cardFilters", cardContext.getCardFilters());
 				cardParams.put("cardUserFilters", cardContext.getCardUserFilters());
+				cardParams.put("customScriptFilters",context.get(FacilioConstants.ContextNames.CARD_CUSTOM_SCRIPT_FILTERS));
 			}
 		
 		

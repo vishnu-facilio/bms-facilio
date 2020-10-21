@@ -4,6 +4,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.DashboardCustomScriptFilter;
 import com.facilio.bmsconsole.context.WidgetCardContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
@@ -62,7 +63,16 @@ public class CardAction extends FacilioAction {
 		this.cardFilter=cardFilter;
 	}
 	
+	private DashboardCustomScriptFilter customScriptFilter;
 	
+public DashboardCustomScriptFilter getCustomScriptFilter() {
+		return customScriptFilter;
+	}
+
+	public void setCustomScriptFilter(DashboardCustomScriptFilter customScriptFilter) {
+		this.customScriptFilter = customScriptFilter;
+	}
+
 private String cardUserFilters;
 	
 	public String getCardUserFilters()
@@ -97,7 +107,8 @@ private String cardUserFilters;
 		chain.getContext().put(FacilioConstants.ContextNames.CARD_ID, cardId);
 		chain.getContext().put(FacilioConstants.ContextNames.CARD_FILTERS, getCardFilterJson());
 		chain.getContext().put(FacilioConstants.ContextNames.CARD_USER_FILTERS, getCardUserFiltersJson());
-		
+		chain.getContext().put(FacilioConstants.ContextNames.CARD_CUSTOM_SCRIPT_FILTERS,getCustomScriptFilter());
+
 		
 		chain.execute();
 			

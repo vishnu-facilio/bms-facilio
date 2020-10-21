@@ -407,6 +407,8 @@ public class FacilioConstants {
 		public static final String CARD_ID = "cardId";
 		public static final String CARD_FILTERS = "cardFilters";
 		public static final String CARD_USER_FILTERS = "cardUserFilters";
+		public static final String CARD_CUSTOM_SCRIPT_FILTERS = "cardCustomScriptFilters";
+		
 		public static final String CARD_RETURN_VALUE = "cardReturnValue";
 		public static final String CARD_LAYOUT = "cardLayout";
 		public static final String CARD_STATE = "cardState";
