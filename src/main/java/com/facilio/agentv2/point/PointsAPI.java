@@ -925,7 +925,7 @@ public class PointsAPI {
         }
     }
     public static void applyBacnetDefaultWritableRule(Point point) {
-        if((point.getControllerType() == FacilioControllerType.BACNET_IP) && (AgentType.valueOf(point.getPointType()) == AgentType.BACnet)){
+        if(point.getControllerType() == FacilioControllerType.BACNET_IP){
             BacnetIpPointContext bacnetIpPoint = (BacnetIpPointContext) point;
             if(BACNetUtil.InstanceType.valueOf(bacnetIpPoint.getInstanceType()).isWritable()){
                 point.setWritable(true);
