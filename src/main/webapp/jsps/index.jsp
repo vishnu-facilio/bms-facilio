@@ -71,6 +71,8 @@
 
 	boolean isEcholtech = request.getServerName().contains("echoltech.com");
 
+	boolean isStageTest = request.getServerName().contains("samltest.facilio.in");
+
 	JSONObject domainInfo = IAMAppUtil.getAppDomainInfo(request.getServerName());
 	
 	if (isSutherland) {
@@ -82,10 +84,24 @@
 		rebrandInfo.put("domain", "sutherlandglobal.com");
 		rebrandInfo.put("copyright", copyrightInfo);
 	}
+
+	if (isEcholtech) {
+        rebrandInfo.put("brandName", "Echol");
+        rebrandInfo.put("name", "Echol");
+        rebrandInfo.put("domain", "echoltech.com");
+        rebrandInfo.put("copyright", copyrightInfo);
+	}
+
+	if (isStageTest) {
+	    rebrandInfo.put("brandName", "Echol");
+        rebrandInfo.put("name", "Echol");
+        rebrandInfo.put("domain", "echoltech.com");
+        rebrandInfo.put("copyright", copyrightInfo);
+	}
 	
 	String userAgent = request.getHeader("User-Agent");
-	String title = isBuildingstalk ? "BuildingsTalk" : isSutherland ? "Sutherland" : isEcholtech ? "Echol" : "Facilio";
-	String faviconPath = isBuildingstalk ? "/statics/machinestalk.ico" : isSutherland ? "/statics/sutherland.ico" : isEcholtech ? "/statics/echoltech-ico.png" : "/statics/favicon.png";
+	String title = isBuildingstalk ? "BuildingsTalk" : isSutherland ? "Sutherland" : (isEcholtech || isStageTest) ? "Echol" : "Facilio";
+	String faviconPath = isBuildingstalk ? "/statics/machinestalk.ico" : isSutherland ? "/statics/sutherland.ico" : (isEcholtech || isStageTest) ? "/statics/echoltech-ico.png" : "/statics/favicon.png";
 
     Map<String, String> placeHolderParams = new HashMap<>();
     placeHolderParams.put("domainInfo", domainInfo.toString());
