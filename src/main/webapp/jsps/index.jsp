@@ -12,8 +12,11 @@
 <%@page import="java.nio.charset.StandardCharsets" %>
 <%@page import="java.net.URL" %>
 <%@page import="java.util.HashMap" %>
+<%@page import="java.util.concurrent.ConcurrentHashMap" %>
 
 <%@page contentType="text/html; charset=UTF-8" %>
+
+<%! static Map<String, String> indexHtmls = new ConcurrentHashMap<>(); %> <%-- Maybe change this to LRU Cache later --%>
 
 <%
 	String clientVersion = (String)com.facilio.aws.util.AwsUtil.getClientInfo().get("version");
@@ -117,18 +120,29 @@
 	/* Fetch index.html from s3 and replace placeholders. For index.html contents refer
 	   index.hbs in client repo
 	*/
-	String indexUrl = staticUrl + "/index.html";
+    String html = indexHtmls.get(staticUrl);
+    if (html == null || html.isEmpty()) {
+        // System.out.println("no cache");
+        String indexUrl = staticUrl + "/index.html";
+        try (InputStream inputStream = new URL(indexUrl).openStream())
+        {
+            html = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+            indexHtmls.put(staticUrl, html);
+        }
+        catch (Exception e) {
+            out.println("Internal Server Error. Please try after sometime");
+        }
+    }
+    /* else {
+        System.out.println("cache");
+    } */
 
-    try (InputStream inputStream = new URL(indexUrl).openStream())
-    {
-        String html = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
-        
+    if (html == null || html.isEmpty()) {
+        out.println("Internal Server Error. Please try after sometime");
+    }
+    else {
         StringSubstitutor substitutor = new StringSubstitutor(placeHolderParams, "{{", "}}");
-
         html = substitutor.replace(html);
         out.println(html);
-    }
-    catch (Exception e) {
-        out.println("Internal Server Error. Please try after sometime");
     }
 %>
