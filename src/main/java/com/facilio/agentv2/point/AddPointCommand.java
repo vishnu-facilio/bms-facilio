@@ -30,17 +30,17 @@ public class AddPointCommand extends FacilioCommand {
             LOGGER.info(" point inserted and pointId is " + pointId);
             if(pointId > 0){
                 point.setId(pointId);
-                boolean childPointId = addChildPoint(point);
+                long childPointId = addChildPoint(point);
                 LOGGER.info(" child point id " + childPointId);
-                return childPointId;
+                return !(childPointId > 0);
             }
         }
         return false;
     }
 
-    private boolean addChildPoint(Point point) throws Exception {
+    private long addChildPoint(Point point) throws Exception {
         JSONObject toInsertMap = point.getChildJSON();
-        return addPoint(PointsAPI.getPointModule(point.getControllerType()), PointsAPI.getChildPointFields(point.getControllerType()), toInsertMap) > 0;
+        return addPoint(PointsAPI.getPointModule(point.getControllerType()), PointsAPI.getChildPointFields(point.getControllerType()), toInsertMap);
         /*switch (point.getControllerType()){
             case MODBUS_IP:
                 return addPoint(ModuleFactory.getModbusTcpPointModule(),FieldFactory.getModbusTcpPointFields(),toInsertMap) > 0;

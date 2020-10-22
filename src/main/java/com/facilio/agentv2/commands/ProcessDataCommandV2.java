@@ -1,7 +1,16 @@
 package com.facilio.agentv2.commands;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.controller.Controller;
+import com.facilio.agentv2.controller.ControllerApiV2;
+import com.facilio.agentv2.device.Device;
+import com.facilio.agentv2.device.FieldDeviceApi;
+import com.facilio.agentv2.misc.MiscController;
+import com.facilio.agentv2.misc.MiscPoint;
+import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Context;
@@ -10,10 +19,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.facilio.agentv2.point.PointsAPI.getPointsFromDb;
 
@@ -35,7 +41,7 @@ public class ProcessDataCommandV2 extends AgentV2Command {
                 JSONObject payload = (JSONObject) payloadObject;
 
                 Controller controller = (Controller) context.get(AgentConstants.CONTROLLER);
-
+                FacilioAgent agent = controller.getAgent();
                 if( containsCheck(AgentConstants.DATA,payload)){
                     JSONArray pointData = (JSONArray) payload.get(AgentConstants.DATA);
                     List<String> pointNames = new ArrayList<>();
@@ -64,6 +70,25 @@ public class ProcessDataCommandV2 extends AgentV2Command {
 
                     if( ! pointNames.isEmpty()){
                         List<Map<String, Object>> pointsFromDb = getPointsFromDb(pointNames,controller);
+                        if (pointsFromDb.size() < pointNames.size() && controller != null) {
+
+                            if (controller.getAgent().getType().equals("rest")) {
+                                Set<String> pointsFromDbSet = new HashSet<>();
+                                pointsFromDb.forEach(row -> pointsFromDbSet.add(row.get("name").toString()));
+                                Set<String> pointNamesSet = new HashSet<>(pointNames);
+                                pointNamesSet.removeAll(pointsFromDbSet);
+                                pointNamesSet.forEach(name -> {
+                                    MiscPoint point = new MiscPoint(agent.getId(), controller.getControllerId());
+                                    point.setName(name);
+                                    point.setDeviceId(controller.getDeviceId());
+                                    point.setDeviceName(controller.getName());
+                                    point.setConfigureStatus(3);
+                                    point.setPath(name);
+                                    PointsAPI.addPoint(point);
+                                    pointsFromDb.add(point.getPointJSON());
+                                });
+                            }
+                        }
                         if( ! pointsFromDb.isEmpty() && controller!=null){
                             for (Map<String, Object> pointRow : pointsFromDb) {
                                 if( ! pointRow.isEmpty()){
