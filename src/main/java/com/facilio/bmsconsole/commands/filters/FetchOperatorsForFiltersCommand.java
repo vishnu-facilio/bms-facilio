@@ -111,16 +111,16 @@ public class FetchOperatorsForFiltersCommand extends FacilioCommand {
                     return operators;
                 }
                 case CURRENT_WEEK: { // Have to check with Krishna if operator name itself can be changed if they are not used in Scripts
-                    return Collections.singletonList(new FilterOperator("This Week", operator.getOperatorId(), operator.isValueNeeded()));
+                    return Collections.singletonList(new FilterOperator("This Week", operator.getTagDisplayName(), operator.getOperatorId(), operator.isValueNeeded()));
                 }
                 case LAST_N_WEEKS: {
                     return Collections.singletonList(new FilterOperator("Last 2 Weeks", "within last 2 weeks", operator.getOperatorId(), false, "2"));
                 }
                 case CURRENT_MONTH: {
-                    return Collections.singletonList(new FilterOperator("This Month", operator.getOperatorId(), operator.isValueNeeded()));
+                    return Collections.singletonList(new FilterOperator("This Month", operator.getTagDisplayName(), operator.getOperatorId(), operator.isValueNeeded()));
                 }
                 case BETWEEN: {
-                    return Collections.singletonList(new FilterOperator("Custom", operator.getOperatorId(), operator.isValueNeeded()));
+                    return Collections.singletonList(new FilterOperator("Custom", operator.getTagDisplayName(), operator.getOperatorId(), operator.isValueNeeded()));
                 }
                 default:
                     return Collections.singletonList(new FilterOperator(operator));

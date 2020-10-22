@@ -15,7 +15,11 @@ public class FilterOperator {
     }
 
     public FilterOperator(String displayName, int operatorId, boolean valueNeeded) {
-        this(displayName, operatorId, valueNeeded, null);
+        this(displayName, null, operatorId, valueNeeded);
+    }
+
+    public FilterOperator(String displayName, String tagDisplayName, int operatorId, boolean valueNeeded) {
+        this(displayName, tagDisplayName, operatorId, valueNeeded, null);
     }
 
     public FilterOperator(String displayName, int operatorId, boolean valueNeeded, String defaultValue) {
