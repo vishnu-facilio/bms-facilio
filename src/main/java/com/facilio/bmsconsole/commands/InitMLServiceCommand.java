@@ -37,10 +37,10 @@ public class InitMLServiceCommand extends FacilioCommand {
 			postObj.put("modelvariables", mlServiceContext.getReqJson());
 			postObj.put("date", getCurrentDate(false));
 			postObj.put("predictedtime", predictedTime);
-//			postObj.put("orgDetails", mlServiceContext.getOrgDetails());
-			postObj.put("data", mlServiceContext.getDataObject());
 			postObj.put("usecaseId", mlServiceContext.getUseCaseId());
-
+			
+			LOGGER.info("ML api request without data :: "+postObj.toString());
+			postObj.put("data", mlServiceContext.getDataObject());
 //			String postURL= FacilioProperties.getMlModelBuildingApi();
 			String postURL= FacilioProperties.getAnomalyPredictAPIURL() + "/trainingModel";
 			Map<String, String> headers = new HashMap<>();
