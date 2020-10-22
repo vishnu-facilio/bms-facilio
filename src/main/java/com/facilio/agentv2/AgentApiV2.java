@@ -1,5 +1,22 @@
 package com.facilio.agentv2;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.chain.Chain;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
 import com.facilio.agent.AgentKeys;
 import com.facilio.agent.AgentType;
 import com.facilio.agentv2.controller.ControllerApiV2;
@@ -12,19 +29,17 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.modules.*;
+import com.facilio.modules.BmsAggregateOperators;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Chain;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
-import java.sql.SQLException;
-import java.util.*;
+import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.util.WorkflowUtil;
 
 public class AgentApiV2 {
 
@@ -119,7 +134,26 @@ public class AgentApiV2 {
                });
             }
         }
-        return updateAgent(agent);
+        
+        long oldWorkflowId = -1;
+        if (containsValueCheck(AgentConstants.WORKFLOW, jsonObject)) {
+            WorkflowContext workflow = FieldUtil.getAsBeanFromMap((Map<String, Object>)jsonObject.get(AgentConstants.WORKFLOW), WorkflowContext.class);
+            oldWorkflowId = agent.getWorkflowId();
+            if(workflow.validateWorkflow()) {
+	        		long workflowId = WorkflowUtil.addWorkflow(workflow);
+	        		agent.setWorkflowId(workflowId);
+			}
+			else {
+				throw new IllegalArgumentException(agent.getWorkflow().getErrorListener().getErrorsAsString());
+			}
+            
+        }
+        boolean status = updateAgent(agent);
+        if (oldWorkflowId != -1) {
+        		WorkflowUtil.deleteWorkflow(oldWorkflowId);
+        }
+        
+        return status;
     }
 
 
@@ -278,6 +312,23 @@ public class AgentApiV2 {
             genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getDeletedTimeField(agentDataModule), "NULL", CommonOperators.IS_EMPTY));
         }
         List<Map<String, Object>> maps = genericSelectRecordBuilder.get();
+        if (CollectionUtils.isNotEmpty(maps)) {
+        		List<Long> workflowIds = new ArrayList<>();
+	        	for (Map<String, Object> agent : maps) {
+	        		if (agent.get("workflowId") != null) {
+	        			workflowIds.add((long) agent.get("workflowId"));
+	        		}
+	        	}
+	        	if (!workflowIds.isEmpty()) {
+	        		Map<Long, WorkflowContext> workflowMap = WorkflowUtil.getWorkflowsAsMap(workflowIds);
+	        		for (Map<String, Object> agent : maps) {
+		        		if (agent.get("workflowId") != null) {
+		        			WorkflowContext workflow = workflowMap.get(agent.get("workflowId"));
+		        			agent.put("workflow", workflow);
+		        		}
+		        	}
+	        	}
+        }
         return maps;
     }
 

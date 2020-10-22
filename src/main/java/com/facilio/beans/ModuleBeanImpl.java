@@ -1593,13 +1593,17 @@ public class ModuleBeanImpl implements ModuleBean {
 		if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {
 			return LookupSpecialTypeUtil.getAllFields(moduleName);
 		}
-		
+
 		FacilioModule module = getMod(moduleName);
 		Map<Long, FacilioModule> moduleMap = splitModules(module);
+		
+		List<Long> extendedModuleIds = module.getExtendedModuleIds();
+		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getSelectFieldFields())
 														.table("Fields")
-															.andCustomWhere("Fields.ORGID = ? AND Fields.MODULEID = ? AND (IS_DEFAULT IS NULL OR IS_DEFAULT = false)", getOrgId(), module.getModuleId());
+														.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", StringUtils.join(extendedModuleIds, ","), NumberOperators.EQUALS))
+														.andCondition(CriteriaAPI.getCondition("IS_DEFAULT", "default", String.valueOf(false),BooleanOperators.IS));
 		List<Map<String, Object>> fieldProps = selectBuilder.get();
 		List<FacilioField> fields = getFieldFromPropList(fieldProps, moduleMap);
 		return fields;

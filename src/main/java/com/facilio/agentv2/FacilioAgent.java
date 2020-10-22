@@ -1,10 +1,12 @@
 package com.facilio.agentv2;
 
-import com.facilio.agent.AgentKeys;
-import com.fasterxml.jackson.annotation.JsonInclude;
+import java.io.Serializable;
+
 import org.json.simple.JSONObject;
 
-import java.io.Serializable;
+import com.facilio.agent.AgentKeys;
+import com.facilio.workflows.context.WorkflowContext;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 public class FacilioAgent implements Serializable {
 
@@ -46,8 +48,16 @@ public class FacilioAgent implements Serializable {
     public void setWorkflowId(long workflowId) {
         this.workflowId = workflowId;
     }
+    
+    private WorkflowContext workflow;
+    public WorkflowContext getWorkflow() {
+		return workflow;
+	}
+	public void setWorkflow(WorkflowContext workflow) {
+		this.workflow = workflow;
+	}
 
-    public Boolean getIsDisable() {
+	public Boolean getIsDisable() {
 		return isDisable;
 	}
 

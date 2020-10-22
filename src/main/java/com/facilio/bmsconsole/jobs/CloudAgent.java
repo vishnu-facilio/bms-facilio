@@ -1,18 +1,26 @@
 package com.facilio.bmsconsole.jobs;
 
-import com.facilio.agentv2.AgentApiV2;
-import com.facilio.agentv2.FacilioAgent;
-import com.facilio.agentv2.actions.AddAgentAction;
-import com.facilio.fw.FacilioException;
-import com.facilio.tasker.job.FacilioJob;
-import com.facilio.tasker.job.JobContext;
-import com.facilio.timeseries.TimeSeriesAPI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.facilio.agentv2.AgentApiV2;
+import com.facilio.agentv2.FacilioAgent;
+import com.facilio.agentv2.actions.AddAgentAction;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
+import com.facilio.fw.FacilioException;
+import com.facilio.tasker.job.FacilioJob;
+import com.facilio.tasker.job.JobContext;
+import com.facilio.timeseries.TimeSeriesAPI;
+import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.util.WorkflowUtil;
+import com.facilio.workflowv2.util.WorkflowV2Util;
 
 public class CloudAgent extends FacilioJob {
     private static final Logger LOGGER = LogManager.getLogger(AddAgentAction.class.getName());
@@ -33,9 +41,11 @@ public class CloudAgent extends FacilioJob {
         }
     }
 
-    private void pushToMessageQueue(List<JSONObject> payloads) throws Exception {
-        for (JSONObject payload : payloads) {
-            TimeSeriesAPI.processPayLoad(0, payload, null);
+    private void pushToMessageQueue(List<Map<String, Object>> results) throws Exception {
+        for (Map<String, Object> payload : results) {
+        		JSONObject obj = new JSONObject();
+        		obj.putAll(payload);
+            TimeSeriesAPI.processPayLoad(0, obj, null);
         }
     }
 
@@ -48,15 +58,30 @@ public class CloudAgent extends FacilioJob {
              noOfDataMissingIntervals > 0; noOfDataMissingIntervals--) {
             long nextTimestampToGetData = ((lastDataReceivedTime + interval) / interval) * interval;
             LOGGER.info("Next Timestamp " + nextTimestampToGetData);
-            List<JSONObject> results = runWorkflow(workflowId, nextTimestampToGetData);
+            List<Map<String, Object>> results = runWorkflow(workflowId, nextTimestampToGetData);
             Thread.sleep(2000);
             pushToMessageQueue(results);
             lastDataReceivedTime = lastDataReceivedTime + interval;
         }
     }
 
-    private List<JSONObject> runWorkflow(long workflowId, long nextTimestampToGetData) {
-        //TODO get data from workflow for the time 'nextTimestampToGetData'
-        return new ArrayList<>();
+    private List<Map<String,Object>> runWorkflow(long workflowId, long nextTimestampToGetData) throws Exception {
+    		WorkflowContext workflowContext = WorkflowUtil.getWorkflowContext(workflowId);
+		workflowContext.setLogNeeded(true);
+
+
+		FacilioChain chain = TransactionChainFactory.getExecuteWorkflowChain();
+		
+		FacilioContext newContext = chain.getContext();
+		
+		List<Object> props = new ArrayList<>();
+		props.add(nextTimestampToGetData);
+		
+		newContext.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflowContext);
+		newContext.put(WorkflowV2Util.WORKFLOW_PARAMS, props);
+
+		chain.execute();
+		
+		return (List<Map<String, Object>>) workflowContext.getReturnValue();
     }
 }

@@ -1,5 +1,10 @@
 package com.facilio.agentv2.commands;
 
+import java.time.LocalTime;
+
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
@@ -8,10 +13,7 @@ import com.facilio.aws.util.AwsUtil;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.tasker.job.JobContext;
 import com.facilio.tasker.job.JobStore;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-
-import java.time.LocalTime;
+import com.facilio.workflows.util.WorkflowUtil;
 
 public class CreateAgentCommand extends AgentV2Command {
 
@@ -24,6 +26,15 @@ public class CreateAgentCommand extends AgentV2Command {
             String agentDownloadUrl = "agentDownloadUrl";
             FacilioAgent agent = (FacilioAgent) context.get(AgentConstants.AGENT);
             String certFileDownloadUrl = "certDownloadUrl";
+            if (agent.getWorkflow() != null) {
+	            	if(agent.getWorkflow().validateWorkflow()) {
+	            		long workflowId = WorkflowUtil.addWorkflow(agent.getWorkflow());
+	            		agent.setWorkflowId(workflowId);
+	    			}
+	    			else {
+	    				throw new IllegalArgumentException(agent.getWorkflow().getErrorListener().getErrorsAsString());
+	    			}
+            }
             long agentId = AgentApiV2.addAgent(agent);
             agent.setId(agentId);
             String type = agent.getType();

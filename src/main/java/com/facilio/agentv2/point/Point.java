@@ -1,5 +1,12 @@
 package com.facilio.agentv2.point;
 
+import java.util.Map;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.apache.struts2.json.annotations.JSON;
+import org.json.simple.JSONObject;
+
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.controller.FacilioDataType;
 import com.facilio.agent.controller.FacilioPoint;
@@ -7,12 +14,6 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.JsonUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.apache.struts2.json.annotations.JSON;
-import org.json.simple.JSONObject;
-
-import java.util.Map;
 
 public abstract class Point extends FacilioPoint{
 
@@ -223,6 +224,15 @@ public abstract class Point extends FacilioPoint{
         }
         if(row.containsKey(AgentConstants.DEVICE_ID)){
             setDeviceId((Long) row.get(AgentConstants.DEVICE_ID));
+        }
+        if(row.containsKey(AgentConstants.RESOURCE_ID)){
+            setResourceId((Long) row.get(AgentConstants.RESOURCE_ID));
+        }
+        if(row.containsKey(AgentConstants.FIELD_ID)){
+            setFieldId((Long) row.get(AgentConstants.FIELD_ID));
+        }
+        if(row.containsKey(AgentConstants.ASSET_CATEGORY_ID)){
+            setCategoryId((Long) row.get(AgentConstants.ASSET_CATEGORY_ID));
         }
         return this;
     }

@@ -1,17 +1,19 @@
 package com.facilio.agentv2.actions;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import com.facilio.workflows.context.WorkflowContext;
 
 public class AddAgentAction extends AgentActionV2
 {
@@ -43,6 +45,8 @@ public class AddAgentAction extends AgentActionV2
     public void setType(String type) { this.type = type;}
     @NotNull @Size(min = 3)
     private String type;
+    
+    
 
     public String getDisplayName() {
         return displayName;
@@ -55,8 +59,15 @@ public class AddAgentAction extends AgentActionV2
     @NotNull @Size(min = 2,max = 100)
     private String displayName;
 
-
-    public String createAgent() {
+    private WorkflowContext workflow;
+    public WorkflowContext getWorkflow() {
+		return workflow;
+	}
+	public void setWorkflow(WorkflowContext workflow) {
+		this.workflow = workflow;
+	}
+	
+	public String createAgent() {
         try {
             FacilioChain addAgentChain = TransactionChainFactory.createAgentChain();
             FacilioContext context = addAgentChain.getContext();
@@ -66,6 +77,7 @@ public class AddAgentAction extends AgentActionV2
             agent.setSiteId(getSiteId()); //TODO validate SITE ID.
             agent.setType(getType());
             agent.setDisplayName(getDisplayName());
+            agent.setWorkflow(getWorkflow());
             context.put(AgentConstants.AGENT,agent);
             addAgentChain.execute();
             JSONObject jsonObject = new JSONObject();
