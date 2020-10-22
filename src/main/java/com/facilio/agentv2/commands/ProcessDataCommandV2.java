@@ -70,23 +70,26 @@ public class ProcessDataCommandV2 extends AgentV2Command {
 
                     if( ! pointNames.isEmpty()){
                         List<Map<String, Object>> pointsFromDb = getPointsFromDb(pointNames,controller);
-                        if (pointsFromDb.size() < pointNames.size() && controller != null) {
+                        if (pointsFromDb.size() < pointNames.size() && controller != null && controller.getAgent().getType().equals("rest")) {
 
                             if (controller.getAgent().getType().equals("rest")) {
                                 Set<String> pointsFromDbSet = new HashSet<>();
                                 pointsFromDb.forEach(row -> pointsFromDbSet.add(row.get("name").toString()));
                                 Set<String> pointNamesSet = new HashSet<>(pointNames);
                                 pointNamesSet.removeAll(pointsFromDbSet);
-                                pointNamesSet.forEach(name -> {
+                                for (String name : pointNamesSet) {
                                     MiscPoint point = new MiscPoint(agent.getId(), controller.getControllerId());
                                     point.setName(name);
                                     point.setDeviceId(controller.getDeviceId());
                                     point.setDeviceName(controller.getName());
                                     point.setConfigureStatus(3);
+                                    point.setControllerId(controller.getControllerId());
                                     point.setPath(name);
-                                    PointsAPI.addPoint(point);
+                                    if (!PointsAPI.addPoint(point)) {
+                                        throw new Exception("Exception while adding misc point for REST agent ");
+                                    }
                                     pointsFromDb.add(point.getPointJSON());
-                                });
+                                }
                             }
                         }
                         if( ! pointsFromDb.isEmpty() && controller!=null){
