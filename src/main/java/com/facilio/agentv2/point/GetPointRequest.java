@@ -299,12 +299,22 @@ public class GetPointRequest {
 
     public GetPointRequest withDeviceId(long deviceId) throws Exception {
         if(deviceId > 0){
-            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getFieldDeviceId(POINT_MODULE), String.valueOf(deviceId),NumberOperators.EQUALS));
+            withDeviceIds(Collections.singletonList(deviceId));
         }else {
             throw new Exception(" controller id can't be less than 1");
         }
         return this;
     }
+
+    public GetPointRequest withDeviceIds(List<Long> deviceIds) throws Exception {
+        if(CollectionUtils.isNotEmpty(deviceIds)){
+            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getFieldDeviceId(POINT_MODULE), deviceIds,NumberOperators.EQUALS));
+        }else {
+            throw new Exception(" device id can't be null");
+        }
+        return this;
+    }
+    
     private static boolean notNull(Object object) {
         return object != null;
     }

@@ -4,9 +4,12 @@
 package com.facilio.agentv2.actions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -16,10 +19,14 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.bacnet.BACNetUtil;
 import com.facilio.chain.FacilioContext;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 
 public class GetPointsAction extends AgentActionV2 {
@@ -29,7 +36,7 @@ public class GetPointsAction extends AgentActionV2 {
 	private static final Logger LOGGER = LogManager.getLogger(GetPointsAction.class.getName());
 	private static final List<Integer> FILTER_INSTANCES = new ArrayList<>();
 	private static final  Map<String, FacilioField> BACNET_POINT_MAP = FieldFactory.getAsMap(FieldFactory.getBACnetIPPointFields());
-
+	private static final  Map<String, FacilioField> POINT_MAP = FieldFactory.getAsMap(FieldFactory.getPointFields());
 	static {
 		FILTER_INSTANCES.add(BACNetUtil.InstanceType.ANALOG_INPUT.ordinal());//0
 		FILTER_INSTANCES.add(BACNetUtil.InstanceType.ANALOG_OUTPUT.ordinal());
@@ -93,6 +100,15 @@ public class GetPointsAction extends AgentActionV2 {
 
 	public void setControllerId(Long controllerId) {
 		this.controllerId = controllerId;
+	}
+	
+	private Long agentId;
+	public Long getAgentId() {
+		return agentId;
+	}
+
+	public void setAgentId(Long agentId) {
+		this.agentId = agentId;
 	}
 
 	/**
@@ -194,6 +210,17 @@ public class GetPointsAction extends AgentActionV2 {
 		if (getDeviceId() != null && getDeviceId() > 0) {
 			point.withDeviceId(getDeviceId());
 		}
+		if(getDeviceId() != null && getDeviceId()==0 && getControllerType() != null && getControllerType() == 0) {
+			List<Long> deviceIds = getDeviceIds(getAgentId());
+			if(CollectionUtils.isNotEmpty(deviceIds)) {
+				Criteria criteria = new Criteria();
+				criteria.addAndCondition(CriteriaAPI.getCondition(POINT_MAP.get(AgentConstants.PSEUDO), String.valueOf(true),BooleanOperators.IS));
+				point.withCriteria(criteria);
+				point.withDeviceIds(deviceIds);
+			}else {
+				throw new IllegalArgumentException("deviceIds should not be null for getting Virtual points.");
+			}
+		}
 		if (StringUtils.isNotEmpty(querySearch)) {
 			point.querySearch(AgentConstants.COL_NAME, querySearch);
 		}
@@ -207,5 +234,17 @@ public class GetPointsAction extends AgentActionV2 {
 	 */
 	public enum PointStatus {
 		UNCONFIRURED, CONFIGURED, SUBSCRIBED, COMMISSIONED
+	}
+
+	//Getting all deviceIds for specific agentId	
+	private List<Long> getDeviceIds(long agentId) throws Exception {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getFieldDeviceModule();
+		fields.add(FieldFactory.getIdField(module));
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().select(fields)
+				.table(module.getTableName()).andCondition(CriteriaAPI.getCondition(
+						FieldFactory.getNewAgentIdField(module), String.valueOf(agentId), NumberOperators.EQUALS));
+		List<Map<String, Object>> props = builder.get();
+		return props.stream().map(p -> (Long) p.get("id")).collect(Collectors.toList());
 	}
 }
