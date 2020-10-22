@@ -2,10 +2,13 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
+import com.facilio.bmsconsole.context.DashboardCustomScriptFilter;
 import com.facilio.bmsconsole.context.WidgetCardContext;
 import com.facilio.cards.util.CardLayout;
 import com.facilio.constants.FacilioConstants;
@@ -17,10 +20,12 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 
 public class ExecuteCardWorkflowCommand extends FacilioCommand {
-	
+	private static final Logger LOGGER = Logger.getLogger(ExecuteCardWorkflowCommand.class.getName());
+
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		// TODO Auto-generated method stub
+		
+
 		WidgetCardContext cardContext = (WidgetCardContext) context.get(FacilioConstants.ContextNames.CARD_CONTEXT);
 		Long cardId = (Long) context.get(FacilioConstants.ContextNames.CARD_ID);
 		
@@ -53,8 +58,24 @@ public class ExecuteCardWorkflowCommand extends FacilioCommand {
 			if (cardParams!=null) {
 				cardParams.put("cardFilters", cardContext.getCardFilters());
 				cardParams.put("cardUserFilters", cardContext.getCardUserFilters());
-				cardParams.put("customScriptFilters",context.get(FacilioConstants.ContextNames.CARD_CUSTOM_SCRIPT_FILTERS));
+				
+
+				try {
+					DashboardCustomScriptFilter filterContext= (DashboardCustomScriptFilter)context.get(FacilioConstants.ContextNames.CARD_CUSTOM_SCRIPT_FILTERS);
+					if(filterContext!=null)
+					{
+						cardParams.put("customScriptFilters",FieldUtil.getAsJSON(filterContext));
+					}
+					
+				}
+				catch(Exception e)
+				{
+					LOGGER.log(Level.SEVERE,"exception parsing customScriptFilters to json");
+				}
+			
+		
 			}
+			
 		
 		
 		CardLayout cl = CardLayout.getCardLayout(cardContext.getCardLayout());
