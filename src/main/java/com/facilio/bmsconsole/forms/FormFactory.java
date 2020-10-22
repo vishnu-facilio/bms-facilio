@@ -323,6 +323,26 @@ public class FormFactory {
 				if (CollectionUtils.isNotEmpty(checklistFields)) {
 					sections.add(checklistSection);
 				}
+			}  else if (moduleName.equals(FacilioConstants.ContextNames.Budget.BUDGET)) {
+				List<FormSection> sections = new ArrayList<>();
+				List<FormField> defaultFields = new ArrayList<>();
+				List<FormField> budgetAmountFields = new ArrayList<>();
+
+				form.setSections(sections);
+				FormSection defaultSection = new FormSection("BUDGET DETAILS", 1, defaultFields, true);
+				FormSection budgetAmount = new FormSection("BUDGET AMOUNTS", 2, budgetAmountFields, true);
+
+				form.getFields().forEach(field -> {
+					if (field.getDisplayTypeEnum() == FieldDisplayType.BUDGET_AMOUNT) {
+						budgetAmountFields.add(field);
+					} else {
+						defaultFields.add(field);
+					}
+				});
+				sections.add(defaultSection);
+				if (CollectionUtils.isNotEmpty(budgetAmountFields)) {
+					sections.add(budgetAmount);
+				}
 			}
 			else if (form.getSections() == null && form.getFields() != null) {
 				FormSection section = new FormSection("Default", 1, form.getFields(), false);
@@ -370,6 +390,7 @@ public class FormFactory {
 		List<FacilioForm> dealsAndOffersFormsList = Arrays.asList(getDealsAndOffersForm(), getDealsAndOffersPortalForm());
 		List<FacilioForm> contactDirectoryFormsList = Arrays.asList(getContactDirectoryForm());
 		List<FacilioForm> adminDocumentsFormsList = Arrays.asList(getAdminDocumentsForm());
+		List<FacilioForm> budgetFormsList = Arrays.asList(getBudgetForm());
 
 
 		List<FacilioForm> workPermitForm = Arrays.asList(getWorkPermitForm(),getPortalWorkPermitForm());
@@ -419,6 +440,7 @@ public class FormFactory {
 				.put(FacilioConstants.ContextNames.Tenant.DEALS_AND_OFFERS, getFormMap(dealsAndOffersFormsList))
 				.put(FacilioConstants.ContextNames.Tenant.CONTACT_DIRECTORY, getFormMap(contactDirectoryFormsList))
 				.put(FacilioConstants.ContextNames.Tenant.ADMIN_DOCUMENTS, getFormMap(adminDocumentsFormsList))
+				.put(FacilioConstants.ContextNames.Budget.BUDGET, getFormMap(budgetFormsList))
 
 				.build();
 	}
@@ -2387,6 +2409,26 @@ public class FormFactory {
 		fields.add(new FormField("category", FieldDisplayType.SELECTBOX, "Category", Required.OPTIONAL, 3, 1));
 		fields.add(new FormField("file", FieldDisplayType.FILE, "File", Required.REQUIRED, 4, 1));
 		fields.add(new FormField("admindocumentsharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 5, 1));
+		form.setFields(fields);
+
+		return form;
+	}
+
+	private static FacilioForm getBudgetForm() {
+
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("Budget");
+		form.setName("default_"+ FacilioConstants.ContextNames.Budget.BUDGET +"_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.Budget.BUDGET));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFormType(FormType.WEB);
+
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("fiscalYearStart", FieldDisplayType.NUMBER, "Fiscal Year Start", Required.REQUIRED, 2, 2));
+		fields.add(new FormField("fiscalYear", FieldDisplayType.NUMBER, "Fiscal Year", Required.REQUIRED, 2, 3));
+		fields.add(new FormField("focalPointType", FieldDisplayType.SELECTBOX, "Scope", Required.OPTIONAL, 4, 1));
+		fields.add(new FormField("budgetamount", FieldDisplayType.BUDGET_AMOUNT, "Budget Amounts", Required.OPTIONAL, 5, 1));
 		form.setFields(fields);
 
 		return form;

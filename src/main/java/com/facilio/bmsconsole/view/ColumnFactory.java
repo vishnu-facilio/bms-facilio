@@ -202,6 +202,8 @@ public class ColumnFactory {
 		columnMap.put("quote-default", getDefaultQuotationColumns());
 		columnMap.put("quoteterms-default", getDefaultQuotationTermsColumns());
 
+		columnMap.put("budget-default", getDefaultBudgetColumns());
+
 		// Community Features
 		columnMap.put("announcement-default", getDefaultAnnouncementColumns());
 		columnMap.put("peopleannouncement-default", getDefaultAnnouncementColumns());
@@ -1580,6 +1582,20 @@ public class ColumnFactory {
 		columns.add(new ViewField("category", "Category"));
 
 		return columns;
+	}
+
+	private static List<ViewField> getDefaultBudgetColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("fiscalYearStart", "Fiscal Year Start"));
+		columns.add(new ViewField("fiscalYear", "Fiscal Year"));
+		columns.add(new ViewField("focalPointType", "Scope"));
+		columns.add(new ViewField("totalIncome", "Total Income"));
+		columns.add(new ViewField("totalExpense", "Total Expense"));
+
+		return columns;
+
 	}
 
 }

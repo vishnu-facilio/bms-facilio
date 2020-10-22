@@ -856,6 +856,11 @@ public class ViewFactory {
 		views.put("all", getAllAdminDocumentsView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.Tenant.ADMIN_DOCUMENTS, views);
 
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllBudgetView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.Budget.BUDGET, views);
+
 		return viewsMap;
 	}
 
@@ -7596,6 +7601,25 @@ public class ViewFactory {
 		appDomains.add(AppDomain.AppDomainType.TENANT_PORTAL);
 		allView.setViewSharing(getSharingContext(appDomains));
 
+
+		return allView;
+	}
+
+	private static FacilioView getAllBudgetView() {
+
+		FacilioModule module = ModuleFactory.getBudgetModule();
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Budgets");
+		allView.setModuleName(module.getName());
+		allView.setSortFields(sortFields);
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		allView.setViewSharing(getSharingContext(appDomains));
 
 		return allView;
 	}

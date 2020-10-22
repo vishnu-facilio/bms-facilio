@@ -136,6 +136,7 @@ public class ModuleFactory {
 		moduleMap.put(ContextNames.Tenant.ANNOUNCEMENT, getAnnouncementModule());
 		moduleMap.put(ContextNames.Tenant.ADMIN_DOCUMENTS, getAdminDocumentsModule());
 		moduleMap.put(ContextNames.Tenant.CONTACT_DIRECTORY, getContactDirectoryModule());
+		moduleMap.put(ContextNames.Budget.BUDGET, getBudgetModule());
 
 		return moduleMap;
 	}
@@ -4207,4 +4208,13 @@ public class ModuleFactory {
         module.setTableName("Agent_Files_Update_Log");
         return module;
     }
+
+	public static FacilioModule getBudgetModule()
+	{
+		FacilioModule module=new FacilioModule();
+		module.setName(ContextNames.Budget.BUDGET);
+		module.setDisplayName("Budget");
+		module.setTableName("Budget");
+		return module;
+	}
 }
