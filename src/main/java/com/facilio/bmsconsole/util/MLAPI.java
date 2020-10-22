@@ -268,8 +268,6 @@ public class MLAPI {
 		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getMLServiceModule().getTableName())
 				.fields(FieldFactory.getMLServiceFields());
-		LOGGER.info("row--> "+row);
-		LOGGER.info("fields ::" +FieldFactory.getMLServiceFields());
 		return builder.insert(row);
 	}
 	

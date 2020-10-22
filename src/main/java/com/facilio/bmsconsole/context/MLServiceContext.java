@@ -1,11 +1,11 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
@@ -18,29 +18,29 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 	 */
 	private String modelName;
 	private String scenario;
-	private List<String> readingVariables;
-	private Map<String, Object> assetDetails;
-	private Map<String, Object> mlVariables;
-    private Map<String, Object> groupingMethod;
-    private Map<String, Object> workflowInfo;
-    private List<Map<String, Object>> filteringMethod;
+	private JSONArray readingVariables;
+	private JSONObject assetDetails;
+	private JSONObject mlVariables;
+    private JSONObject groupingMethod;
+    private JSONObject workflowInfo;
+    private JSONArray filteringMethod;
     
     /**
      * Internal usage variables 
      */
 	private JSONArray dataObject;
-	private Map<String, Object> orgDetails;
+	private JSONObject orgDetails;
 	private long useCaseId;
 	private long workflowId;
 	
 	private String status;
 	private MLResponseContext mlResponse;
 
-    public Map<String, Object> getWorkflowInfo() {
+    public JSONObject getWorkflowInfo() {
 		return workflowInfo;
 	}
 
-	public void setWorkflowInfo(Map<String, Object> workflowInfo) {
+	public void setWorkflowInfo(JSONObject workflowInfo) {
 		this.workflowInfo = workflowInfo;
 	}
     
@@ -52,52 +52,59 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 		this.modelName = modelName;
 	}
 	
-	public Map<String, Object> getMlVariables() {
+	public JSONObject getMlVariables() {
 		return mlVariables;
 	}
 	
-	public void setMlVariables(Map<String, Object> mlVariables) {
+	public void setMlVariables(JSONObject mlVariables) {
 		this.mlVariables = mlVariables;
 	}
 	
-	public Map<String, Object> getGroupingMethod() {
+	public JSONObject getGroupingMethod() {
 		return groupingMethod;
 	}
 	
-	public void setGroupingMethod(Map<String, Object> groupingMethod) {
+	public void setGroupingMethod(JSONObject groupingMethod) {
 		this.groupingMethod = groupingMethod;
 	}
 	
-	public List<Map<String, Object>> getFilteringMethod() {
+	public JSONArray getFilteringMethod() {
 		return filteringMethod;
 	}
 
-	public void setFilteringMethod(List<Map<String, Object>> filteringMethod) {
+	public void setFilteringMethod(JSONArray filteringMethod) {
 		this.filteringMethod = filteringMethod;
 	}
 
-	public List<String> getReadingVariables() {
+	public JSONArray getReadingVariables() {
 		return readingVariables;
 	}
+	
+	public List<String> getReadingList() {
+		List<String> readingList = new ArrayList<String>();
+		if(this.readingVariables!=null) {
+			readingList.addAll(this.readingVariables);
+		}
+		return readingList;
+	}
 
-	public void setReadingVariables(List<String> readingVariables) {
+	public void setReadingVariables(JSONArray readingVariables) {
 		this.readingVariables = readingVariables;
 	}
 	
-	public Map<String, Object> getAssetDetails() {
+	public JSONObject getAssetDetails() {
 		return assetDetails;
 	}
 
-	public void setAssetDetails(Map<String, Object> assetDetails) {
+	public void setAssetDetails(JSONObject assetDetails) {
 		this.assetDetails = assetDetails;
 	}
 	
 	public JSONObject getReqJson() throws JSONException {
 		JSONObject jsonRes = new JSONObject();
-		jsonRes.put("modelName", 	this.modelName);
+		jsonRes.put("modelName", this.modelName);
 		jsonRes.put("scenario", this.scenario);
 		jsonRes.put("assetDetails", this.assetDetails);
-		jsonRes.put("orgDetails", this.orgDetails);
 		jsonRes.put("readingVariables", this.readingVariables);
 		jsonRes.put("mlVariables", this.mlVariables);
 		jsonRes.put("filteringMethod", this.filteringMethod);
@@ -114,11 +121,11 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 		this.dataObject = dataObject;
 	}
 
-	public Map<String, Object> getOrgDetails() {
+	public JSONObject getOrgDetails() {
 		return orgDetails;
 	}
 
-	public void setOrgDetails(Map<String, Object> orgDetails) {
+	public void setOrgDetails(JSONObject orgDetails) {
 		this.orgDetails = orgDetails;
 	}
 
@@ -152,7 +159,6 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 
 	public void setMlResponse(MLResponseContext mlResponse) {
 		this.mlResponse = mlResponse;
-		setStatus(mlResponse.getMessage());
 	}
 
 	public long getWorkflowId() {

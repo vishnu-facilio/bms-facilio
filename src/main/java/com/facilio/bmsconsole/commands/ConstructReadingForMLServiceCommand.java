@@ -9,8 +9,9 @@ import java.util.TreeMap;
 
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.json.JSONException;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
@@ -42,20 +43,18 @@ public class ConstructReadingForMLServiceCommand extends FacilioCommand {
 			
 			MLServiceContext mlServiceContext = (MLServiceContext) context.get(FacilioConstants.ContextNames.ML_MODEL_INFO);
 			mlServiceContext.setOrgDetails(getOrgInfo());
+			
 			this.updateMLServiceInfo(mlServiceContext);
 			
-			LOGGER.info("ML Usecase id "+mlServiceContext.getUseCaseId()+" initiated..");
+			LOGGER.info("ML dry hit data construction started for usecase id "+mlServiceContext.getUseCaseId());
 			Long assetId = (Long) mlServiceContext.getAssetDetails().get(FacilioConstants.ContextNames.ASSET_ID);
 			Long startTime = (Long) context.get(FacilioConstants.ContextNames.START_TTIME);
 			Long endTime = (Long) context.get(FacilioConstants.ContextNames.END_TTIME);
 			
 			List<String> readingVariable = mlServiceContext.getReadingVariables();
-			LOGGER.info("ML Service assetId :: "+assetId);
-			LOGGER.info("ML Service readingVariable :: "+readingVariable);
+			LOGGER.info("ML Service assetId :: "+assetId + "and readingVariables : "+readingVariable);
 
 			List<Map<String, Object>> readingFieldsDetails = MLAPI.getReadingFields(assetId, readingVariable);
-
-			LOGGER.info("ML MODEL no of variables :: "+readingFieldsDetails.size());
 
 			JSONArray dataObject = new JSONArray();
 			
@@ -124,25 +123,25 @@ public class ConstructReadingForMLServiceCommand extends FacilioCommand {
 					JSONObject object = new JSONObject();
 					object.put("ttime", time);
 					if(data.get(time)==null) {
-						object.put(attributeName, JSONObject.NULL);
+						object.put(attributeName, null);
 					}
 					else {
 						object.put(attributeName, data.get(time));
 					}
 					object.put("assetID", resourceId);
 					
-					attributeArray.put(object);
+					attributeArray.add(object);
 				}
 				
-				dataObject.put(attributeArray);
+				dataObject.add(attributeArray);
 			}
 			
 			mlServiceContext.setDataObject(dataObject);
-			LOGGER.info("end of GetReadingsForMLModelCommand");
+			LOGGER.info("ML dry hit data constructed");
 			return false;
 		}
 		catch(Exception e) {
-			LOGGER.error("Error while adding Energy Prediction Job", e);
+			LOGGER.error("Error while constructing data to dry hit ML api", e);
 			throw e;
 		}
 	}
@@ -167,40 +166,24 @@ public class ConstructReadingForMLServiceCommand extends FacilioCommand {
 		mlServiceContext.setUseCaseId(useCaseId);
 	}
 
-	private long getWorkFlowId(Map<String, Object> workflowInfo) {
+	private long getWorkFlowId(JSONObject workflowInfo) throws JSONException {
 		String namespace = (String) workflowInfo.get("namespace");
 		String function = (String) workflowInfo.get("function");
-		LOGGER.info("namespace ::"+namespace);
-		LOGGER.info("function ::"+function);
 		try {
 			WorkflowContext workflowContext = UserFunctionAPI.getWorkflowFunction(namespace, function);
-			LOGGER.info("workflowContext ::"+workflowContext);
-			LOGGER.info("getId ::"+workflowContext.getId());
-//			Map<String, Object> sample = new HashMap<>();
-//			JSONObject obj = new JSONObject();
-//			obj.put("firstname", "seeni");
-//			obj.put("lastname", "mohamed");
-//			obj.put("age", "28");
-//			sample.put("row", obj.toMap());
-////			sample.put("mes", "sending an req");
-//			LOGGER.info("before script row :: "+obj);
-//			Object resMap = WorkflowUtil.getResult(workflowContext.getId(), sample);
-//			LOGGER.info("after script row :: "+resMap);
+			long workflowId = workflowContext.getId();
+			LOGGER.info("ml service workflow namespace = "+namespace+", function = "+function+", workflowId = "+workflowId);
 			return workflowContext.getId();
 		} catch (Exception e) {
 			LOGGER.error("Error while getting flow id for given namespace <"+namespace+"> and function <"+function+">");
 			e.printStackTrace();
 		}
-//		Map<String, Object> sample = new HashMap<>();
-//		sample.put("rowsss", map);
-//		sample.put("row", "seeni");
-//		Object resMap = WorkflowUtil.getResult(workflowContext.getId(), sample);
-//		LOGGER.info("after script row ::"+resMap);
 		return 0;
 	}
 	
-	private Map<String, Object> getOrgInfo() {
-		Map<String, Object> orgInfo = new TreeMap<>();
+	private JSONObject getOrgInfo() throws JSONException {
+//		Map<String, Object> orgInfo = new TreeMap<>();
+		JSONObject orgInfo = new JSONObject();
 		Organization org = AccountUtil.getCurrentOrg();
 		orgInfo.put(FacilioConstants.ContextNames.ORGID, org.getOrgId());
 		orgInfo.put(FacilioConstants.ContextNames.TIME_ZONE, org.getTimezone());

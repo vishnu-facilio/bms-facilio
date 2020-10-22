@@ -8,7 +8,8 @@ import java.util.TimeZone;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.json.JSONObject;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
@@ -18,7 +19,6 @@ import com.facilio.bmsconsole.context.MLServiceContext;
 import com.facilio.bmsconsole.util.MLAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class InitMLServiceCommand extends FacilioCommand {
 
@@ -33,21 +33,23 @@ public class InitMLServiceCommand extends FacilioCommand {
 		try {
 			LOGGER.info("Start of InitMLModelCommand for usecase id "+mlServiceContext.getUseCaseId());
 
+			JSONObject modelVariables = mlServiceContext.getReqJson();
+			modelVariables.put("orgDetails", mlServiceContext.getOrgDetails());
 			JSONObject postObj = new JSONObject();
-			postObj.put("modelvariables", mlServiceContext.getReqJson());
-			postObj.put("date", getCurrentDate(false));
+			postObj.put("modelvariables", modelVariables);
+			postObj.put("date", String.valueOf(getCurrentDate(false)));
 			postObj.put("predictedtime", predictedTime);
 			postObj.put("usecaseId", mlServiceContext.getUseCaseId());
-			
+
 			LOGGER.info("ML api request without data :: "+postObj.toString());
 			postObj.put("data", mlServiceContext.getDataObject());
-//			String postURL= FacilioProperties.getMlModelBuildingApi();
+			//			String postURL= FacilioProperties.getMlModelBuildingApi();
 			String postURL= FacilioProperties.getAnomalyPredictAPIURL() + "/trainingModel";
 			Map<String, String> headers = new HashMap<>();
-//			LOGGER.info("whole data ::\n"+postObj.toString());
 
 			headers.put("Content-Type", "application/json");
 			LOGGER.info(" Sending request to ML Server "+postURL+"::"+mlServiceContext.getUseCaseId());
+
 			String result = AwsUtil.doHttpPost(postURL, headers, null, postObj.toString(),300);
 			if(StringUtils.isEmpty(result) || result.contains("Internal Server Error")){
 				if(StringUtils.isEmpty(result)) {
@@ -57,19 +59,23 @@ public class InitMLServiceCommand extends FacilioCommand {
 				LOGGER.fatal(error);
 				mlServiceContext.setStatus(error);
 			} else {
-				LOGGER.info("\n\n\n\nmlresponse :: \n"+result);
-				
+//				LOGGER.info("\nmlresponse :: \n"+result);
+
+				JSONParser parser = new JSONParser();
+				JSONObject response = (JSONObject) parser.parse(result);
 //				JSONObject response = new JSONObject(result);
-				Map<String,Object> response =
-				        new ObjectMapper().readValue(result, HashMap.class);
-				MLResponseContext mlResponse = FieldUtil.getAsBeanFromMap(response, MLResponseContext.class);
-				
+//				Map<String,Object> response = new ObjectMapper().readValue(result, HashMap.class);
+				MLResponseContext mlResponse = FieldUtil.getAsBeanFromJson(response, MLResponseContext.class);
+
 				Map<String, Object> row = new HashMap<>();
 				row.put("status", mlResponse.getMessage());
 				MLAPI.updateMLServiceInfo(mlResponse.getUsecaseId(), row);
-				
+
 				LOGGER.info("\nML Status has been updated :: \n"+result);
 				mlServiceContext.setMlResponse(mlResponse);
+				if(mlResponse!=null) {
+					mlServiceContext.setStatus(mlResponse.getMessage());
+				}
 			}
 		}catch(Exception e){
 			if(!e.getMessage().contains("ML error")){

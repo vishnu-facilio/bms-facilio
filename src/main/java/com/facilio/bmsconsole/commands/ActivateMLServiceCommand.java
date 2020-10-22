@@ -26,13 +26,11 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.ScheduleInfo;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ActivateMLServiceCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = Logger.getLogger(ActivateMLServiceCommand.class.getName());
-//	private static long maxSamplingPeriod = 7776000000l;
+	//	private static long maxSamplingPeriod = 7776000000l;
 	private static final long TRAINING_SAMPLING_PERIOD = (long)(90*24*60*60*1000); //90 days
 	private static final long PREDICTION_SAMPLING_PERIOD = (long)(60*60*1000); //1 hour
 	private static long futureSamplingPeriod = 0;
@@ -42,15 +40,14 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 
 		MLServiceContext mlServiceContext = (MLServiceContext) context.get(FacilioConstants.ContextNames.ML_MODEL_INFO);
 		try {
-
 			LOGGER.info("Start of ActivateMLServiceCommand");
-			LOGGER.info("whole mlservicecontext : \n"+mlServiceContext);
 			LOGGER.info(mlServiceContext.getMlResponse().getModuleInfo());
 			MLResponseContext mlResponseContext = mlServiceContext.getMlResponse();
+
 			long assetId = mlResponseContext.getAssetid();
 			String scenario = mlServiceContext.getScenario();
 
-			List<String> readingVariables = mlServiceContext.getReadingVariables();
+			List<String> readingVariables = mlServiceContext.getReadingList();
 
 			Map<String, MLCustomModuleContext> mlCustomModuleMap = mlResponseContext.getModuleInfo()
 					.stream().collect(Collectors.toMap(MLCustomModuleContext::getModuleName, mlCustomModule -> mlCustomModule));
@@ -86,7 +83,7 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 			}
 
 		}catch(Exception e){
-			LOGGER.error("Error while activating ml service ml response in table");
+			LOGGER.error("Error while activating ml service ");
 			throw e;
 		}
 		LOGGER.info("End of ActivateMLServiceCommand");
@@ -94,45 +91,52 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 	}
 
 
-	private String convertMapIntoString(Object elements) {
-		ObjectMapper objectMapper = new ObjectMapper();
-		try {
-			String json = objectMapper.writeValueAsString(elements);
-			return json;
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+	//	private String convertMapIntoStrings(Object elements) {
+	//		ObjectMapper objectMapper = new ObjectMapper();
+	//		try {
+	//			String json = objectMapper.writeValueAsString(elements);
+	//			return json;
+	//		} catch (JsonProcessingException e) {
+	//			e.printStackTrace();
+	//		}
+	//		return null;
+	//	}
 
 	private void addMLModelVariables(long mlID, MLServiceContext mlServiceContext, MLCustomModuleContext moduleContext, Long assetId) throws Exception {
 		//Already available variables
 		MLAPI.addMLModelVariables(mlID,"assetID",String.valueOf(assetId));
 		MLAPI.addMLModelVariables(mlID,"timezone",AccountUtil.getCurrentAccount().getTimeZone());
-		
-//		MLAPI.addMLModelVariables(mlID,"workflowInfo",FieldUtil.getAsBeanFromMap(mlServiceContext.getWorkflowInfo(), String.class));
-//		MLAPI.addMLModelVariables(mlID,"filteringMethod",JSONArray.toJSONString(mlServiceContext.getFilteringMethod()));
-//
+
 		//ML service variables
-		MLAPI.addMLModelVariables(mlID,"workflowInfo",convertMapIntoString(mlServiceContext.getWorkflowInfo()));
-		MLAPI.addMLModelVariables(mlID,"filteringMethod",convertMapIntoString(mlServiceContext.getFilteringMethod()));
-		MLAPI.addMLModelVariables(mlID,"groupingMethod",convertMapIntoString(mlServiceContext.getGroupingMethod()));
-		MLAPI.addMLModelVariables(mlID,"mlVariables",convertMapIntoString(mlServiceContext.getMlVariables()));
-		MLAPI.addMLModelVariables(mlID,"readingVariables",convertMapIntoString(mlServiceContext.getReadingVariables()));
-		
+		if(mlServiceContext.getWorkflowInfo()!=null) {
+			MLAPI.addMLModelVariables(mlID,"workflowInfo",mlServiceContext.getWorkflowInfo().toString());
+		}
+		if(mlServiceContext.getFilteringMethod()!=null) {
+			MLAPI.addMLModelVariables(mlID,"filteringMethod",mlServiceContext.getFilteringMethod().toString());
+		}
+		if(mlServiceContext.getGroupingMethod()!=null) {
+			MLAPI.addMLModelVariables(mlID,"groupingMethod",mlServiceContext.getGroupingMethod().toString());
+		}
+		if(mlServiceContext.getMlVariables()!=null) {
+			MLAPI.addMLModelVariables(mlID,"mlVariables",mlServiceContext.getMlVariables().toString());
+		}
+		MLAPI.addMLModelVariables(mlID,"readingVariables",mlServiceContext.getReadingVariables().toString());
+
 		//extra variables (duplicates)
 		MLAPI.addMLModelVariables(mlID,"modelName",mlServiceContext.getModelName());
 		MLAPI.addMLModelVariables(mlID,"scenario",mlServiceContext.getScenario());
-		MLAPI.addMLModelVariables(mlID,"assetDetails",convertMapIntoString(mlServiceContext.getAssetDetails()));
-		MLAPI.addMLModelVariables(mlID,"orgDetails",convertMapIntoString(mlServiceContext.getOrgDetails()));
-		
+		if(mlServiceContext.getWorkflowInfo()!=null) {
+			MLAPI.addMLModelVariables(mlID,"assetDetails",mlServiceContext.getAssetDetails().toString());
+		}
+		MLAPI.addMLModelVariables(mlID,"orgDetails",mlServiceContext.getOrgDetails().toString());
+
 		MLAPI.addMLModelVariables(mlID,"usecaseId",String.valueOf(mlServiceContext.getUseCaseId()));
 		if(moduleContext.getType().equals("prediction")) {
 			MLAPI.addMLModelVariables(mlID,"workflowId",String.valueOf(mlServiceContext.getWorkflowId()));
 		}
-		
-		int sleepTime = 10;
-		LOGGER.info("I am sleeping for next "+sleepTime+" sec");
+
+		int sleepTime = 2;
+		LOGGER.info("I am sleeping for next "+sleepTime+" sec while MLModelVariables entry");
 		Thread.sleep(1000 * sleepTime);
 	}
 
@@ -140,12 +144,12 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 	private void addMLVariables(long mlID, long assetId, MLCustomModuleContext moduleContext, List<Map<String, Object>> readingFieldsDetails, Map<String, MLCustomModuleContext> mlCustomModuleMap) throws Exception {
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
+
 		long maxSamplingPeriod = PREDICTION_SAMPLING_PERIOD;
 		if(moduleContext.getType().equals("training")) {
 			maxSamplingPeriod = TRAINING_SAMPLING_PERIOD;
 		}
-		
+
 		String prevModuleName = moduleContext.getParentModule();
 		if(prevModuleName == null) {
 			boolean first = true;
