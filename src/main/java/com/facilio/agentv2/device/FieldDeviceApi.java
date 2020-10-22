@@ -371,7 +371,7 @@ public class FieldDeviceApi {
         List<Map<String, Object>> props = selectRecordBuilder.get();
         boolean isMiscType=false;
 		for (Map<String, Object> prop : props) {
-			Long val = (Long) prop.get("controllerType");
+			Integer val = (Integer) prop.get("controllerType");
 			if (val != null && val == 0L) {
 				isMiscType = true;
 				break;
