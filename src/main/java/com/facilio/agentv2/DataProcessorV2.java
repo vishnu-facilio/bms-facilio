@@ -5,11 +5,13 @@ import com.facilio.agent.alarms.AgentEvent;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.fw.constants.PublishType;
 import com.facilio.agentv2.controller.Controller;
+import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.controller.ControllerUtilV2;
 import com.facilio.agentv2.device.Device;
 import com.facilio.agentv2.device.DeviceUtil;
 import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.metrics.MetricsApi;
+import com.facilio.agentv2.misc.MiscController;
 import com.facilio.agentv2.point.PointsUtil;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
@@ -78,9 +80,10 @@ public class DataProcessorV2
             }else {
                 payload.put(AgentConstants.TIMESTAMP,timeStamp);
             }
-
-            agent.setLastDataReceivedTime(timeStamp);
-            AgentApiV2.updateAgentLastDataRevievedTime(agent);
+            if (!agent.getType().equals("rest")) {
+                agent.setLastDataReceivedTime(timeStamp);
+                AgentApiV2.updateAgentLastDataRevievedTime(agent);
+            }
 
             controllerUtil = getControllerUtil(agent.getId());
             if (!payload.containsKey(AgentConstants.PUBLISH_TYPE)) {
@@ -242,7 +245,26 @@ public class DataProcessorV2
                         if (controller != null) {
                             return controller;
                         } else {
-                            throw new Exception("No controller found " + controllerJSON);
+                            FacilioAgent agent = AgentApiV2.getAgent(agentId);
+                            if (agent.getType().equals("rest")) {
+                                MiscController miscController = new MiscController(agent.getId(), AccountUtil.getCurrentOrg().getOrgId());
+                                miscController.setName(((JSONObject) (payload.get(AgentConstants.CONTROLLER))).get(AgentConstants.NAME).toString());
+                                Device device = new Device();
+                                device.setIdentifier(miscController.getName());
+                                device.setName(miscController.getName());
+                                device.setAgentId(agent.getId());
+                                device.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+                                device.setControllerType(FacilioControllerType.MISC.asInt());
+                                device.setConfigure(true);
+                                device.setSiteId(agent.getSiteId());
+                                long deviceId = FieldDeviceApi.addFieldDevice(device);
+                                miscController.setDeviceId(deviceId);
+                                ControllerApiV2.addController(miscController);
+                                return miscController;
+                            } else {
+                                throw new Exception("controller not found for " + payload);
+                            }
+
                         }
                     } else {
                         throw new Exception(" controllerJSON cant be empty " + controllerJSON);
@@ -356,6 +378,14 @@ public class DataProcessorV2
                     }
                 } else throw new Exception("Agent missing in payload");
             }
+            if (controller == null) {
+                int type = Integer.parseInt(payload.get(AgentConstants.CONTROLLER_TYPE).toString());
+                FacilioAgent agent = AgentApiV2.getAgent(getAgentId(payload.get("agent").toString()));
+                if (type == FacilioControllerType.MISC.asInt() && agent.getType().equals("rest")) {
+                    String name = ((JSONObject) payload.get("controller")).get("name").toString();
+                    context.put(AgentConstants.CONTROLLER_NAME, name);
+                }
+            }
             context.put(AgentConstants.DATA, payload);
             context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, isTimeSeries);
             if (payload.containsKey(AgentConstants.TIMESTAMP) && (payload.get(AgentConstants.TIMESTAMP) != null)) {
@@ -378,7 +408,7 @@ public class DataProcessorV2
         }
         return false;
     }
-    
+
     private boolean processCustom(FacilioAgent agent,JSONObject payload) {
 
     	try {

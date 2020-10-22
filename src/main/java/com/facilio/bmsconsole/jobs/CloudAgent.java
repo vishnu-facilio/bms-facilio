@@ -51,6 +51,10 @@ public class CloudAgent extends FacilioJob {
 
     private void getPayloadsFromWorkflowAndPushToMessageQueue(long workflowId, FacilioAgent agent) throws Exception {
         long lastDataReceivedTime = agent.getLastDataReceivedTime();
+        long threeMonths = 3 * 30 * 24 * 3600 * 1000L;
+        if (System.currentTimeMillis() - lastDataReceivedTime > threeMonths) {
+            pushToMessageQueue(runWorkflow(workflowId, System.currentTimeMillis()));
+        }
         LOGGER.info("Last received Time : " + lastDataReceivedTime);
         long interval = agent.getInterval() * 60 * 1000;
         long currentTime = System.currentTimeMillis();
@@ -63,6 +67,8 @@ public class CloudAgent extends FacilioJob {
             pushToMessageQueue(results);
             lastDataReceivedTime = lastDataReceivedTime + interval;
         }
+        agent.setLastDataReceivedTime(lastDataReceivedTime);
+        AgentApiV2.updateAgentLastDataRevievedTime(agent);
     }
 
     private List<Map<String,Object>> runWorkflow(long workflowId, long nextTimestampToGetData) throws Exception {
