@@ -19,7 +19,15 @@ import com.facilio.util.FacilioUtil;
 public class DashboardUserFilterContext extends ModuleBaseWithCustomFields {
 
 	private Map<Long,FacilioField> widgetFieldMap=new HashMap<Long, FacilioField>();
-//	private long moduleId=-1;
+	Map<Long,FacilioField>  cascadingFilters;
+public Map<Long, FacilioField> getCascadingFilters() {
+		return cascadingFilters;
+	}
+	public void setCascadingFilters(Map<Long, FacilioField> cascadingFilters) {
+		this.cascadingFilters = cascadingFilters;
+	}
+
+	//	private long moduleId=-1;
 	String moduleName;
 	public String getModuleName() {
 		return moduleName;

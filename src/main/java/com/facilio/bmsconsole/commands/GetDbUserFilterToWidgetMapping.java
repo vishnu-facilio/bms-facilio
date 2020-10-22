@@ -134,8 +134,8 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 								}
 								
 							} else if (fieldForFilter != null) {
-								Boolean isFilterApplicableForWidget = this
-										.isEnumFilterApplicableToWidget(filter.getField().getModule(), widgetModule);
+								Boolean isFilterApplicableForWidget = 
+										DashboardFilterUtil.isEnumFilterApplicableToWidget(filter.getField().getModule(), widgetModule);
 
 								if (isFilterApplicableForWidget) {
 									filter.getWidgetFieldMap().put(widgetId, fieldForFilter);
@@ -161,33 +161,7 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 
 
 	
-	// enum db user filters apply to only widgets of the same module
-		// must check if widget module is either same as filter module or one of its
-		// children
-		// Ex , ticketCategory field has module='ticket' but report_chart corresponding
-		// to workorders has module='workorder'
-	public boolean isEnumFilterApplicableToWidget(FacilioModule filterModule, FacilioModule widgetModule)
-			throws Exception {
-
-		long widgetModuleId = widgetModule.getModuleId();
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-
-		List<FacilioModule> filterChildModules = modBean.getChildModules(filterModule);
-
-		List<Long> filterChildModuleIds = new ArrayList<Long>();
-
-		if (filterChildModules != null) {
-			filterChildModuleIds = filterChildModules.stream().map((FacilioModule module) -> {
-				return module.getModuleId();
-			}).collect(Collectors.toList());
-		}
-
-		if (widgetModuleId == filterModule.getModuleId() || filterChildModuleIds.contains(widgetModuleId)) {
-			return true;
-		} else {
-			return false;
-		}
-	}
+	
 
 	public void addToWidgetUserFiltersMap(long widgetId, long filterId, Map<Long, List<Long>> widgetUserFiltersMap) {
 		if (!widgetUserFiltersMap.containsKey(widgetId)) {

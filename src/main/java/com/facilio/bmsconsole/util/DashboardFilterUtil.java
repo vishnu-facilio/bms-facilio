@@ -126,6 +126,7 @@ public class DashboardFilterUtil {
 				if(filter.getModuleName()!=null)
 				{
 					filter.setModule(modBean.getModule(filter.getModuleName()));
+					filter.getModule().setFields(modBean.getAllFields(filter.getModuleName()));
 				}
 				
 				if(filter.getCriteriaId()>0)
@@ -136,6 +137,23 @@ public class DashboardFilterUtil {
 				//filter.setWidgetFieldMap(getUserFilterToWidgetColumnMapping(filter.getId()));
 
 			}
+			
+			//set cross cascading rels
+			try {
+				for (DashboardUserFilterContext filter : dashboardUserFilters) {
+						if(filter.getShowOnlyRelevantValues()==true)
+						{
+						filter.setCascadingFilters(DashboardFilterUtil.findCascadingFilterRel(filter,dashboardUserFilters));
+						}
+				}
+				
+			}
+			catch(Exception e)
+			{
+				LOGGER.log(Level.SEVERE,"Exception finding cascading filter relation");
+				
+			}
+			
 			return dashboardUserFilters;
 		}
 		return null;
@@ -308,6 +326,77 @@ public static FacilioField getFilterApplicableField(FacilioModule filterModule, 
 			return filterApplicableFields.get(0);
 		}
 		return null;
+	 }
+
+//enum db user filters apply to only widgets of the same module
+		// must check if widget module is either same as filter module or one of its
+		// children
+		// Ex , ticketCategory field has module='ticket' but report_chart corresponding
+		// to workorders has module='workorder'
+	public static  boolean isEnumFilterApplicableToWidget(FacilioModule filterModule, FacilioModule widgetModule)
+			throws Exception {
+
+		long widgetModuleId = widgetModule.getModuleId();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+		List<FacilioModule> filterChildModules = modBean.getChildModules(filterModule);
+
+		List<Long> filterChildModuleIds = new ArrayList<Long>();
+
+		if (filterChildModules != null) {
+			filterChildModuleIds = filterChildModules.stream().map((FacilioModule module) -> {
+				return module.getModuleId();
+			}).collect(Collectors.toList());
+		}
+
+		if (widgetModuleId == filterModule.getModuleId() || filterChildModuleIds.contains(widgetModuleId)) {
+			return true;
+		} else {
+			return false;
+		}
 	}
+
+public static Map<Long,FacilioField>  findCascadingFilterRel(DashboardUserFilterContext currentFilter,List<DashboardUserFilterContext> otherFilters) throws Exception
+{
+	if(currentFilter.getModule()==null)
+	{
+		return null;//filter rel only applicable for lookup (module) type filters
+	}
+	
+	
+	
+	Map<Long,FacilioField> cascadingRelMap=new HashMap<Long, FacilioField>();
+	//return a map of ->otherFilterId:applicableToField in currentFilter
+	for(DashboardUserFilterContext otherFilter:otherFilters)
+	{
+		if(currentFilter.getId()!=otherFilter.getId())//dont find filter rel for itself
+		{
+			
+			
+			//a ENUM filter can cascade onto a module filter but not vice versa
+			//Example Filter1->Workorders , Filter 2,Ticket->Source , 2 can filter out options fetched in 1 , but not the reverse as 2 isnt a module to support filtering its records
+			if(otherFilter.getField()!=null&&DashboardFilterUtil.isEnumFilterApplicableToWidget(otherFilter.getField().getModule(), currentFilter.getModule()))//the other filter is of type ENUM
+			{
+				cascadingRelMap.put(otherFilter.getFieldId(), otherFilter.getField());
+			}
+			else if(otherFilter.getModule()!=null) {//both current and other are lookup ie module filters,find which col in current relates to other
+				FacilioField applicableField=DashboardFilterUtil.getFilterApplicableField(otherFilter.getModule(), currentFilter.getModule());
+				if(applicableField!=null)
+				{
+					cascadingRelMap.put(otherFilter.getId(), applicableField);
+					
+				}
+			}
+			
+		
+		}
+	}
+	if(cascadingRelMap.size()==0)
+	{
+		return null;
+	}
+	
+	return cascadingRelMap;
+}
 
 }
