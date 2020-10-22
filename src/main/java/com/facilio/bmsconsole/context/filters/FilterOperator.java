@@ -19,7 +19,12 @@ public class FilterOperator {
     }
 
     public FilterOperator(String displayName, int operatorId, boolean valueNeeded, String defaultValue) {
+        this(displayName, null, operatorId, valueNeeded, defaultValue);
+    }
+
+    public FilterOperator(String displayName, String tagDisplayName, int operatorId, boolean valueNeeded, String defaultValue) {
         this.displayName = displayName;
+        this.tagDisplayName = tagDisplayName;
         this.operatorId = operatorId;
         this.valueNeeded = valueNeeded;
         this.defaultValue = defaultValue;
@@ -28,6 +33,11 @@ public class FilterOperator {
     private String displayName;
     public String getDisplayName() {
         return StringUtils.isNotEmpty(displayName) ? displayName : operator == null ? null : operator.getOperator();
+    }
+
+    private String tagDisplayName;
+    public String getTagDisplayName() {
+        return StringUtils.isNotEmpty(tagDisplayName) ? tagDisplayName : operator == null ? null : operator.getTagDisplayName();
     }
 
     private Integer operatorId;
