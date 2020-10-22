@@ -9102,6 +9102,7 @@ public class FieldFactory {
 		 fields.add(getField("optionType", "OPTION_TYPE", module, FieldType.SYSTEM_ENUM));
 		 fields.add(getField("isAllOptionEnabled", "IS_ALL_OPTION_ENABLED", module, FieldType.BOOLEAN));
 		 fields.add(getField("isOthersOptionEnabled", "IS_OTHERS_OPTION_ENABLED", module, FieldType.BOOLEAN));
+		 fields.add(getField("showOnlyRelevantValues", "SHOW_ONLY_RELEVANT_VALUES", module, FieldType.BOOLEAN));
 		 fields.add(getField("label", "LABEL", module, FieldType.STRING));
 		 fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.NUMBER));
 		 fields.add(getField("moduleName", "MODULE_NAME", module, FieldType.STRING));

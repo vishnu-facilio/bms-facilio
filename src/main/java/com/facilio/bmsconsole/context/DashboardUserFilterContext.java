@@ -146,6 +146,14 @@ public class DashboardUserFilterContext extends ModuleBaseWithCustomFields {
 	String label;
 	OptionType optionType;
 	Boolean isAllOptionEnabled;
+	Boolean showOnlyRelevantValues;
+	public Boolean getShowOnlyRelevantValues() {
+		return showOnlyRelevantValues;
+	}
+	public void setShowOnlyRelevantValues(Boolean showOnlyRelevantValues) {
+		this.showOnlyRelevantValues = showOnlyRelevantValues;
+	}
+
 	private FacilioField field;
 	private long dashboardFilterId;
 	
