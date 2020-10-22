@@ -4,7 +4,6 @@
 package com.facilio.agentv2.actions;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -173,6 +172,9 @@ public class GetPointsAction extends AgentActionV2 {
 	 * @throws if none of the conditions satisfied, then throws IllegalArgumentException.
 	 */
 	private void pointFilter(PointStatus status, GetPointRequest point) throws Exception {
+		if(status == null) {
+			return;
+		}
 		switch (status) {
 		case SUBSCRIBED:
 			point.filterSubsctibedPoints();
@@ -198,34 +200,37 @@ public class GetPointsAction extends AgentActionV2 {
 	 * @throws Exception
 	 */
 	private void sanityCheck(GetPointRequest point) throws Exception {
-
-		if (getControllerType() != null) {
-			point.ofType(FacilioControllerType.valueOf(getControllerType()));
-			if (getControllerType() == FacilioControllerType.BACNET_IP.asInt()) {
-				Criteria criteria = new Criteria();
-				criteria.addAndCondition(CriteriaAPI.getCondition(BACNET_POINT_MAP.get(AgentConstants.INSTANCE_TYPE),FILETR_JOIN, NumberOperators.EQUALS));
-				point.withCriteria(criteria);
-			}
+		
+		if (getControllerType() == null || getDeviceId() == null) {
+			throw new IllegalArgumentException("Controller type/deviceId cannot be null");
 		}
-		if (getDeviceId() != null && getDeviceId() > 0) {
-			point.withDeviceId(getDeviceId());
+		point.ofType(FacilioControllerType.valueOf(controllerType));
+		if (controllerType == FacilioControllerType.BACNET_IP.asInt()) {
+			Criteria criteria = new Criteria();
+			criteria.addAndCondition(CriteriaAPI.getCondition(BACNET_POINT_MAP.get(AgentConstants.INSTANCE_TYPE),
+					FILETR_JOIN, NumberOperators.EQUALS));
+			point.withCriteria(criteria);
 		}
-		if(getDeviceId() != null && getDeviceId()==0 && getControllerType() != null && getControllerType() == 0) {
+		if (deviceId > 0) {
+			point.withDeviceId(deviceId);
+		}
+		if (deviceId == 0 && controllerType == 0) {
 			List<Long> deviceIds = getDeviceIds(getAgentId());
-			if(CollectionUtils.isNotEmpty(deviceIds)) {
+			if (CollectionUtils.isNotEmpty(deviceIds)) {
 				Criteria criteria = new Criteria();
-				criteria.addAndCondition(CriteriaAPI.getCondition(POINT_MAP.get(AgentConstants.PSEUDO), String.valueOf(true),BooleanOperators.IS));
+				criteria.addAndCondition(CriteriaAPI.getCondition(POINT_MAP.get(AgentConstants.PSEUDO),
+						String.valueOf(true), BooleanOperators.IS));
 				point.withCriteria(criteria);
 				point.withDeviceIds(deviceIds);
-			}else {
+			} else {
 				throw new IllegalArgumentException("deviceIds should not be null for getting Virtual points.");
 			}
 		}
-		if (StringUtils.isNotEmpty(querySearch)) {
+		if (querySearch != null && !querySearch.trim().isEmpty()) {
 			point.querySearch(AgentConstants.COL_NAME, querySearch);
 		}
 		if (getControllerId() != null && getControllerId() > 0) {
-			point.withControllerId(getControllerId());
+			point.withControllerId(controllerId);
 		}
 	}
 	/**
@@ -246,5 +251,13 @@ public class GetPointsAction extends AgentActionV2 {
 						FieldFactory.getNewAgentIdField(module), String.valueOf(agentId), NumberOperators.EQUALS));
 		List<Map<String, Object>> props = builder.get();
 		return props.stream().map(p -> (Long) p.get("id")).collect(Collectors.toList());
+	}
+	
+	public static boolean isVirtualPointExist(long agentId) throws Exception {
+		GetPointsAction req = new GetPointsAction();
+		req.setAgentId(agentId);
+		req.setControllerType(0);
+		req.setDeviceId(0L);
+		return (req.getPointCount(null) > 0) ? true:false;
 	}
 }

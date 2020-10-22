@@ -1,7 +1,23 @@
 package com.facilio.agentv2.device;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.actions.GetPointsAction;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerUtilV2;
 import com.facilio.agentv2.iotmessage.ControllerMessenger;
@@ -16,16 +32,12 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.modules.*;
+import com.facilio.modules.BmsAggregateOperators;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
-import java.sql.SQLException;
-import java.util.*;
 
 public class FieldDeviceApi {
 
@@ -356,7 +368,23 @@ public class FieldDeviceApi {
                 .andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(fieldDeviceModule), String.valueOf(agentId), NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition(FieldFactory.getDeletedTimeField(fieldDeviceModule), "NULL", CommonOperators.IS_EMPTY));
 
-        return selectRecordBuilder.get();
+        List<Map<String, Object>> props = selectRecordBuilder.get();
+        boolean isMiscType=false;
+		for (Map<String, Object> prop : props) {
+			Long val = (Long) prop.get("controllerType");
+			if (val != null && val == 0L) {
+				isMiscType = true;
+				break;
+			}
+		}
+        if(isMiscType && GetPointsAction.isVirtualPointExist(agentId)) {
+        	Map<String,Object> prop = new HashMap<String, Object>();
+        	prop.put("id", 0);
+        	prop.put("controllerType",0);
+        	prop.put("name", "Virtual");
+        	props.add(prop);
+        }
+        return props;
     }
 
     public static List<Map<String,Object>> getModbusDeviceFilter(Long agentId) throws Exception {
