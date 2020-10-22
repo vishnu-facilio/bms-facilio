@@ -7,10 +7,14 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.GetDbTimeLineFilterToWidgetMapping;
 import com.facilio.bmsconsole.context.DashboardFilterContext;
 import com.facilio.bmsconsole.context.DashboardUserFilterContext;
 import com.facilio.bmsconsole.context.DashboardUserFilterWidgetFieldMappingContext;
@@ -32,15 +36,18 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.util.ReportUtil;
 import com.facilio.util.FacilioUtil;
 
 public class DashboardFilterUtil {
+    private static final Logger LOGGER = Logger.getLogger(DashboardFilterUtil.class.getName());
 
 	public static final List<String> T_TIME_ONLY_CARD_LAYOUTS = initCardLayouts();
 
@@ -253,6 +260,53 @@ public class DashboardFilterUtil {
 		}
 		
 		
+		return null;
+	}
+
+public static FacilioField getFilterApplicableField(FacilioModule filterModule, FacilioModule widgetModule){
+		
+		//see if module's lookup fields refrer to the filter's lookupmodule.
+		List<FacilioField> filterApplicableFields = widgetModule.getFields().stream().filter((FacilioField field) -> {
+			if (field.getDataTypeEnum() == FieldType.LOOKUP) {
+				LookupField lookupField = (LookupField) field;
+				if (lookupField.getLookupModule().equals(filterModule)) {
+					return true;
+				}
+			}
+			return false;
+		}).collect(Collectors.toList());
+			
+//		 else traverse fields again and check if field's lookupModule is a parent of filter's lookupmodule
+		//moduleId=-1 ,special type modules, cannot inherit or be extended , so skip parent comparison
+		if(filterApplicableFields.size()==0&&filterModule.getModuleId()!=-1)
+		{
+			filterApplicableFields=widgetModule.getFields().stream().filter((FacilioField field) -> {
+				if (field.getDataTypeEnum() == FieldType.LOOKUP) {
+					LookupField lookupField = (LookupField) field;
+					
+						try {
+							if(filterModule.getExtendedModuleIds().contains(lookupField.getLookupModule().getModuleId()))
+							{
+								return true;
+							}
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							LOGGER.log(Level.SEVERE, "Exception checking extended modules for lookup filter relation");
+							e.printStackTrace();
+						}
+//				
+				}
+				return false;
+			}).collect(Collectors.toList());
+				
+		}
+    
+		
+		if (filterApplicableFields != null && filterApplicableFields.size() > 0) {
+			
+			
+			return filterApplicableFields.get(0);
+		}
 		return null;
 	}
 

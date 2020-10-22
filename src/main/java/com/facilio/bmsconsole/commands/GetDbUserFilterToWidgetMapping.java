@@ -119,7 +119,7 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 								}
 								else
 								{
-								 filterApplicableField = getFilterApplicableField(moduleForFilter,
+								 filterApplicableField =DashboardFilterUtil.getFilterApplicableField(moduleForFilter,
 										widgetModule);
 								 
 								}
@@ -160,53 +160,7 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 
 
 
-	public FacilioField getFilterApplicableField(FacilioModule filterModule, FacilioModule widgetModule){
-		
-		//see if module's lookup fields refrer to the filter's lookupmodule.
-		List<FacilioField> filterApplicableFields = widgetModule.getFields().stream().filter((FacilioField field) -> {
-			if (field.getDataTypeEnum() == FieldType.LOOKUP) {
-				LookupField lookupField = (LookupField) field;
-				if (lookupField.getLookupModule().equals(filterModule)) {
-					return true;
-				}
-			}
-			return false;
-		}).collect(Collectors.toList());
-			
-//		 else traverse fields again and check if field's lookupModule is a parent of filter's lookupmodule
-		//moduleId=-1 ,special type modules, cannot inherit or be extended , so skip parent comparison
-		if(filterApplicableFields.size()==0&&filterModule.getModuleId()!=-1)
-		{
-			filterApplicableFields=widgetModule.getFields().stream().filter((FacilioField field) -> {
-				if (field.getDataTypeEnum() == FieldType.LOOKUP) {
-					LookupField lookupField = (LookupField) field;
-					
-						try {
-							if(filterModule.getExtendedModuleIds().contains(lookupField.getLookupModule().getModuleId()))
-							{
-								return true;
-							}
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							LOGGER.log(Level.SEVERE, "Exception checking extended modules for lookup filter relation");
-							e.printStackTrace();
-						}
-//				
-				}
-				return false;
-			}).collect(Collectors.toList());
-				
-		}
-    
-		
-		if (filterApplicableFields != null && filterApplicableFields.size() > 0) {
-			
-			
-			return filterApplicableFields.get(0);
-		}
-		return null;
-	}
-
+	
 	// enum db user filters apply to only widgets of the same module
 		// must check if widget module is either same as filter module or one of its
 		// children
