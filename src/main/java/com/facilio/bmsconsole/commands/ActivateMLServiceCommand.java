@@ -31,8 +31,8 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = Logger.getLogger(ActivateMLServiceCommand.class.getName());
 	//	private static long maxSamplingPeriod = 7776000000l;
-	private static final long TRAINING_SAMPLING_PERIOD = (long)(90*24*60*60*1000); //90 days
-	private static final long PREDICTION_SAMPLING_PERIOD = (long)(60*60*1000); //1 hour
+	private static final Long TRAINING_SAMPLING_PERIOD = 90*(24*60*60*1000l); //90 days
+	private static final long PREDICTION_SAMPLING_PERIOD = 60*60*1000l; //1 hour
 	private static long futureSamplingPeriod = 0;
 
 	@Override

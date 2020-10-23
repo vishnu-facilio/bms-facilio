@@ -52,7 +52,7 @@ public class ConstructReadingForMLServiceCommand extends FacilioCommand {
 			Long endTime = (Long) context.get(FacilioConstants.ContextNames.END_TTIME);
 			
 			List<String> readingVariable = mlServiceContext.getReadingVariables();
-			LOGGER.info("ML Service assetId :: "+assetId + "and readingVariables : "+readingVariable);
+			LOGGER.info("ML Service assetId :: "+assetId + " and readingVariables : "+readingVariable);
 
 			List<Map<String, Object>> readingFieldsDetails = MLAPI.getReadingFields(assetId, readingVariable);
 

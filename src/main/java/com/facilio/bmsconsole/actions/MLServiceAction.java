@@ -22,7 +22,7 @@ public class MLServiceAction extends FacilioAction {
     private static long endTime = 1590987600000L;
 //    private static final long usecase_id = 21876312873L;
     
-    private static final long DAYS_IN_MILLISECONDS = (long)(24*60*60*1000);
+    private static final long DAYS_IN_MILLISECONDS = 24*60*60*1000l;
 
     public String addMLModel() throws Exception {
     	LOGGER.info("MLServiceAction has been initiated..");
