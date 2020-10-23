@@ -105,7 +105,7 @@ public class CreateAgentCommand extends AgentV2Command {
         cloudAgentJobContext.setActive(true);
         cloudAgentJobContext.setExecutorName("facilio");
         cloudAgentJobContext.setTransactionTimeout(300000);
-        cloudAgentJobContext.setExecutionTime(System.currentTimeMillis());
+        cloudAgentJobContext.setExecutionTime(System.currentTimeMillis() / 1000);
         cloudAgentJobContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
         LOGGER.info("Adding Cloud Agent : " + agent.getName() + " : " + cloudAgentJobContext.toString());
         return cloudAgentJobContext;
