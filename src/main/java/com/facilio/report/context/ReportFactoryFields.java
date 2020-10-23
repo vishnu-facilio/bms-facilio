@@ -52,32 +52,10 @@ public class ReportFactoryFields {
 				selectedFields.add(fields.get(fieldName));
 			}
 	}
-		
-//		if(customFields.size() != 0 && !(facilioModule.isCustom() )) {
-//			for(String customFieldName: customFields.keySet()) {
-//				FacilioField customField = fields.get(customFieldName);
-//				if(customField.getDataType() == FieldType.LOOKUP.getTypeAsInt()) {
-//					LookupField lookupField = (LookupField) customField;
-//					if(lookupField.getLookupModule().getTypeEnum() != FacilioModule.ModuleType.PICK_LIST && !"user".equalsIgnoreCase(lookupField.getLookupModule().getName())) {
-//					if(!lookUpModuleNames.containsKey(lookupField.getDisplayName())) {
-//						lookUpModuleNames.put(lookupField.getDisplayName(),lookupField.getLookupModule().getName());
-//					}
-//					}
-//					else {
-//						selectedFields.add(customFields.get(customFieldName));
-//					}
-//				}
-//				else {
-//					selectedFields.add(customFields.get(customFieldName));
-//				}
-//			}
-//		}
 		if(facilioModule.isCustom()) {
 			selectedFields.addAll(FieldFactory.getSystemPointFields(facilioModule));
 		}
 		
-		
-		// loading additional module fields
 		JSONObject rearrangedFields = rearrangeFields(selectedFields, facilioModule);
 		setDefaultAdditionalModulemap(rearrangedFields, lookUpModuleNames, bean);
 		HashMap<String , List<FacilioField>> additionalModuleFields = getAdditionalModuleFields(moduleName,lookUpModuleNames, bean);
@@ -158,6 +136,20 @@ public class ReportFactoryFields {
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("rotatingTool"));
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("rotatingItem"));
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("lastIssuedToUser"));
+
+		List<FacilioField> customAssetFields = bean.getAllCustomFields(FacilioConstants.ContextNames.ASSET);
+		if(customAssetFields != null) {
+			for (FacilioField field : customAssetFields) {
+			if(field != null) {
+				if (field.getDataTypeEnum() != FieldType.FILE 
+					&& field.getDataTypeEnum() != FieldType.STRING
+					|| field.isMainField()) {
+					
+					assetFields.add(field);
+				}
+			}
+		}
+		}
 		
 		List<FacilioField> spaceFields = new ArrayList<FacilioField>();
 		spaceFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.SPACE).get("spaceCategory"));
@@ -836,7 +828,7 @@ public class ReportFactoryFields {
 		fieldsObject.put("metrics", metricFields);
 		fieldsObject.put("moduleType", addModuleTypes(module));
 		
-		fieldsObject =  addFormulaFields(fieldsObject, module);
+		fieldsObject =  addFormulaFields(fieldsObject, module, null);
 		
 		return fieldsObject;
 	}
@@ -873,7 +865,7 @@ public class ReportFactoryFields {
 		fieldsObject.put("metrics", metricFields);
 		fieldsObject.put("moduleType", addModuleTypes(module.getName()));
 		
-		fieldsObject =  addFormulaFields(fieldsObject, module.getName());
+		fieldsObject =  addFormulaFields(fieldsObject, module.getName(), module.getDisplayName());
 		
 		return fieldsObject;
 	}
@@ -948,10 +940,14 @@ public class ReportFactoryFields {
 		return moduleTypes;
 	}
 	
-	private static JSONObject addFormulaFields(JSONObject fieldsObject, String module){
+	private static JSONObject addFormulaFields(JSONObject fieldsObject, String module, String displayName){
 		
 		List<FacilioField> metricFields = (List<FacilioField>)fieldsObject.get("metrics");
 		Map<String, List<FacilioField>> dimensionFieldMap = (Map<String, List<FacilioField>>)fieldsObject.get("dimension");
+		List<FacilioField> dimensionFields = dimensionFieldMap.get(module);
+		if(dimensionFields == null && displayName != null) {
+			dimensionFields = dimensionFieldMap.get(displayName);
+		}
 		
 		if (module.equals("workorder")) {
 			metricFields.add(ReportFactory.getReportField(WorkOrder.FIRST_RESPONSE_TIME_COL));
@@ -960,12 +956,11 @@ public class ReportFactoryFields {
 					ReportFacilioField totalScorePercentageField = (ReportFacilioField) ReportFactory.getReportField(WorkOrder.TOTAL_SCORE_PERCENTAGE_COL);
 					metricFields.add(totalScorePercentageField);	
 			}
-			List<FacilioField> workorderFields = dimensionFieldMap.get(module);
-			workorderFields.add(ReportFactory.getReportField(WorkOrder.OPENVSCLOSE_COL));
-			workorderFields.add(ReportFactory.getReportField(WorkOrder.OVERDUE_OPEN_COL));
-			workorderFields.add(ReportFactory.getReportField(WorkOrder.OVERDUE_CLOSED_COL));
-			workorderFields.add(ReportFactory.getReportField(WorkOrder.PLANNED_VS_UNPLANNED_COL));
-			workorderFields.add(ReportFactory.getReportField(WorkOrder.RESPONSE_SLA_COL));
+			dimensionFields.add(ReportFactory.getReportField(WorkOrder.OPENVSCLOSE_COL));
+			dimensionFields.add(ReportFactory.getReportField(WorkOrder.OVERDUE_OPEN_COL));
+			dimensionFields.add(ReportFactory.getReportField(WorkOrder.OVERDUE_CLOSED_COL));
+			dimensionFields.add(ReportFactory.getReportField(WorkOrder.PLANNED_VS_UNPLANNED_COL));
+			dimensionFields.add(ReportFactory.getReportField(WorkOrder.RESPONSE_SLA_COL));
 			
 			
 		}
@@ -976,7 +971,6 @@ public class ReportFactoryFields {
 		else if(module.equals("alarmoccurrence")) {
 			metricFields.add(ReportFactory.getReportField(Alarm.NEW_ALARM_DURATION_COL));
 			metricFields.add(ReportFactory.getReportField(Alarm.NEW_FIRST_RESPONSE_TIME_COL));
-			List<FacilioField> dimensionFields = dimensionFieldMap.get(module);
 			dimensionFields.add(ReportFactory.getReportField(Alarm.WO_ID));
 			
 		}
