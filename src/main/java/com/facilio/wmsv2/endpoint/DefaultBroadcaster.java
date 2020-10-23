@@ -74,6 +74,9 @@ public class DefaultBroadcaster {
     }
 
     private void sendObject(LiveSession session, Message message) {
+        if (session == null) {
+            return;
+        }
         sendObject(Collections.singletonList(session), message);
     }
 
