@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.jobs;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +22,7 @@ import com.facilio.timeseries.TimeSeriesAPI;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
+import org.json.simple.parser.JSONParser;
 
 public class CloudAgent extends FacilioJob {
     private static final Logger LOGGER = LogManager.getLogger(AddAgentAction.class.getName());
@@ -64,30 +66,36 @@ public class CloudAgent extends FacilioJob {
             LOGGER.info("Next Timestamp " + nextTimestampToGetData);
             List<Map<String, Object>> results = runWorkflow(workflowId, nextTimestampToGetData);
             Thread.sleep(2000);
-            pushToMessageQueue(results);
+            LOGGER.info("results : " + results);
+            //pushToMessageQueue(results);
+            agent.setLastDataReceivedTime(lastDataReceivedTime);
+            AgentApiV2.updateAgentLastDataRevievedTime(agent);
             lastDataReceivedTime = lastDataReceivedTime + interval;
         }
-        agent.setLastDataReceivedTime(lastDataReceivedTime);
-        AgentApiV2.updateAgentLastDataRevievedTime(agent);
     }
 
     private List<Map<String,Object>> runWorkflow(long workflowId, long nextTimestampToGetData) throws Exception {
-    		WorkflowContext workflowContext = WorkflowUtil.getWorkflowContext(workflowId);
+
+        JSONObject jsonObject = (JSONObject) new JSONParser().parse("{\"actual_timestamp\":" + System.currentTimeMillis() + ",\"controller\":{\"name\":\"misc-controller-1\"},\"agent\":\"test-agent\",\"publishType\":6,\"data\":[{\"Analog Value 42\":4.0}],\"controllerType\":0,\"failure\":0,\"timestamp\":1603424447677}");
+        List<Map<String, Object>> list = new ArrayList<>();
+        list.add(jsonObject);
+        return list;
+        /*WorkflowContext workflowContext = WorkflowUtil.getWorkflowContext(workflowId);
 		workflowContext.setLogNeeded(true);
 
 
 		FacilioChain chain = TransactionChainFactory.getExecuteWorkflowChain();
-		
+
 		FacilioContext newContext = chain.getContext();
-		
+
 		List<Object> props = new ArrayList<>();
 		props.add(nextTimestampToGetData);
-		
+
 		newContext.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflowContext);
 		newContext.put(WorkflowV2Util.WORKFLOW_PARAMS, props);
 
 		chain.execute();
-		
-		return (List<Map<String, Object>>) workflowContext.getReturnValue();
+
+		return (List<Map<String, Object>>) workflowContext.getReturnValue();*/
     }
 }
