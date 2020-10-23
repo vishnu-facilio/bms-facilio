@@ -9,7 +9,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 
@@ -19,8 +18,8 @@ public class AddLookupFieldMetaList extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		Boolean shouldFetchLookup = (Boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_LOOKUPS, false);
-
-		if (shouldFetchLookup != null && !shouldFetchLookup) {
+		Boolean customLookupsOnly = (Boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_CUSTOM_LOOKUPS, false);
+		if (shouldFetchLookup != null && !shouldFetchLookup && !customLookupsOnly) {
 			return false;
 		}
 
@@ -41,7 +40,7 @@ public class AddLookupFieldMetaList extends FacilioCommand {
 		fetchLookup = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(fields)) {
 			for (FacilioField f : fields) {
-				if (f instanceof LookupField) {
+				if (f instanceof LookupField && (!customLookupsOnly || !f.isDefault())) {
 					fetchLookup.add((LookupField) f);
 				}
 			}

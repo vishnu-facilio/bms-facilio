@@ -299,6 +299,7 @@ public class AssetAction extends FacilioAction {
  		context.put(FacilioConstants.ContextNames.INPUT_TYPE, getInputType());
  		context.put(FacilioConstants.ContextNames.WITH_READINGS, this.getWithReadings());
  		context.put(FacilioConstants.ContextNames.WITH_WRITABLE_READINGS, this.getWithWritableReadings());
+ 		context.put(FacilioConstants.ContextNames.FETCH_CUSTOM_LOOKUPS, true);
  		FacilioChain assetList = FacilioChainFactory.getAssetListChain();
  		assetList.execute(context);
  		if (getCount()) {

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -24,6 +25,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 
 public class GetAssetListCommand extends FacilioCommand {
 	private static final Logger LOGGER = LogManager.getLogger(GetAssetListCommand.class.getName());
@@ -37,10 +39,10 @@ public class GetAssetListCommand extends FacilioCommand {
 		FacilioModule module = modBean.getModule(moduleName);
 		List<String> selectFields = (List<String>) context.get(FacilioConstants.ContextNames.FETCH_SELECTED_FIELDS);
 		
-		Boolean getCount = (Boolean) context.get(FacilioConstants.ContextNames.FETCH_COUNT);
+		Boolean getCount = (Boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_COUNT, false);
 		List<FacilioField> fields;
 		List<FacilioField> specifiedfields =  new ArrayList<>();
-		if (getCount != null && getCount) {
+		if (getCount) {
 			fields = FieldFactory.getCountField(module);
 		}
 		else {
@@ -58,6 +60,7 @@ public class GetAssetListCommand extends FacilioCommand {
 		if(specifiedfields.isEmpty()) {
 			specifiedfields = fields;
 		}
+		context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, specifiedfields);
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		
 		Class beanClassName = FacilioConstants.ContextNames.getClassFromModule(module);
@@ -123,6 +126,11 @@ public class GetAssetListCommand extends FacilioCommand {
 			
 			builder.offset(offset);
 			builder.limit(perPage);
+		}
+		
+		List<LookupField>fetchLookup = (List<LookupField>) context.get(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST);
+		if (CollectionUtils.isNotEmpty(fetchLookup) && !getCount) {
+			builder.fetchSupplements(fetchLookup);
 		}
 		
 		Boolean withReadings = (Boolean) context.get(FacilioConstants.ContextNames.WITH_READINGS);

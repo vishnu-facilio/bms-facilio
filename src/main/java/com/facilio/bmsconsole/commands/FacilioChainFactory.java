@@ -909,8 +909,10 @@ public class FacilioChainFactory {
 //		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
-		c.addCommand(new GenerateCriteriaFromClientCriteriaCommand()); 
+		c.addCommand(new GenerateCriteriaFromClientCriteriaCommand());
+		c.addCommand(new AddLookupFieldMetaList());
 		c.addCommand(new GetAssetListCommand());
+		c.addCommand(new LookupPrimaryFieldHandlingCommand());
 		return c;
 	}
 	
