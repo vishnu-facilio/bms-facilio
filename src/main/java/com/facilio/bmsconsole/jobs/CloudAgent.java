@@ -67,7 +67,7 @@ public class CloudAgent extends FacilioJob {
             List<Map<String, Object>> results = runWorkflow(workflowId, nextTimestampToGetData);
             Thread.sleep(2000);
             LOGGER.info("results : " + results);
-            //pushToMessageQueue(results);
+            pushToMessageQueue(results);
             agent.setLastDataReceivedTime(lastDataReceivedTime);
             AgentApiV2.updateAgentLastDataRevievedTime(agent);
             lastDataReceivedTime = lastDataReceivedTime + interval;
@@ -76,11 +76,11 @@ public class CloudAgent extends FacilioJob {
 
     private List<Map<String,Object>> runWorkflow(long workflowId, long nextTimestampToGetData) throws Exception {
 
-        JSONObject jsonObject = (JSONObject) new JSONParser().parse("{\"actual_timestamp\":" + System.currentTimeMillis() + ",\"controller\":{\"name\":\"misc-controller-1\"},\"agent\":\"test-agent\",\"publishType\":6,\"data\":[{\"Analog Value 42\":4.0}],\"controllerType\":0,\"failure\":0,\"timestamp\":1603424447677}");
+        /*JSONObject jsonObject = (JSONObject) new JSONParser().parse("{\"actual_timestamp\":" + System.currentTimeMillis() + ",\"controller\":{\"name\":\"misc-controller-1\"},\"agent\":\"test-agent\",\"publishType\":6,\"data\":[{\"Analog Value 42\":4.0}],\"controllerType\":0,\"failure\":0,\"timestamp\":1603424447677}");
         List<Map<String, Object>> list = new ArrayList<>();
         list.add(jsonObject);
-        return list;
-        /*WorkflowContext workflowContext = WorkflowUtil.getWorkflowContext(workflowId);
+        return list;*/
+        WorkflowContext workflowContext = WorkflowUtil.getWorkflowContext(workflowId);
 		workflowContext.setLogNeeded(true);
 
 
@@ -96,6 +96,6 @@ public class CloudAgent extends FacilioJob {
 
 		chain.execute();
 
-		return (List<Map<String, Object>>) workflowContext.getReturnValue();*/
+        return (List<Map<String, Object>>) workflowContext.getReturnValue();
     }
 }
