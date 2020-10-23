@@ -161,7 +161,8 @@ public class DemoSingleRollUpYearlyCommand extends FacilioCommand{
 		    				.select(modBean.getAllFields(readingModule.getName()))
 		    				.table(readingModuleTableName)
 		    				.beanClass(ReadingContext.class)
-		    				.andCondition(CriteriaAPI.getCondition(allModuleFields.get("ttime"), lastYearWeekStart+","+lastYearWeekEnd, DateOperators.BETWEEN));
+		    				.andCondition(CriteriaAPI.getCondition(allModuleFields.get("ttime"), lastYearWeekStart+","+lastYearWeekEnd, DateOperators.BETWEEN))
+		    				.skipUnitConversion();
 					
 					SelectRecordsBuilder.BatchResult<ReadingContext> bs = selectBuilder.getInBatches("ID", 20000);
 					while (bs.hasNext()) 
