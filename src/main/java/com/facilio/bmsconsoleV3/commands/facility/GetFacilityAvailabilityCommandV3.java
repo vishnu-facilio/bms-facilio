@@ -1,14 +1,11 @@
 package com.facilio.bmsconsoleV3.commands.facility;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
-import com.facilio.bmsconsoleV3.context.communityfeatures.DealsAndOffersContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.FacilityContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.FacilitySpecialAvailabilityContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.SlotContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.WeekDayAvailability;
 import com.facilio.bmsconsoleV3.util.FacilityAPI;
-import com.facilio.bmsconsoleV3.util.V3RecordAPI;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -17,10 +14,6 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.*;
 
 public class GetFacilityAvailabilityCommandV3 extends FacilioCommand {
@@ -28,8 +21,8 @@ public class GetFacilityAvailabilityCommandV3 extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         List<Long> facilityIds = (List<Long>)Constants.getRecordIds(context);
         String moduleName = Constants.getModuleName(context);
-        Long startDateTime = null;
-        Long endDateTime = null;
+        Long startDateTime = -1L;
+        Long endDateTime = -1L;
         Boolean fetchAvailability = false;
         Map<String, Object> queryParams = Constants.getQueryParams(context);
         if(MapUtils.isNotEmpty(queryParams) && queryParams.containsKey("startTime") && queryParams.containsKey("endTime")) {
@@ -51,7 +44,6 @@ public class GetFacilityAvailabilityCommandV3 extends FacilioCommand {
                 if(fetchAvailability) {
 
                     List<SlotContext> slotList = new ArrayList<>();
-                    Map<Long, FacilitySpecialAvailabilityContext> unavailabilityMAp = new HashMap<>();
 
                     if (CollectionUtils.isNotEmpty(facilityContext.getFacilitySpecialAvailabilities())) {
                         for (FacilitySpecialAvailabilityContext splAvailability : facilityContext.getFacilitySpecialAvailabilities()) {
@@ -60,8 +52,8 @@ public class GetFacilityAvailabilityCommandV3 extends FacilioCommand {
                             cal.setTimeInMillis(startTime);
 
                             while (startTime <= splAvailability.getEndDate()) {
-                                long startDateTimeOfDay = FacilityAPI.getCalendarTime(startTime, splAvailability.getStartTimeAsLocalTime().toSecondOfDay());
-                                long endDateTimeOfDay = FacilityAPI.getCalendarTime(startTime, splAvailability.getEndTimeAsLocalTime().toSecondOfDay());
+                                long startDateTimeOfDay = FacilityAPI.getCalendarTime(startTime, splAvailability.getStartTimeAsLocalTime());
+                                long endDateTimeOfDay = FacilityAPI.getCalendarTime(startTime, splAvailability.getEndTimeAsLocalTime());
 
                                 while (startDateTimeOfDay <= endDateTimeOfDay && startDateTimeOfDay <= endDateTime) {
                                     SlotContext slot = new SlotContext();
@@ -85,8 +77,9 @@ public class GetFacilityAvailabilityCommandV3 extends FacilioCommand {
                             if (!weekDayMap.containsKey(weekDay.getDayOfWeek())) {
                                 weekDayMap.put(weekDay.getDayOfWeek(), Collections.singletonList(weekDay));
                             } else {
-                                List<WeekDayAvailability> weekDays = weekDayMap.get(weekDay.getDayOfWeek());
+                                List<WeekDayAvailability> weekDays = new ArrayList<>(weekDayMap.get(weekDay.getDayOfWeek()));
                                 weekDays.add(weekDay);
+                                weekDayMap.put(weekDay.getDayOfWeek(), weekDays);
                             }
                         }
                         Long startDay = startDateTime;
@@ -94,16 +87,16 @@ public class GetFacilityAvailabilityCommandV3 extends FacilioCommand {
                         cal.setTimeInMillis(startDay);
 
                         while (startDay <= endDateTime) {
-                            int day = cal.get(Calendar.DAY_OF_WEEK);
+                            int day = cal.get(Calendar.DAY_OF_WEEK) - 1;
 
                             if (weekDayMap.containsKey(day)) {
                                 List<WeekDayAvailability> weekDaysForDay = weekDayMap.get(day);
                                 if (CollectionUtils.isNotEmpty(weekDaysForDay)) {
                                     for (WeekDayAvailability wk : weekDaysForDay) {
-                                        long startDateTimeOfDay = FacilityAPI.getCalendarTime(startDay, wk.getStartTimeAsLocalTime().toSecondOfDay());
-                                        long endDateTimeOfDay = FacilityAPI.getCalendarTime(startDay, wk.getEndTimeAsLocalTime().toSecondOfDay());
+                                        long startDateTimeOfDay = FacilityAPI.getCalendarTime(startDay, wk.getStartTimeAsLocalTime());
+                                        long endDateTimeOfDay = FacilityAPI.getCalendarTime(startDay, wk.getEndTimeAsLocalTime());
 
-                                        while (startDateTimeOfDay <= endDateTimeOfDay && startDateTimeOfDay <= endDateTime) {
+                                        while (startDateTimeOfDay < endDateTimeOfDay && startDateTimeOfDay < endDateTime) {
                                             SlotContext slot = new SlotContext();
                                             slot.setSlotCost(wk.getCost());
                                             slot.setSlotStartTime(startDateTimeOfDay);

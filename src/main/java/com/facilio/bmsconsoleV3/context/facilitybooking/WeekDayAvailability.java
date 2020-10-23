@@ -1,6 +1,9 @@
 package com.facilio.bmsconsoleV3.context.facilitybooking;
 
+import com.facilio.bmsconsoleV3.util.BudgetAPI;
 import com.facilio.v3.context.V3Context;
+
+import java.text.DecimalFormat;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 
@@ -98,6 +101,17 @@ public class WeekDayAvailability extends V3Context {
     }
 
     public void setCost(Double cost) {
-        this.cost = cost;
+        if(cost != null) {
+            final DecimalFormat df = new DecimalFormat(BudgetAPI.CURRENCY_PATTERN);
+            this.cost = Double.valueOf(df.format(cost));
+        }
+    }
+
+    public String getSlotCostString() {
+        if(cost != null) {
+            final DecimalFormat df = new DecimalFormat(BudgetAPI.CURRENCY_PATTERN);
+            return df.format(this.cost);
+        }
+        return null;
     }
 }

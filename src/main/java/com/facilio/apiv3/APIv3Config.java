@@ -69,12 +69,14 @@ import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnn
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.AmenitiesContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.FacilityContext;
+import com.facilio.bmsconsoleV3.context.facilitybooking.*;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
 import com.facilio.bmsconsoleV3.context.workpermit.V3WorkPermitContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistCategoryContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistContext;
+import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount10;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount30;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.V3Builder.V3Config;
@@ -746,7 +748,32 @@ public class APIv3Config {
 
     @Module("amenity")
     public static Supplier<V3Config> getAmenity() {
-        return () -> new V3Config(AmenitiesContext.class, new ModuleCustomFieldCount30())
+        return () -> new V3Config(AmenitiesContext.class, new ModuleCustomFieldCount10())
+                .create()
+                .update()
+
+                .delete()
+                .list()
+                .summary()
+                .build();
+    }
+
+    @Module("facilitybooking")
+    public static Supplier<V3Config> getFacilityBooking() {
+        return () -> new V3Config(V3FacilityBookingContext.class, new ModuleCustomFieldCount30())
+                .create().beforeSave(new SetLocalIdCommandV3())
+                .update()
+                .delete()
+                .list()
+                .beforeFetch(new LoadFacilityLookupCommandV3())
+                .summary()
+                .afterFetch(ReadOnlyChainFactoryV3.getFacilityAfterFetchChain())
+                .build();
+    }
+
+    @Module("facilityWeekdayAvailability")
+    public static Supplier<V3Config> getFacilityWeekDayAvailability() {
+        return () -> new V3Config(WeekDayAvailability.class, new ModuleCustomFieldCount30())
                 .create()
                 .update()
                 .delete()
@@ -755,7 +782,16 @@ public class APIv3Config {
                 .build();
     }
 
-
+    @Module("facilitySpecialAvailability")
+    public static Supplier<V3Config> getFacilitySpecialAvailability() {
+        return () -> new V3Config(FacilitySpecialAvailabilityContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .update()
+                .delete()
+                .list()
+                .summary()
+                .build();
+    }
 
 
 }

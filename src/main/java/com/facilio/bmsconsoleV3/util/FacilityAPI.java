@@ -9,12 +9,10 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
 import com.facilio.time.DateTimeUtil;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.time.LocalTime;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
@@ -97,10 +95,10 @@ public class FacilityAPI {
 
                 while (startTime <= unavailability.getEndDate()) {
 
-                    long startDateTimeOfDay = getCalendarTime(startTime, unavailability.getStartTimeAsLocalTime().toSecondOfDay());
-                    long endDateTimeOfDay = getCalendarTime(startTime, unavailability.getEndTimeAsLocalTime().toSecondOfDay());
+                    long startDateTimeOfDay = getCalendarTime(startTime, unavailability.getStartTimeAsLocalTime());
+                    long endDateTimeOfDay = getCalendarTime(startTime, unavailability.getEndTimeAsLocalTime());
 
-                    if(slotStartTime >= startDateTimeOfDay && slotStartTime <= endDateTimeOfDay){
+                    if(slotStartTime > startDateTimeOfDay && slotStartTime < endDateTimeOfDay){
                         return true;
                     }
 
@@ -117,7 +115,7 @@ public class FacilityAPI {
 
         if (CollectionUtils.isNotEmpty(existingSlotList)) {
             for(SlotContext slot : existingSlotList){
-                if((newSlot.getSlotStartTime() >= slot.getSlotStartTime() && newSlot.getSlotStartTime() <= slot.getSlotEndTime())) {
+                if((newSlot.getSlotStartTime() > slot.getSlotStartTime() && newSlot.getSlotStartTime() < slot.getSlotEndTime())) {
                     return true;
                 }
             }
@@ -125,14 +123,14 @@ public class FacilityAPI {
         return false;
     }
 
-    public static Long getCalendarTime(Long startTime, int secondsOfDay) {
+    public static Long getCalendarTime(Long startTime, LocalTime localTime) {
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(startTime);
         int date = cal.get(Calendar.DATE);
         int month = cal.get(Calendar.MONTH);
         int year = cal.get(Calendar.YEAR);
 
-        cal.set(year, month, date, -1, -1, secondsOfDay);
+        cal.set(year, month, date, localTime.getHour(), localTime.getMinute(), localTime.getSecond());
         long startDateTimeOfDay = cal.getTimeInMillis();
         return startDateTimeOfDay;
 
