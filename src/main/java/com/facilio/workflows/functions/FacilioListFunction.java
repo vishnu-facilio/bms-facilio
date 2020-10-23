@@ -8,7 +8,6 @@ import java.util.Map;
 
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.exceptions.FunctionParamException;
-import com.facilio.workflows.util.WorkflowUtil;
 
 public enum FacilioListFunction implements FacilioWorkflowFunctionInterface {
 
@@ -324,6 +323,15 @@ public enum FacilioListFunction implements FacilioWorkflowFunctionInterface {
 //			}
 		}
 	},
+	PARSE(16, "parse") {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			
+			String string = (String) objects[0];
+			
+			return FacilioUtil.parseJsonArray(string);
+		}
+	}
 	;
 	private Integer value;
 	private String functionName;

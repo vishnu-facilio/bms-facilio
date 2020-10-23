@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.jobs;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -11,7 +10,6 @@ import org.json.simple.JSONObject;
 
 import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.FacilioAgent;
-import com.facilio.agentv2.actions.AddAgentAction;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -19,13 +17,13 @@ import com.facilio.fw.FacilioException;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 import com.facilio.timeseries.TimeSeriesAPI;
+import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
-import org.json.simple.parser.JSONParser;
 
 public class CloudAgent extends FacilioJob {
-    private static final Logger LOGGER = LogManager.getLogger(AddAgentAction.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(CloudAgent.class.getName());
     @Override
     public void execute(JobContext jc) throws Exception {
         long jobId = jc.getJobId();
@@ -45,8 +43,8 @@ public class CloudAgent extends FacilioJob {
 
     private void pushToMessageQueue(List<Map<String, Object>> results) throws Exception {
         for (Map<String, Object> payload : results) {
-        		JSONObject obj = new JSONObject();
-        		obj.putAll(payload);
+        		JSONObject obj = FacilioUtil.parseJson(payload.toString());
+        		LOGGER.info("Payload : "+obj.toJSONString());
             TimeSeriesAPI.processPayLoad(0, obj, null);
         }
     }
@@ -56,33 +54,32 @@ public class CloudAgent extends FacilioJob {
         long threeMonths = 3 * 30 * 24 * 3600 * 1000L;
         if (System.currentTimeMillis() - lastDataReceivedTime > threeMonths) {
             pushToMessageQueue(runWorkflow(workflowId, System.currentTimeMillis()));
+            updateLastRecievedTime(agent, lastDataReceivedTime);
+            return;
         }
         LOGGER.info("Last received Time : " + lastDataReceivedTime);
         long interval = agent.getInterval() * 60 * 1000;
         long currentTime = System.currentTimeMillis();
-        for (long noOfDataMissingIntervals = ((currentTime - lastDataReceivedTime) / interval) + 1L;
+        for (long noOfDataMissingIntervals = ((currentTime - lastDataReceivedTime) / interval);
              noOfDataMissingIntervals > 0; noOfDataMissingIntervals--) {
             long nextTimestampToGetData = ((lastDataReceivedTime + interval) / interval) * interval;
             LOGGER.info("Next Timestamp " + nextTimestampToGetData);
             List<Map<String, Object>> results = runWorkflow(workflowId, nextTimestampToGetData);
-            Thread.sleep(2000);
             LOGGER.info("results : " + results);
             pushToMessageQueue(results);
-            agent.setLastDataReceivedTime(lastDataReceivedTime);
-            AgentApiV2.updateAgentLastDataRevievedTime(agent);
-            lastDataReceivedTime = lastDataReceivedTime + interval;
+            lastDataReceivedTime = System.currentTimeMillis();
+            updateLastRecievedTime(agent, lastDataReceivedTime);
+            Thread.sleep(2000);
         }
     }
 
+    private void updateLastRecievedTime(FacilioAgent agent, long lastDataReceivedTime) {
+        agent.setLastDataReceivedTime(lastDataReceivedTime);
+        AgentApiV2.updateAgentLastDataRevievedTime(agent);
+    }
+
     private List<Map<String,Object>> runWorkflow(long workflowId, long nextTimestampToGetData) throws Exception {
-
-        /*JSONObject jsonObject = (JSONObject) new JSONParser().parse("{\"actual_timestamp\":" + System.currentTimeMillis() + ",\"controller\":{\"name\":\"misc-controller-1\"},\"agent\":\"test-agent\",\"publishType\":6,\"data\":[{\"Analog Value 42\":4.0}],\"controllerType\":0,\"failure\":0,\"timestamp\":1603424447677}");
-        List<Map<String, Object>> list = new ArrayList<>();
-        list.add(jsonObject);
-        return list;*/
         WorkflowContext workflowContext = WorkflowUtil.getWorkflowContext(workflowId);
-		workflowContext.setLogNeeded(true);
-
 
 		FacilioChain chain = TransactionChainFactory.getExecuteWorkflowChain();
 
@@ -99,3 +96,4 @@ public class CloudAgent extends FacilioJob {
         return (List<Map<String, Object>>) workflowContext.getReturnValue();
     }
 }
+
