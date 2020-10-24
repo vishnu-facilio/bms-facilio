@@ -94,7 +94,8 @@ public class RtuNetworkContext implements Serializable {
                 throw new Exception(" unexpected results cant get more than one record");
             }
         } else {
-            throw new Exception(" record null ");
+            LOGGER.info("RTU Network not found ");
+            return null;
         }
     }
 

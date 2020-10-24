@@ -61,7 +61,6 @@ public class AgentMessenger {
                     break;
                 case CONTROLLER_STATUS:
                 case CONFIGURE:
-                case ADD_CONTROLLER:
                 case EDIT_CONTROLLER:
                     if (extraMsgContent.containsKey(AgentConstants.DATA)) {
                         messageBody.put(AgentConstants.CONTROLLER, extraMsgContent.get(AgentConstants.DATA));
@@ -73,6 +72,17 @@ public class AgentMessenger {
                     break;
                 case UPGRADE:
                     messageBody.putAll(extraMsgContent);
+                    break;
+
+                case ADD_CONTROLLER:
+                    if (extraMsgContent.containsKey(AgentConstants.DATA)) {
+                        messageBody.put(AgentConstants.CONTROLLERS, extraMsgContent.get(AgentConstants.DATA));
+                        LOGGER.info(type);
+                    } else {
+                        LOGGER.info("Exception occurred , no data in context for " + command.name());
+                        throw new Exception("No data in context for " + command.name());
+                    }
+                    break;
             }
             List<IotMessage> messages = new ArrayList<>();
             messages.add(MessengerUtil.getMessageObject(messageBody, command));

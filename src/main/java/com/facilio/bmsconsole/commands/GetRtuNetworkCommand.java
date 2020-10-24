@@ -26,12 +26,13 @@ public class GetRtuNetworkCommand extends FacilioCommand {
             RtuNetworkContext network =
                     RtuNetworkContext.getRtuNetworkContext((long) context.get(AgentConstants.AGENT_ID),
                             context.get(AgentConstants.COM_PORT).toString());
-
-            Map<String, FacilioField> fieldsMap = Controller.getFieldsMap(FacilioConstants.ContextNames.MODBUS_RTU_CONTROLLER_MODULE_NAME);
-            Criteria criteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
-            List<Condition> conditions = new ArrayList<>();
-            conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.NETWORK_ID), String.valueOf(network.getId()), NumberOperators.EQUALS));
-            criteria.addAndConditions(conditions);
+            if (network != null) {
+                Map<String, FacilioField> fieldsMap = Controller.getFieldsMap(FacilioConstants.ContextNames.MODBUS_RTU_CONTROLLER_MODULE_NAME);
+                Criteria criteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
+                List<Condition> conditions = new ArrayList<>();
+                conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.NETWORK_ID), String.valueOf(network.getId()), NumberOperators.EQUALS));
+                criteria.addAndConditions(conditions);
+            }
         }
         return false;
     }
