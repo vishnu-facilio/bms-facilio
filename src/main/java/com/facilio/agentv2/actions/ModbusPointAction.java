@@ -1,12 +1,16 @@
 package com.facilio.agentv2.actions;
 
 import com.facilio.agent.controller.FacilioControllerType;
+import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.GetControllerRequest;
+import com.facilio.agentv2.device.Device;
+import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.iotmessage.ControllerMessenger;
 import com.facilio.agentv2.modbusrtu.ModbusRtuPointContext;
 import com.facilio.agentv2.modbustcp.ModbusTcpPointContext;
 import org.apache.log4j.LogManager;
+import org.json.simple.JSONObject;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -78,30 +82,37 @@ public class ModbusPointAction extends DeviceIdActions {
 
     public String createModbusPoint() {
         try {
-            GetControllerRequest getControllerRequest = new GetControllerRequest()
-                    .forDevice(getDeviceId());
-            if (getControllerType() == FacilioControllerType.MODBUS_IP.asInt()) {
-                Controller controller = getControllerRequest.ofType(FacilioControllerType.MODBUS_IP).getController();
-                Objects.requireNonNull(controller,"controller can't be null");
-                ModbusTcpPointContext tcpPointContext = new ModbusTcpPointContext( -1,controller.getId());
-                tcpPointContext.setRegisterType(registerType);
-                tcpPointContext.setModbusDataType(modbusDataType);
-                tcpPointContext.setRegisterNumber(registerNumber);
-                tcpPointContext.setName(name);
-                ControllerMessenger.sendConfigureModbusTcpPoint(tcpPointContext);
-                setResponseCode(HttpURLConnection.HTTP_OK);
-                return SUCCESS;
+            Device device = FieldDeviceApi.getDevice(getDeviceId());
+            if (device != null) {
+                GetControllerRequest getControllerRequest = new GetControllerRequest()
+                        .forDevice(getDeviceId()).withAgentId(device.getAgentId());
+                if (getControllerType() == FacilioControllerType.MODBUS_IP.asInt()) {
+                    Controller controller = getControllerRequest.ofType(FacilioControllerType.MODBUS_IP).getController();
+                    Objects.requireNonNull(controller, "controller can't be null");
+                    ModbusTcpPointContext tcpPointContext = new ModbusTcpPointContext(-1, controller.getId());
+                    tcpPointContext.setRegisterType(registerType);
+                    tcpPointContext.setModbusDataType(modbusDataType);
+                    tcpPointContext.setRegisterNumber(registerNumber);
+                    tcpPointContext.setName(name);
+                    ControllerMessenger.sendConfigureModbusTcpPoint(tcpPointContext);
+                    setResponseCode(HttpURLConnection.HTTP_OK);
+                    return SUCCESS;
+                } else {
+                    JSONObject controllerJSON = (JSONObject) device.getControllerProps().get(AgentConstants.CONTROLLER);
+                    Controller controller = getControllerRequest.withControllerProperties(controllerJSON, FacilioControllerType.MODBUS_RTU).getController();
+                    Objects.requireNonNull(controller, "controller can't be null");
+                    ModbusRtuPointContext rtuPointContext = new ModbusRtuPointContext(-1, controller.getId());
+                    rtuPointContext.setRegisterType(registerType);
+                    rtuPointContext.setModbusDataType(modbusDataType);
+                    rtuPointContext.setRegisterNumber(registerNumber);
+                    rtuPointContext.setName(name);
+                    ControllerMessenger.sendConfigureModbusRtuPoint(rtuPointContext);
+                    setResponseCode(HttpURLConnection.HTTP_OK);
+                    return SUCCESS;
+                }
             } else {
-                Controller controller = getControllerRequest.ofType(FacilioControllerType.MODBUS_RTU).getController();
-                Objects.requireNonNull(controller,"controller can't be null");
-                ModbusRtuPointContext rtuPointContext = new ModbusRtuPointContext(-1, controller.getId());
-                rtuPointContext.setRegisterType(registerType);
-                rtuPointContext.setModbusDataType(modbusDataType);
-                rtuPointContext.setRegisterNumber(registerNumber);
-                rtuPointContext.setName(name);
-                ControllerMessenger.sendConfigureModbusRtuPoint(rtuPointContext);
-                setResponseCode(HttpURLConnection.HTTP_OK);
-                return SUCCESS;
+                LOGGER.info("Device is null");
+                return ERROR;
             }
         } catch (Exception e) {
             LOGGER.info("Exception while sending configure modbus point command", e);

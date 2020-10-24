@@ -3,6 +3,8 @@ package com.facilio.agentv2.controller;
 import com.facilio.agent.FacilioAgent;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.device.Device;
+import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
