@@ -66,9 +66,6 @@ public class AgentMessenger {
                     if (extraMsgContent.containsKey(AgentConstants.DATA)) {
                         messageBody.put(AgentConstants.CONTROLLER, extraMsgContent.get(AgentConstants.DATA));
                         LOGGER.info(type);
-                        if (type == FacilioControllerType.MODBUS_RTU) {
-                            alterMessageForRtu(messageBody, extraMsgContent);
-                        }
                     } else {
                         LOGGER.info("Exception occurred , no data in context for " + command.name());
                         throw new Exception("No data in context for " + command.name());
@@ -81,12 +78,6 @@ public class AgentMessenger {
             messages.add(MessengerUtil.getMessageObject(messageBody, command));
             iotData.setMessages(messages);
             return iotData;
-    }
-
-    private static void alterMessageForRtu(JSONObject object, FacilioContext context) {
-        if (context.containsKey(AgentConstants.CONFIGURE)) {
-            object.put(AgentConstants.CONFIGURE, context.get(AgentConstants.CONFIGURE));
-        }
     }
 
 
@@ -249,11 +240,11 @@ public class AgentMessenger {
         return constructNewIotAgentMessage(agent, FacilioCommand.ADD_CONTROLLER, context, FacilioControllerType.valueOf(controllerList.get(0).getControllerType()));
     }
 
-    public static boolean sendConfigureModbusRtuControllerCommand(ModbusRtuControllerContext controllerContext) throws Exception {
+    public static boolean sendAddModbusRtuControllerCommand(ModbusRtuControllerContext controllerContext) throws Exception {
         return sendControllerConfig(controllerContext);
     }
 
-    public static boolean sendConfigModbusIpControllerCommand(ModbusTcpControllerContext controllerContext) throws Exception {
+    public static boolean sendAddModbusIpControllerCommand(ModbusTcpControllerContext controllerContext) throws Exception {
         return sendControllerConfig(controllerContext);
     }
 

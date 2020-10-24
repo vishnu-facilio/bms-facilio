@@ -433,8 +433,8 @@
                 method="createModbusPoint">
         </action>
 
-        <action name="addRtuNetwork" class="com.facilio.agentv2.actions.RtuNetworkAction" method="addRtuNetwork">
-        </action>
+        <!--<action name="addRtuNetwork" class="com.facilio.agentv2.actions.RtuNetworkAction" method="addRtuNetwork">
+        </action>-->
 
         <action name="addIpControllers" class="com.facilio.agentv2.actions.BulkAddMosbusIpAction" method="addControllers">
         </action>

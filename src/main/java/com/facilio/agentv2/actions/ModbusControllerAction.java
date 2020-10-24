@@ -6,6 +6,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 
+import com.facilio.agentv2.modbusrtu.RtuNetworkContext;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -27,6 +28,8 @@ public class ModbusControllerAction extends AgentIdAction {
 
     @Size(max = 15)
     private String ip;
+
+    private RtuNetworkContext rtuNetwork;
 
     private Long netwokId;
     
@@ -54,6 +57,14 @@ public class ModbusControllerAction extends AgentIdAction {
         this.netwokId = netwokId;
     }
 
+    public RtuNetworkContext getRtuNetwork() {
+        return rtuNetwork;
+    }
+
+    public void setRtuNetwork(RtuNetworkContext rtuNetwork) {
+        this.rtuNetwork = rtuNetwork;
+    }
+
     public String addModbusController() {
         try {
             FacilioControllerType controllerType = FacilioControllerType.valueOf(getControllerType());
@@ -63,7 +74,8 @@ public class ModbusControllerAction extends AgentIdAction {
                 controllerContext.setNetworkId(getNetwokId());
                 controllerContext.setSlaveId(getSlaveId().intValue());
                 controllerContext.setName(getName());
-                if (AgentMessenger.sendConfigureModbusRtuControllerCommand(controllerContext)) {
+                controllerContext.setNetwork(getRtuNetwork());
+                if (AgentMessenger.sendAddModbusRtuControllerCommand(controllerContext)) {
                     setResult(AgentConstants.RESULT, SUCCESS);
                     setResponseCode(HttpURLConnection.HTTP_OK);
                     return SUCCESS;
@@ -78,7 +90,7 @@ public class ModbusControllerAction extends AgentIdAction {
                 controllerContext.setIpAddress(getIp());
                 controllerContext.setSlaveId(slaveId.intValue());
                 controllerContext.setName(getName());
-                if (AgentMessenger.sendConfigModbusIpControllerCommand(controllerContext)) {
+                if (AgentMessenger.sendAddModbusIpControllerCommand(controllerContext)) {
                     setResult(AgentConstants.RESULT, SUCCESS);
                     setResponseCode(HttpURLConnection.HTTP_OK);
                     return SUCCESS;

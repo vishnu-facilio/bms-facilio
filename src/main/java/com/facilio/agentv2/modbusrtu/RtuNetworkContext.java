@@ -17,11 +17,12 @@ import org.apache.log4j.Logger;
 import org.eclipse.milo.opcua.sdk.client.model.nodes.objects.AggregateConfigurationNode;
 import org.json.simple.JSONObject;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class RtuNetworkContext {
+public class RtuNetworkContext implements Serializable {
     private static final Logger LOGGER = LogManager.getLogger(RtuNetworkContext.class.getName());
 
     private static final FacilioModule MODULE = ModuleFactory.getRtuNetworkModule();
