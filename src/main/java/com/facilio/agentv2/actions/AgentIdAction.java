@@ -26,6 +26,12 @@ import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.agentv2.sqlitebuilder.SqliteBridge;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 
 public class AgentIdAction extends AgentActionV2 {
     private static final Logger LOGGER = LogManager.getLogger(AgentIdAction.class.getName());
@@ -596,5 +602,25 @@ public class AgentIdAction extends AgentActionV2 {
             internalError();
         }
         return SUCCESS;
+    }
+    
+    public String getRtuNetworks() {
+    	try {
+    		setResult(AgentConstants.DATA, fetchRtuNetworks(agentId));
+    		ok();
+    	}catch(Exception e) {
+    		LOGGER.error("Exception occurred while getting Rtu Networks. ", e);
+    		setResult(AgentConstants.EXCEPTION, e.getMessage());
+    		internalError();
+    	}
+    	return SUCCESS;
+    }
+
+    private List<Map<String, Object>> fetchRtuNetworks(Long agentId) throws Exception {
+    	List<FacilioField> fields = FieldFactory.getRtuNetworkFields();
+    	GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+    			.select(fields).table(ModuleFactory.getRtuNetworkModule().getTableName())
+    			.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(fields).get(AgentConstants.AGENT_ID), String.valueOf(agentId), NumberOperators.EQUALS));
+    	return builder.get();
     }
 }

@@ -441,6 +441,9 @@
 
         <action name="addIpPoints" class="com.facilio.agentv2.actions.BulkAddModbusIpPointAction" method="addPoints">
         </action>
+		
+		<action name="rtuNetworks" class="com.facilio.agentv2.actions.AgentIdAction" method="getRtuNetworks">
+        </action>
     </package>
 
     <package name="modbusDeviceImport" namespace="/api/v2/modbus/deviceImport" extends="agent">
