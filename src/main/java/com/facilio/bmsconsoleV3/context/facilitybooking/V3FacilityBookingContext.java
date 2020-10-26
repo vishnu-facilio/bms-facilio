@@ -73,40 +73,6 @@ public class V3FacilityBookingContext extends V3Context {
         this.actualEndTime = actualEndTime;
     }
 
-    private V3FacilityBookingContext.DurationType durationType;
-    public V3FacilityBookingContext.DurationType getDurationTypeEnum() {
-        return durationType;
-    }
-    public void setDurationType(V3FacilityBookingContext.DurationType durationType) {
-        this.durationType = durationType;
-    }
-    public int getDurationType() {
-        if (durationType != null) {
-            return durationType.getIndex();
-        }
-        return -1;
-    }
-    public void setDurationType(int durationType) {
-        this.durationType = V3FacilityBookingContext.DurationType.valueOf(durationType);
-    }
-
-    private V3FacilityBookingContext.ReservationStatus status;
-    public V3FacilityBookingContext.ReservationStatus getStatusEnum() {
-        return status;
-    }
-    public void setStatus(V3FacilityBookingContext.ReservationStatus status) {
-        this.status = status;
-    }
-    public int getStatus() {
-        if (status != null) {
-            return status.getIndex();
-        }
-        return -1;
-    }
-    public void setStatus(int status) {
-        this.status = V3FacilityBookingContext.ReservationStatus.valueOf(status);
-    }
-
     private SpaceContext space;
     public SpaceContext getSpace() {
         return space;
@@ -131,66 +97,29 @@ public class V3FacilityBookingContext extends V3Context {
         this.externalAttendees = externalAttendees;
     }
 
-    public static enum DurationType implements FacilioEnum {
-        HALF_AN_HOUR ("30 Minutes"),
-        ONE_HOUR("1 Hour"),
-        ONE_AND_HALF_HOUR("90 Minutes"),
-        TWO_HOURS("2 Hours"),
-        ALL_DAY ("All Day"),
-        CUSTOM("Custom")
-        ;
+    private FacilityContext facility;
 
-        private String name;
-        DurationType(String name) {
-            this.name = name;
-        }
-
-        @Override
-        public int getIndex() {
-            return ordinal() + 1;
-        }
-
-        @Override
-        public String getValue() {
-            return name;
-        }
-
-        public static V3FacilityBookingContext.DurationType valueOf(int value) {
-            if (value > 0 && value <= values().length) {
-                return values()[value - 1];
-            }
-            return null;
-        }
+    public FacilityContext getFacility() {
+        return facility;
     }
 
-    public static enum ReservationStatus implements FacilioEnum {
-        SCHEDULED ("Scheduled"),
-        ON_GOING ("On Going"),
-        FINISHED ("Finished"),
-        CANCELLED ("Cancelled")
-        ;
-
-        private String name;
-        ReservationStatus (String name) {
-            this.name = name;
-        }
-
-        @Override
-        public int getIndex() {
-            return ordinal() + 1;
-        }
-
-        @Override
-        public String getValue() {
-            return name;
-        }
-
-        public static V3FacilityBookingContext.ReservationStatus valueOf(int value) {
-            if (value > 0 && value <= values().length) {
-                return values()[value - 1];
-            }
-            return null;
-        }
+    public void setFacility(FacilityContext facility) {
+        this.facility = facility;
     }
 
+    private Boolean isCancelled;
+    public Boolean getIsCancelled() {
+        return isCancelled;
+    }
+
+    public void setIsCancelled(Boolean isCancelled) {
+        this.isCancelled = isCancelled;
+    }
+
+    public Boolean isCancelled() {
+        if (isCancelled != null) {
+            return isCancelled.booleanValue();
+        }
+        return false;
+    }
 }

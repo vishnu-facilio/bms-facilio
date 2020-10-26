@@ -761,7 +761,7 @@ public class APIv3Config {
     @Module("facilitybooking")
     public static Supplier<V3Config> getFacilityBooking() {
         return () -> new V3Config(V3FacilityBookingContext.class, new ModuleCustomFieldCount30())
-                .create().beforeSave(new SetLocalIdCommandV3())
+                .create().beforeSave(TransactionChainFactoryV3.getCreateBookingBeforeSaveChain())
                 .update()
                 .delete()
                 .list()

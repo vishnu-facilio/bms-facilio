@@ -264,4 +264,24 @@ public class FacilityContext extends V3Context {
     public void setSlots(List<SlotContext> slots) {
         this.slots = slots;
     }
+
+    private Long slotGeneratedUpto;
+
+    public Long getSlotGeneratedUpto() {
+        return slotGeneratedUpto;
+    }
+
+    public void setSlotGeneratedUpto(Long slotGeneratedUpto) {
+        this.slotGeneratedUpto = slotGeneratedUpto;
+    }
+
+    private Long bookingAdvancePeriodInDays;
+
+    public Long getBookingAdvancePeriodInDays() {
+        return bookingAdvancePeriodInDays;
+    }
+
+    public void setBookingAdvancePeriodInDays(Long bookingAdvancePeriodInDays) {
+        this.bookingAdvancePeriodInDays = bookingAdvancePeriodInDays;
+    }
 }
