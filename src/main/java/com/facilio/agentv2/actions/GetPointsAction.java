@@ -218,7 +218,7 @@ public class GetPointsAction extends AgentActionV2 {
 			List<Long> deviceIds = getDeviceIds(getAgentId());
 			if (CollectionUtils.isNotEmpty(deviceIds)) {
 				Criteria criteria = new Criteria();
-				criteria.addAndCondition(CriteriaAPI.getCondition(POINT_MAP.get(AgentConstants.VIRTUAL),
+				criteria.addAndCondition(CriteriaAPI.getCondition(POINT_MAP.get(AgentConstants.LOGICAL_POINT),
 						String.valueOf(true), BooleanOperators.IS));
 				point.withCriteria(criteria);
 				point.withDeviceIds(deviceIds);

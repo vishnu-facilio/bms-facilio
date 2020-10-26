@@ -249,5 +249,5 @@ public class AgentConstants
     public static final String AGENT_ACTION = "agentAction";
 
     public static final String COL_NAME = "NAME";
-    public static final String VIRTUAL = "virtual";
+    public static final String LOGICAL_POINT = "logicalPoint";
 }

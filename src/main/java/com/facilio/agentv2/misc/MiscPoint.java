@@ -39,8 +39,8 @@ public class MiscPoint extends Point {
             if (pointMap.containsKey(AgentConstants.ID)) {
                 point.setId((Long) pointMap.get(AgentConstants.ID));
             }
-            if(pointMap.containsKey(AgentConstants.VIRTUAL)){
-                point.setVirtual(JsonUtil.getBoolean(pointMap.get(AgentConstants.VIRTUAL)));
+            if(pointMap.containsKey(AgentConstants.LOGICAL_POINT)){
+                point.setLogicalPoint(JsonUtil.getBoolean(pointMap.get(AgentConstants.LOGICAL_POINT)));
             }
             return (MiscPoint) point.getPointObjectFromMap(pointMap);
         }

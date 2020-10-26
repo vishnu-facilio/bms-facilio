@@ -126,8 +126,8 @@ public class PointsAPI {
             FacilioControllerType controllerType;
             controllerType = FacilioControllerType.valueOf(JsonUtil.getInt(payload.get(AgentConstants.POINT_TYPE)));
             //LOGGER.info(" controller type for point is " + controllerType.asString());
-            if (payload.containsKey(AgentConstants.VIRTUAL)) {
-                if (JsonUtil.getBoolean(payload.get(AgentConstants.VIRTUAL))) {
+            if (payload.containsKey(AgentConstants.LOGICAL_POINT)) {
+                if (JsonUtil.getBoolean(payload.get(AgentConstants.LOGICAL_POINT))) {
                     controllerType = FacilioControllerType.MISC;
                 }
             }
