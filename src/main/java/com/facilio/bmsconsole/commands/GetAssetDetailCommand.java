@@ -10,11 +10,13 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.FloorContext;
+import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
@@ -24,26 +26,26 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 
 public class GetAssetDetailCommand extends GenericGetModuleDataDetailCommand {
-	
+
 	private static final Logger LOGGER = LogManager.getLogger(GetAssetDetailCommand.class.getName());
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		
+
 		if (context.get(FacilioConstants.ContextNames.ID) != null) {
 			super.executeCommand(context);
-			
+
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			AssetContext assetContext = (AssetContext) context.get(FacilioConstants.ContextNames.RECORD);
 			if (assetContext != null && assetContext.getId() > 0) {
 				AssetsAPI.loadAssetsLookups(Collections.singletonList(assetContext));
-				
+
 				Boolean fetchHierarchy = (Boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_HIERARCHY, false);
-				if (fetchHierarchy) {
+				if (fetchHierarchy || AccountUtil.getCurrentAccount().isFromMobile()) {
 					fetchHierarchy(assetContext);
 				}
 			}
-			
+
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			if (assetContext.getModuleId() != -1) {
 				FacilioModule module = modBean.getModule(assetContext.getModuleId());
@@ -63,15 +65,16 @@ public class GetAssetDetailCommand extends GenericGetModuleDataDetailCommand {
 		}
 		return false;
 	}
-	
+
 	private void fetchHierarchy(AssetContext asset) throws Exception {
 		BaseSpaceContext assetLocation = asset.getSpace();
 		if (assetLocation == null || assetLocation.getId() <= 0) {
 			return;
 		}
 		Set<Long> spaceIds = new HashSet<>();
+		LocationContext currentLocation = null;
 		if (assetLocation.getSiteId() > 0) {
-			if (assetLocation.getSiteId() == assetLocation.getId()) {
+			/*if (assetLocation.getSiteId() == assetLocation.getId()) {
 				SiteContext site = new SiteContext();
 				site.setId(assetLocation.getSiteId());
 				site.setName(assetLocation.getName());
@@ -79,10 +82,11 @@ public class GetAssetDetailCommand extends GenericGetModuleDataDetailCommand {
 			}
 			else {
 				spaceIds.add(assetLocation.getSiteId());
-			}
+			}*/
+			spaceIds.add(assetLocation.getSiteId());
 		}
 		if (assetLocation.getBuildingId() > 0) {
-			if (assetLocation.getBuildingId() == assetLocation.getId()) {
+			/*if (assetLocation.getBuildingId() == assetLocation.getId()) {
 				BuildingContext building = new BuildingContext();
 				building.setId(assetLocation.getBuildingId());
 				building.setName(assetLocation.getName());
@@ -90,7 +94,8 @@ public class GetAssetDetailCommand extends GenericGetModuleDataDetailCommand {
 			}
 			else {
 				spaceIds.add(assetLocation.getBuildingId());
-			}
+			}*/
+			spaceIds.add(assetLocation.getBuildingId());
 		}
 		if (assetLocation.getFloorId() > 0) {
 			if (assetLocation.getFloorId() == assetLocation.getId()) {
@@ -164,12 +169,14 @@ public class GetAssetDetailCommand extends GenericGetModuleDataDetailCommand {
 				SiteContext site = new SiteContext();
 				site.setId(assetLocation.getSiteId());
 				site.setName(spaceMap.get(assetLocation.getSiteId()).getName());
+				currentLocation = site.getLocation();
 				assetLocation.setSite(site);
 			}
 			if (spaceMap.containsKey(assetLocation.getBuildingId())) {
 				BuildingContext building = new BuildingContext();
 				building.setId(assetLocation.getBuildingId());
 				building.setName(spaceMap.get(assetLocation.getBuildingId()).getName());
+				currentLocation = building.getLocation();
 				assetLocation.setBuilding(building);
 			}
 			if (spaceMap.containsKey(assetLocation.getFloorId())) {
@@ -208,6 +215,10 @@ public class GetAssetDetailCommand extends GenericGetModuleDataDetailCommand {
 				space.setName(spaceMap.get(assetLocation.getSpaceId4()).getName());
 				assetLocation.setSpace4(space);
 			}
+		}
+		if(asset.getCurrentLocation() == null && currentLocation != null) {
+			currentLocation = SpaceAPI.getLocationSpace(currentLocation.getId());
+			asset.setCurrentLocation(currentLocation.getLat()+","+currentLocation.getLng());
 		}
 	}
 }
