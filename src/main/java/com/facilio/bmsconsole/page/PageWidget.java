@@ -292,7 +292,15 @@ public class PageWidget {
 		NEIGHBOURHOOD_DETAILS_WIDGET("neighbourhoodDetailsWidget"),
 		DEALS_DETAILS_WIDGET("dealsDetailsWidget"),
 		NEIGHBOURHOOD_DEALS("neighbourhoodDeals"),
-        NEWS_AND_INFORMATION("newsAndInformationWidget")
+        NEWS_AND_INFORMATION("newsAndInformationWidget"),
+
+		// Budget Widgets
+		TOTAL_BUDGET("totalBudget"),
+		ACTUAL_BUDGET_AMOUNT("actualBudgetAmount"),
+		REMAINING_BUDGET("remainingBudget"),
+		BUDGET_PRIMARY_DETAILS("budgetPrimaryDetails"),
+		BUDGET_SPLIT_UP("budgetSplitUp"),
+		BUDGET_NET_INCOME("budgetNetIncome")
 
 		;
 		

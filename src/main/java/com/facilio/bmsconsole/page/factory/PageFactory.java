@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.page.WidgetGroup.WidgetGroupType;
 import com.facilio.bmsconsole.templates.DefaultTemplate;
 import com.facilio.bmsconsole.util.ConnectedAppAPI;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
+import com.facilio.bmsconsoleV3.context.budget.BudgetContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnnouncementContext;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
@@ -111,6 +112,8 @@ public class PageFactory {
 				return CommunityFeaturesPageFactory.getDealsAndOffersPageFactory((DealsAndOffersContext) record, module);
 			case ContextNames.Tenant.NEWS_AND_INFORMATION:
 				return CommunityFeaturesPageFactory.getNewsAndInformationPageFactory((NewsAndInformationContext)record, module);
+			case ContextNames.Budget.BUDGET:
+				return BudgetPageFactory.getBudgetPage();
 
 
 		}
