@@ -98,7 +98,7 @@ public class GetAssetDetailCommand extends GenericGetModuleDataDetailCommand {
 		}
 		if (assetLocation.getBuildingId() > 0) {
 			if (asset.getCurrentLocation() == null && currentLocation == null) {
-				BuildingContext assetBuilding = SpaceAPI.getBuildingSpace(assetLocation.getBuildingId());
+				BuildingContext assetBuilding = SpaceAPI.getBuildingSpace(assetLocation.getBuildingId(), true);
 				BuildingContext building = new BuildingContext();
 				building.setId(assetBuilding.getBuildingId());
 				building.setName(assetBuilding.getName());
