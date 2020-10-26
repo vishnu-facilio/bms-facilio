@@ -74,28 +74,50 @@ public class GetAssetDetailCommand extends GenericGetModuleDataDetailCommand {
 		Set<Long> spaceIds = new HashSet<>();
 		LocationContext currentLocation = null;
 		if (assetLocation.getSiteId() > 0) {
-			/*if (assetLocation.getSiteId() == assetLocation.getId()) {
+			if (asset.getCurrentLocation() == null) {
+				SiteContext assetSite = SpaceAPI.getSiteSpace(assetLocation.getSiteId());
 				SiteContext site = new SiteContext();
-				site.setId(assetLocation.getSiteId());
-				site.setName(assetLocation.getName());
+				site.setId(assetSite.getSiteId());
+				site.setName(assetSite.getName());
 				assetLocation.setSite(site);
+				if (assetSite.getLocation() != null) {
+					currentLocation = assetSite.getLocation();
+				}
 			}
 			else {
-				spaceIds.add(assetLocation.getSiteId());
-			}*/
-			spaceIds.add(assetLocation.getSiteId());
+				if (assetLocation.getSiteId() == assetLocation.getId()) {
+					SiteContext site = new SiteContext();
+					site.setId(assetLocation.getSiteId());
+					site.setName(assetLocation.getName());
+					assetLocation.setSite(site);
+				}
+				else {
+					spaceIds.add(assetLocation.getSiteId());
+				}
+			}
 		}
 		if (assetLocation.getBuildingId() > 0) {
-			/*if (assetLocation.getBuildingId() == assetLocation.getId()) {
+			if (asset.getCurrentLocation() == null && currentLocation == null) {
+				BuildingContext assetBuilding = SpaceAPI.getBuildingSpace(assetLocation.getBuildingId());
 				BuildingContext building = new BuildingContext();
-				building.setId(assetLocation.getBuildingId());
-				building.setName(assetLocation.getName());
+				building.setId(assetBuilding.getBuildingId());
+				building.setName(assetBuilding.getName());
 				assetLocation.setBuilding(building);
+				if (assetBuilding.getLocation() != null) {
+					currentLocation = assetBuilding.getLocation();
+				}
 			}
 			else {
-				spaceIds.add(assetLocation.getBuildingId());
-			}*/
-			spaceIds.add(assetLocation.getBuildingId());
+				if (assetLocation.getBuildingId() == assetLocation.getId()) {
+					BuildingContext building = new BuildingContext();
+					building.setId(assetLocation.getBuildingId());
+					building.setName(assetLocation.getName());
+					assetLocation.setBuilding(building);
+				}
+				else {
+					spaceIds.add(assetLocation.getBuildingId());
+				}
+			}
 		}
 		if (assetLocation.getFloorId() > 0) {
 			if (assetLocation.getFloorId() == assetLocation.getId()) {
@@ -169,14 +191,12 @@ public class GetAssetDetailCommand extends GenericGetModuleDataDetailCommand {
 				SiteContext site = new SiteContext();
 				site.setId(assetLocation.getSiteId());
 				site.setName(spaceMap.get(assetLocation.getSiteId()).getName());
-				currentLocation = site.getLocation();
 				assetLocation.setSite(site);
 			}
 			if (spaceMap.containsKey(assetLocation.getBuildingId())) {
 				BuildingContext building = new BuildingContext();
 				building.setId(assetLocation.getBuildingId());
 				building.setName(spaceMap.get(assetLocation.getBuildingId()).getName());
-				currentLocation = building.getLocation();
 				assetLocation.setBuilding(building);
 			}
 			if (spaceMap.containsKey(assetLocation.getFloorId())) {
@@ -217,7 +237,6 @@ public class GetAssetDetailCommand extends GenericGetModuleDataDetailCommand {
 			}
 		}
 		if(asset.getCurrentLocation() == null && currentLocation != null) {
-			currentLocation = SpaceAPI.getLocationSpace(currentLocation.getId());
 			asset.setCurrentLocation(currentLocation.getLat()+","+currentLocation.getLng());
 		}
 	}
