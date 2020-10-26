@@ -51,7 +51,7 @@ public abstract class Point extends FacilioPoint{
     @JsonInclude
     private Long fieldId;
     @JsonInclude
-    private boolean pseudo;
+    private boolean virtual;
     @JsonInclude
     private long mappedTime;
     @JsonInclude
@@ -100,7 +100,7 @@ public abstract class Point extends FacilioPoint{
         pointJSON.put(AgentConstants.WRITABLE,isWritable());
         pointJSON.put(AgentConstants.AGENT_WRITABLE,isAgentWritable());
         pointJSON.put(AgentConstants.SUBSCRIBED,isSubscribed());
-        pointJSON.put(AgentConstants.PSEUDO,isPseudo());
+        pointJSON.put(AgentConstants.VIRTUAL,isVirtual());
         pointJSON.put(AgentConstants.THRESHOLD_JSON,getThresholdJSON());
         pointJSON.put(AgentConstants.CREATED_TIME,getCreatedTime());
         pointJSON.put(AgentConstants.MAPPED_TIME,getMappedTime());
@@ -118,10 +118,17 @@ public abstract class Point extends FacilioPoint{
         return pointJSON;
     }
 
-    public boolean isPseudo() { return pseudo; }
-    public void setPseudo(boolean pseudo) { this.pseudo = pseudo; }
+    
 
-    public long getAgentId() { return agentId; }
+    public boolean isVirtual() {
+		return virtual;
+	}
+
+	public void setVirtual(boolean virtual) {
+		this.virtual = virtual;
+	}
+
+	public long getAgentId() { return agentId; }
     public void setAgentId(long agentId) {
         this.agentId = agentId;
     }

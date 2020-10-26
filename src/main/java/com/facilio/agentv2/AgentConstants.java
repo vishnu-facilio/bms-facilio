@@ -100,7 +100,6 @@ public class AgentConstants
     public static final String EXCEPTION = "exception";
     public static final String AGENT = "agent";
     public static final String POINTS_TABLE = "Point";
-    public static final String PSEUDO = "pseudo";
     public static final String SUBSCRIBE_STATUS = "subscribeStatus";
     public static final String CONFIGURE_STATUS = "configureStatus";
     public static final String VERSION_ID = "versionId";
@@ -250,4 +249,5 @@ public class AgentConstants
     public static final String AGENT_ACTION = "agentAction";
 
     public static final String COL_NAME = "NAME";
+    public static final String VIRTUAL = "virtual";
 }
