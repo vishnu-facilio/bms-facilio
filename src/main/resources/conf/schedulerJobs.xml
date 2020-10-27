@@ -73,7 +73,7 @@
 	 <job name='DeletePMJob' classname= 'com.facilio.bmsconsole.jobs.DeletePMJob' transactionTimeout='1200000'/>
 	 <job name='AttendanceAbsentSchedulerJob' classname='com.facilio.bmsconsole.commands.AttendanceAbsentSchedulerJob' transactionTimeout='14400000'/>
 	 <job name= 'ShiftRotationSchedulerJob' classname='com.facilio.bmsconsole.commands.ShiftRotationSchedulerJob' transactionTimeout= '14400000'></job>
-	 
+
 	<!-- Visitor Jobs -->
 	<job name='ScheduleVisitorLogs' classname= 'com.facilio.bmsconsole.jobs.VisitorLogScheduler' transactionTimeout='600000'/> -->
 	<job name='AutoCheckOutVisitors' classname= 'com.facilio.bmsconsole.jobs.AutoCheckOutVisitorsScheduler' transactionTimeout='600000'/> -->
@@ -167,5 +167,8 @@
 
     <!-- cloud agent job -->
     <job name='CloudAgent' classname='com.facilio.bmsconsole.jobs.CloudAgent' transactionTimeout="7200000"/>
+	<!-- create slots for facilities -->
+	<job name='CreateSlotForFacilities' classname= 'com.facilio.bmsconsoleV3.commands.facility.GenerateSlotCommand' transactionTimeout='600000'/> -->
+	<job name='ScheduleSlotCreation' classname= 'com.facilio.bmsconsoleV3.commands.facility.SlotCreationScheduler' transactionTimeout='600000'/> -->
 
 </scheduler>

@@ -46,13 +46,13 @@ public class SlotContext extends V3Context {
         return null;
     }
 
-    private FacilityContext facility;
+    private Long facilityId;
 
-    public FacilityContext getFacility() {
-        return facility;
+    public Long getFacilityId() {
+        return facilityId;
     }
 
-    public void setFacility(FacilityContext facility) {
-        this.facility = facility;
+    public void setFacilityId(Long facilityId) {
+        this.facilityId = facilityId;
     }
 }

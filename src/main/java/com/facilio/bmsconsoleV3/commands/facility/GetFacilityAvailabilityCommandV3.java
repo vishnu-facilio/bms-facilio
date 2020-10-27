@@ -40,6 +40,7 @@ public class GetFacilityAvailabilityCommandV3 extends FacilioCommand {
             FacilityAPI.setFacilityWeekDayAvailability(facilityContext);
             if(fetchAvailability) {
                 List<SlotContext> slotList = FacilityAPI.getAvailabilitySlots(facilityContext, startDateTime, endDateTime);
+                //List<SlotContext> slotList = FacilityAPI.getFacilitySlots(facilityContext, startDateTime, endDateTime);
                 if (CollectionUtils.isNotEmpty(slotList)) {
                     facilityContext.setSlots(slotList);
                 }

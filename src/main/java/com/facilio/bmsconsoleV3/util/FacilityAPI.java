@@ -9,6 +9,7 @@ import com.facilio.bmsconsoleV3.context.facilitybooking.*;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
@@ -16,10 +17,12 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.util.CommandUtil;
+import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.time.LocalTime;
 import java.util.*;
+import java.util.logging.Level;
 
 public class FacilityAPI {
 
@@ -52,11 +55,32 @@ public class FacilityAPI {
                 .moduleName(facilityWeekDayModName)
                 .select(fields)
                 .beanClass(WeekDayAvailability.class)
-                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("facility"), String.valueOf(facility.getId()), NumberOperators.EQUALS));
+                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("facility"), String.valueOf(facility.getId()), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("endDate"), String.valueOf(-1), CommonOperators.IS_EMPTY));
+
+                ;
         List<WeekDayAvailability> list = builder.get();
         if (CollectionUtils.isNotEmpty(list)) {
             facility.setWeekDayAvailabilities(list);
         }
+    }
+
+    public static List<WeekDayAvailability> getFacilitySpecialWeekDayAvailability(FacilityContext facility, Long startTime, Long endTime) throws Exception {
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        String facilityWeekDayModName = FacilioConstants.ContextNames.FacilityBooking.FACILITY_WEEKDAY_AVAILABILITY;
+        List<FacilioField> fields = modBean.getAllFields(facilityWeekDayModName);
+        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+
+        SelectRecordsBuilder<WeekDayAvailability> builder = new SelectRecordsBuilder<WeekDayAvailability>()
+                .moduleName(facilityWeekDayModName)
+                .select(fields)
+                .beanClass(WeekDayAvailability.class)
+                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("startDate"), String.valueOf(startTime), NumberOperators.GREATER_THAN_EQUAL))
+                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("startDate"), String.valueOf(endTime), NumberOperators.LESS_THAN_EQUAL))
+                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("facility"), String.valueOf(facility.getId()), NumberOperators.EQUALS));
+        List<WeekDayAvailability> list = builder.get();
+        return list;
     }
 
     public static void setFacilitySpecialAvailability(FacilityContext facility, Long startTime, Long endTime) throws Exception {
@@ -182,8 +206,8 @@ public class FacilityAPI {
                         SlotContext slot = new SlotContext();
                         slot.setSlotCost(splAvailability.getCost());
                         slot.setSlotStartTime(startDateTimeOfDay);
-                        slot.setFacility(facilityContext);
-                        slot.setSlotEndTime(startDateTimeOfDay + facilityContext.getSlotDuration());
+                        slot.setFacilityId(facilityContext.getId());
+                        slot.setSlotEndTime((startDateTimeOfDay + facilityContext.getSlotDuration()));
                         if (!FacilityAPI.checkForUnavailability(slot.getSlotStartTime(), slot.getSlotEndTime(), facilityContext.getFacilitySpecialAvailabilities()) && !FacilityAPI.checkExistingSlots(slotList, slot)) {
                             slotList.add(slot);
                         }
@@ -212,29 +236,56 @@ public class FacilityAPI {
 
             while (startDay <= endDateTime) {
                 int day = cal.get(Calendar.DAY_OF_WEEK) - 1;
+//                List<WeekDayAvailability> splWeekDayAvailability = FacilityAPI.getFacilitySpecialWeekDayAvailability(facilityContext, startDateTime, endDateTime);
+//                if(CollectionUtils.isNotEmpty(splWeekDayAvailability)){
+//                    for (WeekDayAvailability splAvailability : splWeekDayAvailability) {
+//                        Long startTime = splAvailability.getStartDate();
+//                        Calendar cal_week = Calendar.getInstance();
+//                        cal_week.setTimeInMillis(startTime);
+//                        while (startTime <= splAvailability.getEndDate()) {
+//                            long startDateTimeOfDay = FacilityAPI.getCalendarTime(startTime, splAvailability.getStartTimeAsLocalTime());
+//                            long endDateTimeOfDay = FacilityAPI.getCalendarTime(startTime, splAvailability.getEndTimeAsLocalTime());
+//                            while (startDateTimeOfDay <= endDateTimeOfDay && startDateTimeOfDay <= endDateTime) {
+//                                SlotContext slot = new SlotContext();
+//                                slot.setSlotCost(splAvailability.getCost());
+//                                slot.setSlotStartTime(startDateTimeOfDay);
+//                                slot.setFacility(facilityContext);
+//                                slot.setSlotEndTime(startDateTimeOfDay + facilityContext.getSlotDuration());
+//                                if (!FacilityAPI.checkForUnavailability(slot.getSlotStartTime(), slot.getSlotEndTime(), facilityContext.getFacilitySpecialAvailabilities()) && !FacilityAPI.checkExistingSlots(slotList, slot)) {
+//                                    slotList.add(slot);
+//                                }
+//                                //need to consider the slot intervals before starting other slot
+//                                startDateTimeOfDay = slot.getSlotEndTime();
+//                            }
+//                            cal_week.add(Calendar.DATE, 1);
+//                            startTime = cal_week.getTimeInMillis();
+//                        }
+//                    }
+//                }
+//                else {
+                    if (weekDayMap.containsKey(day)) {
+                        List<WeekDayAvailability> weekDaysForDay = weekDayMap.get(day);
+                        if (CollectionUtils.isNotEmpty(weekDaysForDay)) {
+                            for (WeekDayAvailability wk : weekDaysForDay) {
+                                long startDateTimeOfDay = FacilityAPI.getCalendarTime(startDay, wk.getStartTimeAsLocalTime());
+                                long endDateTimeOfDay = FacilityAPI.getCalendarTime(startDay, wk.getEndTimeAsLocalTime());
 
-                if (weekDayMap.containsKey(day)) {
-                    List<WeekDayAvailability> weekDaysForDay = weekDayMap.get(day);
-                    if (CollectionUtils.isNotEmpty(weekDaysForDay)) {
-                        for (WeekDayAvailability wk : weekDaysForDay) {
-                            long startDateTimeOfDay = FacilityAPI.getCalendarTime(startDay, wk.getStartTimeAsLocalTime());
-                            long endDateTimeOfDay = FacilityAPI.getCalendarTime(startDay, wk.getEndTimeAsLocalTime());
-
-                            while (startDateTimeOfDay < endDateTimeOfDay && startDateTimeOfDay < endDateTime) {
-                                SlotContext slot = new SlotContext();
-                                slot.setSlotCost(wk.getCost());
-                                slot.setSlotStartTime(startDateTimeOfDay);
-                                slot.setSlotEndTime(startDateTimeOfDay + facilityContext.getSlotDuration());
-                                slot.setFacility(facilityContext);
-                                if (!FacilityAPI.checkForUnavailability(slot.getSlotStartTime(), slot.getSlotEndTime(), facilityContext.getFacilitySpecialAvailabilities()) && !FacilityAPI.checkExistingSlots(slotList, slot)) {
-                                    slotList.add(slot);
+                                while (startDateTimeOfDay < endDateTimeOfDay && startDateTimeOfDay < endDateTime) {
+                                    SlotContext slot = new SlotContext();
+                                    slot.setSlotCost(wk.getCost());
+                                    slot.setSlotStartTime(startDateTimeOfDay);
+                                    slot.setSlotEndTime((startDateTimeOfDay + facilityContext.getSlotDuration()));
+                                    slot.setFacilityId(facilityContext.getId());
+                                    if (!FacilityAPI.checkForUnavailability(slot.getSlotStartTime(), slot.getSlotEndTime(), facilityContext.getFacilitySpecialAvailabilities()) && !FacilityAPI.checkExistingSlots(slotList, slot)) {
+                                        slotList.add(slot);
+                                    }
+                                    //need to consider the slot intervals before starting other slot
+                                    startDateTimeOfDay = slot.getSlotEndTime();
                                 }
-                                //need to consider the slot intervals before starting other slot
-                                startDateTimeOfDay = slot.getSlotEndTime();
                             }
                         }
                     }
-                }
+               // }
                 cal.add(Calendar.DAY_OF_MONTH, 1);
                 startDay = cal.getTimeInMillis();
 
@@ -267,11 +318,33 @@ public class FacilityAPI {
                 .moduleName(slots)
                 .select(fields)
                 .beanClass(SlotContext.class)
-                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("facility"), String.valueOf(facility.getId()), PickListOperators.IS))
-                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("slotStartTime"), String.valueOf(startTime), NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("slotEndTime"), String.valueOf(endTime), NumberOperators.EQUALS));
+                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("facility"), String.valueOf(facility.getId()), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("slotStartTime"), String.valueOf(startTime), NumberOperators.GREATER_THAN_EQUAL))
+                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("slotStartTime"), String.valueOf(endTime), NumberOperators.LESS_THAN_EQUAL));
 
         List<SlotContext> list = builder.get();
         return  list;
+    }
+
+    public static List<FacilityContext> getFacilityList() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        String slots = FacilioConstants.ContextNames.FacilityBooking.FACILITY;
+        List<FacilioField> fields = modBean.getAllFields(slots);
+        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+
+        SelectRecordsBuilder<FacilityContext> builder = new SelectRecordsBuilder<FacilityContext>()
+                .moduleName(slots)
+                .select(fields)
+                .beanClass(FacilityContext.class);
+
+        List<FacilityContext> list = builder.get();
+        return  list;
+    }
+
+    public static void createSlots(FacilityContext facility, long startTime, Long endTime) throws Exception {
+        facility.setSlotGeneratedUpto(endTime);
+        List<SlotContext> slots = FacilityAPI.getFacilitySlots(facility, startTime, endTime);
+        facility.setSlots(slots);
+        FacilityAPI.updateGeneratedUptoInFacilityAndAddSlots(facility);
     }
 }

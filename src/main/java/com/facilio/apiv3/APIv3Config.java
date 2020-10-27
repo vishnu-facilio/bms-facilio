@@ -33,6 +33,7 @@ import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.Lo
 import com.facilio.bmsconsoleV3.commands.employee.UpdateEmployeePeopleAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.facility.FillFacilityDetailsCommandV3;
 import com.facilio.bmsconsoleV3.commands.facility.LoadFacilityLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.facility.ScheduleSlotCreationCommand;
 import com.facilio.bmsconsoleV3.commands.imap.UpdateLatestMessageUIDCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
@@ -737,6 +738,7 @@ public class APIv3Config {
     public static Supplier<V3Config> getFacility() {
         return () -> new V3Config(FacilityContext.class, new ModuleCustomFieldCount30())
                 .create().beforeSave(new SetLocalIdCommandV3())
+                    .afterSave(new ScheduleSlotCreationCommand())
                 .update()
                 .delete()
                 .list()
