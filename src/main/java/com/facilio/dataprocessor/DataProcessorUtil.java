@@ -362,7 +362,6 @@ public class DataProcessorUtil {
                 event.setProperty(TIME_TAKEN, String.valueOf(time / 1000));
                 event.setProperty(TIME_TAKEN_IN_MILLIS, String.valueOf(time));
                 LOGGER.callAppenders(event);
-                if(isStage) {
                 	Map<String,Object> prop = new HashMap<>();
                 	prop.put(AgentConstants.SELECT_QUERIES, account.getSelectQueries());
                 	prop.put(AgentConstants.INSERT_QUERIES, account.getInsertQueries());
@@ -394,7 +393,6 @@ public class DataProcessorUtil {
                 	prop.put(AgentConstants.PUBLIC_REDIS_DELETE_TIME, account.getPublicRedisDeleteTime());
                 	prop.put(AgentConstants.AGENT_ID, agentMsgId);
                 	updateAgentMsg(prop,recordId);
-                }
             } catch (Exception e) {
                 LOGGER.error("record: " + recordId);
             }
