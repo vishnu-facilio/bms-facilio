@@ -281,7 +281,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
                 }
             }
 
-            if (request.getRequestURL().indexOf("/admin") != -1) {
+            if (request.getRequestURI().startsWith("/admin")) {
                 if (currentAccount != null) {
                     String useremail = currentAccount.getUser().getEmail();
                     if (!useremail.endsWith(FacilioProperties.getConfig("admin.domain"))) {
