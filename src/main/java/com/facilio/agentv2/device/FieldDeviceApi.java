@@ -381,7 +381,7 @@ public class FieldDeviceApi {
         	Map<String,Object> prop = new HashMap<String, Object>();
         	prop.put("id", 0);
         	prop.put("controllerType",0);
-        	prop.put("name", "Virtual");
+        	prop.put("name", "Logical");
         	props.add(prop);
         }
         return props;

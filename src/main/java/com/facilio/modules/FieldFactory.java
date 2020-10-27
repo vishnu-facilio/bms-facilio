@@ -6499,7 +6499,7 @@ public class FieldFactory {
         fields.add(getField(AgentConstants.DATA_TYPE, "DATA_TYPE", module, FieldType.NUMBER));
         fields.add(getField(AgentConstants.POINT_TYPE, "POINT_TYPE", module, FieldType.NUMBER));
         fields.add(getField(AgentConstants.DEVICE_NAME, "DEVICE_NAME", module, FieldType.STRING));
-        fields.add(getField(AgentConstants.LOGICAL_POINT, "LOGICAL_POINT", module, FieldType.BOOLEAN));
+        fields.add(getField(AgentConstants.LOGICAL, "LOGICAL", module, FieldType.BOOLEAN));
         fields.add(getNewControllerIdField(module));
         fields.add(getFieldDeviceId(module));
         fields.add(getPointAssetCategoryIdField(module));

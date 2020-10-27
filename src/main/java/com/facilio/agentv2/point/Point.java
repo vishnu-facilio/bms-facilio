@@ -51,7 +51,7 @@ public abstract class Point extends FacilioPoint{
     @JsonInclude
     private Long fieldId;
     @JsonInclude
-    private boolean logicalPoint;
+    private boolean logical;
     @JsonInclude
     private long mappedTime;
     @JsonInclude
@@ -100,7 +100,7 @@ public abstract class Point extends FacilioPoint{
         pointJSON.put(AgentConstants.WRITABLE,isWritable());
         pointJSON.put(AgentConstants.AGENT_WRITABLE,isAgentWritable());
         pointJSON.put(AgentConstants.SUBSCRIBED,isSubscribed());
-        pointJSON.put(AgentConstants.LOGICAL_POINT,isLogicalPoint());
+        pointJSON.put(AgentConstants.LOGICAL,isLogical());
         pointJSON.put(AgentConstants.THRESHOLD_JSON,getThresholdJSON());
         pointJSON.put(AgentConstants.CREATED_TIME,getCreatedTime());
         pointJSON.put(AgentConstants.MAPPED_TIME,getMappedTime());
@@ -120,12 +120,12 @@ public abstract class Point extends FacilioPoint{
 
     
 
-    public boolean isLogicalPoint() {
-		return logicalPoint;
+    public boolean isLogical() {
+		return logical;
 	}
 
-	public void setLogicalPoint(boolean virtual) {
-		this.logicalPoint = virtual;
+	public void setLogical(boolean virtual) {
+		this.logical = virtual;
 	}
 
 	public long getAgentId() { return agentId; }
