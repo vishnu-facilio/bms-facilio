@@ -1,1 +1,1 @@
-git pull test for slowness
+git pull test for slowness, is this because of lambda?
