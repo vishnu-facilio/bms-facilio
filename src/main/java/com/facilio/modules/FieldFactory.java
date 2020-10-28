@@ -7893,6 +7893,7 @@ public class FieldFactory {
         list.add(getField("positionType", "POSITION_TYPE", module, FieldType.NUMBER));
         list.add(getField("allApprovalRequired", "ALL_APPROVAL_REQUIRED", module, FieldType.BOOLEAN));
         list.add(getField("approvalOrder", "APPROVAL_ORDER", module, FieldType.NUMBER));
+        list.add(getField("configStr", "CONFIG", module, FieldType.STRING));
 
         return list;
     }

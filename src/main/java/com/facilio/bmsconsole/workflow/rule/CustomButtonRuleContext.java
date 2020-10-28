@@ -7,8 +7,13 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.FacilioUtil;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.json.annotations.JSON;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
 
 import java.util.Map;
 
@@ -90,6 +95,27 @@ public class CustomButtonRuleContext extends ApproverWorkflowRuleContext impleme
     }
     public void setPositionType(int positionType) {
         this.positionType = PositionType.valueOf(positionType);
+    }
+
+    private JSONObject config;
+
+    @JsonIgnore
+    public JSONObject getConfig() {
+        return config;
+    }
+    public void setConfig(JSONObject config) {
+        this.config = config;
+    }
+
+    @JSON(serialize=false)
+    public String getConfigStr() {
+        if (config != null) {
+            return config.toJSONString();
+        }
+        return null;
+    }
+    public void setConfigStr(String configStr) throws ParseException {
+        this.config = FacilioUtil.parseJson(configStr);
     }
 
     @Override
