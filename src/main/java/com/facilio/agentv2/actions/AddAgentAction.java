@@ -78,6 +78,9 @@ public class AddAgentAction extends AgentActionV2
             agent.setType(getType());
             agent.setDisplayName(getDisplayName());
             agent.setWorkflow(getWorkflow());
+            if (!agent.getType().equals("custom")) {
+                agent.setProcessorVersion(2);
+            }
             context.put(AgentConstants.AGENT,agent);
             addAgentChain.execute();
             JSONObject jsonObject = new JSONObject();

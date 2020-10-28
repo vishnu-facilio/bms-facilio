@@ -29,7 +29,7 @@ public class updateAgentAction extends AgentAction {
 
     public String edit() {
         try {
-            if (AgentApiV2.editAgent(AgentApiV2.getAgent(getAgentId()),getToUpdate())) {
+            if (AgentApiV2.editAgent(AgentApiV2.getAgent(getAgentId()), getToUpdate(), false)) {
                 setResult(AgentConstants.RESULT, SUCCESS);
                 setResponseCode(HttpURLConnection.HTTP_OK);
             }else {
