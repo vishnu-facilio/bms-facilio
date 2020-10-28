@@ -130,6 +130,7 @@
             indexHtmls.put(staticUrl, html);
         }
         catch (Exception e) {
+            e.printStackTrace();
             out.println("Internal Server Error. Please try after sometime");
         }
     }
