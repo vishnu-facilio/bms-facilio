@@ -2079,6 +2079,18 @@ public class FieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getScoringCommitmentFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getScoringCommitmentModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("name", "NAME", module, FieldType.STRING));
+        fields.add(getField("namedCriteriaId", "NAMED_CRITERIA_ID", module, FieldType.NUMBER));
+        fields.add(getField("order", "COMMITMENT_ORDER", module, FieldType.NUMBER));
+        fields.add(getField("scoringRuleId", "SCORING_RULE_ID", module, FieldType.NUMBER));
+        return fields;
+    }
+
     public static List<FacilioField> getBaseScoringFields() {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getBaseScoringModule();
@@ -2086,7 +2098,7 @@ public class FieldFactory {
         fields.add(getIdField(module));
         fields.add(getField("weightage", "WEIGHTAGE", module, FieldType.DECIMAL));
         fields.add(getField("type", "TYPE", module, FieldType.SYSTEM_ENUM));
-        fields.add(getField("scoringRuleId", "SCORING_RULE_ID", module, FieldType.NUMBER));
+        fields.add(getField("scoringCommitmentId", "SCORING_COMMITMENT_ID", module, FieldType.NUMBER));
 
         return fields;
     }

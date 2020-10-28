@@ -71,6 +71,16 @@ public class NodeScoringContext extends BaseScoringContext {
     }
 
     @Override
+    public String getScoreType() {
+        return "dependency";
+    }
+
+    @Override
+    public boolean shouldUpdateParent() {
+        return true;
+    }
+
+    @Override
     public void validate() {
         super.validate();
         if (StringUtils.isEmpty(name)) {

@@ -2,14 +2,22 @@ package com.facilio.bmsconsole.scoringrule;
 
 import com.facilio.modules.FacilioEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.apache.commons.chain.Context;
 import org.apache.http.MethodNotSupportedException;
 import org.apache.struts2.json.annotations.JSON;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Objects;
 
-public class BaseScoringContext {
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, visible = true, property = "type")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = ConditionScoringContext.class, name = "1"),
+        @JsonSubTypes.Type(value = NodeScoringContext.class, name = "2")
+})
+public class BaseScoringContext implements Serializable {
     private long id;
     public long getId() {
         return id;
@@ -43,12 +51,16 @@ public class BaseScoringContext {
         this.type = type;
     }
 
-    private long scoringRuleId = -1;
-    public long getScoringRuleId() {
-        return scoringRuleId;
+    private long scoringCommitmentId = -1;
+    public long getScoringCommitmentId() {
+        return scoringCommitmentId;
     }
-    public void setScoringRuleId(long scoringRuleId) {
-        this.scoringRuleId = scoringRuleId;
+    public void setScoringCommitmentId(long scoringCommitmentId) {
+        this.scoringCommitmentId = scoringCommitmentId;
+    }
+
+    public String getScoreType() {
+        return null;
     }
 
     @JsonIgnore
@@ -117,6 +129,10 @@ public class BaseScoringContext {
     }
 
     public void saveChildren() throws Exception {}
+
+    public boolean shouldUpdateParent() {
+        return false;
+    }
 
     public enum Type implements FacilioEnum {
         CONDITIONED("Conditioned"),
