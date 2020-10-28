@@ -1,5 +1,9 @@
 package com.facilio.agentv2;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
@@ -545,14 +549,26 @@ public class AgentAction extends AgentActionV2 {
 		}
 		return SUCCESS;
 	}
+	FileInputStream fileInputStream ;
+    public FileInputStream getFileInputStream() {
+		return fileInputStream;
+	}
 
-    public String downloadCertificate(){
+	public void setFileInputStream(FileInputStream fileInputStream) {
+		this.fileInputStream = fileInputStream;
+	}
+
+	public String downloadCertificate(){
         try{
-            String orgMessageTopic = getMessageTopic();
+            String orgMessageTopic = FacilioService.runAsServiceWihReturn(()->getMessageTopic());
             LOGGER.info("download certificate current org domain is :"+orgMessageTopic);
             FacilioAgent agent = AgentApiV2.getAgent(agentId);
             String downloadCertificateLink = DownloadCertFile.downloadCertificate(orgMessageTopic, "facilio");
-            setResult(AgentConstants.DATA, downloadCertificateLink);
+            File file = new File(downloadCertificateLink);
+            fileInputStream = new FileInputStream(file);
+            String fileName = orgMessageTopic+"_"+"cert"+".zip";
+			setFilename(fileName);
+			setContentType("application/zip");
             Objects.requireNonNull(agent, "no such agent");
             try {
                 AwsUtil.addClientToPolicy(agent.getName(), orgMessageTopic, "facilio");
@@ -578,7 +594,7 @@ public class AgentAction extends AgentActionV2 {
     			.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(AgentFieldFactory.getMessageTopicFields()).get("orgId"), String.valueOf(currentOrg.getOrgId()), StringOperators.IS));
     	Map<String,Object> prop =	builder.fetchFirst();
     	if(MapUtils.isEmpty(prop)) {
-    		return 	MessageQueueTopic.addMsgTopic(currentOrg.getDomain(), currentOrg.getOrgId()) ? currentOrg.getDomain():null;
+    		return 	FacilioService.runAsServiceWihReturn(()->MessageQueueTopic.addMsgTopic(currentOrg.getDomain(), currentOrg.getOrgId())) ? currentOrg.getDomain():null;
     	}
     	return prop.get("topic").toString();
     }
