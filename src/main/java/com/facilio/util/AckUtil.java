@@ -59,9 +59,9 @@ public class AckUtil
 
     }
 
-    public static boolean handleConfigurationAndSubscription(long msgId, Controller controller, JSONObject payload) {
+    public static boolean handleConfigurationAndSubscription(IotMessage iotMessage, Controller controller, JSONObject payload) {
         try {
-            IotMessage iotMessage = IotMessageApiV2.getIotMessage(msgId);
+
             if ( iotMessage != null ) {
                 List<String> pointNames = getPointsNameFromPayload(payload);
                 return PointsAPI.handlePointConfigurationAndSubscription(FacilioCommand.valueOf(iotMessage.getCommand()),controller.getId(),pointNames);

@@ -170,6 +170,7 @@ public class RtuNetworkContext implements Serializable {
         object.put(AgentConstants.PARITY, parity);
         object.put(AgentConstants.STOP_BITS, stopBits);
         object.put(AgentConstants.BAUD_RATE, baudRate);
+        object.put(AgentConstants.DATA_BITS,dataBits);
         return object;
     }
 

@@ -101,6 +101,9 @@ public class PointsUtil
                         }
                         if(controller != null){
                             point.setControllerId(controller.getId());
+                            if (controller.getControllerType()==FacilioControllerType.MODBUS_IP.asInt() || controller.getControllerType()== FacilioControllerType.MODBUS_RTU.asInt()){
+                                point.setConfigureStatus(PointEnum.ConfigureStatus.CONFIGURED.getIndex());
+                            }
                         }
                         points.add(point);
                     }

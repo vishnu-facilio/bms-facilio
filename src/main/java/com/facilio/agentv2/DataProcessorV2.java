@@ -3,6 +3,7 @@ package com.facilio.agentv2;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.alarms.AgentEvent;
 import com.facilio.agent.controller.FacilioControllerType;
+import com.facilio.agent.fw.constants.FacilioCommand;
 import com.facilio.agent.fw.constants.PublishType;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
@@ -10,6 +11,8 @@ import com.facilio.agentv2.controller.ControllerUtilV2;
 import com.facilio.agentv2.device.Device;
 import com.facilio.agentv2.device.DeviceUtil;
 import com.facilio.agentv2.device.FieldDeviceApi;
+import com.facilio.agentv2.iotmessage.IotMessage;
+import com.facilio.agentv2.iotmessage.IotMessageApiV2;
 import com.facilio.agentv2.metrics.MetricsApi;
 import com.facilio.agentv2.misc.MiscController;
 import com.facilio.agentv2.point.PointsUtil;
@@ -156,7 +159,13 @@ public class DataProcessorV2
             payload.put(AgentConstants.IS_NEW_AGENT, Boolean.TRUE);
             if (containsCheck(AgentConstants.CONTROLLER, payload)) {
                 Controller controller = getCachedControllerUsingPayload(payload, agent.getId());
-                if (AckUtil.handleConfigurationAndSubscription(AckUtil.getMessageIdFromPayload(payload), controller, payload)) {
+                IotMessage iotMessage = IotMessageApiV2.getIotMessage(AckUtil.getMessageIdFromPayload(payload));
+                if (iotMessage.getCommand()== FacilioCommand.CONFIGURE.asInt()
+                        && (controller.getControllerType() == FacilioControllerType.MODBUS_RTU.asInt()
+                        || controller.getControllerType() == FacilioControllerType.MODBUS_IP.asInt())){
+                    return processDevicePoints(agent,payload);
+                }
+                if (AckUtil.handleConfigurationAndSubscription(iotMessage, controller, payload)) {
                     return true;
                 }
             } else {

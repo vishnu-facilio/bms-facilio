@@ -11,6 +11,7 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.log4j.LogManager;
@@ -86,7 +87,7 @@ public class ModbusTcpControllerContext extends Controller {
     }
 
     public String getModuleName() {
-        return ASSETCATEGORY;
+        return FacilioConstants.ContextNames.MODBUS_TCP_CONTROLLER_MODULE_NAME;
     }
 
     public JSONObject getChildJSON() {
@@ -102,6 +103,8 @@ public class ModbusTcpControllerContext extends Controller {
     public List<Condition> getControllerConditions() throws Exception {
         List<Condition> conditions = new ArrayList<>();
         Map<String, FacilioField> fieldsMap = getFieldsMap(getModuleName());
+        LOGGER.info("ModuleName : "+getModuleName());
+        LOGGER.info("Fields : "+fieldsMap);
         conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.SLAVE_ID), String.valueOf(getSlaveId()), NumberOperators.EQUALS));
         if (ipAddress != null) {
             conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.IP_ADDRESS),getIpAddress(), StringOperators.IS));
