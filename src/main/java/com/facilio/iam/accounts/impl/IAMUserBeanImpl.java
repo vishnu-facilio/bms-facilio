@@ -1257,7 +1257,8 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		insertBuilder.save();
 		long userId = (Long) props.get("id");
 		user.setUid(userId);
-		
+
+		initialiseUserMfaSettings(userId);
 		
 		return userId;
 	}
@@ -2033,7 +2034,24 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		}
 	}
 
-	
+	private static void initialiseUserMfaSettings(long userId) throws Exception{
+
+		if(userId <= 0) {
+			throw new IllegalArgumentException("Invalid UserId");
+		}
+		else {
+
+			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+					.table(IAMAccountConstants.getUserMfaSettings().getTableName())
+					.fields(IAMAccountConstants.getUserMfaSettingsFields());
+
+			Map<String,Object> props = new HashMap<>();
+			props.put("userId",userId);
+			props.put("totpSecret",null);
+			insertBuilder.addRecord(props);
+			insertBuilder.save();
+		}
+	}
 
 	public Map<String,Object> getUserMfaSettings(long userId) throws Exception{
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()

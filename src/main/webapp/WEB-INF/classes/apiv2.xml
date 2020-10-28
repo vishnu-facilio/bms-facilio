@@ -180,6 +180,11 @@
 	    <action name="totpdisabled" class="com.facilio.bmsconsole.actions.SettingsMfa" method="totpDisabled"/>
 	 </package>
 
+	<package name="UserMfaAuth" namespace="/api/settings" extends="v2Api">
+		<action name="totpVerification" class="com.facilio.bmsconsole.actions.SettingsMfa" method="totpVerification" />
+		<action name="totpsetup" class="com.facilio.bmsconsole.actions.SettingsMfa" method="totpsetup"/>
+	</package>
+
 	<package name="internalV2" namespace="/v2/exception"
 		extends="v2Api">
 		<action name="handleException"
