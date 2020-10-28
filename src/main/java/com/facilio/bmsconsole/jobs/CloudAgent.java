@@ -31,9 +31,11 @@ public class CloudAgent extends FacilioJob {
     public void execute(JobContext jc) throws Exception {
         long jobId = jc.getJobId();
         FacilioAgent agent = AgentApiV2.getAgent(jobId);
-        if (agent != null && agent.getType().equals("rest")) {
-            long workflowId = agent.getWorkflowId();
-            getPayloadsFromWorkflowAndPushToMessageQueue(workflowId, agent);
+        if (agent != null) {
+            if (agent.getWorkflowId() != -1) {
+            		getPayloadsFromWorkflowAndPushToMessageQueue(agent);
+            }
+            
         } else {
             if (agent != null) {
                 LOGGER.info("Agent Type : " + agent.getType());
@@ -50,7 +52,7 @@ public class CloudAgent extends FacilioJob {
         }
     }
 
-    private void getPayloadsFromWorkflowAndPushToMessageQueue(long workflowId, FacilioAgent agent) throws Exception {
+    private void getPayloadsFromWorkflowAndPushToMessageQueue(FacilioAgent agent) throws Exception {
         long lastDataReceivedTime = agent.getLastDataReceivedTime();
         long threeMonths = 3 * 30 * 24 * 3600 * 1000L;
         long currentTime = System.currentTimeMillis();
@@ -59,7 +61,7 @@ public class CloudAgent extends FacilioJob {
         
         if (toTime - lastDataReceivedTime > threeMonths) {
             long fromTime = toTime - interval;
-        		processResult(workflowId, agent, fromTime, toTime);
+        		processResult(agent, fromTime, toTime);
             return;
         }
         LOGGER.info("Last received Time : " + lastDataReceivedTime);
@@ -68,14 +70,14 @@ public class CloudAgent extends FacilioJob {
              noOfDataMissingIntervals > 0; noOfDataMissingIntervals--) {
             long nextTimestampToGetData = ((lastDataReceivedTime + interval) / interval) * interval;
             LOGGER.info("Next Timestamp " + nextTimestampToGetData);
-            processResult(workflowId, agent, lastDataReceivedTime, nextTimestampToGetData);
+            processResult(agent, lastDataReceivedTime, nextTimestampToGetData);
             lastDataReceivedTime = nextTimestampToGetData;
             Thread.sleep(2000);
         }
     }
     
-    private void processResult(long workflowId, FacilioAgent agent, long fromTime, long toTime) throws Exception {
-    		List<JSONObject> results = runWorkflow(workflowId, fromTime, toTime, agent);
+    private void processResult(FacilioAgent agent, long fromTime, long toTime) throws Exception {
+    		List<JSONObject> results = runWorkflow(agent.getWorkflowId(), fromTime, toTime, agent);
         LOGGER.info("results : " + results);
         if (results == null) {
         		throw new FacilioException("Fetching data from cloud failed");
