@@ -184,9 +184,9 @@
 
         <action name="data" class="com.facilio.agentv2.AgentAction" method="getAlertsPoints">
         </action>
-		<action name="certificate" class="com.facilio.agentv2.AgentAction" method="downloadCertificate">
+
+        <action name="certificate" class="com.facilio.agentv2.AgentAction" method="downloadCertificate">
         </action>
-		
         <action name="addClientToPolicy" class="com.facilio.agentv2.AgentAction" method="addClientToPolicy">
         </action>
         <action name="addVersion" class="com.facilio.agentv2.actions.AgentVersionAction" method="addAgentVersion">
@@ -198,14 +198,6 @@
         <action name="logs" class="com.facilio.agentv2.actions.AgentIdAction" method="getAgentLogs">
         </action>
         <action name="logCount" class="com.facilio.agentv2.actions.AgentIdAction" method="getLogCount">
-        </action>
-		<action name="certificateUrl" class="com.facilio.agentv2.AgentAction" method="downloadCertificate">
-			 <result name="success" type="stream">
-             <param name="contentType">application/zip</param>
-                <param name="inputName">fileInputStream</param>
-                <param name="contentDisposition">attachment;filename="${filename}"</param>
-                <param name="bufferSize">1024</param>
-            </result>
         </action>
         <action name="agentDownload" class="com.facilio.bmsconsole.actions.AgentDownloadAction" method="downloadAgent">
          <result name="success" type="stream">
