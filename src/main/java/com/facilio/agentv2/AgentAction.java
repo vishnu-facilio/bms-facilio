@@ -616,9 +616,11 @@ public class AgentAction extends AgentActionV2 {
 
     private String getMessageTopic() throws Exception {
     	Organization currentOrg = AccountUtil.getCurrentOrg();
+    	long orgId = currentOrg.getOrgId();
+    	LOGGER.info("Downld current org :"+currentOrg.getDomain()+" orgid "+currentOrg.getOrgId());
     	GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().select(AgentFieldFactory.getMessageTopicFields())
     			.table(AgentModuleFactory.getMessageToipcModule().getTableName())
-    			.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(AgentFieldFactory.getMessageTopicFields()).get("orgId"), String.valueOf(currentOrg.getOrgId()), StringOperators.IS));
+    			.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(AgentFieldFactory.getMessageTopicFields()).get("orgId"), String.valueOf(orgId), StringOperators.IS));
     	Map<String,Object> prop =	builder.fetchFirst();
     	if(MapUtils.isEmpty(prop)) {
     		return 	FacilioService.runAsServiceWihReturn(()->MessageQueueTopic.addMsgTopic(currentOrg.getDomain(), currentOrg.getOrgId())) ? currentOrg.getDomain():null;
