@@ -571,15 +571,15 @@ public class AgentAction extends AgentActionV2 {
 			long orgId = Objects.requireNonNull(AccountUtil.getCurrentOrg()).getOrgId();
 			Map<String, Object> orgInfo = CommonCommandUtil.getOrgInfo(orgId, certFileId);
 			long fileId = -1;
+			String url =null;
 			if (orgInfo != null) {
 				fileId = Long.parseLong((String) orgInfo.get("value"));
-				 FileStore fs = FacilioFactory.getFileStore();
-				 String url =null;
-		          url = fs.getPrivateUrl(fileId);
-		         if(url== null) {
-		        	 fileId = DownloadCertFile.addCert(orgMessageTopic, "facilio");
-		         }
+				FileStore fs = FacilioFactory.getFileStore();
+				url = fs.getPrivateUrl(fileId);
 			}
+			if(url== null) {
+	        	 fileId = DownloadCertFile.addCert(orgMessageTopic, "facilio");
+	         }
 			if (fileId > 0) {
 				FileStore fs = FacilioFactory.getFileStore();
 				FileInfo fileInfo = fs.getFileInfo(fileId, true);
