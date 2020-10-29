@@ -25,6 +25,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.service.FacilioService;
 
 public class MessageQueueTopic {
 
@@ -49,7 +50,7 @@ public class MessageQueueTopic {
 	}
 	
 	public static List<Map<String, Object>> getTopics(List<Long> orgId) throws Exception {
-		return getAllMessageTopics(orgId);
+		return FacilioService.runAsServiceWihReturn(()->getAllMessageTopics(orgId));
 	}
 	
 	private static List<Map<String, Object>> getAllMessageTopics(List<Long> orgId) throws Exception {
