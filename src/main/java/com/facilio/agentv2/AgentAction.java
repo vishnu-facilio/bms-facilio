@@ -560,6 +560,7 @@ public class AgentAction extends AgentActionV2 {
 
 	public String downloadCertificate() {
 		try {
+			LOGGER.info("Downld certificate called..orgId :"+AccountUtil.getCurrentOrg().getOrgId());
 			String orgMessageTopic = FacilioService.runAsServiceWihReturn(()->getMessageTopic());
 			LOGGER.info("download certificate current org domain is :" + orgMessageTopic);
 			com.facilio.agentv2.FacilioAgent agent = AgentApiV2.getAgent(agentId);
