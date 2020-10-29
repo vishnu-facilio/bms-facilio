@@ -2,9 +2,10 @@ package com.facilio.agentv2;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,7 @@ import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.agent.FacilioAgent;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.integration.DownloadCertFile;
 import com.facilio.agent.module.AgentFieldFactory;
@@ -42,12 +44,14 @@ import com.facilio.aws.util.AwsUtil;
 import com.facilio.bacnet.BACNetUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.actions.AdminAction;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.fs.FileInfo;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.service.FacilioService;
@@ -545,31 +549,69 @@ public class AgentAction extends AgentActionV2 {
 		}
 		return SUCCESS;
 	}
+	private InputStream downloadStream;
+    public InputStream getDownloadStream() {
+		return downloadStream;
+	}
 
-    public String downloadCertificate(){
-        try{
-            String orgMessageTopic = getMessageTopic();
-            LOGGER.info("download certificate current org domain is :"+orgMessageTopic);
-            FacilioAgent agent = AgentApiV2.getAgent(agentId);
-            String downloadCertificateLink = DownloadCertFile.downloadCertificate(orgMessageTopic, "facilio");
-            setResult(AgentConstants.DATA, downloadCertificateLink);
-            Objects.requireNonNull(agent, "no such agent");
-            try {
-                AwsUtil.addClientToPolicy(agent.getName(), orgMessageTopic, "facilio");
-                ok();
-            } catch (Exception e) {
-                setResult(AgentConstants.EXCEPTION, " exception while adding to policy " + e.getMessage());
-                LOGGER.info("Exception  while adding client to policy", e);
-                internalError();
-            }
+	public void setDownloadStream(InputStream downloadStream) {
+		this.downloadStream = downloadStream;
+	}
 
-        }catch (Exception e){
-            setResult(AgentConstants.EXCEPTION,e.getMessage());
-            internalError();
-            LOGGER.info("Exception while getting download cert link",e);
-        }
-        return SUCCESS;
-    }
+	public String downloadCertificate() {
+		try {
+			String orgMessageTopic = FacilioService.runAsServiceWihReturn(()->getMessageTopic());
+			LOGGER.info("download certificate current org domain is :" + orgMessageTopic);
+			com.facilio.agentv2.FacilioAgent agent = AgentApiV2.getAgent(agentId);
+			Objects.requireNonNull(agent, "no such agent");
+			String certFileId = FacilioAgent.getCertFileId("facilio");
+			LOGGER.info("certFileId " + certFileId);
+			long orgId = Objects.requireNonNull(AccountUtil.getCurrentOrg()).getOrgId();
+			Map<String, Object> orgInfo = CommonCommandUtil.getOrgInfo(orgId, certFileId);
+			long fileId = -1;
+			if (orgInfo != null) {
+				fileId = Long.parseLong((String) orgInfo.get("value"));
+				 FileStore fs = FacilioFactory.getFileStore();
+				 String url =null;
+		          url = fs.getPrivateUrl(fileId);
+		         if(url== null) {
+		        	 fileId = DownloadCertFile.addCert(orgMessageTopic, "facilio");
+		         }
+			}
+			if (fileId > 0) {
+				FileStore fs = FacilioFactory.getFileStore();
+				FileInfo fileInfo = fs.getFileInfo(fileId, true);
+				if (fileInfo != null) {
+					downloadStream = fs.readFile(fileInfo);
+					if (downloadStream != null) {
+						String dateStamp = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss Z").format(new Date());
+						setLastModified(dateStamp);
+						setDayExpiry();
+						String fileName = orgMessageTopic+"_cert.zip";
+		    			setFilename(fileName);
+					} else {
+						throw new Exception("File not Found");
+					}
+				} else {
+					setResponseCode(HttpURLConnection.HTTP_NOT_FOUND);
+				}
+			}
+			try {
+				AwsUtil.addClientToPolicy(agent.getName(), orgMessageTopic, "facilio");
+				ok();
+			} catch (Exception e) {
+				setResult(AgentConstants.EXCEPTION, " exception while adding to policy " + e.getMessage());
+				LOGGER.info("Exception  while adding client to policy", e);
+				internalError();
+			}
+
+		} catch (Exception e) {
+			setResult(AgentConstants.EXCEPTION, e.getMessage());
+			internalError();
+			LOGGER.info("Exception while getting download cert link", e);
+		}
+		return SUCCESS;
+	}
 
     private String getMessageTopic() throws Exception {
     	Organization currentOrg = AccountUtil.getCurrentOrg();
@@ -578,7 +620,7 @@ public class AgentAction extends AgentActionV2 {
     			.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(AgentFieldFactory.getMessageTopicFields()).get("orgId"), String.valueOf(currentOrg.getOrgId()), StringOperators.IS));
     	Map<String,Object> prop =	builder.fetchFirst();
     	if(MapUtils.isEmpty(prop)) {
-    		return 	MessageQueueTopic.addMsgTopic(currentOrg.getDomain(), currentOrg.getOrgId()) ? currentOrg.getDomain():null;
+    		return 	FacilioService.runAsServiceWihReturn(()->MessageQueueTopic.addMsgTopic(currentOrg.getDomain(), currentOrg.getOrgId())) ? currentOrg.getDomain():null;
     	}
     	return prop.get("topic").toString();
     }
