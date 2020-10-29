@@ -15,6 +15,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.GetDbTimeLineFilterToWidgetMapping;
+import com.facilio.bmsconsole.context.DashboardCustomScriptFilter;
 import com.facilio.bmsconsole.context.DashboardFilterContext;
 import com.facilio.bmsconsole.context.DashboardUserFilterContext;
 import com.facilio.bmsconsole.context.DashboardUserFilterWidgetFieldMappingContext;
@@ -30,9 +31,15 @@ import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.BaseCriteriaAPI;
 import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BuildingOperator;
+import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.Operator;
+import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -49,7 +56,9 @@ import com.facilio.util.FacilioUtil;
 public class DashboardFilterUtil {
     private static final Logger LOGGER = Logger.getLogger(DashboardFilterUtil.class.getName());
 
+    public static final List<String> BUILDING_IS_MODULES=new ArrayList<String>(Arrays.asList("site","building","floor","space"));
 	public static final List<String> T_TIME_ONLY_CARD_LAYOUTS = initCardLayouts();
+	
 
 	static List<String> initCardLayouts() {
 
@@ -191,6 +200,12 @@ public class DashboardFilterUtil {
 		{
 			WidgetCardContext cardContext=(WidgetCardContext)widget;
 			if(cardContext.getScriptMode()==ScriptMode.CUSTOM_SCRIPT)
+			{
+				return true;
+			}
+			
+				//hack ,treat gauge_layout_7 similar to custom script.as its multi module and default widget-filter map doesn't support multi module
+			if(cardContext.getCardLayout().equals(CardLayout.GAUGE_LAYOUT_7.getName()))
 			{
 				return true;
 			}
@@ -397,6 +412,77 @@ public static Map<Long,FacilioField>  findCascadingFilterRel(DashboardUserFilter
 	}
 	
 	return cascadingRelMap;
+}
+
+public static Criteria getUserFilterCriteriaForModule(DashboardCustomScriptFilter customscriptFilters,
+		FacilioModule widgetModule) throws Exception
+
+{
+	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+	widgetModule.setFields(modBean.getAllFields(widgetModule.getName()));
+	Boolean useBuildingIsOperator = false;
+	Criteria criteria = new Criteria();
+	if (customscriptFilters != null && customscriptFilters.getFilterMeta() != null) {
+
+//	Map<FacilioField, List<Long>> fieldValueMap=new HashMap<>();
+
+		// find which field in module applies to which dashboard user filter
+		for (DashboardUserFilterContext userFilter : customscriptFilters.getFilterMeta()) {
+			FacilioField fieldForFilter = null;
+			if (userFilter.getModuleName() != null)// LOOKUP filter
+			{
+
+				fieldForFilter = getFilterApplicableField(userFilter.getModule(), widgetModule);
+
+			} else if (userFilter.getFieldId() > 0)// ENUM type filter
+			{
+				FacilioField filterEnumField = userFilter.getField();
+				if (isEnumFilterApplicableToWidget(filterEnumField.getModule(), widgetModule)) {
+					fieldForFilter = filterEnumField;
+				}
+			}
+
+			// found field , its either the field in filter itself.enum case , or LOOKUP
+			// field referencing same module LOOKUP filter case
+			// get corresponding dropdown and generate condition
+			if (fieldForFilter != null) {
+
+				String moduleName = userFilter.getModuleName();
+
+				if (moduleName != null && BUILDING_IS_MODULES.contains(moduleName)) {
+					useBuildingIsOperator = true;
+				}
+					
+				Map<String,List<String>> userFilterValueMap=customscriptFilters.getFilterValues();				
+				List<String> valuesForFilter = userFilterValueMap.get(Long.toString((userFilter.getId())));
+				
+				
+				
+				if (valuesForFilter != null
+						&& (!valuesForFilter.get(0).equals("all") && !valuesForFilter.get(0).equals("others"))) {
+					// skip adding any criteria for filter when it's dropdown is 'all'
+					// to . generate valuelist for userFilter.optionType==SOME ,all and others cases
+					List<Long> valueList = valuesForFilter.stream().map((String value) -> {
+						return Long.parseLong(value);
+					}).collect(Collectors.toList());
+//				fieldValueMap.put(fieldForFilter, valueList);
+
+					Condition condition = CriteriaAPI.getCondition(fieldForFilter, valueList,
+							useBuildingIsOperator ? BuildingOperator.BUILDING_IS : PickListOperators.IS);
+					criteria.addAndCondition(condition);
+
+				}
+//			TO DO : Handle multiple filters applying to same field case, site,building-> apply to RESOURCE field BUILDING IS[SITEID,BUILDINGID]
+
+			}
+		}
+
+	}
+	if (criteria.isEmpty()) {
+		return null;
+	} else {
+		return criteria;
+	}
 }
 
 }
