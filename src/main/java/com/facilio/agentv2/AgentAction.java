@@ -560,8 +560,9 @@ public class AgentAction extends AgentActionV2 {
 
 	public String downloadCertificate() {
 		try {
-			LOGGER.info("Downld certificate called..orgId :"+AccountUtil.getCurrentOrg().getOrgId());
-			String orgMessageTopic = FacilioService.runAsServiceWihReturn(()->getMessageTopic());
+			Organization currentOrg = AccountUtil.getCurrentOrg();
+			LOGGER.info("Downld certificate called..orgId :"+currentOrg.getOrgId());
+			String orgMessageTopic = FacilioService.runAsServiceWihReturn(()->getMessageTopic(currentOrg.getDomain(),currentOrg.getOrgId()));
 			LOGGER.info("download certificate current org domain is :" + orgMessageTopic);
 			com.facilio.agentv2.FacilioAgent agent = AgentApiV2.getAgent(agentId);
 			Objects.requireNonNull(agent, "no such agent");
@@ -614,16 +615,14 @@ public class AgentAction extends AgentActionV2 {
 		return SUCCESS;
 	}
 
-    private String getMessageTopic() throws Exception {
-    	Organization currentOrg = AccountUtil.getCurrentOrg();
-    	long orgId = currentOrg.getOrgId();
-    	LOGGER.info("Downld current org :"+currentOrg.getDomain()+" orgid "+currentOrg.getOrgId());
+    private String getMessageTopic(String domain, long orgId) throws Exception {
+    	LOGGER.info("Downld current org :"+domain+" orgid "+orgId);
     	GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().select(AgentFieldFactory.getMessageTopicFields())
     			.table(AgentModuleFactory.getMessageToipcModule().getTableName())
     			.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(AgentFieldFactory.getMessageTopicFields()).get("orgId"), String.valueOf(orgId), StringOperators.IS));
     	Map<String,Object> prop =	builder.fetchFirst();
     	if(MapUtils.isEmpty(prop)) {
-    		return 	FacilioService.runAsServiceWihReturn(()->MessageQueueTopic.addMsgTopic(currentOrg.getDomain(), currentOrg.getOrgId())) ? currentOrg.getDomain():null;
+    		return 	FacilioService.runAsServiceWihReturn(()->MessageQueueTopic.addMsgTopic(domain, orgId)) ? domain:null;
     	}
     	return prop.get("topic").toString();
     }
