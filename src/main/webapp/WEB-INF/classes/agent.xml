@@ -209,7 +209,7 @@
 		<action name="certificate" class="com.facilio.agentv2.AgentAction" method="downloadCertificate">
 		 <result name="success" type="stream">
              <param name="contentType">application/octet-stream</param>
-                <param name="inputName">fileInputStream</param>
+                <param name="inputName">downloadStream</param>
                 <param name="contentDisposition">attachment;filename="${filename}"</param>
                 <param name="bufferSize">1024</param>
             </result>
