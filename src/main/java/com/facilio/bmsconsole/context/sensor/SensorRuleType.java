@@ -1,13 +1,5 @@
 package com.facilio.bmsconsole.context.sensor;
 
-import com.facilio.bmsconsole.context.sensor.SensorRuleTypeValidationInterface;
-import com.facilio.bmsconsole.context.sensor.ValidateContinuouslyReceivingSameValueInSensorRule;
-import com.facilio.bmsconsole.context.sensor.ValidateContinuouslyReceivingZeroInSensorRule;
-import com.facilio.bmsconsole.context.sensor.ValidateDecrementalValueInSensorRule;
-import com.facilio.bmsconsole.context.sensor.ValidateMeanVariationInSensorRule;
-import com.facilio.bmsconsole.context.sensor.ValidateNegativeValueInSensorRule;
-import com.facilio.bmsconsole.context.sensor.ValidatePermissibleLimitViolationInSensorRule;
-import com.facilio.bmsconsole.context.sensor.ValidateSameValueWithZeroDeltaInSensorRule;
 import com.facilio.modules.FacilioEnum;
 
 public enum SensorRuleType implements FacilioEnum{

@@ -40,6 +40,8 @@ public class SensorEventContext extends BaseEventContext {
 		if (readingFieldId != -1) {
 			sensorAlarm.setReadingFieldId(readingFieldId);
 		}
+		sensorAlarm.setSensorRuleType(sensorRuleType);
+		sensorAlarm.setMeterRollUp(meterRollUp);
 		return baseAlarm;
 	}
 
@@ -53,6 +55,8 @@ public class SensorEventContext extends BaseEventContext {
 		if (readingFieldId != -1) {
 			sensorAlarmOccurrence.setReadingFieldId(readingFieldId);
 		}
+		sensorAlarmOccurrence.setSensorRuleType(sensorRuleType);
+		sensorAlarmOccurrence.setMeterRollUp(meterRollUp);
 		return super.updateAlarmOccurrenceContext(alarmOccurrence, context, add);
 	}
 
@@ -70,6 +74,31 @@ public class SensorEventContext extends BaseEventContext {
 	}
 	public void setReadingFieldId(long readingFieldId) {
 		this.readingFieldId = readingFieldId;
+	}
+
+	private SensorRuleType sensorRuleType;
+	public SensorRuleType getSensorRuleTypeEnum() {
+		return sensorRuleType;
+	}
+	public void setSensorRuleType(SensorRuleType sensorRuleType) {
+		this.sensorRuleType = sensorRuleType;
+	}
+	public int getSensorRuleType() {
+		if (sensorRuleType != null) {
+			return sensorRuleType.getIndex();
+		}
+		return -1;
+	}
+	public void setSensorRuleType(int sensorRuleType) {
+		this.sensorRuleType = SensorRuleType.valuOf(sensorRuleType);
+	}
+
+	private boolean meterRollUp = false;
+	public boolean isMeterRollUp() {
+		return meterRollUp;
+	}
+	public void setMeterRollUp(boolean meterRollUp) {
+		this.meterRollUp = meterRollUp;
 	}
 
 	@JsonSerialize

@@ -1,49 +1,23 @@
 package com.facilio.bmsconsole.context.sensor;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
-import com.facilio.bmsconsole.context.BaseEventContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleAlarmMeta;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
-import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.CommonOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.Operator;
-import com.facilio.events.commands.NewEventsToAlarmsConversionCommand.PointedList;
-import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.NumberField;
-import com.facilio.time.DateRange;
-import com.facilio.unitconversion.Metric;
-import com.facilio.util.FacilioUtil;
 
 public class SensorRuleContext implements Serializable{
 	
@@ -165,6 +139,8 @@ public class SensorRuleContext implements Serializable{
 		
 		sensorEvent.setReadingFieldId(this.getReadingFieldId());
 		sensorEvent.setSensorRule(sensorRule);
+		sensorEvent.setSensorRuleType(this.sensorRuleType);
+		sensorEvent.setMeterRollUp(this.sensorRuleType.isMeterRollUp());
 		
 		SensorRuleUtil.addDefaultEventProps(reading, defaultSeverityProps, sensorEvent);
 		
@@ -188,6 +164,8 @@ public class SensorRuleContext implements Serializable{
 			sensorRule.setId(this.getId());	
 			sensorEvent.setReadingFieldId(this.getReadingFieldId());
 			sensorEvent.setSensorRule(sensorRule);
+			sensorEvent.setSensorRuleType(this.sensorRuleType);
+			sensorEvent.setMeterRollUp(this.sensorRuleType.isMeterRollUp());
 			
 			sensorEvent.setAutoClear(true);
 			sensorEvent.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
