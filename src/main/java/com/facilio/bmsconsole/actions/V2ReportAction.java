@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.actions;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,6 +12,8 @@ import java.util.Set;
 
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.sensor.SensorRollUpAlarmContext;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -1136,6 +1139,9 @@ public class V2ReportAction extends FacilioAction {
 			else if (alarmOccurrence.getAlarm() instanceof OperationAlarmContext) {
 				OperationAlarmContext opAlarm = (OperationAlarmContext) alarmOccurrence.getAlarm();
 			}
+			else if (alarmOccurrence.getAlarm() instanceof SensorRollUpAlarmContext) {
+				SensorRollUpAlarmContext sensorAlarm = (SensorRollUpAlarmContext) alarmOccurrence.getAlarm();
+			}
 			if(ruleId > 0) {
 				ReadingRuleContext readingruleContext = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(ruleId);
 				readingRules.add(readingruleContext);
@@ -1175,6 +1181,11 @@ public class V2ReportAction extends FacilioAction {
 		else if ( alarmOccurrence.getAlarm() instanceof OperationAlarmContext) {
 			OperationAlarmContext opAlarm = (OperationAlarmContext) alarmOccurrence.getAlarm();
 			dataPoints.addAll(getDataPointsJSONForOpAlarm(opAlarm, resource));
+
+		}
+		else if ( alarmOccurrence.getAlarm() instanceof SensorRollUpAlarmContext) {
+			SensorRollUpAlarmContext sensorAlarm = (SensorRollUpAlarmContext) alarmOccurrence.getAlarm();
+			dataPoints.addAll(getDataPointsJSONForSensorAlarm(sensorAlarm, resource));
 
 		}
 		
@@ -1510,6 +1521,24 @@ public class V2ReportAction extends FacilioAction {
 
 		return dataPoints;
 
+	}
+	
+	private Collection getDataPointsJSONForSensorAlarm(SensorRollUpAlarmContext sensorAlarm, ResourceContext resource) {
+		JSONArray dataPoints = new JSONArray();
+		JSONObject dataPoint = new JSONObject();
+
+		dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
+
+		JSONObject yAxisJson = new JSONObject();
+		yAxisJson.put("fieldId", sensorAlarm.getReadingFieldId());
+		yAxisJson.put("aggr", 0);
+
+		dataPoint.put("yAxis", yAxisJson);
+
+		dataPoint.put("type", 1);
+		dataPoints.add(dataPoint);
+
+		return dataPoints;
 	}
 	
 	private JSONArray getDataPointsJSONFromRule(ReadingRuleContext readingruleContext,ResourceContext resource,AlarmContext alarmContext) throws Exception {

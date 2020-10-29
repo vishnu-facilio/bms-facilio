@@ -1064,6 +1064,12 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new FetchAlarmInsightCommand());
 		return c;
 	}
+	
+	public static FacilioChain getRelatedAlarmsChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new FetchRelatedAlarmsCommand());
+		return c;
+	}
 
 	public static FacilioChain fetchGatePassDetails() {
 		FacilioChain c = getDefaultChain();

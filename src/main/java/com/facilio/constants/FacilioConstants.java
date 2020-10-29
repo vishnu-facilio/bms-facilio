@@ -380,6 +380,7 @@ public class FacilioConstants {
 		
 		public static final String ALARM_SEVERITY = "alarmseverity";
 		public static final String ALARM = "alarm";
+		public static final String RELATED_ALARMS = "relatedAlarms";
 		public static final String READING_ALARM = "readingalarm";
 		public static final String IS_RCA ="isRca";
 		public static final String ML_ALARM = "mlalarm";
@@ -1880,6 +1881,7 @@ public class FacilioConstants {
 			classMap.put(WORK_ORDER_REQUEST, WorkOrderRequestContext.class);
 			classMap.put(ALARM_SEVERITY, AlarmSeverityContext.class);
 			classMap.put(ALARM, AlarmContext.class);
+			classMap.put(SENSOR_ALARM, SensorAlarmContext.class);
 			classMap.put(READING_ALARM, ReadingAlarmContext.class);
 			classMap.put(ML_ALARM, MLAlarmContext.class);
 			classMap.put(ML_ALARM_OCCURRENCE, MLAlarmOccurrenceContext.class);
@@ -2168,18 +2170,23 @@ public class FacilioConstants {
 		}
 		
 		public static Class getClassFromModule(FacilioModule module, boolean checkParent) {
-			Class moduleClass =  classMap.get(module.getName());
-			if (moduleClass == null && checkParent && module.getExtendModule() != null) {
-				return getClassFromModule(module.getExtendModule(), true);
-			}
-
-			if (moduleClass == null && module.isCustom()) {
-				if (module.getTypeEnum() == FacilioModule.ModuleType.ATTACHMENTS) {
-					moduleClass = AttachmentV3Context.class;
-				} else {
-					moduleClass = CustomModuleData.class;
+			Class moduleClass = null;
+			if (module != null) {
+				moduleClass =  classMap.get(module.getName());
+				if (moduleClass == null && checkParent && module.getExtendModule() != null) {
+					return getClassFromModule(module.getExtendModule(), true);
 				}
+
+				if (moduleClass == null && module.isCustom()) {
+					if (module.getTypeEnum() == FacilioModule.ModuleType.ATTACHMENTS) {
+						moduleClass = AttachmentV3Context.class;
+					} else {
+						moduleClass = CustomModuleData.class;
+					}
+				}
+				
 			}
+			
 			return moduleClass;
 		}
 		

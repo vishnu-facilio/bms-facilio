@@ -511,6 +511,18 @@ public class ViewFactory {
 		views.put("agentAll", getAgentAlarmOccurrenceViews().setOrder(order++));
 		views.put("controllerAll",getControllerAlarmOccurrenceViews().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.BMS_ALARM, views);
+		
+		views.put("sensorActive", getSensorAlarmSeverity("sensorActive", "Active Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, false).setOrder(order++));
+		views.put("sensorAlarm", getSensorAlarm("sensorAlarm", "All Alarms", true).setOrder(order++));
+		views.put("unacknowledgedSensorAlarm", getSensorAlarmUnacknowledged().setOrder(order++));
+		views.put("sensorCritical", getSensorAlarmSeverity("sensorCritical", "Critical Alarms", "Critical", true).setOrder(order++));
+		views.put("sensorMajor", getSensorAlarmSeverity("sensorMajor", "Major Alarms", "Major", true).setOrder(order++));
+		views.put("sensorMinor", getSensorAlarmSeverity("sensorMinor", "Minor Alarms", "Minor", true).setOrder(order++));
+		views.put("sensorCleared", getSensorAlarmSeverity("sensorCleared", "Cleared Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true).setOrder(order++));
+//		views.put("mlmvaAlarms", getMultivariateAnomalyAlarmOccurrenceViews().setOrder(order++));
+//		views.put("agentAll", getAgentAlarmOccurrenceViews().setOrder(order++));
+//		views.put("controllerAll",getControllerAlarmOccurrenceViews().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.SENSOR_ROLLUP_ALARM, views);
 
 
 		order = 1;
@@ -1033,6 +1045,24 @@ public class ViewFactory {
 		groupDetails.put("displayName", "Agent Alarms");
 		groupDetails.put("moduleName", FacilioConstants.ContextNames.AGENT_ALARM);
 		groupDetails.put("views", agentAlarms);
+		groupVsViews.add(groupDetails);
+		
+		
+		ArrayList<String> sensorAlarms = new ArrayList<String>();
+		sensorAlarms.add("sensorAlarm");
+		sensorAlarms.add("sensorActive");
+		sensorAlarms.add("unacknowledgedSensorAlarm");
+		sensorAlarms.add("sensorMajor");
+		sensorAlarms.add("sensorMinor");
+		sensorAlarms.add("sensorCritical");
+		sensorAlarms.add("sensorCleared");
+
+
+		groupDetails = new HashMap<>();
+		groupDetails.put("name", "sensorAlarmViews");
+		groupDetails.put("displayName", "Sensor Alarms");
+		groupDetails.put("moduleName", FacilioConstants.ContextNames.SENSOR_ROLLUP_ALARM);
+		groupDetails.put("views", sensorAlarms);
 		groupVsViews.add(groupDetails);
 
 		try {	
@@ -7689,6 +7719,75 @@ public class ViewFactory {
 			}
 		}
 		return viewSharing;
+	}
+	
+	private static FacilioView getSensorAlarmSeverity(String name, String displayName, String severity, boolean equals) {
+
+		Condition alarmCondition = getReadingAlarmSeverityCondition(severity, equals);
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(alarmCondition);
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("lastOccurredTime");	
+		createdTime.setDataType(FieldType.DATE_TIME);
+		createdTime.setColumnName("LAST_OCCURRED_TIME");
+		createdTime.setModule(ModuleFactory.getBaseAlarmModule());
+
+		FacilioView view = new FacilioView();
+		view.setName(name);
+		view.setDisplayName(displayName);
+		view.setCriteria(criteria);
+		view.setModuleName("sensorrollupalarm");
+		view.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+
+		view.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+
+		return view;
+	}
+	
+	private static FacilioView getSensorAlarm(String name, String displayName, boolean equals) {
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("lastOccurredTime");	
+		createdTime.setDataType(FieldType.DATE_TIME);
+		createdTime.setColumnName("LAST_OCCURRED_TIME");
+		createdTime.setModule(ModuleFactory.getBaseAlarmModule());
+
+		FacilioView view = new FacilioView();
+		view.setName(name);
+		view.setDisplayName(displayName);
+		view.setModuleName("sensorrollupalarm");
+		view.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		view.setDefault(true);
+
+		view.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+
+		return view;
+	}
+	
+	private static FacilioView getSensorAlarmUnacknowledged() {
+		Criteria criteria = getReadingAlarmUnacknowledgedCriteria();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("lastOccurredTime");	
+		createdTime.setDataType(FieldType.DATE_TIME);
+		createdTime.setColumnName("LAST_OCCURRED_TIME");
+		createdTime.setModule(ModuleFactory.getSensorRollUpAlarmModule());
+
+		FacilioView typeAlarms = new FacilioView();
+		typeAlarms.setName("unacknowledgedsensoralarm");
+		typeAlarms.setDisplayName("Unacknowledged");
+		typeAlarms.setCriteria(criteria);
+		typeAlarms.setModuleName("sensorrollupalarm");
+		typeAlarms.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+
+		typeAlarms.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+
+		return typeAlarms;
 	}
 
 }

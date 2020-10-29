@@ -211,6 +211,15 @@ public class AlarmAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.COUNT, getCount());
 		return SUCCESS;
 	}
+	
+	
+	public String getRelatedAlarms() throws Exception {
+		FacilioChain chain = ReadOnlyChainFactory.getRelatedAlarmsChain();
+		chain.getContext().put(FacilioConstants.ContextNames.ALARM_ID, alarmId);
+		chain.execute();
+		setResult(FacilioConstants.ContextNames.RELATED_ALARMS, chain.getContext().get(FacilioConstants.ContextNames.RELATED_ALARMS));
+		return SUCCESS;
+	}
 
 	public String alarmList() throws Exception {
 		FacilioChain chain = null;

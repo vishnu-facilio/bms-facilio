@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.page.factory;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.sensor.SensorRollUpAlarmContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.PageWidget;
@@ -63,6 +64,8 @@ public class PageFactory {
 			case ContextNames.READING_ALARM:
 			case ContextNames.NEW_READING_ALARM:
 				return  ReadingAlarmPageFactory.getReadingAlarmPage((ReadingAlarm) record, module);
+			case ContextNames.SENSOR_ROLLUP_ALARM:
+				return  SensorAlarmPageFactory.getSensorAlarmPage((SensorRollUpAlarmContext) record, module);
 			case ContextNames.MULTIVARIATE_ANOMALY_ALARM:
 				return  MultiVariateAnomalyAlarmPageFactory.getMultiVariateAnomalyAlarmPage((MultiVariateAnomalyAlarm) record, module);
 			case ContextNames.OPERATION_ALARM:

@@ -3252,6 +3252,22 @@ public class ModuleFactory {
 		module.setTableName("BMSAlarm");
 		return module;
 	}
+	
+	public static FacilioModule getSensorAlarmModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(ContextNames.SENSOR_ALARM);
+		module.setDisplayName("Sensor Alarm");
+		module.setTableName("SensorAlarm");
+		return module;
+	}
+	
+	public static FacilioModule getSensorRollUpAlarmModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(ContextNames.SENSOR_ROLLUP_ALARM);
+		module.setDisplayName("Sensor RollUp Alarm");
+		module.setTableName("sensorrollupalarm");
+		return module;
+	}
 
 	public static FacilioModule getDigestConfigModule() {
 		FacilioModule module = new FacilioModule();

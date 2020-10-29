@@ -16,6 +16,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.WordUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import java.util.logging.Level;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -36,6 +37,8 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
+import com.facilio.bmsconsole.context.sensor.SensorAlarmContext;
+import com.facilio.bmsconsole.context.sensor.SensorRollUpAlarmContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleMetricContext;
 import com.facilio.chain.FacilioChain;
@@ -56,6 +59,7 @@ import com.facilio.modules.BaseLineContext;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
@@ -1077,5 +1081,44 @@ public class AlarmAPI {
 		}
 		 
 	 }
+	
+	public static SensorRollUpAlarmContext getSensorAlarms(long alarmId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SENSOR_ROLLUP_ALARM);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		SelectRecordsBuilder<SensorRollUpAlarmContext> selectBuilder = new SelectRecordsBuilder<SensorRollUpAlarmContext>()
+																		.select(modBean.getAllFields(FacilioConstants.ContextNames.SENSOR_ROLLUP_ALARM))
+																		.moduleName(FacilioConstants.ContextNames.SENSOR_ROLLUP_ALARM)
+																		.beanClass(SensorRollUpAlarmContext.class)	
+																		.andCondition(CriteriaAPI.getIdCondition(alarmId, ModuleFactory.getSensorRollUpAlarmModule()))
+																		;
+	
+
+		List<SensorRollUpAlarmContext> alarms = selectBuilder.get();
+		// TODO Auto-generated method stub
+		return alarms.get(0);
+	}
+
+	public static List<SensorAlarmContext> getSensorChildAlarms(SensorRollUpAlarmContext alarm, long startTime, long endTime) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SENSOR_ALARM);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		SelectRecordsBuilder<SensorAlarmContext> selectBuilder = new SelectRecordsBuilder<SensorAlarmContext>()
+																		.select(modBean.getAllFields(FacilioConstants.ContextNames.SENSOR_ALARM))
+																		.moduleName(FacilioConstants.ContextNames.SENSOR_ALARM)
+																		.beanClass(SensorAlarmContext.class)
+																		.andCondition(CriteriaAPI.getCondition(fieldMap.get("readingFieldId"), String.valueOf(alarm.getReadingFieldId()), NumberOperators.EQUALS))
+																		
+																		;
+		if (alarm.getResource().getId() > 0) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), String.valueOf(alarm.getResource().getId()), NumberOperators.EQUALS));
+		}
+		if (startTime > 0 && endTime > 0) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("lastCreatedTime"), startTime+","+endTime, DateOperators.BETWEEN));
+		}
+		List<SensorAlarmContext> alarms = selectBuilder.get();
+		// TODO Auto-generated method stub
+		return alarms;
+	}
 	
 }

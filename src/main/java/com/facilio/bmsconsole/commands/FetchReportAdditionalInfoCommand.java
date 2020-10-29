@@ -12,6 +12,10 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.sensor.SensorAlarmContext;
+import com.facilio.bmsconsole.context.sensor.SensorAlarmOccurrenceContext;
+import com.facilio.bmsconsole.context.sensor.SensorRollUpAlarmContext;
+
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -163,6 +167,38 @@ public class FetchReportAdditionalInfoCommand extends FacilioCommand {
 					OperationAlarmContext alarm = (OperationAlarmContext) currentAlarm;
 					readingFieldId = alarm.getReadingFieldId();
 				}
+				else if (currentAlarm instanceof SensorRollUpAlarmContext) {
+					SensorRollUpAlarmContext alarm = (SensorRollUpAlarmContext) currentAlarm;
+					readingFieldId = alarm.getReadingFieldId();
+					List<SensorAlarmContext> relatedAlarms = AlarmAPI.getSensorChildAlarms(alarm, report.getDateRange().getStartTime(), report.getDateRange().getEndTime());
+					
+					JSONArray alarmMetaList = new JSONArray();
+					
+					for (SensorAlarmContext relatedAlarm : relatedAlarms) {
+						Map<String, Object> relatedReportAggrData = new HashMap<>();
+						Map<Long, AlarmOccurrenceContext> relatedAlarmMap = new HashMap<>();
+						List<AlarmOccurrenceContext> relatedAlarmOccurrences = null;
+						
+						
+						relatedAlarmOccurrences = NewAlarmAPI.getReadingAlarmOccurrences(relatedAlarm.getId(), report.getDateRange().getStartTime(), report.getDateRange().getEndTime());
+						relatedReportAggrData.put("alarms",  splitAlarmOccurrence(relatedAlarmOccurrences, report.getDateRange(), relatedAlarmMap));
+						
+						
+						for(Long key : relatedAlarmMap.keySet()) {
+							AlarmOccurrenceContext alarmOccurrenceContext = relatedAlarmMap.get(key);
+							alarmOccurrenceContext.setAlarm(alarmOccurrenceContext.getAlarm());
+							alarmOccurrenceContext.setSubject(alarmOccurrenceContext.getAlarm().getSubject());
+						}
+						relatedReportAggrData.put("alarmInfo", relatedAlarmMap);
+						alarmMetaList.add(relatedReportAggrData);
+					}
+					if (alarmMetaList != null && !alarmMetaList.isEmpty()) {
+						reportAggrData.put("relatedAlarms",  alarmMetaList);
+					}
+					
+				}
+				
+				
 				if (occurrenceId == null || occurrenceId == -1) {
 					occurrences = NewAlarmAPI.getReadingAlarmOccurrences(parentIds, -1l, dp.getyAxis().getFieldId(), report.getDateRange().getStartTime(), report.getDateRange().getEndTime(), null, null, null);
 				}
@@ -194,7 +230,7 @@ public class FetchReportAdditionalInfoCommand extends FacilioCommand {
 		}
 		reportAggrData.put("alarmInfo", alarmMap);
 	}
-	
+
 	private void oldAlarm(ReportContext report, boolean showAlarms, boolean fetchEventBar, Long alarmId, ReadingAlarmContext currentAlarm, 
 			Map<String, Object> reportAggrData, Context context, Collection<Map<String, Object>> csvData) throws Exception {
 		Map<Long, ReadingAlarmContext> alarmMap = new HashMap<>();
@@ -340,6 +376,7 @@ public class FetchReportAdditionalInfoCommand extends FacilioCommand {
 		
 		return alarmMetaList;
 	}
+	
 	
 	static JSONArray splitAlarmOccurrence (List<AlarmOccurrenceContext> alarmOccurrences, DateRange range, Map<Long, AlarmOccurrenceContext> alarmMap) {
 		
