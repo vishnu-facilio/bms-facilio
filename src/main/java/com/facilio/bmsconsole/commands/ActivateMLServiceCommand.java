@@ -176,11 +176,13 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 			LOGGER.info("prevModule Fields - local:: "+prevModuleContext.getRequestFields());
 			LOGGER.info("prevModule subFields - local:: "+subFields);
 
-			List<String> defaultFields = getDefaultFields(false).stream().map(field -> field.getName()).collect(Collectors.toList());
-
+			List<String> parentFields = moduleContext.getParentFields();
+			LOGGER.info("parentFields :: "+parentFields);
 			List<FacilioField> finalFields = prevModuleContext.getRequestFields().stream()
-					.filter( field -> !defaultFields.contains(field.getName()) )
+					.filter( field -> parentFields.contains(field.getName()) )
 					.collect(Collectors.toList());
+
+			LOGGER.info("finalFields :: "+finalFields);
 
 			boolean first = true;
 			FacilioField parentField = modBean.getField("parentId", prevModule.getName());
