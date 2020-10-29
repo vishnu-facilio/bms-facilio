@@ -338,6 +338,16 @@ public class FacilioAuthAction extends FacilioAction {
 		return SUCCESS;
 	}
 
+	private String lookUpType;
+
+	public void setLookUpType(String lookUpType) {
+		this.lookUpType = lookUpType;
+	}
+
+	public String getLookUpType() {
+		return this.lookUpType;
+	}
+
 	public String servicelookup() {
 		String username = getUsername();
 		AppDomain.GroupType groupType = AppDomain.GroupType.TENANT_OCCUPANT_PORTAL;
@@ -353,6 +363,11 @@ public class FacilioAuthAction extends FacilioAction {
 	}
 
 	public String lookup() {
+		if (!StringUtils.isNullOrEmpty(getLookUpType())) {
+			if (getLookUpType().equals("service")) {
+				return servicelookup();
+			}
+		}
 		String username = getUsername();
 		String domain = getDomain();
 		HttpServletRequest request = ServletActionContext.getRequest();
@@ -445,6 +460,11 @@ public class FacilioAuthAction extends FacilioAction {
 	}
 
 	public String loginWithPasswordAndDigest() throws Exception {
+		if (!StringUtils.isNullOrEmpty(getLookUpType())) {
+			if (getLookUpType().equals("service")) {
+				return serviceLoginWithPasswordAndDigest();
+			}
+		}
 		String digest = getDigest();
 		String emailFromDigest = null;
 		try {
