@@ -21,13 +21,13 @@ public class MLCustomModuleContext extends ModuleBaseWithCustomFields {
 	private String moduleName;
 	private Map<String, List<String>> fields;
 	private String parentModule;
+	private List<String> parentFields;
 	private String type;
 	
 	/**
 	 * Internal usage variables
 	 */
 	private List<FacilioField> requestFields;
-	private List<FacilioField> responseFields;
 	private long mlReadingModuleId;
 	private long mlId;
 	
@@ -80,28 +80,12 @@ public class MLCustomModuleContext extends ModuleBaseWithCustomFields {
 		this.requestFields = requestFields;
 	}
 
-	public List<FacilioField> getResponseFields() {
-		return responseFields;
-	}
-
-	public void setResponseFields(List<FacilioField> responseFields) {
-		this.responseFields = responseFields;
-	}
-
 	public long getMlReadingModuleId() {
 		return mlReadingModuleId;
 	}
 
 	public void setMlReadingModuleId(long mlReadingModuleId) {
 		this.mlReadingModuleId = mlReadingModuleId;
-	}
-
-	@Override
-	public String toString() {
-		return "MLCustomModuleContext [modelPath=" + modelPath + ", moduleNeeded=" + moduleNeeded + ", moduleName="
-				+ moduleName + ", fields=" + fields + ", parentModule=" + parentModule + ", requestFields="
-				+ requestFields + ", responseFields=" + responseFields + ", mlReadingModuleId=" + mlReadingModuleId
-				+ "]";
 	}
 
 	public long getMlId() {
@@ -119,8 +103,21 @@ public class MLCustomModuleContext extends ModuleBaseWithCustomFields {
 	public void setType(String type) {
 		this.type = type;
 	}
-	
-	
 
+	public List<String> getParentFields() {
+		return parentFields;
+	}
+
+	public void setParentFields(List<String> parentFields) {
+		this.parentFields = parentFields;
+	}
+
+	@Override
+	public String toString() {
+		return "MLCustomModuleContext [modelPath=" + modelPath + ", moduleNeeded=" + moduleNeeded + ", moduleName="
+				+ moduleName + ", fields=" + fields + ", parentModule=" + parentModule + ", parentFields="
+				+ parentFields + ", type=" + type + ", requestFields=" + requestFields + ", mlReadingModuleId="
+				+ mlReadingModuleId + ", mlId=" + mlId + "]";
+	}
 	
 }
