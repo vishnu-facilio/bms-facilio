@@ -1,9 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TimeZone;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang.StringUtils;
@@ -11,12 +9,11 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.context.MLResponseContext;
 import com.facilio.bmsconsole.context.MLServiceContext;
-import com.facilio.bmsconsole.util.MLAPI;
+import com.facilio.bmsconsole.util.MLServiceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
 
@@ -37,7 +34,7 @@ public class InitMLServiceCommand extends FacilioCommand {
 			modelVariables.put("orgDetails", mlServiceContext.getOrgDetails());
 			JSONObject postObj = new JSONObject();
 			postObj.put("modelvariables", modelVariables);
-			postObj.put("date", String.valueOf(getCurrentDate(false)));
+			postObj.put("date", String.valueOf(MLServiceAPI.getCurrentDate(false)));
 			postObj.put("predictedtime", predictedTime);
 			postObj.put("usecaseId", mlServiceContext.getUseCaseId());
 
@@ -66,11 +63,7 @@ public class InitMLServiceCommand extends FacilioCommand {
 //				JSONObject response = new JSONObject(result);
 //				Map<String,Object> response = new ObjectMapper().readValue(result, HashMap.class);
 				MLResponseContext mlResponse = FieldUtil.getAsBeanFromJson(response, MLResponseContext.class);
-
-				Map<String, Object> row = new HashMap<>();
-				row.put("status", mlResponse.getMessage());
-				MLAPI.updateMLServiceInfo(mlResponse.getUsecaseId(), row);
-
+				MLServiceAPI.updateMLServiceStatus(mlResponse.getUsecaseId(), mlResponse.getMessage());
 				LOGGER.info("\nML Status has been updated :: \n"+result);
 				mlServiceContext.setMlResponse(mlResponse);
 				if(mlResponse!=null) {
@@ -87,14 +80,5 @@ public class InitMLServiceCommand extends FacilioCommand {
 		LOGGER.info("End of InitMLModelCommand for usecase id "+mlServiceContext.getUseCaseId());
 		return false;
 
-	}
-
-	private Object getCurrentDate(boolean dummyHit) {
-		if(dummyHit) {
-			return "2020-06-12";
-		}
-		else {
-			return LocalDate.now(TimeZone.getTimeZone(AccountUtil.getCurrentAccount().getTimeZone()).toZoneId());
-		}
 	}
 }
