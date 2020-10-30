@@ -7605,6 +7605,7 @@ public class FieldFactory {
         fields.add(getField("status", "STATUS", module, FieldType.STRING));
         fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.NUMBER));
         fields.add(getField("modelName", "MODEL_NAME", module, FieldType.STRING));
+        fields.add(getField("scenario", "SCENARIO", module, FieldType.STRING));
         fields.add(getField("mlModelMeta", "ML_MODEL_META", module, FieldType.STRING));
         return fields;
     }
