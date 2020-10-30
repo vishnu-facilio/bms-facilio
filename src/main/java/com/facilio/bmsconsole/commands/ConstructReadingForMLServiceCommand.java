@@ -9,16 +9,14 @@ import java.util.TreeMap;
 
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
-import org.json.JSONException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.MLServiceContext;
 import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.util.MLAPI;
+import com.facilio.bmsconsole.util.MLServiceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -28,8 +26,6 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
-import com.facilio.workflows.context.WorkflowContext;
-import com.facilio.workflowv2.util.UserFunctionAPI;
 
 public class ConstructReadingForMLServiceCommand extends FacilioCommand {
 
@@ -42,7 +38,7 @@ public class ConstructReadingForMLServiceCommand extends FacilioCommand {
 		try {
 			
 			MLServiceContext mlServiceContext = (MLServiceContext) context.get(FacilioConstants.ContextNames.ML_MODEL_INFO);
-			mlServiceContext.setOrgDetails(getOrgInfo());
+			mlServiceContext.setOrgDetails(MLServiceAPI.getOrgInfo());
 			
 			this.updateMLServiceInfo(mlServiceContext);
 			
@@ -51,10 +47,10 @@ public class ConstructReadingForMLServiceCommand extends FacilioCommand {
 			Long startTime = (Long) context.get(FacilioConstants.ContextNames.START_TTIME);
 			Long endTime = (Long) context.get(FacilioConstants.ContextNames.END_TTIME);
 			
-			List<String> readingVariable = mlServiceContext.getReadingVariables();
+			List<String> readingVariable = mlServiceContext.getReadingList();
 			LOGGER.info("ML Service assetId :: "+assetId + " and readingVariables : "+readingVariable);
 
-			List<Map<String, Object>> readingFieldsDetails = MLAPI.getReadingFields(assetId, readingVariable);
+			List<Map<String, Object>> readingFieldsDetails = MLServiceAPI.getReadingFields(assetId, readingVariable);
 
 			JSONArray dataObject = new JSONArray();
 			
@@ -142,14 +138,13 @@ public class ConstructReadingForMLServiceCommand extends FacilioCommand {
 		}
 		catch(Exception e) {
 			LOGGER.error("Error while constructing data to dry hit ML api", e);
-			throw e;
+			return true;
 		}
 	}
 
 	private void updateMLServiceInfo(MLServiceContext mlServiceContext) throws Exception {
-		long workflowId = getWorkFlowId(mlServiceContext.getWorkflowInfo());
+		long workflowId = MLServiceAPI.getWorkFlowId(mlServiceContext.getWorkflowInfo());
 		LOGGER.info("workflowId :: "+workflowId);
-		
 		
 		Map<String, Object> mlServiceRow = new HashMap<>();
 		mlServiceRow.put("orgId", AccountUtil.getCurrentOrg().getOrgId());
@@ -160,33 +155,11 @@ public class ConstructReadingForMLServiceCommand extends FacilioCommand {
 			LOGGER.info("setting workflowId :: "+workflowId);
 		}
 		mlServiceRow.put("modelName", mlServiceContext.getModelName());
+		mlServiceRow.put("scenario", mlServiceContext.getScenario());
 		mlServiceRow.put("mlModelMeta", mlServiceContext.getReqJson().toString());
 		
-		long useCaseId = MLAPI.addMLServiceInfo(mlServiceRow);
+		long useCaseId = MLServiceAPI.addMLServiceInfo(mlServiceRow);
 		mlServiceContext.setUseCaseId(useCaseId);
 	}
 
-	private long getWorkFlowId(JSONObject workflowInfo) throws JSONException {
-		String namespace = (String) workflowInfo.get("namespace");
-		String function = (String) workflowInfo.get("function");
-		try {
-			WorkflowContext workflowContext = UserFunctionAPI.getWorkflowFunction(namespace, function);
-			long workflowId = workflowContext.getId();
-			LOGGER.info("ml service workflow namespace = "+namespace+", function = "+function+", workflowId = "+workflowId);
-			return workflowContext.getId();
-		} catch (Exception e) {
-			LOGGER.error("Error while getting flow id for given namespace <"+namespace+"> and function <"+function+">");
-			e.printStackTrace();
-		}
-		return 0;
-	}
-	
-	private JSONObject getOrgInfo() throws JSONException {
-//		Map<String, Object> orgInfo = new TreeMap<>();
-		JSONObject orgInfo = new JSONObject();
-		Organization org = AccountUtil.getCurrentOrg();
-		orgInfo.put(FacilioConstants.ContextNames.ORGID, org.getOrgId());
-		orgInfo.put(FacilioConstants.ContextNames.TIME_ZONE, org.getTimezone());
-		return orgInfo;
-	}
 }

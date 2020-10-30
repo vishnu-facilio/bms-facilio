@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -16,6 +18,7 @@ import com.facilio.bmsconsole.context.MLResponseContext;
 import com.facilio.bmsconsole.context.MLServiceContext;
 import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
+import com.facilio.bmsconsole.util.MLServiceAPI;
 import com.facilio.bmsconsole.util.MLAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -52,9 +55,8 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 			Map<String, MLCustomModuleContext> mlCustomModuleMap = mlResponseContext.getModuleInfo()
 					.stream().collect(Collectors.toMap(MLCustomModuleContext::getModuleName, mlCustomModule -> mlCustomModule));
 
-
-			List<Map<String, Object>> readingFieldsDetails = MLAPI.getReadingFields(assetId, readingVariables);
-
+			List<Map<String, Object>> readingFieldsDetails = MLServiceAPI.getReadingFields(assetId, readingVariables);
+			
 			for(MLCustomModuleContext moduleContext : mlResponseContext.getModuleInfo()) {
 				LOGGER.info("MAPPPSSS:::"+mlCustomModuleMap);
 				LOGGER.info("MODULEEEEEEEEEEE name :: "+moduleContext.getModelPath());
@@ -89,18 +91,18 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 		LOGGER.info("End of ActivateMLServiceCommand");
 		return false;
 	}
-
-
-	//	private String convertMapIntoStrings(Object elements) {
-	//		ObjectMapper objectMapper = new ObjectMapper();
-	//		try {
-	//			String json = objectMapper.writeValueAsString(elements);
-	//			return json;
-	//		} catch (JsonProcessingException e) {
-	//			e.printStackTrace();
-	//		}
-	//		return null;
-	//	}
+	
+	private void addMLModelVariables(long mlId, String key, JSONObject value) throws Exception {
+		if(value!=null) {
+			MLAPI.addMLModelVariables(mlId, key, value.toString());
+		}
+	}
+	
+	private void addMLModelVariables(long mlId, String key, JSONArray value) throws Exception {
+		if(value!=null) {
+			MLAPI.addMLModelVariables(mlId, key, value.toString());
+		}
+	}
 
 	private void addMLModelVariables(long mlID, MLServiceContext mlServiceContext, MLCustomModuleContext moduleContext, Long assetId) throws Exception {
 		//Already available variables
@@ -108,27 +110,17 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 		MLAPI.addMLModelVariables(mlID,"timezone",AccountUtil.getCurrentAccount().getTimeZone());
 
 		//ML service variables
-		if(mlServiceContext.getWorkflowInfo()!=null) {
-			MLAPI.addMLModelVariables(mlID,"workflowInfo",mlServiceContext.getWorkflowInfo().toString());
-		}
-		if(mlServiceContext.getFilteringMethod()!=null) {
-			MLAPI.addMLModelVariables(mlID,"filteringMethod",mlServiceContext.getFilteringMethod().toString());
-		}
-		if(mlServiceContext.getGroupingMethod()!=null) {
-			MLAPI.addMLModelVariables(mlID,"groupingMethod",mlServiceContext.getGroupingMethod().toString());
-		}
-		if(mlServiceContext.getMlVariables()!=null) {
-			MLAPI.addMLModelVariables(mlID,"mlVariables",mlServiceContext.getMlVariables().toString());
-		}
-		MLAPI.addMLModelVariables(mlID,"readingVariables",mlServiceContext.getReadingVariables().toString());
+		addMLModelVariables(mlID,"workflowInfo",mlServiceContext.getWorkflowInfo());
+		addMLModelVariables(mlID,"filteringMethod",mlServiceContext.getFilteringMethod());
+		addMLModelVariables(mlID,"groupingMethod",mlServiceContext.getGroupingMethod());
+		addMLModelVariables(mlID,"mlVariables",mlServiceContext.getMlVariables());
+		addMLModelVariables(mlID,"readingVariables",mlServiceContext.getReadingVariables());
 
 		//extra variables (duplicates)
 		MLAPI.addMLModelVariables(mlID,"modelName",mlServiceContext.getModelName());
 		MLAPI.addMLModelVariables(mlID,"scenario",mlServiceContext.getScenario());
-		if(mlServiceContext.getWorkflowInfo()!=null) {
-			MLAPI.addMLModelVariables(mlID,"assetDetails",mlServiceContext.getAssetDetails().toString());
-		}
-		MLAPI.addMLModelVariables(mlID,"orgDetails",mlServiceContext.getOrgDetails().toString());
+		addMLModelVariables(mlID,"assetDetails",mlServiceContext.getAssetDetails());
+		addMLModelVariables(mlID,"orgDetails",mlServiceContext.getOrgDetails());
 
 		MLAPI.addMLModelVariables(mlID,"usecaseId",String.valueOf(mlServiceContext.getUseCaseId()));
 		if(moduleContext.getType().equals("prediction")) {
