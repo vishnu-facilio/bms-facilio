@@ -434,6 +434,9 @@
         <action name="addController" class="com.facilio.agentv2.actions.ModbusControllerAction"
                 method="addModbusController">
         </action>
+         <action name="addMiscController" class="com.facilio.agentv2.actions.AddMiscControllerAction"
+                method="addMiscController">
+        </action>
         <action name="addPoint" class="com.facilio.agentv2.actions.ModbusPointAction"
                 method="createModbusPoint">
         </action>
