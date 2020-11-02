@@ -52,6 +52,11 @@ public enum EnumOperators implements Operator<String> {
 	},
 	IS(54, "is") {
 		@Override
+		public boolean isDefaultSelection() {
+			return true;
+		}
+
+		@Override
 		public String getWhereClause(String columnName, String value) {
 			// TODO Auto-generated method stub
 			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {

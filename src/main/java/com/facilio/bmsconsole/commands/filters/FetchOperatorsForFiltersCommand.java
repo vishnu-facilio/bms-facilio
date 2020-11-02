@@ -54,7 +54,7 @@ public class FetchOperatorsForFiltersCommand extends FacilioCommand {
         if (MapUtils.isNotEmpty(operators)) {
             filterOperators = new ArrayList<>();
             for (Operator operator : operators.values()) {
-                List<FilterOperator> filterOperator = createFilterOperator(operator);
+                List<FilterOperator> filterOperator = createFilterOperator(fieldType, operator);
                 if (CollectionUtils.isNotEmpty(filterOperator)) {
                     filterOperators.addAll(filterOperator);
                 }
@@ -90,7 +90,7 @@ public class FetchOperatorsForFiltersCommand extends FacilioCommand {
         }
     }
 
-    private List<FilterOperator> createFilterOperator (Operator operator) {
+    private List<FilterOperator> createFilterOperator (FieldType type, Operator operator) {
 
         if (operator instanceof FieldOperator
                 || operator instanceof BuildingOperator
@@ -106,21 +106,21 @@ public class FetchOperatorsForFiltersCommand extends FacilioCommand {
             switch ((DateOperators) operator) {
                 case NEXT_N_DAYS: {
                     List<FilterOperator> operators = new ArrayList<>();
-                    operators.add(new FilterOperator("Next 2 Days", "within next 2 days", operator.getOperatorId(), false, "2"));
-                    operators.add(new FilterOperator("Next 7 Days", "within next 7 days", operator.getOperatorId(), false, "7"));
+                    operators.add(new FilterOperator(operator, "Next 2 Days", "within next 2 days", false, "2"));
+                    operators.add(new FilterOperator(operator, "Next 7 Days", "within next 7 days", false, "7"));
                     return operators;
                 }
                 case CURRENT_WEEK: { // Have to check with Krishna if operator name itself can be changed if they are not used in Scripts
-                    return Collections.singletonList(new FilterOperator("This Week", operator.getTagDisplayName(), operator.getOperatorId(), operator.isValueNeeded()));
+                    return Collections.singletonList(new FilterOperator(operator, "This Week"));
                 }
                 case LAST_N_WEEKS: {
-                    return Collections.singletonList(new FilterOperator("Last 2 Weeks", "within last 2 weeks", operator.getOperatorId(), false, "2"));
+                    return Collections.singletonList(new FilterOperator(operator, "Last 2 Weeks", "within last 2 weeks", false, "2"));
                 }
                 case CURRENT_MONTH: {
-                    return Collections.singletonList(new FilterOperator("This Month", operator.getTagDisplayName(), operator.getOperatorId(), operator.isValueNeeded()));
+                    return Collections.singletonList(new FilterOperator(operator, "This Month"));
                 }
                 case BETWEEN: {
-                    return Collections.singletonList(new FilterOperator("Custom", operator.getTagDisplayName(), operator.getOperatorId(), operator.isValueNeeded()));
+                    return Collections.singletonList(new FilterOperator(operator, "Custom"));
                 }
                 default:
                     return Collections.singletonList(new FilterOperator(operator));
