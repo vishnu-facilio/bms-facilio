@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.page.factory;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.WorkPermitContext;
 import com.facilio.bmsconsole.page.Page;
@@ -19,9 +18,9 @@ public class WorkpermitPageFactory extends PageFactory {
 
 	public static Page getWorkPermitPage(WorkPermitContext workpermit) throws Exception {
 
-		if (AccountUtil.getCurrentUser().isPortalUser()) {
-			return getWorkPermitPortalPage(workpermit);
-		}
+//		if (AccountUtil.getCurrentUser().isPortalUser()) {
+//			return getWorkPermitPortalPage(workpermit);
+//		}
 		return getMainAppWorkPermitPage(workpermit);
 	}
 
