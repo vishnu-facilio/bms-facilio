@@ -66,6 +66,10 @@ public class NamedCriteriaAPI {
     }
 
     public static Map<Long, NamedCriteria> getCriteriaAsMap(List<Long> ids) throws Exception {
+        if (CollectionUtils.isEmpty(ids)) {
+            return null;
+        }
+
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getNamedCriteriaModule().getTableName())
                 .select(FieldFactory.getNamedCriteriaFields())

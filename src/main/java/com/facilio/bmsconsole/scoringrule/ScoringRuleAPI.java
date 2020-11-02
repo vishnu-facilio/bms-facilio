@@ -26,11 +26,11 @@ import java.util.stream.Collectors;
 public class ScoringRuleAPI extends WorkflowRuleAPI {
 
     public static void validateRule(ScoringRuleContext rule) {
-        if (rule.getScoreFieldId() == -1) {
-            throw new IllegalArgumentException("Scoring field cannot be empty");
-        }
-
         if (!rule.isDraft()) {
+            if (rule.getScoreFieldId() == -1) {
+                throw new IllegalArgumentException("Scoring field cannot be empty");
+            }
+
             for (ScoringCommitmentContext scoringCommitment : rule.getScoringCommitmentContexts()) {
 
                 List<BaseScoringContext> baseScoringContexts = scoringCommitment.getBaseScoringContexts();
@@ -139,10 +139,10 @@ public class ScoringRuleAPI extends WorkflowRuleAPI {
         addScoringRuleChildren(rule);
 
         ScoringRuleContext oldRule = (ScoringRuleContext) getWorkflowRule(rule.getId());
-        rule.setScoreFieldId(oldRule.getScoreFieldId());
-        rule.setScoreField(oldRule.getScoreField());
-
         if (!oldRule.isDraft()) {
+            rule.setScoreFieldId(oldRule.getScoreFieldId());
+            rule.setScoreField(oldRule.getScoreField());
+
             if (rule.isDraft()) {
                 throw new IllegalArgumentException("Cannot draft published scoring rule");
             }
