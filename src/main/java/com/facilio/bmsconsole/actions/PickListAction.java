@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.modules.fields.FieldOption;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
@@ -917,5 +919,43 @@ public class PickListAction extends FacilioAction {
 		deleteStockedToolsStatusChain.execute(context);
 		setResult("itemStatusId", itemStatusId);
 		return SUCCESS;
+	}
+
+	public String fetchLabels() throws Exception {
+		FacilioChain fetchLabel = ReadOnlyChainFactory.fetchLabels();
+		fetchLabel.getContext().put(FacilioConstants.PickList.LOOKUP_LABEL_META, labelMeta);
+		fetchLabel.execute();
+
+		Map<String, List<FieldOption>> labels = (Map<String, List<FieldOption>>) fetchLabel.getContext().get(FacilioConstants.PickList.LOOKUP_LABELS);
+		setResult("label", labels);
+
+		return SUCCESS;
+	}
+
+	public List<LookupLabelMeta> getLabelMeta() {
+		return labelMeta;
+	}
+	public void setLabelMeta(List<LookupLabelMeta> labelMeta) {
+		this.labelMeta = labelMeta;
+	}
+
+	private List<LookupLabelMeta> labelMeta;
+
+	public static class LookupLabelMeta {
+		private String moduleName;
+		public String getModuleName() {
+			return moduleName;
+		}
+		public void setModuleName(String moduleName) {
+			this.moduleName = moduleName;
+		}
+
+		private List<Long> id;
+		public List<Long> getId() {
+			return id;
+		}
+		public void setId(List<Long> id) {
+			this.id = id;
+		}
 	}
 }

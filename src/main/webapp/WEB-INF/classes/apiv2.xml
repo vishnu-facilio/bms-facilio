@@ -1852,6 +1852,10 @@
 			class="com.facilio.bmsconsole.actions.PickListAction"
 			method="deleteItemStatus">
 		</action>
+		<action name="label"
+				class="com.facilio.bmsconsole.actions.PickListAction"
+				method="fetchLabels">
+		</action>
 	</package>
 	<package name="formsApiv2" namespace="/api/v2/form"
 		extends="v2Api">

@@ -2613,4 +2613,11 @@ public class ReadOnlyChainFactory {
 
 		return chain;
 	}
+
+	public static FacilioChain fetchLabels() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new FetchLookupLabelsCommand());
+
+		return c;
+	}
 }
