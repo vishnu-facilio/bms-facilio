@@ -102,10 +102,18 @@ public enum FacilioMathFunction implements FacilioWorkflowFunctionInterface  {
 		@Override
 		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
-			int no = (int) Double.parseDouble(objects[0].toString());
+			int no1 = (int) Double.parseDouble(objects[0].toString());
 			
 			Random random = new Random();
-			return random.nextInt(no);
+			if(objects.length > 1) {
+				int no2 = (int) Double.parseDouble(objects[1].toString());
+				
+				int result = random.nextInt(no2-no1) + no1;
+				return result;
+			}
+			else {
+				return random.nextInt(no1);
+			}
 			
 		};
 		
