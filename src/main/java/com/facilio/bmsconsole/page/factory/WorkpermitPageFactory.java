@@ -1,15 +1,12 @@
 package com.facilio.bmsconsole.page.factory;
 
-import com.facilio.beans.ModuleBean;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.WorkPermitContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.Page.Section;
-import com.facilio.bmsconsole.page.Page.Tab;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.PageWidget.WidgetType;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -18,27 +15,37 @@ public class WorkpermitPageFactory extends PageFactory {
 
 	public static Page getWorkPermitPage(WorkPermitContext workpermit) throws Exception {
 
-//		if (AccountUtil.getCurrentUser().isPortalUser()) {
-//			return getWorkPermitPortalPage(workpermit);
-//		}
+		if (AccountUtil.getCurrentUser().isPortalUser()) {
+			return getWorkPermitPortalPage(workpermit);
+		}
 		return getMainAppWorkPermitPage(workpermit);
 	}
 
 	private static Page getWorkPermitPortalPage(WorkPermitContext workpermit) throws Exception {
 		Page page = new Page();
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(workpermit.getModuleId());
 
-		Tab tab1 = page.new Tab("summary");
+		Page.Tab tab1 = page.new Tab("summary");
 		page.addTab(tab1);
 
-		Section tab1Sec1 = page.new Section();
+		Page.Section tab1Sec1 = page.new Section();
 		tab1.addSection(tab1Sec1);
-		addPortalDetailsWidget(tab1Sec1);
-		Section tab1Sec3 = page.new Section();
-		tab1.addSection(tab1Sec3);
-		addRelatedListWidgets(tab1Sec3, module.getModuleId());
-		addCommonSubModuleWidget(tab1Sec3, module, workpermit);
+		PageWidget previewWidget = new PageWidget(PageWidget.WidgetType.WORKPERMIT_PREVIEW);
+		previewWidget.addToLayoutParams(tab1Sec1, 24, 24);
+		tab1Sec1.addWidget(previewWidget);
+
+		Page.Tab tab2 = page.new Tab("Notes & Attachments");
+		page.addTab(tab2);
+		Page.Section tab2Sec1 = page.new Section();
+		tab2.addSection(tab2Sec1);
+		PageWidget notesWidget = new PageWidget(PageWidget.WidgetType.COMMENT);
+		notesWidget.setTitle("Notes");
+		notesWidget.addToLayoutParams(tab2Sec1, 24, 8);
+		tab2Sec1.addWidget(notesWidget);
+
+		PageWidget attachmentWidget = new PageWidget(PageWidget.WidgetType.ATTACHMENT);
+		attachmentWidget.addToLayoutParams(tab2Sec1, 24, 6);
+		attachmentWidget.setTitle("Attachments");
+		tab2Sec1.addWidget(attachmentWidget);
 
 		return page;
 	}
@@ -69,7 +76,6 @@ public class WorkpermitPageFactory extends PageFactory {
 		attachmentWidget.addToLayoutParams(tab2Sec1, 24, 6);
 		attachmentWidget.setTitle("Attachments");
 		tab2Sec1.addWidget(attachmentWidget);
-
 
 		Page.Tab tab4 = page.new Tab("Activity");
 		page.addTab(tab4);
