@@ -93,11 +93,11 @@ public class SensorEventContext extends BaseEventContext {
 		this.sensorRuleType = SensorRuleType.valuOf(sensorRuleType);
 	}
 
-	private boolean meterRollUp = false;
-	public boolean isMeterRollUp() {
+	private Boolean meterRollUp;
+	public Boolean getMeterRollUp() {
 		return meterRollUp;
 	}
-	public void setMeterRollUp(boolean meterRollUp) {
+	public void setMeterRollUp(Boolean meterRollUp) {
 		this.meterRollUp = meterRollUp;
 	}
 
