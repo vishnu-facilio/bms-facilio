@@ -12,6 +12,7 @@ import java.util.Set;
 
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.sensor.SensorAlarmContext;
 import com.facilio.bmsconsole.context.sensor.SensorRollUpAlarmContext;
 
 import org.apache.commons.lang3.StringUtils;
@@ -1523,20 +1524,51 @@ public class V2ReportAction extends FacilioAction {
 
 	}
 	
-	private Collection getDataPointsJSONForSensorAlarm(SensorRollUpAlarmContext sensorAlarm, ResourceContext resource) {
+	private Collection getDataPointsJSONForSensorAlarm(SensorRollUpAlarmContext sensorAlarm, ResourceContext resource) throws Exception {
 		JSONArray dataPoints = new JSONArray();
-		JSONObject dataPoint = new JSONObject();
+		
+		List<SensorAlarmContext> sensorAlarms = AlarmAPI.getSensorChildAlarms(sensorAlarm, startTime, endTime);
+		if (sensorAlarms != null && !sensorAlarms.isEmpty() ) {
+		    List<Long> duplication = new ArrayList<>();
+			for (SensorAlarmContext senAlarm : sensorAlarms) {
+				JSONObject dataPoint = new JSONObject();
+				
+				if (duplication.isEmpty() || !duplication.contains(senAlarm.getReadingFieldId())) {
+				
+				ResourceContext sensorResource = senAlarm.getResource();
+				
+				dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(sensorResource.getId()));
 
-		dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
+				JSONObject yAxisJson = new JSONObject();
+				yAxisJson.put("fieldId", senAlarm.getReadingFieldId());
+				duplication.add(senAlarm.getReadingFieldId());
+				
+				yAxisJson.put("aggr", 0);
 
-		JSONObject yAxisJson = new JSONObject();
-		yAxisJson.put("fieldId", sensorAlarm.getReadingFieldId());
-		yAxisJson.put("aggr", 0);
+				dataPoint.put("yAxis", yAxisJson);
 
-		dataPoint.put("yAxis", yAxisJson);
+				dataPoint.put("type", 1);
+				dataPoints.add(dataPoint);
+				}
+				
+			}
+		} else if (sensorAlarm.getReadingFieldId() > 0 && (dataPoints == null || dataPoints.isEmpty())) {
+			ResourceContext sensorResource = sensorAlarm.getResource();
+			
+			JSONObject dataPoint = new JSONObject();
+			dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(sensorResource.getId()));
 
-		dataPoint.put("type", 1);
-		dataPoints.add(dataPoint);
+			JSONObject yAxisJson = new JSONObject();
+			yAxisJson.put("fieldId", sensorAlarm.getReadingFieldId());
+			
+			yAxisJson.put("aggr", 0);
+
+			dataPoint.put("yAxis", yAxisJson);
+
+			dataPoint.put("type", 1);
+			dataPoints.add(dataPoint);
+			
+		}
 
 		return dataPoints;
 	}

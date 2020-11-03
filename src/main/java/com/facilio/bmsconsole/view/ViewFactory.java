@@ -7778,7 +7778,7 @@ public class ViewFactory {
 		createdTime.setModule(ModuleFactory.getSensorRollUpAlarmModule());
 
 		FacilioView typeAlarms = new FacilioView();
-		typeAlarms.setName("unacknowledgedsensoralarm");
+		typeAlarms.setName("unacknowledgedSensorAlarm");
 		typeAlarms.setDisplayName("Unacknowledged");
 		typeAlarms.setCriteria(criteria);
 		typeAlarms.setModuleName("sensorrollupalarm");

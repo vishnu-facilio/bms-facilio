@@ -49,6 +49,7 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -1107,11 +1108,17 @@ public class AlarmAPI {
 																		.select(modBean.getAllFields(FacilioConstants.ContextNames.SENSOR_ALARM))
 																		.moduleName(FacilioConstants.ContextNames.SENSOR_ALARM)
 																		.beanClass(SensorAlarmContext.class)
-																		.andCondition(CriteriaAPI.getCondition(fieldMap.get("readingFieldId"), String.valueOf(alarm.getReadingFieldId()), NumberOperators.EQUALS))
-																		
 																		;
 		if (alarm.getResource().getId() > 0) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), String.valueOf(alarm.getResource().getId()), NumberOperators.EQUALS));
+		}
+		if (alarm.getReadingFieldId() > 0) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("readingFieldId"), String.valueOf(alarm.getReadingFieldId()), NumberOperators.EQUALS));
+			selectBuilder.andCondition(CriteriaAPI.getCondition("IS_METER_ROLL_UP", "meterRollUp", Boolean.FALSE.toString(), BooleanOperators.IS));
+		}
+		else {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("IS_METER_ROLL_UP", "meterRollUp", Boolean.TRUE.toString(), BooleanOperators.IS));
+		
 		}
 		if (startTime > 0 && endTime > 0) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("lastCreatedTime"), startTime+","+endTime, DateOperators.BETWEEN));
