@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class AccessLogFilter implements Filter {
 
     private static final Logger LOGGER = LogManager.getLogger(AccessLogFilter.class.getName());
+    private static final Logger ETISALAT = LogManager.getLogger("Etisalat");
     private static final String RESPONSE_CODE = "responseCode";
     private static final String TIME_TAKEN = "timetaken";
     private static final String TIME_TAKEN_IN_MILLIS = "timeInMillis";
@@ -156,6 +157,14 @@ public class AccessLogFilter implements Filter {
                 appender.doAppend(event);
             } else {
                 LOGGER.callAppenders(event);
+            }
+            if(FacilioProperties.logUserAccessLog()) {
+                String email = "guest";
+                if(AccountUtil.getCurrentUser() != null ) {
+                    email = AccountUtil.getCurrentUser().getEmail();
+                }
+                event.setProperty("email", email);
+                ETISALAT.callAppenders(event);
             }
             thread.setName(threadName);
             AccountUtil.cleanCurrentAccount();
