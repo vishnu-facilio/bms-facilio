@@ -34,6 +34,11 @@ public class ConditionScoringContext extends BaseScoringContext {
     }
 
     @Override
+    public String getScoreType() {
+        return "condition";
+    }
+
+    @Override
     public void validate() {
         super.validate();
         if (namedCriteria == null) {

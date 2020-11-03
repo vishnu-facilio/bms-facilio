@@ -31,6 +31,7 @@ import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.WidgetCardContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.floorplan.FloorPlanViewContext;
+import com.facilio.bmsconsole.util.DashboardFilterUtil;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.KPIUtil;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -822,10 +823,28 @@ public enum CardLayout {
 						period=(String) timeLineFilters.get("dateLabel");
 					
 					}
-				else if (dateRange != null) {
+				else if (dateRange != null) {//db timeline filters if present override default date period configured in card
 					kpiContext.setDateOperator((DateOperators) DateOperators.getAllOperators().get(dateRange));
 					period=dateRange;
 				}
+				
+			if(cardContext.getCardCustomScriptFilters()!=null)
+			{
+				try {
+					
+					Criteria filterCriteria=DashboardFilterUtil.getUserFilterCriteriaForModule(cardContext.getCardCustomScriptFilters(),kpiContext.getModule());
+					if(filterCriteria!=null)
+					{
+						kpiContext.getCriteria().andCriteria(filterCriteria);
+					}
+				}
+				catch (Exception e) {
+					LOGGER.log(Level.SEVERE, "Error applying custom script filters for widget"+cardContext.getId(),e);
+				}
+				
+				
+			}
+				
 				
 				
 				cardValue = KPIUtil.getKPIValue(kpiContext);

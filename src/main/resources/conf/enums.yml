@@ -124,3 +124,6 @@ enums:
   - name: AppLayoutType
     enumClassName: com.facilio.bmsconsole.context.ApplicationLayoutContext$AppLayoutType
 
+  - name: SensorRuleType
+    enumClassName: com.facilio.bmsconsole.context.sensor.SensorRuleType
+

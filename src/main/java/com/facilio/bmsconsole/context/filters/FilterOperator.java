@@ -11,27 +11,24 @@ public class FilterOperator {
 
     private Operator operator;
     public FilterOperator(Operator operator) {
+        this(operator, null);
+    }
+
+    public FilterOperator(Operator operator, String displayName) {
+        this(operator, displayName, null, null, null);
+    }
+
+    public FilterOperator(Operator operator, String displayName, String tagDisplayName, Boolean valueNeeded, String defaultValue) {
+        this (operator, displayName, tagDisplayName, valueNeeded, defaultValue, null);
+    }
+
+    public FilterOperator(Operator operator, String displayName, String tagDisplayName, Boolean valueNeeded, String defaultValue, Boolean defaultSelection) {
         this.operator = operator;
-    }
-
-    public FilterOperator(String displayName, int operatorId, boolean valueNeeded) {
-        this(displayName, null, operatorId, valueNeeded);
-    }
-
-    public FilterOperator(String displayName, String tagDisplayName, int operatorId, boolean valueNeeded) {
-        this(displayName, tagDisplayName, operatorId, valueNeeded, null);
-    }
-
-    public FilterOperator(String displayName, int operatorId, boolean valueNeeded, String defaultValue) {
-        this(displayName, null, operatorId, valueNeeded, defaultValue);
-    }
-
-    public FilterOperator(String displayName, String tagDisplayName, int operatorId, boolean valueNeeded, String defaultValue) {
         this.displayName = displayName;
         this.tagDisplayName = tagDisplayName;
-        this.operatorId = operatorId;
         this.valueNeeded = valueNeeded;
         this.defaultValue = defaultValue;
+        this.defaultSelection = defaultSelection;
     }
 
     private String displayName;
@@ -44,9 +41,10 @@ public class FilterOperator {
         return StringUtils.isNotEmpty(tagDisplayName) ? tagDisplayName : operator == null ? null : operator.getTagDisplayName();
     }
 
-    private Integer operatorId;
-    public Integer getOperatorId() {
-        return operatorId != null ? operatorId : operator == null ? null : operator.getOperatorId();
+//    private Integer operatorId;
+    public Integer getOperatorId() { // Always from operator
+        // return operatorId != null ? operatorId : operator == null ? null : operator.getOperatorId();
+        return operator == null ? null : operator.getOperatorId();
     }
 
     private Boolean valueNeeded = null;
@@ -57,5 +55,10 @@ public class FilterOperator {
     private String defaultValue;
     public String getDefaultValue() {
         return defaultValue;
+    }
+
+    private Boolean defaultSelection = false;
+    public boolean getDefaultSelection() {
+        return defaultSelection != null ? defaultSelection : operator == null ? false : operator.isDefaultSelection();
     }
 }

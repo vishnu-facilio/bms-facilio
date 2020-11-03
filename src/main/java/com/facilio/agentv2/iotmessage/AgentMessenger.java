@@ -258,6 +258,9 @@ public class AgentMessenger {
         return sendControllerConfig(controllerContext);
     }
 
+    public static boolean sendAddControllerCommand(Controller controllerContext) throws Exception {
+        return sendControllerConfig(controllerContext);
+    }
 
     public static IotData sendAgentUpgradeCommand(long agentId, String version, String url, String authKey) throws Exception {
         FacilioContext context = new FacilioContext();

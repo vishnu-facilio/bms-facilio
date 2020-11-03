@@ -84,6 +84,7 @@ public class FacilioProperties {
     private static String pythonAI;
     private static String pythonPath;
     private static String allowedAppDomains;
+    private static String stageDomain;
 
     private static String wmsBroadcaster;
 
@@ -111,6 +112,8 @@ public class FacilioProperties {
     private static String mobileClientportalAppScheme;
 
     private static int authTokenCookieLifespan = 7 * 24 * 60 * 60;
+
+    private static boolean userAccessLog = false;
 
     static {
         loadProperties();
@@ -140,6 +143,7 @@ public class FacilioProperties {
                 pushNotificationKey = PROPERTIES.getProperty("push.notification.key");
                 portalPushNotificationKey = PROPERTIES.getProperty("portal.push.notification.key");
                 allowedAppDomains = PROPERTIES.getProperty("allowedapp.domains");
+                stageDomain = PROPERTIES.getProperty("stage.domain");
                 kafkaProducer = PROPERTIES.getProperty("kafka.producer");
                 kafkaConsumer = PROPERTIES.getProperty("kafka.consumer");
                 nodejs = PROPERTIES.getProperty("nodejs");
@@ -158,6 +162,7 @@ public class FacilioProperties {
                 mlModelBuildingApi = PROPERTIES.getProperty("mlModelBuildingApiURL","http://localhost:7444/api/trainingModel");
                 sysLogEnabled = "true".equals(PROPERTIES.getProperty("syslog.enabled", "false"));
                 sentryEnabled = "true".equals(PROPERTIES.getProperty( "sentry.enabled", "false"));
+                userAccessLog = "true".equalsIgnoreCase(PROPERTIES.getProperty("user.access.log", "false"));
                 iotEndPoint = (String) PROPERTIES.get("iot.endpoint");
                 messageReprocessInterval = Long.parseLong(PROPERTIES.getProperty(AgentKeys.MESSAGE_REPROCESS_INTERVAL,"300000"));
                 defaultDataSource = PROPERTIES.getProperty("db.default.ds");
@@ -295,6 +300,10 @@ public class FacilioProperties {
     
     public static String getAllowedAppDomains() {
         return allowedAppDomains;
+    }
+
+    public static String getStageDomain() {
+        return stageDomain;
     }
 
     public static String getPushNotificationKey() {
@@ -616,5 +625,9 @@ public class FacilioProperties {
             wmsBroadcaster = "default";
         }
         return wmsBroadcaster;
+    }
+
+    public static boolean logUserAccessLog() {
+        return userAccessLog;
     }
 }

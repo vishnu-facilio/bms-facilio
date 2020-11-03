@@ -10,10 +10,14 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 public class ScoringRuleContext extends WorkflowRuleContext {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ScoringRuleContext.class.getSimpleName());
 
     private long scoreFieldId = -1;
     public long getScoreFieldId() {
@@ -42,12 +46,12 @@ public class ScoringRuleContext extends WorkflowRuleContext {
         }
     }
 
-    private List<BaseScoringContext> baseScoringContexts;
-    public List<BaseScoringContext> getBaseScoringContexts() {
-        return baseScoringContexts;
+    private List<ScoringCommitmentContext> scoringCommitmentContexts;
+    public List<ScoringCommitmentContext> getScoringCommitmentContexts() {
+        return scoringCommitmentContexts;
     }
-    public void setBaseScoringContexts(List<BaseScoringContext> baseScoringContexts) {
-        this.baseScoringContexts = baseScoringContexts;
+    public void setScoringCommitmentContexts(List<ScoringCommitmentContext> scoringCommitmentContexts) {
+        this.scoringCommitmentContexts = scoringCommitmentContexts;
     }
 
     private Boolean draft;
@@ -74,20 +78,30 @@ public class ScoringRuleContext extends WorkflowRuleContext {
         if (record instanceof ModuleBaseWithCustomFields) {
             ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) record;
 
-            List<Map<String, Object>> scores = new ArrayList<>();
+//            List<Map<String, Object>> scores = new ArrayList<>();
             float totalScore = 0f;
-            for (BaseScoringContext scoringContext : baseScoringContexts) {
-                float score = scoringContext.getScore(record, context, placeHolders);
-                totalScore += score;
+            boolean updateParent = false;
+            for (ScoringCommitmentContext scoringCommitmentContext : scoringCommitmentContexts) {
+                if (scoringCommitmentContext.evaluate(record, context, placeHolders)) {
+                    for (BaseScoringContext scoringContext : scoringCommitmentContext.getBaseScoringContexts()) {
+                        if (!updateParent) {
+                            updateParent = scoringContext.shouldUpdateParent();
+                        }
+                        float score = scoringContext.getScore(record, context, placeHolders);
+                        totalScore += score;
 
-                Map<String, Object> map = new HashMap<>();
-                map.put("recordId", moduleRecord.getId());
-                map.put("recordModuleId", moduleRecord.getModuleId());
-                map.put("score", score);
-                map.put("baseScoreId", scoringContext.getId());
-                scores.add(map);
+//                        Map<String, Object> map = new HashMap<>();
+//                        map.put("recordId", moduleRecord.getId());
+//                        map.put("recordModuleId", moduleRecord.getModuleId());
+//                        map.put("score", score);
+//                        map.put("baseScoreId", scoringContext.getId());
+//                        map.put("scoringCommitmentId", scoringCommitmentContext.getId());
+//                        scores.add(map);
+                    }
+                    break;
+                }
             }
-            ScoringRuleAPI.addActualScore(scores, moduleRecord.getId(), moduleRecord.getModuleId());
+//            ScoringRuleAPI.addActualScore(scores, moduleRecord.getId(), moduleRecord.getModuleId());
 
             System.out.println("Total score: " + totalScore);
             FacilioField scoreField = getScoreField();
@@ -104,7 +118,10 @@ public class ScoringRuleContext extends WorkflowRuleContext {
                 builder.update(moduleRecord);
 
                 // update only when the values are changed..
-                ScoringRuleAPI.updateParentScores(moduleRecord, scoreFieldId, !(Objects.equals(value, totalScore)));
+                if (updateParent) {
+                    LOGGER.debug("Should update parent score also");
+//                    ScoringRuleAPI.updateParentScores(moduleRecord, scoreFieldId, !(Objects.equals(value, totalScore)));
+                }
             }
         }
     }

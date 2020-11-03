@@ -19,12 +19,12 @@ public List<DashboardUserFilterContext> getFilterMeta() {
 public void setFilterMeta(List<DashboardUserFilterContext> filterMeta) {
 	this.filterMeta = filterMeta;
 }
-public Map<Long, List<String>> getFilterValues() {
+public Map<String, List<String>> getFilterValues() {
 	return filterValues;
 }
-public void setFilterValues(Map<Long, List<String>> filterValues) {
+public void setFilterValues(Map<String, List<String>> filterValues) {
 	this.filterValues = filterValues;
 }
 private List<DashboardUserFilterContext> filterMeta;
-private Map<Long, List<String>> filterValues;
+private Map<String, List<String>> filterValues;
 }

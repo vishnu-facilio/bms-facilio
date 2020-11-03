@@ -146,7 +146,16 @@ public class WidgetCardContext extends DashboardWidgetContext {
 	}
 	
 private JSONObject cardUserFilters;
+
+private DashboardCustomScriptFilter cardCustomScriptFilters;
+
 	
+	public DashboardCustomScriptFilter getCardCustomScriptFilters() {
+	return cardCustomScriptFilters;
+}
+public void setCardCustomScriptFilters(DashboardCustomScriptFilter cardCustomScriptFilters) {
+	this.cardCustomScriptFilters = cardCustomScriptFilters;
+}
 	public JSONObject getCardUserFilters() {
 		return cardUserFilters;
 	}

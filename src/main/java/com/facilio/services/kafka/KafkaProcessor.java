@@ -22,6 +22,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.server.ServerInfo;
+import com.facilio.service.FacilioService;
 import com.facilio.services.procon.message.FacilioRecord;
 import com.facilio.services.procon.processor.FacilioProcessor;
 
@@ -51,7 +52,7 @@ public class KafkaProcessor extends FacilioProcessor {
     @Override
 	public void processRecords(List<FacilioRecord> records) {
 		try {
-			if (!isTopicEnabled()) {
+			if (!FacilioService.runAsServiceWihReturn(()->isTopicEnabled())) {
 				LOGGER.info("Org Topic is disabled : "+getTopic());
 				return;
 			}

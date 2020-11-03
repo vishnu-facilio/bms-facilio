@@ -1,9 +1,7 @@
 package com.facilio.bmsconsole.context.filters;
 
 import com.facilio.db.criteria.operators.FieldOperator;
-import com.facilio.db.criteria.operators.Operator;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -27,7 +25,7 @@ public class FilterFieldContext {
                 options = new ArrayList<>();
                 for (EnumFieldValue value : values) {
                     if (value.isVisible()) { //Have to check if this is needed. What if user wants to check old records with deleted enum options
-                        options.add(new FilterFieldOptions(String.valueOf(value.getIndex()), value.getValue()));
+                        options.add(new FieldOption(String.valueOf(value.getIndex()), value.getValue()));
                     }
                 }
             }
@@ -38,12 +36,12 @@ public class FilterFieldContext {
             if (StringUtils.isEmpty(trueVal)) {
                 trueVal = "True";
             }
-            options.add(new FilterFieldOptions("true", trueVal));
+            options.add(new FieldOption("true", trueVal));
             String falseVal = ((BooleanField) field).getFalseVal();
             if (StringUtils.isEmpty(falseVal)) {
                 falseVal = "False";
             }
-            options.add(new FilterFieldOptions("false", falseVal));
+            options.add(new FieldOption("false", falseVal));
         }
         else if (field instanceof LookupField) {
             FacilioModule lookup = ((LookupField) field).getLookupModule();
@@ -84,25 +82,9 @@ public class FilterFieldContext {
         this.operators = operators;
     }
 
-    private List<FilterFieldOptions> options;
-    public List<FilterFieldOptions> getOptions() {
+    private List<FieldOption> options;
+    public List<FieldOption> getOptions() {
         return options;
-    }
-
-    public static class FilterFieldOptions {
-        String label, value;
-
-        private FilterFieldOptions(String value, String label) {
-            this.value = value;
-            this.label = label;
-        }
-
-        public String getLabel() {
-            return label;
-        }
-        public String getValue() {
-            return value;
-        }
     }
 
     public static class FilterFieldLookupModule {

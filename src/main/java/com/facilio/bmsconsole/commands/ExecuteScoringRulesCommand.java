@@ -32,48 +32,50 @@ public class ExecuteScoringRulesCommand extends ExecuteAllWorkflowsCommand {
         List<WorkflowRuleContext> orderedList = new ArrayList<>();
         Set<Long> scoringFields = new HashSet<>();
 
-        int threshold = 0;
-        while (workflowRules.size() > 0) {
-            if (threshold ++ > 20) {
-                LOGGER.error("Reached max threshold of re-arranging scoring rules");
-                return null;
-            }
-            Iterator<WorkflowRuleContext> iterator = workflowRules.iterator();
-            while (iterator.hasNext()) {
-                WorkflowRuleContext workflowRuleContext = iterator.next();
-                boolean shouldAdd = true;
+        return workflowRules;
 
-                ScoringRuleContext scoringRuleContext = (ScoringRuleContext) workflowRuleContext;
-                if (scoringRuleContext.isDraft() || CollectionUtils.isEmpty(scoringRuleContext.getBaseScoringContexts())) {
-                    iterator.remove();
-                    continue;
-                }
-                List<BaseScoringContext> baseScoringContexts = scoringRuleContext.getBaseScoringContexts();
-                for (BaseScoringContext baseScoringContext : baseScoringContexts) {
-                    if (baseScoringContext instanceof NodeScoringContext) {
-                        NodeScoringContext nodeScoringContext = (NodeScoringContext) baseScoringContext;
-                        if (nodeScoringContext.getNodeTypeEnum() == NodeScoringContext.NodeType.CURRENT_MODULE) {
-                            boolean contains = scoringFields.contains(nodeScoringContext.getScoringFieldId());
-                            if (contains) {
-                                // dependency already added
-                                continue;
-                            } else {
-                                // dependency still not ordered
-                                shouldAdd = false;
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                if (shouldAdd) {
-                    orderedList.add(workflowRuleContext);
-                    scoringFields.add(scoringRuleContext.getScoreFieldId());
-                    iterator.remove();
-                }
-            }
-        }
-
-        return orderedList;
+//        int threshold = 0;
+//        while (workflowRules.size() > 0) {
+//            if (threshold ++ > 20) {
+//                LOGGER.error("Reached max threshold of re-arranging scoring rules");
+//                return null;
+//            }
+//            Iterator<WorkflowRuleContext> iterator = workflowRules.iterator();
+//            while (iterator.hasNext()) {
+//                WorkflowRuleContext workflowRuleContext = iterator.next();
+//                boolean shouldAdd = true;
+//
+//                ScoringRuleContext scoringRuleContext = (ScoringRuleContext) workflowRuleContext;
+//                if (scoringRuleContext.isDraft() || CollectionUtils.isEmpty(scoringRuleContext.getBaseScoringContexts())) {
+//                    iterator.remove();
+//                    continue;
+//                }
+//                List<BaseScoringContext> baseScoringContexts = scoringRuleContext.getBaseScoringContexts();
+//                for (BaseScoringContext baseScoringContext : baseScoringContexts) {
+//                    if (baseScoringContext instanceof NodeScoringContext) {
+//                        NodeScoringContext nodeScoringContext = (NodeScoringContext) baseScoringContext;
+//                        if (nodeScoringContext.getNodeTypeEnum() == NodeScoringContext.NodeType.CURRENT_MODULE) {
+//                            boolean contains = scoringFields.contains(nodeScoringContext.getScoringFieldId());
+//                            if (contains) {
+//                                // dependency already added
+//                                continue;
+//                            } else {
+//                                // dependency still not ordered
+//                                shouldAdd = false;
+//                                break;
+//                            }
+//                        }
+//                    }
+//                }
+//
+//                if (shouldAdd) {
+//                    orderedList.add(workflowRuleContext);
+//                    scoringFields.add(scoringRuleContext.getScoreFieldId());
+//                    iterator.remove();
+//                }
+//            }
+//        }
+//
+//        return orderedList;
     }
 }

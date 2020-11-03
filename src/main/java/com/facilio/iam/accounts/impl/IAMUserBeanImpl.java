@@ -21,8 +21,10 @@ import com.facilio.modules.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggingEvent;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -56,12 +58,12 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 
-;
 
 public class IAMUserBeanImpl implements IAMUserBean {
 
 	private static final String USER_TOKEN_REGEX = "#";
-	private static Logger log = LogManager.getLogger(IAMUserBeanImpl.class.getName());
+	private static final Logger USER_LOGIN = LogManager.getLogger("UserLogin");
+	private static final Logger LOGGER = LogManager.getLogger(IAMUserBeanImpl.class.getName());
 	public static final String JWT_DELIMITER = "#";
 
 	public boolean updateUserv2(IAMUser user, List<FacilioField> fields) throws Exception {
@@ -138,7 +140,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 					
 					updateUserv2(user, fields);
 				} catch (Exception e) {
-					log.info("Exception occurred ", e);
+					LOGGER.info("Exception occurred ", e);
 				}
 				return user;
 //			}
@@ -163,7 +165,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 					
 					IAMUtil.getTransactionalUserBean().updateUserv2(user, fields);
 				} catch (Exception e) {
-					log.info("Exception occurred ", e);
+					LOGGER.info("Exception occurred ", e);
 				}
 				return user;
 //			}
@@ -731,7 +733,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			if (transactionManager != null) {
 				transactionManager.rollback();
 			}
-			log.info("exception while adding user session transaction ", e);
+			LOGGER.info("exception while adding user session transaction ", e);
 		}
 		return -1L;
 	}
@@ -770,7 +772,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			if (transactionManager != null) {
 				transactionManager.rollback();
 			}
-			log.info("exception while adding ending user session ", e);
+			LOGGER.info("exception while adding ending user session ", e);
 		}
 		return status;
 	}
@@ -915,7 +917,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 						}
 					}
 				} catch (ParseException e) {
-					log.info("Exception occurred ", e);
+					LOGGER.info("Exception occurred ", e);
 				}
 			}
 			else {
@@ -971,7 +973,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		    
 		    return builder.sign(algorithm);
 		} catch (UnsupportedEncodingException | JWTCreationException exception){
-			log.info("exception occurred while creating JWT "+ exception.toString());
+			LOGGER.info("exception occurred while creating JWT "+ exception.toString());
 		    //UTF-8 encoding not supported
 		}
 		return null;
@@ -988,7 +990,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 			return jwt;
 		} catch (UnsupportedEncodingException | JWTVerificationException exception) {
-			log.info("exception occurred while decoding JWT "+ exception.toString());
+			LOGGER.info("exception occurred while decoding JWT "+ exception.toString());
 			// UTF-8 encoding not supported
 			return null;
 
@@ -1280,11 +1282,29 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 
+	private LoggingEvent getUserLoginEvent(String username, String remoteIp) {
+		LoggingEvent event = new LoggingEvent(LOGGER.getName(), LOGGER, Level.INFO, "", null);
+		event.setProperty("email", username);
+		event.setProperty("remoteIp", remoteIp);
+		return event;
+	}
 
 	@Override
 	public String validateAndGenerateTokenV3(String username, String password, String appDomainName,
 			String userAgent, String userType, String ipAddress, boolean startUserSession) throws Exception {
 		long validUid = verifyPasswordv3(username, password, appDomainName, userType);
+
+		// added to log log in failures for etisalat.
+		if ( FacilioProperties.logUserAccessLog()) {
+			LoggingEvent event = getUserLoginEvent(username, ipAddress);
+			if(validUid > 0) {
+				event.setProperty("responseCode", "200");
+			} else {
+				event.setProperty("responseCode", "500");
+			}
+			USER_LOGIN.callAppenders(event);
+		}
+
 		if (validUid > 0) {
 			//IAMUser user = getFacilioUser(emailaddress, -1, domain);
 			String jwt = createJWT("id", "auth0", String.valueOf(validUid),
@@ -1294,7 +1314,6 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			}
 			return jwt;
 			//throw new AccountException(ErrorCode.USER_DEACTIVATED_FROM_THE_ORG, "User is deactivated, Please contact admin to activate.");
-
 		}
 		throw new AccountException(ErrorCode.ERROR_VALIDATING_CREDENTIALS, "Invalid username or password");
 	}
@@ -1366,8 +1385,8 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 
 			
-			log.info("Email Address  " + username);
-			log.info("PAssword  " + password);
+			LOGGER.info("Email Address  " + username);
+			LOGGER.info("PAssword  " + password);
 			
 			List<Map<String, Object>> props = selectBuilder.get();
 
@@ -1378,12 +1397,12 @@ public class IAMUserBeanImpl implements IAMUserBean {
 					return (long)result.get("uid");
 				}
 			} else {
-				log.info("No records found for  " + username +" --> User doesn't exists");
+				LOGGER.info("No records found for  " + username +" --> User doesn't exists");
 				throw new AccountException(ErrorCode.ERROR_VALIDATING_CREDENTIALS, "Invalid username or password");
 			}
 
 		} catch (SQLException | RuntimeException e) {
-			log.info("Exception while verifying password, "+ e.toString());
+			LOGGER.info("Exception while verifying password, "+ e.toString());
 		} 
 		return -1;
 	}
@@ -1421,7 +1440,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			throw e;
 		}
 		catch (Exception e) {
-			log.info("Exception occurred "+e.toString());
+			LOGGER.info("Exception occurred "+e.toString());
 			return null;
 		}
 
@@ -1890,10 +1909,14 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		//handling done for domain aliases for our main app
 		if(StringUtils.isNotEmpty(domain)) {
 			String allowedAppdomains = FacilioProperties.getAllowedAppDomains();
-			String[] appdomains = allowedAppdomains.split(",");
+			String[] appdomains = allowedAppdomains.split("\\s*,\\s*");
 			if(appdomains.length > 0){
 				List<String> allowedAppDomainList = Arrays.asList(appdomains);
-				if(allowedAppDomainList.contains(domain)) {
+				if(allowedAppDomainList.contains(domain) ||
+						(!FacilioProperties.isProduction()
+								&& StringUtils.isNotEmpty(FacilioProperties.getStageDomain())
+								&& domain.endsWith(FacilioProperties.getStageDomain())
+						)) {
 					domain = AccountUtil.getDefaultAppDomain();
 				}
 			}
@@ -1905,7 +1928,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		if (CollectionUtils.isNotEmpty(props)) {
 			return FieldUtil.getAsBeanFromMap(props.get(0), AppDomain.class);
 		}
-		log.info("App domain doesnt exists -->  " + domain);
+		LOGGER.info("App domain doesnt exists -->  " + domain);
     	return null;
 
 	}

@@ -2088,6 +2088,7 @@ public class FacilioChainFactory {
 	
 	public static FacilioChain addMLServiceChain() {
 		FacilioChain c = FacilioChain.getNonTransactionChain();
+		c.addCommand(new CheckDuplicateMLServiceCommand());
 		c.addCommand(new ConstructReadingForMLServiceCommand());
 		c.addCommand(new InitMLServiceCommand());
 		c.addCommand(new UpdateJobDetailsForMLCommand());

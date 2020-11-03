@@ -667,6 +667,14 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getScoringCommitmentModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("scoringCommitment");
+		module.setDisplayName("Scoring Commitment");
+		module.setTableName("Scoring_Commitment");
+		return module;
+	}
+
 	public static FacilioModule getBaseScoringModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("baseScoringModule");

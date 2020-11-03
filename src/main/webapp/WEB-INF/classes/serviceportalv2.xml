@@ -1121,6 +1121,32 @@
 			</result>
 		</action>
 	</package>
+	<package name="vendorPortalhazardPrecaution" namespace="/api/service/v2/hazardPrecaution"
+			 extends="newServicePortalApiV2">
+		<action name="add"
+				class="com.facilio.bmsconsole.actions.HazardPrecautionAction" method="addHazardPrecautionList" />
+		<action name="delete"
+				class="com.facilio.bmsconsole.actions.HazardPrecautionAction" method="deleteHazardPrecautionList" />
+		<action name="*"
+				class="com.facilio.bmsconsole.actions.HazardPrecautionAction" method="hazardPrecautionList">
+		</action>
+	</package>
+	<package name="vendorPortalworkorderHazard" namespace="/api/service/v2/workorderHazard"
+			 extends="newServicePortalApiV2">
+		<action name="add"
+				class="com.facilio.bmsconsole.actions.WorkorderHazardAction" method="addWorkorderHazardList" />
+		<action name="delete"
+				class="com.facilio.bmsconsole.actions.WorkorderHazardAction" method="deleteWorkOrderHazardList" />
+		<action name="*"
+				class="com.facilio.bmsconsole.actions.WorkorderHazardAction" method="workorderHazardList">
+		</action>
+	</package>
+
+	<package name="vendorPortalformRuleApiv2" namespace="/api/service/v2/form/rule"
+			 extends="newServicePortalApiV2">
+		<action name="executeFormActionRules" class="com.facilio.bmsconsole.actions.FormRuleAction" method="executeFormActionRules">
+		</action>
+	</package>
 	
 	<package name="ServicePageApiv2" namespace="/api/service/v2/pages" extends="newServicePortalApiV2">
 		<action name="*" class="com.facilio.bmsconsole.actions.PageAction"

@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.modules.fields.FieldOption;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
@@ -918,4 +920,23 @@ public class PickListAction extends FacilioAction {
 		setResult("itemStatusId", itemStatusId);
 		return SUCCESS;
 	}
+
+	public String fetchLabels() throws Exception {
+		FacilioChain fetchLabel = ReadOnlyChainFactory.fetchLabels();
+		fetchLabel.getContext().put(FacilioConstants.PickList.LOOKUP_LABEL_META, labelMeta);
+		fetchLabel.execute();
+
+		Map<String, List<FieldOption>> labels = (Map<String, List<FieldOption>>) fetchLabel.getContext().get(FacilioConstants.PickList.LOOKUP_LABELS);
+		setResult("label", labels);
+
+		return SUCCESS;
+	}
+
+	public Map<String, List<Long>> getLabelMeta() {
+		return labelMeta;
+	}
+	public void setLabelMeta(Map<String, List<Long>> labelMeta) {
+		this.labelMeta = labelMeta;
+	}
+	private Map<String, List<Long>> labelMeta;
 }

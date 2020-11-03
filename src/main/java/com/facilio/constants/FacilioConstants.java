@@ -128,6 +128,11 @@ public class FacilioConstants {
 
 	}
 
+	public static class PickList {
+		public static final String LOOKUP_LABEL_META = "lookupLabelMeta";
+		public static final String LOOKUP_LABELS = "lookupLabels";
+	}
+
 	public static class Filters {
 		public static final String FILTER_DATA_TYPE = "filterDataType";
 		public static final String FILTER_FIELDS = "filterFields";

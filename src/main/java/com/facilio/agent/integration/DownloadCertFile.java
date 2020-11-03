@@ -93,7 +93,32 @@ public class DownloadCertFile {
         }
         return url;
     }
-
+    public static long addCert(String policyName, String type) throws Exception {
+    	return addCertificate(policyName,type);
+    }
+	private static long addCertificate(String policyName, String type) throws Exception {
+		long fileId = -1;
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
+		CreateKeysAndCertificateResult certificateResult = AwsUtil.signUpIotToKinesis(policyName, policyName,
+				type);
+		String directoryName = "facilio/";
+		String certFileId = FacilioAgent.getCertFileId(type);
+		String outFileName = FacilioAgent.getCertFileName(type);
+		File file = new File(System.getProperty("user.home") + outFileName);
+		try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(file))) {
+			addToZip(out, directoryName + "facilio.crt", certificateResult.getCertificatePem());
+			addToZip(out, directoryName + "facilio-private.key", certificateResult.getKeyPair().getPrivateKey());
+			addToZip(out, directoryName + "facilio.config", getFacilioConfig(policyName, policyName));
+			out.finish();
+			out.flush();
+			FileStore fs = FacilioFactory.getFileStore();
+			long id = fs.addFile(file.getName(), file, "application/octet-stream");
+			CommonCommandUtil.insertOrgInfo(orgId, certFileId, String.valueOf(id));
+			file.delete();
+		}
+		FacilioFactory.getMessageQueue().start();
+		return fileId;
+	}
 
     public static String downloadAgentCertificate(String policyName, String agentName, String type) throws Exception {
         String url = downloadCertificate(policyName,type);

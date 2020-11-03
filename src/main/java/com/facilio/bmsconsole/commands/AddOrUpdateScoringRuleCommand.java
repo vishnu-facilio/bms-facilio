@@ -2,8 +2,10 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.scoringrule.BaseScoringContext;
+import com.facilio.bmsconsole.scoringrule.ScoringCommitmentContext;
 import com.facilio.bmsconsole.scoringrule.ScoringRuleAPI;
 import com.facilio.bmsconsole.scoringrule.ScoringRuleContext;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
@@ -12,7 +14,9 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.ScoreField;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 
 import java.util.Collections;
@@ -36,29 +40,21 @@ public class AddOrUpdateScoringRuleCommand extends FacilioCommand {
             scoringRuleContext.setActivityType(EventType.SCORING_RULE);
             scoringRuleContext.setModule(module);
 
-            if (scoringRuleContext.getId() < 0) {
-                String name = scoringRuleContext.getName();
-                name = name.toLowerCase().replaceAll("[^a-zA-Z0-9]+","");
-                ScoreField scoreField = new ScoreField();
-                scoreField.setName(name + "Score");
-                scoreField.setDefault(false);
-                scoreField.setDataType(FieldType.SCORE);
-                scoreField.setDisplayName(scoringRuleContext.getName() + "Score");
-                scoreField.setScale(100f);
-                scoreField.setType(ScoreField.Type.PERCENTAGE);
-
-                FacilioChain chain = TransactionChainFactory.getAddFieldsChain();
-                FacilioContext addFieldContext = chain.getContext();
-                addFieldContext.put(FacilioConstants.ContextNames.ALLOW_SAME_FIELD_DISPLAY_NAME, true);
-                addFieldContext.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, Collections.singletonList(scoreField));
-                addFieldContext.put(FacilioConstants.ContextNames.MODULE, module);
-                chain.execute();
-                scoringRuleContext.setScoreField(scoreField);
+            if (scoringRuleContext.getScoreFieldId() < 0 && !scoringRuleContext.isDraft()) {
+                boolean alreadyCreated = false;
+                if (scoringRuleContext.getId() > 0) {
+                    ScoringRuleContext workflowRule = (ScoringRuleContext) WorkflowRuleAPI.getWorkflowRule(scoringRuleContext.getId());
+                    if (!workflowRule.isDraft()) {
+                        alreadyCreated = true;
+                    }
+                }
+                if (!alreadyCreated) {
+                    createScoreField(scoringRuleContext, module);
+                }
             }
 
             List<Map<String, Object>> scoringContextMapList = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.SCORING_CONTEXT_LIST);
-            List<BaseScoringContext> baseScoringContexts = ScoringRuleAPI.convertToObject(scoringContextMapList);
-            scoringRuleContext.setBaseScoringContexts(baseScoringContexts);
+            scoringRuleContext.setScoringCommitmentContexts(FieldUtil.getAsBeanListFromMapList(scoringContextMapList, ScoringCommitmentContext.class));
 
             FacilioChain chain;
             if (scoringRuleContext.getId() < 0) {
@@ -72,5 +68,25 @@ public class AddOrUpdateScoringRuleCommand extends FacilioCommand {
             chain.execute();
         }
         return false;
+    }
+
+    private void createScoreField(ScoringRuleContext scoringRuleContext, FacilioModule module) throws Exception {
+        String name = scoringRuleContext.getName();
+        name = name.toLowerCase().replaceAll("[^a-zA-Z0-9]+","");
+        ScoreField scoreField = new ScoreField();
+        scoreField.setName(name + "Score");
+        scoreField.setDefault(false);
+        scoreField.setDataType(FieldType.SCORE);
+        scoreField.setDisplayName(scoringRuleContext.getName() + "Score");
+        scoreField.setScale(100f);
+        scoreField.setType(ScoreField.Type.PERCENTAGE);
+
+        FacilioChain chain = TransactionChainFactory.getAddFieldsChain();
+        FacilioContext addFieldContext = chain.getContext();
+        addFieldContext.put(FacilioConstants.ContextNames.ALLOW_SAME_FIELD_DISPLAY_NAME, true);
+        addFieldContext.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, Collections.singletonList(scoreField));
+        addFieldContext.put(FacilioConstants.ContextNames.MODULE, module);
+        chain.execute();
+        scoringRuleContext.setScoreField(scoreField);
     }
 }

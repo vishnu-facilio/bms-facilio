@@ -273,7 +273,7 @@ public class AgentUtilV2
 
 
     private boolean updateAgent(FacilioAgent agent, JSONObject jsonObject) throws Exception {
-        boolean isDone = AgentApiV2.editAgent(agent, jsonObject);
+        boolean isDone = AgentApiV2.editAgent(agent, jsonObject, true);
         if (isDone) {
             agentMap.replace(agent.getName(), agent);
         }

@@ -184,9 +184,6 @@
 
         <action name="data" class="com.facilio.agentv2.AgentAction" method="getAlertsPoints">
         </action>
-
-        <action name="certificate" class="com.facilio.agentv2.AgentAction" method="downloadCertificate">
-        </action>
         <action name="addClientToPolicy" class="com.facilio.agentv2.AgentAction" method="addClientToPolicy">
         </action>
         <action name="addVersion" class="com.facilio.agentv2.actions.AgentVersionAction" method="addAgentVersion">
@@ -209,6 +206,14 @@
         </action>
 		<action name="agentControl" class="com.facilio.agent.agentcontrol.AgentControl" method="sendToKafka">
 		</action>
+		<action name="certificate" class="com.facilio.agentv2.AgentAction" method="downloadCertificate">
+		 <result name="success" type="stream">
+             <param name="contentType">application/octet-stream</param>
+                <param name="inputName">downloadStream</param>
+                <param name="contentDisposition">attachment;filename="${filename}"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+        </action>
 
     </package>
 
@@ -428,6 +433,9 @@
     <package name="modbus" namespace="/api/v2/modbus" extends="agent">
         <action name="addController" class="com.facilio.agentv2.actions.ModbusControllerAction"
                 method="addModbusController">
+        </action>
+         <action name="addMiscController" class="com.facilio.agentv2.actions.AddMiscControllerAction"
+                method="addMiscController">
         </action>
         <action name="addPoint" class="com.facilio.agentv2.actions.ModbusPointAction"
                 method="createModbusPoint">
