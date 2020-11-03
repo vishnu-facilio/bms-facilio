@@ -1909,10 +1909,14 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		//handling done for domain aliases for our main app
 		if(StringUtils.isNotEmpty(domain)) {
 			String allowedAppdomains = FacilioProperties.getAllowedAppDomains();
-			String[] appdomains = allowedAppdomains.split(",");
+			String[] appdomains = allowedAppdomains.split("\\s*,\\s*");
 			if(appdomains.length > 0){
 				List<String> allowedAppDomainList = Arrays.asList(appdomains);
-				if(allowedAppDomainList.contains(domain)) {
+				if(allowedAppDomainList.contains(domain) ||
+						(!FacilioProperties.isProduction()
+								&& StringUtils.isNotEmpty(FacilioProperties.getStageDomain())
+								&& domain.endsWith(FacilioProperties.getStageDomain())
+						)) {
 					domain = AccountUtil.getDefaultAppDomain();
 				}
 			}

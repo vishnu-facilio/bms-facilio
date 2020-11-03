@@ -84,6 +84,7 @@ public class FacilioProperties {
     private static String pythonAI;
     private static String pythonPath;
     private static String allowedAppDomains;
+    private static String stageDomain;
 
     private static String wmsBroadcaster;
 
@@ -142,6 +143,7 @@ public class FacilioProperties {
                 pushNotificationKey = PROPERTIES.getProperty("push.notification.key");
                 portalPushNotificationKey = PROPERTIES.getProperty("portal.push.notification.key");
                 allowedAppDomains = PROPERTIES.getProperty("allowedapp.domains");
+                stageDomain = PROPERTIES.getProperty("stage.domain");
                 kafkaProducer = PROPERTIES.getProperty("kafka.producer");
                 kafkaConsumer = PROPERTIES.getProperty("kafka.consumer");
                 nodejs = PROPERTIES.getProperty("nodejs");
@@ -298,6 +300,10 @@ public class FacilioProperties {
     
     public static String getAllowedAppDomains() {
         return allowedAppDomains;
+    }
+
+    public static String getStageDomain() {
+        return stageDomain;
     }
 
     public static String getPushNotificationKey() {
