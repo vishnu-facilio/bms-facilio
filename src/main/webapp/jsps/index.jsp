@@ -46,7 +46,8 @@
             clientVersion = "";
         }
 
-        String staticUrl = com.facilio.aws.util.FacilioProperties.getConfig("static.url") + clientVersion;
+        String staticUrlPropName = isDynamicClient ? "stage.static.url" : "static.url";
+        String staticUrl = com.facilio.aws.util.FacilioProperties.getConfig(staticUrlPropName) + clientVersion;
         String servicePortalDomain = com.facilio.aws.util.FacilioProperties.getOccupantAppDomain();
         String allowedPortalDomain = com.facilio.aws.util.FacilioProperties.getPortalAppDomains();
 
