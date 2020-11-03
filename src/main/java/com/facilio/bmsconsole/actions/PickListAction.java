@@ -932,30 +932,11 @@ public class PickListAction extends FacilioAction {
 		return SUCCESS;
 	}
 
-	public List<LookupLabelMeta> getLabelMeta() {
+	public Map<String, List<Long>> getLabelMeta() {
 		return labelMeta;
 	}
-	public void setLabelMeta(List<LookupLabelMeta> labelMeta) {
+	public void setLabelMeta(Map<String, List<Long>> labelMeta) {
 		this.labelMeta = labelMeta;
 	}
-
-	private List<LookupLabelMeta> labelMeta;
-
-	public static class LookupLabelMeta {
-		private String moduleName;
-		public String getModuleName() {
-			return moduleName;
-		}
-		public void setModuleName(String moduleName) {
-			this.moduleName = moduleName;
-		}
-
-		private List<Long> id;
-		public List<Long> getId() {
-			return id;
-		}
-		public void setId(List<Long> id) {
-			this.id = id;
-		}
-	}
+	private Map<String, List<Long>> labelMeta;
 }

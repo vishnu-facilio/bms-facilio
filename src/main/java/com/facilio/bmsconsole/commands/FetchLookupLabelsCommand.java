@@ -22,15 +22,17 @@ import java.util.stream.Collectors;
 public class FetchLookupLabelsCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        List<PickListAction.LookupLabelMeta> labelMeta = (List<PickListAction.LookupLabelMeta>) context.get(FacilioConstants.PickList.LOOKUP_LABEL_META);
-        FacilioUtil.throwIllegalArgumentException(CollectionUtils.isEmpty(labelMeta), "Meta cannot be null/ empty for fetching labels");
+        Map<String, List<Long>> labelMeta = (Map<String, List<Long>>) context.get(FacilioConstants.PickList.LOOKUP_LABEL_META);
+        FacilioUtil.throwIllegalArgumentException(MapUtils.isEmpty(labelMeta), "Meta cannot be null/ empty for fetching labels");
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         Map<String, List<FieldOption>> labels = new HashMap<>();
-        for (PickListAction.LookupLabelMeta meta : labelMeta) {
-            FacilioModule module = modBean.getModule(meta.getModuleName());
-            FacilioUtil.throwIllegalArgumentException(module == null, MessageFormat.format("Invalid module name => {0}", meta.getModuleName()));
-            List<FieldOption> options = constructFieldOptions(modBean, module, meta.getId());
+        for (Map.Entry<String, List<Long>> meta : labelMeta.entrySet()) {
+            String moduleName = meta.getKey();
+            List<Long> id = meta.getValue();
+            FacilioModule module = modBean.getModule(moduleName);
+            FacilioUtil.throwIllegalArgumentException(module == null, MessageFormat.format("Invalid module name => {0}", moduleName));
+            List<FieldOption> options = constructFieldOptions(modBean, module, id);
             labels.put(module.getName(), options);
         }
         context.put(FacilioConstants.PickList.LOOKUP_LABELS, labels);
