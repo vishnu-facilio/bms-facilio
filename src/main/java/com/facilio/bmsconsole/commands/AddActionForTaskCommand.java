@@ -126,13 +126,22 @@ public class AddActionForTaskCommand extends FacilioCommand {
 					ActionContext action = new ActionContext();
 					action.setTemplateId(formTemplate.getId());
 					action.setActionType(ActionType.CREATE_DEVIATION_WORK_ORDER);
+					if (actionMap == null) {
+						actionMap = new HashMap<>();
+					}
+					actionMap.put(formTemplate.getId(), action);
 					
 					task.setAction(action);
 					actions.add(action);
 				}
 				else {
 					ActionContext formAction = actionMap.get(formTemplate.getId());
-					task.setActionId(formAction.getId());
+					if (formAction.getId() != -1) {
+						task.setActionId(formAction.getId());
+					}
+					else {	// Action not in db, but will be added for previous task
+						task.setAction(formAction);
+					}
 				}
 				
 			}
