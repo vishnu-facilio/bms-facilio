@@ -97,7 +97,7 @@ public class UpdateWorkOrderCommand extends FacilioCommand {
 				log.error("Old Site - " + oldWo.getSiteId() +", New Site - " + workOrder.getSiteId());
 				throw new IllegalArgumentException("Site cannot be changed for work order");
 			}
-			if (workOrder.getTenant() != null && (oldWo.getTenant() == null || workOrder.getTenant().getId() !=  oldWo.getTenant().getId())) {
+			if (workOrder.getTenant() != null && workOrder.getTenant().getId() > 0 && (oldWo.getTenant() == null || workOrder.getTenant().getId() !=  oldWo.getTenant().getId())) {
 				isTenantChanged = true;
 				if (tenant == null) {
 					tenant = TenantsAPI.getTenant(workOrder.getTenant().getId());
@@ -106,13 +106,13 @@ public class UpdateWorkOrderCommand extends FacilioCommand {
 					throw new IllegalArgumentException("The selected tenant belongs to another Site.");
 				}
 			}
-			if (!isScopeFieldsChanged && workOrder.getResource() != null && (oldWo.getResource() == null || workOrder.getResource().getId() !=  oldWo.getResource().getId())) {
+			if (!isScopeFieldsChanged && workOrder.getResource() != null && workOrder.getResource().getId() > 0 && (oldWo.getResource() == null || workOrder.getResource().getId() !=  oldWo.getResource().getId())) {
 				isScopeFieldsChanged  = true;
 			}
-			else if (!isScopeFieldsChanged && workOrder.getAssignedTo() != null && (oldWo.getAssignedTo() == null || workOrder.getAssignedTo().getId() !=  oldWo.getAssignedTo().getId())) {
+			else if (!isScopeFieldsChanged && workOrder.getAssignedTo() != null && workOrder.getAssignedTo().getId() > 0 && (oldWo.getAssignedTo() == null || workOrder.getAssignedTo().getId() !=  oldWo.getAssignedTo().getId())) {
 				isScopeFieldsChanged  = true;
 			}
-			else if (!isScopeFieldsChanged && workOrder.getAssignmentGroup() != null && (oldWo.getAssignmentGroup() == null || workOrder.getAssignmentGroup().getId() !=  oldWo.getAssignmentGroup().getId())) {
+			else if (!isScopeFieldsChanged && workOrder.getAssignmentGroup() != null &&  workOrder.getAssignmentGroup().getId() > 0 && (oldWo.getAssignmentGroup() == null || workOrder.getAssignmentGroup().getId() !=  oldWo.getAssignmentGroup().getId())) {
 				isScopeFieldsChanged  = true;
 			}
 		}

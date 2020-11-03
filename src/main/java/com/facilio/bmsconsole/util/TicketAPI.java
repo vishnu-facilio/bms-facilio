@@ -1321,7 +1321,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 
 	public static <T extends TicketContext> void validateSiteSpecificData(T ticket, List<T> oldTickets) throws Exception {
 		boolean isWorkOrder = ticket instanceof WorkOrderContext;
-		if (ticket.getResource() != null) {
+		if (ticket.getResource() != null && ticket.getResource().getId() > 0) {
 			ResourceContext resource = ResourceAPI.getResource(ticket.getResource().getId());
 			long resourceSiteId = -1;
 			if (resource.getResourceTypeEnum() == ResourceType.SPACE) {
@@ -1364,7 +1364,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 					}
 				}
 			}
-		} else if(ticket.getAssignedTo() != null || ticket.getAssignmentGroup() != null) {
+		} else if((ticket.getAssignedTo() != null && ticket.getAssignedTo().getId() > 0) || (ticket.getAssignmentGroup() != null && ticket.getAssignmentGroup().getId() > 0)) {
 			User assignedTo = ticket.getAssignedTo();
 			Group assignmentGroup = ticket.getAssignmentGroup();
 			long groupSiteId = -1;
