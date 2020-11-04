@@ -190,6 +190,7 @@ public class FetchReportAdditionalInfoCommand extends FacilioCommand {
 							alarmOccurrenceContext.setSubject(alarmOccurrenceContext.getAlarm().getSubject());
 						}
 						relatedReportAggrData.put("alarmInfo", relatedAlarmMap);
+						relatedReportAggrData.put("alarmTitle", relatedAlarm.getSubject());
 						alarmMetaList.add(relatedReportAggrData);
 					}
 					if (alarmMetaList != null && !alarmMetaList.isEmpty()) {
