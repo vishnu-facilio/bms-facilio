@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.context.sensor;
 
+import java.math.BigDecimal;
+
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 
@@ -45,4 +47,23 @@ public class SensorAlarmContext extends BaseAlarmContext{
 	public void setMeterRollUp(Boolean meterRollUp) {
 		this.meterRollUp = meterRollUp;
 	}
+	
+	
+	public BigDecimal getTotalDuration() {
+		return totalDuration;
+	}
+	public void setTotalDuration(BigDecimal totalDuration) {
+		this.totalDuration = totalDuration;
+	}
+	public BigDecimal getAverageFrequencyFailure() {
+		return averageFrequencyFailure;
+	}
+	public void setAverageFrequencyFailure(BigDecimal averageFrequencyFailure) {
+		this.averageFrequencyFailure = averageFrequencyFailure;
+	}
+
+	private BigDecimal totalDuration;
+	
+	private BigDecimal averageFrequencyFailure;
+	
 }

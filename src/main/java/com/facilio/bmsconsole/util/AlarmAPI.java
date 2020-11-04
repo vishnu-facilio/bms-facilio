@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.util;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.AlarmSeverityContext;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
@@ -63,6 +65,7 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
+import com.facilio.modules.BmsAggregateOperators.NumberAggregateOperator;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.time.DateRange;
@@ -70,6 +73,7 @@ import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.util.WorkflowUtil;
 
 public class AlarmAPI {
 	private static final Logger LOGGER = LogManager.getLogger(AlarmAPI.class.getName());
@@ -1122,10 +1126,123 @@ public class AlarmAPI {
 		}
 		if (startTime > 0 && endTime > 0) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("lastCreatedTime"), startTime+","+endTime, DateOperators.BETWEEN));
+//			Criteria criteria = new Criteria();
+//			criteria.addAndCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", "" + endTime, NumberOperators.LESS_THAN_EQUAL));
+//			
+//			Criteria subCriteria = new Criteria();
+//			subCriteria.addOrCondition(CriteriaAPI.getCondition("CLEARED_TIME", "clearedTime", "" + startTime, NumberOperators.GREATER_THAN_EQUAL));
+//			subCriteria.addOrCondition(CriteriaAPI.getCondition("CLEARED_TIME", "clearedTime", "", CommonOperators.IS_EMPTY));
+//			criteria.andCriteria(subCriteria);
+//			
+//			selectBuilder.andCriteria(criteria);
 		}
 		List<SensorAlarmContext> alarms = selectBuilder.get();
-		// TODO Auto-generated method stub
 		return alarms;
+	}
+
+	public static BigDecimal getOccurencesDuration(long id, DateRange range) throws Exception {
+		AlarmOccurrenceContext.Type alarmOccurrenceType = AlarmOccurrenceContext.Type.SENSOR;
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(NewAlarmAPI.getOccurrenceModuleName(alarmOccurrenceType));
+		List<FacilioField> allFields = modBean.getAllFields(module.getName());
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
+		FacilioField removeField = fieldMap.get("duration");
+		List<FacilioField> filteredFields = allFields;
+		filteredFields.remove(removeField);
+		
+		
+	
+		SelectRecordsBuilder<AlarmOccurrenceContext> selectbuilder = new SelectRecordsBuilder<AlarmOccurrenceContext>()
+				.aggregate(NumberAggregateOperator.SUM, fieldMap.get("duration"))
+				.select(filteredFields)
+				.module(module)
+				.beanClass(NewAlarmAPI.getOccurrenceClass(alarmOccurrenceType))
+				.moduleName(NewAlarmAPI.getOccurrenceModuleName(alarmOccurrenceType))
+				.andCondition(CriteriaAPI.getCondition("ALARM_ID", "alarm", "" + id, NumberOperators.EQUALS))
+				;
+		
+		
+		selectbuilder.andCondition(CriteriaAPI.getCondition("ALARM_ID", "alarm", "" + id, NumberOperators.EQUALS));
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", "" + range.getEndTime(), NumberOperators.LESS_THAN_EQUAL));
+		
+		Criteria subCriteria = new Criteria();
+		subCriteria.addOrCondition(CriteriaAPI.getCondition("CLEARED_TIME", "clearedTime", "" + range.getStartTime(), NumberOperators.GREATER_THAN_EQUAL));
+		subCriteria.addOrCondition(CriteriaAPI.getCondition("CLEARED_TIME", "clearedTime", "", CommonOperators.IS_EMPTY));
+		criteria.andCriteria(subCriteria);
+		
+		
+		selectbuilder.andCriteria(criteria);
+		
+		List<Map<String, Object>> props = selectbuilder.getAsProps();
+		
+		BigDecimal duration = (BigDecimal) props.get(0).get("duration");
+		
+		SelectRecordsBuilder<AlarmOccurrenceContext> selectBuilder = new SelectRecordsBuilder<AlarmOccurrenceContext>()
+				.select(allFields)
+				.module(module)
+				.beanClass(NewAlarmAPI.getOccurrenceClass(alarmOccurrenceType))
+				.moduleName(NewAlarmAPI.getOccurrenceModuleName(alarmOccurrenceType))
+				.andCondition(CriteriaAPI.getCondition("ALARM_ID", "alarm", "" + id, NumberOperators.EQUALS))
+				;
+
+		
+		selectBuilder.andCriteria(criteria);
+		selectBuilder.orderBy("CREATED_TIME");
+		selectBuilder.limit(1);
+		
+		List<AlarmOccurrenceContext> prop = selectBuilder.get();
+		
+		if(prop != null && !prop.isEmpty()) {
+			AlarmOccurrenceContext occurrence = (AlarmOccurrenceContext) prop.get(0);
+			if (occurrence.getCreatedTime() < range.getStartTime()) {
+				long differenceInDuration = (occurrence.getClearedTime() - range.getStartTime());
+				BigDecimal bigD = new BigDecimal(differenceInDuration);
+				bigD =  BigDecimal.valueOf(differenceInDuration);
+				duration = duration.add(bigD);
+			}
+		}	
+		
+		
+		
+		return duration;
+	}
+
+	public static BigDecimal getOccurencesAverageFrequencyFailure(long id, DateRange range) throws Exception {
+		AlarmOccurrenceContext.Type alarmOccurrenceType = AlarmOccurrenceContext.Type.SENSOR;
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(NewAlarmAPI.getOccurrenceModuleName(alarmOccurrenceType));
+		List<FacilioField> allFields = modBean.getAllFields(module.getName());
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
+		FacilioField removeField = fieldMap.get("timeBetweeenOccurrence");
+		List<FacilioField> filteredFields = allFields;
+		filteredFields.remove(removeField);
+	
+		SelectRecordsBuilder<AlarmOccurrenceContext> selectbuilder = new SelectRecordsBuilder<AlarmOccurrenceContext>()
+				.select(filteredFields)
+				.module(module)
+				.beanClass(NewAlarmAPI.getOccurrenceClass(alarmOccurrenceType))
+				.moduleName(NewAlarmAPI.getOccurrenceModuleName(alarmOccurrenceType))
+				.andCondition(CriteriaAPI.getCondition("ALARM_ID", "alarm", "" + id, NumberOperators.EQUALS))
+				;
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", "" + range.getEndTime(), NumberOperators.LESS_THAN_EQUAL));
+		
+		Criteria subCriteria = new Criteria();
+		subCriteria.addOrCondition(CriteriaAPI.getCondition("CLEARED_TIME", "clearedTime", "" + range.getStartTime(), NumberOperators.GREATER_THAN_EQUAL));
+		subCriteria.addOrCondition(CriteriaAPI.getCondition("CLEARED_TIME", "clearedTime", "", CommonOperators.IS_EMPTY));
+		criteria.andCriteria(subCriteria);
+		
+		
+		selectbuilder.andCriteria(criteria);
+		selectbuilder.aggregate(NumberAggregateOperator.AVERAGE, fieldMap.get("timeBetweeenOccurrence"));
+		
+		List<Map<String, Object>> props = selectbuilder.getAsProps();
+		
+		
+		BigDecimal timeBetweeenOccurrence = (BigDecimal) props.get(0).get("timeBetweeenOccurrence");
+		return  timeBetweeenOccurrence;
 	}
 	
 }
