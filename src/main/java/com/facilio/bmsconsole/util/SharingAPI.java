@@ -63,10 +63,10 @@ public class SharingAPI {
 		}
 		return null;
 	}
-	public static int deleteSharingForParent (long parentId, FacilioModule module) throws Exception {
+	public static int deleteSharingForParent (List<Long> parentIds, FacilioModule module) throws Exception {
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCondition("PARENT_ID", "parentId", String.valueOf(parentId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("PARENT_ID", "parentId", StringUtils.join(parentIds, ","), NumberOperators.EQUALS))
 				;
 
 		return deleteBuilder.delete();

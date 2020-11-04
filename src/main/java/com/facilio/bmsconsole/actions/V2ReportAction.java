@@ -266,7 +266,7 @@ public class V2ReportAction extends FacilioAction {
 	public String addReportFolderPermission() throws Exception {
 	if (folderId > 0) {	
 		if (!reportFolder.getIds().isEmpty() && reportFolder.getIds() != null) {
-	SharingAPI.deleteSharing(reportFolder.getIds(), ModuleFactory.getReportSharingModule());
+	SharingAPI.deleteSharingForParent(reportFolder.getIds(), ModuleFactory.getReportSharingModule());
 		}
 	SharingAPI.addSharing(reportFolder.getReportSharing(), folderId, ModuleFactory.getReportSharingModule());
 	}
