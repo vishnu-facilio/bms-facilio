@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -96,7 +97,7 @@ public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 			}
 			if (field == null) {
 				LOGGER.error("Field is not found for: " + fieldName + " : " + moduleName);
-				throw new Exception("Field is not found for: " + fieldName + " : " + moduleName);
+				throw new IllegalArgumentException("Field is not found for: " + fieldName + " : " + moduleName);
 			}
 		}
 		Operator operator;
@@ -126,67 +127,66 @@ public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 			operatorId = operator.getOperatorId();
 		}
 		JSONArray value = (JSONArray) fieldJson.get("value");
-		if(!operator.isValueNeeded() || (value != null && !value.isEmpty())) {
-			
-			Condition condition = new Condition();
-			condition.setField(field);
-			condition.setOperatorId(operatorId);
-			
-			if(value!=null && value.size()>0) {
-				StringBuilder values = new StringBuilder();
-				boolean isFirst = true;
-				Iterator<String> iterator = value.iterator();
-				while(iterator.hasNext())
-				{
-					String obj = iterator.next();
-					if(!isFirst) {
-						values.append(",");
-					}
-					else {
-						isFirst = false;
-					}
-					if (operator instanceof StringOperators) {
-						obj = obj.replace(",", StringOperators.DELIMITED_COMMA);
-					}
-					values.append(obj.trim());
+
+		Condition condition = new Condition();
+		condition.setField(field);
+		condition.setOperatorId(operatorId);
+
+		if(operator.isValueNeeded() && (value!=null && value.size()>0)) {
+			StringBuilder values = new StringBuilder();
+			boolean isFirst = true;
+			Iterator<String> iterator = value.iterator();
+			while(iterator.hasNext())
+			{
+				String obj = iterator.next();
+				if(!isFirst) {
+					values.append(",");
 				}
-				String valuesString = values.toString();
-				if (condition.getOperator() instanceof FieldOperator) {
-					condition.setValueField(modBean.getField(valuesString, moduleName));
-				} else if(condition.getOperator() instanceof RelatedModuleOperator) {
-					Criteria criteriaVal = new Criteria();
-					Operator relatedOperator = NumberOperators.EQUALS;
-					if (fieldJson.containsKey("relatedOperatorId")) {
-						relatedOperator = Operator.getOperator((int)(long) fieldJson.get("relatedOperatorId"));
-					}
-					FacilioField relatedField;
-					if (fieldJson.containsKey("filterFieldName")) {
-						relatedField = modBean.getField(relatedFieldName, (String)fieldJson.get("filterFieldName"));
-					}
-					else {
-						relatedField = FieldFactory.getIdField();
-					}
-					criteriaVal.addAndCondition(CriteriaAPI.getCondition(relatedField, valuesString, relatedOperator));
-					condition.setCriteriaValue(criteriaVal);
-				} else {
-					condition.setValue(valuesString);
+				else {
+					isFirst = false;
 				}
-				if (fieldJson.containsKey("orFilters")) {	// To have or condition for different fields..eg: (space=1 OR purposeSpace=1)
-					JSONArray orFilters = (JSONArray) fieldJson.get("orFilters");
-					for(int i=0;i<orFilters.size();i++) {
-						JSONObject fieldJsonObj = (JSONObject) orFilters.get(i);
-						if (!fieldJsonObj.containsKey("operator")) {
-							fieldJsonObj.put("operator", operatorName);
-						}
-						if (!fieldJsonObj.containsKey("value")) {
-							fieldJsonObj.put("value", value);
-						}
-						setConditions(moduleName, (String)fieldJsonObj.get("field"), fieldJsonObj, conditionList);
+				if (operator instanceof StringOperators) {
+					obj = obj.replace(",", StringOperators.DELIMITED_COMMA);
+				}
+				values.append(obj.trim());
+			}
+			String valuesString = values.toString();
+			if (condition.getOperator() instanceof FieldOperator) {
+				condition.setValueField(modBean.getField(valuesString, moduleName));
+			} else if(condition.getOperator() instanceof RelatedModuleOperator) {
+				Criteria criteriaVal = new Criteria();
+				Operator relatedOperator = NumberOperators.EQUALS;
+				if (fieldJson.containsKey("relatedOperatorId")) {
+					relatedOperator = Operator.getOperator((int)(long) fieldJson.get("relatedOperatorId"));
+				}
+				FacilioField relatedField;
+				if (fieldJson.containsKey("filterFieldName")) {
+					relatedField = modBean.getField(relatedFieldName, (String)fieldJson.get("filterFieldName"));
+				}
+				else {
+					relatedField = FieldFactory.getIdField();
+				}
+				criteriaVal.addAndCondition(CriteriaAPI.getCondition(relatedField, valuesString, relatedOperator));
+				condition.setCriteriaValue(criteriaVal);
+			} else {
+				condition.setValue(valuesString);
+			}
+			if (fieldJson.containsKey("orFilters")) {	// To have or condition for different fields..eg: (space=1 OR purposeSpace=1)
+				JSONArray orFilters = (JSONArray) fieldJson.get("orFilters");
+				for(int i=0;i<orFilters.size();i++) {
+					JSONObject fieldJsonObj = (JSONObject) orFilters.get(i);
+					if (!fieldJsonObj.containsKey("operator")) {
+						fieldJsonObj.put("operator", operatorName);
 					}
+					if (!fieldJsonObj.containsKey("value")) {
+						fieldJsonObj.put("value", value);
+					}
+					setConditions(moduleName, (String)fieldJsonObj.get("field"), fieldJsonObj, conditionList);
 				}
 			}
-			conditionList.add(condition);
 		}
+		condition.validateValue();
+		conditionList.add(condition);
 	}
 	
 	private static final List<String> TEMPLATE_FIELDS = Arrays.asList("priorityId", "statusId", "categoryId", "typeId", "assignmentGroupId", "assignedToId", "resourceId", "tenantId", "additionInfo", "vendorId");

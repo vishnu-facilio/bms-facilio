@@ -82,18 +82,7 @@ public class CriteriaAPI extends BaseCriteriaAPI {
 				if (condition.getOperator().isValueNeeded() && condition.getValue() == null && condition.getCriteriaValue() == null && condition.getJsonValue() == null) {
 					throw new IllegalArgumentException("Value cannot be null for Condition with operator "+condition.getOperator());
 				}
-
-				switch (condition.getOperator().getValueType()) {
-					case STRING:
-						condition.getOperator().validateValue(condition, condition.getValue());
-						break;
-					case CRITERIA:
-						condition.getOperator().validateValue(condition, condition.getCriteriaValue());
-						break;
-					case JSON:
-						condition.getOperator().validateValue(condition, condition.getJsonValue());
-						break;
-				}
+				condition.validateValue();
 				
 				int sequence = -1;
 				Object key = conditionEntry.getKey();
