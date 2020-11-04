@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.db;
 import java.io.File;
 import java.io.InputStream;
 import java.sql.Connection;
+import java.text.MessageFormat;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -220,30 +221,35 @@ public class BmsDBConf extends DBConf {
         for(Map<String, Object> record: records) {
             for(FacilioField field : selectFields) {
                 if(field != null && field.getDataTypeEnum() == FieldType.FILE && record.containsKey(field.getName()+"Id")) {
-                    Long id = (Long) record.get(field.getName()+"Id");
-                    FileInfo info = files.get(id);
-                    record.put(field.getName()+"Url", fileUrls.get(id));
-                    record.put(field.getName()+"DownloadUrl", downloadUrls.get(id));
-                    record.put(field.getName()+"FileName", info.getFileName());
-                    record.put(field.getName()+"ContentType", info.getContentType());
-                    if(field.getDisplayType() == FacilioField.FieldDisplayType.SIGNATURE && MapUtils.isNotEmpty(info.getUploadedBy()) && info.getUploadedBy().containsKey("id")){
-                        Long ouId = (Long)info.getUploadedBy().get("id");
-                        if(ouId != null) {
-                            User user = null;
-                            if(!orgUserMap.containsKey(ouId)) {
-                                user = AccountUtil.getUserBean().getUser(ouId, true);
-                                orgUserMap.put(ouId, user);
-                            }
-                            else {
-                                user = (User) orgUserMap.get(ouId);
-                            }
-                            if (user != null) {
-                                info.setUploadedBy(FieldUtil.getAsProperties(user));
+                    try {
+                        Long id = (Long) record.get(field.getName() + "Id");
+                        FileInfo info = files.get(id);
+                        record.put(field.getName() + "Url", fileUrls.get(id));
+                        record.put(field.getName() + "DownloadUrl", downloadUrls.get(id));
+                        record.put(field.getName() + "FileName", info.getFileName());
+                        record.put(field.getName() + "ContentType", info.getContentType());
+                        if (field.getDisplayType() == FacilioField.FieldDisplayType.SIGNATURE && MapUtils.isNotEmpty(info.getUploadedBy()) && info.getUploadedBy().containsKey("id")) {
+                            Long ouId = (Long) info.getUploadedBy().get("id");
+                            if (ouId != null) {
+                                User user = null;
+                                if (!orgUserMap.containsKey(ouId)) {
+                                    user = AccountUtil.getUserBean().getUser(ouId, true);
+                                    orgUserMap.put(ouId, user);
+                                } else {
+                                    user = (User) orgUserMap.get(ouId);
+                                }
+                                if (user != null) {
+                                    info.setUploadedBy(FieldUtil.getAsProperties(user));
+                                }
                             }
                         }
+                        record.put(field.getName() + "UploadedBy", info.getUploadedBy());
+                        record.put(field.getName() + "UploadedTime", info.getUploadedTime());
                     }
-                    record.put(field.getName()+"UploadedBy", info.getUploadedBy());
-                    record.put(field.getName()+"UploadedTime", info.getUploadedTime());
+                    catch (Exception e) {
+                        LOGGER.error(MessageFormat.format("Error occurred while getting file info for field {0}", field.getName()), e);
+                        throw e;
+                    }
                 }
             }
         }
