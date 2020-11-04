@@ -2048,7 +2048,6 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			Map<String,Object> props = new HashMap<>();
 			props.put("userId",userId);
 			props.put("totpSecret",null);
-			props.put("totpStatus",false);
 			insertBuilder.addRecord(props);
 			insertBuilder.save();
 		}
@@ -2066,24 +2065,10 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			Map<String,Object> result = new HashMap<>();
 			result.put("userId", x.get("userId"));
 			result.put("totpSecret", x.get("totpSecret"));
-			result.put("totpStatus",x.get("totpStatus"));
 			return result;
 			
 		}
 		return null;
-	}
-
-	public void updateUserMfaSettingsStatus(long userId,boolean value) throws Exception{
-
-		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.table(IAMAccountConstants.getUserMfaSettings().getTableName())
-				.fields(IAMAccountConstants.getUserMfaSettingsFields())
-				.andCondition(CriteriaAPI.getCondition("UserMfaSettings.USERID", "userId",userId + "", NumberOperators.EQUALS));
-
-		Map<String, Object> props = new HashMap<>();
-		props.put("totpStatus",value);
-		updateBuilder.update(props);
-
 	}
 
 	public boolean updateUserMfaSettingsSecretKey(long userId,String value) throws Exception {

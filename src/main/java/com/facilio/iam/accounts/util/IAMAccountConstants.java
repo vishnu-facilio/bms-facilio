@@ -725,13 +725,6 @@ public class IAMAccountConstants {
 			totpSecret.setModule(module);
 			fields.add(totpSecret);
 
-			FacilioField totpStatus = new FacilioField();
-			totpStatus.setName("totpStatus");
-			totpStatus.setDataType(FieldType.BOOLEAN);
-			totpStatus.setColumnName("TOTP_STATUS");
-			totpStatus.setModule(module);
-			fields.add(totpStatus);
-
 			return fields;
 		}
 		
