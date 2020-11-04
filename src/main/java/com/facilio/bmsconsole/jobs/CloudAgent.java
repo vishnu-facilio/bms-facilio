@@ -128,7 +128,7 @@ public class CloudAgent extends FacilioJob {
         				timeStamp = fromTime;
         			}
         			payload.put("actual_timestamp", timeStamp);
-        			payload.put("timeStamp", timeStamp);
+        			payload.put("timestamp", timeStamp);
         			
         			JSONObject controller = new JSONObject();
         			controller.put("name", result.remove("controller"));

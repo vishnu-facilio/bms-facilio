@@ -159,7 +159,7 @@ public class ResourceContext extends ModuleBaseWithCustomFields {
 	
 
 	public static enum ResourceType {
-		SPACE, ASSET, PM, USER;
+		SPACE, ASSET, PM, USER, CONTROLLER;
 
 		public int getValue() {
 			return ordinal() + 1;

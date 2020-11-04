@@ -1,6 +1,7 @@
 package com.facilio.agentv2;
 
 import java.sql.SQLException;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -24,6 +25,7 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.Job;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
@@ -38,6 +40,8 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.tasker.FacilioTimer;
+import com.facilio.tasker.ScheduleInfo;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
@@ -118,6 +122,10 @@ public class AgentApiV2 {
             if (agent.getInterval() != currDataInterval) {
                 agent.setInterval(currDataInterval);
                 agent.setLastModifiedTime(currTime);
+                if(agent.getType().equals("rest")) {
+                		FacilioTimer.deleteJob(agent.getId(), Job.CLOUD_AGENT_JOB_NAME);
+                		scheduleRestJob(agent);
+                }
             }
         }
 
@@ -449,6 +457,19 @@ public class AgentApiV2 {
             LOGGER.info("get agent query "+selectRecordBuilder.toString());
         }
         return FieldUtil.getAsBeanListFromMapList(maps,FacilioAgent.class);
+    }
+    
+    public static void scheduleRestJob(FacilioAgent agent) throws Exception {
+    		long interval = agent.getInterval();
+    		ScheduleInfo scheduleInfo = new ScheduleInfo();
+        scheduleInfo.setFrequencyType(ScheduleInfo.FrequencyType.DAILY);
+        long totalMinutesInADay = 60 * 24;
+        LocalTime time = LocalTime.of(0, 0);
+        for (long frequency = totalMinutesInADay / interval; frequency > 0; frequency--) {
+            time = time.plusMinutes(interval);
+            scheduleInfo.addTime(time);
+        }
+    		FacilioTimer.scheduleCalendarJob(agent.getId(), Job.CLOUD_AGENT_JOB_NAME, System.currentTimeMillis(), scheduleInfo, "facilio");
     }
 
 

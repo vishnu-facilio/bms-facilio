@@ -2256,6 +2256,7 @@ public class FacilioConstants {
 		
 		public static final String DIGEST_JOB_NAME = "ScheduledActionExecution";
 		public static final String AUTO_CHECKOUT_JOB_NAME = "AutoCheckOutVisitors";
+		public static final String CLOUD_AGENT_JOB_NAME = "CloudAgent";
 
 	}
 	public static class Ticket{

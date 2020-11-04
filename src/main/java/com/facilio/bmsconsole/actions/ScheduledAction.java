@@ -45,6 +45,15 @@ public class ScheduledAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String deleteScheduledAction() throws Exception {
+		FacilioChain chain = TransactionChainFactory.getDeleteScheduledActionChain();
+		FacilioContext facilioContext = chain.getContext();
+		facilioContext.put(FacilioConstants.ContextNames.ID, id);
+		chain.execute();
+		setResult("result", "success");
+		return SUCCESS;
+	}
+	
 	private long id;
 	public long getId() {
 		return id;

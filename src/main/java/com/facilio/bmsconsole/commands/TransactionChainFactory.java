@@ -3752,6 +3752,12 @@ public class TransactionChainFactory {
 			c.addCommand(new DeleteDigestConfigCommand());
 			return c;
 		}
+		
+		public static FacilioChain getDeleteScheduledActionChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new DeleteScheduledActionCommand());
+			return c;
+		}
 
 		public static FacilioChain getEnablePreference() {
 			FacilioChain c = getDefaultChain();

@@ -1,7 +1,5 @@
 package com.facilio.agentv2.commands;
 
-import java.time.LocalTime;
-
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 
@@ -10,9 +8,6 @@ import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.aws.util.AwsUtil;
-import com.facilio.tasker.ScheduleInfo;
-import com.facilio.tasker.job.JobContext;
-import com.facilio.tasker.job.JobStore;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class CreateAgentCommand extends AgentV2Command {
@@ -42,20 +37,12 @@ public class CreateAgentCommand extends AgentV2Command {
                     || type.equalsIgnoreCase("niagara")) {
                 return createPolicy(context, orgDomainname, agent, certFileDownloadUrl);
             } else if (type.equalsIgnoreCase("rest")) {
-                return createJob(agent);
-            } else {
-                return false;
+            		AgentApiV2.scheduleRestJob(agent);
             }
+            return false;
         } else {
             throw new Exception(" agent missing from context " + context);
         }
-    }
-
-    private boolean createJob(FacilioAgent agent) throws Exception {
-
-        JobContext cloudAgentJob = getJobContext(agent);
-        JobStore.addJob(cloudAgentJob);
-        return false;
     }
 
     private boolean createPolicy(Context context, String orgDomainname, FacilioAgent agent, String certFileDownloadUrl) throws Exception {
@@ -85,29 +72,5 @@ public class CreateAgentCommand extends AgentV2Command {
 
     private String packAgent(FacilioAgent agent) {
         return "no implementation yet"; //TODO implement agent packing.
-    }
-
-    private JobContext getJobContext(FacilioAgent agent) {
-        long interval = agent.getInterval();
-        JobContext cloudAgentJobContext = new JobContext();
-        ScheduleInfo scheduleInfo = new ScheduleInfo();
-        scheduleInfo.setFrequencyType(ScheduleInfo.FrequencyType.DAILY);
-        long totalMinutesInADay = 60 * 24;
-        LocalTime time = LocalTime.of(0, 0);
-        for (long frequency = totalMinutesInADay / interval; frequency > 0; frequency--) {
-            time = time.plusMinutes(interval);
-            scheduleInfo.addTime(time);
-        }
-        cloudAgentJobContext.setSchedule(scheduleInfo);
-        cloudAgentJobContext.setJobId(agent.getId());
-        cloudAgentJobContext.setIsPeriodic(true);
-        cloudAgentJobContext.setJobName("CloudAgent");
-        cloudAgentJobContext.setActive(true);
-        cloudAgentJobContext.setExecutorName("facilio");
-        cloudAgentJobContext.setTransactionTimeout(300000);
-        cloudAgentJobContext.setExecutionTime(System.currentTimeMillis() / 1000);
-        cloudAgentJobContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-        LOGGER.info("Adding Cloud Agent : " + agent.getName() + " : " + cloudAgentJobContext.toString());
-        return cloudAgentJobContext;
     }
 }

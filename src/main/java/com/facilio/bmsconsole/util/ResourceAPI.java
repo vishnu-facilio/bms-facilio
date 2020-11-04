@@ -81,6 +81,7 @@ public class ResourceAPI {
 		if (resource != null) {
 			switch (resource.getResourceTypeEnum()) {
 			case ASSET:
+			case CONTROLLER:
 				return AssetsAPI.getAssetInfo(id);
 			case SPACE:
 				return SpaceAPI.getBaseSpace(id);
@@ -166,6 +167,7 @@ public class ResourceAPI {
 				case SPACE:
 					spaceIds.add(resource.getId());
 					break;
+				case CONTROLLER:
 				case ASSET:
 					assetIds.add(resource.getId());
 					if (resource.getSpaceId() != -1) {

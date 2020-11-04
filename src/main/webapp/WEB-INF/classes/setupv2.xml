@@ -84,6 +84,8 @@
 		</action>
 		<action name="update" class="com.facilio.bmsconsole.actions.ScheduledAction" method="updateScheduledAction">
 		</action>
+		<action name="delete" class="com.facilio.bmsconsole.actions.ScheduledAction" method="deleteScheduledAction">
+		</action>
 		<action name="run" class="com.facilio.bmsconsole.actions.ScheduledAction" method="executeScheduledAction">
 		</action>
 	</package>
