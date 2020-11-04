@@ -104,7 +104,7 @@ public class SettingsMfa extends FacilioAction {
 					.label(AccountUtil.getCurrentUser().getEmail())
 					.secret(totpKey)
 					.issuer("Facilio")
-					.algorithm(HashingAlgorithm.SHA1)
+					.algorithm(HashingAlgorithm.SHA1) // More on this below
 					.digits(6)
 					.period(30)
 					.build();
@@ -126,7 +126,7 @@ public class SettingsMfa extends FacilioAction {
 		CodeGenerator codeGenerator = new DefaultCodeGenerator();
 		CodeVerifier verifier = new DefaultCodeVerifier(codeGenerator, timeProvider);
 		
-		boolean successful = verifier.isValidCode(totpKey,code);
+		boolean successful = verifier.isValidCode(totpKey, code);
 		
 		return successful;
 	}
@@ -134,7 +134,7 @@ public class SettingsMfa extends FacilioAction {
 	public String totpsetup() throws Exception{
 		
 		LOGGER.error(verificationCode);
-		LOGGER.error(totpChecking(verificationCode));
+		totpChecking(verificationCode);
 		return "success";
 	}
 }
