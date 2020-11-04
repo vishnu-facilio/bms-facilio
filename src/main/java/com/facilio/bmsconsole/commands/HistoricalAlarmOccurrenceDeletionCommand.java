@@ -94,6 +94,30 @@ public class HistoricalAlarmOccurrenceDeletionCommand extends FacilioCommand imp
 			updateParentRuleResourceLoggerToModifiedRangeAndEventGeneratingState(parentRuleResourceLoggerContext, modifiedDateRange);
 			
 			triggerGroupedTimeSplitRuleResourceLoggers(parentRuleResourceLoggerId);		
+			
+			//rule data point deletion starts
+			
+			WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(primaryRuleId);
+			
+			if(rule instanceof ReadingRuleContext) {
+				ReadingRuleContext readingRule = (ReadingRuleContext) rule;
+				if(readingRule.getDataModuleId() > 0) {
+					
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					
+					Criteria criteria = new Criteria();
+					criteria.addAndCondition(CriteriaAPI.getCondition("PARENT_ID", "parentId", parentRuleResourceLoggerContext.getResourceId()+"", NumberOperators.EQUALS));
+					criteria.addAndCondition(CriteriaAPI.getCondition("TTIME", "ttime", actualStartTime+","+actualEndTime, DateOperators.BETWEEN));
+					
+					DeleteRecordBuilder<ReadingContext> deleteBuilder = new DeleteRecordBuilder<ReadingContext>()
+							.module(modBean.getModule(readingRule.getDataModuleId()))
+							.andCriteria(criteria);
+					
+					deleteBuilder.delete();
+				}
+			}
+			
+			//rule data point deletion ends
 		}
 		
 		catch (Exception historicalRuleDeletionException) {
