@@ -195,7 +195,8 @@ public class ReadingDataMeta implements Serializable {
 		TASK,
 		CONTROLLER_MAPPED,
 		FORMULA_FIELD,
-		HIDDEN_FORMULA_FIELD
+		HIDDEN_FORMULA_FIELD,
+		ALARM_POINT_FIELD,
 		;
 		
 		public int getValue() {

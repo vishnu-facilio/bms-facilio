@@ -65,7 +65,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 	
 	private static final Logger LOGGER = LogManager.getLogger(ReadingRuleAPI.class.getName());
 	
-	private static final String ALARM_LOG_MODULE_TABLE_NAME = "AlarmLogData";
+	public static final String ALARM_LOG_MODULE_TABLE_NAME = "AlarmLogData";
 	
 	public static final String ALARM_LOG_MODULE_FIELD_NAME = "alarmLog";
 	
@@ -640,46 +640,8 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		alarmRule.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		
 		alarmRule.setParentRuleId(parentId);
-		
-		if(ruleType == RuleType.ALARM_TRIGGER_RULE) {
-			
-			FacilioChain addReadingChain = TransactionChainFactory.getAddCategoryReadingChain();
-			
-			FacilioContext context = addReadingChain.getContext();
-			context.put(FacilioConstants.ContextNames.PARENT_MODULE, FacilioConstants.ContextNames.ASSET_CATEGORY);
-			context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, ALARM_LOG_MODULE_TABLE_NAME);
-			context.put(FacilioConstants.ContextNames.READING_NAME, ALARM_LOG_MODULE_FIELD_NAME);
-			context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getAlarmLogBooleanFields());
-			context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
-			context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, alarmRule.getAssetCategoryId());
-			context.put(FacilioConstants.ContextNames.VALIDATION_RULES, null);
-			
-			addReadingChain.execute();
-			
-			
-			List<FacilioModule> modules = CommonCommandUtil.getModules(context);
-			
-			alarmRule.setDataModuleId(modules.get(0).getModuleId());
-			
-		}
-		
 	}
 	
-	private static List<FacilioField> getAlarmLogBooleanFields() {
-		
-		List<FacilioField> list = new ArrayList<FacilioField>();
-		BooleanField alarmLogField = new BooleanField();
-		alarmLogField.setName("alarmLog");
-		alarmLogField.setDataType(FieldType.BOOLEAN);
-		alarmLogField.setDisplayType(FieldDisplayType.DECISION_BOX);
-		alarmLogField.setTrueVal("Alarm Raised");
-		alarmLogField.setFalseVal("Alarm Not Raised");
-		
-		list.add(alarmLogField);
-		
-		return list;
-	}
-
 	private static void updateParentRuleId(long oldRuleId,long newRuleId) throws SQLException {
 
 		GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder()
