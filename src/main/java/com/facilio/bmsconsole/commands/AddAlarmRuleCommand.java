@@ -52,11 +52,17 @@ public class AddAlarmRuleCommand extends FacilioCommand {
 		FacilioChain addReadingChain = TransactionChainFactory.getAddCategoryReadingChain();
 		
 		FacilioContext context = addReadingChain.getContext();
+		
+		FacilioField logfield = getAlarmLogBooleanFields(preRequsiteRule);
+		
+		List<FacilioField> fields = new ArrayList();
+		fields.add(logfield);
+		
 		context.put(FacilioConstants.ContextNames.PARENT_MODULE, FacilioConstants.ContextNames.ASSET_CATEGORY);
 		context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, ReadingRuleAPI.ALARM_LOG_MODULE_TABLE_NAME);
 		context.put(FacilioConstants.ContextNames.READING_DATA_META_TYPE,ReadingDataMeta.ReadingInputType.ALARM_POINT_FIELD);
 		context.put(FacilioConstants.ContextNames.READING_NAME, preRequsiteRule.getName());
-		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getAlarmLogBooleanFields(preRequsiteRule));
+		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fields);
 		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
 		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, preRequsiteRule.getAssetCategoryId());
 		context.put(FacilioConstants.ContextNames.VALIDATION_RULES, null);
@@ -66,13 +72,12 @@ public class AddAlarmRuleCommand extends FacilioCommand {
 		List<FacilioModule> modules = CommonCommandUtil.getModules(context);
 		
 		preRequsiteRule.setDataModuleId(modules.get(0).getModuleId());
-			
+		preRequsiteRule.setDataModuleFieldId(logfield.getId());
 		
 	}
 	
-	private List<FacilioField> getAlarmLogBooleanFields(ReadingRuleContext preRequsiteRule) {
+	private FacilioField getAlarmLogBooleanFields(ReadingRuleContext preRequsiteRule) {
 		
-		List<FacilioField> list = new ArrayList<FacilioField>();
 		BooleanField alarmLogField = new BooleanField();
 		alarmLogField.setDisplayName(preRequsiteRule.getName());
 		alarmLogField.setDataType(FieldType.BOOLEAN);
@@ -80,9 +85,7 @@ public class AddAlarmRuleCommand extends FacilioCommand {
 		alarmLogField.setTrueVal("Alarm Raised");
 		alarmLogField.setFalseVal("Alarm Not Raised");
 		
-		list.add(alarmLogField);
-		
-		return list;
+		return alarmLogField;
 	}
 
 }

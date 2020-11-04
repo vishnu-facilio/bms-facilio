@@ -82,8 +82,15 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 
 	private static final Logger LOGGER = LogManager.getLogger(ReadingRuleContext.class.getName());
 	
-	long dataModuleId = -1;
+	long dataModuleId = -1l;
+	long dataModuleFieldId = -1l;
 	
+	public long getDataModuleFieldId() {
+		return dataModuleFieldId;
+	}
+	public void setDataModuleFieldId(long dataModuleFieldId) {
+		this.dataModuleFieldId = dataModuleFieldId;
+	}
 	public long getDataModuleId() {
 		return dataModuleId;
 	}
@@ -920,11 +927,33 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 	
 	private void addRuleLogEntry(Object record,boolean isTrueAction) throws Exception {
 		
-		if(dataModuleId > 0 && record instanceof ReadingContext) {
+		ReadingRuleContext currentRule = null;
+		if(isTrueAction) {
+			if(this.getRuleTypeEnum() == RuleType.ALARM_TRIGGER_RULE) {
+				currentRule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(getParentRuleId());
+			}
+			else {
+				return;
+			}
+		}
+		else {
+			if(this.getRuleTypeEnum() == RuleType.READING_RULE) {
+				currentRule = this;
+			}
+			else if (this.getRuleTypeEnum() == RuleType.ALARM_TRIGGER_RULE) {
+				currentRule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(getParentRuleId());
+			}
+			else {
+				return;
+			}
+		}
+		
+		if(currentRule.getDataModuleId() > 0 && currentRule.getDataModuleFieldId() > 0 && record instanceof ReadingContext) {
 			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			
-			FacilioModule ruleDataModule = modBean.getModule(dataModuleId);
+			FacilioModule ruleDataModule = modBean.getModule(currentRule.getDataModuleId());
+			FacilioField ruledataField = modBean.getField(currentRule.getDataModuleFieldId());
 			
 			ReadingContext readingContext = (ReadingContext) record;
 			
@@ -934,7 +963,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 			ruleLogReadingContext.setParentId(readingContext.getParentId());
 			ruleLogReadingContext.setTtime(readingContext.getTtime());
 			
-			ruleLogReadingContext.setDatum(ReadingRuleAPI.ALARM_LOG_MODULE_FIELD_NAME, isTrueAction);
+			ruleLogReadingContext.setDatum(ruledataField.getName(), isTrueAction);
 			
 			FacilioChain addRuleData = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
 			

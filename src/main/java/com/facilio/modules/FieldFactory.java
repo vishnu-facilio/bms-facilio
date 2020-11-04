@@ -1915,6 +1915,7 @@ public class FieldFactory {
         fields.add(getField("alarmCategoryId", "ALARM_CATEGORY_ID", module, FieldType.LOOKUP));
         
         fields.add(getField("dataModuleId", "DATA_MODULE_ID", module, FieldType.NUMBER));
+        fields.add(getField("dataModuleFieldId", "DATA_MODULE_FIELD_ID", module, FieldType.NUMBER));
         
         SystemEnumField faultTypeField = (SystemEnumField) (getField("faultType", "FAULT_TYPE", module, FieldType.SYSTEM_ENUM));
         faultTypeField.setEnumName("FaultType");
