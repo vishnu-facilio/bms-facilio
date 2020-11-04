@@ -27,17 +27,7 @@ public class SettingsMfa extends FacilioAction {
 	
 	private static final Logger LOGGER = Logger.getLogger(SettingsMfa.class.getName());
 	
-	private boolean totpStatus;
-	
 	private String verificationCode;
-
-	public boolean isTotpStatus() {
-		return totpStatus;
-	}
-
-	public void setTotpStatus(boolean totpStatus) {
-		this.totpStatus = totpStatus;
-	}
 
 	public String getVerificationCode() {
 		return verificationCode;
@@ -131,7 +121,7 @@ public class SettingsMfa extends FacilioAction {
 		totpKey = (String) values.get("totpSecret");
 
 		LOGGER.error(totpKey);
-		TimeProvider timeProvider = new NtpTimeProvider("pool.ntp.org");
+		TimeProvider timeProvider = new SystemTimeProvider();
 		CodeGenerator codeGenerator = new DefaultCodeGenerator();
 		DefaultCodeVerifier verifier = new DefaultCodeVerifier(codeGenerator, timeProvider);
 		
@@ -142,8 +132,29 @@ public class SettingsMfa extends FacilioAction {
 
 	public String totpsetup() throws Exception{
 
-		LOGGER.error(verificationCode);
-		LOGGER.error(totpChecking(verificationCode));
+		//IAMUserUtil.updateUserMfaSettingsStatus(AccountUtil.getCurrentUser().getIamOrgUserId(),true);
+		if(totpChecking(verificationCode)){
+			IAMUserUtil.updateUserMfaSettingsStatus(AccountUtil.getCurrentUser().getIamOrgUserId(),true);
+		}
 		return "success";
 	}
+
+	public String totpstatus() throws Exception{
+
+		Map<String,Object> values = new HashMap<>();
+		values = IAMUserUtil.getUserMfaSettings(AccountUtil.getCurrentUser().getIamOrgUserId());
+
+		boolean totpstatus = (boolean) values.get("totpStatus");
+		setResult("totpstatus",totpstatus);
+		return "success";
+
+	}
+
+//	public String totpexit() throws Exception{
+//
+//		IAMUserUtil.updateUserMfaSettingsStatus(AccountUtil.getCurrentUser().getIamOrgUserId(),false);
+//
+//		return "success";
+//
+//	}
 }

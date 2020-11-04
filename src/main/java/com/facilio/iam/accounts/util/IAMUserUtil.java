@@ -86,6 +86,10 @@ public class IAMUserUtil {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().verifyEmailv2(invitetoken));
 	}
 
+	public static void updateUserMfaSettingsStatus(long userId,boolean value) throws Exception{
+		FacilioService.runAsService(() -> IAMUtil.getUserBean().updateUserMfaSettingsStatus(userId,value));
+	}
+
 	public static boolean updateUser(IAMUser user, long orgId) throws Exception {
 		List<FacilioField> fieldsToBeUpdated = new ArrayList<FacilioField>();
 		fieldsToBeUpdated.addAll(IAMAccountConstants.getAccountsUserFields());
