@@ -139,10 +139,4 @@ public interface IAMUserBean {
 	public Map<String, Object> getLoginModes(String userName, String domain, AppDomain appDomain) throws Exception;
 
 	public Map<String, Object> getLoginModes(String userName, AppDomain.GroupType groupType) throws Exception;
-	
-
-	public boolean updateUserMfaSettingsSecretKey(long userId,String value) throws Exception;
-
-	public Map<String,Object> getUserMfaSettings(long userId) throws Exception;
-
 }

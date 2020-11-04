@@ -2033,38 +2033,5 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		}
 	}
 
-	
-
-	public Map<String,Object> getUserMfaSettings(long userId) throws Exception{
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(IAMAccountConstants.getUserMfaSettingsFields())
-				.table(IAMAccountConstants.getUserMfaSettings().getTableName())
-		        .andCondition(CriteriaAPI.getCondition("UserMfaSettings.USERID", "userId",userId + "", NumberOperators.EQUALS));
-		List<Map<String, Object>> props = selectBuilder.get();
-		if(props != null && !props.isEmpty()) {
-			
-			Map<String,Object> x = props.get(0);
-			Map<String,Object> result = new HashMap<>();
-			result.put("userId", x.get("userId"));
-			result.put("totpSecret", x.get("totpSecret"));
-			return result;
-			
-		}
-		return null;
-	}
-
-	public boolean updateUserMfaSettingsSecretKey(long userId,String value) throws Exception {
-
-		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.table(IAMAccountConstants.getUserMfaSettings().getTableName())
-				.fields(IAMAccountConstants.getUserMfaSettingsFields())
-				.andCondition(CriteriaAPI.getCondition("UserMfaSettings.USERID", "userId",userId + "", NumberOperators.EQUALS));
-
-		Map<String, Object> props = new HashMap<>();
-		props.put("totpSecret",value);
-		updateBuilder.update(props);
-
-		return true;
-	}
 		
 }

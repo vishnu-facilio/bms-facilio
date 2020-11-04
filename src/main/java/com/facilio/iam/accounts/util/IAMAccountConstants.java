@@ -692,42 +692,6 @@ public class IAMAccountConstants {
 			return userModule;
 		}
 		
-		public static FacilioModule getUserMfaSettings() {
-			FacilioModule userModule = new FacilioModule();
-			userModule.setName("userMfaSettings");
-			userModule.setDisplayName("User MFA Settings");
-			userModule.setTableName("UserMfaSettings");
-			return userModule;
-		}
-		
-		public static List<FacilioField> getUserMfaSettingsFields(){
-			FacilioModule module = getUserMfaSettings();
-			List<FacilioField> fields = new ArrayList<>();
-			
-			FacilioField userId = new FacilioField();
-			userId.setName("userId");
-			userId.setDataType(FieldType.NUMBER);
-			userId.setColumnName("USERID");
-			userId.setModule(module);
-			fields.add(userId);
-			
-			FacilioField userMfaSettings = new FacilioField();
-			userMfaSettings.setName("userMfaSettings");
-			userMfaSettings.setDataType(FieldType.ID);
-			userMfaSettings.setColumnName("USERMFASETTINGS");
-			userMfaSettings.setModule(module);
-			fields.add(userMfaSettings);
-			
-			FacilioField totpSecret = new FacilioField();
-			totpSecret.setName("totpSecret");
-			totpSecret.setDataType(FieldType.STRING);
-			totpSecret.setColumnName("TOTP_SECRET");
-			totpSecret.setModule(module);
-			fields.add(totpSecret);
-
-			return fields;
-		}
-		
 		public static FacilioModule getUserMobileSettingModule() {
 			FacilioModule userModule = new FacilioModule();
 			userModule.setName("userMobileSetting");

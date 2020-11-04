@@ -308,13 +308,5 @@ public class IAMUserUtil {
 		return getUserForPhone(phone, identifier, orgId);
 	}
 	
-
-	public static Map<String,Object> getUserMfaSettings(long userId) throws Exception{
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserMfaSettings(userId));
-	}
-
-	public static boolean updateUserMfaSettingsSecretKey(long userId,String value) throws Exception{
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().updateUserMfaSettingsSecretKey(userId, value) );
-	}
 	
 }
