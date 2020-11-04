@@ -627,7 +627,7 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 	
 	public static void addViewSharing(FacilioView view) throws Exception {
 		SharingContext<SingleSharingContext> viewSharing = view.getViewSharing();
-		SharingAPI.deleteSharing(Collections.singletonList(view.getId()), ModuleFactory.getViewSharingModule());
+		SharingAPI.deleteSharingForParent(view.getId(), ModuleFactory.getViewSharingModule());
 
 		//temp handling for apptype sharing for custom views..can be removed after supporting apptype sharing in ui
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
