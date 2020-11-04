@@ -68,15 +68,9 @@ public class SettingsMfa extends FacilioAction {
 
 
 		String totpKey;
-		Map<String,Object> values = new HashMap<>();
-		values = IAMUserUtil.getUserMfaSettings(AccountUtil.getCurrentUser().getIamOrgUserId());
+		totpKey = generateKey();
+		IAMUserUtil.updateUserMfaSettingsSecretKey(AccountUtil.getCurrentUser().getIamOrgUserId(), totpKey);
 
-		if(values.get("totpSecret") == null) {
-			totpKey = generateKey();
-		    IAMUserUtil.updateUserMfaSettingsSecretKey(AccountUtil.getCurrentUser().getIamOrgUserId(), totpKey);
-		} else {
-		totpKey = values.get("totpSecret").toString();
-		}
 	    HashMap<String,String> data = new HashMap<>();
 		data.put("secret",totpKey);
 		data.put("qrCode",QrCode());
@@ -103,9 +97,7 @@ public class SettingsMfa extends FacilioAction {
 
 			QrGenerator generator = new ZxingPngQrGenerator();
 			byte[] imageData = generator.generate(data);
-
 			String mimeType = generator.getImageMimeType();
-
 			String dataUri = getDataUriForImage(imageData, mimeType);
 
 			return dataUri;
@@ -132,9 +124,14 @@ public class SettingsMfa extends FacilioAction {
 
 	public String totpsetup() throws Exception{
 
-		//IAMUserUtil.updateUserMfaSettingsStatus(AccountUtil.getCurrentUser().getIamOrgUserId(),true);
+//		IAMUserUtil.updateUserMfaSettingsStatus(AccountUtil.getCurrentUser().getIamOrgUserId(),true);
+//		throw new IllegalArgumentException("invalid verification code");
 		if(totpChecking(verificationCode)){
 			IAMUserUtil.updateUserMfaSettingsStatus(AccountUtil.getCurrentUser().getIamOrgUserId(),true);
+		    setResponseCode(0);
+		}
+		else{
+		    throw new IllegalArgumentException("invalid verification code");
 		}
 		return "success";
 	}
@@ -150,11 +147,28 @@ public class SettingsMfa extends FacilioAction {
 
 	}
 
-//	public String totpexit() throws Exception{
-//
-//		IAMUserUtil.updateUserMfaSettingsStatus(AccountUtil.getCurrentUser().getIamOrgUserId(),false);
-//
-//		return "success";
-//
-//	}
+	public String totpexit() throws Exception{
+
+		IAMUserUtil.updateUserMfaSettingsSecretKey(AccountUtil.getCurrentUser().getIamOrgUserId(),null);
+		IAMUserUtil.updateUserMfaSettingsStatus(AccountUtil.getCurrentUser().getIamOrgUserId(),false);
+		return "success";
+
+	}
+
+	public String totpchange() throws Exception{
+
+		IAMUserUtil.updateUserMfaSettingsSecretKey(AccountUtil.getCurrentUser().getIamOrgUserId(),null);
+		IAMUserUtil.updateUserMfaSettingsStatus(AccountUtil.getCurrentUser().getIamOrgUserId(),false);
+
+		String totpKey;
+		totpKey = generateKey();
+		IAMUserUtil.updateUserMfaSettingsSecretKey(AccountUtil.getCurrentUser().getIamOrgUserId(), totpKey);
+
+		HashMap<String,String> data = new HashMap<>();
+		data.put("secret",totpKey);
+		data.put("qrCode",QrCode());
+		setResult("totpData",data);
+		return "success";
+	}
+
 }

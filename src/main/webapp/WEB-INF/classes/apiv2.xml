@@ -184,7 +184,8 @@
 		<action name="totpVerification" class="com.facilio.bmsconsole.actions.SettingsMfa" method="totpVerification" />
 		<action name="totpsetup" class="com.facilio.bmsconsole.actions.SettingsMfa" method="totpsetup"/>
 		<action name="totpstatus" class="com.facilio.bmsconsole.actions.SettingsMfa" method="totpstatus"/>
-<!--		<action name="totpexit" class="com.facilio.bmsconsole.actions.SettingsMfa" method="totpexit"/>-->
+		<action name="totpchange" class="com.facilio.bmsconsole.actions.SettingsMfa" method="totpchange"/>
+		<action name="totpexit" class="com.facilio.bmsconsole.actions.SettingsMfa" method="totpexit"/>
 	</package>
 
 	<package name="internalV2" namespace="/v2/exception"

@@ -1258,11 +1258,28 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		long userId = (Long) props.get("id");
 		user.setUid(userId);
 
-		initialiseUserMfaSettings(userId);
-		
+		if(!isUserMfaSettingsExists(userId)) {
+			initialiseUserMfaSettings(userId);
+		}
 		return userId;
 	}
-	
+
+	private boolean isUserMfaSettingsExists(long userId) throws Exception{
+
+		if(userId <= 0) {
+			throw new IllegalArgumentException("Invalid UserId");
+		}
+		else {
+
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+					.select(IAMAccountConstants.getUserMfaSettingsFields())
+					.table(IAMAccountConstants.getUserMfaSettings().getTableName())
+					.andCondition(CriteriaAPI.getCondition("UserMfaSettings.USERID", "userId", userId + "", NumberOperators.EQUALS));
+
+			List<Map<String, Object>> props = selectBuilder.get();
+			return !props.isEmpty();
+		}
+	}
 	
 
 	private long addAccountOrgUserEntry(long orgId, IAMUser user) throws Exception {
