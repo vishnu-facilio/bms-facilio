@@ -1382,7 +1382,7 @@ public class FieldFactory {
         fields.add(getSystemField("sysCreatedTime", module));
         fields.add(getSystemField("sysCreatedBy", module));
 
-        if (module != null && module.getTypeEnum() != FacilioModule.ModuleType.LOOKUP_REL_MODULE && module.getTypeEnum() != FacilioModule.ModuleType.ENUM_REL_MODULE) {
+        if (module == null || (module.getTypeEnum() != FacilioModule.ModuleType.LOOKUP_REL_MODULE && module.getTypeEnum() != FacilioModule.ModuleType.ENUM_REL_MODULE)) {
             fields.add(getSystemField("sysModifiedTime", module));
             fields.add(getSystemField("sysModifiedBy", module));
         }
