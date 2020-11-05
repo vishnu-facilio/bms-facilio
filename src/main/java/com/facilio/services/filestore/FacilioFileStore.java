@@ -62,7 +62,7 @@ public class FacilioFileStore extends FileStore {
 		long fileId = addDummyFileEntry(namespace, fileName, isOrphan);
 		byte[] contentInBytes = Files.readAllBytes(file.toPath());
 		try {
-			addComppressedFile(namespace, fileId, fileName, file, contentType);
+			//addComppressedFile(namespace, fileId, fileName, file, contentType);
 			return addFile(namespace, fileId, fileName, contentInBytes, contentType);
 		} catch (Exception e){
 			log.info("Exception occurred ", e);
@@ -77,7 +77,7 @@ public class FacilioFileStore extends FileStore {
 
 	private long addFile(String namespace, String fileName, File file, String contentType, int[] resize, boolean isOrphan) throws Exception {
 		long fileId = this.addFile(namespace, fileName, file, contentType, isOrphan);
-		for (int resizeVal : resize) {
+		/*for (int resizeVal : resize) {
 			try(
 					FileInputStream fis = new FileInputStream(file);
 					ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -105,7 +105,7 @@ public class FacilioFileStore extends FileStore {
 			} catch (Exception e) {
 				log.info("Exception occurred ", e);
 			}
-		}
+		}*/
 		return fileId;
 	}
 
