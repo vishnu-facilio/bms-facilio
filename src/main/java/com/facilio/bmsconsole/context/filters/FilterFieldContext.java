@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.context.filters;
 
 import com.facilio.db.criteria.operators.FieldOperator;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -66,7 +67,34 @@ public class FilterFieldContext {
     }
 
     public String getDisplayType() {
-        return field == null ? null : field.getDisplayType() == null ? null : field.getDisplayType().name();
+        return field == null ? null : field.getDisplayType() == null ? defaultDisplayTypeForBackwardCompatibility(field.getDataTypeEnum()) : field.getDisplayType().name();
+    }
+
+    private String defaultDisplayTypeForBackwardCompatibility (FieldType dataType) {
+        if (dataType != null) {
+            switch (dataType) {
+                case STRING:
+                    return FacilioField.FieldDisplayType.TEXTBOX.name();
+                case NUMBER:
+                case DECIMAL:
+                case ID:
+                case COUNTER:
+                case SCORE:
+                    return FacilioField.FieldDisplayType.NUMBER.name();
+                case BOOLEAN:
+                    return FacilioField.FieldDisplayType.DECISION_BOX.name();
+                case LOOKUP:
+                case ENUM:
+                case SYSTEM_ENUM:
+                    return FacilioField.FieldDisplayType.LOOKUP_SIMPLE.name();
+                case DATE:
+                case DATE_TIME:
+                    return FacilioField.FieldDisplayType.DATE.name();
+                case FILE:
+                    return FacilioField.FieldDisplayType.FILE.name();
+            }
+        }
+        return null;
     }
 
     private FilterFieldLookupModule lookupModule;
