@@ -589,6 +589,13 @@ public class TransactionChainFactory {
 		return c;
 	}
 
+	public static FacilioChain deleteAgentV2() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new DeleteCloudAgentJobCommand());
+		c.addCommand(new DeleteAgentV2Command());
+		return c;
+	}
+
 	public static FacilioChain updateAckChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new AckUpdateCommand());

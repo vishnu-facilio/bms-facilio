@@ -12,7 +12,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.facilio.chain.FacilioChain;
+import com.facilio.tasker.FacilioTimer;
 import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -82,7 +85,10 @@ public class AgentApiV2 {
         Chain chain = TransactionChainFactory.addNewAgent();
         FacilioContext context = new FacilioContext();
         agent.setCreatedTime(System.currentTimeMillis());
-        agent.setLastDataReceivedTime(agent.getCreatedTime());
+        agent.setLastDataReceivedTime(-1);
+        if (agent.getType().equalsIgnoreCase("rest")) {
+            agent.setConnected(true);
+        }
         agent.setLastModifiedTime(agent.getCreatedTime());
         context.put(AgentConstants.AGENT, agent);
         chain.execute(context);
@@ -271,19 +277,12 @@ public class AgentApiV2 {
     }
 
     public static boolean deleteAgent(List<Long> ids) {
-        FacilioModule agentDataModule = ModuleFactory.getNewAgentModule();
         try {
-            GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
-                    .table(agentDataModule.getTableName())
-                    .fields(FieldFactory.getNewAgentFields())
-                    .andCondition(CriteriaAPI.getIdCondition(ids, agentDataModule));
-            Map<String, Object> toUpdateMap = new HashMap<>();
-            toUpdateMap.put(AgentConstants.DELETED_TIME,System.currentTimeMillis());
-            int rowsAffected = builder.update(toUpdateMap);
-            if( rowsAffected > 0 ){
-                return true;
-            }
-
+            FacilioChain facilioChain = TransactionChainFactory.deleteAgentV2();
+            FacilioContext context = new FacilioContext();
+            context.put(AgentConstants.RECORD_IDS, ids);
+            facilioChain.setContext(context);
+            facilioChain.execute();
         }catch (Exception e){
             LOGGER.info("Exception while deleting agent ->"+ids+"--",e);
         }
@@ -458,7 +457,7 @@ public class AgentApiV2 {
         }
         return FieldUtil.getAsBeanListFromMapList(maps,FacilioAgent.class);
     }
-    
+
     public static void scheduleRestJob(FacilioAgent agent) throws Exception {
     		long interval = agent.getInterval();
     		ScheduleInfo scheduleInfo = new ScheduleInfo();
