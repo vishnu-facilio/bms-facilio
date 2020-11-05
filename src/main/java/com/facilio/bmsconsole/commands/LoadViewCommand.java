@@ -129,7 +129,7 @@ public class LoadViewCommand extends FacilioCommand {
 					view.setViewSharing(SharingAPI.getSharing(view.getId(), ModuleFactory.getViewSharingModule(), SingleSharingContext.class));
 				}
 				
-				if (view.getFields() == null && module != null && module.isCustom()) {
+				if ((view.getFields() == null ||  view.getFields().isEmpty()) && module != null && module.isCustom()) {
 					List<ViewField> viewFields = new ArrayList<>();
 					if (modBean == null) {
 						modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
