@@ -6,6 +6,7 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,8 +18,14 @@ public class FilterFieldContext {
     }
 
     private FacilioField field;
+    private JSONObject lookupFilters;
     public FilterFieldContext(FacilioField field) {
+        this (field, null);
+    }
+
+    public FilterFieldContext(FacilioField field, JSONObject lookupFilters) {
         this.field = field;
+        this.lookupFilters = lookupFilters;
 
         if (field instanceof EnumField) {
             List<EnumFieldValue> values = ((EnumField) field).getValues();
@@ -46,7 +53,7 @@ public class FilterFieldContext {
         }
         else if (field instanceof LookupField) {
             FacilioModule lookup = ((LookupField) field).getLookupModule();
-            lookupModule = new FilterFieldLookupModule(lookup.getName(), lookup.getDisplayName());
+            lookupModule = new FilterFieldLookupModule(lookup.getName(), lookup.getDisplayName(), lookup.getTypeEnum() == FacilioModule.ModuleType.BASE_ENTITY, lookupFilters);
         }
     }
 
@@ -84,9 +91,10 @@ public class FilterFieldContext {
                 case BOOLEAN:
                     return FacilioField.FieldDisplayType.DECISION_BOX.name();
                 case LOOKUP:
+                    return FacilioField.FieldDisplayType.LOOKUP_SIMPLE.name();
                 case ENUM:
                 case SYSTEM_ENUM:
-                    return FacilioField.FieldDisplayType.LOOKUP_SIMPLE.name();
+                    return FacilioField.FieldDisplayType.SELECTBOX.name();
                 case DATE:
                 case DATE_TIME:
                     return FacilioField.FieldDisplayType.DATE.name();
@@ -117,10 +125,14 @@ public class FilterFieldContext {
 
     public static class FilterFieldLookupModule {
         String name, displayName;
+        boolean showPopup;
+        JSONObject filters;
 
-        private FilterFieldLookupModule (String name, String displayName) {
+        private FilterFieldLookupModule (String name, String displayName, boolean showPopup, JSONObject filters) {
             this.name = name;
             this.displayName = displayName;
+            this.showPopup = showPopup;
+            this.filters = filters;
         }
 
         public String getName() {
@@ -128,6 +140,12 @@ public class FilterFieldContext {
         }
         public  String getDisplayName() {
             return displayName;
+        }
+        public boolean isShowPopup() {
+            return showPopup;
+        }
+        public JSONObject getFilters() {
+            return filters;
         }
     }
 
