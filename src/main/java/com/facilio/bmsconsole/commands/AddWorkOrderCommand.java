@@ -1,16 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
@@ -27,6 +16,11 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
+import java.util.*;
+import java.util.logging.Logger;
 
 public class AddWorkOrderCommand extends FacilioCommand {
 	
@@ -52,10 +46,16 @@ public class AddWorkOrderCommand extends FacilioCommand {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			workOrder.setCreatedBy(AccountUtil.getCurrentUser());
+			Boolean pm_exec= (Boolean) context.get(FacilioConstants.ContextNames.IS_PM_EXECUTION);
 			if (workOrder.getScheduledStart() > 0) {
-				workOrder.setCreatedTime(workOrder.getScheduledStart());
+				if (pm_exec != null && pm_exec) {
+					workOrder.setCreatedTime(workOrder.getScheduledStart());
+				} else {
+					workOrder.setCreatedTime(workOrder.getCurrentTime());
+				}
 			} else {
 				workOrder.setCreatedTime(workOrder.getCurrentTime());
+				workOrder.setScheduledStart(workOrder.getCurrentTime());
 			}
 
 			if (workOrder.getParentWO() != null) {
@@ -63,7 +63,6 @@ public class AddWorkOrderCommand extends FacilioCommand {
 			}
 
 			workOrder.setModifiedTime(workOrder.getCreatedTime());
-			workOrder.setScheduledStart(workOrder.getCreatedTime());
 			workOrder.setApprovalState(ApprovalState.YET_TO_BE_REQUESTED);
 			
 			if (workOrder.getPriority() == null || workOrder.getPriority().getId() == -1) {

@@ -1,24 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.StringJoiner;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
@@ -50,6 +31,13 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import com.facilio.modules.fields.LookupField;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class FormsAPI {
 	
@@ -178,7 +166,12 @@ public class FormsAPI {
 			 * Should introduce name column in Form Fields 
 			 */
 			else if (f.getDisplayTypeEnum() == FieldDisplayType.TICKETNOTES){
-				f.setName("comment");
+				// Shaan will change this temp handling suggested by him
+				if (f.getName() != null && StringUtils.equals("quotenotes", f.getName())) {
+					f.setName(f.getName());
+				} else {
+					f.setName("comment");
+				}
 			}
 			else if (f.getDisplayTypeEnum() == FieldDisplayType.ATTACHMENT) {
 				f.setName("attachedFiles");

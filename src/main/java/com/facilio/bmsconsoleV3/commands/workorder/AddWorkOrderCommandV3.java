@@ -2,29 +2,24 @@ package com.facilio.bmsconsoleV3.commands.workorder;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
-import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.util.V3TicketAPI;
 import com.facilio.bmsconsoleV3.util.V3WorkOderAPI;
-import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioStatus;
-import com.facilio.modules.InsertRecordBuilder;
-import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
-import org.json.simple.JSONObject;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 public class AddWorkOrderCommandV3 extends FacilioCommand {
@@ -56,10 +51,16 @@ public class AddWorkOrderCommandV3 extends FacilioCommand {
             }
 
             workOrder.setCreatedBy(AccountUtil.getCurrentUser());
+            Boolean pm_exec= (Boolean) context.get(FacilioConstants.ContextNames.IS_PM_EXECUTION);
             if (workOrder.getScheduledStart() != null && workOrder.getScheduledStart() > 0) {
-                workOrder.setCreatedTime(workOrder.getScheduledStart());
+                if (pm_exec != null && pm_exec) {
+                    workOrder.setCreatedTime(workOrder.getScheduledStart());
+                } else {
+                    workOrder.setCreatedTime(workOrder.getCurrentTime());
+                }
             } else {
                 workOrder.setCreatedTime(workOrder.getCurrentTime());
+                workOrder.setScheduledStart(workOrder.getCurrentTime());
             }
 
             if (workOrder.getParentWO() != null) {
@@ -67,7 +68,6 @@ public class AddWorkOrderCommandV3 extends FacilioCommand {
             }
 
             workOrder.setModifiedTime(workOrder.getCreatedTime());
-            workOrder.setScheduledStart(workOrder.getCreatedTime());
             workOrder.setApprovalState(ApprovalState.YET_TO_BE_REQUESTED.getValue());
 
             if (workOrder.getPriority() == null || workOrder.getPriority().getId() == -1) {
