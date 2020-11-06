@@ -151,7 +151,7 @@ public class DashboardFilterUtil {
 			//set cross cascading rels
 			try {
 				for (DashboardUserFilterContext filter : dashboardUserFilters) {
-						if(filter.getShowOnlyRelevantValues()==true)
+						if(filter.getShowOnlyRelevantValues()!=null&&filter.getShowOnlyRelevantValues()==true)
 						{
 						filter.setCascadingFilters(DashboardFilterUtil.findCascadingFilterRel(filter,dashboardUserFilters));
 						}
@@ -160,7 +160,7 @@ public class DashboardFilterUtil {
 			}
 			catch(Exception e)
 			{
-				LOGGER.log(Level.SEVERE,"Exception finding cascading filter relation");
+				LOGGER.log(Level.SEVERE,"Exception finding cascading filter relation",e);
 				
 			}
 			
