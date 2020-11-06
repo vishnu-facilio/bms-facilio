@@ -67,7 +67,7 @@ public class WidgetStaticContext extends DashboardWidgetContext {
 		
 		resultJson.put("id", getId());
 		resultJson.put("type", getWidgetType().getName());
-		resultJson.put("widgetSettingsJson",getWidgetSettings());
+		resultJson.put("widgetSettings",getWidgetSettings());
 		JSONObject layoutJson = new JSONObject();
 		layoutJson.put("height", getLayoutHeight());
 		layoutJson.put("width", getLayoutWidth());
