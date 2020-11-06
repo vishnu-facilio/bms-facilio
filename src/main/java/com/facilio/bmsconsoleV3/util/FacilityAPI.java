@@ -236,33 +236,6 @@ public class FacilityAPI {
 
             while (startDay <= endDateTime) {
                 int day = cal.get(Calendar.DAY_OF_WEEK) - 1;
-//                List<WeekDayAvailability> splWeekDayAvailability = FacilityAPI.getFacilitySpecialWeekDayAvailability(facilityContext, startDateTime, endDateTime);
-//                if(CollectionUtils.isNotEmpty(splWeekDayAvailability)){
-//                    for (WeekDayAvailability splAvailability : splWeekDayAvailability) {
-//                        Long startTime = splAvailability.getStartDate();
-//                        Calendar cal_week = Calendar.getInstance();
-//                        cal_week.setTimeInMillis(startTime);
-//                        while (startTime <= splAvailability.getEndDate()) {
-//                            long startDateTimeOfDay = FacilityAPI.getCalendarTime(startTime, splAvailability.getStartTimeAsLocalTime());
-//                            long endDateTimeOfDay = FacilityAPI.getCalendarTime(startTime, splAvailability.getEndTimeAsLocalTime());
-//                            while (startDateTimeOfDay <= endDateTimeOfDay && startDateTimeOfDay <= endDateTime) {
-//                                SlotContext slot = new SlotContext();
-//                                slot.setSlotCost(splAvailability.getCost());
-//                                slot.setSlotStartTime(startDateTimeOfDay);
-//                                slot.setFacility(facilityContext);
-//                                slot.setSlotEndTime(startDateTimeOfDay + facilityContext.getSlotDuration());
-//                                if (!FacilityAPI.checkForUnavailability(slot.getSlotStartTime(), slot.getSlotEndTime(), facilityContext.getFacilitySpecialAvailabilities()) && !FacilityAPI.checkExistingSlots(slotList, slot)) {
-//                                    slotList.add(slot);
-//                                }
-//                                //need to consider the slot intervals before starting other slot
-//                                startDateTimeOfDay = slot.getSlotEndTime();
-//                            }
-//                            cal_week.add(Calendar.DATE, 1);
-//                            startTime = cal_week.getTimeInMillis();
-//                        }
-//                    }
-//                }
-//                else {
                     if (weekDayMap.containsKey(day)) {
                         List<WeekDayAvailability> weekDaysForDay = weekDayMap.get(day);
                         if (CollectionUtils.isNotEmpty(weekDaysForDay)) {

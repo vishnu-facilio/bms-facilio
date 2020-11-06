@@ -12221,6 +12221,9 @@ VALUES (${orgId}, @SLOT_MODULE_ID, 'slotEndTime', 'Slot End Time', 9, 'END_TIME'
 INSERT INTO Fields (ORGID, MODULEID, NAME, DISPLAY_NAME, DISPLAY_TYPE, COLUMN_NAME, DATA_TYPE, REQUIRED, DISABLED, IS_DEFAULT) VALUES (${orgId}, @SLOT_MODULE_ID, 'slotCost', 'Slot Cost', 13, 'COST', 3, false, false, true);
 INSERT INTO NumberFields (FIELDID, ORGID,METRIC) VALUES ((SELECT LAST_INSERT_ID()), ${orgId},15);
 
+--Job entry for slot creation
+
+INSERT INTO ${publicDb}.Jobs (JOBID, ORGID, JOBNAME, IS_ACTIVE, IS_PERIODIC, SCHEDULE_INFO, NEXT_EXECUTION_TIME, EXECUTOR_NAME, STATUS, JOB_SERVER_ID, TRANSACTION_TIMEOUT, CURRENT_EXECUTION_TIME) VALUES (${orgId}, ${orgId}, 'ScheduleSlotCreation', true, true, '{"times":["00:00"],"frequencyType":1,"frequencyTypeEnum":"DAILY"}', UNIX_TIMESTAMP()+30,'facilio', 3, 0, 1200000, UNIX_TIMESTAMP()*1000);
 
 
 

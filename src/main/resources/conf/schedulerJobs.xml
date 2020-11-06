@@ -167,6 +167,7 @@
 
     <!-- cloud agent job -->
     <job name='CloudAgent' classname='com.facilio.bmsconsole.jobs.CloudAgent' transactionTimeout="7200000"/>
+
 	<!-- create slots for facilities -->
 	<job name='CreateSlotForFacilities' classname= 'com.facilio.bmsconsoleV3.commands.facility.GenerateSlotCommand' transactionTimeout='600000'/> -->
 	<job name='ScheduleSlotCreation' classname= 'com.facilio.bmsconsoleV3.commands.facility.SlotCreationScheduler' transactionTimeout='600000'/> -->

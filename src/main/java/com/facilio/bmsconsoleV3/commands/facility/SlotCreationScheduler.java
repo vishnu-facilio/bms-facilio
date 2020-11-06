@@ -30,10 +30,12 @@ public class SlotCreationScheduler extends FacilioJob {
                 if(lastGeneratedTime != null) {
                     long difference = lastGeneratedTime - startTime;
                     daysBetween = (difference / (1000 * 60 * 60 * 24));
-                    startTime = lastGeneratedTime;
-                    endTime = (long) (startTime + (daysBetween * 1000 * 60 * 60 * 24));
-                    LOGGER.log(Level.FINE, "Generating slots for Facility: " + facility.getId());
-                    createSlots(facility, startTime, endTime);
+                    if(daysBetween < facility.getBookingAdvancePeriodInDays()) {
+                        startTime = lastGeneratedTime;
+                        endTime = (long) (startTime + (daysBetween * 1000 * 60 * 60 * 24));
+                        LOGGER.log(Level.FINE, "Generating slots for Facility: " + facility.getId());
+                        createSlots(facility, startTime, endTime);
+                    }
                 }
             }
         }
