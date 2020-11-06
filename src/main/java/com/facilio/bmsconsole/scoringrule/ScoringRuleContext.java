@@ -5,10 +5,12 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.ScoreField;
 import org.apache.commons.chain.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +67,39 @@ public class ScoringRuleContext extends WorkflowRuleContext {
         return draft == null || draft;
     }
 
+    private ScoreField.Type scoreType;
+    public int getScoreType() {
+        if (scoreType != null) {
+            return scoreType.getIndex();
+        }
+        return -1;
+    }
+    public void setScoreType(int type) {
+        scoreType = ScoreField.Type.valueOf(type);
+    }
+    public ScoreField.Type getScoreTypeEnum() {
+        return scoreType;
+    }
+    public void setScoreType(ScoreField.Type scoreType) {
+        this.scoreType = scoreType;
+    }
+
+    private int scoreRange = -1;
+    public int getScoreRange() {
+        return scoreRange;
+    }
+    public void setScoreRange(int scoreRange) {
+        this.scoreRange = scoreRange;
+    }
+
+    private String scoreFieldName;
+    public String getScoreFieldName() {
+        return scoreFieldName;
+    }
+    public void setScoreFieldName(String scoreFieldName) {
+        this.scoreFieldName = scoreFieldName;
+    }
+
     @Override
     public boolean evaluateMisc(String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
         if (isDraft()) {
@@ -78,7 +113,6 @@ public class ScoringRuleContext extends WorkflowRuleContext {
         if (record instanceof ModuleBaseWithCustomFields) {
             ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) record;
 
-//            List<Map<String, Object>> scores = new ArrayList<>();
             float totalScore = 0f;
             boolean updateParent = false;
             for (ScoringCommitmentContext scoringCommitmentContext : scoringCommitmentContexts) {
@@ -89,19 +123,10 @@ public class ScoringRuleContext extends WorkflowRuleContext {
                         }
                         float score = scoringContext.getScore(record, context, placeHolders);
                         totalScore += score;
-
-//                        Map<String, Object> map = new HashMap<>();
-//                        map.put("recordId", moduleRecord.getId());
-//                        map.put("recordModuleId", moduleRecord.getModuleId());
-//                        map.put("score", score);
-//                        map.put("baseScoreId", scoringContext.getId());
-//                        map.put("scoringCommitmentId", scoringCommitmentContext.getId());
-//                        scores.add(map);
                     }
                     break;
                 }
             }
-//            ScoringRuleAPI.addActualScore(scores, moduleRecord.getId(), moduleRecord.getModuleId());
 
             System.out.println("Total score: " + totalScore);
             FacilioField scoreField = getScoreField();
@@ -125,4 +150,33 @@ public class ScoringRuleContext extends WorkflowRuleContext {
             }
         }
     }
+
+//    public enum ScoreType implements FacilioEnum {
+//        PERCENTAGE("Percentage"),
+//        RANGE("Range"),
+//        ;
+//
+//        private String name;
+//
+//        ScoreType(String name) {
+//            this.name = name;
+//        }
+//
+//        @Override
+//        public int getIndex() {
+//            return ordinal() + 1;
+//        }
+//
+//        public static ScoreType valueOf(int type) {
+//            if (type > 0 && type <= values().length) {
+//                return values()[type - 1];
+//            }
+//            return null;
+//        }
+//
+//        @Override
+//        public String getValue() {
+//            return name;
+//        }
+//    }
 }

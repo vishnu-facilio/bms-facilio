@@ -40,18 +40,18 @@ public class AddOrUpdateScoringRuleCommand extends FacilioCommand {
             scoringRuleContext.setActivityType(EventType.SCORING_RULE);
             scoringRuleContext.setModule(module);
 
-            if (scoringRuleContext.getScoreFieldId() < 0 && !scoringRuleContext.isDraft()) {
-                boolean alreadyCreated = false;
-                if (scoringRuleContext.getId() > 0) {
-                    ScoringRuleContext workflowRule = (ScoringRuleContext) WorkflowRuleAPI.getWorkflowRule(scoringRuleContext.getId());
-                    if (!workflowRule.isDraft()) {
-                        alreadyCreated = true;
-                    }
-                }
-                if (!alreadyCreated) {
-                    createScoreField(scoringRuleContext, module);
-                }
-            }
+//            if (scoringRuleContext.getScoreFieldId() < 0 && !scoringRuleContext.isDraft()) {
+//                boolean alreadyCreated = false;
+//                if (scoringRuleContext.getId() > 0) {
+//                    ScoringRuleContext workflowRule = (ScoringRuleContext) WorkflowRuleAPI.getWorkflowRule(scoringRuleContext.getId());
+//                    if (!workflowRule.isDraft()) {
+//                        alreadyCreated = true;
+//                    }
+//                }
+//                if (!alreadyCreated) {
+//                    createScoreField(scoringRuleContext, module);
+//                }
+//            }
 
             List<Map<String, Object>> scoringContextMapList = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.SCORING_CONTEXT_LIST);
             scoringRuleContext.setScoringCommitmentContexts(FieldUtil.getAsBeanListFromMapList(scoringContextMapList, ScoringCommitmentContext.class));
@@ -68,25 +68,5 @@ public class AddOrUpdateScoringRuleCommand extends FacilioCommand {
             chain.execute();
         }
         return false;
-    }
-
-    private void createScoreField(ScoringRuleContext scoringRuleContext, FacilioModule module) throws Exception {
-        String name = scoringRuleContext.getName();
-        name = name.toLowerCase().replaceAll("[^a-zA-Z0-9]+","");
-        ScoreField scoreField = new ScoreField();
-        scoreField.setName(name + "Score");
-        scoreField.setDefault(false);
-        scoreField.setDataType(FieldType.SCORE);
-        scoreField.setDisplayName(scoringRuleContext.getName() + "Score");
-        scoreField.setScale(100f);
-        scoreField.setType(ScoreField.Type.PERCENTAGE);
-
-        FacilioChain chain = TransactionChainFactory.getAddFieldsChain();
-        FacilioContext addFieldContext = chain.getContext();
-        addFieldContext.put(FacilioConstants.ContextNames.ALLOW_SAME_FIELD_DISPLAY_NAME, true);
-        addFieldContext.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, Collections.singletonList(scoreField));
-        addFieldContext.put(FacilioConstants.ContextNames.MODULE, module);
-        chain.execute();
-        scoringRuleContext.setScoreField(scoreField);
     }
 }

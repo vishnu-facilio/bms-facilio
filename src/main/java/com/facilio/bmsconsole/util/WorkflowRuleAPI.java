@@ -154,8 +154,8 @@ public class WorkflowRuleAPI {
 				addExtendedProps(ModuleFactory.getTransactionRuleModule(), FieldFactory.getTransactionWorkflowRuleFields(), ruleProps);
 				break;
 			case SCORING_RULE:
-				ScoringRuleAPI.validateRule((ScoringRuleContext) rule);
-				ScoringRuleAPI.addScoringRuleChildren((ScoringRuleContext) rule);
+				ScoringRuleAPI.addScoringRuleChildren((ScoringRuleContext) rule, true);
+				ruleProps = FieldUtil.getAsProperties(rule);
 				addExtendedProps(ModuleFactory.getScoringRuleModule(), FieldFactory.getScoringRuleFields(), ruleProps);
 				break;
 			default:

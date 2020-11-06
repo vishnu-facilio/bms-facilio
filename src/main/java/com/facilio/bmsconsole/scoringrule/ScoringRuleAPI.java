@@ -1,8 +1,11 @@
 package com.facilio.bmsconsole.scoringrule;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -16,6 +19,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.ScoreField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -26,11 +30,26 @@ import java.util.stream.Collectors;
 public class ScoringRuleAPI extends WorkflowRuleAPI {
 
     public static void validateRule(ScoringRuleContext rule) {
-        if (!rule.isDraft()) {
-            if (rule.getScoreFieldId() == -1) {
-                throw new IllegalArgumentException("Scoring field cannot be empty");
-            }
+        if (rule.getScoreTypeEnum() == null) {
+            throw new IllegalArgumentException("Score type cannot be empty");
+        }
+        switch (rule.getScoreTypeEnum()) {
+            case PERCENTAGE:
+                rule.setScoreRange(100);
+                break;
 
+            case RANGE:
+                if (rule.getScoreRange() < 0) {
+                    rule.setScoreRange(5);
+                }
+                break;
+        }
+
+        if (StringUtils.isEmpty(rule.getScoreFieldName())) {
+            throw new IllegalArgumentException("ScoreField name cannot be empty");
+        }
+
+        if (!rule.isDraft()) {
             for (ScoringCommitmentContext scoringCommitment : rule.getScoringCommitmentContexts()) {
 
                 List<BaseScoringContext> baseScoringContexts = scoringCommitment.getBaseScoringContexts();
@@ -50,8 +69,36 @@ public class ScoringRuleAPI extends WorkflowRuleAPI {
         }
     }
 
-    public static void addScoringRuleChildren(ScoringRuleContext rule) throws Exception {
+    public static void addScoringRuleChildren(ScoringRuleContext rule, boolean add) throws Exception {
+        validateRule(rule);
+        if (add && !rule.isDraft()) {
+            createScoreField(rule);
+        }
         addBaseScoringContexts(rule.getId(), rule.getScoringCommitmentContexts());
+    }
+
+    private static void createScoreField(ScoringRuleContext scoringRuleContext) throws Exception {
+        String name = scoringRuleContext.getScoreFieldName();
+        name = name.toLowerCase().replaceAll("[^a-zA-Z0-9]+","");
+
+        ScoreField scoreField = new ScoreField();
+        scoreField.setName(name);
+        scoreField.setDefault(false);
+        scoreField.setDataType(FieldType.SCORE);
+        scoreField.setDisplayType(FacilioField.FieldDisplayType.DECIMAL);
+
+        // changing data
+        scoreField.setDisplayName(scoringRuleContext.getScoreFieldName());
+        scoreField.setScale(scoringRuleContext.getScoreRange());
+        scoreField.setType(scoringRuleContext.getScoreType());
+
+        FacilioChain chain = TransactionChainFactory.getAddFieldsChain();
+        FacilioContext addFieldContext = chain.getContext();
+        addFieldContext.put(FacilioConstants.ContextNames.ALLOW_SAME_FIELD_DISPLAY_NAME, true);
+        addFieldContext.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, Collections.singletonList(scoreField));
+        addFieldContext.put(FacilioConstants.ContextNames.MODULE, scoringRuleContext.getModule());
+        chain.execute();
+        scoringRuleContext.setScoreField(scoreField);
     }
 
     private static Map<BaseScoringContext.Type, List<BaseScoringContext>> getScoringMap(List<BaseScoringContext> baseScoringContexts) {
@@ -135,20 +182,34 @@ public class ScoringRuleAPI extends WorkflowRuleAPI {
     }
 
     public static void updateScoringRule(ScoringRuleContext rule) throws Exception {
-        deleteScoringContext(rule.getId());
-        addScoringRuleChildren(rule);
-
         ScoringRuleContext oldRule = (ScoringRuleContext) getWorkflowRule(rule.getId());
+        ScoreField scoreField = (ScoreField) oldRule.getScoreField();
         if (!oldRule.isDraft()) {
             rule.setScoreFieldId(oldRule.getScoreFieldId());
-            rule.setScoreField(oldRule.getScoreField());
+            rule.setScoreField(scoreField);
+        }
+        validateRule(rule);
 
+        deleteScoringContext(rule.getId());
+        addScoringRuleChildren(rule, false);
+
+        if (!oldRule.isDraft()) {
             if (rule.isDraft()) {
                 throw new IllegalArgumentException("Cannot draft published scoring rule");
             }
+
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            scoreField.setDisplayName(rule.getScoreFieldName());
+            scoreField.setType(rule.getScoreType());
+            scoreField.setScale(rule.getScoreRange());
+            modBean.updateField(scoreField);
+        }
+        else {
+            if (!rule.isDraft()) {
+                createScoreField(rule);
+            }
         }
 
-        validateRule(rule);
         updateWorkflowRuleWithChildren(rule);
         updateExtendedRule(rule, ModuleFactory.getScoringRuleModule(), FieldFactory.getScoringRuleFields());
     }

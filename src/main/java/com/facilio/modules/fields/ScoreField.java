@@ -31,6 +31,7 @@ public class ScoreField extends FacilioField {
 
     public enum Type implements FacilioEnum {
         PERCENTAGE("Percentage"),
+        RANGE("Range")
         ;
 
         private String name;

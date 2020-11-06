@@ -2077,6 +2077,9 @@ public class FieldFactory {
         fields.add(getIdField(module));
         fields.add(getField("scoreFieldId", "SCORING_FIELD_ID", module, FieldType.NUMBER));
         fields.add(getField("draft", "DRAFT", module, FieldType.BOOLEAN));
+        fields.add(getField("scoreType", "SCORE_TYPE", module, FieldType.SYSTEM_ENUM));
+        fields.add(getField("scoreRange", "SCORE_RANGE", module, FieldType.NUMBER));
+        fields.add(getField("scoreFieldName", "SCORE_FIELDNAME", module, FieldType.STRING));
         return fields;
     }
 
