@@ -47,7 +47,7 @@ public class ValidateSameValueWithZeroDeltaInSensorRule implements SensorRuleTyp
 		{
 			NumberField numberField = (NumberField) readingField;	
 			Object currentReadingValue = FacilioUtil.castOrParseValueAsPerType(readingField, reading.getReading(readingField.getName()));
-			if(currentReadingValue == null || !SensorRuleUtil.isAllowedSensorMetric(numberField) || !numberField.isCounterField()){
+			if(currentReadingValue == null || !SensorRuleUtil.isAllowedSensorMetric(numberField) || !SensorRuleUtil.isCounterField(numberField)){
 				return false;
 			}
 			

@@ -44,7 +44,7 @@ public class ValidateNegativeValueInSensorRule implements SensorRuleTypeValidati
 			NumberField numberField = (NumberField) readingField;
 			Object currentReadingValue = FacilioUtil.castOrParseValueAsPerType(readingField, reading.getReading(readingField.getName()));
 			currentReadingValue = (Double) currentReadingValue;
-			if(currentReadingValue == null || !SensorRuleUtil.isAllowedSensorMetric(numberField) || !numberField.isCounterField()){
+			if(currentReadingValue == null || !SensorRuleUtil.isAllowedSensorMetric(numberField) || !SensorRuleUtil.isCounterField(numberField)){
 				return false;
 			}
 			if((double)currentReadingValue < 0.0){ 

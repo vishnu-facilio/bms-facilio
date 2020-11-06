@@ -1,12 +1,6 @@
 package com.facilio.bmsconsole.context.sensor;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -60,7 +54,18 @@ import com.facilio.unitconversion.UnitsUtil;
 
 public class SensorRuleUtil {
 	
-	private static final Logger LOGGER = Logger.getLogger(SensorRuleUtil.class.getName());	
+	private static final Logger LOGGER = Logger.getLogger(SensorRuleUtil.class.getName());
+
+	//TODO To be removed after Energy fields are moved to counter fields behaviour
+	private static final List<String> SPL_ENERGY_COUNTER_FIELDS = Arrays.asList(new String[] {"totalEnergyConsumption", "phaseEnergyR", "phaseEnergyY", "phaseEnergyB"});
+	public static boolean isCounterField (NumberField field) {
+		return field.isCounterField() ||
+				(
+						field.getModule() != null
+						&& FacilioConstants.ContextNames.ENERGY_DATA_READING.equals(field.getModule().getName())
+						&& SPL_ENERGY_COUNTER_FIELDS.contains(field.getName())
+				);
+	}
 	
 	public static List<SensorRuleContext> getSensorRuleByIds(List<Long> ruleIds) throws Exception {
 		
