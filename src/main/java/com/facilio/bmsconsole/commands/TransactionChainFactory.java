@@ -5795,6 +5795,12 @@ public class TransactionChainFactory {
 		chain.addCommand(new CreateDependencyHistoryCommand());
 		return chain;
 	}
+	public static FacilioChain getUpdateWidgetFilterSettingsChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new UpdateWidgetFilterSettingsCommand());
+		return chain;
+	}
+	
 }
 
 

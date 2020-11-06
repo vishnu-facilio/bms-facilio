@@ -50,9 +50,17 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 	private String metaJSONString;
 	private JSONObject metaJSON;
 	
-	String widgetSettingsJsonString;
+	private String widgetSettingsJsonString;
+	
+	@JSON(serialize = false)
 	public String getWidgetSettingsJsonString() {
-		return widgetSettingsJsonString;
+		if(this.widgetSettings!=null)
+		{
+			return this.widgetSettings.toJSONString();
+		}
+		else {
+			return null;
+		}
 	}
 	public void setWidgetSettingsJsonString(String widgetSettingsJsonString) {
 		this.widgetSettingsJsonString = widgetSettingsJsonString;
@@ -64,14 +72,13 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 	
 	public void setWidgetSettings(JSONObject widgetSettings)
 	{
-		if(widgetSettings!=null)
-		{
-			this.widgetSettingsJsonString=widgetSettings.toJSONString();
-		}
+		//used while setting from client, json object sent
+		this.widgetSettings=widgetSettings;
 		
 	}
 	public JSONObject getWidgetSettings() 
 	{
+		//used while fetching from db ,widgetSettingsJsonString  set from db,parse as json to send to client
 		
 		if(this.widgetSettingsJsonString!=null)
 		{

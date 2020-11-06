@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import java.util.List;
+import java.util.Map;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -20,6 +21,14 @@ public class DashboardFilterAction extends FacilioAction{
 	private Long dashboardTabId;
 	private DashboardFilterContext dashboardFilter;
 	
+	private List<Map<String,Object>> widgets;
+	
+	public List<Map<String, Object>> getWidgets() {
+		return widgets;
+	}
+	public void setWidgets(List<Map<String, Object>> widgets) {
+		this.widgets = widgets;
+	}
 	public DashboardFilterContext getDashboardFilter() {
 		return this.dashboardFilter;
 	}
@@ -63,6 +72,18 @@ public class DashboardFilterAction extends FacilioAction{
 			context.put(ContextNames.DASHBOARD_TAB, DashboardUtil.getDashboardTabWithWidgets(dashboardFilter.getDashboardTabId()));
 		}
 		dbFilterUpdateChain.execute();
+		return SUCCESS;
+	}
+	
+	public String updateWidgetSettings() throws Exception
+	{
+		FacilioChain chain=TransactionChainFactory.getUpdateWidgetFilterSettingsChain();
+		FacilioContext context=chain.getContext();
+		context.put(FacilioConstants.ContextNames.WIDGET_UPDATE_LIST, getWidgets());
+		chain.execute();
+		setResult("rowsUpdated", context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
+
+		
 		return SUCCESS;
 	}
 	

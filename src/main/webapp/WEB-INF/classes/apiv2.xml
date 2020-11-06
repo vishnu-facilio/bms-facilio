@@ -6291,6 +6291,10 @@
 				class="com.facilio.bmsconsole.actions.DashboardFilterAction"
 				method="addOrUpdateDashboardFilters">			
 		</action>
+		<action name="updateWidgetSettings"
+				class="com.facilio.bmsconsole.actions.DashboardFilterAction"
+				method="updateWidgetSettings">			
+		</action>
 		
 		
 	</package>
