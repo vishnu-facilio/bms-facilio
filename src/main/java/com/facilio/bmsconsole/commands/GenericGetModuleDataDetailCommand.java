@@ -57,6 +57,11 @@ public class GenericGetModuleDataDetailCommand extends FacilioCommand {
 																	.andCondition(CriteriaAPI.getIdCondition(recordId, module))
 																	;
 
+			boolean skipModuleCriteria = (boolean) context.getOrDefault(FacilioConstants.ContextNames.SKIP_MODULE_CRITERIA, false);
+			if (skipModuleCriteria) {
+				builder.skipModuleCriteria();
+			}
+
 			List<LookupField>fetchLookup = (List<LookupField>) context.get(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST);
 			if (CollectionUtils.isNotEmpty(fetchLookup)) {
 				builder.fetchSupplements(fetchLookup);

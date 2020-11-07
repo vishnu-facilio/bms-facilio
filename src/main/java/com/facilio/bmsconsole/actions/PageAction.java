@@ -16,6 +16,7 @@ public class PageAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.ID, id);
 		context.put(FacilioConstants.ContextNames.IS_APPROVAL, isApproval());
+		context.put(FacilioConstants.ContextNames.SKIP_MODULE_CRITERIA, true);
 		FacilioChain chain = ReadOnlyChainFactory.getPageChain();
 		chain.execute(context);
 		
