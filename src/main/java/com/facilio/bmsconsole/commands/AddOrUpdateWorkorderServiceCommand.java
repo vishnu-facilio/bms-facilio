@@ -152,7 +152,11 @@ public class AddOrUpdateWorkorderServiceCommand extends FacilioCommand{
 		double costOccured = 0;
 		if(service.getBuyingPrice() > 0) {
 			if (service.getPaymentTypeEnum() == ServiceContext.PaymentType.SINGLE_PAYMENT) {
-				costOccured = service.getBuyingPrice();
+				woService.setQuantity(workorderService.getQuantity());
+				if(workorderService.getQuantity() <= 0) {
+					woService.setQuantity(1);
+				}
+				costOccured = service.getBuyingPrice() * woService.getQuantity();
 			}
 			else {
 				costOccured = service.getBuyingPrice() * duration;
