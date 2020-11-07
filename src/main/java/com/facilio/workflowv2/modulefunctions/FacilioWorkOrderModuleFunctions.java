@@ -358,8 +358,11 @@ public class FacilioWorkOrderModuleFunctions extends FacilioModuleFunctionImpl {
 		context = addWOChain.getContext();
 		
 		WorkOrderContext workorder = (WorkOrderContext) FieldUtil.getAsBeanFromMap(actualData, WorkOrderContext.class);
-		
-		workorder.setSourceType(com.facilio.bmsconsole.context.TicketContext.SourceType.WEB_ORDER);
+
+
+		if (workorder.getSourceTypeEnum() != null) {
+			workorder.setSourceType(com.facilio.bmsconsole.context.TicketContext.SourceType.WEB_ORDER);
+		}
 		
 		if(taskList != null) {
 			workorder.setTaskList(taskList);
