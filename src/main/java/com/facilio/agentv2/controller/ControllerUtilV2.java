@@ -1,5 +1,6 @@
 package com.facilio.agentv2.controller;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.device.Device;
@@ -196,6 +197,9 @@ public class ControllerUtilV2 {
                         getControllerRequest.withControllerProperties(controllerJson, controllerType);
                     }
                     controllers = getControllerRequest.getControllersMap();
+                    if (AccountUtil.getCurrentOrg().getOrgId() == 152) {
+                        LOGGER.info("Controllers from DB for :" + controllerType.asInt() + " : " + controllers);
+                    }
                 }catch (Exception e){
                     LOGGER.info("Exception while getting controller og type "+controllerType.asString()+" for agent "+agentId);
                 }
@@ -217,6 +221,9 @@ public class ControllerUtilV2 {
                                 .withAgentId(agentId)
                                 .withControllerProperties(controllerJson,controllerType);
                         controller = getControllerRequest.getController();
+                        if (AccountUtil.getCurrentOrg().getOrgId() == 152 && controller != null) {
+                            LOGGER.info("Controller from DB for :" + controllerType.asInt() + " : " + controller.toJSON());
+                        }
                         //controller = ControllerApiV2.getControllerFromDb(controllerJson, agentId, controllerType);
                     } catch (Exception e) {
                         LOGGER.info(" Exception while fetching controller ",e);
@@ -226,7 +233,7 @@ public class ControllerUtilV2 {
                             controllerMapList.get(controllerType.asInt()).put(controller.getIdentifier(), controller);
                             return controller;
                         } catch (Exception e) {
-                            LOGGER.info("Exception occured, cant generate identifier");
+                            LOGGER.info("Exception occurred, cant generate identifier");
                         }
                     }
                     LOGGER.info("Exception Occurred, No such controller for agent " + agentId + ", with identifier " + controllerJson);
