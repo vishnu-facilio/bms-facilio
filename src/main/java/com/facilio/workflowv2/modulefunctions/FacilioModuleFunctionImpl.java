@@ -286,6 +286,9 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		
 		FacilioModule module = (FacilioModule) objects.get(0);
 		
+		DeleteRecordBuilder<ModuleBaseWithCustomFields> delete = new DeleteRecordBuilder<>()
+				.module(module);
+		
 		Criteria criteria = null;
 		if(objects.get(1) instanceof DBParamContext) {
 			criteria = ((DBParamContext) objects.get(1)).getCriteria();
@@ -293,6 +296,14 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		else if (objects.get(1) instanceof Criteria) {
 			criteria = (Criteria)objects.get(1);
 		}
+		else if (objects.get(1) instanceof Map) {
+			DBParamContext dbParamContext = FieldUtil.getAsBeanFromMap((Map)objects.get(1), DBParamContext.class);
+			criteria = dbParamContext.getCriteria();
+			if(dbParamContext.isSkipModuleCriteria()) {
+				delete.skipModuleCriteria();
+			}
+		}
+		
 		
 		if(criteria == null) {
 			throw new Exception("criteria cannot be null during delete");
@@ -300,9 +311,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		
 		WorkflowV2Util.fillCriteriaField(criteria, module.getName());
 		
-		DeleteRecordBuilder<ModuleBaseWithCustomFields> delete = new DeleteRecordBuilder<>()
-				.module(module)
-				.andCriteria(criteria);
+		delete.andCriteria(criteria);
 		
 		delete.delete();
 	}
