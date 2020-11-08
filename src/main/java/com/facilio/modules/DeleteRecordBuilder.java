@@ -37,6 +37,7 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	private WhereBuilder where = new WhereBuilder();
 	private int level = 1;
 	private List<SupplementRecord> deleteSupplements;
+	private boolean skipModuleCriteria = false;
 
 	public DeleteRecordBuilder<E> moduleName (String moduleName) {
 		selectBuilder.moduleName(moduleName);
@@ -54,6 +55,12 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	
 	public DeleteRecordBuilder<E> level(int level) {
 		this.level = level;
+		return this;
+	}
+	
+	public DeleteRecordBuilder<E> skipModuleCriteria() {
+		this.skipModuleCriteria = true;
+		selectBuilder.skipModuleCriteria();
 		return this;
 	}
 	
