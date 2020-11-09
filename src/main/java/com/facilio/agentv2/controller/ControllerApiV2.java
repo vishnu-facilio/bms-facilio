@@ -557,7 +557,7 @@ public class ControllerApiV2 {
         return controllers;
     }
 
-// temp and need to remove future..
+    // temp and need to remove future..
     public static List<Map<String, Object>> getControllersData(Long agentId, Long controllerId, FacilioContext contextProps) throws Exception {
         List<Map<String, Object>> controllers = new ArrayList<>();
         List<Map<String, Object>> controllerData = new ArrayList<>();
@@ -565,6 +565,9 @@ public class ControllerApiV2 {
         Set<FacilioControllerType> controllerTypes = new HashSet<>();
         for(Map<String, Object> prop:filterTypes) {
         	Integer value = (Integer) prop.get(AgentConstants.CONTROLLER_TYPE);
+        	if((Long)prop.get("id") == 0 && value == 0) {
+        		controllers.add(prop);
+        	}
         	controllerTypes.add(FacilioControllerType.valueOf(value));
         }
         for (FacilioControllerType controllerType : controllerTypes) {

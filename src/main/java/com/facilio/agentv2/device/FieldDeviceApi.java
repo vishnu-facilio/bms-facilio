@@ -372,14 +372,14 @@ public class FieldDeviceApi {
         boolean isMiscType=false;
 		for (Map<String, Object> prop : props) {
 			Integer val = (Integer) prop.get("controllerType");
-			if (val != null && val == 0L) {
+			if (val != null && val == 0) {
 				isMiscType = true;
 				break;
 			}
 		}
         if(isMiscType && GetPointsAction.isVirtualPointExist(agentId)) {
         	Map<String,Object> prop = new HashMap<String, Object>();
-        	prop.put("id", 0);
+        	prop.put("id", 0L);
         	prop.put("controllerType",0);
         	prop.put("name", "Logical");
         	props.add(prop);
