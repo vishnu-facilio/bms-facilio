@@ -19,7 +19,7 @@ public class CustomModuleDataV3 extends V3Context {
     public Long getPhotoId() {
         return photoId;
     }
-    public void setPhotoId(long photoId) {
+    public void setPhotoId(Long photoId) {
         this.photoId = photoId;
     }
 
