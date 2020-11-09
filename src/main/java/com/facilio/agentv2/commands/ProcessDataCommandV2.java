@@ -83,7 +83,7 @@ public class ProcessDataCommandV2 extends AgentV2Command {
                                     point.setDeviceId(controller.getDeviceId());
                                     point.setDeviceName(controller.getName());
                                     point.setConfigureStatus(3);
-                                    point.setControllerId(controller.getControllerId());
+                                    point.setControllerId(controller.getId());
                                     point.setPath(name);
                                     if (!PointsAPI.addPoint(point)) {
                                         throw new Exception("Exception while adding misc point for REST agent ");
