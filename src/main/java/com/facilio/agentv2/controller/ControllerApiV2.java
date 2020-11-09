@@ -565,9 +565,9 @@ public class ControllerApiV2 {
         Set<FacilioControllerType> controllerTypes = new HashSet<>();
         for(Map<String, Object> prop:filterTypes) {
         	Integer value = (Integer) prop.get(AgentConstants.CONTROLLER_TYPE);
-        	if((Long)prop.get("id") == 0 && value == 0) {
-        		controllers.add(prop);
-        	}
+//        	if((Long)prop.get("id") == 0 && value == 0) { temp comment out , because of need to handle in commissioning log add controllerId problem
+//        		controllers.add(prop);
+//        	}
         	controllerTypes.add(FacilioControllerType.valueOf(value));
         }
         for (FacilioControllerType controllerType : controllerTypes) {
