@@ -31,6 +31,7 @@ import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.WidgetCardContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.floorplan.FloorPlanViewContext;
+import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.bmsconsole.util.DashboardFilterUtil;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.KPIUtil;
@@ -49,6 +50,7 @@ import com.facilio.db.criteria.operators.Operator;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.BaseLineContext;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
@@ -339,6 +341,7 @@ public enum CardLayout {
 			}
 			
 			Object cardValue = null;
+			Object cardBaseValue = null;
 			
 			if ("module".equalsIgnoreCase(kpiType)) {
 				try {
@@ -347,6 +350,9 @@ public enum CardLayout {
 						kpiContext.setDateOperator((DateOperators) DateOperators.getAllOperators().get(dateRange));
 					}
 					cardValue = KPIUtil.getKPIValue(kpiContext);
+					if (baselineRange != null) {
+						cardBaseValue = KPIUtil.getKPIBaseValueValue(kpiContext, baselineRange);
+					}
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					LOGGER.log(Level.WARNING, "Exception in getKPIValue::: ", e);
@@ -365,13 +371,19 @@ public enum CardLayout {
 			jobj.put("value", cardValue);
 			jobj.put("unit", null);
 			
+			JSONObject jobj1 = new JSONObject();
+			jobj1.put("value", cardBaseValue);
+			jobj1.put("unit", null);
+			
+			
+			
 			JSONObject returnValue = new JSONObject();
 			returnValue.put("title", title);
 			if (imageId != null) {
 				returnValue.put("image", imageId);
 			}
 			returnValue.put("value", jobj);
-			returnValue.put("baselineValue", jobj);
+			returnValue.put("baselineValue", jobj1);
 			returnValue.put("period", dateRange);
 			returnValue.put("baselinePeriod", baselineRange);
 

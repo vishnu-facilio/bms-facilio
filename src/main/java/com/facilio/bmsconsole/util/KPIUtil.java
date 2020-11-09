@@ -399,4 +399,60 @@ public class KPIUtil {
 		
 		return obj;
 	}
+	public static Object getKPIBaseValueValue(KPIContext kpi, String baselineName) throws Exception {
+		FacilioModule module = kpi.getModule();
+		FacilioField dateField = kpi.getDateField();
+		
+		SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
+				.module(module)
+				.andCriteria(kpi.getCriteria())
+				;
+		if (kpi.getSiteId() != -1) {
+			builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(module), String.valueOf(kpi.getSiteId()), NumberOperators.EQUALS));
+		}
+		
+		String fieldName;
+		if (kpi.getAggr() != -1) {
+			builder.aggregate(kpi.getAggrEnum(), kpi.getMetric());
+			fieldName = kpi.getMetric().getName();
+		}
+		else {
+			builder.aggregate(CommonAggregateOperator.COUNT, FieldFactory.getIdField(module));
+			fieldName = "id";
+		}
+		
+		SelectRecordsBuilder<ModuleBaseWithCustomFields> baseLineBuilder = new SelectRecordsBuilder<>(builder);
+		// This condition should be last
+		if (dateField != null) {
+			if (baselineName != null) {
+				BaseLineContext baseline = BaseLineAPI.getBaseLine(baselineName);
+				DateRange actualRange = kpi.getDateOperatorEnum().getRange(kpi.getDateValue());
+				DateRange baseLineRange = baseline.calculateBaseLineRange(actualRange, baseline.getAdjustTypeEnum());
+				baseLineBuilder.andCondition(CriteriaAPI.getCondition(dateField, baseLineRange.toString(), DateOperators.BETWEEN));
+			}
+			builder.andCondition(CriteriaAPI.getCondition(dateField, kpi.getDateValue(), kpi.getDateOperatorEnum()));
+		}
+		else if (baselineName != null) {
+			throw new IllegalArgumentException("Date range is mandatory for baseline");
+		}
+		
+		
+		Object obj = 0;
+		List<Map<String, Object>> props = builder.getAsProps();
+		
+		if (CollectionUtils.isNotEmpty(props)) {
+			obj = props.get(0).get(fieldName);
+		}
+		
+		if (baselineName != null) {
+			Object baseLineVal = 0;
+			List<Map<String, Object>> baselineProps = baseLineBuilder.getAsProps();
+			if (CollectionUtils.isNotEmpty(baselineProps)) {
+				baseLineVal = baselineProps.get(0).get(fieldName);
+			}
+			return baseLineVal;
+		}
+		
+		return obj;
+	}
 }
