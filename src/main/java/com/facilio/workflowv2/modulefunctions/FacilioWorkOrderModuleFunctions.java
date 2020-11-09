@@ -360,7 +360,7 @@ public class FacilioWorkOrderModuleFunctions extends FacilioModuleFunctionImpl {
 		WorkOrderContext workorder = (WorkOrderContext) FieldUtil.getAsBeanFromMap(actualData, WorkOrderContext.class);
 
 
-		if (workorder.getSourceTypeEnum() != null) {
+		if (workorder.getSourceTypeEnum() == null) {
 			workorder.setSourceType(com.facilio.bmsconsole.context.TicketContext.SourceType.WEB_ORDER);
 		}
 		
