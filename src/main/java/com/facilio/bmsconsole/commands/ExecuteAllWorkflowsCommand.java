@@ -125,7 +125,7 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 	}
 
 	protected List<WorkflowRuleContext> getWorkflowRules(FacilioModule module, List<EventType> activities, List<? extends ModuleBaseWithCustomFields> records, FacilioContext context) throws Exception {
-		Criteria parentCriteria = getCriteria();
+		Criteria parentCriteria = getCriteria(records);
 
 		// don't take any record if criteria
 		if (parentCriteria == null) {
@@ -135,7 +135,7 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 		return workflowRules;
 	}
 
-	protected Criteria getCriteria() {
+	protected Criteria getCriteria(List<? extends ModuleBaseWithCustomFields> records) {
 		Map<String, FacilioField> fields = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleFields());
 		FacilioField parentRule = fields.get("parentRuleId");
 
