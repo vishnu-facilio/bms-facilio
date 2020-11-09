@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.context;
 
 import java.util.List;
 
+import com.facilio.bmsconsoleV3.context.budget.BudgetContext;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
@@ -102,7 +103,21 @@ private ServiceStatus status;
 	}
 
 	public static enum PaymentType implements FacilioEnum {
-		SINGLE_PAYMENT, HOURLY_PAYMENT;
+		FIXED("Fixed"),
+		DURATION_BASED("Duration Based");
+
+		private String name;
+
+		PaymentType(String name) {
+			this.name = name;
+		}
+
+		public static PaymentType valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
 
 		@Override
 		public int getIndex() {
@@ -111,14 +126,7 @@ private ServiceStatus status;
 
 		@Override
 		public String getValue() {
-			return name();
-		}
-
-		public static ServiceContext.PaymentType valueOf(int value) {
-			if (value > 0 && value <= values().length) {
-				return values()[value - 1];
-			}
-			return null;
+			return name;
 		}
 	}
 
