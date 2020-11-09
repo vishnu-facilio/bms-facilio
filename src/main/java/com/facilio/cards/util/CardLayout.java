@@ -251,7 +251,166 @@ public enum CardLayout {
 			return returnValue;
 		}
 	},
-	
+	KPICARD_LAYOUT_2 ("kpicard_layout_2") {
+		@Override
+		protected Object execute(WidgetCardContext cardContext) throws Exception {
+			JSONObject cardParams = cardContext.getCardParams();
+
+			String title = (String) cardParams.get("title");
+			Object imageId = (Object) cardParams.get("imageId");
+			String kpiType = (String) cardParams.get("kpiType");
+			String dateRange = (String) cardParams.get("dateRange");
+			String dateField = (String) cardParams.get("dateField");
+			String baselineRange = (String) cardParams.get("baseline");
+			 
+			Long kpiId;
+			Long parentId;
+			String yAggr;
+			if (cardParams.get("kpi") instanceof JSONObject) {
+				JSONObject kpiConfig = (JSONObject) cardParams.get("kpi");
+				kpiId = (Long) kpiConfig.get("kpiId");
+				parentId = (Long) kpiConfig.get("parentId");
+				yAggr = (String) kpiConfig.get("yAggr");
+			} else if (cardParams.get("kpi") instanceof Map) {
+				Map<String, Object> kpiConfig = (Map<String, Object>) cardParams.get("kpi");
+				kpiId = (Long) kpiConfig.get("kpiId");
+				parentId = (Long) kpiConfig.get("parentId");
+				yAggr = (String) kpiConfig.get("yAggr");
+			} else {
+				throw new IllegalStateException();
+			}
+			
+			Object cardValue = null;
+			Object cardBaseValue = null;
+			Object listData = null;
+			Object fields = null;
+			Object kpi = null;
+			String period = null;
+			JSONArray variables = null;
+			
+			if ("module".equalsIgnoreCase(kpiType)) {
+//				try {
+//					KPIContext kpiContext = KPIUtil.getKPI(kpiId, false);
+//					if (dateRange != null) {
+//						kpiContext.setDateOperator((DateOperators) DateOperators.getAllOperators().get(dateRange));
+//					}
+//					cardValue = KPIUtil.getKPIValue(kpiContext);
+//					if (baselineRange != null) {
+//						cardBaseValue = KPIUtil.getKPIBaseValueValue(kpiContext, baselineRange);
+//					}
+//				} catch (Exception e) {
+//					// TODO Auto-generated catch block
+//					LOGGER.log(Level.WARNING, "Exception in getKPIValue::: ", e);
+//				}
+				
+				try {
+					KPIContext kpiContext = KPIUtil.getKPI(kpiId, false);
+					if(cardContext.getCardUserFilters()!=null)//db lookup filters
+					{
+						FacilioChain generateCriteriaChain=ReadOnlyChainFactory.getGenerateCriteriaFromFilterChain();
+						FacilioContext generateCriteriaContext= generateCriteriaChain.getContext();
+						generateCriteriaContext.put(FacilioConstants.ContextNames.MODULE_NAME,kpiContext.getModuleName());
+						generateCriteriaContext.put(FacilioConstants.ContextNames.FILTERS, cardContext.getCardUserFilters());
+						generateCriteriaChain.execute();
+						Criteria cardFilterCriteria=(Criteria) generateCriteriaContext.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
+						kpiContext.getCriteria().andCriteria(cardFilterCriteria);
+					}
+					
+					
+					if (cardContext.getCardFilters() != null ) {//db timeline filters
+						
+						JSONObject timeLineFilters = (JSONObject) cardContext.getCardFilters();
+						
+							kpiContext.setDateOperator(DateOperators.BETWEEN);
+							kpiContext.setDateValue((String)timeLineFilters.get("dateValueString"));
+							period=(String) timeLineFilters.get("dateLabel");
+						
+						}
+					else if (dateRange != null) {
+						kpiContext.setDateOperator((DateOperators) DateOperators.getAllOperators().get(dateRange));
+						period=dateRange;
+					}
+					
+					
+					cardValue = KPIUtil.getKPIValue(kpiContext);
+					if (baselineRange != null) {
+						cardBaseValue = KPIUtil.getKPIBaseValueValue(kpiContext, baselineRange);
+					}
+					kpi = KPIUtil.getKPI(kpiId);
+					fields = KPIUtil.getKPIModuleFIelds(kpiContext);
+
+					listData = KPIUtil.getKPIList(kpiContext, null);
+					
+					if (listData != null) {
+						try {
+							variables = new JSONArray();
+							
+							Map<String, Object> record = (Map<String, Object>) listData;
+							List<FacilioField> moduleFields = (List<FacilioField>) fields;
+							for (FacilioField field : moduleFields) {
+								Object value = record.get(field.getName());
+								
+								variables.add(getVariable(field.getName(), field.getDisplayName(), field.getDataTypeEnum().name(), value, null));
+							}
+						}
+						catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					LOGGER.log(Level.WARNING, "Exception in getKPIValue::: ", e);
+				}
+			}
+			else if ("reading".equalsIgnoreCase(kpiType)) {
+				try {
+					cardValue = FormulaFieldAPI.getFormulaCurrentValue(kpiId, parentId);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					LOGGER.log(Level.WARNING, "Exception in get KPI Reading Value::: ", e);
+				}
+			}
+			
+			JSONObject jobj = new JSONObject();
+			jobj.put("value", cardValue);
+			jobj.put("unit", null);
+			
+			JSONObject jobj1 = new JSONObject();
+			jobj1.put("value", cardBaseValue);
+			jobj1.put("unit", null);
+			jobj.put("kpi", kpi);
+			jobj.put("moduleData", listData);
+			jobj.put("fields", fields);
+			
+			
+			
+			JSONObject returnValue = new JSONObject();
+			returnValue.put("title", title);
+			if (imageId != null) {
+				returnValue.put("image", imageId);
+			}
+			returnValue.put("value", jobj);
+			returnValue.put("baselineValue", jobj1);
+			returnValue.put("period", dateRange);
+			returnValue.put("baselinePeriod", baselineRange);
+
+		
+			
+			returnValue.put("title", title);
+			returnValue.put("value", jobj);
+			
+			if(period != null) {
+				returnValue.put("period", period);
+			}
+			if (imageId != null) {
+				returnValue.put("image", imageId);
+			}
+			if (variables != null && variables.size() > 0) {
+				returnValue.put("variables", variables);
+			}
+			return returnValue;
+		}
+	},
 	GAUGE_LAYOUT_7 ("gauge_layout_7") {
 		@Override
 		protected Object execute(WidgetCardContext cardContext) throws Exception {
@@ -307,86 +466,6 @@ public enum CardLayout {
 			returnValue.put("title", title);
 			returnValue.put("values", kpiList);
 	
-			
-			return returnValue;
-		}
-	},
-	KPICARD_LAYOUT_2 ("kpicard_layout_2") {
-		@Override
-		protected Object execute(WidgetCardContext cardContext) throws Exception {
-			JSONObject cardParams = cardContext.getCardParams();
-
-			String title = (String) cardParams.get("title");
-			Object imageId = (Object) cardParams.get("imageId");
-			String kpiType = (String) cardParams.get("kpiType");
-			String dateRange = (String) cardParams.get("dateRange");
-			String dateField = (String) cardParams.get("dateField");
-			String baselineRange = (String) cardParams.get("baseline");
-			 
-			Long kpiId;
-			Long parentId;
-			String yAggr;
-			if (cardParams.get("kpi") instanceof JSONObject) {
-				JSONObject kpiConfig = (JSONObject) cardParams.get("kpi");
-				kpiId = (Long) kpiConfig.get("kpiId");
-				parentId = (Long) kpiConfig.get("parentId");
-				yAggr = (String) kpiConfig.get("yAggr");
-			} else if (cardParams.get("kpi") instanceof Map) {
-				Map<String, Object> kpiConfig = (Map<String, Object>) cardParams.get("kpi");
-				kpiId = (Long) kpiConfig.get("kpiId");
-				parentId = (Long) kpiConfig.get("parentId");
-				yAggr = (String) kpiConfig.get("yAggr");
-			} else {
-				throw new IllegalStateException();
-			}
-			
-			Object cardValue = null;
-			Object cardBaseValue = null;
-			
-			if ("module".equalsIgnoreCase(kpiType)) {
-				try {
-					KPIContext kpiContext = KPIUtil.getKPI(kpiId, false);
-					if (dateRange != null) {
-						kpiContext.setDateOperator((DateOperators) DateOperators.getAllOperators().get(dateRange));
-					}
-					cardValue = KPIUtil.getKPIValue(kpiContext);
-					if (baselineRange != null) {
-						cardBaseValue = KPIUtil.getKPIBaseValueValue(kpiContext, baselineRange);
-					}
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					LOGGER.log(Level.WARNING, "Exception in getKPIValue::: ", e);
-				}
-			}
-			else if ("reading".equalsIgnoreCase(kpiType)) {
-				try {
-					cardValue = FormulaFieldAPI.getFormulaCurrentValue(kpiId, parentId);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					LOGGER.log(Level.WARNING, "Exception in get KPI Reading Value::: ", e);
-				}
-			}
-			
-			JSONObject jobj = new JSONObject();
-			jobj.put("value", cardValue);
-			jobj.put("unit", null);
-			
-			JSONObject jobj1 = new JSONObject();
-			jobj1.put("value", cardBaseValue);
-			jobj1.put("unit", null);
-			
-			
-			
-			JSONObject returnValue = new JSONObject();
-			returnValue.put("title", title);
-			if (imageId != null) {
-				returnValue.put("image", imageId);
-			}
-			returnValue.put("value", jobj);
-			returnValue.put("baselineValue", jobj1);
-			returnValue.put("period", dateRange);
-			returnValue.put("baselinePeriod", baselineRange);
-
 			
 			return returnValue;
 		}
