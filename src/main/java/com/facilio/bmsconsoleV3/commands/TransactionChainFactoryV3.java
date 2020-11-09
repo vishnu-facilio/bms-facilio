@@ -44,6 +44,12 @@ import com.facilio.bmsconsoleV3.commands.workorder.*;
 import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.trigger.command.AddOrUpdateTriggerActionAndRelCommand;
+import com.facilio.trigger.command.AddTriggerCommand;
+import com.facilio.trigger.command.DeleteTriggerCommand;
+import com.facilio.trigger.command.ExecuteTriggerCommand;
+import com.facilio.trigger.command.UpdateTriggerCommand;
+
 import org.apache.commons.chain.Context;
 
 import java.util.Collections;
@@ -478,5 +484,30 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new UpdatePeoplePrimaryContactCommandV3());
         return c;
     }
-
+    
+    public static FacilioChain getTriggerAddChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddTriggerCommand());
+        c.addCommand(new AddOrUpdateTriggerActionAndRelCommand());
+        return c;
+    }
+    
+    public static FacilioChain getTriggerUpdateChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new UpdateTriggerCommand());
+        c.addCommand(new AddOrUpdateTriggerActionAndRelCommand());
+        return c;
+    }
+    
+    public static FacilioChain getTriggerDeleteChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new DeleteTriggerCommand());
+        return c;
+    }
+    
+    public static FacilioChain getTriggerExecuteChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ExecuteTriggerCommand());
+        return c;
+    }
 }

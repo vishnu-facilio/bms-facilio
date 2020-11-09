@@ -9227,5 +9227,51 @@ public class FieldFactory {
         fields.add(getField("authKey", "AUTH_KEY", module, FieldType.STRING));
         return fields;
     }
+    
+    
+    public static List<FacilioField> getTriggerFields() {
+        FacilioModule module = ModuleFactory.getTriggerModule();
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField(module));
+        fields.add(getNameField(module));
+        fields.add(getField("type", "TYPE", module, FieldType.NUMBER));
+        fields.add(getField("moduleId", "MODULE_ID", module, FieldType.NUMBER));
+        fields.add(getField("childModuleId", "CHILD_MODULE_ID", module, FieldType.NUMBER));
+        fields.add(getField("eventType", "EVENT_TYPE", module, FieldType.NUMBER));
+        fields.add(getField("status", "STATUS", module, FieldType.BOOLEAN));
+        fields.add(getField("extrainfo", "EXTRAINFO", module, FieldType.STRING));
+        return fields;
+    }
+    
+    public static List<FacilioField> getTriggerActionFields() {
+        FacilioModule module = ModuleFactory.getTriggerActionModule();
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField(module));
+        fields.add(getNameField(module));
+        fields.add(getField("actionType", "TYPE", module, FieldType.NUMBER));
+        fields.add(getField("typeRefPrimaryId", "TYPE_PRIMARY_ID", module, FieldType.NUMBER));
+        return fields;
+    }
+
+    public static List<FacilioField> getTriggerActionRelFields() {
+        FacilioModule module = ModuleFactory.getTriggerActionRelModule();
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField(module));
+        fields.add(getField("triggerId", "TRIGGER_ID", module, FieldType.NUMBER));
+        fields.add(getField("triggerActionId", "TRIGGER_ACTION_ID", module, FieldType.NUMBER));
+        fields.add(getField("executionOrder", "EXECUTION_ORDER", module, FieldType.NUMBER));
+        return fields;
+    }
+
+    public static List<FacilioField> getTriggerLogFields() {
+        FacilioModule module = ModuleFactory.getTriggerLogModule();
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField(module));
+        fields.add(getField("triggerId", "TRIGGER_ID", module, FieldType.NUMBER));
+        fields.add(getField("recordId", "RECORD_ID", module, FieldType.NUMBER));
+        fields.add(getField("executionTime", "EXECUTION_TIME", module, FieldType.NUMBER));
+        fields.add(getField("triggerActionId", "TRIGGER_ACTION_ID", module, FieldType.NUMBER));
+        return fields;
+    }
 }
 

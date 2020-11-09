@@ -4225,4 +4225,40 @@ public class ModuleFactory {
 		module.setTableName("Budget");
 		return module;
 	}
+	
+	public static FacilioModule getTriggerModule()
+	{
+		FacilioModule module=new FacilioModule();
+		module.setName("trigger");
+		module.setDisplayName("Trigger");
+		module.setTableName("Facilio_Trigger");
+		return module;
+	}
+	
+	public static FacilioModule getTriggerActionModule()
+	{
+		FacilioModule module=new FacilioModule();
+		module.setName("triggerAction");
+		module.setDisplayName("Trigger Action");
+		module.setTableName("Trigger_Action");
+		return module;
+	}
+	
+	public static FacilioModule getTriggerActionRelModule()
+	{
+		FacilioModule module=new FacilioModule();
+		module.setName("triggerActionRel");
+		module.setDisplayName("Trigger_Action_Rel");
+		module.setTableName("Trigger_Action_Rel");
+		return module;
+	}
+	
+	public static FacilioModule getTriggerLogModule()
+	{
+		FacilioModule module=new FacilioModule();
+		module.setName("triggerLog");
+		module.setDisplayName("Trigger_Log");
+		module.setTableName("Trigger_Log");
+		return module;
+	}
 }
