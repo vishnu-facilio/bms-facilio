@@ -1,14 +1,5 @@
 package com.facilio.bmsconsole.context;
 
-import java.text.ParseException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.tenant.TenantContext;
@@ -17,6 +8,14 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.time.DateTimeUtil;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import java.text.ParseException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class TicketContext extends ModuleBaseWithCustomFields {
 	/**
@@ -253,6 +252,12 @@ public class TicketContext extends ModuleBaseWithCustomFields {
  	}
 	public void setScheduledStart(long scheduledStart) {
 		this.scheduledStart = scheduledStart;
+	}
+	public String getScheduledStartString() {
+		if(scheduledStart != -1) {
+			return DateTimeUtil.getZonedDateTime(scheduledStart).format(DateTimeUtil.READABLE_DATE_FORMAT);
+		}
+		return null;
 	}
 	
 	public long getEstimatedStart() {
