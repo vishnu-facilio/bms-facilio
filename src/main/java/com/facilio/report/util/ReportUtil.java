@@ -116,6 +116,12 @@ public class ReportUtil {
 			report.sethmAggr(hmAggr);
 		}
 		
+		String scatterConfig = (String) context.get(FacilioConstants.ContextNames.REPORT_SCATTER_CONFIG);
+		
+		if(StringUtils.isNotEmpty(scatterConfig)) {
+			report.addToReportState(FacilioConstants.ContextNames.REPORT_SCATTER_CONFIG, scatterConfig);
+		}
+		
 		AggregateOperator groupByTimeAggr= (AggregateOperator) context.get(FacilioConstants.ContextNames.REPORT_GROUP_BY_TIME_AGGR);
 		
 		if(groupByTimeAggr!= null) {

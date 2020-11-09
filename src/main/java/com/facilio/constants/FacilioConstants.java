@@ -644,6 +644,7 @@ public class FacilioConstants {
 		public static final String REPORT_SHOW_SAFE_LIMIT = "showSafeLimit";
 		public static final String REPORT_STARTTIME = "starttime";
 		public static final String REPORT_ENDTIME = "endtime";
+		public static final String REPORT_SCATTER_CONFIG = "scatterConfig";
 		
 		public static final String TOTAL_CONSUMPTION = "totalConsumption";
 		public static final String UNIT = "unit";

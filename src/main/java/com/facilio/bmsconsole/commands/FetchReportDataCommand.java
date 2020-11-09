@@ -679,6 +679,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 				switch (dataPoint.getTypeEnum()) {
 					case MODULE:
 					case FIELD:
+					case ADDITIONAL:
 						if (handleBooleanField) {
 							handleBooleanField(dataPoint);
 						}

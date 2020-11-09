@@ -227,6 +227,9 @@ public class V2ReportAction extends FacilioAction {
 			reportContext.addToReportState(FacilioConstants.ContextNames.REPORT_GROUP_BY_TIME_AGGR, groupByTimeAggr.getValue());
 			reportContext.setgroupByTimeAggr(groupByTimeAggr);
 		}
+		if(scatterConfig!= null) {
+			reportContext.addToReportState(FacilioConstants.ContextNames.REPORT_SCATTER_CONFIG, scatterConfig);
+		}
 		if (xAggr != null) {
 			reportContext.setxAggr(xAggr);
 		}
@@ -342,6 +345,9 @@ public class V2ReportAction extends FacilioAction {
 		if(groupByTimeAggr != null) {
 			context.put(FacilioConstants.ContextNames.REPORT_GROUP_BY_TIME_AGGR, groupByTimeAggr);
 		}
+		if(scatterConfig != null && !scatterConfig.isEmpty()) {
+			context.put(FacilioConstants.ContextNames.REPORT_SCATTER_CONFIG, scatterConfig);
+		}
 		
 		context.put(FacilioConstants.ContextNames.ALARM_ID, alarmId);
 		
@@ -407,6 +413,18 @@ public class V2ReportAction extends FacilioAction {
 		 	reportContext.setgroupByTimeAggr(groupByTimeAggr);
 		 	context.put(FacilioConstants.ContextNames.REPORT_GROUP_BY_TIME_AGGR, groupByTimeAggr);
 		 }
+		 if(reportContext != null && scatterConfig != null) {
+			 	JSONObject reportState;
+			 	if(reportContext.getReportState() != null && !reportContext.getReportState().isEmpty()) {
+			 		reportState = reportContext.getReportState();
+			 	}
+			 	else {
+			 		reportState = new JSONObject();
+			 	}
+			 	reportState.put("scatterConfig", scatterConfig);
+			 	reportContext.setReportState(reportState);
+			 	context.put(FacilioConstants.ContextNames.REPORT_SCATTER_CONFIG, scatterConfig);
+			 }
 		context.put(FacilioConstants.ContextNames.REPORT_TEMPLATE, template);
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateOperatorValue);
@@ -805,6 +823,15 @@ public class V2ReportAction extends FacilioAction {
 	}
 	public void setDefaultDate(boolean date){
 		this.defaultDate = date;
+	}
+	
+	private String scatterConfig;
+
+	public String getScatterConfig() {
+		return scatterConfig;
+	}
+	public void setScatterConfig(String scatterConfig) {
+		this.scatterConfig = scatterConfig;
 	}
 	
 //	public String fetchReportDataFromPm() throws Exception{

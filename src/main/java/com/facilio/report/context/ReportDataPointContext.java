@@ -400,7 +400,8 @@ public class ReportDataPointContext {
 		DERIVATION,
 		TRENDLINE,
 		FIELD,		//Number Fields of Site, Building, Asset Modules
-		FILTER
+		FILTER,
+		ADDITIONAL
 		;
 		
 		public int getValue() {

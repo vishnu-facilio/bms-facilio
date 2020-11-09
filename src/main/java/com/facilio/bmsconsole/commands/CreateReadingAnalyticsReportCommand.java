@@ -99,6 +99,7 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 				switch (metric.getTypeEnum()) {
 					case MODULE:
 					case FIELD:
+					case ADDITIONAL:
 						dataPoint = getModuleDataPoint(report, metric, mode, modBean, resourceAlias);
 						break;
 					case DERIVATION:

@@ -206,7 +206,8 @@ public class ReadingAnalysisContext {
 		REGRESSION("Regression Analysis"),
 		READINGS("Readings Analysis"),
 		SITE("Site Analysis"),
-		TREE_MAP("Tree Map Analysis")
+		TREE_MAP("Tree Map Analysis"),
+		SCATTER("Scatter Analysis"),
 		;
 		
 		private String strVal;
