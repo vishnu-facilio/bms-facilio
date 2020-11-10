@@ -93,3 +93,675 @@
                  res.maxValue = max;
                  return res;
                }'
+
+'199':
+  description: 'check in check out week digest'
+  usage: 'week digest'
+  workflow: 'Map weekDigest() {
+              result = {};
+  math = new NameSpace("math");
+  date = new NameSpace("date"); 
+  dateRange = new NameSpace("dateRange"); 
+  
+  thisWeek = date.getDateRange("Current Week");
+  startTime = (thisWeek.getStartTime() - (86400000 * 3));
+  endTime = (thisWeek.getEndTime() - (86400000 * 3));
+
+  thisWeek = dateRange().create(startTime, endTime);
+  
+  lastWeek = date.getDateRange("Last Week");
+  lastWeekstartTime = (lastWeek.getStartTime() - (86400000 * 3));
+  lastWeekendTime = (lastWeek.getEndTime() - (86400000 * 3));
+  
+  lastWeek = dateRange().create(lastWeekstartTime, lastWeekendTime);
+  
+  result.startTime = date().getFormattedTime(startTime,"dd-MM-yyyy");
+  result.endTime = date().getFormattedTime(endTime,"dd-MM-yyyy");
+  result.lastWeekstartTime = date().getFormattedTime(lastWeekstartTime,"dd-MM-yyyy");
+  result.lastWeekendTime = date().getFormattedTime(lastWeekendTime,"dd-MM-yyyy");
+
+  now = date.now();
+  moduleId = 98566;
+  
+  db = {
+    criteria: [parentModuleId == moduleId && typeCode == 1],
+    field: "id"
+  }; 
+  openticketStatus = Module("ticketstatus").fetch(db); 	
+  db = {
+        criteria: [parentModuleId == moduleId && typeCode == 2],
+    field: "id"
+  }; 
+  closeticketStatus = Module("ticketstatus").fetch(db); 	
+  holdticketStatus = [13410];
+  db = {
+        criteria: [category == 2004],
+        field: "id",
+        aggregation: "count"
+  }; 
+  result.totalWorkorder = Module("workorder").fetch(db); 
+  db = {
+        criteria: [category == 2004 && moduleState != null && moduleState == closeticketStatus],
+        field: "id",
+        aggregation: "count"
+  };  
+  result.totalClosedWorkorder = Module("workorder").fetch(db); 
+  db = {
+        criteria: [category == 2004 && moduleState != null && moduleState == closeticketStatus],
+        field: "actualWorkDuration",
+        aggregation: "avg"
+  };  
+  avgSeconds = Module("workorder").fetch(db);
+  result.totalWoAvgComp = 0;
+      if (avgSeconds != null){
+      avgMin = date.secToHour(avgSeconds);
+      avgdays = date.hourToDay(avgMin);
+      result.totalWoAvgComp = math().setPrecision(avgdays, 0);
+      }
+  db = {
+        criteria: [category == 2004 && createdTime == thisWeek && moduleState != null && moduleState == closeticketStatus],
+        field: "actualWorkDuration",
+        aggregation: "avg"
+  };  
+  avgSeconds = Module("workorder").fetch(db);
+  result.totalWoAvgCompThisWeek = 0;
+      if (avgSeconds != null){
+      avgMin = date.secToHour(avgSeconds);
+      avgdays = date.hourToDay(avgMin);
+      result.totalWoAvgCompThisWeek = math().setPrecision(avgdays, 0);
+      }
+  db = {
+        criteria: [category == 2004 && createdTime == lastWeek && moduleState != null && moduleState == closeticketStatus],
+        field: "actualWorkDuration",
+        aggregation: "avg"
+  };  
+  avgSeconds = Module("workorder").fetch(db);
+  result.totalWoAvgCompLastWeek = 0;
+      if (avgSeconds != null) {
+      avgMin = date.secToHour(avgSeconds);
+      avgdays = date.hourToDay(avgMin);
+      result.totalWoAvgCompLastWeek = math().setPrecision(avgdays, 0);
+      }
+   db = {
+        criteria: [category == 2004 && createdTime == thisWeek && moduleState != null && moduleState == closeticketStatus],
+        field: "actualWorkDuration",
+  }; 
+  list =  Module("workorder").fetch(db);
+  result.maxdaysThisWeek = 0;
+  result.mindaysThisWeek = 0;
+        if (list != null) {
+        max = 0;
+        min = list[0];
+            for each index,value in list{
+              if ( max < value ) {
+                  max = value;
+              }
+              if (value < min) {
+                min = value;
+             }
+            }
+        maxMinu = date.secToHour(max);
+        maxdays = date.hourToDay(maxMinu);
+        result.maxdaysThisWeek = math().setPrecision(maxdays, 0);
+        minMinu = date.secToHour(min);
+        mindays = date.hourToDay(minMinu);
+        result.mindaysThisWeek = math().setPrecision(mindays, 0);
+        }
+  
+  db = {
+        criteria: [category == 2004 && createdTime == lastWeek && moduleState != null && moduleState == closeticketStatus],
+        field: "actualWorkDuration",
+  }; 
+  list =  Module("workorder").fetch(db);
+  result.maxdaysLastWeek = 0;
+  result.mindaysLastWeek = 0;
+        if (list != null) {
+        max = 0;
+        min = list[0];
+            for each index,value in list{
+              if ( max < value ) {
+                  max = value;
+              }
+              if (value < min) {
+                min = value;
+             }
+            }
+        maxMinu = date.secToHour(max);
+        maxdays = date.hourToDay(maxMinu);
+        result.maxdaysLastWeek = math().setPrecision(maxdays, 0);
+        minMinu = date.secToHour(min);
+        mindays = date.hourToDay(minMinu);
+        result.mindaysLastWeek = math().setPrecision(mindays, 0);
+        }
+
+  db = {
+        criteria: [category == 2004 && createdTime == thisWeek],
+        field: "id",
+        aggregation: "count"
+  }; 
+  result.totalWorkordersThisWeek = Module("workorder").fetch(db);
+  db = {
+         criteria: [category == 2004 && createdTime == thisWeek && moduleState == 13410],
+         field: "id",
+         aggregation: "count"
+  }; 
+  result.totalWoOnHoldThisWeek = 0;
+  if (Module("workorder").fetch(db) != null && Module("workorder").fetch(db) > 0) {
+      result.totalWoOnHoldThisWeek = ((Module("workorder").fetch(db)/result.totalWorkordersThisWeek)*100);
+  }
+  
+  db = {
+         criteria: [picklist == 2],
+    	 field: "id"
+  }; 
+  buildings = Module("building").fetch(db);
+   db = {
+        criteria: [category == 2004 && resource == buildings],
+     	field: "id",
+        aggregation: "count"
+  };
+  result.totalAlWahaibiWo = Module("workorder").fetch(db);
+  total = Module("workorder").fetch(db);
+  
+  db = {
+        criteria: [category == 2004 && actualWorkStart == thisWeek && resource == buildings && moduleState != null && moduleState == openticketStatus],
+     	field: "id",
+        aggregation: "count"
+  };
+  result.totalAlWahaibiWoOpen = 0;
+  if (Module("workorder").fetch(db) != null && Module("workorder").fetch(db) > 0 && total > 0) {
+      result.totalAlWahaibiWoOpen = ((Module("workorder").fetch(db)/total)*100);
+      if (result.totalAlWahaibiWoOpen > 0) {
+        result.totalAlWahaibiWoOpen = math().setPrecision(result.totalAlWahaibiWoOpen, 0); 
+      }
+  }
+  
+   db = {
+        criteria: [category == 2004 && resource == buildings && moduleState != null && moduleState == holdticketStatus],
+     	field: "id",
+        aggregation: "count"
+  };
+  result.totalAlWahaibiWoClose = 0;
+  if (Module("workorder").fetch(db) != null && Module("workorder").fetch(db) > 0 && total > 0) {
+      result.totalAlWahaibiWoClose = ((Module("workorder").fetch(db)/total)*100);
+      if (result.totalAlWahaibiWoClose > 0) {
+        result.totalAlWahaibiWoClose = math().setPrecision(result.totalAlWahaibiWoClose, 0); 
+      }
+  }
+
+  db = {
+         criteria: [picklist == 3],
+    	 field: "id"
+  }; 
+  buildings = Module("building").fetch(db);
+   db = {
+        criteria: [category == 2004 && resource == buildings],
+     	field: "id",
+        aggregation: "count"
+  };
+  result.totalBdPropertiesWo = Module("workorder").fetch(db);
+  
+  total = Module("workorder").fetch(db);
+  
+  db = {
+        criteria: [category == 2004 && actualWorkStart == thisWeek && resource == buildings && moduleState != null && moduleState == openticketStatus],
+     	field: "id",
+        aggregation: "count"
+  };
+  result.totalBdPropertiesWoOpen = 0;
+  if (Module("workorder").fetch(db) != null && Module("workorder").fetch(db) > 0 && total > 0) {
+      result.totalBdPropertiesWoOpen = ((Module("workorder").fetch(db)/total)*100);
+      if (result.totalBdPropertiesWoOpen > 0) {
+        result.totalBdPropertiesWoOpen = math().setPrecision(result.totalBdPropertiesWoOpen, 0); 
+      }
+  }
+  
+   db = {
+        criteria: [category == 2004 && resource == buildings && moduleState != null && moduleState == holdticketStatus],
+     	field: "id",
+        aggregation: "count"
+  };
+  result.totalBdPropertiesWoClose = 0;
+  if (Module("workorder").fetch(db) != null && Module("workorder").fetch(db) > 0 && total > 0) {
+      result.totalBdPropertiesWoClose = ((Module("workorder").fetch(db)/total)*100);
+      if (result.totalBdPropertiesWoClose > 0) {
+        result.totalBdPropertiesWoClose = math().setPrecision(result.totalBdPropertiesWoClose, 0); 
+      }
+  }
+  db = {
+         criteria: [picklist == 1],
+    	 field: "id"
+  }; 
+  buildings = Module("building").fetch(db);
+   db = {
+        criteria: [category == 2004 && resource == buildings],
+     	field: "id",
+        aggregation: "count"
+  };
+  result.totalAmPropertiesWo = Module("workorder").fetch(db);
+   
+  total = Module("workorder").fetch(db);
+  
+  db = {
+        criteria: [category == 2004 && actualWorkStart == thisWeek && resource == buildings && moduleState != null && moduleState == openticketStatus],
+     	field: "id",
+        aggregation: "count"
+  };
+  result.totalAmPropertiesWoOpen = 0;
+  if (Module("workorder").fetch(db) != null && Module("workorder").fetch(db) > 0 && total > 0) {
+      result.totalAmPropertiesWoOpen = ((Module("workorder").fetch(db)/total)*100);
+      if (result.totalAmPropertiesWoOpen > 0) {
+        result.totalAmPropertiesWoOpen = math().setPrecision(result.totalAmPropertiesWoOpen, 0); 
+      }
+  }
+  
+   db = {
+        criteria: [category == 2004 && resource == buildings && moduleState != null && moduleState == holdticketStatus],
+     	field: "id",
+        aggregation: "count"
+  };
+  result.totalAmPropertiesWoClose = 0;
+  if (Module("workorder").fetch(db) != null && Module("workorder").fetch(db) > 0 && total > 0) {
+      result.totalAmPropertiesWoClose = ((Module("workorder").fetch(db)/total)*100);
+      if (result.totalAmPropertiesWoClose > 0) {
+        result.totalAmPropertiesWoClose = math().setPrecision(result.totalAmPropertiesWoClose, 0); 
+      }
+  }
+  db = {
+         criteria: [picklist == 5],
+    	 field: "id"
+  }; 
+  buildings = Module("building").fetch(db);
+   db = {
+        criteria: [category == 2004 && resource == buildings],
+     	field: "id",
+        aggregation: "count"
+  };
+  result.totalEqaratPropertiesWo = Module("workorder").fetch(db);
+  total = Module("workorder").fetch(db);
+  
+  db = {
+        criteria: [category == 2004 && actualWorkStart == thisWeek && resource == buildings && moduleState != null && moduleState == openticketStatus],
+     	field: "id",
+        aggregation: "count"
+  };
+  result.totalEqaratPropertiesWoOpen = 0;
+  if (Module("workorder").fetch(db) != null && Module("workorder").fetch(db) > 0 && total > 0) {
+      result.totalEqaratPropertiesWoOpen = ((Module("workorder").fetch(db)/total)*100);
+      if (result.totalEqaratPropertiesWoOpen > 0) {
+        result.totalEqaratPropertiesWoOpen = math().setPrecision(result.totalEqaratPropertiesWoOpen, 0); 
+      }
+  }
+   db = {
+        criteria: [category == 2004 && resource == buildings && moduleState != null && moduleState == holdticketStatus],
+     	field: "id",
+        aggregation: "count"
+  };
+  result.totalEqaratPropertiesWoClose = 0;
+  if (Module("workorder").fetch(db) != null && Module("workorder").fetch(db) > 0 && total > 0) {
+      result.totalEqaratPropertiesWoClose = ((Module("workorder").fetch(db)/total)*100);
+      if (result.totalEqaratPropertiesWoClose > 0) {
+        result.totalEqaratPropertiesWoClose = math().setPrecision(result.totalEqaratPropertiesWoClose, 0); 
+      }
+  }
+  db = {
+         criteria: [picklist == 4],
+    	 field: "id"
+  }; 
+  buildings = Module("building").fetch(db);
+   db = {
+        criteria: [category == 2004 && resource == buildings],
+     	field: "id",
+        aggregation: "count"
+  };
+  result.totalDgPropertiesWo = Module("workorder").fetch(db);
+
+  total = Module("workorder").fetch(db);
+  
+  db = {
+        criteria: [category == 2004 && actualWorkStart == thisWeek && resource == buildings && moduleState != null && moduleState == openticketStatus],
+     	field: "id",
+        aggregation: "count"
+  };
+  result.totalDgPropertiesWoOpen = 0;
+  if (Module("workorder").fetch(db) != null && Module("workorder").fetch(db) > 0 && total > 0) {
+      result.totalDgPropertiesWoOpen = ((Module("workorder").fetch(db)/total)*100);
+      if (result.totalDgPropertiesWoOpen > 0) {
+        result.totalDgPropertiesWoOpen = math().setPrecision(result.totalDgPropertiesWoOpen, 0); 
+      }
+  }
+  
+   db = {
+        criteria: [category == 2004&& resource == buildings && moduleState != null && moduleState == holdticketStatus],
+     	field: "id",
+        aggregation: "count"
+  };
+  result.totalDgPropertiesWoClose = 0;
+  if (Module("workorder").fetch(db) != null && Module("workorder").fetch(db) > 0 && total > 0) {
+      result.totalDgPropertiesWoClose = ((Module("workorder").fetch(db)/total)*100);
+      if (result.totalDgPropertiesWoClose > 0) {
+        result.totalDgPropertiesWoClose = math().setPrecision(result.totalDgPropertiesWoClose, 0); 
+      }
+  }
+   db = {
+        criteria: [category == 2004],
+     	field: "id",
+        aggregation: "count"
+  };
+  result.totalWoInProperties = Module("workorder").fetch(db);
+  
+  total = Module("workorder").fetch(db);
+  
+  db = {
+        criteria: [category == 2004 && actualWorkStart == thisWeek && moduleState != null && moduleState == openticketStatus],
+     	field: "id",
+        aggregation: "count"
+  };
+  result.totalOpenWoInProperties = 0;
+  if (Module("workorder").fetch(db) != null && Module("workorder").fetch(db) > 0 && total > 0) {
+      result.totalOpenWoInProperties = ((Module("workorder").fetch(db)/total)*100);
+      if (result.totalOpenWoInProperties > 0) {
+        result.totalOpenWoInProperties = math().setPrecision(result.totalOpenWoInProperties, 0); 
+      }
+  }
+  
+   db = {
+        criteria: [category == 2004 && moduleState != null && moduleState == holdticketStatus],
+     	field: "id",
+        aggregation: "count"
+  };
+  result.totalClosedWoInProperties = 0;
+  if (Module("workorder").fetch(db) != null && Module("workorder").fetch(db) > 0 && total > 0) {
+      result.totalClosedWoInProperties = ((Module("workorder").fetch(db)/total)*100);
+      if (result.totalClosedWoInProperties > 0) {
+        result.totalClosedWoInProperties = math().setPrecision(result.totalClosedWoInProperties, 0); 
+      }
+  }
+
+  buildingsList = Module("building").fetch([id != null]);
+  buildings = [];
+  alWahaibiList = [];
+  bipinDharamseyNensey = [];
+  ahmedBinAbdulNabiMack = [];
+  aliHussainAlRahma = [];
+  akramZarrouf = [];
+  remainingList = [];
+  buildingVsUnitList = [];
+  buildingVsUnitFirstItem = [];
+  buildingVsUnitListForClosed = [];
+  buildingVsUnitFirstItemForClosed = [];
+        if (buildingsList != null) {
+              for each index,value in buildingsList{  
+                buildingVsMap = {};
+                mapObj = {};
+                building = {};
+                building.id = value.id;
+                building.name = value.name;      
+                db = {
+                  criteria: [category == 2004 && resource == value.id],
+                  field: "id",
+                  aggregation: "count"
+                };
+                totalWo = Module("workorder").fetch(db);
+                if (totalWo > 0) {
+                  building.totalWo = Module("workorder").fetch(db);
+                db = {
+                  criteria: [category == 2004 && resource == value.id && moduleState != null && moduleState == closeticketStatus],
+                  field: "id",
+                  aggregation: "count"
+                };      
+                building.totalClosedWo = Module("workorder").fetch(db);
+                db = {
+                criteria: [category == 2004 && resource == value.id && moduleState != null && moduleState == closeticketStatus],
+                field: "actualWorkDuration",
+                aggregation: "avg"
+  				};  
+                avgSec = Module("workorder").fetch(db);
+                building.WoAvgComp = 0;               
+                if (avgSec != null && avgSec > 0){
+                avgMinu = date.secToHour(avgSec);
+                avgday = date.hourToDay(avgMinu);
+                building.WoAvgComp = math().setPrecision(avgday, 0);   
+                }
+                
+                   if (value.client != null) {
+                if (value.client.id == 11) {
+                  alWahaibiList.push(building);
+                }else if (value.client.id == 12) {
+                  bipinDharamseyNensey.push(building);
+                }else if (value.client.id == 13) {
+                  ahmedBinAbdulNabiMack.push(building);
+                }else if (value.client.id == 14) {
+                  aliHussainAlRahma.push(building);
+                }else if (value.client.id == 15) {
+                  akramZarrouf.push(building);
+                }
+                }else {
+                  remainingList.push(building);
+                }
+            
+                
+                db = {
+                criteria: [category == 2004 && resource == value.id && moduleState != null && moduleState == openticketStatus],
+  				};  
+  				openWorkorders = Module("workorder").fetch(db);
+                  if (openWorkorders != null){
+                    unitList = [];
+                      for each ind,wo in openWorkorders{
+                        obj = {};
+                        daysInOpen = 0;
+                           if (wo.unit != null){
+                              db = {
+                                criteria: [id == wo.unit.id],
+                              };
+                           unitArr = Module("tenantunit").fetch(db);
+                           unitObj = unitArr[0];
+
+                             if (wo.date != null){
+                               obj.date = date().getFormattedTime(wo.date,"dd-MM-yyyy");
+                               constFiveDays = 432000000;
+                               handOver = (wo.date + constFiveDays);
+                               obj.handOverDate = date().getFormattedTime(handOver,"dd-MM-yyyy");
+                               daysInOpen = (now - wo.date)/86400000;
+                               if (wo.actualWorkDuration > 0) {
+                                 actualWorkDurationInMs = (wo.actualWorkDuration * 1000);
+                                 resolvedTime = (wo.actualWorkStart + actualWorkDurationInMs);
+                                 daysInOpen = (resolvedTime - wo.date)/86400000;
+                               }
+                             }    
+                             
+                             if (daysInOpen == null) {
+                                 daysInOpen = (now - wo.actualWorkStart)/86400000; 
+                             }
+                             
+                             if (daysInOpen == null) {
+                             obj.daysInOpen = 0;
+                             }else {
+                               obj.daysInOpen = math().setPrecision(daysInOpen, 0);
+                             }
+                    
+                             
+                           if (wo.actualWorkDuration > 0 && handOver > 0) {
+                             actualWorkDurationInMs = (wo.actualWorkDuration * 1000);
+                             resolvedTime = (wo.actualWorkStart + actualWorkDurationInMs);
+                             
+                             resolvedTimeInSec = (resolvedTime/1000);
+                             handOverInSec = (handOver/1000);
+                             
+                             if (resolvedTimeInSec > handOverInSec) {
+                             variationInSec = (resolvedTimeInSec - handOverInSec);
+                             inHr = date.secToHour(variationInSec);
+      						 inDays = date.hourToDay(inHr);
+                             obj.variation = "+" + math().setPrecision(inDays, 0);
+                             }
+                             else {
+                             variationInSec = (handOverInSec - resolvedTimeInSec);
+                             inHr = date.secToHour(variationInSec);
+      						 inDays = date.hourToDay(inHr);
+                             obj.variation = "-" + math().setPrecision(inDays, 0);
+                             }
+                           
+                             startDate = date().getFormattedTime(wo.actualWorkStart,"dd-MM-yyyy");
+                             resolvedDate = date().getFormattedTime(resolvedTime,"dd-MM-yyyy");
+          
+                         
+                           }
+                           else if ( handOver > 0  &&  obj.daysInOpen > 0) {
+                               indays = (daysInOpen - 5);
+                               obj.variation = math().setPrecision(indays, 0);
+                           }
+                           
+                           obj.unitName = unitObj.name;
+                           unitList.push(obj);
+                           }
+                        
+                      }
+                        if (unitList != []) {
+                          firstItemopen = {};
+                          mapObj["lists"] = unitList;
+                          mapObj["name"] = building.name;
+                        
+                         if (mapObj != null && firstItemopen != null) {
+                              buildingVsUnitFirstItem.push(mapObj);
+                             firstItemopen = mapObj;
+                        	}
+                          else {
+                            buildingVsUnitList.push(mapObj);
+                          }    
+
+
+                        }
+                  }
+   
+                mapObj = {};
+                db = {
+                criteria: [category == 2004 && resource == value.id && moduleState != null && moduleState == closeticketStatus && actualWorkEnd == thisWeek],
+  				};  
+  				closeWorkorders = Module("workorder").fetch(db);
+                  if (closeWorkorders != null){
+                    unitList = [];
+                      for each ind,wo in closeWorkorders{
+                        obj = {};
+                        daysInOpen = 0;
+                           if (wo.unit != null){
+                              db = {
+                                criteria: [id == wo.unit.id],
+                              };
+                           unitArr = Module("tenantunit").fetch(db);
+                           unitObj = unitArr[0];
+
+                             if (wo.date != null){
+                               obj.date = date().getFormattedTime(wo.date,"dd-MM-yyyy");
+                               constFiveDays = 432000000;
+                               handOver = (wo.date + constFiveDays);
+                               obj.handOverDate = date().getFormattedTime(handOver,"dd-MM-yyyy");
+                               daysInOpen = (now - wo.date)/86400000;
+                               if (wo.actualWorkDuration > 0) {
+                                 actualWorkDurationInMs = (wo.actualWorkDuration * 1000);
+                                 resolvedTime = (wo.actualWorkStart + actualWorkDurationInMs);
+                                 daysInOpen = (resolvedTime - wo.date)/86400000;
+                               }
+                             }
+                             
+                              if (daysInOpen == null) {
+                                 daysInOpen = (now - wo.actualWorkStart)/86400000; 
+                              }
+                          
+                           if (daysInOpen == null) {
+                             obj.daysInOpen = 0;
+                            }else {
+                              obj.daysInOpen = math().setPrecision(daysInOpen, 0);
+                            }
+    
+                           if (wo.actualWorkDuration > 0 && handOver > 0) {
+                             actualWorkDurationInMs = (wo.actualWorkDuration * 1000);
+                             resolvedTime = (wo.actualWorkStart + actualWorkDurationInMs);
+                             
+                             resolvedTimeInSec = (resolvedTime/1000);
+                             handOverInSec = (handOver/1000);
+                             
+                             if (resolvedTimeInSec > handOverInSec) {
+                             variationInSec = (resolvedTimeInSec - handOverInSec);
+                             inHr = date.secToHour(variationInSec);
+      						 inDays = date.hourToDay(inHr);
+                             obj.variation = "+" + math().setPrecision(inDays, 0);
+                             }
+                             else if (handOverInSec > resolvedTimeInSec) {
+                             variationInSec = (handOverInSec - resolvedTimeInSec);
+                             inHr = date.secToHour(variationInSec);
+      						 inDays = date.hourToDay(inHr);
+                             obj.variation = "-" + math().setPrecision(inDays, 0);
+                             }
+                           
+                             startDate = date().getFormattedTime(wo.actualWorkStart,"dd-MM-yyyy");
+                             resolvedDate = date().getFormattedTime(resolvedTime,"dd-MM-yyyy");
+          
+                         
+                           }
+                           
+                           obj.unitName = unitObj.name;
+                           unitList.push(obj);
+                           }
+                        
+                      }
+                        if (unitList != []) {
+                          firstItem = {};
+                        mapObj["lists"] = unitList;
+                        mapObj["name"] = building.name;
+                           if (mapObj != null && firstItem != null) {
+                              buildingVsUnitFirstItemForClosed.push(mapObj);
+                             firstItem = mapObj;
+                        	}
+                          else {
+                            buildingVsUnitListForClosed.push(mapObj);
+                          }    
+
+                      	}
+                  }                  
+               }
+             } 
+          }  
+   
+   if (alWahaibiList != null) {
+   for each ind,bu in alWahaibiList{
+      buildings.push(bu);
+   }  
+  }
+  if (bipinDharamseyNensey != null) {
+   for each ind,bu in bipinDharamseyNensey{
+      buildings.push(bu);
+   }  
+  }
+  if (ahmedBinAbdulNabiMack != null) {
+   for each ind,bu in ahmedBinAbdulNabiMack{
+      buildings.push(bu);
+   }  
+  }
+  if (aliHussainAlRahma != null) {
+   for each ind,bu in aliHussainAlRahma{
+      buildings.push(bu);
+   }  
+  }
+  if (akramZarrouf != null) {
+   for each ind,bu in akramZarrouf{
+      buildings.push(bu);
+   }  
+  }
+  if (remainingList != null) {
+   for each ind,bu in remainingList{
+      buildings.push(bu);
+   }  
+  }
+  
+   result.buildings = buildings;
+   result.buildingVsUnitList = buildingVsUnitList;
+   result.buildingVsUnitFirstItem = buildingVsUnitFirstItem;
+   result.buildingVsUnitListForClosed = buildingVsUnitListForClosed;
+   result.buildingVsUnitFirstItemForClosed = buildingVsUnitFirstItemForClosed;
+  org ={};
+  org.domain = "thequalitygroup";
+  org.timezone = "Asia/Muscat";
+  result.org = org;
+  
+  return result;
+}'

@@ -84,6 +84,9 @@ public class ApplicationApi {
         else if (appLinkName.equals("newtenants")) {
             appLinkName = FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP;
         }
+        else if (appLinkName.equals("digest")) {
+            appLinkName = FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP;
+        }
         
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getApplicationModule().getTableName()).select(FieldFactory.getApplicationFields())
