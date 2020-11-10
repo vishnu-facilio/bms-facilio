@@ -33,7 +33,8 @@ public class ConfigurePointCommand extends FacilioCommand {
                         LOGGER.info(" point already configured "+point.getId());
                     }
                 }
-                PointsAPI.configurePoints(pointsToConfigure, controller);
+                boolean isLogical = (boolean) context.getOrDefault(AgentConstants.LOGICAL, false);
+                PointsAPI.configurePoints(pointsToConfigure, controller,isLogical);
             }
         } else {
             throw new Exception(AgentConstants.RECORD_IDS + ", " + AgentConstants.CONTROLLER_TYPE + " missing from context->" + context);

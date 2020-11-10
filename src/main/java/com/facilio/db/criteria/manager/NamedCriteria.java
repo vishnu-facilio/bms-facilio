@@ -1,18 +1,16 @@
 package com.facilio.db.criteria.manager;
 
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
-import com.facilio.db.criteria.Criteria;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.modules.FacilioEnum;
-import com.facilio.workflows.context.WorkflowContext;
-import com.facilio.workflows.util.WorkflowUtil;
-import com.facilio.workflowv2.util.WorkflowV2API;
+import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.util.ExpressionEvaluator;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections.PredicateUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.collections.Predicate;
 
-import java.util.Map;
+import java.util.*;
 
-public class NamedCriteria {
+public class NamedCriteria extends ExpressionEvaluator<Predicate> {
 
     private long id;
     public long getId() {
@@ -38,129 +36,230 @@ public class NamedCriteria {
         this.name = name;
     }
 
-    private Type type;
-    public int getType() {
-        if (type != null) {
-            return type.getIndex();
+    private long namedCriteriaModuleId = -1;
+    public long getNamedCriteriaModuleId() {
+        return namedCriteriaModuleId;
+    }
+    public void setNamedCriteriaModuleId(long namedCriteriaModuleId) {
+        this.namedCriteriaModuleId = namedCriteriaModuleId;
+    }
+
+    private String pattern;
+    public String getPattern() {
+        return pattern;
+    }
+    public void setPattern(String pattern) {
+        this.pattern = pattern;
+    }
+
+    private Map<String, NamedCondition> conditions = null;
+    public Map<String, NamedCondition> getConditions() {
+        return conditions;
+    }
+    public void setConditions(Map<String, NamedCondition> conditions) {
+        this.conditions = conditions;
+    }
+    public void addCondition(String key, NamedCondition condition) {
+        if (conditions == null) {
+            conditions = new HashMap<>();
         }
-        return -1;
-    }
-    public Type getTypeEnum() {
-        return type;
-    }
-    public void setType(int type) {
-        this.type = Type.valueOf(type);
-    }
-    public void setType(Type type) {
-        this.type = type;
-    }
-
-    private long criteriaId = -1l;
-    public long getCriteriaId() {
-        return criteriaId;
-    }
-    public void setCriteriaId(long criteriaId) {
-        this.criteriaId = criteriaId;
-    }
-
-    private Criteria criteria;
-    public Criteria getCriteria() throws Exception {
-        if (criteria == null) {
-            if (criteriaId > 0) {
-                criteria = CriteriaAPI.getCriteria(criteriaId);
-            }
-        }
-        return criteria;
-    }
-    public void setCriteria(Criteria criteria) {
-        this.criteria = criteria;
-    }
-
-    private long workflowId = -1;
-    public long getWorkflowId() {
-        return workflowId;
-    }
-    public void setWorkflowId(long workflowId) {
-        this.workflowId = workflowId;
-    }
-
-    private WorkflowContext workflowContext;
-    public WorkflowContext getWorkflowContext() throws Exception {
-        if (workflowContext == null) {
-            if (workflowId > 0) {
-                workflowContext = WorkflowUtil.getWorkflowContext(workflowId);
-            }
-        }
-        return workflowContext;
-    }
-    public void setWorkflowContext(WorkflowContext workflowContext) {
-        this.workflowContext = workflowContext;
+        conditions.put(key, condition);
     }
 
     public boolean evaluate(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
-        switch (type) {
-            case CRITERIA:
-                return getCriteria().computePredicate(placeHolders).evaluate(record);
+        Predicate predicate = evaluateExpression(pattern);
+//        predicate.
 
-            case WORKFLOW:
-                Object result = workflowContext.executeWorkflow();
-                if (result != null && result instanceof Boolean) {
-                    return (Boolean) result;
-                }
-                break;
-        }
         return false;
     }
 
-    public void validate() {
-        if (type == null) {
-            throw new IllegalArgumentException("Type in named criteria cannot be empty");
-        }
+    @Override
+    public Predicate getOperand(String s) {
+        return new BooleanOperators.TruePredicate();
+    }
 
+    @Override
+    public Predicate applyOp(String operator, Predicate leftOperand, Predicate rightOperand) {
+        if (operator.equalsIgnoreCase("and")) {
+            return PredicateUtils.andPredicate(leftOperand, rightOperand);
+        } else {
+            return operator.equalsIgnoreCase("or") ? PredicateUtils.orPredicate(leftOperand, rightOperand) : null;
+        }
+    }
+
+    public void validate() {
         if (StringUtils.isEmpty(name)) {
             throw new IllegalArgumentException("Name cannot be empty for named criteria");
         }
 
-        switch (type) {
-            case CRITERIA:
-                if (criteria == null || criteria.isEmpty()) {
-                    throw new IllegalArgumentException("Criteria cannot be empty");
-                }
-                break;
-
-            case WORKFLOW:
-                if (workflowContext == null) {
-                    throw new IllegalArgumentException("Workflow cannot be empty");
-                }
-                break;
+        if (MapUtils.isEmpty(conditions)) {
+            throw new IllegalArgumentException("Conditions cannot be empty");
         }
     }
 
-    public enum Type implements FacilioEnum {
-        CRITERIA("Criteria"),
-        WORKFLOW("Workflow");
+    public void validatePattern() {
+        String[] tokens = this.tokenize();
+        this.postfix(tokens);
+    }
 
-        private String name;
+    private String[] tokenize() {
+        String pattern = "(" + this.pattern + ")";
+        List<String> tokens = new ArrayList();
+        String curr = "";
 
-        Type(String name) {
-            this.name = name;
-        }
+        for(int i = 0; i < pattern.length(); ++i) {
+            String c = Character.toString(pattern.charAt(i));
+            if (c.equals("(")) {
+                tokens.add(c);
+            } else if (c.equals(")")) {
+                if (!curr.isEmpty()) {
+                    tokens.add(curr);
+                    curr = "";
+                }
 
-        @Override
-        public int getIndex() {
-            return ordinal() + 1;
-        }
+                tokens.add(c);
+            } else if (this.isNumber(c)) {
+                if (!curr.equalsIgnoreCase("and") && !curr.equalsIgnoreCase("or") && !curr.equalsIgnoreCase("(")) {
+                    if (curr.isEmpty()) {
+                        curr = curr + c;
+                    } else if (this.isNumber(curr.charAt(curr.length() - 1))) {
+                        curr = curr + c;
+                    } else {
+                        tokens.add(curr);
+                        curr = c;
+                    }
+                } else {
+                    tokens.add(curr);
+                    curr = "";
+                }
+            } else if (this.isAlphabet(c)) {
+                if (!curr.isEmpty() && this.isNumber(curr.charAt(curr.length() - 1))) {
+                    tokens.add(curr);
+                    curr = "";
+                }
 
-        @Override
-        public String getValue() {
-            return name;
-        }
+                curr = curr + c;
+                if (curr.equalsIgnoreCase("and") || curr.equalsIgnoreCase("or")) {
+                    tokens.add(curr);
+                    curr = "";
+                }
+            } else if (this.isSpace(c)) {
+                if (!curr.isEmpty()) {
+                    tokens.add(curr);
+                    curr = "";
+                }
+            } else {
+                if (!curr.isEmpty()) {
+                    tokens.add(curr);
+                }
 
-        public static Type valueOf(int index) {
-            if (index >= 1 && index <= Type.values().length) {
-                return Type.values()[index - 1];
+                curr = "";
+                tokens.add(c);
             }
-            return null;
         }
+
+        if (!curr.isEmpty()) {
+            tokens.add(curr);
+        }
+
+        return (String[])tokens.toArray(new String[tokens.size()]);
+    }
+
+    public String postfix(String[] tokens) {
+        Stack<String> stack = new Stack();
+        List<String> outPut = new ArrayList();
+        String prev = null;
+        String[] var5 = tokens;
+        int var6 = tokens.length;
+
+        for(int var7 = 0; var7 < var6; ++var7) {
+            String e = var5[var7];
+            boolean pass = this.isNumber(e) || e.equalsIgnoreCase("and") || e.equalsIgnoreCase("or") || e.equals(")") || e.equals("(");
+            if (!pass) {
+                throw new IllegalArgumentException("Invalid Character");
+            }
+
+            if (e.equals("(") && prev != null && !prev.equals("(") && !prev.equalsIgnoreCase("and") && prev.equalsIgnoreCase("or")) {
+                throw new IllegalArgumentException("Invalid Expression");
+            }
+
+            if (e.equals(")") && !prev.equals(")") && !this.isNumber(prev)) {
+                throw new IllegalArgumentException("Invalid Expression");
+            }
+
+            if ((e.equalsIgnoreCase("and") || e.equalsIgnoreCase("or")) && !prev.equals(")") && !this.isNumber(prev)) {
+                throw new IllegalArgumentException("Invalid Expression");
+            }
+
+            if (this.isNumber(e) && prev != null && !prev.equals("(") && !prev.equalsIgnoreCase("and") && !prev.equalsIgnoreCase("or")) {
+                throw new IllegalArgumentException("Invalid Expression");
+            }
+
+            if (e.equals("(")) {
+                stack.push(e);
+            } else if (this.isNumber(e)) {
+                outPut.add(e);
+            } else {
+                String p;
+                if (e.equalsIgnoreCase("and")) {
+                    while(!stack.isEmpty()) {
+                        p = (String)stack.peek();
+                        if (p.equals("(") || p.equalsIgnoreCase("or")) {
+                            break;
+                        }
+
+                        outPut.add(stack.pop());
+                    }
+
+                    stack.add(e);
+                } else if (!e.equalsIgnoreCase("or")) {
+                    if (e.equals(")")) {
+                        while(!stack.isEmpty()) {
+                            p = (String)stack.pop();
+                            if (p.equals("(")) {
+                                break;
+                            }
+
+                            outPut.add(p);
+                        }
+                    }
+                } else {
+                    while(!stack.isEmpty()) {
+                        p = (String)stack.peek();
+                        if (p.equals("(")) {
+                            break;
+                        }
+
+                        outPut.add(stack.pop());
+                    }
+
+                    stack.add(e);
+                }
+            }
+
+            prev = e;
+        }
+
+        if (!stack.isEmpty()) {
+            throw new IllegalArgumentException("Invalid Expression");
+        } else {
+            return StringUtils.join(outPut.toArray(new String[outPut.size()]));
+        }
+    }
+
+    private boolean isSpace(String c) {
+        return StringUtils.isBlank(c);
+    }
+
+    private boolean isAlphabet(String c) {
+        return StringUtils.isAlpha(c);
+    }
+
+    private boolean isNumber(char c) {
+        return this.isNumber(Character.toString(c));
+    }
+
+    private boolean isNumber(String c) {
+        return StringUtils.isNumeric(c);
     }
 }

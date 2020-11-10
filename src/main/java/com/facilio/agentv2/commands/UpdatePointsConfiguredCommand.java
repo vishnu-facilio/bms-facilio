@@ -15,6 +15,7 @@ import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,14 +45,20 @@ public class UpdatePointsConfiguredCommand extends AgentV2Command {
             int rowsAffected = builder.update(toUpdate);
 
             if (rowsAffected > 0) {
-                List<FacilioField> childPointFields = PointsAPI.getChildPointFields(FacilioControllerType.valueOf((Integer) context.get(AgentConstants.POINT_TYPE)));
+            	List<FacilioField> childPointFields = new ArrayList<FacilioField>();
+            	boolean logical = (boolean) context.getOrDefault(AgentConstants.LOGICAL, false);
+            	Integer controllerType = (Integer) context.get(AgentConstants.POINT_TYPE);
+            	if(logical) {
+            		controllerType = 0;
+            		childPointModule = PointsAPI.getPointModule(FacilioControllerType.valueOf(0));
+            	}
+            	childPointFields = PointsAPI.getChildPointFields(FacilioControllerType.valueOf(controllerType));
                 GenericUpdateRecordBuilder builder1 = new GenericUpdateRecordBuilder()
                         .table(childPointModule.getTableName())
                         .fields(childPointFields)
                         .andCondition(CriteriaAPI.getIdCondition(ids, childPointModule));
                 int childRowsAffected = builder1.update(toUpdate);
 
-                childPointFields.forEach(field -> System.out.println(field));
                 context.put(FacilioConstants.ContextNames.ROWS_UPDATED, childRowsAffected);
                 if (childRowsAffected > 0) {
                     return true;

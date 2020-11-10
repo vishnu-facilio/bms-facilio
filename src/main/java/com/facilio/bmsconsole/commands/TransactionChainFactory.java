@@ -5795,12 +5795,24 @@ public class TransactionChainFactory {
 		chain.addCommand(new CreateDependencyHistoryCommand());
 		return chain;
 	}
+
+	public static FacilioChain getAddNamedCriteriaChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddNamedCriteriaCommand());
+		return chain;
+	}
+
+	public static FacilioChain deleteNamedCriteriaChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new DeleteNamedCriteriaCommand());
+		return chain;
+	}
 	public static FacilioChain getUpdateWidgetFilterSettingsChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new UpdateWidgetFilterSettingsCommand());
 		return chain;
 	}
-	
+
 }
 
 

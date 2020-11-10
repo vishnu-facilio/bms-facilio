@@ -12,10 +12,11 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.FacilioTimer;
 import org.apache.log4j.Logger;
 
-public class ForkChainToInstantJobCommand extends FacilioCommand {
+public class ForkChainToInstantJobCommand extends FacilioCommand implements PostTransactionCommand {
 	private static final Logger LOGGER = Logger.getLogger(ForkChainToInstantJobCommand.class.getName());
 	private List<Command> commands = new ArrayList<>();
 	private boolean propogateException = true;
+	private FacilioContext context = null;
 
 	public ForkChainToInstantJobCommand() {
 
@@ -35,8 +36,14 @@ public class ForkChainToInstantJobCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
+		this.context = (FacilioContext) context;
+		return false;
+	}
+
+	@Override
+	public boolean postExecute() throws Exception {
 		try {
-			if (!commands.isEmpty()) {
+			if (context != null && !commands.isEmpty()) {
 				Context noSeriablable = new FacilioContext();
 				for (Object key : context.keySet()) {
 					Object object = context.get(key);
@@ -56,5 +63,4 @@ public class ForkChainToInstantJobCommand extends FacilioCommand {
 		}
 		return false;
 	}
-
 }

@@ -1,14 +1,19 @@
 package com.facilio.db.criteria.manager;
 
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,40 +24,49 @@ import java.util.stream.Collectors;
 
 public class NamedCriteriaAPI {
 
-    public static long addNamedCriteria(NamedCriteria namedCriteria) throws Exception {
+    public static long addOrUpdateNamedCriteria(NamedCriteria namedCriteria) throws Exception {
         if (namedCriteria == null) {
             return -1;
         }
 
-        NamedCriteria.Type type = namedCriteria.getTypeEnum();
-        switch (type) {
-            case CRITERIA:
-                if (namedCriteria.getCriteria() == null || namedCriteria.getCriteria().isEmpty()) {
-                    throw new IllegalArgumentException("Criteria cannot be empty");
-                }
-                namedCriteria.setCriteriaId(CriteriaAPI.addCriteria(namedCriteria.getCriteria()));
-                break;
+        namedCriteria.validate();
 
-            case WORKFLOW:
-                if (namedCriteria.getWorkflowContext() == null) {
-                    throw new IllegalArgumentException("Workflow cannot be empty");
-                }
-                namedCriteria.setWorkflowId(WorkflowUtil.addWorkflow(namedCriteria.getWorkflowContext()));
-                break;
+        if (namedCriteria.getId() < 0) {
+            GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+                    .table(ModuleFactory.getNamedCriteriaModule().getTableName())
+                    .fields(FieldFactory.getNamedCriteriaFields());
+            Map<String, Object> props = FieldUtil.getAsProperties(namedCriteria);
+            builder.addRecord(props);
+            builder.save();
+            long criteriaId = (long) props.get("id");
+            namedCriteria.setId(criteriaId);
+        }
+        else {
+            GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+                    .table(ModuleFactory.getNamedCriteriaModule().getTableName())
+                    .fields(FieldFactory.getNamedCriteriaFields())
+                    .andCondition(CriteriaAPI.getIdCondition(namedCriteria.getId(), ModuleFactory.getNamedCriteriaModule()));
+            builder.update(FieldUtil.getAsProperties(namedCriteria));
 
-            default:
-                throw new IllegalArgumentException("Not a valid named criteria type");
+            GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+                    .table(ModuleFactory.getNamedConditionModule().getTableName())
+                    .andCondition(CriteriaAPI.getCondition("NAMED_CRITERIA_ID", "namedCriteriaId", String.valueOf(namedCriteria.getId()), NumberOperators.EQUALS));
+            deleteBuilder.delete();
         }
 
-        GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
-                .table(ModuleFactory.getNamedCriteriaModule().getTableName())
-                .fields(FieldFactory.getNamedCriteriaFields());
-        Map<String, Object> props = FieldUtil.getAsProperties(namedCriteria);
-        builder.addRecord(props);
-        builder.save();
-        long id = (long) props.get("id");
-        namedCriteria.setId(id);
-        return id;
+        GenericInsertRecordBuilder conditionBuilder = new GenericInsertRecordBuilder()
+                .table(ModuleFactory.getNamedConditionModule().getTableName())
+                .fields(FieldFactory.getNamedConditionFields());
+        for (String key : namedCriteria.getConditions().keySet()) {
+            NamedCondition namedCondition = namedCriteria.getConditions().get(key);
+            namedCondition.validateAndAddChildren();
+            namedCondition.setNamedCriteriaId(namedCriteria.getId());
+            namedCondition.setSequence(Integer.valueOf(key));
+            conditionBuilder.addRecord(FieldUtil.getAsProperties(namedCondition));
+        }
+        conditionBuilder.save();
+
+        return namedCriteria.getId();
     }
 
     public static NamedCriteria getNamedCriteria(long id) throws Exception {
@@ -84,26 +98,52 @@ public class NamedCriteriaAPI {
             return;
         }
 
+        Map<Long, NamedCriteria> namedCriteriaMap = namedCriteriaList.stream().collect(Collectors.toMap(NamedCriteria::getId, Function.identity()));
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getNamedConditionModule().getTableName())
+                .select(FieldFactory.getNamedConditionFields())
+                .andCondition(CriteriaAPI.getCondition("NAMED_CRITERIA_ID", "namedCriteriaId", StringUtils.join(namedCriteriaMap.keySet(), ","), NumberOperators.EQUALS));
+        List<NamedCondition> namedConditionList = FieldUtil.getAsBeanListFromMapList(builder.get(), NamedCondition.class);
+
         List<Long> criteriaIds = new ArrayList<>();
-        for (NamedCriteria namedCriteria : namedCriteriaList) {
-            switch (namedCriteria.getTypeEnum()) {
+        for (NamedCondition namedCondition : namedConditionList) {
+            namedCriteriaMap.get(namedCondition.getNamedCriteriaId()).addCondition(
+                    String.valueOf(namedCondition.getSequence()), namedCondition);
+            switch (namedCondition.getTypeEnum()) {
                 case CRITERIA:
-                    criteriaIds.add(namedCriteria.getCriteriaId());
+                    criteriaIds.add(namedCondition.getCriteriaId());
                     break;
 
                 case WORKFLOW:
-                    namedCriteria.setWorkflowContext(WorkflowUtil.getWorkflowContext(namedCriteria.getWorkflowId()));
+                    namedCondition.setWorkflowContext(WorkflowUtil.getWorkflowContext(namedCondition.getWorkflowId()));
                     break;
             }
         }
 
         Map<Long, Criteria> criteriaMap = CriteriaAPI.getCriteriaAsMap(criteriaIds);
-        for (NamedCriteria namedCriteria : namedCriteriaList) {
-            switch (namedCriteria.getTypeEnum()) {
+        for (NamedCondition namedCondition : namedConditionList) {
+            switch (namedCondition.getTypeEnum()) {
                 case CRITERIA:
-                    namedCriteria.setCriteria(criteriaMap.get(namedCriteria.getCriteriaId()));
+                    namedCondition.setCriteria(criteriaMap.get(namedCondition.getCriteriaId()));
                     break;
             }
         }
+    }
+
+    public static List<NamedCriteria> getAllNamedCriteria(FacilioModule module) throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getNamedCriteriaModule().getTableName())
+                .select(FieldFactory.getNamedCriteriaFields())
+                .andCondition(CriteriaAPI.getCondition("NAMED_CRITERIA_MODULEID", "namedCriteriaModuleid", String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
+        List<NamedCriteria> namedCriteriaList = FieldUtil.getAsBeanListFromMapList(builder.get(), NamedCriteria.class);
+        populateChildren(namedCriteriaList);
+        return namedCriteriaList;
+    }
+
+    public static void deleteCriteria(Long id) throws Exception {
+        GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+                .table(ModuleFactory.getNamedCriteriaModule().getTableName())
+                .andCondition(CriteriaAPI.getIdCondition(id, ModuleFactory.getNamedCriteriaModule()));
+         builder.delete();
     }
 }

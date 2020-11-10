@@ -41,12 +41,23 @@ public class controllerTypeIdsAction extends IdsAction {
     @Min(value = 0, message = "controllerType can't be less than 1")
     @Max(99)
     private Integer controllerType;
+    
+    
+    private Boolean logical=false;
 
-    public String configurePointsAndMakeController() {
+    public Boolean getLogical() {
+		return logical;
+	}
+
+	public void setLogical(Boolean logical) {
+		this.logical = logical;
+	}
+
+	public String configurePointsAndMakeController() {
         try {
             List<Long> pointIds = getRecordIds();
             if (!pointIds.isEmpty()) {
-                PointsAPI.configurePointsAndMakeController(pointIds, FacilioControllerType.valueOf(getControllerType()));
+                PointsAPI.configurePointsAndMakeController(pointIds, FacilioControllerType.valueOf(getControllerType()),getLogical());
                 setResponseCode(HttpURLConnection.HTTP_OK);
                 setResult(AgentConstants.RESULT, SUCCESS);
                 ok();
