@@ -41,15 +41,14 @@ public class ConditionScoringContext extends BaseScoringContext {
     @Override
     public void validate() {
         super.validate();
-        if (namedCriteria == null) {
-            throw new IllegalArgumentException("Criteria cannot be empty");
+        if (namedCriteriaId < 0) {
+            throw new IllegalArgumentException("NamedCriteria cannot be empty");
         }
-        namedCriteria.validate();
     }
 
     @Override
     public void saveChildren() throws Exception {
-        namedCriteriaId = NamedCriteriaAPI.addOrUpdateNamedCriteria(namedCriteria);
+//        namedCriteriaId = NamedCriteriaAPI.addOrUpdateNamedCriteria(namedCriteria);
     }
 
     @Override

@@ -118,11 +118,11 @@ public class ScoringRuleAPI extends WorkflowRuleAPI {
             scoringCommitmentContext.setOrder(i + 1);
             scoringCommitmentContext.setScoringRuleId(ruleId);
 
-            if (scoringCommitmentContext.getNamedCriteria() != null) {
-                scoringCommitmentContext.getNamedCriteria().validate();
-                long l = NamedCriteriaAPI.addOrUpdateNamedCriteria(scoringCommitmentContext.getNamedCriteria());
-                scoringCommitmentContext.setNamedCriteriaId(l);
-            }
+//            if (scoringCommitmentContext.getNamedCriteria() != null) {
+//                scoringCommitmentContext.getNamedCriteria().validate();
+//                long l = NamedCriteriaAPI.addOrUpdateNamedCriteria(scoringCommitmentContext.getNamedCriteria());
+//                scoringCommitmentContext.setNamedCriteriaId(l);
+//            }
 
             GenericInsertRecordBuilder commitmentInsertBuilder = new GenericInsertRecordBuilder()
                     .table(ModuleFactory.getScoringCommitmentModule().getTableName())
