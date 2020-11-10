@@ -70,8 +70,8 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
         JSONObject operator = new JSONObject();
         operator.put("operatorId", NumberOperators.EQUALS.getOperatorId());
         JSONArray values = new JSONArray();
-        values.add(module.getModuleId());
-        operator.put("values", values);
+        values.add(String.valueOf(module.getModuleId()));
+        operator.put("value", values);
 
         JSONObject filter = new JSONObject();
         filter.put("parentModuleId", operator);
