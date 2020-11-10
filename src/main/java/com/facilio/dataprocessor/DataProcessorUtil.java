@@ -188,19 +188,19 @@ public class DataProcessorUtil {
                     boolean isEveryMessageProcessed = true;
                     for (JSONObject msg :
                             messages) {
-                        isEveryMessageProcessed = isEveryMessageProcessed && sendToProcessorV2(msg, recordId);
+                        isEveryMessageProcessed = isEveryMessageProcessed && sendToProcessorV2(msg, recordId, record.getPartitionKey());
                     }
                     return isEveryMessageProcessed;
                 case 2:
 //                    LOGGER.info(" new processor data ");
-                    return sendToProcessorV2(payLoad,recordId);
+                    return sendToProcessorV2(payLoad, recordId, record.getPartitionKey());
                 case 3:
                     AgentMessagePreProcessor wattSensePreProcessor = new WattsenseToV2();
                     List<JSONObject> msgs = wattSensePreProcessor.preProcess(payLoad);
                     isEveryMessageProcessed = true;
                     for (JSONObject msg :
                             msgs) {
-                        isEveryMessageProcessed = isEveryMessageProcessed && sendToProcessorV2(msg, recordId);
+                        isEveryMessageProcessed = isEveryMessageProcessed && sendToProcessorV2(msg, recordId, record.getPartitionKey());
                     }
                     return isEveryMessageProcessed;
                 default:
@@ -437,10 +437,11 @@ public class DataProcessorUtil {
 			LOGGER.error("Cann't able to update log count in Agent Message Table ");
 		}
     }
-	private boolean sendToProcessorV2(JSONObject payLoad, long recordId) {
+
+    private boolean sendToProcessorV2(JSONObject payLoad, long recordId, String partitionKey) {
         if (dataProcessorV2 != null) {
             try {
-                if (!dataProcessorV2.processRecord(payLoad)) {
+                if (!dataProcessorV2.processRecord(payLoad, partitionKey, eventUtil)) {
                     return false;
                 }
                 updateAgentMessage(recordId, MessageStatus.PROCESSED);

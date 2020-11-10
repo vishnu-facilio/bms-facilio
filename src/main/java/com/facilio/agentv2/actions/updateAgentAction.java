@@ -37,7 +37,7 @@ public class updateAgentAction extends AgentAction {
                 setResult(AgentConstants.RESULT,ERROR);
             }
         }catch (Exception e){
-            LOGGER.info("Exception occurred while editing agent"+e.getMessage());
+            LOGGER.info("Exception occurred while editing agent :" + e);
             setResult(AgentConstants.EXCEPTION,e.getMessage());
             setResult(AgentConstants.RESULT,ERROR);
             setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);

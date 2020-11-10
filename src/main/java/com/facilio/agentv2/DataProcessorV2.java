@@ -16,6 +16,7 @@ import com.facilio.agentv2.iotmessage.IotMessageApiV2;
 import com.facilio.agentv2.metrics.MetricsApi;
 import com.facilio.agentv2.misc.MiscController;
 import com.facilio.agentv2.point.PointsUtil;
+import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -23,6 +24,9 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.events.context.EventRuleContext;
+import com.facilio.events.tasker.tasks.EventUtil;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
@@ -62,7 +66,7 @@ public class DataProcessorV2
     }
 
 
-    public boolean processRecord(JSONObject payload) {
+    public boolean processRecord(JSONObject payload, String partitionKey, EventUtil eventUtil) {
         boolean processStatus = false;
         try {
             if (payload.containsKey("clearAgentCache")) {
@@ -144,6 +148,14 @@ public class DataProcessorV2
                 case AGENT_EVENTS:
                     processStatus = processAgentEvents(agent, payload);
                     break;
+                case EVENTS:
+                    List<EventRuleContext> eventRules = new ArrayList<>();
+                    ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+                    List<EventRuleContext> ruleList = bean.getActiveEventRules();
+                    if (ruleList != null) {
+                        eventRules = ruleList;
+                    }
+                    processStatus = eventUtil.processEvents(timeStamp, payload, partitionKey, orgId, eventRules);
                 default:
                     throw new Exception("No such Publish type " + publishType.name());
             }
@@ -160,6 +172,8 @@ public class DataProcessorV2
             if (containsCheck(AgentConstants.CONTROLLER, payload)) {
                 Controller controller = getCachedControllerUsingPayload(payload, agent.getId());
                 IotMessage iotMessage = IotMessageApiV2.getIotMessage(AckUtil.getMessageIdFromPayload(payload));
+                //for modbus device points are sent as ACK's,
+                //so redirecting to devicePoints from ack
                 if (iotMessage.getCommand()== FacilioCommand.CONFIGURE.asInt()
                         && (controller.getControllerType() == FacilioControllerType.MODBUS_RTU.asInt()
                         || controller.getControllerType() == FacilioControllerType.MODBUS_IP.asInt())){
