@@ -69,7 +69,7 @@ public class SettingsMfa extends FacilioAction {
 
 		String totpKey;
 		totpKey = generateKey();
-		IAMUserUtil.updateUserMfaSettingsSecretKey(AccountUtil.getCurrentUser().getIamOrgUserId(), totpKey);
+		IAMUserUtil.updateUserMfaSettingsSecretKey(AccountUtil.getCurrentUser().getUid(), totpKey);
 
 	    HashMap<String,String> data = new HashMap<>();
 		data.put("secret",totpKey);
@@ -82,7 +82,7 @@ public class SettingsMfa extends FacilioAction {
 
 		String totpKey;
 		Map<String,Object> values = new HashMap<>();
-		values = IAMUserUtil.getUserMfaSettings(AccountUtil.getCurrentUser().getIamOrgUserId());
+		values = IAMUserUtil.getUserMfaSettings(AccountUtil.getCurrentUser().getUid());
 		totpKey = (String) values.get("totpSecret");
 
 		if(totpKey != null) {
@@ -109,7 +109,7 @@ public class SettingsMfa extends FacilioAction {
 
 		String totpKey;
 		Map<String,Object> values = new HashMap<>();
-		values = IAMUserUtil.getUserMfaSettings(AccountUtil.getCurrentUser().getIamOrgUserId());
+		values = IAMUserUtil.getUserMfaSettings(AccountUtil.getCurrentUser().getUid());
 		totpKey = (String) values.get("totpSecret");
 
 		LOGGER.error(totpKey);
@@ -124,10 +124,8 @@ public class SettingsMfa extends FacilioAction {
 
 	public String totpsetup() throws Exception{
 
-//		IAMUserUtil.updateUserMfaSettingsStatus(AccountUtil.getCurrentUser().getIamOrgUserId(),true);
-//		throw new IllegalArgumentException("invalid verification code");
 		if(totpChecking(verificationCode)){
-			IAMUserUtil.updateUserMfaSettingsStatus(AccountUtil.getCurrentUser().getIamOrgUserId(),true);
+			IAMUserUtil.updateUserMfaSettingsStatus(AccountUtil.getCurrentUser().getUid(),true);
 		    setResponseCode(0);
 		}
 		else{
@@ -139,7 +137,7 @@ public class SettingsMfa extends FacilioAction {
 	public String totpstatus() throws Exception{
 
 		Map<String,Object> values = new HashMap<>();
-		values = IAMUserUtil.getUserMfaSettings(AccountUtil.getCurrentUser().getIamOrgUserId());
+		values = IAMUserUtil.getUserMfaSettings(AccountUtil.getCurrentUser().getUid());
 		if(values == null || values.isEmpty()){
 			LOGGER.info("values is empty");
 			LOGGER.info("USERID is "+ AccountUtil.getCurrentUser().getIamOrgUserId());
@@ -152,7 +150,7 @@ public class SettingsMfa extends FacilioAction {
 
 	public String totpexit() throws Exception{
 
-		IAMUserUtil.clearUserMfaSettings(AccountUtil.getCurrentUser().getIamOrgUserId());
+		IAMUserUtil.clearUserMfaSettings(AccountUtil.getCurrentUser().getUid());
 
 		return "success";
 
@@ -160,11 +158,11 @@ public class SettingsMfa extends FacilioAction {
 
 	public String totpchange() throws Exception{
 
-		IAMUserUtil.clearUserMfaSettings(AccountUtil.getCurrentUser().getIamOrgUserId());
+		IAMUserUtil.clearUserMfaSettings(AccountUtil.getCurrentUser().getUid());
 
 		String totpKey;
 		totpKey = generateKey();
-		IAMUserUtil.updateUserMfaSettingsSecretKey(AccountUtil.getCurrentUser().getIamOrgUserId(),totpKey);
+		IAMUserUtil.updateUserMfaSettingsSecretKey(AccountUtil.getCurrentUser().getUid(),totpKey);
 
 		HashMap<String,String> data = new HashMap<>();
 		data.put("secret",totpKey);
