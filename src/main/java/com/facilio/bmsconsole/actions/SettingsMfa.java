@@ -57,7 +57,7 @@ public class SettingsMfa extends FacilioAction {
 	}
 
 	
-	private static String generateKey() {
+	private String generateKey() {
 	    SecretGenerator secretGenerator = new DefaultSecretGenerator();
 	    String secret = secretGenerator.generate();
 	    
@@ -140,7 +140,10 @@ public class SettingsMfa extends FacilioAction {
 
 		Map<String,Object> values = new HashMap<>();
 		values = IAMUserUtil.getUserMfaSettings(AccountUtil.getCurrentUser().getIamOrgUserId());
-
+		if(values == null || values.isEmpty()){
+			LOGGER.info("values is empty");
+			LOGGER.info("USERID is "+ AccountUtil.getCurrentUser().getIamOrgUserId());
+		}
 		boolean totpstatus = (boolean) values.get("totpStatus");
 		setResult("totpstatus",totpstatus);
 		return "success";
