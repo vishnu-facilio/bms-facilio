@@ -123,7 +123,7 @@
         </action>
 
         <!--6-->
-        <action name="edit" class="com.facilio.agentv2.actions.updateAgentAction" method="edit">
+        <action name="edit" class="com.facilio.agentv2.actions.UpdateAgentAction" method="edit">
         </action>
 
         <!--7-->

@@ -10,9 +10,9 @@ import org.json.simple.JSONObject;
 import javax.validation.constraints.NotNull;
 import java.net.HttpURLConnection;
 
-public class updateAgentAction extends AgentAction {
+public class UpdateAgentAction extends AgentAction {
 
-    private static final Logger LOGGER = LogManager.getLogger(updateAgentAction.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(UpdateAgentAction.class.getName());
 
 
     public JSONObject getToUpdate() {
