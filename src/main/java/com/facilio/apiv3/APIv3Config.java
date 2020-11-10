@@ -1,9 +1,11 @@
 package com.facilio.apiv3;
 
 import com.facilio.activity.AddActivitiesCommand;
-import com.facilio.bmsconsole.commands.*;
+import com.facilio.bmsconsole.commands.AssetDepreciationFetchAssetDetailsCommand;
+import com.facilio.bmsconsole.commands.ExecuteAllWorkflowsCommand;
+import com.facilio.bmsconsole.commands.ExecuteWorkFlowsBusinessLogicInPostTransactionCommand;
+import com.facilio.bmsconsole.commands.ValidateAssetDepreciationCommand;
 import com.facilio.bmsconsole.context.AssetDepreciationContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
 import com.facilio.bmsconsoleV3.commands.RollUpTransactionAmountCommand;
@@ -64,6 +66,7 @@ import com.facilio.bmsconsoleV3.context.budget.ChartOfAccountContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.*;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnnouncementContext;
+import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
@@ -229,19 +232,27 @@ public class APIv3Config {
     
     @Module("purchaserequest")
     public static Supplier<V3Config> getPurchaseRequest() {
-        return () -> new V3Config(V3PurchaseRequestContext.class, null)
+        return () -> new V3Config(V3PurchaseRequestContext.class, new ModuleCustomFieldCount30())
                 .create()
             		.beforeSave(new PreFillAddPurchaseRequestCommand())
                     .afterSave(TransactionChainFactoryV3.getAddPurchaseRequestAfterSaveChain())
                 .update()
                 	.beforeSave(new PreFillUpdatePurchaseRequestCommand())
-                	.afterSave(new ForkChainToInstantJobCommand()
-        					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)))
                 .list()
                     .beforeFetch(new LoadPurchaseRequestListLookupCommandV3())
                 .summary()
                     .beforeFetch(new LoadPurchaseRequestSummaryLookupCommandV3())
                     .afterFetch(new FetchPurchaseRequestDetailsCommandV3())
+                .build();
+    }
+
+    @Module("purchaseorder")
+    public static Supplier<V3Config> getPurchaseOrder() {
+        return () -> new V3Config(V3PurchaseOrderContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .update()
+                .list()
+                .summary()
                 .build();
     }
     
