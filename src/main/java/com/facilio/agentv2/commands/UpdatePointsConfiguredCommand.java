@@ -50,6 +50,7 @@ public class UpdatePointsConfiguredCommand extends AgentV2Command {
             	Integer controllerType = (Integer) context.get(AgentConstants.POINT_TYPE);
             	if(logical) {
             		controllerType = 0;
+            		childPointModule = PointsAPI.getPointModule(FacilioControllerType.valueOf(0));
             	}
             	childPointFields = PointsAPI.getChildPointFields(FacilioControllerType.valueOf(controllerType));
                 GenericUpdateRecordBuilder builder1 = new GenericUpdateRecordBuilder()
