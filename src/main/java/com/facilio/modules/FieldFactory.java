@@ -3497,10 +3497,23 @@ public class FieldFactory {
 
         fields.add(getIdField(module));
         fields.add(getField("name", "NAME", module, FieldType.STRING));
+        fields.add(getField("namedCriteriaModuleId", "NAMED_CRITERIA_MODULEID", module, FieldType.STRING));
+        fields.add(getField("pattern", "PATTERN", module, FieldType.STRING));
+
+        return fields;
+    }
+
+    public static List<FacilioField> getNamedConditionFields() {
+        FacilioModule module = ModuleFactory.getNamedConditionModule();
+        List<FacilioField> fields = new ArrayList<>();
+
+        fields.add(getIdField(module));
+        fields.add(getField("namedCriteriaId", "NAMED_CRITERIA_ID", module, FieldType.NUMBER));
+        fields.add(getField("sequence", "SEQUENCE", module, FieldType.NUMBER));
         fields.add(getField("type", "TYPE", module, FieldType.NUMBER));
         fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.NUMBER));
         fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.NUMBER));
-
+        fields.add(getField("systemCriteriaId", "SYSTEM_CRITERIA_ID", module, FieldType.NUMBER));
         return fields;
     }
 

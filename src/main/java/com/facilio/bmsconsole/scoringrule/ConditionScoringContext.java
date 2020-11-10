@@ -49,7 +49,7 @@ public class ConditionScoringContext extends BaseScoringContext {
 
     @Override
     public void saveChildren() throws Exception {
-        namedCriteriaId = NamedCriteriaAPI.addNamedCriteria(namedCriteria);
+        namedCriteriaId = NamedCriteriaAPI.addOrUpdateNamedCriteria(namedCriteria);
     }
 
     @Override

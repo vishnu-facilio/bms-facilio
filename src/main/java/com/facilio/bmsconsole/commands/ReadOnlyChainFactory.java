@@ -2620,4 +2620,10 @@ public class ReadOnlyChainFactory {
 
 		return c;
 	}
+
+	public static FacilioChain getAllNamedCriteriaChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetAllNamedCriteriaCommand());
+		return c;
+	}
 }

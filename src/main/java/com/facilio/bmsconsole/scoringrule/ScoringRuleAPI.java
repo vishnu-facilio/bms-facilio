@@ -10,7 +10,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.manager.NamedCriteria;
 import com.facilio.db.criteria.manager.NamedCriteriaAPI;
@@ -18,7 +17,6 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.ScoreField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -122,7 +120,7 @@ public class ScoringRuleAPI extends WorkflowRuleAPI {
 
             if (scoringCommitmentContext.getNamedCriteria() != null) {
                 scoringCommitmentContext.getNamedCriteria().validate();
-                long l = NamedCriteriaAPI.addNamedCriteria(scoringCommitmentContext.getNamedCriteria());
+                long l = NamedCriteriaAPI.addOrUpdateNamedCriteria(scoringCommitmentContext.getNamedCriteria());
                 scoringCommitmentContext.setNamedCriteriaId(l);
             }
 

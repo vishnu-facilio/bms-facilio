@@ -1070,6 +1070,14 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getNamedConditionModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("namedCondition");
+		module.setDisplayName("Named Condition");
+		module.setTableName("Named_Condition");
+		return module;
+	}
+
 	public static FacilioModule getViewsModule() {
 		FacilioModule viewsModule = new FacilioModule();
 		viewsModule.setName("views");
