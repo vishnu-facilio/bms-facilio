@@ -146,4 +146,6 @@ public interface IAMUserBean {
 	public Map<String,Object> getUserMfaSettings(long userId) throws Exception;
 
 	public void updateUserMfaSettingsStatus(long userId, boolean value) throws Exception;
+
+	public boolean clearUserMfaSettings(long userId) throws Exception;
 }

@@ -320,5 +320,9 @@ public class IAMUserUtil {
 	public static boolean updateUserMfaSettingsSecretKey(long userId,String value) throws Exception{
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().updateUserMfaSettingsSecretKey(userId, value) );
 	}
+
+	public static boolean clearUserMfaSettings(long userId) throws Exception{
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().clearUserMfaSettings(userId));
+	}
 	
 }

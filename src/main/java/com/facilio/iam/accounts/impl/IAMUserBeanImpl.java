@@ -2116,5 +2116,20 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 		return true;
 	}
+
+	public boolean clearUserMfaSettings(long userId) throws Exception {
+
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(IAMAccountConstants.getUserMfaSettings().getTableName())
+				.fields(IAMAccountConstants.getUserMfaSettingsFields())
+				.andCondition(CriteriaAPI.getCondition("UserMfaSettings.USERID", "userId",userId + "", NumberOperators.EQUALS));
+
+		Map<String, Object> props = new HashMap<>();
+		props.put("totpSecret","-99");
+		props.put("totpStatus",false);
+		updateBuilder.update(props);
+
+		return true;
+	}
 		
 }

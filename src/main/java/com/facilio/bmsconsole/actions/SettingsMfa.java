@@ -149,20 +149,19 @@ public class SettingsMfa extends FacilioAction {
 
 	public String totpexit() throws Exception{
 
-		IAMUserUtil.updateUserMfaSettingsSecretKey(AccountUtil.getCurrentUser().getIamOrgUserId(),null);
-		IAMUserUtil.updateUserMfaSettingsStatus(AccountUtil.getCurrentUser().getIamOrgUserId(),false);
+		IAMUserUtil.clearUserMfaSettings(AccountUtil.getCurrentUser().getIamOrgUserId());
+
 		return "success";
 
 	}
 
 	public String totpchange() throws Exception{
 
-		IAMUserUtil.updateUserMfaSettingsSecretKey(AccountUtil.getCurrentUser().getIamOrgUserId(),null);
-		IAMUserUtil.updateUserMfaSettingsStatus(AccountUtil.getCurrentUser().getIamOrgUserId(),false);
+		IAMUserUtil.clearUserMfaSettings(AccountUtil.getCurrentUser().getIamOrgUserId());
 
 		String totpKey;
 		totpKey = generateKey();
-		IAMUserUtil.updateUserMfaSettingsSecretKey(AccountUtil.getCurrentUser().getIamOrgUserId(), totpKey);
+		IAMUserUtil.updateUserMfaSettingsSecretKey(AccountUtil.getCurrentUser().getIamOrgUserId(),totpKey);
 
 		HashMap<String,String> data = new HashMap<>();
 		data.put("secret",totpKey);
