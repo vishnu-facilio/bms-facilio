@@ -369,7 +369,7 @@ public class PointsAPI {
     }
 
 
-    public static void configurePointsAndMakeController(List<Long> pointIds, FacilioControllerType controllerType) throws Exception {
+    public static void configurePointsAndMakeController(List<Long> pointIds, FacilioControllerType controllerType,boolean logical) throws Exception {
         if ((pointIds != null) && (!pointIds.isEmpty())) {
             List<Point> points = new GetPointRequest().ofType(controllerType).fromIds(pointIds).getPoints();
             if (points != null && (!points.isEmpty())) {
@@ -383,6 +383,7 @@ public class PointsAPI {
                 context.put(AgentConstants.POINTS, points);
                 context.put(AgentConstants.RECORD_IDS, pointIds);
                 context.put(AgentConstants.CONTROLLER_TYPE, controllerType);
+                context.put(AgentConstants.LOGICAL, logical);
                 chain.execute();
                 //sendConfigurePointCommand(points,controllerType);
             } else {
@@ -418,7 +419,7 @@ public class PointsAPI {
             }
     }
 
-    public static boolean configurePoints(List<Point> points, Controller controller) throws Exception {
+    public static boolean configurePoints(List<Point> points, Controller controller,boolean isLogical) throws Exception {
         ControllerMessenger.configurePoints(points, controller);
         if ((points != null) && (!points.isEmpty())) {
             List<Long> pointIds = new ArrayList<>();
@@ -430,7 +431,7 @@ public class PointsAPI {
             }catch (Exception e){
                 LOGGER.info("Exception while updating point's controller id for device "+controller.getDeviceId());
             }
-            return updatePointsConfiguredInprogress(pointIds, controller.getId(), controller.getControllerType());
+            return updatePointsConfiguredInprogress(pointIds, controller.getId(), controller.getControllerType(),isLogical);
         } else {
             throw new Exception("points can't be null or empty");
         }
@@ -464,7 +465,7 @@ public class PointsAPI {
         return false;
     }
 
-    public static boolean updatePointsConfiguredInprogress(List<Long> ids, long controllerId, int controllerType) throws Exception {
+    public static boolean updatePointsConfiguredInprogress(List<Long> ids, long controllerId, int controllerType, boolean logical) throws Exception {
         if ((ids != null) && (!ids.isEmpty())) {
 
             Map<String, Object> toUpdateMap = new HashMap<>();
@@ -475,8 +476,8 @@ public class PointsAPI {
             FacilioContext context = chain.getContext();
             context.put(AgentConstants.POINT_IDS, ids);
             context.put(AgentConstants.POINT_TYPE, controllerType);
-            context.put(AgentConstants.CONTROLLER_ID, controllerId);
-
+            context.put(AgentConstants.CONTROLLER_ID, controllerId);	
+            context.put(AgentConstants.LOGICAL, logical);
             chain.execute();
 
             if (context.containsKey(FacilioConstants.ContextNames.ROWS_UPDATED) && ((Integer) context.get(FacilioConstants.ContextNames.ROWS_UPDATED) > 0)) {
