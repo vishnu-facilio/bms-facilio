@@ -173,6 +173,16 @@
 			</result>
 		</action>
 	</package>
+
+	<package name="v2ApiNullIgnored" strict-method-invocation="false" extends="v2Api">
+		<global-results>
+			<result name="success" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</global-results>
+	</package>
 	
 	<package name="MfaAuth" namespace="/api/v2/settings/org" extends="v2Api">
 	    <action name="mfa" class="com.facilio.bmsconsole.actions.SettingsMfa" method="getMfa" />
@@ -2726,20 +2736,20 @@
 	</package>
 
 	<package name="advancedFilterApiv2" namespace="/api/v2/filter/advanced"
-			 extends="v2Api">
+			 extends="v2ApiNullIgnored">
 		<action name="operators"
 				class="com.facilio.bmsconsole.actions.AdvancedFilterAction" method="fetchOperators">
 		</action>
 	</package>
 	<package name="advancedFilterFieldsApiv2" namespace="/api/v2/filter/advanced/fields"
-			 extends="v2Api">
+			 extends="v2ApiNullIgnored">
 		<action name="*"
 				class="com.facilio.bmsconsole.actions.AdvancedFilterAction" method="fetchFilterableFields">
 			<param name="module">{1}</param>
 		</action>
 	</package>
 	<package name="advancedFilterOperatorsApiv2" namespace="/api/v2/filter/advanced/operators"
-			 extends="v2Api">
+			 extends="v2ApiNullIgnored">
 		<action name="*"
 				class="com.facilio.bmsconsole.actions.AdvancedFilterAction" method="fetchOperators">
 			<param name="dataType">{1}</param>
