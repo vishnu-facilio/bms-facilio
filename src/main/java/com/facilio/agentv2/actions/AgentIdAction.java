@@ -537,7 +537,7 @@ public class AgentIdAction extends AgentActionV2 {
 
     public String getControllerFilter() {
         try {
-            List<Map<String, Object>> agentControllerFilterData = ControllerApiV2.getAgentControllerFilterData(getAgentId());
+            List<Map<String, Object>> agentControllerFilterData = ControllerApiV2.getControllerFilterData(getAgentId());
             setResult(AgentConstants.DATA, agentControllerFilterData);
             ok();
             return SUCCESS;
