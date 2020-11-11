@@ -4786,32 +4786,32 @@
 		<action name="addOrUpdate"
 			class="com.facilio.bmsconsole.actions.ServiceAction"
 			method="addOrUpdateService">
-			<param name="moduleName">service</param>
+			<param name="moduleName">inventory</param>
 			<param name="permission">CREATE,UPDATE,UPDATE_OWN</param>
 		</action>
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ServiceAction"
 			method="getServiceList">
 			<param name="viewName">{1}</param>
-			<param name="moduleName">service</param>
+			<param name="moduleName">inventory</param>
 			<param name="permission">READ,READ_OWN</param>
 		</action>
 		<action name="count"
 			class="com.facilio.bmsconsole.actions.ServiceAction"
 			method="getServicesCount">
-			<param name="moduleName">service</param>
+			<param name="moduleName">inventory</param>
 			<param name="permission">READ,READ_OWN</param>
 		</action>
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.ServiceAction"
 			method="deleteServices">
-			<param name="moduleName">service</param>
+			<param name="moduleName">inventory</param>
 			<param name="permission">DELETE</param>
 		</action>
 		<action name="details"
 			class="com.facilio.bmsconsole.actions.ServiceAction"
 			method="getServiceDetails">
-			<param name="moduleName">service</param>
+			<param name="moduleName">inventory</param>
 			<param name="permission">READ,READ_OWN</param>
 		</action>
 
