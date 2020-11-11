@@ -166,7 +166,7 @@ public class QuotationAPI {
             if (Objects.equals(getDiscountMode(), 1l) && subTotal != null) {
                 Double subTotalAfterDiscount = subTotal;
                 if (discountAmount != null) {
-                    subTotal -= discountAmount;
+                    subTotalAfterDiscount -= discountAmount;
                 }
                 return subTotalAfterDiscount * (lineItemCost / subTotal);
             } else if (Objects.equals(getDiscountMode(), 2l)) {
