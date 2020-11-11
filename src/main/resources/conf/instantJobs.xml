@@ -17,4 +17,5 @@
 	<job name="ReadingImportPointsDataJob" classname='com.facilio.bmsconsole.instant.jobs.ReadingImportPointsDataJob' transactionTimeout= '3600' />
     <job name="AddOrUpdateChildAnnouncementsJob" classname='com.facilio.bmsconsole.instant.jobs.AddOrUpdateChildAnnouncementsJob' transactionTimeout= '3600' />
     <job name="ReadingPostProcessingJob" classname='com.facilio.bmsconsole.instant.jobs.ReadingPostProcessingJob' transactionTimeout= '900' />
+    <job name="SendNotificationJob" classname='com.facilio.bmsconsole.instant.jobs.SendNotificationJob' transactionTimeout= '900' />
 </instantjob>

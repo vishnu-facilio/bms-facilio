@@ -664,6 +664,9 @@ public class FacilioConstants {
 		public static final String COMMENT = "comment";
 		public static final String NOTIFY_REQUESTER = "notifyRequester";
 		
+		public static final String NOTIFICATION_TYPE = "notificationType";
+		public static final String NOTIFICATION_OBJECT = "notificationObject";
+		
 		public static final String MODULE_FIELD = "moduleField";
 		public static final String MODULE_FIELD_NAME = "fieldName";
 		public static final String MODULE_FIELD_LIST = "moduleFields";

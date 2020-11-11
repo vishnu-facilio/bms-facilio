@@ -1,20 +1,15 @@
 package com.facilio.workflows.functions;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.bmsconsole.util.CallUtil;
-import com.facilio.bmsconsole.util.NotificationAPI;
-import com.facilio.bmsconsole.util.SMSUtil;
-import com.facilio.services.factory.FacilioFactory;
+import com.facilio.bmsconsole.workflow.rule.ActionType;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.tasker.FacilioTimer;
 import com.facilio.workflows.exceptions.FunctionParamException;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 
@@ -32,7 +27,15 @@ public enum FacilioNotificationFunctions implements FacilioWorkflowFunctionInter
 			Map<String,Object> sendMailMap =  (Map<String, Object>) objects[0];
 			sendMailMap.put("sender", "noreply@facilio.com");
 			Map<String,String> attachements = (Map<String,String>)sendMailMap.get("attachments");
-			FacilioFactory.getEmailClient().sendEmail(WorkflowV2Util.getAsJSONObject(sendMailMap),attachements);
+			
+			FacilioContext context = new FacilioContext();
+			
+			context.put(FacilioConstants.ContextNames.NOTIFICATION_TYPE, ActionType.EMAIL_NOTIFICATION);
+			context.put(FacilioConstants.ContextNames.NOTIFICATION_OBJECT, WorkflowV2Util.getAsJSONObject(sendMailMap));
+			context.put(FacilioConstants.ContextNames.ATTACHMENT_MAP_FILE_LIST, attachements);
+			
+			FacilioTimer.scheduleInstantJob("SendNotificationJob", context);
+			
 			return null;
 		};
 		
@@ -53,7 +56,12 @@ public enum FacilioNotificationFunctions implements FacilioWorkflowFunctionInter
 			}
 			Map<String,Object> sendMailMap =  (Map<String, Object>) objects[0];
 			
-			SMSUtil.sendSMS(WorkflowV2Util.getAsJSONObject(sendMailMap));
+			FacilioContext context = new FacilioContext();
+			
+			context.put(FacilioConstants.ContextNames.NOTIFICATION_TYPE, ActionType.SMS_NOTIFICATION);
+			context.put(FacilioConstants.ContextNames.NOTIFICATION_OBJECT, WorkflowV2Util.getAsJSONObject(sendMailMap));
+			
+			FacilioTimer.scheduleInstantJob("facilio","SendNotificationJob", context);
 			return null;
 		};
 		
@@ -75,7 +83,12 @@ public enum FacilioNotificationFunctions implements FacilioWorkflowFunctionInter
 			Long userId =  (Long) objects[0];
 			Map<String,Object> sendMailMap =  (Map<String, Object>) objects[1];
 			
-			NotificationAPI.sendPushNotification(Collections.singletonList(userId), WorkflowV2Util.getAsJSONObject(sendMailMap));
+			FacilioContext context = new FacilioContext();
+			
+			context.put(FacilioConstants.ContextNames.NOTIFICATION_TYPE, ActionType.PUSH_NOTIFICATION);
+			context.put(FacilioConstants.ContextNames.NOTIFICATION_OBJECT, WorkflowV2Util.getAsJSONObject(sendMailMap));
+			
+			FacilioTimer.scheduleInstantJob("facilio","SendNotificationJob", context);
 			
 			return null;
 		};
@@ -98,7 +111,13 @@ public enum FacilioNotificationFunctions implements FacilioWorkflowFunctionInter
 			}
 			Map<String,Object> callMap =  (Map<String, Object>) objects[0];
 			
-			CallUtil.makeCall(WorkflowV2Util.getAsJSONObject(callMap));
+			FacilioContext context = new FacilioContext();
+			
+			context.put(FacilioConstants.ContextNames.NOTIFICATION_TYPE, ActionType.MAKE_CALL);
+			context.put(FacilioConstants.ContextNames.NOTIFICATION_OBJECT, WorkflowV2Util.getAsJSONObject(callMap));
+			
+			FacilioTimer.scheduleInstantJob("facilio","SendNotificationJob", context);
+			
 			return null;
 		};
 		
