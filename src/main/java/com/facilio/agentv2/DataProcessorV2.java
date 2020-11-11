@@ -156,6 +156,7 @@ public class DataProcessorV2
                         eventRules = ruleList;
                     }
                     processStatus = eventUtil.processEvents(timeStamp, payload, partitionKey, orgId, eventRules);
+                    break;
                 default:
                     throw new Exception("No such Publish type " + publishType.name());
             }
