@@ -1,9 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -33,18 +30,16 @@ public class GetPickListCommand extends FacilioCommand {
 		
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		String search = (String) context.get(FacilioConstants.ContextNames.SEARCH);
-		String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
+//		String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 		FacilioField defaultField = (FacilioField) context.get(FacilioConstants.ContextNames.DEFAULT_FIELD);
 		//Connection conn = FacilioConnectionPool.INSTANCE.getConnection();
 		
 		try {
-			if(dataTableName != null && !dataTableName.isEmpty() && defaultField != null) {
-				List<FacilioField> fields = new ArrayList<>();
-				fields.add(defaultField);			
+			if(defaultField != null) {
+				List<FacilioField> fields = Collections.singletonList(defaultField);
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioModule module = modBean.getModule(moduleName);
 				SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
-																	.table(dataTableName)
 																	.module(module)
 																	.select(fields)
 																	;
