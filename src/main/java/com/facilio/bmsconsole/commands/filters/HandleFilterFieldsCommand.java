@@ -14,6 +14,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class HandleFilterFieldsCommand extends FacilioCommand {
@@ -38,6 +40,9 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
                 }
             }
         }
+//        long startTime = System.currentTimeMillis();
+        Collections.sort(filterFields, Comparator.comparing(FilterFieldContext::getDisplayName)); //Sorting in java because we take fields from cache and Collections.sort is pretty efficient
+//        System.out.println("Time taken to sort => "+ (System.currentTimeMillis() - startTime));
         return filterFields;
     }
 
