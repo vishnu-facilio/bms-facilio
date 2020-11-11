@@ -1,16 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.purchaserequest;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
-import com.facilio.bmsconsole.context.PurchaseRequestContext;
-import com.facilio.bmsconsole.context.PurchaseRequestLineItemContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestLineItemContext;
 import com.facilio.constants.FacilioConstants;
@@ -22,6 +13,12 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.context.Constants;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 public class FetchPurchaseRequestDetailsCommandV3 extends FacilioCommand {
 
@@ -43,7 +40,7 @@ public class FetchPurchaseRequestDetailsCommandV3 extends FacilioCommand {
         			SelectRecordsBuilder<V3PurchaseRequestLineItemContext> builder = new SelectRecordsBuilder<V3PurchaseRequestLineItemContext>()
         					.moduleName(lineItemModuleName)
         					.select(fields)
-        					.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(lineItemModuleName))
+        					.beanClass(V3PurchaseRequestLineItemContext.class)
         					.andCondition(CriteriaAPI.getCondition("PR_ID", "prid", String.valueOf(purchaseRequestContext.getId()), NumberOperators.EQUALS))
         					.fetchSupplements(Arrays.asList((LookupField) fieldsAsMap.get("itemType"),
         					(LookupField) fieldsAsMap.get("toolType")));

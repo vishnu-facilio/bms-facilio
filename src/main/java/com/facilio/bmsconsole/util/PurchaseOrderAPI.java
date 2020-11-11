@@ -1,18 +1,10 @@
 package com.facilio.bmsconsole.util;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.collections4.CollectionUtils;
-
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.PoAssociatedTermsContext;
-import com.facilio.bmsconsole.context.PoLineItemsSerialNumberContext;
-import com.facilio.bmsconsole.context.PurchaseOrderContext;
-import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
-import com.facilio.bmsconsole.context.ReceivableContext;
-import com.facilio.bmsconsole.context.TermsAndConditionContext;
+import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsoleV3.context.purchaseorder.V3PoAssociatedTermsContext;
+import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
+import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderLineItemContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -23,6 +15,11 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import org.apache.commons.collections4.CollectionUtils;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 public class PurchaseOrderAPI {
 
@@ -67,6 +64,28 @@ public class PurchaseOrderAPI {
 		}
 		po.setLineItems(list);
 		
+	}
+
+	public static void setLineItemsV3(V3PurchaseOrderContext po) throws Exception {
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		String lineItemModuleName = FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS;
+		List<FacilioField> fields = modBean.getAllFields(lineItemModuleName);
+		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+
+		SelectRecordsBuilder<V3PurchaseOrderLineItemContext> builder = new SelectRecordsBuilder<V3PurchaseOrderLineItemContext>()
+				.moduleName(lineItemModuleName)
+				.select(fields)
+				.beanClass(V3PurchaseOrderLineItemContext.class)
+				.andCondition(CriteriaAPI.getCondition("PO_ID", "poid", String.valueOf(po.getId()), NumberOperators.EQUALS))
+				.fetchSupplements(Arrays.asList((LookupField) fieldsAsMap.get("itemType"),
+						(LookupField) fieldsAsMap.get("toolType")))
+				;
+		List<V3PurchaseOrderLineItemContext> list = builder.get();
+		for(V3PurchaseOrderLineItemContext item : list) {
+			item.setNoOfSerialNumbers(getSerialNumberCount(item.getId()));
+		}
+		po.setLineItems(list);
 	}
 
 	public static PurchaseOrderContext getPoContext(long poId) throws Exception {
@@ -197,5 +216,23 @@ public class PurchaseOrderAPI {
 		List<PoAssociatedTermsContext> list = builder.get();
 		return list;
 			                 
+	}
+
+	public static List<V3PoAssociatedTermsContext> fetchAssociatedTermsV3(Long poId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PO_ASSOCIATED_TERMS);
+		List<FacilioField> fields = modBean.getAllFields(module.getName());
+		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+
+		SelectRecordsBuilder<V3PoAssociatedTermsContext> builder = new SelectRecordsBuilder<V3PoAssociatedTermsContext>()
+				.module(module)
+				.beanClass(V3PoAssociatedTermsContext.class)
+				.select(fields)
+				.andCondition(CriteriaAPI.getCondition("PURCHASE_ORDER_ID", "poId", String.valueOf(poId),NumberOperators.EQUALS))
+				.fetchSupplement((LookupField) fieldsAsMap.get("terms"))
+				;
+		List<V3PoAssociatedTermsContext> list = builder.get();
+		return list;
+
 	}
 }

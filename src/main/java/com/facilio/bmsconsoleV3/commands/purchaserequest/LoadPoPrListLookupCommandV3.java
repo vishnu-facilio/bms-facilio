@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class LoadPurchaseRequestListLookupCommandV3 extends FacilioCommand {
+public class LoadPoPrListLookupCommandV3 extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -33,6 +33,9 @@ public class LoadPurchaseRequestListLookupCommandV3 extends FacilioCommand {
 		additionaLookups.add((LookupField) fieldsAsMap.get("shipToAddress"));
 		additionaLookups.add((LookupField) fieldsAsMap.get("billToAddress"));
 		additionaLookups.add((LookupField) fieldsAsMap.get("vendor"));
+		if(moduleName.contentEquals(FacilioConstants.ContextNames.PURCHASE_ORDER)) {
+			additionaLookups.add((LookupField) fieldsAsMap.get("contract"));
+		}
 		
 		for (FacilioField field : fields) {
 			if (!field.isDefault() && field.getDataTypeEnum() == FieldType.LOOKUP) {
