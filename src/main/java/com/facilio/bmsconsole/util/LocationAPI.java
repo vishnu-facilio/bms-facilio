@@ -1,20 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.collections4.CollectionUtils;
-
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -22,6 +7,8 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.context.VendorContext;
+import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
+import com.facilio.bmsconsoleV3.context.V3VendorContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -36,6 +23,10 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import org.apache.commons.collections4.CollectionUtils;
+
+import java.sql.*;
+import java.util.*;
 
 ;
 
@@ -284,7 +275,7 @@ public class LocationAPI {
 		return selectBuilder.getAsMap();
 	}
 	
-	public static LocationContext getPoPrLocation (Object obj, LocationContext locationContext, String locationName, boolean isShippingAddress) throws Exception {
+	public static LocationContext getPoPrLocation (Object obj, LocationContext locationContext, String locationName, boolean isShippingAddress, boolean isV3Api) throws Exception {
 		if (locationContext == null) {
 			return null;
 		}
@@ -306,14 +297,24 @@ public class LocationAPI {
 				LocationContext locationObj = null;
 				if (obj != null) {
 					if(isShippingAddress) {
-						long storeRoomId = ((StoreRoomContext) obj).getId();
+						long storeRoomId;
+						if (isV3Api) {
+							storeRoomId = ((V3StoreRoomContext) obj).getId();
+						} else {
+							storeRoomId = ((StoreRoomContext) obj).getId();
+						}
 		                StoreRoomContext storeRoom = getLocationObj(modBean, "storeRoom", "location", storeRoomId);
 		                if (storeRoom != null) {
 		                	locationObj = storeRoom.getLocation();
 		                }
 					}
 					else {
-						long vendorId = ((VendorContext) obj).getId();
+						long vendorId;
+						if (isV3Api) {
+							vendorId = ((V3VendorContext) obj).getId();
+						} else {
+							vendorId = ((VendorContext) obj).getId();
+						}
 						VendorContext vendorContext = getLocationObj(modBean, "vendors", "address", vendorId);
 		                if (vendorContext != null) {
 		                	locationObj = vendorContext.getAddress();

@@ -12,13 +12,12 @@ import com.facilio.bmsconsole.page.WidgetGroup.WidgetGroupType;
 import com.facilio.bmsconsole.templates.DefaultTemplate;
 import com.facilio.bmsconsole.util.ConnectedAppAPI;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
-import com.facilio.bmsconsoleV3.context.budget.BudgetContext;
-import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementContext;
-import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnnouncementContext;
-import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.DealsAndOffersContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.NeighbourhoodContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.NewsAndInformationContext;
+import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementContext;
+import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnnouncementContext;
+import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.DateOperators;
@@ -114,8 +113,11 @@ public class PageFactory {
 				return CommunityFeaturesPageFactory.getNewsAndInformationPageFactory((NewsAndInformationContext)record, module);
 			case ContextNames.Budget.BUDGET:
 				return BudgetPageFactory.getBudgetPage();
-
-
+			case ContextNames.PURCHASE_REQUEST:
+				return PurchaseModulesPageFactory.getPrPage((PurchaseRequestContext) record, module);
+			case ContextNames.PURCHASE_ORDER:
+				return PurchaseModulesPageFactory.getPoPage((PurchaseOrderContext) record, module);
+				
 		}
 		if (module.getExtendModule() == null) {	// temp
 			// etisalat changes will be changed to standard method

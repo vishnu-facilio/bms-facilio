@@ -300,7 +300,11 @@ public class PageWidget {
 		REMAINING_BUDGET("remainingBudget"),
 		BUDGET_PRIMARY_DETAILS("budgetPrimaryDetails"),
 		BUDGET_SPLIT_UP("budgetSplitUp"),
-		BUDGET_NET_INCOME("budgetNetIncome")
+		BUDGET_NET_INCOME("budgetNetIncome"),
+
+		// Purchase Module Widgets
+		PR_PREVIEW("prPreview"),
+		PO_PREVIEW("poPreview")
 
 		;
 		

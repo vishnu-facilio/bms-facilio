@@ -1,11 +1,5 @@
 package com.facilio.bmsconsoleV3.commands.purchaserequest;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Context;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -14,6 +8,11 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import org.apache.commons.chain.Context;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class LoadPurchaseRequestListLookupCommandV3 extends FacilioCommand {
 
@@ -30,10 +29,10 @@ public class LoadPurchaseRequestListLookupCommandV3 extends FacilioCommand {
 		
 		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 		List<LookupField> additionaLookups = new ArrayList<LookupField>();
-		LookupField moduleStateField = (LookupField) fieldsAsMap.get("vendor");
-		LookupField addressField = (LookupField) fieldsAsMap.get("storeRoom");
-		additionaLookups.add(addressField);
-		additionaLookups.add(moduleStateField);
+		additionaLookups.add((LookupField) fieldsAsMap.get("storeRoom"));
+		additionaLookups.add((LookupField) fieldsAsMap.get("shipToAddress"));
+		additionaLookups.add((LookupField) fieldsAsMap.get("billToAddress"));
+		additionaLookups.add((LookupField) fieldsAsMap.get("vendor"));
 		
 		for (FacilioField field : fields) {
 			if (!field.isDefault() && field.getDataTypeEnum() == FieldType.LOOKUP) {
