@@ -292,8 +292,11 @@ public class BmsDBConf extends DBConf {
                     value.put(field.getName(), fileId);
                 }
                 else if (value.get(field.getName()+"Id") != null) {
-                		value.put(field.getName(), value.get(field.getName()+"Id"));
-                		orphanFileIds.add(FacilioUtil.parseLong(value.get(field.getName()+"Id")));
+                        Long val = FacilioUtil.parseLong(value.get(field.getName()+"Id"));
+                		value.put(field.getName(), val);
+                		if (val != null && val != -99) { // Since it's sent as -99 from client and fileId cannot be less than 0, this is okay I guess
+                            orphanFileIds.add(val);
+                        }
                 }
             }
         }
