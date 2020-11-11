@@ -1,9 +1,7 @@
 package com.facilio.bmsconsoleV3.context.purchaserequest;
 
 import com.facilio.bmsconsole.context.InventoryType;
-import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.ServiceContext;
-import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.bmsconsoleV3.context.V3ItemTypesContext;
 import com.facilio.bmsconsoleV3.context.V3ToolTypesContext;
 import com.facilio.v3.context.V3Context;
@@ -12,7 +10,7 @@ public class V3PurchaseRequestLineItemContext extends V3Context {
 	
 	private static final long serialVersionUID = 1L;
 
-	private V3PurchaseRequestContext prid;
+	private Long prid;
 	private InventoryType inventoryType;
 	private V3ItemTypesContext itemType;
 	private V3ToolTypesContext toolType;
@@ -21,11 +19,12 @@ public class V3PurchaseRequestLineItemContext extends V3Context {
 	private Double cost;
 	public String remarks;
 	private ServiceContext service;
-	
-	public V3PurchaseRequestContext getPrid() {
+
+	public Long getPrid() {
 		return prid;
 	}
-	public void setPrid(V3PurchaseRequestContext prid) {
+
+	public void setPrid(Long prid) {
 		this.prid = prid;
 	}
 	public V3ItemTypesContext getItemType() {

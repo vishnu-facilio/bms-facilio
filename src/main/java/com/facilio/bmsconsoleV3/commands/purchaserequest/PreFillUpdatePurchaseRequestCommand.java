@@ -52,7 +52,7 @@ public class PreFillUpdatePurchaseRequestCommand extends FacilioCommand {
 	
 	private void updateLineItems(V3PurchaseRequestContext purchaseRequestContext) {
 		for (V3PurchaseRequestLineItemContext lineItemContext : purchaseRequestContext.getLineItems()) {
-			lineItemContext.setPrid(purchaseRequestContext);
+			lineItemContext.setPrid(purchaseRequestContext.getId());
 			updateLineItemCost(lineItemContext);
 		}
 	}

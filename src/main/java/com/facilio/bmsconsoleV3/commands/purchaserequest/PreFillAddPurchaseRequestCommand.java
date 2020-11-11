@@ -55,10 +55,10 @@ public class PreFillAddPurchaseRequestCommand extends FacilioCommand {
         }
 		return false;	
 	}
-	
+
 	private void updateLineItems(V3PurchaseRequestContext purchaseRequestContext) {
 		for (V3PurchaseRequestLineItemContext lineItemContext : purchaseRequestContext.getLineItems()) {
-			lineItemContext.setPrid(purchaseRequestContext);
+			lineItemContext.setPrid(purchaseRequestContext.getId());
 			updateLineItemCost(lineItemContext);
 		}
 	}
