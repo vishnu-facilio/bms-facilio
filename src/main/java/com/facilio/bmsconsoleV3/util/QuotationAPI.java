@@ -160,12 +160,15 @@ public class QuotationAPI {
         quotation.setTotalCost(quotationTotalCost);
     }
 
-    private static Double relativeLineItemCost(QuotationLineItemsContext lineItem, Double subTotal,Double discountAmount) throws Exception {
+    private static Double relativeLineItemCost(QuotationLineItemsContext lineItem, Double subTotal, Double discountAmount) throws Exception {
         if (lineItem.getUnitPrice() != null && lineItem.getQuantity() != null) {
             Double lineItemCost = (lineItem.getUnitPrice() * lineItem.getQuantity());
-            if (Objects.equals(getDiscountMode(), 1l) && subTotal != null && discountAmount != null) {
-                Double subTotalAfterDiscount = subTotal - discountAmount;
-                return subTotalAfterDiscount *(lineItemCost/subTotal);
+            if (Objects.equals(getDiscountMode(), 1l) && subTotal != null) {
+                Double subTotalAfterDiscount = subTotal;
+                if (discountAmount != null) {
+                    subTotal -= discountAmount;
+                }
+                return subTotalAfterDiscount * (lineItemCost / subTotal);
             } else if (Objects.equals(getDiscountMode(), 2l)) {
                 return lineItemCost;
             }
