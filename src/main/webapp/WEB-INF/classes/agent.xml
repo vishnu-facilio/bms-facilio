@@ -380,15 +380,22 @@
                 method="disableWritable"> <!--DONE-->
         </action>
     </package>
+	
+	<package name="ControllersAPIv2" namespace="/api/v2/controllers" extends="agent">
+		<!-- Get controllers and count -->
+		<action name="controllers" class="com.facilio.agentv2.actions.AgentIdAction" method="getControllersData"> 
+        </action>
 
+		<!--Get controllers for specific agentId  -->
+		<action name="filter" class="com.facilio.agentv2.actions.AgentIdAction" method="getControllerFilter"> 
+        </action>
+	</package>
+	
     <package name="DeviceApiV2" namespace="/api/v2/device" extends="agent">
         <action name="list" class="com.facilio.agentv2.actions.AgentIdAction" method="devices"> <!--DONEDONE-->
         </action>
         
         <action name="getlist" class="com.facilio.agentv2.actions.AgentIdAction" method="getDeviceOrControllersData"> <!--DONEDONE-->
-        </action>
-        
-         <action name="controllers" class="com.facilio.agentv2.actions.AgentIdAction" method="getControllersData"> <!--DONEDONE-->
         </action>
         
         <action name="add" class="com.facilio.agentv2.actions.AddFieldDeviceAction" method="addDevice">
