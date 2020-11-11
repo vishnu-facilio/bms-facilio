@@ -1,13 +1,6 @@
 package com.facilio.bmsconsole.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.LogManager;
@@ -36,6 +29,12 @@ import com.facilio.modules.fields.LookupField;
 public class ResourceAPI {
 
 	private static final Logger LOGGER = LogManager.getLogger(ReadingsAPI.class.getName());
+
+	public static String getResourceSubModuleFromType (int resourceType) {
+		ResourceType type = ResourceType.valueOf(resourceType);
+		Objects.requireNonNull(type, "Invalid resource type");
+		return type.getSubModuleName();
+	}
 
 	public static ResourceContext getResource(long id) throws Exception {
 		return getResource(id, false);

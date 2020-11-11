@@ -2,7 +2,9 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.PickListAction;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
@@ -69,9 +71,20 @@ public class FetchLookupLabelsCommand extends FacilioCommand {
         FacilioField primaryField = modBean.getPrimaryField(module.getName());
         FacilioUtil.throwIllegalArgumentException(primaryField == null, MessageFormat.format("The module ({0}) is corrupt as it doesn't have primary field", module.getName()));
 
+        List<FacilioField> fields = null;
+        boolean isResource = module.getName().equals(FacilioConstants.ContextNames.RESOURCE);
+        if (isResource) {
+            fields = new ArrayList<>(2);
+            fields.add(primaryField);
+            fields.add(modBean.getField("resourceType", module.getName()));
+        }
+        else {
+            fields = Collections.singletonList(primaryField);
+        }
+
         List<Map<String, Object>> records = new SelectRecordsBuilder()
                 .module(module)
-                .select(Collections.singletonList(primaryField))
+                .select(fields)
                 .andCondition(CriteriaAPI.getIdCondition(id, module))
                 .getAsProps()
                 ;
@@ -82,7 +95,8 @@ public class FetchLookupLabelsCommand extends FacilioCommand {
 
         List<FieldOption> options = records.stream().map(prop -> new FieldOption(
                 prop.get("id").toString(),
-                prop.get(primaryField.getName()).toString()
+                prop.get(primaryField.getName()).toString(),
+                isResource ? ResourceAPI.getResourceSubModuleFromType((Integer) prop.get("resourceType")) : null
         )).collect(Collectors.toList());
         return options;
     }

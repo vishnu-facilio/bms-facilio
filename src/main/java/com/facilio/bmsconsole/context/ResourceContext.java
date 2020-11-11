@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.bmsconsole.enums.SourceType;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
@@ -159,7 +160,20 @@ public class ResourceContext extends ModuleBaseWithCustomFields {
 	
 
 	public static enum ResourceType {
-		SPACE, ASSET, PM, USER, CONTROLLER;
+		SPACE (FacilioConstants.ContextNames.BASE_SPACE),
+		ASSET (FacilioConstants.ContextNames.ASSET),
+		PM (FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE),
+		USER (FacilioConstants.ContextNames.USERS),
+		CONTROLLER (FacilioConstants.ContextNames.CONTROLLER_MODULE_NAME);
+
+		private String subModuleName;
+		private ResourceType (String module) {
+			this.subModuleName = module;
+		}
+
+		public String getSubModuleName() {
+			return subModuleName;
+		}
 
 		public int getValue() {
 			return ordinal() + 1;
