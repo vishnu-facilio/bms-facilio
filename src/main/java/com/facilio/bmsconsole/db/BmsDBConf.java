@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.facilio.modules.FieldUtil;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -292,7 +293,7 @@ public class BmsDBConf extends DBConf {
                 }
                 else if (value.get(field.getName()+"Id") != null) {
                 		value.put(field.getName(), value.get(field.getName()+"Id"));
-                		orphanFileIds.add((Long) value.get(field.getName()+"Id"));
+                		orphanFileIds.add(FacilioUtil.parseLong(value.get(field.getName()+"Id")));
                 }
             }
         }
