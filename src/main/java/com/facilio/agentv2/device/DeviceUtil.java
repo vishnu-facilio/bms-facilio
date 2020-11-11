@@ -8,6 +8,7 @@ import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.controller.ControllerUtilV2;
 import com.facilio.agentv2.modbusrtu.RtuNetworkContext;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -105,14 +106,12 @@ public class DeviceUtil {
         if (devices != null && !devices.isEmpty()) {
 
             try{
-                for (Device device : devices) {
-                    if (device.getControllerType() == FacilioControllerType.MODBUS_IP.asInt() || device.getControllerType() == FacilioControllerType.MODBUS_RTU.asInt()) {
-                        FieldDeviceApi.addFieldDevice(device);
-                        ControllerUtilV2.fieldDeviceToController(device);
-                    } else {
-                        FieldDeviceApi.addFieldDevices(devices);
-                    }
-                }
+            	for (Device device : devices) {
+            		FieldDeviceApi.addFieldDevice(device);
+            		if (!FacilioProperties.isProduction() || device.getControllerType() == FacilioControllerType.MODBUS_IP.asInt() || device.getControllerType() == FacilioControllerType.MODBUS_RTU.asInt()) {
+            			ControllerUtilV2.fieldDeviceToController(device);
+            		} 
+            	}
             }catch (Exception e){
                 LOGGER.info("Exception while making controller from device",e);
             }

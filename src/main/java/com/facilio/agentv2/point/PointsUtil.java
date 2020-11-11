@@ -5,6 +5,8 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.GetControllerRequest;
 import com.facilio.agentv2.device.Device;
+import com.facilio.aws.util.FacilioProperties;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -100,7 +102,7 @@ public class PointsUtil
                     Point point = PointsAPI.getPointFromJSON(pointJSON);
                     setPointWritable(pointJSON,point);
                     if (point != null) {
-                        if (point.getControllerId() > 0) {
+                    	if (FacilioProperties.isProduction() && point.getControllerId() > 0) {
                             point.setControllerId(-1);
                         }
                         if(controller != null){
