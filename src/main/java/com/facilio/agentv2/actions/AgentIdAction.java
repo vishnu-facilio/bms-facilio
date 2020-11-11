@@ -149,6 +149,30 @@ public class AgentIdAction extends AgentActionV2 {
 
 		return SUCCESS;
 	}
+
+	public String getControllersData() { 
+		try {
+			FacilioContext context = new FacilioContext();
+			context.put(AgentConstants.AGENT_ID, getAgentId());
+			context.put(AgentConstants.SEARCH_KEY, getQuerySearch());
+			context.put(AgentConstants.CONTROLLER_TYPE, getControllerType());
+			context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
+
+			if (count != null && count) {
+				context.put(FacilioConstants.ContextNames.FETCH_COUNT, true);
+				setResult(AgentConstants.DATA, ControllerApiV2.getControllersCount(context));
+			} else {
+				setResult(AgentConstants.DATA, ControllerApiV2.getControllerDataForAgent(context));
+			}
+			ok();
+		} catch (Exception e) {
+			LOGGER.info("Exception occurred while getting Controllers ", e);
+			setResult(AgentConstants.EXCEPTION, e.getMessage());
+			internalError();
+		}
+		return SUCCESS;
+	}
+	
 	public String devices() {
         try {
         	FacilioContext context = new FacilioContext();
