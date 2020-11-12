@@ -147,6 +147,22 @@ public class FormSection {
 		return -1;
 	}
 
+	private long lookupFieldId = -1;
+	public long getLookupFieldId() {
+		return lookupFieldId;
+	}
+	public void setLookupFieldId(long lookupFieldId) {
+		this.lookupFieldId = lookupFieldId;
+	}
+
+	private int numberOfSubFormRecords = -1;
+	public int getNumberOfSubFormRecords() {
+		return numberOfSubFormRecords;
+	}
+	public void setNumberOfSubFormRecords(int numberOfSubFormRecords) {
+		this.numberOfSubFormRecords = numberOfSubFormRecords;
+	}
+
 	public enum SectionType implements FacilioEnum {
 		FIELDS("Fields"),
 		SUB_FORM("Sub Form"),

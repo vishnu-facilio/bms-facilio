@@ -866,6 +866,9 @@ public class FieldFactory {
         fields.add(getField("subFormValueStr", "SUB_FORM_DEFAULT_VALUE", module, FieldType.STRING));
         fields.add(getField("sectionType", "SECTION_TYPE", module, FieldType.NUMBER));
 
+        fields.add(getField("lookupFieldId", "LOOKUP_FIELDID", module, FieldType.NUMBER));
+        fields.add(getField("numberOfSubFormRecords", "NUMBER_OF_SUB_FORM_RECORDS", module, FieldType.NUMBER));
+
         return fields;
     }
 
