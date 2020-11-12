@@ -520,11 +520,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			String url = (String) objects[0];
-			String name = null;
-			if (objects[1] instanceof String) {
-				name = (String) objects[1];
-			}
-			String fileName = PdfUtil.exportUrlAsPdf(url.toString(), true, name, FileFormat.PDF);
+			String fileName = PdfUtil.exportUrlAsPdf(url.toString(), true, null, FileFormat.PDF);
 			return fileName;
 		}
 		
