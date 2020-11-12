@@ -2626,4 +2626,10 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetAllNamedCriteriaCommand());
 		return c;
 	}
+
+	public static FacilioChain getReplacePlaceHoldersChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new ReplacePlaceHoldersCommand());
+		return chain;
+	}
 }

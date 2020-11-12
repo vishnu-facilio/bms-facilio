@@ -1039,6 +1039,9 @@ public class FacilioConstants {
 
 		public static final String SCORING_CONTEXT_LIST = "scoringContextList";
 
+		public static final String FORMATTED_STRING = "formattedString";
+		public static final String REPLACED_STRING = "replacedString";
+
 		public static final String NAMED_CRITERIA_LIST = "namedCriteriaList";
 		public static final String NAMED_CRITERIA = "namedCriteria";
 

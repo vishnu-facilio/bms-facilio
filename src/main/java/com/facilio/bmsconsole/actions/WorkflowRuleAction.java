@@ -662,4 +662,40 @@ public class WorkflowRuleAction extends FacilioAction {
 	public void setCount(long count) {
 		this.count = count;
 	}
+
+	public String moduleName;
+	public String getModuleName() {
+		return moduleName;
+	}
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
+
+	private String formattedString;
+	public String getFormattedString() {
+		return formattedString;
+	}
+	public void setFormattedString(String formattedString) {
+		this.formattedString = formattedString;
+	}
+
+	private Long recordId;
+	public Long getRecordId() {
+		return recordId;
+	}
+	public void setRecordId(Long recordId) {
+		this.recordId = recordId;
+	}
+
+	public String replacePlaceHolders() throws Exception {
+		FacilioChain chain = ReadOnlyChainFactory.getReplacePlaceHoldersChain();
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.ID, recordId);
+		context.put(FacilioConstants.ContextNames.FORMATTED_STRING, formattedString);
+		chain.execute();
+
+		setResult(FacilioConstants.ContextNames.REPLACED_STRING, context.get(FacilioConstants.ContextNames.REPLACED_STRING));
+		return SUCCESS;
+	}
 }
