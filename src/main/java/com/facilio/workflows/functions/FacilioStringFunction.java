@@ -1,8 +1,10 @@
 
 package com.facilio.workflows.functions;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.facilio.workflows.exceptions.FunctionParamException;
@@ -216,6 +218,28 @@ public enum FacilioStringFunction implements FacilioWorkflowFunctionInterface {
 			else {
 				return string.lastIndexOf(subString);
 			}
+		}
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length < 1) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
+	SPLIT(13,"split") {
+
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			String string = objects[0].toString();
+			String regex = objects[1].toString();
+			
+			String[] res = string.split(regex);
+			List<String> resList = new ArrayList<String>();
+			
+			for(int i=0;i<res.length;i++) {
+				resList.add(res[i]);
+			}
+			return resList;
 		}
 		public void checkParam(Object... objects) throws Exception {
 			if(objects.length < 1) {
