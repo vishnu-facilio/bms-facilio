@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.util;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsoleV3.context.V3TermsAndConditionContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PoAssociatedTermsContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderLineItemContext;
@@ -180,7 +181,19 @@ public class PurchaseOrderAPI {
 			RecordAPI.addRecord(false, associatedTerms, module, fields);
 		}
 	}
-	
+
+	public static void updateTermsAssociatedV3(Long id, List<V3PoAssociatedTermsContext> associatedTerms) throws Exception {
+		if(CollectionUtils.isNotEmpty(associatedTerms)) {
+			for(V3PoAssociatedTermsContext term : associatedTerms) {
+				term.setPoId(id);
+			}
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PO_ASSOCIATED_TERMS);
+			List<FacilioField> fields = modBean.getAllFields(module.getName());
+			RecordAPI.addRecord(false, associatedTerms, module, fields);
+		}
+	}
+
 	public static List<TermsAndConditionContext> fetchPoDefaultTerms() throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TERMS_AND_CONDITIONS);
@@ -198,6 +211,25 @@ public class PurchaseOrderAPI {
 		
 		return list;
 			                 
+	}
+
+	public static List<V3TermsAndConditionContext> fetchPoDefaultTermsV3() throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TERMS_AND_CONDITIONS);
+		List<FacilioField> fields = modBean.getAllFields(module.getName());
+
+		SelectRecordsBuilder<V3TermsAndConditionContext> builder = new SelectRecordsBuilder<V3TermsAndConditionContext>()
+				.module(module)
+				.beanClass(V3TermsAndConditionContext.class)
+				.select(fields)
+				.andCondition(CriteriaAPI.getCondition("DEFAULT_ON_PO", "defaultOnPo", String.valueOf(1), NumberOperators.EQUALS))
+				;
+		;
+		List<V3TermsAndConditionContext> list = builder.get();
+
+
+		return list;
+
 	}
 	
 	public static List<PoAssociatedTermsContext> fetchAssociatedTerms(Long poId) throws Exception {

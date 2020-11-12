@@ -26,6 +26,11 @@ public class PurchaseModulesPageFactory extends PageFactory {
         page.addTab(tab2);
         Page.Section tab2Sec1 = page.new Section();
         tab2.addSection(tab2Sec1);
+
+        PageWidget detailsWidget = new PageWidget(PageWidget.WidgetType.FIXED_DETAILS_WIDGET);
+        detailsWidget.addToLayoutParams(tab2Sec1, 24, 4);
+        tab2Sec1.addWidget(detailsWidget);
+
         PageWidget notesWidget = new PageWidget(PageWidget.WidgetType.COMMENT);
         notesWidget.addToLayoutParams(tab2Sec1, 24, 8);
         notesWidget.setTitle("Notes");
@@ -59,6 +64,11 @@ public class PurchaseModulesPageFactory extends PageFactory {
         page.addTab(tab2);
         Page.Section tab2Sec1 = page.new Section();
         tab2.addSection(tab2Sec1);
+
+        PageWidget detailsWidget = new PageWidget(PageWidget.WidgetType.FIXED_DETAILS_WIDGET);
+        detailsWidget.addToLayoutParams(tab2Sec1, 24, 4);
+        tab2Sec1.addWidget(detailsWidget);
+
         PageWidget notesWidget = new PageWidget(PageWidget.WidgetType.COMMENT);
         notesWidget.addToLayoutParams(tab2Sec1, 24, 8);
         notesWidget.setTitle("Notes");
