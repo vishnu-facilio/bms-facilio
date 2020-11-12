@@ -27,6 +27,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.UpdateChangeSet;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.trigger.context.Trigger;
 import com.facilio.trigger.util.TriggerUtil;
@@ -61,7 +62,33 @@ public class ExecuteAllTriggersCommand extends FacilioCommand {
 				
 				List<Trigger> triggers = TriggerUtil.getTriggers(module, activities, null, null);
 
-				TriggerUtil.executeTriggerActions(triggers, (FacilioContext) context);
+				List records = new LinkedList<>(entry.getValue());
+				Iterator it = records.iterator();
+				
+				while (it.hasNext()) {
+					ModuleBaseWithCustomFields record = (ModuleBaseWithCustomFields) it.next();	
+					
+					for(Trigger trigger :triggers) {
+						
+						List<Long> resourceList = trigger.getActualResourceList();
+						if(record.getData().containsKey("parentId") && resourceList != null && !resourceList.isEmpty()) {
+							Long parentId = (Long) record.getData().get("parentId");
+							if(!resourceList.contains(parentId)) {
+								continue;
+							}
+						}
+						
+						if(trigger.getFieldId() > 0) {
+							FacilioField field = modBean.getField(trigger.getFieldId());
+							if(record.getData().containsKey(field.getName())) {
+								TriggerUtil.executeTriggerActions(triggers, (FacilioContext) context);
+							}
+						}
+						else {
+							TriggerUtil.executeTriggerActions(triggers, (FacilioContext) context);
+						}
+					}
+				}
 			}
 		}
 		

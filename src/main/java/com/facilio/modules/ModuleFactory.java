@@ -4269,4 +4269,13 @@ public class ModuleFactory {
 		module.setTableName("Trigger_Log");
 		return module;
 	}
+	
+	public static FacilioModule getTriggerInclExclModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("triggerInclExcl");
+		module.setDisplayName("Trgiger incl excl");
+		module.setTableName("Trigger_Include_Exclude_Resource");
+		return module;
+	}
+
 }

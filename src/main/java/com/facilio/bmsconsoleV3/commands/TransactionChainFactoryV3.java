@@ -45,6 +45,7 @@ import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.trigger.command.AddOrUpdateTriggerActionAndRelCommand;
+import com.facilio.trigger.command.AddOrUpdateTriggerInclExclCommand;
 import com.facilio.trigger.command.AddTriggerCommand;
 import com.facilio.trigger.command.DeleteTriggerCommand;
 import com.facilio.trigger.command.ExecuteTriggerCommand;
@@ -488,6 +489,7 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getTriggerAddChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddTriggerCommand());
+        c.addCommand(new AddOrUpdateTriggerInclExclCommand());
         c.addCommand(new AddOrUpdateTriggerActionAndRelCommand());
         return c;
     }
@@ -495,6 +497,7 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getTriggerUpdateChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdateTriggerCommand());
+        c.addCommand(new AddOrUpdateTriggerInclExclCommand());
         c.addCommand(new AddOrUpdateTriggerActionAndRelCommand());
         return c;
     }

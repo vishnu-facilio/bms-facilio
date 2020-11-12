@@ -22,7 +22,10 @@ public class ReadingPostProcessingCommand extends FacilioCommand {
 //        if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
             LOGGER.debug("Executing workflow rules");
 //        }
+            
         executeWorkflowsRules(context);
+        //executeTriggers(context);
+        
         boolean adjustTime = (boolean) context.getOrDefault(FacilioConstants.ContextNames.ADJUST_READING_TTIME, true);
         ControllerContext controller = (ControllerContext) context.get(FacilioConstants.ContextNames.OLD_CONTROLLER);
         if (controller == null && adjustTime) {
@@ -48,6 +51,20 @@ public class ReadingPostProcessingCommand extends FacilioCommand {
             Map<String, List<ReadingContext>> readingMap = (Map<String, List<ReadingContext>>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
             LOGGER.error("Error occurred during workflow execution of readings. \n"+readingMap, e);
             CommonCommandUtil.emailException(this.getClass().getName(), "Error occurred during workflow execution of readings.", e, String.valueOf(readingMap));
+        }
+    }
+    
+    private void executeTriggers (Context context) {
+        try {
+            FacilioChain executeWorkflowChain = ReadOnlyChainFactory.executeTriggersForReadingChain();
+            executeWorkflowChain.setContext((FacilioContext) context);
+            executeWorkflowChain.execute();
+        }
+        catch (Exception e) {
+        	e.printStackTrace();
+            Map<String, List<ReadingContext>> readingMap = (Map<String, List<ReadingContext>>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
+            LOGGER.error("Error occurred during Trigger execution of readings. \n"+readingMap, e);
+            CommonCommandUtil.emailException(this.getClass().getName(), "Error occurred during Trigger execution of readings.", e, String.valueOf(readingMap));
         }
     }
 

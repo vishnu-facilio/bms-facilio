@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.controlaction.context.ControlGroupInclExclContext;
 
 public class Trigger {
 
@@ -14,8 +15,35 @@ public class Trigger {
 	String extrainfo;
 	long moduleId = -1;
 	long childModuleId = -1;
+	long assetCategoryId = -1;
+	long fieldId = -1;
+	public long getAssetCategoryId() {
+		return assetCategoryId;
+	}
+
+	public void setAssetCategoryId(long assetCategoryId) {
+		this.assetCategoryId = assetCategoryId;
+	}
+
+	public long getFieldId() {
+		return fieldId;
+	}
+
+	public void setFieldId(long fieldId) {
+		this.fieldId = fieldId;
+	}
+
 	EventType eventType;
 	Boolean status;
+	List<TriggerInclExclContext> inclExclResources;
+	
+	public List<TriggerInclExclContext> getInclExclResources() {
+		return inclExclResources;
+	}
+
+	public void setInclExclResources(List<TriggerInclExclContext> inclExclResources) {
+		this.inclExclResources = inclExclResources;
+	}
 	
 	public Boolean getStatus() {
 		return status;
@@ -39,6 +67,35 @@ public class Trigger {
 		if(triggerActions == null) { triggerActions = new ArrayList<TriggerAction>();}
 		
 		triggerActions.add(action);
+	}
+	
+	public void addTriggerInclExclResources(TriggerInclExclContext inclExclContext) {
+		if(inclExclResources == null) { inclExclResources = new ArrayList<TriggerInclExclContext>();}
+		
+		inclExclResources.add(inclExclContext);
+	}
+	
+	public List<Long> getActualResourceList() {
+		
+		List<Long> includedIds = new ArrayList<Long>();
+		List<Long> excludedIds = new ArrayList<Long>();
+		
+		if(this.getInclExclResources() != null && !this.getInclExclResources().isEmpty()) {
+			for(TriggerInclExclContext includeExcludeRes :this.getInclExclResources()) {
+				if(includeExcludeRes.getIsInclude()) {
+					includedIds = includedIds == null ? new ArrayList<>() : includedIds; 
+					includedIds.add(includeExcludeRes.getResourceId());
+				}
+				else {
+					excludedIds = excludedIds == null ? new ArrayList<>() : excludedIds;
+					excludedIds.add(includeExcludeRes.getResourceId());
+				}
+			}
+		}
+		if(excludedIds != null) {
+			includedIds.removeAll(excludedIds);
+		}
+		return includedIds;
 	}
 
 	public long getId() {

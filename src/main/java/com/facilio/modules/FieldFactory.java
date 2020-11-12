@@ -9250,6 +9250,8 @@ public class FieldFactory {
         fields.add(getField("type", "TYPE", module, FieldType.NUMBER));
         fields.add(getField("moduleId", "MODULE_ID", module, FieldType.NUMBER));
         fields.add(getField("childModuleId", "CHILD_MODULE_ID", module, FieldType.NUMBER));
+        fields.add(getField("assetCategoryId", "ASSET_CATEGORY_ID", module, FieldType.NUMBER));
+        fields.add(getField("fieldId", "FIELD_ID", module, FieldType.NUMBER));
         fields.add(getField("eventType", "EVENT_TYPE", module, FieldType.NUMBER));
         fields.add(getField("status", "STATUS", module, FieldType.BOOLEAN));
         fields.add(getField("extrainfo", "EXTRAINFO", module, FieldType.STRING));
@@ -9273,6 +9275,18 @@ public class FieldFactory {
         fields.add(getField("triggerId", "TRIGGER_ID", module, FieldType.NUMBER));
         fields.add(getField("triggerActionId", "TRIGGER_ACTION_ID", module, FieldType.NUMBER));
         fields.add(getField("executionOrder", "EXECUTION_ORDER", module, FieldType.NUMBER));
+        return fields;
+    }
+    
+    public static List<FacilioField> getTriggerInclExclFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getTriggerInclExclModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("triggerId", "TRIGGER_ID", module, FieldType.LOOKUP));
+        fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.LOOKUP));
+        fields.add(getField("isInclude", "IS_INCLUDE", module, FieldType.BOOLEAN));
+
         return fields;
     }
 

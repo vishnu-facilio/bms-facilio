@@ -25,6 +25,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.trigger.context.Trigger;
 import com.facilio.trigger.context.TriggerAction;
+import com.facilio.trigger.context.TriggerInclExclContext;
 import com.facilio.trigger.context.TriggerLog;
 import com.facilio.trigger.context.Trigger_Type;
 
@@ -62,8 +63,8 @@ public class TriggerUtil {
 		List<Map<String, Object>> props = FieldUtil.getAsMapList(logs, TriggerLog.class);
 		
 		GenericInsertRecordBuilder insert = new GenericInsertRecordBuilder()
-				.table(ModuleFactory.getTriggerModule().getTableName())
-				.fields(FieldFactory.getTriggerFields())
+				.table(ModuleFactory.getTriggerLogModule().getTableName())
+				.fields(FieldFactory.getTriggerLogFields())
 				.addRecords(props);
 		
 		insert.save();
@@ -82,7 +83,7 @@ public class TriggerUtil {
 		
 		if(props != null && !props.isEmpty()) {
 			Trigger trigger = FieldUtil.getAsBeanFromMap(props.get(0), Trigger.class);
-			fillTriggerActions(Collections.singletonList(trigger));
+			fillTriggerExtras(Collections.singletonList(trigger));
 			return trigger;
 		}
 		return null;
@@ -138,12 +139,14 @@ public class TriggerUtil {
 
 		List<Trigger> triggers = FieldUtil.getAsBeanListFromMapList(props, Trigger.class);
 		
-		fillTriggerActions(triggers);
+		if(triggers != null && !triggers.isEmpty()) {
+			fillTriggerExtras(triggers);
+		}
 
 		return triggers;
 	}
 	
-	public static void fillTriggerActions(List<Trigger> triggers) throws Exception {
+	public static void fillTriggerExtras(List<Trigger> triggers) throws Exception {
 		
 		Map<Long,Trigger> triggerIDmap = new HashedMap<Long, Trigger>();
 		for(Trigger trigger : triggers) { 
@@ -168,6 +171,21 @@ public class TriggerUtil {
 			
 			triggerIDmap.get(triggerid).addTriggerAction(triggerAction);
 		}
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getTriggerInclExclFields());
 
+		select = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getTriggerInclExclFields())
+				.table(ModuleFactory.getTriggerInclExclModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("triggerId"), StringUtils.join(triggerIDmap.keySet(), ","), NumberOperators.EQUALS));
+		
+		props = select.get();
+		
+		for(Map<String, Object> prop :props) {
+			Long triggerid = (Long)prop.get("triggerId");
+			TriggerInclExclContext triggerInclExcl = FieldUtil.getAsBeanFromMap(prop, TriggerInclExclContext.class);
+			triggerIDmap.get(triggerid).addTriggerInclExclResources(triggerInclExcl);
+		}
+				
 	}
 }
