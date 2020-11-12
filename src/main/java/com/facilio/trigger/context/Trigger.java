@@ -118,22 +118,4 @@ public class Trigger {
 	public void setEventType(int eventType) {
 		this.eventType = EventType.valueOf(eventType);
 	}
-
-	public enum Trigger_Type {
-		
-		SCHEDULED,
-		MODULE_TRIGGER,
-		CHILD_MODULE_TRIGGER,
-		;
-		
-		public int getValue() {
-			return ordinal()+1;
-		}
-		public static Trigger_Type valueOf(int value) {
-			if (value > 0 && value <= values().length) {
-				return values()[value - 1];
-			}
-			return null;
-		}
-	}
 }
