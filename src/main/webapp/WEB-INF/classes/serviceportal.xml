@@ -5,7 +5,7 @@
 
 <struts>
 	<!-- Not extending baseapiV1 because of Portal Auth interceptor change. This needs to be changed -->
-	<package name="serviceportal" strict-method-invocation="false" namespace="/api/service"  extends="struts-default,json-default">
+	<package name="serviceportal" strict-method-invocation="false" namespace="/api/service"  extends="baseV1Api">
 		<result-types>
 			<result-type name="tiles"
 				class="org.apache.struts2.views.tiles.TilesResult" />
@@ -32,35 +32,7 @@
 		</interceptors>
 
 		<default-interceptor-ref name="defaultInterceptor" />
-		<global-results>
-			<result name="login" type="httpheader">
-				<param name="status">401</param>
-			</result>
-			<result name="unauthorized" type="httpheader">
-				<param name="status">403</param>
-			</result>
-			<result name="usernotinapp" type="httpheader">
-				<param name="status">409</param>
-			</result>
-			<result name="error" type="json">
-				<param name="ignoreHierarchy">false</param>
-				<param name="includeProperties">responseCode, message, stackTrace</param>
-				<param name="statusCode">500</param>
-			</result>
-			<result name="input" type="json">
-				<param name="ignoreHierarchy">false</param>
-				<param name="includeProperties">responseCode, message, stackTrace</param>
-				<param name="statusCode">400</param>
-			</result>
-			<result name="exception" type="chain">
-				<param name="actionName">handleException</param>
-				<param name="namespace">/v1/exception</param>
-			</result>
-		</global-results>
-		<global-exception-mappings>
-			<exception-mapping exception="java.lang.Exception"
-							   result="exception" />
-		</global-exception-mappings>
+
 		<action name="validateRegistration" class="com.facilio.auth.actions.FacilioAuthAction"
 		method="verifyEmail">
 			<param name="auth">false</param>
@@ -308,7 +280,7 @@
 			</result>
 		</action>
 	</package>
-	
+
 
 	<package name="tenantService" namespace="/api/service/tenant" extends="serviceportal">
 	
