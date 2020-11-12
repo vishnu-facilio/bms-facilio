@@ -122,6 +122,10 @@ public class CustomButtonRuleContext extends ApproverWorkflowRuleContext impleme
     public boolean evaluateMisc(String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
         boolean result;
 
+        if (!isActive()) {
+            return false;
+        }
+
         result = super.evaluateMisc(moduleName, record, placeHolders, context);
         return result;
     }
