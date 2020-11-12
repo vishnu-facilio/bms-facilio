@@ -238,7 +238,7 @@ public class APIv3Config {
             		.beforeSave(new PreFillAddPurchaseRequestCommand())
                     .afterSave(TransactionChainFactoryV3.getAddPurchaseRequestAfterSaveChain())
                 .update()
-                	.beforeSave(new PreFillUpdatePurchaseRequestCommand())
+                	.beforeSave(new PreFillUpdatePurchaseRequestCommand()).afterSave(TransactionChainFactoryV3.getAddPurchaseRequestAfterSaveChain())
                 .list()
                     .beforeFetch(new LoadPoPrListLookupCommandV3())
                 .summary()

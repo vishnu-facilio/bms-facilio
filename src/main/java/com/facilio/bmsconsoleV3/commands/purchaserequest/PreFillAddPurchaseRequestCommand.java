@@ -3,12 +3,8 @@ package com.facilio.bmsconsoleV3.commands.purchaserequest;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.LocationAPI;
-import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
-import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestLineItemContext;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
@@ -31,12 +27,7 @@ public class PreFillAddPurchaseRequestCommand extends FacilioCommand {
             {          	
     			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
     			List<FacilioField> fields = modBean.getAllFields(moduleName);
-    			CommonCommandUtil.handleLookupFormData(fields, purchaseRequestContext.getData());
-				context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 
-//    			if (CollectionUtils.isEmpty(purchaseRequestContext.getLineItems())) {
-//    				throw new Exception("Line items cannot be empty");
-//    			}
     			// setting current user to requestedBy
     			if(purchaseRequestContext.getRequestedBy() == null) {
     		 	  purchaseRequestContext.setRequestedBy(AccountUtil.getCurrentUser());
@@ -49,26 +40,11 @@ public class PreFillAddPurchaseRequestCommand extends FacilioCommand {
 				purchaseRequestContext.setStatus(V3PurchaseRequestContext.Status.REQUESTED);
     			purchaseRequestContext.setShipToAddress(LocationAPI.getPoPrLocation(purchaseRequestContext.getStoreRoom(), purchaseRequestContext.getShipToAddress(), "SHIP_TO_Location", true, true));
                 purchaseRequestContext.setBillToAddress(LocationAPI.getPoPrLocation(purchaseRequestContext.getVendor(), purchaseRequestContext.getBillToAddress(), "BILL_TO_Location", false, true));
-				
-				//updateLineItems(purchaseRequestContext);				
+
             }
         }
 		return false;	
 	}
 
-	private void updateLineItems(V3PurchaseRequestContext purchaseRequestContext) {
-		for (V3PurchaseRequestLineItemContext lineItemContext : purchaseRequestContext.getLineItems()) {
-			lineItemContext.setPrid(purchaseRequestContext.getId());
-			updateLineItemCost(lineItemContext);
-		}
-	}
-	private void updateLineItemCost(V3PurchaseRequestLineItemContext lineItemContext){
-		if(lineItemContext.getUnitPrice() > 0) {
-		  lineItemContext.setCost(lineItemContext.getUnitPrice() * lineItemContext.getQuantity()); 	
-		}
-		else {
-			lineItemContext.setCost(0.0);	//need to check this.fetch is required to get the unit price of item/tool
-		}
-	}
 }
 	
