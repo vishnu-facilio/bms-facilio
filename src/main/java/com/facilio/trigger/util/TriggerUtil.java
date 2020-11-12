@@ -24,9 +24,9 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.trigger.context.Trigger;
-import com.facilio.trigger.context.Trigger.Trigger_Type;
 import com.facilio.trigger.context.TriggerAction;
 import com.facilio.trigger.context.TriggerLog;
+import com.facilio.trigger.context.Trigger_Type;
 
 public class TriggerUtil {
 	
