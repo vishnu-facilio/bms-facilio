@@ -24,10 +24,11 @@ import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 
 import java.util.*;
 
-public class POAfterCreateorEditV3Command extends FacilioCommand {
+public class POAfterCreateOrEditV3Command extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
 
@@ -35,7 +36,7 @@ public class POAfterCreateorEditV3Command extends FacilioCommand {
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<V3PurchaseOrderContext> purchaseOrderContexts = recordMap.get(moduleName);
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        if(CollectionUtils.isNotEmpty(purchaseOrderContexts)){
+        if (CollectionUtils.isNotEmpty(purchaseOrderContexts)) {
             for (V3PurchaseOrderContext purchaseOrderContext : purchaseOrderContexts) {
                 if (purchaseOrderContext != null) {
 
@@ -57,15 +58,15 @@ public class POAfterCreateorEditV3Command extends FacilioCommand {
                         RecordAPI.addRecord(true, Collections.singletonList(receivableContext), receivableModule, modBean.getAllFields(receivableModule.getName()));
 
                         List<V3TermsAndConditionContext> terms = PurchaseOrderAPI.fetchPoDefaultTermsV3();
-                        if(CollectionUtils.isNotEmpty(terms)) {
+                        if (CollectionUtils.isNotEmpty(terms)) {
                             List<V3PoAssociatedTermsContext> poAssociatedTerms = new ArrayList<>();
-                            for(V3TermsAndConditionContext term : terms) {
+                            for (V3TermsAndConditionContext term : terms) {
                                 V3PoAssociatedTermsContext associatedTerm = new V3PoAssociatedTermsContext();
                                 associatedTerm.setPoId(purchaseOrderContext.getId());
                                 associatedTerm.setTerms(term);
                                 poAssociatedTerms.add(associatedTerm);
                             }
-                            PurchaseOrderAPI.updateTermsAssociatedV3(purchaseOrderContext.getId(), poAssociatedTerms );
+                            PurchaseOrderAPI.updateTermsAssociatedV3(purchaseOrderContext.getId(), poAssociatedTerms);
                         }
 
                         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER);
@@ -87,24 +88,26 @@ public class POAfterCreateorEditV3Command extends FacilioCommand {
                                 .module(module).fields(updatedFields)
                                 .andCondition(CriteriaAPI.getIdCondition(purchaseOrderContext.getId(), module));
                         updateBuilder.updateViaMap(map);
-
-                        if(context.get(FacilioConstants.ContextNames.PR_IDS) != null) {
-                            List<Long> purchaseRequestsIds = (List<Long>) context.get(FacilioConstants.ContextNames.PR_IDS);
-                            FacilioModule purchaseRequestModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_REQUEST);
-                            PurchaseOrderContext purchaseOrder = (PurchaseOrderContext) context.get(FacilioConstants.ContextNames.RECORD);
-                            Map<String, Object> updateMap = new HashMap<>();
-                            FacilioField statusField = modBean.getField("status", purchaseRequestModule.getName());
-                            FacilioField poField = modBean.getField("purchaseOrder", purchaseRequestModule.getName());
-                            updateMap.put("status", V3PurchaseRequestContext.Status.COMPLETED.ordinal()+1);
-                            updateMap.put("purchaseOrder", FieldUtil.getAsProperties(purchaseOrder));
-                            List<FacilioField> updatedfields = new ArrayList<FacilioField>();
-                            updatedfields.add(poField);
-                            updatedfields.add(statusField);
-                            UpdateRecordBuilder<V3PurchaseRequestContext> updateBuilder2 = new UpdateRecordBuilder<V3PurchaseRequestContext>()
-                                    .module(purchaseRequestModule)
-                                    .fields(updatedfields)
-                                    .andCondition(CriteriaAPI.getIdCondition(purchaseRequestsIds,purchaseRequestModule));
-                            updateBuilder2.updateViaMap(updateMap);
+                        Map<String, Object> bodyParams = Constants.getBodyParams(context);
+                        if (MapUtils.isNotEmpty(bodyParams) && bodyParams.containsKey(FacilioConstants.ContextNames.PR_IDS)) {
+                            List<Long> prIds = (List<Long>) bodyParams.get(FacilioConstants.ContextNames.PR_IDS);
+                            if (CollectionUtils.isNotEmpty(prIds)) {
+                                FacilioModule purchaseRequestModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_REQUEST);
+                                PurchaseOrderContext purchaseOrder = (PurchaseOrderContext) context.get(FacilioConstants.ContextNames.RECORD);
+                                Map<String, Object> updateMap = new HashMap<>();
+                                FacilioField statusField = modBean.getField("status", purchaseRequestModule.getName());
+                                FacilioField poField = modBean.getField("purchaseOrder", purchaseRequestModule.getName());
+                                updateMap.put("status", V3PurchaseRequestContext.Status.COMPLETED.ordinal() + 1);
+                                updateMap.put("purchaseOrder", FieldUtil.getAsProperties(purchaseOrder));
+                                List<FacilioField> updatedfields = new ArrayList<FacilioField>();
+                                updatedfields.add(poField);
+                                updatedfields.add(statusField);
+                                UpdateRecordBuilder<V3PurchaseRequestContext> updateBuilder2 = new UpdateRecordBuilder<V3PurchaseRequestContext>()
+                                        .module(purchaseRequestModule)
+                                        .fields(updatedfields)
+                                        .andCondition(CriteriaAPI.getIdCondition(prIds, purchaseRequestModule));
+                                updateBuilder2.updateViaMap(updateMap);
+                            }
                         }
                     }
 
@@ -158,8 +161,7 @@ public class POAfterCreateorEditV3Command extends FacilioCommand {
         SelectRecordsBuilder<V3PurchaseOrderLineItemContext> builder = new SelectRecordsBuilder<V3PurchaseOrderLineItemContext>()
                 .select(field).moduleName(lineModule.getName())
                 .andCondition(CriteriaAPI.getCondition(fieldsMap.get("poId"), String.valueOf(id), NumberOperators.EQUALS))
-                .setAggregation()
-                ;
+                .setAggregation();
 
         List<Map<String, Object>> rs = builder.getAsProps();
         if (rs != null && rs.size() > 0) {
@@ -187,8 +189,7 @@ public class POAfterCreateorEditV3Command extends FacilioCommand {
         SelectRecordsBuilder<V3PurchaseOrderLineItemContext> builder = new SelectRecordsBuilder<V3PurchaseOrderLineItemContext>()
                 .select(field).moduleName(lineModule.getName())
                 .andCondition(CriteriaAPI.getCondition(fieldsMap.get("poId"), String.valueOf(id), NumberOperators.EQUALS))
-                .setAggregation()
-                ;
+                .setAggregation();
 
         List<Map<String, Object>> rs = builder.getAsProps();
         if (rs != null && rs.size() > 0) {

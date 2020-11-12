@@ -40,9 +40,7 @@ import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.itemtypes.SetItemTypesUnitCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
-import com.facilio.bmsconsoleV3.commands.purchaseorder.DeleteReceivableByPOIdV3;
-import com.facilio.bmsconsoleV3.commands.purchaseorder.FetchPODetailsCommandV3;
-import com.facilio.bmsconsoleV3.commands.purchaseorder.LoadPOSummaryLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.purchaseorder.*;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.*;
 import com.facilio.bmsconsoleV3.commands.quotation.*;
 import com.facilio.bmsconsoleV3.commands.storeroom.LoadStoreRoomLookUpCommandV3;
@@ -252,8 +250,8 @@ public class APIv3Config {
     @Module("purchaseorder")
     public static Supplier<V3Config> getPurchaseOrder() {
         return () -> new V3Config(V3PurchaseOrderContext.class, new ModuleCustomFieldCount30())
-                .create()
-                .update()
+                .create().beforeSave(new POBeforeCreateOrEditV3Command()).afterSave(new POAfterCreateOrEditV3Command())
+                .update().beforeSave(new POBeforeCreateOrEditV3Command()).afterSave(new POAfterCreateOrEditV3Command())
                 .list().beforeFetch(new LoadPoPrListLookupCommandV3())
                 .summary().beforeFetch(new LoadPOSummaryLookupCommandV3()).afterFetch(new FetchPODetailsCommandV3())
                 .delete().afterDelete(new DeleteReceivableByPOIdV3())
