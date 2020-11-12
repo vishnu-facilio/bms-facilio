@@ -116,7 +116,7 @@ public class NamedCondition {
 
             case SYSTEM_FUNCTION:
                 SystemCriteria systemCriteria = SystemCriteria.getSystemCriteria(systemCriteriaId);
-                return systemCriteria.evaluate(record, placeHolders, (FacilioContext) context);
+                return systemCriteria.evaluate(record, null, (FacilioContext) context);
         }
         return false;
     }
