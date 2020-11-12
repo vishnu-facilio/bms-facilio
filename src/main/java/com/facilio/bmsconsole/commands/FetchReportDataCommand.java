@@ -812,17 +812,28 @@ public class FetchReportDataCommand extends FacilioCommand {
 		return lookupFields;
 	}
 
-	private void handleLookupJoin(Map<String, LookupField> lookupFields, FacilioModule module, SelectRecordsBuilder builder, Set<FacilioModule> addedModules) {
+	private void handleLookupJoin(Map<String, LookupField> lookupFields, FacilioModule module, SelectRecordsBuilder builder, Set<FacilioModule> addedModules, Long lookupfieldId) throws Exception {
 		Stack<FacilioModule> stack = null;
 		FacilioModule prevModule = null;
 		while (module != null) {
 			if (lookupFields.containsKey(module.getName())) {
 				LookupField lookupFieldClone = lookupFields.get(module.getName()).clone();
+				if(lookupfieldId != null && lookupfieldId != -1) {
+					if(lookupFieldClone.getFieldId() == lookupfieldId) {
+						String joinOn = getJoinOn(lookupFieldClone);
+						
+						applyJoin(joinOn, module, builder);
+						prevModule = module;
+						break;
+					}
+					
+				} else {
 				String joinOn = getJoinOn(lookupFieldClone);
 				
 				applyJoin(joinOn, module, builder);
 				prevModule = module;
 				break;
+				}
 			}
 			if (stack == null) {
 				stack = new Stack<>();
@@ -897,7 +908,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 		if (!reportField.getModule().equals(baseModule) && !isAlreadyAdded(addedModules, reportField.getModule())) {		// inter-module support
 			List<FacilioField> allFields = modBean.getAllFields(baseModule.getName()); // for now base module is enough
 			Map<String, LookupField> lookupFields = getLookupFields(allFields);
-			handleLookupJoin(lookupFields, reportField.getModule(), selectBuilder, addedModules);
+			handleLookupJoin(lookupFields, reportField.getModule(), selectBuilder, addedModules, reportField.getLookupFieldId());
 		} else {
 			joinModuleIfRequred(reportField, selectBuilder, addedModules);
 		}

@@ -155,7 +155,8 @@ public class ReportFactoryFields {
 		spaceFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.SPACE).get("spaceCategory"));
 		
 		Map<String, List<FacilioField>> dimensionFieldMap = (Map<String, List<FacilioField>>)rearrangedFields.get("dimension");
-
+		HashMap<String,FacilioField> lookUpModuleFieldMap = new HashMap<String,FacilioField>();
+		lookUpModuleFieldMap.put(FacilioConstants.ContextNames.ASSET, fields.get("resource"));
 		
 		dimensionFieldMap.put(FacilioConstants.ContextNames.ASSET, assetFields);
 		dimensionFieldMap.put(FacilioConstants.ContextNames.SPACE, spaceFields);
@@ -166,7 +167,7 @@ public class ReportFactoryFields {
 		dimensionListOrder.add("asset");
 		
 		rearrangedFields.put("dimensionListOrder", dimensionListOrder);
-		
+		rearrangedFields.put("parentlookupFileds", lookUpModuleFieldMap);
 		rearrangedFields.put("displayName","workorders");
 		
 		return rearrangedFields;

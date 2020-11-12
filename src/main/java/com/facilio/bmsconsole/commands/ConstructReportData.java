@@ -125,6 +125,10 @@ public class ConstructReportData extends FacilioCommand {
 		if (xAxisJSON.containsKey("selectedIds")) {
 			xAxis.setSelectValuesOnly((List<Long>) xAxisJSON.get("selectedIds"));
 		}
+		
+		if (xAxisJSON.containsKey("lookupFieldId")) {
+			xAxis.setLookupFieldId((Long) xAxisJSON.get("lookupFieldId"));
+		}
  		
 		if (xAxisJSON.containsKey("aggr")) {
 			Integer xAggr = ((Number) xAxisJSON.get("aggr")).intValue();
@@ -214,6 +218,10 @@ public class ConstructReportData extends FacilioCommand {
 				FacilioModule groupByModule = null;
 				if (groupByJSON.containsKey("module_id")) {
 					groupByModule = modBean.getModule((Long) groupByJSON.get("module_id"));
+				}
+				
+				if (groupByJSON.containsKey("lookupFieldId")) {
+					groupByField.setLookupFieldId((Long) groupByJSON.get("lookupFieldId"));
 				}
 				groupByField.setField(groupByModule, field);
 				groupByField.setAlias(field.getName());
