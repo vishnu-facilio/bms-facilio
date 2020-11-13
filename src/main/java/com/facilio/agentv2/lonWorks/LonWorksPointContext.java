@@ -64,6 +64,7 @@ public class LonWorksPointContext extends Point {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put(AgentConstants.LINK_TYPE,linkType);
         jsonObject.put(AgentConstants.DEVICE_ID,getDeviceId());
+        jsonObject.put(AgentConstants.CONTROLLER_ID, getControllerId());
         jsonObject.put(AgentConstants.TARGET_COMP,targetComp);
         jsonObject.put(AgentConstants.TARGET_NAME,targetName);
         return jsonObject;

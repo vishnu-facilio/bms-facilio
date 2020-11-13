@@ -71,6 +71,7 @@ public class OpcUaPointContext extends Point {
         opcUsPointJSON.put(AgentConstants.DEVICE_ID,getDeviceId());
         opcUsPointJSON.put(AgentConstants.NAMESPACE,this.getNamespace());
         opcUsPointJSON.put(AgentConstants.UA_POINT_IDENTIFIER, this.getUaPointIdentifier());
+        opcUsPointJSON.put(AgentConstants.CONTROLLER_ID, getControllerId());
         return opcUsPointJSON;
     }
 

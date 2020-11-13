@@ -78,6 +78,7 @@ public class ModbusRtuPointContext extends Point {
             object.put(AgentConstants.ID,getId());
         }
         object.put(AgentConstants.DEVICE_ID,getDeviceId());
+        object.put(AgentConstants.CONTROLLER_ID, getControllerId());
         object.put(AgentConstants.REGISTER_NUMBER, getRegisterNumber());
         object.put(AgentConstants.REGISTER_TYPE, getRegisterType());
         object.put(AgentConstants.MODBUS_DATA_TYPE,getModbusDataType());
