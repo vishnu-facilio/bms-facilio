@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.modules.FacilioEnum;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
@@ -12,19 +13,11 @@ import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.ContractsContext;
 import com.facilio.bmsconsole.context.InventoryType;
 import com.facilio.bmsconsole.context.LocationContext;
-import com.facilio.bmsconsole.context.PoAssociatedTermsContext;
-import com.facilio.bmsconsole.context.PurchaseOrderContext;
-import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
-import com.facilio.bmsconsole.context.PurchaseRequestContext;
-import com.facilio.bmsconsole.context.PurchaseRequestLineItemContext;
-import com.facilio.bmsconsole.context.ReceivableContext;
-import com.facilio.bmsconsole.context.StoreRoomContext;
-import com.facilio.bmsconsole.context.VendorContext;
+
 import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
 import com.facilio.bmsconsoleV3.context.V3VendorContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestLineItemContext;
-import com.facilio.bmsconsole.context.PurchaseOrderContext.Status;
 import com.facilio.v3.context.V3Context;
 
 public class V3PurchaseOrderContext extends V3Context {
@@ -307,4 +300,52 @@ public class V3PurchaseOrderContext extends V3Context {
 	public void setTermsAssociated(List<V3PoAssociatedTermsContext> termsAssociated) {
 		this.termsAssociated = termsAssociated;
 	}
+
+	private ReceivableStatus receivableStatus;
+
+	public enum ReceivableStatus implements FacilioEnum {
+		YET_TO_RECEIVE("Yet To Receive"),
+		PARTIALLY_RECEIVED("Partially Received"),
+		RECEIVED("Received")
+		;
+		private String name;
+
+		ReceivableStatus(String name) {
+			this.name = name;
+		}
+
+		public static ReceivableStatus valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+
+		@Override
+		public int getIndex() {
+			return ordinal() + 1;
+		}
+
+		@Override
+		public String getValue() {
+			return name;
+		}
+	}
+
+	public void setReceivableStatus(Integer type) {
+		if (type != null) {
+			this.receivableStatus = ReceivableStatus.valueOf(type);
+		}
+	}
+
+	public ReceivableStatus getReceivableStatusEnum() {
+		return receivableStatus;
+	}
+	public Integer getReceivableStatus() {
+		if (receivableStatus != null) {
+			return receivableStatus.getIndex();
+		}
+		return null;
+	}
+
 }

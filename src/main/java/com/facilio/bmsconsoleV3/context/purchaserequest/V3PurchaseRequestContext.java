@@ -168,4 +168,22 @@ public class V3PurchaseRequestContext extends V3Context {
 	public void setRequiredTime(Long requiredTime) {
 		this.requiredTime = requiredTime;
 	}
+
+	private Boolean isPoCreated;
+
+	public Boolean getIsPoCreated() {
+		return isPoCreated;
+	}
+
+	public void setIsPoCreated(Boolean isPoCreated) {
+		this.isPoCreated = isPoCreated;
+	}
+
+	public Boolean isPoCreated() {
+		if (isPoCreated != null) {
+			return isPoCreated.booleanValue();
+		}
+		return false;
+	}
+
 }

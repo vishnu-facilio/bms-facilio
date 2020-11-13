@@ -127,3 +127,5 @@ enums:
   - name: SensorRuleType
     enumClassName: com.facilio.bmsconsole.context.sensor.SensorRuleType
 
+  - name: ReceivableStatus
+    enumClassName: com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext$ReceivableStatus
