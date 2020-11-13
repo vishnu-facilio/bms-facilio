@@ -28,7 +28,7 @@ public class SlotCreationScheduler extends FacilioJob {
                 Long endTime = -1L;
                 float daysBetween = 0;
                 if(lastGeneratedTime != null) {
-                    long difference = lastGeneratedTime - startTime;
+                    long difference = startTime - lastGeneratedTime;
                     daysBetween = (difference / (1000 * 60 * 60 * 24));
                     if(daysBetween < facility.getBookingAdvancePeriodInDays()) {
                         startTime = lastGeneratedTime;
