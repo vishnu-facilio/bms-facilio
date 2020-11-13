@@ -109,6 +109,7 @@ public enum FloorPlanMode {
 		}
 	},
 	VAVREADINGS("vavreadings"),
+	DESKMANAGER("employee"),
 	READINGS("readings"),
 	ALARMS("alarms"),
 	MAINTENANCE("maintenance"),
