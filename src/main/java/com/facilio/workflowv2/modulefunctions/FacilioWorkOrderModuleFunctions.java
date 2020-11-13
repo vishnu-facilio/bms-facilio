@@ -120,6 +120,34 @@ public class FacilioWorkOrderModuleFunctions extends FacilioModuleFunctionImpl {
 		addNote.execute();
 	}
 	
+	public void addTask(Map<String,Object> globalParams,List<Object> objects) throws Exception {
+		
+		Long woId = Long.parseLong(objects.get(1).toString());
+		
+		Map<String, List<TaskContext>> taskList = new HashMap<String, List<TaskContext>>(); 
+		
+		Map<String,List<Map<String,Object>>> taskMap = (Map<String, List<Map<String, Object>>>) objects.get(2);
+		
+		for(String section : taskMap.keySet()) {
+			
+			List<TaskContext> tasks = FieldUtil.getAsBeanListFromMapList(taskMap.get(section), TaskContext.class);
+			for(TaskContext task :tasks) {
+				task.setParentTicketId(woId);
+			}
+			taskList.put(section, tasks);
+		}
+		
+		FacilioChain chain = TransactionChainFactory.getAddNewTasksChain();
+		
+		FacilioContext context = chain.getContext();
+		
+		context.put(FacilioConstants.ContextNames.WORK_ORDER,WorkOrderAPI.getWorkOrder(woId));
+		context.put(FacilioConstants.ContextNames.TASK_MAP,taskList);
+		
+		chain.execute();
+		
+	}
+	
 	public void addAttachements(Map<String,Object> globalParams,List<Object> objects) throws Exception {
 		
 		
