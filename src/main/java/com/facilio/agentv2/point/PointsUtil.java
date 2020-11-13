@@ -75,41 +75,31 @@ public class PointsUtil
 
         if (containsValueCheck(AgentConstants.DATA, payload)) {
             JSONArray pointsJSON = (JSONArray) payload.get(AgentConstants.DATA);
-            long incommingCount = pointsJSON.size();
-            if (incommingCount == 0) {
+            long incomingCount = pointsJSON.size();
+            if (incomingCount == 0) {
                 throw new Exception(" pointJSON cant be empty");
             }
-            Controller controller = null;
-            try {
-                // If controllerType is MODBUS_IP/RTU ,then need to set ControllerId because it is a default configured Points.
-                // otherthan MODBUS_IP/RTU then set controllerID null -- because unconfigured points
-                int deviceType = device.getControllerType();
-                if (deviceType == FacilioControllerType.MODBUS_IP.asInt() || deviceType == FacilioControllerType.MODBUS_RTU.asInt()) {
-                    GetControllerRequest getControllerRequest = new GetControllerRequest()
-                            .forDevice(device.getId()).ofType(FacilioControllerType.MODBUS_IP);
-                    controller = getControllerRequest.getController();
-                }
-            }catch(Exception e){
-                LOGGER.info("Exception while fetching controller ",e); //TODO watch and remove try catch.
-            }
+            Controller controller;
+            int deviceType = device.getControllerType();
+
+            GetControllerRequest getControllerRequest = new GetControllerRequest()
+                    .forDevice(device.getId()).ofType(FacilioControllerType.valueOf(deviceType));
+            controller = getControllerRequest.getController();
+
             List<Point> points = new ArrayList<>();
             for (Object o : pointsJSON) {
                 JSONObject pointJSON = (JSONObject) o;
                 pointJSON.put(AgentConstants.DEVICE_NAME, device.getName());
                 pointJSON.put(AgentConstants.DEVICE_ID, device.getId());
                 pointJSON.put(AgentConstants.POINT_TYPE, device.getControllerType());
+                pointJSON.put(AgentConstants.CONTROLLER_ID, controller.getId());
                 try {
                     Point point = PointsAPI.getPointFromJSON(pointJSON);
                     setPointWritable(pointJSON,point);
                     if (point != null) {
-                    	if (FacilioProperties.isProduction() && point.getControllerId() > 0) {
-                            point.setControllerId(-1);
-                        }
-                        if(controller != null){
-                            point.setControllerId(controller.getId());
-                            if (controller.getControllerType()==FacilioControllerType.MODBUS_IP.asInt() || controller.getControllerType()== FacilioControllerType.MODBUS_RTU.asInt()){
-                                point.setConfigureStatus(PointEnum.ConfigureStatus.CONFIGURED.getIndex());
-                            }
+                        point.setControllerId(controller.getId());
+                        if (controller.getControllerType() == FacilioControllerType.MODBUS_IP.asInt() || controller.getControllerType() == FacilioControllerType.MODBUS_RTU.asInt()) {
+                            point.setConfigureStatus(PointEnum.ConfigureStatus.CONFIGURED.getIndex());
                         }
                         points.add(point);
                     }
@@ -125,14 +115,15 @@ public class PointsUtil
             long pointsAdded = 0;
             for (Point point : points) {
                 PointsAPI.applyBacnetDefaultWritableRule(point);
-                boolean pointEntry = PointsAPI.addPoint(point); //TODO make it bulk add
+                //TODO make it bulk add
+                boolean pointEntry = PointsAPI.addPoint(point);
                 if (!pointEntry) {
                     LOGGER.info("Exception while adding point," + point.toJSON());
                 }else {
                     pointsAdded++;
                 }
             }
-            LOGGER.info("-----DISCOVERPOINTS SUMMARY POINTDATAIN->"+incommingCount+"  POINTSTOBEADDED->"+pointsToBeAdded+"  POINTSADDED->"+pointsAdded);
+            LOGGER.info("-----DISCOVERPOINTS SUMMARY POINTDATAIN->" + incomingCount + "  POINTSTOBEADDED->" + pointsToBeAdded + "  POINTSADDED->" + pointsAdded);
         }else {
             LOGGER.info(" Exception occurred, pointsData missing from payload -> "+payload);
         }

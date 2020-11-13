@@ -79,7 +79,7 @@ public class DeviceUtil {
                 device.setControllerProps(deviceJSON);
                 devices.add(device);
             }
-            return addDevices(devices);
+            return addDevicesAndControllers(devices);
         } else {
             throw new Exception("Exception occurred while processing device, data is missing from payload->" + payload);
         }
@@ -102,16 +102,14 @@ public class DeviceUtil {
         return null;
     }
 
-    public static boolean addDevices(List<Device> devices) throws Exception {
+    private static boolean addDevicesAndControllers(List<Device> devices) throws Exception {
         if (devices != null && !devices.isEmpty()) {
 
             try{
-            	for (Device device : devices) {
-            		FieldDeviceApi.addFieldDevice(device);
-            		if (!FacilioProperties.isProduction() || device.getControllerType() == FacilioControllerType.MODBUS_IP.asInt() || device.getControllerType() == FacilioControllerType.MODBUS_RTU.asInt()) {
-            			ControllerUtilV2.fieldDeviceToController(device);
-            		} 
-            	}
+                for (Device device : devices) {
+                    FieldDeviceApi.addFieldDevice(device);
+                    ControllerUtilV2.fieldDeviceToController(device);
+                }
             }catch (Exception e){
                 LOGGER.info("Exception while making controller from device",e);
             }
@@ -120,7 +118,7 @@ public class DeviceUtil {
         throw new Exception("Devices to add can't be empty");
     }
 
-    public static boolean deleteFieldDevices(List<Long> ids) {
+    private static boolean deleteFieldDevices(List<Long> ids) {
         FacilioChain chain = TransactionChainFactory.getDeleteFieldDeviceChain();
         FacilioContext context = chain.getContext();
         List<Long> deleteList = new ArrayList<>();
