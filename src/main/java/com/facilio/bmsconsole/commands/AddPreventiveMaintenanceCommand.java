@@ -1,5 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
@@ -17,6 +20,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleFactory;
+import org.apache.commons.collections4.CollectionUtils;
 
 public class AddPreventiveMaintenanceCommand extends FacilioCommand {
 
@@ -35,6 +39,7 @@ public class AddPreventiveMaintenanceCommand extends FacilioCommand {
 		builder.save();
 		long id = (long) pmProps.get("id");
 		pm.setId(id);
+		addPMSites(pm);
 		context.put(FacilioConstants.ContextNames.PARENT_ID, id);
 		context.put(FacilioConstants.ContextNames.RECORD_ID, id);
 		return false;
@@ -47,6 +52,30 @@ public class AddPreventiveMaintenanceCommand extends FacilioCommand {
 																	.fields(modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE))
 																	;
 		insertBuilder.insert(resource);
+	}
+
+	private static void addPMSites(PreventiveMaintenance pm) throws Exception {
+		if (pm.getPmCreationTypeEnum() != PreventiveMaintenance.PMCreationType.MULTI_SITE) {
+			return;
+		}
+
+		List<Map<String, Object>> props = new ArrayList<>();
+		if (CollectionUtils.isEmpty(pm.getSiteIds()) ) {
+			throw new IllegalArgumentException("sites should not be empty");
+		}
+
+		for (Long siteId: pm.getSiteIds()) {
+			Map<String, Object> prop = new HashMap<>();
+			prop.put("siteId", siteId);
+			prop.put("pmId", pm.getId());
+			props.add(prop);
+		}
+
+		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getPMSites().getTableName())
+				.fields(FieldFactory.getPMSitesFields()).addRecords(props);
+
+		builder.save();
 	}
 
 	private static void addDefaultProps(PreventiveMaintenance pm, Context context) {

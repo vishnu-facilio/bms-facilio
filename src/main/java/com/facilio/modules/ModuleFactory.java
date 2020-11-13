@@ -1214,6 +1214,14 @@ public class ModuleFactory {
 		return jsonTemplateModule;
 	}
 
+	public static FacilioModule getPMSites() {
+		FacilioModule pmSites = new FacilioModule();
+		pmSites.setName("pmsites");
+		pmSites.setDisplayName("PM Sites");
+		pmSites.setTableName("PM_Sites");
+		return pmSites;
+	}
+
 	public static FacilioModule getPreventiveMaintenanceModule() {
 		FacilioModule alarmModule = new FacilioModule();
 		alarmModule.setName("preventivemaintenance");

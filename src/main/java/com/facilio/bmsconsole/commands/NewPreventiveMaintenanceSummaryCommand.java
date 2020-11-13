@@ -75,8 +75,12 @@ public class NewPreventiveMaintenanceSummaryCommand extends FacilioCommand {
 		} else {
 			pm.setIsAllowedToExecute(isAllowedToExecute(pm));
 		}
+
+		if (pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTI_SITE) {
+			pm.setSiteIds(PreventiveMaintenanceAPI.getPMSites(pm.getId()));
+		}
 		
-		if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE) {
+		if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE || pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTI_SITE) {
 			pm.setPmIncludeExcludeResourceContexts(TemplateAPI.getPMIncludeExcludeList(pm.getId(), null, null));
 			PreventiveMaintenanceAPI.populateResourcePlanner(pm);
 		}

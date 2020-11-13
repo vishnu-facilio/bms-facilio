@@ -136,7 +136,45 @@ public class PMNewScheduler extends FacilioJob {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RESOURCE_MAP, new HashMap<Long, ResourceContext>());
 		context.put(FacilioConstants.ContextNames.STATUS_MAP, new HashMap<FacilioStatus.StatusType, FacilioStatus>());
-		if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE) {
+		if (pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTI_SITE) {
+			long templateId = pm.getTemplateId();
+			WorkorderTemplate workorderTemplate = (WorkorderTemplate) TemplateAPI.getTemplate(templateId);
+			// PreventiveMaintenanceAPI.addJobPlanSectionsToWorkorderTemplate(pm, workorderTemplate); 								   un command here to start using job plans
+			if (workorderTemplate != null) {
+				//TODO
+				List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),pm.getSiteIds(),pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
+				//TODO
+				Map<Long, PMResourcePlannerContext> pmResourcePlanner = PreventiveMaintenanceAPI.getPMResourcesPlanner(pm.getId());
+				//TODO
+				List<ResourceContext> resourceObjs = ResourceAPI.getResources(resourceIds, false); // ?
+
+				Map<Long, ResourceContext> resourceMap = new HashMap<>();
+				if(resourceObjs != null && !resourceObjs.isEmpty()) {
+					for (ResourceContext resource : resourceObjs) {
+						resourceMap.put(resource.getId(), resource);
+					}
+				}
+
+				for(Long resourceId :resourceIds) {
+					List<PMTriggerContext> triggers = getResourceTriggers(triggerMap, workorderTemplate, pmResourcePlanner, resourceId);
+					if(triggers == null) {
+						triggers = PreventiveMaintenanceAPI.getDefaultTrigger(pm.getDefaultAllTriggers() != null && pm.getDefaultAllTriggers(), pm.getTriggers());
+					}
+
+					if (resourceMap.get(resourceId) != null) {
+						workorderTemplate.setResourceId(resourceId);
+						workorderTemplate.setResource(resourceMap.get(resourceId));
+					} else {
+						LOGGER.error("work order not generated PMID: " + pm.getId() + "ResourceId: " + resourceId);
+						CommonCommandUtil.emailAlert("work order not generated", "PMID: " + pm.getId() + "ResourceId: " + resourceId);
+					}
+					List<BulkWorkOrderContext> bulkWorkOrderContextList = generateBulkWoContext(pm, context, workorderTemplate, triggers);
+					if (!bulkWorkOrderContextList.isEmpty()) {
+						bulkWorkOrderContexts.addAll(bulkWorkOrderContextList);
+					}
+				}
+			}
+		} else if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE) {
 			long templateId = pm.getTemplateId();
 			WorkorderTemplate workorderTemplate = (WorkorderTemplate) TemplateAPI.getTemplate(templateId);
 			// PreventiveMaintenanceAPI.addJobPlanSectionsToWorkorderTemplate(pm, workorderTemplate); 								   un command here to start using job plans

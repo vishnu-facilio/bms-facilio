@@ -39,7 +39,14 @@ public class GetResourceListForMultiplePM extends FacilioCommand {
 		if (resourceId == null || resourceId < 0) {
 			resourceId = preventivemaintenance.getSiteId();
 		}
-		List<Long> resIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(preventivemaintenance.getAssignmentTypeEnum(), resourceId, preventivemaintenance.getSpaceCategoryId(), preventivemaintenance.getAssetCategoryId(), null, preventivemaintenance.getPmIncludeExcludeResourceContexts());
+		List<Long> resIds;
+		if (preventivemaintenance.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTI_SITE) {
+			List<Long> pmSites = PreventiveMaintenanceAPI.getPMSites(preventivemaintenance.getId());
+			resIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(preventivemaintenance.getAssignmentTypeEnum(), pmSites, preventivemaintenance.getSpaceCategoryId(), preventivemaintenance.getAssetCategoryId(), null, preventivemaintenance.getPmIncludeExcludeResourceContexts());
+		} else {
+			resIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(preventivemaintenance.getAssignmentTypeEnum(), resourceId, preventivemaintenance.getSpaceCategoryId(), preventivemaintenance.getAssetCategoryId(), null, preventivemaintenance.getPmIncludeExcludeResourceContexts());
+		}
+
 
 		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
 		List<PMTriggerContext> pmTriggers = PreventiveMaintenanceAPI.getPMTriggers(preventivemaintenance);

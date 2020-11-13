@@ -32,6 +32,7 @@ import com.facilio.modules.*;
 import com.facilio.tasker.job.JobContext;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -196,7 +197,13 @@ public class PreventiveMaintenanceAPI {
 		if (baseSpaceId == null || baseSpaceId < 0) {
 			baseSpaceId = pm.getSiteId();
 		}
-		List<Long> resourceIds = getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),baseSpaceId,pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
+
+		List<Long> resourceIds;
+		if (pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTI_SITE) {
+			resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),pm.getSiteIds(),pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
+		} else {
+			resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),baseSpaceId,pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
+		}
 		for(Long resourceId :resourceIds) {					// construct resource planner for default cases
 			if(!resourcePlanners.containsKey(resourceId)) {
 				PMResourcePlannerContext pmResourcePlannerContext = new PMResourcePlannerContext();
@@ -379,6 +386,7 @@ public class PreventiveMaintenanceAPI {
 
 					 	TaskContext task = taskTemplate.getTask();
 					 	task.setResource(taskResource);
+					 	task.setSiteId(taskResource.getSiteId());
 					 	tasks.add(task);
 					 }
 				 }
@@ -468,7 +476,12 @@ public class PreventiveMaintenanceAPI {
 
 		return startTimeInSecond;
 	}
-	public static List<Long> getMultipleResourceToBeAddedFromPM(PMAssignmentType pmAssignmentType, Long resourceId,Long spaceCategoryID,Long assetCategoryID,Long currentAssetId, List<PMIncludeExcludeResourceContext> includeExcludeRess) throws Exception {
+
+	public static List<Long> getMultipleResourceToBeAddedFromPM(PMAssignmentType pmAssignmentType, Long resourceId, Long spaceCategoryID, Long assetCategoryId, Long currentAssetId, List<PMIncludeExcludeResourceContext> includeExcludeResourceContexts) throws Exception {
+		return getMultipleResourceToBeAddedFromPM(pmAssignmentType, Collections.singletonList(resourceId), spaceCategoryID, assetCategoryId, currentAssetId, includeExcludeResourceContexts);
+	}
+
+	public static List<Long> getMultipleResourceToBeAddedFromPM(PMAssignmentType pmAssignmentType, List<Long> resourceIds,Long spaceCategoryID,Long assetCategoryID,Long currentAssetId, List<PMIncludeExcludeResourceContext> includeExcludeRess) throws Exception {
 		List<Long> includedIds = null;
 		List<Long> excludedIds = null;
 		if(includeExcludeRess != null && !includeExcludeRess.isEmpty()) {
@@ -489,43 +502,46 @@ public class PreventiveMaintenanceAPI {
 			}
 			return includedIds;
 		}
-		List<Long> resourceIds = new ArrayList<>();
-		switch(pmAssignmentType) {
-			case ALL_FLOORS:
-				List<BaseSpaceContext> floors = SpaceAPI.getBuildingFloors(resourceId);
-				for(BaseSpaceContext floor :floors) {
-					resourceIds.add(floor.getId());
-				}
-				break;
-			case ALL_SPACES:
-				resourceIds = SpaceAPI.getSpaceIdListForBuilding(resourceId);
-				break;
-			case SPACE_CATEGORY:
-				List<SpaceContext> spaces = SpaceAPI.getSpaceListOfCategory(resourceId, spaceCategoryID);
-				for(SpaceContext space :spaces) {
-					resourceIds.add(space.getId());
-				}
-				break;
-			case ASSET_CATEGORY:
-				List<AssetContext> assets = AssetsAPI.getAssetListOfCategory(assetCategoryID, resourceId);
-				
-				for(AssetContext asset :assets) {
-					resourceIds.add(asset.getId());
-				}
-				break;
-			case CURRENT_ASSET:
-				resourceIds = Collections.singletonList(resourceId);
-				break;
-			case SPECIFIC_ASSET:
-				resourceIds = Collections.singletonList(currentAssetId);
-				break;
-		default:
-			break;
+		List<Long> selectedResourceIds = new ArrayList<>();
+		for (Long resourceId: resourceIds) {
+			switch(pmAssignmentType) {
+				case ALL_FLOORS:
+					List<BaseSpaceContext> floors = SpaceAPI.getBuildingFloors(resourceId);
+					for(BaseSpaceContext floor :floors) {
+						selectedResourceIds.add(floor.getId());
+					}
+					break;
+				case ALL_SPACES:
+					selectedResourceIds.addAll(SpaceAPI.getSpaceIdListForBuilding(resourceId));
+					break;
+				case SPACE_CATEGORY:
+					List<SpaceContext> spaces = SpaceAPI.getSpaceListOfCategory(resourceId, spaceCategoryID);
+					for(SpaceContext space :spaces) {
+						selectedResourceIds.add(space.getId());
+					}
+					break;
+				case ASSET_CATEGORY:
+					List<AssetContext> assets = AssetsAPI.getAssetListOfCategory(assetCategoryID, resourceId);
+
+					for(AssetContext asset :assets) {
+						selectedResourceIds.add(asset.getId());
+					}
+					break;
+				case CURRENT_ASSET:
+					selectedResourceIds.addAll(Collections.singletonList(resourceId));
+					break;
+				case SPECIFIC_ASSET:
+					selectedResourceIds.addAll(Collections.singletonList(currentAssetId));
+					break;
+				default:
+					break;
+			}
 		}
+
 		if(excludedIds != null) {
-			resourceIds.removeAll(excludedIds);
+			selectedResourceIds.removeAll(excludedIds);
 		}
-		return resourceIds;
+		return selectedResourceIds;
  	}
 	public static long getEndTime(long startTime, List<PMTriggerContext> triggers) {
 		Optional<PMTriggerContext> minTrigger = triggers.stream().filter(i -> i.getTriggerExecutionSourceEnum() == TriggerExectionSource.SCHEDULE).min(Comparator.comparingInt(PMTriggerContext::getFrequency));
@@ -667,6 +683,7 @@ public class PreventiveMaintenanceAPI {
 					ResourceContext resourceContext = getResource(context, clonedWoTemplate.getResourceIdVal());
 					clonedWoTemplate.setResource(resourceContext);
 				}
+				wo.setSiteId(clonedWoTemplate.getResource().getSiteId());
 			}
 			int preRequisiteCount= clonedWoTemplate.getPreRequestSectionTemplates() != null ? clonedWoTemplate.getPreRequestSectionTemplates().size() : 0;
 			wo.setPrerequisiteEnabled(preRequisiteCount != 0);
@@ -680,7 +697,6 @@ public class PreventiveMaintenanceAPI {
 			wo.setTrigger(pmTrigger);
 			wo.setJobStatus(WorkOrderContext.JobsStatus.ACTIVE);
 			wo.setSourceType(TicketContext.SourceType.PREVENTIVE_MAINTENANCE);
-			wo.setPm(pm);
 			if (wo.getSpace() != null && wo.getSpace().getId() != -1){
 				wo.setResource(wo.getSpace());
 			}
@@ -1385,10 +1401,16 @@ public class PreventiveMaintenanceAPI {
 				}
 			}
 			Map<Long, ResourceContext> resourceMap = ResourceAPI.getExtendedResourcesAsMapFromIds(resourceIds, true);
+			Map<Long, List<Long>> pmSitesMap = new HashMap<>();
+			if (pms != null && !pms.isEmpty()) {
+				pmSitesMap = PreventiveMaintenanceAPI.getPMSitesMap(pms.stream().map(i -> i.getId()).collect(Collectors.toList()));
+			}
 			for(PreventiveMaintenance pm : pms) {
 				if (pm.getWoTemplate().getResourceIdVal() != -1) {
 					pm.getWoTemplate().setResource(resourceMap.get(pm.getWoTemplate().getResourceIdVal()));
 				}
+
+				pm.setSiteIds(pmSitesMap.get(pm.getId()));
 			}
 			if (fetchDependency) {
 				Map<Long, List<PMReminder>> reminders = PreventiveMaintenanceAPI.getPMRemindersAsMap(ids);
@@ -1787,6 +1809,43 @@ public class PreventiveMaintenanceAPI {
 		
 		return pmReminderActionMap;
 	}
+
+	public static List<Long> getPMSites(long pmId) throws Exception {
+		Map<Long, List<Long>> pmSitesMap = getPMSitesMap(Collections.singletonList(pmId));
+		if (pmSitesMap == null || pmSitesMap.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		return pmSitesMap.get(pmId);
+	}
+
+	public static Map<Long, List<Long>> getPMSitesMap(Collection<Long> pmIds) throws Exception {
+		List<FacilioField> pmSitesFields = FieldFactory.getPMSitesFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(pmSitesFields);
+
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder();
+		selectRecordBuilder.select(pmSitesFields)
+				.table(ModuleFactory.getPMSites().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("pmId"), pmIds, NumberOperators.EQUALS));
+
+		List<Map<String, Object>> props = selectRecordBuilder.get();
+
+		if (CollectionUtils.isEmpty(props)) {
+			return Collections.EMPTY_MAP;
+		}
+
+		Map<Long, List<Long>> pmIdVsSiteIds = new HashMap<>();
+		for (Map<String, Object> prop: props) {
+			long pmId = (long) prop.get("pmId");
+			List<Long> siteIds = pmIdVsSiteIds.get(pmId);
+			if (siteIds == null) {
+				pmIdVsSiteIds.put(pmId, new ArrayList<>());
+			}
+			pmIdVsSiteIds.get(pmId).add((long) prop.get("siteId"));
+		}
+
+		return pmIdVsSiteIds;
+	}
 	
 	public static Map<Long,List<PMReminder>> getPMRemindersAsMap(Collection<Long> pmIds) throws Exception {
 		
@@ -2139,7 +2198,13 @@ public class PreventiveMaintenanceAPI {
 				if (baseSpaceId == null || baseSpaceId < 0) {
 					baseSpaceId = pm.getSiteId();
 				}
-				List<Long> resourceIds = getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),baseSpaceId,pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
+				List<Long> resourceIds;
+				if (pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTI_SITE) {
+					List<Long> pmSites = PreventiveMaintenanceAPI.getPMSites(pm.getId());
+					resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(), pmSites, pm.getSpaceCategoryId(), pm.getAssetCategoryId(), null, pm.getPmIncludeExcludeResourceContexts());
+				} else {
+					resourceIds = getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),baseSpaceId,pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
+				}
 				if (resourceIds != null && !resourceIds.isEmpty()) {
 					for(Long resourceId :resourceIds) {					// construct resource planner for default cases
 						if(!resourcePlanners.containsKey(resourceId)) {

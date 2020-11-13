@@ -161,7 +161,7 @@ public class AddPMTriggerCommand extends FacilioCommand {
 		} else if (trigger.getExecuteOnEnum() == PMTriggerContext.ExecuteOn.BEFORE) {
 			rule.setScheduleType(WorkflowRuleContext.ScheduledRuleType.BEFORE);
 		}
-		rule.setSiteId(pm.getSiteId());
+		// rule.setSiteId(pm.getSiteId());
 		rule.setActivityType(EventType.SCHEDULED);
 		long ruleId = WorkflowRuleAPI.addWorkflowRule(rule);
 		trigger.setRuleId(ruleId);

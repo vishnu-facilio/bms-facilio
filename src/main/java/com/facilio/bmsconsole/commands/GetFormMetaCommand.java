@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.facilio.modules.FieldType;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -123,6 +124,17 @@ public class GetFormMetaCommand extends FacilioCommand {
 				if (CollectionUtils.isNotEmpty(form.getSections())) {
 					form.getSections().get(0).getFields().addAll(0, FormFactory.getRequesterFormFields(true, true));
 				}
+			}
+			if (formName.equalsIgnoreCase("multi_web_pm")) {
+				List<FormField> formFields = new ArrayList<>();
+				for (FormField f : form.getFields()) {
+					FacilioField field = f.getField();
+					if (field != null && !field.isDefault() && field.getDataTypeEnum() == FieldType.LOOKUP) {
+						continue;
+					}
+					formFields.add(f);
+				}
+				form.setFields(formFields);
 			}
 		}
 		

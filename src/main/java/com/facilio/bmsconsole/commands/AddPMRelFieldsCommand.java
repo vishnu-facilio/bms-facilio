@@ -50,7 +50,7 @@ public class AddPMRelFieldsCommand extends FacilioCommand {
 		}
 		
 		for(PreventiveMaintenance pm:pms) {
-			if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE) {
+			if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE || pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTI_SITE) {
 				TemplateAPI.addIncludeExcludePropsForPM(pm);
 				prepareAndAddResourcePlanner(context, pm);
 			}

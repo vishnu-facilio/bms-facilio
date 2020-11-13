@@ -111,7 +111,96 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
             minTime = pm.getWoGeneratedUpto();
         }
 
-        if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE) {
+        if (pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTI_SITE) {
+            switch (pm.getTriggerTypeEnum()) {
+                case ONLY_SCHEDULE_TRIGGER:
+                    if (workorderTemplate != null) {
+                        List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),pm.getSiteIds(),pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
+                        Map<Long, PMResourcePlannerContext> pmResourcePlanner = PreventiveMaintenanceAPI.getPMResourcesPlanner(pm.getId());
+                        List<ResourceContext> resourceObjs = ResourceAPI.getResources(resourceIds, false); // ?
+                        Map<Long, ResourceContext> resourceMap = new HashMap<>();
+                        if(resourceObjs != null && !resourceObjs.isEmpty()) {
+                            for (ResourceContext resource : resourceObjs) {
+                                resourceMap.put(resource.getId(), resource);
+                            }
+                        }
+
+                        if (action == PreventiveMaintenanceAPI.ScheduleActions.INIT) {
+                            List<PMTriggerContext> triggers = null;
+                            for (Long resourceId: resourceIds) {
+                                PMResourcePlannerContext currentResourcePlanner = pmResourcePlanner.get(resourceId);
+                                if (pmResourcePlanner.get(resourceId) != null) {
+                                    triggers = new ArrayList<>();
+                                    for (PMTriggerContext trig : currentResourcePlanner.getTriggerContexts()) {
+                                        if (pm.getTriggerMap() != null && pm.getTriggerMap().get(trig.getName()) != null) {
+                                            triggers.add(pm.getTriggerMap().get(trig.getName()));
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (triggers == null) {
+                                triggers = PreventiveMaintenanceAPI.getDefaultTrigger(pm.getDefaultAllTriggers() != null && pm.getDefaultAllTriggers(), pm.getTriggers());
+                            }
+
+                            endTime = PreventiveMaintenanceAPI.getEndTime(-1L, triggers);
+                        }
+
+                        for(Long resourceId :resourceIds) {
+                            List<PMTriggerContext> triggers = null;
+                            if (pmResourcePlanner.get(resourceId) != null) {
+                                PMResourcePlannerContext currentResourcePlanner = pmResourcePlanner.get(resourceId);
+                                triggers = new ArrayList<>();
+                                for (PMTriggerContext trig : currentResourcePlanner.getTriggerContexts()) {
+                                    if (pm.getTriggerMap() != null && pm.getTriggerMap().get(trig.getName()) != null) {
+                                        triggers.add(pm.getTriggerMap().get(trig.getName()));
+                                    }
+                                }
+                                if (currentResourcePlanner.getAssignedToId() != null && currentResourcePlanner.getAssignedToId() > 0 ) {
+                                    workorderTemplate.setAssignedToId(currentResourcePlanner.getAssignedToId());
+                                }
+                            }
+
+                            if (triggers == null) {
+                                triggers = PreventiveMaintenanceAPI.getDefaultTrigger(pm.getDefaultAllTriggers() != null && pm.getDefaultAllTriggers(), pm.getTriggers());
+                            }
+
+                            for (PMTriggerContext trigger : triggers) {
+                                if (resourceMap.get(resourceId) != null) {
+                                    workorderTemplate.setResource(resourceMap.get(resourceId));
+                                    if (workorderTemplate.getResource() != null) {
+                                        workorderTemplate.setResourceId(workorderTemplate.getResource().getId());
+                                    }
+                                } else {
+                                    LOGGER.log(Level.SEVERE,"work order not generated PMID: " + pm.getId() + "ResourceId: " + resourceId);
+                                    CommonCommandUtil.emailAlert("work order not generated", "PMID: " + pm.getId() + "ResourceId: " + resourceId);
+                                }
+                                workorderTemplate.setResource(ResourceAPI.getResource(resourceId));
+                                if (trigger.getSchedule() != null) {
+                                    long startTime = PreventiveMaintenanceAPI.getStartTimeInSecond(trigger.getStartTime());
+                                    switch (pm.getTriggerTypeEnum()) {
+                                        case ONLY_SCHEDULE_TRIGGER:
+                                            BulkWorkOrderContext bulkWoContextsFromPM = PreventiveMaintenanceAPI.createBulkWoContextsFromPM(context, pm, trigger, startTime, endTime, minTime, workorderTemplate);
+                                            bulkWorkOrderContexts.add(bulkWoContextsFromPM);
+                                            nextExecutionTimes.put(trigger.getId(), bulkWoContextsFromPM.getNextExecutionTimes());
+                                            break;
+                                        case FIXED:
+                                        case FLOATING:
+                                            // pmJob = PreventiveMaintenanceAPI.createPMJobOnce(pm, trigger, startTime);
+                                            break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    break;
+                case FIXED:
+                case FLOATING:
+                    throw new IllegalArgumentException("PM Of type Multiple cannot have this type of trigger");
+                default:
+                    break;
+            }
+        } else if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE) {
             switch (pm.getTriggerTypeEnum()) {
                 case ONLY_SCHEDULE_TRIGGER:
                     if (workorderTemplate != null) {

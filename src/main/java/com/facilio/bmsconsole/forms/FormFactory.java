@@ -34,6 +34,7 @@ public class FormFactory {
 		forms.put("workOrderForm", getWebWorkOrderForm());
 		forms.put("serviceWorkOrder", getServiceWorkOrderForm());
 		forms.put("web_pm", getPMForm());
+		forms.put("multi_web_pm", getMultiPMForm());
 		forms.put("approvalForm", getApprovalForm());
 		forms.put("default_asset", getAssetForm());
 		forms.put("energymeter", getEnergyMeterForm());
@@ -626,6 +627,17 @@ public class FormFactory {
 		form.setFields(getWebPMFormFields());
 		return form;
 	}
+
+	private static FacilioForm getMultiPMForm()  {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("PREVENTIVE MAINTENANCE");
+		form.setName("multi_web_pm");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFormType(FormType.WEB);
+		form.setFields(getMultiSiteWebPMFormFields());
+		return form;
+	}
 	
 	public static FacilioForm getStoreRoomForm() {
 		FacilioForm form = new FacilioForm();
@@ -896,6 +908,21 @@ public class FormFactory {
 	private static List<FormField> getWebPMFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("site", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 1, 1));
+		fields.add(new FormField("type",FieldDisplayType.LOOKUP_SIMPLE,"Maintenance Type", Required.REQUIRED, "tickettype", 2, 1));
+		fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.REQUIRED, 3, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 4, 1));
+		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "ticketcategory", 5, 2));
+		fields.add(new FormField("priority", FieldDisplayType.LOOKUP_SIMPLE, "Priority", Required.OPTIONAL, "ticketpriority", 5, 3));
+		fields.add(new FormField("duration", FieldDisplayType.DURATION, "Due Duration", Required.OPTIONAL, "duration", 6, 1));
+		fields.add(new FormField("estimatedWorkDuration", FieldDisplayType.DURATION, "Estimated Duration", Required.OPTIONAL, "duration", 7, 1));
+		fields.add(new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL, "vendors", 11, 1));
+		fields.add(new FormField("groups",FieldDisplayType.LOOKUP_SIMPLE,"Team", Required.OPTIONAL, "groups", 8, 1));
+		fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, "attachment", 9, 1));
+		return Collections.unmodifiableList(fields);
+	}
+
+	private static List<FormField> getMultiSiteWebPMFormFields() {
+		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("type",FieldDisplayType.LOOKUP_SIMPLE,"Maintenance Type", Required.REQUIRED, "tickettype", 2, 1));
 		fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.REQUIRED, 3, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 4, 1));

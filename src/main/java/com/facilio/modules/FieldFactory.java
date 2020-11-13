@@ -3183,6 +3183,20 @@ public class FieldFactory {
         return woTemplateFields;
     }
 
+    public static List<FacilioField> getPMSitesFields() {
+        FacilioModule module = ModuleFactory.getPMSites();
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField(module));
+        fields.add(getSiteIdField(module));
+        FacilioField pmId = new FacilioField();
+        pmId.setName("pmId");
+        pmId.setDataType(FieldType.NUMBER);
+        pmId.setColumnName("PM_ID");
+        pmId.setModule(module);
+        fields.add(pmId);
+        return fields;
+    }
+
     public static List<FacilioField> getPreventiveMaintenanceFields() {
         FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
 

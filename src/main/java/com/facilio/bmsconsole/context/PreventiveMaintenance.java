@@ -426,6 +426,16 @@ public class PreventiveMaintenance extends ResourceContext {
 	public void setSiteId(long siteId) {
 		this.siteId = siteId;
 	}
+
+	private List<Long> siteIds;
+
+	public List<Long> getSiteIds() {
+		return siteIds;
+	}
+
+	public void setSiteIds(List<Long> siteIds) {
+		this.siteIds = siteIds;
+	}
 	
 	Long baseSpaceId;
 	
@@ -489,7 +499,8 @@ public class PreventiveMaintenance extends ResourceContext {
 	public static enum PMCreationType {
 		
 		SINGLE, 
-		MULTIPLE, 
+		MULTIPLE,
+		MULTI_SITE
 		;
 		public int getVal() {
 			return ordinal() + 1;
