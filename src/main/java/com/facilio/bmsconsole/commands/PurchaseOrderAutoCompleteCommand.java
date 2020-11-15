@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
+import com.facilio.modules.*;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -23,10 +25,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 
 ;
@@ -35,7 +33,7 @@ public class PurchaseOrderAutoCompleteCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		List<PurchaseOrderContext> purchaseOrders = (List<PurchaseOrderContext>) context
+		List<V3PurchaseOrderContext> purchaseOrders = (List<V3PurchaseOrderContext>) context
 				.get(FacilioConstants.ContextNames.PURCHASE_ORDERS);
 		List<ItemContext> itemsTobeAdded = new ArrayList<>();
 		List<ToolContext> toolsToBeAdded = new ArrayList<>();
@@ -49,7 +47,9 @@ public class PurchaseOrderAutoCompleteCommand extends FacilioCommand {
 		if (purchaseOrders != null && !purchaseOrders.isEmpty()) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule pomodule = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER);
-			for (PurchaseOrderContext po : purchaseOrders) {
+			for (V3PurchaseOrderContext v3po : purchaseOrders) {
+				Map<String, Object> map = FieldUtil.getAsProperties(v3po);
+				PurchaseOrderContext po = FieldUtil.getAsBeanFromMap(map, PurchaseOrderContext.class);
 				if (po.getStatusEnum() == Status.RECEIVED) {
 					storeRoomId = po.getStoreRoom().getId();
 					vendorId= po.getVendor().getId();

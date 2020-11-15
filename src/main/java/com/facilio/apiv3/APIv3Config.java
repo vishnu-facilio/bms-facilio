@@ -250,7 +250,7 @@ public class APIv3Config {
     @Module("purchaseorder")
     public static Supplier<V3Config> getPurchaseOrder() {
         return () -> new V3Config(V3PurchaseOrderContext.class, new ModuleCustomFieldCount30())
-                .create().beforeSave(new POBeforeCreateOrEditV3Command()).afterSave(new POAfterCreateOrEditV3Command())
+                .create().beforeSave(new POBeforeCreateOrEditV3Command()).afterSave(TransactionChainFactoryV3.getPoAfterSaveChain())
                 .update().beforeSave(new POBeforeCreateOrEditV3Command()).afterSave(new POAfterCreateOrEditV3Command())
                 .list().beforeFetch(new LoadPoPrListLookupCommandV3())
                 .summary().beforeFetch(new LoadPOSummaryLookupCommandV3()).afterFetch(new FetchPODetailsCommandV3())

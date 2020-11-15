@@ -10,18 +10,21 @@ import com.facilio.bmsconsole.context.ReceivableContext;
 import com.facilio.bmsconsole.context.ReceivableContext.Status;
 import com.facilio.bmsconsole.util.LocationAPI;
 import com.facilio.bmsconsole.util.RecordAPI;
+import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.DeleteRecordBuilder;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 ;
 
@@ -80,7 +83,9 @@ public class AddOrUpdatePurchaseOrderCommand extends FacilioCommand {
 				RecordAPI.addRecord(true,Collections.singletonList(purchaseOrderContext), module, fields);
 				FacilioModule receivableModule = modBean.getModule(FacilioConstants.ContextNames.RECEIVABLE);
 				ReceivableContext receivableContext = new ReceivableContext();
-				receivableContext.setPoId(purchaseOrderContext);
+				Map<String, Object> mapPo = FieldUtil.getAsProperties(purchaseOrderContext);
+				V3PurchaseOrderContext v3Po = FieldUtil.getAsBeanFromMap(mapPo, V3PurchaseOrderContext.class);
+				receivableContext.setPoId(v3Po);
 				receivableContext.setStatus(Status.YET_TO_RECEIVE);
 				RecordAPI.addRecord(true,Collections.singletonList(receivableContext), receivableModule, modBean.getAllFields(receivableModule.getName()));
 				updateLineItems(purchaseOrderContext);

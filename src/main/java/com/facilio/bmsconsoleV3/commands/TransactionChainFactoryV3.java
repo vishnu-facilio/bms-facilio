@@ -23,6 +23,9 @@ import com.facilio.bmsconsoleV3.commands.employee.AddPeopleTypeForEmployeeComman
 import com.facilio.bmsconsoleV3.commands.employee.UpdateEmployeePeopleAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.UpdatePeoplePrimaryContactCommandV3;
+import com.facilio.bmsconsoleV3.commands.purchaseorder.POAfterCreateOrEditV3Command;
+import com.facilio.bmsconsoleV3.commands.purchaseorder.POBeforeCreateOrEditV3Command;
+import com.facilio.bmsconsoleV3.commands.purchaseorder.UpdateIsPoCreatedCommand;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.PurchaseRequestTotalCostRollUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.InsertQuotationLineItemsAndActivitiesCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.QuotationValidationAndCostCalculationCommand;
@@ -508,6 +511,13 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getTriggerExecuteChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ExecuteTriggerCommand());
+        return c;
+    }
+
+    public static FacilioChain getPoAfterSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new UpdateIsPoCreatedCommand());
+        c.addCommand(new POAfterCreateOrEditV3Command());
         return c;
     }
 }

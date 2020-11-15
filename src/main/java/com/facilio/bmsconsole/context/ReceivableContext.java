@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class ReceivableContext extends ModuleBaseWithCustomFields {
@@ -30,13 +31,13 @@ public class ReceivableContext extends ModuleBaseWithCustomFields {
 		this.requiredTime = requiredTime;
 	}
 	
-	private PurchaseOrderContext poId;
+	private V3PurchaseOrderContext poId;
 	
 	
-	public PurchaseOrderContext getPoId() {
+	public V3PurchaseOrderContext getPoId() {
 		return poId;
 	}
-	public void setPoId(PurchaseOrderContext poId) {
+	public void setPoId(V3PurchaseOrderContext poId) {
 		this.poId = poId;
 	}
  

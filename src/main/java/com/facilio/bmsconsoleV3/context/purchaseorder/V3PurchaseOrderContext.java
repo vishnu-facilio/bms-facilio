@@ -348,4 +348,13 @@ public class V3PurchaseOrderContext extends V3Context {
 		return null;
 	}
 
+	private List<Long> prIds;
+
+	public List<Long> getPrIds() {
+		return prIds;
+	}
+
+	public void setPrIds(List<Long> prIds) {
+		this.prIds = prIds;
+	}
 }
