@@ -5806,6 +5806,8 @@
 				class="com.facilio.bmsconsole.actions.WebTabAction" method="associateTabToGroupTab" />
 		<action name="disassociate"
 				class="com.facilio.bmsconsole.actions.WebTabAction" method="disAssociateTabToGroupTab" />
+		<action name="listForApp"
+				class="com.facilio.bmsconsole.actions.WebTabAction" method="getTabListForApplication" />
 	</package>
 
 	<package name="tabPermissions" namespace="/api/v2/tab/permissions"

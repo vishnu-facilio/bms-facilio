@@ -133,6 +133,17 @@ public class WebTabAction extends FacilioAction {
         return SUCCESS;
     }
 
+    public String getTabListForApplication() throws Exception {
+        FacilioChain chain = ReadOnlyChainFactory.getAllTabForApplicationChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.APPLICATION_ID, getAppId());
+        chain.execute();
+
+        setResult(FacilioConstants.ContextNames.WEB_TABS, context.get(FacilioConstants.ContextNames.WEB_TABS));
+
+        return SUCCESS;
+    }
+
     public String associateTabToGroupTab() throws Exception {
         FacilioChain chain = TransactionChainFactory.getCreateAndAssociateTabGroupChain();
         FacilioContext context = chain.getContext();
