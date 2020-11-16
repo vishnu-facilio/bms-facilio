@@ -141,4 +141,8 @@ enums:
 
   - name: PaymentStatus
     enumClassName: com.facilio.bmsconsoleV3.context.facilitybooking.BookingPaymentContext$PaymentStatus
+    
+  - name: ClickAction
+    enumClassName: com.facilio.report.context.ReportSettings$ClickAction
+
 
