@@ -41,7 +41,6 @@ import com.facilio.events.commands.NewEventsToAlarmsConversionCommand;
 import com.facilio.events.commands.NewExecuteEventRulesCommand;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.modules.fields.relations.CalculateDependencyCommand;
-import com.facilio.modules.fields.relations.RunDependencyHistoryJob;
 import com.facilio.mv.command.*;
 import com.facilio.workflows.command.*;
 import org.apache.commons.chain.Context;

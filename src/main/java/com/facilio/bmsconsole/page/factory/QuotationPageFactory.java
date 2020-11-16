@@ -7,13 +7,6 @@ import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
-import org.apache.commons.collections4.CollectionUtils;
-import org.json.simple.JSONObject;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class QuotationPageFactory extends PageFactory {
 
@@ -51,7 +44,7 @@ public class QuotationPageFactory extends PageFactory {
         page.addTab(tab3);
             Page.Section tab3Sec1 = page.new Section();
             tab3.addSection(tab3Sec1);
-            addRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.QUOTE_ASSOCIATED_TERMS, quotationModule.getModuleId());
+            addSubModuleRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.QUOTE_ASSOCIATED_TERMS, quotationModule.getModuleId());
 
 
         Page.Tab tab4 = page.new Tab("Activity");
@@ -65,26 +58,5 @@ public class QuotationPageFactory extends PageFactory {
 
 
         return page;
-    }
-
-
-    private static void addRelatedListWidget(Page.Section section, String moduleName, long parenModuleId) throws Exception {
-
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-
-        FacilioModule module = modBean.getModule(moduleName);
-        List<FacilioField> allFields = modBean.getAllFields(module.getName());
-        List<FacilioField> fields = allFields.stream().filter(field -> (field instanceof LookupField && ((LookupField) field).getLookupModuleId() == parenModuleId)).collect(Collectors.toList());
-        if (CollectionUtils.isNotEmpty(fields)) {
-            for (FacilioField field : fields) {
-                PageWidget relatedListWidget = new PageWidget(PageWidget.WidgetType.RELATED_LIST);
-                JSONObject relatedList = new JSONObject();
-                relatedList.put("module", module);
-                relatedList.put("field", field);
-                relatedListWidget.setRelatedList(relatedList);
-                relatedListWidget.addToLayoutParams(section, 24, 10);
-                section.addWidget(relatedListWidget);
-            }
-        }
     }
 }

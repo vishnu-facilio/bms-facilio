@@ -280,6 +280,26 @@ public class PageFactory {
 			}
 		}
 	}
+
+	static void addSubModuleRelatedListWidget(Page.Section section, String moduleName, long parenModuleId) throws Exception {
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+		FacilioModule module = modBean.getModule(moduleName);
+		List<FacilioField> allFields = modBean.getAllFields(module.getName());
+		List<FacilioField> fields = allFields.stream().filter(field -> (field instanceof LookupField && ((LookupField) field).getLookupModuleId() == parenModuleId)).collect(Collectors.toList());
+		if (CollectionUtils.isNotEmpty(fields)) {
+			for (FacilioField field : fields) {
+				PageWidget relatedListWidget = new PageWidget(PageWidget.WidgetType.RELATED_LIST);
+				JSONObject relatedList = new JSONObject();
+				relatedList.put("module", module);
+				relatedList.put("field", field);
+				relatedListWidget.setRelatedList(relatedList);
+				relatedListWidget.addToLayoutParams(section, 24, 10);
+				section.addWidget(relatedListWidget);
+			}
+		}
+	}
 	
 	protected static void addRelatedCountWidget(Section section, int yPos, List<String> modules) {
 		PageWidget cardWidget = new PageWidget(WidgetType.RELATED_COUNT);

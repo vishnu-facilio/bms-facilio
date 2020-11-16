@@ -66,7 +66,7 @@ public class POBeforeCreateOrEditV3Command extends FacilioCommand {
         if (CollectionUtils.isNotEmpty(lineItems)) {
             for (V3PurchaseOrderLineItemContext lineItem : lineItems) {
                 if ((lineItem.getInventoryType() == InventoryType.ITEM.getValue() || lineItem.getInventoryType() == InventoryType.TOOL.getValue()) && po.getStoreRoom() == null) {
-                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Receivable are invalid");
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Storeroom cannot be null for pos with items and tools");
                 }
             }
         }

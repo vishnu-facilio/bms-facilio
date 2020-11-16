@@ -1,24 +1,22 @@
 package com.facilio.bmsconsoleV3.context.purchaseorder;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.facilio.modules.FacilioEnum;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
-
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.ContractsContext;
 import com.facilio.bmsconsole.context.InventoryType;
 import com.facilio.bmsconsole.context.LocationContext;
-
 import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
 import com.facilio.bmsconsoleV3.context.V3VendorContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestLineItemContext;
+import com.facilio.modules.FacilioEnum;
 import com.facilio.v3.context.V3Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class V3PurchaseOrderContext extends V3Context {
 	
@@ -103,9 +101,9 @@ public class V3PurchaseOrderContext extends V3Context {
 		double quantity = 0.0;
 	
 		for(V3PurchaseRequestContext pr : list) {
-			if(pr.getStatusEnum() != V3PurchaseRequestContext.Status.APPROVED) {
-				throw new IllegalArgumentException("Only Purchase Requests with Approved status can be converted to Purchase Order");
-			}
+//			if(pr.getStatusEnum() != V3PurchaseRequestContext.Status.APPROVED) {
+//				throw new IllegalArgumentException("Only Purchase Requests with Approved status can be converted to Purchase Order");
+//			}
 			if(vendorId == -1 && pr.getVendor() != null) {
 				purchaseOrderContext.setVendor(pr.getVendor());
 				vendorId = 	pr.getVendor().getId();

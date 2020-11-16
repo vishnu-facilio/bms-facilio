@@ -2,7 +2,6 @@ package com.facilio.bmsconsoleV3.commands.purchaseorder;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
-import com.facilio.bmsconsole.context.InventoryType;
 import com.facilio.bmsconsole.context.PurchaseOrderContext;
 import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
 import com.facilio.bmsconsole.util.PurchaseOrderAPI;
@@ -20,8 +19,6 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
-import com.facilio.v3.exception.ErrorCode;
-import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -36,11 +33,15 @@ public class POAfterCreateOrEditV3Command extends FacilioCommand {
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<V3PurchaseOrderContext> purchaseOrderContexts = recordMap.get(moduleName);
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER);
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASE_ORDER);
+        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
+        FacilioModule lineItemsModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS);
+
         if (CollectionUtils.isNotEmpty(purchaseOrderContexts)) {
             for (V3PurchaseOrderContext purchaseOrderContext : purchaseOrderContexts) {
                 if (purchaseOrderContext != null) {
 
-                    FacilioModule lineItemsModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS);
                     if (purchaseOrderContext.getId() > 0) {
                         if (purchaseOrderContext.getLineItems() != null) {
                             DeleteRecordBuilder<PurchaseOrderLineItemContext> deleteBuilder = new DeleteRecordBuilder<PurchaseOrderLineItemContext>()
@@ -50,28 +51,28 @@ public class POAfterCreateOrEditV3Command extends FacilioCommand {
                             updateLineItems(purchaseOrderContext);
                             RecordAPI.addRecord(false, purchaseOrderContext.getLineItems(), lineItemsModule, modBean.getAllFields(lineItemsModule.getName()));
                         }
-                        FacilioModule receivableModule = modBean.getModule(FacilioConstants.ContextNames.RECEIVABLE);
-                        V3ReceivableContext receivableContext = new V3ReceivableContext();
-                        receivableContext.setPoId(purchaseOrderContext);
-                        receivableContext.setStatus(V3ReceivableContext.Status.YET_TO_RECEIVE);
-                        receivableContext.setRequiredTime(purchaseOrderContext.getRequiredTime());
-                        RecordAPI.addRecord(true, Collections.singletonList(receivableContext), receivableModule, modBean.getAllFields(receivableModule.getName()));
+                        Long poId = (Long) context.get(Constants.RECORD_ID);
+                        if (poId == null || poId <= 0) {
+                            FacilioModule receivableModule = modBean.getModule(FacilioConstants.ContextNames.RECEIVABLE);
+                            V3ReceivableContext receivableContext = new V3ReceivableContext();
+                            receivableContext.setPoId(purchaseOrderContext);
+                            receivableContext.setStatus(V3ReceivableContext.Status.YET_TO_RECEIVE);
+                            receivableContext.setRequiredTime(purchaseOrderContext.getRequiredTime());
+                            RecordAPI.addRecord(true, Collections.singletonList(receivableContext), receivableModule, modBean.getAllFields(receivableModule.getName()));
 
-                        List<V3TermsAndConditionContext> terms = PurchaseOrderAPI.fetchPoDefaultTermsV3();
-                        if (CollectionUtils.isNotEmpty(terms)) {
-                            List<V3PoAssociatedTermsContext> poAssociatedTerms = new ArrayList<>();
-                            for (V3TermsAndConditionContext term : terms) {
-                                V3PoAssociatedTermsContext associatedTerm = new V3PoAssociatedTermsContext();
-                                associatedTerm.setPoId(purchaseOrderContext.getId());
-                                associatedTerm.setTerms(term);
-                                poAssociatedTerms.add(associatedTerm);
+                            List<V3TermsAndConditionContext> terms = PurchaseOrderAPI.fetchPoDefaultTermsV3();
+                            if (CollectionUtils.isNotEmpty(terms)) {
+                                List<V3PoAssociatedTermsContext> poAssociatedTerms = new ArrayList<>();
+                                for (V3TermsAndConditionContext term : terms) {
+                                    V3PoAssociatedTermsContext associatedTerm = new V3PoAssociatedTermsContext();
+                                    associatedTerm.setPoId(purchaseOrderContext.getId());
+                                    associatedTerm.setTerms(term);
+                                    poAssociatedTerms.add(associatedTerm);
+                                }
+                                PurchaseOrderAPI.updateTermsAssociatedV3(purchaseOrderContext.getId(), poAssociatedTerms);
                             }
-                            PurchaseOrderAPI.updateTermsAssociatedV3(purchaseOrderContext.getId(), poAssociatedTerms);
                         }
 
-                        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER);
-                        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASE_ORDER);
-                        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
                         List<FacilioField> updatedFields = new ArrayList<FacilioField>();
                         updatedFields.add(fieldsMap.get("totalCost"));
                         updatedFields.add(fieldsMap.get("totalQuantity"));
@@ -131,16 +132,6 @@ public class POAfterCreateOrEditV3Command extends FacilioCommand {
             lineItemContext.setCost(lineItemContext.getUnitPrice() * lineItemContext.getQuantity());
         } else {
             lineItemContext.setCost(0.0);
-        }
-    }
-
-    private void checkForStoreRoom(V3PurchaseOrderContext po, List<V3PurchaseOrderLineItemContext> lineItems) throws RESTException {
-        if (CollectionUtils.isNotEmpty(lineItems)) {
-            for (V3PurchaseOrderLineItemContext lineItem : lineItems) {
-                if ((lineItem.getInventoryType() == InventoryType.ITEM.getValue() || lineItem.getInventoryType() == InventoryType.TOOL.getValue()) && po.getStoreRoom() == null) {
-                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Receivable are invalid");
-                }
-            }
         }
     }
 
