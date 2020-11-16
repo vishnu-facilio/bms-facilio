@@ -331,7 +331,7 @@ public class ControllerApiV2 {
         try {
             long orgId = AccountUtil.getCurrentAccount().getOrg().getOrgId();
             if (orgId > 0) {
-                return getCount(null,null);
+                return getCount(null,null,null);
             } else {
                 LOGGER.info("Exception while getting controller count, orgId can't be null or empty  ->" + orgId);
             }
@@ -345,7 +345,7 @@ public class ControllerApiV2 {
         try {
             long orgId = AccountUtil.getCurrentAccount().getOrg().getOrgId();
             if (orgId > 0 && (agentIds != null) && (!agentIds.isEmpty())) {
-                return getCount(agentIds,null);
+                return getCount(agentIds,null,null);
             } else {
                 LOGGER.info("Exception while getting controller count, agentId and orgId can't be null or empty -> " + agentIds + " ->" + orgId);
             }
@@ -358,10 +358,10 @@ public class ControllerApiV2 {
     public static long getControllersCount(FacilioContext context) {
     	Long agentIds = (Long) context.get(AgentConstants.AGENT_ID);
     	Integer controllerType = (Integer) context.get(AgentConstants.CONTROLLER_TYPE);
-    	return getCount(Collections.singletonList(agentIds), controllerType);
+    	return getCount(Collections.singletonList(agentIds), controllerType,(String)context.get(AgentConstants.SEARCH_KEY));
     }
 
-    private static long getCount(List<Long> agentIds,Integer controllerType) {
+    private static long getCount(List<Long> agentIds,Integer controllerType , String querySearch) {
         try {
             GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                     .table(CONTROLLER_MODULE.getTableName())
@@ -374,6 +374,9 @@ public class ControllerApiV2 {
             }
             if(controllerType != null) {
             	builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getControllerTypeField(CONTROLLER_MODULE), String.valueOf(controllerType), NumberOperators.EQUALS));
+            }
+            if(querySearch != null && !querySearch.trim().isEmpty()) {
+            	builder.andCustomWhere(RESOURCE_MODULE.getTableName()+".NAME = ?  OR  "+RESOURCE_MODULE.getTableName()+".NAME LIKE ?",querySearch,"%"+querySearch+"%");
             }
             return (long) builder.fetchFirst().getOrDefault(AgentConstants.ID, 0L);
         } catch (Exception e) {
@@ -487,7 +490,7 @@ public class ControllerApiV2 {
     public static JSONObject getControllerCountData(List<Long> agentIds) throws Exception {
         JSONObject controlleCountData = new JSONObject();
         controlleCountData.put(AgentConstants.TOTAL_COUNT, FieldDeviceApi.getAgentDeviceCount(agentIds));
-        controlleCountData.put(AgentConstants.CONFIGURED_COUNT, getCount(agentIds,null));
+        controlleCountData.put(AgentConstants.CONFIGURED_COUNT, getCount(agentIds,null,null));
         return controlleCountData;
     }
 
