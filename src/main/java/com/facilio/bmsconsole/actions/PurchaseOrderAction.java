@@ -1,23 +1,21 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.Collections;
-import java.util.List;
-
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.InventoryType;
+import com.facilio.bmsconsole.context.PurchaseOrderContext;
+import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
+import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsoleV3.context.purchaseorder.V3PoAssociatedTermsContext;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.ContractAssociatedTermsContext;
-import com.facilio.bmsconsole.context.InventoryType;
-import com.facilio.bmsconsole.context.PoAssociatedTermsContext;
-import com.facilio.bmsconsole.context.PurchaseOrderContext;
-import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
-import com.facilio.bmsconsole.workflow.rule.EventType;
-import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
+import java.util.Collections;
+import java.util.List;
 
 public class PurchaseOrderAction extends FacilioAction {
 
@@ -30,15 +28,16 @@ public class PurchaseOrderAction extends FacilioAction {
 	public void setModuleName(String moduleName) {
 		this.moduleName = moduleName;
 	}
-	
-	private List<PoAssociatedTermsContext> associatedTerms;
-	
-	public List<PoAssociatedTermsContext> getAssociatedTerms() {
-		return associatedTerms;
+
+	public List<V3PoAssociatedTermsContext> getTermsAssociated() {
+		return termsAssociated;
 	}
-	public void setAssociatedTerms(List<PoAssociatedTermsContext> associatedTerms) {
-		this.associatedTerms = associatedTerms;
+
+	public void setTermsAssociated(List<V3PoAssociatedTermsContext> termsAssociated) {
+		this.termsAssociated = termsAssociated;
 	}
+
+	private List<V3PoAssociatedTermsContext> termsAssociated;
 	private Boolean fetchCount;
 	public Boolean getFetchCount() {
 		if (fetchCount == null) {
@@ -419,7 +418,7 @@ public class PurchaseOrderAction extends FacilioAction {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, recordId );
-		context.put(FacilioConstants.ContextNames.PO_ASSOCIATED_TERMS, associatedTerms );
+		context.put(FacilioConstants.ContextNames.PO_ASSOCIATED_TERMS, termsAssociated );
 		
 		FacilioChain chain = TransactionChainFactory.getAssociateTermsToPOChain();
 		chain.execute(context);

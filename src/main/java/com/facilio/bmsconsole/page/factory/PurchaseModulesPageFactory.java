@@ -4,6 +4,7 @@ import com.facilio.bmsconsole.context.PurchaseOrderContext;
 import com.facilio.bmsconsole.context.PurchaseRequestContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
 
 public class PurchaseModulesPageFactory extends PageFactory {
@@ -78,6 +79,12 @@ public class PurchaseModulesPageFactory extends PageFactory {
         attachmentWidget.addToLayoutParams(tab2Sec1, 24, 6);
         attachmentWidget.setTitle("Attachments");
         tab2Sec1.addWidget(attachmentWidget);
+
+        Page.Tab tab3 = page.new Tab("Related Records");
+        page.addTab(tab3);
+        Page.Section tab3Sec1 = page.new Section();
+        tab3.addSection(tab3Sec1);
+        addSubModuleRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.PO_ASSOCIATED_TERMS, module.getModuleId());
 
 
         return page;

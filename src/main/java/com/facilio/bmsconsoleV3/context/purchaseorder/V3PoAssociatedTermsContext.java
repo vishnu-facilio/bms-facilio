@@ -6,15 +6,18 @@ import com.facilio.v3.context.V3Context;
 public class V3PoAssociatedTermsContext extends V3Context {
 	
 	private static final long serialVersionUID = 1L;
-	private Long poId;
+	private V3PurchaseOrderContext purchaseOrder;
 	private V3TermsAndConditionContext terms;
-		
-	public Long getPoId() {
-		return poId;
+
+	public V3PurchaseOrderContext getPurchaseOrder() {
+		return purchaseOrder;
 	}
-	public void setPoId(Long poId) {
-		this.poId = poId;
+
+	public void setPurchaseOrder(V3PurchaseOrderContext purchaseOrder) {
+		this.purchaseOrder = purchaseOrder;
 	}
+
+
 	public V3TermsAndConditionContext getTerms() {
 		return terms;
 	}

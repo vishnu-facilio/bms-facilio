@@ -4048,6 +4048,14 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getPOTermsModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("poterms");
+		module.setDisplayName("PO Associated Terms");
+		module.setTableName("PO_Associated_Terms");
+		return module;
+	}
+
 	public static FacilioModule getAnnouncementModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("announcement");

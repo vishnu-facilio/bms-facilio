@@ -182,11 +182,8 @@ public class PurchaseOrderAPI {
 		}
 	}
 
-	public static void updateTermsAssociatedV3(Long id, List<V3PoAssociatedTermsContext> associatedTerms) throws Exception {
+	public static void updateTermsAssociatedV3(List<V3PoAssociatedTermsContext> associatedTerms) throws Exception {
 		if(CollectionUtils.isNotEmpty(associatedTerms)) {
-			for(V3PoAssociatedTermsContext term : associatedTerms) {
-				term.setPoId(id);
-			}
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PO_ASSOCIATED_TERMS);
 			List<FacilioField> fields = modBean.getAllFields(module.getName());

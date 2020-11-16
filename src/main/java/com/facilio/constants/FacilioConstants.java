@@ -32,6 +32,7 @@ import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.Announcem
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementSharingInfoContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnnouncementContext;
 import com.facilio.bmsconsoleV3.context.budget.*;
+import com.facilio.bmsconsoleV3.context.purchaseorder.V3PoAssociatedTermsContext;
 import com.facilio.bmsconsoleV3.context.quotation.*;
 import com.facilio.bmsconsoleV3.context.communityfeatures.*;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitChecklistContext;
@@ -2100,6 +2101,7 @@ public class FacilioConstants {
 			classMap.put(TAX, TaxContext.class);
 			classMap.put(TAX_GROUPS, TaxGroupContext.class);
 			classMap.put(QUOTE_ASSOCIATED_TERMS, QuotationAssociatedTermsContext.class);
+			classMap.put(PO_ASSOCIATED_TERMS, V3PoAssociatedTermsContext.class);
 			classMap.put(QUOTE_ACTIVITY, ActivityContext.class);
 
 			classMap.put(WorkPermit.WORKPERMIT, WorkPermitContext.class);

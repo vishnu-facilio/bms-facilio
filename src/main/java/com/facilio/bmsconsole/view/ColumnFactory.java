@@ -200,7 +200,9 @@ public class ColumnFactory {
 		columnMap.put("client-default", getDefaultClientColumns());
 
 		columnMap.put("quote-default", getDefaultQuotationColumns());
-		columnMap.put("quoteterms-default", getDefaultQuotationTermsColumns());
+		columnMap.put("quoteterms-default", getDefaultTermsSubModuleColumns());
+
+		columnMap.put("poterms-default", getDefaultTermsSubModuleColumns());
 
 		columnMap.put("budget-default", getDefaultBudgetColumns());
 
@@ -1511,7 +1513,7 @@ public class ColumnFactory {
 		return columns;
 	}
 
-	private static List<ViewField> getDefaultQuotationTermsColumns() {
+	private static List<ViewField> getDefaultTermsSubModuleColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 
 		columns.add(new ViewField("name", "Name", "terms"));

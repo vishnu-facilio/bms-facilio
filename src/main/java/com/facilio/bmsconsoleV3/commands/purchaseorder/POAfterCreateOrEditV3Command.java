@@ -66,11 +66,11 @@ public class POAfterCreateOrEditV3Command extends FacilioCommand {
                                 List<V3PoAssociatedTermsContext> poAssociatedTerms = new ArrayList<>();
                                 for (V3TermsAndConditionContext term : terms) {
                                     V3PoAssociatedTermsContext associatedTerm = new V3PoAssociatedTermsContext();
-                                    associatedTerm.setPoId(purchaseOrderContext.getId());
+                                    associatedTerm.setPurchaseOrder(purchaseOrderContext);
                                     associatedTerm.setTerms(term);
                                     poAssociatedTerms.add(associatedTerm);
                                 }
-                                PurchaseOrderAPI.updateTermsAssociatedV3(purchaseOrderContext.getId(), poAssociatedTerms);
+                                PurchaseOrderAPI.updateTermsAssociatedV3(poAssociatedTerms);
                             }
                         }
 
