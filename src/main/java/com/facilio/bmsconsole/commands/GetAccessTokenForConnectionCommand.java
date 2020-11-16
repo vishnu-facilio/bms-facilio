@@ -14,7 +14,7 @@ public class GetAccessTokenForConnectionCommand extends FacilioCommand  {
 		ConnectionContext connectionContext = (ConnectionContext) context.get(FacilioConstants.ContextNames.CONNECTION);
 		
 		if(connectionContext.getStateEnum() == ConnectionContext.State.AUTHORIZED) {
-			ConnectionUtil.validateOauth2Connection(connectionContext);
+			connectionContext.getGrantTypeEnum().validateConnection(connectionContext);
 		}
 		
 		return false;

@@ -3808,10 +3808,15 @@ public class FieldFactory {
         fields.add(getField("name", "NAME", module, FieldType.STRING));
         fields.add(getField("serviceName", "SERVICE_NAME", module, FieldType.STRING));
         fields.add(getField("authType", "AUTH_TYPE", module, FieldType.NUMBER));
+        fields.add(getField("grantType", "GRANT_TYPE", module, FieldType.NUMBER));
         fields.add(getField("paramType", "PARAM_TYPE", module, FieldType.NUMBER));
         fields.add(getField("state", "STATE", module, FieldType.NUMBER));
         fields.add(getField("clientId", "CLIENT_ID", module, FieldType.STRING));
         fields.add(getField("clientSecretId", "CLIENT_SECRET_ID", module, FieldType.STRING));
+        fields.add(getField("userName", "USER_NAME", module, FieldType.STRING));
+        fields.add(getField("password", "PASSWORD", module, FieldType.STRING));
+        fields.add(getField("audience", "AUDIENCE", module, FieldType.STRING));
+        fields.add(getField("resource", "RESOURCE", module, FieldType.STRING));
         fields.add(getField("scope", "SCOPE", module, FieldType.STRING));
         fields.add(getField("authorizeUrl", "AUTHORIZE_URL", module, FieldType.STRING));
         fields.add(getField("accessTokenUrl", "ACCESS_TOKEN_URL", module, FieldType.STRING));
@@ -3824,7 +3829,8 @@ public class FieldFactory {
         fields.add(getField("refreshTokenExpiryTime", "REFRESH_EXPIRY_TIME", module, FieldType.NUMBER));
         fields.add(getField("secretStateKey", "SECRET_STATE_KEY", module, FieldType.STRING));
         fields.add(getField("accessTokenSetting", "ACCESS_TOKEN_SETTING", module, FieldType.NUMBER));
-
+        fields.add(getField("oAuthParamInHeader", "OAUTH_PARAM_IN_HEADER", module, FieldType.BOOLEAN));
+        
         fields.add(getSystemField("sysCreatedTime", module));
         fields.add(getSystemField("sysModifiedTime", module));
         fields.add(getSystemField("sysCreatedBy", module));

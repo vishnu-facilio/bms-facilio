@@ -11,6 +11,7 @@ import java.util.Map;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import com.amazonaws.HttpMethod;
 import com.facilio.accounts.util.AccountUtil;
@@ -46,6 +47,8 @@ public class ConnectionUtil {
 	public static final String CLIENT_ID_STRING = "client_id";
 	public static final String AUTHORIZATION_STRING = "Authorization";
 	public static final String CLIENT_SECRET_STRING = "client_secret";
+	public static final String USER_NAME_STRING = "username";
+	public static final String PASSWORD_STRING = "password";
 	public static final String REDIRECT_URI_STRING = "redirect_uri";
 	public static final String GRANT_TYPE_STRING = "grant_type";
 	public static final String ACCESS_TYPE_STRING = "access_type";
@@ -56,9 +59,12 @@ public class ConnectionUtil {
 	public static final String EXPIRES_IN_STRING = "expires_in";
 	public static final String REFRESH_TOKEN_EXPIRES_IN_STRING = "x_refresh_token_expires_in";
 	public static final String REFRESH_TOKEN_STRING = "refresh_token";
-	public static final String GRANT_TYPE_AUTH_TOKEN = "authorization_code";
 	public static final String DEFAULT_CHARSET_NAME = "UTF-8";
 	public static final String SECRET_STATE = "state";
+	
+	public static final String RESOURCE_STRING = "resource";
+	public static final String AUDIENCE_STRING = "audience";
+
 	
 	public static final long MAX_TIME = 4102425000000l;
 
@@ -75,7 +81,7 @@ public class ConnectionUtil {
 		switch(connectionContext.getAuthTypeEnum()) {
 
 			case OAUTH2:
-				validateOauth2Connection(connectionContext);
+				connectionContext.getGrantTypeEnum().validateConnection(connectionContext);
 				headerParam.put("Authorization", "Bearer "+connectionContext.getAccessToken());
 				
 				break;
@@ -94,33 +100,87 @@ public class ConnectionUtil {
 		}
 		return getUrlResult(urlString, params, method,headerParam,bodyString,bodyType);
 	}
-
-	public static void validateOauth2Connection(ConnectionContext connectionContext) throws Exception {
-
-		switch(connectionContext.getStateEnum()) {
-		case CREATED:
-		case CLIENT_ID_MAPPED:
-				throw new Exception("Connection Not Yet Authorized");
-		case AUTHORIZED:
-				getAuthToken(connectionContext);
-			break;
-
-		case AUTH_TOKEN_GENERATED:
-				if(connectionContext.getRefreshTokenExpiryTime() > 0 && connectionContext.getRefreshTokenExpiryTime() <= DateTimeUtil.getCurrenTime()) {
-					invalidateConnection(connectionContext);
-					validateOauth2Connection(connectionContext);
+	
+	public static void parseJsonAndUpdateConnection(String result,ConnectionContext connectionContext) throws Exception {
+		
+		System.out.println("result --- "+result);
+		JSONParser parser = new JSONParser();
+		JSONObject resultJson = (JSONObject) parser.parse(result);
+		
+		if(resultJson.containsKey(ConnectionUtil.ACCESS_TOKEN_STRING)) {
+			connectionContext.setAccessToken((String)resultJson.get(ConnectionUtil.ACCESS_TOKEN_STRING));
+			
+			if(resultJson.containsKey(ConnectionUtil.REFRESH_TOKEN_STRING)) {
+				connectionContext.setRefreshToken((String)resultJson.get(ConnectionUtil.REFRESH_TOKEN_STRING));
+				
+				if(resultJson.containsKey(ConnectionUtil.REFRESH_TOKEN_EXPIRES_IN_STRING)) {
+					
+					long refreshTokenExpireTimeInSec = (long) resultJson.get(ConnectionUtil.REFRESH_TOKEN_EXPIRES_IN_STRING);
+					
+					refreshTokenExpireTimeInSec = refreshTokenExpireTimeInSec - 6000;
+					
+					connectionContext.setRefreshTokenExpiryTime(DateTimeUtil.getCurrenTime() + (refreshTokenExpireTimeInSec * 1000));
 				}
-				else if(connectionContext.getExpiryTime() <= DateTimeUtil.getCurrenTime()) {
-					getAuthToken(connectionContext);
-				}
-			break;
+			}
+			
+			if(resultJson.containsKey(ConnectionUtil.EXPIRES_IN_STRING)) {
+				
+				long expireTimeInSec = (long) resultJson.get(ConnectionUtil.EXPIRES_IN_STRING);
 
-		case DISABLED:
-			break;
+				expireTimeInSec = expireTimeInSec - 60;
+
+				connectionContext.setExpiryTime(DateTimeUtil.getCurrenTime() + (expireTimeInSec * 1000));
+			}
+			else {
+				connectionContext.setExpiryTime(ConnectionUtil.MAX_TIME);
+			}
+			
+			ConnectionUtil.updateConnectionContext(connectionContext);
+		}
+		else {
+			throw new Exception("Required Param is Missing in Response - "+resultJson.toJSONString());
 		}
 	}
 	
-	private static void invalidateConnection(ConnectionContext connectionContext) throws Exception {
+	public static void updateAuthTokenByRefreshToken(ConnectionContext connectionContext) throws Exception {
+		
+		String url = connectionContext.getRefreshTokenUrl();
+
+		Map<String,String> params = new HashMap<>();
+
+		params.put(ConnectionUtil.REFRESH_TOKEN_STRING, connectionContext.getRefreshToken());
+		params.put(ConnectionUtil.CLIENT_ID_STRING, connectionContext.getClientId());
+		params.put(ConnectionUtil.CLIENT_SECRET_STRING, connectionContext.getClientSecretId());
+		params.put(ConnectionUtil.GRANT_TYPE_STRING, ConnectionUtil.REFRESH_TOKEN_STRING);
+		params.put(ConnectionUtil.SECRET_STATE, connectionContext.getSecretStateKey());
+
+		String res = ConnectionUtil.getUrlResult(url, params, HttpMethod.POST,null,null,null);
+		JSONParser parser = new JSONParser();
+		JSONObject resultJson = (JSONObject) parser.parse(res);
+
+		if(resultJson.containsKey(ConnectionUtil.ACCESS_TOKEN_STRING)) {
+			connectionContext.setAccessToken((String)resultJson.get(ConnectionUtil.ACCESS_TOKEN_STRING));
+			
+			if(resultJson.containsKey(ConnectionUtil.EXPIRES_IN_STRING)) {
+				long expireTimeInSec = (long) resultJson.get(ConnectionUtil.EXPIRES_IN_STRING);
+
+				expireTimeInSec = expireTimeInSec - 60;
+
+				connectionContext.setExpiryTime(DateTimeUtil.getCurrenTime() + (expireTimeInSec * 1000));
+
+			}
+			else {
+				connectionContext.setExpiryTime(ConnectionUtil.MAX_TIME);
+			}
+			ConnectionUtil.updateConnectionContext(connectionContext);
+		}
+		else {
+			throw new Exception("Required Param is Missing During updateAuthTokenByRefreshToken in Response - "+resultJson.toJSONString());
+		}
+	}
+
+	
+	public static void invalidateConnection(ConnectionContext connectionContext) throws Exception {
 		
 		connectionContext.setState(ConnectionContext.State.CLIENT_ID_MAPPED.getValue());
 		connectionContext.setAuthCode("");
@@ -131,112 +191,6 @@ public class ConnectionUtil {
 		NewTransactionService.newTransaction(() ->  ConnectionUtil.updateConnectionContext(connectionContext));
 	}
 
-	private static void getAuthToken(ConnectionContext connectionContext) throws Exception {
-
-		if(connectionContext.getStateEnum() == State.AUTHORIZED || connectionContext.getStateEnum() == State.AUTH_TOKEN_GENERATED) {
-
-			if(connectionContext.getStateEnum() == State.AUTHORIZED) {
-				String url = connectionContext.getAccessTokenUrl();
-
-				Map<String,String> params = new HashMap<>();
-				
-				Map<String,String> headerParams = new HashMap<>();
-
-				params.put(CODE_STRING, connectionContext.getAuthCode());
-				
-				if(connectionContext.getAccessTokenSetting() > 0 && connectionContext.getAccessTokenSetting() == ConnectionContext.Access_Token_Setting.CLIENT_DETAILS_ENCODED_AS_AUTH_PARAM.getValue()) {
-					
-					headerParams.put(AUTHORIZATION_STRING, "Basic " + Base64.getEncoder().encodeToString(new String(connectionContext.getClientId() + ":" + connectionContext.getClientSecretId()).getBytes()));
-				}
-				else {
-					params.put(CLIENT_ID_STRING, connectionContext.getClientId());
-					params.put(CLIENT_SECRET_STRING, connectionContext.getClientSecretId());
-				}
-				
-				params.put(GRANT_TYPE_STRING, GRANT_TYPE_AUTH_TOKEN);
-				params.put(REDIRECT_URI_STRING, connectionContext.getCallBackURL());
-				params.put(ACCESS_TYPE_STRING, ACCESS_TYPE_OFFLINE);
-
-				String res = getUrlResult(url, params, HttpMethod.POST,headerParams,null,null);
-				JSONParser parser = new JSONParser();
-				JSONObject resultJson = (JSONObject) parser.parse(res);
-
-				if(resultJson.containsKey(ACCESS_TOKEN_STRING)) {
-					connectionContext.setAccessToken((String)resultJson.get(ACCESS_TOKEN_STRING));
-					
-					if(resultJson.containsKey(REFRESH_TOKEN_STRING)) {
-						connectionContext.setRefreshToken((String)resultJson.get(REFRESH_TOKEN_STRING));
-						
-						if(resultJson.containsKey(REFRESH_TOKEN_EXPIRES_IN_STRING)) {
-							
-							long refreshTokenExpireTimeInSec = (long) resultJson.get(REFRESH_TOKEN_EXPIRES_IN_STRING);
-							
-							refreshTokenExpireTimeInSec = refreshTokenExpireTimeInSec - 6000;
-							
-							connectionContext.setRefreshTokenExpiryTime(DateTimeUtil.getCurrenTime() + (refreshTokenExpireTimeInSec * 1000));
-						}
-					}
-					
-					if(resultJson.containsKey(EXPIRES_IN_STRING)) {
-						
-						long expireTimeInSec = (long) resultJson.get(EXPIRES_IN_STRING);
-
-						expireTimeInSec = expireTimeInSec - 60;
-
-						connectionContext.setExpiryTime(DateTimeUtil.getCurrenTime() + (expireTimeInSec * 1000));
-					}
-					else {
-						connectionContext.setExpiryTime(MAX_TIME);
-					}
-					
-					updateConnectionContext(connectionContext);
-				}
-				else {
-					throw new Exception("Required Param is Missing in Response - "+resultJson.toJSONString());
-				}
-			}
-
-			else if (connectionContext.getStateEnum() == State.AUTH_TOKEN_GENERATED) {
-				String url = connectionContext.getRefreshTokenUrl();
-
-				Map<String,String> params = new HashMap<>();
-
-				params.put(REFRESH_TOKEN_STRING, connectionContext.getRefreshToken());
-				params.put(CLIENT_ID_STRING, connectionContext.getClientId());
-				params.put(CLIENT_SECRET_STRING, connectionContext.getClientSecretId());
-				params.put(GRANT_TYPE_STRING, REFRESH_TOKEN_STRING);
-				params.put(SECRET_STATE, connectionContext.getSecretStateKey());
-
-				String res = getUrlResult(url, params, HttpMethod.POST,null,null,null);
-				JSONParser parser = new JSONParser();
-				JSONObject resultJson = (JSONObject) parser.parse(res);
-
-				if(resultJson.containsKey(ACCESS_TOKEN_STRING)) {
-					connectionContext.setAccessToken((String)resultJson.get(ACCESS_TOKEN_STRING));
-					
-					if(resultJson.containsKey(EXPIRES_IN_STRING)) {
-						long expireTimeInSec = (long) resultJson.get(EXPIRES_IN_STRING);
-
-						expireTimeInSec = expireTimeInSec - 60;
-
-						connectionContext.setExpiryTime(DateTimeUtil.getCurrenTime() + (expireTimeInSec * 1000));
-
-					}
-					else {
-						connectionContext.setExpiryTime(MAX_TIME);
-					}
-					
-					updateConnectionContext(connectionContext);
-				}
-				else {
-					throw new Exception("Required Param is Missing in Response - "+resultJson.toJSONString());
-				}
-			}
-		}
-		else {
-			throw new Exception("Connection Not Yet Authorized");
-		}
-	}
 
 	public static String getUrlResult(String urlString,Map<String,String> params,HttpMethod method,Map<String,String> headerParam,String bodyString,String bodyType) throws Exception {
 

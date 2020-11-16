@@ -11,6 +11,7 @@ public class ConnectionContext {
 	long orgId = -1l;
 	AuthType authType;
 	ParamType paramType;
+	GrantType grantType;
 	State state;
 	String name;
 	String serviceName;
@@ -30,12 +31,62 @@ public class ConnectionContext {
 	long refreshTokenExpiryTime = -1l;
 	String secretStateKey;
 	Access_Token_Setting accessTokenSetting;
+	String userName;
+	String password;
+	String audience;
 	
+	public String getAudience() {
+		return audience;
+	}
+	public void setAudience(String audience) {
+		this.audience = audience;
+	}
+	public String getResource() {
+		return resource;
+	}
+	public void setResource(String resource) {
+		this.resource = resource;
+	}
+
+	String resource;
+	public String getUserName() {
+		return userName;
+	}
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	boolean oAuthParamInHeader = false;
+	
+	public boolean isoAuthParamInHeader() {
+		return oAuthParamInHeader;
+	}
+	public void setoAuthParamInHeader(boolean oAuthParamInHeader) {
+		this.oAuthParamInHeader = oAuthParamInHeader;
+	}
 	public int getAccessTokenSetting() {
 		if(accessTokenSetting != null) {
 			return accessTokenSetting.getValue();
 		}
 		return -1;
+	}
+	public GrantType getGrantTypeEnum() {
+		return grantType;
+	}
+	public int getGrantType() {
+		if(grantType != null) {
+			return grantType.getValue();
+		}
+		return -1;
+	}
+	public void setGrantType(int grantType) {
+		this.grantType = GrantType.valueOf(grantType);
 	}
 	public void setAccessTokenSetting(int accessTokenSetting) {
 		if(accessTokenSetting > 0) {
