@@ -1,15 +1,14 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.accounts.dto.User;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
-
-import com.facilio.accounts.dto.User;
-import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class PurchaseOrderContext extends ModuleBaseWithCustomFields {
 
@@ -123,9 +122,9 @@ public class PurchaseOrderContext extends ModuleBaseWithCustomFields {
 		double quantity = 0.0;
 	
 		for(PurchaseRequestContext pr : list) {
-			if(pr.getStatusEnum() != PurchaseRequestContext.Status.APPROVED) {
-				throw new IllegalArgumentException("Only Purchase Requests with Approved status can be converted to Purchase Order");
-			}
+//			if(pr.getStatusEnum() != PurchaseRequestContext.Status.APPROVED) {
+//				throw new IllegalArgumentException("Only Purchase Requests with Approved status can be converted to Purchase Order");
+//			}
 			if(vendorId == -1 && pr.getVendor() != null) {
 				purchaseOrderContext.setVendor(pr.getVendor());
 				vendorId = 	pr.getVendor().getId();

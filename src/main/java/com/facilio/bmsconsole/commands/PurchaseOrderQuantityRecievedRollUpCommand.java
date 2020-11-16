@@ -1,30 +1,28 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.*;
-
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
+import com.facilio.bmsconsole.context.PurchaseOrderContext.Status;
+import com.facilio.bmsconsole.context.ReceivableContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
-import com.facilio.modules.*;
-import com.facilio.v3.V3Builder.V3Config;
-import com.facilio.v3.context.Constants;
-import com.facilio.v3.util.ChainUtil;
-import org.apache.commons.chain.Context;
-
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.PurchaseOrderContext;
-import com.facilio.bmsconsole.context.PurchaseOrderContext.Status;
-import com.facilio.bmsconsole.context.ReceivableContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.v3.V3Builder.V3Config;
+import com.facilio.v3.context.Constants;
+import com.facilio.v3.util.ChainUtil;
+import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
+
+import java.util.*;
 
 public class PurchaseOrderQuantityRecievedRollUpCommand extends FacilioCommand {
 
@@ -137,6 +135,7 @@ public class PurchaseOrderQuantityRecievedRollUpCommand extends FacilioCommand {
 
 		Constants.setModuleName(patchContext, FacilioConstants.ContextNames.PURCHASE_ORDER);
 		Constants.setBulkRawInput(patchContext, Collections.singletonList(json));
+		patchContext.put(Constants.RECORD_ID, po.getId());
 		patchContext.put(Constants.BEAN_CLASS, beanClass);
 		patchContext.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		patchContext.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
