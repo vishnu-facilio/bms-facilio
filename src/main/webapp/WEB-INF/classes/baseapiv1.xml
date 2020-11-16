@@ -1,39 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE struts PUBLIC
-	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
 	"http://struts.apache.org/dtds/struts-2.5.dtd">
 
 <struts>
-
-	<package name="baseV1Api" strict-method-invocation="false" extends="struts-default,json-default">
+	<package name="baseV1" strict-method-invocation="false" extends="struts-default,json-default">
 		<result-types>
 			<result-type name="tiles"
 						 class="org.apache.struts2.views.tiles.TilesResult" />
 			<result-type name="json"
 						 class="com.facilio.bmsconsole.interceptors.CacheResult" />
 		</result-types>
-		<interceptors>
-			<interceptor name="cacheinterceptor"
-						 class="com.facilio.bmsconsole.interceptors.CacheInterceptor" />
-			<interceptor name="scopeinterceptor"
-						 class="com.facilio.bmsconsole.interceptors.ScopeInterceptor" />
-			<interceptor name="datasourceinterceptor"
-						 class="com.facilio.bmsconsole.interceptors.DataSourceInterceptor" />
-			<interceptor name="authinterceptor"
-						 class="com.facilio.bmsconsole.interceptors.AuthInterceptor" />
-			<interceptor-stack name="defaultInterceptor">
-				<interceptor-ref name="defaultStack" />
-				<interceptor-ref name="authinterceptor" />
-				<interceptor-ref name="datasourceinterceptor" />
-				<interceptor-ref name="scopeinterceptor" />
-				<interceptor-ref name="cacheinterceptor" />
-				<interceptor-ref name="json">
-					<param name="enableSMD">true</param>
-				</interceptor-ref>
-			</interceptor-stack>
-		</interceptors>
-
-		<default-interceptor-ref name="defaultInterceptor" />
 		<global-results>
 			<result name="login" type="httpheader">
 				<param name="status">401</param>
@@ -66,6 +43,29 @@
 			<exception-mapping exception="java.lang.Exception"
 							   result="exception" />
 		</global-exception-mappings>
+	</package>
+	<package name="baseV1Api" strict-method-invocation="false" extends="baseV1">
+		<interceptors>
+			<interceptor name="cacheinterceptor"
+						 class="com.facilio.bmsconsole.interceptors.CacheInterceptor" />
+			<interceptor name="scopeinterceptor"
+						 class="com.facilio.bmsconsole.interceptors.ScopeInterceptor" />
+			<interceptor name="datasourceinterceptor"
+						 class="com.facilio.bmsconsole.interceptors.DataSourceInterceptor" />
+			<interceptor name="authinterceptor"
+						 class="com.facilio.bmsconsole.interceptors.AuthInterceptor" />
+			<interceptor-stack name="defaultInterceptor">
+				<interceptor-ref name="defaultStack" />
+				<interceptor-ref name="authinterceptor" />
+				<interceptor-ref name="datasourceinterceptor" />
+				<interceptor-ref name="scopeinterceptor" />
+				<interceptor-ref name="cacheinterceptor" />
+				<interceptor-ref name="json">
+					<param name="enableSMD">true</param>
+				</interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
+		<default-interceptor-ref name="defaultInterceptor" />
 	</package>
 	<package name="internalV1" namespace="/v1/exception"
 			 extends="baseV1Api">

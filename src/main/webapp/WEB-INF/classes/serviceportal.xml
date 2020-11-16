@@ -4,12 +4,7 @@
     "http://struts.apache.org/dtds/struts-2.5.dtd">
 
 <struts>
-	<!-- Not extending baseapiV1 because of Portal Auth interceptor change. This needs to be changed -->
-	<package name="serviceportal" strict-method-invocation="false" namespace="/api/service"  extends="baseV1Api">
-		<result-types>
-			<result-type name="tiles"
-				class="org.apache.struts2.views.tiles.TilesResult" />
-		</result-types>
+	<package name="serviceportal" strict-method-invocation="false" namespace="/api/service"  extends="baseV1">
 		<interceptors>
 			<interceptor name="cacheinterceptor"
 						 class="com.facilio.bmsconsole.interceptors.CacheInterceptor" />
@@ -30,9 +25,7 @@
 				</interceptor-ref>
 			</interceptor-stack>
 		</interceptors>
-
 		<default-interceptor-ref name="defaultInterceptor" />
-
 		<action name="validateRegistration" class="com.facilio.auth.actions.FacilioAuthAction"
 		method="verifyEmail">
 			<param name="auth">false</param>

@@ -39,11 +39,11 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
     public String intercept(ActionInvocation arg0) throws Exception { 
         try { 
             intercept0();
-            return arg0.invoke();
         } catch (Exception e) {
             logger.log(Level.SEVERE, "error in portal auth interceptor", e); 
             return Action.LOGIN; 
-        } 
+        }
+        return arg0.invoke();
     }
  
     private void intercept0() throws Exception{
