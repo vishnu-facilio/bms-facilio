@@ -170,6 +170,7 @@
       avgdays = date.hourToDay(avgMin);
       result.totalWoAvgCompThisWeek = math().setPrecision(avgdays, 0);
       }
+      result.totalWoAvgCompThisWeekValue = avgMin;
   db = {
         criteria: [category == 2004 && createdTime == lastWeek && moduleState != null && moduleState == closeticketStatus],
         field: "actualWorkDuration",
@@ -182,6 +183,7 @@
       avgdays = date.hourToDay(avgMin);
       result.totalWoAvgCompLastWeek = math().setPrecision(avgdays, 0);
       }
+      result.totalWoAvgCompLastWeekValue = avgMin;
    db = {
         criteria: [category == 2004 && createdTime == thisWeek && moduleState != null && moduleState == closeticketStatus],
         field: "actualWorkDuration",
@@ -250,6 +252,9 @@
       result.totalWoOnHoldThisWeek = ((Module("workorder").fetch(db)/result.totalWorkordersThisWeek)*100);
   }
   
+
+
+
   db = {
          criteria: [picklist == 2],
     	 field: "id"
@@ -290,6 +295,19 @@
   }
 
   db = {
+        criteria: [category == 2004 && resource == buildings && moduleState != null && moduleState == closeticketStatus],
+        field: "actualWorkDuration",
+        aggregation: "avg"
+  };  
+  avgSeconds = Module("workorder").fetch(db);
+  result.totalAlWahaibiWoAvgComp = 0;
+      if (avgSeconds != null){
+      avgMin = date.secToHour(avgSeconds);
+      avgdays = date.hourToDay(avgMin);
+      result.totalAlWahaibiWoAvgComp = math().setPrecision(avgdays, 0);
+      }
+
+  db = {
          criteria: [picklist == 3],
     	 field: "id"
   }; 
@@ -328,6 +346,20 @@
         result.totalBdPropertiesWoClose = math().setPrecision(result.totalBdPropertiesWoClose, 0); 
       }
   }
+
+  db = {
+        criteria: [category == 2004 && resource == buildings && moduleState != null && moduleState == closeticketStatus],
+        field: "actualWorkDuration",
+        aggregation: "avg"
+  };  
+  avgSeconds = Module("workorder").fetch(db);
+  result.totalBdPropertiesWoAvgComp = 0;
+      if (avgSeconds != null){
+      avgMin = date.secToHour(avgSeconds);
+      avgdays = date.hourToDay(avgMin);
+      result.totalBdPropertiesWoAvgComp = math().setPrecision(avgdays, 0);
+      }
+
   db = {
          criteria: [picklist == 1],
     	 field: "id"
@@ -367,6 +399,20 @@
         result.totalAmPropertiesWoClose = math().setPrecision(result.totalAmPropertiesWoClose, 0); 
       }
   }
+
+  db = {
+        criteria: [category == 2004 && resource == buildings && moduleState != null && moduleState == closeticketStatus],
+        field: "actualWorkDuration",
+        aggregation: "avg"
+  };  
+  avgSeconds = Module("workorder").fetch(db);
+  result.totalAmPropertiesWoAvgComp = 0;
+      if (avgSeconds != null){
+      avgMin = date.secToHour(avgSeconds);
+      avgdays = date.hourToDay(avgMin);
+      result.totalAmPropertiesWoAvgComp = math().setPrecision(avgdays, 0);
+      }
+
   db = {
          criteria: [picklist == 5],
     	 field: "id"
@@ -404,6 +450,20 @@
         result.totalEqaratPropertiesWoClose = math().setPrecision(result.totalEqaratPropertiesWoClose, 0); 
       }
   }
+
+   db = {
+        criteria: [category == 2004 && resource == buildings && moduleState != null && moduleState == closeticketStatus],
+        field: "actualWorkDuration",
+        aggregation: "avg"
+  };  
+  avgSeconds = Module("workorder").fetch(db);
+  result.totalEqaratPropertiessWoAvgComp = 0;
+      if (avgSeconds != null){
+      avgMin = date.secToHour(avgSeconds);
+      avgdays = date.hourToDay(avgMin);
+      result.totalEqaratPropertiessWoAvgComp = math().setPrecision(avgdays, 0);
+      }
+
   db = {
          criteria: [picklist == 4],
     	 field: "id"
@@ -443,6 +503,20 @@
         result.totalDgPropertiesWoClose = math().setPrecision(result.totalDgPropertiesWoClose, 0); 
       }
   }
+
+  db = {
+        criteria: [category == 2004 && resource == buildings && moduleState != null && moduleState == closeticketStatus],
+        field: "actualWorkDuration",
+        aggregation: "avg"
+  };  
+  avgSeconds = Module("workorder").fetch(db);
+  result.totalDgPropertiessWoAvgComp = 0;
+      if (avgSeconds != null){
+      avgMin = date.secToHour(avgSeconds);
+      avgdays = date.hourToDay(avgMin);
+      result.totalDgPropertiessWoAvgComp = math().setPrecision(avgdays, 0);
+      }
+
    db = {
         criteria: [category == 2004],
      	field: "id",
@@ -476,6 +550,19 @@
       if (result.totalClosedWoInProperties > 0) {
         result.totalClosedWoInProperties = math().setPrecision(result.totalClosedWoInProperties, 0); 
       }
+  }
+
+    db = {
+        criteria: [category == 2004 && moduleState != null && moduleState == closeticketStatus],
+        field: "actualWorkDuration",
+        aggregation: "avg"
+  };  
+  avgSeconds = Module("workorder").fetch(db);
+  result.totalAllWoAvgComp = 0;
+      if (avgSeconds != null){
+      avgMin = date.secToHour(avgSeconds);
+      avgdays = date.hourToDay(avgMin);
+      result.totalAllWoAvgComp = math().setPrecision(avgdays, 0);
   }
 
   buildingsList = Module("building").fetch([id != null]);
@@ -607,8 +694,13 @@
                          
                            }
                            else if ( handOver > 0  &&  obj.daysInOpen > 0) {
+                             if (daysInOpen > 5) {
                                indays = (daysInOpen - 5);
-                               obj.variation = math().setPrecision(indays, 0);
+                               obj.variation = "+" + math().setPrecision(indays, 0);
+                             }else if (daysInOpen > 0 && daysInOpen < 5) {
+                               indays = (5 - daysInOpen);
+                               obj.variation = "-" + math().setPrecision(indays, 0);
+                             }
                            }
                            
                            obj.unitName = unitObj.name;
@@ -694,8 +786,16 @@
                            
                              startDate = date().getFormattedTime(wo.actualWorkStart,"dd-MM-yyyy");
                              resolvedDate = date().getFormattedTime(resolvedTime,"dd-MM-yyyy");
-          
                          
+                           }
+                            else if ( handOver > 0  &&  obj.daysInOpen > 0) {
+                             if (daysInOpen > 5) {
+                               indays = (daysInOpen - 5);
+                               obj.variation = "+" + math().setPrecision(indays, 0);
+                             }else if (daysInOpen > 0 && daysInOpen < 5) {
+                               indays = (5 - daysInOpen);
+                               obj.variation = "-" + math().setPrecision(indays, 0);
+                             }
                            }
                            
                            obj.unitName = unitObj.name;
@@ -1301,7 +1401,16 @@
           
                          
                            }
-                           
+                            else if ( handOver > 0  &&  obj.daysInOpen > 0) {
+                             if (daysInOpen > 5) {
+                               indays = (daysInOpen - 5);
+                               obj.variation = "+" + math().setPrecision(indays, 0);
+                             }else if (daysInOpen > 0 && daysInOpen < 5) {
+                               indays = (5 - daysInOpen);
+                               obj.variation = "-" + math().setPrecision(indays, 0);
+                             }
+                           }
+
                            obj.unitName = unitObj.name;
                            unitList.push(obj);
                            }
@@ -1386,8 +1495,15 @@
                            
                              startDate = date().getFormattedTime(wo.actualWorkStart,"dd-MM-yyyy");
                              resolvedDate = date().getFormattedTime(resolvedTime,"dd-MM-yyyy");
-          
-                         
+                           }
+                            else if ( handOver > 0  &&  obj.daysInOpen > 0) {
+                             if (daysInOpen > 5) {
+                               indays = (daysInOpen - 5);
+                               obj.variation = "+" + math().setPrecision(indays, 0);
+                             }else if (daysInOpen > 0 && daysInOpen < 5) {
+                               indays = (5 - daysInOpen);
+                               obj.variation = "-" + math().setPrecision(indays, 0);
+                             }
                            }
                            
                            obj.unitName = unitObj.name;
