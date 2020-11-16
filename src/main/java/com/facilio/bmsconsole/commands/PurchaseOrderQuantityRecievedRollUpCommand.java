@@ -20,6 +20,7 @@ import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.ChainUtil;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
 import java.util.*;
@@ -60,27 +61,28 @@ public class PurchaseOrderQuantityRecievedRollUpCommand extends FacilioCommand {
 				SelectRecordsBuilder<V3PurchaseOrderContext> poBuilder = new SelectRecordsBuilder<V3PurchaseOrderContext>()
 						.module(pomodule).select(pofields).beanClass(V3PurchaseOrderContext.class)
 						.andCondition(CriteriaAPI.getIdCondition(entry.getKey(), pomodule));
-				List<V3PurchaseOrderContext> purchaseOrderlist = poBuilder.get();
+				V3PurchaseOrderContext po = poBuilder.fetchFirst();
 				ReceivableContext receivable = new ReceivableContext();
-				if (purchaseOrderlist != null && !purchaseOrderlist.isEmpty()) {
-					for (V3PurchaseOrderContext po : purchaseOrderlist) {
-						Map<String, Object> map = FieldUtil.getAsProperties(po);
-						receivable.setPoId(po);
-						po.setQuantityReceived(entry.getValue());
-						if (entry.getValue() < po.getTotalQuantity()) {
-							po.setStatus(Status.PARTIALLY_RECEIVED.getValue());
-							po.setReceivableStatus(V3PurchaseOrderContext.ReceivableStatus.PARTIALLY_RECEIVED.getIndex());
-							receivable.setStatus(com.facilio.bmsconsole.context.ReceivableContext.Status.PARTIALLY_RECEIVED);
-						} else if (entry.getValue() >= po.getTotalQuantity()) {
-							po.setStatus(Status.RECEIVED.getValue());
-							receivable.setStatus(com.facilio.bmsconsole.context.ReceivableContext.Status.RECEIVED);
-							po.setReceivableStatus(V3PurchaseOrderContext.ReceivableStatus.RECEIVED.getIndex());
-							receivedPOs.add(po);
-						}
-						updatePurchaseOrder(po, pomodule, pofields);
-						updateReceivables(receivable, module, fields, fieldsMap);
+				if(po != null) {
+					Map<String, Object> map = FieldUtil.getAsProperties(po);
+					po.setQuantityReceived(entry.getValue());
+					if (entry.getValue() < po.getTotalQuantity()) {
+						po.setStatus(Status.PARTIALLY_RECEIVED.getValue());
+						po.setReceivableStatus(V3PurchaseOrderContext.ReceivableStatus.PARTIALLY_RECEIVED.getIndex());
+						receivable.setStatus(com.facilio.bmsconsole.context.ReceivableContext.Status.PARTIALLY_RECEIVED);
+					} else if (entry.getValue() >= po.getTotalQuantity()) {
+						po.setStatus(Status.RECEIVED.getValue());
+						receivable.setStatus(com.facilio.bmsconsole.context.ReceivableContext.Status.RECEIVED);
+						po.setReceivableStatus(V3PurchaseOrderContext.ReceivableStatus.RECEIVED.getIndex());
 					}
+					po = updatePurchaseOrder(po, pomodule);
+					receivable.setPoId(po);
+					if(entry.getValue() >= po.getTotalQuantity()) {
+						receivedPOs.add(po);
+					}
+					updateReceivables(receivable, module, fields, fieldsMap);
 				}
+
 			}
 			context.put(FacilioConstants.ContextNames.PURCHASE_ORDERS, receivedPOs);
 		}
@@ -122,24 +124,31 @@ public class PurchaseOrderQuantityRecievedRollUpCommand extends FacilioCommand {
 		return 0d;
 	}
 	
-	private void updatePurchaseOrder(V3PurchaseOrderContext po, FacilioModule pomodule, List<FacilioField> pofields) throws Exception{
+	private V3PurchaseOrderContext updatePurchaseOrder(V3PurchaseOrderContext po, FacilioModule pomodule) throws Exception{
 
 		Map<String, Object> map = FieldUtil.getAsProperties(po);
 		JSONObject json = new JSONObject();
 		json.putAll(map);
 
-		FacilioChain patchChain = ChainUtil.getBulkPatchChain(FacilioConstants.ContextNames.PURCHASE_ORDER);
+		FacilioChain patchChain = ChainUtil.getPatchChain(FacilioConstants.ContextNames.PURCHASE_ORDER);
 		FacilioContext patchContext = patchChain.getContext();
 		V3Config v3Config = ChainUtil.getV3Config(FacilioConstants.ContextNames.PURCHASE_ORDER);
 		Class beanClass = ChainUtil.getBeanClass(v3Config, pomodule);
 
 		Constants.setModuleName(patchContext, FacilioConstants.ContextNames.PURCHASE_ORDER);
-		Constants.setBulkRawInput(patchContext, Collections.singletonList(json));
+		Constants.setRawInput(patchContext, json);
 		patchContext.put(Constants.RECORD_ID, po.getId());
 		patchContext.put(Constants.BEAN_CLASS, beanClass);
 		patchContext.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		patchContext.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
 		patchChain.execute();
+
+		Map<String, List<ModuleBaseWithCustomFields>> recordMap = Constants.getRecordMap(patchContext);
+		List<ModuleBaseWithCustomFields> purchaseOrders = recordMap.get(FacilioConstants.ContextNames.PURCHASE_ORDER);
+		if(CollectionUtils.isNotEmpty(purchaseOrders)){
+			return (V3PurchaseOrderContext) purchaseOrders.get(0);
+		}
+		return null;
 	}
 	
 	private void updateReceivables(ReceivableContext receivable, FacilioModule module, List<FacilioField> fields, Map<String, FacilioField> fieldsMap) throws Exception{
