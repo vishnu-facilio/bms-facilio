@@ -43,7 +43,7 @@ public class POAfterCreateOrEditV3Command extends FacilioCommand {
                 if (purchaseOrderContext != null) {
 
                     if (purchaseOrderContext.getId() > 0) {
-                        if (purchaseOrderContext.getLineItems() != null) {
+                        if (purchaseOrderContext.getLineItems() != null && purchaseOrderContext.getReceivableStatus() == V3PurchaseOrderContext.ReceivableStatus.YET_TO_RECEIVE.getIndex()) {
                             DeleteRecordBuilder<PurchaseOrderLineItemContext> deleteBuilder = new DeleteRecordBuilder<PurchaseOrderLineItemContext>()
                                     .module(lineItemsModule)
                                     .andCondition(CriteriaAPI.getCondition("PO_ID", "poid", String.valueOf(purchaseOrderContext.getId()), NumberOperators.EQUALS));
@@ -53,6 +53,7 @@ public class POAfterCreateOrEditV3Command extends FacilioCommand {
                         }
                         Long poId = (Long) context.get(Constants.RECORD_ID);
                         if (poId == null || poId <= 0) {
+
                             FacilioModule receivableModule = modBean.getModule(FacilioConstants.ContextNames.RECEIVABLE);
                             V3ReceivableContext receivableContext = new V3ReceivableContext();
                             receivableContext.setPoId(purchaseOrderContext);
