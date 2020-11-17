@@ -16,7 +16,9 @@ import com.facilio.db.util.DBConf;
 import com.facilio.modules.*;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.*;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
@@ -32,7 +34,7 @@ import java.util.stream.Collectors;
 
 public class ModuleBeanImpl implements ModuleBean {
 
-	private static org.apache.log4j.Logger log = LogManager.getLogger(ModuleBeanImpl.class.getName());
+	private static final org.apache.log4j.Logger LOGGER = LogManager.getLogger(ModuleBeanImpl.class.getName());
 
 	private Connection getConnection() throws SQLException {
 	//	return BeanFactory.getConnection();
@@ -104,14 +106,13 @@ public class ModuleBeanImpl implements ModuleBean {
 			pstmt.setLong(1, getOrgId());
 			pstmt.setLong(2, moduleId);
 			pstmt.setLong(3, getOrgId());
-			pstmt.setLong(4, moduleId);
 			
 			rs = pstmt.executeQuery();
 			
 			return getModuleFromRS(rs);
 		}
 		catch(SQLException e) {
-			log.info("Exception occurred ", e);
+			LOGGER.info("Exception occurred ", e);
 			throw e;
 		}
 		finally {
@@ -197,15 +198,15 @@ public class ModuleBeanImpl implements ModuleBean {
 			 pstmt = conn.prepareStatement(sql);
 
 			pstmt.setLong(1, getOrgId());
-			pstmt.setLong(2, getOrgId());
-			pstmt.setString(3, moduleName);
+			pstmt.setString(2, moduleName);
+			pstmt.setLong(3, getOrgId());
 			
 			rs = pstmt.executeQuery();
 			
 			return getModuleFromRS(rs);
 		}
 		catch(SQLException e) {
-			log.info("Exception occurred ", e);
+			LOGGER.info("Exception occurred ", e);
 			throw e;
 		}
 		finally {
@@ -224,6 +225,7 @@ public class ModuleBeanImpl implements ModuleBean {
 	}
 
 	private List<FacilioModule> getSubModulesFromRS(ResultSet rs) throws SQLException, Exception {
+		// We are getting only module id here and separate fetch for modules to handle sub modules that extend some other module
 		List<FacilioModule> subModules = new ArrayList<>();
 		while(rs.next()) {
 			subModules.add(getMod(rs.getLong("CHILD_MODULE_ID")));
@@ -246,21 +248,24 @@ public class ModuleBeanImpl implements ModuleBean {
 		return Collections.unmodifiableList(subModules);
 	}
 
-	@Override
-	public List<FacilioModule> getAllSubModules(long moduleId) throws Exception {
-		String sql = DBConf.getInstance().getQuery("module.submodule.all.id");
+	private List<FacilioModule> getSubModuleFromParent (FacilioModule parentModule, FacilioModule.ModuleType... types) throws Exception {
+		FacilioUtil.throwIllegalArgumentException(parentModule == null, "Invalid module while getting sub modules");
+		// We are getting only module id here and separate fetch for modules to handle sub modules that extend some other module
+		String sql = null;
+		if (ArrayUtils.isEmpty(types)) {
+			sql = MessageFormat.format(DBConf.getInstance().getQuery("module.submodule.all"), StringUtils.join(parentModule.getExtendedModuleIds(), ","));
+		}
+		else {
+			sql = MessageFormat.format(DBConf.getInstance().getQuery("module.submodule.type"), StringUtils.join(parentModule.getExtendedModuleIds(), ","), getTypes(types));
+		}
 		ResultSet rs = null;
 		try(Connection conn = getConnection();PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setLong(1, getOrgId());
-			pstmt.setLong(2, moduleId);
-			pstmt.setLong(3, getOrgId());
-			pstmt.setLong(4, moduleId);
-			pstmt.setLong(5, getOrgId());
 			rs = pstmt.executeQuery();
 			return getSubModulesFromRS(rs);
 		}
 		catch(Exception e) {
-			log.info("Exception occurred ", e);
+			LOGGER.error("Exception occurred ", e);
 			throw e;
 		}
 		finally {
@@ -269,43 +274,26 @@ public class ModuleBeanImpl implements ModuleBean {
 					rs.close();
 				}
 				catch(SQLException e) {
-					log.info("Exception occurred ", e);
+					LOGGER.info("Exception occurred ", e);
 				}
 			}
 		}
 	}
+
+	@Override
+	public List<FacilioModule> getAllSubModules(long moduleId) throws Exception {
+		FacilioModule parentModule = getMod(moduleId);
+		return getSubModuleFromParent(parentModule);
+	}
 	
 	@Override
 	public List<FacilioModule> getAllSubModules(String moduleName) throws Exception {
-		
 		if (LookupSpecialTypeUtil.isSpecialType(moduleName)) {
 			return LookupSpecialTypeUtil.getAllSubModules(moduleName);
 		}
-		
-		String sql = DBConf.getInstance().getQuery("module.submodule.all.name");
-		ResultSet rs = null;
-		try(Connection conn = getConnection();PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setLong(1, getOrgId());
-			pstmt.setLong(2, getOrgId());
-			pstmt.setString(3, moduleName);
-			pstmt.setLong(4, getOrgId());
-			rs = pstmt.executeQuery();
-			return getSubModulesFromRS(rs);
-		}
-		catch(Exception e) {
-			log.info("Exception occurred ", e);
-			throw e;
-		}
-		finally {
-			if(rs != null) {
-				try {
-					rs.close();
-				}
-				catch(SQLException e) {
-					log.info("Exception occurred ", e);
-				}
-			}
-		}
+
+		FacilioModule parentModule = getMod(moduleName);
+		return getSubModuleFromParent(parentModule);
 	}
 	
 	private String getTypes(FacilioModule.ModuleType... types) {
@@ -321,20 +309,19 @@ public class ModuleBeanImpl implements ModuleBean {
 		if (types == null || types.length == 0) {
 			return null;
 		}
-		String sql = MessageFormat.format(DBConf.getInstance().getQuery("module.submodule.type.deletetype"), getTypes(types));
-		ResultSet rs = null;
+		FacilioModule parentModule = getMod(moduleId);
+		FacilioUtil.throwIllegalArgumentException(parentModule == null, "Invalid module while getting sub modules");
 
+		// We are getting only module id here and separate fetch for modules to handle sub modules that extend some other module
+		String sql = MessageFormat.format(DBConf.getInstance().getQuery("module.submodule.type"), StringUtils.join(parentModule.getExtendedModuleIds(), ","), getTypes(types));
+		ResultSet rs = null;
 		try(Connection conn = getConnection();PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setLong(1, getOrgId());
-			pstmt.setLong(2, moduleId);
-			pstmt.setLong(3, getOrgId());
-			pstmt.setLong(4, moduleId);
-			pstmt.setLong(5, getOrgId());
 			rs = pstmt.executeQuery();
 			return getSubModulesDeleteTypeFromRS(rs);
 		}
 		catch(Exception e) {
-			log.info("Exception occurred ", e);
+			LOGGER.error("Exception occurred ", e);
 			throw e;
 		}
 		finally {
@@ -343,7 +330,7 @@ public class ModuleBeanImpl implements ModuleBean {
 					rs.close();
 				}
 				catch(SQLException e) {
-					log.info("Exception occurred ", e);
+					LOGGER.info("Exception occurred ", e);
 				}
 			}
 		}
@@ -354,31 +341,8 @@ public class ModuleBeanImpl implements ModuleBean {
 		if (types == null || types.length == 0) {
 			return null;
 		}
-		String sql = MessageFormat.format(DBConf.getInstance().getQuery("module.submodule.type.id"), getTypes(types));
-		ResultSet rs = null;
-		try(Connection conn = getConnection();PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setLong(1, getOrgId());
-			pstmt.setLong(2, moduleId);
-			pstmt.setLong(3, getOrgId());
-			pstmt.setLong(4, moduleId);
-			pstmt.setLong(5, getOrgId());
-			rs = pstmt.executeQuery();
-			return getSubModulesFromRS(rs);
-		}
-		catch(Exception e) {
-			log.info("Exception occurred ", e);
-			throw e;
-		}
-		finally {
-			if(rs != null) {
-				try {
-					rs.close();
-				}
-				catch(SQLException e) {
-					log.info("Exception occurred ", e);
-				}
-			}
-		}
+		FacilioModule parentModule = getMod(moduleId);
+		return getSubModuleFromParent(parentModule, types);
 	}
 	
 	@Override
@@ -386,35 +350,11 @@ public class ModuleBeanImpl implements ModuleBean {
 		if (types == null || types.length == 0) {
 			return null;
 		}
-		
 		if (LookupSpecialTypeUtil.isSpecialType(moduleName)) {
 			return LookupSpecialTypeUtil.getSubModules(moduleName, types);
 		}
-		
-		String sql = MessageFormat.format(DBConf.getInstance().getQuery("module.submodule.get"), getTypes(types));
-		ResultSet rs = null;
-		try(Connection conn = getConnection();PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setLong(1, getOrgId());
-			pstmt.setLong(2, getOrgId());
-			pstmt.setString(3, moduleName);
-			pstmt.setLong(4, getOrgId());
-			rs = pstmt.executeQuery();
-			return getSubModulesFromRS(rs);
-		}
-		catch(Exception e) {
-			log.info("Exception occurred ", e);
-			throw e;
-		}
-		finally {
-			if(rs != null) {
-				try {
-					rs.close();
-				}
-				catch(SQLException e) {
-					log.info("Exception occurred ", e);
-				}
-			}
-		}
+		FacilioModule parentModule = getMod(moduleName);
+		return getSubModuleFromParent(parentModule, types);
 	}
 	
 	@Override
@@ -438,7 +378,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		return parentModule;
 	}
 	
-	@Override
+	@Override //This doesn't fetch grand child and so on
 	public List<FacilioModule> getChildModules(FacilioModule parentModule) throws Exception {
 		if(LookupSpecialTypeUtil.isSpecialType(parentModule.getName())) {
 			return null;
@@ -468,6 +408,7 @@ public class ModuleBeanImpl implements ModuleBean {
 				currentModule.setType(rs.getInt("MODULE_TYPE"));
 				currentModule.setTrashEnabled(rs.getBoolean("IS_TRASH_ENABLED"));
 				currentModule.setShowAsView(rs.getBoolean("SHOW_AS_VIEW"));
+				currentModule.setExtendModule(parentModule);
 				int dataInterval = rs.getInt("DATA_INTERVAL"); 
 				if (dataInterval != 0) {
 					currentModule.setDataInterval(dataInterval);
@@ -477,7 +418,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			return modules;
 		}
 		catch(SQLException e) {
-			log.info("Exception occurred ", e);
+			LOGGER.info("Exception occurred ", e);
 			throw e;
 		}
 		finally {
@@ -582,7 +523,7 @@ public class ModuleBeanImpl implements ModuleBean {
 				return pstmt.executeUpdate();
 			}
 			catch (Exception e) {
-				log.info("Exception occurred ", e);
+				LOGGER.info("Exception occurred ", e);
 				throw e;
 			}
 		}
@@ -672,7 +613,7 @@ public class ModuleBeanImpl implements ModuleBean {
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					// e.printStackTrace();
-					log.fatal("Exception occurred while fetching field for fieldid : "+prop.get("fieldId"), e);
+					LOGGER.fatal("Exception occurred while fetching field for fieldid : "+prop.get("fieldId"), e);
 					throw e;
 				}
 			}
@@ -1512,7 +1453,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			}
 		}
 		catch(Exception e) {
-			log.info("Exception occurred ", e);
+			LOGGER.info("Exception occurred ", e);
 			throw e;
 		}
 		finally {
@@ -1521,7 +1462,7 @@ public class ModuleBeanImpl implements ModuleBean {
 					rs.close();
 				}
 				catch(SQLException e) {
-					log.info("Exception occurred ", e);
+					LOGGER.info("Exception occurred ", e);
 				}
 			}
 		}
@@ -1625,7 +1566,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			return getSubModulesFromRS(rs, permissionType);
 		}
 		catch(Exception e) {
-			log.info("Exception occurred ", e);
+			LOGGER.info("Exception occurred ", e);
 			throw e;
 		}
 		finally {
@@ -1634,7 +1575,7 @@ public class ModuleBeanImpl implements ModuleBean {
 					rs.close();
 				}
 				catch(SQLException e) {
-					log.info("Exception occurred ", e);
+					LOGGER.info("Exception occurred ", e);
 				}
 			}
 		}
