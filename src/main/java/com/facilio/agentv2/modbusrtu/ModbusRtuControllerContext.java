@@ -133,7 +133,9 @@ public class ModbusRtuControllerContext extends Controller {
         List<Condition> conditions = new ArrayList<>();
         Map<String, FacilioField> fieldsMap = getFieldsMap(getModuleName());
         conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.SLAVE_ID), String.valueOf(getSlaveId()), NumberOperators.EQUALS));
-    return conditions;
+        conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.NETWORK_ID), String.valueOf(getNetworkId()), NumberOperators.EQUALS));
+
+        return conditions;
     }
 
     @Override
