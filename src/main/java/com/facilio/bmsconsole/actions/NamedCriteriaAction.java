@@ -64,4 +64,25 @@ public class NamedCriteriaAction extends FacilioAction {
 
         return SUCCESS;
     }
+
+    private long recordId = -1;
+    public long getRecordId() {
+        return recordId;
+    }
+    public void setRecordId(long recordId) {
+        this.recordId = recordId;
+    }
+
+    public String evaluateCriteria() throws Exception {
+        FacilioChain chain = ReadOnlyChainFactory.getEvaluateNamedCriteriaChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        context.put(FacilioConstants.ContextNames.RECORD_ID, recordId);
+        context.put(FacilioConstants.ContextNames.ID, id);
+        chain.execute();
+
+        setResult(FacilioConstants.ContextNames.NAMED_CRITERIA_RESULT, context.get(FacilioConstants.ContextNames.NAMED_CRITERIA_RESULT));
+
+        return SUCCESS;
+    }
 }

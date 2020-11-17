@@ -1,18 +1,26 @@
 package com.facilio.db.criteria.manager;
 
+import com.facilio.db.criteria.FacilioModulePredicate;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.util.ExpressionEvaluator;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.collections.Predicate;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class NamedCriteria extends ExpressionEvaluator<Predicate> {
 
-    private long id;
+    private static final Pattern SPLIT_REG_EX = Pattern.compile("([1-9]\\d*)|(\\()|(\\))|(and)|(or)", 2);
+
+    public NamedCriteria() {
+        this.setRegEx(SPLIT_REG_EX);
+    }
+
+    private long id = -1l;
     public long getId() {
         return id;
     }
@@ -66,16 +74,58 @@ public class NamedCriteria extends ExpressionEvaluator<Predicate> {
         conditions.put(key, condition);
     }
 
+    private Map<String, Object> variables;
+    private Object record;
+    private Map<String, Object> resultMap = new HashMap<>();
+
     public boolean evaluate(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
+        this.variables = placeHolders;
+        this.record = record;
+
+//        String pattern = this.pattern;
+//        Predicate p;
+//        for (String key : conditions.keySet()) {
+//            NamedCondition namedCondition = conditions.get(key);
+//            switch (namedCondition.getTypeEnum()) {
+//                case CRITERIA:
+//                    boolean evaluate = namedCondition.getCriteria().computePredicate(placeHolders).evaluate(record);
+//                    pattern.replace(key, String.valueOf(evaluate));
+//                    break;
+//            }
+//        }
+
         Predicate predicate = evaluateExpression(pattern);
 //        predicate.
 
-        return false;
+        return predicate.evaluate(resultMap);
+//        return false;
     }
 
     @Override
     public Predicate getOperand(String s) {
-        return new BooleanOperators.TruePredicate();
+        NamedCondition condition = conditions.get(s);
+
+        try {
+            Object result = null;
+            switch (condition.getTypeEnum()) {
+                case CRITERIA:
+                    result = condition.getCriteria().computePredicate(variables).evaluate(record);
+                    break;
+
+                case WORKFLOW:
+                    result = condition.getWorkflowContext().executeWorkflow();
+                    break;
+
+                case SYSTEM_FUNCTION:
+                    result = SystemCriteria.getSystemCriteria(condition.getSystemCriteriaId()).evaluate(record, null, null);
+                    break;
+            }
+            resultMap.put(s, result);
+            return new FacilioModulePredicate(s, new BooleanOperators.TruePredicate());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override

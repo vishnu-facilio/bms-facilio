@@ -2633,6 +2633,12 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 
+	public static FacilioChain getEvaluateNamedCriteriaChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new EvaluateNamedCriteriaCommand());
+		return chain;
+	}
+
 	public static FacilioChain executeTriggersForReadingChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new ExecuteAllTriggersCommand());

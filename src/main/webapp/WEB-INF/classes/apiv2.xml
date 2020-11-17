@@ -513,6 +513,9 @@
 				class="com.facilio.bmsconsole.actions.NamedCriteriaAction" method="addOrUpdateNamedCriteria" />
 		<action name="delete"
 				class="com.facilio.bmsconsole.actions.NamedCriteriaAction" method="deleteNamedCriteria" />
+
+		<action name="evaluate"
+				class="com.facilio.bmsconsole.actions.NamedCriteriaAction" method="evaluateCriteria" />
 	</package>
 
 	<package name="scoringRule" namespace="/api/v2/scoringRule" extends="v2Api">

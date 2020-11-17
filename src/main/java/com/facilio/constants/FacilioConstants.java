@@ -1045,6 +1045,7 @@ public class FacilioConstants {
 
 		public static final String NAMED_CRITERIA_LIST = "namedCriteriaList";
 		public static final String NAMED_CRITERIA = "namedCriteria";
+		public static final String NAMED_CRITERIA_RESULT = "namedCriteriaResult";
 
 //		public static final String SLA_MODULE = "sla";
 //		public static final String SLA_LIST = "sla_list";
