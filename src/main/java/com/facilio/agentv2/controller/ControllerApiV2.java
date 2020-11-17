@@ -489,7 +489,6 @@ public class ControllerApiV2 {
 
     public static JSONObject getControllerCountData(List<Long> agentIds) throws Exception {
         JSONObject controlleCountData = new JSONObject();
-        controlleCountData.put(AgentConstants.TOTAL_COUNT, FieldDeviceApi.getAgentDeviceCount(agentIds));
         controlleCountData.put(AgentConstants.CONFIGURED_COUNT, getCount(agentIds,null,null));
         return controlleCountData;
     }
