@@ -92,7 +92,8 @@ public class GetPickListCommand extends FacilioCommand {
 				Map<Long, String> pickList = new HashMap<>();
 				if(records != null && records.size() > 0) {
 					for(Map<String, Object> record : records) {
-						pickList.put((Long) record.get("id"), record.get(defaultField.getName()).toString());
+						Object val = record.get(defaultField.getName());
+						pickList.put((Long) record.get("id"), val == null ? null : Objects.toString(val));
 					}
 				}
 				context.put(FacilioConstants.ContextNames.PICKLIST, pickList);
