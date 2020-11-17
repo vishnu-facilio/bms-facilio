@@ -3,11 +3,14 @@ package com.facilio.bmsconsole.actions;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.modules.fields.FieldOption;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -78,11 +81,13 @@ public class PickListAction extends FacilioAction {
 				JSONObject json = (JSONObject) parser.parse(getFilters());
 				context.put(FacilioConstants.ContextNames.FILTERS, json);
 			}
-			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, defaultIds);
-			//FacilioTransactionManager.INSTANCE.getTransactionManager().begin();
+			if (StringUtils.isNotEmpty(_default)) {
+				String[] ids = FacilioUtil.splitByComma(_default);
+				List<Long> defaultIds = Arrays.stream(ids).map(Long::parseLong).collect(Collectors.toList());
+				context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, defaultIds);
+			}
 			FacilioChain pickListChain = FacilioChainFactory.getPickListChain();
 			pickListChain.execute(context);
-			//FacilioTransactionManager.INSTANCE.getTransactionManager().commit();			
 			setPickList((Map<Long, String>) context.get(FacilioConstants.ContextNames.PICKLIST));
 		}
 		
@@ -166,15 +171,14 @@ public class PickListAction extends FacilioAction {
 	public void setModuleName(String moduleName) {
 		this.moduleName = moduleName;
 	}
-	
-	private List<Long> defaultIds;
-	public List<Long> getDefaultIds() {
-		return defaultIds;
-	}
-	public void setDefaultIds(List<Long> defaultIds) {
-		this.defaultIds = defaultIds;
-	}
 
+	private String _default;
+	public String getDefault() {
+		return _default;
+	}
+	public void setDefault(String _default) {
+		this._default = _default;
+	}
 
 	TicketCategoryContext ticketCategory;
 	public TicketCategoryContext getTicketCategory() {
