@@ -46,9 +46,9 @@ public enum GrantType implements GrantTypeInterface{
 					params.put(ConnectionUtil.REDIRECT_URI_STRING, connectionContext.getCallBackURL());
 					params.put(ConnectionUtil.ACCESS_TYPE_STRING, ConnectionUtil.ACCESS_TYPE_OFFLINE);
 					
-					if(connectionContext.getScope() != null) {
-						params.put(ConnectionUtil.SCOPE_TYPE_STRING, connectionContext.getScope());
-					}
+//					if(connectionContext.getScope() != null) {
+//						params.put(ConnectionUtil.SCOPE_TYPE_STRING, connectionContext.getScope());
+//					}
 					if(connectionContext.getResource() != null) {
 						params.put(ConnectionUtil.RESOURCE_STRING, connectionContext.getResource());
 					}
