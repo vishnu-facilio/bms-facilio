@@ -13,7 +13,6 @@ import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.db.util.DBConf;
-import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.*;
@@ -487,13 +486,11 @@ public class ModuleBeanImpl implements ModuleBean {
 	}
 
 	private FacilioModule getMod(String moduleName) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", getOrgId());
-		return modBean.getModule(moduleName);
+		return getModule(moduleName);
 	}
 	
 	private FacilioModule getMod(long moduleId) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", getOrgId());
-		return modBean.getModule(moduleId);
+		return getModule(moduleId);
 	}
 	
 	private Map<Long, FacilioModule> splitModules(FacilioModule module) {
