@@ -610,6 +610,7 @@ public class ControllerApiV2 {
         fields.add(FieldFactory.getNameField(RESOURCE_MODULE));
         fields.add(FieldFactory.getIdField(CONTROLLER_MODULE));
         fields.add(FieldFactory.getControllerTypeField(CONTROLLER_MODULE));
+        fields.add(FieldFactory.getFieldDeviceId(CONTROLLER_MODULE));
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(CONTROLLER_MODULE.getTableName())
                 .select(fields)
