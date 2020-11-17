@@ -117,6 +117,7 @@ public class GetControllerCommand extends AgentV2Command {
             selectRecordBuilder.andCustomWhere(controllerModule.getTableName()+"."+FieldFactory.getAgentIdField(controllerModule).getName()+"=?",context.get(AgentConstants.AGENT_ID));
         }
             selectRecordBuilder.groupBy(controllerModule.getTableName()+".ID");
+            LOGGER.info("Select query for controllers : "+selectRecordBuilder.constructSelectStatement());
             List<Map<String, Object>> result = selectRecordBuilder.get();
             context.put(FacilioConstants.ContextNames.RECORD_LIST, result);
             if (result != null) {
