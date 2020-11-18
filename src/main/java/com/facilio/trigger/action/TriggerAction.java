@@ -6,7 +6,6 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.trigger.context.Trigger;
 import com.facilio.trigger.util.TriggerUtil;
 import com.facilio.v3.V3Action;
-import com.facilio.v3.exception.ErrorCode;
 
 public class TriggerAction extends V3Action {
 
@@ -26,90 +25,39 @@ public class TriggerAction extends V3Action {
 		this.triggerContext = triggerContext;
 	}
 
-	public String addTrigger() {
-		
-		try {
-           
-			FacilioChain chain = TransactionChainFactoryV3.getTriggerAddChain();
-			
-			FacilioContext context = chain.getContext();
-			
-			context.put(TriggerUtil.TRIGGER_CONTEXT, triggerContext);
-			
-			chain.execute();
-			
-			setData(TriggerUtil.TRIGGER_CONTEXT, triggerContext);
-			
-        } catch (Exception ex) {
-            this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getCode());
-            this.setMessage("Internal Server Error" + ex);
-            return "failure";
-        }
+	public String addTrigger() throws Exception {
+		FacilioChain chain = TransactionChainFactoryV3.getTriggerAddChain();
+		FacilioContext context = chain.getContext();
+		context.put(TriggerUtil.TRIGGER_CONTEXT, triggerContext);
+		chain.execute();
+		setData(TriggerUtil.TRIGGER_CONTEXT, triggerContext);
         return SUCCESS;
 	}
 	
-	public String updateTrigger() {
-		
-		try {
-           
-			FacilioChain chain = TransactionChainFactoryV3.getTriggerUpdateChain();
-			
-			FacilioContext context = chain.getContext();
-			
-			context.put(TriggerUtil.TRIGGER_CONTEXT, triggerContext);
-			
-			chain.execute();
-			
-			setData(TriggerUtil.TRIGGER_CONTEXT, triggerContext);
-        } catch (Exception ex) {
-            this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getCode());
-            this.setMessage("Internal Server Error" + ex);
-            return "failure";
-        }
-        return SUCCESS;
+	public String updateTrigger() throws Exception {
+		FacilioChain chain = TransactionChainFactoryV3.getTriggerUpdateChain();
+		FacilioContext context = chain.getContext();
+		context.put(TriggerUtil.TRIGGER_CONTEXT, triggerContext);
+		chain.execute();
+		return SUCCESS;
 	}
 
-	public String deleteTrigger() {
-	
-	try {
-       
+	public String deleteTrigger() throws Exception {
 		FacilioChain chain = TransactionChainFactoryV3.getTriggerDeleteChain();
-		
 		FacilioContext context = chain.getContext();
-		
 		context.put(TriggerUtil.TRIGGER_CONTEXT, triggerContext);
-		
 		chain.execute();
-		
 		setData(TriggerUtil.TRIGGER_CONTEXT, triggerContext);
-		
-    } catch (Exception ex) {
-        this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getCode());
-        this.setMessage("Internal Server Error" + ex);
-        return "failure";
-    }
-    return SUCCESS;
-}
+    	return SUCCESS;
+	}
 
-	public String executeTrigger() {
-	
-	try {
+	public String executeTrigger() throws Exception {
 		triggerContext = TriggerUtil.getTrigger(triggerContext.getId());
-		
 		FacilioChain chain = TransactionChainFactoryV3.getTriggerExecuteChain();
-		
 		FacilioContext context = chain.getContext();
-		
 		context.put(TriggerUtil.TRIGGER_CONTEXT, triggerContext);
-		
 		chain.execute();
-		
 		setData(TriggerUtil.TRIGGER_CONTEXT, triggerContext);
-    } catch (Exception ex) {
-        this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getCode());
-        this.setMessage("Internal Server Error" + ex);
-        return "failure";
-    }
-    return SUCCESS;
-}
+    	return SUCCESS;
+	}
 }

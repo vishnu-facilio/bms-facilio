@@ -26,34 +26,22 @@ public class UserNotificationAction extends V3Action {
 
 
     public String updateUserNotificationSeen () throws Exception {
-        try {
-            if (userId == null) {
-                userId = AccountUtil.getCurrentUser().getId();
-            }
-            FacilioChain c = TransactionChainFactoryV3.getUserNotificationSeenUpdateChain();
-            c.getContext().put(FacilioConstants.ContextNames.USER, userId);
-            c.execute();
-        } catch (Exception ex) {
-            this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getCode());
-            this.setMessage("Internal Server Error" + ex);
-            return "failure";
+        if (userId == null) {
+            userId = AccountUtil.getCurrentUser().getId();
         }
+        FacilioChain c = TransactionChainFactoryV3.getUserNotificationSeenUpdateChain();
+        c.getContext().put(FacilioConstants.ContextNames.USER, userId);
+        c.execute();
         return SUCCESS;
     }
 
     public String updateUserNotificationRead () throws Exception {
-        try {
-            if (userId == null) {
-                throw new RESTException(ErrorCode.VALIDATION_ERROR, "User Id cannot be null");
-            }
-            FacilioChain c = TransactionChainFactoryV3.getMarkAllAsReadUserNotification();
-            c.getContext().put(FacilioConstants.ContextNames.USER, userId);
-            c.execute();
-        } catch (Exception ex) {
-            this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getCode());
-            this.setMessage("Internal Server Error" + ex);
-            return "failure";
+        if (userId == null) {
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "User Id cannot be null");
         }
+        FacilioChain c = TransactionChainFactoryV3.getMarkAllAsReadUserNotification();
+        c.getContext().put(FacilioConstants.ContextNames.USER, userId);
+        c.execute();
         return SUCCESS;
     }
 }
