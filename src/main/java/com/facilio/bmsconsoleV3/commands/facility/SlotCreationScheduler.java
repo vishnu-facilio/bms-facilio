@@ -4,6 +4,7 @@ import com.facilio.bmsconsoleV3.context.facilitybooking.FacilityContext;
 import com.facilio.bmsconsoleV3.util.FacilityAPI;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
+import com.facilio.time.DateTimeUtil;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
@@ -24,19 +25,11 @@ public class SlotCreationScheduler extends FacilioJob {
         if (CollectionUtils.isNotEmpty(facilities)) {
             for (FacilityContext facility : facilities) {
                 Long lastGeneratedTime = facility.getSlotGeneratedUpto();
-                Long startTime =  System.currentTimeMillis();
-                Long endTime = -1L;
-                float daysBetween = 0;
-                if(lastGeneratedTime != null) {
-                    long difference = startTime - lastGeneratedTime;
-                    daysBetween = (difference / (1000 * 60 * 60 * 24));
-                    if(daysBetween < facility.getBookingAdvancePeriodInDays()) {
-                        startTime = lastGeneratedTime;
-                        endTime = (long) (startTime + (daysBetween * 1000 * 60 * 60 * 24));
-                        LOGGER.log(Level.FINE, "Generating slots for Facility: " + facility.getId());
-                        createSlots(facility, startTime, endTime);
-                    }
-                }
+                Long startTime = DateTimeUtil.getDayStartTimeOf(lastGeneratedTime, false) + (1000 * 60 * 60 * 24);
+                Long endTime = DateTimeUtil.getDayStartTimeOf(System.currentTimeMillis(), false)  + (facility.getBookingAdvancePeriodInDays() * 1000 * 60 * 60 * 24);
+                LOGGER.log(Level.FINE, "Generating slots for Facility: " + facility.getId());
+                createSlots(facility, startTime, endTime);
+
             }
         }
 

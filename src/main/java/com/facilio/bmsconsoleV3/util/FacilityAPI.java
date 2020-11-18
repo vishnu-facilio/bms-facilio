@@ -243,7 +243,7 @@ public class FacilityAPI {
                                 long startDateTimeOfDay = FacilityAPI.getCalendarTime(startDay, wk.getStartTimeAsLocalTime());
                                 long endDateTimeOfDay = FacilityAPI.getCalendarTime(startDay, wk.getEndTimeAsLocalTime());
 
-                                while (startDateTimeOfDay < endDateTimeOfDay && startDateTimeOfDay < endDateTime) {
+                                while (startDateTimeOfDay < endDateTimeOfDay && startDateTimeOfDay <= endDateTime) {
                                     SlotContext slot = new SlotContext();
                                     slot.setSlotCost(wk.getCost());
                                     slot.setSlotStartTime(startDateTimeOfDay);
@@ -255,6 +255,7 @@ public class FacilityAPI {
                                     //need to consider the slot intervals before starting other slot
                                     startDateTimeOfDay = slot.getSlotEndTime();
                                 }
+                                facilityContext.setSlotGeneratedUpto(startDateTimeOfDay);
                             }
                         }
                     }
@@ -315,7 +316,6 @@ public class FacilityAPI {
     }
 
     public static void createSlots(FacilityContext facility, long startTime, Long endTime) throws Exception {
-        facility.setSlotGeneratedUpto(endTime);
         List<SlotContext> slots = FacilityAPI.getFacilitySlots(facility, startTime, endTime);
         facility.setSlots(slots);
         FacilityAPI.updateGeneratedUptoInFacilityAndAddSlots(facility);
