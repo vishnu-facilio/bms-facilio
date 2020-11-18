@@ -21,10 +21,15 @@ public class AddRtuNetworkCommand extends AgentV2Command {
             ModbusRtuControllerContext controller = (ModbusRtuControllerContext) context.get(FacilioConstants.ContextNames.RECORD);
             RtuNetworkContext rtuNetwork = (RtuNetworkContext) context.get(AgentConstants.RTU_NETWORK);
             try {
-                long id = RtuNetworkContext.addRtuNetworkCommand(rtuNetwork);
-                if (id > 0) {
-                    controller.setNetworkId(id);
+                if (rtuNetwork.getId() > 0) {
+                    controller.setNetworkId(rtuNetwork.getId());
+                } else {
+                    long id = RtuNetworkContext.addRtuNetworkCommand(rtuNetwork);
+                    if (id > 0) {
+                        controller.setNetworkId(id);
+                    }
                 }
+
             } catch (java.sql.BatchUpdateException e) {
                 if (e.getMessage().contains("Duplicate entry")) {
                     LOGGER.info(" duplicate enrty for network and sending command to agent ");

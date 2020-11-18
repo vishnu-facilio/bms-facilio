@@ -87,8 +87,13 @@ public class ControllerUtilV2 {
                     if (controller.getControllerType() == MODBUS_RTU.asInt()) {
                         ModbusRtuControllerContext rtuControllerContext = (ModbusRtuControllerContext) controller;
                         JSONObject network = (JSONObject) controllerProps.get("network");
-                        RtuNetworkContext rtuNetworkContext = FieldUtil.getAsBeanFromJson(network, RtuNetworkContext.class);
-                        rtuControllerContext.setNetwork(rtuNetworkContext);
+                        RtuNetworkContext rtuNetworkContextFromJson = FieldUtil.getAsBeanFromJson(network, RtuNetworkContext.class);
+                        RtuNetworkContext rtuNetworkContext = RtuNetworkContext.getRtuNetworkContext(device.getAgentId(), rtuNetworkContextFromJson.getComPort());
+                        if (rtuNetworkContext == null) {
+                            rtuControllerContext.setNetwork(rtuNetworkContextFromJson);
+                        } else {
+                            rtuControllerContext.setNetwork(rtuNetworkContext);
+                        }
                         controllerId = ControllerApiV2.addController(rtuControllerContext);
                     } else {
                         controllerId = ControllerApiV2.addController(controller);

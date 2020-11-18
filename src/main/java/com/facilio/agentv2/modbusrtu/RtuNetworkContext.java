@@ -1,7 +1,6 @@
 package com.facilio.agentv2.modbusrtu;
 
 import com.facilio.agentv2.AgentConstants;
-import com.facilio.bmsconsole.commands.EnableAnomalyDetectionCommand;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -14,7 +13,6 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.eclipse.milo.opcua.sdk.client.model.nodes.objects.AggregateConfigurationNode;
 import org.json.simple.JSONObject;
 
 import java.io.Serializable;
