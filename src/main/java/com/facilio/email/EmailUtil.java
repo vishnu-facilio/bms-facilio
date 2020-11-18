@@ -48,7 +48,7 @@ public class EmailUtil {
     }
 
     public static void sendEmail(JSONObject mailJson) throws Exception {
-        String sender = FacilioProperties.getConfig("mail.username");
+        String sender = FacilioProperties.getConfig("mail.from") != null ? FacilioProperties.getConfig("mail.from") : FacilioProperties.getConfig("mail.username");
 
         Session session = Session.getDefaultInstance(getSMTPProperties(),
                 new javax.mail.Authenticator() {
