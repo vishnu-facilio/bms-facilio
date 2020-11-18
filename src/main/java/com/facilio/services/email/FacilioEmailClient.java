@@ -17,6 +17,7 @@ class FacilioEmailClient extends EmailClient {
     private static final FacilioEmailClient INSTANCE = new FacilioEmailClient();
 
     private static final String MAIL_USERNAME="mail.username";
+    private static final String MAIL_FROM="mail.from";
     private static final String MAIL_PASSWORD="mail.password";
     private static final String SMTP_HOST="mail.smtp.host";
     private static final String SMTP_AUTH="mail.smtp.auth";
@@ -50,7 +51,7 @@ class FacilioEmailClient extends EmailClient {
     }
 
     public void sendEmail(JSONObject mailJson) throws Exception {
-        String sender = FacilioProperties.getConfig(MAIL_USERNAME);
+        String sender = FacilioProperties.getConfig(MAIL_FROM) != null ? FacilioProperties.getConfig(MAIL_FROM) : FacilioProperties.getConfig(MAIL_USERNAME);
 
         Session session = getSession();
         try {
