@@ -40,8 +40,6 @@ public class SpecialHandlingToGetModuleDataListCommand extends FacilioCommand {
 					break;
 			}
 		}
-		if(moduleName.equals("assetcategory") && records != null && !records.isEmpty()) {
-		}
 		return false;
 	}
 
