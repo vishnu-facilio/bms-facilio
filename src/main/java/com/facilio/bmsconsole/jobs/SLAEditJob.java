@@ -122,7 +122,7 @@ public class SLAEditJob extends FacilioJob {
 
         if (CollectionUtils.isNotEmpty(SLAWorkflowAPI.getSLAEditJobDetails(jobId))) {
             // schedule another job
-            jc.setNextExecutionTime(System.currentTimeMillis() + (10 * 1000));
+            jc.setNextExecutionTime((System.currentTimeMillis() / 1000) + (10 * 1000));
         }
     }
 }
