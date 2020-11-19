@@ -31,6 +31,8 @@ import java.util.stream.Collectors;
 
 public class SLAEditJob extends FacilioJob {
 
+    private final int LIMIT = 100;
+
     @Override
     public void execute(JobContext jc) throws Exception {
         long jobId = jc.getJobId();
@@ -98,14 +100,14 @@ public class SLAEditJob extends FacilioJob {
                             .andCondition(CriteriaAPI.getCondition(dueField, CommonOperators.IS_NOT_EMPTY))
                             .andCondition(CriteriaAPI.getCondition(dueField, String.valueOf(System.currentTimeMillis() - maxInterval), NumberOperators.GREATER_THAN))
                             .andCondition(CriteriaAPI.getCondition("SLA_POLICY_ID", "slaPolicyId", String.valueOf(slaPolicyId), NumberOperators.EQUALS))
-                            .limit(100)
+                            .limit(LIMIT)
                             .orderBy("ID ASC");
 
                     if (lastRecordId > 0) {
-                        moduleRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), String.valueOf(lastRecordId), NumberOperators.GREATER_THAN));
+                        moduleRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(module), String.valueOf(lastRecordId), NumberOperators.GREATER_THAN));
                     }
                     List<? extends ModuleBaseWithCustomFields> moduleRecords = moduleRecordBuilder.get();
-                    if (CollectionUtils.isEmpty(moduleRecords)) {
+                    if (CollectionUtils.isEmpty(moduleRecords) || moduleRecords.size() < LIMIT) {
                         // all records for this particular sla entity is completed..
                         SLAWorkflowAPI.deleteEditJobDetails(jobId, slaEntityId);
                     }
