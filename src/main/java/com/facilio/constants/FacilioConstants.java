@@ -750,6 +750,7 @@ public class FacilioConstants {
 		public static final String ASSET_LIST = "assets";
 		public static final String ASSET_TYPE = "assettype";
 		public static final String ASSET_CATEGORY = "assetcategory";
+		public static final String ASSET_CATEGORY_ID = "assetcategoryId";
 		public static final String ASSET_DEPARTMENT = "assetdepartment";
 		public static final String ENERGY_METER = "energymeter";
 		public static final String WATER_METER = "watermeter";
@@ -1040,6 +1041,9 @@ public class FacilioConstants {
 		public static final String SLA_POLICY_ESCALATION_LIST = "slaPolicyEscalationList";
 
 		public static final String SCORING_CONTEXT_LIST = "scoringContextList";
+
+		public static final String ALARM_IMPACT = "alarmImpact";
+		public static final String ALARM_IMPACT_LIST = "alarmImpactList";
 
 		public static final String FORMATTED_STRING = "formattedString";
 		public static final String REPLACED_STRING = "replacedString";

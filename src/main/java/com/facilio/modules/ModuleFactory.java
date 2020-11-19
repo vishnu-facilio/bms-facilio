@@ -712,6 +712,25 @@ public class ModuleFactory {
 
 		return module;
 	}
+
+	public static FacilioModule getBaseAlarmImpactModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("baseAlarmImpactModule");
+		module.setDisplayName("Base Alarm Impact");
+		module.setTableName("Base_Alarm_Impact");
+
+		return module;
+	}
+
+	public static FacilioModule getConstantAlarmImpactModule() {
+		FacilioModule module = new FacilioModule();
+		module.setExtendModule(getBaseAlarmImpactModule());
+		module.setName("constantAlarmImpactModule");
+		module.setDisplayName("Constant Alarm Impact");
+		module.setTableName("Constant_Alarm_Impact");
+
+		return module;
+	}
 	
 	public static FacilioModule getScheduledActionModule() {
 		FacilioModule scheduledRule = new FacilioModule();

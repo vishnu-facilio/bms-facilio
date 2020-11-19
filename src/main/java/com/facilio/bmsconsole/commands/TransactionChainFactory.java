@@ -26,6 +26,8 @@ import com.facilio.bmsconsole.commands.reservation.CreateExternalAttendeesComman
 import com.facilio.bmsconsole.commands.reservation.CreateInternalAttendeesCommand;
 import com.facilio.bmsconsole.commands.reservation.ValidateAndSetReservationPropCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
+import com.facilio.bmsconsole.workflow.rule.impact.AddOrUpdateAlarmImpactCommand;
+import com.facilio.bmsconsole.workflow.rule.impact.util.AlarmImpactAPI;
 import com.facilio.bmsconsoleV3.commands.AddDefaultScopingCommandV3;
 import com.facilio.bmsconsoleV3.commands.imap.SaveMailMessageCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.AssociateQuotationTermsCommand;
@@ -5812,6 +5814,26 @@ public class TransactionChainFactory {
 		return chain;
 	}
 
+	public static FacilioChain getAddOrUpdateAlarmImpactChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddOrUpdateAlarmImpactCommand());
+		return chain;
+	}
+
+	public static FacilioChain deleteAlarmImpactChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new FacilioCommand() {
+			@Override
+			public boolean executeCommand(Context context) throws Exception {
+				long id = (long) context.get(FacilioConstants.ContextNames.ID);
+				if (id > 0) {
+					AlarmImpactAPI.deleteAlarmImpact(id);
+				}
+				return false;
+			}
+		});
+		return chain;
+	}
 }
 
 

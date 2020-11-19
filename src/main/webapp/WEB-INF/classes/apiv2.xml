@@ -1456,6 +1456,16 @@
 				method="categoryRules"></action>
 	</package>
 
+	<package name="alarmImpact" namespace="/api/v2/alarm/impacts" extends="v2Api">
+		<action name="addOrUpdate"
+				class="com.facilio.bmsconsole.actions.ImpactAction"
+				method="addOrUpdateImpact" />
+		<action name="list"
+				class="com.facilio.bmsconsole.actions.ImpactAction" method="getAlarmImpacts" />
+		<action name="delete"
+				class="com.facilio.bmsconsole.actions.ImpactAction" method="deleteAlarmImpact" />
+	</package>
+
 	<package name="alarmListApiv2" namespace="/api/v2/alarms/view"
 		extends="v2Api">
 		<action name="*"

@@ -2150,6 +2150,33 @@ public class FieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getBaseAlarmImpactFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getBaseAlarmImpactModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("name", "NAME", module, FieldType.STRING));
+        fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
+        fields.add(getField("categoryId", "CATEGORY_ID", module, FieldType.NUMBER));
+
+        fields.add(getField("enabled", "ENABLED", module, FieldType.BOOLEAN));
+        fields.add(getField("type", "TYPE", module, FieldType.SYSTEM_ENUM));
+        fields.add(getField("impactType", "IMPACT_TYPE", module, FieldType.SYSTEM_ENUM));
+
+        return fields;
+    }
+
+    public static List<FacilioField> getConstantAlarmImpactFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getConstantAlarmImpactModule();
+
+        fields.add(getIdField(module));
+        fields.addAll(getBaseAlarmImpactFields());
+        fields.add(getField("constant", "CONSTANT", module, FieldType.NUMBER));
+
+        return fields;
+    }
+
 //	public static List<FacilioField> getScheduledRuleFields() {
     //	List<FacilioField> fields = new ArrayList<>();
     //FacilioModule module = ModuleFactory.getScheduledRuleModule();

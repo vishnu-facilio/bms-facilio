@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.commands.picklist.HandleDefaultIdAndOrderByForPick
 import com.facilio.bmsconsole.commands.reservation.FetchAttendeesCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
+import com.facilio.bmsconsole.workflow.rule.impact.GetAllAlarmImpactsCommand;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.controlaction.commands.GetControllableCategoryFromSpaceCommand;
@@ -2666,6 +2667,12 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getReplacePlaceHoldersChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new ReplacePlaceHoldersCommand());
+		return chain;
+	}
+
+	public static FacilioChain getAlarmImpactsChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetAllAlarmImpactsCommand());
 		return chain;
 	}
 }
