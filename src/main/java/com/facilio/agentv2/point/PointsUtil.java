@@ -5,6 +5,7 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.GetControllerRequest;
 import com.facilio.agentv2.device.Device;
+import com.facilio.agentv2.modbusrtu.RtuNetworkContext;
 import com.facilio.aws.util.FacilioProperties;
 
 import org.apache.log4j.LogManager;
@@ -84,7 +85,25 @@ public class PointsUtil
 
             GetControllerRequest getControllerRequest = new GetControllerRequest()
                     .forDevice(device.getId()).ofType(FacilioControllerType.valueOf(deviceType));
+            if (deviceType == FacilioControllerType.MODBUS_RTU.asInt()) {
+                JSONObject controllerProps = (JSONObject) device.getControllerProps().get(AgentConstants.CONTROLLER);
+                long agentId = device.getAgentId();
+                String comPort;
+                if (controllerProps.containsKey(AgentConstants.NETWORK)) {
+                    JSONObject network = (JSONObject) controllerProps.get(AgentConstants.NETWORK);
+                    comPort = network.get(AgentConstants.COM_PORT).toString();
+                } else {
+                    comPort = controllerProps.get(AgentConstants.COM_PORT).toString();
+                }
+                RtuNetworkContext network = RtuNetworkContext.getRtuNetworkContext(agentId, comPort);
+                if (network != null) {
+                    controllerProps.put(AgentConstants.NETWORK_ID, network.getId());
+                }
+                getControllerRequest.withControllerProperties((JSONObject) device.getControllerProps().get(AgentConstants.CONTROLLER), FacilioControllerType.MODBUS_RTU)
+                        .withAgentId(device.getAgentId());
+            }
             controller = getControllerRequest.getController();
+
 
             List<Point> points = new ArrayList<>();
             for (Object o : pointsJSON) {
