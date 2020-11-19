@@ -102,12 +102,16 @@ public class GetControllerRequest
                     throw new RuntimeException("network or comport is missing in controller props");
                 }
             }
-            List<Condition> conditions = ControllerApiV2.getControllerCondition(controllerProperties, controllerType);
-            if (!conditions.isEmpty()) {
-                criteria.addAndConditions(conditions);
-                context.put(FacilioConstants.ContextNames.FILTER_CRITERIA, criteria);
+            if (controllerType != FacilioControllerType.MODBUS_RTU) {
+                List<Condition> conditions = ControllerApiV2.getControllerCondition(controllerProperties, controllerType);
+                if (!conditions.isEmpty()) {
+                    criteria.addAndConditions(conditions);
+                    context.put(FacilioConstants.ContextNames.FILTER_CRITERIA, criteria);
+                } else {
+                    LOGGER.info(" controller condition for this type " + controllerType.asString() + " is missing ");
+                }
             } else {
-                LOGGER.info(" controller condition for this type " + controllerType.asString() + " is missing ");
+                context.put(AgentConstants.CONTROLLER_PROPS, controllerProperties);
             }
         }
         return this;

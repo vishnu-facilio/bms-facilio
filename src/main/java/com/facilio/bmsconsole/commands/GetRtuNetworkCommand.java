@@ -14,6 +14,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,13 +27,22 @@ public class GetRtuNetworkCommand extends FacilioCommand {
             RtuNetworkContext network =
                     RtuNetworkContext.getRtuNetworkContext((long) context.get(AgentConstants.AGENT_ID),
                             context.get(AgentConstants.COM_PORT).toString());
+            Criteria criteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
+            Map<String, FacilioField> fieldsMap = Controller.getFieldsMap(FacilioConstants.ContextNames.MODBUS_RTU_CONTROLLER_MODULE_NAME);
             if (network != null) {
-                Map<String, FacilioField> fieldsMap = Controller.getFieldsMap(FacilioConstants.ContextNames.MODBUS_RTU_CONTROLLER_MODULE_NAME);
-                Criteria criteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
                 List<Condition> conditions = new ArrayList<>();
                 conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.NETWORK_ID), String.valueOf(network.getId()), NumberOperators.EQUALS));
                 criteria.addAndConditions(conditions);
+            } else {
+                List<Condition> conditions = new ArrayList<>();
+                conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.NETWORK_ID), String.valueOf(-1), NumberOperators.EQUALS));
+                criteria.addAndConditions(conditions);
             }
+            JSONObject props = (JSONObject) context.get(AgentConstants.CONTROLLER_PROPS);
+            int slaveId = (int) props.get(AgentConstants.SLAVE_ID);
+            List<Condition> conditions = new ArrayList<>();
+            conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.SLAVE_ID), String.valueOf(slaveId), NumberOperators.EQUALS));
+            criteria.addAndConditions(conditions);
         }
         return false;
     }
