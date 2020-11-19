@@ -1406,10 +1406,12 @@ public class WorkOrderAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CLOSE_WORK_ORDER);
 		context.put(FacilioConstants.ContextNames.ACTUAL_TIMINGS, actualTimings);
 
-		
-		workorder.setStatus(TicketAPI.getStatus("Closed")); // We shouldn't
-															// allow close to be
-															// edited
+
+		if (stateTransitionId < 0) {
+			workorder.setStatus(TicketAPI.getStatus("Closed")); // We shouldn't
+			// allow close to be
+			// edited
+		}
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		setUpdateWorkorderContext(context);
 
