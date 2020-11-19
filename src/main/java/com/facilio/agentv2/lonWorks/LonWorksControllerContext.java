@@ -21,8 +21,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 public class LonWorksControllerContext extends Controller {
 
-	private static final long serialVersionUID = 1L;
-
 	private static final Logger LOGGER = LogManager.getLogger(LonWorksControllerContext.class.getName());
 
     private long id;
@@ -35,6 +33,11 @@ public class LonWorksControllerContext extends Controller {
     private String neuronId;
 
     public LonWorksControllerContext() {
+        setControllerType(FacilioControllerType.LON_WORKS.asInt());
+    }
+
+    public LonWorksControllerContext(long agentId, long orgId) throws Exception {
+        super(agentId, orgId);
         setControllerType(FacilioControllerType.LON_WORKS.asInt());
     }
 
