@@ -7,6 +7,8 @@ import com.facilio.bmsconsole.commands.anomaly.GetAnomalyMetricsCommand;
 import com.facilio.bmsconsole.commands.anomaly.GetEnergyByCDDCommand;
 import com.facilio.bmsconsole.commands.filters.FetchOperatorsForFiltersCommand;
 import com.facilio.bmsconsole.commands.filters.HandleFilterFieldsCommand;
+import com.facilio.bmsconsole.commands.picklist.ConstructFieldOptionForPicklist;
+import com.facilio.bmsconsole.commands.picklist.HandleDefaultIdAndOrderByForPicklist;
 import com.facilio.bmsconsole.commands.reservation.FetchAttendeesCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
@@ -135,14 +137,31 @@ public class ReadOnlyChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new LoadViewCommand());
 		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(commonFetchDataListChain(false));
+		return c;
+	}
+
+	public static FacilioChain newPicklistFromDataChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new LoadMainFieldCommand());
+		c.addCommand(new HandleDefaultIdAndOrderByForPicklist());
+		c.addCommand(commonFetchDataListChain(true));
+		c.addCommand(new ConstructFieldOptionForPicklist());
+		return c;
+	}
+
+	private static FacilioChain commonFetchDataListChain(boolean isPicklist) {
+		FacilioChain c = getDefaultChain();
 		c.addCommand(new CheckForCustomFilterAndGenerateCriteria());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateCriteriaFromClientCriteriaCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
 		c.addCommand(new AddLookupFieldMetaList());
-		c.addCommand(new GenericGetModuleDataListCommand());
-		c.addCommand(new SpecialHandlingToGetModuleDataListCommand());
-		c.addCommand(new LookupPrimaryFieldHandlingCommand());
+		c.addCommand(new GenericGetModuleDataListCommand(isPicklist));
+		if (!isPicklist) {
+			c.addCommand(new SpecialHandlingToGetModuleDataListCommand());
+			c.addCommand(new LookupPrimaryFieldHandlingCommand());
+		}
 		return c;
 	}
 	

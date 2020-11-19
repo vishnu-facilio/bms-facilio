@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.PickListAction;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -93,11 +94,7 @@ public class FetchLookupLabelsCommand extends FacilioCommand {
             return null;
         }
 
-        List<FieldOption> options = records.stream().map(prop -> new FieldOption(
-                prop.get("id").toString(),
-                prop.get(primaryField.getName()).toString(),
-                isResource ? ResourceAPI.getResourceSubModuleFromType((Integer) prop.get("resourceType")) : null
-        )).collect(Collectors.toList());
+        List<FieldOption> options = RecordAPI.constructFieldOptionsFromRecords(records, primaryField.getName(), isResource);
         return options;
     }
 }

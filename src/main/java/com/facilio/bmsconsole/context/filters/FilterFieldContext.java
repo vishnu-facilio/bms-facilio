@@ -53,7 +53,7 @@ public class FilterFieldContext {
         }
         else if (field instanceof LookupField) {
             FacilioModule lookup = ((LookupField) field).getLookupModule();
-            lookupModule = new FilterFieldLookupModule(lookup.getName(), lookup.getDisplayName(), lookup.getTypeEnum() == FacilioModule.ModuleType.BASE_ENTITY, lookupFilters);
+            lookupModule = new FilterFieldLookupModule(lookup.getName(), lookup.getDisplayName(), lookup.getTypeEnum() != FacilioModule.ModuleType.PICK_LIST, lookupFilters);
         }
     }
 

@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.*;
 
+import com.facilio.bmsconsole.util.RecordAPI;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -53,7 +54,6 @@ public class GetPickListCommand extends FacilioCommand {
 				if (search != null) {
 					FacilioField primaryField = modBean.getPrimaryField(moduleName);
 					builder.andCondition(CriteriaAPI.getCondition(primaryField, search, StringOperators.CONTAINS));
-
 				}
 				
 				JSONObject filters = (JSONObject) context.get(FacilioConstants.ContextNames.FILTERS);
@@ -62,7 +62,7 @@ public class GetPickListCommand extends FacilioCommand {
 					builder.andCriteria(filterCriteria);
 				}
 				
-				String orderBy = "ID";
+				String orderBy = "ID DESC";
 				
 				JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
 				if (pagination != null) {
@@ -78,9 +78,9 @@ public class GetPickListCommand extends FacilioCommand {
 						builder.offset(offset);
 						builder.limit(perPage);
 						
-						List<Long> defaultIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
+						List<Long> defaultIds = (List<Long>) context.get(FacilioConstants.PickList.DEFAULT_ID_LIST);
 						if (CollectionUtils.isNotEmpty(defaultIds)) {
-							orderBy = "FIELD(" + module.getTableName() + ".ID," + StringUtils.join(defaultIds, ",") +") desc, " + orderBy;
+							orderBy = RecordAPI.getDefaultIdOrderBy(module, defaultIds, orderBy);
 						}
 					}
 				}

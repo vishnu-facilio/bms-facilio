@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.view.FacilioView;
@@ -17,8 +18,10 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -28,6 +31,17 @@ import java.util.List;
 
 public class GenericGetModuleDataListCommand extends FacilioCommand {
 	private static final Logger LOGGER = LogManager.getLogger(GenericGetModuleDataListCommand.class.getName());
+
+	private boolean isPicklist = false;
+
+	public GenericGetModuleDataListCommand() {
+
+	}
+
+	public GenericGetModuleDataListCommand(boolean isPicklist) {
+		this.isPicklist = isPicklist;
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -35,6 +49,7 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		FacilioModule module = modBean.getModule(moduleName);
+		FacilioUtil.throwIllegalArgumentException(module == null, "Invalid module name for data list");
 
 		boolean fetchCount = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_COUNT, false);
 
@@ -64,11 +79,11 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 															.select(fields)
 															;
 		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
-		if (orderBy != null && !orderBy.isEmpty()) {
-			builder.orderBy(orderBy);
+		if (StringUtils.isEmpty(orderBy)) {
+			orderBy = RecordAPI.getDefaultOrderByForModuleIfAny(moduleName);
 		}
-		else if (moduleName.equals(ContextNames.TICKET_PRIORITY)) {
-			builder.orderBy("SEQUENCE_NUMBER");
+		if (StringUtils.isNotEmpty(orderBy)) {
+			builder.orderBy(orderBy);
 		}
 		
 		Integer maxLevel = (Integer) context.get(FacilioConstants.ContextNames.MAX_LEVEL);
@@ -156,16 +171,18 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 			builder.aggregate(CommonAggregateOperator.COUNT, FieldFactory.getIdField(module));
 		}
 		
-		List<? extends ModuleBaseWithCustomFields> records = builder.get();
+		List records = isPicklist ? builder.getAsProps() : builder.get();
 		context.put("query",builder.toString());
 		/*LOGGER.info("- - - - select controllers - - - - "+builder.toString());*/
 		if (fetchCount) {
 			if (CollectionUtils.isNotEmpty(records)) {
-				context.put(FacilioConstants.ContextNames.RECORD_COUNT, records.get(0).getId());
+				context.put(FacilioConstants.ContextNames.RECORD_COUNT, ((ModuleBaseWithCustomFields) records.get(0)).getId());
 			}
 		}
 		else {
-			ResourceAPI.loadModuleResources(records, fields);
+			if (!isPicklist) {
+				ResourceAPI.loadModuleResources(records, fields);
+			}
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, records);
 			if (records != null) {
 				LOGGER.debug("No of records fetched for module : " + moduleName + " is " + records.size());

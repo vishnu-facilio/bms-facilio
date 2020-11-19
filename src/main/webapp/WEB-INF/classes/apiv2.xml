@@ -1754,7 +1754,7 @@
 	</package>
 
 	<package name="picklistApiv2" namespace="/api/v2/picklist"
-		extends="v2Api">
+		extends="v2ApiNullIgnored">
 
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.PickListAction"
@@ -1887,6 +1887,17 @@
 				method="fetchLabels">
 		</action>
 	</package>
+
+	<package name="picklistApiv3" namespace="/api/v3/picklist"
+			 extends="v2ApiNullIgnored">
+		<action name="*"
+				class="com.facilio.bmsconsole.actions.PickListAction"
+				method="v3PickList">
+			<param name="moduleName">{1}</param>
+		</action>
+	</package>
+
+
 	<package name="formsApiv2" namespace="/api/v2/form"
 		extends="v2Api">
 		<action name="fields"

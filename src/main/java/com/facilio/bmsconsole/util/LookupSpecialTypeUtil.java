@@ -30,6 +30,7 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.FieldOption;
 import com.facilio.modules.fields.SystemEnumField;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -83,6 +84,80 @@ public class LookupSpecialTypeUtil {
 		else {
 			return FieldFactory.getIdField(getModule(specialType));
 		}
+	}
+
+	private static List<FieldOption> getUserPickList (List<User> users) {
+		List<FieldOption> userList = null;
+		if (CollectionUtils.isNotEmpty(users)) {
+			userList = users.stream()
+						.map(usr -> new FieldOption(usr.getId(), usr.getName()))
+						.collect(Collectors.toList());
+		}
+		return userList;
+	}
+
+	private static List<FieldOption> getRulePickList (List<WorkflowRuleContext> rules) {
+		List<FieldOption> ruleList = null;
+		if (CollectionUtils.isNotEmpty(rules)) {
+			ruleList = rules.stream()
+					.map(rule -> new FieldOption(rule.getId(), rule.getName()))
+					.collect(Collectors.toList());
+		}
+		return ruleList;
+	}
+
+	public static List<FieldOption> getNewPickList(String specialType) throws Exception {
+		if(FacilioConstants.ContextNames.USERS.equals(specialType)) {
+			List<User> users = AccountUtil.getOrgBean().getOrgUsers(AccountUtil.getCurrentOrg().getOrgId(), true);
+			return getUserPickList(users);
+		}
+		else if(FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
+			List<User> users = AccountUtil.getOrgBean().getRequesterTypeUsers(AccountUtil.getCurrentOrg().getOrgId(), true);
+			return getUserPickList(users);
+		}
+		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
+			List<Group> groups = AccountUtil.getGroupBean().getOrgGroups(AccountUtil.getCurrentOrg().getOrgId(), true);
+			List<FieldOption> groupList = null;
+			if (CollectionUtils.isNotEmpty(groups)) {
+				groupList = groups.stream()
+								.map(group -> new FieldOption(group.getGroupId(), group.getName()))
+								.collect(Collectors.toList());
+			}
+			return groupList;
+		}
+		else if (FacilioConstants.ContextNames.ROLE.equals(specialType)) {
+			List<Role> roles = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getId()).getRoles();
+			List<FieldOption> roleList = null;
+			if (CollectionUtils.isNotEmpty(roles)) {
+				roleList = roles.stream()
+								.map(role -> new FieldOption(role.getId(), role.getName()))
+								.collect(Collectors.toList());
+			}
+			return roleList;
+		}
+		else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)){
+			List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getAllWorkflowRuleContextOfType(WorkflowRuleContext.RuleType.READING_RULE, false,false);
+			return getRulePickList(workflowRules);
+		}
+		else if (ContextNames.SLA_RULE_MODULE.equals(specialType)) {
+			List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getAllWorkflowRuleContextOfType(WorkflowRuleContext.RuleType.SLA_RULE, false,false);
+			return getRulePickList(workflowRules);
+		}
+		else if(FacilioConstants.ContextNames.KPI_CATEGORY.equals(specialType)) {
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+					.select(FieldFactory.getKPICategoryFields())
+					.table(ModuleFactory.getKPICategoryModule().getTableName());
+
+			List<Map<String, Object>> props = selectBuilder.get();
+			if (CollectionUtils.isNotEmpty(props)) {
+				List<KPICategoryContext> kpiCategoryContext = FieldUtil.getAsBeanListFromMapList(props, KPICategoryContext.class);
+				List<FieldOption> kpiCategoryList = kpiCategoryContext.stream()
+														.map(kpi -> new FieldOption(kpi.getId(), kpi.getName()))
+														.collect(Collectors.toList());
+				return kpiCategoryList;
+			}
+		}
+		return null;
 	}
 	
 	public static Map<Long, String> getPickList(String specialType) throws Exception {

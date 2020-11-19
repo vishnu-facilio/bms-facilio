@@ -1,8 +1,12 @@
 package com.facilio.bmsconsole.util;
 
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
+import com.facilio.modules.fields.FieldOption;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
@@ -19,6 +23,7 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.lang3.StringUtils;
 
 public class RecordAPI {
 
@@ -142,8 +147,33 @@ public class RecordAPI {
 	public static FacilioField getField(String fieldName, String modName) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		return modBean.getField(fieldName, modName);
-				
 		
 	}
+
+	// TODO : This should be made db driven like main field
+	public static String getDefaultOrderByForModuleIfAny (String moduleName) {
+		Objects.requireNonNull(moduleName, "Module name cannot be null for getting default order by");
+		switch (moduleName) {
+			case FacilioConstants.ContextNames.TICKET_PRIORITY:
+				return "SEQUENCE_NUMBER";
+			default:
+				return null;
+		}
+	}
+
+	public static String getDefaultIdOrderBy (FacilioModule module, List<Long> ids, String orderBy) {
+		String defaultIdOrderBy = MessageFormat.format("FIELD ( {0}.ID, {1} ) DESC, {2}", module.getTableName(), StringUtils.join(ids, ","), orderBy);
+//		orderBy = "FIELD(" + module.getTableName() + ".ID," + StringUtils.join(ids, ",") +") desc, " + orderBy;
+		return defaultIdOrderBy;
+	}
+
+	public static List<FieldOption> constructFieldOptionsFromRecords (List<Map<String, Object>> records, String defaultFieldName, boolean isResource) {
+		return records.stream().map(prop -> new FieldOption(
+				prop.get("id").toString(),
+				prop.get(defaultFieldName),
+				isResource ? ResourceAPI.getResourceSubModuleFromType((Integer) prop.get("resourceType")) : null
+		)).collect(Collectors.toList());
+	}
+
 	
 }
