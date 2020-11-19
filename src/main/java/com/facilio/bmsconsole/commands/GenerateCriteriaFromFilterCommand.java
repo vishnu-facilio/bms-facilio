@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -85,6 +84,7 @@ public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 		String relatedFieldName = (String) fieldJson.get("relatedFieldName");
 		FacilioField field;
 		if(relatedFieldName != null) {
+			// here fieldName is modulename of subquery
 			field = modBean.getField(relatedFieldName, fieldName);
 		}
 		else {
@@ -161,7 +161,7 @@ public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 				}
 				FacilioField relatedField;
 				if (fieldJson.containsKey("filterFieldName")) {
-					relatedField = modBean.getField(relatedFieldName, (String)fieldJson.get("filterFieldName"));
+					relatedField = modBean.getField((String)fieldJson.get("filterFieldName"), fieldName);
 				}
 				else {
 					relatedField = FieldFactory.getIdField();
