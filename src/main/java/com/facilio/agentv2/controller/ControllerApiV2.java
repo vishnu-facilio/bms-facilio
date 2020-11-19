@@ -257,6 +257,8 @@ public class ControllerApiV2 {
                 return FacilioConstants.ContextNames.CUSTOM_CONTROLLER_MODULE_NAME;
             case SYSTEM:
                 return FacilioConstants.ContextNames.SYSTEM_CONTROLLER_MODULE_NAME;
+            case LON_WORKS:
+            	return FacilioConstants.ContextNames.LON_WORKS_CONTROLLER_MODULE_NAME;
             default:
                 return null;
         }

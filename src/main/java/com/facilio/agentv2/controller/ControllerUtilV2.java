@@ -15,6 +15,7 @@ import com.facilio.custom.CustomController;
 import com.facilio.modules.FieldUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.log4j.jmx.Agent;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -65,6 +66,10 @@ public class ControllerUtilV2 {
             if(controllerProps.containsKey(AgentConstants.AGENT_TYPE)){
                 controllerProps.remove(AgentConstants.AGENT_TYPE);
             }
+            Integer availablePoints = 0;
+            if(controllerProps.containsKey(AgentConstants.AVAILABLE_POINTS)) {
+            	availablePoints = Integer.parseInt(controllerProps.getOrDefault(AgentConstants.AVAILABLE_POINTS,0).toString());
+            }
             controller = makeControllerFromFieldDevice(device);
             if (controller != null) {
                 controller.setAgentId(device.getAgentId());
@@ -80,7 +85,7 @@ public class ControllerUtilV2 {
                 } else {
                     controller.setActive(true);
                     controller.setDataInterval(900000);
-                    controller.setAvailablePoints(0);
+                    controller.setAvailablePoints(availablePoints);
                     controller.setDeviceId(device.getId());
                     controller.setControllerType(device.getControllerType());
                     long controllerId = -1;

@@ -1,26 +1,29 @@
 package com.facilio.agentv2.lonWorks;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.fields.FacilioField;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 public class LonWorksControllerContext extends Controller {
 
-    private static final Logger LOGGER = LogManager.getLogger(LonWorksControllerContext.class.getName());
+	private static final long serialVersionUID = 1L;
 
-    public static final String ASSETCATEGORY = FacilioConstants.ContextNames.BACNET_IP_CONTROLLER_MODULE_NAME;
-
+	private static final Logger LOGGER = LogManager.getLogger(LonWorksControllerContext.class.getName());
 
     private long id;
     private long siteId;
@@ -90,7 +93,12 @@ public class LonWorksControllerContext extends Controller {
     public void setSubnetNode(String subnetNode) {
         this.subnetNode = subnetNode;
     }
-
+    
+    @JsonIgnore
+    public String getModuleName() {
+        return FacilioConstants.ContextNames.LON_WORKS_CONTROLLER_MODULE_NAME;
+    }
+    
     @Override
     public JSONObject getChildJSON() {
         JSONObject jsonObject = new JSONObject();
@@ -98,29 +106,14 @@ public class LonWorksControllerContext extends Controller {
         jsonObject.put(AgentConstants.NEURON_ID,neuronId);
         return jsonObject;
     }
-/*
-    public void processIdentifier(String identifier) throws Exception {
-        if ((identifier != null) && (!identifier.isEmpty())) {
-            String[] uniques = identifier.split(IDENTIFIER_SEPERATOR);
-            if ((uniques.length == 3) && ((FacilioControllerType.valueOf(Integer.parseInt(uniques[0])) == FacilioControllerType.LON_WORKS))) {
-                LOGGER.info("setting subnet node " + subnetNode + "  neuron id " + neuronId );
-                subnetNode = uniques[1];
-                neuronId = uniques[2];
-            } else {
-                throw new Exception(" Exceprion while processing identifier -- length or Type didnt match ");
-            }
-        } else {
-            throw new Exception("Exception Occurred, identifier can't be null or empty ->"+identifier);
-        }
-    }*/
-
 
     @Override
     public List<Condition> getControllerConditions() throws Exception {
         List<Condition> conditions = new ArrayList<>();
-        Map<String, FacilioField> fieldsMap = getFieldsMap(getModuleName());
-        //TODO implement this
-        return null;
+        Map<String, FacilioField> fieldsMap = getFieldsMap(FacilioConstants.ContextNames.LON_WORKS_CONTROLLER_MODULE_NAME);
+        conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.NEURON_ID), neuronId, StringOperators.IS));
+        conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.SUBNET_NODE),subnetNode, StringOperators.IS));
+        return conditions;
     }
 
     @Override
