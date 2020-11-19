@@ -38,4 +38,16 @@ public class AgentFieldFactory {
 			fields.add(FieldFactory.getField("disabledTime", "DISABLED_TIME", module, FieldType.NUMBER));
 			return fields;
 		}
+	 
+	 public static List<FacilioField> getLonWorksPointFields(){
+	        FacilioModule module = AgentModuleFactory.getLonWorksPointModule();
+	        List<FacilioField> fields = new ArrayList<>();
+	        fields.add(FieldFactory.getIdNotPrimaryField(module));
+	        fields.add(FieldFactory.getControllerIdField(module));
+	        fields.add(FieldFactory.getField(AgentConstants.TARGET_NAME, "TARGET_NAME", FieldType.STRING));
+	        fields.add(FieldFactory.getField(AgentConstants.TARGET_COMP, "TARGET_COMP", FieldType.STRING));
+	        fields.add(FieldFactory.getField(AgentConstants.LINK_TYPE, "LINK_TYPE", FieldType.STRING));
+	        fields.add(FieldFactory.getFieldDeviceId(module));
+	        return fields;
+	    }
 }

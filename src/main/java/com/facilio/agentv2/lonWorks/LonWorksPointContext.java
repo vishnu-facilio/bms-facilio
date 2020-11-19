@@ -4,14 +4,18 @@ import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.bacnet.BacnetIpPointContext;
 import com.facilio.agentv2.point.Point;
+import com.facilio.modules.FieldUtil;
 import com.fasterxml.jackson.annotation.JsonInclude;
+
+import java.util.Map;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 public class LonWorksPointContext extends Point {
 
-    private static final Logger LOGGER = LogManager.getLogger(BacnetIpPointContext.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(LonWorksPointContext.class.getName());
 
     @JsonInclude
     private String targetComp;
@@ -68,5 +72,15 @@ public class LonWorksPointContext extends Point {
         jsonObject.put(AgentConstants.TARGET_COMP,targetComp);
         jsonObject.put(AgentConstants.TARGET_NAME,targetName);
         return jsonObject;
+    }
+    
+    public static Point getPointFromMap( Map<String, Object> pointMap) throws Exception {
+        if (pointMap == null || pointMap.isEmpty()) {
+            throw new Exception(" Map for controller can't be null or empty ->" + pointMap);
+        }
+          JSONObject jsonObject = new JSONObject();
+          jsonObject.putAll(pointMap);
+          LonWorksPointContext point = FieldUtil.getAsBeanFromJson(jsonObject, LonWorksPointContext.class);
+          return point;
     }
 }

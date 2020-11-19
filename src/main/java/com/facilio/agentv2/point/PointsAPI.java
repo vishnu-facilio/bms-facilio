@@ -22,6 +22,8 @@ import com.facilio.agent.AgentType;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.controller.FacilioPointType;
 import com.facilio.agent.fw.constants.FacilioCommand;
+import com.facilio.agent.module.AgentFieldFactory;
+import com.facilio.agent.module.AgentModuleFactory;
 import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.JsonUtil;
@@ -29,6 +31,7 @@ import com.facilio.agentv2.bacnet.BacnetIpPointContext;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.iotmessage.ControllerMessenger;
+import com.facilio.agentv2.lonWorks.LonWorksPointContext;
 import com.facilio.agentv2.misc.MiscPoint;
 import com.facilio.agentv2.modbusrtu.ModbusRtuPointContext;
 import com.facilio.agentv2.modbustcp.ModbusTcpPointContext;
@@ -81,9 +84,10 @@ public class PointsAPI {
                 return ModuleFactory.getOPCUAPointModule();
             case SYSTEM:
                 return ModuleFactory.getSystemPointModule();
+            case LON_WORKS:
+            	return AgentModuleFactory.getLonWorksPointModule();
             case REST:
             case CUSTOM:
-            case LON_WORKS:
             case BACNET_MSTP:
             case KNX:
                 throw new Exception(" No implementation for " + controllerType.asString() + " points");
@@ -110,9 +114,10 @@ public class PointsAPI {
                 return FieldFactory.getOPCUAPointFields();
             case SYSTEM:
                 return FieldFactory.getSystemPointFields();
+            case LON_WORKS:
+            	return AgentFieldFactory.getLonWorksPointFields();
             case REST:
             case CUSTOM:
-            case LON_WORKS:
             case BACNET_MSTP:
             case KNX:
                 throw new Exception(" No implementation for " + controllerType.asString() + " points");
@@ -148,6 +153,8 @@ public class PointsAPI {
                     return MiscPoint.getPointFromMap(payload);
                 case SYSTEM:
                     return SystemPointContext.getPointFromMap(payload);
+                case LON_WORKS:
+                	return LonWorksPointContext.getPointFromMap(payload);
                 default:
                     throw new Exception("no implementation for " + controllerType.asString());
             }

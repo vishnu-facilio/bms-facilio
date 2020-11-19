@@ -20,4 +20,12 @@ public class AgentModuleFactory {
 		module.setTableName("Agent_Disable");
 		return module;
 	}
+	
+	public static FacilioModule getLonWorksPointModule() {
+		FacilioModule bacnetIpPointModule = new FacilioModule();
+		bacnetIpPointModule.setName("lonworksPoint");
+		bacnetIpPointModule.setDisplayName("LonWorks Point");
+		bacnetIpPointModule.setTableName("LonWorks_Point");
+		return bacnetIpPointModule;
+	}
 }
