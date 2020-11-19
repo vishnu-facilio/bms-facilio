@@ -629,7 +629,7 @@ public class ColumnFactory {
 //		columns.add(new ViewField("vendor", "Vendor"));
 		columns.add(new ViewField("requestedTime", "Requested Date"));
 		columns.add(new ViewField("requiredTime", "Required Date"));
-		columns.add(new ViewField("status", "Status"));
+		columns.add(new ViewField("moduleState", "Status"));
 		columns.add(new ViewField("totalCost", "Total Cost"));
 				
 		return columns;
@@ -645,7 +645,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("storeRoom", "Storeroom"));
 		columns.add(new ViewField("orderedTime", "Ordered Date"));
 		columns.add(new ViewField("requiredTime", "Required Date"));
-		columns.add(new ViewField("status", "Status"));
+		columns.add(new ViewField("moduleState", "Status"));
 		columns.add(new ViewField("totalCost", "Total Cost"));
 		return columns;
 	}
