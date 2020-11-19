@@ -12,6 +12,8 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.agent.controller.FacilioControllerType;
+import com.facilio.agent.module.AgentFieldFactory;
+import com.facilio.agent.module.AgentModuleFactory;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.chain.FacilioContext;
@@ -276,6 +278,11 @@ public class GetPointRequest {
                 builder.select(fields).innerJoin(ModuleFactory.getSystemPointModule().getTableName())
                         .on(AgentConstants.POINTS_TABLE+".ID="+ModuleFactory.getSystemPointModule().getTableName()+".ID");
                 return builder;
+            case LON_WORKS:
+            	fields.addAll(AgentFieldFactory.getLonWorksPointFields());
+            	builder.select(fields).innerJoin(AgentModuleFactory.getLonWorksPointModule().getTableName())
+            	.on(AgentConstants.POINTS_TABLE+".ID="+AgentModuleFactory.getLonWorksPointModule().getTableName()+".ID");
+            	return builder;
             default:
                 throw new Exception("FacilioControler type didnt match with cases " + controllerType.toString());
         }
