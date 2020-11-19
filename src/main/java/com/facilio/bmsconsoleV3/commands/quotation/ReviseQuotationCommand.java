@@ -4,14 +4,12 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.QuotationActivityType;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
@@ -40,8 +38,6 @@ public class ReviseQuotationCommand extends FacilioCommand {
                 FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.QUOTE);
                 List<FacilioField> fields = modBean.getAllFields(module.getName());
                 Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
-                FacilioStatus revisedStatus = TicketAPI.getStatus(module, "Revised");
-                FacilioStatus sentStatus = TicketAPI.getStatus(module, "Sent");
 
                 List<QuotationContext> revisedQuoteList = new ArrayList<>();
                 for (QuotationContext quotation : list) {
@@ -49,20 +45,15 @@ public class ReviseQuotationCommand extends FacilioCommand {
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Parent record Id is needed for revising the quote");
                     }
                     QuotationContext exitingQuotation = (QuotationContext) V3RecordAPI.getRecord(moduleName,quotation.getId(), QuotationContext.class);
-                    if (exitingQuotation.getModuleState() != null && exitingQuotation.getModuleState().getId() == sentStatus.getId()) {
-                        quotation.setModuleState(revisedStatus);
-                        quotation.setIsQuotationRevised(true);
-                        V3RecordAPI.updateRecord(quotation, module, Arrays.asList(fieldsMap.get("isQuotationRevised"),fieldsMap.get("moduleState")));
-                        context.put(FacilioConstants.ContextNames.OLD_RECORD_ID, quotation.getId());
-                        JSONObject info = new JSONObject();
-                        info.put("quotationId", quotation.getId());
-                        CommonCommandUtil.addActivityToContext(quotation.getId(), -1, QuotationActivityType.REVISE_QUOTATION, info,(FacilioContext) context);
-                        QuotationContext revisedQuotation = quotation.clone();
-                        revisedQuotation.setParentId(exitingQuotation.getParentId());
-                        revisedQuoteList.add(revisedQuotation);
-                    } else {
-                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Only Quotation in sent status can be revised");
-                    }
+                    quotation.setIsQuotationRevised(true);
+                    V3RecordAPI.updateRecord(quotation, module, Arrays.asList(fieldsMap.get("isQuotationRevised")));
+                    context.put(FacilioConstants.ContextNames.OLD_RECORD_ID, quotation.getId());
+                    JSONObject info = new JSONObject();
+                    info.put("quotationId", quotation.getId());
+                    CommonCommandUtil.addActivityToContext(quotation.getId(), -1, QuotationActivityType.REVISE_QUOTATION, info, (FacilioContext) context);
+                    QuotationContext revisedQuotation = quotation.clone();
+                    revisedQuotation.setParentId(exitingQuotation.getParentId());
+                    revisedQuoteList.add(revisedQuotation);
                 }
                 recordMap.put(moduleName, revisedQuoteList);
             }
