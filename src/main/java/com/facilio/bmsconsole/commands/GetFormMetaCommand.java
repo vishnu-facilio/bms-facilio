@@ -125,7 +125,7 @@ public class GetFormMetaCommand extends FacilioCommand {
 					form.getSections().get(0).getFields().addAll(0, FormFactory.getRequesterFormFields(true, true));
 				}
 			}
-			if (formName.equalsIgnoreCase("multi_web_pm")) {
+			if (formName != null && formName.equalsIgnoreCase("multi_web_pm")) {
 				List<FormField> formFields = new ArrayList<>();
 				for (FormField f : form.getFields()) {
 					FacilioField field = f.getField();
