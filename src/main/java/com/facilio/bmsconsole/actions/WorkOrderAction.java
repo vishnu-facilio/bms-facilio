@@ -1407,7 +1407,7 @@ public class WorkOrderAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.ACTUAL_TIMINGS, actualTimings);
 
 
-		if (stateTransitionId < 0) {
+		if (stateTransitionId == null || stateTransitionId < 0) {
 			workorder.setStatus(TicketAPI.getStatus("Closed")); // We shouldn't
 			// allow close to be
 			// edited
