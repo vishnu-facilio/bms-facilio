@@ -361,7 +361,7 @@ public class DataProcessorV2
             int type = ((Number)payload.get(AgentConstants.CONTROLLER_TYPE)).intValue();
             Device device = FieldDeviceApi.getDevice(agent.getId(), DeviceUtil.getControllerIdentifier(agent, type, controllerJson));
             if (device != null) {
-                return PointsUtil.processPoints(payload, device);
+                return PointsUtil.processPoints(payload, device, agent);
             } else {
                 throw new Exception("Exception occurred, Controller obtained in null");
             }

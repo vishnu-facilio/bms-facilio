@@ -2,6 +2,7 @@ package com.facilio.agentv2.point;
 
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.GetControllerRequest;
 import com.facilio.agentv2.device.Device;
@@ -71,7 +72,7 @@ public class PointsUtil
         return false;
     }*/
 
-    public static boolean processPoints(JSONObject payload, Device device) throws Exception {
+    public static boolean processPoints(JSONObject payload, Device device, FacilioAgent agent) throws Exception {
         LOGGER.info(" processing point "+device.getControllerProps());
 
         if (containsValueCheck(AgentConstants.DATA, payload)) {
@@ -118,7 +119,9 @@ public class PointsUtil
                     if (point != null) {
                         point.setControllerId(controller.getId());
                         if (controller.getControllerType() == FacilioControllerType.MODBUS_IP.asInt() || controller.getControllerType() == FacilioControllerType.MODBUS_RTU.asInt()) {
-                            point.setConfigureStatus(PointEnum.ConfigureStatus.CONFIGURED.getIndex());
+                            if (agent.getType().equalsIgnoreCase("facilio")) {
+                                point.setConfigureStatus(PointEnum.ConfigureStatus.CONFIGURED.getIndex());
+                            }
                         }
                         points.add(point);
                     }
