@@ -1,17 +1,16 @@
 package com.facilio.agentv2.lonWorks;
 
-import com.facilio.agent.controller.FacilioControllerType;
-import com.facilio.agentv2.AgentConstants;
-import com.facilio.agentv2.bacnet.BacnetIpPointContext;
-import com.facilio.agentv2.point.Point;
-import com.facilio.modules.FieldUtil;
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 import java.util.Map;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
+
+import com.facilio.agent.controller.FacilioControllerType;
+import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.point.Point;
+import com.facilio.modules.FieldUtil;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 public class LonWorksPointContext extends Point {
 
@@ -66,6 +65,7 @@ public class LonWorksPointContext extends Point {
     @Override
     public JSONObject getChildJSON() {
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put(AgentConstants.ID,getId());
         jsonObject.put(AgentConstants.LINK_TYPE,linkType);
         jsonObject.put(AgentConstants.DEVICE_ID,getDeviceId());
         jsonObject.put(AgentConstants.CONTROLLER_ID, getControllerId());
