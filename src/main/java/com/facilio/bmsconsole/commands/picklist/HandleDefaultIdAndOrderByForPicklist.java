@@ -22,6 +22,7 @@ public class HandleDefaultIdAndOrderByForPicklist extends FacilioCommand {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(moduleName);
         FacilioUtil.throwIllegalArgumentException(module == null, "Invalid module name for picklist");
+        context.put(FacilioConstants.ContextNames.MODULE, module);
         String orderBy = RecordAPI.getDefaultOrderByForModuleIfAny(moduleName);
         if (StringUtils.isEmpty(orderBy)) {
             orderBy = "ID DESC";

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FieldOption;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Command;
@@ -502,15 +503,19 @@ public class PickListAction extends FacilioAction {
 	 * @throws Exception ******************/
 
 	public String v3PickList() throws Exception {
+		JSONObject meta = new JSONObject();
 		if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {
-			setResult(FacilioConstants.ContextNames.PICKLIST, LookupSpecialTypeUtil.getNewPickList(moduleName));
+			setResult(FacilioConstants.ContextNames.DATA, LookupSpecialTypeUtil.getNewPickList(moduleName));
+			meta.put("moduleType", FacilioModule.ModuleType.PICK_LIST.name());
 		}
 		else {
 			FacilioChain pickListChain = ReadOnlyChainFactory.newPicklistFromDataChain();
 			populatePicklistContext(pickListChain.getContext());
 			pickListChain.execute();
 			setResult(FacilioConstants.ContextNames.DATA,pickListChain.getContext().get(FacilioConstants.ContextNames.PICKLIST));
+			meta.put("moduleType", ((FacilioModule)pickListChain.getContext().get(FacilioConstants.ContextNames.MODULE)).getTypeEnum().name());
 		}
+		setResult(FacilioConstants.ContextNames.META, meta);
 		return SUCCESS;
 	}
 	
