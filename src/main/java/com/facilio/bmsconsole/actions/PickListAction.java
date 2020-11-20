@@ -509,7 +509,7 @@ public class PickListAction extends FacilioAction {
 			FacilioChain pickListChain = ReadOnlyChainFactory.newPicklistFromDataChain();
 			populatePicklistContext(pickListChain.getContext());
 			pickListChain.execute();
-			setResult(FacilioConstants.ContextNames.PICKLIST,pickListChain.getContext().get(FacilioConstants.ContextNames.PICKLIST));
+			setResult(FacilioConstants.ContextNames.DATA,pickListChain.getContext().get(FacilioConstants.ContextNames.PICKLIST));
 		}
 		return SUCCESS;
 	}
