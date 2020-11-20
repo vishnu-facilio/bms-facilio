@@ -145,7 +145,10 @@ public class WorkflowRuleAPI {
 				break;
 			case CUSTOM_BUTTON:
 				ApprovalRulesAPI.addApproverRuleChildren((ApproverWorkflowRuleContext) rule);
-				StateFlowRulesAPI.addOrUpdateFormDetails((CustomButtonRuleContext) rule);
+				CustomButtonRuleContext customButtonRuleContext = (CustomButtonRuleContext) rule;
+				if (StringUtils.isEmpty(customButtonRuleContext.getFormModuleName())) {
+					StateFlowRulesAPI.addOrUpdateFormDetails((CustomButtonRuleContext) rule);
+				}
 				ruleProps = FieldUtil.getAsProperties(rule);
 				addExtendedProps(ModuleFactory.getCustomButtonRuleModule(), FieldFactory.getCustomButtonRuleFields(), ruleProps);
 				break;
