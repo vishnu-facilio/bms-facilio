@@ -14,6 +14,8 @@ if [ -z "$pid" ]; then
 else
     echo "Shutting down java process $pid"
     kill -9 $pid
+    echo "Sleeping 15 seconds to release the occupied ports"
+    sleep 15
 fi
 chmod 644 $APP_HOME/logs/*
 sh $APP_HOME/bin/startup.sh
