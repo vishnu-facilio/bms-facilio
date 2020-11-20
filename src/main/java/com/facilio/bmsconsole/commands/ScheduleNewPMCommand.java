@@ -115,7 +115,7 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
             switch (pm.getTriggerTypeEnum()) {
                 case ONLY_SCHEDULE_TRIGGER:
                     if (workorderTemplate != null) {
-                        List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),pm.getSiteIds(),pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
+                        List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),pm.getSiteIds(),pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts(), true);
                         Map<Long, PMResourcePlannerContext> pmResourcePlanner = PreventiveMaintenanceAPI.getPMResourcesPlanner(pm.getId());
                         List<ResourceContext> resourceObjs = ResourceAPI.getResources(resourceIds, false); // ?
                         Map<Long, ResourceContext> resourceMap = new HashMap<>();
@@ -208,7 +208,7 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
                         if (baseSpaceId == null || baseSpaceId < 0) {
                             baseSpaceId = pm.getSiteId();
                         }
-                        List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),baseSpaceId,pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
+                        List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),baseSpaceId,pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts(), false);
 
                         Map<Long, PMResourcePlannerContext> pmResourcePlanner = PreventiveMaintenanceAPI.getPMResourcesPlanner(pm.getId());
                         List<ResourceContext> resourceObjs = ResourceAPI.getResources(resourceIds, false); // ?

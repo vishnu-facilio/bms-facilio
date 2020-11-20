@@ -131,7 +131,7 @@ public class FailedPMNewScheduler {
 					baseSpaceId = pm.getSiteId();
 				}
 				//TODO
-				List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),baseSpaceId,pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
+				List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),baseSpaceId,pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts(), false);
 				//TODO
 				Map<Long, PMResourcePlannerContext> pmResourcePlanner = PreventiveMaintenanceAPI.getPMResourcesPlanner(pm.getId());
 				//TODO
@@ -344,7 +344,7 @@ public class FailedPMNewScheduler {
 				Long woTemplateResourceId = wo.getResource() != null ? wo.getResource().getId() : -1;
 				if(woTemplateResourceId > 0) {
 					Long currentTriggerId = pmTrigger.getId();
-					taskMapForNewPmExecution = PreventiveMaintenanceAPI.getTaskMapForNewPMExecution(context, clonedWoTemplate.getSectionTemplates(), woTemplateResourceId, currentTriggerId);
+					taskMapForNewPmExecution = PreventiveMaintenanceAPI.getTaskMapForNewPMExecution(context, clonedWoTemplate.getSectionTemplates(), woTemplateResourceId, currentTriggerId, false);
 				}
 			} else {
 				taskMapForNewPmExecution = clonedWoTemplate.getTasks();
@@ -373,7 +373,7 @@ public class FailedPMNewScheduler {
 				Long woTemplateResourceId = wo.getResource() != null ? wo.getResource().getId() : -1;
 				if (woTemplateResourceId > 0) {
 					Long currentTriggerId = pmTrigger.getId();
-					preRequestMapForNewPmExecution = PreventiveMaintenanceAPI.getTaskMapForNewPMExecution(context, clonedWoTemplate.getPreRequestSectionTemplates(), woTemplateResourceId, currentTriggerId);
+					preRequestMapForNewPmExecution = PreventiveMaintenanceAPI.getTaskMapForNewPMExecution(context, clonedWoTemplate.getPreRequestSectionTemplates(), woTemplateResourceId, currentTriggerId, false);
 				}
 			} else {
 				preRequestMapForNewPmExecution = clonedWoTemplate.getPreRequests();

@@ -583,6 +583,7 @@ public class PreventiveMaintenance extends ResourceContext {
 		CURRENT_ASSET,
 		SPECIFIC_ASSET,
 		ALL_BUILDINGS,
+		ALL_SITES
 		;
 		public int getVal() {
 			return ordinal() + 1;

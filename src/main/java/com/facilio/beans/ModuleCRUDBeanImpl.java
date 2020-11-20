@@ -237,10 +237,10 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				if (resourceId == null || resourceId < 0) {
 					resourceId = pm.getSiteId();
 				}
-				resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),resourceId,pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
+				resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),resourceId,pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts(), false);
 			} else if (pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTI_SITE) {
 				List<Long> pmSites = PreventiveMaintenanceAPI.getPMSites(pm.getId());
-				resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),pmSites,pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
+				resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),pmSites,pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts(), true);
 			}
 			else {
 				resourceIds = Collections.singletonList(workorderTemplate.getResourceIdVal());
@@ -297,7 +297,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 						if (pmTrigger != null) {
 							currentTriggerId = pmTrigger.getId();
 						}
-						taskMapForNewPmExecution = PreventiveMaintenanceAPI.getTaskMapForNewPMExecution(workorderTemplate.getSectionTemplates(), woTemplateResourceId, currentTriggerId);
+						taskMapForNewPmExecution = PreventiveMaintenanceAPI.getTaskMapForNewPMExecution(workorderTemplate.getSectionTemplates(), woTemplateResourceId, currentTriggerId, pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTI_SITE);
 					}
 				} else {
 					taskMapForNewPmExecution = workorderTemplate.getTasks();
@@ -330,7 +330,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 						}
 						preRequestMapForNewPmExecution = PreventiveMaintenanceAPI.getPreRequestMapForNewPMExecution(
 								workorderTemplate.getPreRequestSectionTemplates(), woTemplateResourceId,
-								currentTriggerId);
+								currentTriggerId, pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTI_SITE);
 					}
 				} else {
 					preRequestMapForNewPmExecution = workorderTemplate.getPreRequests();

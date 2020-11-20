@@ -736,9 +736,7 @@ public class WorkOrderAction extends FacilioAction {
 				
 				assetCategoryIds = AssetsAPI.getAssetCategoryIds(floorsIds, buildingId, true);
 				spaceCategoryIds = SpaceAPI.getSpaceCategoryIds(floorsIds, buildingId);
-			}
-			else if(assignmentType.equals(PMAssignmentType.SPACE_CATEGORY)) {
-				
+			} else if(assignmentType.equals(PMAssignmentType.SPACE_CATEGORY) || assignmentType.equals(PMAssignmentType.ALL_SITES)) {
 				if(parentAssignmentType == null) {
 					List<Long> spaceIds = new ArrayList<>();
 					

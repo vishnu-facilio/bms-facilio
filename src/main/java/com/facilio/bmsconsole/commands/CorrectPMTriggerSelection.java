@@ -114,7 +114,7 @@ public class CorrectPMTriggerSelection extends FacilioJob implements Serializabl
                         if (baseSpaceId == null || baseSpaceId < 0) {
                             baseSpaceId = pm.getSiteId();
                         }
-                        List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),baseSpaceId,pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
+                        List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),baseSpaceId,pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts(), false);
 
                         Map<Long, PMResourcePlannerContext> pmResourcePlanner = PreventiveMaintenanceAPI.getPMResourcesPlanner(pm.getId());
                         List<ResourceContext> resourceObjs = ResourceAPI.getResources(resourceIds, false); // ?
@@ -421,7 +421,7 @@ public class CorrectPMTriggerSelection extends FacilioJob implements Serializabl
                 Long woTemplateResourceId = wo.getResource() != null ? wo.getResource().getId() : -1;
                 if(woTemplateResourceId > 0) {
                     Long currentTriggerId = pmTrigger.getId();
-                    taskMapForNewPmExecution = PreventiveMaintenanceAPI.getTaskMapForNewPMExecution(context, clonedWoTemplate.getSectionTemplates(), woTemplateResourceId, currentTriggerId);
+                    taskMapForNewPmExecution = PreventiveMaintenanceAPI.getTaskMapForNewPMExecution(context, clonedWoTemplate.getSectionTemplates(), woTemplateResourceId, currentTriggerId, false);
                 }
             } else {
                 taskMapForNewPmExecution = clonedWoTemplate.getTasks();

@@ -200,9 +200,9 @@ public class PreventiveMaintenanceAPI {
 
 		List<Long> resourceIds;
 		if (pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTI_SITE) {
-			resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),pm.getSiteIds(),pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
+			resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),pm.getSiteIds(),pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts(), true);
 		} else {
-			resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),baseSpaceId,pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
+			resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),baseSpaceId,pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts(), false);
 		}
 		for(Long resourceId :resourceIds) {					// construct resource planner for default cases
 			if(!resourcePlanners.containsKey(resourceId)) {
@@ -308,11 +308,11 @@ public class PreventiveMaintenanceAPI {
 		}
 	}
 
-	public static Map<String, List<TaskContext>> getTaskMapForNewPMExecution(List<TaskSectionTemplate> sectiontemplates, Long woResourceId, Long triggerId) throws Exception {
-		return getTaskMapForNewPMExecution(new FacilioContext(), sectiontemplates, woResourceId, triggerId);
+	public static Map<String, List<TaskContext>> getTaskMapForNewPMExecution(List<TaskSectionTemplate> sectiontemplates, Long woResourceId, Long triggerId, boolean isMultiSite) throws Exception {
+		return getTaskMapForNewPMExecution(new FacilioContext(), sectiontemplates, woResourceId, triggerId, isMultiSite);
 	}
 
-	public static Map<String, List<TaskContext>> getTaskMapForNewPMExecution(Context context, List<TaskSectionTemplate> sectiontemplates, Long woResourceId, Long triggerId) throws Exception {
+	public static Map<String, List<TaskContext>> getTaskMapForNewPMExecution(Context context, List<TaskSectionTemplate> sectiontemplates, Long woResourceId, Long triggerId, boolean isMultiSite) throws Exception {
 		Map<String, List<TaskContext>> taskMap = new LinkedHashMap<>();
 		for(TaskSectionTemplate sectiontemplate :sectiontemplates) {
 			if (triggerId != null && triggerId > -1) {
@@ -331,7 +331,10 @@ public class PreventiveMaintenanceAPI {
 				}
 			}
 
-			List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(sectiontemplate.getAssignmentType()), woResourceId, sectiontemplate.getSpaceCategoryId(), sectiontemplate.getAssetCategoryId(),sectiontemplate.getResourceId(),sectiontemplate.getPmIncludeExcludeResourceContexts());
+			List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(sectiontemplate.getAssignmentType()), woResourceId, sectiontemplate.getSpaceCategoryId(), sectiontemplate.getAssetCategoryId(),sectiontemplate.getResourceId(),sectiontemplate.getPmIncludeExcludeResourceContexts(), isMultiSite);
+			if (isMultiSite && CollectionUtils.isEmpty(resourceIds)) {
+				return taskMap;
+			}
 
 			if (CollectionUtils.isEmpty(resourceIds)) {
 				long woRId = woResourceId == null ? -1 : woResourceId;
@@ -369,7 +372,7 @@ public class PreventiveMaintenanceAPI {
 
 					 List<Long> taskResourceIds = null;
 				 	try {
-						taskResourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(taskTemplate.getAssignmentType()), sectionResource.getId(), taskTemplate.getSpaceCategoryId(), taskTemplate.getAssetCategoryId(),taskTemplate.getResourceId(),taskTemplate.getPmIncludeExcludeResourceContexts());
+						taskResourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(taskTemplate.getAssignmentType()), sectionResource.getId(), taskTemplate.getSpaceCategoryId(), taskTemplate.getAssetCategoryId(),taskTemplate.getResourceId(),taskTemplate.getPmIncludeExcludeResourceContexts(), isMultiSite);
 					} catch (Exception ex) {
 						LOGGER.log(Level.ERROR, "exception ocurred for task " + taskTemplate.getId() + " section " + taskTemplate.getSectionId());
 						throw ex;
@@ -397,7 +400,7 @@ public class PreventiveMaintenanceAPI {
 	}
 
 	public static Map<String, List<TaskContext>> getPreRequestMapForNewPMExecution(
-			List<TaskSectionTemplate> sectiontemplates, Long woResourceId, Long triggerId) throws Exception {
+			List<TaskSectionTemplate> sectiontemplates, Long woResourceId, Long triggerId, boolean isMultiSite) throws Exception {
 		Map<String, List<TaskContext>> taskMap = new LinkedHashMap<>();
 		for (TaskSectionTemplate sectiontemplate : sectiontemplates) {
 			if (triggerId != null && triggerId > -1) {
@@ -420,7 +423,7 @@ public class PreventiveMaintenanceAPI {
 			List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(
 					PMAssignmentType.valueOf(sectiontemplate.getAssignmentType()), woResourceId,
 					sectiontemplate.getSpaceCategoryId(), sectiontemplate.getAssetCategoryId(),
-					sectiontemplate.getResourceId(), sectiontemplate.getPmIncludeExcludeResourceContexts());
+					sectiontemplate.getResourceId(), sectiontemplate.getPmIncludeExcludeResourceContexts(), isMultiSite);
 			Map<String, Integer> dupSectionNameCount = new HashMap<>();
 			for (Long resourceId : resourceIds) {
 				if (resourceId == null || resourceId < 0) {
@@ -448,7 +451,7 @@ public class PreventiveMaintenanceAPI {
 					List<Long> taskResourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(
 							PMAssignmentType.valueOf(taskTemplate.getAssignmentType()), sectionResource.getId(),
 							taskTemplate.getSpaceCategoryId(), taskTemplate.getAssetCategoryId(),
-							taskTemplate.getResourceId(), taskTemplate.getPmIncludeExcludeResourceContexts());
+							taskTemplate.getResourceId(), taskTemplate.getPmIncludeExcludeResourceContexts(), isMultiSite);
 
 					applySectionSettingsIfApplicable(sectiontemplate, taskTemplate);
 					for (Long taskResourceId : taskResourceIds) {
@@ -477,11 +480,11 @@ public class PreventiveMaintenanceAPI {
 		return startTimeInSecond;
 	}
 
-	public static List<Long> getMultipleResourceToBeAddedFromPM(PMAssignmentType pmAssignmentType, Long resourceId, Long spaceCategoryID, Long assetCategoryId, Long currentAssetId, List<PMIncludeExcludeResourceContext> includeExcludeResourceContexts) throws Exception {
-		return getMultipleResourceToBeAddedFromPM(pmAssignmentType, Collections.singletonList(resourceId), spaceCategoryID, assetCategoryId, currentAssetId, includeExcludeResourceContexts);
+	public static List<Long> getMultipleResourceToBeAddedFromPM(PMAssignmentType pmAssignmentType, Long resourceId, Long spaceCategoryID, Long assetCategoryId, Long currentAssetId, List<PMIncludeExcludeResourceContext> includeExcludeResourceContexts, boolean isMultiSite) throws Exception {
+		return getMultipleResourceToBeAddedFromPM(pmAssignmentType, Collections.singletonList(resourceId), spaceCategoryID, assetCategoryId, currentAssetId, includeExcludeResourceContexts, isMultiSite);
 	}
 
-	public static List<Long> getMultipleResourceToBeAddedFromPM(PMAssignmentType pmAssignmentType, List<Long> resourceIds,Long spaceCategoryID,Long assetCategoryID,Long currentAssetId, List<PMIncludeExcludeResourceContext> includeExcludeRess) throws Exception {
+	public static List<Long> getMultipleResourceToBeAddedFromPM(PMAssignmentType pmAssignmentType, List<Long> resourceIds,Long spaceCategoryID,Long assetCategoryID,Long currentAssetId, List<PMIncludeExcludeResourceContext> includeExcludeRess, boolean isMultiSite) throws Exception {
 		List<Long> includedIds = null;
 		List<Long> excludedIds = null;
 		if(includeExcludeRess != null && !includeExcludeRess.isEmpty()) {
@@ -500,11 +503,16 @@ public class PreventiveMaintenanceAPI {
 			if(excludedIds != null) {
 				includedIds.removeAll(excludedIds);
 			}
-			return includedIds;
+			if (!isMultiSite) {
+				return includedIds;
+			}
 		}
 		List<Long> selectedResourceIds = new ArrayList<>();
 		for (Long resourceId: resourceIds) {
 			switch(pmAssignmentType) {
+				case ALL_SITES:
+					selectedResourceIds.addAll(Collections.singletonList(resourceId));
+					break;
 				case ALL_FLOORS:
 					List<BaseSpaceContext> floors = SpaceAPI.getBuildingFloors(resourceId);
 					for(BaseSpaceContext floor :floors) {
@@ -541,7 +549,22 @@ public class PreventiveMaintenanceAPI {
 		if(excludedIds != null) {
 			selectedResourceIds.removeAll(excludedIds);
 		}
-		return selectedResourceIds;
+
+		// this is to avoid mixup accross sites, when multisite
+		List<Long> commonresourceIds = new ArrayList<>();
+		if (includedIds != null) {
+			for (int i = 0; i < selectedResourceIds.size(); i++) {
+				for (int j = 0; j < includedIds.size(); j++) {
+					if (selectedResourceIds.get(i).equals(includedIds.get(j))) {
+						commonresourceIds.add(selectedResourceIds.get(i));
+					}
+				}
+			}
+		} else {
+			commonresourceIds = selectedResourceIds;
+		}
+
+		return commonresourceIds;
  	}
 	public static long getEndTime(long startTime, List<PMTriggerContext> triggers) {
 		Optional<PMTriggerContext> minTrigger = triggers.stream().filter(i -> i.getTriggerExecutionSourceEnum() == TriggerExectionSource.SCHEDULE).min(Comparator.comparingInt(PMTriggerContext::getFrequency));
@@ -722,7 +745,8 @@ public class PreventiveMaintenanceAPI {
 				Long woTemplateResourceId = wo.getResource() != null ? wo.getResource().getId() : -1;
 				if(woTemplateResourceId > 0) {
 					Long currentTriggerId = pmTrigger.getId();
-					taskMapForNewPmExecution = PreventiveMaintenanceAPI.getTaskMapForNewPMExecution(context, clonedWoTemplate.getSectionTemplates(), woTemplateResourceId, currentTriggerId);
+					boolean isMultiSite = pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTI_SITE;
+					taskMapForNewPmExecution = PreventiveMaintenanceAPI.getTaskMapForNewPMExecution(context, clonedWoTemplate.getSectionTemplates(), woTemplateResourceId, currentTriggerId, isMultiSite);
 				}
 			} else {
 				taskMapForNewPmExecution = clonedWoTemplate.getTasks();
@@ -792,7 +816,7 @@ public class PreventiveMaintenanceAPI {
 			Long woTemplateResourceId = wo.getResource() != null ? wo.getResource().getId() : -1;
 			if(woTemplateResourceId > 0) {
 				Long currentTriggerId = pmTrigger.getId();
-				taskMapForNewPmExecution = PreventiveMaintenanceAPI.getTaskMapForNewPMExecution(woTemplate.getSectionTemplates(), woTemplateResourceId, currentTriggerId);
+				taskMapForNewPmExecution = PreventiveMaintenanceAPI.getTaskMapForNewPMExecution(woTemplate.getSectionTemplates(), woTemplateResourceId, currentTriggerId, pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTI_SITE);
 			}
 		} else {
 			taskMapForNewPmExecution = woTemplate.getTasks();
@@ -824,7 +848,7 @@ public class PreventiveMaintenanceAPI {
 			if (woTemplateResourceId > 0) {
 				Long currentTriggerId = pmTrigger.getId();
 				preRequestMapForNewPmExecution = PreventiveMaintenanceAPI.getTaskMapForNewPMExecution(
-						woTemplate.getPreRequestSectionTemplates(), woTemplateResourceId, currentTriggerId);
+						woTemplate.getPreRequestSectionTemplates(), woTemplateResourceId, currentTriggerId, pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTI_SITE);
 			}
 		} else {
 			preRequestMapForNewPmExecution = woTemplate.getPreRequests();
@@ -2201,9 +2225,9 @@ public class PreventiveMaintenanceAPI {
 				List<Long> resourceIds;
 				if (pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTI_SITE) {
 					List<Long> pmSites = PreventiveMaintenanceAPI.getPMSites(pm.getId());
-					resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(), pmSites, pm.getSpaceCategoryId(), pm.getAssetCategoryId(), null, pm.getPmIncludeExcludeResourceContexts());
+					resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(), pmSites, pm.getSpaceCategoryId(), pm.getAssetCategoryId(), null, pm.getPmIncludeExcludeResourceContexts(), true);
 				} else {
-					resourceIds = getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),baseSpaceId,pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
+					resourceIds = getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),baseSpaceId,pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts(), false);
 				}
 				if (resourceIds != null && !resourceIds.isEmpty()) {
 					for(Long resourceId :resourceIds) {					// construct resource planner for default cases

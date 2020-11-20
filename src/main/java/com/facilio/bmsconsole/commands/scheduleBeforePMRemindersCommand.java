@@ -83,7 +83,7 @@ public class scheduleBeforePMRemindersCommand extends FacilioCommand {
 			if (baseSpaceId == null || baseSpaceId < 0) {
 				baseSpaceId = pm.getSiteId();
 			}
-			List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),baseSpaceId,pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
+			List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),baseSpaceId,pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts(), pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTI_SITE);
 			
 			Map<Long, PMReminder> pmReminderMap = getPMReminderMap(pm.getReminders());
 			
