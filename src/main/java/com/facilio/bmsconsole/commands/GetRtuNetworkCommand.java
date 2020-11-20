@@ -39,7 +39,7 @@ public class GetRtuNetworkCommand extends FacilioCommand {
                 criteria.addAndConditions(conditions);
             }
             JSONObject props = (JSONObject) context.get(AgentConstants.CONTROLLER_PROPS);
-            int slaveId = (int) props.get(AgentConstants.SLAVE_ID);
+            Long slaveId = (Long) props.get(AgentConstants.SLAVE_ID);
             List<Condition> conditions = new ArrayList<>();
             conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.SLAVE_ID), String.valueOf(slaveId), NumberOperators.EQUALS));
             criteria.addAndConditions(conditions);
