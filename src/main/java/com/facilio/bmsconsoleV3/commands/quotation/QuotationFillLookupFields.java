@@ -38,6 +38,8 @@ public class QuotationFillLookupFields extends FacilioCommand {
         fetchLookupsList.add((LookupField) fieldsAsMap.get("moduleState"));
         fetchLookupsList.add((LookupField) fieldsAsMap.get("contact"));
         fetchLookupsList.add((LookupField) fieldsAsMap.get("tax"));
+        LookupField sysCreatedBy = (LookupField) FieldFactory.getSystemField("sysCreatedBy", modBean.getModule(moduleName));
+        fetchLookupsList.add(sysCreatedBy);
 
         // TEMP Adding custom lookup fields until supported in v3
         List<FacilioField> customLookupFields = fields.stream().filter(field -> (field.getDefault() != null && !field.getDefault()) && (field.getDataType() == FieldType.LOOKUP.getTypeAsInt())).collect(Collectors.toList());
