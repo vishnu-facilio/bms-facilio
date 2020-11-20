@@ -178,7 +178,9 @@ public class DataProcessorV2
                 if (iotMessage.getCommand()== FacilioCommand.CONFIGURE.asInt()
                         && (controller.getControllerType() == FacilioControllerType.MODBUS_RTU.asInt()
                         || controller.getControllerType() == FacilioControllerType.MODBUS_IP.asInt())){
-                    return processDevicePoints(agent,payload);
+                    if (agent.getType().equalsIgnoreCase("facilio")) {
+                        return processDevicePoints(agent, payload);
+                    }
                 }
                 if (AckUtil.handleConfigurationAndSubscription(iotMessage, controller, payload)) {
                     return true;
