@@ -14,6 +14,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -238,6 +239,11 @@ public class AssetAction extends FacilioAction {
 	}
 
 	public String assetList() throws Exception {
+		if (AccountUtil.getCurrentOrg().getId() == 146) {
+			assets = new ArrayList<>();
+ 			setResult("assets", assets);
+ 			return SUCCESS;
+		}
 		FacilioContext context = new FacilioContext();
  		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
