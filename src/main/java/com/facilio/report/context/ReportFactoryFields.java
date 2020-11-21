@@ -102,7 +102,7 @@ public class ReportFactoryFields {
 		selectedFields.add(fields.get("type"));
 		selectedFields.add(fields.get("sourceType"));
 		selectedFields.add(fields.get("totalCost"));
-		selectedFields.add(fields.get("status"));
+		selectedFields.add(fields.get("moduleState"));
 		selectedFields.add(fields.get("requestedBy"));
 		if(AccountUtil.isFeatureEnabled(FeatureLicense.TENANTS)) {
 			selectedFields.add(fields.get("tenant"));

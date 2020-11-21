@@ -84,10 +84,10 @@ public class ReportFactory {
 		try {
 			// workorder fields
 			List<FacilioField> reportFields = new ArrayList<>();
-			ReportFacilioField openVsCloseField = (ReportFacilioField) getField(WorkOrder.OPENVSCLOSE_COL, "Status Type", ModuleFactory.getWorkOrdersModule(), " CASE WHEN STATUS_ID in (?) THEN 'Closed' ELSE CASE WHEN STATUS_ID in ($) THEN 'Skipped' ELSE CASE WHEN STATUS_ID in (*) THEN 'Open' END END END", FieldType.STRING, WorkOrder.OPENVSCLOSE);
-			openVsCloseField.addGenericCondition("Open", CriteriaAPI.getCondition("STATUS_ID", "status", "*", NumberOperators.EQUALS));
-			openVsCloseField.addGenericCondition("Closed", CriteriaAPI.getCondition("STATUS_ID", "status", "?", NumberOperators.EQUALS));
-			openVsCloseField.addGenericCondition("Skipped", CriteriaAPI.getCondition("STATUS_ID", "status", "$", NumberOperators.EQUALS));
+			ReportFacilioField openVsCloseField = (ReportFacilioField) getField(WorkOrder.OPENVSCLOSE_COL, "Status Type", ModuleFactory.getWorkOrdersModule(), " CASE WHEN MODULE_STATE in (?) THEN 'Closed' ELSE CASE WHEN MODULE_STATE in ($) THEN 'Skipped' ELSE CASE WHEN MODULE_STATE in (*) THEN 'Open' END END END", FieldType.STRING, WorkOrder.OPENVSCLOSE);
+			openVsCloseField.addGenericCondition("Open", CriteriaAPI.getCondition("MODULE_STATE", "status", "*", NumberOperators.EQUALS));
+			openVsCloseField.addGenericCondition("Closed", CriteriaAPI.getCondition("MODULE_STATE", "status", "?", NumberOperators.EQUALS));
+			openVsCloseField.addGenericCondition("Skipped", CriteriaAPI.getCondition("MODULE_STATE", "status", "$", NumberOperators.EQUALS));
 			reportFields.add(openVsCloseField);
 			
 			ReportFacilioField overdueOpenField = (ReportFacilioField) getField(WorkOrder.OVERDUE_OPEN_COL, "Open Due Status", ModuleFactory.getWorkOrdersModule(), " CASE WHEN DUE_DATE IS NOT NULL THEN CASE WHEN DUE_DATE < ? THEN 'Overdue' ELSE 'On Schedule' END END ", FieldType.STRING, WorkOrder.OVERDUE_OPEN);
