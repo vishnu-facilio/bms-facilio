@@ -168,6 +168,9 @@ public class ConstructReportData extends FacilioCommand {
 			if(field == null && moduleId != -1) {
 				if(dateField.containsKey("fieldName")) {
 					field = modBean.getField((String) dateField.get("fieldName"), modBean.getModule(moduleId).getName());
+					if(field == null) {
+						field = getField(modBean, (String) dateField.get("fieldName"));
+					}
 				}
 			}
 			reportFieldContext.setField(modBean.getModule(moduleId), field);
@@ -355,7 +358,11 @@ public class ConstructReportData extends FacilioCommand {
 		} else if (fieldId instanceof String) {
 			xField = modBean.getField((String) fieldId, module.getName());
 			if (xField == null) {
-				xField = ReportFactory.getReportField((String) fieldId);
+				if(ReportFactory.getReportField((String) fieldId) != null) {
+					xField = ReportFactory.getReportField((String) fieldId);
+				} else if(FieldFactory.getSystemField((String) fieldId, module) != null) {
+					xField = FieldFactory.getSystemField((String) fieldId, module);
+				}
 			}
 		}
 		return xField;
