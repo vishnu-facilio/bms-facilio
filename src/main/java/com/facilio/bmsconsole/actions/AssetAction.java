@@ -687,17 +687,17 @@ public class AssetAction extends FacilioAction {
 		JSONObject pagination = new JSONObject();
  		pagination.put("page", getPage());
  		pagination.put("perPage", getPerPage());
-		assetsReadings = AssetsAPI.getAssetsWithReadings(buildingIds, categoryIds, assetIds, fieldIds, search, pagination, fetchOnlyAssets != null && fetchOnlyAssets, fetchOnlyReadings != null && fetchOnlyReadings, fetchOnlyAssetReadingMap != null && fetchOnlyAssetReadingMap, getCount());
+		assetsReadings = AssetsAPI.getAssetsWithReadings(buildingIds, categoryIds, assetIds, fieldIds, search, pagination, fetchOnlyAssets != null && fetchOnlyAssets, fetchOnlyReadings != null && fetchOnlyReadings, fetchOnlyAssetReadingMap != null && fetchOnlyAssetReadingMap, getCount(),fetchOnlyAlarmPoints != null && fetchOnlyAlarmPoints);
 		return SUCCESS;
   	}
 	
 	public String getReadingsWithAssetsForSpecificCategories() throws Exception {
-		assetsReadings = AssetsAPI.getAssetsWithReadingsForSpecificCategory(buildingIds, categoryIds);
+		assetsReadings = AssetsAPI.getAssetsWithReadingsForSpecificCategory(buildingIds, categoryIds, fetchOnlyAlarmPoints != null && fetchOnlyAlarmPoints);
 		return SUCCESS;
   	}
 	
 	public String getAssetCategoryWithReadings () throws Exception {
-			assetCategoriesWithReadings = AssetsAPI.getAssetCategoryWithReadings(buildingIds);
+			assetCategoriesWithReadings = AssetsAPI.getAssetCategoryWithReadings(buildingIds, fetchOnlyAlarmPoints != null && fetchOnlyAlarmPoints);
 		return SUCCESS;
 	}
 	
@@ -731,6 +731,14 @@ public class AssetAction extends FacilioAction {
 	}
 	public void setFetchOnlyAssetReadingMap(Boolean fetchOnlyAssetReadingMap) {
 		this.fetchOnlyAssetReadingMap = fetchOnlyAssetReadingMap;
+	}
+	
+	private Boolean fetchOnlyAlarmPoints;
+	public Boolean getFetchOnlyAlarmPoints() {
+		return fetchOnlyAlarmPoints;
+	}
+	public void setFetchOnlyAlarmPoints(Boolean fetchOnlyAlarmPoints) {
+		this.fetchOnlyAlarmPoints = fetchOnlyAlarmPoints;
 	}
 	
 	private List<Long> assetIds;

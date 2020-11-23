@@ -1187,7 +1187,7 @@ public class AssetsAPI {
         return true;
    }
    
-	public static JSONObject getAssetCategoryWithReadings (List<Long> buildingIds) throws Exception {
+	public static JSONObject getAssetCategoryWithReadings (List<Long> buildingIds, boolean fetchOnlyAlarmPoints) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
@@ -1225,6 +1225,14 @@ public class AssetsAPI {
 				.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("value"), CommonOperators.IS_NOT_EMPTY))
 				.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("inputType"),String.valueOf(ReadingInputType.HIDDEN_FORMULA_FIELD.getValue()), PickListOperators.ISN_T))
 				.groupBy(FieldFactory.getIdField(assetCategoryModule).getCompleteColumnName());
+		
+		if(fetchOnlyAlarmPoints) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("inputType"),
+					String.valueOf(ReadingInputType.ALARM_POINT_FIELD.getValue()), PickListOperators.IS));
+		} else{
+			selectBuilder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("inputType"),
+					String.valueOf(ReadingInputType.ALARM_POINT_FIELD.getValue()), PickListOperators.ISN_T));
+		}
 
 		if (buildingIds != null && !buildingIds.isEmpty()) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("SPACE_ID", "space", StringUtils.join(buildingIds, ","), BuildingOperator.BUILDING_IS));
@@ -1239,7 +1247,7 @@ public class AssetsAPI {
 		return data;
 	}
 	
-	public static JSONObject getAssetsWithReadingsForSpecificCategory(List<Long> buildingIds, List<Long> categoryIds) throws Exception{
+	public static JSONObject getAssetsWithReadingsForSpecificCategory(List<Long> buildingIds, List<Long> categoryIds, boolean fetchOnlyAlarmPoints) throws Exception{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
 		List<FacilioField> assetFields = new ArrayList(modBean.getAllFields(FacilioConstants.ContextNames.ASSET));
@@ -1264,7 +1272,16 @@ public class AssetsAPI {
 				.setAggregation()
 				.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("value"), "-1", StringOperators.ISN_T))
 				.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("value"), CommonOperators.IS_NOT_EMPTY))
-				.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("inputType"),String.valueOf(ReadingInputType.HIDDEN_FORMULA_FIELD.getValue()), PickListOperators.ISN_T));
+				.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("inputType"),
+				String.valueOf(ReadingInputType.HIDDEN_FORMULA_FIELD.getValue()), PickListOperators.ISN_T));
+		
+		if(fetchOnlyAlarmPoints) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("inputType"),
+					String.valueOf(ReadingInputType.ALARM_POINT_FIELD.getValue()), PickListOperators.IS));
+		} else{
+			selectBuilder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("inputType"),
+					String.valueOf(ReadingInputType.ALARM_POINT_FIELD.getValue()), PickListOperators.ISN_T));
+		}
 		
 		if (categoryIds != null && !categoryIds.isEmpty()) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(assetFieldMap.get("category"), StringUtils.join(categoryIds, ","), NumberOperators.EQUALS));
@@ -1358,7 +1375,7 @@ public class AssetsAPI {
 	
 	public static JSONObject getAssetsWithReadings(List<Long> buildingIds, List<Long> categoryIds, List<Long> assetIds,
 			List<Long> fieldIds, String searchText, JSONObject pagination, boolean fetchOnlyAssets,
-			boolean fetchOnlyReadings, boolean fetchOnlyAssetReadingMap, boolean count) throws Exception {
+			boolean fetchOnlyReadings, boolean fetchOnlyAssetReadingMap, boolean count,boolean fetchOnlyAlarmPoints) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
@@ -1391,7 +1408,14 @@ public class AssetsAPI {
 				.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("value"), CommonOperators.IS_NOT_EMPTY))
 				.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("inputType"),
 						String.valueOf(ReadingInputType.HIDDEN_FORMULA_FIELD.getValue()), PickListOperators.ISN_T));
-
+		
+		if(fetchOnlyAlarmPoints) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("inputType"),
+					String.valueOf(ReadingInputType.ALARM_POINT_FIELD.getValue()), PickListOperators.IS));
+		} else{
+			selectBuilder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("inputType"),
+					String.valueOf(ReadingInputType.ALARM_POINT_FIELD.getValue()), PickListOperators.ISN_T));
+		}
 		if (categoryIds != null && !categoryIds.isEmpty()) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(assetFieldMap.get("category"),
 					StringUtils.join(categoryIds, ","), NumberOperators.EQUALS));
