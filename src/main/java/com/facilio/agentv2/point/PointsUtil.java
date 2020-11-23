@@ -115,6 +115,9 @@ public class PointsUtil
                 pointJSON.put(AgentConstants.CONTROLLER_ID, controller.getId());
                 try {
                     Point point = PointsAPI.getPointFromJSON(pointJSON);
+                    if(!pointJSON.containsKey(AgentConstants.DISPLAY_NAME) && pointJSON.containsKey(AgentConstants.NAME)) {
+                    	point.setDisplayName(pointJSON.get(AgentConstants.NAME).toString());
+                    }
                     setPointWritable(pointJSON,point);
                     if (point != null) {
                         point.setControllerId(controller.getId());
