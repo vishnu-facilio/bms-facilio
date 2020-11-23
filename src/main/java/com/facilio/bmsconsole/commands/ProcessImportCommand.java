@@ -829,7 +829,8 @@ public class ProcessImportCommand extends FacilioCommand {
 						newLocation.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 
 						// newLocation.setSiteId((long)siteObj.get("id"));
-						LocationAPI.addLocation(newLocation);
+						long locationId = LocationAPI.addLocation(newLocation);
+						newLocation.setId(locationId);
 						return FieldUtil.getAsProperties(newLocation);
 					}
 					else {

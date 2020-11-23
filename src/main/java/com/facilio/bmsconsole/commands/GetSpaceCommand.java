@@ -1,9 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-
-import org.apache.commons.chain.Context;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.FloorContext;
@@ -14,8 +10,16 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class GetSpaceCommand extends FacilioCommand {
 
@@ -36,6 +40,11 @@ public class GetSpaceCommand extends FacilioCommand {
 			
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		//	Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
+			List<LookupField> fetchLookupsList = new ArrayList<LookupField>();
+			List<FacilioField> customLookupFields = fields.stream().filter(field -> (field.getDefault() != null && !field.getDefault()) && (field.getDataType() == FieldType.LOOKUP.getTypeAsInt())).collect(Collectors.toList());
+			if (CollectionUtils.isNotEmpty(customLookupFields)) {
+				customLookupFields.forEach(field -> fetchLookupsList.add((LookupField) field));
+			}
 			
 			SelectRecordsBuilder<SpaceContext> builder = new SelectRecordsBuilder<SpaceContext>()
 					.table(module.getTableName())
@@ -43,7 +52,7 @@ public class GetSpaceCommand extends FacilioCommand {
 					.beanClass(SpaceContext.class)
 					.select(fields)
 					.andCustomWhere(module.getTableName()+".ID = ?", spaceId)
-					.orderBy("ID");
+					.orderBy("ID").fetchSupplements(fetchLookupsList);
 
 			List<SpaceContext> spaces = builder.get();	
 			if(spaces.size() > 0) {
