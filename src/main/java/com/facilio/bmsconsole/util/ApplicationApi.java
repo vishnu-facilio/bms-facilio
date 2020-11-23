@@ -429,9 +429,6 @@ public class ApplicationApi {
             configJSON = new JSONObject();
             configJSON.put("type", "agents");
             webTabs.add(new WebTabContext("Agents", "list", WebTabContext.Type.CUSTOM, null, layout.getApplicationId(), configJSON));
-            configJSON = new JSONObject();
-            configJSON.put("type", "device");
-            webTabs.add(new WebTabContext("Device", "device", WebTabContext.Type.CUSTOM, null, layout.getApplicationId(), configJSON));
             webTabs.add(new WebTabContext("Controllers", "controllers", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("controller").getModuleId()), layout.getApplicationId(), null));
             configJSON = new JSONObject();
             configJSON.put("type", "points");
