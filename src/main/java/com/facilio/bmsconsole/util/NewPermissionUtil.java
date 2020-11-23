@@ -24,6 +24,7 @@ public class NewPermissionUtil {
     private static Map<String, Integer> kpiTabType = Collections.unmodifiableMap(initKpiMap());
     private static Map<String, Integer> dashboardTabType = Collections.unmodifiableMap(initDashboardMap());
     private static Map<String, Integer> customTabType = Collections.unmodifiableMap(initCustomMap());
+    private static Map<String, Integer> appTabType = Collections.unmodifiableMap(initConnectedAppMap());
     private static Map<String, Long> settingsTabType = Collections.unmodifiableMap(initSettingsMap());
     private static Map<String, Integer> portalOverviewType = Collections.unmodifiableMap(initportalOverviewMap());
 
@@ -101,6 +102,12 @@ public class NewPermissionUtil {
         customTabType.put("UPDATE", 4);
         customTabType.put("DELETE", 8);
         return customTabType;
+    }
+
+    private static Map<String, Integer> initConnectedAppMap() {
+        appTabType = new HashMap<>();
+        appTabType.put("VIEW", 1);
+        return appTabType;
     }
 
     private static Map<String, Long> initSettingsMap() {
@@ -280,6 +287,12 @@ public class NewPermissionUtil {
 
         permissions = new ArrayList<>();
         permissionMap = new HashMap<>();
+        permissions.add(new Permission("VIEW", "View", appTabType.get("VIEW"), null));
+        permissionMap.put("*", permissions);
+        permissionList.put(Type.APPS.getIndex(), permissionMap);
+
+        permissions = new ArrayList<>();
+        permissionMap = new HashMap<>();
         permissions.add(new Permission("COMPANY_PROFILE", "Company Profile", settingsTabType.get("COMPANY_PROFILE"), null));
         permissions.add(new Permission("SERVICE_PORTAL", "Service Portal", settingsTabType.get("SERVICE_PORTAL"), null));
         permissions.add(new Permission("DEVICES", "Devices", settingsTabType.get("DEVICES"), null));
@@ -425,6 +438,8 @@ public class NewPermissionUtil {
                 return dashboardTabType.get(action);
             case 8:
                 return customTabType.get(action);
+            case 9:
+                return appTabType.get(action);
             case 10:
                 return settingsTabType.containsKey(action) ? settingsTabType.get(action) : -1;
             case 12:
