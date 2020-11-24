@@ -18,6 +18,10 @@ public class FilterOperator {
         this(operator, displayName, null, null, null);
     }
 
+    public FilterOperator(Operator operator, String displayName, Boolean defaultSelection) {
+        this (operator, displayName, null, null, null, defaultSelection);
+    }
+
     public FilterOperator(Operator operator, String displayName, String tagDisplayName, Boolean valueNeeded, String defaultValue) {
         this (operator, displayName, tagDisplayName, valueNeeded, defaultValue, null);
     }

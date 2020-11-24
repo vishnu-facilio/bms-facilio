@@ -1380,6 +1380,18 @@ public class FieldFactory {
         return field;
     }
 
+    public static FacilioField getSiteField (FacilioModule module) {
+        if (module != null && FacilioConstants.ContextNames.SITE.equals(module.getName())) {
+            return getIdField(module);
+        }
+
+        LookupField field = (LookupField) getField("siteId", "Site", "SITE_ID", module, FieldType.LOOKUP);
+        field.setDefault(true);
+        field.setLookupModule(ModuleFactory.getSiteModule());
+
+        return field;
+    }
+
     public static List<FacilioField> getSystemPointFields(FacilioModule module) { // Why is it point fields?
         List<FacilioField> fields = new ArrayList<>();
 

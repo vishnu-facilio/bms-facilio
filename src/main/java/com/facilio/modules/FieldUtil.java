@@ -420,8 +420,8 @@ public class FieldUtil {
 	public static boolean isSiteIdFieldPresent(FacilioModule module) {
 		return isSiteIdFieldPresent(module, false);
 	}
-	public static boolean isSiteIdFieldPresent(FacilioModule module, boolean isInsert) {
-		if (isInsert && FacilioConstants.ContextNames.SITE.equals(module.getName())) { //Temp fix. Have to check how to handle this
+	public static boolean isSiteIdFieldPresent(FacilioModule module, boolean returnFalseIfSite) {
+		if (returnFalseIfSite && FacilioConstants.ContextNames.SITE.equals(module.getName())) { //Temp fix. Have to check how to handle this
 			return false;
 		}
 		return module.isCustom() || SITE_ID_ALLOWED_MODULES.contains(module.getName()) || (module.getExtendModule() != null && (module.getExtendModule().getName().equals("asset") || module.getExtendModule().getName().equals("controller")));

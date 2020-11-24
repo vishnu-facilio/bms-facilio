@@ -165,9 +165,11 @@ public class ScopeHandlerImpl extends ScopeHandler {
     
     private ScopeFieldsAndCriteria constructScopingFieldsAndCriteria(FacilioModule primaryModule, Collection<FacilioModule> joinModules, boolean isInsert) throws Exception {
     	if(joinModules == null) {
-    		joinModules = new ArrayList<FacilioModule>();
+    		joinModules = Collections.singletonList(primaryModule);
     	}
-    	joinModules.add(primaryModule);
+    	else {
+			joinModules.add(primaryModule);
+		}
     	List<FacilioField> fields = new ArrayList<FacilioField>();
 		Criteria criteria = null;
 	    

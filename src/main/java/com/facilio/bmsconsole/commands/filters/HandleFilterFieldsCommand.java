@@ -3,20 +3,23 @@ package com.facilio.bmsconsole.commands.filters;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.filters.FilterFieldContext;
+import com.facilio.bmsconsole.context.filters.FilterOperator;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.operators.BuildingOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ScopeHandler;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class HandleFilterFieldsCommand extends FacilioCommand {
 
@@ -33,8 +36,13 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
         List<FilterFieldContext> filterFields = null;
         if (CollectionUtils.isNotEmpty(fields)) {
             filterFields = new ArrayList<>();
-            for (FacilioField field : fields) {
-                FilterFieldContext filterField = createFilterField(moduleName, field);
+
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule module = modBean.getModule(moduleName);
+            Objects.requireNonNull(module, "Invalid module name when fetching filter fields");
+
+            for (FacilioField field : filterFields(module, fields)) {
+                FilterFieldContext filterField = createFilterField(module, field);
                 if (filterField != null) {
                     filterFields.add(filterField);
                 }
@@ -46,7 +54,26 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
         return filterFields;
     }
 
-    private FilterFieldContext createFilterField(String moduleName, FacilioField field) throws Exception { // We can do special handling here also maybe
+    private List<FacilioField> filterFields (FacilioModule module, List<FacilioField> fields) {
+        if (AssetsAPI.isAssetsModule(module)) {
+            fields = filterAssetFields(fields);
+        }
+        return filterScopeFields(module, fields);
+    }
+
+    private List<FacilioField> filterScopeFields (FacilioModule module, List<FacilioField> fields) {
+        ScopeHandler.ScopeFieldsAndCriteria scopeFieldsAndCriteria = ScopeHandler.getInstance().getFieldsAndCriteriaForSelect(module, null);
+
+
+        // TODO Handle multiple scope fields
+        // Need to filter only if a valid criteria is present which means scope is set
+        if (scopeFieldsAndCriteria != null && scopeFieldsAndCriteria.getCriteria() != null && CollectionUtils.isNotEmpty(scopeFieldsAndCriteria.getFields())) {
+            fields.removeAll(scopeFieldsAndCriteria.getFields());
+        }
+        return fields;
+    }
+
+    private FilterFieldContext createFilterField(FacilioModule module, FacilioField field) throws Exception { // We can do special handling here also maybe
         switch (field.getDataTypeEnum()) {
             case FILE:
             case ID:
@@ -54,20 +81,38 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
                 return null;
         }
 
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(moduleName);
-
+        FilterFieldContext filterField = null;
         switch (field.getName()) {
             case "stateFlowId" :
             case "slaPolicyId" :
             case "approvalFlowId" :
             case "formId" :
+                filterField = null;
+                break;
             case "siteId" :
-                return null;
+                filterField = new FilterFieldContext(FieldFactory.getSiteField(module), false);
+                break;
             case "moduleState" :
-                return module.isStateFlowEnabled() ? new FilterFieldContext(field, createStateFieldFilter(module)) : null;
+                filterField = module.isStateFlowEnabled() ? new FilterFieldContext(field, createStateFieldFilter(module)) : null;
+                break;
             default:
-                return new FilterFieldContext(field);
+                filterField = new FilterFieldContext(field);
+                break;
+        }
+
+        if (filterField != null) {
+            handleSpecialOperators(filterField);
+        }
+
+        return filterField;
+    }
+
+    private void handleSpecialOperators (FilterFieldContext field) {
+        if (field.getLookupModule() != null &&
+                (   field.getLookupModule().getName().equals(FacilioConstants.ContextNames.RESOURCE)
+                        || field.getLookupModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE)
+                )) {
+            field.setOperators(Collections.singletonList(new FilterOperator(BuildingOperator.BUILDING_IS, "within", true)));
         }
     }
 
@@ -81,5 +126,13 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
         JSONObject filter = new JSONObject();
         filter.put("parentModuleId", operator);
         return filter;
+    }
+
+    private static final List<String> FILTERABLE_ASSET_FIELDS = Arrays.asList(new String[] {"name", "siteId", "assetCategory", "space", "qrVal", "connected", "assetDepartment", "assetType", "warrantyExpiryDate"});
+    private List<FacilioField> filterAssetFields (List<FacilioField> fields) {
+        return fields.stream().
+                filter(
+                        f -> FILTERABLE_ASSET_FIELDS.contains(f.getName())
+                ).collect(Collectors.toList());
     }
 }

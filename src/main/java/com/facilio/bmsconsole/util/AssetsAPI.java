@@ -71,6 +71,10 @@ import com.facilio.util.FacilioUtil;
 public class AssetsAPI {
 	
 	private static Logger logger = Logger.getLogger(AssetsAPI.class.getName());
+
+	public static boolean isAssetsModule (FacilioModule module) {
+		return module.equalsOrExtends(FacilioConstants.ContextNames.ASSET);
+	}
 	
 	public static List<Long> getAssetIdsFromBaseSpaceIds(List<Long> baseSpaceIds) throws Exception {
 		

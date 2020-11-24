@@ -36,8 +36,14 @@ public class GetFieldsByAccessType extends FacilioCommand {
 
         List<FacilioField> selectedFields = FieldUtil.getFieldsByAccessType(accessType, moduleName);
 
-        if (ChainUtil.getV3Config(moduleName) == null && FieldUtil.isSystemFieldsPresent(module)) {
-            selectedFields.addAll(FieldFactory.getSystemPointFields(module));
+        // TODO Should be removed when all modules are moved to V3
+        if (ChainUtil.getV3Config(moduleName) == null) {
+            if (FieldUtil.isSiteIdFieldPresent(module, true)) {
+                selectedFields.add(FieldFactory.getSiteIdField(module));
+            }
+            if (FieldUtil.isSystemFieldsPresent(module)) {
+                selectedFields.addAll(FieldFactory.getSystemPointFields(module));
+            }
         }
 
         context.put(FacilioConstants.ContextNames.FIELDS, selectedFields);

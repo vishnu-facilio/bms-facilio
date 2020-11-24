@@ -20,10 +20,18 @@ public class FilterFieldContext {
     private FacilioField field;
     private JSONObject lookupFilters;
     public FilterFieldContext(FacilioField field) {
-        this (field, null);
+        this (field, null, null);
+    }
+
+    public FilterFieldContext(FacilioField field, boolean showLookupPopup) {
+        this (field, null, showLookupPopup);
     }
 
     public FilterFieldContext(FacilioField field, JSONObject lookupFilters) {
+        this (field, lookupFilters, null);
+    }
+
+    public FilterFieldContext(FacilioField field, JSONObject lookupFilters, Boolean showLookupPopup) {
         this.field = field;
         this.lookupFilters = lookupFilters;
 
@@ -53,7 +61,11 @@ public class FilterFieldContext {
         }
         else if (field instanceof LookupField) {
             FacilioModule lookup = ((LookupField) field).getLookupModule();
-            lookupModule = new FilterFieldLookupModule(lookup.getName(), lookup.getDisplayName(), lookup.getTypeEnum() != FacilioModule.ModuleType.PICK_LIST, lookupFilters);
+            lookupModule = new FilterFieldLookupModule(
+                    lookup.getName(),
+                    lookup.getDisplayName(),
+                    showLookupPopup != null ? showLookupPopup : lookup.getTypeEnum() != FacilioModule.ModuleType.PICK_LIST,
+                    lookupFilters);
         }
     }
 
@@ -110,11 +122,11 @@ public class FilterFieldContext {
         return lookupModule;
     }
 
-    private List<FieldOperator> operators;
-    public List<FieldOperator> getOperators() {
+    private List<FilterOperator> operators;
+    public List<FilterOperator> getOperators() {
         return operators;
     }
-    public void setOperators(List<FieldOperator> operators) {
+    public void setOperators(List<FilterOperator> operators) {
         this.operators = operators;
     }
 
