@@ -14,33 +14,17 @@ public class UserNotificationAction extends V3Action {
 
     private static Logger LOGGER = LogManager.getLogger(UserNotificationAction.class.getName());
 
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    Long userId ;
-
 
     public String updateUserNotificationSeen () throws Exception {
-        if (userId == null) {
-            userId = AccountUtil.getCurrentUser().getId();
-        }
         FacilioChain c = TransactionChainFactoryV3.getUserNotificationSeenUpdateChain();
-        c.getContext().put(FacilioConstants.ContextNames.USER, userId);
+        c.getContext().put(FacilioConstants.ContextNames.USER, AccountUtil.getCurrentUser().getId());
         c.execute();
         return SUCCESS;
     }
 
     public String updateUserNotificationRead () throws Exception {
-        if (userId == null) {
-            throw new RESTException(ErrorCode.VALIDATION_ERROR, "User Id cannot be null");
-        }
         FacilioChain c = TransactionChainFactoryV3.getMarkAllAsReadUserNotification();
-        c.getContext().put(FacilioConstants.ContextNames.USER, userId);
+        c.getContext().put(FacilioConstants.ContextNames.USER, AccountUtil.getCurrentUser().getId());
         c.execute();
         return SUCCESS;
     }

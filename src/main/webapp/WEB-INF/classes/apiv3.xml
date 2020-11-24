@@ -127,7 +127,7 @@
     </package>
 
 
-    <package name="usernotification" namespace="/api/v3/usernotification/update" extends="v3BaseApi">
+    <package name="usernotification" namespace="/api/v3/usernotification/update" extends="v3Api">
         <action name="seen"
                 class="com.facilio.bmsconsoleV3.actions.UserNotificationAction"
                 method="updateUserNotificationSeen">
@@ -140,7 +140,7 @@
 
     </package>
     
-    <package name="v3triggers" namespace="/api/v3/trigger" extends="v3BaseApi">
+    <package name="v3triggers" namespace="/api/v3/trigger" extends="v3Api">
         <action name="add"
                 class="com.facilio.trigger.action.TriggerAction"
                 method="addTrigger">
