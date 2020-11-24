@@ -1,15 +1,13 @@
 package com.facilio.bmsconsole.actions;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.agent.AgentType;
-import com.facilio.agent.integration.DownloadCertFile;
-import com.opensymphony.xwork2.ActionSupport;
-import org.apache.log4j.LogManager;
-import org.json.simple.JSONObject;
-
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
+
+import org.apache.log4j.LogManager;
+import org.json.simple.JSONObject;
+
+import com.opensymphony.xwork2.ActionSupport;
 
 public class DeviceAction extends ActionSupport
 {
@@ -83,11 +81,11 @@ public class DeviceAction extends ActionSupport
 
 
 
-	public String downloadCertificate() {
-		String clientIdAndPolicyName = AccountUtil.getCurrentOrg().getDomain();
-		url = DownloadCertFile.downloadCertificate( clientIdAndPolicyName , AgentType.BACnet.getLabel());
-		return SUCCESS;
-	}
+//	public String downloadCertificate() {
+//		String clientIdAndPolicyName = AccountUtil.getCurrentOrg().getDomain();
+//		url = DownloadCertFile.downloadCertificate( clientIdAndPolicyName , AgentType.BACnet.getLabel());
+//		return SUCCESS;
+//	}
 
 
 
