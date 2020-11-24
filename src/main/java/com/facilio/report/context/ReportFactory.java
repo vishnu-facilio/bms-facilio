@@ -42,6 +42,8 @@ public class ReportFactory {
 		String ESTIMATED_DURATION_COL = "estimatedduration";
 		String TOTAL_SCORE_PERCENTAGE_COL = "totalscorepercentage";
 		String RESPONSE_SLA_COL = "response_sla";
+		String RESOLUTION_DUE_COL="resolutionduestatus";
+		String ACCEPTANCE_DUE_COL="acceptanceduestatus";
 		
 		
 		int OPENVSCLOSE = 1;
@@ -52,6 +54,8 @@ public class ReportFactory {
 		int ESTIMATED_DURATION = 6;
 		int TOTAL_SCORE_PERCENTAGE = 13;
 		int RESPONSE_SLA = 14;
+		int RESOLUTION_DUE=15;
+		int ACCEPTANCE_DUE=16;
 	}
 	
 	public interface Alarm {
@@ -162,6 +166,16 @@ public class ReportFactory {
 		case "totalscorepercentage":
 			if (FacilioProperties.isProduction() && AccountUtil.getCurrentOrg().getOrgId() == 210) {
 				return (ReportFacilioField) ReportFactory.getField(WorkOrder.TOTAL_SCORE_PERCENTAGE_COL, "Total Score In Percentage", ModuleFactory.getWorkOrdersModule(), " CASE WHEN WorkOrders.NUMBER_CF9 IS NOT NULL AND WorkOrders.NUMBER_CF13 IS NOT NULL THEN WorkOrders.NUMBER_CF9 / WorkOrders.NUMBER_CF13 * 100 ELSE 0 END",FieldType.NUMBER, WorkOrder.TOTAL_SCORE_PERCENTAGE);
+			}
+			break;
+		case "resolutionduestatus":
+			if (FacilioProperties.isProduction() && AccountUtil.getCurrentOrg().getOrgId() == 274) {
+				return (ReportFacilioField) ReportFactory.getField(WorkOrder.RESOLUTION_DUE_COL, "Resolution Due Status", ModuleFactory.getWorkOrdersModule(), " CASE WHEN WorkOrders.DATETIME_CF4 IS NOT NULL AND WorkOrders.DATETIME_CF3 IS NOT NULL THEN CASE WHEN WorkOrders.DATETIME_CF4 < WorkOrders.DATETIME_CF3 THEN 'Overdue' ELSE 'Ontime' END END ",FieldType.STRING, WorkOrder.RESOLUTION_DUE);
+			}
+			break;
+		case "acceptanceduestatus":
+			if (FacilioProperties.isProduction() && AccountUtil.getCurrentOrg().getOrgId() == 274) {
+				return (ReportFacilioField) ReportFactory.getField(WorkOrder.ACCEPTANCE_DUE_COL, "Acceptance Due Status", ModuleFactory.getWorkOrdersModule(), " CASE WHEN WorkOrders.DATETIME_CF6 IS NOT NULL AND WorkOrders.DATETIME_CF5 IS NOT NULL THEN CASE WHEN WorkOrders.DATETIME_CF6 < WorkOrders.DATETIME_CF5 THEN 'Overdue' ELSE 'Ontime' END END ",FieldType.STRING, WorkOrder.ACCEPTANCE_DUE);
 			}
 			break;
 		}
