@@ -247,6 +247,10 @@
 			class="com.facilio.events.actions.V2AlarmAction" method="deleteAlarm" />
 		<action name="rcaAlarms"
 				class="com.facilio.events.actions.V2AlarmAction" method="rcaAlarms" />
+		<action name="fetchSensorRules"
+				class="com.facilio.events.actions.V2AlarmAction" method="fetchSensorRulesList" />
+		<action name="updateSensorRules"
+				class="com.facilio.events.actions.V2AlarmAction" method="updateSensorRulesList" />
 	</package>
 	
 	<package name="alarmOccurrence" namespace="/api/v2/alarmOccurrence" extends="v2Api">

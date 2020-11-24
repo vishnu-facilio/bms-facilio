@@ -3451,6 +3451,14 @@ public class TransactionChainFactory {
 		c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.ALARM_ACTIVITY));
 		return c;
 	}
+	
+	public static FacilioChain updateSensorRulesChain() {
+		
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new UpdateSensorRulesCommand());
+		
+		return c;
+	}
 
 		public static FacilioChain configureStoreNotificationsChain() {
 			FacilioChain c = getDefaultChain();

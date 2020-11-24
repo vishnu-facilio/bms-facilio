@@ -1020,6 +1020,7 @@ public class FacilioConstants {
 		public static final String IS_READING_RULE_EXECUTE_FROM_JOB ="isReadingRulesExecutionFromJob";
 		public static final String READING_RULE_ALARM_META ="readingRuleAlarmMeta";
 		public static final String SENSOR_RULE_MODULE = "sensorRule";
+		public static final String SENSOR_RULE_TYPES = "sensorRuleTypes";
 		public static final String WORKFLOW_RULE_TYPE = "workflowRuleType";
 		public static final String WORKFLOW_ACTION_LIST="workflowActions";
 		public static final String WORKFLOW_ACTION_ID="workflowActionId";

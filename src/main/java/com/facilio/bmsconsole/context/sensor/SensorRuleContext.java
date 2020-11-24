@@ -45,7 +45,29 @@ public class SensorRuleContext implements Serializable{
 	public void setReadingFieldId(long readingFieldId) {
 		this.readingFieldId = readingFieldId;
 	}
+	private List<String> sensorRuleProps;
 	
+	public List<String> getSensorRuleProps() {
+		return sensorRuleProps;
+	}
+	public void setSensorRuleProps(List<String> sensorRuleProps) {
+		this.sensorRuleProps = sensorRuleProps;
+	}
+	public String getSubject() {
+		return subject;
+	}
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
+	private String subject;
+	private JSONObject rulePropInfo;
+	
+	public JSONObject getRulePropInfo() {
+		return rulePropInfo;
+	}
+	public void setRulePropInfo(JSONObject rulePropInfo) {
+		this.rulePropInfo = rulePropInfo;
+	}
 	private FacilioField readingField;
 	public FacilioField getReadingField(){
 		try {

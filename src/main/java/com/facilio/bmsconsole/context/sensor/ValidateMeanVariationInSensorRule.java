@@ -24,7 +24,7 @@ public class ValidateMeanVariationInSensorRule implements SensorRuleTypeValidati
 	public List<String> getSensorRuleProps() {
 		List<String> validatorProps = new ArrayList<String>();
 		validatorProps.add("averageBoundPercentage");
-		validatorProps.add("timeInteval");
+		validatorProps.add("timeInterval");
 		validatorProps.add("subject");
 		validatorProps.add("severity");
 		return validatorProps;

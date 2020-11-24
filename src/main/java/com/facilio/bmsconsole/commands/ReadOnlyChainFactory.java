@@ -419,6 +419,12 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static FacilioChain getSensorRulesListChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GenerateSensorRulesListCommand());
+		return c;
+	}
+	
 	public static FacilioChain getV2AlarmDetailsChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetV2AlarmsCommand());

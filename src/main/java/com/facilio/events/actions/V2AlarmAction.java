@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.context.sensor.SensorRuleContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -33,7 +34,15 @@ public class V2AlarmAction extends FacilioAction {
 	public void setId(long id) {
 		this.id = id;
 	}
+	
+	private long moduleId = -1;
 
+	public long getModuleId() {
+		return moduleId;
+	}
+	public void setModuleId(long moduleId) {
+		this.moduleId = moduleId;
+	}
 	public String fetchAlarmSummary() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, getId());
@@ -43,6 +52,56 @@ public class V2AlarmAction extends FacilioAction {
 		
 		setResult(FacilioConstants.ContextNames.RECORD, context.get(FacilioConstants.ContextNames.RECORD));
 		setResult(FacilioConstants.ContextNames.LATEST_ALARM_OCCURRENCE, context.get(FacilioConstants.ContextNames.LATEST_ALARM_OCCURRENCE));
+		
+		return SUCCESS;
+	}
+	
+	public long getReadingFieldId() {
+		return readingFieldId;
+	}
+	public void setReadingFieldId(long readingFieldId) {
+		this.readingFieldId = readingFieldId;
+	}
+	public long getCategoryId() {
+		return categoryId;
+	}
+	public void setCategoryId(long categoryId) {
+		this.categoryId = categoryId;
+	}
+
+	private long readingFieldId = -1;
+	private long categoryId = -1;
+	private List<SensorRuleContext> sensorRules;
+	
+	public List<SensorRuleContext> getSensorRules() {
+		return sensorRules;
+	}
+	public void setSensorRules(List<SensorRuleContext> sensorRules) {
+		this.sensorRules = sensorRules;
+	}
+	public String fetchSensorRulesList() throws Exception {
+		
+		FacilioChain sensorRuleChain = ReadOnlyChainFactory.getSensorRulesListChain();
+ 		FacilioContext context = sensorRuleChain.getContext();
+ 		constructListContext(context);
+ 		context.put(ContextNames.READING_FIELD_ID, readingFieldId);
+ 		context.put(ContextNames.CATEGORY_ID, categoryId);
+ 		sensorRuleChain.execute();
+ 		setResult(FacilioConstants.ContextNames.SENSOR_RULE_TYPES, context.get(FacilioConstants.ContextNames.SENSOR_RULE_TYPES));
+		
+		return SUCCESS;
+	}
+	
+	public String updateSensorRulesList() throws Exception {
+
+		FacilioChain updateSensorRulesChain = TransactionChainFactory.updateSensorRulesChain();
+ 		FacilioContext context = updateSensorRulesChain.getContext();
+ 		constructListContext(context);
+ 		context.put(ContextNames.SENSOR_RULE_TYPES, sensorRules);
+ 		context.put(ContextNames.READING_FIELD_ID, readingFieldId);
+ 		context.put(ContextNames.CATEGORY_ID, categoryId);
+ 		context.put(ContextNames.MODULE_ID, moduleId);
+ 		updateSensorRulesChain.execute();
 		
 		return SUCCESS;
 	}
