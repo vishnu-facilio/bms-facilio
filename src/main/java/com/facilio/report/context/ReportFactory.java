@@ -170,12 +170,18 @@ public class ReportFactory {
 			break;
 		case "resolutionduestatus":
 			if (FacilioProperties.isProduction() && AccountUtil.getCurrentOrg().getOrgId() == 274) {
-				return (ReportFacilioField) ReportFactory.getField(WorkOrder.RESOLUTION_DUE_COL, "Resolution Due Status", ModuleFactory.getWorkOrdersModule(), " CASE WHEN WorkOrders.DATETIME_CF4 IS NOT NULL AND WorkOrders.DATETIME_CF3 IS NOT NULL THEN CASE WHEN WorkOrders.DATETIME_CF4 < WorkOrders.DATETIME_CF3 THEN 'Overdue' ELSE 'Ontime' END END ",FieldType.STRING, WorkOrder.RESOLUTION_DUE);
+				ReportFacilioField ResolutionDueStatusField = (ReportFacilioField) ReportFactory.getField(WorkOrder.RESOLUTION_DUE_COL, "Resolution Due Status", ModuleFactory.getWorkOrdersModule(), " CASE WHEN WorkOrders.DATETIME_CF4 IS NOT NULL AND WorkOrders.DATETIME_CF3 IS NOT NULL THEN CASE WHEN WorkOrders.DATETIME_CF4 < WorkOrders.DATETIME_CF3 THEN 'Overdue' ELSE 'Ontime' END END ",FieldType.STRING, WorkOrder.RESOLUTION_DUE);
+				ResolutionDueStatusField.addGenericCondition("Overdue", CriteriaAPI.getCondition("DATETIME_CF4", "datetime_3", "WorkOrders.DATETIME_CF3", NumberOperators.LESS_THAN));
+				ResolutionDueStatusField.addGenericCondition("Ontime", CriteriaAPI.getCondition("DATETIME_CF4", "datetime_3", "WorkOrders.DATETIME_CF3", NumberOperators.GREATER_THAN_EQUAL));
+				return ResolutionDueStatusField;
 			}
 			break;
 		case "acceptanceduestatus":
 			if (FacilioProperties.isProduction() && AccountUtil.getCurrentOrg().getOrgId() == 274) {
-				return (ReportFacilioField) ReportFactory.getField(WorkOrder.ACCEPTANCE_DUE_COL, "Acceptance Due Status", ModuleFactory.getWorkOrdersModule(), " CASE WHEN WorkOrders.DATETIME_CF6 IS NOT NULL AND WorkOrders.DATETIME_CF5 IS NOT NULL THEN CASE WHEN WorkOrders.DATETIME_CF6 < WorkOrders.DATETIME_CF5 THEN 'Overdue' ELSE 'Ontime' END END ",FieldType.STRING, WorkOrder.ACCEPTANCE_DUE);
+				ReportFacilioField AcceptanceDueStatusField = (ReportFacilioField) ReportFactory.getField(WorkOrder.ACCEPTANCE_DUE_COL, "Acceptance Due Status", ModuleFactory.getWorkOrdersModule(), " CASE WHEN WorkOrders.DATETIME_CF6 IS NOT NULL AND WorkOrders.DATETIME_CF5 IS NOT NULL THEN CASE WHEN WorkOrders.DATETIME_CF6 < WorkOrders.DATETIME_CF5 THEN 'Overdue' ELSE 'Ontime' END END ",FieldType.STRING, WorkOrder.ACCEPTANCE_DUE);
+				AcceptanceDueStatusField.addGenericCondition("Overdue", CriteriaAPI.getCondition("DATETIME_CF6", "datetime_5", "WorkOrders.DATETIME_CF5", NumberOperators.LESS_THAN));
+				AcceptanceDueStatusField.addGenericCondition("Ontime", CriteriaAPI.getCondition("DATETIME_CF6", "datetime_5", "WorkOrders.DATETIME_CF5", NumberOperators.GREATER_THAN_EQUAL));
+				return AcceptanceDueStatusField;
 			}
 			break;
 		}
