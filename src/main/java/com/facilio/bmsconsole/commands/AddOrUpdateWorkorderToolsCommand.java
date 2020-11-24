@@ -1,36 +1,27 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.workflow.rule.EventType;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-import org.json.simple.JSONObject;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.util.AssetsAPI;
-import com.facilio.bmsconsole.util.InventoryRequestAPI;
-import com.facilio.bmsconsole.util.ToolsApi;
-import com.facilio.bmsconsole.util.TransactionState;
-import com.facilio.bmsconsole.util.TransactionType;
+import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.InsertRecordBuilder;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.UpdateRecordBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class AddOrUpdateWorkorderToolsCommand extends FacilioCommand {
 
@@ -210,11 +201,9 @@ public class AddOrUpdateWorkorderToolsCommand extends FacilioCommand {
 				}
 			}
 		} else {
-			duration = (woTool.getDuration() / (1000 * 60 * 60));
-			//duration = (woTool.getDuration() / (60 * 60));
+			duration = woTool.getDuration();
 			if (woTool.getIssueTime() >= 0) {
-				woTool.setReturnTime((long) (woTool.getIssueTime() + woTool.getDuration()));
-				//woTool.setReturnTime((long) (woTool.getIssueTime() + (woTool.getDuration() * 1000)));
+				woTool.setReturnTime((long) (woTool.getIssueTime() + (woTool.getDuration() * (60*60*1000))));
 			}
 		}
 		woTool.setTransactionType(TransactionType.WORKORDER);
@@ -272,7 +261,7 @@ public class AddOrUpdateWorkorderToolsCommand extends FacilioCommand {
 			}
 		}
 //        woTool.setDuration(duration * 60 * 60);
-		woTool.setDuration(duration * 60 * 60 * 1000);
+		woTool.setDuration(duration);
 		
 		return woTool;
 	}
@@ -338,7 +327,7 @@ public class AddOrUpdateWorkorderToolsCommand extends FacilioCommand {
 			duration = returnTime - issueTime;
 		}
 		
-		double hours = ((duration / (1000 * 60 * 60)));
+		double hours = duration / (60*60*1000);
 		return Math.round(hours*100.0)/100.0;
 	}
 
