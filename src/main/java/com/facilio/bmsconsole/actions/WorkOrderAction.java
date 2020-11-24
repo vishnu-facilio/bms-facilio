@@ -7,6 +7,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.workflow.rule.*;
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -70,10 +71,6 @@ import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.view.FacilioView;
-import com.facilio.bmsconsole.workflow.rule.ActionContext;
-import com.facilio.bmsconsole.workflow.rule.EventType;
-import com.facilio.bmsconsole.workflow.rule.TicketActivity;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -2195,6 +2192,7 @@ public class WorkOrderAction extends FacilioAction {
 			setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
 		}
 		setStateFlows((Map<String, List<WorkflowRuleContext>>) context.get("stateFlows"));
+		setCustomButtons((List<CustomButtonRuleContext>) context.get(ContextNames.CUSTOM_BUTTONS));
 		FacilioView cv = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		if (cv != null) {
 			setViewDisplayName(cv.getDisplayName());
@@ -2801,6 +2799,7 @@ public class WorkOrderAction extends FacilioAction {
 			setResult(FacilioConstants.ContextNames.SUB_VIEW_COUNT, subViewsCount);
 		}
 		setResult("stateFlows", stateFlows);
+		setResult(FacilioConstants.ContextNames.CUSTOM_BUTTONS, customButtons);
 		return SUCCESS;
 	}
 	
@@ -2816,6 +2815,14 @@ public class WorkOrderAction extends FacilioAction {
 	}
 	public void setStateFlows(Map<String, List<WorkflowRuleContext>> stateFlows) {
 		this.stateFlows = stateFlows;
+	}
+
+	private List<CustomButtonRuleContext> customButtons;
+	public List<CustomButtonRuleContext> getCustomButtons() {
+		return customButtons;
+	}
+	public void setCustomButtons(List<CustomButtonRuleContext> customButtons) {
+		this.customButtons = customButtons;
 	}
 
 	public String addPortalOrders() throws Exception {
