@@ -571,9 +571,10 @@ public class FieldFactory {
         fields.add(getField("lastActionModified", "LAST_ACTION_MODIFIED", module, FieldType.NUMBER));
         fields.add(getField("recordId", "RECORD_ID", module, FieldType.NUMBER));
         fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.NUMBER));
+        fields.add(getField("agentType", "AGENT_TYPE", module, FieldType.NUMBER));
         return fields;
     }
-
+    
     public static FacilioField getNewAgentTypeField(FacilioModule module) {
         return getField(AgentConstants.AGENT_TYPE, "TYPE", module, FieldType.STRING);
     }

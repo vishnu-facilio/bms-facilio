@@ -4082,6 +4082,7 @@ CREATE TABLE IF NOT EXISTS Agent (
         ORGID bigint(20) NOT NULL,
         SITE_ID bigint(20),
         NAME varchar(250) NOT NULL,
+        AGENT_TYPE TINYINT,
         TYPE varchar(100) ,
         CONNECTED tinyint(1) ,
         DISPLAY_NAME varchar(250) ,

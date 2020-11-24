@@ -5,17 +5,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum AgentType {
-    Misc(0, "Misc"),
+	Misc(0, "Misc"),
+	BACnet(1, "BACnet"),
+	Niagara(3, "Niagara"),
+	Wattsense(4,"Wattsense"),
+	Rest(5,"Rest"),
+	Custom(6,"Custom");
 
-    BACnet(1, "BACnet"),
-
-    Niagara(3, "Niagara"),
-
-    Wattsense(4,"Wattsense");
-
-
-
-    private int key;
+	private int key;
     private String label;
 
     AgentType(int key, String label) {
