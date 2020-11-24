@@ -616,7 +616,7 @@ public class ApplicationApi {
 
             webTabs.add(getWebTabForApplication(appId, "workorder"));
             webTabs.add(getWebTabForApplication(appId, "catalog"));
-            WebTabContext notificationWebTab = new WebTabContext("Notifications", "notification", WebTabContext.Type.NOTIFICATION, null, appId, null, AccountUtil.FeatureLicense.COMMUNITY.getLicense());
+            WebTabContext notificationWebTab = new WebTabContext("Notifications", "notification", WebTabContext.Type.NOTIFICATION, null, appId, null);
             addWebTab(notificationWebTab);
             webTabs.add(notificationWebTab);
             groupNameVsWebTabsMap.put("favorite", webTabs);
