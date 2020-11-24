@@ -27,6 +27,7 @@ public class NewPermissionUtil {
     private static Map<String, Integer> appTabType = Collections.unmodifiableMap(initConnectedAppMap());
     private static Map<String, Long> settingsTabType = Collections.unmodifiableMap(initSettingsMap());
     private static Map<String, Integer> portalOverviewType = Collections.unmodifiableMap(initportalOverviewMap());
+    private static Map<String, Integer> notificationType = Collections.unmodifiableMap(initNotificationMap());
 
     private static Map<String, Integer> initModuleMap() {
         moduleTabType = new HashMap<>();
@@ -157,6 +158,12 @@ public class NewPermissionUtil {
         portalOverviewType = new HashMap<>();
         portalOverviewType.put("READ", 1);
         return  portalOverviewType;
+    }
+
+    private static Map<String, Integer> initNotificationMap() {
+        notificationType = new HashMap<>();
+        notificationType.put("READ", 1);
+        return notificationType;
     }
 
 
@@ -371,6 +378,12 @@ public class NewPermissionUtil {
         permissions.add(new Permission("READ", "Read", portalOverviewType.get("READ"), null));
         permissionMap.put("*", permissions);
         permissionList.put(Type.PORTAL_OVERVIEW.getIndex(), permissionMap);
+
+        permissions = new ArrayList<>();
+        permissionMap = new HashMap<>();
+        permissions.add(new Permission("READ", "Read", notificationType.get("READ"), null));
+        permissionMap.put("*", permissions);
+        permissionList.put(Type.NOTIFICATION.getIndex(), permissionMap);
     }
 
     public static List<Permission> getPermissions(int tabType, String moduleName) {

@@ -380,7 +380,14 @@ public class ApplicationApi {
         if (tenantPortal.getId() > 0) {
             ApplicationLayoutContext tpLayout = new ApplicationLayoutContext(tenantPortal.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.WEB, FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
             addApplicationLayout(tpLayout);
+
+            //mobile layout for tenant portal
+            ApplicationLayoutContext tpLayoutMobile = new ApplicationLayoutContext(tenantPortal.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.MOBILE, FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
+            addApplicationLayout(tpLayoutMobile);
+
             addTenantPortalWebTabs(tpLayout);
+            addTenantPortalWebGroupsForMobileLayout(tpLayoutMobile);
+
         }
 
         ApplicationContext servicePortal = getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
@@ -585,6 +592,93 @@ public class ApplicationApi {
 
     }
 
+
+    public static void addTenantPortalWebGroupsForMobileLayout(ApplicationLayoutContext layout) {
+        try {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            int groupOrder = 1;
+
+            long appId = layout.getApplicationId();
+
+            List<WebTabGroupContext> webTabGroups = new ArrayList<>();
+            Map<String, List<WebTabContext>> groupNameVsWebTabsMap = new HashMap<>();
+            List<WebTabContext> webTabs = new ArrayList<>();
+            JSONObject configJSON;
+
+            webTabGroups.add(new WebTabGroupContext("Favorite", "favorite", layout.getId(), 200, groupOrder++));
+            webTabs = new ArrayList<>();
+            configJSON = new JSONObject();
+            configJSON.put("path", "/webview/tenant/home");
+
+            WebTabContext homeTab = new WebTabContext("Home", "home", WebTabContext.Type.PORTAL_OVERVIEW, null, appId, configJSON);
+            addWebTab(homeTab);
+            webTabs.add(homeTab);
+
+            webTabs.add(getWebTabForApplication(appId, "workorder"));
+            webTabs.add(getWebTabForApplication(appId, "catalog"));
+            WebTabContext notificationWebTab = new WebTabContext("Notifications", "notification", WebTabContext.Type.NOTIFICATION, null, appId, null, AccountUtil.FeatureLicense.COMMUNITY.getLicense());
+            addWebTab(notificationWebTab);
+            webTabs.add(notificationWebTab);
+            groupNameVsWebTabsMap.put("favorite", webTabs);
+
+            webTabGroups.add(new WebTabGroupContext("Vendors", "vendor", layout.getId(), 202, groupOrder++));
+            webTabs = new ArrayList<>();
+            webTabs.add(getWebTabForApplication(appId, "vendors"));
+            webTabs.add(getWebTabForApplication(appId, "workpermit"));
+
+            groupNameVsWebTabsMap.put("vendor", webTabs);
+
+
+            webTabGroups.add(new WebTabGroupContext("Visits", "visits", layout.getId(), 203, groupOrder++));
+            webTabs = new ArrayList<>();
+            webTabs.add(getWebTabForApplication(appId, "visitorinvites"));
+            webTabs.add(getWebTabForApplication(appId, "visits"));
+
+            groupNameVsWebTabsMap.put("visits", webTabs);
+
+            webTabGroups.add(new WebTabGroupContext("Community", "community", layout.getId(), 204, groupOrder++));
+            webTabs = new ArrayList<>();
+            webTabs.add(getWebTabForApplication(appId, "announcement"));
+            webTabs.add(getWebTabForApplication(appId, "neighbourhood"));
+            webTabs.add(getWebTabForApplication(appId, "deals"));
+            webTabs.add(getWebTabForApplication(appId, "news"));
+
+            groupNameVsWebTabsMap.put("community", webTabs);
+
+            for (WebTabGroupContext webTabGroupContext : webTabGroups) {
+                FacilioChain chain = TransactionChainFactory.getAddOrUpdateTabGroup();
+                FacilioContext chainContext = chain.getContext();
+                chainContext.put(FacilioConstants.ContextNames.WEB_TAB_GROUP, webTabGroupContext);
+                chain.execute();
+                long webGroupId = (long) chainContext.get(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID);
+                webTabGroupContext.setId(webGroupId);
+                List<WebTabContext> tabs = groupNameVsWebTabsMap.get(webTabGroupContext.getRoute());
+                if(CollectionUtils.isNotEmpty(tabs)){
+                    chain = TransactionChainFactory.getCreateAndAssociateTabGroupChain();
+                    chainContext = chain.getContext();
+                    chainContext.put(FacilioConstants.ContextNames.WEB_TABS, tabs);
+                    chainContext.put(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID, webGroupId);
+                    chain.execute();
+                }
+            }
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public static void addWebTab(WebTabContext webtab) throws Exception {
+
+        GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+                .table(ModuleFactory.getWebTabModule().getTableName()).fields(FieldFactory.getWebTabFields());
+        long tabId = builder.insert(FieldUtil.getAsProperties(webtab));
+        webtab.setId(tabId);
+
+    }
     public static void addDefaultAppDomains(long orgId) throws Exception {
         Organization org = AccountUtil.getOrgBean().getOrg(orgId);
         AppDomain servicePortalAppDomain = new AppDomain(org.getDomain() + "." + FacilioProperties.getOccupantAppDomain(), AppDomainType.SERVICE_PORTAL.getIndex(), GroupType.TENANT_OCCUPANT_PORTAL.getIndex(), orgId, AppDomain.DomainType.DEFAULT.getIndex());
@@ -852,6 +946,21 @@ public class ApplicationApi {
         return applications;
 
 
+    }
+
+    private static WebTabContext getWebTabForApplication(long appId, String route) throws Exception {
+
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                    .table(ModuleFactory.getWebTabModule().getTableName()).select(FieldFactory.getWebTabFields())
+                    .andCondition(CriteriaAPI.getCondition("APPLICATION_ID", "applicationId", String.valueOf(appId), NumberOperators.EQUALS))
+                    .andCondition(CriteriaAPI.getCondition("ROUTE", "route", route, StringOperators.IS));
+
+        List<WebTabContext> webTabs = FieldUtil.getAsBeanListFromMapList(builder.get(), WebTabContext.class);
+        if(CollectionUtils.isNotEmpty(webTabs)) {
+            return webTabs.get(0);
+        }
+
+        return null;
     }
 
 }
