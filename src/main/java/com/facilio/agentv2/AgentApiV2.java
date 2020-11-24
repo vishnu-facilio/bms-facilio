@@ -40,6 +40,7 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
@@ -347,6 +348,7 @@ public class AgentApiV2 {
         filterFields.add(FieldFactory.getIdField(agentDataModule));
         filterFields.add(FieldFactory.getNameField(agentDataModule));
         filterFields.add(FieldFactory.getNewAgentTypeField(agentDataModule));
+        filterFields.add(FieldFactory.getField(AgentConstants.DISPLAY_NAME, "DISPLAY_NAME", agentDataModule, FieldType.STRING));
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(agentDataModule.getTableName())
                 .select(filterFields)
