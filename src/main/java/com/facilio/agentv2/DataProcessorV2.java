@@ -123,7 +123,8 @@ public class DataProcessorV2
                     JSONObject timeSeriesPayload = (JSONObject) payload.clone();
                     Controller timeseriesController = getCachedControllerUsingPayload(payload,agent.getId());
                     if (!controllerIdVsLastTimeSeriesTimeStamp.containsKey(timeseriesController.getId()) ||
-                            !controllerIdVsLastTimeSeriesTimeStamp.get(timeseriesController.getId()).equals(timeStamp)) {
+                            !controllerIdVsLastTimeSeriesTimeStamp.get(timeseriesController.getId()).equals(timeStamp) ||
+                            agent.getType().equalsIgnoreCase("wattsense")) {
 
                         controllerIdVsLastTimeSeriesTimeStamp.put(timeseriesController.getId(), timeStamp);
                         timeSeriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, timeseriesController.getId());
