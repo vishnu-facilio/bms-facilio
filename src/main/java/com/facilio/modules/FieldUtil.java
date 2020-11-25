@@ -424,7 +424,7 @@ public class FieldUtil {
 		if (returnFalseIfSite && FacilioConstants.ContextNames.SITE.equals(module.getName())) { //Temp fix. Have to check how to handle this
 			return false;
 		}
-		return module.isCustom() || SITE_ID_ALLOWED_MODULES.contains(module.getName()) || (module.getExtendModule() != null && (module.getExtendModule().getName().equals("asset") || module.getExtendModule().getName().equals("controller")));
+		return SITE_ID_ALLOWED_MODULES.contains(module.getName()) || (module.getExtendModule() != null && (module.getExtendModule().getName().equals("asset") || module.getExtendModule().getName().equals("controller")));
 	}
 
 	private static final Set<String> SYSTEM_FIELDS_ALLOWED_MODULES = Collections.unmodifiableSet(

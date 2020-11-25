@@ -73,7 +73,7 @@ public class AssetsAPI {
 	private static Logger logger = Logger.getLogger(AssetsAPI.class.getName());
 
 	public static boolean isAssetsModule (FacilioModule module) {
-		return module.equalsOrExtends(FacilioConstants.ContextNames.ASSET);
+		return module.instanceOf(FacilioConstants.ContextNames.ASSET);
 	}
 	
 	public static List<Long> getAssetIdsFromBaseSpaceIds(List<Long> baseSpaceIds) throws Exception {
