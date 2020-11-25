@@ -87,6 +87,9 @@ public class ApplicationApi {
         else if (appLinkName.equals("digest")) {
             appLinkName = FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP;
         }
+        else if (appLinkName.equals("agent")) {
+            appLinkName = FacilioConstants.ApplicationLinkNames.FACILIO_AGENT_APP;
+        }
         
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getApplicationModule().getTableName()).select(FieldFactory.getApplicationFields())

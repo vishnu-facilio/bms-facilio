@@ -2312,7 +2312,7 @@ public class FacilioConstants {
 	
 	public static class ApplicationLinkNames {
 		public static final String FACILIO_MAIN_APP = "newapp";
-		public static final String FACILIO_AGENT_APP = "agent";
+		public static final String FACILIO_AGENT_APP = "iot";
 		public static final String TENANT_PORTAL_APP = "tenant";
 		public static final String CLIENT_PORTAL_APP = "client";
 		public static final String VENDOR_PORTAL_APP = "vendor";
