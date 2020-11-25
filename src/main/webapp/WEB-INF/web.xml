@@ -34,11 +34,6 @@
 	</filter>
 
 	<filter>
-		<filter-name>IotFilter</filter-name>
-		<filter-class>com.facilio.filters.IotFilter</filter-class>
-	</filter>
-
-	<filter>
 		<filter-name>CorsFilter</filter-name>
 		<filter-class>com.facilio.filters.FacilioCorsFilter</filter-class>
 		<init-param>
@@ -78,7 +73,7 @@
 			<!-- The following urls won't be excluded. They will forwarded without app name parsing
 			If a url is added here, it needs to be handled in web.xml as well for struts2 to work. But that shouldn't be done. -->
 			<param-name>exclude</param-name>
-			<param-value>/auth/api/, /iot/api/</param-value>
+			<param-value>/auth/api/</param-value>
 		</init-param>
 	</filter>
 
@@ -131,12 +126,6 @@
 	<filter-mapping>
 		<filter-name>HealthFilter</filter-name>
 		<url-pattern>/api/health</url-pattern>
-	</filter-mapping>
-
-	<!-- IOT Filter -->
-	<filter-mapping>
-		<filter-name>IotFilter</filter-name>
-		<url-pattern>/iot/api/timeseries/publish</url-pattern>
 	</filter-mapping>
 
 	<!-- Global (/*) Filter mapping start -->
@@ -213,25 +202,6 @@
 
 	<!-- Auth API Filter mapping end -->
 
-	<!-- /iot/api needs to go through the same filters as /api. Adding them separately for backward compatibility -->
-	<!-- iot API Filter mapping start -->
-	<filter-mapping>
-		<filter-name>SecurityFilter</filter-name>
-		<url-pattern>/iot/api/*</url-pattern>
-		<dispatcher>FORWARD</dispatcher>
-	</filter-mapping>
-	<filter-mapping>
-		<filter-name>InputValidationFilter</filter-name>
-		<url-pattern>/iot/api/*</url-pattern>
-		<dispatcher>FORWARD</dispatcher>
-	</filter-mapping>
-	<filter-mapping>
-		<filter-name>api-struts2</filter-name>
-		<url-pattern>/iot/api/*</url-pattern>
-		<dispatcher>FORWARD</dispatcher>
-	</filter-mapping>
-	<!-- iot API Filter mapping end -->
-	
 	<!-- /sso needs to go through the same filters as /api. Adding them separately for backward compatibility -->
 	<!-- SSO API Filter mapping start -->
 	<filter-mapping>
