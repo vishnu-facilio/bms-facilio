@@ -299,7 +299,7 @@ public class FacilioFileStore extends FileStore {
 			request.writeBytes(this.crlf);
 
             FileInputStream fis = new FileInputStream(uploadFile);
-            IOUtils.copy(new FileInputStream(uploadFile), request);
+            IOUtils.copy(fis, request);
             IOUtils.closeQuietly(fis);
         }
 
