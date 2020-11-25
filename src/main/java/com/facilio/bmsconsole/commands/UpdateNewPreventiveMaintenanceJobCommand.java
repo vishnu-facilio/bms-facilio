@@ -81,9 +81,11 @@ public class UpdateNewPreventiveMaintenanceJobCommand extends FacilioCommand {
 					.module(module)
 					.fields(modBean.getAllFields(module.getName()))
 					.andCondition(CriteriaAPI.getIdCondition(workorder.getId(), module))
+					.skipModuleCriteria()
 					;
 			
 			int rowsUpdated = updateBuilder.update(newWo);
+			System.out.println(rowsUpdated);
 			
 		}
 		// Temp...will remove

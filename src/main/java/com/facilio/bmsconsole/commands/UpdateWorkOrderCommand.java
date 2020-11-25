@@ -140,6 +140,7 @@ public class UpdateWorkOrderCommand extends FacilioCommand {
 				.module(module)
 				.fields(fields)
 				.withChangeSet(oldWos)
+				.skipModuleCriteria() //Just in case to avoid any error. Please remove this when moving WO to V3
 				; //No where condition because Old records are specified
 		
 		

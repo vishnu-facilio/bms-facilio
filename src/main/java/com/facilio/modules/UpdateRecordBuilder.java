@@ -48,6 +48,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	private ScopeHandler.ScopeFieldsAndCriteria scopeFieldsAndCriteria;
 	private Collection<FacilioModule> joinModules;
 	private boolean ignoreSplNullHandling;
+	private boolean skipModuleCriteria = false;
 
 	public UpdateRecordBuilder () {
 		// TODO Auto-generated constructor stub
@@ -210,6 +211,12 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		return this;
 	}
 
+	public UpdateRecordBuilder<E> skipModuleCriteria() {
+		this.skipModuleCriteria = true;
+		this.selectBuilder.skipModuleCriteria();
+		return this;
+	}
+
 	@Override
 	public int update(E bean) throws Exception {
 		this.bean = bean;
@@ -269,6 +276,11 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 					if (module.isTrashEnabled() && !withDeleted) {
 						whereCondition.andCondition(CriteriaAPI.getCondition("SYS_DELETED", "deleted", String.valueOf(false), BooleanOperators.IS));
 					}
+
+					if (module.getCriteria() != null && !skipModuleCriteria) {
+						whereCondition.andCriteria(module.getCriteria());
+					}
+
 					whereCondition.andCustomWhere(where.getWhereClause(), where.getValues());
 					rowsUpdated = update(whereCondition, moduleProps);
 				}
@@ -312,7 +324,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 
 		if (oldValues == null) {
 			this.selectBuilder.select(allFields);
-			selectBuilder.skipPermission().skipModuleCriteria();
+			selectBuilder.skipPermission();
 			oldValues = selectBuilder.get();
 		}
 

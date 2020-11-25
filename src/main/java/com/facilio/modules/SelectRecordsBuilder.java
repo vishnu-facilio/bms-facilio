@@ -500,6 +500,10 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			}
 		}
 
+		if (module.getCriteria() != null && !skipModuleCriteria) {
+			whereCondition.andCriteria(module.getCriteria());
+		}
+
 		whereCondition.andCustomWhere(where.getWhereClause(), where.getValues());
 		return whereCondition;
 	}
@@ -613,9 +617,6 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			WhereBuilder whereCondition = computeWhere(orgIdField, moduleIdField, isDeletedField);
 			builder.andCustomWhere(whereCondition.getWhereClause(), whereCondition.getValues());
 			handlePermissionAndScope();
-			if (module.getCriteria() != null && !skipModuleCriteria) {
-				builder.andCriteria(module.getCriteria());
-			}
 
 			builder.getJoinBuilder().append(joinBuilder.toString());
 			actualSelectFields = selectFields;
