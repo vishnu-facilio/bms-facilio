@@ -6,10 +6,12 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,24 +20,24 @@ import java.util.Map;
 
 public class UserNotificationAPI {
 
-    public static List<Map<String, Object>> getUserNotificationMapping (long userId) throws Exception {
+    public static Map<String, Object> getUserNotificationMapping (long userId) throws Exception {
 
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getUserNotificationSeenMapping().getTableName())
                 .select(FieldFactory.getUserNotificationSeenMappingFields()).
                         andCondition(CriteriaAPI.getCondition(
-                                "USER", "user","" + userId, NumberOperators.EQUALS));
+                                "USER", "user",String.valueOf(userId), NumberOperators.EQUALS));
 
         List<Map<String, Object>> resultMap = selectBuilder.get();
 
-        return resultMap;
+        return CollectionUtils.isNotEmpty(resultMap) ? resultMap.get(0) : null;
     }
 
-    public static void getInsertUserNotificationMapping (long userId) throws Exception {
+    public static void insertUserNotificationMapping(long userId, long lastSeenTime) throws Exception {
         List<Map<String, Object>> propMapList = new ArrayList<>();
         Map<String, Object> propMap = new HashMap<>();
         propMap.put("user", userId);
-        propMap.put("lastSeen", System.currentTimeMillis());
+        propMap.put("lastSeen", lastSeenTime);
         propMapList.add(propMap);
 
 

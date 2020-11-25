@@ -21,14 +21,14 @@ public class FetchUnSeenNotificationCommand extends FacilioCommand {
         Map<String, Object> queryParams = Constants.getQueryParams(context);
         if (MapUtils.isNotEmpty(queryParams) && queryParams.containsKey("unseen")) {
 
-            List<Map<String, Object>> mappingRecord = UserNotificationAPI.getUserNotificationMapping(AccountUtil.getCurrentUser().getId());
-            if (mappingRecord != null && !mappingRecord.isEmpty()) {
-                Map<String, Object> record = mappingRecord.get(0);
+            Map<String, Object> record = UserNotificationAPI.getUserNotificationMapping(AccountUtil.getCurrentUser().getId());
+            if (MapUtils.isNotEmpty(record)) {
+//                Map<String, Object> record = mappingRecord.get(0);
                 long lastSeen = (long) record.get("lastSeen");
                 JSONObject filters = (JSONObject)context.get(Constants.FILTERS);
                 JSONObject lastSeenFilter = new JSONObject();
                 JSONArray time = new JSONArray();
-                time.add(lastSeen+"");
+                time.add(String.valueOf(lastSeen));
                 lastSeenFilter.put("operatorId", (long) NumberOperators.GREATER_THAN.getOperatorId());
                 lastSeenFilter.put("value", time);
 
