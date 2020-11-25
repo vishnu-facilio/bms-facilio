@@ -91,7 +91,8 @@
         boolean isBuildingstalk = (request.getServerName().endsWith("buildingsoncloud.com")  || ( brandName != null && (brandName.indexOf("BuildingsTalk") != -1 )));
 
         boolean isSutherland = request.getServerName().contains("sutherlandglobal.com");
-
+        boolean isIungoCitGroup = request.getServerName().contains("iungo.citgroupltd"); 
+		
         boolean isEcholtech = request.getServerName().contains("echoltech.com");
 
         boolean isStageTest = request.getServerName().contains("samltest.facilio.in");
@@ -121,10 +122,17 @@
             rebrandInfo.put("domain", "echoltech.com");
             rebrandInfo.put("copyright", copyrightInfo);
         }
-
+		if(isIungoCitGroup)
+		{
+			rebrandInfo.put("brandName", "iungo CIT Group Ltd");
+            rebrandInfo.put("name", "iungoCitGroup");
+            rebrandInfo.put("domain", "iungo.citgroupltd.com");
+			
+		}
         String userAgent = request.getHeader("User-Agent");
-        String title = isBuildingstalk ? "BuildingsTalk" : isSutherland ? "Sutherland" : (isEcholtech || isStageTest) ? "Echol" : "Facilio";
-        String faviconPath = isBuildingstalk ? "/statics/machinestalk.ico" : isSutherland ? "/statics/sutherland.ico" : (isEcholtech || isStageTest) ? "/statics/echoltech-ico.png" : "/statics/favicon.png";
+        String title = isIungoCitGroup ? "iungo CIT Group Ltd":isBuildingstalk ? "BuildingsTalk" : isSutherland ? "Sutherland" : (isEcholtech || isStageTest) ? "Echol" : "Facilio";
+        String faviconPath = isIungoCitGroup ? "/statics/citgroup.ico":isBuildingstalk ? "/statics/machinestalk.ico" : isSutherland ? "/statics/sutherland.ico" : (isEcholtech || isStageTest) ? "/statics/echoltech-ico.png" : "/statics/favicon.png";
+        
 
         Map<String, String> placeHolderParams = new HashMap<>();
         placeHolderParams.put("domainInfo", domainInfo.toString());
