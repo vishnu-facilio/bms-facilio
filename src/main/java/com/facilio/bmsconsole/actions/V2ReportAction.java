@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.context.sensor.SensorRollUpAlarmContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -2286,4 +2287,12 @@ public class V2ReportAction extends FacilioAction {
 		this.ids = ids;
 	}
 	
+	private JSONObject drillDownParams;
+	@JSON(serialize = false)
+	public JSONObject getDrillDownParams() {
+		return drillDownParams;
+	}
+	public void setDrillDownParams(JSONObject drillDownParams) {
+		this.drillDownParams = drillDownParams;
+	}
 }

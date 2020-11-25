@@ -1,16 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.bmsconsole.view.ViewFactory;
-import com.facilio.db.criteria.Condition;
-import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.modules.*;
-import com.facilio.report.context.*;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -19,19 +13,38 @@ import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.DateAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.SpaceAggregateOperator;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FacilioStatus.StatusType;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.report.context.ReportBaseLineContext;
+import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportContext.ReportType;
+import com.facilio.report.context.ReportDataPointContext;
+import com.facilio.report.context.ReportFactory;
+import com.facilio.report.context.ReportFieldContext;
+import com.facilio.report.context.ReportGroupByField;
+import com.facilio.report.context.ReportHavingContext;
+import com.facilio.report.context.ReportUserFilterContext;
+import com.facilio.report.context.ReportYAxisContext;
+import com.facilio.report.util.ReportUtil;
 
 ;
 
@@ -119,7 +132,7 @@ public class ConstructReportData extends FacilioCommand {
 		FacilioField xField = null;
 		if (xAxisJSON.containsKey("field_id")) {
 			Object fieldId = xAxisJSON.get("field_id");
-			xField = getField(modBean, fieldId);
+			xField = ReportUtil.getField(modBean, fieldId, module);
 		}
 
 		if (xAxisJSON.containsKey("selectedIds")) {
@@ -194,7 +207,7 @@ public class ConstructReportData extends FacilioCommand {
 					yAggr = AggregateOperator.getAggregateOperator(((Number) yMap.get("aggr")).intValue());
 				}
 				Object fieldId = yMap.get("field_id");
-				yField = getField(modBean, fieldId);
+				yField = ReportUtil.getField(modBean, fieldId, module);
 				if (yMap.containsKey("module_id")) {
 					yAxisModule = modBean.getModule((Long) yMap.get("module_id"));
 				}
@@ -216,7 +229,7 @@ public class ConstructReportData extends FacilioCommand {
 				}
 				
 				Object fieldId = groupByJSON.get("field_id");
-				FacilioField field = getField(modBean, fieldId);
+				FacilioField field = ReportUtil.getField(modBean, fieldId, module);
 				
 				FacilioModule groupByModule = null;
 				if (groupByJSON.containsKey("module_id")) {
@@ -251,7 +264,7 @@ public class ConstructReportData extends FacilioCommand {
 					if(((String) fieldId).equals("y-field")) {
 					orderBy.add(yAggr.getSelectField(yField).getCompleteColumnName());
 					} else {
-						FacilioField orderByField = getField(modBean,fieldId);
+						FacilioField orderByField = ReportUtil.getField(modBean,fieldId,module);
 						if (object.containsKey("aggr")) {
 							AggregateOperator orderByAggr = AggregateOperator.getAggregateOperator(((Number) object.get("aggr")).intValue());
 							orderBy.add(orderByAggr.getSelectField(orderByField).getCompleteColumnName());
@@ -367,6 +380,7 @@ public class ConstructReportData extends FacilioCommand {
 		}
 		return xField;
 	}
+
 
 	private boolean isDateField(FacilioField field) {
 		return field != null && (field.getDataType() == FieldType.DATE.getTypeAsInt() || field.getDataType() == FieldType.DATE_TIME.getTypeAsInt());

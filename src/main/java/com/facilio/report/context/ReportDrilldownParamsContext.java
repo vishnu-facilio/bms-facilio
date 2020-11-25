@@ -1,53 +1,33 @@
 package com.facilio.report.context;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.AggregateOperator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class ReportDrilldownContext  {
+public class ReportDrilldownParamsContext {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	
-	private JSONObject xField;
-	private String selectedPrevXValues;
-	public String getSelectedPrevXValues() {
-		return selectedPrevXValues;
+	
+	private  JSONArray criteria;
+	public JSONArray getCriteria() {
+		return criteria;
 	}
-
-
-	public void setSelectedPrevXValues(String selectedPrevXValues) {
-		this.selectedPrevXValues = selectedPrevXValues;
+	public void setCriteria(JSONArray criteria) {
+		this.criteria = criteria;
 	}
-
-
-	public String getSelectedPrevYAlias() {
-		return selectedPrevYAlias;
-	}
-
-
-	public void setSelectedPrevYAlias(String selectedPrevYAlias) {
-		this.selectedPrevYAlias = selectedPrevYAlias;
-	}
-
-	private String selectedPrevYAlias;
-
-
-
-
-
-
 	public JSONObject getxField() {
 		return xField;
 	}
-
-	
 	public void setxField(JSONObject xField) {
 		this.xField = xField;
 	}
+	private JSONObject xField;
+
 
 	private AggregateOperator xAggr;
 
@@ -70,6 +50,4 @@ public class ReportDrilldownContext  {
 	public void setxAggr(AggregateOperator xAggr) {
 		this.xAggr = xAggr;
 	}
-
-
 }

@@ -750,13 +750,13 @@ public class ReportContext {
 	
 //	Drill down
 	
-	private List<ReportDrillDownContext> reportDrilldown;
+	private List<ReportDrilldownContext> reportDrilldown;
 	
-	public List<ReportDrillDownContext> getReportDrilldown() {
+	public List<ReportDrilldownContext> getReportDrilldown() {
 		return reportDrilldown;
 	}
 
-	public void setReportDrilldown(List<ReportDrillDownContext> reportDrilldown) {
+	public void setReportDrilldown(List<ReportDrilldownContext> reportDrilldown) {
 		this.reportDrilldown = reportDrilldown;
 	}
 
@@ -770,7 +770,7 @@ public class ReportContext {
 		for (Object jsonObject : jsonarray) {
 
 			JSONObject json = (JSONObject) jsonObject;
-			ReportDrillDownContext drilldown = FieldUtil.getAsBeanFromJson(json, ReportDrillDownContext.class);
+			ReportDrilldownContext drilldown = FieldUtil.getAsBeanFromJson(json, ReportDrilldownContext.class);
 
 			
 			reportDrilldown.add(drilldown);
@@ -783,7 +783,7 @@ public class ReportContext {
 	public String getReportDrilldownJson() throws Exception {
 
 		if (reportDrilldown != null) {
-			return FieldUtil.getAsJSONArray(reportDrilldown, ReportDrillDownContext.class).toJSONString();
+			return FieldUtil.getAsJSONArray(reportDrilldown, ReportDrilldownContext.class).toJSONString();
 		}
 		return null;
 	}

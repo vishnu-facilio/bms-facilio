@@ -43,6 +43,8 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.BaseLineContext;
 import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
+import com.facilio.modules.BmsAggregateOperators.NumberAggregateOperator;
+import com.facilio.modules.BmsAggregateOperators.SpaceAggregateOperator;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
@@ -872,5 +874,26 @@ public class ReportUtil {
 			}
 		}
 		return alias;
+	}
+	
+	public static Boolean isSpaceAggregation(AggregateOperator aggr)
+	{
+		for(AggregateOperator operator : SpaceAggregateOperator.values()) {
+            return operator.equals(aggr);
+        }
+	
+		return false;
+	}
+	public static FacilioField getField(ModuleBean modBean, Object fieldId,FacilioModule module) throws Exception {
+		FacilioField xField = null;
+		if (fieldId instanceof Long) {
+			xField = modBean.getField((Long) fieldId);
+		} else if (fieldId instanceof String) {
+			xField = modBean.getField((String) fieldId, module.getName());
+			if (xField == null) {
+				xField = ReportFactory.getReportField((String) fieldId);
+			}
+		}
+		return xField;
 	}
 }
