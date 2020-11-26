@@ -277,9 +277,9 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 						whereCondition.andCondition(CriteriaAPI.getCondition("SYS_DELETED", "deleted", String.valueOf(false), BooleanOperators.IS));
 					}
 
-					if (module.getCriteria() != null && !skipModuleCriteria) {
-						whereCondition.andCriteria(module.getCriteria());
-					}
+//					if (module.getCriteria() != null && !skipModuleCriteria) {
+//						whereCondition.andCriteria(module.getCriteria());
+//					}
 
 					whereCondition.andCustomWhere(where.getWhereClause(), where.getValues());
 					rowsUpdated = update(whereCondition, moduleProps);
