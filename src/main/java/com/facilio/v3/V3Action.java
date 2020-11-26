@@ -134,9 +134,14 @@ public class V3Action extends ActionSupport {
 	public JSONObject getMeta() {
 		return meta;
 	}
-
 	public void setMeta(JSONObject meta) {
 		this.meta = meta;
+	}
+	public void setMeta (String key, Object value) {
+		if (this.meta == null) {
+			this.meta = new JSONObject();
+		}
+		meta.put(key, value);
 	}
 
 	public int getCode() {

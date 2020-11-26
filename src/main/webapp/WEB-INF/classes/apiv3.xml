@@ -163,4 +163,13 @@
 
     </package>
 
+    <package name="picklistApiv3" namespace="/api/v3/picklist"
+             extends="v3Api">
+        <action name="*"
+                class="com.facilio.bmsconsoleV3.actions.picklist.V3PIckListAction"
+                method="pickList">
+            <param name="moduleName">{1}</param>
+        </action>
+    </package>
+
 </struts>

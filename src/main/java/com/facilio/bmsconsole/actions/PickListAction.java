@@ -49,36 +49,34 @@ public class PickListAction extends FacilioAction {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private void populatePicklistContext (FacilioContext context) throws Exception {
-		context.put(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA, criteria);
+	public static void populatePicklistContext (FacilioContext context, String moduleName, String filters, String search, Criteria clientCriteria, String clientCriteriaStr, String defaultIds, int page, int perPage) throws Exception {
+		context.put(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA, clientCriteria);
 
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
-		if (getSearch() != null) {
-			context.put(FacilioConstants.ContextNames.SEARCH, getSearch());
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		if (search != null) {
+			context.put(FacilioConstants.ContextNames.SEARCH, search);
 		}
-		if (getPage() != 0) {
+		if (page != 0) {
 			JSONObject pagination = new JSONObject();
-			pagination.put("page", getPage());
-			pagination.put("perPage", getPerPage());
+			pagination.put("page", page);
+			pagination.put("perPage", perPage);
 			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
 		}
 
-		if (getClientCriteria() != null) {
-			JSONParser parser = new JSONParser();
-			JSONObject json = (JSONObject) parser.parse(getClientCriteria());
+		if (StringUtils.isNotEmpty(clientCriteriaStr)) {
+			JSONObject json = FacilioUtil.parseJson(clientCriteriaStr);
 			Criteria newCriteria = FieldUtil.getAsBeanFromJson(json, Criteria.class);
 			context.put(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA, newCriteria);
 		}
 
-		if (getFilters() != null) {
-			JSONParser parser = new JSONParser();
-			JSONObject json = (JSONObject) parser.parse(getFilters());
+		if (StringUtils.isNotEmpty(filters)) {
+			JSONObject json = FacilioUtil.parseJson(filters);
 			context.put(FacilioConstants.ContextNames.FILTERS, json);
 		}
-		if (StringUtils.isNotEmpty(_default)) {
-			String[] ids = FacilioUtil.splitByComma(_default);
-			List<Long> defaultIds = Arrays.stream(ids).map(Long::parseLong).collect(Collectors.toList());
-			context.put(FacilioConstants.PickList.DEFAULT_ID_LIST, defaultIds);
+		if (StringUtils.isNotEmpty(defaultIds)) {
+			String[] ids = FacilioUtil.splitByComma(defaultIds);
+			List<Long> defaultIdList = Arrays.stream(ids).map(Long::parseLong).collect(Collectors.toList());
+			context.put(FacilioConstants.PickList.DEFAULT_ID_LIST, defaultIdList);
 		}
 	}
 
@@ -91,72 +89,58 @@ public class PickListAction extends FacilioAction {
 		}
 		else {
 			FacilioChain pickListChain = FacilioChainFactory.getPickListChain();
-			populatePicklistContext(pickListChain.getContext());
+			populatePicklistContext(pickListChain.getContext(), getModuleName(), getFilters(), getSearch(), getCriteria(), getClientCriteria(), getDefault(), getPage(), getPerPage());
 			pickListChain.execute();
 			setPickList((Map<Long, String>) pickListChain.getContext().get(FacilioConstants.ContextNames.PICKLIST));
 		}
 		
 		return SUCCESS;
 	}
-	
+
+	private Criteria criteria;
 	public Criteria getCriteria() {
 		return criteria;
 	}
-
 	public void setCriteria(Criteria criteria) {
 		this.criteria = criteria;
 	}
-
-	Criteria criteria;
 	
-	
-	String search;
-
+	private String search;
 	public void setSearch(String search) {
 		this.search = search;
 	}
-
 	public String getSearch() {
 		return this.search;
 	}
 	
 	private int page;
-
 	public void setPage(int page) {
 		this.page = page;
 	}
-
 	public int getPage() {
 		return this.page;
 	}
 	
 	public int perPage = 40;
-
 	public void setPerPage(int perPage) {
 		this.perPage = perPage;
 	}
-
 	public int getPerPage() {
 		return this.perPage;
 	}
-	
-	
+
 	private String clientCriteria;
-	
 	public String getClientCriteria() {
 		return clientCriteria;
 	}
-
 	public void setClientCriteria(String clientCriteria) {
 		this.clientCriteria = clientCriteria;
 	}
 
 	private String filters;
-
 	public void setFilters(String filters) {
 		this.filters = filters;
 	}
-
 	public String getFilters() {
 		return this.filters;
 	}
@@ -496,27 +480,6 @@ public class PickListAction extends FacilioAction {
 	}
 	public void setAlarmSeverities(List<AlarmSeverityContext> alarmSeverities) {
 		this.alarmSeverities = alarmSeverities;
-	}
-
-
-	/******************      V3 Api
-	 * @throws Exception ******************/
-
-	public String v3PickList() throws Exception {
-		JSONObject meta = new JSONObject();
-		if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {
-			setResult(FacilioConstants.ContextNames.DATA, LookupSpecialTypeUtil.getNewPickList(moduleName));
-			meta.put("moduleType", FacilioModule.ModuleType.PICK_LIST.name());
-		}
-		else {
-			FacilioChain pickListChain = ReadOnlyChainFactory.newPicklistFromDataChain();
-			populatePicklistContext(pickListChain.getContext());
-			pickListChain.execute();
-			setResult(FacilioConstants.ContextNames.DATA,pickListChain.getContext().get(FacilioConstants.ContextNames.PICKLIST));
-			meta.put("moduleType", ((FacilioModule)pickListChain.getContext().get(FacilioConstants.ContextNames.MODULE)).getTypeEnum().name());
-		}
-		setResult(FacilioConstants.ContextNames.META, meta);
-		return SUCCESS;
 	}
 	
 	

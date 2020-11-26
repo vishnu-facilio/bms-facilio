@@ -128,7 +128,7 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
         return filter;
     }
 
-    private static final List<String> FILTERABLE_ASSET_FIELDS = Arrays.asList(new String[] {"name", "siteId", "assetCategory", "space", "qrVal", "connected", "assetDepartment", "assetType", "warrantyExpiryDate"});
+    private static final List<String> FILTERABLE_ASSET_FIELDS = Arrays.asList(new String[] {"name", "siteId", "category", "space", "qrVal", "connected", "assetDepartment", "assetType", "warrantyExpiryDate"});
     private List<FacilioField> filterAssetFields (List<FacilioField> fields) {
         return fields.stream().
                 filter(
