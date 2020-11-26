@@ -228,7 +228,8 @@ public class AgentApiV2 {
             List<Map<String, Object>> data = selectRecordBuilder.get();
             Set<Long> siteSet = new HashSet<>();
             int offlineCount = 0;
-            if (!data.isEmpty()) {
+            JSONObject countData = new JSONObject();
+            if (CollectionUtils.isNotEmpty(data)) {
                 for (Map<String, Object> datum : data) {
                     ids.add((Long) datum.get(AgentConstants.ID));
                     if ((datum.get(AgentConstants.CONNECTED) == null) || (!(boolean) datum.get(AgentConstants.CONNECTED))) {
@@ -238,12 +239,11 @@ public class AgentApiV2 {
                         siteSet.add((Long) datum.get(AgentConstants.SITE_ID));
                     }
                 }
+                countData.put(AgentConstants.RECORD_IDS,ids);
+                countData.put(AgentConstants.SITE_COUNT,siteSet.size());
+                countData.put(AgentConstants.TOTAL_COUNT,data.size());
+                countData.put(AgentConstants.ACTIVE_COUNT,(data.size()-offlineCount));
             }
-            JSONObject countData = new JSONObject();
-            countData.put(AgentConstants.RECORD_IDS,ids);
-            countData.put(AgentConstants.SITE_COUNT,siteSet.size());
-            countData.put(AgentConstants.TOTAL_COUNT,data.size());
-            countData.put(AgentConstants.ACTIVE_COUNT,(data.size()-offlineCount));
             return countData;
         } catch (Exception e) {
             LOGGER.info("Exception while getting agent count data ",e);
@@ -348,7 +348,9 @@ public class AgentApiV2 {
         filterFields.add(FieldFactory.getIdField(agentDataModule));
         filterFields.add(FieldFactory.getNameField(agentDataModule));
         filterFields.add(FieldFactory.getNewAgentTypeField(agentDataModule));
+        filterFields.add(FieldFactory.getAgentTypeField(agentDataModule));
         filterFields.add(FieldFactory.getField(AgentConstants.DISPLAY_NAME, "DISPLAY_NAME", agentDataModule, FieldType.STRING));
+        
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(agentDataModule.getTableName())
                 .select(filterFields)
