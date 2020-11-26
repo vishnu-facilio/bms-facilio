@@ -57,7 +57,11 @@ public class AgentUtilV2
 
     public static JSONObject getOverview() {
         JSONObject overiewData = new JSONObject();
-        overiewData.put(AgentConstants.AGENT,AgentApiV2.getAgentCountDetails());
+        JSONObject agentDetails = AgentApiV2.getAgentCountDetails();
+        if(agentDetails == null ||agentDetails.isEmpty()) {
+        	return new JSONObject();
+        }
+        overiewData.put(AgentConstants.AGENT,agentDetails);
         if (overiewData.containsKey(AgentConstants.AGENT)) {
             JSONObject agentCount = (JSONObject) overiewData.get(AgentConstants.AGENT);
             if(agentCount.containsKey(AgentConstants.RECORD_IDS)){
