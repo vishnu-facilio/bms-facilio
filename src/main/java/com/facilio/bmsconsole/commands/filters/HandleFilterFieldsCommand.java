@@ -128,11 +128,10 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
         return filter;
     }
 
-    private static final List<String> FILTERABLE_ASSET_FIELDS = Arrays.asList(new String[] {"name", "siteId", "category", "space", "qrVal", "connected", "assetDepartment", "assetType", "warrantyExpiryDate"});
     private List<FacilioField> filterAssetFields (List<FacilioField> fields) {
         return fields.stream().
                 filter(
-                        f -> FILTERABLE_ASSET_FIELDS.contains(f.getName())
+                        f -> FieldFactory.Fields.assetFieldsInclude.contains(f.getName()) || !f.isDefault()
                 ).collect(Collectors.toList());
     }
 }

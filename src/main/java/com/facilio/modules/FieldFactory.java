@@ -259,11 +259,11 @@ public class FieldFactory {
             assetFieldsInclude.add("localId");
             assetFieldsInclude.add("manufacturer");
             assetFieldsInclude.add("name");
-            assetFieldsInclude.add("parentAssetId");
-            assetFieldsInclude.add("photoId");
+//            assetFieldsInclude.add("parentAssetId");
+//            assetFieldsInclude.add("photoId");
             assetFieldsInclude.add("purchasedDate");
             assetFieldsInclude.add("qrVal");
-            assetFieldsInclude.add("resourceType");
+//            assetFieldsInclude.add("resourceType");
             assetFieldsInclude.add("retireDate");
             assetFieldsInclude.add("serialNumber");
             assetFieldsInclude.add("state");
