@@ -228,8 +228,7 @@ public class AgentApiV2 {
             List<Map<String, Object>> data = selectRecordBuilder.get();
             Set<Long> siteSet = new HashSet<>();
             int offlineCount = 0;
-            JSONObject countData = new JSONObject();
-            if (CollectionUtils.isNotEmpty(data)) {
+            if (!data.isEmpty()) {
                 for (Map<String, Object> datum : data) {
                     ids.add((Long) datum.get(AgentConstants.ID));
                     if ((datum.get(AgentConstants.CONNECTED) == null) || (!(boolean) datum.get(AgentConstants.CONNECTED))) {
@@ -239,11 +238,14 @@ public class AgentApiV2 {
                         siteSet.add((Long) datum.get(AgentConstants.SITE_ID));
                     }
                 }
-                countData.put(AgentConstants.RECORD_IDS,ids);
-                countData.put(AgentConstants.SITE_COUNT,siteSet.size());
-                countData.put(AgentConstants.TOTAL_COUNT,data.size());
-                countData.put(AgentConstants.ACTIVE_COUNT,(data.size()-offlineCount));
+            }else {
+            	return new JSONObject();
             }
+            JSONObject countData = new JSONObject();
+            countData.put(AgentConstants.RECORD_IDS,ids);
+            countData.put(AgentConstants.SITE_COUNT,siteSet.size());
+            countData.put(AgentConstants.TOTAL_COUNT,data.size());
+            countData.put(AgentConstants.ACTIVE_COUNT,(data.size()-offlineCount));
             return countData;
         } catch (Exception e) {
             LOGGER.info("Exception while getting agent count data ",e);

@@ -380,7 +380,13 @@ public class AgentAction extends AgentActionV2 {
 
     public String getOverview() {
         try {
-            setResult(AgentConstants.DATA, AgentUtilV2.getOverview());
+        	JSONObject result =  AgentUtilV2.getOverview();
+        	if(result == null || result.isEmpty()) {
+        		setResult(AgentConstants.DATA, new ArrayList<>());
+        	}else {
+        		setResult(AgentConstants.DATA, result);
+        	}
+            
             ok();
         } catch (Exception e) {
             LOGGER.info("Exception occurred while getting overview");
