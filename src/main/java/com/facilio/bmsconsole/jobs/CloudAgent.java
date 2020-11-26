@@ -125,7 +125,7 @@ public class CloudAgent extends FacilioJob {
 
         			Long timeStamp = (Long) result.get("timestamp");
         			if (timeStamp == null) {
-        				timeStamp = fromTime;
+        				timeStamp = toTime;
         			}
         			payload.put("actual_timestamp", timeStamp);
         			payload.put("timestamp", timeStamp);
