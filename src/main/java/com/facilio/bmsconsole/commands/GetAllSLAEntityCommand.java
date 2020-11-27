@@ -39,22 +39,19 @@ public class GetAllSLAEntityCommand extends FacilioCommand {
             List<SLAEntityContext> slaEntities = FieldUtil.getAsBeanListFromMapList(builder.get(), SLAEntityContext.class);
 
             if (CollectionUtils.isNotEmpty(slaEntities)) {
-                Boolean includeCriteria = (Boolean) context.get(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA);
-                if (includeCriteria != null && includeCriteria) {
-                    Map<Long, SLAEntityContext> map = new HashMap<>();
-                    Set<Long> criteriaIds = new HashSet<>();
-                    for (SLAEntityContext entityContext : slaEntities) {
-                        map.put(entityContext.getId(), entityContext);
-                        if (entityContext.getCriteriaId() > 0) {
-                            criteriaIds.add(entityContext.getCriteriaId());
-                        }
+                Map<Long, SLAEntityContext> map = new HashMap<>();
+                Set<Long> criteriaIds = new HashSet<>();
+                for (SLAEntityContext entityContext : slaEntities) {
+                    map.put(entityContext.getId(), entityContext);
+                    if (entityContext.getCriteriaId() > 0) {
+                        criteriaIds.add(entityContext.getCriteriaId());
                     }
-                    if (CollectionUtils.isNotEmpty(criteriaIds)) {
-                        Map<Long, Criteria> criteriaAsMap = CriteriaAPI.getCriteriaAsMap(criteriaIds);
-                        if (MapUtils.isNotEmpty(criteriaAsMap)) {
-                            for (SLAEntityContext entityContext : slaEntities) {
-                                entityContext.setCriteria(criteriaAsMap.get(entityContext.getCriteriaId()));
-                            }
+                }
+                if (CollectionUtils.isNotEmpty(criteriaIds)) {
+                    Map<Long, Criteria> criteriaAsMap = CriteriaAPI.getCriteriaAsMap(criteriaIds);
+                    if (MapUtils.isNotEmpty(criteriaAsMap)) {
+                        for (SLAEntityContext entityContext : slaEntities) {
+                            entityContext.setCriteria(criteriaAsMap.get(entityContext.getCriteriaId()));
                         }
                     }
                 }
