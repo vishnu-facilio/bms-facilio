@@ -71,7 +71,13 @@ public class ScheduleWOStatusChange extends FacilioJob {
 //            	if(wo.getTasks() == null || wo.getTasks().isEmpty()) {
 //            		continue;
 //            	}
-                FacilioTimer.scheduleOneTimeJobWithTimestampInSec(wo.getId(), "OpenScheduledWO", wo.getCreatedTime()/1000, "priority");
+				try {
+					FacilioTimer.scheduleOneTimeJobWithTimestampInSec(wo.getId(), "OpenScheduledWO", wo.getCreatedTime() / 1000, "priority");
+				}
+				catch (Exception e) { //Delete job entry if any and try again
+					FacilioTimer.deleteJob(wo.getId(), "OpenScheduledWO");
+					FacilioTimer.scheduleOneTimeJobWithTimestampInSec(wo.getId(), "OpenScheduledWO", wo.getCreatedTime() / 1000, "priority");
+				}
             }
 
             updateJobStatus(wos);
