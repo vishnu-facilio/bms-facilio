@@ -449,7 +449,7 @@ public class ApplicationApi {
             webTabs.add(new WebTabContext("Alarms", "alarm", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("agentAlarm").getModuleId()),  layout.getApplicationId(), null));
             configJSON = new JSONObject();
             configJSON.put("type", "alarmrule");
-            webTabs.add(new WebTabContext("Alarm Notifications", "notification", WebTabContext.Type.MODULE, null, layout.getApplicationId(), configJSON));
+            webTabs.add(new WebTabContext("Alarm Notifications", "notification", WebTabContext.Type.CUSTOM, null, layout.getApplicationId(), configJSON));
             configJSON = new JSONObject();
             configJSON.put("type", "metrics");
             webTabs.add(new WebTabContext("Metrics", "metrics", WebTabContext.Type.CUSTOM,null, layout.getApplicationId(), configJSON));
