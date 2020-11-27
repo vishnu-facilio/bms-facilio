@@ -2316,9 +2316,7 @@ public class FacilioConstants {
 		public static final String TENANT_PORTAL_APP = "tenant";
 		public static final String CLIENT_PORTAL_APP = "client";
 		public static final String VENDOR_PORTAL_APP = "vendor";
-		public static final String OCCUPANT_PORTAL_APP = "portal";
-
-		
+		public static final String OCCUPANT_PORTAL_APP = "service";
 	}
 	
 	public static class TableNames{
