@@ -30,7 +30,7 @@ public class UpdateSensorRulesCommand extends FacilioCommand {
 		long readingFieldId = (long) context.get(FacilioConstants.ContextNames.READING_FIELD_ID);
 		long categoryId = (long) context.get(FacilioConstants.ContextNames.CATEGORY_ID);
 		long moduleId = (long) context.get(FacilioConstants.ContextNames.MODULE_ID);
-		if (sensorRules != null && !sensorRules.isEmpty()) {
+		if (readingFieldId > 0 && categoryId > 0) {
 			FacilioModule module = ModuleFactory.getSensorRuleModule();
 			List<Long> sensorRuleIds = sensorRules.stream().map(sensorRule -> sensorRule.getId()).collect(Collectors.toList());	
 			GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()

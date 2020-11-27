@@ -27,6 +27,7 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.NumberField;
 
 public class GenerateSensorRulesListCommand extends FacilioCommand {
 
@@ -64,7 +65,8 @@ public class GenerateSensorRulesListCommand extends FacilioCommand {
 				sensorRule.setSubject(SensorRuleType.valuOf(sensorRule.getSensorRuleType()).getValueString());
 				}	
 			}
-		
+			
+			String[] specialFields = new String[] {"totalEnergyConsumption", "phaseEnergyR", "phaseEnergyY", "phaseEnergyB"};
 			for (SensorRuleType type : SensorRuleType.values()) {	
 				
 			JSONObject rulePropInfo = new JSONObject();
@@ -81,13 +83,15 @@ public class GenerateSensorRulesListCommand extends FacilioCommand {
 			newContext.setRulePropInfo(rulePropInfo);
 			List<SensorRuleContext> found = sensorRules.stream().filter(i -> i.getSensorRuleType() == type.getIndex()).collect(Collectors.toList());
 			
-			if (found == null || found.isEmpty()) {	
-				if ((readingFieldObj.getDataTypeEnum().equals(FieldType.NUMBER) || readingFieldObj.getDataTypeEnum().equals(FieldType.DECIMAL)) && !type.isCounterFieldType()) {		
-					sensorRules.add(newContext);
-				}
-				else if (readingFieldObj.getDataTypeEnum().equals(FieldType.COUNTER)) {
-					sensorRules.add(newContext);
-				}
+			
+			if (found == null || found.isEmpty()) {
+			if (readingFieldObj instanceof NumberField && !type.isCounterFieldType()) {	
+				sensorRules.add(newContext);
+			}
+			NumberField numberField = (NumberField) readingFieldObj;
+			if ((numberField.isCounterField() ||  Arrays.asList(specialFields).contains(readingFieldObj.getName())) && type.isCounterFieldType()) {
+				sensorRules.add(newContext);
+			}
 			}
 		}
 		
