@@ -46,6 +46,10 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
     public boolean evaluateMisc(String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
         ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) record;
 
+        if (moduleRecord.getSlaPolicyId() <= 0) {
+            return false;
+        }
+
         log("commitment rule id: " + getId() + "; policy id: " + getParentRuleId() + "; record: " + moduleRecord.getSlaPolicyId());
         // If the record is matched in another sla policy, execute false
         if (moduleRecord.getSlaPolicyId() > 0 && moduleRecord.getSlaPolicyId() != getParentRuleId()) {
