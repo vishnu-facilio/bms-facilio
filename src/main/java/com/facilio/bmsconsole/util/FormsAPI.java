@@ -941,6 +941,7 @@ public class FormsAPI {
 			}
 			setFieldDetails(modBean, defaultFields, moduleName);
 			allFields.addAll(defaultFields);
+			addUnusedWebSystemFields(defaultForm, allFields);
 		}
 		
 		List<FacilioField> customFields = modBean.getAllCustomFields(moduleName);
