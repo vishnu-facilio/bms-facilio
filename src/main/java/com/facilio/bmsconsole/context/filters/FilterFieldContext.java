@@ -64,7 +64,7 @@ public class FilterFieldContext {
             lookupModule = new FilterFieldLookupModule(
                     lookup.getName(),
                     lookup.getDisplayName(),
-                    showLookupPopup != null ? showLookupPopup : lookup.getTypeEnum() != FacilioModule.ModuleType.PICK_LIST,
+                    showLookupPopup != null ? showLookupPopup : lookup.getTypeEnum() != FacilioModule.ModuleType.PICK_LIST && StringUtils.isEmpty(((LookupField) field).getSpecialType()),
                     lookupFilters);
         }
     }
