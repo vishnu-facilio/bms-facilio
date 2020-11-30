@@ -87,7 +87,7 @@ public class AgentApiV2 {
         FacilioContext context = new FacilioContext();
         agent.setCreatedTime(System.currentTimeMillis());
         agent.setLastDataReceivedTime(-1);
-        if (agent.getType().equalsIgnoreCase("rest")) {
+        if (AgentType.valueOf(agent.getAgentType()) == AgentType.Rest) {
             agent.setConnected(true);
         }
         agent.setLastModifiedTime(agent.getCreatedTime());
@@ -129,7 +129,7 @@ public class AgentApiV2 {
             if (agent.getInterval() != currDataInterval) {
                 agent.setInterval(currDataInterval);
                 agent.setLastModifiedTime(currTime);
-                if(agent.getType().equals("rest")) {
+                if(AgentType.valueOf(agent.getAgentType()) == AgentType.Rest) {
                 		FacilioTimer.deleteJob(agent.getId(), Job.CLOUD_AGENT_JOB_NAME);
                 		scheduleRestJob(agent);
                 }
