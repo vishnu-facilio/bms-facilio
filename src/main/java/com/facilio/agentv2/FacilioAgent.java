@@ -201,6 +201,15 @@ public class FacilioAgent implements Serializable {
         this.controllers = controllers;
     }*/
 
+    @JsonInclude
+    private int agentType;
+
+    public int getAgentType() {
+        return agentType;
+    }
+    public void setAgentType(int agentType) {
+        this.agentType = agentType;
+    }
 
     public JSONObject toJSON(){
         JSONObject payload = new JSONObject();
@@ -219,6 +228,7 @@ public class FacilioAgent implements Serializable {
         payload.put(AgentKeys.DELETED_TIME,getDeletedTime());
         payload.put(AgentKeys.DISPLAY_NAME,getDisplayName());
         payload.put(AgentKeys.WRITABLE, getWritable());
+        payload.put("agentType",getAgentType());
         if(createdTime>0){
             payload.put(AgentKeys.CREATED_TIME,getCreatedTime());
         }else {

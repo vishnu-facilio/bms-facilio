@@ -1,19 +1,18 @@
 package com.facilio.agentv2.actions;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
+import com.facilio.agent.AgentType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.workflows.context.WorkflowContext;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 public class AddAgentAction extends AgentActionV2
 {
@@ -43,7 +42,7 @@ public class AddAgentAction extends AgentActionV2
 
     public String getType() { return type; }
     public void setType(String type) { this.type = type;}
-    @NotNull @Size(min = 3)
+
     private String type;
     
     
@@ -66,7 +65,17 @@ public class AddAgentAction extends AgentActionV2
 	public void setWorkflow(WorkflowContext workflow) {
 		this.workflow = workflow;
 	}
-	
+
+    public Integer getAgentType() {
+        return agentType;
+    }
+
+    public void setAgentType(Integer agentType) {
+        this.agentType = agentType;
+    }
+
+    private Integer agentType;
+
 	public String createAgent() {
         try {
             FacilioChain addAgentChain = TransactionChainFactory.createAgentChain();
@@ -76,26 +85,14 @@ public class AddAgentAction extends AgentActionV2
             agent.setInterval(getDataInterval());
             agent.setSiteId(getSiteId()); //TODO validate SITE ID.
             agent.setType(getType());
+            agent.setAgentType(getAgentType());
             agent.setDisplayName(getDisplayName());
             agent.setWorkflow(getWorkflow());
-            if (!agent.getType().equals("custom")) {
+            if (AgentType.valueOf(getAgentType()) != AgentType.Custom) {
                 agent.setProcessorVersion(2);
             }
             context.put(AgentConstants.AGENT,agent);
             addAgentChain.execute();
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put(AgentConstants.AGENT_ID,agent.getId());
-            String downloadUrl = null;
-            String files = null;
-            if (context.containsKey(AgentConstants.DOWNLOAD_AGENT) )  {
-                downloadUrl = (String) context.get(AgentConstants.DOWNLOAD_AGENT);
-            }
-            if(context.containsKey(AgentConstants.CERT_FILE_DOWNLOAD_URL)){
-                files = (String) context.get(AgentConstants.CERT_FILE_DOWNLOAD_URL);
-            }
-            jsonObject.put(AgentConstants.DOWNLOAD_AGENT,downloadUrl);
-            jsonObject.put("files",files);
-            setResult(AgentConstants.DATA, jsonObject);
             setResult(AgentConstants.RESULT, SUCCESS);
             ok();
         }catch (Exception e){

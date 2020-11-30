@@ -1,5 +1,13 @@
 package com.facilio.agentv2.commands;
 
+import com.facilio.accounts.dto.Organization;
+import com.facilio.agent.AgentType;
+import com.facilio.agent.integration.DownloadCertFile;
+import com.facilio.agentv2.AgentAction;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.service.FacilioService;
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 
@@ -10,6 +18,9 @@ import com.facilio.agentv2.FacilioAgent;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.workflows.util.WorkflowUtil;
 
+import java.util.Map;
+import java.util.Objects;
+
 public class CreateAgentCommand extends AgentV2Command {
 
     private static final org.apache.log4j.Logger LOGGER = LogManager.getLogger(CreateAgentCommand.class.getName());
@@ -17,10 +28,7 @@ public class CreateAgentCommand extends AgentV2Command {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         if (containsCheck(AgentConstants.AGENT, context)) {
-            String orgDomainname = AccountUtil.getCurrentOrg().getDomain();
-            String agentDownloadUrl = "agentDownloadUrl";
             FacilioAgent agent = (FacilioAgent) context.get(AgentConstants.AGENT);
-            String certFileDownloadUrl = "certDownloadUrl";
             if (agent.getWorkflow() != null) {
 	            	if(agent.getWorkflow().validateWorkflow()) {
 	            		long workflowId = WorkflowUtil.addWorkflow(agent.getWorkflow());
@@ -32,12 +40,17 @@ public class CreateAgentCommand extends AgentV2Command {
             }
             long agentId = AgentApiV2.addAgent(agent);
             agent.setId(agentId);
-            String type = agent.getType();
-            if (type.equalsIgnoreCase("facilio")
-                    || type.equalsIgnoreCase("niagara")) {
-                return createPolicy(context, orgDomainname, agent, certFileDownloadUrl);
-            } else if (type.equalsIgnoreCase("rest")) {
-            		AgentApiV2.scheduleRestJob(agent);
+            switch (AgentType.valueOf(agent.getAgentType())) {
+                case Custom:
+                case Wattsense:
+                    break;
+                case Facilio:
+                case Niagara:
+                    createPolicy(agent);
+                    return true;
+                case Rest:
+                    AgentApiV2.scheduleRestJob(agent);
+                    return true;
             }
             return false;
         } else {
@@ -45,32 +58,20 @@ public class CreateAgentCommand extends AgentV2Command {
         }
     }
 
-    private boolean createPolicy(Context context, String orgDomainname, FacilioAgent agent, String certFileDownloadUrl) throws Exception {
-        String agentDownloadUrl;
-        AwsUtil.addClientToPolicy(agent.getName(), orgDomainname, "facilio");
-        if (certFileDownloadUrl != null) {
-            context.put(AgentConstants.CERT_FILE_DOWNLOAD_URL, certFileDownloadUrl);
-            // pack agent and give a download link
-            agentDownloadUrl = packAgent(agent);
-            if ((agentDownloadUrl != null) && (agent.getType().equals("facilio")) && (agent.getType().equals("niagara"))) {
-                switch (agent.getType()) {
-                    case "facilio":
-                    case "niagara":
-                        context.put(AgentConstants.DOWNLOAD_AGENT, agentDownloadUrl);
-                        break;
-                    default:
-                }
-            } else {
-                LOGGER.info(" agentDownload link cant be null ");
+    private void createPolicy(FacilioAgent agent) throws Exception {
+        try{
+            Organization currentOrg = AccountUtil.getCurrentOrg();
+            String orgMessageTopic = FacilioService.runAsServiceWihReturn(()-> AgentAction.getMessageTopic(currentOrg.getDomain(),currentOrg.getOrgId()));
+            LOGGER.info("download certificate current org domain is :" + orgMessageTopic);
+            String certFileId = com.facilio.agent.FacilioAgent.getCertFileId("facilio");
+            long orgId = Objects.requireNonNull(currentOrg.getOrgId());
+            Map<String, Object> orgInfo = CommonCommandUtil.getOrgInfo(orgId, certFileId);
+            if (orgInfo == null || orgInfo.isEmpty()) {
+                DownloadCertFile.addCert(orgMessageTopic, "facilio");
             }
-
-            return false;
-        } else {
-            throw new Exception(" certFile download url can't be null ");
+            AwsUtil.addClientToPolicy(agent.getName(), orgMessageTopic, "facilio");
+        }catch (Exception e){
+            LOGGER.error("Exception occurred while adding Agent cert .. ",e);
         }
-    }
-
-    private String packAgent(FacilioAgent agent) {
-        return "no implementation yet"; //TODO implement agent packing.
     }
 }

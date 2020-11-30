@@ -621,7 +621,7 @@ public class AgentAction extends AgentActionV2 {
 		return SUCCESS;
 	}
 
-    private String getMessageTopic(String domain, long orgId) throws Exception {
+    public static String getMessageTopic(String domain, long orgId) throws Exception {
     	LOGGER.info("Downld current org :"+domain+" orgid "+orgId);
     	GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().select(AgentFieldFactory.getMessageTopicFields())
     			.table(AgentModuleFactory.getMessageToipcModule().getTableName())

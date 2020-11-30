@@ -7,9 +7,10 @@ import java.util.Map;
 public enum AgentType {
 	Custom(0, "Custom"),
 	Facilio(1, "Facilio"),
-	Niagara(3, "Niagara"),
-	Wattsense(4,"Wattsense"),
-	Rest(5,"Rest");
+	Niagara(2, "Niagara"),
+    Rest(3,"Rest"),
+	Wattsense(4,"Wattsense");
+
 
 	private int key;
     private String label;
