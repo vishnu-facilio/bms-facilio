@@ -750,14 +750,16 @@ public class ReportContext {
 	
 //	Drill down
 	
-	private List<ReportDrilldownContext> reportDrilldown;
+	private List<ReportDrilldownPathContext> reportDrilldownPath;
 	
-	public List<ReportDrilldownContext> getReportDrilldown() {
-		return reportDrilldown;
+
+
+	public List<ReportDrilldownPathContext> getReportDrilldownPath() {
+		return reportDrilldownPath;
 	}
 
-	public void setReportDrilldown(List<ReportDrilldownContext> reportDrilldown) {
-		this.reportDrilldown = reportDrilldown;
+	public void setReportDrilldownPath(List<ReportDrilldownPathContext> reportDrilldownPath) {
+		this.reportDrilldownPath = reportDrilldownPath;
 	}
 
 	public void setReportDrilldownJson(String reportDrilldownJson) throws Exception {
@@ -766,14 +768,14 @@ public class ReportContext {
 		{
 		JSONArray jsonarray = FacilioUtil.parseJsonArray(reportDrilldownJson);
 
-		reportDrilldown=new ArrayList<>();
+		reportDrilldownPath=new ArrayList<>();
 		for (Object jsonObject : jsonarray) {
 
 			JSONObject json = (JSONObject) jsonObject;
-			ReportDrilldownContext drilldown = FieldUtil.getAsBeanFromJson(json, ReportDrilldownContext.class);
+			ReportDrilldownPathContext drilldown = FieldUtil.getAsBeanFromJson(json, ReportDrilldownPathContext.class);
 
 			
-			reportDrilldown.add(drilldown);
+			reportDrilldownPath.add(drilldown);
 		}
 		}
 		
@@ -782,8 +784,8 @@ public class ReportContext {
 	@JSON(serialize = false)
 	public String getReportDrilldownJson() throws Exception {
 
-		if (reportDrilldown != null) {
-			return FieldUtil.getAsJSONArray(reportDrilldown, ReportDrilldownContext.class).toJSONString();
+		if (reportDrilldownPath != null) {
+			return FieldUtil.getAsJSONArray(reportDrilldownPath, ReportDrilldownPathContext.class).toJSONString();
 		}
 		return null;
 	}
@@ -820,6 +822,17 @@ public class ReportContext {
 			this.reportSettings=FieldUtil.getAsBeanFromJson(FacilioUtil.parseJson(reportSettingsJson), ReportSettings.class);
 		}
 		
+	}
+	
+	private ReportDrilldownParamsContext drilldownParams;
+
+	
+	public ReportDrilldownParamsContext getDrilldownParams() {
+		return drilldownParams;
+	}
+
+	public void setDrilldownParams(ReportDrilldownParamsContext drilldownParams) {
+		this.drilldownParams = drilldownParams;
 	}
 
 }

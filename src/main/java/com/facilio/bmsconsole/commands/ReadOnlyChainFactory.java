@@ -94,6 +94,7 @@ public class ReadOnlyChainFactory {
 	
 	public static FacilioChain newFetchReportDataChain() {
 		FacilioChain c = getDefaultChain();
+		c.addCommand(new ReportDrilldownCommand());
 		c.addCommand(new FilterFieldCommand());
 		c.addCommand(new FetchReportDataCommand());
 		c.addCommand(new ConstructReportDataCommand());

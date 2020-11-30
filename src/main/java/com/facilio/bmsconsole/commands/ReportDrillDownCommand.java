@@ -1,9 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
@@ -21,26 +23,28 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.report.context.ReportContext;
+import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportDrilldownParamsContext;
+import com.facilio.report.context.ReportDrilldownParamsContext.DrilldownCriteria;
 import com.facilio.report.context.ReportFieldContext;
+import com.facilio.report.context.ReportGroupByField;
 import com.facilio.report.util.ReportUtil;
 
 public class ReportDrilldownCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		
+
 		ReportDrilldownParamsContext drillDownParamCtx = (ReportDrilldownParamsContext) context
 				.get(FacilioConstants.ContextNames.REPORT_DRILLDOWN_PARAMS);
-		
+
 		if (drillDownParamCtx != null) {
+			ReportContext reportContext = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
+
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 
-			ReportContext reportContext = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
-
-			
 			FacilioModule module = null;
 
 			if (reportContext.getModuleId() > 0) {
@@ -56,47 +60,112 @@ public class ReportDrilldownCommand extends FacilioCommand {
 			if (reportContext.getDataPoints() == null || reportContext.getDataPoints().isEmpty()) {
 				return false;
 			}
-			ReportFieldContext dPXAxis=this.getDataPointXAxis(drillDownParamCtx.getxField(),module);
+			String seriesAlias = drillDownParamCtx.getSeriesAlias();
+			// multi series reports  get reduced to single series(whichever was clicked)
 
-			Criteria drilldownCriteria = getDrillDownCriteria(drillDownParamCtx.getCriteria());
+			List<ReportDataPointContext> drilledReportDataPoints = reportContext.getDataPoints().stream()
+					.filter((ReportDataPointContext dp) -> {
+						return dp.getAliases().get("actual").equals(seriesAlias);
+					}).collect(Collectors.toList());
+
+			ReportDataPointContext drilledReportDataPoint = drilledReportDataPoints.get(0);
+			//need to resolve label for last criteria/drill step
+//			resolveBreadCrumbLabel(drilledReportDataPoint, drillDownParamCtx.getDrilldownCriteria().get(drillDownParamCtx.getDrilldownCriteria().size()-1));
+			
+			
+			
+			
+			
+			
+			
+			
+			ReportFieldContext newDataPointXaxis = this.getNewXAxis(drillDownParamCtx.getxField(), module);
+			
+			drilledReportDataPoint.setxAxis(newDataPointXaxis);
+
+			Criteria criteria = this.generateCriteria(drillDownParamCtx.getDrilldownCriteria());
+			drillDownParamCtx.setCriteria(criteria);
+			reportContext.setDataPoints(drilledReportDataPoints);
+			reportContext.setxAggr(drillDownParamCtx.getxAggr());
+			reportContext.setDrilldownParams(drillDownParamCtx);
 
 		}
 		return false;
 	}
+	
+//	private void resolveBreadCrumbLabel(ReportDataPointContext dataPoint,DrilldownCriteria drilldownCriteria)
+//	{
+//		String label=null;
+//		ReportFieldContext xAxis=dataPoint.getxAxis();
+//		
+//		
+//		
+//		
+//		
+//		drilldownCriteria.setBreadcrumbLabel(label);
+//		
+//		
+//	}
 
-	private ReportFieldContext getDataPointXAxis(JSONObject xAxisJSON,FacilioModule module) throws Exception {
+	private ReportFieldContext getNewXAxis(Map<String, Object> xAxisJSON, FacilioModule module) throws Exception {
 		ReportFieldContext xAxis = new ReportFieldContext();
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioField xField = null;
+		FacilioField xAxisField = null;
 		if (xAxisJSON.containsKey("field_id")) {
 			Object fieldId = xAxisJSON.get("field_id");
-			xField = ReportUtil.getField(modBean, fieldId,module);
+			xAxisField = ReportUtil.getField(modBean, fieldId, module);
+		}
+		FacilioModule xAxisModule = null;
+		if (xAxisJSON.containsKey("module_id")) {
+			xAxisModule = modBean.getModule((Long) xAxisJSON.get("module_id"));
 		}
 		if (xAxisJSON.containsKey("lookupFieldId")) {
 			xAxis.setLookupFieldId((Long) xAxisJSON.get("lookupFieldId"));
 		}
+
+		xAxis.setField(xAxisModule, xAxisField);
 		return xAxis;
 	}
 
-	private Criteria getDrillDownCriteria(JSONArray drilldownParamsCriteria) throws Exception {
+	private Criteria generateCriteria(List<ReportDrilldownParamsContext.DrilldownCriteria> drillldownCriteriaList)
+			throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		Criteria criteria = new Criteria();
 
-		for (Object drillStepCriteria : drilldownParamsCriteria) {
-			JSONObject drillStepCriteriaJson = (JSONObject) drillStepCriteria;
-			JSONObject xField = (JSONObject) drillStepCriteriaJson.get("xField");
+		for (DrilldownCriteria drilldownCriteria : drillldownCriteriaList) {
+
+			Map<String, Object> xField = drilldownCriteria.getxField();
+
 			long fieldId = (long) xField.get("field_id");
 			long moduleId = (long) xField.get("module_id");
-			int xAggrOperator = (int) xField.get("xAggr");
-			AggregateOperator xAggr = AggregateOperator.getAggregateOperator(xAggrOperator);
-			String commaSepValues = (String) drillStepCriteriaJson.get("values");
+			long xAggrOperator = (long) xField.get("xAggr");
+			AggregateOperator xAggr = AggregateOperator.getAggregateOperator((int)xAggrOperator);
+			String dimensionValues = drilldownCriteria.getDimensionValues();
 
 			FacilioModule module = modBean.getModule(moduleId);
 			FacilioField xAxisField = modBean.getField(fieldId);
 
-			Condition condition = CriteriaAPI.getCondition(xAxisField, commaSepValues, getOperator(xAxisField, xAggr));
+			Condition condition = CriteriaAPI.getCondition(xAxisField, dimensionValues, getOperator(xAxisField, xAggr));
 			criteria.addAndCondition(condition);
+
+			Map<String, Object> groupBy = drilldownCriteria.getGroupBy();
+			if (groupBy != null) {
+				long groupByFieldId = (long) groupBy.get("field_id");
+				long groupByModuleId = (long) groupBy.get("module_id");
+				long groupByXAggrOperator = (long) groupBy.get("xAggr");
+				AggregateOperator groupByXAggr = AggregateOperator.getAggregateOperator((int)groupByXAggrOperator);
+
+				String groupByValues = drilldownCriteria.getGroupByValues();
+
+				FacilioModule groupBymodule = modBean.getModule(groupByModuleId);
+				FacilioField groupByField = modBean.getField(groupByFieldId);
+
+				Condition groupByCondition = CriteriaAPI.getCondition(groupByField, groupByValues,
+						getOperator(groupByField, groupByXAggr));
+				criteria.addAndCondition(groupByCondition);
+			}
+
 		}
 
 		return criteria;

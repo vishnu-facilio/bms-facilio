@@ -5,7 +5,7 @@ import org.json.simple.JSONObject;
 import com.facilio.modules.AggregateOperator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class ReportDrilldownContext  {
+public class ReportDrilldownPathContext  {
 
 	/**
 	 * 
@@ -13,29 +13,29 @@ public class ReportDrilldownContext  {
 	private static final long serialVersionUID = 1L;
 	
 	private JSONObject xField;
-	private String selectedPrevXValues;
-	public String getSelectedPrevXValues() {
-		return selectedPrevXValues;
-	}
-
-
-	public void setSelectedPrevXValues(String selectedPrevXValues) {
-		this.selectedPrevXValues = selectedPrevXValues;
-	}
-
-
-	public String getSelectedPrevYAlias() {
-		return selectedPrevYAlias;
-	}
-
-
-	public void setSelectedPrevYAlias(String selectedPrevYAlias) {
-		this.selectedPrevYAlias = selectedPrevYAlias;
-	}
-
-	private String selectedPrevYAlias;
-
-
+//	private String selectedPrevXValues;
+//	public String getSelectedPrevXValues() {
+//		return selectedPrevXValues;
+//	}
+//
+//
+//	public void setSelectedPrevXValues(String selectedPrevXValues) {
+//		this.selectedPrevXValues = selectedPrevXValues;
+//	}
+//
+//
+//	public String getSelectedPrevYAlias() {
+//		return selectedPrevYAlias;
+//	}
+//
+//
+//	public void setSelectedPrevYAlias(String selectedPrevYAlias) {
+//		this.selectedPrevYAlias = selectedPrevYAlias;
+//	}
+//
+//	private String selectedPrevYAlias;
+//
+//
 
 
 

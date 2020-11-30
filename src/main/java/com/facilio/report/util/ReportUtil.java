@@ -879,7 +879,10 @@ public class ReportUtil {
 	public static Boolean isSpaceAggregation(AggregateOperator aggr)
 	{
 		for(AggregateOperator operator : SpaceAggregateOperator.values()) {
-            return operator.equals(aggr);
+            if( operator.equals(aggr))
+            {
+            	return true;
+            }
         }
 	
 		return false;

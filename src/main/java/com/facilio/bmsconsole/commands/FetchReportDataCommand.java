@@ -436,6 +436,19 @@ public class FetchReportDataCommand extends FacilioCommand {
 		if(dataFilter != null && !dataFilter.isEmpty()) {
 			FilterUtil.setDataFilterCriteria(dp.getxAxis().getModuleName(), dataFilter,  report.getDateRange(), newSelectBuilder, parentId);
 		}
+		
+		//appllying Report drilldown criteria
+		ReportDrilldownParamsContext drilldownParams=report.getDrilldownParams();
+		if(drilldownParams!=null)
+		{
+			Criteria drilldownCriteria=drilldownParams.getCriteria();
+			if(drilldownCriteria!=null)
+			{
+				newSelectBuilder.andCriteria(drilldownCriteria);
+			}
+
+		}
+		
 
 		List<Map<String, Object>> props;
 

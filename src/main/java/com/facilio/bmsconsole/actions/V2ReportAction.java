@@ -18,7 +18,6 @@ import com.facilio.bmsconsole.context.sensor.SensorRollUpAlarmContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -26,6 +25,26 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.AddOrUpdateReportCommand;
+import com.facilio.bmsconsole.commands.ConstructReportData;
+import com.facilio.bmsconsole.commands.GenerateCriteriaFromFilterCommand;
+import com.facilio.bmsconsole.commands.GetCriteriaDataCommand;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
+import com.facilio.bmsconsole.context.DashboardWidgetContext;
+import com.facilio.bmsconsole.context.FormulaFieldContext;
+import com.facilio.bmsconsole.context.MLAlarmContext;
+import com.facilio.bmsconsole.context.MLAnomalyAlarm;
+import com.facilio.bmsconsole.context.OperationAlarmContext;
+import com.facilio.bmsconsole.context.ReadingAlarm;
+import com.facilio.bmsconsole.context.ReadingAlarmContext;
+import com.facilio.bmsconsole.context.RegressionContext;
+import com.facilio.bmsconsole.context.ReportInfo;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.WidgetChartContext;
+import com.facilio.bmsconsole.context.WidgetStaticContext;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.DashboardUtil;
@@ -63,6 +82,7 @@ import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
 import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportContext.ReportType;
+import com.facilio.report.context.ReportDrilldownParamsContext;
 import com.facilio.report.context.ReportFactoryFields;
 import com.facilio.report.context.ReportFolderContext;
 import com.facilio.report.context.ReportTemplateContext;
@@ -86,7 +106,14 @@ public class V2ReportAction extends FacilioAction {
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = LogManager.getLogger(V2ReportAction.class.getName());
-	
+	private ReportDrilldownParamsContext drilldownParams;
+	public ReportDrilldownParamsContext getDrilldownParams() {
+		return drilldownParams;
+	}
+	public void setDrilldownParams(ReportDrilldownParamsContext drilldownParams) {
+		this.drilldownParams = drilldownParams;
+	}
+
 	private ReportContext reportContext;
 	private long folderId=-1;
 	
@@ -970,6 +997,7 @@ public class V2ReportAction extends FacilioAction {
 		if(needCriteriaData){
 			chain.addCommand(new GetCriteriaDataCommand());
 		}
+		context.put(FacilioConstants.ContextNames.REPORT_DRILLDOWN_PARAMS, getDrilldownParams());
 		chain.execute(context);
 
 		return setReportResult(context);
@@ -2287,12 +2315,5 @@ public class V2ReportAction extends FacilioAction {
 		this.ids = ids;
 	}
 	
-	private JSONObject drillDownParams;
-	@JSON(serialize = false)
-	public JSONObject getDrillDownParams() {
-		return drillDownParams;
-	}
-	public void setDrillDownParams(JSONObject drillDownParams) {
-		this.drillDownParams = drillDownParams;
-	}
+	
 }
