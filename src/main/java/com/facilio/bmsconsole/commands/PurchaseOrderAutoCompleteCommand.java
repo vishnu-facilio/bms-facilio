@@ -1,31 +1,21 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
-import com.facilio.modules.*;
-import org.apache.commons.chain.Context;
-
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.InventoryType;
-import com.facilio.bmsconsole.context.ItemContext;
-import com.facilio.bmsconsole.context.ItemTypesContext;
-import com.facilio.bmsconsole.context.ItemTypesVendorsContext;
-import com.facilio.bmsconsole.context.PurchaseOrderContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.PurchaseOrderContext.Status;
-import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
-import com.facilio.bmsconsole.context.PurchasedItemContext;
-import com.facilio.bmsconsole.context.ToolContext;
-import com.facilio.bmsconsole.context.ToolTypeVendorContext;
-import com.facilio.bmsconsole.context.ToolTypesContext;
+import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.chain.Context;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 ;
 
@@ -77,14 +67,6 @@ public class PurchaseOrderAutoCompleteCommand extends FacilioCommand {
 							}
 						}
 					}
-				}
-				if (!containsIndividualTrackingItem && !containsIndividualTrackingTool) {
-					po.setStatus(Status.COMPLETED);
-					po.setCompletedTime(System.currentTimeMillis());
-					UpdateRecordBuilder<PurchaseOrderContext> updateBuilder = new UpdateRecordBuilder<PurchaseOrderContext>()
-							.module(pomodule).fields(modBean.getAllFields(pomodule.getName()))
-							.andCondition(CriteriaAPI.getIdCondition(po.getId(), pomodule));
-					updateBuilder.update(po);
 				}
 			}
 			if (containsIndividualTrackingItem || containsIndividualTrackingTool) {

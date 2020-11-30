@@ -1,14 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.InventoryType;
 import com.facilio.bmsconsole.context.PurchaseOrderContext;
@@ -23,6 +14,10 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+
+import java.util.*;
 
 public class UpdateServiceVendorPriceCommand extends FacilioCommand{
 
@@ -46,8 +41,8 @@ public class UpdateServiceVendorPriceCommand extends FacilioCommand{
 					UpdateRecordBuilder<ServiceVendorContext> updateBuilder = new UpdateRecordBuilder<ServiceVendorContext>()
 									.module(serviceVendormodule)
 									.fields(updatedfields)
-									.andCondition(CriteriaAPI.getCondition("SERVICE","service", String.valueOf(lineItem.getService().getId()), NumberOperators.EQUALS))
-									.andCondition(CriteriaAPI.getCondition("VENDOR","vendor", String.valueOf(po.getVendor().getId()), NumberOperators.EQUALS))
+									.andCondition(CriteriaAPI.getCondition("SERVICE_ID","serviceId", String.valueOf(lineItem.getService().getId()), NumberOperators.EQUALS))
+									.andCondition(CriteriaAPI.getCondition("VENDOR_ID","vendor", String.valueOf(po.getVendor().getId()), NumberOperators.EQUALS))
 									;
 				     updateBuilder.updateViaMap(updateMap);
 				}

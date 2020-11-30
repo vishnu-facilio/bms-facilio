@@ -80,7 +80,7 @@ public class PurchaseOrderAPI {
 				.beanClass(V3PurchaseOrderLineItemContext.class)
 				.andCondition(CriteriaAPI.getCondition("PO_ID", "poid", String.valueOf(po.getId()), NumberOperators.EQUALS))
 				.fetchSupplements(Arrays.asList((LookupField) fieldsAsMap.get("itemType"),
-						(LookupField) fieldsAsMap.get("toolType")))
+						(LookupField) fieldsAsMap.get("toolType"), (LookupField) fieldsAsMap.get("service")))
 				;
 		List<V3PurchaseOrderLineItemContext> list = builder.get();
 		for(V3PurchaseOrderLineItemContext item : list) {
@@ -149,7 +149,7 @@ public class PurchaseOrderAPI {
 					.andCondition(CriteriaAPI.getCondition("INVENTORY_TYPE", "inventoryType", String.valueOf(inventoryType), NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCondition(availableQuantityField, String.valueOf(0), NumberOperators.GREATER_THAN))
 			        .fetchSupplements(Arrays.asList((LookupField) fieldsAsMap.get("itemType"),
-					(LookupField) fieldsAsMap.get("toolType")))
+					(LookupField) fieldsAsMap.get("toolType"), (LookupField) fieldsAsMap.get("service")))
 			        ;
 			List<PurchaseOrderLineItemContext> list = builder.get();
 			return list;

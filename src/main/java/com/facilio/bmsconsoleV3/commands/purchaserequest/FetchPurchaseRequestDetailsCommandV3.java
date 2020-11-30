@@ -36,14 +36,14 @@ public class FetchPurchaseRequestDetailsCommandV3 extends FacilioCommand {
         			String lineItemModuleName = FacilioConstants.ContextNames.PURCHASE_REQUEST_LINE_ITEMS;
         			List<FacilioField> fields = modBean.getAllFields(lineItemModuleName);
         			Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
-        			
-        			SelectRecordsBuilder<V3PurchaseRequestLineItemContext> builder = new SelectRecordsBuilder<V3PurchaseRequestLineItemContext>()
-        					.moduleName(lineItemModuleName)
-        					.select(fields)
-        					.beanClass(V3PurchaseRequestLineItemContext.class)
-        					.andCondition(CriteriaAPI.getCondition("PR_ID", "prid", String.valueOf(purchaseRequestContext.getId()), NumberOperators.EQUALS))
-        					.fetchSupplements(Arrays.asList((LookupField) fieldsAsMap.get("itemType"),
-        					(LookupField) fieldsAsMap.get("toolType")));
+
+					SelectRecordsBuilder<V3PurchaseRequestLineItemContext> builder = new SelectRecordsBuilder<V3PurchaseRequestLineItemContext>()
+							.moduleName(lineItemModuleName)
+							.select(fields)
+							.beanClass(V3PurchaseRequestLineItemContext.class)
+							.andCondition(CriteriaAPI.getCondition("PR_ID", "prid", String.valueOf(purchaseRequestContext.getId()), NumberOperators.EQUALS))
+							.fetchSupplements(Arrays.asList((LookupField) fieldsAsMap.get("itemType"),
+									(LookupField) fieldsAsMap.get("toolType"), (LookupField) fieldsAsMap.get("service")));
         		
         			List<V3PurchaseRequestLineItemContext> list = builder.get();
         			purchaseRequestContext.setLineItems(list);
