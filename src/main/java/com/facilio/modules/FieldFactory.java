@@ -256,7 +256,7 @@ public class FieldFactory {
             assetFieldsInclude.add("category");
             assetFieldsInclude.add("department");
             assetFieldsInclude.add("description");
-            assetFieldsInclude.add("localId");
+//            assetFieldsInclude.add("localId");
             assetFieldsInclude.add("manufacturer");
             assetFieldsInclude.add("name");
 //            assetFieldsInclude.add("parentAssetId");
