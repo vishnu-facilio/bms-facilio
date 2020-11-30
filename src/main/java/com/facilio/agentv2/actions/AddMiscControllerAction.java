@@ -4,6 +4,9 @@ import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.facilio.agentv2.AgentApiV2;
+import com.facilio.agentv2.FacilioAgent;
+import com.facilio.fw.FacilioException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -22,32 +25,37 @@ public class AddMiscControllerAction extends AgentIdAction{
 	public String addMiscController() {
 		
 		try {
-			Device fieldDevice = new Device();
-			fieldDevice.setName(getName());
-			fieldDevice.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-			fieldDevice.setAgentId(getAgentId());
-			fieldDevice.setControllerType(getControllerType());
-			fieldDevice.setCreatedTime(System.currentTimeMillis());
-			Long deviceId = FieldDeviceApi.addFieldDevice(fieldDevice);
-			Long controllerId = null;
-			if(deviceId != null && deviceId > 0) {
-				MiscController context = new MiscController();
-				context.setAgentId(getAgentId());
-				context.setActive(true);
-				context.setDataInterval(900000);
-				context.setName(getName());
-				context.setControllerType(getControllerType());
-				context.setDeviceId(deviceId);
-				controllerId = ControllerApiV2.addController(context);
-			}
-			if(controllerId != null && controllerId >0) {
-				FieldDeviceApi.updateDeviceConfigured(deviceId);
-				LOGGER.info("successfully marked a Misc Device - "+getName()+" as a Controller. ");
-				setResult(AgentConstants.RESULT, SUCCESS);
-	            setResponseCode(HttpURLConnection.HTTP_OK);
-			}else {
-				setResponseCode(HttpURLConnection.HTTP_BAD_REQUEST);
-                setResult(AgentConstants.RESULT, ERROR);
+            FacilioAgent agent = AgentApiV2.getAgent(getAgentId());
+            if (agent != null) {
+                Device fieldDevice = new Device();
+                fieldDevice.setName(getName());
+                fieldDevice.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+                fieldDevice.setAgentId(getAgentId());
+                fieldDevice.setControllerType(getControllerType());
+                fieldDevice.setCreatedTime(System.currentTimeMillis());
+                Long deviceId = FieldDeviceApi.addFieldDevice(fieldDevice);
+                Long controllerId = null;
+                if (deviceId != null && deviceId > 0) {
+                    MiscController context = new MiscController();
+                    context.setAgentId(agent.getId());
+                    context.setActive(true);
+                    context.setDataInterval(agent.getInterval() * 60 * 1000);
+                    context.setName(getName());
+                    context.setControllerType(getControllerType());
+                    context.setDeviceId(deviceId);
+                    controllerId = ControllerApiV2.addController(context);
+                }
+                if (controllerId != null && controllerId > 0) {
+                    FieldDeviceApi.updateDeviceConfigured(deviceId);
+                    LOGGER.info("successfully marked a Misc Device - " + getName() + " as a Controller. ");
+                    setResult(AgentConstants.RESULT, SUCCESS);
+                    setResponseCode(HttpURLConnection.HTTP_OK);
+                } else {
+                    setResponseCode(HttpURLConnection.HTTP_BAD_REQUEST);
+                    setResult(AgentConstants.RESULT, ERROR);
+                }
+            } else {
+                throw new FacilioException("Agent not found");
 			}
 		}catch(Exception e) {
 			LOGGER.error("Exception occurred while adding Misc controller.",e);

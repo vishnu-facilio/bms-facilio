@@ -276,6 +276,7 @@ public class DataProcessorV2
                             if (agent.getType().equals("rest")) {
                                 MiscController miscController = new MiscController(agent.getId(), AccountUtil.getCurrentOrg().getOrgId());
                                 miscController.setName(((JSONObject) (payload.get(AgentConstants.CONTROLLER))).get(AgentConstants.NAME).toString());
+                                miscController.setDataInterval(agent.getInterval() * 60 * 1000);
                                 Device device = new Device();
                                 device.setIdentifier(miscController.getName());
                                 device.setName(miscController.getName());
