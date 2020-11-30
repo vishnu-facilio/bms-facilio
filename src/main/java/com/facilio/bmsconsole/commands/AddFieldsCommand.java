@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount30;
+import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount50;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -124,7 +125,7 @@ public class AddFieldsCommand extends FacilioCommand {
 						throw new IllegalArgumentException("No column available for the Field type");
 					}
 				} else {
-					newColumnName = new ModuleCustomFieldCount30().getNewColumnNameForFieldType(dataType.getTypeAsInt(), existingColumnNames);
+					newColumnName = new ModuleCustomFieldCount50().getNewColumnNameForFieldType(dataType.getTypeAsInt(), existingColumnNames);
 				}
 				if (StringUtils.isEmpty(newColumnName)) {
 					throw new IllegalArgumentException("No more column available for the Field type");
