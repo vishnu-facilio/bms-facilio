@@ -3,58 +3,85 @@ package com.facilio.services.messageQueue;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.services.procon.message.FacilioRecord;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.util.*;
 
 public abstract class MessageQueue {
+
+    private static final Logger LOGGER = LogManager.getLogger(MessageQueue.class.getName());
     private static final HashSet<String> STREAMS = new HashSet<>();
-    private static org.apache.log4j.Logger log = LogManager.getLogger(MessageQueue.class.getName());
     private static final HashSet<String> EXISTING_ORGS = new HashSet<>();
+
     private static final List<Long> EMPTY_LIST = Collections.emptyList();
 
-    private static Properties getLoggingProps(){
-        Properties properties = new Properties();
-        properties.put("log4j.rootLogger", "ERROR,stdout");
-        properties.put("log4j.appender.stdout", "org.apache.log4j.ConsoleAppender" );
-        properties.put("log4j.appender.stdout.layout", "org.apache.log4j.PatternLayout");
-        return properties;
-    }
-    private void updateStream() {
-        try {
-
-            List<String> streamNames = getTopics();
-            if (streamNames != null && STREAMS.isEmpty()) {
-                STREAMS.addAll(streamNames);
-            } else {
-                if (streamNames != null) {
-                    for (String stream : streamNames) {
-                        if( ! STREAMS.contains(stream)) {
-                            STREAMS.add(stream);
-                        }
-                    }
-                }else{
-                    log.error("getTopics() returned null");
-                }
-            }
-        } catch (Exception e){
-            log.info("Exception occurred ", e);
-        }
+    static HashSet<String> getSTREAMS() {
+        return STREAMS;
     }
 
+    static HashSet<String> getExistingOrgs() {
+        return EXISTING_ORGS;
+    }
+
+    /**
+     * Entry point for starting processors
+     */
+    public void start() {
+        updateStream();
+        startProcessor();
+    }
+
+    /**
+     * Starts processor for specific org
+     *
+     * @param orgId         Org ID
+     * @param orgDomainName Org Domain Name
+     */
+    abstract void startProcessor(long orgId, String orgDomainName);
+
+    /**
+     * Pushes record to the message queue
+     *
+     * @param orgId         Org ID
+     * @param orgDomainName Org Domain Name
+     * @param type          Type of the processor event,processor,alarm etc.,
+     * @param record        record containing the message to put to the queue
+     * @throws Exception Throws exception if stream not found
+     */
+
+    public abstract void put(long orgId, String orgDomainName, String type, FacilioRecord record) throws Exception;
+
+    /**
+     * Gets list of topics/streams
+     *
+     * @return list of topics/streams
+     */
+
+    public abstract List<String> getTopics();
+
+    /**
+     * Creates a new message queue
+     *
+     * @param name name of the queue
+     */
+
+    public abstract void createQueue(String name);
+
+    /**
+     * Loops over all orgs and starts the processor
+     */
     private void startProcessor() {
-
-//        PropertyConfigurator.configure(getLoggingProps());
-
+        //PropertyConfigurator.configure(getLoggingProps());
         try {
-            List<Map<String,Object>> orgMessageTopics = MessageQueueTopic.getTopics(EMPTY_LIST);
-            if(CollectionUtils.isNotEmpty(orgMessageTopics)) {
-
+            List<Map<String, Object>> orgMessageTopics = MessageQueueTopic.getTopics(EMPTY_LIST);
+            if (CollectionUtils.isNotEmpty(orgMessageTopics)) {
                 for (Map<String, Object> org : orgMessageTopics) {
                     Long orgId = (Long) org.get(AgentConstants.ORGID);
                     String orgDomainName = (String) org.get(AgentConstants.MESSAGE_TOPIC);
-                    if( (! EXISTING_ORGS.contains(orgDomainName))) {
+                    if ((!EXISTING_ORGS.contains(orgDomainName))) {
                         try {
                             startProcessor(orgId, orgDomainName);
                         } catch (Exception e) {
@@ -63,46 +90,47 @@ public abstract class MessageQueue {
                                 Thread.sleep(10000L);
                                 startProcessor(orgId, orgDomainName);
                             } catch (InterruptedException interrupted) {
-                                log.info("Exception occurred ", interrupted);
+                                LOGGER.info("Exception occurred ", interrupted);
                                 CommonCommandUtil.emailException("KafkaProcessor", "Exception while starting stream " + orgDomainName, interrupted);
                             }
                         }
                     }
                 }
             }
-        } catch (Exception e){
-            log.info("Exception occurred ", e);
+        } catch (Exception e) {
+            LOGGER.info("Exception occurred ", e);
         }
     }
 
-    private void startProcessor(long orgId, String orgDomainName) {
+    private void updateStream() {
         try {
-            if(orgDomainName != null && STREAMS.contains(orgDomainName)) {
-                log.info("Starting kafka processor for org : " + orgDomainName + " id " + orgId);
-                initiateProcessFactory(orgId,orgDomainName,"processor");
-                /*initiateProcessFactory(orgId, orgDomainName, "event");
-                initiateProcessFactory(orgId, orgDomainName, "timeSeries");
-                initiateProcessFactory(orgId,orgDomainName,"agent");*/
-                EXISTING_ORGS.add(orgDomainName);
+            List<String> streamNames = getTopics();
+            if (streamNames != null && STREAMS.isEmpty()) {
+                STREAMS.addAll(streamNames);
+            } else {
+                if (streamNames != null) {
+                    for (String stream : streamNames) {
+                        if (!STREAMS.contains(stream)) {
+                            STREAMS.add(stream);
+                        } else {
+                            LOGGER.info("Stream already exists");
+                        }
+                    }
+                } else {
+                    LOGGER.error("getTopics() returned null");
+                }
             }
-        } catch (Exception e){
-            log.info("Exception occurred ", e);
+        } catch (Exception e) {
+            LOGGER.info("Exception occurred ", e);
         }
     }
 
-    public  void start() {
-        updateStream();
-        startProcessor();
+    private static Properties getLoggingProps() {
+        Properties properties = new Properties();
+        properties.put("log4j.rootLogger", "ERROR,stdout");
+        properties.put("log4j.appender.stdout", "org.apache.log4j.ConsoleAppender");
+        properties.put("log4j.appender.stdout.layout", "org.apache.log4j.PatternLayout");
+        return properties;
     }
-
-
-    public abstract List<String> getTopics()  throws Exception;
-
-    abstract List<Organization> getOrgs() throws Exception;
-
-    public abstract void initiateProcessFactory(long orgId, String orgDomainName, String type) ;
-
-
-    public abstract void createQueue(String name);
 
 }

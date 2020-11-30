@@ -4,6 +4,7 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.services.kafka.KafkaProcessor;
+import com.facilio.services.procon.message.FacilioRecord;
 import com.facilio.services.procon.processor.FacilioProcessor;
 import org.apache.kafka.clients.admin.*;
 import org.apache.kafka.common.KafkaFuture;
@@ -19,6 +20,7 @@ public class KafkaMessageQueue extends MessageQueue {
     private static org.apache.log4j.Logger LOGGER = LogManager.getLogger(KafkaMessageQueue.class.getName());
     private static AdminClient kafkaClient = null;
     private static final KafkaMessageQueue INSTANCE =new KafkaMessageQueue();
+    private static Map<String, FacilioProcessor> KAFKA_PROCESSOR_MAP = new HashMap<>();
 
     private KafkaMessageQueue(){}
     static KafkaMessageQueue getClient(){
@@ -30,6 +32,22 @@ public class KafkaMessageQueue extends MessageQueue {
         }
         return kafkaClient;
     }
+
+    @Override
+    void startProcessor(long orgId, String orgDomainName) {
+        try {
+            if (orgDomainName != null && getSTREAMS().contains(orgDomainName)) {
+                LOGGER.info("Starting kafka processor for org : " + orgDomainName + " id " + orgId);
+                FacilioProcessor kafkaProcessor = getProcessor(orgId, orgDomainName, "processor");
+                new Thread(kafkaProcessor).start();
+                KAFKA_PROCESSOR_MAP.put(orgId + "-" + orgDomainName + "-" + "processor", kafkaProcessor);
+                getExistingOrgs().add(orgDomainName);
+            }
+        } catch (Exception e) {
+            LOGGER.info("Exception occurred ", e);
+        }
+    }
+
     @Override
     public List<String> getTopics(){
         AdminClient adminClient = getKafkaClient();
@@ -58,18 +76,14 @@ public class KafkaMessageQueue extends MessageQueue {
 
         return properties;
     }
-    List<Organization> getOrgs() throws Exception {
-       return AccountUtil.getOrgBean().getOrgs();
-    }
 
-    public void initiateProcessFactory(long orgId, String orgDomainName, String type) {
-        try {
-            new Thread(getProcessor(orgId, orgDomainName, type)).start();
+    public void put(long orgId, String orgDomainName, String type, FacilioRecord record) throws Exception {
+        FacilioProcessor processor = KAFKA_PROCESSOR_MAP.get(orgId + "-" + orgDomainName + "-" + type);
+        if (processor != null) {
+            processor.put(record);
+        } else {
+            throw new Exception("Kafka-Processor not found in map");
         }
-        catch (Exception e){
-            LOGGER.info("Exception occurred ", e);
-        }
-
     }
 
     @Override
@@ -85,7 +99,7 @@ public class KafkaMessageQueue extends MessageQueue {
     }
 
 
-    private static FacilioProcessor getProcessor(long orgId, String orgDomainName, String type) throws SQLException {
+    private static FacilioProcessor getProcessor(long orgId, String orgDomainName, String type) {
         return new KafkaProcessor(orgId,orgDomainName);
     }
 }
