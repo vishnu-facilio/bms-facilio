@@ -574,7 +574,11 @@ public class FieldFactory {
         fields.add(getField("agentType", "AGENT_TYPE", module, FieldType.NUMBER));
         return fields;
     }
-    
+
+    public static FacilioField getAgentTypeField(FacilioModule module) {
+        return getField("agentType", "AGENT_TYPE", module, FieldType.NUMBER);
+    }
+
     public static FacilioField getNewAgentTypeField(FacilioModule module) {
         return getField(AgentConstants.AGENT_TYPE, "TYPE", module, FieldType.STRING);
     }
