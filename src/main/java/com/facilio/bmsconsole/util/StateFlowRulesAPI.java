@@ -243,6 +243,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			}
 		}
 
+		timeLogModuleEntry(module, record, oldState, facilioStatus);
 		checkAutomatedCondition(facilioStatus, module, record, context);
 		addScheduledJobIfAny(facilioStatus.getId(), module.getName(), record, (FacilioContext) context);
 	}
@@ -337,45 +338,39 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			}
 			prop.put(timerField.getTotalTimeFieldName(), totalTime);
 		}
+	}
 
+	private static void timeLogModuleEntry(FacilioModule module, ModuleBaseWithCustomFields record, FacilioStatus fromStatus, FacilioStatus toStatus) throws Exception {
 		// Add or Update Time Log Entries
 		FacilioModule timeLogModule = getTimeLogModule(module);
 		if (timeLogModule != null) {
-			long parentId = (long) prop.get("id");
+			long currentTime = record.getCurrentTime();
+			long parentId = record.getId();
 
-			Map<String, Object> timeLogProp = new HashMap<>();
-
-			long id = -1;
-			long startTime = -1;
-			long endTime = -1;
-
-			if (!ticketStatus.isTimerEnabled()) {
-				endTime = currentTime;
-				Map<String, Object> lastTimerLog = TimerLogUtil.getLastTimerActiveLog(timeLogModule, parentId);
-				if (lastTimerLog != null) {
-					id = (long) lastTimerLog.get("id");
-					startTime = (long) lastTimerLog.get("startTime");
-				} else {
-					return; // start_time has not recorded, so return
+			Map<String, Object> timeLogProp = null;
+			if (fromStatus != null) {
+				timeLogProp = TimerLogUtil.getLastTimerActiveLog(timeLogModule, parentId, fromStatus.getId());
+				if (timeLogProp != null) {
+					long startTime = (long) timeLogProp.get("startTime");
+					timeLogProp.put("toStatusId", toStatus.getId());
+					timeLogProp.put("endTime", currentTime);
+					long duration = (currentTime - startTime) / 1000;
+					timeLogProp.put("duration", duration);
+					timeLogProp.put("doneBy", AccountUtil.getCurrentUser().getId());
+					TimerLogUtil.addOrUpdate(timeLogModule, timeLogProp);
+					timeLogProp.clear();
 				}
 			}
-			else {
-				startTime = currentTime;
+
+			if (timeLogProp == null) {
+				timeLogProp = new HashMap<>();
 			}
-			timeLogProp.put("id", id);
+
 			timeLogProp.put("parentId", parentId);
-			timeLogProp.put("startTime", startTime);
-			timeLogProp.put("endTime", endTime);
-
-			long duration = -1;
-			if (startTime > 0 && endTime > 0) {
-				duration = (endTime - startTime) / 1000;
-			}
-			timeLogProp.put("duration", duration);
-
+			timeLogProp.put("fromStatusId", toStatus.getId());
+			timeLogProp.put("startTime", currentTime);
+			timeLogProp.put("isTimerEnabled", toStatus.isTimerEnabled());
 			TimerLogUtil.addOrUpdate(timeLogModule, timeLogProp);
-
-			timeLogProp.clear();
 		}
 	}
 

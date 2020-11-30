@@ -14,13 +14,16 @@ import com.facilio.modules.FieldFactory;
 
 public class TimerLogUtil {
 
-	public static Map<String, Object> getLastTimerActiveLog(FacilioModule module, long parentId) throws Exception {
+	public static Map<String, Object> getLastTimerActiveLog(FacilioModule module, long parentId, long fromStatusId) throws Exception {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(module.getTableName())
 				.select(FieldFactory.getTimeLogFields(module))
 				.andCondition(CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getId(), module))
 				.andCondition(CriteriaAPI.getCondition("PARENT_ID", "parentId", String.valueOf(parentId), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("END_TIME", "endTime", null, CommonOperators.IS_EMPTY));
+				.andCondition(CriteriaAPI.getCondition("FROM_STATUS_ID", "fromStatusId", String.valueOf(fromStatusId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("END_TIME", "endTime", null, CommonOperators.IS_EMPTY))
+				.orderBy("ID DESC")
+				.limit(1);
 		
 		return builder.fetchFirst();
 	}

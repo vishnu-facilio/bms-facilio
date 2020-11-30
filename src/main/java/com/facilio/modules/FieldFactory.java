@@ -8077,9 +8077,16 @@ public class FieldFactory {
         list.add(getField("id", "ID", module, FieldType.ID));
         list.add(getField("name", "NAME", module, FieldType.STRING));
         list.add(getField("parentId", "PARENT_ID", module, FieldType.STRING));
+
+        list.add(getField("fromStatusId", "FROM_STATUS_ID", module, FieldType.NUMBER));
+        list.add(getField("toStatusId", "TO_STATUS_ID", module, FieldType.NUMBER));
+
         list.add(getField("startTime", "START_TIME", module, FieldType.NUMBER));
         list.add(getField("endTime", "END_TIME", module, FieldType.NUMBER));
         list.add(getField("duration", "DURATION", module, FieldType.NUMBER));
+
+        list.add(getField("isTimerEnabled", "IS_TIMER_ENABLED", module, FieldType.BOOLEAN));
+        list.add(getField("doneBy", "DONE_BY", module, FieldType.NUMBER));
         return list;
     }
 
