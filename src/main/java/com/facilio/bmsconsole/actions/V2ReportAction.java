@@ -641,6 +641,7 @@ public class V2ReportAction extends FacilioAction {
 		}
 		
 		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.SHOULD_INCLUDE_MARKED, shouldIncludeMarked);
 		context.put(FacilioConstants.ContextNames.REPORT_FROM_ALARM, true);
 		context.put(FacilioConstants.ContextNames.ALARM_RESOURCE, alarmResource);
 		context.put(FacilioConstants.ContextNames.ALARM_TYPE, alarmType);

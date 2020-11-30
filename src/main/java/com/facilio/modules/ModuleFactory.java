@@ -3265,7 +3265,7 @@ public class ModuleFactory {
 		FacilioModule module = new FacilioModule();
 		module.setName(ContextNames.SENSOR_ROLLUP_ALARM);
 		module.setDisplayName("Sensor RollUp Alarm");
-		module.setTableName("sensorrollupalarm");
+		module.setTableName("SensorRollUpAlarm");
 		return module;
 	}
 
