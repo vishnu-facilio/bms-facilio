@@ -30,6 +30,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -107,6 +108,7 @@ public class SensorRuleUtil {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 			.select(FieldFactory.getSensorRuleFields())
 			.table(ModuleFactory.getSensorRuleModule().getTableName())
+			.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), "true", BooleanOperators.IS))
 			.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), childModule.getExtendedModuleIds(), NumberOperators.EQUALS));
 							
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -119,6 +121,7 @@ public class SensorRuleUtil {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 			.select(FieldFactory.getSensorRuleFields())
 			.table(ModuleFactory.getSensorRuleModule().getTableName())
+			.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), "true", BooleanOperators.IS))
 			.andCondition(CriteriaAPI.getCondition(fieldMap.get("assetCategoryId"), ""+assetCategoryId, NumberOperators.EQUALS));
 							
 		List<Map<String, Object>> props = selectBuilder.get();

@@ -1017,6 +1017,7 @@ public class FieldFactory {
         fields.add(getField("readingFieldId", "READING_FIELD_ID", module, FieldType.LOOKUP));
         fields.add(getField("assetCategoryId", "ASSET_CATEGORY_ID", module, FieldType.LOOKUP));
         fields.add(getField("sensorRuleType", "SENSOR_RULE_TYPE", module, FieldType.NUMBER));
+        fields.add(getField("status", "STATUS", module, FieldType.BOOLEAN));
         return fields;
     }
     

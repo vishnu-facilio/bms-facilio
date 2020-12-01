@@ -68,6 +68,14 @@ public class SensorRuleContext implements Serializable{
 	public void setRulePropInfo(JSONObject rulePropInfo) {
 		this.rulePropInfo = rulePropInfo;
 	}
+
+	public void setStatus(boolean status) {
+		this.status = status;
+	}
+	public boolean getStatus() {
+		return status;
+	}
+	private boolean status;
 	private FacilioField readingField;
 	public FacilioField getReadingField(){
 		try {

@@ -20,6 +20,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
@@ -50,6 +51,7 @@ public class GenerateSensorRulesListCommand extends FacilioCommand {
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("readingFieldId"), "" +readingFieldId, NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("assetCategoryId"), "" +categoryId, NumberOperators.EQUALS));
 			
+			
 			List<Map<String, Object>> props = selectBuilder.get();
 		
 			if (props != null && !props.isEmpty()) {
@@ -59,15 +61,26 @@ public class GenerateSensorRulesListCommand extends FacilioCommand {
 				HashMap<Long, JSONObject> sensorRuleValidatorPropsMap = SensorRuleUtil.getSensorRuleValidatorPropsByParentRuleIds(sensorRuleIds);
 				
 				for(SensorRuleContext sensorRule : sensorRules) {
+					JSONObject rulePropInfo = new JSONObject();
 					if (sensorRuleValidatorPropsMap != null && sensorRuleValidatorPropsMap.get(sensorRule.getId()) != null) {
-						sensorRule.setRulePropInfo(sensorRuleValidatorPropsMap.get(sensorRule.getId()));
+						if (!sensorRule.getStatus()) {
+							for (Object key : sensorRuleValidatorPropsMap.get(sensorRule.getId()).keySet()) {
+								rulePropInfo.put(key, null);
+							}
+							sensorRule.setRulePropInfo(rulePropInfo);
+							
+						}else {
+							sensorRule.setRulePropInfo(sensorRuleValidatorPropsMap.get(sensorRule.getId()));
+						}
+						
 					}	
 				sensorRule.setSubject(SensorRuleType.valuOf(sensorRule.getSensorRuleType()).getValueString());
 				}	
 			}
 			
 			String[] specialFields = new String[] {"totalEnergyConsumption", "phaseEnergyR", "phaseEnergyY", "phaseEnergyB"};
-			for (SensorRuleType type : SensorRuleType.values()) {	
+			for (SensorRuleType type : SensorRuleType.values()) {
+				if (type.getIndex() != 3) {
 				
 			JSONObject rulePropInfo = new JSONObject();
 				for (String prop : type.getSensorRuleValidationType().getSensorRuleProps()) {
@@ -93,6 +106,7 @@ public class GenerateSensorRulesListCommand extends FacilioCommand {
 				sensorRules.add(newContext);
 			}
 			}
+				}
 		}
 		
 	}

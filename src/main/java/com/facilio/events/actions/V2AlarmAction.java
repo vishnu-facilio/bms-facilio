@@ -71,6 +71,16 @@ public class V2AlarmAction extends FacilioAction {
 
 	private long readingFieldId = -1;
 	private long categoryId = -1;
+	private List<SensorRuleContext> typesToInactive;
+
+
+	public List<SensorRuleContext> getTypesToInactive() {
+		return typesToInactive;
+	}
+	public void setTypesToInactive(List<SensorRuleContext> typesToInactive) {
+		this.typesToInactive = typesToInactive;
+	}
+
 	private List<SensorRuleContext> sensorRules;
 	
 	public List<SensorRuleContext> getSensorRules() {
@@ -98,6 +108,7 @@ public class V2AlarmAction extends FacilioAction {
  		FacilioContext context = updateSensorRulesChain.getContext();
  		constructListContext(context);
  		context.put(ContextNames.SENSOR_RULE_TYPES, sensorRules);
+ 		context.put(ContextNames.RULE_TYPES, typesToInactive);
  		context.put(ContextNames.READING_FIELD_ID, readingFieldId);
  		context.put(ContextNames.CATEGORY_ID, categoryId);
  		context.put(ContextNames.MODULE_ID, moduleId);
