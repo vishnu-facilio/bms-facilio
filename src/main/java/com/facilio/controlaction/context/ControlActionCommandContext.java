@@ -139,6 +139,7 @@ public class ControlActionCommandContext extends ModuleBaseWithCustomFields {
 		SCHEDULE(3, "Schedule"),
 		ALARM_CONDITION(4, "Alarm Condition"),
 		RESERVATION_CONDITION(5, "Reservation Condition"),
+		SCRIPT(6, "SCRIPT"),
 		;
 
 		int intVal;

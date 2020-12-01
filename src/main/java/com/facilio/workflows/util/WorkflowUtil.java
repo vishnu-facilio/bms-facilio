@@ -81,6 +81,7 @@ import com.facilio.workflows.functions.FacilioChatBotFunctions;
 import com.facilio.workflows.functions.FacilioConnectedAppFunctions;
 import com.facilio.workflows.functions.FacilioConnectionFunctions;
 import com.facilio.workflows.functions.FacilioConsumptionFunctions;
+import com.facilio.workflows.functions.FacilioControlFunctions;
 import com.facilio.workflows.functions.FacilioCostFunctions;
 import com.facilio.workflows.functions.FacilioCriteriaFunctions;
 import com.facilio.workflows.functions.FacilioDateFunction;
@@ -2137,6 +2138,9 @@ public class WorkflowUtil {
 				case ORG_SPECIFIC:
 					facilioWorkflowFunction = FacilioOrgSpecificFunctions.getFacilioOrgSpecificFunctions(functionName);
 					break;
+				case CONTROLS:
+					facilioWorkflowFunction = FacilioControlFunctions.getFacilioControlFunctions(functionName);
+					break;
 					
 			}
 		}
@@ -2241,6 +2245,9 @@ public class WorkflowUtil {
 					break;
 				case ORG_SPECIFIC:
 					facilioWorkflowFunction = new ArrayList<>( FacilioOrgSpecificFunctions.getAllFunctions().values());
+					break;
+				case CONTROLS:
+					facilioWorkflowFunction = new ArrayList<>( FacilioControlFunctions.getAllFunctions().values());
 					break;
 			}
 		}

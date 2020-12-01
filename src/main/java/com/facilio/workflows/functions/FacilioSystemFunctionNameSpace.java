@@ -38,6 +38,7 @@ public enum FacilioSystemFunctionNameSpace {
 	CONNECTED_APP(30,"connectedApp"),
 	ML_NAMESPACE(31,"mlNameSpace"),
 	ORG_SPECIFIC(32,"orgSpecific"),
+	CONTROLS(33,"control"),
 	;
 	
 	
