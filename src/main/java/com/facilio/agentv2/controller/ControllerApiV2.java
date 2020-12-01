@@ -621,15 +621,15 @@ public class ControllerApiV2 {
         if (agentId != null) {
             builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(CONTROLLER_MODULE), String.valueOf(agentId), NumberOperators.EQUALS));
             List<Map<String, Object>> props = builder.get();
-            boolean isMiscType=false;
-    		for (Map<String, Object> prop : props) {
-    			Integer val = (Integer) prop.get("controllerType");
-    			if (val != null && val == 0) {
-    				isMiscType = true;
-    				break;
-    			}
-    		}
-            if(isMiscType && GetPointsAction.isVirtualPointExist(agentId)) {
+//            boolean isMiscType=false;
+//    		for (Map<String, Object> prop : props) {
+//    			Integer val = (Integer) prop.get("controllerType");
+//    			if (val != null && val == 0) {
+//    				isMiscType = true;
+//    				break;
+//    			}
+//    		}
+            if( GetPointsAction.isVirtualPointExist(agentId)) {
             	Map<String,Object> prop = new HashMap<String, Object>();
             	prop.put("id", 0L);
             	prop.put("controllerType",0);
