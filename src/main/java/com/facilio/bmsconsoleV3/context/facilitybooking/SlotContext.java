@@ -55,4 +55,14 @@ public class SlotContext extends V3Context {
     public void setFacilityId(Long facilityId) {
         this.facilityId = facilityId;
     }
+
+    private Integer bookingCount;
+
+    public Integer getBookingCount() {
+        return bookingCount;
+    }
+
+    public void setBookingCount(Integer bookingCount) {
+        this.bookingCount = bookingCount;
+    }
 }

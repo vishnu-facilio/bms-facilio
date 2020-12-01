@@ -2,8 +2,8 @@ package com.facilio.bmsconsoleV3.commands.facility;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
-import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.BookingPaymentContext;
+import com.facilio.bmsconsoleV3.context.facilitybooking.BookingSlotsContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.SlotContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.V3FacilityBookingContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
@@ -38,7 +38,7 @@ public class CreatePaymentRecordForBookingCommand extends FacilioCommand {
             List<BookingPaymentContext> payments = new ArrayList<>();
             for(V3FacilityBookingContext booking : bookings) {
                 Map<String, List<Map<String, Object>>> subformMap = booking.getSubForm();
-                if(MapUtils.isEmpty(subformMap) || subformMap.containsKey(FacilioConstants.ContextNames.FacilityBooking.SLOTS)) {
+                if(MapUtils.isEmpty(subformMap) || subformMap.containsKey(FacilioConstants.ContextNames.FacilityBooking.BOOKING_SLOTS)) {
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Slot is mandatory for a booking");
                 }
                 if(booking.getId() > 0){
@@ -48,10 +48,16 @@ public class CreatePaymentRecordForBookingCommand extends FacilioCommand {
                             .andCondition(CriteriaAPI.getCondition("FACILITY_BOOKING_ID", "booking", String.valueOf(booking.getId()), NumberOperators.EQUALS));
                     deleteBuilder.delete();
                 }
-                List<SlotContext> slotList = FieldUtil.getAsBeanListFromMapList(subformMap.get(FacilioConstants.ContextNames.FacilityBooking.SLOTS), SlotContext.class);
+                List<BookingSlotsContext> slotList = FieldUtil.getAsBeanListFromMapList(subformMap.get(FacilioConstants.ContextNames.FacilityBooking.BOOKING_SLOTS), BookingSlotsContext.class);
                 Double amount = 0.0;
-                for(SlotContext slot : slotList){
-                    amount = amount + slot.getSlotCost();
+                for(BookingSlotsContext bookingSlot : slotList) {
+                    if(bookingSlot == null){
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Slot is mandatory for a booking");
+                    }
+                    SlotContext slot = (SlotContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.FacilityBooking.SLOTS, bookingSlot.getSlot().getId(), SlotContext.class);
+                    if(slot != null) {
+                        amount = amount + slot.getSlotCost();
+                    }
                 }
                 BookingPaymentContext bookingPayment = new BookingPaymentContext();
                 bookingPayment.setAmount(amount);
@@ -63,6 +69,7 @@ public class CreatePaymentRecordForBookingCommand extends FacilioCommand {
             if(CollectionUtils.isNotEmpty(payments)) {
                 V3RecordAPI.addRecord(false, payments, payment, modBean.getAllFields(payment.getName()));
             }
+
         }
 
         return false;
