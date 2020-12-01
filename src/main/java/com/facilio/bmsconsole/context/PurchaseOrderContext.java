@@ -118,6 +118,7 @@ public class PurchaseOrderContext extends ModuleBaseWithCustomFields {
 		
 		Map<Long,PurchaseOrderLineItemContext> toolTypeItems = new HashMap<Long, PurchaseOrderLineItemContext>();
 		Map<Long,PurchaseOrderLineItemContext> itemTypeItems = new HashMap<Long, PurchaseOrderLineItemContext>();
+		Map<Long,PurchaseOrderLineItemContext> serviceTypeItems = new HashMap<Long, PurchaseOrderLineItemContext>();
 		ArrayList<PurchaseOrderLineItemContext> others = new ArrayList<PurchaseOrderLineItemContext>();
 		double quantity = 0.0;
 	
@@ -161,6 +162,16 @@ public class PurchaseOrderContext extends ModuleBaseWithCustomFields {
 							toolTypeLineItem.setQuantity(quantity);
 						}
 					}
+					else if(prItem.getInventoryTypeEnum() == InventoryType.SERVICE) {
+						if(!serviceTypeItems.containsKey(prItem.getService().getId())) {
+							serviceTypeItems.put(prItem.getService().getId(), PurchaseOrderLineItemContext.from(prItem));
+						}
+						else {
+							PurchaseOrderLineItemContext serviceTypeLineItem = serviceTypeItems.get(prItem.getService().getId());
+							quantity = serviceTypeLineItem.getQuantity() + prItem.getQuantity();
+							serviceTypeLineItem.setQuantity(quantity);
+						}
+					}
 					else if(prItem.getInventoryTypeEnum() == InventoryType.OTHERS) {
 						others.add(PurchaseOrderLineItemContext.from(prItem));
 					}
@@ -172,6 +183,7 @@ public class PurchaseOrderContext extends ModuleBaseWithCustomFields {
 		
 		List<PurchaseOrderLineItemContext> poLineItems = new ArrayList(itemTypeItems.values());
 		poLineItems.addAll(new ArrayList(toolTypeItems.values()));
+		poLineItems.addAll(new ArrayList(serviceTypeItems.values()));
 		poLineItems.addAll(others);
 		purchaseOrderContext.setLineItems(poLineItems);
 	
