@@ -132,4 +132,20 @@ public class V3FacilityBookingContext extends V3Context {
     public void setBookingAmount(Double bookingAmount) {
         this.bookingAmount = bookingAmount;
     }
+
+    private Boolean canEdit;
+    public Boolean getCanEdit() {
+        return canEdit;
+    }
+
+    public void setCanEdit(Boolean canEdit) {
+        this.canEdit = canEdit;
+    }
+
+    public Boolean canEdit() {
+        if (canEdit != null) {
+            return canEdit.booleanValue();
+        }
+        return false;
+    }
 }
