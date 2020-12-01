@@ -181,7 +181,7 @@ public class GetFormMetaCommand extends FacilioCommand {
 		}
 		else {
 			List<FacilioField> customFields = modBean.getAllCustomFields(moduleName);
-			if (form.getName().equalsIgnoreCase("web_pm")) { // Temp...showing custom fields in standard form...will be removed once action in pm
+			if (form.getName().equalsIgnoreCase("web_pm") || form.getName().equalsIgnoreCase("multi_web_pm")) { // Temp...showing custom fields in standard form...will be removed once action in pm
 				FacilioForm defaultWoForm = form = FormsAPI.getDefaultFormFromDBOrFactory(modBean.getModule(moduleName), FormType.WEB, true);
 				customFields = defaultWoForm.getFields().stream().filter(field -> field.getField() != null && !field.getField().isDefault())
 								.map(field -> field.getField()).collect(Collectors.toList());
