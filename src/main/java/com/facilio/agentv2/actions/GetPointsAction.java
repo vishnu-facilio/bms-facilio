@@ -222,6 +222,7 @@ public class GetPointsAction extends AgentActionV2 {
 						String.valueOf(true), BooleanOperators.IS));
 				point.withCriteria(criteria);
 				point.withDeviceIds(deviceIds);
+				point.limit(1);
 			} else {
 				throw new IllegalArgumentException("deviceIds should not be null for getting Virtual points.");
 			}
