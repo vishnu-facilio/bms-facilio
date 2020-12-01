@@ -9,7 +9,7 @@ public enum SensorRuleType implements FacilioEnum{
 	NEGATIVE_VALUE("Validate negative value ",new ValidateNegativeValueInSensorRule(), true, true, true),
 	DECREMENTAL_VALUE("Validate decremental value",new ValidateDecrementalValueInSensorRule(), true, true),
 	SAME_VALUE_WITH_ZERO_DELTA("continiously receiving same value for {timeInterval} times",new ValidateSameValueWithZeroDeltaInSensorRule(), true, true),
-	MEAN_VARIATION("Validate mean variation for {timeInterval} hours and {averageBoundPercentage}%",new ValidateMeanVariationInSensorRule(), true, true),
+	MEAN_VARIATION("Validate mean variation for {timeInterval} days and {averageBoundPercentage}%",new ValidateMeanVariationInSensorRule(), true, true),
 	;
 	
 	public int getIndex() {

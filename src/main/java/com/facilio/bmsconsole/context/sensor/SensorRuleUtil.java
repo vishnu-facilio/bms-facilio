@@ -458,21 +458,22 @@ public class SensorRuleUtil {
 	
 	public static boolean isAllowedSensorMetric(NumberField numberField) {
 		
-		List<Integer> allowedMetricIds = new ArrayList<Integer>();
-		allowedMetricIds.add(Metric.TEMPERATURE.getMetricId());
-		allowedMetricIds.add(Metric.ABSOLUTE_HUMIDITY.getMetricId());
-		allowedMetricIds.add(Metric.SPECIFIC_HUMIDITY.getMetricId());
-		allowedMetricIds.add(Metric.PRESSURE.getMetricId());
-		allowedMetricIds.add(Metric.VAPOUR_PRESSURE.getMetricId());
-		allowedMetricIds.add(Metric.ENERGY.getMetricId());
-		
-		Integer fieldMetricId = numberField.getMetric();
-		if(fieldMetricId != null && fieldMetricId != - 1) {
-			if(allowedMetricIds.contains(fieldMetricId)){
-				return true;
-			}	
-		}
-		return false;
+//		List<Integer> allowedMetricIds = new ArrayList<Integer>();
+//		allowedMetricIds.add(Metric.TEMPERATURE.getMetricId());
+//		allowedMetricIds.add(Metric.ABSOLUTE_HUMIDITY.getMetricId());
+//		allowedMetricIds.add(Metric.SPECIFIC_HUMIDITY.getMetricId());
+//		allowedMetricIds.add(Metric.PRESSURE.getMetricId());
+//		allowedMetricIds.add(Metric.VAPOUR_PRESSURE.getMetricId());
+//		allowedMetricIds.add(Metric.ENERGY.getMetricId());
+//		
+//		Integer fieldMetricId = numberField.getMetric();
+//		if(fieldMetricId != null && fieldMetricId != - 1) {
+//			if(allowedMetricIds.contains(fieldMetricId)){
+//				return true;
+//			}	
+//		}
+//		return false;
+		return true;
 	}
 	
 	public static ReadingContext fetchSingleReadingContext(NumberField numberField, long resourceId, long ttime) throws Exception{

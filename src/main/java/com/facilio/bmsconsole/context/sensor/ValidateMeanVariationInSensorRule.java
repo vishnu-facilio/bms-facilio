@@ -63,10 +63,11 @@ public class ValidateMeanVariationInSensorRule implements SensorRuleTypeValidati
 				return false;
 			}
 
-			Long noOfHoursToBeFetched = Long.valueOf(String.valueOf(fieldConfig.get("timeInterval")));
-			if(noOfHoursToBeFetched == null) {
-				noOfHoursToBeFetched = 7*24l;
+			Long noOfDaysToBeFetched = Long.valueOf(String.valueOf(fieldConfig.get("timeInterval")));
+			if(noOfDaysToBeFetched == null) {
+				noOfDaysToBeFetched = 7l;
 			}
+			Long noOfHoursToBeFetched = noOfDaysToBeFetched*24l;
 			
 			Integer averageBoundPercentage = Integer.valueOf(String.valueOf(fieldConfig.get("averageBoundPercentage")));
 			if(averageBoundPercentage == null) {
