@@ -629,7 +629,7 @@ public class ControllerApiV2 {
 //    				break;
 //    			}
 //    		}
-            if( GetPointsAction.isVirtualPointExist(agentId)) {
+            if( CollectionUtils.isNotEmpty(props) && GetPointsAction.isVirtualPointExist(agentId)) {
             	Map<String,Object> prop = new HashMap<String, Object>();
             	prop.put("id", 0L);
             	prop.put("controllerType",0);
