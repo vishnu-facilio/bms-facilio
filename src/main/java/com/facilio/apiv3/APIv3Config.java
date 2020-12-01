@@ -763,8 +763,10 @@ public class APIv3Config {
     @Module("facilitybooking")
     public static Supplier<V3Config> getFacilityBooking() {
         return () -> new V3Config(V3FacilityBookingContext.class, new ModuleCustomFieldCount30())
-                .create().beforeSave(TransactionChainFactoryV3.getCreateBookingBeforeSaveChain())
+                .create()
+                   .beforeSave(TransactionChainFactoryV3.getCreateBookingBeforeSaveChain())
                 .update()
+                    .beforeSave(TransactionChainFactoryV3.getCreateBookingBeforeEditChain())
                 .delete()
                 .list()
                 .beforeFetch(new LoadFacilityLookupCommandV3())
@@ -796,5 +798,15 @@ public class APIv3Config {
     }
 
 
+    @Module("slot")
+    public static Supplier<V3Config> getSlot() {
+        return () -> new V3Config(SlotContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .update()
+                .delete()
+                .list()
+                .summary()
+                .build();
+    }
 }
 

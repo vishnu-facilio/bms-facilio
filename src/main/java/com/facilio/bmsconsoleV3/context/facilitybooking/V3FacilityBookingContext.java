@@ -122,4 +122,14 @@ public class V3FacilityBookingContext extends V3Context {
         }
         return false;
     }
+
+    private Double bookingAmount;
+
+    public Double getBookingAmount() {
+        return bookingAmount;
+    }
+
+    public void setBookingAmount(Double bookingAmount) {
+        this.bookingAmount = bookingAmount;
+    }
 }

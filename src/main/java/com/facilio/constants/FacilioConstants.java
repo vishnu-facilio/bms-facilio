@@ -1835,6 +1835,9 @@ public class FacilioConstants {
 			public static final String FACILITY_ID = "facilityId";
 			public static final String START_DATE_TIME = "startDateTime";
 			public static final String SLOTS = "slot";
+			public static final String BOOKING_SLOTS = "bookingslot";
+			public static final String FACILITY_BOOKING_PAYMENTS = "bookingpayment";
+
 
 			public static final String END_DATE_TIME = "endDateTime";
 
@@ -2181,6 +2184,9 @@ public class FacilioConstants {
 			classMap.put(FacilityBooking.FACILITY_BOOKING, V3FacilityBookingContext.class);
 			classMap.put(FacilityBooking.FACILITY_BOOKING_EXTERNAL_ATTENDEE, V3ExternalAttendeeContext.class);
 			classMap.put(FacilityBooking.FACILITY_BOOKING_INTERNAL_ATTENDEE, V3InternalAttendeeContext.class);
+			classMap.put(FacilityBooking.SLOTS, SlotContext.class);
+			classMap.put(FacilityBooking.BOOKING_SLOTS, BookingSlotsContext.class);
+			classMap.put(FacilityBooking.FACILITY_BOOKING_PAYMENTS, BookingPaymentContext.class);
 
 			return classMap;
 		}

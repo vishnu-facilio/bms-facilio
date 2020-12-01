@@ -130,9 +130,14 @@ enums:
   - name: SpecialType
     enumClassName: com.facilio.bmsconsoleV3.context.facilitybooking.FacilitySpecialAvailabilityContext$SpecialType
 
-
   - name: SensorRuleType
     enumClassName: com.facilio.bmsconsole.context.sensor.SensorRuleType
 
   - name: ReceivableStatus
     enumClassName: com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext$ReceivableStatus
+
+  - name: PaymentMode
+    enumClassName: com.facilio.bmsconsoleV3.context.facilitybooking.BookingPaymentContext$PaymentMode
+
+  - name: PaymentStatus
+    enumClassName: com.facilio.bmsconsoleV3.context.facilitybooking.BookingPaymentContext$PaymentStatus
