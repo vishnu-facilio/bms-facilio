@@ -2,10 +2,10 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.DashboardCustomScriptFilter;
@@ -20,7 +20,8 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 
 public class ExecuteCardWorkflowCommand extends FacilioCommand {
-	private static final Logger LOGGER = Logger.getLogger(ExecuteCardWorkflowCommand.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(ExecuteCardWorkflowCommand.class.getName());
+
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -31,6 +32,7 @@ public class ExecuteCardWorkflowCommand extends FacilioCommand {
 		
 		
 		if (cardId != null && cardContext == null) {
+			LOGGER.debug("### cardId is="+cardId);
 			
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 					.table(ModuleFactory.getWidgetCardModule().getTableName())
@@ -72,7 +74,7 @@ public class ExecuteCardWorkflowCommand extends FacilioCommand {
 				}
 				catch(Exception e)
 				{
-					LOGGER.log(Level.SEVERE,"exception parsing customScriptFilters to json");
+					LOGGER.error("exception parsing customScriptFilters to json");
 				}
 			
 		

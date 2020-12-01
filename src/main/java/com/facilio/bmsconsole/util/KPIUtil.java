@@ -8,10 +8,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.ExecuteCardWorkflowCommand;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.KPICategoryContext;
 import com.facilio.bmsconsole.context.KPIContext;
@@ -41,6 +44,7 @@ import com.facilio.time.DateRange;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class KPIUtil {
+	private static final Logger LOGGER = LogManager.getLogger(KPIUtil.class.getName());
 	
 	public static final String KPI_CATEGORY_CONTEXT = "kpiCategoryContext";
 	public static final String KPI_CATEGORY_CONTEXTS = "kpiCategoryContexts";
@@ -164,6 +168,8 @@ public class KPIUtil {
 	}
 	
 	public static KPIContext getKPI(long id,  boolean fetchCurrentValue) throws Exception {
+		long currentMillis = System.currentTimeMillis();
+
 		FacilioModule module = ModuleFactory.getKpiModule();
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -171,7 +177,12 @@ public class KPIUtil {
 														.table(module.getTableName())
 														.andCondition(CriteriaAPI.getIdCondition(id, module))
 														;
-		return fetchKPIFromProps(selectBuilder.get(), fetchCurrentValue).get(0);
+		KPIContext kpi= fetchKPIFromProps(selectBuilder.get(), fetchCurrentValue).get(0);
+		long executionTime = System.currentTimeMillis() - currentMillis;
+		LOGGER.debug("### time taken for getKpi: " + executionTime);
+
+		return kpi;
+		
 		
 	}
 	
@@ -341,6 +352,7 @@ public class KPIUtil {
 		return fields;
 	}
 	public static Object getKPIValue(KPIContext kpi, String baselineName) throws Exception {
+		long currentMillis = System.currentTimeMillis();
 		FacilioModule module = kpi.getModule();
 		FacilioField dateField = kpi.getDateField();
 		
@@ -396,7 +408,8 @@ public class KPIUtil {
 			value.put("baseLineValue", baseLineVal);
 			return value;
 		}
-		
+		long executionTime = System.currentTimeMillis() - currentMillis;
+		LOGGER.debug("### time taken for getKpiValue: " + executionTime);
 		return obj;
 	}
 	public static Object getKPIBaseValueValue(KPIContext kpi, String baselineName) throws Exception {
