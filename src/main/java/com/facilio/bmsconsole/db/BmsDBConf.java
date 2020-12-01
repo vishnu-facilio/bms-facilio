@@ -225,27 +225,33 @@ public class BmsDBConf extends DBConf {
                     try {
                         Long id = (Long) record.get(field.getName() + "Id");
                         FileInfo info = files.get(id);
-                        record.put(field.getName() + "Url", fileUrls.get(id));
-                        record.put(field.getName() + "DownloadUrl", downloadUrls.get(id));
-                        record.put(field.getName() + "FileName", info.getFileName());
-                        record.put(field.getName() + "ContentType", info.getContentType());
-                        if (field.getDisplayType() == FacilioField.FieldDisplayType.SIGNATURE && MapUtils.isNotEmpty(info.getUploadedBy()) && info.getUploadedBy().containsKey("id")) {
-                            Long ouId = (Long) info.getUploadedBy().get("id");
-                            if (ouId != null) {
-                                User user = null;
-                                if (!orgUserMap.containsKey(ouId)) {
-                                    user = AccountUtil.getUserBean().getUser(ouId, true);
-                                    orgUserMap.put(ouId, user);
-                                } else {
-                                    user = (User) orgUserMap.get(ouId);
-                                }
-                                if (user != null) {
-                                    info.setUploadedBy(FieldUtil.getAsProperties(user));
+                        if (info != null) {
+                            record.put(field.getName() + "Url", fileUrls.get(id));
+                            record.put(field.getName() + "DownloadUrl", downloadUrls.get(id));
+                            record.put(field.getName() + "FileName", info.getFileName());
+                            record.put(field.getName() + "ContentType", info.getContentType());
+                            if (field.getDisplayType() == FacilioField.FieldDisplayType.SIGNATURE && MapUtils.isNotEmpty(info.getUploadedBy()) && info.getUploadedBy().containsKey("id")) {
+                                Long ouId = (Long) info.getUploadedBy().get("id");
+                                if (ouId != null) {
+                                    User user = null;
+                                    if (!orgUserMap.containsKey(ouId)) {
+                                        user = AccountUtil.getUserBean().getUser(ouId, true);
+                                        orgUserMap.put(ouId, user);
+                                    } else {
+                                        user = (User) orgUserMap.get(ouId);
+                                    }
+                                    if (user != null) {
+                                        info.setUploadedBy(FieldUtil.getAsProperties(user));
+                                    }
                                 }
                             }
+                            record.put(field.getName() + "UploadedBy", info.getUploadedBy());
+                            record.put(field.getName() + "UploadedTime", info.getUploadedTime());
                         }
-                        record.put(field.getName() + "UploadedBy", info.getUploadedBy());
-                        record.put(field.getName() + "UploadedTime", info.getUploadedTime());
+                        else { //Since we are anyway not showing file fields in filter, this is okay for now
+                            record.remove(field.getName() + "Id");
+                            LOGGER.error(MessageFormat.format("Invalid fieldid : {0} is present in record {1} of {2}", id, record.get("id"), field.getModule().getName()));
+                        }
                     }
                     catch (Exception e) {
                         LOGGER.error(MessageFormat.format("Error occurred while getting file info for field {0}", field.getName()), e);
