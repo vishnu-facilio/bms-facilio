@@ -24,7 +24,11 @@ public class GetAvailableButtonsCommand extends FacilioCommand {
         ModuleBaseWithCustomFields moduleData = (ModuleBaseWithCustomFields) context.get(FacilioConstants.ContextNames.RECORD);
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
         int positionType = (int) context.get(FacilioConstants.ContextNames.POSITION_TYPE);
-        if (moduleData != null) {
+
+        if (positionType < 4 && moduleData == null) {
+            throw new IllegalArgumentException("Invalid record");
+        }
+//        if (moduleData != null) {
             CustomButtonRuleContext.PositionType positionTypeEnum = CustomButtonRuleContext.PositionType.valueOf(positionType);
             if (positionTypeEnum == null) {
                 throw new IllegalArgumentException("Position type cannot be empty");
@@ -50,7 +54,7 @@ public class GetAvailableButtonsCommand extends FacilioCommand {
                 }
             }
             context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST, customButtons);
-        }
+//        }
         return false;
     }
 }
