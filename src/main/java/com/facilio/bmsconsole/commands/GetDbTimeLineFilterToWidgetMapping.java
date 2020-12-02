@@ -154,7 +154,7 @@ public class GetDbTimeLineFilterToWidgetMapping extends FacilioCommand {
 							if (cardParams.get("dateRange") != null) {
 								JSONObject kpiObj = (JSONObject) cardParams.get("kpi");
 								long kpiId = (long) kpiObj.get("kpiId");
-								KPIContext kpi = KPIUtil.getKPI(kpiId);
+								KPIContext kpi = KPIUtil.getKPI(kpiId,false);
 								String dateFieldName = kpi.getDateField().getName();
 								dateField=new HashMap<>(
 										Collections.singletonMap("dateField", dateFieldName));

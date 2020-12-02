@@ -309,7 +309,7 @@ public class KPIUtil {
 
 		SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
 				.module(module)
-				.select(fields)
+				.select(fields).limit(1)
 				.andCriteria(kpi.getCriteria());
 		if (kpi.getSiteId() != -1) {
 			builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(module), String.valueOf(kpi.getSiteId()), NumberOperators.EQUALS));
@@ -329,6 +329,7 @@ public class KPIUtil {
 		else if (baselineName != null) {
 			throw new IllegalArgumentException("Date range is mandatory for baseline");
 		}
+		
 		
 		
 		Object obj = null;

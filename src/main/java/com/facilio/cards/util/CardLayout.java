@@ -192,7 +192,7 @@ public enum CardLayout {
 					
 					cardValue = KPIUtil.getKPIValue(kpiContext);
 					
-					kpi = KPIUtil.getKPI(kpiId);
+					kpi = KPIUtil.getKPI(kpiId,false);
 					fields = KPIUtil.getKPIModuleFIelds(kpiContext);
 
 					listData = KPIUtil.getKPIList(kpiContext, null);
