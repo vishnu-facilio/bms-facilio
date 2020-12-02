@@ -356,7 +356,7 @@ public class LoginAction extends FacilioAction {
 		try {
 			Map<String, Object> config = new HashMap<>();
 			config.put("ws_endpoint", WmsApi.getWebsocketEndpoint(AccountUtil.getCurrentUser().getId(), LiveSessionType.TENANT_PORTAL, LiveSessionSource.WEB));
-			if (AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 343) {
+			if (AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 343 || AccountUtil.getCurrentOrg().getId() == 324) {
 				config.put("new_ws_endpoint", WmsApi.getNewWebsocketEndpoint(AccountUtil.getCurrentUser().getId(), LiveSessionType.TENANT_PORTAL, LiveSessionSource.WEB));
 			}
 			account.put("config",config);	
@@ -574,7 +574,7 @@ public class LoginAction extends FacilioAction {
 
 		Map<String, Object> config = new HashMap<>();
 		config.put("ws_endpoint", WmsApi.getWebsocketEndpoint(remoteScreen.getId(), LiveSessionType.REMOTE_SCREEN, LiveSessionSource.WEB));
-		if (AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 343) {
+		if (AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 343 || AccountUtil.getCurrentOrg().getId() == 324) {
 			config.put("new_ws_endpoint", WmsApi.getNewWebsocketEndpoint(remoteScreen.getId(), LiveSessionType.REMOTE_SCREEN, LiveSessionSource.WEB));
 		}
 
@@ -648,7 +648,7 @@ public class LoginAction extends FacilioAction {
 			}
 			
 			config.put("ws_endpoint", WmsApi.getWebsocketEndpoint(device.getId(), LiveSessionType.DEVICE, ((device.getDeviceTypeEnum()==DeviceType.VISITOR_KIOSK) ? LiveSessionSource.TABLET : LiveSessionSource.WEB)));
-			if (AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 343) {
+			if (AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 343 || AccountUtil.getCurrentOrg().getId() == 324) {
 				config.put("new_ws_endpoint", WmsApi.getNewWebsocketEndpoint(device.getId(), LiveSessionType.DEVICE, ((device.getDeviceTypeEnum()==DeviceType.VISITOR_KIOSK) ? LiveSessionSource.TABLET : LiveSessionSource.WEB)));
 			}
 		}
@@ -887,7 +887,7 @@ public class LoginAction extends FacilioAction {
 		
 		Map<String, Object> config = new HashMap<>();
 		config.put("ws_endpoint", WmsApi.getWebsocketEndpoint(AccountUtil.getCurrentUser().getId(), LiveSessionType.APP, LiveSessionSource.WEB));
-		if (AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 343) {
+		if (AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 343 || AccountUtil.getCurrentOrg().getId() == 324) {
 			config.put("new_ws_endpoint", WmsApi.getNewWebsocketEndpoint(AccountUtil.getCurrentUser().getId(), LiveSessionType.APP, LiveSessionSource.WEB));
 		}
 		

@@ -34,7 +34,7 @@ public class ReadingPostProcessingCommand extends FacilioCommand {
 //            }
             executeFormulae(context);
         }
-        if (AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getId() == 146 || AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 343) ){
+        if (AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getId() == 146 || AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 343 || AccountUtil.getCurrentOrg().getId() == 324) ){
             publishReadingChangeMessage(context);
         }
         LOGGER.debug("Post processing completed");
