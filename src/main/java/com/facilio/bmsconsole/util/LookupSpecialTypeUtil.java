@@ -86,27 +86,27 @@ public class LookupSpecialTypeUtil {
 		}
 	}
 
-	private static List<FieldOption> getUserPickList (List<User> users) {
-		List<FieldOption> userList = null;
+	private static List<FieldOption<Long>> getUserPickList (List<User> users) {
+		List<FieldOption<Long>> userList = null;
 		if (CollectionUtils.isNotEmpty(users)) {
 			userList = users.stream()
-						.map(usr -> new FieldOption(usr.getId(), usr.getName()))
+						.map(usr -> new FieldOption<>(usr.getId(), usr.getName()))
 						.collect(Collectors.toList());
 		}
 		return userList;
 	}
 
-	private static List<FieldOption> getRulePickList (List<WorkflowRuleContext> rules) {
-		List<FieldOption> ruleList = null;
+	private static List<FieldOption<Long>> getRulePickList (List<WorkflowRuleContext> rules) {
+		List<FieldOption<Long>> ruleList = null;
 		if (CollectionUtils.isNotEmpty(rules)) {
 			ruleList = rules.stream()
-					.map(rule -> new FieldOption(rule.getId(), rule.getName()))
+					.map(rule -> new FieldOption<>(rule.getId(), rule.getName()))
 					.collect(Collectors.toList());
 		}
 		return ruleList;
 	}
 
-	public static List<FieldOption> getNewPickList(String specialType) throws Exception {
+	public static List<FieldOption<Long>> getNewPickList(String specialType) throws Exception {
 		if(FacilioConstants.ContextNames.USERS.equals(specialType)) {
 			List<User> users = AccountUtil.getOrgBean().getOrgUsers(AccountUtil.getCurrentOrg().getOrgId(), true);
 			return getUserPickList(users);
@@ -117,20 +117,20 @@ public class LookupSpecialTypeUtil {
 		}
 		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
 			List<Group> groups = AccountUtil.getGroupBean().getOrgGroups(AccountUtil.getCurrentOrg().getOrgId(), true);
-			List<FieldOption> groupList = null;
+			List<FieldOption<Long>> groupList = null;
 			if (CollectionUtils.isNotEmpty(groups)) {
 				groupList = groups.stream()
-								.map(group -> new FieldOption(group.getGroupId(), group.getName()))
+								.map(group -> new FieldOption<>(group.getGroupId(), group.getName()))
 								.collect(Collectors.toList());
 			}
 			return groupList;
 		}
 		else if (FacilioConstants.ContextNames.ROLE.equals(specialType)) {
 			List<Role> roles = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getId()).getRoles();
-			List<FieldOption> roleList = null;
+			List<FieldOption<Long>> roleList = null;
 			if (CollectionUtils.isNotEmpty(roles)) {
 				roleList = roles.stream()
-								.map(role -> new FieldOption(role.getId(), role.getName()))
+								.map(role -> new FieldOption<>(role.getId(), role.getName()))
 								.collect(Collectors.toList());
 			}
 			return roleList;
@@ -151,8 +151,8 @@ public class LookupSpecialTypeUtil {
 			List<Map<String, Object>> props = selectBuilder.get();
 			if (CollectionUtils.isNotEmpty(props)) {
 				List<KPICategoryContext> kpiCategoryContext = FieldUtil.getAsBeanListFromMapList(props, KPICategoryContext.class);
-				List<FieldOption> kpiCategoryList = kpiCategoryContext.stream()
-														.map(kpi -> new FieldOption(kpi.getId(), kpi.getName()))
+				List<FieldOption<Long>> kpiCategoryList = kpiCategoryContext.stream()
+														.map(kpi -> new FieldOption<>(kpi.getId(), kpi.getName()))
 														.collect(Collectors.toList());
 				return kpiCategoryList;
 			}

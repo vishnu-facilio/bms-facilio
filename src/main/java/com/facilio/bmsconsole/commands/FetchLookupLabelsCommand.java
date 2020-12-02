@@ -29,20 +29,20 @@ public class FetchLookupLabelsCommand extends FacilioCommand {
         FacilioUtil.throwIllegalArgumentException(MapUtils.isEmpty(labelMeta), "Meta cannot be null/ empty for fetching labels");
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        Map<String, List<FieldOption>> labels = new HashMap<>();
+        Map<String, List<FieldOption<Long>>> labels = new HashMap<>();
         for (Map.Entry<String, List<Long>> meta : labelMeta.entrySet()) {
             String moduleName = meta.getKey();
             List<Long> id = meta.getValue();
             FacilioModule module = modBean.getModule(moduleName);
             FacilioUtil.throwIllegalArgumentException(module == null, MessageFormat.format("Invalid module name => {0}", moduleName));
-            List<FieldOption> options = constructFieldOptions(modBean, module, id);
+            List<FieldOption<Long>> options = constructFieldOptions(modBean, module, id);
             labels.put(module.getName(), options);
         }
         context.put(FacilioConstants.PickList.LOOKUP_LABELS, labels);
         return false;
     }
 
-    private List<FieldOption> constructFieldOptions (ModuleBean modBean, FacilioModule module, List<Long> id) throws Exception {
+    private List<FieldOption<Long>> constructFieldOptions (ModuleBean modBean, FacilioModule module, List<Long> id) throws Exception {
         if (CollectionUtils.isEmpty(id)) {
             return null;
         }
@@ -55,20 +55,20 @@ public class FetchLookupLabelsCommand extends FacilioCommand {
         }
     }
 
-    private List<FieldOption> fetchSplModuleLabels (String moduleName, List<Long> ids) throws Exception {
+    private List<FieldOption<Long>> fetchSplModuleLabels (String moduleName, List<Long> ids) throws Exception {
         Map<Long, Object> records = LookupSpecialTypeUtil.getPickList(moduleName, ids);
         if (MapUtils.isEmpty(records)) {
             return null;
         }
 
-        List<FieldOption> options = new ArrayList<>();
+        List<FieldOption<Long>> options = new ArrayList<>();
         for (Map.Entry<Long, Object> entry : records.entrySet()) {
-            options.add(new FieldOption(entry.getKey().toString(), entry.getValue().toString()));
+            options.add(new FieldOption<>(entry.getKey(), entry.getValue().toString()));
         }
         return options;
     }
 
-    private List<FieldOption> fetchModuleLabels (ModuleBean modBean, FacilioModule module, List<Long> id) throws Exception {
+    private List<FieldOption<Long>> fetchModuleLabels (ModuleBean modBean, FacilioModule module, List<Long> id) throws Exception {
         FacilioField primaryField = modBean.getPrimaryField(module.getName());
         FacilioUtil.throwIllegalArgumentException(primaryField == null, MessageFormat.format("The module ({0}) is corrupt as it doesn't have primary field", module.getName()));
 
@@ -94,7 +94,7 @@ public class FetchLookupLabelsCommand extends FacilioCommand {
             return null;
         }
 
-        List<FieldOption> options = RecordAPI.constructFieldOptionsFromRecords(records, primaryField.getName(), isResource);
+        List<FieldOption<Long>> options = RecordAPI.constructFieldOptionsFromRecords(records, primaryField.getName(), isResource);
         return options;
     }
 }

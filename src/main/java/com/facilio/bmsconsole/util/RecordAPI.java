@@ -167,9 +167,9 @@ public class RecordAPI {
 		return defaultIdOrderBy;
 	}
 
-	public static List<FieldOption> constructFieldOptionsFromRecords (List<Map<String, Object>> records, String defaultFieldName, boolean isResource) {
-		return records.stream().map(prop -> new FieldOption(
-				prop.get("id").toString(),
+	public static List<FieldOption<Long>> constructFieldOptionsFromRecords (List<Map<String, Object>> records, String defaultFieldName, boolean isResource) {
+		return records.stream().map(prop -> new FieldOption<>(
+				(Long) prop.get("id"),
 				prop.get(defaultFieldName),
 				isResource ? ResourceAPI.getResourceSubModuleFromType((Integer) prop.get("resourceType")) : null
 		)).collect(Collectors.toList());

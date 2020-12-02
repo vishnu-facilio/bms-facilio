@@ -17,7 +17,7 @@ public class ConstructFieldOptionForPicklist extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         List<Map<String, Object>> records = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
-        List<FieldOption> pickList = null;
+        List<FieldOption<Long>> pickList = null;
         if(CollectionUtils.isNotEmpty(records)) {
             FacilioField defaultField = (FacilioField) context.get(FacilioConstants.ContextNames.DEFAULT_FIELD);
             String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);

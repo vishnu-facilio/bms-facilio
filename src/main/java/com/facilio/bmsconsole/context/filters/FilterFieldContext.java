@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.context.filters;
 
-import com.facilio.db.criteria.operators.FieldOperator;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.*;
@@ -41,7 +40,7 @@ public class FilterFieldContext {
                 options = new ArrayList<>();
                 for (EnumFieldValue value : values) {
                     if (value.isVisible()) { //Have to check if this is needed. What if user wants to check old records with deleted enum options
-                        options.add(new FieldOption(String.valueOf(value.getIndex()), value.getValue()));
+                        options.add(new FieldOption<>(value.getIndex(), value.getValue()));
                     }
                 }
             }
@@ -52,12 +51,12 @@ public class FilterFieldContext {
             if (StringUtils.isEmpty(trueVal)) {
                 trueVal = "True";
             }
-            options.add(new FieldOption("true", trueVal));
+            options.add(new FieldOption<>("true", trueVal));
             String falseVal = ((BooleanField) field).getFalseVal();
             if (StringUtils.isEmpty(falseVal)) {
                 falseVal = "False";
             }
-            options.add(new FieldOption("false", falseVal));
+            options.add(new FieldOption<>("false", falseVal));
         }
         else if (field instanceof LookupField) {
             FacilioModule lookup = ((LookupField) field).getLookupModule();
