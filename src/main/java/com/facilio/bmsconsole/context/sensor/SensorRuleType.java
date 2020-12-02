@@ -4,12 +4,12 @@ import com.facilio.modules.FacilioEnum;
 
 public enum SensorRuleType implements FacilioEnum{
 	
-	CONTINUOUSLY_RECEIVING_SAME_VALUE("Same value received continiously {timeInterval} hours",new ValidateContinuouslyReceivingSameValueInSensorRule(),false, false),
-	PERMISSIBLE_LIMIT_VIOLATION("Reading shouldnt go beyond {lowerLimit} and {upperLimit}",new ValidatePermissibleLimitViolationInSensorRule(), false, false, true),
-	NEGATIVE_VALUE("Validate negative value ",new ValidateNegativeValueInSensorRule(), true, true, true),
-	DECREMENTAL_VALUE("Validate decremental value",new ValidateDecrementalValueInSensorRule(), true, true),
-	SAME_VALUE_WITH_ZERO_DELTA("continiously receiving same value for {timeInterval} times",new ValidateSameValueWithZeroDeltaInSensorRule(), true, true),
-	MEAN_VARIATION("Validate mean variation for {timeInterval} days and {averageBoundPercentage}%",new ValidateMeanVariationInSensorRule(), true, true),
+	CONTINUOUSLY_RECEIVING_SAME_VALUE("Same value received continiously for {timeInterval} hours",new ValidateContinuouslyReceivingSameValueInSensorRule(),false, false),
+	PERMISSIBLE_LIMIT_VIOLATION("Range is outside of {lowerLimit} and {upperLimit}",new ValidatePermissibleLimitViolationInSensorRule(), false, false, true),
+	NEGATIVE_VALUE("Meter reads negative value",new ValidateNegativeValueInSensorRule(), true, true, true),
+	DECREMENTAL_VALUE("Meter has decremental readings",new ValidateDecrementalValueInSensorRule(), true, true),
+	SAME_VALUE_WITH_ZERO_DELTA("Same meter reading for {timeInterval} occurrences",new ValidateSameValueWithZeroDeltaInSensorRule(), true, true),
+	MEAN_VARIATION("Energy consumption is greater than {averageBoundPercentage}% compared to past {timeInterval} days",new ValidateMeanVariationInSensorRule(), true, true),
 	;
 	
 	public int getIndex() {
