@@ -20,6 +20,7 @@ import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
@@ -87,6 +88,17 @@ public class LocationAPI {
 		finally {
 			DBUtil.closeAll(conn, pstmt, rs);
 		}
+	}
+
+	public static long addLocationV2(LocationContext location) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.LOCATION);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.LOCATION);
+		InsertRecordBuilder<LocationContext> insertRecordBuilder = new InsertRecordBuilder<LocationContext>()
+				.module(module)
+				.fields(fields);
+
+		return insertRecordBuilder.insert(location);
 	}
 	
 	public static long addLocation(LocationContext locationContext) throws Exception {

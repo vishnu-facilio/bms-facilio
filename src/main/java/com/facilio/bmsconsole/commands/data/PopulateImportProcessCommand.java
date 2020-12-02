@@ -332,7 +332,7 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 			String enumString = (String) readingsList.get(j).getData().get(facilioField.getName());
 			EnumField enumField = (EnumField) facilioField;
 			updateBuilder.andCondition(CriteriaAPI.getCondition(facilioField,String.valueOf(enumField.getIndex(enumString)), NumberOperators.EQUALS));
-		} else if (facilioField.getName() == "id") {
+		} else if (facilioField.getName() == "id" || facilioField.getName() == "localId") {
 				updateBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(module), String.valueOf(readingsList.get(j).getId()), NumberOperators.EQUALS));
 		}
 		else {

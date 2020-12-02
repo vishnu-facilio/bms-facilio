@@ -333,7 +333,10 @@ public class ImportProcessContext implements Serializable,Cloneable
 				{
 					if(!ImportAPI.isRemovableFieldOnImport(field.getName()) && !removeFields.contains(field.getName()))
 					{
-						if (field.getDataType() == FieldType.LOOKUP.getTypeAsInt() && getModule().getName().equals(FacilioConstants.ContextNames.ASSET) == false &&
+						if (field.getDisplayType() == FacilioField.FieldDisplayType.ADDRESS || field.getDisplayType() == FacilioField.FieldDisplayType.GEO_LOCATION) {
+							facilioFieldMapping.putAll(ImportAPI.getLocationFields((LookupField) field));
+						}
+						else if (field.getDataType() == FieldType.LOOKUP.getTypeAsInt() && getModule().getName().equals(FacilioConstants.ContextNames.ASSET) == false &&
 
 								(getModule().getExtendModule() != null && getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET) == false)
 								&& getModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE) == false

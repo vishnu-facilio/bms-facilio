@@ -523,7 +523,6 @@ public class ImportAPI {
                 	}
                 	parsedData.add(posVsData);
                 }
-                System.out.println("parsedData --- "+parsedData);
                 return parsedData;
 	        }
 		}
@@ -544,7 +543,6 @@ public class ImportAPI {
                 	}
                 	parsedData.add(posVsData);
                 }
-                System.out.println("parsedData --- "+parsedData);
                 return parsedData;
 	        }
 		}
@@ -574,6 +572,7 @@ public class ImportAPI {
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule facilioModule =  bean.getModule(module);
 			List<FacilioField> fieldsList = bean.getAllFields(module);
+			Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fieldsList);
 			
 			if(facilioModule.getName().equals(FacilioConstants.ContextNames.TOOL)
 					|| facilioModule.getName().equals(FacilioConstants.ContextNames.PURCHASED_TOOL)
@@ -583,19 +582,26 @@ public class ImportAPI {
 					|| facilioModule.getName().equals(FacilioConstants.ContextNames.ITEM_TYPES)		
 					) {
 				fields.addAll(ImportFieldFactory.getImportFieldNames(facilioModule.getName()));
-			}
-			else {
-
-				if(facilioModule.getName().equals(FacilioConstants.ContextNames.ASSET) ||
-						(facilioModule.getExtendModule() != null && facilioModule.getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
-					for(FacilioField field : fieldsList)
-					{
-						if(!ImportAPI.isRemovableFieldOnImport(field.getName()))
-						{
+			} else {
+				for (FacilioField field : fieldsList) {
+					if (!ImportAPI.isRemovableFieldOnImport(field.getName())) {
+						if (field.getDisplayType() == FacilioField.FieldDisplayType.ADDRESS || field.getDisplayType() == FacilioField.FieldDisplayType.GEO_LOCATION) {
+							fields.addAll(Arrays.asList(field.getName() + "_name", field.getName() + "_street", field.getName() + "_city", field.getName() + "_state", field.getName() + "_country", field.getName() + "_zip", field.getName() + "_lat", field.getName() + "_lng"));
+						} else {
 							fields.add(field.getName());
 						}
 					}
-					
+				}
+
+				if (importSetting != null && (importSetting != ImportProcessContext.ImportSetting.INSERT.getValue() || importSetting != ImportProcessContext.ImportSetting.INSERT_SKIP.getValue())) {
+					if (!fieldsMap.containsKey("localId")) {
+						fields.add("id");
+					}
+				}
+
+				if(facilioModule.getName().equals(FacilioConstants.ContextNames.ASSET) ||
+						(facilioModule.getExtendModule() != null && facilioModule.getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
+
 					fields.remove("space");
 					fields.remove("resourceType");
 					fields.remove("localId");
@@ -610,31 +616,8 @@ public class ImportAPI {
 					fields.add("space2");
 					fields.add("space3");
 
-					if (importSetting != null && importSetting == 3) {
-						fields.add("id");
-					}
 				}
-				}
-				else if(facilioModule.getName().equals(FacilioConstants.ContextNames.SITE)
-						|| facilioModule.getName().equals(FacilioConstants.ContextNames.BUILDING) ||
-						facilioModule.getName().equals(FacilioConstants.ContextNames.FLOOR)
-						|| facilioModule.getName().equals(FacilioConstants.ContextNames.SPACE)
-						|| facilioModule.getName().equals(FacilioConstants.ContextNames.TENANT_UNIT_SPACE)
-						) {
-					
-					for(FacilioField field : fieldsList) {
-						if((!ImportAPI.isRemovableFieldOnImport(field.getName()))) {
-							fields.add(field.getName());
-						}
-					}					
 				} else if (facilioModule.getName().equals(FacilioConstants.ContextNames.WORK_ORDER)) {
-					for(FacilioField field : fieldsList)
-					{
-						if(!ImportAPI.isRemovableFieldOnImport(field.getName()))
-						{
-							fields.add(field.getName());
-						}
-					}
 
 					fields.remove("resource");
 					fields.remove("site");
@@ -645,15 +628,6 @@ public class ImportAPI {
 					fields.add("space2");
 					fields.add("space3");
 					fields.add("asset");
-				}
-				else {
-					for(FacilioField field : fieldsList)
-					{
-						if(!ImportAPI.isRemovableFieldOnImport(field.getName()))
-						{
-							fields.add(field.getName());
-						}
-					}
 				}
 		}
 			if (!AssetsAPI.isAssetsModule(facilioModule)
@@ -683,6 +657,20 @@ public class ImportAPI {
 		}
 		return fields;
 		
+	}
+
+	public static HashMap<String, FacilioField> getLocationFields(LookupField field) {
+		HashMap<String, FacilioField> fieldsMap = new HashMap<>();
+		fieldsMap.put(field.getName() + "_name", FieldFactory.getField("name", field.getDisplayName() + " - Name", "NAME", field.getModule(), FieldType.STRING));
+		fieldsMap.put(field.getName() + "_street", FieldFactory.getField("street", field.getDisplayName() + " - Street", "STREET", field.getModule(), FieldType.STRING));
+		fieldsMap.put(field.getName() + "_city", FieldFactory.getField("city", field.getDisplayName() + " - City", "CITY", field.getModule(), FieldType.STRING));
+		fieldsMap.put(field.getName() + "_state", FieldFactory.getField("state", field.getDisplayName() + " - State", "STATE", field.getModule(), FieldType.STRING));
+		fieldsMap.put(field.getName() + "_country", FieldFactory.getField("country", field.getDisplayName() + " - Country", "COUNTRY", field.getModule(), FieldType.STRING));
+		fieldsMap.put(field.getName() + "_zip", FieldFactory.getField("zip", field.getDisplayName() + " - Zip", "ZIP", field.getModule(), FieldType.STRING));
+		fieldsMap.put(field.getName() + "_lat", FieldFactory.getField("lat", field.getDisplayName() + " - LAT", "LAT", field.getModule(), FieldType.NUMBER));
+		fieldsMap.put(field.getName() + "_lng", FieldFactory.getField("lng", field.getDisplayName() + " - LNG", "LNG", field.getModule(), FieldType.NUMBER));
+
+		return fieldsMap;
 	}
 	
 	public static ImportProcessContext updateTotalRows (ImportProcessContext importProcessContext) throws Exception {

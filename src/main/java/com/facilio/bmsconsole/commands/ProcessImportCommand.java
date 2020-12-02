@@ -479,7 +479,7 @@ public class ProcessImportCommand extends FacilioCommand {
 							if (facilioField.getDataTypeEnum().equals(FieldType.LOOKUP) && facilioField instanceof LookupField && (!isBim || (cellValue!=null && !cellValue.toString().equals("n/a")))) {
 								LookupField lookupField = (LookupField) facilioField;
 
-								if (lookupField.getLookupModule().getName().equals(FacilioConstants.ContextNames.ASSET_CATEGORY) && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET) && fieldMapping.get(facilioField.getModule().getName() + "__" + facilioField.getName()) == null) {
+								if (lookupField.getLookupModule().getName().equals(FacilioConstants.ContextNames.ASSET_CATEGORY) && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET) && fieldMapping.get(key) == null) {
 									ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 									String assetCategoryModuleName = lookupField.getLookupModule().getName();
 									List<FacilioField> lookupModuleFields = bean.getAllFields(assetCategoryModuleName);
@@ -505,70 +505,106 @@ public class ProcessImportCommand extends FacilioCommand {
 									isfilledByLookup = true;
 								}
 
-								if (isNewLookupFormat || fieldMapping.get(facilioField.getModule().getName() + "__" + facilioField.getName()) != null) {
+								if (isNewLookupFormat || fieldMapping.get(key) != null) {
 
-								boolean isSkipSpecialLookup = false;
+									boolean isSkipSpecialLookup = false;
 
-								try {
-									if ((importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) || (importProcessContext.getModule().getExtendModule() != null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) && lookupField.getName().equals("department")) {
-										isSkipSpecialLookup = true;
-									} else if ((importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.WORK_ORDER) || importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.TASK)) && lookupField.getName().equals("resource")) {
-										isSkipSpecialLookup = true;
-									}
-								} catch (Exception e) {
-									e.printStackTrace();
-									throw e;
-								}
-
-								if (facilioField.getDisplayType().equals(FacilioField.FieldDisplayType.LOOKUP_SIMPLE) || isSkipSpecialLookup) {
-									List<Map<String, Object>> lookupPropsList;
 									try {
-										lookupPropsList = getLookupProps(lookupField,colVal, fieldMapping.get(key), importProcessContext);
-									}catch(Exception e) {
-										LOGGER.severe("Process Import Lookup Exception -- Row No --" + row_no + " Fields Mapping --" + fieldMapping.get(key));
-										if(colVal.get(fieldMapping.get(key)) == null) {
-											throw new ImportFieldValueMissingException(row_no, fieldMapping.get(key), e);
+										if ((importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) || (importProcessContext.getModule().getExtendModule() != null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) && lookupField.getName().equals("department")) {
+											isSkipSpecialLookup = true;
+										} else if ((importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.WORK_ORDER) || importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.TASK)) && lookupField.getName().equals("resource")) {
+											isSkipSpecialLookup = true;
 										}
-										else if (e.getMessage().equals("Value not found")) {
-											throw new ImportLookupModuleValueNotFoundException(colVal.get(fieldMapping.get(key)).toString(), row_no, fieldMapping.get(key), e);
-										} else {
-											throw e;
-										}
-
+									} catch (Exception e) {
+										e.printStackTrace();
+										throw e;
 									}
 
-									if (lookupPropsList != null) {
-										Map<String, Object> lookupProps = lookupPropsList.get(0);
-										if (!props.containsKey(facilioField.getName())) {
-											props.put(facilioField.getName(), lookupProps);
-										}
-										isfilledByLookup = true;
+									if (facilioField.getDisplayType().equals(FacilioField.FieldDisplayType.LOOKUP_SIMPLE) || isSkipSpecialLookup) {
+										List<Map<String, Object>> lookupPropsList;
+										try {
+											lookupPropsList = getLookupProps(lookupField, colVal, fieldMapping.get(key), importProcessContext);
+										} catch (Exception e) {
+											LOGGER.severe("Process Import Lookup Exception -- Row No --" + row_no + " Fields Mapping --" + fieldMapping.get(key));
+											if (colVal.get(fieldMapping.get(key)) == null) {
+												throw new ImportFieldValueMissingException(row_no, fieldMapping.get(key), e);
+											} else if (e.getMessage().equals("Value not found")) {
+												throw new ImportLookupModuleValueNotFoundException(colVal.get(fieldMapping.get(key)).toString(), row_no, fieldMapping.get(key), e);
+											} else {
+												throw e;
+											}
 
-									}
-								}
-								else if (facilioField.getDisplayType().equals(FacilioField.FieldDisplayType.LOOKUP_POPUP) && (fieldMapping.get(facilioField.getModule().getName() + "__" + facilioField.getName()) != null)) {
-									Map<String, Object> specialLookupList;
-									try {
-										specialLookupList = getSpecialLookupProps(lookupField,colVal, importProcessContext);
-									}catch(Exception e) {
-										if(colVal.get(fieldMapping.get(key)) == null) {
-											LOGGER.severe("Process Import Special Lookup Exception -- Row No --" + row_no + " Fields Mapping --" + fieldMapping.get(key));
-											throw new ImportFieldValueMissingException(row_no, fieldMapping.get(key), e);
-										} else if (e.getMessage().equals("Value not found")) {
-											throw new ImportLookupModuleValueNotFoundException(colVal.get(fieldMapping.get(key)).toString(), row_no, fieldMapping.get(key), e);
 										}
-										else {
-											throw e;
-										}
-									}
 
-									if (specialLookupList != null) {
-										if (!props.containsKey(facilioField.getName())) {
-											props.put(facilioField.getName(), specialLookupList);
+										if (lookupPropsList != null) {
+											Map<String, Object> lookupProps = lookupPropsList.get(0);
+											if (!props.containsKey(facilioField.getName())) {
+												props.put(facilioField.getName(), lookupProps);
+											}
+											isfilledByLookup = true;
+
 										}
-										isfilledByLookup = true;
+									} else if (facilioField.getDisplayType().equals(FacilioField.FieldDisplayType.LOOKUP_POPUP) && (fieldMapping.get(key) != null)) {
+										Map<String, Object> specialLookupList;
+										try {
+											specialLookupList = getSpecialLookupProps(lookupField, colVal, importProcessContext);
+										} catch (Exception e) {
+											if (colVal.get(fieldMapping.get(key)) == null) {
+												LOGGER.severe("Process Import Special Lookup Exception -- Row No --" + row_no + " Fields Mapping --" + fieldMapping.get(key));
+												throw new ImportFieldValueMissingException(row_no, fieldMapping.get(key), e);
+											} else if (e.getMessage().equals("Value not found")) {
+												throw new ImportLookupModuleValueNotFoundException(colVal.get(fieldMapping.get(key)).toString(), row_no, fieldMapping.get(key), e);
+											} else {
+												throw e;
+											}
+										}
+
+										if (specialLookupList != null) {
+											if (!props.containsKey(facilioField.getName())) {
+												props.put(facilioField.getName(), specialLookupList);
+											}
+											isfilledByLookup = true;
+										}
 									}
-								}
+								} else if ((facilioField.getDisplayType().equals(FacilioField.FieldDisplayType.ADDRESS) || facilioField.getDisplayType().equals(FacilioField.FieldDisplayType.GEO_LOCATION)) && isLocationFieldMapped(fieldMapping, facilioField, importProcessContext.getModule().getName())) {
+									LocationContext location = new LocationContext();
+									if (fieldMapping.get(importProcessContext.getModule().getName() + "__" + facilioField.getName() + "_name") != null) {
+										location.setName((String) colVal.get(fieldMapping.get(importProcessContext.getModule().getName() + "__" + facilioField.getName() + "_name")));
+									}
+									if (fieldMapping.get(importProcessContext.getModule().getName() + "__" + facilioField.getName() + "_street") != null) {
+										location.setStreet((String) colVal.get(fieldMapping.get(importProcessContext.getModule().getName() + "__" + facilioField.getName() + "_street")));
+									}
+									if (fieldMapping.get(importProcessContext.getModule().getName() + "__" + facilioField.getName() + "_city") != null) {
+										location.setCity((String) colVal.get(fieldMapping.get(importProcessContext.getModule().getName() + "__" + facilioField.getName() + "_city")));
+									}
+									if (fieldMapping.get(importProcessContext.getModule().getName() + "__" + facilioField.getName() + "_state") != null) {
+										location.setState((String) colVal.get(fieldMapping.get(importProcessContext.getModule().getName() + "__" + facilioField.getName() + "_state")));
+									}
+									if (fieldMapping.get(importProcessContext.getModule().getName() + "__" + facilioField.getName() + "_country") != null) {
+										location.setCountry((String) colVal.get(fieldMapping.get(importProcessContext.getModule().getName() + "__" + facilioField.getName() + "_country")));
+									}
+									if (fieldMapping.get(importProcessContext.getModule().getName() + "__" + facilioField.getName() + "_zip") != null) {
+										location.setZip((String) colVal.get(fieldMapping.get(importProcessContext.getModule().getName() + "__" + facilioField.getName() + "_zip")));
+									}
+									if (fieldMapping.get(importProcessContext.getModule().getName() + "__" + facilioField.getName() + "_lat") != null) {
+										location.setLat((double) colVal.get(fieldMapping.get(importProcessContext.getModule().getName() + "__" + facilioField.getName() + "_lat")));
+									}
+									if (fieldMapping.get(importProcessContext.getModule().getName() + "__" + facilioField.getName() + "_lng") != null) {
+										location.setLng((double) colVal.get(fieldMapping.get(importProcessContext.getModule().getName() + "__" + facilioField.getName() + "_lng")));
+									}
+									if (isLocationContextNotEmpty(location)) {
+										if (location.getLng() == -1) {
+											location.setLng(1.1);
+										}
+										if (location.getLat() == -1) {
+											location.setLat(1.1);
+										}
+										if (location.getName() == null) {
+											location.setName("Import" + importProcessContext.getId());
+										}
+										location.setId(LocationAPI.addLocationV2(location));
+										props.put(facilioField.getName(), location);
+									}
 								}
 							}
 
@@ -1085,4 +1121,19 @@ public class ProcessImportCommand extends FacilioCommand {
 		}
 		return null;
 	}
+
+	public static boolean isLocationFieldMapped(HashMap<String, String> fieldMapping, FacilioField field, String moduleName) {
+		if ((fieldMapping.containsKey(moduleName + "__" + field.getName() + "_name")) || fieldMapping.containsKey(moduleName + "__" + field.getName() + "_street") || fieldMapping.containsKey(moduleName + "__" + field.getName() + "_city") || fieldMapping.containsKey(moduleName + "__" + field.getName() + "_state") || fieldMapping.containsKey(moduleName + "__" + field.getName() + "_country") || fieldMapping.containsKey(moduleName + "__" + field.getName() + "_zip") || fieldMapping.containsKey(moduleName + "__" + field.getName() + "_lat") || fieldMapping.containsKey(moduleName + "__" + field.getName() + "_lng")) {
+			return true;
+		}
+		return false;
+	}
+
+	public static boolean isLocationContextNotEmpty(LocationContext location) {
+		if (location.getName() != null || location.getStreet() != null || location.getCity() != null || location.getCountry() != null || location.getState() != null || location.getZip() != null || location.getLat() != -1 || location.getLng() != -1) {
+			return true;
+		}
+		return false;
+	}
+
 }
