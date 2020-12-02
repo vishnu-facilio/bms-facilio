@@ -2687,4 +2687,10 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetAllAlarmImpactsCommand());
 		return chain;
 	}
+	public static FacilioChain getExecuteCardWorkflowChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new ExecuteCardWorkflowCommand());
+		c.addCommand(new ApplyConditionalFormattingForCard());
+		return c;
+	}
 }

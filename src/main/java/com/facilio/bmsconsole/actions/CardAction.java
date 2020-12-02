@@ -3,7 +3,7 @@ package com.facilio.bmsconsole.actions;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.DashboardCustomScriptFilter;
 import com.facilio.bmsconsole.context.WidgetCardContext;
 import com.facilio.chain.FacilioChain;
@@ -102,7 +102,7 @@ private String cardUserFilters;
 
 	public String getCardData() throws Exception {
 		
-		FacilioChain chain = TransactionChainFactory.getExecuteCardWorkflowChain();
+		FacilioChain chain = ReadOnlyChainFactory.getExecuteCardWorkflowChain();
 		chain.getContext().put(FacilioConstants.ContextNames.CARD_CONTEXT, cardContext);
 		chain.getContext().put(FacilioConstants.ContextNames.CARD_ID, cardId);
 		chain.getContext().put(FacilioConstants.ContextNames.CARD_FILTERS, getCardFilterJson());
