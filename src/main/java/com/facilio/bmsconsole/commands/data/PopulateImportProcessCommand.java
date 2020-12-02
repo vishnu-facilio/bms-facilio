@@ -30,6 +30,7 @@ import com.google.common.collect.ArrayListMultimap;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -332,8 +333,12 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 			String enumString = (String) readingsList.get(j).getData().get(facilioField.getName());
 			EnumField enumField = (EnumField) facilioField;
 			updateBuilder.andCondition(CriteriaAPI.getCondition(facilioField,String.valueOf(enumField.getIndex(enumString)), NumberOperators.EQUALS));
-		} else if (facilioField.getName() == "id" || facilioField.getName() == "localId") {
-				updateBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(module), String.valueOf(readingsList.get(j).getId()), NumberOperators.EQUALS));
+		} else if (StringUtils.equals(facilioField.getName(), "id")) {
+			updateBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(module), String.valueOf(readingsList.get(j).getId()), NumberOperators.EQUALS));
+		} else if (StringUtils.equals(facilioField.getName(), "localId")) {
+			updateBuilder.andCondition(CriteriaAPI.getCondition(facilioField, String.valueOf(readingsList.get(j).getLocalId()), NumberOperators.EQUALS));
+		} else if (facilioField.getDataType() == FieldType.NUMBER.getTypeAsInt()) {
+			updateBuilder.andCondition(CriteriaAPI.getCondition(facilioField, String.valueOf(readingsList.get(j).getData().get(facilioField.getName())), NumberOperators.EQUALS));
 		}
 		else {
 			updateBuilder.andCondition(CriteriaAPI.getCondition(facilioField, String.valueOf(readingsList.get(j).getData().get(facilioField.getName())), StringOperators.IS));
