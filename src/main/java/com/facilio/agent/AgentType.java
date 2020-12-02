@@ -5,11 +5,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum AgentType {
-	Custom(0, "Custom"),
-	Facilio(1, "Facilio"),
-	Niagara(2, "Niagara"),
-    Rest(3,"Rest"),
-	Wattsense(4,"Wattsense");
+	CUSTOM(0, "custom"),
+	FACILIO(1, "facilio"),
+	NIAGARA(2, "niagara"),
+    REST(3,"rest"),
+	WATTSENSE(4,"wattsense");
 
 
 	private int key;

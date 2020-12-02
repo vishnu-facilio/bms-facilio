@@ -1,5 +1,6 @@
 package com.facilio.agentv2.point;
 
+import com.facilio.agent.AgentType;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
@@ -122,7 +123,7 @@ public class PointsUtil
                     if (point != null) {
                         point.setControllerId(controller.getId());
                         if (controller.getControllerType() == FacilioControllerType.MODBUS_IP.asInt() || controller.getControllerType() == FacilioControllerType.MODBUS_RTU.asInt()) {
-                            if (agent.getType().equalsIgnoreCase("facilio")) {
+                            if (agent.getAgentType() == AgentType.FACILIO.getKey()) {
                                 point.setConfigureStatus(PointEnum.ConfigureStatus.CONFIGURED.getIndex());
                             }
                         }

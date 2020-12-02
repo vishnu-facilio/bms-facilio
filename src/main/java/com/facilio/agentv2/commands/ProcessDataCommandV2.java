@@ -1,6 +1,7 @@
 package com.facilio.agentv2.commands;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.agent.AgentType;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
@@ -70,9 +71,7 @@ public class ProcessDataCommandV2 extends AgentV2Command {
 
                     if( ! pointNames.isEmpty()){
                         List<Map<String, Object>> pointsFromDb = getPointsFromDb(pointNames,controller);
-                        if (pointsFromDb.size() < pointNames.size() && controller != null && controller.getAgent().getType().equals("rest")) {
-
-                            if (controller.getAgent().getType().equals("rest")) {
+                        if (pointsFromDb.size() < pointNames.size() && controller != null && controller.getAgent().getAgentType() == AgentType.REST.getKey()) {
                                 Set<String> pointsFromDbSet = new HashSet<>();
                                 pointsFromDb.forEach(row -> pointsFromDbSet.add(row.get("name").toString()));
                                 Set<String> pointNamesSet = new HashSet<>(pointNames);
@@ -90,7 +89,6 @@ public class ProcessDataCommandV2 extends AgentV2Command {
                                     }
                                     pointsFromDb.add(point.getPointJSON());
                                 }
-                            }
                         }
                         if( ! pointsFromDb.isEmpty() && controller!=null){
                             for (Map<String, Object> pointRow : pointsFromDb) {

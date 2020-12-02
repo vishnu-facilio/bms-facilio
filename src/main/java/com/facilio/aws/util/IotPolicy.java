@@ -1,14 +1,15 @@
 package com.facilio.aws.util;
 
-import com.facilio.agent.AgentType;
-import com.facilio.events.tasker.tasks.EventUtil;
-import com.google.api.client.util.ArrayMap;
-import org.json.simple.JSONObject;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.json.simple.JSONObject;
+
+import com.facilio.agent.AgentType;
+import com.facilio.events.tasker.tasks.EventUtil;
+import com.google.api.client.util.ArrayMap;
 
 public class IotPolicy
 {
@@ -103,7 +104,7 @@ public class IotPolicy
     }
 
     public String getSql(String topic,String publishType) {
-        if(AgentType.Wattsense.getLabel().equalsIgnoreCase(type) && ( publishType != null ) ){
+        if(AgentType.WATTSENSE.getLabel().equalsIgnoreCase(type) && ( publishType != null ) ){
             return "SELECT * as data , '" + publishType +"' as "+ EventUtil.DATA_TYPE +" FROM '" + topic + "'";
         }
         return "SELECT * FROM '" + topic + "'";

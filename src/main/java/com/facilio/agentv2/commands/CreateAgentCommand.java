@@ -41,14 +41,14 @@ public class CreateAgentCommand extends AgentV2Command {
             long agentId = AgentApiV2.addAgent(agent);
             agent.setId(agentId);
             switch (AgentType.valueOf(agent.getAgentType())) {
-                case Custom:
-                case Wattsense:
+                case CUSTOM:
+                case WATTSENSE:
                     break;
-                case Facilio:
-                case Niagara:
+                case FACILIO:
+                case NIAGARA:
                     createPolicy(agent);
                     return true;
-                case Rest:
+                case REST:
                     AgentApiV2.scheduleRestJob(agent);
                     return true;
             }

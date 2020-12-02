@@ -1,5 +1,6 @@
 package com.facilio.dataprocessor;
 
+import com.facilio.agent.AgentType;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.fw.constants.PublishType;
 import com.facilio.agent.integration.queue.preprocessor.AgentMessagePreProcessor;
@@ -86,13 +87,12 @@ public class V1ToV2PreProcessor implements AgentMessagePreProcessor {
             if (agent != null) {
                 msg.put(AgentConstants.AGENT, agent.getName());
 
-                    String agentType = agent.getType();
-                    switch (agentType) {
-                        case "facilio":
+                    switch (AgentType.valueOf(agent.getAgentType())) {
+                        case FACILIO:
                             //TODO @Anand
                             msg.put(AgentConstants.CONTROLLER_TYPE, FacilioControllerType.BACNET_IP.asInt());
                             break;
-                        case "niagara":
+                        case NIAGARA:
                             msg.put(AgentConstants.CONTROLLER_TYPE, FacilioControllerType.NIAGARA.asInt());
                             controllerJson.put(AgentConstants.IP_ADDRESS,payload.get(AgentConstants.IP_ADDRESS));
                             controllerJson.put(AgentConstants.PORT_NUMBER,payload.get(AgentConstants.PORT_NUMBER));

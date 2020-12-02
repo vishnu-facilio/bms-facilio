@@ -772,7 +772,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder()
 				.table(AgentKeys.AGENT_TABLE).select(FieldFactory.getAgentDataFields());
 //				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(agentDataModule))
-		if( ! AgentType.Wattsense.equals(type)) {
+		if(!AgentType.WATTSENSE.equals(type)) {
 				genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getDeletedTimeField(agentDataModule), "NULL", CommonOperators.IS_EMPTY));
 
 		}

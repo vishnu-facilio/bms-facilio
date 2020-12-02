@@ -113,7 +113,7 @@ public class FacilioAgent implements Serializable
 
 
     public static String getCertFileName(String type) {
-        if(AgentType.Wattsense.getLabel().equalsIgnoreCase(type)){
+        if(AgentType.WATTSENSE.getLabel().equalsIgnoreCase(type)){
             return AgentIntegrationKeys.WATT_FEDGE_ZIP;
         }
         else {
@@ -122,7 +122,7 @@ public class FacilioAgent implements Serializable
     }
 
     public static String getCertFileId(String type) {
-        if(AgentType.Wattsense.getLabel().equalsIgnoreCase(type)){
+        if(AgentType.WATTSENSE.getLabel().equalsIgnoreCase(type)){
             return AgentIntegrationKeys.WATT_FEDGE_FILE_ID;
         }
         else {

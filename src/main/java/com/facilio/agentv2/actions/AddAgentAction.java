@@ -88,7 +88,7 @@ public class AddAgentAction extends AgentActionV2
             agent.setAgentType(getAgentType());
             agent.setDisplayName(getDisplayName());
             agent.setWorkflow(getWorkflow());
-            if (AgentType.valueOf(getAgentType()) != AgentType.Custom) {
+            if (getAgentType() != AgentType.CUSTOM.getKey()) {
                 agent.setProcessorVersion(2);
             }
             context.put(AgentConstants.AGENT,agent);

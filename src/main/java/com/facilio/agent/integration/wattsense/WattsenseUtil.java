@@ -143,7 +143,8 @@ public class WattsenseUtil
         agent.setName(wattsenseClient.getClientId());
         agent.setConnected(Boolean.FALSE);
         agent.setInterval(15L);
-        agent.setType(AgentType.Wattsense.getLabel());
+        agent.setAgentType(AgentType.WATTSENSE.getKey());
+        agent.setType(AgentType.WATTSENSE.getLabel());
         AgentApiV2.addAgent(agent);
         wattsenseClient.setIntegrationStatus(NOT_INTEGRATED);
         WattsenseApi.updateWattsenseIntegration(wattsenseClient);
@@ -165,10 +166,10 @@ public class WattsenseUtil
                 }
             }*/
 
-            String url = DownloadCertFile.downloadCertificate( policyName,AgentType.Wattsense.getLabel() );
+            String url = DownloadCertFile.downloadCertificate( policyName,AgentType.WATTSENSE.getLabel() );
             LOGGER.info("wattsense file download url "+url);
             //DownloadCertFile.getCertAndKeyFileAsInputStream(policyName , AgentType.Wattsense.getLabel());
-            inputStreamMap = DownloadCertFile.getCertKeyFileInputStreamsFromFileStore(AgentType.Wattsense.getLabel());
+            inputStreamMap = DownloadCertFile.getCertKeyFileInputStreamsFromFileStore(AgentType.WATTSENSE.getLabel());
             if(inputStreamMap.isEmpty()){
                 LOGGER.info(" Exception occurred certfileInputstream map is empty ");
                 return false;
@@ -378,7 +379,7 @@ public class WattsenseUtil
         toUpdate.put(AgentIntegrationKeys.PROP_VALUE,status);*/
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentIntegrationKeys.NAME), wattsenseClient.getClientId(),StringOperators.IS));
-        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentIntegrationKeys.INTEGRATION_TYPE), String.valueOf(AgentType.Wattsense.getKey()),NumberOperators.EQUALS));
+        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentIntegrationKeys.INTEGRATION_TYPE), String.valueOf(AgentType.WATTSENSE.getKey()),NumberOperators.EQUALS));
        // criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentIntegrationKeys.PROP_KEY), AgentIntegrationKeys.INTEGRATION_STATUS,StringOperators.IS));
         context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
         context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP,toUpdate);
@@ -397,7 +398,7 @@ public class WattsenseUtil
         context.put(FacilioConstants.ContextNames.TABLE_NAME, AgentIntegrationKeys.TABLE_NAME);
         context.put(FacilioConstants.ContextNames.FIELDS,FieldFactory.getWattsenseIntegrationField());
         Criteria criteria = new Criteria();
-        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentIntegrationKeys.INTEGRATION_TYPE), String.valueOf(AgentType.Wattsense.getKey()),NumberOperators.EQUALS));
+        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentIntegrationKeys.INTEGRATION_TYPE), String.valueOf(AgentType.WATTSENSE.getKey()),NumberOperators.EQUALS));
         context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
         context.put(FacilioConstants.ContextNames.SORT_FIELDS,"ID desc");
         List<Map<String, Object>> rows = new ArrayList<>();
@@ -437,7 +438,7 @@ public class WattsenseUtil
 
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentIntegrationKeys.NAME),clientId,StringOperators.IS));
-        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentIntegrationKeys.INTEGRATION_TYPE), String.valueOf(AgentType.Wattsense.getKey()),NumberOperators.EQUALS));
+        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentIntegrationKeys.INTEGRATION_TYPE), String.valueOf(AgentType.WATTSENSE.getKey()),NumberOperators.EQUALS));
         //criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentIntegrationKeys.PROP_KEY), AgentIntegrationKeys.DELETED_TIME,StringOperators.IS));
 
         context.put(FacilioConstants.ContextNames.CRITERIA,criteria);

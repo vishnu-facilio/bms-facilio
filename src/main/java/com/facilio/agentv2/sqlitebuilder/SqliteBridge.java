@@ -1,6 +1,7 @@
 package com.facilio.agentv2.sqlitebuilder;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.agent.AgentType;
 import com.facilio.agent.AgentUtil;
 import com.facilio.agent.FacilioAgent;
 import com.facilio.agent.controller.FacilioControllerType;
@@ -449,6 +450,7 @@ public class SqliteBridge {
                 agentV2.setInterval(15);
             }
             agentV2.setType(agent.getType());
+            agentV2.setAgentType(AgentType.valueOf(agent.getType()).getKey());
             agentV2.setVersion(agent.getVersion());
             if (agent.getLastModifiedTime() != null) {
                 agentV2.setLastModifiedTime(agent.getLastModifiedTime());

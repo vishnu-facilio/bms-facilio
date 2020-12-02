@@ -1,6 +1,7 @@
 package com.facilio.agentv2;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.agent.AgentType;
 import com.facilio.agent.alarms.AgentEvent;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.fw.constants.FacilioCommand;
@@ -87,7 +88,7 @@ public class DataProcessorV2
             }else {
                 payload.put(AgentConstants.TIMESTAMP,timeStamp);
             }
-            if (!agent.getType().equals("rest")) {
+            if (agent.getAgentType() != AgentType.REST.getKey()) {
                 agent.setLastDataReceivedTime(timeStamp);
                 AgentApiV2.updateAgentLastDataRevievedTime(agent);
             }
@@ -124,7 +125,7 @@ public class DataProcessorV2
                     Controller timeseriesController = getCachedControllerUsingPayload(payload,agent.getId());
                     if (!controllerIdVsLastTimeSeriesTimeStamp.containsKey(timeseriesController.getId()) ||
                             !controllerIdVsLastTimeSeriesTimeStamp.get(timeseriesController.getId()).equals(timeStamp) ||
-                            agent.getType().equalsIgnoreCase("wattsense")) {
+                            agent.getAgentType()== AgentType.WATTSENSE.getKey()) {
 
                         controllerIdVsLastTimeSeriesTimeStamp.put(timeseriesController.getId(), timeStamp);
                         timeSeriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, timeseriesController.getId());
@@ -179,7 +180,7 @@ public class DataProcessorV2
                 if (iotMessage.getCommand()== FacilioCommand.CONFIGURE.asInt()
                         && (controller.getControllerType() == FacilioControllerType.MODBUS_RTU.asInt()
                         || controller.getControllerType() == FacilioControllerType.MODBUS_IP.asInt())){
-                    if (agent.getType().equalsIgnoreCase("facilio")) {
+                    if (agent.getAgentType() == AgentType.FACILIO.getKey()) {
                         return processDevicePoints(agent, payload);
                     }
                 }
@@ -273,7 +274,7 @@ public class DataProcessorV2
                             return controller;
                         } else {
                             FacilioAgent agent = AgentApiV2.getAgent(agentId);
-                            if (agent.getType().equals("rest")) {
+                            if (agent.getAgentType() == AgentType.REST.getKey()) {
                                 MiscController miscController = new MiscController(agent.getId(), AccountUtil.getCurrentOrg().getOrgId());
                                 miscController.setName(((JSONObject) (payload.get(AgentConstants.CONTROLLER))).get(AgentConstants.NAME).toString());
                                 miscController.setDataInterval(agent.getInterval() * 60 * 1000);
@@ -409,7 +410,7 @@ public class DataProcessorV2
             if (controller == null) {
                 int type = Integer.parseInt(payload.get(AgentConstants.CONTROLLER_TYPE).toString());
                 FacilioAgent agent = AgentApiV2.getAgent(getAgentId(payload.get("agent").toString()));
-                if (type == FacilioControllerType.MISC.asInt() && agent.getType().equals("rest")) {
+                if (type == FacilioControllerType.MISC.asInt() && agent.getAgentType() == AgentType.REST.getKey()) {
                     String name = ((JSONObject) payload.get("controller")).get("name").toString();
                     context.put(AgentConstants.CONTROLLER_NAME, name);
                 }

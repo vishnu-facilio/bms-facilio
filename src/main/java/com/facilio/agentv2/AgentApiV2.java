@@ -87,7 +87,7 @@ public class AgentApiV2 {
         FacilioContext context = new FacilioContext();
         agent.setCreatedTime(System.currentTimeMillis());
         agent.setLastDataReceivedTime(-1);
-        if (AgentType.valueOf(agent.getAgentType()) == AgentType.Rest) {
+        if (AgentType.valueOf(agent.getAgentType()) == AgentType.REST) {
             agent.setConnected(true);
         }
         agent.setLastModifiedTime(agent.getCreatedTime());
@@ -129,7 +129,7 @@ public class AgentApiV2 {
             if (agent.getInterval() != currDataInterval) {
                 agent.setInterval(currDataInterval);
                 agent.setLastModifiedTime(currTime);
-                if(AgentType.valueOf(agent.getAgentType()) == AgentType.Rest) {
+                if(AgentType.valueOf(agent.getAgentType()) == AgentType.REST) {
                 		FacilioTimer.deleteJob(agent.getId(), Job.CLOUD_AGENT_JOB_NAME);
                 		scheduleRestJob(agent);
                 }
@@ -364,7 +364,7 @@ public class AgentApiV2 {
         Map<String, FacilioAgent> wattsenseAgentsMap = new HashMap<>();
         FacilioModule newAgentModule = ModuleFactory.getNewAgentModule();
         Criteria criteria = new Criteria();
-        criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentTypeField(newAgentModule), AgentType.Wattsense.name(),StringOperators.IS));
+        criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentTypeField(newAgentModule), AgentType.WATTSENSE.name(),StringOperators.IS));
         criteria.addAndCondition(getDeletedTimeNullCondition(newAgentModule));
         FacilioContext context = new FacilioContext();
         context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
@@ -380,7 +380,7 @@ public class AgentApiV2 {
     public static FacilioAgent getWattsenseAgent() throws Exception {
         FacilioModule newAgentModule = ModuleFactory.getNewAgentModule();
         Criteria criteria = new Criteria();
-        criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentTypeField(newAgentModule), AgentType.Wattsense.name(),StringOperators.IS));
+        criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentTypeField(newAgentModule), AgentType.WATTSENSE.name(),StringOperators.IS));
         criteria.addAndCondition(getDeletedTimeNullCondition(newAgentModule));
         FacilioContext context = new FacilioContext();
         context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
@@ -399,7 +399,7 @@ public class AgentApiV2 {
                     .table(agentDataModule.getTableName())
                     .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(agentDataModule))
                     .andCondition(getDeletedTimeNullCondition(agentDataModule))
-                    .andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentTypeField(agentDataModule),AgentType.Wattsense.name(),StringOperators.IS));
+                    .andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentTypeField(agentDataModule),AgentType.WATTSENSE.name(),StringOperators.IS));
             List<Map<String, Object>> result = builder.get();
             return (long) result.get(0).get(AgentConstants.ID);
         } catch (Exception e) {
