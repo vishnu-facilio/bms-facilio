@@ -31,9 +31,7 @@ import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.Fi
 import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.FillNewsRelatedModuleDataInListCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.LoadNewsAndInformationLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.employee.UpdateEmployeePeopleAppPortalAccessCommandV3;
-import com.facilio.bmsconsoleV3.commands.facility.FillFacilityDetailsCommandV3;
-import com.facilio.bmsconsoleV3.commands.facility.LoadFacilityLookupCommandV3;
-import com.facilio.bmsconsoleV3.commands.facility.ScheduleSlotCreationCommand;
+import com.facilio.bmsconsoleV3.commands.facility.*;
 import com.facilio.bmsconsoleV3.commands.imap.UpdateLatestMessageUIDCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
@@ -803,9 +801,12 @@ public class APIv3Config {
         return () -> new V3Config(SlotContext.class, new ModuleCustomFieldCount30())
                 .create()
                 .update()
+                    .beforeSave(new ValidateSlotCommand())
                 .delete()
                 .list()
                 .summary()
+                .delete().afterDelete(new CancelBookingsForSlotsCommand())
+
                 .build();
     }
 }

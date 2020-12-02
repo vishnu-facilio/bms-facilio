@@ -10,12 +10,14 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
+import com.facilio.v3.context.V3Context;
 import com.facilio.v3.util.CommandUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -164,27 +166,6 @@ public class FacilityAPI {
 
     }
 
-    public static List<V3FacilityBookingContext> getBookingsPerSlot(Long scheduledStartTime, Long scheduledEndTime, boolean fetchActiveBooking) throws Exception{
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        String facilityBookings = FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING;
-        List<FacilioField> fields = modBean.getAllFields(facilityBookings);
-        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
-
-        SelectRecordsBuilder<V3FacilityBookingContext> builder = new SelectRecordsBuilder<V3FacilityBookingContext>()
-                .moduleName(facilityBookings)
-                .select(fields)
-                .beanClass(V3FacilityBookingContext.class)
-                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("scheduledStartTime"), String.valueOf(scheduledStartTime), NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("scheduledEndTime"), String.valueOf(scheduledEndTime), NumberOperators.EQUALS));
-
-        if(fetchActiveBooking){
-            FacilioStatus active = TicketAPI.getStatus(modBean.getModule(facilityBookings), "Active");
-            builder.andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("moduleState"), String.valueOf(active.getId()), PickListOperators.IS));
-        }
-
-        List<V3FacilityBookingContext> list = builder.get();
-       return list;
-    }
 
     public static List<SlotContext> getFacilitySlots(FacilityContext facilityContext, Long startDateTime, Long endDateTime) throws Exception {
 
@@ -320,4 +301,27 @@ public class FacilityAPI {
         facility.setSlots(slots);
         FacilityAPI.updateGeneratedUptoInFacilityAndAddSlots(facility);
     }
+
+    public static List<WeekDayAvailability> getWeekDayAvailabilityForDay(Long facilityId, Integer dayOfWeek) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.FacilityBooking.FACILITY_WEEKDAY_AVAILABILITY);
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.FacilityBooking.FACILITY_WEEKDAY_AVAILABILITY);
+
+        Class beanClassName = FacilioConstants.ContextNames.getClassFromModule(module);
+        if (beanClassName == null) {
+            beanClassName = V3Context.class;
+        }
+        SelectRecordsBuilder<WeekDayAvailability> builder = new SelectRecordsBuilder<WeekDayAvailability>()
+                .module(module)
+                .beanClass(beanClassName)
+                .select(fields)
+                .andCondition(CriteriaAPI.getCondition("FACILITY_ID", "facilityId", String.valueOf(facilityId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("DAY_OF_WEEK", "dayOfWeek", String.valueOf(dayOfWeek), NumberOperators.EQUALS));
+
+        ;
+
+        List<WeekDayAvailability> records = builder.get();
+        return records;
+    }
+
 }

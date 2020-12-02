@@ -1,16 +1,20 @@
 package com.facilio.bmsconsoleV3.commands.facility;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
-import com.facilio.bmsconsoleV3.context.facilitybooking.FacilityContext;
-import com.facilio.bmsconsoleV3.context.facilitybooking.V3FacilityBookingContext;
+import com.facilio.bmsconsoleV3.context.facilitybooking.*;
 import com.facilio.bmsconsoleV3.util.FacilityAPI;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.DeleteRecordBuilder;
+import com.facilio.modules.FieldUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -23,16 +27,23 @@ public class ValidateFacilityBookingCommandV3 extends FacilioCommand {
         List<V3FacilityBookingContext> bookings = recordMap.get(moduleName);
         if(CollectionUtils.isNotEmpty(bookings)) {
             for(V3FacilityBookingContext booking : bookings) {
-                if(booking.getFacility() != null && booking.getFacility().getId() > 0){
-                    FacilityContext facility = (FacilityContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.FacilityBooking.FACILITY, booking.getFacility().getId(), FacilityContext.class);
-                    if(facility.isMultiBookingPerSlotAllowed()) {
-                        List<V3FacilityBookingContext> bookingsInTheSlot = FacilityAPI.getBookingsPerSlot(booking.getScheduledStartTime(), booking.getScheduledEndTime(), true);
-                        if(CollectionUtils.isNotEmpty(bookingsInTheSlot) && (bookingsInTheSlot.size() + booking.getNoOfAttendees()) > facility.getMaxMultiBookingPerSlot()){
+                Map<String, List<Map<String, Object>>> subformMap = booking.getSubForm();
+                if(MapUtils.isEmpty(subformMap) || subformMap.containsKey(FacilioConstants.ContextNames.FacilityBooking.BOOKING_SLOTS)) {
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Slot is mandatory for a booking");
+                }
+                List<BookingSlotsContext> slotList = FieldUtil.getAsBeanListFromMapList(subformMap.get(FacilioConstants.ContextNames.FacilityBooking.BOOKING_SLOTS), BookingSlotsContext.class);
+                for(BookingSlotsContext bookingSlot : slotList) {
+                    if(bookingSlot == null){
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Slot is mandatory for a booking");
+                    }
+                    SlotContext slot = (SlotContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.FacilityBooking.SLOTS, bookingSlot.getSlot().getId(), SlotContext.class);
+                    if(slot != null) {
+                        if(booking.getNoOfAttendees() > slot.getBookingCount()) {
                             throw new RESTException(ErrorCode.VALIDATION_ERROR, "The current booking count exceeds the permitted bookings for the slot");
                         }
                     }
                 }
-                else {
+                if(booking.getFacility() == null && booking.getFacility().getId() <= 0){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Facility is mandatory for a booking");
                 }
             }
