@@ -19,6 +19,8 @@ files:
     destination: /home/facilio
   - source: /threaddump.sh
     destination: /home/facilio
+  - source: /move_hprof.sh
+    destination: /home/facilio
   - source: /oom.sh
     destination: /home/facilio
   - source: /awsprops-scheduler.properties
