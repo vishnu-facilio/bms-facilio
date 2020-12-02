@@ -256,7 +256,7 @@ public class DashboardFilterUtil {
 						
 							JSONObject kpiObj = (JSONObject) cardParams.get("kpi");
 							long kpiId = (long) kpiObj.get("kpiId");
-							KPIContext kpi = KPIUtil.getKPI(kpiId);
+							KPIContext kpi = KPIUtil.getKPI(kpiId,false);
 							moduleId=kpi.getModuleId();
 						
 					}
