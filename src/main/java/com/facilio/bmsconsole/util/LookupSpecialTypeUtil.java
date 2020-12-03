@@ -388,7 +388,7 @@ public class LookupSpecialTypeUtil {
 				ids = new ArrayList<>(ids);
 			}
 			boolean isSla = ContextNames.SLA_RULE_MODULE.equals(specialType);
-			List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getWorkflowRules((List<Long>) ids, isSla, isSla);
+			List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getWorkflowRules((List<Long>) ids, isSla, true);
 			if (CollectionUtils.isNotEmpty(workflowRules)) {
 				return workflowRules.stream().collect(Collectors.toMap(WorkflowRuleContext::getId, Function.identity()));
 			}
@@ -434,7 +434,7 @@ public class LookupSpecialTypeUtil {
 			return WorkflowRuleAPI.getWorkflowRules((List<Long>) ids);
 		}
 		else if ((FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType))) {
-			return WorkflowRuleAPI.getWorkflowRules((List<Long>) ids, false, false);
+			return WorkflowRuleAPI.getWorkflowRules((List<Long>) ids, false, true);
 		}
 		else if (FacilioConstants.ContextNames.SENSOR_RULE_MODULE.equals(specialType)) {
 			return SensorRuleUtil.getSensorRuleByIds((List<Long>) ids);
