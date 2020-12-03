@@ -3,9 +3,12 @@ package com.facilio.pdf;
 import java.io.File;
 import java.io.IOException;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -16,6 +19,7 @@ import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.services.filestore.PublicFileUtil;
+import com.facilio.util.RequestUtil;
 
 public class PdfUtil {
 
@@ -44,6 +48,10 @@ public class PdfUtil {
 				if(serverName != null) {
 					String[] server = serverName.split(":");
 					serverName = server[0];
+					if (FacilioProperties.getEnvironment().equals("stage")) {
+						HttpServletRequest request = ServletActionContext.getRequest();
+						serverName = request.getServerName().replace(RequestUtil.getProtocol(request)+"://", StringUtils.EMPTY);
+					}
 				}
 				if (StringUtils.isEmpty(htmlContent)) {
 					htmlContent = "false";

@@ -245,7 +245,13 @@
 	
 	<package name="alarm" namespace="/api/v2/alarm" extends="v2Api">
 		<action name="get"
-			class="com.facilio.events.actions.V2AlarmAction" method="fetchAlarmSummary" />
+			class="com.facilio.events.actions.V2AlarmAction" method="fetchAlarmSummary">
+			<result name="success" type="json">
+				<param name="excludeNullProperties">true</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+			</result>
+		</action>
 		<action name="updateOccurrence"
 			class="com.facilio.events.actions.V2AlarmAction" method="updateAlarmOccurrence" />
 		<action name="delete"

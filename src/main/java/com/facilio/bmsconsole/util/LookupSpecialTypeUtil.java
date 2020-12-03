@@ -262,7 +262,7 @@ public class LookupSpecialTypeUtil {
 		else if(FacilioConstants.Workflow.WORKFLOW.equals(specialType)) {
 			return WorkflowUtil.getWorkflowContext(id);
 		}
-		else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType) || ContextNames.SLA_RULE_MODULE.equals(specialType)) {
+		else if (ContextNames.SLA_RULE_MODULE.equals(specialType)) {
 			return WorkflowRuleAPI.getWorkflowRule(id);
 		}
 		else if(FacilioConstants.ContextNames.PM_TRIGGER.equals(specialType)) {
@@ -273,7 +273,7 @@ public class LookupSpecialTypeUtil {
 			return null;
 		}
 		else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
-			return WorkflowRuleAPI.getWorkflowRule(id, false, true);
+			return WorkflowRuleAPI.getWorkflowRule(id, false, false);
 		}else if (ContextNames.AGENT_DATA.equals(specialType)){
 			return AgentApiV2.getAgent(id);
 		}
@@ -387,7 +387,8 @@ public class LookupSpecialTypeUtil {
 			if (!(ids instanceof List)) {
 				ids = new ArrayList<>(ids);
 			}
-			List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getWorkflowRules((List<Long>) ids);
+			boolean isSla = ContextNames.SLA_RULE_MODULE.equals(specialType);
+			List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getWorkflowRules((List<Long>) ids, isSla, isSla);
 			if (CollectionUtils.isNotEmpty(workflowRules)) {
 				return workflowRules.stream().collect(Collectors.toMap(WorkflowRuleContext::getId, Function.identity()));
 			}
@@ -429,8 +430,11 @@ public class LookupSpecialTypeUtil {
 		else if (FacilioConstants.ContextNames.PM_TRIGGER.equals(specialType)) {
 			return PreventiveMaintenanceAPI.getPMTriggersByTriggerIds(ids);
 		}
-		else if ((FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) || ContextNames.SLA_RULE_MODULE.equals(specialType)) {
+		else if (ContextNames.SLA_RULE_MODULE.equals(specialType)) {
 			return WorkflowRuleAPI.getWorkflowRules((List<Long>) ids);
+		}
+		else if ((FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType))) {
+			return WorkflowRuleAPI.getWorkflowRules((List<Long>) ids, false, false);
 		}
 		else if (FacilioConstants.ContextNames.SENSOR_RULE_MODULE.equals(specialType)) {
 			return SensorRuleUtil.getSensorRuleByIds((List<Long>) ids);
