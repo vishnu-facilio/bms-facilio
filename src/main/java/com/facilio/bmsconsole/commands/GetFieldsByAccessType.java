@@ -27,10 +27,10 @@ public class GetFieldsByAccessType extends FacilioCommand {
             module = modBean.getModule(moduleId);
         }
         else {
-            FacilioUtil.throwIllegalArgumentException(StringUtils.isEmpty(moduleName), "Invalid module name/ ID");
+            FacilioUtil.throwIllegalArgumentException(StringUtils.isEmpty(moduleName), "Invalid module name/ID while fetching fields");
             module = modBean.getModule(moduleName);
         }
-        FacilioUtil.throwIllegalArgumentException(module == null, "Invalid module name/ ID");
+        FacilioUtil.throwIllegalArgumentException(module == null, "Invalid module name/ID while fetching fields");
         moduleName = module.getName();
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 

@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import com.facilio.fw.FacilioException;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -63,24 +64,34 @@ public class FacilioAction extends ActionSupport {
 	public void setException(Exception exception) {
 		this.exception = exception;
 	}
+
+	private String getMessageFromException (Throwable e) {
+		if (e instanceof IllegalArgumentException
+			|| e instanceof FacilioException
+			) {
+			return e.getMessage();
+		}
+		return null;
+	}
 	
 	public String handleException() {
 		try {
 			this.responseCode = 1;
-			if (exception != null && (exception instanceof IllegalArgumentException
-					|| exception instanceof FacilioException)) {
-				this.message = exception.getMessage();
-			} else {
+			Throwable e = this.exception;
+			while (StringUtils.isEmpty(message) && e != null) {
+				this.message = getMessageFromException(e);
+				e = e.getCause();
+			}
+			if (StringUtils.isEmpty(message)) {
 				this.message = FacilioConstants.ERROR_MESSAGE;
 			}
-			setStackTrace(exception);
+//			setStackTrace(exception); // I'm not sure if anyone's using this given we have graylog
 		} catch (Exception e) {
 			LogManager.getLogger(this.getClass().getName()).error("Exception occurred inside handle Exception: - ", e);
 		}
 		if (sendErrorCode && (
-						exception instanceof IllegalArgumentException
+						this.message != FacilioConstants.ERROR_MESSAGE // != is valid here. So 400 if it's valid error or SQL Exception. 500 otherwise
 					||	exception instanceof SQLException
-					|| exception instanceof FacilioException
 					)
 		) {
 			return INPUT;

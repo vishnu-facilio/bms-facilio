@@ -89,6 +89,7 @@ public class AccessLogFilter implements Filter {
                 responseSize = ((FacilioHttpResponse) response).getLengthInBytes();
                 message = message + "  data: " + responseSize;
             }
+            System.out.println("Response size in Access => "+responseSize);
             LoggingEvent event = new LoggingEvent(LOGGER.getName(), LOGGER, Level.INFO, message, null);
 
             if (AccountUtil.getCurrentAccount() != null) {

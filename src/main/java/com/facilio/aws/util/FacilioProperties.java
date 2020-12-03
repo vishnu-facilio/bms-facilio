@@ -112,6 +112,7 @@ public class FacilioProperties {
     private static String mobileClientportalAppScheme;
 
     private static int authTokenCookieLifespan = 7 * 24 * 60 * 60;
+    private static int responseSizeThreshold = 5000000; // In Bytes
 
     private static boolean userAccessLog = false;
 
@@ -207,6 +208,21 @@ public class FacilioProperties {
                     }
                     catch (NumberFormatException e) {
                         LOGGER.info(MessageFormat.format("Exception while parsing 'user.token.timeout' with value : {0}. So using default timeout ({1})",cookieLifespanProp, authTokenCookieLifespan));
+                    }
+                }
+                String responseThreshold = PROPERTIES.getProperty("response.size.threshold");
+                if (StringUtils.isNotEmpty(responseThreshold)) {
+                    try {
+                        int threshold = Integer.parseInt(responseThreshold);
+                        if (threshold > 0) {
+                            responseSizeThreshold = threshold;
+                        }
+                        else {
+                            LOGGER.info(MessageFormat.format("Negative value ({0}) for 'response.size.threshold'. So using default timeout ({1})", responseThreshold, responseSizeThreshold));
+                        }
+                    }
+                    catch (NumberFormatException e) {
+                        LOGGER.info(MessageFormat.format("Exception while parsing 'response.size.threshold' with value : {0}. So using default timeout ({1})",responseThreshold, responseSizeThreshold));
                     }
                 }
 
@@ -393,6 +409,10 @@ public class FacilioProperties {
 
     public static int getAuthTokenCookieLifespan() {
         return authTokenCookieLifespan;
+    }
+
+    public static int getResponseSizeThreshold() {
+        return responseSizeThreshold;
     }
 
     public static String getDefaultAppDB() {

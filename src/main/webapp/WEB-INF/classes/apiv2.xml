@@ -26,6 +26,7 @@
 			<result name="error" type="json">
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">responseCode, message, stackTrace</param>
+				<param name="excludeNullProperties">true</param>
 			</result>
 			<result name="exception" type="chain">
 				<param name="actionName">handleException</param>
@@ -180,6 +181,10 @@
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">responseCode, ^result.*</param>
 				<param name="excludeNullProperties">true</param>
+			</result>
+			<result name="exception" type="chain">
+				<param name="actionName">handleException</param>
+				<param name="namespace">/v1/exception</param>
 			</result>
 		</global-results>
 	</package>

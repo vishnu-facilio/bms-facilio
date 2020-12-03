@@ -556,5 +556,10 @@ public class BmsDBConf extends DBConf {
 		// TODO Auto-generated method stub
 		return FacilioFactory.getFileStore().deleteFiles(fileIds);
 	}
-	
+
+    @Override
+    public int getResponseSizeThreshold() {
+        return FacilioProperties.getResponseSizeThreshold();
+    }
+
 }

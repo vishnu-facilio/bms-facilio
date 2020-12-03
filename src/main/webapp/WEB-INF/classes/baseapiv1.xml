@@ -27,11 +27,13 @@
 			<result name="error" type="json">
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">responseCode, message, stackTrace</param>
+				<param name="excludeNullProperties">true</param>
 				<param name="statusCode">500</param>
 			</result>
 			<result name="input" type="json">
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">responseCode, message, stackTrace</param>
+				<param name="excludeNullProperties">true</param>
 				<param name="statusCode">400</param>
 			</result>
 			<result name="exception" type="chain">
