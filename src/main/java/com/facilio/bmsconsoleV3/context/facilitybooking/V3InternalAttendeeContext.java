@@ -1,24 +1,29 @@
 package com.facilio.bmsconsoleV3.context.facilitybooking;
 
 import com.facilio.accounts.dto.User;
+import com.facilio.bmsconsoleV3.context.V3PeopleContext;
+import com.facilio.modules.FacilioEnum;
 import com.facilio.v3.context.V3Context;
 
 public class V3InternalAttendeeContext extends V3Context {
-    private V3FacilityBookingContext facilityBooking;
+    private V3FacilityBookingContext left;
 
-    public V3FacilityBookingContext getFacilityBooking() {
-        return facilityBooking;
-    }
+    private V3PeopleContext right;
 
-    public void setFacilityBooking(V3FacilityBookingContext facilityBooking) {
-        this.facilityBooking = facilityBooking;
+    public V3FacilityBookingContext getLeft() {
+        return left;
     }
 
-    private User attendee;
-    public User getAttendee() {
-        return attendee;
+    public void setLeft(V3FacilityBookingContext left) {
+        this.left = left;
     }
-    public void setAttendee(User attendee) {
-        this.attendee = attendee;
+
+    public V3PeopleContext getRight() {
+        return right;
     }
+
+    public void setRight(V3PeopleContext right) {
+        this.right = right;
+    }
+
 }

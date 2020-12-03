@@ -1830,8 +1830,8 @@ public class FacilioConstants {
 			public static final String FACILITY_WEEKDAY_AVAILABILITY = "facilityWeekdayAvailability";
 			public static final String FACILITY_SPECIAL_AVAILABILITY = "facilitySpecialAvailability";
 			public static final String FACILITY_BOOKING = "facilitybooking";
-			public static final String FACILITY_BOOKING_EXTERNAL_ATTENDEE = "facilityBookingExternalAttendee";
 			public static final String FACILITY_BOOKING_INTERNAL_ATTENDEE = "facilityBookingInternalAttendee";
+			public static final String FACILITY_BOOKING_EXTERNAL_ATTENDEE = "facilityBookingExternalAttendee";
 			public static final String FACILITY_ID = "facilityId";
 			public static final String START_DATE_TIME = "startDateTime";
 			public static final String SLOTS = "slot";
@@ -2182,8 +2182,8 @@ public class FacilioConstants {
 			classMap.put(FacilityBooking.FACILITY_WEEKDAY_AVAILABILITY, WeekDayAvailability.class);
 			classMap.put(FacilityBooking.FACILITY_SPECIAL_AVAILABILITY, FacilitySpecialAvailabilityContext.class);
 			classMap.put(FacilityBooking.FACILITY_BOOKING, V3FacilityBookingContext.class);
-			classMap.put(FacilityBooking.FACILITY_BOOKING_EXTERNAL_ATTENDEE, V3ExternalAttendeeContext.class);
 			classMap.put(FacilityBooking.FACILITY_BOOKING_INTERNAL_ATTENDEE, V3InternalAttendeeContext.class);
+			classMap.put(FacilityBooking.FACILITY_BOOKING_EXTERNAL_ATTENDEE, V3ExternalAttendeeContext.class);
 			classMap.put(FacilityBooking.SLOTS, SlotContext.class);
 			classMap.put(FacilityBooking.BOOKING_SLOTS, BookingSlotsContext.class);
 			classMap.put(FacilityBooking.FACILITY_BOOKING_PAYMENTS, BookingPaymentContext.class);

@@ -1,9 +1,7 @@
 package com.facilio.bmsconsoleV3.context.facilitybooking;
 
-import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.SpaceContext;
-import com.facilio.bmsconsole.context.reservation.ExternalAttendeeContext;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.v3.context.V3Context;
 
 import java.util.List;
@@ -25,11 +23,11 @@ public class V3FacilityBookingContext extends V3Context {
         this.description = description;
     }
 
-    private User reservedFor;
-    public User getReservedFor() {
+    private V3PeopleContext reservedFor;
+    public V3PeopleContext getReservedFor() {
         return reservedFor;
     }
-    public void setReservedFor(User reservedFor) {
+    public void setReservedFor(V3PeopleContext reservedFor) {
         this.reservedFor = reservedFor;
     }
 
@@ -81,19 +79,23 @@ public class V3FacilityBookingContext extends V3Context {
         this.space = space;
     }
 
-    private List<User> internalAttendees;
-    public List<User> getInternalAttendees() {
+    private List<V3InternalAttendeeContext> internalAttendees;
+
+    public List<V3InternalAttendeeContext> getInternalAttendees() {
         return internalAttendees;
     }
-    public void setInternalAttendees(List<User> internalAttendees) {
+
+    public void setInternalAttendees(List<V3InternalAttendeeContext> internalAttendees) {
         this.internalAttendees = internalAttendees;
     }
 
-    private List<ExternalAttendeeContext> externalAttendees;
-    public List<ExternalAttendeeContext> getExternalAttendees() {
+    private List<V3ExternalAttendeeContext> externalAttendees;
+
+    public List<V3ExternalAttendeeContext> getExternalAttendees() {
         return externalAttendees;
     }
-    public void setExternalAttendees(List<ExternalAttendeeContext> externalAttendees) {
+
+    public void setExternalAttendees(List<V3ExternalAttendeeContext> externalAttendees) {
         this.externalAttendees = externalAttendees;
     }
 

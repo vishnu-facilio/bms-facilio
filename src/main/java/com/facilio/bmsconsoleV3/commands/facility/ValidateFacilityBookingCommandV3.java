@@ -39,6 +39,12 @@ public class ValidateFacilityBookingCommandV3 extends FacilioCommand {
                 if(facility.getMaxSlotBookingAllowed() != null && slotList.size() > facility.getMaxSlotBookingAllowed()){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Max slots booking allowed is " + facility.getMaxSlotBookingAllowed());
                 }
+                if(facility.isAttendeeListNeeded() && (CollectionUtils.isEmpty(booking.getInternalAttendees()) && CollectionUtils.isEmpty(booking.getExternalAttendees()))) {
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Attendee List is mandatory for this facility");
+                }
+                if(booking.getInternalAttendees().size() + booking.getExternalAttendees().size() < booking.getNoOfAttendees()){
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Attendee List is not matching the booking count");
+                }
                 for(BookingSlotsContext bookingSlot : slotList) {
                     if(bookingSlot == null){
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Slot is mandatory for a booking");

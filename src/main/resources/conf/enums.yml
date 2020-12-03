@@ -141,3 +141,4 @@ enums:
 
   - name: PaymentStatus
     enumClassName: com.facilio.bmsconsoleV3.context.facilitybooking.BookingPaymentContext$PaymentStatus
+
