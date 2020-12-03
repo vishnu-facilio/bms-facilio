@@ -69,8 +69,7 @@ public class ReportDrilldownCommand extends FacilioCommand {
 					}).collect(Collectors.toList());
 
 			ReportDataPointContext drilledReportDataPoint = drilledReportDataPoints.get(0);
-			//need to resolve label for last criteria/drill step
-//			resolveBreadCrumbLabel(drilledReportDataPoint, drillDownParamCtx.getDrilldownCriteria().get(drillDownParamCtx.getDrilldownCriteria().size()-1));
+	
 			
 			
 			
@@ -93,19 +92,6 @@ public class ReportDrilldownCommand extends FacilioCommand {
 		return false;
 	}
 	
-//	private void resolveBreadCrumbLabel(ReportDataPointContext dataPoint,DrilldownCriteria drilldownCriteria)
-//	{
-//		String label=null;
-//		ReportFieldContext xAxis=dataPoint.getxAxis();
-//		
-//		
-//		
-//		
-//		
-//		drilldownCriteria.setBreadcrumbLabel(label);
-//		
-//		
-//	}
 
 	private ReportFieldContext getNewXAxis(Map<String, Object> xAxisJSON, FacilioModule module) throws Exception {
 		ReportFieldContext xAxis = new ReportFieldContext();
