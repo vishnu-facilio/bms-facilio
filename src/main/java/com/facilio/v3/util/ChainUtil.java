@@ -52,6 +52,7 @@ public class ChainUtil {
         if (beforeFetchCommand != null) {
             nonTransactionChain.addCommand(beforeFetchCommand);
         }
+        nonTransactionChain.addCommand(new AddCustomLookupInSupplementCommand());
         nonTransactionChain.addCommand(new SummaryCommand(module));
         if (afterFetchCommand != null) {
             nonTransactionChain.addCommand(afterFetchCommand);
@@ -111,6 +112,7 @@ public class ChainUtil {
 
         nonTransactionChain.addCommand(new GenerateCriteriaFromFilterCommand());
         nonTransactionChain.addCommand(new GenerateSearchConditionCommand());
+        nonTransactionChain.addCommand(new AddCustomLookupInSupplementCommand());
         nonTransactionChain.addCommand(new ListCommand(module));
 
         if (listHandler != null && listHandler.isShowStateFlowList()) {
