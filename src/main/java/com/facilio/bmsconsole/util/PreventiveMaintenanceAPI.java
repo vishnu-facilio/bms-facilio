@@ -513,6 +513,12 @@ public class PreventiveMaintenanceAPI {
 				case ALL_SITES:
 					selectedResourceIds.addAll(Collections.singletonList(resourceId));
 					break;
+				case ALL_BUILDINGS:
+					List<BaseSpaceContext> siteBuildingsWithFloors = SpaceAPI.getSiteBuildingsWithFloors(resourceId);
+					for (BaseSpaceContext building: siteBuildingsWithFloors) {
+						selectedResourceIds.add(building.getId());
+					}
+					break;
 				case ALL_FLOORS:
 					List<BaseSpaceContext> floors = SpaceAPI.getBuildingFloors(resourceId);
 					for(BaseSpaceContext floor :floors) {

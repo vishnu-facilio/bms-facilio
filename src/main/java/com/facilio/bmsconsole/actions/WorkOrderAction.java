@@ -708,6 +708,15 @@ public class WorkOrderAction extends FacilioAction {
 		return this.siteIds;
 	}
 
+	private List<Long> buildingIds;
+	public List<Long> getBuildingIds() {
+		return this.buildingIds;
+	}
+
+	public void setBuildingIds(List<Long> buildingIds) {
+		this.buildingIds = buildingIds;
+	}
+
 	public void setSiteIds(List<Long> siteIds) {
 		this.siteIds = siteIds;
 	}
@@ -776,9 +785,32 @@ public class WorkOrderAction extends FacilioAction {
 					spaceCategoryIds = Collections.emptyList();
 					spaceCategoryIds = SpaceAPI.getSpaceCategoryIds(spaceIds, buildingId);
 				}
-			}
-			else if(assignmentType.equals(PMAssignmentType.ASSET_CATEGORY)) {
-				
+			} else if (assignmentType.equals(PMAssignmentType.ALL_BUILDINGS)) {
+				if (siteIds != null && siteIds.size() > 0) {
+					Set<Long> assetCategSet = new HashSet<>();
+					Set<Long> spaceCategSet = new HashSet<>();
+					if (this.buildingIds != null && this.buildingIds.size() > 0) {
+						for (int i = 0; i < this.siteIds.size(); i++) {
+							for (int j = 0; j < this.buildingIds.size(); j++) {
+								assetCategSet.addAll(AssetsAPI.getAssetCategoryIds(this.siteIds.get(i), this.buildingIds.get(j), true));
+								spaceCategSet.addAll(SpaceAPI.getSpaceCategoryIds(this.siteIds.get(i), this.buildingIds.get(j)));
+							}
+						}
+					} else {
+						for (int i = 0; i < siteIds.size(); i++) {
+							List<BaseSpaceContext> buildings = SpaceAPI.getSiteBuildingsWithFloors(siteIds.get(i));
+							if (buildings != null) {
+								for (int j = 0; j < buildings.size(); j++) {
+									assetCategSet.addAll(AssetsAPI.getAssetCategoryIds(this.siteIds.get(i), buildings.get(j).getId(), true));
+									spaceCategSet.addAll(SpaceAPI.getSpaceCategoryIds(this.siteIds.get(i), buildings.get(j).getId()));
+								}
+							}
+						}
+					}
+					assetCategoryIds = assetCategSet.stream().collect(Collectors.toList());
+					spaceCategoryIds = spaceCategSet.stream().collect(Collectors.toList());
+				}
+			} else if(assignmentType.equals(PMAssignmentType.ASSET_CATEGORY)) {
 				assetCategoryIds = AssetsAPI.getSubCategoryIds(assetCategoryId); //doubt
 			}
 		} else if (siteIds != null && siteIds.size() > 0) {
