@@ -14,8 +14,10 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.enums.RuleJobType;
+import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
@@ -39,6 +41,7 @@ import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.BmsAggregateOperators;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.SelectRecordsBuilder;
@@ -141,10 +144,34 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 
 		if(readings != null && !readings.isEmpty())
 		{	
+			List<ReadingContext> ruleLogModuleDatas = new ArrayList<ReadingContext>();
+			
 			WorkflowRuleHistoricalAlarmsAPI.handleDuplicateTriggerMetricReadingErrors(jobStatesMap, readings, readingRule.getReadingField(), currentResourceContext);
 			startTime = readings.get(0).getTtime();
 			endTime = readings.get(readings.size() - 1).getTtime();
-			executeWorkflows(readingRule, readings, currentFields, fields, events, previousEventMeta);
+
+			FacilioContext context = executeWorkflows(readingRule, readings, currentFields, fields, events, previousEventMeta);
+			
+			if(context.containsKey(FacilioConstants.ContextNames.RULE_LOG_MODULE_DATA)) {
+				
+				ruleLogModuleDatas.addAll((List<ReadingContext>)context.get(FacilioConstants.ContextNames.RULE_LOG_MODULE_DATA));
+			}
+			
+			if(readingRule.getDataModuleId() > 0 && readingRule.getDataModuleFieldId() > 0 && ruleLogModuleDatas.size() > 0) {
+				
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				
+				FacilioModule ruleDataModule = modBean.getModule(readingRule.getDataModuleId());
+				
+				FacilioChain addRuleData = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
+				
+				FacilioContext newContext = addRuleData.getContext();
+				newContext.put(FacilioConstants.ContextNames.MODULE_NAME, ruleDataModule.getName());
+				newContext.put(FacilioConstants.ContextNames.READINGS, ruleLogModuleDatas);
+				newContext.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.SYSTEM);
+				newContext.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
+				addRuleData.execute();
+			}
 			
 			eventSpecialCaseStartTime = System.currentTimeMillis();
 			if(events != null && !events.isEmpty())
@@ -179,9 +206,10 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 		return events;
 	}
 	
-	private int executeWorkflows(ReadingRuleContext readingRule, List<ReadingContext> readings, Map<String, List<ReadingDataMeta>> supportFieldsRDM, List<WorkflowFieldContext> fields, List<BaseEventContext> baseEvents,BaseEventContext previousEventMeta) throws Exception
+	private FacilioContext executeWorkflows(ReadingRuleContext readingRule, List<ReadingContext> readings, Map<String, List<ReadingDataMeta>> supportFieldsRDM, List<WorkflowFieldContext> fields, List<BaseEventContext> baseEvents,BaseEventContext previousEventMeta) throws Exception
 	{
 		int alarmCount = 0;
+		FacilioContext context = new FacilioContext();
 		if (readings != null && !readings.isEmpty()) 
 		{
 			Map<String, Object> placeHolders = new HashMap<>();
@@ -189,10 +217,10 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 			CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeHolders);
 			RuleType[] ruleTypes = {RuleType.READING_RULE,RuleType.ALARM_TRIGGER_RULE,RuleType.ALARM_CLEAR_RULE,RuleType.ALARM_RCA_RULES, RuleType.IMPACT_RULE};
 
-			FacilioContext context = new FacilioContext();
 			Map<Long, ReadingRuleAlarmMeta> alarmMetaMap = new HashMap<>();
 			context.put(FacilioConstants.ContextNames.READING_RULE_ALARM_META, alarmMetaMap);
 			context.put(EventConstants.EventContextNames.IS_HISTORICAL_EVENT, true);
+			context.put(FacilioConstants.ContextNames.IS_HISTORICAL, true);
 			ReadingDataMeta prevRDM = null;			
 			int itr = 0;
 			
@@ -247,7 +275,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 				clearLatestAlarms(alarmMetaMap, readingRule);		
 			}
 		}
-		return alarmCount;
+		return context;
 	}
 	
 	private ReadingDataMeta getRDM(ReadingContext value, FacilioField valField) {

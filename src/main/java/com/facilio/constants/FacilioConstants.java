@@ -143,6 +143,8 @@ public class FacilioConstants {
 	}
 
 	public static class ContextNames {
+		public static final String RULE_LOG_MODULE_DATA = "ruleLogModuleData";
+		public static final String RULE_LOG_MODULE_DATA_LIST = "ruleLogModuleDataList";
 		public static final String FIELD_ACCESS_TYPE = "fieldAccessType";
 		public static final String OPERATION_ALARM = "operationalarm";
 		public static final String OPERATION_OCCURRENCE = "operationalarmoccurrence";

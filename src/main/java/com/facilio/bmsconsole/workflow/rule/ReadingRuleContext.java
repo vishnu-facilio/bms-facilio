@@ -922,10 +922,10 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 				action.executeAction(placeHolders, context, this, record);
 			}
 		}
-		addRuleLogEntry(record, Boolean.TRUE);
+		addRuleLogEntry(context,record, Boolean.TRUE);
 	}
 	
-	private void addRuleLogEntry(Object record,boolean isTrueAction) throws Exception {
+	private void addRuleLogEntry(Context context,Object record,boolean isTrueAction) throws Exception {
 		
 		ReadingRuleContext currentRule = null;
 		if(isTrueAction) {
@@ -965,14 +965,26 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 			
 			ruleLogReadingContext.setDatum(ruledataField.getName(), isTrueAction);
 			
-			FacilioChain addRuleData = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
+			boolean isHistorical = (boolean) context.getOrDefault(FacilioConstants.ContextNames.IS_HISTORICAL, false);
 			
-			FacilioContext newContext = addRuleData.getContext();
-			newContext.put(FacilioConstants.ContextNames.MODULE_NAME, ruleDataModule.getName());
-			newContext.put(FacilioConstants.ContextNames.READINGS, Collections.singletonList(ruleLogReadingContext));
-			newContext.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.SYSTEM);
-			newContext.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
-			addRuleData.execute();
+			if(isHistorical) {
+				List<ReadingContext> ruleLogModuleDatas = (List<ReadingContext>) context.getOrDefault(FacilioConstants.ContextNames.RULE_LOG_MODULE_DATA, new ArrayList<ReadingContext>());
+				
+				ruleLogModuleDatas.add(ruleLogReadingContext);
+				
+				context.put(FacilioConstants.ContextNames.RULE_LOG_MODULE_DATA, ruleLogModuleDatas);
+			}
+			else {
+				
+				FacilioChain addRuleData = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
+				
+				FacilioContext newContext = addRuleData.getContext();
+				newContext.put(FacilioConstants.ContextNames.MODULE_NAME, ruleDataModule.getName());
+				newContext.put(FacilioConstants.ContextNames.READINGS, Collections.singletonList(ruleLogReadingContext));
+				newContext.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.SYSTEM);
+				newContext.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
+				addRuleData.execute();
+			}
 			
 		}
 	}
@@ -1000,7 +1012,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 			context.put(FacilioConstants.ContextNames.WORKFLOW_ALARM_TRIGGER_RULES, this);
 			super.executeFalseActions(record, context, placeHolders);
 		}
-		addRuleLogEntry(record, Boolean.FALSE);
+		addRuleLogEntry(context,record, Boolean.FALSE);
 	}
 	public PreEventContext constructPreClearEvent(ReadingContext reading, ResourceContext resource) {
 
