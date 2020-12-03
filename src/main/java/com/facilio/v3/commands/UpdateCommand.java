@@ -11,9 +11,11 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.context.V3Context;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -58,6 +60,13 @@ public class UpdateCommand extends FacilioCommand {
             updateBuilder.withChangeSet(beanClass);
 
             updateBuilder.ignoreSplNullHandling();
+
+            //inserting multi select field values
+            List<SupplementRecord> supplementFields = (List<SupplementRecord>) context.get(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS);
+            if (CollectionUtils.isNotEmpty(supplementFields)) {
+                updateBuilder.updateSupplements(supplementFields);
+            }
+
             totalCount += updateBuilder.update(record);
             Map<Long, List<UpdateChangeSet>> changeSet = updateBuilder.getChangeSet();
             CommonCommandUtil.appendChangeSetMapToContext(context,changeSet,module.getName());

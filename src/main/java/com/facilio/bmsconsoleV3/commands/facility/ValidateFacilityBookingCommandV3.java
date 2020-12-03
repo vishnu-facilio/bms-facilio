@@ -28,24 +28,32 @@ public class ValidateFacilityBookingCommandV3 extends FacilioCommand {
         if(CollectionUtils.isNotEmpty(bookings)) {
             for(V3FacilityBookingContext booking : bookings) {
                 Map<String, List<Map<String, Object>>> subformMap = booking.getSubForm();
+                if(booking.getFacility() == null && booking.getFacility().getId() <= 0){
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Facility is mandatory for a booking");
+                }
                 if(MapUtils.isEmpty(subformMap) || subformMap.containsKey(FacilioConstants.ContextNames.FacilityBooking.BOOKING_SLOTS)) {
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Slot is mandatory for a booking");
                 }
+                FacilityContext facility = (FacilityContext)V3RecordAPI.getRecord(FacilioConstants.ContextNames.FacilityBooking.FACILITY, booking.getFacility().getId(), FacilityContext.class);
                 List<BookingSlotsContext> slotList = FieldUtil.getAsBeanListFromMapList(subformMap.get(FacilioConstants.ContextNames.FacilityBooking.BOOKING_SLOTS), BookingSlotsContext.class);
+                if(facility.getMaxSlotBookingAllowed() != null && slotList.size() > facility.getMaxSlotBookingAllowed()){
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Max slots booking allowed is " + facility.getMaxSlotBookingAllowed());
+                }
                 for(BookingSlotsContext bookingSlot : slotList) {
                     if(bookingSlot == null){
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Slot is mandatory for a booking");
                     }
                     SlotContext slot = (SlotContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.FacilityBooking.SLOTS, bookingSlot.getSlot().getId(), SlotContext.class);
                     if(slot != null) {
-                        if(booking.getNoOfAttendees() > slot.getBookingCount()) {
+                        if(booking.getNoOfAttendees() != null && facility.getUsageCapacity() != null && booking.getNoOfAttendees() > (facility.getUsageCapacity() - slot.getBookingCount())) {
                             throw new RESTException(ErrorCode.VALIDATION_ERROR, "The current booking count exceeds the permitted bookings for the slot");
+                        }
+                        if(slot.getBookingCount() != null && !facility.isMultiBookingPerSlotAllowed()){
+                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Parallel booking in a slot is not allowed for this facility");
                         }
                     }
                 }
-                if(booking.getFacility() == null && booking.getFacility().getId() <= 0){
-                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Facility is mandatory for a booking");
-                }
+
             }
         }
 

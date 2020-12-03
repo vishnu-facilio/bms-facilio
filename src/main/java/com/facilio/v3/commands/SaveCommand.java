@@ -10,6 +10,7 @@ import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.SupplementRecord;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -46,6 +47,12 @@ public class SaveCommand extends FacilioCommand {
 
         insertRecordBuilder.withChangeSet();
         insertRecordBuilder.ignoreSplNullHandling();
+
+        //inserting multi select field values
+        List<SupplementRecord> supplementFields = (List<SupplementRecord>) context.get(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS);
+        if (CollectionUtils.isNotEmpty(supplementFields)) {
+            insertRecordBuilder.insertSupplements(supplementFields);
+        }
 
         List<ModuleBaseWithCustomFields> records = recordMap.get(module.getName());
 

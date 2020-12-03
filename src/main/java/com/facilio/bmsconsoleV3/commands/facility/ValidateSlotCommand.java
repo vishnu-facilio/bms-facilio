@@ -19,7 +19,7 @@ public class ValidateSlotCommand extends FacilioCommand {
         List<SlotContext> slots = recordMap.get(moduleName);
         if(CollectionUtils.isNotEmpty(slots)) {
             for(SlotContext slot : slots){
-                if(slot.getBookingCount() > 0){
+                if(slot.getBookingCount() != null && slot.getBookingCount() > 0){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Slot cannot be edited as it has bookings");
                 }
             }

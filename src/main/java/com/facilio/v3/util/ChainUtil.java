@@ -157,7 +157,7 @@ public class ChainUtil {
 
         addIfNotNull(transactionChain, initCommand);
         addIfNotNull(transactionChain, beforeSaveCommand);
-
+        transactionChain.addCommand(new AddMultiSelectFieldsCommand());
         transactionChain.addCommand(new SaveCommand(module));
         transactionChain.addCommand(new SaveSubFormCommand());
         transactionChain.addCommand(new SaveSubFormFromLineItemsCommand());
@@ -285,6 +285,7 @@ public class ChainUtil {
         addIfNotNull(transactionChain, initCommand);
         addIfNotNull(transactionChain, beforeSaveCommand);
 
+        transactionChain.addCommand(new AddMultiSelectFieldsCommand());
         transactionChain.addCommand(new UpdateCommand(module));
         transactionChain.addCommand(new DeleteSubModuleRecordCommand());
         transactionChain.addCommand(new DeleteSubFormLineItems());

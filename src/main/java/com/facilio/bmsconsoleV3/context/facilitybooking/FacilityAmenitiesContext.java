@@ -4,22 +4,22 @@ import com.facilio.v3.context.V3Context;
 
 public class FacilityAmenitiesContext extends V3Context {
 
-    private AmenitiesContext amenity;
-    private  FacilityContext  facility;
+   private Long left;
+   private Long right;
 
-    public AmenitiesContext getAmenity() {
-        return amenity;
+    public Long getLeft() {
+        return left;
     }
 
-    public void setAmenity(AmenitiesContext amenity) {
-        this.amenity = amenity;
+    public void setLeft(Long left) {
+        this.left = left;
     }
 
-    public FacilityContext getFacility() {
-        return facility;
+    public Long getRight() {
+        return right;
     }
 
-    public void setFacility(FacilityContext facility) {
-        this.facility = facility;
+    public void setRight(Long right) {
+        this.right = right;
     }
 }

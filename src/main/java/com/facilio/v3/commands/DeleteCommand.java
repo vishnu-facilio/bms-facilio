@@ -3,19 +3,19 @@ package com.facilio.v3.commands;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.DeleteRecordBuilder;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.MultiLookupField;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -73,7 +73,21 @@ public class DeleteCommand extends FacilioCommand {
             deleteModuleRecords(rowIds, cascadeModule.getName(), deleteCount);
         }
         deleteCount.put(moduleName, count);
-    }
+
+        //deleting multiselectfield values
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> fields = modBean.getAllFields(moduleName);
+        List<MultiLookupField> multiLookups = new ArrayList<MultiLookupField>();
+
+            for(FacilioField field : fields) {
+                if (field.getDataTypeEnum() == FieldType.MULTI_LOOKUP) {
+                    multiLookups.add((MultiLookupField) field);
+                }
+            }
+            if(CollectionUtils.isNotEmpty(multiLookups)){
+                new DeleteRecordBuilder().deleteSupplements(multiLookups);
+            }
+         }
 
     private int deleteRows(FacilioModule module, List<Long> rowIds) throws Exception {
         return new DeleteRecordBuilder()
