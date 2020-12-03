@@ -5,8 +5,11 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.services.procon.message.FacilioRecord;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.poi.ss.formula.functions.T;
+import sun.security.util.ObjectIdentifier;
 
 import java.util.*;
 
@@ -18,13 +21,6 @@ public abstract class MessageQueue {
 
     private static final List<Long> EMPTY_LIST = Collections.emptyList();
 
-    static HashSet<String> getSTREAMS() {
-        return STREAMS;
-    }
-
-    static HashSet<String> getExistingOrgs() {
-        return EXISTING_ORGS;
-    }
 
     /**
      * Entry point for starting processors
@@ -34,25 +30,6 @@ public abstract class MessageQueue {
         startProcessor();
     }
 
-    /**
-     * Starts processor for specific org
-     *
-     * @param orgId         Org ID
-     * @param orgDomainName Org Domain Name
-     */
-    abstract void startProcessor(long orgId, String orgDomainName);
-
-    /**
-     * Pushes record to the message queue
-     *
-     * @param orgId         Org ID
-     * @param orgDomainName Org Domain Name
-     * @param type          Type of the processor event,processor,alarm etc.,
-     * @param record        record containing the message to put to the queue
-     * @throws Exception Throws exception if stream not found
-     */
-
-    public abstract void put(long orgId, String orgDomainName, String type, FacilioRecord record) throws Exception;
 
     /**
      * Gets list of topics/streams
@@ -69,6 +46,24 @@ public abstract class MessageQueue {
      */
 
     public abstract void createQueue(String name);
+
+    /**
+     * Pushes record to the stream
+     *
+     * @param streamName Name of the stream
+     * @param record     record to be pushed to the stream
+     * @return
+     */
+    public abstract Object put(String streamName, FacilioRecord record);
+
+    /**
+     * Pushes record to the stream
+     *
+     * @param streamName Name of the stream
+     * @param records    List of records to be pushed to the stream
+     * @return
+     */
+    public abstract Object put(String streamName, List<FacilioRecord> records);
 
     /**
      * Loops over all orgs and starts the processor
@@ -101,6 +96,23 @@ public abstract class MessageQueue {
             LOGGER.info("Exception occurred ", e);
         }
     }
+
+    private void startProcessor(long orgId, String orgDomainName) {
+        try {
+            if (orgDomainName != null && STREAMS.contains(orgDomainName)) {
+                LOGGER.info("Starting kafka processor for org : " + orgDomainName + " id " + orgId);
+                initiateProcessFactory(orgId, orgDomainName, "processor");
+                /*initiateProcessFactory(orgId, orgDomainName, "event");
+                initiateProcessFactory(orgId, orgDomainName, "timeSeries");
+                initiateProcessFactory(orgId,orgDomainName,"agent");*/
+                EXISTING_ORGS.add(orgDomainName);
+            }
+        } catch (Exception e) {
+            LOGGER.info("Exception occurred ", e);
+        }
+    }
+
+    public abstract void initiateProcessFactory(long orgId, String orgDomainName, String type) ;
 
     private void updateStream() {
         try {

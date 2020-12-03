@@ -14,10 +14,9 @@ public class FacilioFactory {
     private FacilioFactory(){}
 
     public static FileStore getFileStore(){
-
         return FileStoreFactory.getInstance().getFileStore();
-
     }
+
     public static FileStore getFileStore(long ouid) {
         long orgId = AccountUtil.getCurrentOrg().getOrgId();
         return getFileStoreFromOrg(orgId, ouid);
@@ -38,12 +37,5 @@ public class FacilioFactory {
    public static MessageQueue getMessageQueue(){
        return MessageQueueFactory.getMessageQueue();
     }
-    /*
-    public static FacilioQueue getQueue(){
-        return QueueFactory.getQueue();
-    }
-    public static FacilioIot getIotClient(){
-        return FacilioIotFactory.getIotClient();
-    }*/
 
 }
