@@ -97,16 +97,16 @@ public class GenerateSensorRulesListCommand extends FacilioCommand {
 			List<SensorRuleContext> found = sensorRules.stream().filter(i -> i.getSensorRuleType() == type.getIndex()).collect(Collectors.toList());
 			
 			
-			if (found == null || found.isEmpty()) {
-			if (readingFieldObj instanceof NumberField && !type.isCounterFieldType()) {	
-				sensorRules.add(newContext);
-			}
-			NumberField numberField = (NumberField) readingFieldObj;
-			if ((numberField.isCounterField() ||  Arrays.asList(specialFields).contains(readingFieldObj.getName())) && type.isCounterFieldType()) {
-				sensorRules.add(newContext);
-			}
-			}
+				if (found == null || found.isEmpty()) {
+					NumberField numberField = (NumberField) readingFieldObj;
+					if (!numberField.isCounterField() && readingFieldObj instanceof NumberField && !type.isCounterFieldType() && !Arrays.asList(specialFields).contains(readingFieldObj.getName())) {		
+						sensorRules.add(newContext);
+					}
+					else if ((numberField.isCounterField() || Arrays.asList(specialFields).contains(readingFieldObj.getName())) && type.isCounterFieldType()) {
+						sensorRules.add(newContext);
+					}
 				}
+			}
 		}
 		
 	}
