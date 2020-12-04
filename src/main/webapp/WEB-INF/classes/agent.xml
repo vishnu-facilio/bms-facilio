@@ -278,6 +278,9 @@
         <action name="getFilter" class="com.facilio.agentv2.actions.AgentIdAction"
                 method="getControllerFilter"> <!--DONE-->
         </action>
+        <action name="filterControllerTypes" class="com.facilio.agentv2.actions.AgentIdAction"
+                method="getControllerTypeFilter"> <!--DONE-->
+        </action>
 
     </package>
 

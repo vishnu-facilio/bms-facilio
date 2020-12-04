@@ -603,6 +603,19 @@ public class ControllerApiV2 {
         }
         return controllers;
     }    
+
+    public static List<Map<String,Object>> getControllerTypes(Long agentId) throws Exception {
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(FieldFactory.getIdField(CONTROLLER_MODULE));
+        fields.add(FieldFactory.getControllerTypeField(CONTROLLER_MODULE));
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(CONTROLLER_MODULE.getTableName())
+                .select(fields)
+                .groupBy("CONTROLLER_TYPE")
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(CONTROLLER_MODULE), String.valueOf(agentId), NumberOperators.EQUALS));
+        return builder.get();
+    }
+
     public static List<Map<String, Object>> getControllerFilterData(Long agentId, Integer controllerType) throws Exception {
         return getAgentControllerFilterData(agentId , controllerType);
     }

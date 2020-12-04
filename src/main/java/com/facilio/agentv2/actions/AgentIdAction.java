@@ -548,6 +548,18 @@ public class AgentIdAction extends AgentActionV2 {
         return SUCCESS;
     }
 
+    public String getControllerTypeFilter() {
+        try {
+            setResult(AgentConstants.DATA, ControllerApiV2.getControllerTypes(getAgentId()));
+            ok();
+            return SUCCESS;
+        } catch (Exception e) {
+            internalError();
+            LOGGER.info("Excdeption occurred while getting controller filter", e);
+        }
+        return SUCCESS;
+    }
+
     public String getDeviceFilter() {
         try {
             List<Map<String, Object>> deviceFilter = FieldDeviceApi.getDeviceFilterData(getAgentId());
