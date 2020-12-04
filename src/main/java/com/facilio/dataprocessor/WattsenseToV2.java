@@ -19,7 +19,13 @@ public class WattsenseToV2 implements AgentMessagePreProcessor {
         JSONObject data = (JSONObject) jsonObject.get(AgentConstants.DATA);
         JSONArray dataArray = new JSONArray();
         JSONObject dataItem = new JSONObject();
-        dataItem.put(data.get("property").toString(), data.get("payload"));
+        Object payload;
+        if (data.containsKey("scaledPayload")) {
+            payload = data.get("scaledPayload");
+        } else {
+            payload = data.get("payload");
+        }
+        dataItem.put(data.get("property").toString(), payload);
         dataArray.add(dataItem);
         JSONObject controllerObject = new JSONObject();
         controllerObject.put(AgentConstants.NAME, data.get(AgentConstants.DEVICE_ID).toString());
