@@ -558,7 +558,7 @@ public class BmsDBConf extends DBConf {
 	}
 
     @Override
-    public int getResponseSizeThreshold() {
+    public long getResponseSizeThreshold() {
         return FacilioProperties.getResponseSizeThreshold();
     }
 

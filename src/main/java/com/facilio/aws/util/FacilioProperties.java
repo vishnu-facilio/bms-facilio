@@ -112,7 +112,7 @@ public class FacilioProperties {
     private static String mobileClientportalAppScheme;
 
     private static int authTokenCookieLifespan = 7 * 24 * 60 * 60;
-    private static int responseSizeThreshold = 5000000; // In Bytes
+    private static long responseSizeThreshold = 5000000; // In Bytes
 
     private static boolean userAccessLog = false;
 
@@ -213,7 +213,7 @@ public class FacilioProperties {
                 String responseThreshold = PROPERTIES.getProperty("response.size.threshold");
                 if (StringUtils.isNotEmpty(responseThreshold)) {
                     try {
-                        int threshold = Integer.parseInt(responseThreshold);
+                        long threshold = Long.parseLong(responseThreshold);
                         if (threshold > 0) {
                             responseSizeThreshold = threshold;
                         }
@@ -411,7 +411,7 @@ public class FacilioProperties {
         return authTokenCookieLifespan;
     }
 
-    public static int getResponseSizeThreshold() {
+    public static long getResponseSizeThreshold() {
         return responseSizeThreshold;
     }
 
