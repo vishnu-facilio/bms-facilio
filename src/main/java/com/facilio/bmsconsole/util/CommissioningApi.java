@@ -233,6 +233,9 @@ public class CommissioningApi {
 		List<Pair<Long, FacilioField>> rdmPairs = new ArrayList<>();
 		JSONArray finalPoints = new JSONArray();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		List<String> mappedDetials = new ArrayList<>(); 
+		
 		for(Point point: points) {
 			Long categoryId = point.getCategoryId();
 			Long resourceId = point.getResourceId();
@@ -242,6 +245,17 @@ public class CommissioningApi {
 			Point dbPoint = dbPointMap.get(point.getId());
 			Long dbResourceId = dbPoint.getResourceId();
 			Long dbFieldId = dbPoint.getFieldId();
+			
+			if(resourceId != null && fieldId != null) {
+				String key = resourceId+"_"+ fieldId;
+				if (mappedDetials.contains(key)) {
+					ResourceContext resource = ResourceAPI.getResource(resourceId);
+					StringBuilder builder = new StringBuilder(modBean.getField(fieldId).getDisplayName())
+							.append(" reading of ").append(resource.getName()).append(" is mapped more than once.");
+					throw new IllegalArgumentException(builder.toString());
+				}
+				mappedDetials.add(key);
+			}
 			
 			if (dbResourceId != null && dbFieldId != null) {
 				if (resourceId == null || fieldId == null) {
