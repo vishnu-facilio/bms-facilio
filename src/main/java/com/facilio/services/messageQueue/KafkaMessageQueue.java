@@ -22,7 +22,7 @@ class KafkaMessageQueue extends MessageQueue {
     private static org.apache.log4j.Logger LOGGER = LogManager.getLogger(KafkaMessageQueue.class.getName());
     private static AdminClient kafkaClient = null;
     private static final KafkaMessageQueue INSTANCE =new KafkaMessageQueue();
-
+    private static final int MAX_KAFKA_MESSAGE_SIZE = 110 * 1024; //110KB
     private KafkaMessageQueue(){}
     static KafkaMessageQueue getClient(){
         return INSTANCE;
@@ -64,21 +64,28 @@ class KafkaMessageQueue extends MessageQueue {
         return properties;
     }
 
-    public List<RecordMetadata> put(String streamName, List<FacilioRecord> records) {
+    public List<RecordMetadata> put(String streamName, List<FacilioRecord> records) throws Exception {
         List<RecordMetadata> listOfRecordMetaData = new ArrayList<>();
         FacilioKafkaProducer producer = new FacilioKafkaProducer(streamName);
-        for (FacilioRecord record : records) {
-            listOfRecordMetaData.add(producer.putRecord(record));
+        try {
+            for (FacilioRecord record : records) {
+                String data = record.getData().toJSONString();
+                if (data.length() > MAX_KAFKA_MESSAGE_SIZE) {
+                    throw new Exception("MAX_KAFKA_MESSAGE_SIZE exceeded. Allowed size :" + MAX_KAFKA_MESSAGE_SIZE + " Received :" + data.length());
+                }
+                listOfRecordMetaData.add(producer.putRecord(record));
+            }
+        } catch (Exception ex) {
+            producer.close();
+            throw ex;
         }
-        producer.close();
         return listOfRecordMetaData;
     }
 
-    public RecordMetadata put(String streamName, FacilioRecord record) {
-        FacilioKafkaProducer producer = new FacilioKafkaProducer(streamName);
-        RecordMetadata recordMetadata = producer.putRecord(record);
-        producer.close();
-        return recordMetadata;
+    public RecordMetadata put(String streamName, FacilioRecord record) throws Exception {
+        List<FacilioRecord> records = new ArrayList<>();
+        records.add(record);
+        return put(streamName, records).get(0);
     }
 
     @Override

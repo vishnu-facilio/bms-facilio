@@ -17,22 +17,27 @@ import java.util.concurrent.Future;
 public class FacilioKafkaProducer implements FacilioProducer {
     private static final Logger LOGGER = LogManager.getLogger(FacilioKafkaProducer.class.getName());
 
-    private String topic;
+    private final String topic;
+
 
     private KafkaProducer<String, String> producer;
 
-    public FacilioKafkaProducer (String topic) {
+    public FacilioKafkaProducer(String topic) {
         this.topic = topic;
         producer = new KafkaProducer<>(getProducerProperties());
     }
 
     public RecordMetadata putRecord(FacilioRecord record) {
-        Future<RecordMetadata> future = producer.send(new ProducerRecord<>(topic, record.getPartitionKey(), record.getData().toJSONString()));
         RecordMetadata recordMetadata = null;
         try {
-            recordMetadata = future.get();
-        } catch (InterruptedException | ExecutionException e) {
-            LOGGER.info(e);
+            Future<RecordMetadata> future = producer.send(new ProducerRecord<>(topic, record.getPartitionKey(), record.getData().toJSONString()));
+            try {
+                recordMetadata = future.get();
+            } catch (InterruptedException | ExecutionException e) {
+                LOGGER.info(e);
+            }
+        } catch (Exception ex) {
+            LOGGER.info("Exception while sending record to topic " + topic, ex);
         }
         return recordMetadata;
     }

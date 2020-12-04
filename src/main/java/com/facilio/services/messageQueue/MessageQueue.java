@@ -54,7 +54,7 @@ public abstract class MessageQueue {
      * @param record     record to be pushed to the stream
      * @return
      */
-    public abstract Object put(String streamName, FacilioRecord record);
+    public abstract Object put(String streamName, FacilioRecord record) throws Exception;
 
     /**
      * Pushes record to the stream
@@ -63,7 +63,7 @@ public abstract class MessageQueue {
      * @param records    List of records to be pushed to the stream
      * @return
      */
-    public abstract Object put(String streamName, List<FacilioRecord> records);
+    public abstract Object put(String streamName, List<FacilioRecord> records) throws Exception;
 
     /**
      * Loops over all orgs and starts the processor
