@@ -30,7 +30,6 @@ public class AccessLogFilter implements Filter {
     private static final String DUMMY_MSG = "accesslog";
     private static final String APPENDER_NAME = "graylog3";
     private static final boolean ENABLE_FHR = FacilioProperties.enableFacilioResponse();
-    private static final String RESPONSE_SIZE = "res_size";
 
     private static final AtomicInteger THREAD_ID = new AtomicInteger(1);
     private static final long TIME_THRESHOLD = 5000 ;
@@ -117,7 +116,7 @@ public class AccessLogFilter implements Filter {
 
             RequestUtil.addRequestLogEvents(request, event);
             if (ENABLE_FHR) {
-                event.setProperty(RESPONSE_SIZE, String.valueOf(responseSize));
+                event.setProperty(RequestUtil.RESPONSE_SIZE, String.valueOf(responseSize));
             }
             long timeTaken = System.currentTimeMillis() - startTime;
             String responseCode = String.valueOf(response.getStatus());
