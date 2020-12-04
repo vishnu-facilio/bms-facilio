@@ -24,10 +24,12 @@ public class LoadFacilityLookupCommandV3 extends FacilioCommand {
         LookupField manager = (LookupField) fieldsAsMap.get("manager");
         LookupField location = (LookupField) fieldsAsMap.get("location");
         LookupField slot = (LookupField) fieldsAsMap.get("slot");
+        LookupField amenities = (LookupField) fieldsAsMap.get("amenities");
 
         fetchLookupsList.add(manager);
         fetchLookupsList.add(location);
         fetchLookupsList.add(slot);
+        fetchLookupsList.add(amenities);
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchLookupsList);
         return false;
     }

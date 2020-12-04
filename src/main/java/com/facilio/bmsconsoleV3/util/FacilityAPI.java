@@ -29,24 +29,6 @@ import java.util.logging.Level;
 
 public class FacilityAPI {
 
-    public static void setFacilityAmenities(FacilityContext facility) throws Exception {
-
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        String facilityAmenityModName = FacilioConstants.ContextNames.FacilityBooking.FACILITY_AMENITIES;
-        List<FacilioField> fields = modBean.getAllFields(facilityAmenityModName);
-        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
-
-        SelectRecordsBuilder<FacilityAmenitiesContext> builder = new SelectRecordsBuilder<FacilityAmenitiesContext>()
-                .moduleName(facilityAmenityModName)
-                .select(fields)
-                .beanClass(FacilityAmenitiesContext.class)
-                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("facility"), String.valueOf(facility.getId()), NumberOperators.EQUALS));
-        List<FacilityAmenitiesContext> list = builder.get();
-        if (CollectionUtils.isNotEmpty(list)) {
-            facility.setAmenities(list);
-        }
-    }
-
     public static void setFacilityWeekDayAvailability(FacilityContext facility) throws Exception {
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -184,7 +166,7 @@ public class FacilityAPI {
                     long startDateTimeOfDay = FacilityAPI.getCalendarTime(startTime, splAvailability.getStartTimeAsLocalTime());
                     long endDateTimeOfDay = FacilityAPI.getCalendarTime(startTime, splAvailability.getEndTimeAsLocalTime());
 
-                    while (startDateTimeOfDay <= endDateTimeOfDay && startDateTimeOfDay <= endDateTime) {
+                    while (startDateTimeOfDay <= endDateTimeOfDay && DateTimeUtil.getDayStartTimeOf(startDateTimeOfDay) <= endDateTime) {
                         SlotContext slot = new SlotContext();
                         slot.setSlotCost(splAvailability.getCost());
                         slot.setSlotStartTime(startDateTimeOfDay);
@@ -225,7 +207,7 @@ public class FacilityAPI {
                                 long startDateTimeOfDay = FacilityAPI.getCalendarTime(startDay, wk.getStartTimeAsLocalTime());
                                 long endDateTimeOfDay = FacilityAPI.getCalendarTime(startDay, wk.getEndTimeAsLocalTime());
 
-                                while (startDateTimeOfDay < endDateTimeOfDay && startDateTimeOfDay <= endDateTime) {
+                                while (startDateTimeOfDay < endDateTimeOfDay && DateTimeUtil.getDayStartTimeOf(startDateTimeOfDay) <= endDateTime) {
                                     SlotContext slot = new SlotContext();
                                     slot.setSlotCost(wk.getCost());
                                     slot.setSlotStartTime(startDateTimeOfDay);
