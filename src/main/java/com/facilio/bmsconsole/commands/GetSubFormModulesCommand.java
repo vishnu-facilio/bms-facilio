@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.facilio.modules.FieldType;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.MultiLookupField;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -33,6 +36,15 @@ public class GetSubFormModulesCommand extends FacilioCommand {
             List<FacilioModule> configuredSubModules = modBean.getSubModules(module.getModuleId(), FacilioModule.ModuleType.BASE_ENTITY);
             if (CollectionUtils.isNotEmpty(configuredSubModules)) {
                 subModules.addAll(configuredSubModules);
+            }
+            //adding multi select lookup field related modules
+            List<FacilioField> fields = modBean.getAllFields(moduleName);
+            if(CollectionUtils.isNotEmpty(fields)) {
+                for(FacilioField field : fields) {
+                    if(field.getDataTypeEnum() == FieldType.MULTI_LOOKUP){
+                        subModules.add(((MultiLookupField)field).getRelModule());
+                    }
+                }
             }
 
             context.put(FacilioConstants.ContextNames.MODULE_LIST, subModules);
