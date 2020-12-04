@@ -171,7 +171,7 @@ public class FacilityAPI {
                         slot.setSlotCost(splAvailability.getCost());
                         slot.setSlotStartTime(startDateTimeOfDay);
                         slot.setFacilityId(facilityContext.getId());
-                        slot.setSlotEndTime((startDateTimeOfDay + facilityContext.getSlotDuration()));
+                        slot.setSlotEndTime((startDateTimeOfDay + (facilityContext.getSlotDuration() * 1000)));
                         if (!FacilityAPI.checkForUnavailability(slot.getSlotStartTime(), slot.getSlotEndTime(), facilityContext.getFacilitySpecialAvailabilities()) && !FacilityAPI.checkExistingSlots(slotList, slot)) {
                             slotList.add(slot);
                         }
@@ -211,7 +211,7 @@ public class FacilityAPI {
                                     SlotContext slot = new SlotContext();
                                     slot.setSlotCost(wk.getCost());
                                     slot.setSlotStartTime(startDateTimeOfDay);
-                                    slot.setSlotEndTime((startDateTimeOfDay + facilityContext.getSlotDuration()));
+                                    slot.setSlotEndTime((startDateTimeOfDay + (facilityContext.getSlotDuration() * 1000)));
                                     slot.setFacilityId(facilityContext.getId());
                                     if (!FacilityAPI.checkForUnavailability(slot.getSlotStartTime(), slot.getSlotEndTime(), facilityContext.getFacilitySpecialAvailabilities()) && !FacilityAPI.checkExistingSlots(slotList, slot)) {
                                         slotList.add(slot);
