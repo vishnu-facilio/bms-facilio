@@ -2,10 +2,7 @@ package com.facilio.bmsconsoleV3.commands.facility;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
-import com.facilio.bmsconsoleV3.context.facilitybooking.BookingPaymentContext;
-import com.facilio.bmsconsoleV3.context.facilitybooking.BookingSlotsContext;
-import com.facilio.bmsconsoleV3.context.facilitybooking.SlotContext;
-import com.facilio.bmsconsoleV3.context.facilitybooking.V3FacilityBookingContext;
+import com.facilio.bmsconsoleV3.context.facilitybooking.*;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -38,6 +35,12 @@ public class CreatePaymentRecordForBookingCommand extends FacilioCommand {
             List<BookingPaymentContext> payments = new ArrayList<>();
             for(V3FacilityBookingContext booking : bookings) {
                 Map<String, List<Map<String, Object>>> subformMap = booking.getSubForm();
+                if(booking.getFacility() != null) {
+                    FacilityContext facility = (FacilityContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.FacilityBooking.FACILITY, booking.getFacility().getId(), FacilityContext.class);
+                    if(!facility.isChargeable()){
+                        return false;
+                    }
+                }
                 if(MapUtils.isEmpty(subformMap) || subformMap.containsKey(FacilioConstants.ContextNames.FacilityBooking.BOOKING_SLOTS)) {
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Slot is mandatory for a booking");
                 }
