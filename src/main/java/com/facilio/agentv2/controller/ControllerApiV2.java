@@ -603,11 +603,11 @@ public class ControllerApiV2 {
         }
         return controllers;
     }    
-    public static List<Map<String, Object>> getControllerFilterData(Long agentId) throws Exception {
-        return getAgentControllerFilterData(agentId);
+    public static List<Map<String, Object>> getControllerFilterData(Long agentId, Integer controllerType) throws Exception {
+        return getAgentControllerFilterData(agentId , controllerType);
     }
 
-    private static List<Map<String, Object>> getAgentControllerFilterData(Long agentId) throws Exception {
+    private static List<Map<String, Object>> getAgentControllerFilterData(Long agentId,Integer controllerType) throws Exception {
         List<FacilioField> fields = new ArrayList<>();
         fields.add(FieldFactory.getNameField(RESOURCE_MODULE));
         fields.add(FieldFactory.getIdField(CONTROLLER_MODULE));
@@ -618,6 +618,9 @@ public class ControllerApiV2 {
                 .select(fields)
                 .innerJoin(RESOURCE_MODULE.getTableName()).on(RESOURCE_MODULE.getTableName() + ".ID=" + CONTROLLER_MODULE.getTableName() + ".ID")
                 .andCondition(CriteriaAPI.getCondition(FieldFactory.getSysDeletedTimeField(RESOURCE_MODULE), "NULL", CommonOperators.IS_EMPTY));
+        if(controllerType != null){
+            builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getControllerTypeField(CONTROLLER_MODULE),String.valueOf(controllerType),NumberOperators.EQUALS));
+        }
         if (agentId != null) {
             builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(CONTROLLER_MODULE), String.valueOf(agentId), NumberOperators.EQUALS));
             List<Map<String, Object>> props = builder.get();
