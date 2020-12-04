@@ -134,7 +134,9 @@ public class BusinessHoursContext implements Serializable {
 	}
 
 	public static enum BusinessHourType {
-		DAYS_24_7, DAYS_24_5, CUSTOM;
+		DAYS_24_7, 
+		DAYS_24_5, 
+		CUSTOM;
 
 		public int getValue() {
 			return ordinal() + 1;
@@ -149,7 +151,8 @@ public class BusinessHoursContext implements Serializable {
 	}
 
 	public static enum CustomHourType {
-		SAME_TIMING_ALLDAY, DIFFERENT_TIMING_ALLDAY;
+		SAME_TIMING_ALLDAY, 
+		DIFFERENT_TIMING_ALLDAY;
 		public int getValue() {
 			return ordinal() + 1;
 		}

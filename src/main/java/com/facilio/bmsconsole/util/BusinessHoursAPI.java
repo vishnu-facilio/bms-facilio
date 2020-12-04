@@ -2,7 +2,9 @@ package com.facilio.bmsconsole.util;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +15,12 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
+import com.facilio.tasker.ScheduleInfo;
+import com.facilio.tasker.ScheduleInfo.FrequencyType;
+import com.facilio.time.DateRange;
+import com.facilio.time.DateTimeUtil;
+import com.google.type.DayOfWeek;
+
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -25,6 +33,9 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 
 public class BusinessHoursAPI {
+	
+	public static final String DEFAULT_DAY_START_TIME = "00:00";
+	public static final String DEFAULT_DAY_END_TIME = "23:59";
 
 	public static long addBusinessHours(BusinessHoursContext businessHours) throws Exception {
 
@@ -175,6 +186,97 @@ public class BusinessHoursAPI {
 				businessHours.add(businessHour);
 			}
 		}
+		return businessHours;
+	}
+	
+	
+	public static List<DateRange> getBusinessHoursForNextNDays(BusinessHoursContext businessHour, int days) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		
+		List<BusinessHourContext> businessHours = businessHour.getSingleDaybusinessHoursList();
+		
+		if(businessHours == null || businessHours.isEmpty()) {
+			businessHours = fetchDefault24_7Days();
+		}
+		
+		List<DateRange> dateRanges = new ArrayList<DateRange>();
+		
+		for(BusinessHourContext singleDayBusinessHour :businessHours) {
+			
+			if(singleDayBusinessHour.getStartTime() == null) {
+				singleDayBusinessHour.setStartTime(DEFAULT_DAY_START_TIME);
+			}
+			if(singleDayBusinessHour.getEndTime() == null) {
+				singleDayBusinessHour.setEndTime(DEFAULT_DAY_END_TIME);
+			}
+			
+			ScheduleInfo startTimeScheduleInfo = new ScheduleInfo();
+			
+			startTimeScheduleInfo.setFrequencyType(FrequencyType.WEEKLY);
+			startTimeScheduleInfo.setValues(Collections.singletonList(singleDayBusinessHour.getDayOfWeek()));
+			startTimeScheduleInfo.setTimes(Collections.singletonList(singleDayBusinessHour.getStartTime()));
+			
+			ScheduleInfo endTimeScheduleInfo = new ScheduleInfo();
+			
+			endTimeScheduleInfo.setFrequencyType(FrequencyType.WEEKLY);
+			endTimeScheduleInfo.setValues(Collections.singletonList(singleDayBusinessHour.getDayOfWeek()));
+			endTimeScheduleInfo.setTimes(Collections.singletonList(singleDayBusinessHour.getEndTime()));
+			
+			long startTime = DateTimeUtil.getDayStartTime();
+			
+			long endTime = DateTimeUtil.addDays(startTime, days);
+			
+			while(true) {
+				
+				long tempStartTime = startTimeScheduleInfo.nextExecutionTime(startTime/1000) * 1000;
+				long tempEndTime = endTimeScheduleInfo.nextExecutionTime(tempStartTime/1000) * 1000;
+				
+				if(tempStartTime < endTime && tempEndTime <= endTime) {
+					dateRanges.add(new DateRange(tempStartTime, tempEndTime));
+					startTime = tempEndTime;
+				}
+				else {
+					break;
+				}
+			}
+ 		}
+		
+		Collections.sort(dateRanges);
+		
+		return dateRanges;
+	}
+
+	private static List<BusinessHourContext> fetchDefault24_7Days() {
+		
+		List<BusinessHourContext> businessHours = new ArrayList<BusinessHourContext>();
+		
+		BusinessHourContext businessHour = new BusinessHourContext();
+		businessHour.setDayOfWeek(DayOfWeek.SUNDAY_VALUE);
+		businessHours.add(businessHour);
+		
+		businessHour = new BusinessHourContext();
+		businessHour.setDayOfWeek(DayOfWeek.MONDAY_VALUE);
+		businessHours.add(businessHour);
+		
+		businessHour = new BusinessHourContext();
+		businessHour.setDayOfWeek(DayOfWeek.TUESDAY_VALUE);
+		businessHours.add(businessHour);
+		
+		businessHour = new BusinessHourContext();
+		businessHour.setDayOfWeek(DayOfWeek.WEDNESDAY_VALUE);
+		businessHours.add(businessHour);
+		
+		businessHour = new BusinessHourContext();
+		businessHour.setDayOfWeek(DayOfWeek.THURSDAY_VALUE);
+		businessHours.add(businessHour);
+		
+		businessHour = new BusinessHourContext();
+		businessHour.setDayOfWeek(DayOfWeek.FRIDAY_VALUE);
+		businessHours.add(businessHour);
+		
+		businessHour = new BusinessHourContext();
+		businessHour.setDayOfWeek(DayOfWeek.SATURDAY_VALUE);
+		businessHours.add(businessHour);
+		
 		return businessHours;
 	}
 

@@ -191,7 +191,7 @@ public class ScheduleInfo implements Serializable {
 		return Pair.of(nextExecutionTime(startTimeCyclesExecuted.getLeft()), cycleCount);
 	}
 
-	public long nextExecutionTime(long startTime) {
+	public long nextExecutionTime(long startTime) {							// in sec
 		ZonedDateTime zdt = DateTimeUtil.getDateTime(startTime+1, true);
 //		zdt = zdt.truncatedTo(ChronoUnit.MINUTES);
 		if(times == null || times.isEmpty()) {

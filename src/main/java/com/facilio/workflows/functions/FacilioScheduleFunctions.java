@@ -41,7 +41,7 @@ public enum FacilioScheduleFunctions implements FacilioWorkflowFunctionInterface
 			}
 		}
 	},
-	GET_NEXT_EXECUTION_TIME(1,"nextExecutionTime") {
+	GET_NEXT_EXECUTION_TIME(2,"nextExecutionTime") {
 		@Override
 		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
