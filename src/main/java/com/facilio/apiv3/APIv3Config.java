@@ -765,6 +765,7 @@ public class APIv3Config {
                    .beforeSave(TransactionChainFactoryV3.getCreateBookingBeforeSaveChain())
                 .update()
                     .beforeSave(TransactionChainFactoryV3.getCreateBookingBeforeEditChain())
+                    .afterSave(new CancelBookingCommand())
                 .delete()
                 .list()
                 .beforeFetch(new LoadFacilityLookupCommandV3())

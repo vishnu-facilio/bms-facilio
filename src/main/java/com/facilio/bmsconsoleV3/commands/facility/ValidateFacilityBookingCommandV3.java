@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.facility;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.facilitybooking.*;
 import com.facilio.bmsconsoleV3.util.FacilityAPI;
@@ -7,7 +8,9 @@ import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.DeleteRecordBuilder;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
@@ -25,6 +28,10 @@ public class ValidateFacilityBookingCommandV3 extends FacilioCommand {
         String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<V3FacilityBookingContext> bookings = recordMap.get(moduleName);
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.FacilityBooking.SLOTS);
+
         if(CollectionUtils.isNotEmpty(bookings)) {
             for(V3FacilityBookingContext booking : bookings) {
                 Map<String, List<Map<String, Object>>> subformMap = booking.getSubForm();
@@ -57,7 +64,17 @@ public class ValidateFacilityBookingCommandV3 extends FacilioCommand {
                         if(slot.getBookingCount() != null && !facility.isMultiBookingPerSlotAllowed()){
                             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Parallel booking in a slot is not allowed for this facility");
                         }
+
+                        //setting booking count in slot
+                        if(slot.getBookingCount() != null) {
+                            slot.setBookingCount(slot.getBookingCount() + booking.getNoOfAttendees());
+                        }
+                        else {
+                            slot.setBookingCount(booking.getNoOfAttendees());
+                        }
+                        V3RecordAPI.updateRecord(slot, module, modBean.getAllFields(FacilioConstants.ContextNames.FacilityBooking.SLOTS));
                     }
+
                 }
 
             }

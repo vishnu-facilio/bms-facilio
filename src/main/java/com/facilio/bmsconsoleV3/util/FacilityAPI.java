@@ -22,6 +22,7 @@ import com.facilio.v3.util.CommandUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
+import java.awt.print.Book;
 import java.time.LocalTime;
 import java.util.*;
 import java.util.logging.Level;
@@ -323,5 +324,22 @@ public class FacilityAPI {
         List<WeekDayAvailability> records = builder.get();
         return records;
     }
+
+    public static List<BookingSlotsContext> getBookingSlots(Long bookingId) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        String bookingSlots = FacilioConstants.ContextNames.FacilityBooking.BOOKING_SLOTS;
+        List<FacilioField> fields = modBean.getAllFields(bookingSlots);
+        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+
+        SelectRecordsBuilder<BookingSlotsContext> builder = new SelectRecordsBuilder<BookingSlotsContext>()
+                .moduleName(bookingSlots)
+                .select(fields)
+                .beanClass(BookingSlotsContext.class)
+                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("booking"), String.valueOf(bookingId), NumberOperators.EQUALS));
+
+        List<BookingSlotsContext> list = builder.get();
+        return  list;
+    }
+
 
 }
