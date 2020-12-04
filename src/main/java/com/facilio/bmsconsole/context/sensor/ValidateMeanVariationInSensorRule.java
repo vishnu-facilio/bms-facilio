@@ -33,7 +33,7 @@ public class ValidateMeanVariationInSensorRule implements SensorRuleTypeValidati
 	@Override
 	public JSONObject getDefaultSeverityAndSubject() {
 		JSONObject defaultProps = new JSONObject();
-		defaultProps.put("subject", "Current reading's consumption deviates from the average consumption by 100 times");
+		defaultProps.put("subject", "Abnormal energy reading ");
 		defaultProps.put("comment", "Counter Field readings seems to high delta difference.");
 		defaultProps.put("severity", FacilioConstants.Alarm.CRITICAL_SEVERITY);
 		return defaultProps;

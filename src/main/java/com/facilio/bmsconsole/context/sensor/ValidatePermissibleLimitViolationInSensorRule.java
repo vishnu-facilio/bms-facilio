@@ -29,7 +29,7 @@ public class ValidatePermissibleLimitViolationInSensorRule implements SensorRule
 	@Override
 	public JSONObject getDefaultSeverityAndSubject() {
 		JSONObject defaultProps = new JSONObject();
-		defaultProps.put("subject", "Current reading is not within its permissible limits.");
+		defaultProps.put("subject", "Out of range");
 		defaultProps.put("comment", "Current Reading doesn't lie between the limits of the reading field.");
 		defaultProps.put("severity", FacilioConstants.Alarm.CRITICAL_SEVERITY);
 		return defaultProps;

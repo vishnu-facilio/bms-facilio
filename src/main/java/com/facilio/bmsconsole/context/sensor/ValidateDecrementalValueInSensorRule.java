@@ -34,7 +34,7 @@ public class ValidateDecrementalValueInSensorRule implements SensorRuleTypeValid
 	@Override
 	public JSONObject getDefaultSeverityAndSubject() {
 		JSONObject defaultProps = new JSONObject();
-		defaultProps.put("subject", "Latest reading is less than the previous reading");
+		defaultProps.put("subject", "Decremental meter readings");
 		defaultProps.put("comment", "Counter Field readings seems to be non-incremental.");
 		defaultProps.put("severity", FacilioConstants.Alarm.CRITICAL_SEVERITY);
 		return defaultProps;

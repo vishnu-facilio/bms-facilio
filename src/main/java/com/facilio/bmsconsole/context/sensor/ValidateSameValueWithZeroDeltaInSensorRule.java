@@ -1,3 +1,4 @@
+
 package com.facilio.bmsconsole.context.sensor;
 
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public class ValidateSameValueWithZeroDeltaInSensorRule implements SensorRuleTyp
 	@Override
 	public JSONObject getDefaultSeverityAndSubject() {
 		JSONObject defaultProps = new JSONObject();
-		defaultProps.put("subject", "Current reading seems to have a zero consumption");
+		defaultProps.put("subject", "All match");
 		defaultProps.put("comment", "Counter Field readings seems to have equal readings.");
 		defaultProps.put("severity", FacilioConstants.Alarm.CRITICAL_SEVERITY);
 		return defaultProps;
