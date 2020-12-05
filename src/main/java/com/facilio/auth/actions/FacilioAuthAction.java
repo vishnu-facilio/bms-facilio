@@ -366,6 +366,8 @@ public class FacilioAuthAction extends FacilioAction {
 		if (!StringUtils.isNullOrEmpty(getLookUpType())) {
 			if (getLookUpType().equals("service")) {
 				return servicelookup();
+			} else if (getLookUpType().equals("tenant")) {
+				return servicelookup();
 			}
 		}
 		String username = getUsername();
@@ -423,7 +425,12 @@ public class FacilioAuthAction extends FacilioAction {
 			LOGGER.info("validateLogin() : username : " + getUsername()
 			);
 			String authtoken = null;
-			AppDomain appdomainObj = IAMAppUtil.getAppDomain(getDomain()+"."+FacilioProperties.getOccupantAppDomain());
+			AppDomain appdomainObj = null;
+			if (getLookUpType().equalsIgnoreCase("service")) {
+				appdomainObj = IAMAppUtil.getAppDomain(getDomain()+"."+FacilioProperties.getOccupantAppDomain());
+			} else if (getLookUpType().equalsIgnoreCase("tenant")) {
+				appdomainObj = IAMAppUtil.getAppDomain(getDomain()+"."+FacilioProperties.getTenantAppDomain());
+			}
 
 			HttpServletRequest request = ServletActionContext.getRequest();
 			HttpServletResponse resp = ServletActionContext.getResponse();
@@ -461,7 +468,7 @@ public class FacilioAuthAction extends FacilioAction {
 
 	public String loginWithPasswordAndDigest() throws Exception {
 		if (!StringUtils.isNullOrEmpty(getLookUpType())) {
-			if (getLookUpType().equals("service")) {
+			if (getLookUpType().equals("service") || getLookUpType().equalsIgnoreCase("tenant")) {
 				return serviceLoginWithPasswordAndDigest();
 			}
 		}
@@ -495,7 +502,13 @@ public class FacilioAuthAction extends FacilioAction {
 
 	private void setServicePortalWebViewCookies() throws Exception {
 		HttpServletResponse response = ServletActionContext.getResponse();
-		Cookie schemeCookie = new Cookie("fc.mobile.scheme", FacilioProperties.getMobileServiceportalAppScheme());
+		Cookie schemeCookie = null;
+		if (getLookUpType().equalsIgnoreCase("service")) {
+			schemeCookie = new Cookie("fc.mobile.scheme", FacilioProperties.getMobileServiceportalAppScheme());
+		} else if (getLookUpType().equalsIgnoreCase("tenant")) {
+			schemeCookie = new Cookie("fc.mobile.scheme", FacilioProperties.getMobileTenantportalAppScheme());
+		}
+
 		setTempCookieProperties(schemeCookie, false);
 		response.addCookie(schemeCookie);
 	}
