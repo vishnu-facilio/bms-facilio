@@ -20,9 +20,7 @@ import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.Neighbo
 import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.AddOrUpdateNewsSharingCommandV3;
 import com.facilio.bmsconsoleV3.commands.employee.AddPeopleTypeForEmployeeCommandV3;
 import com.facilio.bmsconsoleV3.commands.employee.UpdateEmployeePeopleAppPortalAccessCommandV3;
-import com.facilio.bmsconsoleV3.commands.facility.CreatePaymentRecordForBookingCommand;
-import com.facilio.bmsconsoleV3.commands.facility.ValidateCanEditBookingCommand;
-import com.facilio.bmsconsoleV3.commands.facility.ValidateFacilityBookingCommandV3;
+import com.facilio.bmsconsoleV3.commands.facility.*;
 import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.UpdatePeoplePrimaryContactCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.POAfterCreateOrEditV3Command;
@@ -519,8 +517,8 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getCreateBookingBeforeSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SetLocalIdCommandV3());
+        c.addCommand(new SetCanEditForBookingCommand());
         c.addCommand(new ValidateFacilityBookingCommandV3());
-        c.addCommand(new CreatePaymentRecordForBookingCommand());
         return c;
     }
 
@@ -528,6 +526,12 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ValidateCanEditBookingCommand());
         c.addCommand(new ValidateFacilityBookingCommandV3());
+        return c;
+    }
+
+    public static FacilioChain getUpdateBookingAfterEditChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new CancelBookingCommand());
         c.addCommand(new CreatePaymentRecordForBookingCommand());
         return c;
     }

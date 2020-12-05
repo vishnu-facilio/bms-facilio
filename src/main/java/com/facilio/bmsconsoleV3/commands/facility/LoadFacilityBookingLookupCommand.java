@@ -5,14 +5,15 @@ import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.fields.*;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.SupplementRecord;
 import org.apache.commons.chain.Context;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class LoadFacilityLookupCommandV3 extends FacilioCommand {
+public class LoadFacilityBookingLookupCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
@@ -20,13 +21,13 @@ public class LoadFacilityLookupCommandV3 extends FacilioCommand {
         List<FacilioField> fields = modBean.getAllFields(moduleName);
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
         List<SupplementRecord> fetchLookupsList = new ArrayList<>();
-        SupplementRecord manager = (SupplementRecord) fieldsAsMap.get("manager");
-        SupplementRecord location = (SupplementRecord) fieldsAsMap.get("location");
-        SupplementRecord amenities = (SupplementRecord) fieldsAsMap.get("amenities");
+        SupplementRecord facility = (SupplementRecord) fieldsAsMap.get("facility");
+        SupplementRecord reservedFor = (SupplementRecord) fieldsAsMap.get("reservedFor");
+        SupplementRecord internalAttendees = (SupplementRecord) fieldsAsMap.get("internalAttendees");
 
-        fetchLookupsList.add(manager);
-        fetchLookupsList.add(location);
-        fetchLookupsList.add(amenities);
+        fetchLookupsList.add(facility);
+        fetchLookupsList.add(reservedFor);
+        fetchLookupsList.add(internalAttendees);
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchLookupsList);
         return false;
     }

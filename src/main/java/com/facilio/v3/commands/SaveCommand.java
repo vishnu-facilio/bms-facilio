@@ -48,12 +48,6 @@ public class SaveCommand extends FacilioCommand {
         insertRecordBuilder.withChangeSet();
         insertRecordBuilder.ignoreSplNullHandling();
 
-        //inserting multi select field values
-        List<SupplementRecord> supplementFields = (List<SupplementRecord>) context.get(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS);
-        if (CollectionUtils.isNotEmpty(supplementFields)) {
-            insertRecordBuilder.insertSupplements(supplementFields);
-        }
-
         List<ModuleBaseWithCustomFields> records = recordMap.get(module.getName());
 
         if (module.isCustom()) {
@@ -68,7 +62,17 @@ public class SaveCommand extends FacilioCommand {
 
         insertRecordBuilder.addRecords(records);
 
+        //inserting multi select field values
+        List<SupplementRecord> supplementFields = (List<SupplementRecord>) context.get(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS);
+        if (CollectionUtils.isNotEmpty(supplementFields)) {
+            insertRecordBuilder.insertSupplements(supplementFields);
+        }
+
         insertRecordBuilder.save();
+
+
+
+
 
         Map<Long, List<UpdateChangeSet>> changeSet = insertRecordBuilder.getChangeSet();
 

@@ -256,7 +256,7 @@ public class FacilityAPI {
                 .moduleName(slots)
                 .select(fields)
                 .beanClass(SlotContext.class)
-                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("facility"), String.valueOf(facility.getId()), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("facilityId"), String.valueOf(facility.getId()), NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("slotStartTime"), String.valueOf(startTime), NumberOperators.GREATER_THAN_EQUAL))
                 .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("slotStartTime"), String.valueOf(endTime), NumberOperators.LESS_THAN_EQUAL));
 
@@ -322,6 +322,23 @@ public class FacilityAPI {
         List<BookingSlotsContext> list = builder.get();
         return  list;
     }
+
+    public static List<V3ExternalAttendeeContext> getExternalAttendees(Long bookingId) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        String externalAttendees = FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING_EXTERNAL_ATTENDEE;
+        List<FacilioField> fields = modBean.getAllFields(externalAttendees);
+        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+
+        SelectRecordsBuilder<V3ExternalAttendeeContext> builder = new SelectRecordsBuilder<V3ExternalAttendeeContext>()
+                .moduleName(externalAttendees)
+                .select(fields)
+                .beanClass(V3ExternalAttendeeContext.class)
+                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("facilityBooking"), String.valueOf(bookingId), NumberOperators.EQUALS));
+
+        List<V3ExternalAttendeeContext> list = builder.get();
+        return  list;
+    }
+
 
 
 }

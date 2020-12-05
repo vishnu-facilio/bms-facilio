@@ -29,50 +29,59 @@ public class CreatePaymentRecordForBookingCommand extends FacilioCommand {
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<V3FacilityBookingContext> bookings = recordMap.get(moduleName);
         if(CollectionUtils.isNotEmpty(bookings)){
-            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            FacilioModule payment = modBean.getModule(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING_PAYMENTS);
+            Map<String, Object> bodyParams = Constants.getBodyParams(context);
+            if (MapUtils.isEmpty(bodyParams) || !bodyParams.containsKey("cancel")) {
 
-            List<BookingPaymentContext> payments = new ArrayList<>();
-            for(V3FacilityBookingContext booking : bookings) {
-                Map<String, List<Map<String, Object>>> subformMap = booking.getSubForm();
-                if(booking.getFacility() != null) {
-                    FacilityContext facility = (FacilityContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.FacilityBooking.FACILITY, booking.getFacility().getId(), FacilityContext.class);
-                    if(!facility.isChargeable()){
-                        return false;
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                FacilioModule payment = modBean.getModule(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING_PAYMENTS);
+                FacilioModule bookingModule = modBean.getModule(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
+
+                List<BookingPaymentContext> payments = new ArrayList<>();
+                for (V3FacilityBookingContext booking : bookings) {
+                    Map<String, List<Map<String, Object>>> subformMap = booking.getSubForm();
+                    if (booking.getFacility() != null) {
+                        FacilityContext facility = (FacilityContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.FacilityBooking.FACILITY, booking.getFacility().getId(), FacilityContext.class);
+                        if (!facility.isChargeable()) {
+                            return false;
+                        }
                     }
-                }
-                if(MapUtils.isEmpty(subformMap) || subformMap.containsKey(FacilioConstants.ContextNames.FacilityBooking.BOOKING_SLOTS)) {
-                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Slot is mandatory for a booking");
-                }
-                if(booking.getId() > 0){
-                    //deleting payment records and re-adding
-                    DeleteRecordBuilder<BookingPaymentContext> deleteBuilder = new DeleteRecordBuilder<BookingPaymentContext>()
-                            .module(payment)
-                            .andCondition(CriteriaAPI.getCondition("FACILITY_BOOKING_ID", "booking", String.valueOf(booking.getId()), NumberOperators.EQUALS));
-                    deleteBuilder.delete();
-                }
-                List<BookingSlotsContext> slotList = FieldUtil.getAsBeanListFromMapList(subformMap.get(FacilioConstants.ContextNames.FacilityBooking.BOOKING_SLOTS), BookingSlotsContext.class);
-                Double amount = 0.0;
-                for(BookingSlotsContext bookingSlot : slotList) {
-                    if(bookingSlot == null){
+                    if (MapUtils.isEmpty(subformMap) || !subformMap.containsKey(FacilioConstants.ContextNames.FacilityBooking.BOOKING_SLOTS)) {
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Slot is mandatory for a booking");
                     }
-                    SlotContext slot = (SlotContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.FacilityBooking.SLOTS, bookingSlot.getSlot().getId(), SlotContext.class);
-                    if(slot != null) {
-                        amount = amount + slot.getSlotCost();
+                    if (booking.getId() > 0) {
+                        //deleting payment records and re-adding
+                        DeleteRecordBuilder<BookingPaymentContext> deleteBuilder = new DeleteRecordBuilder<BookingPaymentContext>()
+                                .module(payment)
+                                .andCondition(CriteriaAPI.getCondition("FACILITY_BOOKING_ID", "booking", String.valueOf(booking.getId()), NumberOperators.EQUALS));
+                        deleteBuilder.delete();
                     }
-                }
-                BookingPaymentContext bookingPayment = new BookingPaymentContext();
-                bookingPayment.setAmount(amount);
-                bookingPayment.setBooking(booking);
-                bookingPayment.setPaymentStatus(BookingPaymentContext.PaymentStatus.DUE.getIndex());
-                payments.add(bookingPayment);
-                booking.setBookingAmount(amount);
-            }
-            if(CollectionUtils.isNotEmpty(payments)) {
-                V3RecordAPI.addRecord(false, payments, payment, modBean.getAllFields(payment.getName()));
-            }
+                    List<BookingSlotsContext> slotList = FieldUtil.getAsBeanListFromMapList(subformMap.get(FacilioConstants.ContextNames.FacilityBooking.BOOKING_SLOTS), BookingSlotsContext.class);
+                    Double amount = 0.0;
+                    for (BookingSlotsContext bookingSlot : slotList) {
+                        if (bookingSlot == null) {
+                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Slot is mandatory for a booking");
+                        }
+                        SlotContext slot = (SlotContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.FacilityBooking.SLOTS, bookingSlot.getSlot().getId(), SlotContext.class);
+                        if (slot != null) {
+                            amount = amount + slot.getSlotCost();
+                        }
+                    }
+                    BookingPaymentContext bookingPayment = new BookingPaymentContext();
+                    bookingPayment.setAmount(amount);
+                    bookingPayment.setBooking(booking);
+                    bookingPayment.setPaymentStatus(BookingPaymentContext.PaymentStatus.DUE.getIndex());
+                    payments.add(bookingPayment);
 
+                    //update booking amount in booking
+                    booking.setBookingAmount(amount);
+                    V3RecordAPI.updateRecord(booking, bookingModule, modBean.getAllFields(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING));
+
+                }
+                if (CollectionUtils.isNotEmpty(payments)) {
+                    V3RecordAPI.addRecord(false, payments, payment, modBean.getAllFields(payment.getName()));
+                }
+
+            }
         }
 
         return false;

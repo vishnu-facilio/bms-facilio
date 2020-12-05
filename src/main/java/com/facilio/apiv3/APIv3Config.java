@@ -763,14 +763,16 @@ public class APIv3Config {
         return () -> new V3Config(V3FacilityBookingContext.class, new ModuleCustomFieldCount30())
                 .create()
                    .beforeSave(TransactionChainFactoryV3.getCreateBookingBeforeSaveChain())
+                    .afterSave(new CreatePaymentRecordForBookingCommand())
                 .update()
                     .beforeSave(TransactionChainFactoryV3.getCreateBookingBeforeEditChain())
-                    .afterSave(new CancelBookingCommand())
+                    .afterSave(TransactionChainFactoryV3.getUpdateBookingAfterEditChain())
                 .delete()
                 .list()
-                .beforeFetch(new LoadFacilityLookupCommandV3())
+                    .beforeFetch(new LoadFacilityBookingLookupCommand())
                 .summary()
-                .afterFetch(ReadOnlyChainFactoryV3.getFacilityAfterFetchChain())
+                    .beforeFetch(new LoadFacilityBookingLookupCommand())
+                    .afterFetch(new FillFacilityBookingDetailsCommandV3())
                 .build();
     }
 

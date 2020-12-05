@@ -31,52 +31,12 @@ public class V3FacilityBookingContext extends V3Context {
         this.reservedFor = reservedFor;
     }
 
-    private Long scheduledStartTime ;
-    public Long getScheduledStartTime() {
-        return scheduledStartTime;
-    }
-    public void setScheduledStartTime(Long scheduledStartTime) {
-        this.scheduledStartTime = scheduledStartTime;
-    }
-
-    private Long scheduledEndTime ;
-    public Long getScheduledEndTime() {
-        return scheduledEndTime;
-    }
-    public void setScheduledEndTime(Long scheduledEndTime) {
-        this.scheduledEndTime = scheduledEndTime;
-    }
-
     private Integer noOfAttendees ;
     public Integer getNoOfAttendees() {
         return noOfAttendees;
     }
     public void setNoOfAttendees(Integer noOfAttendees) {
         this.noOfAttendees = noOfAttendees;
-    }
-
-    private Long actualStartTime ;
-    public Long getActualStartTime() {
-        return actualStartTime;
-    }
-    public void setActualStartTime(Long actualStartTime) {
-        this.actualStartTime = actualStartTime;
-    }
-
-    private Long actualEndTime ;
-    public Long getActualEndTime() {
-        return actualEndTime;
-    }
-    public void setActualEndTime(Long actualEndTime) {
-        this.actualEndTime = actualEndTime;
-    }
-
-    private SpaceContext space;
-    public SpaceContext getSpace() {
-        return space;
-    }
-    public void setSpace(SpaceContext space) {
-        this.space = space;
     }
 
     private List<V3InternalAttendeeContext> internalAttendees;
@@ -89,14 +49,14 @@ public class V3FacilityBookingContext extends V3Context {
         this.internalAttendees = internalAttendees;
     }
 
-    private List<V3ExternalAttendeeContext> externalAttendees;
+    private List<V3ExternalAttendeeContext> facilityBookingExternalAttendee;
 
-    public List<V3ExternalAttendeeContext> getExternalAttendees() {
-        return externalAttendees;
+    public List<V3ExternalAttendeeContext> getFacilityBookingExternalAttendee() {
+        return facilityBookingExternalAttendee;
     }
 
-    public void setExternalAttendees(List<V3ExternalAttendeeContext> externalAttendees) {
-        this.externalAttendees = externalAttendees;
+    public void setFacilityBookingExternalAttendee(List<V3ExternalAttendeeContext> facilityBookingExternalAttendee) {
+        this.facilityBookingExternalAttendee = facilityBookingExternalAttendee;
     }
 
     private FacilityContext facility;
@@ -150,4 +110,16 @@ public class V3FacilityBookingContext extends V3Context {
         }
         return false;
     }
+
+    private List<BookingSlotsContext> slotList;
+
+    public List<BookingSlotsContext> getSlotList() {
+        return slotList;
+    }
+
+    public void setSlotList(List<BookingSlotsContext> slotList) {
+        this.slotList = slotList;
+    }
+
+
 }

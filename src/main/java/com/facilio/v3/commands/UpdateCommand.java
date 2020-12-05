@@ -61,13 +61,14 @@ public class UpdateCommand extends FacilioCommand {
 
             updateBuilder.ignoreSplNullHandling();
 
-            //inserting multi select field values
+            //updating multi select field values
             List<SupplementRecord> supplementFields = (List<SupplementRecord>) context.get(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS);
             if (CollectionUtils.isNotEmpty(supplementFields)) {
                 updateBuilder.updateSupplements(supplementFields);
             }
 
             totalCount += updateBuilder.update(record);
+
             Map<Long, List<UpdateChangeSet>> changeSet = updateBuilder.getChangeSet();
             CommonCommandUtil.appendChangeSetMapToContext(context,changeSet,module.getName());
         }

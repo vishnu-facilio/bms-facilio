@@ -57,7 +57,6 @@ public class FacilityContext extends V3Context {
     private Integer category;
     private Integer usageCapacity;
     private Long slotDuration;
-    private Long maxMultiBookingPerSlot;
     private Long maxSlotBookingAllowed;
     private Boolean isChargeable;
 
@@ -176,14 +175,6 @@ public class FacilityContext extends V3Context {
         this.slotDuration = slotDuration;
     }
 
-    public Long getMaxMultiBookingPerSlot() {
-        return maxMultiBookingPerSlot;
-    }
-
-    public void setMaxMultiBookingPerSlot(Long maxMultiBookingPerSlot) {
-        this.maxMultiBookingPerSlot = maxMultiBookingPerSlot;
-    }
-
     public Long getMaxSlotBookingAllowed() {
         return maxSlotBookingAllowed;
     }
@@ -283,5 +274,14 @@ public class FacilityContext extends V3Context {
 
     public void setBookingAdvancePeriodInDays(Long bookingAdvancePeriodInDays) {
         this.bookingAdvancePeriodInDays = bookingAdvancePeriodInDays;
+    }
+    private Integer maxAttendeeCountPerBooking;
+
+    public Integer getMaxAttendeeCountPerBooking() {
+        return maxAttendeeCountPerBooking;
+    }
+
+    public void setMaxAttendeeCountPerBooking(Integer maxAttendeeCountPerBooking) {
+        this.maxAttendeeCountPerBooking = maxAttendeeCountPerBooking;
     }
 }
