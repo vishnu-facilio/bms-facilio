@@ -39,6 +39,7 @@ public enum FacilioSystemFunctionNameSpace {
 	ML_NAMESPACE(31,"mlNameSpace"),
 	ORG_SPECIFIC(32,"orgSpecific"),
 	CONTROLS(33,"control"),
+	BUSINESS_HOUR(34,"businessHours"),
 	;
 	
 	

@@ -77,6 +77,7 @@ import com.facilio.workflows.context.WorkflowFieldType;
 import com.facilio.workflows.context.WorkflowFunctionContext;
 import com.facilio.workflows.functions.FacilioAnalyticsFunctions;
 import com.facilio.workflows.functions.FacilioAssetFunctions;
+import com.facilio.workflows.functions.FacilioBusinessHourFunctions;
 import com.facilio.workflows.functions.FacilioChatBotFunctions;
 import com.facilio.workflows.functions.FacilioConnectedAppFunctions;
 import com.facilio.workflows.functions.FacilioConnectionFunctions;
@@ -2141,6 +2142,9 @@ public class WorkflowUtil {
 				case CONTROLS:
 					facilioWorkflowFunction = FacilioControlFunctions.getFacilioControlFunctions(functionName);
 					break;
+				case BUSINESS_HOUR:
+					facilioWorkflowFunction = FacilioBusinessHourFunctions.getFacilioBusinessHourFunctions(functionName);
+					break;
 					
 			}
 		}
@@ -2248,6 +2252,9 @@ public class WorkflowUtil {
 					break;
 				case CONTROLS:
 					facilioWorkflowFunction = new ArrayList<>( FacilioControlFunctions.getAllFunctions().values());
+					break;
+				case BUSINESS_HOUR:
+					facilioWorkflowFunction = new ArrayList<>( FacilioBusinessHourFunctions.getAllFunctions().values()); 
 					break;
 			}
 		}

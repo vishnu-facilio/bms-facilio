@@ -1,10 +1,19 @@
 package com.facilio.bmsconsole.context;
 
 import java.io.Serializable;
+import java.time.DayOfWeek;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONObject;
 
+import com.facilio.bmsconsole.util.BusinessHoursAPI;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class BusinessHoursContext implements Serializable {
@@ -128,10 +137,43 @@ public class BusinessHoursContext implements Serializable {
 	public List<BusinessHourContext> getSingleDaybusinessHoursList() {
 		return singleDaybusinessHoursList;
 	}
+	
+	public List<BusinessHourContext> getSingleDaybusinessHoursListOrDefault() {
+		if(singleDaybusinessHoursList == null || singleDaybusinessHoursList.isEmpty()) {
+			return BusinessHoursAPI.fetchDefault24_7Days();
+		}
+		return singleDaybusinessHoursList;
+	}
 
 	public void setSingleDaybusinessHoursList(List<BusinessHourContext> singleDaybusinessHoursList) {
 		this.singleDaybusinessHoursList = singleDaybusinessHoursList;
 	}
+	
+	@JsonIgnore 
+	public Map<DayOfWeek, List<Pair<LocalTime, LocalTime>>> getAsMapBusinessHours() {
+		
+		Map<DayOfWeek,List<Pair<LocalTime,LocalTime>>> businessHourMap = new HashMap<>();
+		
+		for(BusinessHourContext singleDaybusinessHour :getSingleDaybusinessHoursListOrDefault()) {
+			
+			DayOfWeek dayOfWeek = singleDaybusinessHour.getDayOfWeekEnum();
+			
+			List<Pair<LocalTime, LocalTime>> timeList = businessHourMap.getOrDefault(dayOfWeek, new ArrayList<Pair<LocalTime,LocalTime>>());
+			
+			Pair<LocalTime, LocalTime> timePair = Pair.of(singleDaybusinessHour.getStartTimeOrDefault(), singleDaybusinessHour.getEndTimeOrDefault());
+			
+			timeList.add(timePair);
+			
+			businessHourMap.put(dayOfWeek, timeList);
+		}
+		
+		for(DayOfWeek dayOfWeek : businessHourMap.keySet()) {
+			
+			Collections.sort(businessHourMap.get(dayOfWeek));
+		}
+		
+		return businessHourMap;
+ 	}
 
 	public static enum BusinessHourType {
 		DAYS_24_7, 

@@ -2,7 +2,9 @@ package com.facilio.bmsconsole.util;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -22,6 +24,8 @@ import com.facilio.time.DateTimeUtil;
 import com.google.type.DayOfWeek;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.kafka.common.utils.CircularIterator;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.constants.FacilioConstants;
@@ -34,9 +38,6 @@ import com.facilio.db.criteria.CriteriaAPI;
 
 public class BusinessHoursAPI {
 	
-	public static final String DEFAULT_DAY_START_TIME = "00:00";
-	public static final String DEFAULT_DAY_END_TIME = "23:59";
-
 	public static long addBusinessHours(BusinessHoursContext businessHours) throws Exception {
 
 		Map<String, Object> props = new HashMap<>();
@@ -189,37 +190,98 @@ public class BusinessHoursAPI {
 		return businessHours;
 	}
 	
+	public static long addSecondsToBusinessHours(BusinessHoursContext businessHour, long fromTime, int seconds) {
+		
+		ZonedDateTime zdt = DateTimeUtil.getZonedDateTime(fromTime);
+		
+		LocalDateTime localDateTimeFromTime = LocalDateTime.of(zdt.getYear(), zdt.getMonth(), zdt.getDayOfMonth(), zdt.getHour(), zdt.getMinute(), zdt.getSecond()) ;
+		
+		LocalTime localFromTime = localDateTimeFromTime.toLocalTime();
+		
+		Map<java.time.DayOfWeek, List<Pair<LocalTime, LocalTime>>> businessHourMap = businessHour.getAsMapBusinessHours();
+		
+		java.time.DayOfWeek currentDayOfWeek = java.time.DayOfWeek.of(zdt.getDayOfWeek().getValue());
+		
+		int days = 0;
+		LocalTime adjustedFromTimeLocal = null;
+		
+		a:
+		while(true) {
+			
+			List<Pair<LocalTime, LocalTime>> timeList = businessHourMap.get(currentDayOfWeek);
+			
+			if(timeList != null) {
+				
+				for(Pair<LocalTime, LocalTime> timePair : timeList) {
+					
+					LocalTime from = timePair.getLeft();
+					LocalTime to = timePair.getRight();
+						
+					if(localFromTime.isBefore(from) || localFromTime.equals(from)) {
+						adjustedFromTimeLocal = from;
+					}
+					else if(localFromTime.isAfter(from) && localFromTime.isBefore(to)) {
+						adjustedFromTimeLocal = localFromTime;
+					}
+					
+					if(adjustedFromTimeLocal != null) {
+						
+						int availableTime = to.toSecondOfDay() - from.toSecondOfDay();
+						
+						if(seconds <= availableTime) {
+							adjustedFromTimeLocal = adjustedFromTimeLocal.plusSeconds(seconds);
+							break a;
+						}
+						else {
+							adjustedFromTimeLocal = to;
+							
+							seconds = seconds - availableTime;
+						}
+					}
+				}
+				
+			}
+			
+			if(currentDayOfWeek == java.time.DayOfWeek.SUNDAY) {
+				currentDayOfWeek = java.time.DayOfWeek.MONDAY;
+			}
+			else {
+				currentDayOfWeek = java.time.DayOfWeek.of(currentDayOfWeek.getValue()+1);
+			}
+			days++;
+			
+			localFromTime = LocalTime.MIN;
+		}
+		
+		zdt = zdt.plusDays(days);
+		zdt = zdt.withHour(adjustedFromTimeLocal.getHour());
+		zdt = zdt.withMinute(adjustedFromTimeLocal.getMinute());
+		zdt = zdt.withSecond(adjustedFromTimeLocal.getSecond());
+		zdt = zdt.withNano(adjustedFromTimeLocal.getNano());
+		
+		return zdt.toInstant().toEpochMilli();
+	}
+	
 	
 	public static List<DateRange> getBusinessHoursForNextNDays(BusinessHoursContext businessHour, int days) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		
-		List<BusinessHourContext> businessHours = businessHour.getSingleDaybusinessHoursList();
-		
-		if(businessHours == null || businessHours.isEmpty()) {
-			businessHours = fetchDefault24_7Days();
-		}
+		List<BusinessHourContext> businessHours = businessHour.getSingleDaybusinessHoursListOrDefault();
 		
 		List<DateRange> dateRanges = new ArrayList<DateRange>();
 		
 		for(BusinessHourContext singleDayBusinessHour :businessHours) {
 			
-			if(singleDayBusinessHour.getStartTime() == null) {
-				singleDayBusinessHour.setStartTime(DEFAULT_DAY_START_TIME);
-			}
-			if(singleDayBusinessHour.getEndTime() == null) {
-				singleDayBusinessHour.setEndTime(DEFAULT_DAY_END_TIME);
-			}
-			
 			ScheduleInfo startTimeScheduleInfo = new ScheduleInfo();
 			
 			startTimeScheduleInfo.setFrequencyType(FrequencyType.WEEKLY);
 			startTimeScheduleInfo.setValues(Collections.singletonList(singleDayBusinessHour.getDayOfWeek()));
-			startTimeScheduleInfo.setTimes(Collections.singletonList(singleDayBusinessHour.getStartTime()));
+			startTimeScheduleInfo.setTimes(Collections.singletonList(singleDayBusinessHour.getStartTimeOrDefault().toString()));
 			
 			ScheduleInfo endTimeScheduleInfo = new ScheduleInfo();
 			
 			endTimeScheduleInfo.setFrequencyType(FrequencyType.WEEKLY);
 			endTimeScheduleInfo.setValues(Collections.singletonList(singleDayBusinessHour.getDayOfWeek()));
-			endTimeScheduleInfo.setTimes(Collections.singletonList(singleDayBusinessHour.getEndTime()));
+			endTimeScheduleInfo.setTimes(Collections.singletonList(singleDayBusinessHour.getEndTimeOrDefault().toString()));
 			
 			long startTime = DateTimeUtil.getDayStartTime();
 			
@@ -245,7 +307,7 @@ public class BusinessHoursAPI {
 		return dateRanges;
 	}
 
-	private static List<BusinessHourContext> fetchDefault24_7Days() {
+	public static List<BusinessHourContext> fetchDefault24_7Days() {
 		
 		List<BusinessHourContext> businessHours = new ArrayList<BusinessHourContext>();
 		

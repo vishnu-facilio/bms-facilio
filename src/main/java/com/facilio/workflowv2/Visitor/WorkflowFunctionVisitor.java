@@ -14,6 +14,7 @@ import org.antlr.v4.runtime.tree.RuleNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.BusinessHoursContext;
 import com.facilio.bmsconsole.context.ConnectionContext;
 import com.facilio.bmsconsole.util.ConnectionUtil;
 import com.facilio.date.calenderandclock.CalenderAndClockContext;
@@ -411,6 +412,10 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
                     	}
                     	else if(value.asObject() instanceof ScheduleInfo) {
                     		wfFunctionContext.setNameSpace(FacilioSystemFunctionNameSpace.SCHEDULE.getName());
+                    		isDataTypeSpecificFunction = true;
+                    	}
+                    	else if(value.asObject() instanceof BusinessHoursContext) {
+                    		wfFunctionContext.setNameSpace(FacilioSystemFunctionNameSpace.BUSINESS_HOUR.getName());
                     		isDataTypeSpecificFunction = true;
                     	}
                     	else if (value.asObject() instanceof FacilioSystemFunctionNameSpace) {
