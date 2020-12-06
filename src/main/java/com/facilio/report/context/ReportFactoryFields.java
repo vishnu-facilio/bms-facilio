@@ -184,6 +184,7 @@ public class ReportFactoryFields {
 		}
 		
 		List<FacilioField> selectedFields = new ArrayList<FacilioField>();
+		selectedFields.add(fields.get("name"));
 		selectedFields.add(fields.get("type"));
 		selectedFields.add(fields.get("category"));
 		selectedFields.add(fields.get("department"));
