@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.context.facilitybooking;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.v3.context.V3Context;
 
@@ -10,7 +11,7 @@ import java.util.List;
 public class FacilityContext extends V3Context {
 
     private String name;
-    private User manager;
+    private V3PeopleContext manager;
     private String description;
     private String usageGuidance;
     private Long parentModuleId;
@@ -103,11 +104,11 @@ public class FacilityContext extends V3Context {
         this.name = name;
     }
 
-    public User getManager() {
+    public V3PeopleContext getManager() {
         return manager;
     }
 
-    public void setManager(User manager) {
+    public void setManager(V3PeopleContext manager) {
         this.manager = manager;
     }
 

@@ -21,7 +21,7 @@ public class ValidateCanEditBookingCommand extends FacilioCommand {
         List<V3FacilityBookingContext> bookings = recordMap.get(moduleName);
         if(CollectionUtils.isNotEmpty(bookings)) {
             Map<String, Object> bodyParams = Constants.getBodyParams(context);
-            if (MapUtils.isEmpty(bodyParams) || !bodyParams.containsKey("cancel")) {
+            if (MapUtils.isEmpty(bodyParams) || (!bodyParams.containsKey("cancel") && !bodyParams.containsKey("cancelBooking"))) {
                 for(V3FacilityBookingContext booking : bookings) {
                     if (!booking.canEdit()) {
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "The booking cant be edited");

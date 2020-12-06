@@ -776,17 +776,6 @@ public class APIv3Config {
                 .build();
     }
 
-    @Module("facilityBookingAttendee")
-    public static Supplier<V3Config> getFacilityBookingAttendee() {
-        return () -> new V3Config(V3FacilityBookingContext.class, new ModuleCustomFieldCount30())
-                .create()
-                .update()
-                .delete()
-                .list()
-                .summary()
-                .build();
-    }
-
     @Module("facilityWeekdayAvailability")
     public static Supplier<V3Config> getFacilityWeekDayAvailability() {
         return () -> new V3Config(WeekDayAvailability.class, new ModuleCustomFieldCount30())

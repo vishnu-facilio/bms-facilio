@@ -3,6 +3,7 @@ package com.facilio.bmsconsoleV3.commands.facility;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.facilitybooking.*;
+import com.facilio.bmsconsoleV3.util.FacilityAPI;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -30,7 +31,7 @@ public class CreatePaymentRecordForBookingCommand extends FacilioCommand {
         List<V3FacilityBookingContext> bookings = recordMap.get(moduleName);
         if(CollectionUtils.isNotEmpty(bookings)){
             Map<String, Object> bodyParams = Constants.getBodyParams(context);
-            if (MapUtils.isEmpty(bodyParams) || !bodyParams.containsKey("cancel")) {
+            if (MapUtils.isEmpty(bodyParams) || (!bodyParams.containsKey("cancel") && !bodyParams.containsKey("cancelBooking"))) {
 
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                 FacilioModule payment = modBean.getModule(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING_PAYMENTS);
@@ -82,6 +83,7 @@ public class CreatePaymentRecordForBookingCommand extends FacilioCommand {
                 }
 
             }
+
         }
 
         return false;

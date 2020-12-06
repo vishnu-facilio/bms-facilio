@@ -37,9 +37,10 @@ public class CancelBookingCommand extends FacilioCommand {
         Map<String, Object> bodyParams = Constants.getBodyParams(context);
         String moduleName = Constants.getModuleName(context);
         if (MapUtils.isNotEmpty(bodyParams) && bodyParams.containsKey("cancelBooking")) {
-            if(bodyParams.get("cancelBooking").equals("true")) {
+            if((Boolean)bodyParams.get("cancelBooking") == true && !bodyParams.containsKey("cancel")) {
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                 FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
+                FacilioModule slotModule = modBean.getModule(FacilioConstants.ContextNames.FacilityBooking.SLOTS);
 
                 Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
                 List<V3FacilityBookingContext> bookings = recordMap.get(moduleName);
@@ -60,13 +61,13 @@ public class CancelBookingCommand extends FacilioCommand {
                            if (slot != null) {
                                //reverting booking count in slot
                                slot.setBookingCount(slot.getBookingCount() - booking.getNoOfAttendees());
-                               V3RecordAPI.updateRecord(slot, module, modBean.getAllFields(FacilioConstants.ContextNames.FacilityBooking.SLOTS));
+                               V3RecordAPI.updateRecord(slot, slotModule, modBean.getAllFields(FacilioConstants.ContextNames.FacilityBooking.SLOTS));
                            }
                        }
-                       DeleteRecordBuilder<BookingSlotsContext> deleteBuilder = new DeleteRecordBuilder<BookingSlotsContext>()
-                               .module(module)
-                               .andCondition(CriteriaAPI.getCondition("FACILITY_BOOKING", "booking", String.valueOf(booking.getId()), NumberOperators.EQUALS));
-                       deleteBuilder.delete();
+//                       DeleteRecordBuilder<BookingSlotsContext> deleteBuilder = new DeleteRecordBuilder<BookingSlotsContext>()
+//                               .module(module)
+//                               .andCondition(CriteriaAPI.getCondition("FACILITY_BOOKING", "booking", String.valueOf(booking.getId()), NumberOperators.EQUALS));
+//                       deleteBuilder.delete();
                    }
                 }
 
@@ -75,6 +76,11 @@ public class CancelBookingCommand extends FacilioCommand {
                     FacilioContext patchContext = patchChain.getContext();
                     V3Config v3Config = ChainUtil.getV3Config(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
                     Class beanClass = ChainUtil.getBeanClass(v3Config, module);
+
+                    //to avoid validations
+                    JSONObject json = new JSONObject();
+                    json.put("cancel", true);
+                    Constants.setBodyParams(patchContext, json);
 
                     Constants.setModuleName(patchContext, FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
                     Constants.setBulkRawInput(patchContext, (Collection) jsonList);

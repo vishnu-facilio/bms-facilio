@@ -340,5 +340,20 @@ public class FacilityAPI {
     }
 
 
+    public static List<BookingPaymentContext> getBookingPayments(Long bookingId) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        String payments = FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING_PAYMENTS;
+        List<FacilioField> fields = modBean.getAllFields(payments);
+        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+
+        SelectRecordsBuilder<BookingPaymentContext> builder = new SelectRecordsBuilder<BookingPaymentContext>()
+                .moduleName(payments)
+                .select(fields)
+                .beanClass(BookingPaymentContext.class)
+                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("booking"), String.valueOf(bookingId), NumberOperators.EQUALS));
+
+        List<BookingPaymentContext> list = builder.get();
+        return  list;
+    }
 
 }
