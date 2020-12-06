@@ -10,6 +10,7 @@ public interface Topics {
         String unsubscribe = "__unsubscribe__";
         String ping = "__ping__";
         String livereading = "__livereading__";
+        String agentpoints = "__agentpoints__";
     }
 
     interface Push {

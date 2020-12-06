@@ -1,5 +1,6 @@
 package com.facilio.agentv2.point;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentType;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
@@ -9,6 +10,8 @@ import com.facilio.agentv2.controller.GetControllerRequest;
 import com.facilio.agentv2.device.Device;
 import com.facilio.agentv2.modbusrtu.RtuNetworkContext;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.wmsv2.endpoint.SessionManager;
+import com.facilio.wmsv2.message.Message;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -147,6 +150,16 @@ public class PointsUtil
                     LOGGER.info("Exception while adding point," + point.toJSON());
                 }else {
                     pointsAdded++;
+                    JSONObject content = new JSONObject();
+					content.put("agentId",agent.getId());
+					content.put("controllerId", controller.getId());
+					content.put("pointsCount",pointsAdded);
+
+					Message msg = new Message();
+					msg.setOrgId(AccountUtil.getCurrentOrg().getId());
+					msg.setTopic("__agentpoints__/" + agent.getId() + "/" + controller.getId());
+					msg.setContent(content);
+					SessionManager.getInstance().sendMessage(msg);
                 }
             }
             LOGGER.info("-----DISCOVERPOINTS SUMMARY POINTDATAIN->" + incomingCount + "  POINTSTOBEADDED->" + pointsToBeAdded + "  POINTSADDED->" + pointsAdded);
