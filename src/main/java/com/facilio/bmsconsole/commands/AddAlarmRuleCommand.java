@@ -82,8 +82,8 @@ public class AddAlarmRuleCommand extends FacilioCommand {
 		alarmLogField.setDisplayName(preRequsiteRule.getName());
 		alarmLogField.setDataType(FieldType.BOOLEAN);
 		alarmLogField.setDisplayType(FieldDisplayType.DECISION_BOX);
-		alarmLogField.setTrueVal("Alarm Raised");
-		alarmLogField.setFalseVal("Alarm Not Raised");
+		alarmLogField.setTrueVal("Alarm");
+		alarmLogField.setFalseVal("No Alarm");
 		
 		return alarmLogField;
 	}
