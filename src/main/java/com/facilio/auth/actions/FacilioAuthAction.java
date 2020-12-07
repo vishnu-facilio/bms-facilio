@@ -426,10 +426,11 @@ public class FacilioAuthAction extends FacilioAction {
 			);
 			String authtoken = null;
 			AppDomain appdomainObj = null;
+			Organization org = IAMOrgUtil.getOrg(getDomain());
 			if (getLookUpType().equalsIgnoreCase("service")) {
-				appdomainObj = IAMAppUtil.getAppDomain(getDomain()+"."+FacilioProperties.getOccupantAppDomain());
+				appdomainObj = IAMAppUtil.getAppDomainForType(2, org.getOrgId()).get(0);
 			} else if (getLookUpType().equalsIgnoreCase("tenant")) {
-				appdomainObj = IAMAppUtil.getAppDomain(getDomain()+"."+FacilioProperties.getTenantAppDomain());
+				appdomainObj = IAMAppUtil.getAppDomainForType(3, org.getOrgId()).get(0);
 			}
 
 			HttpServletRequest request = ServletActionContext.getRequest();
