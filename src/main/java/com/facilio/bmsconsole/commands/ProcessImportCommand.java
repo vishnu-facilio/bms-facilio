@@ -566,7 +566,7 @@ public class ProcessImportCommand extends FacilioCommand {
 											isfilledByLookup = true;
 										}
 									}
-								} else if ((facilioField.getDisplayType().equals(FacilioField.FieldDisplayType.ADDRESS) || facilioField.getDisplayType().equals(FacilioField.FieldDisplayType.GEO_LOCATION)) && isLocationFieldMapped(fieldMapping, facilioField, importProcessContext.getModule().getName())) {
+								} else if (facilioField.getDisplayType().equals(FacilioField.FieldDisplayType.ADDRESS) && isLocationFieldMapped(fieldMapping, facilioField, importProcessContext.getModule().getName())) {
 									LocationContext location = new LocationContext();
 									if (fieldMapping.get(importProcessContext.getModule().getName() + "__" + facilioField.getName() + "_name") != null) {
 										location.setName((String) colVal.get(fieldMapping.get(importProcessContext.getModule().getName() + "__" + facilioField.getName() + "_name")));
@@ -635,7 +635,6 @@ public class ProcessImportCommand extends FacilioCommand {
 	}
 
 	public static List<Map<String, Object>> getLookupProps(LookupField lookupField, HashMap<String, Object> colVal, String key, ImportProcessContext importProcessContext) throws Exception{
-
 		try {
 
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -738,8 +737,8 @@ public class ProcessImportCommand extends FacilioCommand {
 							throw new Exception("Value not found");
 						}
 					}
-					List<String> lookupModuleList = Arrays.asList("tenant", "ticketstatus", "vendors", "site");
-					if (lookupModuleList.contains(lookupField.getName())) {
+					List<String> lookupModuleList = Arrays.asList("ticketstatus");
+					if (lookupModuleList.contains(lookupField.getName()) || lookupField.getModule().getTypeEnum() == FacilioModule.ModuleType.BASE_ENTITY || lookupField.getModule().getTypeEnum() == FacilioModule.ModuleType.CUSTOM) {
 						throw new Exception("Value not found");
 					}
 
