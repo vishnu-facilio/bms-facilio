@@ -29,7 +29,7 @@ public class LoadFacilityLookupCommandV3 extends FacilioCommand {
 
         MultiLookupMeta amenities = new MultiLookupMeta((MultiLookupField) fieldsAsMap.get("amenities"));
 
-        FacilioField nameField = FieldFactory.getField("name", "NAME", amenitiesModule, FieldType.STRING);
+        FacilioField nameField = FieldFactory.getField("description", "DESCRIPTION", amenitiesModule, FieldType.STRING);
         amenities.setSelectFields(Collections.singletonList(nameField));
 
         fetchLookupsList.add(manager);

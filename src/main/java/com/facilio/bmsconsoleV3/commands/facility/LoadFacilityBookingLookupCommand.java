@@ -30,12 +30,10 @@ public class LoadFacilityBookingLookupCommand extends FacilioCommand {
         SupplementRecord reservedFor = (SupplementRecord) fieldsAsMap.get("reservedFor");
 
         MultiLookupMeta internalAttendees = new MultiLookupMeta((MultiLookupField) fieldsAsMap.get("internalAttendees"));
-        FacilioField nameField = FieldFactory.getField("name", "NAME", pplModule, FieldType.STRING);
         FacilioField emailField = FieldFactory.getField("email", "EMAIL", pplModule, FieldType.STRING);
         FacilioField phoneField = FieldFactory.getField("phone", "PHONE", pplModule, FieldType.STRING);
 
         List<FacilioField> selectFieldsList = new ArrayList<>();
-        selectFieldsList.add(nameField);
         selectFieldsList.add(emailField);
         selectFieldsList.add(phoneField);
 
