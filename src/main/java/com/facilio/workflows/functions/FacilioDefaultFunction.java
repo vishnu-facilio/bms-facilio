@@ -1,5 +1,6 @@
 package com.facilio.workflows.functions;
 
+import java.io.File;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -744,6 +745,17 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 				return URLEncoder.encode((String)objects[0], "UTF-8");
 			}
 			return null;
+		}
+		
+	},
+   	EXPORT_URL_AS_FILE(24, "exportURLAsFile") {
+
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			String url = (String) objects[0];
+			File file = PdfUtil.exportUrlAsFile(url.toString(), null, FileFormat.PDF);
+			return file;
 		}
 		
 	}

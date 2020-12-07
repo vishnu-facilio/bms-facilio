@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 
 import com.facilio.agent.controller.FacilioControllerType;
@@ -45,6 +46,7 @@ public class GetCommissioningDetailsCommand extends FacilioCommand {
 			JSONArray finalPoints  = new JSONArray();
 			List<String> headers = log.getHeaders().stream().map(header -> (String)header.get("name")).collect(Collectors.toList());
 			Map<Integer, String> unitMap = new HashMap<>();
+			boolean isNiagra = log.getControllerTypeEnum() == FacilioControllerType.NIAGARA;
 			for(int i = 0, size = points.size(); i < size; i++) {
 				Map<String, Object> point = (Map<String, Object>) points.get(i);
 				if (point.get("resourceId") != null) {
@@ -62,6 +64,9 @@ public class GetCommissioningDetailsCommand extends FacilioCommand {
 					else {
 						point.put("unit", null); // since unit is set as 0 by default in points table even if there is no data
 					}
+				}
+				if(isNiagra && StringUtils.isNotEmpty((String)point.get("displayName"))) { // Temp
+					point.put("name", point.get("displayName"));
 				}
 				// TODO fetch only those points from db instead of filtering
 				// Points fetched from db will have orgId. Filtering unwanted values here

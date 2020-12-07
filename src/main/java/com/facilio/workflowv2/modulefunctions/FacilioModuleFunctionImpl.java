@@ -46,7 +46,6 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
-import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
@@ -694,6 +693,24 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		
 		return fileUrl;
 	}
+	
+	@Override
+	public long exportAsFileId(Map<String, Object> globalParams, List<Object> objects) throws Exception {
+		
+		FacilioModule module = (FacilioModule) objects.get(0);
+		
+		String viewName = (String) objects.get(1);
+		
+		Criteria criteria = null;
+		if(objects.size() == 3) {
+			criteria = (Criteria)objects.get(2);
+		}
+		WorkflowV2Util.fillCriteriaField(criteria, module.getName());
+		long fileUrl = ExportUtil.exportModuleAsFileId(FileInfo.FileFormat.XLS, module.getName(), viewName, null,criteria, false, 2000);
+		
+		return fileUrl;
+	}
+
 
 	@Override
 	public Map<String, Object> asMap(Map<String,Object> globalParams,List<Object> objects) throws Exception {
@@ -730,5 +747,5 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		FacilioModule module = (FacilioModule) objects.get(0);
 		return module.getModuleId();
 	}
-
+	
 }

@@ -66,6 +66,17 @@ public class ExportUtil {
 		}
 		return fileUrl;
 	}
+	
+	public static long exportDataAsFileId(FileFormat fileFormat, FacilioModule facilioModule, List<ViewField> fields, List<? extends ModuleBaseWithCustomFields> records) throws Exception {
+		long fileId = -1;
+		if(fileFormat == FileFormat.XLS){
+			fileId=ExportUtil.exportDataAsXLSFileId(facilioModule, fields, records, null);
+		}
+		else if(fileFormat == FileFormat.CSV){
+			fileId=ExportUtil.exportDataAsCSVFileId(facilioModule, fields, records, null);
+		}
+		return fileId;
+	}
 
 	public static String exportData(FileFormat fileFormat,String name, Map<String,Object> table, boolean isS3Url) throws Exception {
 		String fileUrl = null;
@@ -78,8 +89,20 @@ public class ExportUtil {
 		return fileUrl;
 	}
 	
-	@SuppressWarnings("resource")
 	public static String exportDataAsXLS(FacilioModule facilioModule, List<ViewField> fields, List<? extends ModuleBaseWithCustomFields> records, boolean isS3Url) throws Exception
+	{
+		FileStore fs = FacilioFactory.getFileStore();
+		long fileId = exportDataAsXLSFileId(facilioModule, fields, records, fs);
+
+		if (isS3Url) {
+			return fs.getOrgiDownloadUrl(fileId);
+		}
+
+		return fs.getDownloadUrl(fileId);
+	}
+	
+	@SuppressWarnings("resource")
+	public static long exportDataAsXLSFileId(FacilioModule facilioModule, List<ViewField> fields, List<? extends ModuleBaseWithCustomFields> records, FileStore fs) throws Exception
 	{
 		try(HSSFWorkbook workbook = new HSSFWorkbook();){
 			HSSFSheet sheet = workbook.createSheet(facilioModule.getDisplayName());
@@ -145,14 +168,12 @@ public class ExportUtil {
 			}
 	
 			File file = new File(filePath);
-			FileStore fs = FacilioFactory.getFileStore();
+			if (fs == null) {
+				fs = FacilioFactory.getFileStore();
+			}
 			long fileId = fs.addFile(fileName, file, "application/xls");
 	
-			if (isS3Url) {
-				return fs.getOrgiDownloadUrl(fileId);
-			}
-	
-			return fs.getDownloadUrl(fileId);
+			return fileId;
 		}
 	}
 	
@@ -267,6 +288,16 @@ public class ExportUtil {
 	
 	public static String exportDataAsCSV(FacilioModule facilioModule, List<ViewField> fields, List<? extends ModuleBaseWithCustomFields> records, boolean isS3Url) throws Exception
     {
+		FileStore fs = FacilioFactory.getFileStore();
+		long fileId = exportDataAsCSVFileId(facilioModule, fields, records, fs);
+		
+	    if (isS3Url) {
+	    	return fs.getOrgiDownloadUrl(fileId);
+		}
+	    return fs.getDownloadUrl(fileId);
+    }
+	
+	public static long exportDataAsCSVFileId(FacilioModule facilioModule, List<ViewField> fields, List<? extends ModuleBaseWithCustomFields> records, FileStore fs) throws Exception {
 		String fileName = facilioModule.getDisplayName() + ".csv";
 		String filePath = getRootFilePath(fileName);
         	try(FileWriter writer = new FileWriter(filePath, false);) {
@@ -325,15 +356,14 @@ public class ExportUtil {
 	        	writer.close();
 	        	
 	        	File file = new File(filePath);
-		    FileStore fs = FacilioFactory.getFileStore();
+	        	if (fs == null) {
+	        		fs = FacilioFactory.getFileStore();
+	        	}
 		    long fileId = fs.addFile(fileName, file, "application/csv");
 	
-		    if (isS3Url) {
-		    	return fs.getOrgiDownloadUrl(fileId);
-			}
-		    return fs.getDownloadUrl(fileId);
+		   return fileId;
         	}
-    }
+	}
 	
 	private static String escapeCsv(String value) {
 		if (value != null) {
@@ -592,6 +622,23 @@ public class ExportUtil {
 	}
 	
 	public static String exportModule(FileFormat fileFormat, String moduleName, String viewName, String filters,Criteria criteria, boolean isS3Value, boolean specialFields, Integer viewLimit) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<ViewField> viewFields = new ArrayList<ViewField>();
+		List<ModuleBaseWithCustomFields> records = new ArrayList<ModuleBaseWithCustomFields>();
+		prepareExportModuleConfig(fileFormat, moduleName, viewName, filters, criteria, specialFields, viewLimit, viewFields, records);
+		return exportData(fileFormat, modBean.getModule(moduleName), viewFields, records, isS3Value);
+	}
+	
+	public static long exportModuleAsFileId(FileFormat fileFormat, String moduleName, String viewName, String filters,Criteria criteria, boolean specialFields, Integer viewLimit) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<ViewField> viewFields = new ArrayList<ViewField>();
+		List<ModuleBaseWithCustomFields> records = new ArrayList<ModuleBaseWithCustomFields>();
+		prepareExportModuleConfig(fileFormat, moduleName, viewName, filters, criteria, specialFields, viewLimit, viewFields, records);
+		return exportDataAsFileId(fileFormat, modBean.getModule(moduleName), viewFields, records);
+	}
+	
+	private static void prepareExportModuleConfig(FileFormat fileFormat, String moduleName, String viewName, String filters,Criteria criteria, boolean specialFields, Integer viewLimit, List<ViewField> viewFields, List<ModuleBaseWithCustomFields> records) throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.CV_NAME, viewName);
@@ -603,7 +650,6 @@ public class ExportUtil {
 			FacilioChain viewDetailsChain = FacilioChainFactory.getViewDetailsChain();
 			viewDetailsChain.execute(context);
 			FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
-			List<ViewField> viewFields = new ArrayList<ViewField>();
 			viewFields.addAll(view.getFields());
 			List<LookupField> fetchLookup = new ArrayList<LookupField>();
 			LookupFieldMeta spaceLookupField = null ;
@@ -659,12 +705,12 @@ public class ExportUtil {
 		FacilioChain moduleListChain = ReadOnlyChainFactory.fetchModuleDataListChain();
 		moduleListChain.execute(context);
 
-		List<ModuleBaseWithCustomFields> records = (List<ModuleBaseWithCustomFields>) context
-				.get(FacilioConstants.ContextNames.RECORD_LIST);
+		records.addAll((List<ModuleBaseWithCustomFields>) context.get(FacilioConstants.ContextNames.RECORD_LIST));
+		
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		List<ViewField> viewFields = new ArrayList<ViewField>();
+		
 		if (moduleName.equals("asset")) {
 			ViewField id = new ViewField("id", "Id");
 			FacilioField idField = FieldFactory.getIdField(modBean.getModule(moduleName));
@@ -772,7 +818,6 @@ public class ExportUtil {
 			}
 			
 		}
-		return exportData(fileFormat, modBean.getModule(moduleName), viewFields, records, isS3Value);
 	}
 	
 	private static String getRootFilePath(String fileName) {

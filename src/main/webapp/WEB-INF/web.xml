@@ -94,7 +94,7 @@
 		</init-param>
 		<init-param>
 			<param-name>exclude</param-name>
-			<param-value>/api/reading/updatesetupreading,/api/reading/addsetupreading,/internal/addFromMail,/api/v2/alarm/rules/updateNew,/api/v2/graphics/update,/api/dashboard/update,/api/v2/parseftl,/api/v2/module/data/customUpload,/api/v2/setup/scheduledaction/add,/api/v2/workflow/updateUserFunction,/api/v2/integ/pdf/create</param-value>
+			<param-value>/api/reading/updatesetupreading,/api/reading/addsetupreading,/internal/addFromMail,/api/v2/alarm/rules/updateNew,/api/v2/alarm/rules/addNew,/api/v2/graphics/update,/api/dashboard/update,/api/v2/parseftl,/api/v2/module/data/customUpload,/api/v2/setup/scheduledaction/add,/api/v2/workflow/updateUserFunction,/api/v2/integ/pdf/create</param-value>
 		</init-param>
 <!--		<init-param>-->
 <!--			<param-name>allowed-upload-types</param-name>-->
