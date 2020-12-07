@@ -226,7 +226,7 @@ public class BusinessHoursAPI {
 					
 					if(adjustedFromTimeLocal != null) {
 						
-						int availableTime = to.toSecondOfDay() - from.toSecondOfDay();
+						int availableTime = to.toSecondOfDay() - adjustedFromTimeLocal.toSecondOfDay();
 						
 						if(seconds <= availableTime) {
 							adjustedFromTimeLocal = adjustedFromTimeLocal.plusSeconds(seconds);
