@@ -210,14 +210,14 @@ public class SensorRuleUtil {
 								sensorEvents.add(sensorEvent);
 								
 								if(isFirstFieldSensorRule && !validatorType.getSensorRuleTypeFromValidator().isMeterRollUp()) {
-									SensorRollUpEventContext sensorFieldRollUpEvent = sensorEvent.constructRollUpEvent(reading, defaultSeverityProps, isHistorical, false);
+									SensorRollUpEventContext sensorFieldRollUpEvent = sensorEvent.constructRollUpEvent(reading, defaultSeverityProps, isHistorical, false, sensorRule);
 									sensorFieldRollUpEvents.add(sensorFieldRollUpEvent);
 									fieldSensorRollUpEventMeta.put(ReadingsAPI.getRDMKey(reading.getParentId(), sensorFieldRollUpEvent.getReadingField()), sensorFieldRollUpEvent);
 									isFirstFieldSensorRule = false;
 								}
 								
 								if(isFirstAssetSensorRule && validatorType.getSensorRuleTypeFromValidator().isMeterRollUp()) {
-									SensorRollUpEventContext sensorAssetRollUpEvent = sensorEvent.constructRollUpEvent(reading, defaultSeverityProps, isHistorical, true);
+									SensorRollUpEventContext sensorAssetRollUpEvent = sensorEvent.constructRollUpEvent(reading, defaultSeverityProps, isHistorical, true, sensorRule);
 									sensorMeterRollUpEvents.add(sensorAssetRollUpEvent);
 									assetSensorRollUpEventMeta.put(reading.getParentId(), sensorAssetRollUpEvent);
 									isFirstAssetSensorRule = false;
