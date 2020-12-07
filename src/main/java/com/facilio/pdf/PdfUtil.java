@@ -147,4 +147,25 @@ public class PdfUtil {
 		return exportUrlAsFile(url, name, null, null, formats);
 	}
 
+	public static long exportUrlAsFileId(String url, String name, FileFormat... formats){
+		FileFormat format = FileFormat.PDF;
+		if (formats != null && formats.length > 0) {
+			format = formats[0];
+		}
+		String pdfFileLocation = convertUrlToPdf(url, null, null, format);
+		File pdfFile = new File(pdfFileLocation);
+		if(pdfFileLocation != null) {
+
+			FileStore fs = FacilioFactory.getFileStore();
+			long fileId = 0;
+			try {
+				fileId = fs.addFile(name != null ? name+format.getExtention() : pdfFile.getName(), pdfFile, format.getContentType());
+			} catch (Exception e) {
+				LOGGER.info("Exception occurred ", e);
+			}
+			return fileId;
+		}
+		return -1;
+	}
+
 }
