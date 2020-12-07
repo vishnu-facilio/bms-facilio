@@ -742,6 +742,7 @@ public class APIv3Config {
                 .list()
                     .beforeFetch(new LoadFacilityLookupCommandV3())
                 .summary()
+                    .beforeFetch(new LoadFacilityLookupCommandV3())
                     .afterFetch(ReadOnlyChainFactoryV3.getFacilityAfterFetchChain())
                 .build();
     }
