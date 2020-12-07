@@ -12224,7 +12224,7 @@ INSERT INTO NumberFields (FIELDID, ORGID) VALUES (@BOOKING_COUNT_ROLL_UP_FIELD_I
 
 --Job entry for slot creation
 
-INSERT INTO ${publicDb}.Jobs (JOBID, ORGID, JOBNAME, IS_ACTIVE, IS_PERIODIC, SCHEDULE_INFO, NEXT_EXECUTION_TIME, EXECUTOR_NAME, STATUS, JOB_SERVER_ID, TRANSACTION_TIMEOUT, CURRENT_EXECUTION_TIME) VALUES (${orgId}, ${orgId}, 'ScheduleSlotCreation', true, true, '{"times":["00:00"],"frequencyType":1,"frequencyTypeEnum":"DAILY"}', UNIX_TIMESTAMP()+30,'facilio', 3, 0, 1200000, UNIX_TIMESTAMP()*1000);
+--INSERT INTO ${publicDb}.Jobs (JOBID, ORGID, JOBNAME, IS_ACTIVE, IS_PERIODIC, SCHEDULE_INFO, NEXT_EXECUTION_TIME, EXECUTOR_NAME, STATUS, JOB_SERVER_ID, TRANSACTION_TIMEOUT, CURRENT_EXECUTION_TIME) VALUES (${orgId}, ${orgId}, 'ScheduleSlotCreation', true, true, '{"times":["00:00"],"frequencyType":1,"frequencyTypeEnum":"DAILY"}', UNIX_TIMESTAMP()+30,'facilio', 3, 0, 1200000, UNIX_TIMESTAMP()*1000);
 
 --Facility Booking slots
 INSERT INTO Modules (ORGID, NAME, DISPLAY_NAME, TABLE_NAME, MODULE_TYPE) VALUES (${orgId}, 'bookingslot', 'Facility Booking Slots', 'FacilityBooking_Slots', @SUB_ENTITY_MODULE_TYPE);
