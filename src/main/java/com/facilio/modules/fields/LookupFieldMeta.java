@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
-
 public class LookupFieldMeta extends LookupField {
 	
 	/**
@@ -16,6 +13,13 @@ public class LookupFieldMeta extends LookupField {
 	public LookupFieldMeta(LookupField field) {
 		// TODO Auto-generated constructor stub
 		super(field);
+	}
+
+	public LookupFieldMeta(LookupField field, List<FacilioField> selectFields, Collection<LookupField> childLookupFields) {
+		// TODO Auto-generated constructor stub
+		this(field);
+		this.selectFields = selectFields;
+		this.childLookupFields = childLookupFields;
 	}
 
 	private List<FacilioField> selectFields;
