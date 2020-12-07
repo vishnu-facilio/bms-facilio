@@ -263,44 +263,132 @@ public class BusinessHoursAPI {
 	}
 	
 	
-	public static List<DateRange> getBusinessHoursForNextNDays(BusinessHoursContext businessHour, int days) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+	public static int getSecondsBetween(BusinessHoursContext businessHour, long fromTime, long toTime) throws Exception {
 		
-		List<BusinessHourContext> businessHours = businessHour.getSingleDaybusinessHoursListOrDefault();
+		List<DateRange> dateRangeList = getBusinessHoursList(businessHour, DateTimeUtil.getDayStartTimeOf(fromTime), DateTimeUtil.getDayEndTimeOf(toTime));
+		
+		int totalsec = 0;
+		for(DateRange dateRange :dateRangeList) {
+			
+			long tempStartTime = dateRange.getStartTime();
+			long tempEndTime = dateRange.getEndTime();
+			
+			if((dateRange.getStartTime() < fromTime && dateRange.getEndTime() < fromTime) || (dateRange.getStartTime() > toTime)) {
+				continue;
+			}
+			
+			if(dateRange.getStartTime() < fromTime && dateRange.getEndTime() > fromTime) {
+				tempStartTime = fromTime;
+			}
+			
+			if(dateRange.getStartTime() < toTime && dateRange.getEndTime() > toTime) {
+				tempEndTime = toTime;
+			}
+			
+			int availabeSecs = (int) (tempEndTime - tempStartTime)/1000; 
+			totalsec += availabeSecs;
+		}
+		
+		return totalsec;
+	}
+	
+	public static List<DateRange> getBusinessHoursForNextNDays(BusinessHoursContext businessHour,int days) throws Exception {
+		
+		return getBusinessHoursForNextNDays(businessHour, -1l, days);
+	}
+	
+	public static List<DateRange> getBusinessHoursForNextNDays(BusinessHoursContext businessHour,long startTime,int days) throws Exception {
+		
+		if(startTime <=0) {
+			startTime = DateTimeUtil.getCurrenTime();
+		}
+		return getBusinessHoursList(businessHour, startTime, DateTimeUtil.addDays(startTime, days));
+	}
+	
+	public static List<DateRange> getBusinessHoursList(BusinessHoursContext businessHour,long startTime,long endTime) throws Exception {
+		
+		ZonedDateTime zdt = DateTimeUtil.getZonedDateTime(startTime);
+		
+		LocalTime localFromTime = LocalTime.of(zdt.getHour(), zdt.getMinute(), zdt.getSecond());
+		
+		startTime = startTime -1;
+		
+		java.time.DayOfWeek currentDayOfWeek = java.time.DayOfWeek.of(zdt.getDayOfWeek().getValue());
+		
+		Map<java.time.DayOfWeek, List<Pair<LocalTime, LocalTime>>> businessHourMap = businessHour.getAsMapBusinessHours();
 		
 		List<DateRange> dateRanges = new ArrayList<DateRange>();
 		
-		for(BusinessHourContext singleDayBusinessHour :businessHours) {
+		Pair<LocalTime, LocalTime> fromTimePair = null;
+		
+		a:
+		while(true) {
 			
-			ScheduleInfo startTimeScheduleInfo = new ScheduleInfo();
+			List<Pair<LocalTime, LocalTime>> timeList = businessHourMap.get(currentDayOfWeek);
 			
-			startTimeScheduleInfo.setFrequencyType(FrequencyType.WEEKLY);
-			startTimeScheduleInfo.setValues(Collections.singletonList(singleDayBusinessHour.getDayOfWeek()));
-			startTimeScheduleInfo.setTimes(Collections.singletonList(singleDayBusinessHour.getStartTimeOrDefault().toString()));
-			
-			ScheduleInfo endTimeScheduleInfo = new ScheduleInfo();
-			
-			endTimeScheduleInfo.setFrequencyType(FrequencyType.WEEKLY);
-			endTimeScheduleInfo.setValues(Collections.singletonList(singleDayBusinessHour.getDayOfWeek()));
-			endTimeScheduleInfo.setTimes(Collections.singletonList(singleDayBusinessHour.getEndTimeOrDefault().toString()));
-			
-			long startTime = DateTimeUtil.getDayStartTime();
-			
-			long endTime = DateTimeUtil.addDays(startTime, days);
-			
-			while(true) {
+			if(timeList != null) {
 				
-				long tempStartTime = startTimeScheduleInfo.nextExecutionTime(startTime/1000) * 1000;
-				long tempEndTime = endTimeScheduleInfo.nextExecutionTime(tempStartTime/1000) * 1000;
-				
-				if(tempStartTime < endTime && tempEndTime <= endTime) {
-					dateRanges.add(new DateRange(tempStartTime, tempEndTime));
-					startTime = tempEndTime;
+				for(Pair<LocalTime, LocalTime> timePair : timeList) {
+					
+					if(fromTimePair != null) {
+						fromTimePair = timePair;
+					}
+					else {
+						
+						LocalTime from = timePair.getLeft();
+						LocalTime to = timePair.getRight();
+						
+						if(to.isBefore(localFromTime)) {
+							continue;
+						}
+						else {
+							
+							if(from.isBefore(localFromTime)) {
+
+								from = localFromTime;
+							}
+							fromTimePair = Pair.of(from, to);
+						}
+					}
+					
+					if(fromTimePair != null) {
+						
+						ScheduleInfo startTimeScheduleInfo = new ScheduleInfo();
+						
+						startTimeScheduleInfo.setFrequencyType(FrequencyType.WEEKLY);
+						startTimeScheduleInfo.setValues(Collections.singletonList(currentDayOfWeek.getValue()));
+						startTimeScheduleInfo.setTimes(Collections.singletonList(fromTimePair.getLeft().toString()));
+						
+						ScheduleInfo endTimeScheduleInfo = new ScheduleInfo();
+						
+						endTimeScheduleInfo.setFrequencyType(FrequencyType.WEEKLY);
+						endTimeScheduleInfo.setValues(Collections.singletonList(currentDayOfWeek.getValue()));
+						endTimeScheduleInfo.setTimes(Collections.singletonList(fromTimePair.getRight().toString()));
+						
+						long tempStartTime = startTimeScheduleInfo.nextExecutionTime(startTime/1000) * 1000;
+						long tempEndTime = endTimeScheduleInfo.nextExecutionTime(tempStartTime/1000) * 1000;
+						
+						if(tempStartTime < endTime && tempEndTime <= endTime) {
+							dateRanges.add(new DateRange(tempStartTime, tempEndTime));
+							startTime = tempEndTime;
+						}
+						if(tempEndTime >= endTime) {
+							break a;
+						}
+					}
 				}
-				else {
-					break;
-				}
+						
 			}
- 		}
+			
+			if(currentDayOfWeek == java.time.DayOfWeek.SUNDAY) {
+				currentDayOfWeek = java.time.DayOfWeek.MONDAY;
+			}
+			else {
+				currentDayOfWeek = java.time.DayOfWeek.of(currentDayOfWeek.getValue()+1);
+			}
+			
+			localFromTime = LocalTime.MIN;
+		}
 		
 		Collections.sort(dateRanges);
 		

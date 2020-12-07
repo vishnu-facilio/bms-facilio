@@ -96,6 +96,34 @@ public enum FacilioBusinessHourFunctions implements FacilioWorkflowFunctionInter
 		}
 		
 	},
+	
+	GET_HOURS_BETWEEN(2,"getHoursBetween") {
+
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			
+			BusinessHoursContext bussBusinessHoursContext = (BusinessHoursContext)objects[0];
+			long fromTime = (long) Double.parseDouble(objects[1].toString());
+			long toTime = (long) Double.parseDouble(objects[2].toString());
+			return BusinessHoursAPI.getSecondsBetween(bussBusinessHoursContext, fromTime, toTime)/60/60;
+		}
+		
+	},
+	
+	GET_MINS_BETWEEN(3,"getMinsBetween") {
+
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			
+			BusinessHoursContext bussBusinessHoursContext = (BusinessHoursContext)objects[0];
+			long fromTime = (long) Double.parseDouble(objects[1].toString());
+			long toTime = (long) Double.parseDouble(objects[2].toString());
+			return BusinessHoursAPI.getSecondsBetween(bussBusinessHoursContext, fromTime, toTime)/60;
+		}
+		
+	},
 	;
 	
 	private Integer value;
