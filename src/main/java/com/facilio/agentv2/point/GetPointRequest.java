@@ -142,6 +142,7 @@ public class GetPointRequest {
 
     public GetPointRequest querySearch(String column,String value) {
     	selectRecordBuilder.andCustomWhere(column + " = ? OR "+ column +" LIKE ? ", value, "%"+value+"%");
+        selectRecordBuilder.orCustomWhere("DISPLAY_NAME" + " = ? OR "+ "DISPLAY_NAME" +" LIKE ? ", value, "%"+value+"%");
     	return this;
     }
     
