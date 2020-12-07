@@ -190,6 +190,9 @@ public abstract class Point extends FacilioPoint{
         if(containsValueCheck(AgentConstants.NAME,row)){
             setName((String) row.get(AgentConstants.NAME));
         }
+        if(containsValueCheck(AgentConstants.DISPLAY_NAME,row)) {
+        	setDisplayName((String)row.get(AgentConstants.DISPLAY_NAME));
+        }
         if(containsValueCheck(AgentConstants.DATA_TYPE,row)){
             setDataType(FacilioDataType.valueOf(JsonUtil.getInt(row.get(AgentConstants.DATA_TYPE))));
         }
