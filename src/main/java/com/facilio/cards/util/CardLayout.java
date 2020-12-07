@@ -21,6 +21,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
@@ -192,25 +193,29 @@ public enum CardLayout {
 					
 					cardValue = KPIUtil.getKPIValue(kpiContext);
 					
-					kpi = KPIUtil.getKPI(kpiId,false);
-					fields = KPIUtil.getKPIModuleFIelds(kpiContext);
-
-					listData = KPIUtil.getKPIList(kpiContext, null);
+					//kpi = KPIUtil.getKPI(kpiId,false);
+					kpi = kpiContext;
 					
-					if (listData != null) {
-						try {
-							variables = new JSONArray();
-							
-							Map<String, Object> record = (Map<String, Object>) listData;
-							List<FacilioField> moduleFields = (List<FacilioField>) fields;
-							for (FacilioField field : moduleFields) {
-								Object value = record.get(field.getName());
+					if (AccountUtil.getCurrentOrg().getId() != 324) {
+						fields = KPIUtil.getKPIModuleFIelds(kpiContext);
+	
+						listData = KPIUtil.getKPIList(kpiContext, null);
+						
+						if (listData != null) {
+							try {
+								variables = new JSONArray();
 								
-								variables.add(getVariable(field.getName(), field.getDisplayName(), field.getDataTypeEnum().name(), value, null));
+								Map<String, Object> record = (Map<String, Object>) listData;
+								List<FacilioField> moduleFields = (List<FacilioField>) fields;
+								for (FacilioField field : moduleFields) {
+									Object value = record.get(field.getName());
+									
+									variables.add(getVariable(field.getName(), field.getDisplayName(), field.getDataTypeEnum().name(), value, null));
+								}
 							}
-						}
-						catch (Exception e) {
-							e.printStackTrace();
+							catch (Exception e) {
+								e.printStackTrace();
+							}
 						}
 					}
 				} catch (Exception e) {
