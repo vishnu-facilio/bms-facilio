@@ -5,11 +5,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
+import com.facilio.util.FacilioUtil;
 import com.facilio.util.RequestUtil;
 import com.opensymphony.xwork2.ActionContext;
 import org.apache.commons.lang3.StringUtils;
@@ -113,6 +111,7 @@ public class FacilioProperties {
 
     private static int authTokenCookieLifespan = 7 * 24 * 60 * 60;
     private static long responseSizeThreshold = 5000000; // In Bytes
+    private static List<String> thresholdWhiteListedUrls = null;
 
     private static boolean userAccessLog = false;
 
@@ -218,11 +217,21 @@ public class FacilioProperties {
                             responseSizeThreshold = threshold;
                         }
                         else {
-                            LOGGER.info(MessageFormat.format("Negative value ({0}) for 'response.size.threshold'. So using default timeout ({1})", responseThreshold, responseSizeThreshold));
+                            LOGGER.error(MessageFormat.format("Negative value ({0}) for 'response.size.threshold'. So using default timeout ({1})", responseThreshold, responseSizeThreshold));
                         }
                     }
                     catch (NumberFormatException e) {
-                        LOGGER.info(MessageFormat.format("Exception while parsing 'response.size.threshold' with value : {0}. So using default timeout ({1})",responseThreshold, responseSizeThreshold));
+                        LOGGER.error(MessageFormat.format("Exception while parsing 'response.size.threshold' with value : {0}. So using default timeout ({1})",responseThreshold, responseSizeThreshold), e);
+                    }
+                }
+                String whiteListedUrls = PROPERTIES.getProperty("response.size.threshold.whitelist");
+                if (StringUtils.isNotEmpty(whiteListedUrls)) {
+                    try {
+                        List<String> urls = Arrays.asList(FacilioUtil.splitByComma(whiteListedUrls));
+                        thresholdWhiteListedUrls = Collections.unmodifiableList(urls);
+                    }
+                    catch (Exception e) {
+                        LOGGER.error("Exception while parsing 'response.size.threshold.whitelist' and so threshold whitelist urls will be considered as empty.", e);
                     }
                 }
 
@@ -413,6 +422,10 @@ public class FacilioProperties {
 
     public static long getResponseSizeThreshold() {
         return responseSizeThreshold;
+    }
+
+    public static List<String> getResponseSizeThresholdWhiteListedUrls() {
+        return thresholdWhiteListedUrls;
     }
 
     public static String getDefaultAppDB() {

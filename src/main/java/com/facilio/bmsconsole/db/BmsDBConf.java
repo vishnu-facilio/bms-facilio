@@ -199,6 +199,14 @@ public class BmsDBConf extends DBConf {
         return null;
     }
 
+    @Override
+    public String getCurrentRequestUri() {
+        if (AccountUtil.getCurrentAccount() != null) {
+            return AccountUtil.getCurrentAccount().getRequestUri();
+        }
+        return null;
+    }
+
     /**
      * fetches file's URL, File Name and Content type
      * @param selectFields
@@ -560,6 +568,11 @@ public class BmsDBConf extends DBConf {
     @Override
     public long getResponseSizeThreshold() {
         return FacilioProperties.getResponseSizeThreshold();
+    }
+
+    @Override
+    public List<String> getResponseSizeThresholdWhiteListedUrls() {
+        return FacilioProperties.getResponseSizeThresholdWhiteListedUrls();
     }
 
 }
