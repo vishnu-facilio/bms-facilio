@@ -29,6 +29,9 @@
 		<action name="migration">
 			<result name="success">/jsps/migration/Migration.jsp</result>
 		</action>
+		<action name="moduleMigration">
+			<result name="success">/jsps/migration/ModuleMigration.jsp</result>
+		</action>
 		<action name="mlResponseParser" class="com.facilio.bmsconsole.actions.MLResponseParser" method="parseResponse">
 			<result name="success" type="json">
 				<param name="statusCode">200</param>
