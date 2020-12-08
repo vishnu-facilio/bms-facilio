@@ -49,15 +49,15 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
             }
         }
 //        long startTime = System.currentTimeMillis();
-        Collections.sort(filterFields, Comparator.comparing(FilterFieldContext::getDisplayName)); //Sorting in java because we take fields from cache and Collections.sort is pretty efficient
+        Collections.sort(filterFields, Comparator.comparing(FilterFieldContext::isMainField).reversed()
+                                        .thenComparing(Comparator.comparing(FilterFieldContext::getDisplayName))
+                        ); //Sorting in java because we take fields from cache and Collections.sort is pretty efficient
 //        System.out.println("Time taken to sort => "+ (System.currentTimeMillis() - startTime));
         return filterFields;
     }
 
     private List<FacilioField> filterFields (FacilioModule module, List<FacilioField> fields) {
-        if (AssetsAPI.isAssetsModule(module)) {
-            fields = filterAssetFields(fields);
-        }
+        fields = filterModuleFields(module, fields);
         return filterScopeFields(module, fields);
     }
 
@@ -128,10 +128,24 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
         return filter;
     }
 
-    private List<FacilioField> filterAssetFields (List<FacilioField> fields) {
+    private List<FacilioField> filterOutFields (List<FacilioField> fields, List<String> filterList) {
         return fields.stream().
                 filter(
-                        f -> FieldFactory.Fields.assetFieldsInclude.contains(f.getName()) || !f.isDefault()
+                        f -> filterList.contains(f.getName()) || !f.isDefault()
                 ).collect(Collectors.toList());
+    }
+
+    private List<FacilioField> filterModuleFields (FacilioModule module, List<FacilioField> fields) {
+        if (AssetsAPI.isAssetsModule(module)) {
+            return filterOutFields(fields, FieldFactory.Fields.assetFieldsInclude);
+        }
+        else {
+            switch (module.getName()) {
+                case FacilioConstants.ContextNames.QUOTE:
+                    return filterOutFields(fields, FieldFactory.Fields.quoteFieldsInclude);
+                default:
+                    return fields;
+            }
+        }
     }
 }

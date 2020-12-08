@@ -256,14 +256,10 @@ public class FieldFactory {
             assetFieldsInclude.add("category");
             assetFieldsInclude.add("department");
             assetFieldsInclude.add("description");
-//            assetFieldsInclude.add("localId");
             assetFieldsInclude.add("manufacturer");
             assetFieldsInclude.add("name");
-//            assetFieldsInclude.add("parentAssetId");
-//            assetFieldsInclude.add("photoId");
             assetFieldsInclude.add("purchasedDate");
             assetFieldsInclude.add("qrVal");
-//            assetFieldsInclude.add("resourceType");
             assetFieldsInclude.add("retireDate");
             assetFieldsInclude.add("serialNumber");
             assetFieldsInclude.add("state");
@@ -275,7 +271,31 @@ public class FieldFactory {
             assetFieldsInclude.add("warrantyExpiryDate");
             assetFieldsInclude.add("distanceMoved");
             assetFieldsInclude.add("connected");
+            assetFieldsInclude.add("sysCreatedTime");
+            assetFieldsInclude.add("sysCreatedBy");
+            assetFieldsInclude.add("sysModifiedTime");
+            assetFieldsInclude.add("sysModifiedBy");
         }
+
+        public static List<String> quoteFieldsInclude = Collections.unmodifiableList(Arrays.asList(new String[] {
+                "subject",
+                "description",
+                "workorder",
+                "tenant",
+                "billDate",
+                "expiryDate",
+                "subTotal",
+                "totalTaxAmount",
+                "discountAmount",
+                "shippingCharges",
+                "adjustmentsCost",
+                "miscellaneousCharges",
+                "totalCost",
+                "sysCreatedTime",
+                "sysCreatedBy",
+                "sysModifiedTime",
+                "sysModifiedBy"
+                                                                        }));
 
         public static List<String> approvalFormFields = new ArrayList<String>();
 

@@ -5,6 +5,7 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
@@ -70,6 +71,11 @@ public class FilterFieldContext {
 
     public String getName() {
         return field == null ? null : field.getName();
+    }
+
+    @JSON(serialize = false)
+    public boolean isMainField() {
+        return field == null ? false : field.isMainField();
     }
 
     public boolean isDefault() {
