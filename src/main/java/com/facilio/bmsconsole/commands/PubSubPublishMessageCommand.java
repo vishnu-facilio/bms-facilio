@@ -70,9 +70,9 @@ public class PubSubPublishMessageCommand extends FacilioCommand {
 						timeTaken = System.currentTimeMillis() - startTime;
 						LOGGER.debug(MessageFormat.format("Time taken to add instant job for {0} is {1}", readingKey, timeTaken));
 						totalInstantJobAddTime += timeTaken;
-					}*/
+					}
 					i++;
-				}
+				}*/
 			}
 			LOGGER.debug(MessageFormat.format("Total number of data points checked : {0}. Total time taken to check : {1}. Total time taken to add instant job : {2}", i, totalChangeCheckTime, totalInstantJobAddTime));
 		}
