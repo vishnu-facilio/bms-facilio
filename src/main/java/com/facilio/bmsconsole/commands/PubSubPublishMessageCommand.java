@@ -35,7 +35,7 @@ public class PubSubPublishMessageCommand extends FacilioCommand {
 			while (readingKeys.hasNext()) {
 				String readingKey = readingKeys.next();
 				
-				if (AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 343 || AccountUtil.getCurrentOrg().getId() == 324) {
+				if (AccountUtil.getCurrentOrg().getId() == 146 || AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 343 || AccountUtil.getCurrentOrg().getId() == 324) {
 					try {
 						ReadingDataMeta rdm = currentReadingMap.get(readingKey);
 
@@ -53,7 +53,7 @@ public class PubSubPublishMessageCommand extends FacilioCommand {
 						LOGGER.log(Level.WARN, "Exception while send wms message for live reading update. readingKey: "+readingKey, e);
 					}
 				}
-				else {
+				/*else {
 					long startTime = System.currentTimeMillis();
 					boolean readingChangeSubscribed = PubSubManager.getInstance().isReadingChangeSubscribed(AccountUtil.getCurrentOrg().getId(), readingKey);
 					long timeTaken = System.currentTimeMillis() - startTime;
@@ -70,7 +70,7 @@ public class PubSubPublishMessageCommand extends FacilioCommand {
 						timeTaken = System.currentTimeMillis() - startTime;
 						LOGGER.debug(MessageFormat.format("Time taken to add instant job for {0} is {1}", readingKey, timeTaken));
 						totalInstantJobAddTime += timeTaken;
-					}
+					}*/
 					i++;
 				}
 			}

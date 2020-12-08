@@ -356,9 +356,7 @@ public class LoginAction extends FacilioAction {
 		try {
 			Map<String, Object> config = new HashMap<>();
 			config.put("ws_endpoint", WmsApi.getWebsocketEndpoint(AccountUtil.getCurrentUser().getId(), LiveSessionType.TENANT_PORTAL, LiveSessionSource.WEB));
-			if (AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 343 || AccountUtil.getCurrentOrg().getId() == 324) {
-				config.put("new_ws_endpoint", WmsApi.getNewWebsocketEndpoint(AccountUtil.getCurrentUser().getId(), LiveSessionType.TENANT_PORTAL, LiveSessionSource.WEB));
-			}
+			config.put("new_ws_endpoint", WmsApi.getNewWebsocketEndpoint(AccountUtil.getCurrentUser().getId(), LiveSessionType.TENANT_PORTAL, LiveSessionSource.WEB));
 			account.put("config",config);	
 		} catch (Exception e) {
 			log.error("Error getting socket endpoint in portal",e);
@@ -574,9 +572,7 @@ public class LoginAction extends FacilioAction {
 
 		Map<String, Object> config = new HashMap<>();
 		config.put("ws_endpoint", WmsApi.getWebsocketEndpoint(remoteScreen.getId(), LiveSessionType.REMOTE_SCREEN, LiveSessionSource.WEB));
-		if (AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 343 || AccountUtil.getCurrentOrg().getId() == 324) {
-			config.put("new_ws_endpoint", WmsApi.getNewWebsocketEndpoint(remoteScreen.getId(), LiveSessionType.REMOTE_SCREEN, LiveSessionSource.WEB));
-		}
+		config.put("new_ws_endpoint", WmsApi.getNewWebsocketEndpoint(remoteScreen.getId(), LiveSessionType.REMOTE_SCREEN, LiveSessionSource.WEB));
 
 		account.put("data", data);
 		account.put("config", config);
@@ -648,9 +644,7 @@ public class LoginAction extends FacilioAction {
 			}
 			
 			config.put("ws_endpoint", WmsApi.getWebsocketEndpoint(device.getId(), LiveSessionType.DEVICE, ((device.getDeviceTypeEnum()==DeviceType.VISITOR_KIOSK) ? LiveSessionSource.TABLET : LiveSessionSource.WEB)));
-			if (AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 343 || AccountUtil.getCurrentOrg().getId() == 324) {
-				config.put("new_ws_endpoint", WmsApi.getNewWebsocketEndpoint(device.getId(), LiveSessionType.DEVICE, ((device.getDeviceTypeEnum()==DeviceType.VISITOR_KIOSK) ? LiveSessionSource.TABLET : LiveSessionSource.WEB)));
-			}
+			config.put("new_ws_endpoint", WmsApi.getNewWebsocketEndpoint(device.getId(), LiveSessionType.DEVICE, ((device.getDeviceTypeEnum()==DeviceType.VISITOR_KIOSK) ? LiveSessionSource.TABLET : LiveSessionSource.WEB)));
 		}
 		
 		
@@ -887,9 +881,7 @@ public class LoginAction extends FacilioAction {
 		
 		Map<String, Object> config = new HashMap<>();
 		config.put("ws_endpoint", WmsApi.getWebsocketEndpoint(AccountUtil.getCurrentUser().getId(), LiveSessionType.APP, LiveSessionSource.WEB));
-		if (AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 343 || AccountUtil.getCurrentOrg().getId() == 324) {
-			config.put("new_ws_endpoint", WmsApi.getNewWebsocketEndpoint(AccountUtil.getCurrentUser().getId(), LiveSessionType.APP, LiveSessionSource.WEB));
-		}
+		config.put("new_ws_endpoint", WmsApi.getNewWebsocketEndpoint(AccountUtil.getCurrentUser().getId(), LiveSessionType.APP, LiveSessionSource.WEB));
 		
 		config.put("payment_endpoint", getPaymentEndpoint());
 		Properties buildinfo = (Properties)ServletActionContext.getServletContext().getAttribute("buildinfo");
