@@ -6,8 +6,12 @@ import java.util.Map;
 
 import org.apache.struts2.json.annotations.JSON;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.AggregateOperator;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.fields.FacilioField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ReportDrilldownParamsContext {
@@ -16,6 +20,16 @@ public class ReportDrilldownParamsContext {
 	public static class DrilldownCriteria{
 		private String dimensionValues;
 		private HashMap<String, Object> xField;
+		ReportFieldContext xAxis;
+		
+		
+		@JSON(serialize = false)
+		public ReportFieldContext getxAxis() {
+			return xAxis;
+		}
+		public void setxAxis(ReportFieldContext xAxis) {
+			this.xAxis = xAxis;
+		}
 		private HashMap<String, Object> groupBy;
 		private String breadcrumbLabel;// the clicked BAR/DIMENSION from previous report
 		public String getBreadcrumbLabel() {
@@ -33,8 +47,17 @@ public class ReportDrilldownParamsContext {
 		public HashMap<String, Object> getxField() {
 			return xField;
 		}
-		public void setxField(HashMap<String, Object> xField) {
+		public void setxField(HashMap<String, Object> xField) throws Exception {
 			this.xField = xField;
+			long fieldId=(long)this.xField.get("field_id");
+			long moduleId=(long)this.xField.get("module_id");
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioField field=modBean.getField(fieldId);
+			FacilioModule module=modBean.getModule(moduleId);
+			this.xAxis=new ReportFieldContext();
+			this.xAxis.setField(module, field);
+
+			
 		}
 		public String getDimensionValues() {
 			return dimensionValues;
