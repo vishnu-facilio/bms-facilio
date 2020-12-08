@@ -1,5 +1,6 @@
 package com.facilio.report.context;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +12,6 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.TabularReportContext;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.Operator;
@@ -23,8 +23,12 @@ import com.facilio.report.context.ReadingAnalysisContext.AnalyticsType;
 import com.facilio.time.DateRange;
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.WorkflowContext;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 public class ReportContext {
+	
+	
 
 	private long id = -1;
 
@@ -743,4 +747,92 @@ public class ReportContext {
 		}
 		return new JSONObject();
 	}
+	
+//	Drill down
+	
+	private List<ReportDrilldownPathContext> reportDrilldownPath;
+	
+
+
+	public List<ReportDrilldownPathContext> getReportDrilldownPath() {
+		return reportDrilldownPath;
+	}
+
+	public void setReportDrilldownPath(List<ReportDrilldownPathContext> reportDrilldownPath) {
+		this.reportDrilldownPath = reportDrilldownPath;
+	}
+
+	public void setReportDrilldownJson(String reportDrilldownJson) throws Exception {
+
+		if(reportDrilldownJson!=null)
+		{
+		JSONArray jsonarray = FacilioUtil.parseJsonArray(reportDrilldownJson);
+
+		reportDrilldownPath=new ArrayList<>();
+		for (Object jsonObject : jsonarray) {
+
+			JSONObject json = (JSONObject) jsonObject;
+			ReportDrilldownPathContext drilldown = FieldUtil.getAsBeanFromJson(json, ReportDrilldownPathContext.class);
+
+			
+			reportDrilldownPath.add(drilldown);
+		}
+		}
+		
+	}
+
+	@JSON(serialize = false)
+	public String getReportDrilldownJson() throws Exception {
+
+		if (reportDrilldownPath != null) {
+			return FieldUtil.getAsJSONArray(reportDrilldownPath, ReportDrilldownPathContext.class).toJSONString();
+		}
+		return null;
+	}
+	
+	private ReportSettings reportSettings;
+
+	public ReportSettings getReportSettings() {
+		if(this.reportSettings!=null)
+		{
+		return reportSettings;
+		}
+		else {
+			return ReportSettings.getDefaultReportSettings();
+		}
+	}
+
+	public void setReportSettings(ReportSettings reportSettings) {
+		
+		this.reportSettings = reportSettings;
+	}
+	@JSON(serialize = false)
+	public String getReportSettingsJson() throws Exception 
+	{
+		if(this.reportSettings!=null)
+		{
+			return FieldUtil.getAsJSON(this.reportSettings).toJSONString();
+		}
+		return null;
+	}
+	public void setReportSettingsJson(String reportSettingsJson) throws JsonParseException, JsonMappingException, IOException, ParseException
+	{
+		if(reportSettingsJson!=null)
+		{
+			this.reportSettings=FieldUtil.getAsBeanFromJson(FacilioUtil.parseJson(reportSettingsJson), ReportSettings.class);
+		}
+		
+	}
+	
+	private ReportDrilldownParamsContext drilldownParams;
+
+	
+	public ReportDrilldownParamsContext getDrilldownParams() {
+		return drilldownParams;
+	}
+
+	public void setDrilldownParams(ReportDrilldownParamsContext drilldownParams) {
+		this.drilldownParams = drilldownParams;
+	}
+
 }

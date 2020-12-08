@@ -29,6 +29,7 @@ import com.facilio.report.context.*;
 import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.context.ReportDataPointContext.DataPointType;
 import com.facilio.report.context.ReportDataPointContext.OrderByFunction;
+import com.facilio.report.context.ReportDrilldownParamsContext.DrilldownCriteria;
 import com.facilio.report.util.DemoHelperUtil;
 import com.facilio.report.util.FilterUtil;
 import com.facilio.report.util.ReportUtil;
@@ -235,7 +236,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 
 		boolean noMatch = hasSortedDp && (xValues == null || xValues.isEmpty());
 		Map<String, List<Map<String, Object>>> props = new HashMap<>();
-		List<Map<String, Object>> dataProps = noMatch ? Collections.EMPTY_LIST : fetchReportData(report, dp, selectBuilder, null, xAggrField, xValues);
+		List<Map<String, Object>> dataProps = noMatch ? Collections.EMPTY_LIST : fetchReportData(report, dp, selectBuilder, null, xAggrField, xValues,addedModules);
 		props.put(FacilioConstants.Reports.ACTUAL_DATA, dataProps);
 		if (AccountUtil.getCurrentOrg().getId() == 75) {
 			LOGGER.info("Date Props : "+dataProps);
@@ -254,7 +255,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 
 		if (report.getBaseLines() != null && !report.getBaseLines().isEmpty()) {
 			for (ReportBaseLineContext reportBaseLine : report.getBaseLines()) {
-				props.put(reportBaseLine.getBaseLine().getName(), noMatch ? Collections.EMPTY_LIST : fetchReportData(report, dp, selectBuilder, reportBaseLine, xAggrField, data.getxValues() == null ? xValues : data.getxValues()));
+				props.put(reportBaseLine.getBaseLine().getName(), noMatch ? Collections.EMPTY_LIST : fetchReportData(report, dp, selectBuilder, reportBaseLine, xAggrField, data.getxValues() == null ? xValues : data.getxValues(),addedModules));
 				data.addBaseLine(reportBaseLine.getBaseLine().getName(), reportBaseLine);
 			}
 		}
@@ -337,7 +338,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 		}
 	}
 
-	private List<Map<String, Object>> fetchReportData(ReportContext report, ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, ReportBaseLineContext reportBaseLine, FacilioField xAggrField, String xValues) throws Exception {
+	private List<Map<String, Object>> fetchReportData(ReportContext report, ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, ReportBaseLineContext reportBaseLine, FacilioField xAggrField, String xValues,Set<FacilioModule> addedModules) throws Exception {
 		SelectRecordsBuilder<ModuleBaseWithCustomFields> newSelectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>(selectBuilder);
 		if (FacilioProperties.isProduction() && (AccountUtil.getCurrentOrg().getOrgId() == 210 || AccountUtil.getCurrentOrg().getOrgId() == 321l) && !enableFutureData) {
 			DateRange dateRange = report.getDateRange();
@@ -436,6 +437,29 @@ public class FetchReportDataCommand extends FacilioCommand {
 		if(dataFilter != null && !dataFilter.isEmpty()) {
 			FilterUtil.setDataFilterCriteria(dp.getxAxis().getModuleName(), dataFilter,  report.getDateRange(), newSelectBuilder, parentId);
 		}
+		
+		//applying Report drilldown criteria
+		ReportDrilldownParamsContext drilldownParams=report.getDrilldownParams();
+		if(drilldownParams!=null)
+		{
+			//drill step criteria can be from different module. join modules from all drill steps
+			for(ReportDrilldownParamsContext.DrilldownCriteria  drilldownCriteria:drilldownParams.getDrilldownCriteria())
+			
+			{
+				this.handleJoin(drilldownCriteria.getxAxis(), newSelectBuilder, addedModules);
+			}
+				
+			
+			
+			
+			Criteria drilldownCriteria=drilldownParams.getCriteria();
+			if(drilldownCriteria!=null)
+			{
+				newSelectBuilder.andCriteria(drilldownCriteria);
+			}
+
+		}
+		
 
 		List<Map<String, Object>> props;
 

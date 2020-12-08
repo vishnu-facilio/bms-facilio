@@ -7399,6 +7399,8 @@ public class FieldFactory {
 
         fields.add(getField("benchmarkJson", "BENCHMARK_JSON", module, FieldType.STRING));
         fields.add(getField("dataPointJson", "DATA_POINT_JSON", module, FieldType.STRING));
+        fields.add(getField("reportDrilldownJson", "DRILLDOWN_PATH_JSON", module, FieldType.STRING));
+        fields.add(getField("reportSettingsJson", "REPORT_SETTINGS_JSON", module, FieldType.STRING));
         fields.add(getField("filtersJson", "FILTERS_JSON", module, FieldType.STRING));
         fields.add(getField("xAggr", "X_AGGR", module, FieldType.NUMBER));
         fields.add(getField("baselineJson", "BASELINE_JSON", module, FieldType.STRING));
