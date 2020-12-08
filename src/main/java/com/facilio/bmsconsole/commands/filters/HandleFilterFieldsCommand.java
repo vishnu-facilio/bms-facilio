@@ -143,6 +143,12 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
             switch (module.getName()) {
                 case FacilioConstants.ContextNames.QUOTE:
                     return filterOutFields(fields, FieldFactory.Fields.quoteFieldsInclude);
+                case FacilioConstants.ContextNames.SENSOR_ROLLUP_ALARM:
+                	String[] fieldsToHide = new String[] {"readingFieldId", "type"};
+                	return fields.stream().
+                            filter(
+                                    f -> (!Arrays.asList(fieldsToHide).contains(f.getName()))
+                            ).collect(Collectors.toList());
                 default:
                     return fields;
             }
