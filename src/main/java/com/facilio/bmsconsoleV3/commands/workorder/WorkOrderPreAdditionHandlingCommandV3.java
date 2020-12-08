@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.workorder;
 
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.TicketContext;
@@ -26,7 +27,9 @@ public class WorkOrderPreAdditionHandlingCommandV3 extends FacilioCommand {
         }
         if(CollectionUtils.isNotEmpty(wos)) {
             for(V3WorkOrderContext wo : wos) {
-                wo.setSourceType(V3TicketContext.SourceType.WEB_ORDER.getIntVal());
+                if(wo.getSourceType() == null) {
+                    wo.setSourceType(V3TicketContext.SourceType.WEB_ORDER.getIntVal());
+                }
             }
         }
 
