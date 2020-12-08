@@ -7,14 +7,14 @@ import java.io.IOException;
 public abstract class AbstractBroadcaster extends DefaultBroadcaster {
 
     @Override
-    public void broadcast(Message data) throws IOException {
+    public void broadcast(Message data) throws Exception {
         b(data);
     }
 
-    private void b(Message data) {
+    private void b(Message data) throws Exception {
         outgoingMessage(data);
     }
 
-    protected abstract void outgoingMessage(Message message);
+    protected abstract void outgoingMessage(Message message) throws Exception;
     protected abstract void incomingMessage(Message message);
 }

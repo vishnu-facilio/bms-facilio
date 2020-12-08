@@ -22,14 +22,14 @@ public class ErrorDataProducer {
 
     private static final Logger LOGGER = LogManager.getLogger(ErrorDataProducer.class.getName());
 
-    public static RecordMetadata send(ProducerRecord<String, String> record) {
+    public static RecordMetadata send(ProducerRecord<String, String> record) throws Exception {
 
-        FacilioKafkaProducer facilioKafkaProducer = new FacilioKafkaProducer(record.topic());
+        FacilioKafkaProducer facilioKafkaProducer = new FacilioKafkaProducer();
         RecordMetadata recordMetadata = null;
         try {
             JSONObject recordData = (JSONObject) new JSONParser().parse(record.value());
             FacilioRecord facilioRecord = new FacilioRecord(record.key(), recordData);
-            recordMetadata = facilioKafkaProducer.putRecord(facilioRecord);
+            recordMetadata = facilioKafkaProducer.putRecord(record.topic(), facilioRecord);
         } catch (ParseException e) {
             LOGGER.info("Exception while putting record ", e);
         } finally {

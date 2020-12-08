@@ -42,7 +42,7 @@ public class KafkaProcessor extends FacilioProcessor {
         String environment = FacilioProperties.getConfig("environment");
         String consumerGroup = clientName + environment;
         setConsumer(new FacilioKafkaConsumer(ServerInfo.getHostname(), consumerGroup, getTopic()));
-        setProducer(new FacilioKafkaProducer(getTopic()));
+		setProducer(new FacilioKafkaProducer());
         setEventType("processor");
         dataProcessorUtil = new DataProcessorUtil(orgId, topic);
         LOGGER.info("Initializing processor " + topic);
@@ -80,12 +80,12 @@ public class KafkaProcessor extends FacilioProcessor {
     	return MapUtils.isEmpty(builder.fetchFirst())?false:true;
 	}
 
-    public long sendMsgToKafka(String partitionKey,JSONObject data) {
+	public long sendMsgToKafka(String partitionKey, JSONObject data) throws Exception {
     	return send(partitionKey,data);
     }
 
-    private long send(String partitionKey,JSONObject data) {
-    	RecordMetadata metaData = (RecordMetadata) getProducer().putRecord(new FacilioRecord(partitionKey, data));
+	private long send(String partitionKey, JSONObject data) throws Exception {
+		RecordMetadata metaData = (RecordMetadata) getProducer().putRecord(getTopic(), new FacilioRecord(partitionKey, data));
     	return metaData.offset();
     }
     

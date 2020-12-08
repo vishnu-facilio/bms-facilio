@@ -58,7 +58,7 @@ public class WmsApi
 			} else {
 				kinesisNotificationTopic = FacilioProperties.getEnvironment() + "-" + kinesisNotificationTopic;
 			}
-			producer = new FacilioKafkaProducer(kinesisNotificationTopic);
+			producer = new FacilioKafkaProducer();
 			LOGGER.info("Initialized Kafka Producer");
 		}
 	}
@@ -72,7 +72,7 @@ public class WmsApi
 			}
 			dataMap.put("timestamp", System.currentTimeMillis());
 			dataMap.put("data", data);
-			RecordMetadata future = (RecordMetadata)producer.putRecord(new FacilioRecord(partitionKey, dataMap));
+			RecordMetadata future = (RecordMetadata) producer.putRecord(kinesisNotificationTopic, new FacilioRecord(partitionKey, dataMap));
 		} catch (Exception e) {
 			LOGGER.info(kinesisNotificationTopic + " : " + dataMap);
 			LOGGER.log(Level.INFO, "Exception while producing to kafka ", e);

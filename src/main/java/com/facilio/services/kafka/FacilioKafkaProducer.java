@@ -17,18 +17,21 @@ import java.util.concurrent.Future;
 public class FacilioKafkaProducer implements FacilioProducer {
     private static final Logger LOGGER = LogManager.getLogger(FacilioKafkaProducer.class.getName());
 
-    private final String topic;
+    private static final int MAX_KAFKA_MESSAGE_SIZE = 110 * 1024; //110KB
 
 
     private KafkaProducer<String, String> producer;
 
-    public FacilioKafkaProducer(String topic) {
-        this.topic = topic;
+    public FacilioKafkaProducer() {
         producer = new KafkaProducer<>(getProducerProperties());
     }
 
-    public RecordMetadata putRecord(FacilioRecord record) {
+    public RecordMetadata putRecord(String topic, FacilioRecord record) throws Exception {
         RecordMetadata recordMetadata = null;
+        String data = record.getData().toJSONString();
+        if (data.length() > MAX_KAFKA_MESSAGE_SIZE) {
+            throw new Exception("MAX_KAFKA_MESSAGE_SIZE exceeded. Allowed size :" + MAX_KAFKA_MESSAGE_SIZE + " Received :" + data.length());
+        }
         try {
             Future<RecordMetadata> future = producer.send(new ProducerRecord<>(topic, record.getPartitionKey(), record.getData().toJSONString()));
             try {

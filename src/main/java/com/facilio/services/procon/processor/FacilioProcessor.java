@@ -72,8 +72,8 @@ public abstract class FacilioProcessor implements  Runnable {
         this.eventType = eventType;
     }
 
-    public Object put(FacilioRecord record) {
-        return producer.putRecord(record);
+    public Object put(FacilioRecord record) throws Exception {
+        return producer.putRecord(getTopic(), record);
     }
 
     public List<FacilioRecord> get() {

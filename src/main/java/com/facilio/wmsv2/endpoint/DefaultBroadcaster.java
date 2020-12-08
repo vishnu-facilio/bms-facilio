@@ -104,7 +104,7 @@ public class DefaultBroadcaster {
         sessions.remove(session);
     }
 
-    public void broadcast(Message data) throws IOException {
+    public void broadcast(Message data) throws Exception {
         pushToLiveSession(data);
     }
 }

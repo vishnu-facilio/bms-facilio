@@ -4,7 +4,7 @@ import com.facilio.services.procon.message.FacilioRecord;
 
 public interface FacilioProducer {
 
-    Object putRecord(FacilioRecord record);
+    Object putRecord(String topic, FacilioRecord record) throws Exception;
 
     void close();
 }

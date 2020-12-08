@@ -54,7 +54,7 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
 
         LOGGER.debug("Notification topic: " + kinesisNotificationTopic);
 
-        producer = new FacilioKafkaProducer(kinesisNotificationTopic);
+        producer = new FacilioKafkaProducer();
 
 
         // consumer initialization
@@ -104,7 +104,7 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
     }
 
     @Override
-    protected void outgoingMessage(Message message) {
+    protected void outgoingMessage(Message message) throws Exception {
         JSONObject dataMap = new JSONObject();
         JSONObject data = message.toJson();
 
@@ -113,7 +113,7 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
 
         String partitionKey = kinesisNotificationTopic;
         LOGGER.debug("Outgoing message: " + message);
-        RecordMetadata future = (RecordMetadata)producer.putRecord(new FacilioRecord(partitionKey, data));
+        RecordMetadata future = (RecordMetadata) producer.putRecord(kinesisNotificationTopic, new FacilioRecord(partitionKey, data));
     }
 
     @Override
