@@ -27,8 +27,8 @@ import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportDrilldownParamsContext;
 import com.facilio.report.context.ReportDrilldownParamsContext.DrilldownCriteria;
 import com.facilio.report.context.ReportFieldContext;
-import com.facilio.report.context.ReportGroupByField;
 import com.facilio.report.util.ReportUtil;
+import com.facilio.time.DateRange;
 
 public class ReportDrilldownCommand extends FacilioCommand {
 
@@ -85,6 +85,7 @@ public class ReportDrilldownCommand extends FacilioCommand {
 			Criteria criteria = this.generateCriteria(drillDownParamCtx.getDrilldownCriteria());
 			drillDownParamCtx.setCriteria(criteria);
 			reportContext.setDataPoints(drilledReportDataPoints);
+			//this.handleDateFieldDrillDown(reportContext,drillDownParamCtx.getxAggrEnum(),drillDownParamCtx.getDrilldownCriteria());
 			reportContext.setxAggr(drillDownParamCtx.getxAggr());
 			reportContext.setDrilldownParams(drillDownParamCtx);
 
@@ -92,7 +93,22 @@ public class ReportDrilldownCommand extends FacilioCommand {
 		return false;
 	}
 	
-
+//	private void handleDateFieldDrillDown(ReportContext report,AggregateOperator drillDownAggregation,List<DrilldownCriteria> drillDownCriteriaList)
+//	{
+//		//setting dateRange to last drilldown criteria's range .
+//		//daterange ingore by client in modulenewreport and overridden with UI datepicker.dateobject. need to change
+//		if(ReportUtil.isDateAggregateOperator(drillDownAggregation)) {
+//			//if there is an X aggregation then PREVIOUS Criteria is always a TIME_STAMP value.
+//			
+//			String betweenDates=drillDownCriteriaList.get(drillDownCriteriaList.size()-1).getDimensionValues();
+//			String[] timeStampArray=betweenDates.split(",");
+//			
+//			report.setDateValue(betweenDates);
+//			report.setDateRange(new DateRange(Long.parseLong(timeStampArray[0]), Long.parseLong(timeStampArray[1])));
+//			
+//		}
+//	}
+	
 	private ReportFieldContext getNewXAxis(Map<String, Object> xAxisJSON, FacilioModule module) throws Exception {
 		ReportFieldContext xAxis = new ReportFieldContext();
 

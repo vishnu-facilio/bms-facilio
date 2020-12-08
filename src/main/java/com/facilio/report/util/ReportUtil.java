@@ -43,6 +43,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.BaseLineContext;
 import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
+import com.facilio.modules.BmsAggregateOperators.DateAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.NumberAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.SpaceAggregateOperator;
 import com.facilio.modules.FacilioModule;
@@ -879,6 +880,17 @@ public class ReportUtil {
 	public static Boolean isSpaceAggregation(AggregateOperator aggr)
 	{
 		for(AggregateOperator operator : SpaceAggregateOperator.values()) {
+            if( operator.equals(aggr))
+            {
+            	return true;
+            }
+        }
+	
+		return false;
+	}
+	public static Boolean isDateAggregateOperator(AggregateOperator aggr)
+	{
+		for(AggregateOperator operator : DateAggregateOperator.values()) {
             if( operator.equals(aggr))
             {
             	return true;
