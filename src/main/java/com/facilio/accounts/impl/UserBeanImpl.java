@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.facilio.accounts.dto.*;
+import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -934,7 +935,7 @@ public class UserBeanImpl implements UserBean {
 
 	@Override
 	public boolean sendResetPasswordLinkv2(User user, String appDomain) throws Exception {
-		AppDomain appDomainObj = IAMUserUtil.getAppDomain(appDomain);
+		AppDomain appDomainObj = IAMAppUtil.getAppDomain(appDomain);
 		String inviteLink = getUserLink(user, "/fconfirm_reset_password/", appDomainObj);
 		Map<String, Object> placeholders = new HashMap<>();
 		//CommonCommandUtil.appendModuleNameInKey(null, "toUser", FieldUtil.getAsProperties(user), placeholders);

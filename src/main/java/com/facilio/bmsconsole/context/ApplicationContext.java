@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.bacnet.BACNetUtil;
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.modules.FacilioEnum;
 
 import java.io.Serializable;
@@ -19,7 +19,9 @@ public class ApplicationContext implements Serializable{
 		this.orgId = orgId;
 	}*/
 
-	public ApplicationContext(long orgId, String name, Boolean isDefault, int domainType, String linkName, int layoutType, String desc) {
+	//isdefault is used to identify the default app in specific app category
+
+	public ApplicationContext(long orgId, String name, Boolean isDefault, int domainType, String linkName, int layoutType, String desc, int appCategory) {
 		this.orgId = orgId;
 		this.name = name;
 		this.isDefault = isDefault;
@@ -27,6 +29,7 @@ public class ApplicationContext implements Serializable{
 		this.linkName = linkName;
 		this.description = desc;
 		this.layoutType = layoutType;
+		this.setAppCategory(appCategory);
 	}
 
 	private long orgId = -1;
@@ -73,6 +76,8 @@ public class ApplicationContext implements Serializable{
 	}
 
 	private List<WebTabGroupContext> webTabGroups;
+	private AppCategory appCategory;
+
 	public List<WebTabGroupContext> getWebTabGroups() {
 		return webTabGroups;
 	}
@@ -189,5 +194,52 @@ public class ApplicationContext implements Serializable{
 
 	public void setLayouts(List<ApplicationLayoutContext> layouts) {
 		this.layouts = layouts;
+	}
+
+	public static enum AppCategory implements FacilioEnum {
+		PORTALS,
+		WORK_CENTERS,
+		FEATURE_GROUPING;
+
+		private AppCategory() {
+		}
+
+		public int getIndex() {
+			return this.ordinal() + 1;
+		}
+
+		public String getValue() {
+			return this.name();
+		}
+
+		public static AppCategory valueOf(int value) {
+			return value > 0 && value <= values().length ? values()[value - 1] : null;
+		}
+	}
+
+	public int getAppCategory() {
+		return this.appCategory != null ? this.appCategory.getIndex() : -1;
+	}
+
+	public void setAppCategory(int appCategory) {
+		this.appCategory = AppCategory.valueOf(appCategory);
+	}
+
+	public AppCategory getAppCategoryEnum() {
+		return this.appCategory;
+	}
+
+	public void setAppCategory(AppCategory appCategory) {
+		this.appCategory = appCategory;
+	}
+
+	private AppDomain appDomain;
+
+	public AppDomain getAppDomain() {
+		return appDomain;
+	}
+
+	public void setAppDomain(AppDomain appDomain) {
+		this.appDomain = appDomain;
 	}
 }
