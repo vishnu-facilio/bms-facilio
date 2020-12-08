@@ -258,6 +258,7 @@ public class ReportUtil {
         reportSelectFields.add(FieldFactory.getField("name", "NAME", reportModule, FieldType.STRING));
         reportSelectFields.add(FieldFactory.getField("description", "DESCRIPTION", reportModule, FieldType.STRING));
         reportSelectFields.add(FieldFactory.getField("type", "REPORT_TYPE", reportModule, FieldType.NUMBER));
+        reportSelectFields.add(FieldFactory.getField("analyticsType", "ANALYTICS_TYPE", reportModule, FieldType.NUMBER));
 		
 		List<Map<String, Object>> props = select.get();
 		List<ReportFolderContext> reportFolders = new ArrayList<>();
