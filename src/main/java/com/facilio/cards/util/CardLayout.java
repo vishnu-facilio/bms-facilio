@@ -196,7 +196,7 @@ public enum CardLayout {
 					//kpi = KPIUtil.getKPI(kpiId,false);
 					kpi = kpiContext;
 					
-					if (AccountUtil.getCurrentOrg().getId() != 324) {
+					if (subText != null && subText.indexOf("${") >= 0) {
 						fields = KPIUtil.getKPIModuleFIelds(kpiContext);
 	
 						listData = KPIUtil.getKPIList(kpiContext, null);
