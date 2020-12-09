@@ -28,17 +28,6 @@ import com.facilio.modules.fields.FacilioField;
 		FacilioUtil.throwIllegalArgumentException(defaultField == null, MessageFormat.format("Invalid default field for the given module {0}", moduleName));
 		context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, defaultField.getModule().getTableName());
 		context.put(FacilioConstants.ContextNames.DEFAULT_FIELD, defaultField);
-
-		List<FacilioField> selectFields = null;
-		if (moduleName.equals(FacilioConstants.ContextNames.RESOURCE)) {
-			selectFields = new ArrayList<>();
-			selectFields.add(defaultField);
-			selectFields.add(modBean.getField("resourceType", moduleName));
-		}
-		else {
-			selectFields = Collections.singletonList(defaultField);
-		}
-		context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, selectFields);
 		
 		return false;
 		

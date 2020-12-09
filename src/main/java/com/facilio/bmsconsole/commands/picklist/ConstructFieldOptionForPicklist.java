@@ -20,9 +20,10 @@ public class ConstructFieldOptionForPicklist extends FacilioCommand {
         List<FieldOption<Long>> pickList = null;
         if(CollectionUtils.isNotEmpty(records)) {
             FacilioField defaultField = (FacilioField) context.get(FacilioConstants.ContextNames.DEFAULT_FIELD);
+            FacilioField secondaryField = (FacilioField) context.get(FacilioConstants.PickList.SECONDARY_FIELD);
             String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
             boolean isResource = moduleName.equals(FacilioConstants.ContextNames.RESOURCE);
-            pickList = RecordAPI.constructFieldOptionsFromRecords(records, defaultField.getName(), isResource);
+            pickList = RecordAPI.constructFieldOptionsFromRecords(records, defaultField, secondaryField, isResource);
         }
         context.put(FacilioConstants.ContextNames.PICKLIST, pickList);
         return false;

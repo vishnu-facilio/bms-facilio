@@ -139,6 +139,7 @@ public class FacilioConstants {
 		public static final String LOOKUP_LABEL_META = "lookupLabelMeta";
 		public static final String LOOKUP_LABELS = "lookupLabels";
 		public static final String DEFAULT_ID_LIST = "defaultIdList";
+		public static final String SECONDARY_FIELD = "secondaryField";
 	}
 
 	public static class Filters {

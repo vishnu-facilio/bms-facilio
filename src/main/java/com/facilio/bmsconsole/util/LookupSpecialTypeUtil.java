@@ -35,6 +35,7 @@ import com.facilio.modules.fields.SystemEnumField;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 
 import java.util.*;
 import java.util.function.Function;
@@ -612,6 +613,57 @@ public class LookupSpecialTypeUtil {
 		}
 		return null;
 	}
+
+	public static Object getPrimaryFieldValue(String specialType, Object obj) throws Exception {
+		Objects.requireNonNull(obj, "Lookup special object cannot be null for getting primary field value");
+		switch (specialType) {
+			case FacilioConstants.ContextNames.USERS:
+				return ((User) obj).getName();
+			case FacilioConstants.ContextNames.GROUPS:
+				return ((Group) obj).getName();
+			case FacilioConstants.ContextNames.ROLE:
+				return ((Role) obj).getName();
+			case FacilioConstants.ContextNames.BUSINESS_HOUR:
+				return ((BusinessHoursList) obj).getName();
+			case FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE:
+				return ((PreventiveMaintenance) obj).getTitle();
+			case FacilioConstants.ContextNames.FORMULA_FIELD:
+				return ((FormulaFieldContext) obj).getName();
+			case EventConstants.EventContextNames.EVENT:
+				return ((EventContext) obj).getEventMessage();
+			case FacilioConstants.ContextNames.READING_RULE_MODULE:
+			case FacilioConstants.ContextNames.SLA_RULE_MODULE:
+				return ((WorkflowRuleContext) obj).getName();
+			case FacilioConstants.ContextNames.SENSOR_RULE_MODULE:
+				return ((SensorRuleContext) obj).getSensorRuleTypeEnum().name();
+			default:
+				return null;
+		}
+	}
+
+	public static Object getPrimaryFieldValue(String specialType, Map<String, Object> prop) {
+		if (MapUtils.isEmpty(prop)) {
+			return null;
+		}
+		switch (specialType) {
+			case FacilioConstants.ContextNames.USERS:
+			case FacilioConstants.ContextNames.GROUPS:
+			case FacilioConstants.ContextNames.ROLE:
+			case FacilioConstants.ContextNames.BUSINESS_HOUR:
+			case FacilioConstants.ContextNames.FORMULA_FIELD:
+			case FacilioConstants.ContextNames.READING_RULE_MODULE:
+			case FacilioConstants.ContextNames.SLA_RULE_MODULE:
+				return prop.get("name");
+			case FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE:
+				return prop.get("title");
+			case EventConstants.EventContextNames.EVENT:
+				return prop.get("eventMessage");
+			case FacilioConstants.ContextNames.SENSOR_RULE_MODULE:
+				return prop.get("sensorRuleTypeEnum");
+			default:
+				return null;
+		}
+	}
 	
 	public static Map<Long,Object> getPrimaryFieldValues(String specialType, List<Object> listObjects) throws Exception {
 		
@@ -648,7 +700,7 @@ public class LookupSpecialTypeUtil {
 			for(Object obj:listObjects) {
 				BusinessHoursList businessHours = (BusinessHoursList)obj;
 				if(businessHours != null) {
-					idVsKey.put(businessHours.getId(), businessHours.toString());
+					idVsKey.put(businessHours.getId(), businessHours.getName());
 				}
 			}
 		}
@@ -674,7 +726,7 @@ public class LookupSpecialTypeUtil {
 				
 				EventContext event = (EventContext)obj;
 				if (event != null) {
-					idVsKey.put(event.getId(), event.toString());
+					idVsKey.put(event.getId(), event.getEventMessage());
 				}
 			}
 		}
@@ -683,7 +735,7 @@ public class LookupSpecialTypeUtil {
 
                 WorkflowRuleContext workflowRule = (WorkflowRuleContext) obj;
                 if (workflowRule != null) {
-                    idVsKey.put(workflowRule.getId(), workflowRule.toString());
+                    idVsKey.put(workflowRule.getId(), workflowRule.getName());
                 }
             }
         }
@@ -692,7 +744,7 @@ public class LookupSpecialTypeUtil {
 
             	SensorRuleContext sensorRuleContext = (SensorRuleContext) obj;
                 if (sensorRuleContext != null) {
-                    idVsKey.put(sensorRuleContext.getId(), sensorRuleContext.toString());
+                    idVsKey.put(sensorRuleContext.getId(), sensorRuleContext.getSensorRuleTypeEnum().name());
                 }
             }
         }

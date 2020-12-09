@@ -1,12 +1,14 @@
 package com.facilio.bmsconsole.util;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.facilio.modules.fields.FieldOption;
+import com.facilio.modules.fields.LookupField;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
@@ -167,13 +169,51 @@ public class RecordAPI {
 		return defaultIdOrderBy;
 	}
 
-	public static List<FieldOption<Long>> constructFieldOptionsFromRecords (List<Map<String, Object>> records, String defaultFieldName, boolean isResource) {
-		return records.stream().map(prop -> new FieldOption<>(
-				(Long) prop.get("id"),
-				prop.get(defaultFieldName),
-				isResource ? ResourceAPI.getResourceSubModuleFromType((Integer) prop.get("resourceType")) : null
-		)).collect(Collectors.toList());
+	private static FacilioField getMainFieldOfLookup (FacilioField field, ModuleBean modBean) throws Exception {
+		if (field != null && field instanceof LookupField && StringUtils.isEmpty(((LookupField) field).getSpecialType())) {
+			return modBean.getPrimaryField(((LookupField) field).getLookupModule().getName());
+		}
+		return null;
 	}
 
+	private static Object getValue (Map<String, Object> prop, FacilioField field, FacilioField lookupMainField) {
+		if (field instanceof LookupField) {
+			LookupField lookupField = (LookupField) field;
+			if (StringUtils.isEmpty(lookupField.getSpecialType())) {
+				Map<String, Object> val = (Map<String, Object>) prop.get(field.getName());
+				return val == null ? null : val.get(lookupMainField.getName());
+			}
+			else {
+				return LookupSpecialTypeUtil.getPrimaryFieldValue(lookupField.getSpecialType(), prop);
+			}
+		}
+		else {
+			return prop.get(field.getName());
+		}
+	}
+
+	public static List<FieldOption<Long>> constructFieldOptionsFromRecords (List<Map<String, Object>> records, FacilioField defaultField, FacilioField secondaryField, boolean isResource) throws Exception {
+
+		if (CollectionUtils.isEmpty(records)) {
+			return null;
+		}
+
+		List<FieldOption<Long>> options = new ArrayList<>();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioField defaultFieldLookupPrimary = getMainFieldOfLookup(defaultField, modBean);
+		FacilioField secondaryFieldLookupPrimary = getMainFieldOfLookup(secondaryField, modBean);
+		for (Map<String, Object> prop : records) {
+			Long id = (Long) prop.get("id");
+			Object primaryLabel = getValue(prop, defaultField, defaultFieldLookupPrimary);
+			Object secondaryLabel = secondaryField == null ? null : getValue(prop, secondaryField, secondaryFieldLookupPrimary);
+			options.add(new FieldOption<>(
+					id,
+					primaryLabel,
+					secondaryLabel,
+					isResource ? ResourceAPI.getResourceSubModuleFromType((Integer) prop.get("resourceType")) : null
+			));
+		}
+		return options;
+	}
 	
 }

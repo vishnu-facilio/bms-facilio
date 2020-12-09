@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.commands.filters.FetchOperatorsForFiltersCommand;
 import com.facilio.bmsconsole.commands.filters.HandleFilterFieldsCommand;
 import com.facilio.bmsconsole.commands.picklist.ConstructFieldOptionForPicklist;
 import com.facilio.bmsconsole.commands.picklist.HandleDefaultIdAndOrderByForPicklist;
+import com.facilio.bmsconsole.commands.picklist.SpecialPickListFieldsCommand;
 import com.facilio.bmsconsole.commands.reservation.FetchAttendeesCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
@@ -146,6 +147,7 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain newPicklistFromDataChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new LoadMainFieldCommand());
+		c.addCommand(new SpecialPickListFieldsCommand());
 		c.addCommand(new HandleDefaultIdAndOrderByForPicklist());
 		c.addCommand(commonFetchDataListChain(true));
 		c.addCommand(new ConstructFieldOptionForPicklist());

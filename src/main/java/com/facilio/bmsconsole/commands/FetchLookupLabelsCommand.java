@@ -94,7 +94,7 @@ public class FetchLookupLabelsCommand extends FacilioCommand {
             return null;
         }
 
-        List<FieldOption<Long>> options = RecordAPI.constructFieldOptionsFromRecords(records, primaryField.getName(), isResource);
+        List<FieldOption<Long>> options = RecordAPI.constructFieldOptionsFromRecords(records, primaryField, null, isResource);
         return options;
     }
 }
