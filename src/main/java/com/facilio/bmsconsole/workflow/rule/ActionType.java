@@ -420,72 +420,50 @@ public enum ActionType {
 			// TODO Auto-generated method stub
 			try {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-//				if (obj != null && FacilioProperties.isProduction()) {
-					String ids = (String) obj.get("id");
-					if (!StringUtils.isEmpty(ids)) {
-						String[] toList = ids.trim().split(",");
-						for (String toId : toList) {
-							if (toId.isEmpty()) {
-								continue;
-							}
-							long id = Long.valueOf(toId);
-							LOGGER.info("Notification Modules entry : "+ id);
-							UserNotificationContext userNotification = UserNotificationContext.instance(obj);
-							User user = new User();
-							user.setId(id);
-							userNotification.setUser(user);
-							userNotification.setSiteId(currentRule.getSiteId());
-							FacilioModule module = modBean.getModule((String) context.getOrDefault("moduleName", null));
-							if (module != null) {
-								userNotification.setParentModule(module.getModuleId());
-							} else if (currentRecord instanceof ModuleBaseWithCustomFields) {
-								userNotification.setParentModule(((ModuleBaseWithCustomFields) currentRecord).getModuleId());
-							} else {
-								// temp fix
-								LOGGER.info("Cannot find moduleId for the current record, skipping for now");
-								continue;
-							}
-							if (currentRecord instanceof ModuleBaseWithCustomFields) {
-								long parentId = ((ModuleBaseWithCustomFields) currentRecord).getId();
-								userNotification.setParentId(parentId);
-							}
-							userNotification.setActionType(UserNotificationContext.ActionType.SUMMARY);
-							FacilioChain chain = TransactionChainFactoryV3.addRecords();
-							FacilioContext notificationContext = chain.getContext();
-							notificationContext.put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(userNotification));
-							notificationContext.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.USER_NOTIFICATION);
-							Boolean isPushNotification = (Boolean) obj.get("isSendNotification");
 
-							if (isPushNotification != null && isPushNotification ) {
-								notificationContext.put(FacilioConstants.ContextNames.DATA, obj);
-							}
-							chain.execute();
+				long parentModuleId = -1;
+				FacilioModule module = modBean.getModule((String) context.getOrDefault("moduleName", null));
+				if (module != null) {
+					parentModuleId = module.getModuleId();
+				} else if (currentRecord instanceof ModuleBaseWithCustomFields) {
+					parentModuleId = ((ModuleBaseWithCustomFields) currentRecord).getModuleId();
+				} else {
+					// temp fix
+					LOGGER.info("Cannot find moduleId for the current record, skipping for now");
+				}
+
+				String ids = (String) obj.get("id");
+				if (!StringUtils.isEmpty(ids) && parentModuleId > 0) {
+					String[] toList = ids.trim().split(",");
+					for (String toId : toList) {
+						if (toId.isEmpty()) {
+							continue;
 						}
-						// Moving push notification Post transcation after notification Context is inserted
-//						List<Pair<String, Boolean>> mobileInstanceSettings = getMobileInstanceIDs(ids);
-//						LOGGER.info("Sending push notifications for ids : "+ids);
-//						if (mobileInstanceSettings != null && !mobileInstanceSettings.isEmpty()) {
-//							LOGGER.info("Sending push notifications for mobileIds : "+mobileInstanceSettings.stream().map(pair -> pair.getLeft()).collect(Collectors.toList()));
-//							for (Pair<String, Boolean> mobileInstanceSetting : mobileInstanceSettings) {
-//								if (mobileInstanceSetting != null) {
-//									// content.put("to",
-//									// "exA12zxrItk:APA91bFzIR6XWcacYh24RgnTwtsyBDGa5oCs5DVM9h3AyBRk7GoWPmlZ51RLv4DxPt2Dq2J4HDTRxW6_j-RfxwAVl9RT9uf9-d9SzQchMO5DHCbJs7fLauLIuwA5XueDuk7p5P7k9PfV");
-//									obj.put("to", mobileInstanceSetting.getLeft());
-//
-//									Map<String, String> headers = new HashMap<>();
-//									headers.put("Content-Type", "application/json");
-//									headers.put("Authorization", "key="+ (mobileInstanceSetting.getRight() ? FacilioProperties.getPortalPushNotificationKey() : FacilioProperties.getPushNotificationKey()));
-//
-//									String url = "https://fcm.googleapis.com/fcm/send";
-//
-//									AwsUtil.doHttpPost(url, headers, null, obj.toJSONString());
-////									System.out.println("Push notification sent");
-////									System.out.println(obj.toJSONString());
-//								}
-//							}
-//						}
+						long id = Long.valueOf(toId);
+						LOGGER.info("Notification Modules entry : "+ id);
+						UserNotificationContext userNotification = UserNotificationContext.instance(obj);
+						User user = new User();
+						user.setId(id);
+						userNotification.setUser(user);
+						userNotification.setSiteId(currentRule.getSiteId());
+						userNotification.setParentModule(parentModuleId);
+						if (currentRecord instanceof ModuleBaseWithCustomFields) {
+							long parentId = ((ModuleBaseWithCustomFields) currentRecord).getId();
+							userNotification.setParentId(parentId);
+						}
+						userNotification.setActionType(UserNotificationContext.ActionType.SUMMARY);
+						FacilioChain chain = TransactionChainFactoryV3.addRecords();
+						FacilioContext notificationContext = chain.getContext();
+						notificationContext.put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(userNotification));
+						notificationContext.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.USER_NOTIFICATION);
+						Boolean isPushNotification = (Boolean) obj.get("isSendNotification");
+
+						if (isPushNotification != null && isPushNotification ) {
+							notificationContext.put(FacilioConstants.ContextNames.DATA, obj);
+						}
+						chain.execute();
 					}
-				// }
+				}
 			} catch (Exception e) {
 				LOGGER.error("Exception occurred ", e);
 			}
