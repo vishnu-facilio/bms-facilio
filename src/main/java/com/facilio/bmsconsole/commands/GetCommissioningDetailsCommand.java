@@ -13,6 +13,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 
+import com.facilio.agent.AgentType;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.point.GetPointRequest;
@@ -46,7 +47,7 @@ public class GetCommissioningDetailsCommand extends FacilioCommand {
 			JSONArray finalPoints  = new JSONArray();
 			List<String> headers = log.getHeaders().stream().map(header -> (String)header.get("name")).collect(Collectors.toList());
 			Map<Integer, String> unitMap = new HashMap<>();
-			boolean isNiagra = log.getControllerTypeEnum() == FacilioControllerType.NIAGARA;
+			boolean isNiagra = log.getAgent().getAgentType() == AgentType.NIAGARA.getKey();
 			for(int i = 0, size = points.size(); i < size; i++) {
 				Map<String, Object> point = (Map<String, Object>) points.get(i);
 				if (point.get("resourceId") != null) {
