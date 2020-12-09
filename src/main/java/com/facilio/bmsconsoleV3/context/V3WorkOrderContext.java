@@ -387,7 +387,7 @@ public class V3WorkOrderContext extends V3TicketContext {
     }
 
     public void setUrgency(Integer urgencyval) {
-        if(urgency != null) {
+        if(urgencyval != null) {
             this.urgency = V3WorkOrderContext.WOUrgency.valueOf(urgencyval);
         }
 
@@ -495,12 +495,10 @@ public class V3WorkOrderContext extends V3TicketContext {
         return null;
     }
 
-    public void setPreRequestStatus(V3WorkOrderContext.PreRequisiteStatus preRequestStatus) {
-        this.preRequestStatus = preRequestStatus;
-    }
-
-    public void setPreRequestStatus(int preRequestStatus) {
-        this.preRequestStatus = V3WorkOrderContext.PreRequisiteStatus.valueOf(preRequestStatus);
+    public void setPreRequestStatus(Integer preRequestStatus) {
+        if(preRequestStatus != null) {
+            this.preRequestStatus = V3WorkOrderContext.PreRequisiteStatus.valueOf(preRequestStatus);
+        }
     }
 
     public enum PreRequisiteStatus {
