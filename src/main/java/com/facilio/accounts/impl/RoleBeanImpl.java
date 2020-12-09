@@ -43,6 +43,7 @@ public class RoleBeanImpl implements RoleBean {
 		role.setOrgId(orgId);
 		role.setName(AccountConstants.DefaultSuperAdmin.SUPER_ADMIN);
 		role.setDescription(AccountConstants.DefaultSuperAdmin.SUPER_ADMIN);
+		role.setIsPrevileged(true);
 		role.setCreatedTime(System.currentTimeMillis());
 		
 		Map<String, Object> props = FieldUtil.getAsProperties(role);

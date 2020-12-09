@@ -505,6 +505,8 @@ public class AccountConstants {
 			Role superAdmin = new Role();
 			superAdmin.setName(SUPER_ADMIN);
 			superAdmin.setDescription(SUPER_ADMIN);
+			superAdmin.setIsPrevileged(true);
+
 //			superAdmin.setPermissions(0L);
 //			superAdmin.setPermissions(superAdminPermission);
 
@@ -1312,6 +1314,14 @@ public class AccountConstants {
 		createdTime.setColumnName("CREATED_TIME");
 		createdTime.setModule(module);
 		fields.add(createdTime);
+
+		FacilioField previlegedRole = new FacilioField();
+		previlegedRole.setName("isPrevileged");
+		previlegedRole.setDataType(FieldType.BOOLEAN);
+		previlegedRole.setColumnName("IS_PREVILEGED_ROLE");
+		previlegedRole.setModule(module);
+		fields.add(previlegedRole);
+
 
 		return fields;
 	}

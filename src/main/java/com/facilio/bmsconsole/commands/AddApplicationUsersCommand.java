@@ -32,9 +32,15 @@ public class AddApplicationUsersCommand extends FacilioCommand{
 			throw new IllegalArgumentException("Invalid app domain");
 		}
 		
-		if (user.getRoleId() <= 0 && app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_AGENT_APP)) {
-			long roleId = getAgentRole();
-			user.setRoleId(roleId);
+		if (user.getRoleId() <= 0) {
+			long roleId = 0;
+		   if(app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_AGENT_APP)) {
+			   roleId = getAppRole("Agent Admin");
+		   }
+		   else if(app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.OPERATIONAL_VISIBILITY_APP)) {
+		   	  roleId = getAppRole("Operations Admin");
+		   }
+		   user.setRoleId(roleId);
 		}
 		
 		user.setUserVerified(false);
@@ -49,8 +55,7 @@ public class AddApplicationUsersCommand extends FacilioCommand{
 		return false;
 	}
 	
-	private long getAgentRole() throws Exception {
-		String roleName = "Agent Admin";
+	private long getAppRole(String roleName) throws Exception {
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		
 		RoleBean roleBean = AccountUtil.getRoleBean();
@@ -61,6 +66,7 @@ public class AddApplicationUsersCommand extends FacilioCommand{
 		
 		role = new Role();
 		role.setName(roleName);
+		role.setIsPrevileged(true);
 		long roleId = roleBean.createRole(orgId, role);
 		return roleId;
 	}
