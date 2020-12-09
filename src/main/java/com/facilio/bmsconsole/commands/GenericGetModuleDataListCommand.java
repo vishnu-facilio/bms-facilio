@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
@@ -136,6 +137,16 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 		
 		if(clientFilterCriteria != null) {
 			builder.andCriteria(clientFilterCriteria);
+		}
+
+		Object serverCriteria = context.get(ContextNames.FILTER_SERVER_CRITERIA);
+		if (serverCriteria != null) {
+			if (serverCriteria instanceof Criteria) {
+				builder.andCriteria((Criteria) serverCriteria);
+			}
+			else {
+				builder.andCondition((Condition) serverCriteria);
+			}
 		}
 		
 		boolean skipModuleCriteria = (boolean) context.getOrDefault(FacilioConstants.ContextNames.SKIP_MODULE_CRITERIA, false);

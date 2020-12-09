@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
@@ -33,25 +34,23 @@ public class FetchLookupLabelsCommand extends FacilioCommand {
         for (Map.Entry<String, List<Long>> meta : labelMeta.entrySet()) {
             String moduleName = meta.getKey();
             List<Long> id = meta.getValue();
-            FacilioModule module = modBean.getModule(moduleName);
-            FacilioUtil.throwIllegalArgumentException(module == null, MessageFormat.format("Invalid module name => {0}", moduleName));
-            List<FieldOption<Long>> options = constructFieldOptions(modBean, module, id);
-            labels.put(module.getName(), options);
+            List<FieldOption<Long>> options = constructFieldOptions(modBean, moduleName, id);
+            labels.put(moduleName, options);
         }
         context.put(FacilioConstants.PickList.LOOKUP_LABELS, labels);
         return false;
     }
 
-    private List<FieldOption<Long>> constructFieldOptions (ModuleBean modBean, FacilioModule module, List<Long> id) throws Exception {
+    private List<FieldOption<Long>> constructFieldOptions (ModuleBean modBean, String moduleName, List<Long> id) throws Exception {
         if (CollectionUtils.isEmpty(id)) {
             return null;
         }
 
-        if (LookupSpecialTypeUtil.isSpecialType(module.getName())) {
-            return fetchSplModuleLabels(module.getName(), id);
+        if (LookupSpecialTypeUtil.isSpecialType(moduleName)) {
+            return fetchSplModuleLabels(moduleName, id);
         }
         else {
-            return fetchModuleLabels(modBean, module, id);
+            return fetchModuleLabels(modBean, moduleName, id);
         }
     }
 
@@ -68,33 +67,14 @@ public class FetchLookupLabelsCommand extends FacilioCommand {
         return options;
     }
 
-    private List<FieldOption<Long>> fetchModuleLabels (ModuleBean modBean, FacilioModule module, List<Long> id) throws Exception {
-        FacilioField primaryField = modBean.getPrimaryField(module.getName());
-        FacilioUtil.throwIllegalArgumentException(primaryField == null, MessageFormat.format("The module ({0}) is corrupt as it doesn't have primary field", module.getName()));
+    private List<FieldOption<Long>> fetchModuleLabels (ModuleBean modBean, String moduleName, List<Long> id) throws Exception {
+        FacilioModule module = modBean.getModule(moduleName);
+        FacilioUtil.throwIllegalArgumentException(module == null, MessageFormat.format("Invalid module name => {0}", moduleName));
+        FacilioChain pickListChain = ReadOnlyChainFactory.newPicklistFromDataChain();
+        pickListChain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        pickListChain.getContext().put(FacilioConstants.ContextNames.FILTER_SERVER_CRITERIA, CriteriaAPI.getIdCondition(id, module));
+        pickListChain.execute();
 
-        List<FacilioField> fields = null;
-        boolean isResource = module.getName().equals(FacilioConstants.ContextNames.RESOURCE);
-        if (isResource) {
-            fields = new ArrayList<>(2);
-            fields.add(primaryField);
-            fields.add(modBean.getField("resourceType", module.getName()));
-        }
-        else {
-            fields = Collections.singletonList(primaryField);
-        }
-
-        List<Map<String, Object>> records = new SelectRecordsBuilder()
-                .module(module)
-                .select(fields)
-                .andCondition(CriteriaAPI.getIdCondition(id, module))
-                .getAsProps()
-                ;
-
-        if (CollectionUtils.isEmpty(records)) {
-            return null;
-        }
-
-        List<FieldOption<Long>> options = RecordAPI.constructFieldOptionsFromRecords(records, primaryField, null, isResource);
-        return options;
+        return (List<FieldOption<Long>>) pickListChain.getContext().get(FacilioConstants.ContextNames.PICKLIST);
     }
 }
