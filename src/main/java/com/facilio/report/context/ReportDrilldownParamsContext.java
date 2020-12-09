@@ -19,6 +19,27 @@ public class ReportDrilldownParamsContext {
 	
 	public static class DrilldownCriteria{
 		private String dimensionValues;
+		private String formulaFieldName;
+		private String formulaModuleName;
+		public String getFormulaFieldName() {
+			return formulaFieldName;
+		}
+		public String getFormulaModuleName() {
+			return formulaModuleName;
+		}
+		public void setFormulaModuleName(String formulaModuleName) {
+			this.formulaModuleName = formulaModuleName;
+		}
+		public void setFormulaFieldName(String formulaFieldName) {
+			this.formulaFieldName = formulaFieldName;
+		}
+		public int getFormulaFieldOperator() {
+			return formulaFieldOperator;
+		}
+		public void setFormulaFieldOperator(int formulaFieldOperator) {
+			this.formulaFieldOperator = formulaFieldOperator;
+		}
+		private int formulaFieldOperator;
 		private HashMap<String, Object> xField;
 		ReportFieldContext xAxis;
 		

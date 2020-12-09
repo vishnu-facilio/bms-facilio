@@ -12,6 +12,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.BuildingOperator;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.Operator;
@@ -19,6 +20,7 @@ import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
@@ -146,10 +148,30 @@ public class ReportDrilldownCommand extends FacilioCommand {
 			String dimensionValues = drilldownCriteria.getDimensionValues();
 
 			FacilioModule module = modBean.getModule(moduleId);
-			FacilioField xAxisField = modBean.getField(fieldId);
+			
+			
+			FacilioField xAxisField =null;
+			if (fieldId == -1) {// clicked X dimension is a formula field
 
-			Condition condition = CriteriaAPI.getCondition(xAxisField, dimensionValues, getOperator(xAxisField, xAggr));
-			criteria.addAndCondition(condition);
+				String fieldName = drilldownCriteria.getFormulaFieldName();
+				int operatorId = drilldownCriteria.getFormulaFieldOperator();
+				String moduleName = drilldownCriteria.getFormulaModuleName();
+				
+				FacilioField field = modBean.getField(fieldName, moduleName);
+				Operator operator = Operator.getOperator(operatorId);
+				Condition condition = CriteriaAPI.getCondition(field, dimensionValues, operator);
+				criteria.addAndCondition(condition);
+
+			} else {
+				xAxisField = modBean.getField(fieldId);
+				Condition condition = CriteriaAPI.getCondition(xAxisField, dimensionValues,
+						getOperator(xAxisField, xAggr));
+				criteria.addAndCondition(condition);
+
+			}
+			
+			
+			
 
 			Map<String, Object> groupBy = drilldownCriteria.getGroupBy();
 			if (groupBy != null) {
@@ -182,6 +204,9 @@ public class ReportDrilldownCommand extends FacilioCommand {
 		case SYSTEM_ENUM:
 			operator = PickListOperators.IS;
 
+			break;
+		case BOOLEAN:
+			operator=BooleanOperators.IS;
 			break;
 		case LOOKUP:
 			LookupField lookupField = (LookupField) field;
