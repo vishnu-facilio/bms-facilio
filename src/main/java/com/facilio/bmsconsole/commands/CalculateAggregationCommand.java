@@ -243,6 +243,10 @@ public class CalculateAggregationCommand extends FacilioCommand {
 			endTime++; //Because this endttime is inclusive
 		}
 		
+		if (endTime >= currentTime) {
+			endTime = currentTime;
+		}
+		
 		long duration = durations.get(previousRecord.getValue());
 		durations.put(previousRecord.getValue(), duration + (endTime - previousRecord.getKey())); //End time is start time of next cycle. It's excluded
 		
