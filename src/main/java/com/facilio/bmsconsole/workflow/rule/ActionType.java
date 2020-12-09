@@ -436,7 +436,15 @@ public enum ActionType {
 							userNotification.setUser(user);
 							userNotification.setSiteId(currentRule.getSiteId());
 							FacilioModule module = modBean.getModule((String) context.getOrDefault("moduleName", null));
-							userNotification.setParentModule(module.getModuleId());
+							if (module != null) {
+								userNotification.setParentModule(module.getModuleId());
+							} else if (currentRecord instanceof ModuleBaseWithCustomFields) {
+								userNotification.setParentModule(((ModuleBaseWithCustomFields) currentRecord).getModuleId());
+							} else {
+								// temp fix
+								LOGGER.info("Cannot find moduleId for the current record, skipping for now");
+								continue;
+							}
 							if (currentRecord instanceof ModuleBaseWithCustomFields) {
 								long parentId = ((ModuleBaseWithCustomFields) currentRecord).getId();
 								userNotification.setParentId(parentId);
