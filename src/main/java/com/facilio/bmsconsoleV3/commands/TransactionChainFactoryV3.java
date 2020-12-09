@@ -419,7 +419,7 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getCreateNeighbourhoodBeforeUpdateChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new NeighbourhoodAddLocationCommand());
-        c.addCommand(new AddOrUpdateAnnouncementSharingInfoCommandV3());
+        c.addCommand(new AddOrUpdateNeighbourhoodSharingCommandV3());
 
         return c;
 
