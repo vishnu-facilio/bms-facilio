@@ -34,7 +34,7 @@ public class GetAutomationModulesCommand extends FacilioCommand {
        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY)) {
     	   modules.add(modBean.getModule(FacilioConstants.ContextNames.PURCHASE_REQUEST));
     	   modules.add(modBean.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER));
-    	    
+           modules.add(modBean.getModule(FacilioConstants.ContextNames.INVENTORY_REQUEST));
        }
 
         if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SERVICE_REQUEST)) {
