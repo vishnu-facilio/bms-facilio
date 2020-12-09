@@ -128,27 +128,25 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
         return filter;
     }
 
-    private List<FacilioField> filterOutFields (List<FacilioField> fields, List<String> filterList) {
+    private List<FacilioField> filterOutFields (List<FacilioField> fields, List<String> filterList, boolean isInclude) {
         return fields.stream().
                 filter(
-                        f -> filterList.contains(f.getName()) || !f.isDefault()
+                        f -> !(isInclude ^ filterList.contains(f.getName())) // This is XNOR behaviour. It should be true only if both isInclude and contains are true or if both are false
+                                || !f.isDefault()
                 ).collect(Collectors.toList());
     }
 
     private static final List<String> SENSOR_ALARM_FIELDS_TO_HIDE = Arrays.asList(new String[] {"readingFieldId", "type"});
     private List<FacilioField> filterModuleFields (FacilioModule module, List<FacilioField> fields) {
         if (AssetsAPI.isAssetsModule(module)) {
-            return filterOutFields(fields, FieldFactory.Fields.assetFieldsInclude);
+            return filterOutFields(fields, FieldFactory.Fields.assetFieldsInclude, true);
         }
         else {
             switch (module.getName()) {
                 case FacilioConstants.ContextNames.QUOTE:
-                    return filterOutFields(fields, FieldFactory.Fields.quoteFieldsInclude);
+                    return filterOutFields(fields, FieldFactory.Fields.quoteFieldsInclude, true);
                 case FacilioConstants.ContextNames.SENSOR_ROLLUP_ALARM:
-                	return fields.stream().
-                            filter(
-                                    f -> (!SENSOR_ALARM_FIELDS_TO_HIDE.contains(f.getName()))
-                            ).collect(Collectors.toList());
+                    return filterOutFields(fields, SENSOR_ALARM_FIELDS_TO_HIDE, false);
                 default:
                     return fields;
             }
