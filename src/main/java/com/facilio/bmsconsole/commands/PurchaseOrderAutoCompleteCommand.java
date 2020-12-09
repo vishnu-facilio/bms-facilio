@@ -41,7 +41,9 @@ public class PurchaseOrderAutoCompleteCommand extends FacilioCommand {
 				Map<String, Object> map = FieldUtil.getAsProperties(v3po);
 				PurchaseOrderContext po = FieldUtil.getAsBeanFromMap(map, PurchaseOrderContext.class);
 				if (v3po.getReceivableStatus() == V3PurchaseOrderContext.ReceivableStatus.RECEIVED.getIndex()) {
-					storeRoomId = po.getStoreRoom().getId();
+					if (po.getStoreRoom() != null) {
+						storeRoomId = po.getStoreRoom().getId();
+					}
 					vendorId= po.getVendor().getId();
 					List<PurchaseOrderLineItemContext> lineItems = getLineItemsForPO(po.getId());
 					if (lineItems != null && !lineItems.isEmpty()) {
