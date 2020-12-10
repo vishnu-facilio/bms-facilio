@@ -3,7 +3,9 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.modules.fields.LookupField;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -56,14 +58,30 @@ public class GenerateSearchConditionCommand extends FacilioCommand {
 		else if (search instanceof String && StringUtils.isNotEmpty((String) search)) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-			Criteria criteria = new Criteria();
 			FacilioField primaryField = modBean.getPrimaryField(moduleName);
-			criteria.addAndCondition(CriteriaAPI.getCondition(primaryField, (String) search, StringOperators.CONTAINS));
-			context.put(FacilioConstants.ContextNames.SEARCH_CRITERIA, criteria);
+			context.put(FacilioConstants.ContextNames.SEARCH_CRITERIA, constructMainFieldSearchCriteria(primaryField, (String) search, modBean));
 		}
 		long timeTaken = System.currentTimeMillis() - startTime;
 		LOGGER.debug("Time taken to execute GenerateSearchConditionCommand : "+timeTaken);
 		return false;
 	}
 
+	private Criteria constructMainFieldSearchCriteria(FacilioField primaryField, String search, ModuleBean modBean) throws Exception {
+		Criteria criteria = null;
+		if (primaryField instanceof LookupField) {
+			// Not handling special lookup here. If a module as special lookup as main field, I think it has to be searched locally like special lookup modules
+			LookupField lookupField = (LookupField) primaryField;
+			if (StringUtils.isEmpty(lookupField.getSpecialType())) {
+				FacilioField lookupFieldPrimary = modBean.getPrimaryField(lookupField.getLookupModule().getName());
+				Criteria lookupCriteria = constructMainFieldSearchCriteria(lookupFieldPrimary, search, modBean);
+				criteria = new Criteria();
+				criteria.addAndCondition(CriteriaAPI.getCondition(primaryField, lookupCriteria, LookupOperator.LOOKUP));
+			}
+		}
+		else {
+			criteria = new Criteria();
+			criteria.addAndCondition(CriteriaAPI.getCondition(primaryField, (String) search, StringOperators.CONTAINS));
+		}
+		return criteria;
+	}
 }
