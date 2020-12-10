@@ -619,19 +619,13 @@ public class ViewFactory {
 
 		// views for vendor portal
 		views.put("vendorActiveVisitors", getVendorUpcomingVisitorLogsView().setOrder(order++)); // 1
-	//	views.put("vendorVisits", getAllVendorVisitsView().setOrder(order++)); // 2
-		//views.put("vendorCurrentVisits", getVendorCurrentVisitsView().setOrder(order++)); // 3
 		views.put("vendorExpired", getVendorExpiredVisitorInvites().setOrder(order++)); // 4
 
 
 		// views for tenant portal
-		//views.put("myActive", getMyActiveVisitorInvites().setOrder(order++)); // 1
-		//views.put("myCurrent", getMyCurrentVisitorInvites().setOrder(order++)); // 2 to be handled
 		views.put("myExpired", getMyExpiredVisitorInvites().setOrder(order++)); // 3
 
-		//views.put("vendorVisitors", getVendorAllInvitesView().setOrder(order++));
 		views.put("myActive", getMyActiveVisitorInvites().setOrder(order++));
-		//views.put("myAll", getMyAllVisitorInvites().setOrder(order++));
 		views.put("myPendingVisits", getMyPendingVisitsView().setOrder(order++));
 
 		viewsMap.put(FacilioConstants.ContextNames.VISITOR_LOGGING, views);
@@ -643,6 +637,9 @@ public class ViewFactory {
 		views.put("invite_all", getAllVisitorInvitesView().setOrder(order++));
 		views.put("invite_myInvites", getActiveVisitorInvites().setOrder(order++));
 		views.put("invite_myExpired", getExpiredVisitorInvites().setOrder(order++)); // 3
+		views.put("myExpired", getMyExpiredVisitorInvites().setOrder(order++)); // 3
+		views.put("myActive", getMyActiveVisitorInvites().setOrder(order++));
+
 		viewsMap.put(FacilioConstants.ContextNames.VISITOR_INVITE, views);
 		
 		order = 1;
@@ -6704,7 +6701,7 @@ public class ViewFactory {
 		expiredCriteria.addAndCondition(getWorkPermitStatusCriteria("Expired"));
 		FacilioView allView = new FacilioView();
 		allView.setName("vendorExpiredWorkpermits");
-		allView.setDisplayName("Expired Work Permit");
+		allView.setDisplayName("Expired");
 		allView.setCriteria(expiredCriteria);
 
 		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.VENDOR_PORTAL)));
@@ -6718,7 +6715,7 @@ public class ViewFactory {
 		activeCriteria.addAndCondition(getWorkPermitStatusCriteria("Active"));
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
-		allView.setDisplayName("All Work Permit");
+		allView.setDisplayName("Active");
 		allView.setCriteria(activeCriteria);
 
 		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.VENDOR_PORTAL)));

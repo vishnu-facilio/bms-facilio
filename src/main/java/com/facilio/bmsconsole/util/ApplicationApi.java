@@ -706,7 +706,7 @@ public class ApplicationApi {
 
             webTabGroups.add(new WebTabGroupContext("Insurance", "insurance", layout.getId(), 205, groupOrder++));
             webTabs = new ArrayList<>();
-            webTabs.add(new WebTabContext("Insurance", "insurances", WebTabContext.Type.MODULE,  Arrays.asList(modBean.getModule("insurance").getModuleId()), appId, null, AccountUtil.FeatureLicense.COMMUNITY.getLicense()));
+            webTabs.add(new WebTabContext("Insurance", "insurances", WebTabContext.Type.MODULE,  Arrays.asList(modBean.getModule("insurance").getModuleId()), appId, null));
             groupNameVsWebTabsMap.put("insurance", webTabs);
 
             for (WebTabGroupContext webTabGroupContext : webTabGroups) {
