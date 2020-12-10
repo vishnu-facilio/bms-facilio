@@ -40,6 +40,8 @@ public class ColumnFactory {
 		columnMap.put("workorder-tenantWorkorder", getTenantWorkorderColumns());
 		columnMap.put("workorder-tenantOpen", getTenantWorkorderColumns());
 		columnMap.put("workorder-tenantClosed", getTenantWorkorderColumns());
+		columnMap.put("workorder-vendorOpen", getVendorWorkorderColumns());
+		columnMap.put("workorder-vendorClosed", getVendorWorkorderColumns());
 		columnMap.put("workorder-tenantAll", getTenantWorkorderColumns());
 		columnMap.put("workorder-vendorWorkorder", getVendorWorkorderColumns());
 		columnMap.put("alarm-default", getDefaultAlarmColumns());
@@ -350,8 +352,8 @@ public class ColumnFactory {
 		columns.add(new ViewField("createdTime", "Created Time"));
 		columns.add(new ViewField("actualWorkEnd", "Resolved Time"));
 		return columns;
-	}	
-	
+	}
+
 	private static List<ViewField> getMyWorkorderColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		

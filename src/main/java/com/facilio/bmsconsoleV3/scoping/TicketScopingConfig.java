@@ -19,7 +19,7 @@ public class TicketScopingConfig extends ModuleScopingConfiguration {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TICKET);
 
-            //adding site scope in Facilio
+            //adding scope in Facilio
             long applicationScopingId = ApplicationApi.addScoping(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
             ScopingConfigContext scoping = new ScopingConfigContext();
             scoping.setFieldName("siteId");
@@ -28,7 +28,7 @@ public class TicketScopingConfig extends ModuleScopingConfiguration {
             scoping.setFieldValueGenerator("com.facilio.modules.SiteValueGenerator");
             scoping.setModuleId(module.getModuleId());
 
-            //adding site scope in Tenant Portal
+            //adding scope in Tenant Portal
             long tenantPortalScopingId = ApplicationApi.addScoping(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
             ScopingConfigContext tenantScoping = new ScopingConfigContext();
             tenantScoping.setFieldName("tenant");
@@ -37,7 +37,7 @@ public class TicketScopingConfig extends ModuleScopingConfiguration {
             tenantScoping.setFieldValueGenerator("com.facilio.modules.UserValueGenerator");
             tenantScoping.setModuleId(module.getModuleId());
 
-            //adding site scope in Vendor Portal
+            //adding scope in Vendor Portal
             long vendorPortalScopingId = ApplicationApi.addScoping(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
             ScopingConfigContext vendorScoping = new ScopingConfigContext();
             vendorScoping.setFieldName("vendor");

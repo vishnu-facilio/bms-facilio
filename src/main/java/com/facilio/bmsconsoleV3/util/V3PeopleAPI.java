@@ -521,5 +521,20 @@ public class V3PeopleAPI {
     }
 
 
+    public static V3VendorContext getVendorForUser(long ouId) throws Exception {
+        long pplId = PeopleAPI.getPeopleIdForUser(ouId);
+        if(pplId <= 0) {
+            throw new IllegalArgumentException("Invalid People Id mapped with ORG_User");
+        }
+        V3VendorContactContext vc = (V3VendorContactContext)V3RecordAPI.getRecord(FacilioConstants.ContextNames.VENDOR_CONTACT, pplId, V3VendorContactContext.class);
+        if (vc != null && vc.getVendor() != null && vc.getVendor().getId() > 0) {
+            return (V3VendorContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.VENDORS, vc.getVendor().getId(), V3VendorContext.class);
+        }
+
+        return null;
+
+    }
+
+
 
 }

@@ -412,6 +412,7 @@ public class ApplicationApi {
         if (vendorPortal.getId() > 0) {
             ApplicationLayoutContext vpLayout = new ApplicationLayoutContext(vendorPortal.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.WEB, FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
             addApplicationLayout(vpLayout);
+            addVendorPortalWebTabs(vpLayout);
         }
 
         ApplicationContext clientPortal = getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
@@ -673,6 +674,76 @@ public class ApplicationApi {
         }
 
     }
+
+    public static void addVendorPortalWebTabs(ApplicationLayoutContext layout) {
+        try {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            int groupOrder = 1;
+
+            long appId = layout.getApplicationId();
+
+            List<WebTabGroupContext> webTabGroups = new ArrayList<>();
+            Map<String, List<WebTabContext>> groupNameVsWebTabsMap = new HashMap<>();
+            List<WebTabContext> webTabs = new ArrayList<>();
+            JSONObject configJSON;
+
+            webTabGroups.add(new WebTabGroupContext("WorkOrders", "workorder", layout.getId(), 201, groupOrder++));
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("WorkOrders", "workorders", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("workorder").getModuleId()), appId, null));
+            groupNameVsWebTabsMap.put("workorder", webTabs);
+
+            webTabGroups.add(new WebTabGroupContext("Work Permits", "workpermit", layout.getId(), 202, groupOrder++));
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Work Permits", "workpermits", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("workpermit").getModuleId()), appId, null));
+            groupNameVsWebTabsMap.put("workpermit", webTabs);
+
+            webTabGroups.add(new WebTabGroupContext("Invites", "visits", layout.getId(), 203, groupOrder++));
+            webTabs = new ArrayList<>();
+            configJSON = new JSONObject();
+            configJSON.put("type", "visitorlogging");
+            webTabs.add(new WebTabContext("Invites", "visitorinvites", WebTabContext.Type.CUSTOM, Arrays.asList(modBean.getModule("visitorlogging").getModuleId()), appId, configJSON,  AccountUtil.FeatureLicense.VISITOR.getLicense()));
+            groupNameVsWebTabsMap.put("visits", webTabs);
+
+            webTabGroups.add(new WebTabGroupContext("Insurance", "insurance", layout.getId(), 205, groupOrder++));
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Insurance", "insurances", WebTabContext.Type.MODULE,  Arrays.asList(modBean.getModule("insurance").getModuleId()), appId, null, AccountUtil.FeatureLicense.COMMUNITY.getLicense()));
+            groupNameVsWebTabsMap.put("insurance", webTabs);
+
+            for (WebTabGroupContext webTabGroupContext : webTabGroups) {
+                System.out.println("we: " + webTabGroupContext.getRoute());
+                FacilioChain chain = TransactionChainFactory.getAddOrUpdateTabGroup();
+                FacilioContext chainContext = chain.getContext();
+                chainContext.put(FacilioConstants.ContextNames.WEB_TAB_GROUP, webTabGroupContext);
+                chain.execute();
+                long webGroupId = (long) chainContext.get(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID);
+                webTabGroupContext.setId(webGroupId);
+                List<WebTabContext> tabs = groupNameVsWebTabsMap.get(webTabGroupContext.getRoute());
+                for (WebTabContext webTabContext : tabs) {
+                    chain = TransactionChainFactory.getAddOrUpdateTabChain();
+                    chainContext = chain.getContext();
+                    chainContext.put(FacilioConstants.ContextNames.WEB_TAB, webTabContext);
+                    chain.execute();
+                    long tabId = (long) chainContext.get(FacilioConstants.ContextNames.WEB_TAB_ID);
+                    webTabContext.setId(tabId);
+                }
+                if(CollectionUtils.isNotEmpty(tabs)){
+                    chain = TransactionChainFactory.getCreateAndAssociateTabGroupChain();
+                    chainContext = chain.getContext();
+                    chainContext.put(FacilioConstants.ContextNames.WEB_TABS, tabs);
+                    chainContext.put(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID, webGroupId);
+                    chain.execute();
+                }
+            }
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
 
     public static void addWebTab(WebTabContext webtab) throws Exception {
 

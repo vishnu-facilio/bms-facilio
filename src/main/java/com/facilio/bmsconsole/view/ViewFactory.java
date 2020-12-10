@@ -178,6 +178,9 @@ public class ViewFactory {
 		views.put("tenantClosed", getTenantClosedWorkOrders().setOrder(order++));
 		views.put("tenantAll", getTenantAllWorkOrders().setOrder(order++));
 
+		views.put("vendorOpen", getVendorOpenWorkOrders().setOrder(order++));
+		views.put("vendorClosed", getVendorClosedWorkOrders().setOrder(order++));
+
 		views.put("pendingapproval", getRequestedStateApproval("pendingapproval", true).setOrder(order++));
 		views.put("myapproval", getMyRequestWorkorders("myapproval").setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.WORK_ORDER, views);
@@ -2154,6 +2157,53 @@ public class ViewFactory {
 		openTicketsView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
 
 		return openTicketsView;
+	}
+
+	private static FacilioView getVendorOpenWorkOrders() {
+		// All Open Tickets
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(getOpenStatusCondition());
+
+		FacilioView openTicketsView = new FacilioView();
+		openTicketsView.setName("vendorOpen");
+		openTicketsView.setDisplayName("Open");
+		openTicketsView.setCriteria(criteria);
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(ModuleFactory.getWorkOrdersModule());
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		openTicketsView.setSortFields(sortFields);
+		openTicketsView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.VENDOR_PORTAL)));
+
+		return openTicketsView;
+	}
+
+
+	private static FacilioView getVendorClosedWorkOrders() {
+		// All Closed Tickets
+
+		FacilioView closedTicketsView = new FacilioView();
+		closedTicketsView.setName("vendorClosed");
+		closedTicketsView.setDisplayName("Closed");
+		closedTicketsView.setCriteria(getClosedTicketsCriteria());
+
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(ModuleFactory.getWorkOrdersModule());
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		closedTicketsView.setSortFields(sortFields);
+		closedTicketsView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.VENDOR_PORTAL)));
+
+		return closedTicketsView;
 	}
 
 
@@ -4158,7 +4208,7 @@ public class ViewFactory {
 
 		FacilioView myVisitorInvitesView = new FacilioView();
 		myVisitorInvitesView.setName("vendorExpired");
-		myVisitorInvitesView.setDisplayName("Vendor Expired Invites");
+		myVisitorInvitesView.setDisplayName("Expired");
 		myVisitorInvitesView.setCriteria(criteria);
 		myVisitorInvitesView.setSortFields(sortFields);
 
@@ -6397,7 +6447,7 @@ public class ViewFactory {
 		
 		FacilioView allView = new FacilioView();
 		allView.setName("vendorActiveVisitors");
-		allView.setDisplayName("All Visits");
+		allView.setDisplayName("Active");
 		allView.setCriteria(criteria);
 		allView.setSortFields(sortFields);
 

@@ -6,6 +6,9 @@ import com.facilio.bmsconsole.context.ClientContext;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.PeopleAPI;
+import com.facilio.bmsconsoleV3.context.V3TenantContext;
+import com.facilio.bmsconsoleV3.context.V3VendorContext;
+import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 
 public class UserValueGenerator extends ValueGenerator{
 
@@ -17,13 +20,13 @@ public class UserValueGenerator extends ValueGenerator{
 				 
 			}
 			else if(appType == AppDomainType.TENANT_PORTAL.getIndex()) {
-				TenantContext tenant = PeopleAPI.getTenantForUser(AccountUtil.getCurrentUser().getId());
+				V3TenantContext tenant = V3PeopleAPI.getTenantForUser(AccountUtil.getCurrentUser().getId());
 				if(tenant != null) {
 					return String.valueOf(tenant.getId());
 				}
 			}
 			else if(appType == AppDomainType.VENDOR_PORTAL.getIndex()) {
-				VendorContext vendor = PeopleAPI.getVendorForUser(AccountUtil.getCurrentUser().getId());
+				V3VendorContext vendor = V3PeopleAPI.getVendorForUser(AccountUtil.getCurrentUser().getId());
 				if(vendor != null) {
 					return String.valueOf(vendor.getId());
 				}
