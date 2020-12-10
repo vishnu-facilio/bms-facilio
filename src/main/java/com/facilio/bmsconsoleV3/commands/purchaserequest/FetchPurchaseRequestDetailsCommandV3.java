@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestLineItemContext;
+import com.facilio.bmsconsoleV3.util.QuotationAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -41,12 +42,13 @@ public class FetchPurchaseRequestDetailsCommandV3 extends FacilioCommand {
 							.moduleName(lineItemModuleName)
 							.select(fields)
 							.beanClass(V3PurchaseRequestLineItemContext.class)
-							.andCondition(CriteriaAPI.getCondition("PR_ID", "prid", String.valueOf(purchaseRequestContext.getId()), NumberOperators.EQUALS))
+							.andCondition(CriteriaAPI.getCondition("PR_ID", "purchaseRequest", String.valueOf(purchaseRequestContext.getId()), NumberOperators.EQUALS))
 							.fetchSupplements(Arrays.asList((LookupField) fieldsAsMap.get("itemType"),
-									(LookupField) fieldsAsMap.get("toolType"), (LookupField) fieldsAsMap.get("service")));
+									(LookupField) fieldsAsMap.get("toolType"), (LookupField) fieldsAsMap.get("service"), (LookupField) fieldsAsMap.get("tax")));
         		
         			List<V3PurchaseRequestLineItemContext> list = builder.get();
         			purchaseRequestContext.setLineItems(list);
+					QuotationAPI.setTaxSplitUp(purchaseRequestContext, purchaseRequestContext.getLineItems());
         		} 	
             }
         }

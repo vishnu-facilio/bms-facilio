@@ -46,9 +46,13 @@ public class POAfterCreateOrEditV3Command extends FacilioCommand {
                         if (purchaseOrderContext.getLineItems() != null && purchaseOrderContext.getReceivableStatus() == V3PurchaseOrderContext.ReceivableStatus.YET_TO_RECEIVE.getIndex()) {
                             DeleteRecordBuilder<PurchaseOrderLineItemContext> deleteBuilder = new DeleteRecordBuilder<PurchaseOrderLineItemContext>()
                               .module(lineItemsModule)
-                                    .andCondition(CriteriaAPI.getCondition("PO_ID", "poid", String.valueOf(purchaseOrderContext.getId()), NumberOperators.EQUALS));
+                                    .andCondition(CriteriaAPI.getCondition("PO_ID", "purchaseOrder", String.valueOf(purchaseOrderContext.getId()), NumberOperators.EQUALS));
                             deleteBuilder.delete();
-                            updateLineItems(purchaseOrderContext);
+                            V3PurchaseOrderContext poContext = new V3PurchaseOrderContext();
+                            poContext.setId(purchaseOrderContext.getId());
+                            for (V3PurchaseOrderLineItemContext lineItemContext : purchaseOrderContext.getLineItems()) {
+                                lineItemContext.setPurchaseOrder(poContext);
+                            }
                             RecordAPI.addRecord(false, purchaseOrderContext.getLineItems(), lineItemsModule, modBean.getAllFields(lineItemsModule.getName()));
                         }
                         Long poId = (Long) context.get(Constants.RECORD_ID);
@@ -78,11 +82,9 @@ public class POAfterCreateOrEditV3Command extends FacilioCommand {
                         updatedFields.add(fieldsMap.get("totalCost"));
                         updatedFields.add(fieldsMap.get("totalQuantity"));
 
-                        double totalCost = getTotalCost(purchaseOrderContext.getId());
                         double totalQuantity = getTotalQuantity(purchaseOrderContext.getId());
 
                         Map<String, Object> map = new HashMap<String, Object>();
-                        map.put("totalCost", totalCost);
                         map.put("totalQuantity", totalQuantity);
 
                         //update total cost for purchase order
@@ -119,52 +121,6 @@ public class POAfterCreateOrEditV3Command extends FacilioCommand {
         return false;
     }
 
-
-    private void updateLineItems(V3PurchaseOrderContext purchaseOrderContext) {
-        for (V3PurchaseOrderLineItemContext lineItemContext : purchaseOrderContext.getLineItems()) {
-            lineItemContext.setPoId(purchaseOrderContext.getId());
-            updateLineItemCost(lineItemContext);
-        }
-    }
-
-
-    private void updateLineItemCost(V3PurchaseOrderLineItemContext lineItemContext) {
-        if (lineItemContext.getUnitPrice() > 0) {
-            lineItemContext.setCost(lineItemContext.getUnitPrice() * lineItemContext.getQuantity());
-        } else {
-            lineItemContext.setCost(0.0);
-        }
-    }
-
-
-    private Double getTotalCost(long id) throws Exception {
-        if (id <= 0) {
-            return 0d;
-        }
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-
-        FacilioModule lineModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS);
-        List<FacilioField> linefields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS);
-        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(linefields);
-
-        List<FacilioField> field = new ArrayList<>();
-        field.add(FieldFactory.getField("totalItemsCost", "sum(COST)", FieldType.DECIMAL));
-
-        SelectRecordsBuilder<V3PurchaseOrderLineItemContext> builder = new SelectRecordsBuilder<V3PurchaseOrderLineItemContext>()
-                .select(field).moduleName(lineModule.getName())
-                .andCondition(CriteriaAPI.getCondition(fieldsMap.get("poId"), String.valueOf(id), NumberOperators.EQUALS))
-                .setAggregation();
-
-        List<Map<String, Object>> rs = builder.getAsProps();
-        if (rs != null && rs.size() > 0) {
-            if (rs.get(0).get("totalItemsCost") != null) {
-                return (double) rs.get(0).get("totalItemsCost");
-            }
-            return 0d;
-        }
-        return 0d;
-    }
-
     private double getTotalQuantity(long id) throws Exception {
         if (id <= 0) {
             return 0d;
@@ -180,7 +136,7 @@ public class POAfterCreateOrEditV3Command extends FacilioCommand {
 
         SelectRecordsBuilder<V3PurchaseOrderLineItemContext> builder = new SelectRecordsBuilder<V3PurchaseOrderLineItemContext>()
                 .select(field).moduleName(lineModule.getName())
-                .andCondition(CriteriaAPI.getCondition(fieldsMap.get("poId"), String.valueOf(id), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(fieldsMap.get("purchaseOrder"), String.valueOf(id), NumberOperators.EQUALS))
                 .setAggregation();
 
         List<Map<String, Object>> rs = builder.getAsProps();

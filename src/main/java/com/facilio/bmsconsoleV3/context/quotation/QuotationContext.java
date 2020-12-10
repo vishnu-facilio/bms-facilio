@@ -1,18 +1,14 @@
 package com.facilio.bmsconsoleV3.context.quotation;
 
 import com.facilio.bmsconsole.context.LocationContext;
-import com.facilio.bmsconsoleV3.context.V3ClientContext;
-import com.facilio.bmsconsoleV3.context.V3PeopleContext;
-import com.facilio.bmsconsoleV3.context.V3TenantContext;
-import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
+import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.FieldUtil;
-import com.facilio.v3.context.V3Context;
 
 import java.io.File;
 import java.util.List;
 
-public class QuotationContext extends V3Context {
+public class QuotationContext extends BaseLineItemsParentModuleContext {
 
     /**
      *
@@ -31,15 +27,10 @@ public class QuotationContext extends V3Context {
     private File signature;
     private String signatureFileName;
     private String signatureContentType;
-    private Double subTotal;
-    private Double totalTaxAmount;
-    private Double discountAmount;
-    private Double discountPercentage;
     private Double shippingCharges;
     private Double adjustmentsCost;
     private String adjustmentsCostName;
     private Double miscellaneousCharges;
-    private Double totalCost;
     private List<QuotationLineItemsContext> lineItems;
     private List<QuotationAssociatedTermsContext> termsAssociated;
     private CustomerType customerType;
@@ -48,25 +39,7 @@ public class QuotationContext extends V3Context {
     private Long revisionNumber;
     private Boolean isQuotationRevised;
     private Boolean revisionHistoryAvailable;
-    private TaxContext tax;
 
-    public TaxContext getTax() {
-        return tax;
-    }
-
-    public void setTax(TaxContext tax) {
-        this.tax = tax;
-    }
-
-    public List<TaxSplitUpContext> getTaxSplitUp() {
-        return taxSplitUp;
-    }
-
-    public void setTaxSplitUp(List<TaxSplitUpContext> taxSplitUp) {
-        this.taxSplitUp = taxSplitUp;
-    }
-
-    private List<TaxSplitUpContext> taxSplitUp;
 
     public V3WorkOrderContext getWorkorder() {
         return workorder;
@@ -236,22 +209,6 @@ public class QuotationContext extends V3Context {
         this.signatureContentType = signatureContentType;
     }
 
-    public Double getSubTotal() {
-        return subTotal;
-    }
-
-    public void setSubTotal(Double subTotal) {
-        this.subTotal = subTotal;
-    }
-
-    public Double getTotalTaxAmount() {
-        return totalTaxAmount;
-    }
-
-    public void setTotalTaxAmount(Double totalTaxAmount) {
-        this.totalTaxAmount = totalTaxAmount;
-    }
-
     public Double getShippingCharges() {
         return shippingCharges;
     }
@@ -282,31 +239,6 @@ public class QuotationContext extends V3Context {
 
     public void setMiscellaneousCharges(Double miscellaneousCharges) {
         this.miscellaneousCharges = miscellaneousCharges;
-    }
-
-    public Double getTotalCost() {
-        return totalCost;
-    }
-
-    public void setTotalCost(Double totalCost) {
-        this.totalCost = totalCost;
-    }
-
-
-    public Double getDiscountAmount() {
-        return discountAmount;
-    }
-
-    public void setDiscountAmount(Double discountAmount) {
-        this.discountAmount = discountAmount;
-    }
-
-    public Double getDiscountPercentage() {
-        return discountPercentage;
-    }
-
-    public void setDiscountPercentage(Double discountPercentage) {
-        this.discountPercentage = discountPercentage;
     }
 
     public enum CustomerType implements FacilioEnum {

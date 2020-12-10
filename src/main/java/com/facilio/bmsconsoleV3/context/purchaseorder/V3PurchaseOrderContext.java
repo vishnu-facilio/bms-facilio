@@ -4,12 +4,12 @@ import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.ContractsContext;
 import com.facilio.bmsconsole.context.InventoryType;
 import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsoleV3.context.BaseLineItemsParentModuleContext;
 import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
 import com.facilio.bmsconsoleV3.context.V3VendorContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestLineItemContext;
 import com.facilio.modules.FacilioEnum;
-import com.facilio.v3.context.V3Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class V3PurchaseOrderContext extends V3Context {
+public class V3PurchaseOrderContext extends BaseLineItemsParentModuleContext {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -28,7 +28,6 @@ public class V3PurchaseOrderContext extends V3Context {
 	private V3StoreRoomContext storeRoom;
 	private Status status;
 	private User requestedBy;
-	private Double totalCost;
 	private List<V3PurchaseOrderLineItemContext> lineItems;
 	private V3ReceivableContext receivableContext;
 	private Long orderedTime;
@@ -40,6 +39,7 @@ public class V3PurchaseOrderContext extends V3Context {
 	private Long completedTime;
 	private ContractsContext contract;
 	private List<V3PoAssociatedTermsContext> termsAssociated;
+
 
 	public void setName(String name) {
 		this.name = name;
@@ -67,11 +67,11 @@ public class V3PurchaseOrderContext extends V3Context {
 		this.requestedBy = requestedBy;
 	}
 
-	public int getStatus() {
+	public Integer getStatus() {
 		if (status != null) {
 			return status.getValue();
 		}
-		return -1;
+		return null;
 	}
 	public void setStatus(Status status) {
 		this.status = status;
@@ -204,26 +204,12 @@ public class V3PurchaseOrderContext extends V3Context {
 		this.shipToAddress = location;
 	}
 
-	public Long getShipToAddressId() {
-		if (shipToAddress != null) {
-			return shipToAddress.getId();
-		}
-		return -1l;
-	}
-
 	public LocationContext getBillToAddress() {
 		return billToAddress;
 	}
 
 	public void setBillToAddress(LocationContext location) {
 		this.billToAddress = location;
-	}
-
-	public Long getBillToAddressId() {
-		if (billToAddress != null) {
-			return billToAddress.getId();
-		}
-		return -1l;
 	}
 
 	public ContractsContext getContract() {
@@ -243,12 +229,6 @@ public class V3PurchaseOrderContext extends V3Context {
 	}
 	public void setStoreRoom(V3StoreRoomContext storeRoom) {
 		this.storeRoom = storeRoom;
-	}
-	public Double getTotalCost() {
-		return totalCost;
-	}
-	public void setTotalCost(Double totalCost) {
-		this.totalCost = totalCost;
 	}
 	public List<V3PurchaseOrderLineItemContext> getLineItems() {
 		return lineItems;

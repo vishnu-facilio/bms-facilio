@@ -1,13 +1,12 @@
 package com.facilio.bmsconsoleV3.commands.purchaseorder;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.InventoryType;
 import com.facilio.bmsconsole.util.LocationAPI;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderLineItemContext;
-import com.facilio.fw.BeanFactory;
+import com.facilio.bmsconsoleV3.util.QuotationAPI;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -25,7 +24,6 @@ public class POBeforeCreateOrEditV3Command extends FacilioCommand {
         String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<V3PurchaseOrderContext> purchaseOrderContexts = recordMap.get(moduleName);
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         if (CollectionUtils.isNotEmpty(purchaseOrderContexts)) {
             for (V3PurchaseOrderContext purchaseOrderContext : purchaseOrderContexts) {
                 if (purchaseOrderContext != null) {
@@ -37,6 +35,7 @@ public class POBeforeCreateOrEditV3Command extends FacilioCommand {
                     }
 
                     checkForStoreRoom(purchaseOrderContext, purchaseOrderContext.getLineItems());
+                    QuotationAPI.lineItemsCostCalculations(purchaseOrderContext, purchaseOrderContext.getLineItems());
 
                     // setting current user to requestedBy
                     if (purchaseOrderContext.getRequestedBy() == null) {

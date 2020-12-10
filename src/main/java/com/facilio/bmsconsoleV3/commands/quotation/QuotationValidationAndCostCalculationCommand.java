@@ -4,13 +4,11 @@ import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsoleV3.context.V3ClientContactContext;
 import com.facilio.bmsconsoleV3.context.V3TenantContactContext;
-import com.facilio.bmsconsoleV3.util.QuotationAPI;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
+import com.facilio.bmsconsoleV3.util.QuotationAPI;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.context.Constants;
-import com.facilio.v3.exception.ErrorCode;
-import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -26,7 +24,19 @@ public class QuotationValidationAndCostCalculationCommand extends FacilioCommand
         List<QuotationContext> list = recordMap.get(moduleName);
         if (CollectionUtils.isNotEmpty(list)) {
             for (QuotationContext quotation : list) {
-                QuotationAPI.calculateQuotationCost(quotation);
+                QuotationAPI.lineItemsCostCalculations(quotation, quotation.getLineItems());
+                Double quotationTotalCost = quotation.getTotalCost();
+                if (quotation.getShippingCharges() != null) {
+                    quotationTotalCost += quotation.getShippingCharges();
+                }
+                if (quotation.getMiscellaneousCharges() != null) {
+                    quotationTotalCost += quotation.getMiscellaneousCharges();
+                }
+                if (quotation.getAdjustmentsCost() != null) {
+                    quotationTotalCost += quotation.getAdjustmentsCost();
+                }
+                quotation.setTotalCost(quotationTotalCost);
+
                 if(quotation.getRevisionNumber() == null){
                     quotation.setRevisionNumber(0L);
                 }

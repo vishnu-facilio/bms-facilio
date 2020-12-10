@@ -78,10 +78,9 @@ public class PurchaseOrderAPI {
 				.moduleName(lineItemModuleName)
 				.select(fields)
 				.beanClass(V3PurchaseOrderLineItemContext.class)
-				.andCondition(CriteriaAPI.getCondition("PO_ID", "poid", String.valueOf(po.getId()), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("PO_ID", "purchaseOrder", String.valueOf(po.getId()), NumberOperators.EQUALS))
 				.fetchSupplements(Arrays.asList((LookupField) fieldsAsMap.get("itemType"),
-						(LookupField) fieldsAsMap.get("toolType"), (LookupField) fieldsAsMap.get("service")))
-				;
+						(LookupField) fieldsAsMap.get("toolType"), (LookupField) fieldsAsMap.get("service"), (LookupField) fieldsAsMap.get("tax")));
 		List<V3PurchaseOrderLineItemContext> list = builder.get();
 		for(V3PurchaseOrderLineItemContext item : list) {
 			item.setNoOfSerialNumbers(getSerialNumberCount(item.getId()));

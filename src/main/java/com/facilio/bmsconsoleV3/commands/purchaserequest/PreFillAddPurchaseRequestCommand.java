@@ -1,12 +1,10 @@
 package com.facilio.bmsconsoleV3.commands.purchaserequest;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.util.LocationAPI;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.fields.FacilioField;
+import com.facilio.bmsconsoleV3.util.QuotationAPI;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -24,9 +22,8 @@ public class PreFillAddPurchaseRequestCommand extends FacilioCommand {
         List<V3PurchaseRequestContext> purchaseRequestContexts = recordMap.get(moduleName);
         if(purchaseRequestContexts != null && CollectionUtils.isNotEmpty(purchaseRequestContexts)) {
             for(V3PurchaseRequestContext purchaseRequestContext : purchaseRequestContexts) 
-            {          	
-    			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-    			List<FacilioField> fields = modBean.getAllFields(moduleName);
+            {
+				QuotationAPI.lineItemsCostCalculations(purchaseRequestContext, purchaseRequestContext.getLineItems());
 
     			// setting current user to requestedBy
     			if(purchaseRequestContext.getRequestedBy() == null) {

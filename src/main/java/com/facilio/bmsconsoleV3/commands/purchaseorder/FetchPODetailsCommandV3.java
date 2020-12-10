@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.util.PurchaseOrderAPI;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3ReceivableContext;
+import com.facilio.bmsconsoleV3.util.QuotationAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -44,6 +45,7 @@ public class FetchPODetailsCommandV3 extends FacilioCommand {
 
             PurchaseOrderAPI.setLineItemsV3(purchaseOrderContext);
             purchaseOrderContext.setTermsAssociated(PurchaseOrderAPI.fetchAssociatedTermsV3(purchaseOrderContext.getId()));
+            QuotationAPI.setTaxSplitUp(purchaseOrderContext, purchaseOrderContext.getLineItems());
         }
         return false;
     }

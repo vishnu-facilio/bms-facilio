@@ -3,9 +3,9 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.InventoryType;
 import com.facilio.bmsconsole.context.PurchaseOrderContext;
-import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
 import com.facilio.bmsconsole.context.ServiceVendorContext;
 import com.facilio.bmsconsole.util.PurchaseOrderAPI;
+import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderLineItemContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -30,8 +30,8 @@ public class UpdateServiceVendorPriceCommand extends FacilioCommand{
 
 			FacilioModule serviceVendormodule = modBean.getModule(FacilioConstants.ContextNames.SERVICE_VENDOR);
 			for (long id : lineItemIds) {
-				PurchaseOrderLineItemContext lineItem = getPoLineItem(id);
-				PurchaseOrderContext po = PurchaseOrderAPI.getPoContext(lineItem.getPoId());
+				V3PurchaseOrderLineItemContext lineItem = getPoLineItem(id);
+				PurchaseOrderContext po = PurchaseOrderAPI.getPoContext(lineItem.getPurchaseOrder().getId());
 				if(lineItem.getInventoryTypeEnum() == InventoryType.SERVICE) {
 					Map<String, Object> updateMap = new HashMap<>();
 					FacilioField lastPriceField = modBean.getField("lastPrice", serviceVendormodule.getName());
@@ -54,7 +54,7 @@ public class UpdateServiceVendorPriceCommand extends FacilioCommand{
 		return false;
 	}
 	
-	private PurchaseOrderLineItemContext getPoLineItem(long lineItemId) throws Exception {
+	private V3PurchaseOrderLineItemContext getPoLineItem(long lineItemId) throws Exception {
 		  if (lineItemId <= 0) {
 				throw new IllegalArgumentException("Invalid lineItem");
 		  }
@@ -63,12 +63,12 @@ public class UpdateServiceVendorPriceCommand extends FacilioCommand{
 
 		  FacilioModule purchaseOrderLineItemModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS);
 
-		  SelectRecordsBuilder<PurchaseOrderLineItemContext> builder = new SelectRecordsBuilder<PurchaseOrderLineItemContext>()
-					.module(purchaseOrderLineItemModule).select(modBean.getAllFields(purchaseOrderLineItemModule.getName())).beanClass(PurchaseOrderLineItemContext.class)
+		  SelectRecordsBuilder<V3PurchaseOrderLineItemContext> builder = new SelectRecordsBuilder<V3PurchaseOrderLineItemContext>()
+					.module(purchaseOrderLineItemModule).select(modBean.getAllFields(purchaseOrderLineItemModule.getName())).beanClass(V3PurchaseOrderLineItemContext.class)
 					.andCondition(CriteriaAPI.getIdCondition(lineItemId, purchaseOrderLineItemModule));
 		  	
 			
-			List<PurchaseOrderLineItemContext> lItem = builder.get();
+			List<V3PurchaseOrderLineItemContext> lItem = builder.get();
 		    if(CollectionUtils.isNotEmpty(lItem)) {
 		    	return lItem.get(0);
 		    }
