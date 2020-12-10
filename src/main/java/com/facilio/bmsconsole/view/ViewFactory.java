@@ -529,9 +529,9 @@ public class ViewFactory {
 		views.put("sensorMajor", getSensorAlarmSeverity("sensorMajor", "Major Alarms", "Major", true).setOrder(order++));
 		views.put("sensorMinor", getSensorAlarmSeverity("sensorMinor", "Minor Alarms", "Minor", true).setOrder(order++));
 		views.put("sensorCleared", getSensorAlarmSeverity("sensorCleared", "Cleared Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true).setOrder(order++));
-//		views.put("mlmvaAlarms", getMultivariateAnomalyAlarmOccurrenceViews().setOrder(order++));
-//		views.put("agentAll", getAgentAlarmOccurrenceViews().setOrder(order++));
-//		views.put("controllerAll",getControllerAlarmOccurrenceViews().setOrder(order++));
+		views.put("sensorMeter", getSensorMeterAlarm().setOrder(order++));
+		views.put("sensorNonMeter", getSensorNonMeterAlarm().setOrder(order++));
+
 		viewsMap.put(FacilioConstants.ContextNames.SENSOR_ROLLUP_ALARM, views);
 
 
@@ -1064,6 +1064,8 @@ public class ViewFactory {
 		sensorAlarms.add("sensorMinor");
 		sensorAlarms.add("sensorCritical");
 		sensorAlarms.add("sensorCleared");
+		sensorAlarms.add("sensorMeter");
+		sensorAlarms.add("sensorNonMeter");
 
 
 		groupDetails = new HashMap<>();
@@ -7890,12 +7892,12 @@ public class ViewFactory {
 	
 	private static FacilioView getSensorAlarmUnacknowledged() {
 		Criteria criteria = getReadingAlarmUnacknowledgedCriteria();
-
+		
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("lastOccurredTime");	
 		createdTime.setDataType(FieldType.DATE_TIME);
 		createdTime.setColumnName("LAST_OCCURRED_TIME");
-		createdTime.setModule(ModuleFactory.getSensorRollUpAlarmModule());
+		createdTime.setModule(ModuleFactory.getBaseAlarmModule());
 
 		FacilioView typeAlarms = new FacilioView();
 		typeAlarms.setName("unacknowledgedSensorAlarm");
@@ -7908,6 +7910,87 @@ public class ViewFactory {
 
 
 		return typeAlarms;
+	}
+	
+	private static FacilioView getSensorMeterAlarm() {
+		Criteria criteria = getSensorMeterAlarmCriteria();
+		
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("lastOccurredTime");	
+		createdTime.setDataType(FieldType.DATE_TIME);
+		createdTime.setColumnName("LAST_OCCURRED_TIME");
+		createdTime.setModule(ModuleFactory.getBaseAlarmModule());
+
+		FacilioView typeAlarms = new FacilioView();
+		typeAlarms.setName("sensorMeter");
+		typeAlarms.setDisplayName("Meter Alarms");
+		typeAlarms.setCriteria(criteria);
+		typeAlarms.setModuleName("sensorrollupalarm");
+		typeAlarms.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+
+		typeAlarms.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+
+		return typeAlarms;
+	}
+	
+	public static Criteria getSensorMeterAlarmCriteria() {
+		FacilioModule module = ModuleFactory.getSensorRollUpAlarmModule();
+		FacilioField field = new FacilioField();
+		field.setName("readingFieldId");
+		field.setColumnName("READING_FIELD_ID");
+		field.setDataType(FieldType.NUMBER);
+		field.setModule(module);
+
+		Condition condition = new Condition();
+		condition.setField(field);
+		condition.setOperator(CommonOperators.IS_EMPTY);
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(condition);
+		return criteria;
+		
+	}
+	
+	private static FacilioView getSensorNonMeterAlarm() {
+		Criteria criteria = getSensorNonMeterAlarmCriteria();
+		
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("lastOccurredTime");	
+		createdTime.setDataType(FieldType.DATE_TIME);
+		createdTime.setColumnName("LAST_OCCURRED_TIME");
+		createdTime.setModule(ModuleFactory.getBaseAlarmModule());
+
+		FacilioView typeAlarms = new FacilioView();
+		typeAlarms.setName("sensorNonMeter");
+		typeAlarms.setDisplayName("Sensor Alarms");
+		typeAlarms.setCriteria(criteria);
+		typeAlarms.setModuleName("sensorrollupalarm");
+		typeAlarms.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+
+		typeAlarms.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+
+		return typeAlarms;
+	}
+	
+	public static Criteria getSensorNonMeterAlarmCriteria() {
+		FacilioModule module = ModuleFactory.getSensorRollUpAlarmModule();
+		FacilioField field = new FacilioField();
+		field.setName("readingFieldId");
+		field.setColumnName("READING_FIELD_ID");
+		field.setDataType(FieldType.NUMBER);
+		field.setModule(module);
+
+		Condition condition = new Condition();
+		condition.setField(field);
+		condition.setOperator(CommonOperators.IS_NOT_EMPTY);
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(condition);
+		return criteria;
+		
+		
 	}
 
 }

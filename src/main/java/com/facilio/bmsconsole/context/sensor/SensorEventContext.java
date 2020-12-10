@@ -128,16 +128,10 @@ public class SensorEventContext extends BaseEventContext {
 		String eventMessage = new String();
 		if(!isMeterRollUpEvent) {
 			sensorRollUpEvent.setReadingFieldId(this.getReadingFieldId());
-			eventMessage = "Sensor Error Detected: " + sensorRule.getReadingField().getDisplayName() + " sensor of " + resource.getName();
+			eventMessage = "Faulty " + sensorRule.getReadingField().getDisplayName().toLowerCase() + " sensor of " + resource.getName().toLowerCase();
 		}
 		else {
-			eventMessage = "Faulty meter Detected: " + resource.getName();
-		}
-		
-		BaseSpaceContext spaceObj = new BaseSpaceContext();
-		if (resource.getSpaceId() > 0) {
-			spaceObj = SpaceAPI.getBaseSpace(resource.getSpaceId());
-			eventMessage = eventMessage + " in " + spaceObj.getName();
+			eventMessage = "Faulty " + resource.getName().toLowerCase();
 		}
 		
 		sensorRollUpEvent.setEventMessage(eventMessage);

@@ -31,7 +31,7 @@ public class ValidatePermissibleLimitViolationInSensorRule implements SensorRule
 		JSONObject defaultProps = new JSONObject();
 		defaultProps.put("subject", "Out of range");
 		defaultProps.put("comment", "Current Reading doesn't lie between the limits of the reading field.");
-		defaultProps.put("severity", FacilioConstants.Alarm.CRITICAL_SEVERITY);
+		defaultProps.put("severity", FacilioConstants.Alarm.WARNING_SEVERITY);
 		return defaultProps;
 	}
 

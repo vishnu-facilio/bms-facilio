@@ -29,7 +29,7 @@ public class ValidateNegativeValueInSensorRule implements SensorRuleTypeValidati
 		JSONObject defaultProps = new JSONObject();
 		defaultProps.put("subject", "Negative meter readings");
 		defaultProps.put("comment", "Counter Field readings seems to have negative readings.");
-		defaultProps.put("severity", FacilioConstants.Alarm.CRITICAL_SEVERITY);
+		defaultProps.put("severity", FacilioConstants.Alarm.WARNING_SEVERITY);
 		return defaultProps;
 	}
 

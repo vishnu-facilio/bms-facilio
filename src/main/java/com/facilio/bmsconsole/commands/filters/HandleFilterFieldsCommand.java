@@ -136,7 +136,7 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
                 ).collect(Collectors.toList());
     }
 
-    private static final List<String> SENSOR_ALARM_FIELDS_TO_HIDE = Arrays.asList(new String[] {"readingFieldId", "type"});
+    private static final List<String> SENSOR_ALARM_FIELDS_TO_HIDE = Arrays.asList(new String[] {"readingFieldId", "type", "noOfNotes", "lastWoId", "lastOccurrenceId", "key", "description", "noOfOccurrences"});
     private List<FacilioField> filterModuleFields (FacilioModule module, List<FacilioField> fields) {
         if (AssetsAPI.isAssetsModule(module)) {
             return filterOutFields(fields, FieldFactory.Fields.assetFieldsInclude, true);

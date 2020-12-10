@@ -32,9 +32,9 @@ public class ValidateSameValueWithZeroDeltaInSensorRule implements SensorRuleTyp
 	@Override
 	public JSONObject getDefaultSeverityAndSubject() {
 		JSONObject defaultProps = new JSONObject();
-		defaultProps.put("subject", "All match");
+		defaultProps.put("subject", "No change in value");
 		defaultProps.put("comment", "Counter Field readings seems to have equal readings.");
-		defaultProps.put("severity", FacilioConstants.Alarm.CRITICAL_SEVERITY);
+		defaultProps.put("severity", FacilioConstants.Alarm.WARNING_SEVERITY);
 		return defaultProps;
 	}
 	

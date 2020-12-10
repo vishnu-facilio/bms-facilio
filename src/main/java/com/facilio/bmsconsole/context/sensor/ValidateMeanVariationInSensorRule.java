@@ -35,7 +35,7 @@ public class ValidateMeanVariationInSensorRule implements SensorRuleTypeValidati
 		JSONObject defaultProps = new JSONObject();
 		defaultProps.put("subject", "Abnormal energy reading ");
 		defaultProps.put("comment", "Counter Field readings seems to high delta difference.");
-		defaultProps.put("severity", FacilioConstants.Alarm.CRITICAL_SEVERITY);
+		defaultProps.put("severity", FacilioConstants.Alarm.WARNING_SEVERITY);
 		return defaultProps;
 	}
 	

@@ -172,7 +172,7 @@ public class SensorRollUpUtil {
 		//sensor_alarms
 		FacilioModule sensorAlarmModule = new FacilioModule();
 		sensorAlarmModule.setName("sensoralarm");
-		sensorAlarmModule.setDisplayName("Sensor Alarm");
+		sensorAlarmModule.setDisplayName("Sensor Child Alarm");
 		sensorAlarmModule.setTableName("SensorAlarm");
 		sensorAlarmModule.setType(FacilioModule.ModuleType.BASE_ENTITY);
 		sensorAlarmModule.setExtendModule(baseAlarmModule);
@@ -215,7 +215,7 @@ public class SensorRollUpUtil {
 		//sensor_rollup_alarms
 		FacilioModule sensorrollupalarm = new FacilioModule();
 		sensorrollupalarm.setName("sensorrollupalarm");
-		sensorrollupalarm.setDisplayName("Sensor RollUp Alarm");
+		sensorrollupalarm.setDisplayName("Sensor Alarm");
 		sensorrollupalarm.setTableName("SensorRollUpAlarm");
 		sensorrollupalarm.setType(FacilioModule.ModuleType.BASE_ENTITY);
 		sensorrollupalarm.setExtendModule(baseAlarmModule);

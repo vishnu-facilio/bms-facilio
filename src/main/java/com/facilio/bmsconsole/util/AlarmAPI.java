@@ -1125,16 +1125,17 @@ public class AlarmAPI {
 		
 		}
 		if (startTime > 0 && endTime > 0) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("lastCreatedTime"), startTime+","+endTime, DateOperators.BETWEEN));
-//			Criteria criteria = new Criteria();
-//			criteria.addAndCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", "" + endTime, NumberOperators.LESS_THAN_EQUAL));
-//			
-//			Criteria subCriteria = new Criteria();
-//			subCriteria.addOrCondition(CriteriaAPI.getCondition("CLEARED_TIME", "clearedTime", "" + startTime, NumberOperators.GREATER_THAN_EQUAL));
-//			subCriteria.addOrCondition(CriteriaAPI.getCondition("CLEARED_TIME", "clearedTime", "", CommonOperators.IS_EMPTY));
-//			criteria.andCriteria(subCriteria);
-//			
-//			selectBuilder.andCriteria(criteria);
+	
+			Criteria criteria = new Criteria();
+			criteria.addAndCondition(CriteriaAPI.getCondition("LAST_CREATED_TIME", "lastCreatedTime", "" + endTime, NumberOperators.LESS_THAN_EQUAL));
+			
+			Criteria subCriteria = new Criteria();
+			subCriteria.addOrCondition(CriteriaAPI.getCondition("LAST_CLEARED_TIME", "lastClearedTime", "" + startTime, NumberOperators.GREATER_THAN_EQUAL));
+			subCriteria.addOrCondition(CriteriaAPI.getCondition("LAST_CLEARED_TIME", "lastClearedTime", "", CommonOperators.IS_EMPTY));
+			criteria.andCriteria(subCriteria);
+			
+			
+			selectBuilder.andCriteria(criteria);
 		}
 		List<SensorAlarmContext> alarms = selectBuilder.get();
 		return alarms;
@@ -1158,7 +1159,6 @@ public class AlarmAPI {
 				.module(module)
 				.beanClass(NewAlarmAPI.getOccurrenceClass(alarmOccurrenceType))
 				.moduleName(NewAlarmAPI.getOccurrenceModuleName(alarmOccurrenceType))
-				.andCondition(CriteriaAPI.getCondition("ALARM_ID", "alarm", "" + id, NumberOperators.EQUALS))
 				;
 		
 		
@@ -1199,9 +1199,43 @@ public class AlarmAPI {
 				long differenceInDuration = (occurrence.getClearedTime() - range.getStartTime());
 				BigDecimal bigD = new BigDecimal(differenceInDuration);
 				bigD =  BigDecimal.valueOf(differenceInDuration);
-				duration = duration.add(bigD);
+				if (duration != null) {
+					duration = duration.add(bigD);
+				}else {
+					duration = bigD;
+				}
 			}
 		}	
+		
+		SelectRecordsBuilder<AlarmOccurrenceContext> selectBuilderLastRecord = new SelectRecordsBuilder<AlarmOccurrenceContext>()
+				.select(allFields)
+				.module(module)
+				.beanClass(NewAlarmAPI.getOccurrenceClass(alarmOccurrenceType))
+				.moduleName(NewAlarmAPI.getOccurrenceModuleName(alarmOccurrenceType))
+				.andCondition(CriteriaAPI.getCondition("ALARM_ID", "alarm", "" + id, NumberOperators.EQUALS))
+				;		
+		selectBuilderLastRecord.andCriteria(criteria);	
+		selectBuilderLastRecord.orderBy("CREATED_TIME " + "DESC");
+		selectBuilderLastRecord.limit(1);
+		
+		
+		
+		List<AlarmOccurrenceContext> propLastRecord = selectBuilderLastRecord.get();
+		
+		if(propLastRecord != null && !propLastRecord.isEmpty()) {
+			AlarmOccurrenceContext occurrence = (AlarmOccurrenceContext) prop.get(0);
+			if (occurrence.getCreatedTime() > range.getStartTime() && occurrence.getClearedTime() == -1) {
+				long differenceInDuration = (occurrence.getCurrentTime() - occurrence.getCreatedTime());
+				BigDecimal bigD = new BigDecimal(differenceInDuration);
+				bigD =  BigDecimal.valueOf(differenceInDuration);
+				if (duration != null) {
+					duration = duration.add(bigD);
+				}else {
+					duration = bigD;
+				}
+				
+			}
+		}
 		
 		
 		

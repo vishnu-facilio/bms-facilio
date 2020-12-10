@@ -94,6 +94,19 @@ public class ColumnFactory {
 		columnMap.put("bmsalarm-major",  getDefaultBmsAlarmColumns());
 		columnMap.put("bmsalarm-minor",  getDefaultBmsAlarmColumns());
 		columnMap.put("bmsalarm-cleared",  getDefaultBmsAlarmColumns());
+	
+		
+		//sensorAlarm		
+		columnMap.put("sensorrollupalarm-default", getDefaultSensorAlarmColumns());
+		columnMap.put("sensorrollupalarm-sensorAlarm",  getDefaultSensorAlarmColumns());
+		columnMap.put("sensorrollupalarm-sensorActive",  getDefaultSensorAlarmColumns());
+		columnMap.put("sensorrollupalarm-unacknowledgedSensorAlarm",  getDefaultSensorAlarmColumns());
+		columnMap.put("sensorrollupalarm-sensorCritical",  getDefaultSensorAlarmColumns());
+		columnMap.put("sensorrollupalarm-sensorMajor",  getDefaultSensorAlarmColumns());
+		columnMap.put("sensorrollupalarm-sensorMinor",  getDefaultSensorAlarmColumns());
+		columnMap.put("sensorrollupalarm-sensorCleared",  getDefaultSensorAlarmColumns());
+		columnMap.put("sensorrollupalarm-sensorMeter",  getDefaultSensorAlarmColumns());
+		columnMap.put("sensorrollupalarm-sensorNonMeter",  getDefaultSensorAlarmColumns());
 
 		// agent Alarm
 
@@ -878,6 +891,23 @@ public class ColumnFactory {
 		columns.add(new ViewField("acknowledged", "Acknowledged"));
 		columns.add(new ViewField("noOfOccurrences", "Occurrences"));
 		columns.add(new ViewField("lastCreatedTime", "Last Occurred Time"));
+		return columns;
+	}
+	
+	private static List<ViewField> getDefaultSensorAlarmColumns() {
+		
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("severity", "Severity"));
+		columns.add(new ViewField("subject", "Message"));
+		columns.add(new ViewField("readingFieldId", "Reading Field"));
+		columns.add(new ViewField("resource", "Resource"));
+		columns.add(new ViewField("siteId", "Site"));
+		columns.add(new ViewField("acknowledged", "Acknowledged"));
+		columns.add(new ViewField("lastOccurredTime", "Last Reported Time"));
+		columns.add(new ViewField("acknowledgedBy", "Acknowledged By"));
+		columns.add(new ViewField("noOfOccurrences", "Occurrences"));
+		columns.add(new ViewField("lastCreatedTime", "Last Occurred Time"));
+		
 		return columns;
 	}
 

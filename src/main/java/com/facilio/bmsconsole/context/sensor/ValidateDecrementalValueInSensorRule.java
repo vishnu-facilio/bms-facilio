@@ -36,7 +36,7 @@ public class ValidateDecrementalValueInSensorRule implements SensorRuleTypeValid
 		JSONObject defaultProps = new JSONObject();
 		defaultProps.put("subject", "Decremental meter readings");
 		defaultProps.put("comment", "Counter Field readings seems to be non-incremental.");
-		defaultProps.put("severity", FacilioConstants.Alarm.CRITICAL_SEVERITY);
+		defaultProps.put("severity", FacilioConstants.Alarm.WARNING_SEVERITY);
 		return defaultProps;
 	}
 	

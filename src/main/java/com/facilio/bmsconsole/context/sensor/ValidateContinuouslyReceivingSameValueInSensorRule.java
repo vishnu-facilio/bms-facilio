@@ -33,9 +33,9 @@ public class ValidateContinuouslyReceivingSameValueInSensorRule implements Senso
 	@Override
 	public JSONObject getDefaultSeverityAndSubject() {
 		JSONObject defaultProps = new JSONObject();
-		defaultProps.put("subject", "All match ");
+		defaultProps.put("subject", "No change in value ");
 		defaultProps.put("comment", "Same reading is received continuously for a long time.");
-		defaultProps.put("severity", FacilioConstants.Alarm.CRITICAL_SEVERITY);
+		defaultProps.put("severity", FacilioConstants.Alarm.WARNING_SEVERITY);
 		return defaultProps;
 	}
 

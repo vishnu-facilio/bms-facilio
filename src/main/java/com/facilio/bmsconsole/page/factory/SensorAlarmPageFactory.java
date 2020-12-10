@@ -1,14 +1,18 @@
 package com.facilio.bmsconsole.page.factory;
 
+import org.json.simple.JSONObject;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.ReadingAlarm;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.sensor.SensorRollUpAlarmContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.Page.Tab;
 import com.facilio.bmsconsole.page.PageWidget.WidgetType;
+import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 
@@ -21,6 +25,9 @@ public class SensorAlarmPageFactory extends PageFactory {
         page.addTab(tab1);
         Section tab1Sec1 = page.new Section();
         tab1.addSection(tab1Sec1);
+        if (alarms.getLastWoId() > 0 || (alarms.getLastOccurrence().getAcknowledged() != null && alarms.getLastOccurrence().getAcknowledged())) {
+            addTimeLineWidget(tab1Sec1, alarms);
+        }
         addAlarmDetailsWidget(tab1Sec1);
         addAssetAlarmDetailsWidget(tab1Sec1);
         addAlarmReport(tab1Sec1,alarms.getLastOccurrence());
@@ -69,6 +76,26 @@ public class SensorAlarmPageFactory extends PageFactory {
 	        PageWidget occurrenceListWidget = new PageWidget(PageWidget.WidgetType.OCCURRENCE_HISTORY);
 	        section.addWidget(occurrenceListWidget);
 	        return occurrenceListWidget;
+	    }
+	 
+	 protected  static  void  addTimeLineWidget(Page.Section section, SensorRollUpAlarmContext alarms) throws Exception {
+	        JSONObject activities = new JSONObject();
+	        int widgetHeight = 0;
+	        if (alarms.getLastOccurrence() != null) {
+	            if (alarms.getLastWoId() > 0) {
+	                WorkOrderContext wo = WorkOrderAPI.getWorkOrder(alarms.getLastWoId());
+	                activities.put("workOrder", wo);
+	                widgetHeight = widgetHeight + 2;
+	            }
+	            if (alarms.getLastOccurrence().getAcknowledged() != null && alarms.getLastOccurrence().getAcknowledged()) {
+	                activities.put("acknowledge", alarms.getLastOccurrence().getAcknowledgedBy());
+	                widgetHeight = widgetHeight + 2;
+	            }
+	        }
+	        PageWidget pageWidget = new PageWidget(PageWidget.WidgetType.ALARM_TIME_LINE);
+	        pageWidget.addToLayoutParams(section, 24, widgetHeight);
+	        pageWidget.setRelatedList(activities);
+	        section.addWidget(pageWidget);
 	    }
 
 }
