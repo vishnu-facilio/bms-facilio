@@ -283,6 +283,22 @@ public class FacilioAuthAction extends FacilioAction {
 		this.appDomainName = appDomainName;
 	}
 
+	private String dbName;
+	public String getDbName() {
+		return dbName;
+	}
+	public void setDbName(String dbName) {
+		this.dbName = dbName;
+	}
+
+	private String dataSource;
+	public String getDataSource() {
+		return dataSource;
+	}
+	public void setDataSource(String dataSource) {
+		this.dataSource = dataSource;
+	}
+
 	public String signupUser() throws Exception {
 
 		LOGGER.info("signupUser() : username :" + getUsername() + ", password :" + getPassword() + ", email : "
@@ -301,6 +317,8 @@ public class FacilioAuthAction extends FacilioAction {
 		signupInfo.put("timezone", getTimezone());
 		signupInfo.put("servername", request.getServerName());
 		signupInfo.put("password", password);
+		signupInfo.put("dataSource", dataSource);
+		signupInfo.put("dbName", dbName);
 		FacilioContext signupContext = new FacilioContext();
 		signupContext.put(FacilioConstants.ContextNames.SIGNUP_INFO, signupInfo);
 		Locale locale = request.getLocale();

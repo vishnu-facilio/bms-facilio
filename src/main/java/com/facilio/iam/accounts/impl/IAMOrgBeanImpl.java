@@ -237,8 +237,8 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
     		return iamAccount;
 		}
 		return null;
-	} 
-	
+	}
+
 	private Organization addOrg(org.json.simple.JSONObject signupInfo, Locale locale) throws Exception{
     	String companyName = (String) signupInfo.get("companyname");
 		String orgDomain = (String) signupInfo.get("domainname");
@@ -271,7 +271,16 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		org.setTimezone(timezone);
 		org.setCreatedTime(System.currentTimeMillis());
 
-		if (FacilioProperties.isProduction() && !FacilioProperties.isOnpremise()) {
+		String dataSource = (String) signupInfo.get("dataSource");
+		if (StringUtils.isNotEmpty(dataSource)) {
+			org.setDataSource(dataSource);
+		}
+
+		String dbName = (String) signupInfo.get("dbName");
+		if (StringUtils.isNotEmpty(dbName)) {
+			org.setDbName(dbName);
+		}
+		else if (FacilioProperties.isProduction() && !FacilioProperties.isOnpremise()) {
 			org.setDbName("bms_3");
 		}
 		
