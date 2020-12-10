@@ -26,19 +26,19 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsoleV3.context.AssetDepartmentContext;
 import com.facilio.bmsconsole.context.AssetMovementContext;
 import com.facilio.bmsconsole.context.AssetTypeContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.PhotosContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.ToolContext;
-import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsoleV3.context.AssetDepartmentContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -56,7 +56,6 @@ import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -427,6 +426,7 @@ public class AssetsAPI {
 				.select(modBean.getAllFields(FacilioConstants.ContextNames.ASSET_CATEGORY))
 				.moduleName(FacilioConstants.ContextNames.ASSET_CATEGORY)
 				.beanClass(AssetCategoryContext.class)
+				.skipModuleCriteria()
 				.andCustomWhere("DISPLAY_NAME = ?", name);
 
 		List<AssetCategoryContext> categories = selectBuilder.get();
@@ -444,6 +444,7 @@ public class AssetsAPI {
 																		.select(modBean.getAllFields(FacilioConstants.ContextNames.ASSET_CATEGORY))
 																		.moduleName(FacilioConstants.ContextNames.ASSET_CATEGORY)
 																		.beanClass(AssetCategoryContext.class)
+																		.skipModuleCriteria()
 																		.andCustomWhere("NAME = ?", name);
 		
 		List<AssetCategoryContext> categories = selectBuilder.get();
@@ -582,6 +583,7 @@ public class AssetsAPI {
 																		.select(modBean.getAllFields(FacilioConstants.ContextNames.ASSET_CATEGORY))
 																		.module(module)
 																		.beanClass(AssetCategoryContext.class)
+																		.skipModuleCriteria()
 																		.andCondition(CriteriaAPI.getIdCondition(categoryId, module));
 		List<AssetCategoryContext> assetList = selectBuilder.get();
 		if (assetList != null && !assetList.isEmpty()) {
