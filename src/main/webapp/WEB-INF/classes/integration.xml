@@ -106,6 +106,16 @@
 		</result>
 	</action>
 
+	<action name="assertDomainWithDigest" class="com.facilio.auth.actions.FacilioAuthAction" method="assertDomainWithDigest">
+		<param name="auth">false</param>
+		<result name="success" type="json">
+			<param name="includeProperties">jsonresponse.*</param>
+		</result>
+		<result name="error" type="json">
+			<param name="includeProperties">jsonresponse.*</param>
+		</result>
+	</action>
+
 	<action name="domainDetails" class="com.facilio.auth.actions.FacilioAuthAction" method="domainDetails">
 		<param name="auth">false</param>
 		<result name="success" type="json">

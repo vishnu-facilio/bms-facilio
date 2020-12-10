@@ -216,6 +216,10 @@ public class IAMUserUtil {
 	public static String getEmailFromDigest(String digest) throws Exception {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getEmailFromDigest(digest));
 	}
+
+	public static String validateDigestAndDomain(String domain, String digest, AppDomain.GroupType groupType) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().validateDigestAndDomain(domain, digest, groupType));
+	}
 	
 	public static IAMAccount verifiyFacilioTokenv3(String idToken, boolean overrideSessionCheck, String userType)
 			throws Exception {
@@ -319,6 +323,10 @@ public class IAMUserUtil {
 
 	public static boolean clearUserMfaSettings(long userId) throws Exception{
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().clearUserMfaSettings(userId));
+	}
+
+	public static  List<Map<String, Object>> getUserData(String username, AppDomain.GroupType groupType) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserData(username, groupType));
 	}
 	
 }

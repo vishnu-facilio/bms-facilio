@@ -17,6 +17,7 @@ import com.facilio.accounts.dto.*;
 import com.facilio.accounts.sso.AccountSSO;
 import com.facilio.accounts.sso.SSOUtil;
 import com.facilio.db.criteria.operators.*;
+import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -615,7 +616,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			domains.add(org.getDomain());
 		}
 
-		result.put("domains", domains);
+		result.put("domainLookupRequired", domains.size() > 1);
 		result.put("loginModes", loginModes);
 
 		String jwt = createJWT("id", "auth0", userName, System.currentTimeMillis());
@@ -1765,7 +1766,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return (Boolean) props.get(0).get("password");
 	}
 
-	private List<Map<String, Object>> getUserData(String username, AppDomain.GroupType groupType) throws Exception {
+	public List<Map<String, Object>> getUserData(String username, AppDomain.GroupType groupType) throws Exception {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(IAMAccountConstants.getAccountsUserFields());
 		fields.addAll(IAMAccountConstants.getAccountsOrgUserFields());
@@ -2130,6 +2131,23 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		updateBuilder.update(props);
 
 		return true;
+	}
+
+	public String validateDigestAndDomain(String domain, String digest, AppDomain.GroupType groupType) throws Exception {
+		String emailFromDigest = IAMUserUtil.getEmailFromDigest(digest);
+		List<Map<String, Object>> userData = getUserData(emailFromDigest, groupType);
+		if (CollectionUtils.isEmpty(userData)) {
+			return null;
+		}
+		List<Long> orgIds = new ArrayList<>();
+		userData.forEach(i -> orgIds.add((long) i.get("orgId")));
+		for (long orgId: orgIds) {
+			Organization org = IAMOrgUtil.getOrg(orgId);
+			if (org.getDomain().equalsIgnoreCase(domain.trim())) {
+				return org.getDomain();
+			}
+		}
+		return null;
 	}
 		
 }

@@ -26,12 +26,12 @@ import javax.servlet.http.HttpSession;
 import com.facilio.bmsconsole.util.AESEncryption;
 import com.facilio.iam.accounts.util.*;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.amazonaws.util.StringUtils;
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.AppDomain.AppDomainType;
@@ -348,6 +348,27 @@ public class FacilioAuthAction extends FacilioAction {
 		return this.lookUpType;
 	}
 
+	public String assertDomainWithDigest() {
+		try {
+			AppDomain.GroupType groupType;
+			if (getLookUpType().equalsIgnoreCase("service") || getLookUpType().equalsIgnoreCase("tenant")) {
+				groupType = AppDomain.GroupType.TENANT_OCCUPANT_PORTAL;
+			} else {
+				groupType = AppDomain.GroupType.FACILIO;
+			}
+			String domain = IAMUserUtil.validateDigestAndDomain(getDomain(), getDigest(), groupType);
+			if (org.apache.commons.lang3.StringUtils.isEmpty(domain)) {
+				setJsonresponse("code", 2);
+			} else {
+				setJsonresponse("code", 1);
+			}
+		} catch (Exception e) {
+			setJsonresponse("code", 3);
+			return ERROR;
+		}
+		return SUCCESS;
+	}
+
 	public String servicelookup() {
 		String username = getUsername();
 		AppDomain.GroupType groupType = AppDomain.GroupType.TENANT_OCCUPANT_PORTAL;
@@ -363,7 +384,7 @@ public class FacilioAuthAction extends FacilioAction {
 	}
 
 	public String lookup() {
-		if (!StringUtils.isNullOrEmpty(getLookUpType())) {
+		if (!StringUtils.isEmpty(getLookUpType())) {
 			if (getLookUpType().equals("service")) {
 				return servicelookup();
 			} else if (getLookUpType().equals("tenant")) {
@@ -416,7 +437,7 @@ public class FacilioAuthAction extends FacilioAction {
 			return ERROR;
 		}
 
-		if (StringUtils.isNullOrEmpty(emailFromDigest) || StringUtils.isNullOrEmpty(getPassword())) {
+		if (StringUtils.isEmpty(emailFromDigest) || StringUtils.isEmpty(getPassword())) {
 			setJsonresponse("message", "Invalid username or password");
 			return ERROR;
 		}
@@ -426,10 +447,25 @@ public class FacilioAuthAction extends FacilioAction {
 			);
 			String authtoken = null;
 			AppDomain appdomainObj = null;
-			Organization org = IAMOrgUtil.getOrg(getDomain());
+			Organization org = null;
+			if (StringUtils.isNotEmpty(getDomain())) {
+				org = IAMOrgUtil.getOrg(getDomain());
+			}
 			if (getLookUpType().equalsIgnoreCase("service")) {
+				if (org == null) {
+					List<Map<String, Object>> userData = IAMUserUtil.getUserData(emailFromDigest, AppDomain.GroupType.TENANT_OCCUPANT_PORTAL);
+					List<Long> orgIds = new ArrayList<>();
+					userData.forEach(i -> orgIds.add((long) i.get("orgId")));
+					org = IAMOrgUtil.getOrg(orgIds.get(0));
+				}
 				appdomainObj = IAMAppUtil.getAppDomainForType(2, org.getOrgId()).get(0);
 			} else if (getLookUpType().equalsIgnoreCase("tenant")) {
+				if (org == null) {
+					List<Map<String, Object>> userData = IAMUserUtil.getUserData(emailFromDigest, AppDomain.GroupType.TENANT_OCCUPANT_PORTAL);
+					List<Long> orgIds = new ArrayList<>();
+					userData.forEach(i -> orgIds.add((long) i.get("orgId")));
+					org = IAMOrgUtil.getOrg(orgIds.get(0));
+				}
 				appdomainObj = IAMAppUtil.getAppDomainForType(3, org.getOrgId()).get(0);
 			}
 
@@ -468,7 +504,7 @@ public class FacilioAuthAction extends FacilioAction {
 	}
 
 	public String loginWithPasswordAndDigest() throws Exception {
-		if (!StringUtils.isNullOrEmpty(getLookUpType())) {
+		if (!StringUtils.isEmpty(getLookUpType())) {
 			if (getLookUpType().equals("service") || getLookUpType().equalsIgnoreCase("tenant")) {
 				return serviceLoginWithPasswordAndDigest();
 			}
@@ -559,7 +595,7 @@ public class FacilioAuthAction extends FacilioAction {
 				ipAddress = (ipAddress == null || "".equals(ipAddress.trim())) ? request.getRemoteAddr() : ipAddress;
                 String userType = "web";
 				String deviceType = request.getHeader("X-Device-Type");
-				if (!StringUtils.isNullOrEmpty(deviceType)
+				if (!StringUtils.isEmpty(deviceType)
 						&& ("android".equalsIgnoreCase(deviceType) || "ios".equalsIgnoreCase(deviceType) || "webview".equalsIgnoreCase(deviceType))) {
 					userType = "mobile";
 				}
@@ -640,7 +676,7 @@ public class FacilioAuthAction extends FacilioAction {
 				String domainName = "app";
 				if (domainNameArray.length > 2) {
 					String awsDomain = FacilioProperties.getDomain();
-					if(StringUtils.isNullOrEmpty(awsDomain)) {
+					if(StringUtils.isEmpty(awsDomain)) {
 						awsDomain = "facilio";
 					}
 					if(!domainNameArray[1].equals(awsDomain) ) {
@@ -651,7 +687,7 @@ public class FacilioAuthAction extends FacilioAction {
 				ipAddress = (ipAddress == null || "".equals(ipAddress.trim())) ? request.getRemoteAddr() : ipAddress;
 	            String userType = "web";
 				String deviceType = request.getHeader("X-Device-Type");
-				if (!StringUtils.isNullOrEmpty(deviceType)
+				if (!StringUtils.isEmpty(deviceType)
 						&& ("android".equalsIgnoreCase(deviceType) || "ios".equalsIgnoreCase(deviceType))) {
 					userType = "mobile";
 				}
@@ -754,7 +790,7 @@ public class FacilioAuthAction extends FacilioAction {
 				String domainName = "app";
 				if (domainNameArray.length > 2) {
 					String awsDomain = FacilioProperties.getDomain();
-					if(StringUtils.isNullOrEmpty(awsDomain)) {
+					if(StringUtils.isEmpty(awsDomain)) {
 						awsDomain = "facilio";
 					}
 					if(!domainNameArray[1].equals(awsDomain) ) {
@@ -765,7 +801,7 @@ public class FacilioAuthAction extends FacilioAction {
 				ipAddress = (ipAddress == null || "".equals(ipAddress.trim())) ? request.getRemoteAddr() : ipAddress;
 	            String userType = "web";
 				String deviceType = request.getHeader("X-Device-Type");
-				if (!StringUtils.isNullOrEmpty(deviceType)
+				if (!StringUtils.isEmpty(deviceType)
 						&& ("android".equalsIgnoreCase(deviceType) || "ios".equalsIgnoreCase(deviceType))) {
 					userType = "mobile";
 				}
@@ -1192,7 +1228,7 @@ public class FacilioAuthAction extends FacilioAction {
 			
 			String userType = "web";
 			String deviceType = request.getHeader("X-Device-Type");
-			if (!StringUtils.isNullOrEmpty(deviceType)
+			if (!StringUtils.isEmpty(deviceType)
 					&& ("android".equalsIgnoreCase(deviceType) || "ios".equalsIgnoreCase(deviceType))) {
 				userType = "mobile";
 			}

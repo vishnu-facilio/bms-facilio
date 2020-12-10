@@ -148,4 +148,8 @@ public interface IAMUserBean {
 	public void updateUserMfaSettingsStatus(long userId, boolean value) throws Exception;
 
 	public boolean clearUserMfaSettings(long userId) throws Exception;
+
+	String validateDigestAndDomain(String domain, String digest, AppDomain.GroupType groupType) throws Exception;
+
+	List<Map<String, Object>> getUserData(String username, AppDomain.GroupType groupType) throws Exception;
 }
