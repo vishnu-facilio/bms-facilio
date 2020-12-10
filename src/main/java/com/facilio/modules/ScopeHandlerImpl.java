@@ -39,7 +39,7 @@ public class ScopeHandlerImpl extends ScopeHandler {
     @Override
     public Collection<FacilioField> updateValuesForInsertAndGetFields(FacilioModule module, List<Map<String, Object>> props) {
         try {
-			if (AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING) && AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomain.AppDomainType.TENANT_PORTAL){
+			if (AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING) && AccountUtil.getCurrentUser().getAppDomain() != null && (AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomain.AppDomainType.TENANT_PORTAL || AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomain.AppDomainType.VENDOR_PORTAL)){
 				ScopeFieldsAndCriteria scopeFields = constructScopingFieldsAndCriteria(module, null, true);
 				if(scopeFields != null) {
 					Collection<FacilioField> fields = scopeFields.getFields();
@@ -69,7 +69,7 @@ public class ScopeHandlerImpl extends ScopeHandler {
     @Override
     public ScopeFieldsAndCriteria updateValuesForUpdateAndGetFieldsAndCriteria (FacilioModule module, Collection<FacilioModule> joinModules, Map<String, Object> prop) {
         try {
-        	if(AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING) && AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomain.AppDomainType.TENANT_PORTAL) {
+        	if(AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING) && AccountUtil.getCurrentUser().getAppDomain() != null && (AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomain.AppDomainType.TENANT_PORTAL || AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomain.AppDomainType.VENDOR_PORTAL)) {
         		Map<Long, Map<String, Object>> scopingMap = AccountUtil.getCurrentAppScopingMap();
 				if(MapUtils.isNotEmpty(scopingMap)) {
 					Map<String, Object> moduleScoping = scopingMap.get(module.getModuleId());
@@ -119,7 +119,7 @@ public class ScopeHandlerImpl extends ScopeHandler {
     @Override
     public ScopeFieldsAndCriteria getFieldsAndCriteriaForSelect(FacilioModule module, Collection<FacilioModule> joinModules) {
         try {
-			if(AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING) && AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomain.AppDomainType.TENANT_PORTAL) {
+			if(AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING) && AccountUtil.getCurrentUser().getAppDomain() != null && (AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomain.AppDomainType.TENANT_PORTAL || AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomain.AppDomainType.VENDOR_PORTAL)) {
 				return constructScopingFieldsAndCriteria(module, joinModules, false);
 			}
 			else {
