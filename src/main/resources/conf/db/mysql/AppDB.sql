@@ -3635,7 +3635,7 @@ CREATE TABLE IF NOT EXISTS Assets
     MODULEID                    BIGINT  NOT NULL,
     STATE                       TINYINT,
     ASSET_TYPE                  BIGINT,
-    CATEGORY                    BIGINT,
+    CATEGORY                    BIGINT NOT NULL,
     PARENT_ASSET_ID             BIGINT,
     DEPARTMENT_ID               BIGINT,
     MANUFACTURER                VARCHAR(100),
