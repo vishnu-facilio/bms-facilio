@@ -637,8 +637,9 @@ public class ViewFactory {
 		views.put("invite_all", getAllVisitorInvitesView().setOrder(order++));
 		views.put("invite_myInvites", getActiveVisitorInvites().setOrder(order++));
 		views.put("invite_myExpired", getExpiredVisitorInvites().setOrder(order++)); // 3
-		views.put("myExpired", getMyExpiredVisitorInvites().setOrder(order++)); // 3
-		views.put("myActive", getMyActiveVisitorInvites().setOrder(order++));
+		// views for vendor portal
+		views.put("invite_vendorActiveVisitors", getVendorUpcomingVisitorLogsView().setOrder(order++)); // 1
+		views.put("invite_vendorExpired", getVendorExpiredVisitorInvites().setOrder(order++)); // 4
 
 		viewsMap.put(FacilioConstants.ContextNames.VISITOR_INVITE, views);
 		
@@ -4146,12 +4147,8 @@ public class ViewFactory {
 	private static FacilioView getMyExpiredVisitorInvites() {
 
 		Criteria criteria = new Criteria();
-	//ß	criteria.addAndCondition(getMyVistorInvitesCondition());
 		criteria.addAndCondition(getExpiredInvitesCondition());
-//		FacilioField checkin = FieldFactory.getField("checkInTime","CHECKIN_TIME", FieldType.DATE_TIME);
-//		criteria.addAndCondition(CriteriaAPI.getCondition(checkin, CommonOperators.IS_EMPTY));
 		FacilioField expectedCheckin = FieldFactory.getField("expectedCheckInTime","EXPECTED_CHECKIN_TIME", FieldType.DATE_TIME);
-//		criteria.addAndCondition(CriteriaAPI.getCondition(expectedCheckin, DateOperators.TILL_NOW));
 
 		List<SortField> sortFields = Arrays.asList(new SortField(expectedCheckin, true));
 
@@ -4172,10 +4169,7 @@ public class ViewFactory {
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(getMyVistorInvitesCondition());
 		criteria.addAndCondition(getExpiredInvitesCondition());
-//		FacilioField checkin = FieldFactory.getField("checkInTime","CHECKIN_TIME", FieldType.DATE_TIME);
-//		criteria.addAndCondition(CriteriaAPI.getCondition(checkin, CommonOperators.IS_EMPTY));
 		FacilioField expectedCheckin = FieldFactory.getField("expectedCheckInTime","EXPECTED_CHECKIN_TIME", FieldType.DATE_TIME);
-//		criteria.addAndCondition(CriteriaAPI.getCondition(expectedCheckin, DateOperators.TILL_NOW));
 		criteria.addAndCondition(getPreregisteredCondition());
 
 		List<SortField> sortFields = Arrays.asList(new SortField(expectedCheckin, true));
@@ -4204,7 +4198,7 @@ public class ViewFactory {
 		List<SortField> sortFields = Arrays.asList(new SortField(expectedCheckin, true));
 
 		FacilioView myVisitorInvitesView = new FacilioView();
-		myVisitorInvitesView.setName("vendorExpired");
+		myVisitorInvitesView.setName("invite_vendorExpired");
 		myVisitorInvitesView.setDisplayName("Expired");
 		myVisitorInvitesView.setCriteria(criteria);
 		myVisitorInvitesView.setSortFields(sortFields);
@@ -6443,7 +6437,7 @@ public class ViewFactory {
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, true));
 		
 		FacilioView allView = new FacilioView();
-		allView.setName("vendorActiveVisitors");
+		allView.setName("invite_vendorActiveVisitors");
 		allView.setDisplayName("Active");
 		allView.setCriteria(criteria);
 		allView.setSortFields(sortFields);
