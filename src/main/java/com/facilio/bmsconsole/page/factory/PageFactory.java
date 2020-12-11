@@ -18,6 +18,8 @@ import com.facilio.bmsconsoleV3.context.communityfeatures.NeighbourhoodContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.NewsAndInformationContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnnouncementContext;
+import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
+import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Criteria;
@@ -117,9 +119,9 @@ public class PageFactory {
 			case ContextNames.Budget.BUDGET:
 				return BudgetPageFactory.getBudgetPage();
 			case ContextNames.PURCHASE_REQUEST:
-				return PurchaseModulesPageFactory.getPrPage((PurchaseRequestContext) record, module);
+				return PurchaseModulesPageFactory.getPrPage((V3PurchaseRequestContext) record, module);
 			case ContextNames.PURCHASE_ORDER:
-				return PurchaseModulesPageFactory.getPoPage((PurchaseOrderContext) record, module);
+				return PurchaseModulesPageFactory.getPoPage((V3PurchaseOrderContext) record, module);
 				
 		}
 		if (module.getExtendModule() == null) {	// temp

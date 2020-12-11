@@ -1,15 +1,15 @@
 package com.facilio.bmsconsole.page.factory;
 
-import com.facilio.bmsconsole.context.PurchaseOrderContext;
-import com.facilio.bmsconsole.context.PurchaseRequestContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
+import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
 
 public class PurchaseModulesPageFactory extends PageFactory {
 
-    public static Page getPrPage(PurchaseRequestContext record, FacilioModule module) throws Exception {
+    public static Page getPrPage(V3PurchaseRequestContext record, FacilioModule module) throws Exception {
 
         Page page = new Page();
 
@@ -47,7 +47,7 @@ public class PurchaseModulesPageFactory extends PageFactory {
     }
 
 
-    public static Page getPoPage(PurchaseOrderContext record, FacilioModule module) throws Exception {
+    public static Page getPoPage(V3PurchaseOrderContext record, FacilioModule module) throws Exception {
 
         Page page = new Page();
 
