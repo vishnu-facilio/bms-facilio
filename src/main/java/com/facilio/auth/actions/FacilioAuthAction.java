@@ -475,6 +475,7 @@ public class FacilioAuthAction extends FacilioAction {
 					List<Long> orgIds = new ArrayList<>();
 					userData.forEach(i -> orgIds.add((long) i.get("orgId")));
 					org = IAMOrgUtil.getOrg(orgIds.get(0));
+					setDomain(org.getDomain());
 				}
 				appdomainObj = IAMAppUtil.getAppDomainForType(2, org.getOrgId()).get(0);
 			} else if (getLookUpType().equalsIgnoreCase("tenant")) {
@@ -483,6 +484,7 @@ public class FacilioAuthAction extends FacilioAction {
 					List<Long> orgIds = new ArrayList<>();
 					userData.forEach(i -> orgIds.add((long) i.get("orgId")));
 					org = IAMOrgUtil.getOrg(orgIds.get(0));
+					setDomain(org.getDomain());
 				}
 				appdomainObj = IAMAppUtil.getAppDomainForType(3, org.getOrgId()).get(0);
 			}
