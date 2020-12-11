@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.LocationAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
+import com.facilio.bmsconsoleV3.util.QuotationAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
@@ -36,6 +37,7 @@ public class PreFillUpdatePurchaseRequestCommand extends FacilioCommand {
     			if (purchaseRequestContext.getId() <= 0 && CollectionUtils.isEmpty(purchaseRequestContext.getLineItems())) {
     				throw new Exception("PR Line items cannot be empty on update");
     			}
+				QuotationAPI.lineItemsCostCalculations(purchaseRequestContext, purchaseRequestContext.getLineItems());
     			// setting current user to requestedBy
     			if(purchaseRequestContext.getRequestedBy() == null) {
     		 	  purchaseRequestContext.setRequestedBy(AccountUtil.getCurrentUser());
