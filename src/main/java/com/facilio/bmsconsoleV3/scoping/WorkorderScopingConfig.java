@@ -28,6 +28,16 @@ public class WorkorderScopingConfig extends ModuleScopingConfiguration {
             scoping.setFieldValueGenerator("com.facilio.modules.SiteValueGenerator");
             scoping.setModuleId(module.getModuleId());
 
+            //adding wo scope in Occupant Portal
+            long occupantScopingId = ApplicationApi.addScoping(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
+            ScopingConfigContext occupantScoping = new ScopingConfigContext();
+            occupantScoping.setFieldName("requester");
+            occupantScoping.setScopingId(occupantScopingId);
+            occupantScoping.setOperatorId(36);
+            occupantScoping.setFieldValueGenerator("com.facilio.modules.UserValueGenerator");
+            occupantScoping.setModuleId(module.getModuleId());
+
+
             ApplicationApi.addScopingConfigForApp(Collections.singletonList(scoping));
         }
         catch(Exception e){

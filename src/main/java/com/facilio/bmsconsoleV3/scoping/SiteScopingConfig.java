@@ -28,7 +28,7 @@ public class SiteScopingConfig extends ModuleScopingConfiguration {
             scoping.setFieldValueGenerator("com.facilio.modules.SiteValueGenerator");
             scoping.setModuleId(module.getModuleId());
 
-            //adding tenant scope in tenant portal
+            //adding site scope in tenant portal
             long tenantPortalScopingId = ApplicationApi.addScoping(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
             ScopingConfigContext tenantScoping = new ScopingConfigContext();
             tenantScoping.setFieldName("siteId");
@@ -37,9 +37,19 @@ public class SiteScopingConfig extends ModuleScopingConfiguration {
             tenantScoping.setFieldValueGenerator("com.facilio.modules.SiteValueGenerator");
             tenantScoping.setModuleId(module.getModuleId());
 
+            //adding site scope in occupant portal
+            long occupantPortalScopingId = ApplicationApi.addScoping(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
+            ScopingConfigContext occupantScoping = new ScopingConfigContext();
+            occupantScoping.setFieldName("siteId");
+            occupantScoping.setScopingId(occupantPortalScopingId);
+            occupantScoping.setOperatorId(36);
+            occupantScoping.setFieldValueGenerator("com.facilio.modules.SiteValueGenerator");
+            occupantScoping.setModuleId(module.getModuleId());
+
             List<ScopingConfigContext> scopingConfig = new ArrayList<>();
             scopingConfig.add(scoping);
             scopingConfig.add(tenantScoping);
+            scopingConfig.add(occupantScoping);
 
             ApplicationApi.addScopingConfigForApp(scopingConfig);
         }

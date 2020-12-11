@@ -1,6 +1,7 @@
 package com.facilio.modules;
 
 import com.facilio.accounts.dto.AppDomain.AppDomainType;
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ClientContext;
 import com.facilio.bmsconsole.context.VendorContext;
@@ -35,6 +36,11 @@ public class UserValueGenerator extends ValueGenerator{
 				ClientContext client = PeopleAPI.getClientForUser(AccountUtil.getCurrentUser().getId());
 				if(client != null) {
 					return String.valueOf(client.getId());
+				}
+			}
+			else if(appType == AppDomainType.SERVICE_PORTAL.getIndex()) {
+				if(AccountUtil.getCurrentUser() != null) {
+					return String.valueOf(AccountUtil.getCurrentUser().getOuid());
 				}
 			}
 		}

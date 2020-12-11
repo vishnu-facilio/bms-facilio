@@ -181,6 +181,13 @@ public class ViewFactory {
 		views.put("vendorOpen", getVendorOpenWorkOrders().setOrder(order++));
 		views.put("vendorClosed", getVendorClosedWorkOrders().setOrder(order++));
 
+		//occupant portal views
+
+		views.put("myAllWo", getMyAllRequestWorkorders().setOrder(order++));
+		views.put("myOpenWo", getMyOpenRequestWorkorders().setOrder(order++));
+		views.put("myClosedWo", getMyClosedRequestWorkorders().setOrder(order++));
+
+
 		views.put("pendingapproval", getRequestedStateApproval("pendingapproval", true).setOrder(order++));
 		views.put("myapproval", getMyRequestWorkorders("myapproval").setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.WORK_ORDER, views);
@@ -3229,7 +3236,79 @@ public class ViewFactory {
 
 		return myAllWorkordersView;
 	}
-	
+
+	private static FacilioView getMyAllRequestWorkorders() {
+
+		FacilioModule workOrdersModule = ModuleFactory.getWorkOrdersModule();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(workOrdersModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+		FacilioView myAllWorkordersView = new FacilioView();
+		myAllWorkordersView.setName("myAllWo");
+		myAllWorkordersView.setDisplayName("All");
+		myAllWorkordersView.setSortFields(sortFields);
+
+		myAllWorkordersView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.SERVICE_PORTAL)));
+
+		return myAllWorkordersView;
+	}
+
+	private static FacilioView getMyOpenRequestWorkorders() {
+
+		FacilioModule workOrdersModule = ModuleFactory.getWorkOrdersModule();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(workOrdersModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+		FacilioView myWorkordersView = new FacilioView();
+		myWorkordersView.setName("myOpenWo");
+		myWorkordersView.setDisplayName("Open");
+		myWorkordersView.setSortFields(sortFields);
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(getOpenStatusCondition());
+		myWorkordersView.setCriteria(criteria);
+
+		myWorkordersView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.SERVICE_PORTAL)));
+
+		return myWorkordersView;
+	}
+
+	private static FacilioView getMyClosedRequestWorkorders() {
+
+		FacilioModule workOrdersModule = ModuleFactory.getWorkOrdersModule();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(workOrdersModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+		FacilioView myWorkordersView = new FacilioView();
+		myWorkordersView.setName("myClosedWo");
+		myWorkordersView.setDisplayName("Closed");
+		myWorkordersView.setSortFields(sortFields);
+
+		myWorkordersView.setCriteria(getClosedTicketsCriteria());
+
+		myWorkordersView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.SERVICE_PORTAL)));
+
+		return myWorkordersView;
+	}
+
 	private static FacilioView getTenantWorkorders(String viewName) {
 
 		FacilioModule workOrdersModule = ModuleFactory.getWorkOrdersModule();

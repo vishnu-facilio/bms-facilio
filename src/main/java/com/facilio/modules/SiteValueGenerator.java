@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -51,14 +53,17 @@ public class SiteValueGenerator extends ValueGenerator {
 					return String.valueOf(tenant.getSiteId());
 				}
 			}
-			else if(appType == AppDomainType.SERVICE_PORTAL.getIndex()) {
-				
-			}
 			else if(appType == AppDomainType.CLIENT_PORTAL.getIndex()) {
 				
 			}
-			else if(appType == AppDomainType.VENDOR_PORTAL.getIndex()) {
-
+			else if(appType == AppDomainType.SERVICE_PORTAL.getIndex()) {
+				List<SiteContext> sites = SpaceAPI.getAllSites(false);
+				if(CollectionUtils.isNotEmpty(sites)) {
+					for(SiteContext site : sites) {
+						values.add(site.getId());
+					}
+					return StringUtils.join(values, ",");
+				}
 			}
 		}
 		catch(Exception e) {

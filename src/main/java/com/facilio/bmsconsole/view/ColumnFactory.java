@@ -44,6 +44,9 @@ public class ColumnFactory {
 		columnMap.put("workorder-vendorClosed", getVendorWorkorderColumns());
 		columnMap.put("workorder-tenantAll", getTenantWorkorderColumns());
 		columnMap.put("workorder-vendorWorkorder", getVendorWorkorderColumns());
+		columnMap.put("workorder-myAllWo", getDefaultOccupantPortalWoColumns());
+		columnMap.put("workorder-myAllOpen", getDefaultOccupantPortalWoColumns());
+		columnMap.put("workorder-myAllClosed", getDefaultOccupantPortalWoColumns());
 		columnMap.put("alarm-default", getDefaultAlarmColumns());
 		columnMap.put("energy-default", getDefaultEnergyColumns());
 		columnMap.put("asset-default", getDefaultAssetsColumns());
@@ -339,8 +342,19 @@ public class ColumnFactory {
 		columns.add(new ViewField("actualWorkEnd", "Resolved Time"));
 		columns.add(new ViewField("dueDate", "Due Date"));
 		return columns;
-	}	
-	
+	}
+
+	private static List<ViewField> getDefaultOccupantPortalWoColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+
+		columns.add(new ViewField("subject", "Subject"));
+		columns.add(new ViewField("status", "Status"));
+		columns.add(new ViewField("assignedTo", "Assigned To"));
+		columns.add(new ViewField("noOfNotes", "Comments"));
+
+		return columns;
+	}
+
 	private static List<ViewField> getTenantWorkorderColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
