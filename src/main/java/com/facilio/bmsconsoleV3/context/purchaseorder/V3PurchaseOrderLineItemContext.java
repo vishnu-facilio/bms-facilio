@@ -55,6 +55,9 @@ public class V3PurchaseOrderLineItemContext extends BaseLineItemContext {
 			poItem.setQuantity(prItem.getQuantity());
 			poItem.setUnitPrice(prItem.getUnitPrice());
 			poItem.setDescription(prItem.getDescription());
+			poItem.setTaxAmount(prItem.getTaxAmount());
+			poItem.setTax(prItem.getTax());
+			poItem.setUnitOfMeasure(prItem.getUnitOfMeasure());
 		}
 		return poItem;
 	}

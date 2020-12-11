@@ -4,6 +4,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.ContractsContext;
 import com.facilio.bmsconsole.context.InventoryType;
 import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
 import com.facilio.bmsconsoleV3.context.BaseLineItemsParentModuleContext;
 import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
 import com.facilio.bmsconsoleV3.context.V3VendorContext;
@@ -82,12 +83,15 @@ public class V3PurchaseOrderContext extends BaseLineItemsParentModuleContext {
 	
 	public static V3PurchaseOrderContext fromPurchaseRequest(List<V3PurchaseRequestContext> list) throws Exception {
 		V3PurchaseOrderContext purchaseOrderContext = new V3PurchaseOrderContext();
-		purchaseOrderContext.setStatus(Status.REQUESTED);
 		if(!CollectionUtils.isEmpty(list)) {
 			purchaseOrderContext.setName(list.get(0).getName());
 			purchaseOrderContext.setDescription(list.get(0).getDescription());
 			purchaseOrderContext.setShipToAddress(list.get(0).getShipToAddress());
 			purchaseOrderContext.setBillToAddress(list.get(0).getBillToAddress());
+			purchaseOrderContext.setDiscountAmount(list.get(0).getDiscountAmount());
+			purchaseOrderContext.setDiscountPercentage(list.get(0).getDiscountPercentage());
+			purchaseOrderContext.setTax(list.get(0).getTax());
+
 			if(MapUtils.isNotEmpty(list.get(0).getData())) {
 				purchaseOrderContext.setData(list.get(0).getData());
 			}
@@ -97,13 +101,11 @@ public class V3PurchaseOrderContext extends BaseLineItemsParentModuleContext {
 		
 		Map<Long,V3PurchaseOrderLineItemContext> toolTypeItems = new HashMap<Long, V3PurchaseOrderLineItemContext>();
 		Map<Long,V3PurchaseOrderLineItemContext> itemTypeItems = new HashMap<Long, V3PurchaseOrderLineItemContext>();
+		Map<Long,V3PurchaseOrderLineItemContext> serviceTypeItems = new HashMap<Long, V3PurchaseOrderLineItemContext>();
 		ArrayList<V3PurchaseOrderLineItemContext> others = new ArrayList<V3PurchaseOrderLineItemContext>();
 		double quantity = 0.0;
 	
 		for(V3PurchaseRequestContext pr : list) {
-//			if(pr.getStatusEnum() != V3PurchaseRequestContext.Status.APPROVED) {
-//				throw new IllegalArgumentException("Only Purchase Requests with Approved status can be converted to Purchase Order");
-//			}
 			if(vendorId == -1 && pr.getVendor() != null) {
 				purchaseOrderContext.setVendor(pr.getVendor());
 				vendorId = 	pr.getVendor().getId();
@@ -140,6 +142,16 @@ public class V3PurchaseOrderContext extends BaseLineItemsParentModuleContext {
 							toolTypeLineItem.setQuantity(quantity);
 						}
 					}
+					else if(prItem.getInventoryTypeEnum() == InventoryType.SERVICE) {
+						if(!serviceTypeItems.containsKey(prItem.getService().getId())) {
+							serviceTypeItems.put(prItem.getService().getId(), V3PurchaseOrderLineItemContext.from(prItem));
+						}
+						else {
+							V3PurchaseOrderLineItemContext serviceTypeLineItem = serviceTypeItems.get(prItem.getService().getId());
+							quantity = serviceTypeLineItem.getQuantity() + prItem.getQuantity();
+							serviceTypeLineItem.setQuantity(quantity);
+						}
+					}
 					else if(prItem.getInventoryTypeEnum() == InventoryType.OTHERS) {
 						others.add(V3PurchaseOrderLineItemContext.from(prItem));
 					}
@@ -150,6 +162,7 @@ public class V3PurchaseOrderContext extends BaseLineItemsParentModuleContext {
 		
 		List<V3PurchaseOrderLineItemContext> poLineItems = new ArrayList(itemTypeItems.values());
 		poLineItems.addAll(new ArrayList(toolTypeItems.values()));
+		poLineItems.addAll(new ArrayList(serviceTypeItems.values()));
 		poLineItems.addAll(others);
 		purchaseOrderContext.setLineItems(poLineItems);	
 		return purchaseOrderContext;
