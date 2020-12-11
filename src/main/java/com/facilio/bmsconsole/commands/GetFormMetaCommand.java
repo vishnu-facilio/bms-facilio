@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.facilio.modules.FieldType;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -20,15 +19,12 @@ import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormField.Required;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.util.FormsAPI;
-import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
-import com.facilio.modules.fields.LookupField;
-import com.facilio.time.DateTimeUtil;
 
 public class GetFormMetaCommand extends FacilioCommand {
 
@@ -116,9 +112,6 @@ public class GetFormMetaCommand extends FacilioCommand {
 			context.put(FacilioConstants.ContextNames.FORM, form);
 		}
 		if (form != null) {
-			for(FormField field: form.getFields()) {
-				handleDefaultValue(field);
-			}
 			if (AccountUtil.getCurrentUser() == null) {
 				form.getFields().addAll(0, FormFactory.getRequesterFormFields(false, true));
 				if (CollectionUtils.isNotEmpty(form.getSections())) {
@@ -194,39 +187,6 @@ public class GetFormMetaCommand extends FacilioCommand {
 		}
 	}
 	
-	private void handleDefaultValue(FormField formField) throws Exception {
-		if (formField.getField() != null) {
-			Object value = null;
-			switch(formField.getField().getDataTypeEnum()) {
-				case DATE:
-				case DATE_TIME:
-					if (formField.getConfig() != null) {
-						Boolean setToday = (Boolean) formField.getConfig().get("setToday");
-						if (setToday != null && setToday) {
-							value = DateTimeUtil.getDayStartTime();
-						}
-						else if (formField.getConfig().containsKey("dayCount")) {
-							Integer dayCount = Integer.parseInt(formField.getConfig().get("dayCount").toString());
-							value = DateTimeUtil.addDays(DateTimeUtil.getDayStartTime(), dayCount);
-						}
-					}
-					break;
-					
-				case LOOKUP:
-					if (formField.getValue() != null && ((LookupField)formField.getField()).getLookupModule().getName().equals(ContextNames.RESOURCE)) {
-						String val = formField.getValue().toString();
-						if (StringUtils.isNumeric(val)) {
-							value = ResourceAPI.getResource(Long.parseLong(val.toString()));
-						}
-					}
-					break;
-			}
-			
-			if (value != null) {
-				formField.setValueObject(value);
-			}
-		}
-		
-	}
+	
 
 }

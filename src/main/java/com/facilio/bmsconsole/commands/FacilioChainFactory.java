@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.activity.AddActivitiesCommand;
+import com.facilio.bmsconsole.commands.form.HandleFormFieldsCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.elasticsearch.command.DeleteDataFromESCommand;
@@ -2051,6 +2052,7 @@ public class FacilioChainFactory {
 	public static FacilioChain getFormMetaChain() {
 		FacilioChain c = FacilioChain.getNonTransactionChain();
 		c.addCommand(new GetFormMetaCommand());
+		c.addCommand(new HandleFormFieldsCommand());
 		c.addCommand(new GetFormRuleFields());
 		return c;
 	}

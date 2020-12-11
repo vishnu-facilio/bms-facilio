@@ -17,6 +17,7 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.FieldOperator;
+import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.db.criteria.operators.PickListOperators;
@@ -25,6 +26,7 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 
 public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 
@@ -167,6 +169,12 @@ public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 					relatedField = FieldFactory.getIdField();
 				}
 				criteriaVal.addAndCondition(CriteriaAPI.getCondition(relatedField, valuesString, relatedOperator));
+				condition.setCriteriaValue(criteriaVal);
+			} else if (condition.getOperator() instanceof LookupOperator) {
+				Criteria criteriaVal = new Criteria();
+				Operator lookupOperator = Operator.getOperator((int)(long) fieldJson.get("lookupOperatorId"));
+				FacilioField lookupFilterField = modBean.getField((String)fieldJson.get("field"), ((LookupField)field).getLookupModule().getName());
+				criteriaVal.addAndCondition(CriteriaAPI.getCondition(lookupFilterField, valuesString, lookupOperator));
 				condition.setCriteriaValue(criteriaVal);
 			} else {
 				condition.setValue(valuesString);

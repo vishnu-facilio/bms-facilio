@@ -297,4 +297,31 @@ public class FormField implements Serializable {
 	public void addDays(int dayCount) {
 		addToConfig("dayCount", dayCount);
 	}
+	
+	private JSONObject filters;
+	@JSON(serialize = false)
+	public String getFiltersStr() {
+		if (filters != null) {
+			return filters.toJSONString();
+		}
+		return null;
+	}
+	@JSON(serialize = false)
+	public void setFiltersStr(String filters) throws ParseException {
+		if (StringUtils.isNotEmpty(filters)) {
+			this.filters = FacilioUtil.parseJson(filters);
+		}
+	}
+	public JSONObject getFilters() {
+		return filters;
+	}
+	public void setFilters(JSONObject filters) {
+		this.filters = filters;
+	}
+	public void addToFilters(String key, Object value) {
+		if (this.filters == null) {
+			this.filters = new JSONObject();
+		}
+		this.filters.put(key, value);
+	}
 }
