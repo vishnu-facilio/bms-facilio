@@ -36,7 +36,7 @@ public class InsurancePageFactory extends PageFactory{
 	}
 	
 	private static void addSecondaryDetailsWidget(Section section) {
-		PageWidget detailsWidget = new PageWidget(WidgetType.PORTAL_INSURANCE);
+		PageWidget detailsWidget = new PageWidget(WidgetType.SECONDARY_DETAILS_WIDGET);
 		detailsWidget.addToLayoutParams(section, 24, 5);
 		section.addWidget(detailsWidget);
 	}
