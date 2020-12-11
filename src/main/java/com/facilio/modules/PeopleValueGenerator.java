@@ -6,7 +6,7 @@ import com.facilio.workflowv2.contexts.Value;
 
 public class PeopleValueGenerator extends ValueGenerator {
     @Override
-    public String generateValueForCondition(long moduleId, int appType) {
+    public String generateValueForCondition(int appType) {
         try {
             Long pplId = V3PeopleAPI.getPeopleIdForUser(AccountUtil.getCurrentUser().getId());
             return String.valueOf(pplId);

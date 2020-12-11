@@ -14,7 +14,7 @@ import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 public class UserValueGenerator extends ValueGenerator{
 
 	@Override
-	public String generateValueForCondition(long moduleId, int appType) {
+	public String generateValueForCondition(int appType) {
 		try {
 			if(appType == AppDomainType.FACILIO.getIndex()) {
 				return String.valueOf(AccountUtil.getCurrentUser().getId());

@@ -23,47 +23,35 @@ import java.util.Map;
 
 public class CommunityBuildingValueGenerator extends ValueGenerator{
     @Override
-    public Object generateValueForCondition(long moduleId, int appType) {
+    public Object generateValueForCondition(int appType) {
         List<Object> values = new ArrayList<Object>();
         try {
-            if(moduleId <= 0){
-                return null;
-            }
-            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            FacilioModule module = modBean.getModule(moduleId);
-            if(module == null) {
-                return null;
-            }
-            List<FacilioField> fields  = modBean.getAllFields(module.getName());
-            Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
-            if(MapUtils.isNotEmpty(fieldsAsMap) && fieldsAsMap.containsKey("sharedToSpace")) {
-            FacilioField sharedToSpaceField  = fieldsAsMap.get("sharedToSpace");
-                if (appType == AppDomain.AppDomainType.TENANT_PORTAL.getIndex()) {
-                    TenantContext tenant = PeopleAPI.getTenantForUser(AccountUtil.getCurrentUser().getId());
-                    if (tenant != null) {
-                        List<TenantUnitSpaceContext> tenantUnits = TenantsAPI.getTenantUnitsForTenant(tenant.getId());
-                        if (CollectionUtils.isNotEmpty(tenantUnits)) {
-                            for (TenantUnitSpaceContext ts : tenantUnits) {
-                                if (ts.getBuilding() != null) {
-                                    values.add(ts.getBuilding().getId());
-                                }
+            if (appType == AppDomain.AppDomainType.TENANT_PORTAL.getIndex()) {
+                TenantContext tenant = PeopleAPI.getTenantForUser(AccountUtil.getCurrentUser().getId());
+                if (tenant != null) {
+                    List<TenantUnitSpaceContext> tenantUnits = TenantsAPI.getTenantUnitsForTenant(tenant.getId());
+                    if (CollectionUtils.isNotEmpty(tenantUnits)) {
+                        for (TenantUnitSpaceContext ts : tenantUnits) {
+                            if (ts.getBuilding() != null) {
+                                values.add(ts.getBuilding().getId());
                             }
-                            Criteria criteria = new Criteria();
-                            criteria.addAndCondition(CriteriaAPI.getCondition(sharedToSpaceField, StringUtils.join(values, ","), PickListOperators.IS));
-                            criteria.addOrCondition(CriteriaAPI.getCondition(sharedToSpaceField, "1", CommonOperators.IS_EMPTY));
-                            return criteria;
                         }
+                        Criteria criteria = new Criteria();
+                        criteria.addAndCondition(CriteriaAPI.getCondition("SHARED_TO_SPACE_ID", "sharedToSpace", StringUtils.join(values, ","), PickListOperators.IS));
+                        criteria.addAndCondition(CriteriaAPI.getCondition("SHARED_TO_SPACE_ID", "sharedToSpace", "1", CommonOperators.IS_EMPTY));
+                        return criteria;
                     }
-                } else if (appType == AppDomain.AppDomainType.SERVICE_PORTAL.getIndex()) {
-
-                } else if (appType == AppDomain.AppDomainType.FACILIO.getIndex()) {
-
-                } else if (appType == AppDomain.AppDomainType.CLIENT_PORTAL.getIndex()) {
-
-                } else if (appType == AppDomain.AppDomainType.VENDOR_PORTAL.getIndex()) {
-
                 }
+            } else if (appType == AppDomain.AppDomainType.SERVICE_PORTAL.getIndex()) {
+
+            } else if (appType == AppDomain.AppDomainType.FACILIO.getIndex()) {
+
+            } else if (appType == AppDomain.AppDomainType.CLIENT_PORTAL.getIndex()) {
+
+            } else if (appType == AppDomain.AppDomainType.VENDOR_PORTAL.getIndex()) {
+
             }
+
         }
         catch (Exception e){
             e.printStackTrace();

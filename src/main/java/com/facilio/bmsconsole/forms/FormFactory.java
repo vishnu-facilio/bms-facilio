@@ -2276,7 +2276,10 @@ public class FormFactory {
 		descField.addToConfig("richText", true);
 		fields.add(descField);
 		fields.add(new FormField("expiryDate", FieldDisplayType.DATE, "Expiry Date", Required.OPTIONAL, 3, 3));
-		fields.add(new FormField("category", FieldDisplayType.SELECTBOX, "Category", Required.REQUIRED,4, 2));
+		FormField categoryField = new FormField("category", FieldDisplayType.SELECTBOX, "Category", Required.REQUIRED,4, 2);
+		categoryField.setAllowCreateOptions(true);
+		fields.add(categoryField);
+
 		fields.add(new FormField("announcementattachments", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, 5, 1));
 		fields.add(new FormField("announcementsharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 6, 1));
 		return fields;
@@ -2319,7 +2322,10 @@ public class FormFactory {
 		FormField descField = new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1);
 		descField.addToConfig("richText", true);
 		fields.add(descField);
-		fields.add(new FormField("category", FieldDisplayType.SELECTBOX, "Category", Required.OPTIONAL, 3, 1));
+		FormField categoryField = new FormField("category", FieldDisplayType.SELECTBOX, "Category", Required.OPTIONAL, 3, 1);
+		categoryField.setAllowCreateOptions(true);
+		fields.add(categoryField);
+
 		fields.add(new FormField("location", FieldDisplayType.GEO_LOCATION, "Location", Required.OPTIONAL, 4, 1));
 		fields.add(new FormField("neighbourhoodattachments", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, 5, 1));
 		fields.add(new FormField("neighbourhoodsharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 6, 1));
@@ -2342,7 +2348,10 @@ public class FormFactory {
 		FormField descField = new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1);
 		descField.addToConfig("richText", true);
 		fields.add(descField);
-		fields.add(new FormField("category", FieldDisplayType.SELECTBOX, "Category", Required.OPTIONAL, 3, 1));
+		FormField categoryField = new FormField("category", FieldDisplayType.SELECTBOX, "Category", Required.OPTIONAL, 3, 1);
+		categoryField.setAllowCreateOptions(true);
+		fields.add(categoryField);
+
 		fields.add(new FormField("location", FieldDisplayType.GEO_LOCATION, "Location", Required.OPTIONAL, 4, 1));
 		fields.add(new FormField("neighbourhoodattachments", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, 5, 1));
 		form.setFields(fields);

@@ -29,7 +29,7 @@ import com.facilio.modules.fields.FacilioField;
 public class SiteValueGenerator extends ValueGenerator {
 
 	@Override
-	public String generateValueForCondition(long moduleId, int appType) {
+	public String generateValueForCondition(int appType) {
 		List<Object> values = new ArrayList<Object>(); 
 		try {
 			Long currentSiteId = (Long)AccountUtil.getSwitchScopingFieldValue("siteId");

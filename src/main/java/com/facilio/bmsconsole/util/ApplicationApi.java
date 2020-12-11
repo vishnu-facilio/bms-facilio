@@ -917,21 +917,19 @@ public class ApplicationApi {
             if (StringUtils.isEmpty(sc.getFieldValueGenerator())) {
                 throw new IllegalArgumentException("Scoping field --> " + sc.getFieldName() + " must either have avlue or value generator associated");
             }
-            if(sc.getModuleId() <= 0){
+            if (sc.getModuleId() <= 0) {
                 throw new IllegalArgumentException("Scoping field must have an associated module");
             }
-            if(computedValues.containsKey(sc.getFieldValueGenerator())){
+            if (computedValues.containsKey(sc.getFieldValueGenerator())) {
                 sc.setValue(computedValues.get(sc.getFieldValueGenerator()));
-            }
-            else {
+            } else {
                 Class<? extends ValueGenerator> classObject = (Class<? extends ValueGenerator>) Class.forName(sc.getFieldValueGenerator());
                 ValueGenerator valueGenerator = classObject.newInstance();
                 if (AccountUtil.getCurrentUser().getAppDomain() != null) {
-                    sc.setValue(valueGenerator.generateValueForCondition(sc.getModuleId(), AccountUtil.getCurrentUser().getAppDomain().getAppDomainType()));
+                    sc.setValue(valueGenerator.generateValueForCondition(AccountUtil.getCurrentUser().getAppDomain().getAppDomainType()));
                     computedValues.put(sc.getFieldValueGenerator(), sc.getValue());
                 }
             }
-
         }
     }
 
