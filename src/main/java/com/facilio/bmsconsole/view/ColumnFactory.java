@@ -899,7 +899,7 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		columns.add(new ViewField("severity", "Severity"));
 		columns.add(new ViewField("subject", "Message"));
-		columns.add(new ViewField("readingFieldId", "Reading Field"));
+		columns.add(new ViewField("readingFieldId", "Reading Name"));
 		columns.add(new ViewField("resource", "Resource"));
 		columns.add(new ViewField("siteId", "Site"));
 		columns.add(new ViewField("acknowledged", "Acknowledged"));
