@@ -38,7 +38,7 @@ public class CommunityBuildingValueGenerator extends ValueGenerator{
                         }
                         Criteria criteria = new Criteria();
                         criteria.addAndCondition(CriteriaAPI.getCondition("SHARED_TO_SPACE_ID", "sharedToSpace", StringUtils.join(values, ","), PickListOperators.IS));
-                        criteria.addAndCondition(CriteriaAPI.getCondition("SHARED_TO_SPACE_ID", "sharedToSpace", "1", CommonOperators.IS_EMPTY));
+                        criteria.addOrCondition(CriteriaAPI.getCondition("SHARED_TO_SPACE_ID", "sharedToSpace", "1", CommonOperators.IS_EMPTY));
                         return criteria;
                     }
                 }
