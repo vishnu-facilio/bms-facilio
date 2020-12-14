@@ -88,20 +88,19 @@ public class PurchaseOrderAPI {
 		po.setLineItems(list);
 	}
 
-	public static PurchaseOrderContext getPoContext(long poId) throws Exception {
+	public static V3PurchaseOrderContext getPoContext(long poId) throws Exception {
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		String poModuleName = FacilioConstants.ContextNames.PURCHASE_ORDER;
 		List<FacilioField> fields = modBean.getAllFields(poModuleName);
-		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 
-		SelectRecordsBuilder<PurchaseOrderContext> builder = new SelectRecordsBuilder<PurchaseOrderContext>()
+		SelectRecordsBuilder<V3PurchaseOrderContext> builder = new SelectRecordsBuilder<V3PurchaseOrderContext>()
 				.moduleName(poModuleName)
 				.select(fields)
-				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(poModuleName))
+				.beanClass(V3PurchaseOrderContext.class)
 				.andCondition(CriteriaAPI.getIdCondition(poId, modBean.getModule(poModuleName)))
 		        ;
-		List<PurchaseOrderContext> list = builder.get();
+		List<V3PurchaseOrderContext> list = builder.get();
 		if(CollectionUtils.isNotEmpty(list)) {
 			return list.get(0);
 		}

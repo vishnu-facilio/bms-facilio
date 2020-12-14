@@ -95,7 +95,7 @@ public class PurchaseOrderAutoCompleteCommand extends FacilioCommand {
 		SelectRecordsBuilder<PurchaseOrderLineItemContext> builder = new SelectRecordsBuilder<PurchaseOrderLineItemContext>()
 				.module(module).select(fields)
 				.andCondition(
-						CriteriaAPI.getCondition(fieldsMap.get("poId"), String.valueOf(id), NumberOperators.EQUALS))
+						CriteriaAPI.getCondition(fieldsMap.get("purchaseOrder"), String.valueOf(id), NumberOperators.EQUALS))
 				.beanClass(PurchaseOrderLineItemContext.class);
 
 		List<PurchaseOrderLineItemContext> lineItems = builder.get();

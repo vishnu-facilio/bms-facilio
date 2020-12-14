@@ -2,9 +2,9 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.InventoryType;
-import com.facilio.bmsconsole.context.PurchaseOrderContext;
 import com.facilio.bmsconsole.context.ServiceVendorContext;
 import com.facilio.bmsconsole.util.PurchaseOrderAPI;
+import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderLineItemContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -31,7 +31,7 @@ public class UpdateServiceVendorPriceCommand extends FacilioCommand{
 			FacilioModule serviceVendormodule = modBean.getModule(FacilioConstants.ContextNames.SERVICE_VENDOR);
 			for (long id : lineItemIds) {
 				V3PurchaseOrderLineItemContext lineItem = getPoLineItem(id);
-				PurchaseOrderContext po = PurchaseOrderAPI.getPoContext(lineItem.getPurchaseOrder().getId());
+				V3PurchaseOrderContext po = PurchaseOrderAPI.getPoContext(lineItem.getPurchaseOrder().getId());
 				if(lineItem.getInventoryTypeEnum() == InventoryType.SERVICE) {
 					Map<String, Object> updateMap = new HashMap<>();
 					FacilioField lastPriceField = modBean.getField("lastPrice", serviceVendormodule.getName());

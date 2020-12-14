@@ -217,9 +217,8 @@ public class PurchaseOrderAction extends FacilioAction {
 		
 		FacilioChain chain = ReadOnlyChainFactory.getPurchaseOrderDetailsChain();
 		chain.execute(context);
-		
-		PurchaseOrderContext purchaseOrderContext = (PurchaseOrderContext) context.get(FacilioConstants.ContextNames.RECORD);
-		setResult(FacilioConstants.ContextNames.PURCHASE_ORDER, purchaseOrderContext);
+
+		setResult(FacilioConstants.ContextNames.PURCHASE_ORDER, context.get(FacilioConstants.ContextNames.RECORD));
 		
 		return SUCCESS;
 	}

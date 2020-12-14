@@ -1,16 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.chain.Context;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
+import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderLineItemContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -21,6 +13,9 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.chain.Context;
+
+import java.util.*;
 
 ;
 
@@ -38,17 +33,19 @@ public class PurchaseOrderLineItemQuantityRollUpCommand extends FacilioCommand{
 			Map<String, FacilioField> receiptsfieldsMap = FieldFactory.getAsMap(receiptsfields);
 			
 			FacilioModule pomodule = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS);
-			
+			List<FacilioField> polineitemfields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS);
+			Map<String, FacilioField> polineitemfieldsmap = FieldFactory.getAsMap(polineitemfields);
 			Set<Long> lineItemId = new HashSet<>();
 			
 			for (long id : lineItemIds) {
 				double quantity = getTotalReceivedQuantity(id, receiptsmodule, receiptsfieldsMap);
 				
-				PurchaseOrderLineItemContext lineItem = new PurchaseOrderLineItemContext();
+				V3PurchaseOrderLineItemContext lineItem = new V3PurchaseOrderLineItemContext();
 				lineItem.setId(id);
 				lineItem.setQuantityReceived(quantity);
-				UpdateRecordBuilder<PurchaseOrderLineItemContext> updateBuilder = new UpdateRecordBuilder<PurchaseOrderLineItemContext>()
-						.module(pomodule).fields(modBean.getAllFields(pomodule.getName()))
+
+				UpdateRecordBuilder<V3PurchaseOrderLineItemContext> updateBuilder = new UpdateRecordBuilder<V3PurchaseOrderLineItemContext>()
+						.module(pomodule).fields(Arrays.asList(polineitemfieldsmap.get("quantityReceived")))
 						.andCondition(CriteriaAPI.getIdCondition(id, pomodule));
 				updateBuilder.update(lineItem);
 				
