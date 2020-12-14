@@ -72,6 +72,12 @@ public class AddNotesCommand extends FacilioCommand implements PostTransactionCo
 					note.setCreatedTime(System.currentTimeMillis());
 				}
 				note.setCreatedBy(AccountUtil.getCurrentUser());
+
+				//setting notifyRequester to true if comment is added by portal user .This is done because only then the comments added by one portal user will be visible to others as well.
+				//in the case of community features
+				if(AccountUtil.getCurrentUser() != null && AccountUtil.getCurrentUser().isPortalUser()){
+					note.setNotifyRequester(true);
+				}
 				
 				parentIds.add(note.getParentId());
 				JSONObject info = new JSONObject();
