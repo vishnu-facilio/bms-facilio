@@ -119,7 +119,9 @@ public class CommunityFeaturesPageFactory extends PageFactory {
 
         PageWidget notesWidget = new PageWidget(PageWidget.WidgetType.COMMENT);
         notesWidget.setTitle("Comments");
-        notesWidget.addToWidgetParams("canShowNotifyRequestor", true);
+        if(AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomain.AppDomainType.FACILIO) {
+            notesWidget.addToWidgetParams("canShowNotifyRequestor", true);
+        }
         tab1Sec1.addWidget(notesWidget);
 
         return page;
