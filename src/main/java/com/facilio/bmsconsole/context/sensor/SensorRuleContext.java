@@ -226,4 +226,17 @@ public class SensorRuleContext implements Serializable{
 			alarmMeta.setClear(false); //Made active
 		}
 	}	
+	
+	@Override
+	public String toString() {
+		
+		StringBuilder builder =  new StringBuilder()
+				.append(" sensorRule ID : ").append(id)
+				.append(", readingFieldId : ").append(readingFieldId)
+				.append(", sensorRuleType : ").append(sensorRuleType)
+				.append(", moduleId : "+moduleId)
+				.append(", assetCategory : ").append(assetCategory);
+			
+		return builder.toString();
+	}
 }

@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context.sensor;
 
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -183,7 +184,11 @@ public class SensorRuleUtil {
 			
 			List<SensorEventContext> sensorEvents = new ArrayList<SensorEventContext>();
 			List<SensorRollUpEventContext> sensorFieldRollUpEvents = new ArrayList<SensorRollUpEventContext>();
-				
+			
+			if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339l) {
+				LOGGER.info("fieldSensorRulesMap: "+ fieldSensorRulesMap+" assetReadingsMap "+assetReadingsMap);
+			}
+			
 			for(ReadingContext reading: readings) 
 			{
 				boolean isFirstAssetSensorRule = true;
@@ -198,21 +203,33 @@ public class SensorRuleUtil {
 						historicalReadings = (isHistorical && !sensorRule.getSensorRuleTypeEnum().isCurrentValueDependent()) ? historicalReadingsMap.get(ReadingsAPI.getRDMKey(reading.getParentId(), sensorRule.getReadingField())) : null;
 
 						if(reading.getReading(sensorRule.getReadingField().getName()) != null) 
-						{
+						{										
 							SensorRuleTypeValidationInterface validatorType = sensorRule.getSensorRuleTypeEnum().getSensorRuleValidationType();
 							boolean result = validatorType.evaluateSensorRule(sensorRule, reading, sensorRuleValidatorPropsMap.get(sensorRule.getId()), isHistorical, historicalReadings, completeHistoricalReadingsMap);
 							JSONObject defaultSeverityProps = validatorType.getDefaultSeverityAndSubject();
 							checkDefaultSeverityProps(defaultSeverityProps, sensorRuleValidatorPropsMap.get(sensorRule.getId()));
+							
+							if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339l) {
+								LOGGER.info("reading: "+ reading+" sensorRule "+sensorRule+ " result: "+result);
+							}
 							
 							if(result) 
 							{
 								SensorEventContext sensorEvent = sensorRule.constructEvent(reading, defaultSeverityProps, isHistorical);
 								sensorEvents.add(sensorEvent);
 								
+								if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339l) {
+									LOGGER.info("reading: "+ reading+" sensorRule "+sensorRule+ " sensorEvent: "+sensorEvent);
+								}
+								
 								if(isFirstFieldSensorRule && !validatorType.getSensorRuleTypeFromValidator().isMeterRollUp()) {
 									SensorRollUpEventContext sensorFieldRollUpEvent = sensorEvent.constructRollUpEvent(reading, defaultSeverityProps, isHistorical, false, sensorRule);
 									sensorFieldRollUpEvents.add(sensorFieldRollUpEvent);
 									fieldSensorRollUpEventMeta.put(ReadingsAPI.getRDMKey(reading.getParentId(), sensorFieldRollUpEvent.getReadingField()), sensorFieldRollUpEvent);
+									
+									if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339l) {
+										LOGGER.info("reading: "+ reading+" sensorRule "+sensorRule+ " sensorFieldRollUpEvent: "+sensorFieldRollUpEvent);
+									}
 									isFirstFieldSensorRule = false;
 								}
 								
@@ -221,6 +238,10 @@ public class SensorRuleUtil {
 									sensorMeterRollUpEvents.add(sensorAssetRollUpEvent);
 									assetSensorRollUpEventMeta.put(reading.getParentId(), sensorAssetRollUpEvent);
 									isFirstAssetSensorRule = false;
+									
+									if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339l) {
+										LOGGER.info("reading: "+ reading+" sensorRule "+sensorRule+ " sensorAssetRollUpEvent: "+sensorAssetRollUpEvent);
+									}
 								}
 							}
 							else 
@@ -237,6 +258,11 @@ public class SensorRuleUtil {
 					for(SensorRuleContext fieldSensorRule: fieldSensorRules) {							
 						if(!fieldSensorRule.getSensorRuleTypeEnum().isMeterRollUp()){ //field sensor rule
 							Map<Long, SensorRuleAlarmMeta> metaMap = fieldSensorRule.getAlarmMetaMap();
+							
+							if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339l) {
+								LOGGER.info("reading: "+ reading+" fieldSensorRule: "+fieldSensorRule+ " metaMap: "+metaMap+ " canClearFieldEventList: "+canClearFieldEventList+ " fieldSensorRuleList: "+fieldSensorRuleList);
+							}
+							
 							if(metaMap != null) { 									//to avoid validations not started for evaluation
 								fieldSensorRuleList++;
 								SensorRuleAlarmMeta alarmMeta = metaMap != null ? metaMap.get(reading.getParentId()) : null;
@@ -246,6 +272,11 @@ public class SensorRuleUtil {
 							}									
 						}
 					}
+					
+					if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339l) {
+						LOGGER.info("reading: "+ reading+" fieldSensorRules "+fieldSensorRules+ " fieldSensorRollUpEventMetaMap: " +fieldSensorRollUpEventMeta+ " canClearFieldEventList: "+canClearFieldEventList+ " fieldSensorRuleList: "+fieldSensorRuleList);
+					}
+					
 					if(canClearFieldEventList > 0 && fieldSensorRuleList > 0 && canClearFieldEventList == fieldSensorRuleList) {
 						ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 						String key = ReadingsAPI.getRDMKey(reading.getParentId(), modBean.getField(readingFieldId));
@@ -253,6 +284,10 @@ public class SensorRuleUtil {
 						if(fieldSensorRollUpMetaEvent != null && !fieldSensorRollUpMetaEvent.getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) {
 							SensorRollUpEventContext sensorFieldRollUpEvent = SensorRollUpUtil.constructRollUpClearEvent(fieldSensorRollUpMetaEvent, reading, isHistorical, false);
 							sensorFieldRollUpEvents.add(sensorFieldRollUpEvent);
+							
+							if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339l) {
+								LOGGER.info("reading: "+ reading+ " fieldSensorRollUpMetaEvent: "+fieldSensorRollUpMetaEvent);
+							}
 							fieldSensorRollUpEventMeta.put(ReadingsAPI.getRDMKey(reading.getParentId(),sensorFieldRollUpEvent.getReadingField()), sensorFieldRollUpEvent);
 						}		
 					}		
@@ -262,6 +297,11 @@ public class SensorRuleUtil {
 				for(SensorRuleContext sensorRule: sensorRules) {							
 					if(sensorRule.getSensorRuleTypeEnum().isMeterRollUp()){ //Meter sensor rule
 						Map<Long, SensorRuleAlarmMeta> metaMap = sensorRule.getAlarmMetaMap();
+						
+						if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339l) {
+							LOGGER.info("reading: "+ reading+" sensorRule: "+sensorRule+ " metaMap: "+metaMap+ " canClearAssetRollUpEventList: "+canClearAssetRollUpEventList+ " meterSensorRuleList: "+meterSensorRuleList);
+						}
+						
 						if(metaMap != null) {
 							meterSensorRuleList++;
 							SensorRuleAlarmMeta alarmMeta = metaMap != null ? metaMap.get(reading.getParentId()) : null;
@@ -271,11 +311,21 @@ public class SensorRuleUtil {
 						}
 					}
 				}
+				
+				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339l) {
+					LOGGER.info("reading: "+ reading+" AssetsensorRules: "+sensorRules+ " assetSensorRollUpEventMetaMap: "+assetSensorRollUpEventMeta+ " canClearAssetRollUpEventList: "+canClearAssetRollUpEventList+ " meterSensorRuleList: "+meterSensorRuleList);
+				}
+				
 				if(canClearAssetRollUpEventList > 0 && meterSensorRuleList > 0 && canClearAssetRollUpEventList == meterSensorRuleList) {
 					SensorRollUpEventContext assetSensorRollUpMetaEvent = assetSensorRollUpEventMeta.get(reading.getParentId());
 					if(assetSensorRollUpMetaEvent != null && !assetSensorRollUpMetaEvent.getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) {
 						SensorRollUpEventContext sensorAssetRollUpEvent = SensorRollUpUtil.constructRollUpClearEvent(assetSensorRollUpMetaEvent, reading, isHistorical, true);
 						sensorMeterRollUpEvents.add(sensorAssetRollUpEvent);
+						
+						if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339l) {
+							LOGGER.info("reading: "+ reading+ " sensorAssetRollUpEvent: "+sensorAssetRollUpEvent);
+						}
+						
 						assetSensorRollUpEventMeta.put(reading.getParentId(), sensorAssetRollUpEvent);
 					}		
 				}		
@@ -284,6 +334,10 @@ public class SensorRuleUtil {
 			List<BaseEventContext> baseEvents = new ArrayList<BaseEventContext>();
 			baseEvents.addAll(sensorEvents);
 			baseEvents.addAll(sensorFieldRollUpEvents);
+			
+			if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339l) {
+				LOGGER.info("sensorEvents: "+ sensorEvents+ " sensorFieldRollUpEvents: "+sensorFieldRollUpEvents+ " sensorMeterRollUpEvents: "+sensorMeterRollUpEvents+" baseEvents "+baseEvents);
+			}
 			
 			if(baseEvents != null && !baseEvents.isEmpty()) {
 				if(isHistorical) {

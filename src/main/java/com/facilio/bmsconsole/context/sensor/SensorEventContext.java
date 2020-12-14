@@ -141,5 +141,19 @@ public class SensorEventContext extends BaseEventContext {
 		
 		return sensorRollUpEvent;
 	}
+	
+	@Override
+	public String toString() {
+		
+		StringBuilder builder =  new StringBuilder()
+				.append(" sensorRule ID : ").append(sensorRule)
+				.append(", readingFieldId : ").append(readingFieldId)
+				.append(", sensorRuleType : ").append(sensorRuleType)
+				.append(", meterRollUp : ").append(meterRollUp)
+				.append(", messageKey : "+getMessageKey())
+				.append(", resource : ").append(getResource());
+			
+		return builder.toString();
+	}
 
 }
