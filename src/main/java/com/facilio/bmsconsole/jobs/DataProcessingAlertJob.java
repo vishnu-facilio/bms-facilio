@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.jobs;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -13,16 +14,21 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.messageQueue.MessageQueueTopic;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
+import com.facilio.time.DateTimeUtil;
 
 public class DataProcessingAlertJob extends FacilioJob {
     private static final Logger LOGGER = LogManager.getLogger(DataProcessingAlertJob.class.getName());
@@ -45,18 +51,22 @@ public class DataProcessingAlertJob extends FacilioJob {
         }
     }
     private void dataMissing(Organization org) throws Exception {
-        long orgId = org.getOrgId();
-        String orgDomain = org.getDomain();
-        ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-        List<Map<String,Object>> props = bean.getMissingData();
-        if(CollectionUtils.isEmpty(props)) {
-            return;
-        }
-        for(Map<String,Object> prop : props){
-            long agentId = (long) prop.get(prop.get(AgentConstants.ID));
-            String agentName = (String) prop.get(AgentConstants.NAME);
-            long lastProcessedTime = (long) prop.get(AgentConstants.LAST_DATA_RECEIVED_TIME);
-            sendMail(orgDomain, orgId,agentId,agentName,lastProcessedTime);
+        try{
+            long orgId = org.getOrgId();
+            String orgDomain = org.getDomain();
+            ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+            List<Map<String,Object>> props = bean.getMissingData();
+            if(CollectionUtils.isEmpty(props)) {
+                return;
+            }
+            for(Map<String,Object> prop : props){
+                long agentId = (long) prop.get(AgentConstants.ID);
+                String agentName = (String) prop.get(AgentConstants.NAME);
+                long lastProcessedTime = (long) prop.get(AgentConstants.LAST_DATA_RECEIVED_TIME);
+                sendMail(orgDomain, orgId,agentId,agentName,lastProcessedTime);
+            }
+        }catch (Exception e){
+            throw e;
         }
     }
 
@@ -80,3 +90,4 @@ public class DataProcessingAlertJob extends FacilioJob {
         FacilioFactory.getEmailClient().sendEmail(json);
     }
 }
+

@@ -43,22 +43,26 @@ public class DataPendingAlertJob extends FacilioJob {
     }
 
     private void calculatePendingMsg(Organization org) throws Exception {
-        long orgId = org.getOrgId();
-        String orgDomain = org.getDomain();
-        ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-        long count = bean.getPendingDataCount();
-        StringBuilder msg = new StringBuilder()
-                .append("There are ")
-                .append(count)
-                .append("messages pending for last 2hrs. org - ")
-                .append(orgDomain)
-                .append("orgId- ")
-                .append(orgId);
-        JSONObject json = new JSONObject();
-        json.put("to", "agent@facilio.com");
-        json.put("sender", "noreply@facilio.com");
-        json.put("subject", "Pending Messages");
-        json.put("message", msg);
-        FacilioFactory.getEmailClient().sendEmail(json);
+        try{
+            long orgId = org.getOrgId();
+            String orgDomain = org.getDomain();
+            ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+            long count = bean.getPendingDataCount();
+            StringBuilder msg = new StringBuilder()
+                    .append("There are ")
+                    .append(count)
+                    .append("messages pending for last 2hrs. org - ")
+                    .append(orgDomain)
+                    .append("orgId- ")
+                    .append(orgId);
+            JSONObject json = new JSONObject();
+            json.put("to", "agent@facilio.com");
+            json.put("sender", "noreply@facilio.com");
+            json.put("subject", "Pending Messages");
+            json.put("message", msg);
+            FacilioFactory.getEmailClient().sendEmail(json);
+        }catch (Exception e){
+            throw e;
+        }
     }
 }

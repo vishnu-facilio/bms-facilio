@@ -1425,7 +1425,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				.select(new ArrayList<>()).table(DataPendingAlertJob.AGENT_MESSAGE_MODULE.getTableName())
 				.aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT,DataPendingAlertJob.FIELD_MAP.get(AgentConstants.ID))
 				.andCondition(CriteriaAPI.getCondition(DataPendingAlertJob.FIELD_MAP.get(AgentKeys.MSG_STATUS), String.valueOf(0), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(DataPendingAlertJob.FIELD_MAP.get(AgentKeys.START_TIME), String.valueOf(getLastTwohours()), NumberOperators.GREATER_THAN));
+				.andCondition(CriteriaAPI.getCondition(DataPendingAlertJob.FIELD_MAP.get(AgentKeys.START_TIME), String.valueOf(getLastTwohours()), NumberOperators.LESS_THAN));
 		return (long) builder.fetchFirst().get(AgentConstants.ID);
 	}
 
@@ -1441,7 +1441,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		fields.add(FieldFactory.getIdField(DataProcessingAlertJob.AGENT_MODULE));
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields).table(DataProcessingAlertJob.AGENT_MODULE.getTableName())
-				.andCondition(CriteriaAPI.getCondition(DataProcessingAlertJob.FIELD_MAP.get(AgentConstants.LAST_DATA_RECEIVED_TIME),String.valueOf(getLastTwohours()),NumberOperators.GREATER_THAN))
+				.andCondition(CriteriaAPI.getCondition(DataProcessingAlertJob.FIELD_MAP.get(AgentConstants.LAST_DATA_RECEIVED_TIME),String.valueOf(getLastTwohours()),NumberOperators.LESS_THAN))
 				.orderBy("ID DESC");
 		List<Map<String,Object>> props = builder.get();
 		return CollectionUtils.isNotEmpty(props) ? props : Collections.emptyList();
