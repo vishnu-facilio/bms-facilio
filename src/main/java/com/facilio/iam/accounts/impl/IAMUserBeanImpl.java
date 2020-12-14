@@ -618,6 +618,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		}
 
 		result.put("domainLookupRequired", domains.size() > 1);
+
 		result.put("loginModes", loginModes);
 
 		String jwt = createJWT("id", "auth0", userName, System.currentTimeMillis());

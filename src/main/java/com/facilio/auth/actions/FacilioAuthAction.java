@@ -425,11 +425,16 @@ public class FacilioAuthAction extends FacilioAction {
 	}
 
 	public String loginWithUserNameAndPassword() throws Exception {
-		validateLoginv3();
-		HttpServletRequest request = ServletActionContext.getRequest();
-		String isWebView = FacilioCookie.getUserCookie(request, "fc.isWebView");
-		if ("true".equalsIgnoreCase(isWebView)) {
-			setWebViewCookies();
+		if (StringUtils.isNotEmpty(lookUpType)) {
+			validateLoginPortal();
+			setServicePortalWebViewCookies();
+		} else {
+			validateLoginv3();
+			HttpServletRequest request = ServletActionContext.getRequest();
+			String isWebView = FacilioCookie.getUserCookie(request, "fc.isWebView");
+			if ("true".equalsIgnoreCase(isWebView)) {
+				setWebViewCookies();
+			}
 		}
 		return SUCCESS;
 	}
@@ -589,6 +594,57 @@ public class FacilioAuthAction extends FacilioAction {
 			response.addCookie(schemeCookie);
 		}
 
+	}
+
+	public  String validateLoginPortal() throws Exception {
+		HttpServletRequest request = ServletActionContext.getRequest();
+		HttpServletResponse resp = ServletActionContext.getResponse();
+
+		if (getUsername() == null || getPassword() == null || getDomain() == null) {
+			return ERROR;
+		}
+
+		Organization org = IAMOrgUtil.getOrg(getDomain());
+		AppDomain appdomainObj = null;
+		if ("service".equalsIgnoreCase(getLookUpType())) {
+			appdomainObj = IAMAppUtil.getAppDomainForType(2, org.getOrgId()).get(0);
+		} else if ("tenant".equalsIgnoreCase(getLookUpType())) {
+			appdomainObj = IAMAppUtil.getAppDomainForType(3, org.getOrgId()).get(0);
+		}
+
+		try {
+			LOGGER.info("validateLogin() : username : " + getUsername()
+			);
+			String authtoken = null;
+			String userAgent = request.getHeader("User-Agent");
+			userAgent = userAgent != null ? userAgent : "";
+			String ipAddress = request.getHeader("X-Forwarded-For");
+			ipAddress = (ipAddress == null || "".equals(ipAddress.trim())) ? request.getRemoteAddr() : ipAddress;
+			String userType = "mobile";
+			authtoken = IAMUserUtil.verifyLoginPasswordv3(getUsername(), getPassword(), appdomainObj.getDomain(), userAgent, userType, ipAddress);
+			setJsonresponse("token", authtoken);
+			setJsonresponse("username", getUsername());
+
+			//deleting .facilio.com cookie(temp handling)
+			FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.facilio","facilio.com");
+			FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.facilio","facilio.in");
+
+			addAuthCookies(authtoken, false, false, request, "mobile".equals(userType));
+		}
+		catch (Exception e) {
+			LOGGER.log(Level.INFO, "Exception while validating password, ", e);
+			Exception ex = e;
+			while (ex != null) {
+				if (ex instanceof AccountException) {
+					setJsonresponse("message", ex.getMessage());
+					break;
+				}
+				ex = (Exception) ex.getCause();
+			}
+			setJsonresponse("errorcode", "1");
+			return ERROR;
+		}
+		return SUCCESS;
 	}
 
 	public String validateLoginv3() {
