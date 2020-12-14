@@ -143,8 +143,27 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		return null;
 	}
 
-	
-    @Override
+	@Override
+	public List<Organization> getOrgs(List<Long> orgIds) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(IAMAccountConstants.getOrgFields())
+				.table(IAMAccountConstants.getOrgModule().getTableName());
+		selectBuilder.andCondition(CriteriaAPI.getCondition(IAMAccountConstants.getOrgIdField(), orgIds, NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			List<Organization> orgList = new ArrayList<Organization>();
+			for(Map<String, Object> org : props) {
+				orgList.add(IAMOrgUtil.createOrgFromProps(org));
+			}
+			return orgList;
+		}
+		return Collections.emptyList();
+	}
+
+
+	@Override
    	public List<IAMUser> getAllOrgUsersv2(long orgId) throws Exception {
    		
        	List<FacilioField> fields = new ArrayList<>();

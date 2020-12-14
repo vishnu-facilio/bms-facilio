@@ -12,8 +12,13 @@ import java.util.Map;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.jobs.DataPendingAlertJob;
+import com.facilio.bmsconsole.jobs.DataProcessingAlertJob;
+import com.facilio.modules.*;
+import com.facilio.time.DateTimeUtil;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -79,16 +84,6 @@ import com.facilio.events.util.EventAPI;
 import com.facilio.events.util.EventRulesAPI;
 import com.facilio.fs.FileInfo;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.BmsAggregateOperators;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FacilioStatus;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.InsertRecordBuilder;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
@@ -1422,6 +1417,34 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		context.getContext().put("WeatherStationIdVsSiteId", siteAndStationMap);
 		context.getContext().put("dataMap", dataMap);
 		context.execute();
+	}
+
+	@Override
+	public long getPendingDataCount() throws Exception {
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(new ArrayList<>()).table(DataPendingAlertJob.AGENT_MESSAGE_MODULE.getTableName())
+				.aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT,DataPendingAlertJob.FIELD_MAP.get(AgentConstants.ID))
+				.andCondition(CriteriaAPI.getCondition(DataPendingAlertJob.FIELD_MAP.get(AgentKeys.MSG_STATUS), String.valueOf(0), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(DataPendingAlertJob.FIELD_MAP.get(AgentKeys.START_TIME), String.valueOf(getLastTwohours()), NumberOperators.GREATER_THAN));
+		return (long) builder.fetchFirst().get(AgentConstants.ID);
+	}
+
+	private long getLastTwohours() {
+		return DateTimeUtil.addHours(DateTimeUtil.getCurrenTime(),-2);
+	}
+
+	@Override
+	public List<Map<String,Object>> getMissingData() throws Exception {
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(FieldFactory.getAgentNameField(DataProcessingAlertJob.AGENT_MODULE));
+		fields.add(FieldFactory.getField(AgentConstants.LAST_DATA_RECEIVED_TIME, "LAST_DATA_RECEIVED_TIME", DataProcessingAlertJob.AGENT_MODULE, FieldType.NUMBER));
+		fields.add(FieldFactory.getNewAgentIdField(DataProcessingAlertJob.AGENT_MODULE));
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields).table(DataProcessingAlertJob.AGENT_MODULE.getTableName())
+				.andCondition(CriteriaAPI.getCondition(DataProcessingAlertJob.FIELD_MAP.get(AgentConstants.LAST_DATA_RECEIVED_TIME),String.valueOf(getLastTwohours()),NumberOperators.GREATER_THAN))
+				.orderBy("ID DESC");
+		List<Map<String,Object>> props = builder.get();
+		return CollectionUtils.isNotEmpty(props) ? props : Collections.emptyList();
 	}
 }
 

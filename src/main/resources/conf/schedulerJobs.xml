@@ -172,4 +172,7 @@
 	<job name='CreateSlotForFacilities' classname= 'com.facilio.bmsconsoleV3.commands.facility.GenerateSlotCommand' transactionTimeout='600000'/> -->
 	<job name='ScheduleSlotCreation' classname= 'com.facilio.bmsconsoleV3.commands.facility.SlotCreationScheduler' transactionTimeout='600000'/> -->
 
+	<!-- Agent Data Missing Job-->
+	<job name="AgentDataMissing" classname="com.facilio.bmsconsole.jobs.DataProcessingAlertJob" transactionTimeout="420000"/>
+	<job name="AgentDataPending" classname="com.facilio.bmsconsole.jobs.DataPendingAlertJob" transactionTimeout="420000"/>
 </scheduler>

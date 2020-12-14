@@ -42,6 +42,10 @@ public class IAMOrgUtil {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getOrgBean().getOrgs());
 	}
 
+	public static List<Organization> getOrgs(List<Long> orgIds) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getOrgBean().getOrgs(orgIds));
+	}
+
 	public static void updateLoggerLevel(int level, long orgId) throws Exception {
 		FacilioService.runAsService(() -> IAMUtil.getOrgBean().updateLoggerLevel(level, orgId));
 	}

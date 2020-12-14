@@ -31,7 +31,9 @@ public interface IAMOrgBean {
 	public boolean rollbackSignUpOrg(long orgId, long superAdminUserId) throws Exception;
 	
 	public List<Organization> getOrgs() throws Exception ;
-	
+
+	public List<Organization> getOrgs(List<Long> orgIds) throws Exception ;
+
  	public List<IAMUser> getAllOrgUsersv2(long orgId) throws Exception;
  	
  	public boolean addOrUpdateAccountSSO(long orgId, AccountSSO sso) throws Exception;

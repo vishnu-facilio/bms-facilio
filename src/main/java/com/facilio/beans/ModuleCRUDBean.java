@@ -150,4 +150,7 @@ public interface ModuleCRUDBean {
 	
 	public void addOrUpdateDailyWeatherData(Map<Long, List<Long>> map, Map<Long, Map<String, Object>> dataMap)throws Exception;
 
+    public long getPendingDataCount() throws Exception;
+
+	public List<Map<String,Object>> getMissingData() throws Exception;
 }
