@@ -16,6 +16,7 @@
 <%@page import="com.facilio.aws.util.FacilioProperties" %>
 <%@page import="org.apache.commons.lang3.StringUtils" %>
 <%@page import="com.facilio.util.FacilioIndexJsp" %>
+<%@page import="com.facilio.util.RequestUtil" %>
 
 <%@page contentType="text/html; charset=UTF-8" %>
 
@@ -24,16 +25,13 @@
 <%
 
     try {
-        String clientVersion = null;
         boolean isDynamicClient = false;
+        String clientVersion = (String) request.getAttribute(RequestUtil.REQUEST_DYNAMIC_CLIENT_VERSION);
         if (!FacilioProperties.isProduction()
-                && StringUtils.isNotEmpty(FacilioProperties.getStageDomain())
-                && !request.getServerName().equals(FacilioProperties.getStageDomain())
-                && request.getServerName().endsWith(FacilioProperties.getStageDomain())
+                && StringUtils.isNotEmpty(clientVersion)
         ) {
-            String subDomain = request.getServerName().substring(0, request.getServerName().indexOf(FacilioProperties.getStageDomain()) - 1);
-            // System.out.println("Sub domain => "+subDomain);
-            clientVersion = subDomain;
+            // String subDomain = request.getServerName().substring(0, request.getServerName().indexOf(FacilioProperties.getStageDomain()) - 1);
+            System.out.println("Client Version => "+clientVersion);
             isDynamicClient = true;
         }
         else {

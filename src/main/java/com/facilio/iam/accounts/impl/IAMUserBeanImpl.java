@@ -19,6 +19,7 @@ import com.facilio.accounts.sso.SSOUtil;
 import com.facilio.db.criteria.operators.*;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.*;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -1928,14 +1929,10 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		//handling done for domain aliases for our main app
 		if(StringUtils.isNotEmpty(domain)) {
 			String allowedAppdomains = FacilioProperties.getAllowedAppDomains();
-			String[] appdomains = allowedAppdomains.split("\\s*,\\s*");
+			String[] appdomains = FacilioUtil.splitByComma(allowedAppdomains);
 			if(appdomains.length > 0){
 				List<String> allowedAppDomainList = Arrays.asList(appdomains);
-				if(allowedAppDomainList.contains(domain) ||
-						(!FacilioProperties.isProduction()
-								&& StringUtils.isNotEmpty(FacilioProperties.getStageDomain())
-								&& domain.endsWith(FacilioProperties.getStageDomain())
-						)) {
+				if(allowedAppDomainList.contains(domain)) {
 					domain = AccountUtil.getDefaultAppDomain();
 				}
 			}

@@ -82,7 +82,7 @@ public class FacilioProperties {
     private static String pythonAI;
     private static String pythonPath;
     private static String allowedAppDomains;
-    private static String stageDomain;
+    private static List<String> stageDomains;
 
     private static String wmsBroadcaster;
 
@@ -119,6 +119,18 @@ public class FacilioProperties {
         loadProperties();
     }
 
+    private static List<String> parseCommaSeparatedProps(String propName, String prop) {
+        if (StringUtils.isNotEmpty(prop)) {
+            try {
+                return Collections.unmodifiableList(Arrays.asList(FacilioUtil.splitByComma(prop)));
+            }
+            catch (Exception e) {
+                LOGGER.info(MessageFormat.format("Error occurred while parsing prop {0} with value {1} and so considering it as null", propName, prop));
+            }
+        }
+        return null;
+    }
+
     private static void loadProperties() {
         URL resource = AwsUtil.class.getClassLoader().getResource(AWS_PROPERTY_FILE);
         if (resource != null) {
@@ -143,7 +155,7 @@ public class FacilioProperties {
                 pushNotificationKey = PROPERTIES.getProperty("push.notification.key");
                 portalPushNotificationKey = PROPERTIES.getProperty("portal.push.notification.key");
                 allowedAppDomains = PROPERTIES.getProperty("allowedapp.domains");
-                stageDomain = PROPERTIES.getProperty("stage.domain");
+                stageDomains = parseCommaSeparatedProps("stage.domains", PROPERTIES.getProperty("stage.domains"));
                 kafkaProducer = PROPERTIES.getProperty("kafka.producer");
                 kafkaConsumer = PROPERTIES.getProperty("kafka.consumer");
                 nodejs = PROPERTIES.getProperty("nodejs");
@@ -225,16 +237,7 @@ public class FacilioProperties {
                     }
                 }
                 String whiteListedUrls = PROPERTIES.getProperty("response.size.threshold.whitelist");
-                if (StringUtils.isNotEmpty(whiteListedUrls)) {
-                    try {
-                        List<String> urls = Arrays.asList(FacilioUtil.splitByComma(whiteListedUrls));
-                        thresholdWhiteListedUrls = Collections.unmodifiableList(urls);
-                    }
-                    catch (Exception e) {
-                        LOGGER.error("Exception while parsing 'response.size.threshold.whitelist' and so threshold whitelist urls will be considered as empty.", e);
-                    }
-                }
-
+                thresholdWhiteListedUrls = parseCommaSeparatedProps("response.size.threshold.whitelist", whiteListedUrls);
                 esDomain = PROPERTIES.getProperty("es.domain");
                 esIndex = PROPERTIES.getProperty("es.index");
 
@@ -327,8 +330,8 @@ public class FacilioProperties {
         return allowedAppDomains;
     }
 
-    public static String getStageDomain() {
-        return stageDomain;
+    public static List<String> getStageDomains() {
+        return stageDomains;
     }
 
     public static String getPushNotificationKey() {

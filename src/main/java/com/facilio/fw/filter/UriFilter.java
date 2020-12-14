@@ -1,6 +1,9 @@
 package com.facilio.fw.filter;
 
+import com.facilio.aws.util.FacilioProperties;
+import com.facilio.filters.FacilioHttpRequest;
 import com.facilio.util.RequestUtil;
+import com.facilio.wms.message.Message;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -9,6 +12,7 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -67,9 +71,32 @@ public class UriFilter implements Filter {
         return true;
     }
 
+    // For handling dynamic client builds
+    private HttpServletRequest constructFacilioRequestIfNeeded (HttpServletRequest request) {
+        if (!FacilioProperties.isProduction() && CollectionUtils.isNotEmpty(FacilioProperties.getStageDomains())) {
+            for (String stageDomain : FacilioProperties.getStageDomains()) {
+                if (request.getServerName().endsWith(stageDomain)) {
+                    if (request.getServerName().equals(stageDomain)) {
+                        break;
+                    }
+                    else {
+                        String[] strings = request.getServerName().split("\\."); // There could be a better way to do this.
+                        if (strings.length > 3) {
+                            String clientBuild = strings[0];
+                            String serverName = MessageFormat.format("{0}.{1}.{2}", strings[1], strings[2], strings[3]);
+                            request.setAttribute(RequestUtil.REQUEST_DYNAMIC_CLIENT_VERSION, clientBuild);
+                            return new FacilioHttpRequest(request, serverName);
+                        }
+                    }
+                }
+            }
+        }
+        return request;
+    }
+
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
-        HttpServletRequest request = (HttpServletRequest) req;
+        HttpServletRequest request = constructFacilioRequestIfNeeded((HttpServletRequest) req);
         HttpServletResponse response = (HttpServletResponse) res;
 
         // Commenting out the if check because it shouldn't be called when app name is set
