@@ -59,7 +59,7 @@ public class TenantWorkRequestPageFactory extends PageFactory{
 	}
 
 	private static void addSecondaryDetailsWidget(Section section) {
-		PageWidget detailsWidget = new PageWidget(WidgetType.PORTAL_WORK_REQUEST_FORM_DETAILS, "portalWorkrequestFormDetails");
+		PageWidget detailsWidget = new PageWidget(WidgetType.SECONDARY_DETAILS_WIDGET, "portalWorkrequestFormDetails");
 		detailsWidget.addToLayoutParams(section, 24, 4);
 		section.addWidget(detailsWidget);
 	}

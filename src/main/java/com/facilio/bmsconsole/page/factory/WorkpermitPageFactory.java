@@ -85,7 +85,7 @@ public class WorkpermitPageFactory extends PageFactory {
 	}
 
 	private static void addPortalDetailsWidget(Section section) {
-		PageWidget detailsWidget = new PageWidget(WidgetType.PORTAL_WORKPERMIT, "portalWorkPermit");
+		PageWidget detailsWidget = new PageWidget(WidgetType.SECONDARY_DETAILS_WIDGET);
 		detailsWidget.addToLayoutParams(section, 24, 7);
 		section.addWidget(detailsWidget);
 	}
