@@ -13,8 +13,19 @@ public class AgentAlarmContext extends BaseAlarmContext {
     private FacilioAgent agent;
     private AgentAlarmType agentAlarmType;
     private List<Controller> controllersList;
+    private boolean notified;
 
+    public void setAgentAlarmType(AgentAlarmType agentAlarmType) {
+        this.agentAlarmType = agentAlarmType;
+    }
 
+    public boolean getNotified() {
+        return notified;
+    }
+
+    public void setNotified(boolean notified) {
+        this.notified = notified;
+    }
 
     public FacilioAgent getAgent() {
         return agent;
