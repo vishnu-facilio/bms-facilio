@@ -1438,7 +1438,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(FieldFactory.getAgentNameField(DataProcessingAlertJob.AGENT_MODULE));
 		fields.add(FieldFactory.getField(AgentConstants.LAST_DATA_RECEIVED_TIME, "LAST_DATA_RECEIVED_TIME", DataProcessingAlertJob.AGENT_MODULE, FieldType.NUMBER));
-		fields.add(FieldFactory.getNewAgentIdField(DataProcessingAlertJob.AGENT_MODULE));
+		fields.add(FieldFactory.getIdField(DataProcessingAlertJob.AGENT_MODULE));
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields).table(DataProcessingAlertJob.AGENT_MODULE.getTableName())
 				.andCondition(CriteriaAPI.getCondition(DataProcessingAlertJob.FIELD_MAP.get(AgentConstants.LAST_DATA_RECEIVED_TIME),String.valueOf(getLastTwohours()),NumberOperators.GREATER_THAN))
