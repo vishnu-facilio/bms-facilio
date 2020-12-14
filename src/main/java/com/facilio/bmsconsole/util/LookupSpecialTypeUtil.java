@@ -1,5 +1,19 @@
 package com.facilio.bmsconsole.util;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
@@ -7,7 +21,11 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agentv2.AgentApiV2;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.BusinessHoursList;
+import com.facilio.bmsconsole.context.FormulaFieldContext;
+import com.facilio.bmsconsole.context.KPICategoryContext;
+import com.facilio.bmsconsole.context.PMTriggerContext;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.sensor.SensorRuleContext;
 import com.facilio.bmsconsole.context.sensor.SensorRuleUtil;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
@@ -34,12 +52,6 @@ import com.facilio.modules.fields.FieldOption;
 import com.facilio.modules.fields.SystemEnumField;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
-
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class LookupSpecialTypeUtil {
 	public static boolean isSpecialType(String specialType) {
@@ -113,7 +125,11 @@ public class LookupSpecialTypeUtil {
 			return getUserPickList(users);
 		}
 		else if(FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
-			List<User> users = AccountUtil.getOrgBean().getRequesterTypeUsers(AccountUtil.getCurrentOrg().getOrgId(), true);
+			List<User> users = null;
+			long appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
+			if(appId > 0) {
+				users = AccountUtil.getOrgBean().getOrgPortalUsers(AccountUtil.getCurrentOrg().getOrgId(), appId);
+			}
 			return getUserPickList(users);
 		}
 		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
@@ -173,7 +189,11 @@ public class LookupSpecialTypeUtil {
 			return userMap;
 		}
 		else if(FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
-			List<User> users = AccountUtil.getOrgBean().getRequesterTypeUsers(AccountUtil.getCurrentOrg().getOrgId(), true);
+			List<User> users = null;
+			long appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
+			if(appId > 0) {
+				users = AccountUtil.getOrgBean().getOrgPortalUsers(AccountUtil.getCurrentOrg().getOrgId(), appId);
+			}
 			Map<Long, String> userMap = new HashMap<Long, String>();
 			if (users != null) {
 				for (User usr : users) {

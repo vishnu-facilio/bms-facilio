@@ -73,6 +73,11 @@ public class PageRecordHandlingCommand extends FacilioCommand {
 			context.put(ContextNames.ID, -1l);
 		}
 		
+		context.put(ContextNames.FETCH_LOOKUPS, true);
+		if (!isApproval) {
+			context.put(ContextNames.FETCH_CUSTOM_LOOKUPS, true);
+		}
+		
 		return false;
 	}
 

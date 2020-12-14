@@ -548,6 +548,7 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getPageChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new PageRecordHandlingCommand());
+		c.addCommand(new AddLookupFieldMetaList());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		c.addCommand(new GetPageCommand());
 		c.addCommand(new GetPageConnectedAppWidgetsCommand());

@@ -1,5 +1,17 @@
 package com.facilio.bmsconsole.forms;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.WorkOrderContext.WOUrgency;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
@@ -7,6 +19,7 @@ import com.facilio.bmsconsole.forms.FacilioForm.LabelPosition;
 import com.facilio.bmsconsole.forms.FormField.Required;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
@@ -16,11 +29,6 @@ import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 public class FormFactory {
 	
@@ -1034,15 +1042,15 @@ public class FormFactory {
 		return Collections.unmodifiableList(fields);
 	}
 	
-	public static List<FormField> getRequesterFormFields(boolean fetchBoth, boolean isMandatory) throws Exception {
+	public static List<FormField> getRequesterFormFields(boolean getRequesterDetails, boolean isMandatory) throws Exception {
 		List<FormField> fields = new ArrayList<>();
 		Required required = isMandatory ? Required.REQUIRED : Required.OPTIONAL;
-		if (AccountUtil.getCurrentAccount().isFromMobile() || fetchBoth) {
+		if (AccountUtil.getCurrentAccount().isFromMobile() || getRequesterDetails) {
 			fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Requester Name", required, 1, 1));
 			fields.add(new FormField("email", FieldDisplayType.TEXTBOX, "Requester Email", required, 2, 1));
 		}
 		else {
-			fields.add(new FormField("requester", FieldDisplayType.REQUESTER, "Requester", required, 1, 1));
+			fields.add(new FormField("requester", FieldDisplayType.REQUESTER, "Requester", required, ContextNames.REQUESTER, 1, 1));
 		}
 		return fields;
 	}
