@@ -372,7 +372,7 @@ public class QuotationAPI {
         if (taxMode  != null && taxMode == 1 && CollectionUtils.isNotEmpty(lineItems)) {
             for (BaseLineItemContext lineItem : (List<BaseLineItemContext>) lineItems) {
                 Double relativeLineItemCost = relativeLineItemCost(lineItem.getUnitPrice(), lineItem.getQuantity(), record.getSubTotal(), record.getDiscountAmount());
-                if (lookupValueIsNotEmpty(lineItem.getTax())) {
+                if (lookupValueIsNotEmpty(lineItem.getTax()) && relativeLineItemCost != 0d) {
                     if (lineItem.getTax().getType() != null && lineItem.getTax().getType() == TaxContext.Type.INDIVIDUAL.getIndex()) {
                         Double taxAmount = getTaxAmount(relativeLineItemCost, lineItem.getTax().getRate());
                         setTaxAmountInMap(taxSplitUp, lineItem.getTax(), taxAmount);

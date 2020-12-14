@@ -1,17 +1,18 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderLineItemContext;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class ReceiptContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
 	
 	private long receivableId = -1;
-	private PurchaseOrderLineItemContext lineItem;
+	private V3PurchaseOrderLineItemContext lineItem;
 	
-	public PurchaseOrderLineItemContext getLineItem() {
+	public V3PurchaseOrderLineItemContext getLineItem() {
 		return lineItem;
 	}
-	public void setLineItem(PurchaseOrderLineItemContext lineItem) {
+	public void setLineItem(V3PurchaseOrderLineItemContext lineItem) {
 		this.lineItem = lineItem;
 	}
 
