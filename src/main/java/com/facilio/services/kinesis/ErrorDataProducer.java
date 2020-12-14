@@ -21,10 +21,11 @@ import java.util.concurrent.Future;
 public class ErrorDataProducer {
 
     private static final Logger LOGGER = LogManager.getLogger(ErrorDataProducer.class.getName());
+    private static FacilioKafkaProducer facilioKafkaProducer = new FacilioKafkaProducer();
+    ;
 
     public static RecordMetadata send(ProducerRecord<String, String> record) throws Exception {
 
-        FacilioKafkaProducer facilioKafkaProducer = new FacilioKafkaProducer();
         RecordMetadata recordMetadata = null;
         try {
             JSONObject recordData = (JSONObject) new JSONParser().parse(record.value());
@@ -32,8 +33,6 @@ public class ErrorDataProducer {
             recordMetadata = facilioKafkaProducer.putRecord(record.topic(), facilioRecord);
         } catch (ParseException e) {
             LOGGER.info("Exception while putting record ", e);
-        } finally {
-            facilioKafkaProducer.close();
         }
         return recordMetadata;
     }
