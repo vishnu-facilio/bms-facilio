@@ -104,7 +104,7 @@ public class TicketAPI {
 			props = selectBuilder.get();
 		}
 		
-		int deletedRows = builder.delete();
+		int deletedRows = builder.markAsDelete();
 	
 		if (props != null && !props.isEmpty()) {
 			Set<Long> userIds = props.stream().map(e -> (Long) e.get("assignedTo")).filter(e -> e != null).collect(Collectors.toSet());
