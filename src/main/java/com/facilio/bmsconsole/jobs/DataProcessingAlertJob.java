@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.jobs;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -70,7 +71,7 @@ public class DataProcessingAlertJob extends FacilioJob {
         }
     }
 
-    private void sendMail(String orgDomain, long orgId , long agentId, String agentName,long lastProcessedTime) throws Exception {
+    private static void sendMail(String orgDomain, long orgId , long agentId, String agentName,long lastProcessedTime) throws Exception {
         StringBuilder msg = new StringBuilder()
                 .append(" Data is not processing for last 2hrs. org -  ")
                 .append(orgDomain)
@@ -86,7 +87,7 @@ public class DataProcessingAlertJob extends FacilioJob {
         json.put("to", "agent@facilio.com");
         json.put("sender", "noreply@facilio.com");
         json.put("subject", "Data not processing for : "+agentName);
-        json.put("message", msg);
+        json.put("message", msg.toString());
         FacilioFactory.getEmailClient().sendEmail(json);
     }
 }

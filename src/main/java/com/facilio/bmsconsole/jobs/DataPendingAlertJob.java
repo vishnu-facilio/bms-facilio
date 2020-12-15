@@ -59,7 +59,7 @@ public class DataPendingAlertJob extends FacilioJob {
             json.put("to", "agent@facilio.com");
             json.put("sender", "noreply@facilio.com");
             json.put("subject", "Pending Messages");
-            json.put("message", msg);
+            json.put("message", msg.toString());
             FacilioFactory.getEmailClient().sendEmail(json);
         }catch (Exception e){
             throw e;
