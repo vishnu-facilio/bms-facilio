@@ -60,7 +60,9 @@ public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 				}
 				criteria.groupOrConditions(conditionList);
 			}
-			context.put(FacilioConstants.ContextNames.FILTER_CRITERIA, criteria);
+			if (!criteria.isEmpty()) {
+				context.put(FacilioConstants.ContextNames.FILTER_CRITERIA, criteria);
+			}
 		}
 		long timeTaken = System.currentTimeMillis() - startTime;
 		LOGGER.debug("Time taken to execute GenerateCriteriaFromFilterCommand : "+timeTaken);

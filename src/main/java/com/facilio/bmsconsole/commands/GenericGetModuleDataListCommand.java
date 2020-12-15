@@ -105,11 +105,11 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 		if (includeParentCriteria == null) {
 			includeParentCriteria = false;
 		}
-		if (filterCriteria != null) {
+		if (filterCriteria != null && !filterCriteria.isEmpty()) {
 			builder.andCriteria(filterCriteria);
 		} 
 		
-		if (customFilterCriteria != null) {
+		if (customFilterCriteria != null && !customFilterCriteria.isEmpty()) {
 			builder.andCriteria(customFilterCriteria);
 		}
 		
@@ -123,26 +123,28 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 		}
 		
 		Criteria searchCriteria = (Criteria) context.get(FacilioConstants.ContextNames.SEARCH_CRITERIA);
-		if (searchCriteria != null) {
+		if (searchCriteria != null && !searchCriteria.isEmpty()) {
 			builder.andCriteria(searchCriteria);
 		}
 		
 		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(moduleName);
-		if(scopeCriteria != null)
+		if(scopeCriteria != null && !scopeCriteria.isEmpty())
 		{
 			builder.andCriteria(scopeCriteria);
 		}
 		
 		Criteria clientFilterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA);
 		
-		if(clientFilterCriteria != null) {
+		if(clientFilterCriteria != null && !clientFilterCriteria.isEmpty()) {
 			builder.andCriteria(clientFilterCriteria);
 		}
 
 		Object serverCriteria = context.get(ContextNames.FILTER_SERVER_CRITERIA);
 		if (serverCriteria != null) {
 			if (serverCriteria instanceof Criteria) {
-				builder.andCriteria((Criteria) serverCriteria);
+				if (!((Criteria) serverCriteria).isEmpty()) {
+					builder.andCriteria((Criteria) serverCriteria);
+				}
 			}
 			else {
 				builder.andCondition((Condition) serverCriteria);
