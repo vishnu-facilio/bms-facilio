@@ -678,13 +678,15 @@
                              if (resolvedTimeInSec > handOverInSec) {
                              variationInSec = (resolvedTimeInSec - handOverInSec);
                              inHr = date.secToHour(variationInSec);
-      						 inDays = date.hourToDay(inHr);
+      						           inDays = date.hourToDay(inHr);
+                             obj.variationindays = math().setPrecision(inDays, 0);
                              obj.variation = "+" + math().setPrecision(inDays, 0);
                              }
                              else {
                              variationInSec = (handOverInSec - resolvedTimeInSec);
                              inHr = date.secToHour(variationInSec);
-      						 inDays = date.hourToDay(inHr);
+      						           inDays = date.hourToDay(inHr);
+                             obj.variationindays = math().setPrecision(inDays, 0);
                              obj.variation = "-" + math().setPrecision(inDays, 0);
                              }
                            
@@ -696,12 +698,40 @@
                            else if ( handOver > 0  &&  obj.daysInOpen > 0) {
                              if (daysInOpen > 5) {
                                indays = (daysInOpen - 5);
+                               obj.variationindays = math().setPrecision(indays, 0);
                                obj.variation = "+" + math().setPrecision(indays, 0);
                              }else if (daysInOpen > 0 && daysInOpen < 5) {
                                indays = (5 - daysInOpen);
+                               obj.variationindays = math().setPrecision(indays, 0);
                                obj.variation = "-" + math().setPrecision(indays, 0);
                              }
                            }
+
+                            dbCri = {
+        						          criteria: [parent == wo.id && fromStatus == 13410],
+ 								             }; 
+                              now = date.now();
+                             duration = 0;
+                             if (Module("workorderTimeLog").fetch(dbCri) != null) {
+                               timelogs = Module("workorderTimeLog").fetch(dbCri);
+                                for each index,timelog in timelogs{
+                                  if (timelog.duration != null) {
+                                    duration = (duration + timelog.duration);
+                                  }
+                                  else {
+                                  
+                                  milliSec = (now - timelog.startTime);
+                                  inSec = (milliSec/1000);
+                                  duration = (duration + inSec);
+                                }        
+                                }
+                               
+                               inHr = date.secToHour(duration);
+                                inDays = date.hourToDay(inHr);
+                               duration = math().setPrecision(inDays, 0);
+                             }         
+                           
+                           obj.onHoldDuration = duration;
                            
                            obj.unitName = unitObj.name;
                            unitList.push(obj);
@@ -775,12 +805,14 @@
                              variationInSec = (resolvedTimeInSec - handOverInSec);
                              inHr = date.secToHour(variationInSec);
       						 inDays = date.hourToDay(inHr);
+                   obj.variationindays = math().setPrecision(inDays, 0);
                              obj.variation = "+" + math().setPrecision(inDays, 0);
                              }
                              else if (handOverInSec > resolvedTimeInSec) {
                              variationInSec = (handOverInSec - resolvedTimeInSec);
                              inHr = date.secToHour(variationInSec);
       						 inDays = date.hourToDay(inHr);
+                   obj.variationindays = math().setPrecision(inDays, 0);
                              obj.variation = "-" + math().setPrecision(inDays, 0);
                              }
                            
@@ -791,12 +823,40 @@
                             else if ( handOver > 0  &&  obj.daysInOpen > 0) {
                              if (daysInOpen > 5) {
                                indays = (daysInOpen - 5);
+                               obj.variationindays = math().setPrecision(indays, 0);
                                obj.variation = "+" + math().setPrecision(indays, 0);
                              }else if (daysInOpen > 0 && daysInOpen < 5) {
                                indays = (5 - daysInOpen);
+                               obj.variationindays = math().setPrecision(indays, 0);
                                obj.variation = "-" + math().setPrecision(indays, 0);
                              }
                            }
+
+                            dbCri = {
+        					          	criteria: [parent == wo.id && fromStatus == 13410],
+ 								            }; 
+                              now = date.now();
+                             duration = 0;
+                             if (Module("workorderTimeLog").fetch(dbCri) != null) {
+                               timelogs = Module("workorderTimeLog").fetch(dbCri);
+                                for each index,timelog in timelogs{
+                                  if (timelog.duration != null) {
+                                    duration = (duration + timelog.duration);
+                                  }
+                                  else {
+                                  
+                                  milliSec = (now - timelog.startTime);
+                                  inSec = (milliSec/1000);
+                                  duration = (duration + inSec);
+                                }        
+                                }
+                               
+                               inHr = date.secToHour(duration);
+                                inDays = date.hourToDay(inHr);
+                               duration = math().setPrecision(inDays, 0);
+                             }         
+                           
+                           obj.onHoldDuration = duration;
                            
                            obj.unitName = unitObj.name;
                            unitList.push(obj);
@@ -1410,6 +1470,8 @@
                                obj.variation = "-" + math().setPrecision(indays, 0);
                              }
                            }
+
+
 
                            obj.unitName = unitObj.name;
                            unitList.push(obj);
