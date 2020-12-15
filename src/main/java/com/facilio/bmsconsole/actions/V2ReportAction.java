@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.context.sensor.SensorRollUpAlarmContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -83,8 +84,10 @@ import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.context.ReportDrilldownParamsContext;
+import com.facilio.report.context.ReportDrilldownPathContext;
 import com.facilio.report.context.ReportFactoryFields;
 import com.facilio.report.context.ReportFolderContext;
+import com.facilio.report.context.ReportSettings;
 import com.facilio.report.context.ReportTemplateContext;
 import com.facilio.report.context.ReportUserFilterContext;
 import com.facilio.report.context.ReportYAxisContext;
@@ -106,6 +109,24 @@ public class V2ReportAction extends FacilioAction {
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = LogManager.getLogger(V2ReportAction.class.getName());
+	private List<ReportDrilldownPathContext> reportDrilldownPath;
+	private ReportSettings reportSettings;
+	
+	@JSON(serialize = false)
+	public ReportSettings getReportSettings() {
+		return reportSettings;
+	}
+	public void setReportSettings(ReportSettings reportSettings) {
+		this.reportSettings = reportSettings;
+	}
+	@JSON(serialize = false)
+	public List<ReportDrilldownPathContext> getReportDrilldownPath() {
+		return reportDrilldownPath;
+	}
+	public void setReportDrilldownPath(List<ReportDrilldownPathContext> reportDrilldownPath) {
+		this.reportDrilldownPath = reportDrilldownPath;
+	}
+
 	private ReportDrilldownParamsContext drilldownParams;
 	public ReportDrilldownParamsContext getDrilldownParams() {
 		return drilldownParams;
@@ -940,7 +961,8 @@ public class V2ReportAction extends FacilioAction {
 		reportContext.setTabularState(tabularState);
 		reportContext.setType(ReportType.WORKORDER_REPORT);
 		reportContext.setModuleType(moduleType);
-		
+		reportContext.setReportDrilldownPath(getReportDrilldownPath());
+		reportContext.setReportSettings(getReportSettings());
 		if (StringUtils.isEmpty(moduleName)) {
 			throw new Exception("Module name is mandatory");
 		}

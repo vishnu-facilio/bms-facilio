@@ -1,5 +1,6 @@
 package com.facilio.report.context;
 
+import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONObject;
 
 import com.facilio.modules.AggregateOperator;
@@ -66,7 +67,7 @@ public class ReportDrilldownPathContext  {
 	public AggregateOperator getxAggrEnum() {
 		return xAggr;
 	}
-
+	@JSON(deserialize = false)
 	public void setxAggr(AggregateOperator xAggr) {
 		this.xAggr = xAggr;
 	}

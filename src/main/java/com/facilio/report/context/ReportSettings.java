@@ -1,9 +1,9 @@
 package com.facilio.report.context;
 
+import org.apache.struts2.json.annotations.JSON;
+
 import com.facilio.modules.FacilioEnum;
-import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 public class ReportSettings  {
 	/**
@@ -13,15 +13,38 @@ public class ReportSettings  {
 	{
 		ReportSettings settings=new ReportSettings();
 		settings.setClickAction(ClickAction.LIST);
-		settings.setShowListAtDrillEnd(true);
+		settings.setIsShowListAtDrillEnd(true);
 		return settings;
 		
 	}
 	private static final long serialVersionUID = 1L;
 
+	private   Boolean isShowListAtDrillEnd;
+
+	public Boolean getIsShowListAtDrillEnd() {
+		return isShowListAtDrillEnd;
+	}
+	
+	public void setIsShowListAtDrillEnd(Boolean isShowListAtDrillEnd) {
+		this.isShowListAtDrillEnd = isShowListAtDrillEnd;
+	}
+	//isPrefixedGetter needed for boolean field in serialize to JSON with jackson obj mapper
+	@JSON(serialize = false)
+	
+	public boolean isShowListAtDrillEnd()
+	{
+		if(this.isShowListAtDrillEnd!=null)
+		{
+			return this.isShowListAtDrillEnd.booleanValue();
+		}
+		else {
+			return false;
+			}
+		
+	}
+
 	private ClickAction clickAction;
 	
-	private Boolean showListAtDrillEnd;
 	
 	@JsonIgnore
 	public ClickAction getClickActionEnum() {
@@ -45,16 +68,10 @@ public class ReportSettings  {
 		this.clickAction=ClickAction.valueOf(value);
 	}
 
-	public Boolean getShowListAtDrillEnd() {
-		return showListAtDrillEnd;
-	}
-
-	public void setShowListAtDrillEnd(Boolean showListAtDrillEnd) {
-		this.showListAtDrillEnd = showListAtDrillEnd;
-	}
+	
 
 	public static enum ClickAction implements FacilioEnum {
-		NONE("None"), LIST("Some"),DRILLDOWN("Drilldown");
+		NONE("None"), LIST("List"),DRILLDOWN("Drilldown");
 
 		public static ClickAction valueOf(int value) {
 			if (value > 0 && value <= values().length) {
