@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import com.facilio.modules.FieldUtil;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -65,6 +66,15 @@ public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 		LOGGER.debug("Time taken to execute GenerateCriteriaFromFilterCommand : "+timeTaken);
 		return false;
 	}
+
+	private boolean isScopeFieldAndNonScopeModule (String fieldName, String moduleName, ModuleBean modBean) throws Exception {
+		switch (fieldName) {
+			case "site":
+			case "siteId":
+				return !FieldUtil.isSiteIdFieldPresent(modBean.getModule(moduleName), true);
+		}
+		return false;
+	}
 	
 	private void setConditions(String moduleName, String fieldName, JSONObject fieldJson,List<Condition> conditionList) throws Exception {
 		
@@ -98,8 +108,13 @@ public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 				field = modBean.getField("siteId", moduleName);
 			}
 			if (field == null) {
-				LOGGER.error("Field is not found for: " + fieldName + " : " + moduleName);
-				throw new IllegalArgumentException("Field is not found for: " + fieldName + " : " + moduleName);
+				if (isScopeFieldAndNonScopeModule(fieldName, moduleName, modBean)) {
+					return;
+				}
+				else {
+					LOGGER.error("Field is not found for: " + fieldName + " : " + moduleName);
+					throw new IllegalArgumentException("Field is not found for: " + fieldName + " : " + moduleName);
+				}
 			}
 		}
 		Operator operator;
