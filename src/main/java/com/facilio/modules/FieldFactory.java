@@ -8099,7 +8099,7 @@ public class FieldFactory {
 
         list.add(getField("id", "ID", module, FieldType.ID));
         list.add(getField("name", "NAME", module, FieldType.STRING));
-        list.add(getField("parentId", "PARENT_ID", module, FieldType.STRING));
+        list.add(getField("parentId", "PARENT_ID", module, FieldType.NUMBER));
 
         list.add(getField("fromStatusId", "FROM_STATUS_ID", module, FieldType.NUMBER));
         list.add(getField("toStatusId", "TO_STATUS_ID", module, FieldType.NUMBER));
