@@ -18,10 +18,12 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.transaction.NewTransactionService;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.service.FacilioService;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 import org.apache.commons.io.FileUtils;
@@ -68,7 +70,7 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 					String s3Id = (String) emailProp.get("s3MessageId");
 					try(S3Object rawEmail = AwsUtil.getAmazonS3Client().getObject(S3_BUCKET_NAME, s3Id); InputStream is = rawEmail.getObjectContent()) {
 
-							createWorkOrderRequest((long) emailProp.get("id"), is);
+						NewTransactionService.newTransaction(() -> createWorkOrderRequest((long) emailProp.get("id"), is));
 //						updateEmailProp((long) emailProp.get("id"), requestId);
 //						if(AccountUtil.isFeatureEnabled(FeatureLicense.SERVICE_REQUEST)) {
 //							createServiceRequest(rawEmail);

@@ -39,8 +39,12 @@ public class Executor implements Runnable {
 		// TODO Auto-generated constructor stub
 		this(name, noOfThreads, bufferPeriod, -1);
 	}
-	
+
 	public Executor(String name, int noOfThreads, int bufferPeriod, int maxRetry) {
+		this (name, noOfThreads, bufferPeriod, maxRetry, null, null);
+	}
+	
+	public Executor(String name, int noOfThreads, int bufferPeriod, int maxRetry, List<Long> includedOrgs, List<Long> excludedOrgs) {
 		// TODO Auto-generated constructor stub
 		this.name = name;
 		this.bufferPeriod = bufferPeriod;
