@@ -23,7 +23,6 @@ public class UpdateLatestMessageUIDCommandV3 extends FacilioCommand implements P
 
     @Override
     public boolean postExecute() throws Exception {
-        Map<Long, List<UpdateChangeSet>> changeSet = Constants.getModuleChangeSets(context);
         SupportEmailContext updateSupportEmail = (SupportEmailContext) context.getOrDefault(FacilioConstants.ContextNames.SUPPORT_EMAIL, null);
         if (updateSupportEmail != null) {
             FacilioService.runAsService(() -> CustomMailMessageApi.updateLatestMailUID(updateSupportEmail, updateSupportEmail.getId()));

@@ -12,13 +12,21 @@ import java.util.Map;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
+import com.facilio.accounts.bean.OrgBean;
+import com.facilio.accounts.dto.Group;
+import com.facilio.accounts.dto.User;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.jobs.DataPendingAlertJob;
 import com.facilio.bmsconsole.jobs.DataProcessingAlertJob;
+import com.facilio.bmsconsole.util.*;
 import com.facilio.modules.*;
 import com.facilio.time.DateTimeUtil;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.mail.util.MimeMessageParser;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -40,31 +48,10 @@ import com.facilio.agentv2.point.Point;
 import com.facilio.bmsconsole.actions.ReadingAction;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.AlarmContext;
-import com.facilio.bmsconsole.context.AssetCategoryContext;
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.ControllerContext;
-import com.facilio.bmsconsole.context.PMResourcePlannerContext;
-import com.facilio.bmsconsole.context.PMTriggerContext;
-import com.facilio.bmsconsole.context.PreventiveMaintenance;
-import com.facilio.bmsconsole.context.ServiceRequestContext;
-import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
-import com.facilio.bmsconsole.context.TicketCategoryContext;
-import com.facilio.bmsconsole.context.TicketContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderContext.PreRequisiteStatus;
-import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
-import com.facilio.bmsconsole.util.AssetsAPI;
-import com.facilio.bmsconsole.util.ControllerAPI;
-import com.facilio.bmsconsole.util.PMStatus;
-import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
-import com.facilio.bmsconsole.util.ResourceAPI;
-import com.facilio.bmsconsole.util.TemplateAPI;
-import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -90,6 +77,9 @@ import com.facilio.services.filestore.FileStore;
 import com.facilio.services.procon.message.FacilioRecord;
 import com.facilio.timeseries.TimeSeriesAPI;
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
+
+import javax.activation.DataSource;
+import javax.mail.internet.MimeMessage;
 
 public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
@@ -1445,6 +1435,104 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				.orderBy("ID DESC");
 		List<Map<String,Object>> props = builder.get();
 		return CollectionUtils.isNotEmpty(props) ? props : Collections.emptyList();
+	}
+
+	@Override
+	public long addRequestFromEmail(MimeMessage emailMsg, MimeMessageParser parser, SupportEmailContext supportEmail) throws Exception {
+		long requestId = -1;
+		OrgBean orgBean = AccountUtil.getOrgBean();
+		if (orgBean.isFeatureEnabled(FeatureLicense.CUSTOM_MAIL)) {
+			requestId = CustomMailMessageApi.createRecordToMailModule(supportEmail, emailMsg);
+			LOGGER.info("Added Email from Email Parser : " + requestId );
+		}
+		else if (orgBean.isFeatureEnabled(FeatureLicense.SERVICE_REQUEST)) {
+			ServiceRequestContext serviceRequestContext = new ServiceRequestContext();
+			User requester = new User();
+			requester.setEmail(parser.getFrom());
+			serviceRequestContext.setSubject(parser.getSubject());
+			if (parser.getPlainContent() != null) {
+				serviceRequestContext.setDescription(StringUtils.trim(parser.getPlainContent()));
+			}
+			else {
+				serviceRequestContext.setDescription(StringUtils.trim(parser.getHtmlContent()));
+			}
+			List<DataSource> attachments = parser.getAttachmentList();
+			List<File> attachedFiles = null;
+			List<String> attachedFilesFileName = null;
+			List<String> attachedFilesContentType = null;
+			if (attachments != null && !attachments.isEmpty()) {
+				LOGGER.info("Attachment List : "+attachments);
+				attachedFiles = new ArrayList<>();
+				attachedFilesFileName = new ArrayList<>();
+				attachedFilesContentType = new ArrayList<>();
+				for (DataSource attachment : attachments) {
+					if (attachment.getName() != null) {
+						attachedFilesFileName.add(attachment.getName());
+						attachedFilesContentType.add(attachment.getContentType());
+						File file = File.createTempFile(attachment.getName(), "");
+						FileUtils.copyInputStreamToFile(attachment.getInputStream(), file);
+						attachedFiles.add(file);
+					}
+				}
+				LOGGER.info("Parsed Attachments : "+attachedFiles);
+			}
+			serviceRequestContext.setSiteId(supportEmail.getSiteId());
+			serviceRequestContext.setSourceType(ServiceRequestContext.SourceType.EMAIL_REQUEST.getIntVal());
+			serviceRequestContext.setRequester(requester);
+			requestId = addServcieRequestFromEmail(serviceRequestContext, attachedFiles, attachedFilesFileName, attachedFilesContentType);
+			LOGGER.info("Added servicerequest from Email Parser : " + requestId );
+		}
+		else {
+			WorkOrderContext workorderContext = new WorkOrderContext();
+			workorderContext.setSendForApproval(true);
+			User requester = new User();
+			requester.setEmail(parser.getFrom());
+			//not to send email while creating wo from email
+			//requester.setInviteAcceptStatus(true);
+
+			workorderContext.setSubject(parser.getSubject());
+			if (parser.getPlainContent() != null) {
+				workorderContext.setDescription(StringUtils.trim(parser.getPlainContent()));
+			}
+			else {
+				workorderContext.setDescription(StringUtils.trim(parser.getHtmlContent()));
+			}
+
+			List<DataSource> attachments = parser.getAttachmentList();
+			List<File> attachedFiles = null;
+			List<String> attachedFilesFileName = null;
+			List<String> attachedFilesContentType = null;
+			if (attachments != null && !attachments.isEmpty()) {
+				LOGGER.info("Attachment List : "+attachments);
+				attachedFiles = new ArrayList<>();
+				attachedFilesFileName = new ArrayList<>();
+				attachedFilesContentType = new ArrayList<>();
+				for (DataSource attachment : attachments) {
+//						LOGGER.info("Attachment Class name : "+attachment.getClass());
+//						LOGGER.info("Attachment File Name : "+attachment.getName());
+//						LOGGER.info("Attachment File Type : "+attachment.getContentType());
+					if (attachment.getName() != null) {
+						attachedFilesFileName.add(attachment.getName());
+						attachedFilesContentType.add(attachment.getContentType());
+						File file = File.createTempFile(attachment.getName(), "");
+						FileUtils.copyInputStreamToFile(attachment.getInputStream(), file);
+						attachedFiles.add(file);
+					}
+				}
+				LOGGER.info("Parsed Attachments : "+attachedFiles);
+			}
+			if (supportEmail.getAutoAssignGroupId() != -1) {
+				workorderContext.setAssignmentGroup((Group) LookupSpecialTypeUtil.getEmptyLookedupObject(FacilioConstants.ContextNames.GROUPS, supportEmail.getAutoAssignGroupId()));
+			}
+			workorderContext.setSiteId(supportEmail.getSiteId());
+
+			workorderContext.setSourceType(TicketContext.SourceType.EMAIL_REQUEST);
+
+			workorderContext.setRequester(requester);
+			requestId = addWorkOrderFromEmail(workorderContext, attachedFiles, attachedFilesFileName, attachedFilesContentType);
+			LOGGER.info("Added Workorder from Email Parser : " + requestId );
+		}
+		return requestId;
 	}
 }
 

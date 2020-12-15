@@ -28,7 +28,7 @@ public class CustomMailMessageApi {
         LOGGER.info("Updated" + rowupdate);
     }
 
-    public static void createRecordToMailModule(SupportEmailContext supportMail, Message rawEmail) throws Exception {
+    public static long createRecordToMailModule(SupportEmailContext supportMail, Message rawEmail) throws Exception {
         V3MailMessageContext mailMessage = V3MailMessageContext.instance(rawEmail);
         mailMessage.setParentId(supportMail.getId());
         Map<String, List<Map<String, Object>>> attachments = new HashMap<>();
@@ -44,6 +44,8 @@ public class CustomMailMessageApi {
         context.put(FacilioConstants.ContextNames.MESSAGES, Collections.singletonList(mailMessage));
 
         chain.execute();
+        long recordId = (long) context.getOrDefault(FacilioConstants.ContextNames.RECORD_ID, -1);
+        return recordId;
     }
 
 }

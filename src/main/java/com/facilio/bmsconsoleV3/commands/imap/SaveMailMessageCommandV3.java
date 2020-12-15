@@ -6,6 +6,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.UpdateChangeSet;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.ChainUtil;
 import org.apache.commons.chain.Context;
@@ -33,6 +34,11 @@ public class SaveMailMessageCommandV3 extends FacilioCommand {
             Class beanClass = FacilioConstants.ContextNames.getClassFromModule(module);
             createContext.put(Constants.BEAN_CLASS, beanClass);
             createRecordChain.execute();
+            Map<Long, List<UpdateChangeSet>> changeSet = Constants.getModuleChangeSets(createContext);
+            if (MapUtils.isNotEmpty(changeSet)) {
+                long recordId = changeSet.keySet().stream().findFirst().get();
+                context.put(FacilioConstants.ContextNames.RECORD_ID, recordId);
+            }
         }
         return false;
     }

@@ -20,6 +20,7 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.transaction.NewTransactionService;
 import com.facilio.fw.BeanFactory;
+import com.facilio.fw.TransactionBeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
@@ -69,17 +70,7 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 				for(Map<String, Object> emailProp : emailProps) {
 					String s3Id = (String) emailProp.get("s3MessageId");
 					try(S3Object rawEmail = AwsUtil.getAmazonS3Client().getObject(S3_BUCKET_NAME, s3Id); InputStream is = rawEmail.getObjectContent()) {
-
-						NewTransactionService.newTransaction(() -> createWorkOrderRequest((long) emailProp.get("id"), is));
-//						updateEmailProp((long) emailProp.get("id"), requestId);
-//						if(AccountUtil.isFeatureEnabled(FeatureLicense.SERVICE_REQUEST)) {
-//							createServiceRequest(rawEmail);
-//						} else {
-//							long requestId = createWorkOrderRequest(rawEmail);
-//	//						if (requestId != -1) { //Marked as processed even if no request is created because of no matching support email
-//								updateEmailProp((long) emailProp.get("id"), requestId);
-//	//						}
-//						}
+						createWorkOrderRequest((long) emailProp.get("id"), is);
 					}
 					catch(Exception e) {
 						LOGGER.error("Exception occurred ", e);
@@ -115,100 +106,14 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 		long orgId = -1;
 		if(supportEmail != null) {
 			orgId = supportEmail.getOrgId();
-			if (AccountUtil.getOrgBean(supportEmail.getOrgId()).isFeatureEnabled(FeatureLicense.CUSTOM_MAIL)) {
-				CustomMailMessageApi.createRecordToMailModule(supportEmail, emailMsg);
-			}
-			else if (AccountUtil.getOrgBean(supportEmail.getOrgId()).isFeatureEnabled(FeatureLicense.SERVICE_REQUEST)) {
-				ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", supportEmail.getOrgId());
-				ServiceRequestContext serviceRequestContext = new ServiceRequestContext();
-				User requester = new User();
-				requester.setEmail(parser.getFrom());
-				serviceRequestContext.setSubject(parser.getSubject());
-				if (parser.getPlainContent() != null) {
-					serviceRequestContext.setDescription(StringUtils.trim(parser.getPlainContent()));
-				} 
-				else {
-					serviceRequestContext.setDescription(StringUtils.trim(parser.getHtmlContent()));
-				}
-				List<DataSource> attachments = parser.getAttachmentList();
-				List<File> attachedFiles = null;
-				List<String> attachedFilesFileName = null;
-				List<String> attachedFilesContentType = null;
-				if (attachments != null && !attachments.isEmpty()) {
-					LOGGER.info("Attachment List : "+attachments);
-					attachedFiles = new ArrayList<>();
-					attachedFilesFileName = new ArrayList<>();
-					attachedFilesContentType = new ArrayList<>();
-					for (DataSource attachment : attachments) {
-						if (attachment.getName() != null) {
-							attachedFilesFileName.add(attachment.getName());
-							attachedFilesContentType.add(attachment.getContentType());
-							File file = File.createTempFile(attachment.getName(), "");
-							FileUtils.copyInputStreamToFile(attachment.getInputStream(), file);
-							attachedFiles.add(file);
-						}
-					}
-					LOGGER.info("Parsed Attachments : "+attachedFiles);
-				}
-				serviceRequestContext.setSiteId(supportEmail.getSiteId());
-				serviceRequestContext.setSourceType(ServiceRequestContext.SourceType.EMAIL_REQUEST.getIntVal());
-				serviceRequestContext.setRequester(requester);
-				requestId = bean.addServcieRequestFromEmail(serviceRequestContext, attachedFiles, attachedFilesFileName, attachedFilesContentType);
-				LOGGER.info("Added servicerequest from Email Parser : " + requestId );	
-			}
-			else {
-				ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", supportEmail.getOrgId());
-				WorkOrderContext workorderContext = new WorkOrderContext();
-				workorderContext.setSendForApproval(true);
-				User requester = new User();
-				requester.setEmail(parser.getFrom());
-				//not to send email while creating wo from email 
-				//requester.setInviteAcceptStatus(true);
-				
-				workorderContext.setSubject(parser.getSubject());
-				if (parser.getPlainContent() != null) {
-					workorderContext.setDescription(StringUtils.trim(parser.getPlainContent()));
-				} 
-				else {
-					workorderContext.setDescription(StringUtils.trim(parser.getHtmlContent()));
-				}
-				
-				List<DataSource> attachments = parser.getAttachmentList();
-				List<File> attachedFiles = null;
-				List<String> attachedFilesFileName = null;
-				List<String> attachedFilesContentType = null;
-				if (attachments != null && !attachments.isEmpty()) {
-					LOGGER.info("Attachment List : "+attachments);
-					attachedFiles = new ArrayList<>();
-					attachedFilesFileName = new ArrayList<>();
-					attachedFilesContentType = new ArrayList<>();
-					for (DataSource attachment : attachments) {
-//						LOGGER.info("Attachment Class name : "+attachment.getClass());
-//						LOGGER.info("Attachment File Name : "+attachment.getName());
-//						LOGGER.info("Attachment File Type : "+attachment.getContentType());
-						if (attachment.getName() != null) {
-							attachedFilesFileName.add(attachment.getName());
-							attachedFilesContentType.add(attachment.getContentType());
-							File file = File.createTempFile(attachment.getName(), "");
-							FileUtils.copyInputStreamToFile(attachment.getInputStream(), file);
-							attachedFiles.add(file);
-						}
-					}
-					LOGGER.info("Parsed Attachments : "+attachedFiles);
-				}
-				if (supportEmail.getAutoAssignGroupId() != -1) {
-					workorderContext.setAssignmentGroup((Group) LookupSpecialTypeUtil.getEmptyLookedupObject(FacilioConstants.ContextNames.GROUPS, supportEmail.getAutoAssignGroupId()));
-				}
-				workorderContext.setSiteId(supportEmail.getSiteId());
-				
-				workorderContext.setSourceType(TicketContext.SourceType.EMAIL_REQUEST);
-				
-				workorderContext.setRequester(requester);
-				requestId = bean.addWorkOrderFromEmail(workorderContext, attachedFiles, attachedFilesFileName, attachedFilesContentType);
-				LOGGER.info("Added Workorder from Email Parser : " + requestId );
-			}
+			requestId = NewTransactionService.newTransactionWithReturn(() -> addWorkRequest(emailMsg, parser, supportEmail));
 		}
 		updateEmailProp(emailpropId, requestId, orgId);
+	}
+
+	private long addWorkRequest(MimeMessage emailMsg, MimeMessageParser parser, SupportEmailContext supportEmail) throws Exception {
+		ModuleCRUDBean bean = (ModuleCRUDBean) TransactionBeanFactory.lookup("ModuleCRUD", supportEmail.getOrgId());
+		return bean.addRequestFromEmail(emailMsg, parser, supportEmail);
 	}
 
 	private SupportEmailContext getSupportEmail(MimeMessageParser parser) throws Exception {
