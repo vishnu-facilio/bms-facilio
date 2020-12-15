@@ -24,6 +24,7 @@ import com.facilio.bmsconsole.context.sensor.SensorEventContext;
 import com.facilio.bmsconsole.context.sensor.SensorRollUpAlarmContext;
 import com.facilio.bmsconsole.context.sensor.SensorRollUpAlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.sensor.SensorRollUpEventContext;
+import com.facilio.bmsconsole.context.sensor.SensorRuleType;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.tenant.TenantSpaceContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
@@ -1001,7 +1002,6 @@ public class FacilioConstants {
 		public static final String WORKFLOW_PARALLEL_RULE_EXECUTION_MAP = "workflowParallelRuleExecutionMap";
 		public static final String RECORD_CONTEXT_FOR_RULE_EXECUTION = "recordContextForRuleExecution";
 		public static final String IS_PARALLEL_RULE_EXECUTION= "isParallelRuleExecution";
-		public static final String STOP_PARALLEL_RULE_EXECUTION= "stopParallelRuleExecution";
 		public static final String PARENT_RULE_FIELD = "parentRuleField";
 		public static final String ON_SUCCESS_FIELD = "onSuccessField";
 		public static final String WORKFLOW_RULE_CACHE_MAP = "workflowRuleCacheMap";
@@ -2249,7 +2249,7 @@ public class FacilioConstants {
 		public static final String IS_PARALLEL_FORMULA_EXECUTION= "isParallelFormulaExecution";
 		public static final String CALCULATE_VM_THROUGH_FORMULA = "calculateVmThroughFormula";
 		public static final String IS_OLD_AGENT = "isOldAgent";
-		public static final String DATA_PROCESSING_LOGGER_LEVEL = "dataProcessingLoggerLevel";
+		public static final String DATA_PROCESSING_LOGGER_LEVEL = "dataProcessingLoggerLevel";		
 	}
 	
 	public static class Alarm {
@@ -2738,5 +2738,42 @@ public class FacilioConstants {
 		public Map<Integer, UserType> getAllTypes() {
 			return typeMap;
 		}
+	}
+	
+	public static enum ParallelRuleExecutionProp {
+	    
+		RECORD_BASED(1),
+		MODULE_BASED(2),
+		RULE_RECORD_BASED(3),
+		;
+
+		public int getIndex() {
+			return ordinal()+1;
+		}
+		
+		public String getValue() {
+	        return name();
+	    }
+		
+		private ParallelRuleExecutionProp() {
+	    }
+	    
+	    private int instantJobType;
+
+	    public int getInstantJobType() {
+			return instantJobType;
+		}
+
+	    private ParallelRuleExecutionProp(int parallelRuleExecutionProp) {
+	        this.instantJobType = instantJobType;
+	    }
+	    	
+	    public static ParallelRuleExecutionProp valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+	    
 	}
 }

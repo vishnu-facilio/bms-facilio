@@ -1128,6 +1128,26 @@ public class WorkflowRuleAPI {
 		instantParallelWorkflowRuleJobContext.put(FacilioConstants.ContextNames.WORKFLOW_PARALLEL_RULE_EXECUTION_MAP, workflowRuleExecutionMap);
 		return instantParallelWorkflowRuleJobContext;
 	}
+	
+	public static FacilioContext addAdditionalPropsForModuleBasedInstantJob(String moduleName, LinkedList recordList, Map<Long, List<UpdateChangeSet>> currentChangeSet, List<EventType> eventTypes, FacilioContext context, RuleType... ruleTypes) {
+		FacilioContext newContext = new FacilioContext();
+		newContext.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		newContext.put(FacilioConstants.ContextNames.RECORD_LIST, recordList);
+		newContext.put(FacilioConstants.ContextNames.CHANGE_SET, currentChangeSet);
+		newContext.put(FacilioConstants.ContextNames.EVENT_TYPE_LIST, eventTypes);
+		newContext.put(FacilioConstants.ContextNames.RULE_TYPES, ruleTypes);
+		
+		newContext.put(FacilioConstants.ContextNames.CURRRENT_READING_DATA_META, (Map<String, ReadingDataMeta>) context.get(FacilioConstants.ContextNames.CURRRENT_READING_DATA_META));
+		newContext.put(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META, (Map<String, ReadingDataMeta>) context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META));
+		newContext.put(FacilioConstants.ContextNames.IS_READING_RULE_EXECUTE_FROM_JOB, (Boolean) context.get(FacilioConstants.ContextNames.IS_READING_RULE_EXECUTE_FROM_JOB));
+		newContext.put(FacilioConstants.ContextNames.READING_RULE_ALARM_META, (Map<Long, ReadingRuleAlarmMeta>) context.get(FacilioConstants.ContextNames.READING_RULE_ALARM_META));	
+		newContext.put(EventConstants.EventContextNames.IS_HISTORICAL_EVENT, (Boolean) context.get(EventConstants.EventContextNames.IS_HISTORICAL_EVENT));	
+		newContext.put(EventConstants.EventContextNames.PREVIOUS_EVENT_META, (ReadingEventContext)context.get(EventConstants.EventContextNames.PREVIOUS_EVENT_META));	
+		newContext.put(EventConstants.EventContextNames.EVENT_RULE_LIST, context.get(EventConstants.EventContextNames.EVENT_RULE_LIST));	
+		newContext.put(FacilioConstants.ContextNames.READING_RULE_ALARM_OCCURANCE, (AlarmOccurrenceContext) context.get(FacilioConstants.ContextNames.READING_RULE_ALARM_OCCURANCE));	
+		newContext.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, context.get(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME));	
+		return newContext;
+	}
 
 
 	public static List<WorkflowRuleContext> getWorkflowRuleByRuletype(List<Long> parentRuleIds,RuleType ruletype) throws Exception {

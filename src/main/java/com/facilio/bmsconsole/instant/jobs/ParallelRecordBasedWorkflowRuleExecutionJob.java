@@ -43,7 +43,6 @@ public class ParallelRecordBasedWorkflowRuleExecutionJob extends InstantJob{
 				filteredContextForRecordSpecificRulesExecution.put(FacilioConstants.ContextNames.RECORD, (Object) workflowRuleExecutionMap.get(FacilioConstants.ContextNames.RECORD));
 				filteredContextForRecordSpecificRulesExecution.put(FacilioConstants.ContextNames.CHANGE_SET, (Map<Long, List<UpdateChangeSet>>)  workflowRuleExecutionMap.get(FacilioConstants.ContextNames.CHANGE_SET));
 				filteredContextForRecordSpecificRulesExecution.put(FacilioConstants.ContextNames.EVENT_TYPE_LIST, (List<EventType>) workflowRuleExecutionMap.get(FacilioConstants.ContextNames.EVENT_TYPE_LIST));
-				filteredContextForRecordSpecificRulesExecution.put(FacilioConstants.ContextNames.STOP_PARALLEL_RULE_EXECUTION, true);
 				executeWorkflowChain.execute();
 				
 				LOGGER.info("ParallelRecordBasedWorkflowRuleExecutionJob executed for record: "+(Object)workflowRuleExecutionMap.get(FacilioConstants.ContextNames.RECORD) +" ModuleName -- " + (String)workflowRuleExecutionMap.get(FacilioConstants.ContextNames.MODULE_NAME));		

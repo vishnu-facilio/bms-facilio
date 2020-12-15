@@ -12,7 +12,10 @@ public class EnableParallelWorkflowRuleJobsExecution extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		
-		context.put(FacilioConstants.ContextNames.IS_PARALLEL_RULE_EXECUTION, Boolean.TRUE);
+		Boolean parallelRuleExecutionProp = (Boolean) context.get(FacilioConstants.ContextNames.IS_PARALLEL_RULE_EXECUTION);
+		if(parallelRuleExecutionProp == null) {
+			context.put(FacilioConstants.ContextNames.IS_PARALLEL_RULE_EXECUTION, Boolean.TRUE);
+		}
 		return false;
 	}
 

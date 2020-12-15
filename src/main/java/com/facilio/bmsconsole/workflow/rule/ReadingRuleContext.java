@@ -983,6 +983,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 				newContext.put(FacilioConstants.ContextNames.READINGS, Collections.singletonList(ruleLogReadingContext));
 				newContext.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.SYSTEM);
 				newContext.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
+				newContext.put(FacilioConstants.ContextNames.IS_PARALLEL_RULE_EXECUTION, Boolean.FALSE);
 				addRuleData.execute();
 			}
 			
