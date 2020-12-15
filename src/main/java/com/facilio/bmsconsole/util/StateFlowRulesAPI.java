@@ -366,6 +366,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 				timeLogProp = new HashMap<>();
 			}
 
+			timeLogProp.put("moduleId", timeLogModule.getModuleId());
 			timeLogProp.put("parentId", parentId);
 			timeLogProp.put("fromStatusId", toStatus.getId());
 			timeLogProp.put("startTime", currentTime);

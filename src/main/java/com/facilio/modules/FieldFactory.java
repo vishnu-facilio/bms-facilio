@@ -8098,6 +8098,7 @@ public class FieldFactory {
         List<FacilioField> list = new ArrayList<>();
 
         list.add(getField("id", "ID", module, FieldType.ID));
+        list.add(getField("moduleId", "MODULEID", module, FieldType.NUMBER));
         list.add(getField("name", "NAME", module, FieldType.STRING));
         list.add(getField("parentId", "PARENT_ID", module, FieldType.NUMBER));
 
