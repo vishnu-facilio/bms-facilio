@@ -263,7 +263,7 @@ public class ApplicationApi {
         if (tabIdAppIdMappingContextList != null && !tabIdAppIdMappingContextList.isEmpty()) {
             for (TabIdAppIdMappingContext tabIdAppIdMappingContext : tabIdAppIdMappingContextList) {
                 if (tabIdAppIdMappingContext.getModuleId() > 0) {
-                    moduleIds.add(tabIdAppIdMappingContext.getTabId());
+                    moduleIds.add(tabIdAppIdMappingContext.getModuleId());
                 }
                 if (tabIdAppIdMappingContext.getSpecialType() != null && !tabIdAppIdMappingContext.getSpecialType().equalsIgnoreCase("null") && !tabIdAppIdMappingContext.getSpecialType().equalsIgnoreCase("")) {
                     specialTypes.add(tabIdAppIdMappingContext.getSpecialType());
