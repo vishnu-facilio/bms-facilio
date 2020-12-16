@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.commands.purchaserequest;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.bmsconsole.util.PurchaseOrderAPI;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestLineItemContext;
 import com.facilio.bmsconsoleV3.util.QuotationAPI;
@@ -48,6 +49,7 @@ public class FetchPurchaseRequestDetailsCommandV3 extends FacilioCommand {
         		
         			List<V3PurchaseRequestLineItemContext> list = builder.get();
         			purchaseRequestContext.setLineItems(list);
+        			purchaseRequestContext.setTermsAssociated(PurchaseOrderAPI.fetchAssociatedPrTerms(purchaseRequestContext.getId()));
 					QuotationAPI.setTaxSplitUp(purchaseRequestContext, purchaseRequestContext.getLineItems());
         		} 	
             }

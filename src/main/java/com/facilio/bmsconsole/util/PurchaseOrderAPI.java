@@ -6,8 +6,12 @@ import com.facilio.bmsconsoleV3.context.V3TermsAndConditionContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PoAssociatedTermsContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderLineItemContext;
+import com.facilio.bmsconsoleV3.context.purchaserequest.PrAssociatedTermsContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -17,6 +21,7 @@ import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -260,6 +265,42 @@ public class PurchaseOrderAPI {
 				;
 		List<V3PoAssociatedTermsContext> list = builder.get();
 		return list;
+	}
 
+	public static List<PrAssociatedTermsContext> fetchAssociatedPrTerms(Long id) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PR_ASSOCIATED_TERMS);
+		List<FacilioField> fields = modBean.getAllFields(module.getName());
+		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+
+		SelectRecordsBuilder<PrAssociatedTermsContext> builder = new SelectRecordsBuilder<PrAssociatedTermsContext>()
+				.module(module)
+				.beanClass(PrAssociatedTermsContext.class)
+				.select(fields)
+				.andCondition(CriteriaAPI.getCondition("PURCHASE_REQUEST_ID", "purchaseRequest", String.valueOf(id),NumberOperators.EQUALS))
+				.fetchSupplement((LookupField) fieldsAsMap.get("terms"))
+				;
+		List<PrAssociatedTermsContext> list = builder.get();
+		return list;
+	}
+	public static List<PrAssociatedTermsContext> fetchTermsForConvertPo(List<Long> idList) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PR_ASSOCIATED_TERMS);
+		List<FacilioField> fields = modBean.getAllFields(module.getName());
+		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+		List<FacilioField> termsFields = modBean.getAllFields(FacilioConstants.ContextNames.TERMS_AND_CONDITIONS);
+		Map<String, FacilioField> termsFieldsAsMap = FieldFactory.getAsMap(termsFields);
+		Criteria lookupCriteria = new Criteria();
+		lookupCriteria.addAndCondition(CriteriaAPI.getCondition(termsFieldsAsMap.get("defaultOnPo"), String.valueOf(false) , BooleanOperators.IS));
+		SelectRecordsBuilder<PrAssociatedTermsContext> builder = new SelectRecordsBuilder<PrAssociatedTermsContext>()
+				.module(module)
+				.beanClass(PrAssociatedTermsContext.class)
+				.select(fields)
+				.andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("terms"), lookupCriteria, LookupOperator.LOOKUP))
+				.andCondition(CriteriaAPI.getCondition("PURCHASE_REQUEST_ID", "purchaseRequest", StringUtils.join(idList, ","),NumberOperators.EQUALS))
+				.fetchSupplement((LookupField) fieldsAsMap.get("terms"))
+				;
+		List<PrAssociatedTermsContext> list = builder.get();
+		return list;
 	}
 }

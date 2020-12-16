@@ -79,7 +79,6 @@ public class POAfterCreateOrEditV3Command extends FacilioCommand {
                         }
 
                         List<FacilioField> updatedFields = new ArrayList<FacilioField>();
-                        updatedFields.add(fieldsMap.get("totalCost"));
                         updatedFields.add(fieldsMap.get("totalQuantity"));
 
                         double totalQuantity = getTotalQuantity(purchaseOrderContext.getId());

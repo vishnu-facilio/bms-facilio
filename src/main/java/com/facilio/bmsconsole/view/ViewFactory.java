@@ -843,6 +843,11 @@ public class ViewFactory {
 
 		order = 1;
 		views = new LinkedHashMap<>();
+		views.put("all", getAllPRTerms().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.PR_ASSOCIATED_TERMS, views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
 		views.put("all", getAllWorkOrderCostView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.WORKORDER_COST, views);
 
@@ -7666,6 +7671,24 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All PO Terms");
+		allView.setModuleName(module.getName());
+		allView.setSortFields(sortFields);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+
+		return allView;
+	}
+
+	private static FacilioView getAllPRTerms() {
+
+		FacilioModule module = ModuleFactory.getPRTermsModule();
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All PR Terms");
 		allView.setModuleName(module.getName());
 		allView.setSortFields(sortFields);
 

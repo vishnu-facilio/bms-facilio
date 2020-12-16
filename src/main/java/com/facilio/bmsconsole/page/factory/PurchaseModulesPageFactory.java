@@ -42,6 +42,12 @@ public class PurchaseModulesPageFactory extends PageFactory {
         attachmentWidget.setTitle("Attachments");
         tab2Sec1.addWidget(attachmentWidget);
 
+        Page.Tab tab3 = page.new Tab("Related Records");
+        page.addTab(tab3);
+        Page.Section tab3Sec1 = page.new Section();
+        tab3.addSection(tab3Sec1);
+        addSubModuleRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.PR_ASSOCIATED_TERMS, module.getModuleId());
+
 
         return page;
     }

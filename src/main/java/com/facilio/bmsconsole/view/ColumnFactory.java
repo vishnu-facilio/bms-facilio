@@ -221,6 +221,7 @@ public class ColumnFactory {
 		columnMap.put("quoteterms-default", getDefaultTermsSubModuleColumns());
 
 		columnMap.put("poterms-default", getDefaultTermsSubModuleColumns());
+		columnMap.put("prterms-default", getDefaultTermsSubModuleColumns());
 
 		columnMap.put("budget-default", getDefaultBudgetColumns());
 

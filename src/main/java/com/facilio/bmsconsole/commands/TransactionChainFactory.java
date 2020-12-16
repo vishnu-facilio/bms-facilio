@@ -4117,9 +4117,21 @@ public class TransactionChainFactory {
 		c.addCommand(new AssociateTermsToPOCommand());
 		return c;
 	}
+	public static FacilioChain getAssociateTermsToPRChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new AssociateTermsToPRCommand());
+		return c;
+	}
+
 	public static FacilioChain getDisAssociateTermsToPOChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new DisAssociateTermsFromPoCommand());
+		return c;
+	}
+
+	public static FacilioChain getDisAssociateTermsToPRChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new DisAssociateTermsFromPrCommand());
 		return c;
 	}
 

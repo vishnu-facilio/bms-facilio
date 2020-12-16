@@ -1,24 +1,33 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.Collections;
-import java.util.List;
-
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.PurchaseRequestContext;
 import com.facilio.bmsconsole.context.PurchaseRequestLineItemContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsoleV3.context.purchaserequest.PrAssociatedTermsContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.util.Collections;
+import java.util.List;
 
 public class PurchaseRequestAction extends FacilioAction {
 	private static final long serialVersionUID = 1L;
 
 	private String moduleName;
+	private List<PrAssociatedTermsContext> termsAssociated;
+
+	public List<PrAssociatedTermsContext> getTermsAssociated() {
+		return termsAssociated;
+	}
+
+	public void setTermsAssociated(List<PrAssociatedTermsContext> termsAssociated) {
+		this.termsAssociated = termsAssociated;
+	}
 	public String getModuleName() {
 		return moduleName;
 	}
@@ -246,6 +255,31 @@ public class PurchaseRequestAction extends FacilioAction {
 		return SUCCESS;
 	
 	}
-	
+
+	public String associateTerms() throws Exception {
+
+		FacilioChain chain = TransactionChainFactory.getAssociateTermsToPRChain();
+		chain.getContext().put(FacilioConstants.ContextNames.RECORD_ID, recordId );
+		chain.getContext().put(FacilioConstants.ContextNames.PR_ASSOCIATED_TERMS, termsAssociated );
+		chain.execute();
+
+		setResult(FacilioConstants.ContextNames.PR_ASSOCIATED_TERMS, chain.getContext().get(FacilioConstants.ContextNames.PR_ASSOCIATED_TERMS));
+
+		return SUCCESS;
+	}
+
+	public String disAssociateTerms() throws Exception {
+
+		FacilioChain chain = TransactionChainFactory.getDisAssociateTermsToPRChain();
+		chain.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds );
+
+		chain.execute();
+
+		setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, chain.getContext().get(FacilioConstants.ContextNames.RECORD_ID_LIST));
+
+		return SUCCESS;
+	}
+
+
 
 }

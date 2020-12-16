@@ -3904,6 +3904,26 @@
 			<param name="permission">READ</param>
 		</action>
 
+		<action name="associateTerms"
+				class="com.facilio.bmsconsole.actions.PurchaseRequestAction"
+				method="associateTerms">
+			<param name="moduleName">purchaseorder</param>
+			<param name="permission">CREATE,UPDATE</param>
+		</action>
+
+		<action name="associateTerms"
+				class="com.facilio.bmsconsole.actions.PurchaseRequestAction"
+				method="associateTerms">
+			<param name="moduleName">purchaseorder</param>
+			<param name="permission">CREATE,UPDATE</param>
+		</action>
+		<action name="disassociateTerms"
+				class="com.facilio.bmsconsole.actions.PurchaseRequestAction"
+				method="disAssociateTerms">
+			<param name="moduleName">purchaseorder</param>
+			<param name="permission">CREATE,UPDATE</param>
+		</action>
+
 	</package>
 	<package name="purchaseOrderViewApi"
 		namespace="/api/v2/purchaseorder/view" extends="v2Api">

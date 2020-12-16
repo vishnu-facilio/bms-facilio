@@ -3,8 +3,11 @@ package com.facilio.bmsconsoleV3.commands.purchaseorder;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
+import com.facilio.bmsconsole.util.PurchaseOrderAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsoleV3.context.purchaseorder.V3PoAssociatedTermsContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
+import com.facilio.bmsconsoleV3.context.purchaserequest.PrAssociatedTermsContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioChain;
@@ -48,6 +51,17 @@ public class UpdateIsPoCreatedCommand extends FacilioCommand {
                             json.putAll(map);
                             jsonList.add(json);
                         }
+                    }
+                    List<PrAssociatedTermsContext> terms = PurchaseOrderAPI.fetchTermsForConvertPo(po.getPrIds());
+                    if (CollectionUtils.isNotEmpty(terms)) {
+                        List<V3PoAssociatedTermsContext> poAssociatedTerms = new ArrayList<>();
+                        for (PrAssociatedTermsContext prterm : terms) {
+                            V3PoAssociatedTermsContext associatedTerm = new V3PoAssociatedTermsContext();
+                            associatedTerm.setPurchaseOrder(po);
+                            associatedTerm.setTerms(prterm.getTerms());
+                            poAssociatedTerms.add(associatedTerm);
+                        }
+                        PurchaseOrderAPI.updateTermsAssociatedV3(poAssociatedTerms);
                     }
                 }
                 if(CollectionUtils.isNotEmpty(jsonList)) {

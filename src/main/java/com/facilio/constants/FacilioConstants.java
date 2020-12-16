@@ -18,34 +18,25 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.reservation.ExternalAttendeeContext;
 import com.facilio.bmsconsole.context.reservation.InternalAttendeeContext;
 import com.facilio.bmsconsole.context.reservation.ReservationContext;
-import com.facilio.bmsconsole.context.sensor.SensorAlarmContext;
-import com.facilio.bmsconsole.context.sensor.SensorAlarmOccurrenceContext;
-import com.facilio.bmsconsole.context.sensor.SensorEventContext;
-import com.facilio.bmsconsole.context.sensor.SensorRollUpAlarmContext;
-import com.facilio.bmsconsole.context.sensor.SensorRollUpAlarmOccurrenceContext;
-import com.facilio.bmsconsole.context.sensor.SensorRollUpEventContext;
-import com.facilio.bmsconsole.context.sensor.SensorRuleType;
+import com.facilio.bmsconsole.context.sensor.*;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.tenant.TenantSpaceContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.SLAWorkflowCommitmentRuleContext;
 import com.facilio.bmsconsoleV3.context.*;
+import com.facilio.bmsconsoleV3.context.budget.*;
+import com.facilio.bmsconsoleV3.context.communityfeatures.*;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementSharingInfoContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnnouncementContext;
-import com.facilio.bmsconsoleV3.context.budget.*;
-import com.facilio.bmsconsoleV3.context.purchaseorder.V3PoAssociatedTermsContext;
-import com.facilio.bmsconsoleV3.context.facilitybooking.FacilityAmenitiesContext;
-import com.facilio.bmsconsoleV3.context.facilitybooking.FacilityContext;
-import com.facilio.bmsconsoleV3.context.facilitybooking.FacilitySpecialAvailabilityContext;
-import com.facilio.bmsconsoleV3.context.facilitybooking.WeekDayAvailability;
 import com.facilio.bmsconsoleV3.context.facilitybooking.*;
+import com.facilio.bmsconsoleV3.context.purchaseorder.V3PoAssociatedTermsContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderLineItemContext;
+import com.facilio.bmsconsoleV3.context.purchaserequest.PrAssociatedTermsContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestLineItemContext;
 import com.facilio.bmsconsoleV3.context.quotation.*;
-import com.facilio.bmsconsoleV3.context.communityfeatures.*;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitChecklistContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistCategoryContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistContext;
@@ -1558,6 +1549,7 @@ public class FacilioConstants {
 		public static final String CONTRACT_ASSOCIATED_ASSETS = "contractassets";
 		public static final String CONTRACT_ASSOCIATED_TERMS = "contractterms";
 		public static final String PO_ASSOCIATED_TERMS = "poterms";
+		public static final String PR_ASSOCIATED_TERMS = "prterms";
 		
 		public static final String CONTRACT_TYPE = "Contract_Type";
 		
@@ -2142,6 +2134,7 @@ public class FacilioConstants {
 			classMap.put(TAX_GROUPS, TaxGroupContext.class);
 			classMap.put(QUOTE_ASSOCIATED_TERMS, QuotationAssociatedTermsContext.class);
 			classMap.put(PO_ASSOCIATED_TERMS, V3PoAssociatedTermsContext.class);
+			classMap.put(PR_ASSOCIATED_TERMS, PrAssociatedTermsContext.class);
 			classMap.put(QUOTE_ACTIVITY, ActivityContext.class);
 
 			classMap.put(WorkPermit.WORKPERMIT, WorkPermitContext.class);

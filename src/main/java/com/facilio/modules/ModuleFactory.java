@@ -4099,6 +4099,14 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getPRTermsModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("prterms");
+		module.setDisplayName("PR Associated Terms");
+		module.setTableName("PR_Associated_Terms");
+		return module;
+	}
+
 	public static FacilioModule getAnnouncementModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("announcement");

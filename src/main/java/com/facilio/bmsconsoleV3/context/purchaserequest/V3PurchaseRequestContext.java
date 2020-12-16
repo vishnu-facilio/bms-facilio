@@ -27,6 +27,16 @@ public class V3PurchaseRequestContext extends BaseLineItemsParentModuleContext {
 	private LocationContext billToAddress;
 	private User requestedBy;
 	private Boolean isPoCreated;
+	private List<PrAssociatedTermsContext> termsAssociated;
+
+
+	public List<PrAssociatedTermsContext> getTermsAssociated() {
+		return termsAssociated;
+	}
+
+	public void setTermsAssociated(List<PrAssociatedTermsContext> termsAssociated) {
+		this.termsAssociated = termsAssociated;
+	}
 
 	public void setName(String name) {
 		this.name = name;
