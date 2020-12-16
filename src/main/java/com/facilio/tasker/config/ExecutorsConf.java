@@ -1,6 +1,12 @@
 package com.facilio.tasker.config;
 
+import com.facilio.util.FacilioUtil;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -25,10 +31,63 @@ public class ExecutorsConf {
 	
 	@Override
 	public String toString() {
-		return String.valueOf(executors);
+		return new StringBuilder()
+				.append(executors)
+				.append(",\n Global ")
+				.append(globalParams)
+				.toString();
+	}
+
+	private Params globalParams;
+	@XmlElement(name="global")
+	public Params getGlobalParams() {
+		return globalParams;
+	}
+	public void setGlobalParams(Params globalParams) {
+		this.globalParams = globalParams;
+	}
+
+	public static class Params {
+
+		private List<Long> include;
+		@XmlElement(name="include")
+		public void setInclude(String include) {
+			this.include = parseOrgIds(include);
+		}
+		public List<Long> getIncludedOrgs() {
+			return include;
+		}
+
+		private List<Long> exclude;
+		@XmlElement(name="exclude")
+		public void setExclude(String exclude) {
+			this.exclude = parseOrgIds(exclude);
+		}
+		public List<Long> getExcludedOrgs() {
+			return exclude;
+		}
+
+		private List<Long> parseOrgIds(String str) {
+			if (StringUtils.isEmpty(str)) {
+				return null;
+			}
+			String[] orgs = FacilioUtil.splitByComma(str);
+			return Arrays.stream(orgs)
+					.map(Long::parseLong)
+					.collect(Collectors.toList());
+		}
+
+		@Override
+		public String toString() {
+			return new StringBuilder("Params{")
+					.append("include=").append(include)
+					.append(", exclude=").append(exclude)
+					.append('}')
+					.toString();
+		}
 	}
 	
-	public final static class ExecutorConf {
+	public final static class ExecutorConf extends Params {
 		public ExecutorConf() {
 			// TODO Auto-generated constructor stub
 		}
@@ -71,11 +130,20 @@ public class ExecutorsConf {
 		public void setMaxRetry(int maxRetry) {
 			this.maxRetry = maxRetry;
 		}
+
 		@Override
 		public String toString() {
-			return "(name, period, threads, maxRetry)=("+name+", "+period+", "+threads+", "+maxRetry+")";
+			return new StringBuilder("ExecutorConf{")
+					.append("name='").append(name).append('\'')
+					.append(", period=").append(period)
+					.append(", threads=").append(threads)
+					.append(", maxRetry=").append(maxRetry)
+					.append("include=").append(getIncludedOrgs())
+					.append(", exclude=").append(getExcludedOrgs())
+					.append('}')
+					.toString();
 		}
-		
+
 		@Override
 		public int hashCode() {
 			// TODO Auto-generated method stub

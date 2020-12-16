@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -70,6 +71,18 @@ public class FacilioScheduler {
 		}
 	}
 
+	private static List<Long> getIncludedOrgs (ExecutorsConf.ExecutorConf executorConf, ExecutorsConf executorsConf) {
+		return executorConf.getIncludedOrgs() == null ?
+				executorsConf.getGlobalParams().getIncludedOrgs() :
+				executorConf.getIncludedOrgs();
+	}
+
+	private static List<Long> getExcludedOrgs (ExecutorsConf.ExecutorConf executorConf, ExecutorsConf executorsConf) {
+		return executorConf.getExcludedOrgs() == null ?
+				executorsConf.getGlobalParams().getExcludedOrgs() :
+				executorConf.getExcludedOrgs();
+	}
+
 	private static void startExecutors() throws JAXBException {
 		ClassLoader classLoader = FacilioScheduler.class.getClassLoader();
 		String executorFile = "executors";
@@ -85,12 +98,12 @@ public class FacilioScheduler {
 		
 		if(executorsConf.getExecutors() != null) {
 			for(ExecutorsConf.ExecutorConf executorConf : executorsConf.getExecutors()) {
-				if(executorConf.getName() != null && !executorConf.getName().isEmpty() && executorConf.getPeriod() != -1 && executorConf.getThreads() != -1) {
+				if(StringUtils.isNotEmpty(executorConf.getName()) && executorConf.getPeriod() != -1 && executorConf.getThreads() != -1) {
 					if(executorConf.getMaxRetry() != -1) {
-						executors.add(new Executor(executorConf.getName(), executorConf.getThreads(), executorConf.getPeriod(), executorConf.getMaxRetry()));
+						executors.add(new Executor(executorConf.getName(), executorConf.getThreads(), executorConf.getPeriod(), executorConf.getMaxRetry(), getIncludedOrgs(executorConf, executorsConf), getExcludedOrgs(executorConf, executorsConf)));
 					}
 					else {
-						executors.add(new Executor(executorConf.getName(), executorConf.getThreads(), executorConf.getPeriod()));
+						executors.add(new Executor(executorConf.getName(), executorConf.getThreads(), executorConf.getPeriod(), getIncludedOrgs(executorConf, executorsConf), getExcludedOrgs(executorConf, executorsConf)));
 					}
 				}
 			}

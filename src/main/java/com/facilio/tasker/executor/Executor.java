@@ -11,7 +11,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.util.FacilioUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -34,14 +33,11 @@ public class Executor implements Runnable {
 	private int bufferPeriod;
 	private int maxRetry = MAX_RETRY;
 	private final ConcurrentMap<String, JobTimeOutInfo> jobMonitor = new ConcurrentHashMap<>();
+	private List<Long> includedOrgs = null, excludedOrgs = null;
 
-	public Executor(String name, int noOfThreads, int bufferPeriod) {
+	public Executor(String name, int noOfThreads, int bufferPeriod, List<Long> includedOrgs, List<Long> excludedOrgs) {
 		// TODO Auto-generated constructor stub
-		this(name, noOfThreads, bufferPeriod, -1);
-	}
-
-	public Executor(String name, int noOfThreads, int bufferPeriod, int maxRetry) {
-		this (name, noOfThreads, bufferPeriod, maxRetry, null, null);
+		this(name, noOfThreads, bufferPeriod, -1, includedOrgs, excludedOrgs);
 	}
 	
 	public Executor(String name, int noOfThreads, int bufferPeriod, int maxRetry, List<Long> includedOrgs, List<Long> excludedOrgs) {
@@ -51,6 +47,8 @@ public class Executor implements Runnable {
 		if(maxRetry != -1) {
 			this.maxRetry = maxRetry;
 		}
+		this.includedOrgs = includedOrgs;
+		this.excludedOrgs = excludedOrgs;
 		
 		executor = Executors.newScheduledThreadPool(noOfThreads+1);
 		executor.scheduleAtFixedRate(this, 0, bufferPeriod*1000, TimeUnit.MILLISECONDS);
@@ -70,8 +68,8 @@ public class Executor implements Runnable {
 			
 			LOGGER.debug(name+"::"+startTime+"::"+endTime);
 			
-			List<JobContext> jobs = JobStore.getJobs(name, startTime, endTime, getMaxRetry());
-			jobs.addAll(JobStore.getIncompletedJobs(name, startTime, endTime, getMaxRetry()));
+			List<JobContext> jobs = JobStore.getJobs(name, startTime, endTime, getMaxRetry(), includedOrgs, excludedOrgs);
+			jobs.addAll(JobStore.getIncompletedJobs(name, startTime, endTime, getMaxRetry(), includedOrgs, excludedOrgs));
 			for(JobContext jc : jobs) {
 				try {
 					scheduleJob(jc);

@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.parser.ParseException;
@@ -240,8 +242,24 @@ public class JobStore {
 		}
 		
 	}
+
+//	public static List<JobContext> getJobs(String executorName, long startTime, long endTime, int maxRetry) throws SQLException, JsonParseException, JsonMappingException, IOException, ParseException {
+//		return getJobs(executorName, startTime, endTime, maxRetry, null, null);
+//	}
+
+	private static void appendOrgId (StringBuilder sql, List<Long> orgIds, boolean isNot) {
+		if (CollectionUtils.isNotEmpty(orgIds)) {
+			sql.append(" AND ORGID");
+			if (isNot) {
+				sql.append(" NOT");
+			}
+			sql.append(" IN (")
+					.append(StringUtils.join(orgIds, ","))
+					.append(")");
+		}
+	}
 	
-	public static List<JobContext> getJobs(String executorName, long startTime, long endTime, int maxRetry) throws SQLException, JsonParseException, JsonMappingException, IOException, ParseException {
+	public static List<JobContext> getJobs(String executorName, long startTime, long endTime, int maxRetry, List<Long> include, List<Long> exclude) throws SQLException, JsonParseException, JsonMappingException, IOException, ParseException {
 		Connection conn = null;
 		PreparedStatement getPstmt = null;
 		ResultSet rs = null;
@@ -250,7 +268,12 @@ public class JobStore {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			getPstmt = conn.prepareStatement("SELECT * FROM Jobs WHERE EXECUTOR_NAME = ? AND IS_ACTIVE = ? AND STATUS = ? AND NEXT_EXECUTION_TIME < ? AND EXECUTION_ERROR_COUNT < ?");
+
+			StringBuilder sql = new StringBuilder("SELECT * FROM Jobs WHERE EXECUTOR_NAME = ? AND IS_ACTIVE = ? AND STATUS = ? AND NEXT_EXECUTION_TIME < ? AND EXECUTION_ERROR_COUNT < ?");
+			appendOrgId(sql, include, false);
+			appendOrgId(sql, exclude, true);
+
+			getPstmt = conn.prepareStatement(sql.toString());
 			getPstmt.setString(1, executorName);
 			getPstmt.setBoolean(2, JobConstants.ENABLED);
 			getPstmt.setInt(3, JobConstants.JOB_COMPLETED);
@@ -272,7 +295,11 @@ public class JobStore {
 		return jcs;
 	}
 
-	public static List<JobContext> getIncompletedJobs(String executorName, long startTime, long endTime, int maxRetry) throws SQLException, JsonParseException, JsonMappingException, IOException, ParseException {
+//	public static List<JobContext> getIncompletedJobs(String executorName, long startTime, long endTime, int maxRetry) throws SQLException, JsonParseException, JsonMappingException, IOException, ParseException {
+//		return getIncompletedJobs(executorName, startTime, endTime, maxRetry, null, null);
+//	}
+
+	public static List<JobContext> getIncompletedJobs(String executorName, long startTime, long endTime, int maxRetry, List<Long> include, List<Long> exclude) throws SQLException, IOException, ParseException {
 		Connection conn = null;
 		PreparedStatement getPstmt = null;
 		ResultSet rs = null;
@@ -281,7 +308,10 @@ public class JobStore {
 
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			getPstmt = conn.prepareStatement("SELECT * FROM Jobs WHERE NEXT_EXECUTION_TIME < ? and EXECUTOR_NAME = ? AND IS_ACTIVE = ? AND STATUS = ? AND (CURRENT_EXECUTION_TIME + TRANSACTION_TIMEOUT) < ? AND EXECUTION_ERROR_COUNT < ?");
+			StringBuilder sql = new StringBuilder("SELECT * FROM Jobs WHERE NEXT_EXECUTION_TIME < ? and EXECUTOR_NAME = ? AND IS_ACTIVE = ? AND STATUS = ? AND (CURRENT_EXECUTION_TIME + TRANSACTION_TIMEOUT) < ? AND EXECUTION_ERROR_COUNT < ?");
+			appendOrgId(sql, include, false);
+			appendOrgId(sql, exclude, true);
+			getPstmt = conn.prepareStatement(sql.toString());
 			getPstmt.setLong(1, endTime);
 			getPstmt.setString(2, executorName);
 			getPstmt.setBoolean(3, JobConstants.ENABLED);
