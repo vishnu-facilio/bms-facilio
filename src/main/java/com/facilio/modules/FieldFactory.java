@@ -291,6 +291,7 @@ public class FieldFactory {
                 "adjustmentsCost",
                 "miscellaneousCharges",
                 "totalCost",
+                "moduleState",
                 "sysCreatedTime",
                 "sysCreatedBy",
                 "sysModifiedTime",
