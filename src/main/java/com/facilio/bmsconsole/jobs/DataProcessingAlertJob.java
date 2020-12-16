@@ -80,11 +80,9 @@ public class DataProcessingAlertJob extends FacilioJob {
                 .append("\n")
                 .append(" orgId : ")
                 .append(orgId)
+                .append("\n")
                 .append(" Agent Name : ")
                 .append(agentName)
-                .append("\n")
-                .append(" Agent Id : ")
-                .append(agentId)
                 .append("\n")
                 .append("last message processed time: ")
                 .append(lastProcessedTime);
