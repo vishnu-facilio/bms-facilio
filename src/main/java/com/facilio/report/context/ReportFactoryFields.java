@@ -10,11 +10,11 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.report.context.ReportFactory.Alarm;
-import com.facilio.report.context.ReportFactory.ModuleType;
 import com.facilio.report.context.ReportFactory.ReportFacilioField;
 import com.facilio.report.context.ReportFactory.WorkOrder;
 import org.json.simple.JSONObject;
@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ReportFactoryFields {
 	
@@ -803,6 +804,16 @@ public class ReportFactoryFields {
 		}
 		}
 		return fields;
+	}
+	public static List<FacilioModule> getSubModulesList(String moduleName) throws Exception {
+		ModuleBean modBean = (ModuleBean)BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		List<FacilioModule> modules = new ArrayList<>();
+		if(!module.isCustom()) {
+			modules = (List<FacilioModule>) modBean.getSubModules(moduleName, ModuleType.BASE_ENTITY, ModuleType.SUB_ENTITY, ModuleType.TIME_LOG, ModuleType.SLA_TIME)
+												.stream().filter(submodule -> !submodule.isCustom()).collect(Collectors.toList());
+		}
+		return modules;
 	}
 	
 	private static JSONObject rearrangeFields(List<FacilioField> fields, String module) throws Exception{

@@ -1033,6 +1033,13 @@ public class V2ReportAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String getSubModulesListForReports() throws Exception {
+		List<FacilioModule> subModulesList = ReportFactoryFields.getSubModulesList(moduleName);
+		
+		setResult("modules", subModulesList);
+		return SUCCESS;
+	}
+	
 	private ReportFilterMode xCriteriaMode;
 	public int getxCriteriaMode() {
 		if (xCriteriaMode != null) {

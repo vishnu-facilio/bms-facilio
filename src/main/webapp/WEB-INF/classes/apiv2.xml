@@ -2330,7 +2330,10 @@
 			class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="getReportFields">
 		</action>
-
+		<action name="getSubModulesListForReports"
+			class="com.facilio.bmsconsole.actions.V2ReportAction"
+			method="getSubModulesListForReports">
+		</action>
 		<action name="readingReport"
 			class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="fetchReadingsData">
