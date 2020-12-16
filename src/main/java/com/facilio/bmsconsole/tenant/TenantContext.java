@@ -381,4 +381,14 @@ public class TenantContext extends ModuleBaseWithCustomFields {
 	}
 
 	private LocationContext address;
+
+	private BaseSpaceContext site;
+
+	public BaseSpaceContext getSite() {
+		return site;
+	}
+
+	public void setSite(BaseSpaceContext site) {
+		this.site = site;
+	}
 }
