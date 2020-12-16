@@ -74,6 +74,11 @@ public class AddSubModulesSystemFieldsCommad extends FacilioCommand {
                 fields.add(body);
 
 
+                FacilioField notifyRequester =  FieldFactory.getField("notifyRequester", "Notify Requester", "NOTIFY_REQUESTER", subModule, FieldType.BOOLEAN);
+                notifyRequester.setDisplayType(5);
+                notifyRequester.setDefault(true);
+                fields.add(notifyRequester);
+
                 subModule.setFields(fields);
 
             break;
