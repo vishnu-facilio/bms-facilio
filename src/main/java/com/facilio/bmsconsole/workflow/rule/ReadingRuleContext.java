@@ -984,6 +984,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 				newContext.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.SYSTEM);
 				newContext.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
 				newContext.put(FacilioConstants.ContextNames.IS_PARALLEL_RULE_EXECUTION, Boolean.FALSE);
+				newContext.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS,Boolean.FALSE);
 				addRuleData.execute();
 			}
 			
