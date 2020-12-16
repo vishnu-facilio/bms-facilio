@@ -5,7 +5,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.facilio.tasker.executor.FacilioInstantJobExecutor;
-import com.facilio.tasker.executor.InstantJobExecutor;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.dto.Account;
@@ -18,13 +17,6 @@ public abstract class InstantJob {
 
     private static final Logger LOGGER = Logger.getLogger(InstantJob.class.getName());
 
-    private String receiptHandle;
-    public void setReceiptHandle(String receiptHandle) {
-        this.receiptHandle = receiptHandle;
-    }
-    String getReceiptHandle() {
-        return receiptHandle;
-    }
     private String messageId;
     public String getMessageId() {
 		return messageId;
@@ -42,7 +34,7 @@ public abstract class InstantJob {
         currentThread.setName(MessageFormat.format("{0}-{1}-instant-job-{2}",
                                                     threadName,
                                                     executor.getName(),
-                                                    getMessageId() != null ? getMessageId() : StringUtils.truncate(getReceiptHandle(), 50)));
+                                                    getMessageId()));
     	String jobName = (String) context.remove(InstantJobConf.getJobNameKey());
     	int status = 0;
     	long startTime = System.currentTimeMillis();
@@ -79,11 +71,7 @@ public abstract class InstantJob {
 //            if(FacilioProperties.isProduction() && StringUtils.isNotBlank(getReceiptHandle())) {
 //            	InstantJobExecutor.INSTANCE.jobEnd(getReceiptHandle());
 //            }
-            if(getMessageId() !=null) {
-            	executor.jobEnd(getMessageId());
-            } else {
-            	InstantJobExecutor.INSTANCE.jobEnd(getReceiptHandle());
-            }
+            executor.jobEnd(getMessageId());
         }
     }
 
