@@ -275,6 +275,7 @@ public class FieldFactory {
             assetFieldsInclude.add("sysCreatedBy");
             assetFieldsInclude.add("sysModifiedTime");
             assetFieldsInclude.add("sysModifiedBy");
+            assetFieldsInclude.add("moduleState");
         }
 
         public static List<String> quoteFieldsInclude = Collections.unmodifiableList(Arrays.asList(new String[] {

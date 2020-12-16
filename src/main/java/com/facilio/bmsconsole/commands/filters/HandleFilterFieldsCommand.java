@@ -128,10 +128,10 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
         return filter;
     }
 
-    private List<FacilioField> filterOutFields (List<FacilioField> fields, List<String> filterList, boolean isInclude) {
+    private List<FacilioField> filterOutFields (List<FacilioField> fields, List<String> filterList, FilterType type) {
         return fields.stream().
                 filter(
-                        f -> !(isInclude ^ filterList.contains(f.getName())) // This is XNOR behaviour. It should be true only if both isInclude and contains are true or if both are false
+                        f -> !(type.getFilterBool() ^ filterList.contains(f.getName())) // This is XNOR behaviour. It should be true only if both isInclude and contains are true or if both are false
                                 || !f.isDefault()
                 ).collect(Collectors.toList());
     }
@@ -139,17 +139,32 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
     private static final List<String> SENSOR_ALARM_FIELDS_TO_HIDE = Arrays.asList(new String[] {"readingFieldId", "type", "noOfNotes", "lastWoId", "lastOccurrenceId", "key", "description", "noOfOccurrences"});
     private List<FacilioField> filterModuleFields (FacilioModule module, List<FacilioField> fields) {
         if (AssetsAPI.isAssetsModule(module)) {
-            return filterOutFields(fields, FieldFactory.Fields.assetFieldsInclude, true);
+            return filterOutFields(fields, FieldFactory.Fields.assetFieldsInclude, FilterType.INCLUDE);
         }
         else {
             switch (module.getName()) {
                 case FacilioConstants.ContextNames.QUOTE:
-                    return filterOutFields(fields, FieldFactory.Fields.quoteFieldsInclude, true);
+                    return filterOutFields(fields, FieldFactory.Fields.quoteFieldsInclude, FilterType.INCLUDE);
                 case FacilioConstants.ContextNames.SENSOR_ROLLUP_ALARM:
-                    return filterOutFields(fields, SENSOR_ALARM_FIELDS_TO_HIDE, false);
+                    return filterOutFields(fields, SENSOR_ALARM_FIELDS_TO_HIDE, FilterType.EXCLUDE);
                 default:
                     return fields;
             }
+        }
+    }
+
+    private static enum FilterType {
+        INCLUDE (true),
+        EXCLUDE (false)
+        ;
+
+        private FilterType(boolean filterBool) {
+            this.filterBool = filterBool;
+        }
+
+        private boolean filterBool;
+        public boolean getFilterBool() {
+            return filterBool;
         }
     }
 }
