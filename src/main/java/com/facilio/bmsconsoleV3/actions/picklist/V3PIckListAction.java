@@ -13,7 +13,7 @@ public class V3PIckListAction extends V3Action {
 
     public String pickList() throws Exception {
         if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {
-            setData(FacilioConstants.ContextNames.DATA, LookupSpecialTypeUtil.getNewPickList(moduleName));
+            setData(FacilioConstants.ContextNames.PICKLIST, LookupSpecialTypeUtil.getNewPickList(moduleName));
             setMeta("moduleType", FacilioModule.ModuleType.PICK_LIST.name());
         }
         else {
