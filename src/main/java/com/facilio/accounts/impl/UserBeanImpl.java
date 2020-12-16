@@ -936,7 +936,7 @@ public class UserBeanImpl implements UserBean {
 	@Override
 	public boolean sendResetPasswordLinkv2(User user, String appDomain) throws Exception {
 		AppDomain appDomainObj = IAMAppUtil.getAppDomain(appDomain);
-		String inviteLink = getUserLink(user, "/fconfirm_reset_password/", appDomainObj);
+		String inviteLink = getUserLink(user, "/confirmpassword/", appDomainObj);
 		Map<String, Object> placeholders = new HashMap<>();
 		//CommonCommandUtil.appendModuleNameInKey(null, "toUser", FieldUtil.getAsProperties(user), placeholders);
 		placeholders.put("toUser", user);
@@ -1063,11 +1063,12 @@ public class UserBeanImpl implements UserBean {
 		String hostname = "";
 		if (appDomainObj != null && StringUtils.isNotEmpty(appDomainObj.getDomain())) {
 			hostname = "https://" + appDomainObj.getDomain();
-			if (appDomainObj.getAppDomainTypeEnum() != AppDomainType.FACILIO) {
-				hostname = hostname + "/service";
-			} else {
-				hostname = hostname + "/app";
-			}
+//				if (appDomainObj.getAppDomainTypeEnum() != AppDomainType.FACILIO) {
+//					hostname = hostname + "/service";
+//				} else {
+//					hostname = hostname + "/app";
+//				}
+			hostname = hostname + "/auth";
 		}
 		return hostname + url + inviteToken;
 	}
