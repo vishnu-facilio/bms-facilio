@@ -54,6 +54,9 @@ public class DataProcessingAlertJob extends FacilioJob {
     private void dataMissing(Organization org) throws Exception {
         try{
             long orgId = org.getOrgId();
+            if(orgId == 152){
+                return;
+            }
             String orgDomain = org.getDomain();
             ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
             List<Map<String,Object>> props = bean.getMissingData();
@@ -73,20 +76,22 @@ public class DataProcessingAlertJob extends FacilioJob {
 
     private static void sendMail(String orgDomain, long orgId , long agentId, String agentName,long lastProcessedTime) throws Exception {
         StringBuilder msg = new StringBuilder()
-                .append(" Data is not processing for last 2hrs. org -  ")
-                .append(orgDomain)
+                .append(" Data is not processing for last 2hrs.")
+                .append("\n")
                 .append(" orgId : ")
                 .append(orgId)
                 .append(" Agent Name : ")
                 .append(agentName)
+                .append("\n")
                 .append(" Agent Id : ")
                 .append(agentId)
-                .append("last message processed time is : ")
+                .append("\n")
+                .append("last message processed time: ")
                 .append(lastProcessedTime);
         JSONObject json = new JSONObject();
         json.put("to", "agent@facilio.com");
         json.put("sender", "noreply@facilio.com");
-        json.put("subject", "Data not processing for : "+agentName);
+        json.put("subject", "Data Missing for Org : "+orgDomain);
         json.put("message", msg.toString());
         FacilioFactory.getEmailClient().sendEmail(json);
     }

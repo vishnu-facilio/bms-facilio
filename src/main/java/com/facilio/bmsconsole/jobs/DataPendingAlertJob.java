@@ -45,6 +45,9 @@ public class DataPendingAlertJob extends FacilioJob {
     private void calculatePendingMsg(Organization org) throws Exception {
         try{
             long orgId = org.getOrgId();
+            if(orgId == 152){
+                return;
+            }
             String orgDomain = org.getDomain();
             ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
             long count = bean.getPendingDataCount();
