@@ -946,7 +946,8 @@ public enum CardLayout {
 				
 				cardValue = KPIUtil.getKPIValue(kpiContext);
 				
-				kpi = KPIUtil.getKPI(kpiId);
+				kpi = kpiContext;
+				/*kpi = KPIUtil.getKPI(kpiId);
 				fields = KPIUtil.getKPIModuleFIelds(kpiContext);
 
 				listData = KPIUtil.getKPIList(kpiContext, null);
@@ -966,7 +967,7 @@ public enum CardLayout {
 					catch (Exception e) {
 						e.printStackTrace();
 					}
-				}
+				}*/
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				LOGGER.log(Level.WARNING, "Exception in getKPIValue::: ", e);
