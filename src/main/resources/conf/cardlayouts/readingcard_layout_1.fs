@@ -35,6 +35,7 @@ Map cardLayout(Map params) {
 
         valueMap = {};
         valueMap["value"] = cardValue;
+        valueMap["actualValue"] = cardValue;
         if (fieldMapInfo.dataTypeEnum == "BOOLEAN") {
             if (cardValue == true && fieldMapInfo.trueVal != null) {
                 valueMap["value"] = fieldMapInfo.trueVal;

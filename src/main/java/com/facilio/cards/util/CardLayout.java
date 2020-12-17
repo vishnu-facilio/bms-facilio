@@ -741,7 +741,8 @@ public enum CardLayout {
 					variables.add(getVariable("title", "Title", "STRING", cardResultMap.get("title"), null));
 				}
 				if (cardResultMap.containsKey("value")) {
-					variables.add(getVariable("value", "Value", (Map) cardResultMap.get("value")));
+					Map value = (boolean) cardResultMap.get("actualValue") ? (Map) cardResultMap.get("actualValue") : (Map) cardResultMap.get("value");
+					variables.add(getVariable("value", "Value",value));
 				}
 				if (cardResultMap.containsKey("maxValue")) {
 					variables.add(getVariable("maxValue", "maxValue", (Map) cardResultMap.get("maxValue")));
