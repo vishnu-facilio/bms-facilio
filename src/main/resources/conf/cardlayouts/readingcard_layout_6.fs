@@ -27,6 +27,7 @@ Map cardLayout(Map params) {
             cardValue = fetchModule.fetch(db);
             enumMap = Reading(fieldid, reading.parentId).getEnumMap();
             valueMap["value"] = cardValue;
+            valueMap["actualValue"] = cardValue;
             if (fieldMapInfo.dataTypeEnum == "BOOLEAN") {
                 if (cardValue == true && fieldMapInfo.trueVal != null) {
                     valueMap["value"] = fieldMapInfo.trueVal;

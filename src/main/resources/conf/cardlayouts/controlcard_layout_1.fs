@@ -17,6 +17,7 @@ Map cardLayout(Map params) {
         enumMap = Reading(fieldid, params.reading.parentId).getEnumMap();
         valueMap = {};
         valueMap["value"] = cardValue;
+        valueMap["actualValue"] = cardValue;
         if (enumMap != null) {
             enumValue = cardValue;
           	if (cardValue == true) {

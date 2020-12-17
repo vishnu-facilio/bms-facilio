@@ -40,6 +40,7 @@ Map cardLayout(Map params) {
         valueMap = {};
         baselineValueMap = {};
         valueMap["value"] = cardValue;
+        valueMap["actualValue"] = cardValue;
         baselineValueMap["value"] = baselineCardValue;
         currentVal = 0;
         previousVal = 0;

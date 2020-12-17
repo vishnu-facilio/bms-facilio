@@ -35,6 +35,7 @@ Map cardLayout(Map params) {
             cardValue = fetchModule.fetch(db);
             valueMap = {};
             valueMap["value"] = cardValue;
+            valueMap["actualValue"] = cardValue;
             valueMap["aggregation"] = yAggr;
             if (fieldMapInfo.dataTypeEnum == "BOOLEAN") {
                 if (cardValue == true && fieldMapInfo.trueVal != null) {

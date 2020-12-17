@@ -40,6 +40,7 @@ Map cardLayout(Map params) {
             assetRecord = assetModule.fetch(assetDb);
             valueMap = {};
             valueMap["value"] = cardValue;
+            valueMap["actualValue"] = cardValue;
             valueMap["name"] = assetRecord[0];
             if (fieldMapInfo.dataTypeEnum == "BOOLEAN") {
                 if (cardValue == true && fieldMapInfo.trueVal != null) {

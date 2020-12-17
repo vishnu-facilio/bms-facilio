@@ -34,6 +34,7 @@ Map cardLayout(Map params) {
         enumMap = Reading(fieldid, params.reading.parentId).getEnumMap();
         valueMap = {};
         valueMap["value"] = cardValue;
+        valueMap["actualValue"] = cardValue;
         if (fieldMapInfo.dataTypeEnum == "BOOLEAN") {
             if (cardValue == true && fieldMapInfo.trueVal != null) {
                 valueMap["value"] = fieldMapInfo.trueVal;
