@@ -77,9 +77,9 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
                 for (ConsumerRecord<String, String> record : records) {
                     String value = record.value();
                     try {
-                        LOGGER.error("Processing message: " + value);
+                        LOGGER.debug("Processing message: " + value);
                         Message message = FieldUtil.getAsBeanFromJson((JSONObject) parser.parse(value), Message.class);
-                        LOGGER.error("Processing message: " + message);
+                        LOGGER.debug("Processing message: " + message);
                         incomingMessage(message);
                     } catch (Exception ex) {
                         LOGGER.error("Exception while parsing data to JSON ", ex);
@@ -112,7 +112,7 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
 //        dataMap.put("data", data);
 
         String partitionKey = kinesisNotificationTopic;
-        LOGGER.error("Outgoing message: " + message);
+        LOGGER.debug("Outgoing message: " + message);
         RecordMetadata future = (RecordMetadata)producer.putRecord(new FacilioRecord(partitionKey, data));
     }
 
