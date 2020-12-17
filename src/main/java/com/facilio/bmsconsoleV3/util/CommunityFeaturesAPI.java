@@ -27,6 +27,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.context.V3Context;
 import com.facilio.v3.util.ChainUtil;
@@ -183,14 +184,19 @@ public class CommunityFeaturesAPI {
     public static List<? extends CommunitySharingInfoContext> getSharingInfo(V3Context record, String sharingModuleName, String parentFieldName) throws Exception {
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(sharingModuleName);
         List<FacilioField> fields = modBean.getAllFields(sharingModuleName);
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
         List<LookupField> fetchSupplementsList = Arrays.asList((LookupField) fieldsAsMap.get("sharedToSpace"));
 
+        V3Config config = ChainUtil.getV3Config(sharingModuleName);
+        Class beanClass = ChainUtil.getBeanClass(config, module);
+
+
         SelectRecordsBuilder<? extends CommunitySharingInfoContext> builder = new SelectRecordsBuilder<AnnouncementSharingInfoContext>()
                 .moduleName(sharingModuleName)
                 .select(fields)
-                .beanClass(AnnouncementSharingInfoContext.class)
+                .beanClass(beanClass)
                 .fetchSupplements(fetchSupplementsList)
                 .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get(parentFieldName), String.valueOf(record.getId()), NumberOperators.EQUALS));
         List<? extends CommunitySharingInfoContext> list = builder.get();
