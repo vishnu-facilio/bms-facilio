@@ -40,7 +40,11 @@ public class ApplyConditionalFormattingForCard extends FacilioCommand {
 							Object value = data.get(key);
 							if (value != null && value instanceof Map) {
 								Map<String, Object> valueData = (Map<String, Object>) value;
-								variables.put(key, valueData.get("value"));
+								if(valueData.get("actualValue") != null) {
+									variables.put(key, valueData.get("actualValue"));
+								} else {
+									variables.put(key, valueData.get("value"));
+								}
 							}
 							else {
 								variables.put(key, value);
