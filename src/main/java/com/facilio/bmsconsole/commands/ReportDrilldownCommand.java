@@ -71,7 +71,7 @@ public class ReportDrilldownCommand extends FacilioCommand {
 					}).collect(Collectors.toList());
 
 			ReportDataPointContext drilledReportDataPoint = drilledReportDataPoints.get(0);
-	
+			drilledReportDataPoint.setGroupByFields(null);//remove group by in report after drill down
 			
 			
 			
