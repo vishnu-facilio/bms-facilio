@@ -5,10 +5,12 @@ import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
 import com.facilio.bmsconsole.util.PurchaseOrderAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsoleV3.context.V3TermsAndConditionContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PoAssociatedTermsContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.PrAssociatedTermsContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
+import com.facilio.bmsconsoleV3.util.QuotationAPI;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -27,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class UpdateIsPoCreatedCommand extends FacilioCommand {
 
@@ -54,11 +57,14 @@ public class UpdateIsPoCreatedCommand extends FacilioCommand {
                     }
                     List<PrAssociatedTermsContext> terms = PurchaseOrderAPI.fetchTermsForConvertPo(po.getPrIds());
                     if (CollectionUtils.isNotEmpty(terms)) {
+                        List<Long> uniqueTermsIds = terms.stream().filter(term -> QuotationAPI.lookupValueIsNotEmpty(term.getTerms())).map(term -> term.getTerms().getId()).distinct().collect(Collectors.toList());
                         List<V3PoAssociatedTermsContext> poAssociatedTerms = new ArrayList<>();
-                        for (PrAssociatedTermsContext prterm : terms) {
+                        for (Long id : uniqueTermsIds) {
                             V3PoAssociatedTermsContext associatedTerm = new V3PoAssociatedTermsContext();
+                            V3TermsAndConditionContext term = new V3TermsAndConditionContext();
+                            term.setId(id);
                             associatedTerm.setPurchaseOrder(po);
-                            associatedTerm.setTerms(prterm.getTerms());
+                            associatedTerm.setTerms(term);
                             poAssociatedTerms.add(associatedTerm);
                         }
                         PurchaseOrderAPI.updateTermsAssociatedV3(poAssociatedTerms);
