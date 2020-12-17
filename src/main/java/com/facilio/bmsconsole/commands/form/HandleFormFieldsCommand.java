@@ -82,15 +82,16 @@ public class HandleFormFieldsCommand extends FacilioCommand {
 		if (AssetsAPI.isAssetsModule(module)) {
 			switch(formField.getName()) {
 				case "rotatingItem":
+					setRotatingFilter("itemType", formField);
+					break;
 				case "rotatingTool":
-					JSONObject rotatingFilter = getRotatingFilter();
-					formField.setFilters(rotatingFilter);
+					setRotatingFilter("toolType", formField);
 					break;
 			}
 		}
 	}
 	
-	private JSONObject getRotatingFilter() {
+	private void setRotatingFilter(String type, FormField formField) {
         JSONObject operator = new JSONObject();
         operator.put("operatorId", LookupOperator.LOOKUP.getOperatorId());
         JSONArray values = new JSONArray();
@@ -99,9 +100,7 @@ public class HandleFormFieldsCommand extends FacilioCommand {
         values.add(String.valueOf(true));
         operator.put("value", values);
 
-        JSONObject filter = new JSONObject();
-        filter.put("itemType", operator);
-        return filter;
+        formField.addToFilters(type, operator);
     }
 
 }

@@ -127,7 +127,7 @@ public class AssetAction extends FacilioAction {
 			if(assetCategory!=null && assetCategory.getId() != 0) {
 				categoryId=assetCategory.getId();
 			}
-			if (asset.getSpace() == null) {
+			if (asset.getSpace() == null || asset.getSpace().getId() < 0) {
 				BaseSpaceContext assetLocation = new BaseSpaceContext();
 				assetLocation.setId(asset.getSiteId());
 				asset.setSpace(assetLocation);
