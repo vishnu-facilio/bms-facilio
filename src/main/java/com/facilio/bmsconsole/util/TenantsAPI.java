@@ -1058,9 +1058,9 @@ public class TenantsAPI {
 		if (filteredSpaces.isEmpty()) {
 			return empty;
 		}
-		List<TenantSpaceContext> tenantSpaces = getTenantSpaces(spaceIds, false);
+		List<TenantUnitSpaceContext> tenantSpaces = getOccupiedTenantUnits(spaceIds);
 		if (tenantSpaces != null && !tenantSpaces.isEmpty()) {
-			return tenantSpaces.stream().collect(Collectors.toMap(tenantSpace -> tenantSpace.getSpace().getId(), TenantSpaceContext::getTenant));
+			return tenantSpaces.stream().collect(Collectors.toMap(tenantSpace -> tenantSpace.getSpace().getId(), TenantUnitSpaceContext::getTenant));
 		}
 		return empty;
 	}
@@ -1236,6 +1236,20 @@ public class TenantsAPI {
 				.beanClass(TenantUnitSpaceContext.class)
 				.select(modBean.getAllFields(module.getName()))
 				.andCondition(CriteriaAPI.getCondition(tenantSpaceFieldMap.get("tenant"), String.valueOf(tenantId), PickListOperators.IS))
+				;
+		return builder.get();
+
+	}
+
+	public static List<TenantUnitSpaceContext> getOccupiedTenantUnits(Collection<Long> spaceIds) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(ContextNames.TENANT_UNIT_SPACE);
+		SelectRecordsBuilder<TenantUnitSpaceContext> builder = new SelectRecordsBuilder<TenantUnitSpaceContext>()
+				.module(module)
+				.beanClass(TenantUnitSpaceContext.class)
+				.select(modBean.getAllFields(module.getName()))
+				.andCondition(CriteriaAPI.getIdCondition(spaceIds, module))
+				.andCondition(CriteriaAPI.getCondition("IS_OCCUPIED", "isOccupied", "true", BooleanOperators.IS))
 				;
 		return builder.get();
 
