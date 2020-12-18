@@ -19,16 +19,16 @@ import java.util.List;
 
 public class WattsenseAction extends FacilioAction {
     private static final Logger LOGGER = LogManager.getLogger(WattsenseAction.class.getName());
-    private long deviceId;
+    private long controllerId;
 
-
-    public long getDeviceId() {
-        return deviceId;
+    public long getControllerId() {
+        return controllerId;
     }
 
-    public void setDeviceId(long deviceId) {
-        this.deviceId = deviceId;
+    public void setControllerId(long controllerId) {
+        this.controllerId = controllerId;
     }
+
     private long agentId;
     private String apiKey;
     private String secretKey;
@@ -66,9 +66,9 @@ public class WattsenseAction extends FacilioAction {
             client.setSecretKey(getSecretKey());
             List<Device> devices = client.getDevices();
             for (Device device : devices) {
-                long id = FieldDeviceApi.addFieldDevice(device);
+                // long id = FieldDeviceApi.addFieldDevice(device);
                 Controller controller = new MiscController();
-                controller.setDeviceId(id);
+                // controller.setDeviceId(id);
                 controller.setAgentId(device.getAgentId());
                 controller.setName(device.getName());
                 ControllerApiV2.addController(controller);
@@ -86,13 +86,12 @@ public class WattsenseAction extends FacilioAction {
             WattsenseClient client = new WattsenseClient(AgentApiV2.getAgent(getAgentId()));
             client.setApiKey(getApiKey());
             client.setSecretKey(getSecretKey());
-            Device fieldDevice = FieldDeviceApi.getDevice(getDeviceId());
-            if (fieldDevice != null) {
-                List<MiscPoint> points = client.getPoints(fieldDevice);
+            Controller controller = ControllerApiV2.getControllerFromDb(getControllerId());
+            List<MiscPoint> points = client.getPoints(controller);
                 for (MiscPoint point : points) {
                     PointsAPI.addPoint(point);
                 }
-            }
+
         } catch (Exception ex) {
             return ERROR;
         }

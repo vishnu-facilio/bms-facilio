@@ -332,7 +332,7 @@ public class DataProcessorV2
                                 MiscController miscController = new MiscController(agent.getId(), AccountUtil.getCurrentOrg().getOrgId());
                                 miscController.setName(((JSONObject) (payload.get(AgentConstants.CONTROLLER))).get(AgentConstants.NAME).toString());
                                 miscController.setDataInterval(agent.getInterval() * 60 * 1000);
-                                Device device = new Device();
+                                /*Device device = new Device();
                                 device.setIdentifier(miscController.getName());
                                 device.setName(miscController.getName());
                                 device.setAgentId(agent.getId());
@@ -341,7 +341,7 @@ public class DataProcessorV2
                                 device.setConfigure(true);
                                 device.setSiteId(agent.getSiteId());
                                 long deviceId = FieldDeviceApi.addFieldDevice(device);
-                                miscController.setDeviceId(deviceId);
+                                miscController.setDeviceId(deviceId);*/
                                 ControllerApiV2.addController(miscController);
                                 return miscController;
                             } else {
@@ -418,11 +418,10 @@ public class DataProcessorV2
                 throw new Exception("payload missing controllerType ");
             }
             int type = ((Number)payload.get(AgentConstants.CONTROLLER_TYPE)).intValue();
-            Device device = FieldDeviceApi.getDevice(agent.getId(), DeviceUtil.getControllerIdentifier(agent, type, controllerJson));
-
-
-            if (device != null) {
-                return PointsUtil.processPoints(payload, device, agent);
+            Controller controller = getCachedControllerUsingPayload(payload, agent.getId());
+            //Device device = FieldDeviceApi.getDevice(agent.getId(), DeviceUtil.getControllerIdentifier(agent, type, controllerJson));
+            if (controller != null) {
+                return PointsUtil.processPoints(payload, controller, agent);
             } else {
                 throw new Exception("Exception occurred, Controller obtained in null");
             }

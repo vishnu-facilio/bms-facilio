@@ -33,20 +33,20 @@ public class AddMiscControllerAction extends AgentIdAction{
                 fieldDevice.setAgentId(getAgentId());
                 fieldDevice.setControllerType(getControllerType());
                 fieldDevice.setCreatedTime(System.currentTimeMillis());
-                Long deviceId = FieldDeviceApi.addFieldDevice(fieldDevice);
+                // Long deviceId = FieldDeviceApi.addFieldDevice(fieldDevice);
                 Long controllerId = null;
-                if (deviceId != null && deviceId > 0) {
+                // if (deviceId != null && deviceId > 0) {
                     MiscController context = new MiscController();
                     context.setAgentId(agent.getId());
                     context.setActive(true);
                     context.setDataInterval(agent.getInterval() * 60 * 1000);
                     context.setName(getName());
                     context.setControllerType(getControllerType());
-                    context.setDeviceId(deviceId);
+                //    context.setDeviceId(deviceId);
                     controllerId = ControllerApiV2.addController(context);
-                }
+                // }
                 if (controllerId != null && controllerId > 0) {
-                    FieldDeviceApi.updateDeviceConfigured(deviceId);
+                    //     FieldDeviceApi.updateDeviceConfigured(deviceId);
                     LOGGER.info("successfully marked a Misc Device - " + getName() + " as a Controller. ");
                     setResult(AgentConstants.RESULT, SUCCESS);
                     setResponseCode(HttpURLConnection.HTTP_OK);

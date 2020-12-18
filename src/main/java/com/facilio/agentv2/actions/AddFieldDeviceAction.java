@@ -27,7 +27,8 @@ public class AddFieldDeviceAction extends FacilioAction {
     }
 
     public String addDevice() throws Exception {
-        try {
+        throw new Exception("Field Devices are not supported anymore");
+        /*try {
             JSONObject d = getDevice();
             if (d != null) {
                 if (d.containsKey("name") &&
@@ -82,6 +83,6 @@ public class AddFieldDeviceAction extends FacilioAction {
             LOGGER.info("Exception while adding Field Device :" + ex.getMessage());
             setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
             return ERROR;
-        }
+        }*/
     }
 }

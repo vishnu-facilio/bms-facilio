@@ -210,10 +210,11 @@ public class WattsenseClient
         Map<String, JSONArray> controllerVsValues = new HashMap<>();
         FacilioAgent agent = getAgent();
         if (agent != null && agent.getId() > 0) {
-            List<Map<String, Object>> devices = FieldDeviceApi.getDevicesForAgent(agent.getId());
-            LOGGER.info("devices size :" + devices.size());
-            for (Map<String, Object> device : devices) {
-                String deviceName = device.get(NAME).toString();
+            List<Controller> controllers = ControllerApiV2.getControllersUsingAgentId(agent.getId());
+            // List<Map<String, Object>> devices = FieldDeviceApi.getDevicesForAgent(agent.getId());
+            LOGGER.info("devices size :" + controllers.size());
+            for (Controller c : controllers) {
+                String deviceName = c.getName();
                 JSONArray jsonArray = getProperties(deviceName);
                 LOGGER.info("Properties : " + jsonArray);
                 controllerVsValues.put(deviceName, jsonArray);
@@ -233,18 +234,17 @@ public class WattsenseClient
         return (JSONArray) parser.parse(WattsenseUtil.getResponseString(response));
     }
 
-    public List<MiscPoint> getPoints(Device device) throws IOException, ParseException {
+    public List<MiscPoint> getPoints(Controller controller) throws IOException, ParseException {
         List<MiscPoint> pointsList = new ArrayList<>();
-        String deviceName = device.getName();
+        String deviceName = controller.getName();
         JSONArray points = getProperties(deviceName);
         for (Object p : points) {
             JSONObject point = (JSONObject) p;
-            MiscPoint miscPoint = new MiscPoint(device.getAgentId());
+            MiscPoint miscPoint = new MiscPoint(controller.getAgentId());
             String name = point.get(PROPERTY).toString();
             miscPoint.setName(name);
             miscPoint.setPath(name);
             miscPoint.setDisplayName(point.get(NAME).toString());
-            miscPoint.setDeviceId(device.getId());
             miscPoint.setDeviceName(deviceName);
             pointsList.add(miscPoint);
         }

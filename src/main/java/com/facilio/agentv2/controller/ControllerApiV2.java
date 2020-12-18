@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.facilio.agentv2.rdm.RdmControllerContext;
 import com.facilio.fw.FacilioException;
@@ -675,32 +674,34 @@ public class ControllerApiV2 {
         	return  builder.get();
         }
     }
-    
-    public static List<Long> getControllersUsingAgentId(long agentId) throws Exception{
+
+    public static List<Controller> getControllersUsingAgentId(long agentId) throws Exception {
     	return getControllersList(Collections.singletonList(agentId));
     }
-    
-    private static List<Long> getControllersList(List<Long> agentIds) throws Exception{
-    	GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
-    	builder.select(FieldFactory.getControllersField()).table(ModuleFactory.getNewControllerModule().getTableName())
+
+    private static List<Controller> getControllersList(List<Long> agentIds) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
+        builder.table(modBean.getModule(AgentConstants.CONTROLLER).getTableName());
+        builder.select(modBean.getModule(AgentConstants.CONTROLLER).getFields())
     	.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(ModuleFactory.getNewControllerModule()), String.valueOf(agentIds), NumberOperators.EQUALS));
-    	List<Map<String, Object>> props =  builder.get();
-    	return props.stream().map(p -> (long)p.get("id")).collect(Collectors.toList());
+        List<Map<String, Object>> props = builder.get();
+        return FieldUtil.getAsBeanListFromMapList(props, Controller.class);
     }
 
     public static Controller getControllerByName(Long agentId,String deviceName) throws Exception {
-        Device device = FieldDeviceApi.getDeviceByName(agentId,deviceName);
-        if (device != null){
-            return getControllerFromDevice(device);
-        }else{
-            LOGGER.info("Device not found for agentID :" + agentId + " deviceName : " + deviceName );
-        }
-        return null;
+        Set<String> names = new HashSet<>();
+        names.add(deviceName);
+        return getControllerRequestWithNames(agentId, names).getController();
     }
 
     public static List<Controller> getControllersByNames(Long agentId, Set<String> deviceNames, FacilioControllerType controllerType) throws Exception {
-        List<Device> devices = FieldDeviceApi.getDevicesByNames(agentId, deviceNames);
-        return getControllersFromDevices(devices, controllerType);
+        GetControllerRequest request = getControllerRequestWithNames(agentId, deviceNames).ofType(controllerType);
+        return request.getControllers();
+    }
+
+    private static GetControllerRequest getControllerRequestWithNames(Long agentId, Set<String> deviceNames) throws Exception {
+        return new GetControllerRequest().withAgentId(agentId).withNames(deviceNames);
     }
 
     private static Controller getControllerFromDevice(Device device) throws Exception {

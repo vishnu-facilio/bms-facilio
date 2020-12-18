@@ -437,6 +437,7 @@ public class FieldDeviceApi {
         return props;
     }
 
+
     public static List<Map<String,Object>> getModbusDeviceFilter(Long agentId) throws Exception {
         FacilioModule fieldDeviceModule = ModuleFactory.getFieldDeviceModule();
         List<FacilioField> deviceFilterFields = new ArrayList<>();
@@ -479,7 +480,8 @@ public class FieldDeviceApi {
         controllerContext.setDeviceId(device.getId());
     }
 
-	public static int updateDeviceConfigured(long deviceId) throws SQLException {
+
+    public static int updateDeviceConfigured(long deviceId) throws SQLException {
 
 		Map<String, Object> updateValue = new HashMap<>();
 		FacilioModule module = ModuleFactory.getFieldDeviceModule();

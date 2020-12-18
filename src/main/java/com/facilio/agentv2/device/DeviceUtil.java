@@ -107,7 +107,7 @@ public class DeviceUtil {
         if (devices != null && !devices.isEmpty()) {
             for (Device device : devices) {
                 try {
-                    FieldDeviceApi.addFieldDevice(device);
+                    // FieldDeviceApi.addFieldDevice(device);
                     ControllerUtilV2.fieldDeviceToController(device);
                 } catch (Exception e) {
                     LOGGER.info("Exception while making controller from device", e);
