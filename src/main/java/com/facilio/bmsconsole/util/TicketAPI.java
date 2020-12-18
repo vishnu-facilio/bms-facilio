@@ -103,8 +103,12 @@ public class TicketAPI {
 					.andCondition(CriteriaAPI.getIdCondition(recordIds, ticketModule));
 			props = selectBuilder.get();
 		}
-		
-		int deletedRows = builder.markAsDelete();
+		int deletedRows;
+		if (module.isTrashEnabled()) {
+			deletedRows = builder.markAsDelete();
+		} else {
+			deletedRows = builder.delete();
+		}
 	
 		if (props != null && !props.isEmpty()) {
 			Set<Long> userIds = props.stream().map(e -> (Long) e.get("assignedTo")).filter(e -> e != null).collect(Collectors.toSet());
