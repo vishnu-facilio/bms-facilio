@@ -24,20 +24,29 @@ import java.util.Map;
 public class CommunityBuildingValueGenerator extends ValueGenerator{
     @Override
     public Object generateValueForCondition(int appType) {
-        List<Object> values = new ArrayList<Object>();
+
+        List<Object> buildingIds = new ArrayList<Object>();
+        List<Long> siteIds = new ArrayList<Long>();
+
         try {
             if (appType == AppDomain.AppDomainType.TENANT_PORTAL.getIndex()) {
                 TenantContext tenant = PeopleAPI.getTenantForUser(AccountUtil.getCurrentUser().getId());
                 if (tenant != null) {
+                    //assuming one site -> one tenant mapping for now
+                    siteIds.add(tenant.getSiteId());
+
                     List<TenantUnitSpaceContext> tenantUnits = TenantsAPI.getTenantUnitsForTenant(tenant.getId());
                     if (CollectionUtils.isNotEmpty(tenantUnits)) {
                         for (TenantUnitSpaceContext ts : tenantUnits) {
                             if (ts.getBuilding() != null) {
-                                values.add(ts.getBuilding().getId());
+                                if(!buildingIds.contains(ts.getBuilding().getId())) {
+                                    buildingIds.add(ts.getBuilding().getId());
+                                }
                             }
                         }
                         Criteria criteria = new Criteria();
-                        criteria.addAndCondition(CriteriaAPI.getCondition("SHARED_TO_SPACE_ID", "sharedToSpace", StringUtils.join(values, ","), PickListOperators.IS));
+                        criteria.addAndCondition(CriteriaAPI.getCondition("SHARED_TO_SPACE_ID", "sharedToSpace", StringUtils.join(buildingIds, ","), PickListOperators.IS));
+                        criteria.addOrCondition(CriteriaAPI.getCondition("SHARED_TO_SPACE_ID", "sharedToSpace", StringUtils.join(siteIds, ","), PickListOperators.IS));
                         criteria.addOrCondition(CriteriaAPI.getCondition("SHARED_TO_SPACE_ID", "sharedToSpace", "1", CommonOperators.IS_EMPTY));
                         return criteria;
                     }
