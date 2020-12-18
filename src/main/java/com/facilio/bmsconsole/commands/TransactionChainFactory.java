@@ -4779,6 +4779,18 @@ public class TransactionChainFactory {
 		chain.addCommand(new AddOrUpdateTabGroupCommand());
 		return chain;
 	}
+	
+	public static FacilioChain getReorderTabGroupChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new ReorderTabGroupCommand());
+		return chain;
+	}
+	
+	public static FacilioChain getReorderTabChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new ReorderTabCommand());
+		return chain;
+	}
 
 	public static FacilioChain getDeleteTabGroupChain() {
 		FacilioChain chain = getDefaultChain();

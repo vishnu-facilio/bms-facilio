@@ -97,7 +97,7 @@ public class AddOrUpdateTabCommand extends FacilioCommand {
         List<WebTabContext> webTabs = ApplicationApi.getWebTabsForApplication(webTab.getApplicationId());
         if (webTabs != null && !webTabs.isEmpty()) {
             for (WebTabContext webTabContext : webTabs) {
-                if (webTabContext.getRoute().equals(webTab.getRoute())) {
+                if (webTabContext.getId() != webTab.getId() && webTabContext.getRoute().equals(webTab.getRoute())) {
                     return true;
                 }
             }

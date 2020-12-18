@@ -87,6 +87,35 @@ public class WebTabAction extends FacilioAction {
 
         return SUCCESS;
     }
+    
+    public String reorderTabGroup() throws Exception {
+    	FacilioChain chain = TransactionChainFactory.getReorderTabGroupChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.WEB_TAB_GROUPS, groupList);
+        chain.execute();
+    	return SUCCESS;
+    }
+    
+	private List<WebTabGroupContext> groupList;
+
+	public List<WebTabGroupContext> getGroupList() {
+		return groupList;
+	}		
+	
+	public void setGroupList(List<WebTabGroupContext> groupList) {
+		this.groupList = groupList;
+	}
+	
+	private List<WebtabWebgroupContext> tabsGroupsList;
+
+	public List<WebtabWebgroupContext> getTabsGroupsList() {
+		return tabsGroupsList;
+	}
+
+	public void setTabsGroupsList(List<WebtabWebgroupContext> tabsGroupsList) {
+		this.tabsGroupsList = tabsGroupsList;
+	}
+	
 
     private WebTabContext tab;
     public WebTabContext getTab() {
@@ -95,6 +124,16 @@ public class WebTabAction extends FacilioAction {
     public void setTab(WebTabContext tab) {
         this.tab = tab;
     }
+    
+    private List<WebTabContext> tabList;
+    
+    public List<WebTabContext> getTabList() {
+		return tabList;
+	}
+
+    public void setTabList(List<WebTabContext> tabList) {
+		this.tabList = tabList;
+	}
 
     private Long tabGroupId;
     public Long getTabGroupId() {
@@ -122,7 +161,7 @@ public class WebTabAction extends FacilioAction {
         return SUCCESS;
     }
 
-    public String getTabList() throws Exception {
+    public String getTabListForGroup() throws Exception {
         FacilioChain chain = ReadOnlyChainFactory.getAllTabChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID, getTabGroupId());
@@ -160,6 +199,14 @@ public class WebTabAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID, getTabGroupId());
         chain.execute();
         return SUCCESS;
+    }
+    
+    public String reorderTab() throws Exception {
+    	FacilioChain chain = TransactionChainFactory.getReorderTabChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.WEB_TAB_WEB_GROUP, tabsGroupsList);
+        chain.execute();
+    	return SUCCESS;
     }
 
     public String addOrUpdateApplicationLayout() throws Exception {
