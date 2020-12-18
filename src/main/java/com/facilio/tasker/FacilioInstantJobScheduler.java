@@ -9,6 +9,7 @@ import com.facilio.tasker.config.InstantJobConf;
 import com.facilio.tasker.executor.FacilioInstantJobExecutor;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -22,6 +23,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class FacilioInstantJobScheduler {
     private static final Logger LOGGER = LogManager.getLogger(FacilioScheduler.class.getName());
@@ -37,6 +39,15 @@ public class FacilioInstantJobScheduler {
         startExecutors();
     }
 
+    private static List<Long> parseOrgIds (List<? extends Object> orgs) {
+        if (CollectionUtils.isNotEmpty(orgs)) {
+            return orgs.stream()
+                        .map(FacilioUtil::parseLong)
+                        .collect(Collectors.toList());
+        }
+        return null;
+    }
+
     private static void startExecutors() throws IOException {
         Map<String, Object> executorsConf = null;
         try {
@@ -47,6 +58,13 @@ public class FacilioInstantJobScheduler {
         }
 
         boolean isInstantJobServer = Boolean.parseBoolean(FacilioProperties.getConfig("instantJobServer"));
+        List<Long> globalIncludedOrgs = null, globalExcludedOrgs = null;
+        Map<String, Object> globalParams = (Map<String, Object>) executorsConf.get("global");
+        if (MapUtils.isNotEmpty(globalParams)) {
+            globalIncludedOrgs = parseOrgIds((List<? extends Object>) globalParams.get("include"));
+            globalExcludedOrgs =  parseOrgIds((List<? extends Object>) globalParams.get("exclude"));
+        }
+
         List<Map<String, Object>> executorList = (List<Map<String, Object>>) executorsConf.get("executors");
         if (CollectionUtils.isNotEmpty(executorList)) {
             for (Map<String, Object> ex : executorList) {
@@ -56,7 +74,17 @@ public class FacilioInstantJobScheduler {
                 int queueSize = (int) ex.getOrDefault("queueSize", -1);
             	int dataRetention = (int) ex.get("dataRetention");
                 int pollingFrequency = (int) ex.get("pollingFrequency");
-                FacilioInstantJobExecutor executor = new FacilioInstantJobExecutor(name, tableName, maxThreads, queueSize, dataRetention, pollingFrequency);
+                List<Long> include = parseOrgIds((List<String>) ex.get("include"));
+                List<Long> exclude = parseOrgIds((List<String>) ex.get("exclude"));
+                FacilioInstantJobExecutor executor = new FacilioInstantJobExecutor(name,
+                                                                                    tableName,
+                                                                                    maxThreads,
+                                                                                    queueSize,
+                                                                                    dataRetention,
+                                                                                    pollingFrequency,
+                                                                                    CollectionUtils.isEmpty(include) ? globalIncludedOrgs : include,
+                                                                                    CollectionUtils.isEmpty(exclude) ? globalExcludedOrgs : exclude
+                                                                                );
                 executors.put(name, executor);
                 if (isInstantJobServer) {
                     executor.startExecutor();

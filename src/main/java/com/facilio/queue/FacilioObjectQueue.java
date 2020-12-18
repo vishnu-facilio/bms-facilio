@@ -19,11 +19,12 @@ public class FacilioObjectQueue {
 
 	private FacilioQueueService queueInstance = null;
 	public FacilioObjectQueue(String tableName) {
-		queueInstance = new FacilioDbQueue(tableName);
+		this(tableName, null, null);
+	}
+	public FacilioObjectQueue(String tableName, List<Long> includeOrg, List<Long> excludeOrg) {
+		queueInstance = new FacilioDbQueue(tableName, includeOrg, excludeOrg);
 	}
 
-	private static final String TABLE_QUEUE_OLD = "FacilioInstantJobQueue";
-	private static final String TABLE_QUEUE_NEW = "FacilioInstantJobQueue_Data";
 	public boolean sendMessage(Serializable serializable) throws Exception {
 		if (serializable == null) {
 			return false;

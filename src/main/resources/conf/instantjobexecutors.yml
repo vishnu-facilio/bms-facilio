@@ -1,3 +1,11 @@
+#global :
+#  include :
+#    - 349
+#    - 210
+#    - 11
+#  exclude :
+#    - 1
+#    - 2
 executors :
   - name : default
     tableName : InstantJobQueue
@@ -12,6 +20,12 @@ executors :
     queueSize : 100
     dataRetention : 1 #in days
     pollingFrequency : 5000 #in milliseconds
+#    include :
+#      - 350
+#      - 214
+#    exclude :
+#      - 3
+#      - 4
 
   - name : datamigration
     tableName : ReadingDataMigrationInstantJobQueue
