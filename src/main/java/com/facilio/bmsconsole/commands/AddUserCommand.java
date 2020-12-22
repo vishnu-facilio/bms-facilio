@@ -32,7 +32,7 @@ public class AddUserCommand extends FacilioCommand {
 			}
 
 			user.setUserType(AccountConstants.UserType.USER.getValue());
-			if(appId == null || appId == -1) {
+			if(appId == null || appId <= 0) {
 				appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
 			}
 			AppDomain appDomainObj = ApplicationApi.getAppDomainForApplication(appId);
