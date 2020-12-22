@@ -40,6 +40,7 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.auth.SAMLAttribute;
 import com.facilio.fw.auth.SAMLUtil;
@@ -47,6 +48,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.pdf.PdfUtil;
 
 public class ConnectedAppAction extends FacilioAction {
 
@@ -579,6 +581,117 @@ public class ConnectedAppAction extends FacilioAction {
 		setResult("connectedAppWidget", connectedAppWidget);
 		handleSAMLResponse(connectedApp, viewURL);
 
+		return SUCCESS;
+	}
+	
+	private String widgetContext;
+	
+	public String getWidgetContext() {
+		return widgetContext;
+	}
+	
+	public JSONObject getWidgetContextJSON() throws Exception {
+		if (widgetContext != null) {
+			JSONParser parser = new JSONParser();
+	 		JSONObject json = (JSONObject) parser.parse(widgetContext);
+	 		return json;
+		}
+		return null;
+	}
+
+	public void setWidgetContext(String widgetContext) {
+		this.widgetContext = widgetContext;
+	}
+	
+	private String exportOptions;
+
+	public String getExportOptions() {
+		return exportOptions;
+	}
+	
+	public JSONObject getExportOptionsJSON() throws Exception {
+		if (exportOptions != null) {
+			JSONParser parser = new JSONParser();
+	 		JSONObject json = (JSONObject) parser.parse(exportOptions);
+	 		return json;
+		}
+		return null;
+	}
+
+	public void setExportOptions(String exportOptions) {
+		this.exportOptions = exportOptions;
+	}
+	
+	private String contentType="application/download";
+	public String getContentType() {
+		return contentType;
+	}
+	protected void setContentType(String contentType) {
+		this.contentType = contentType;
+	}
+	
+	private String filename;
+	public String getFilename() {
+		return filename;
+	}
+	public void setFilename(String filename) {
+		this.filename = filename;
+	}
+	
+	private boolean preview = false;
+	public boolean isPreview() {
+		return preview;
+	}
+
+	public void setPreview(boolean preview) {
+		this.preview = preview;
+	}
+
+	public String exportWidgetAsPdf() throws Exception {
+
+		FacilioChain viewConnectedAppWidgetChain = ReadOnlyChainFactory.getViewConnectedAppWidgetChain();
+		
+		viewConnectedAppWidgetChain.getContext().put(FacilioConstants.ContextNames.ID, getWidgetId());
+		viewConnectedAppWidgetChain.getContext().put(FacilioConstants.ContextNames.WIDGET_LINK_NAME, getWidgetLinkName());
+		viewConnectedAppWidgetChain.getContext().put(FacilioConstants.ContextNames.CONNECTED_APP_ID, getConnectedAppId());
+		viewConnectedAppWidgetChain.getContext().put(FacilioConstants.ContextNames.LINK_NAME, getLinkName());
+		viewConnectedAppWidgetChain.getContext().put(FacilioConstants.ContextNames.RECORD_ID, getRecordId());
+		viewConnectedAppWidgetChain.getContext().put(FacilioConstants.ContextNames.SANDBOX_MODE, isSandboxMode());
+
+		viewConnectedAppWidgetChain.execute();
+
+		ConnectedAppContext connectedApp = (ConnectedAppContext) viewConnectedAppWidgetChain.getContext().get(FacilioConstants.ContextNames.CONNECTED_APP);
+		ConnectedAppWidgetContext connectedAppWidget = (ConnectedAppWidgetContext) viewConnectedAppWidgetChain.getContext().get(FacilioConstants.ContextNames.CONNECTED_APP_WIDGET);
+		
+		String url = FacilioProperties.getClientAppUrl() + connectedApp.getLinkName() + "/" + connectedAppWidget.getLinkName();
+		
+		String downloadUrl = PdfUtil.exportWidget(url, getExportOptionsJSON(), getWidgetContextJSON(), FileFormat.PDF);
+		setResult("url", downloadUrl);
+		
+		return SUCCESS;
+	}
+	
+	public String exportWidgetAsImage() throws Exception {
+
+		FacilioChain viewConnectedAppWidgetChain = ReadOnlyChainFactory.getViewConnectedAppWidgetChain();
+		
+		viewConnectedAppWidgetChain.getContext().put(FacilioConstants.ContextNames.ID, getWidgetId());
+		viewConnectedAppWidgetChain.getContext().put(FacilioConstants.ContextNames.WIDGET_LINK_NAME, getWidgetLinkName());
+		viewConnectedAppWidgetChain.getContext().put(FacilioConstants.ContextNames.CONNECTED_APP_ID, getConnectedAppId());
+		viewConnectedAppWidgetChain.getContext().put(FacilioConstants.ContextNames.LINK_NAME, getLinkName());
+		viewConnectedAppWidgetChain.getContext().put(FacilioConstants.ContextNames.RECORD_ID, getRecordId());
+		viewConnectedAppWidgetChain.getContext().put(FacilioConstants.ContextNames.SANDBOX_MODE, isSandboxMode());
+
+		viewConnectedAppWidgetChain.execute();
+
+		ConnectedAppContext connectedApp = (ConnectedAppContext) viewConnectedAppWidgetChain.getContext().get(FacilioConstants.ContextNames.CONNECTED_APP);
+		ConnectedAppWidgetContext connectedAppWidget = (ConnectedAppWidgetContext) viewConnectedAppWidgetChain.getContext().get(FacilioConstants.ContextNames.CONNECTED_APP_WIDGET);
+		
+		String url = FacilioProperties.getClientAppUrl() + connectedApp.getLinkName() + "/" + connectedAppWidget.getLinkName();
+		
+		String downloadUrl = PdfUtil.exportWidget(url, getExportOptionsJSON(), getWidgetContextJSON(), FileFormat.IMAGE);
+		setResult("url", downloadUrl);
+		
 		return SUCCESS;
 	}
 

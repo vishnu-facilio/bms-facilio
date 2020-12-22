@@ -25,6 +25,7 @@ public class PdfUtil {
 
     private static final String NODE = FacilioProperties.getNodeJSLocation();
     private static final String RENDER_PUPETTEER_JS = FacilioProperties.getPdfjsLocation() + "/puppeteer-render.js";
+    private static final String RENDER_PUPETTEER_JS_WIDGET = FacilioProperties.getPdfjsLocation() + "/puppeteer-render-widget.js";
     private static final Logger LOGGER = LogManager.getLogger(PdfUtil.class.getName());
 
 	public static String convertUrlToPdf(String url, String htmlContent, JSONObject additionalInfo , FileFormat... formats) {
@@ -73,9 +74,59 @@ public class PdfUtil {
 				LOGGER.info("Exception occurred", e);
 			}
 		}
-
 		return pdfFileLocation;
+	}
+	
+	public static String convertWidgetToPdf(String url, JSONObject exportOptions, JSONObject widgetContext, FileFormat... formats) {
+		FileFormat format = FileFormat.PDF;
+		if (formats != null && formats.length > 0) {
+			format = formats[0];
+		}
+		File pdfDirectory = new File(System.getProperty("java.io.tmpdir")+"/"+AccountUtil.getCurrentOrg().getOrgId()+"/");
+		String pdfFileLocation = null;
+		boolean directoryExits = (pdfDirectory.exists() && pdfDirectory.isDirectory());
+		if( ! directoryExits) {
+			directoryExits = pdfDirectory.mkdirs();
+		}
 
+		if(directoryExits) {
+			try {
+				String token = IAMUserUtil.createJWT("id", "auth0", String.valueOf(AccountUtil.getCurrentUser().getUid()), System.currentTimeMillis()+60*60000);
+				File pdfFile = File.createTempFile("report-", format.getExtention(), pdfDirectory);
+				pdfFileLocation = pdfFile.getAbsolutePath();
+				String serverName = FacilioProperties.getAppDomain();
+				if(serverName != null) {
+					String[] server = serverName.split(":");
+					serverName = server[0];
+					if (FacilioProperties.getEnvironment().equals("stage")) {
+						HttpServletRequest request = ServletActionContext.getRequest();
+						serverName = request.getServerName().replace(RequestUtil.getProtocol(request)+"://", StringUtils.EMPTY);
+					}
+				}
+				
+				JSONObject additionalInfo = new JSONObject();
+				additionalInfo.put("orgId", String.valueOf(AccountUtil.getCurrentOrg().getOrgId()));
+				additionalInfo.put("orgDomain", AccountUtil.getCurrentOrg().getDomain());
+				if (AccountUtil.getCurrentSiteId() != -1) {
+					additionalInfo.put("currentSite", AccountUtil.getCurrentSiteId());
+				}
+				
+				if (exportOptions == null) {
+					exportOptions = new JSONObject();
+				}
+				
+				if (widgetContext == null) {
+					widgetContext = new JSONObject();
+				}
+
+				String[] command = new String[] {NODE, RENDER_PUPETTEER_JS_WIDGET, url, pdfFileLocation, token, serverName, format.toString(), additionalInfo.toString(), exportOptions.toString(), widgetContext.toString()};
+				int exitStatus = CommandExecutor.execute(command);
+				LOGGER.debug("Converted to pdf with exit status : " + exitStatus + " and file " + pdfFile.getAbsolutePath());
+			}catch(IOException e) {
+				LOGGER.info("Exception occurred", e);
+			}
+		}
+		return pdfFileLocation;
 	}
 
 	public static String exportUrlAsPdf(String url, FileFormat... formats){
@@ -108,6 +159,26 @@ public class PdfUtil {
 			}
 
 
+		}
+		return null;
+	}
+	
+	public static String exportWidget(String url, JSONObject exportOptions, JSONObject widgetContext, FileFormat format){      	
+		
+		String pdfFileLocation = convertWidgetToPdf(url, exportOptions, widgetContext, format);         
+		
+		if (pdfFileLocation != null) {
+			
+			File pdfFile = new File(pdfFileLocation);
+
+			FileStore fs = FacilioFactory.getFileStore();
+			long fileId = 0;
+			try {
+				fileId = fs.addFile(pdfFile.getName(), pdfFile, format.getContentType());
+				return fs.getDownloadUrl(fileId);
+			} catch (Exception e) {
+				LOGGER.info("Exception occurred ", e);
+			}
 		}
 		return null;
 	}

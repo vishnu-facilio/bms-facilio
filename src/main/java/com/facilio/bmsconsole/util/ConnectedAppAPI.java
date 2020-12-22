@@ -107,6 +107,25 @@ public class ConnectedAppAPI {
 		return null;
 	}
 	
+	public static ConnectedAppWidgetContext getConnectedAppWidget(long connectedAppId, String widgetLinkName) throws Exception {
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getConnectedAppWidgetsFields())
+				.table(ModuleFactory.getConnectedAppWidgetsModule().getTableName())
+				.innerJoin("ConnectedApps")
+				.on("ConnectedApp_Widgets.CONNECTEDAPP_ID=ConnectedApps.ID")
+				.andCondition(CriteriaAPI.getCondition("ConnectedApps.ID", "connectedAppId", connectedAppId+"", NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("ConnectedApp_Widgets.LINK_NAME", "widgetLinkName", widgetLinkName, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition("ConnectedApps.IS_ACTIVE", "isActive", String.valueOf(true), BooleanOperators.IS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			ConnectedAppWidgetContext connectedAppWidget = FieldUtil.getAsBeanFromMap(props.get(0), ConnectedAppWidgetContext.class);
+			return connectedAppWidget;
+		}
+		return null;
+	}
+	
 	public static ConnectedAppSAMLContext getConnectedAppSAML(long connectedAppId) throws Exception {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getConnectedAppSAMLFields())

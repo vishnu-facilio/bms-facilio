@@ -14,6 +14,8 @@ public class GetConnectedAppWidgetCommand extends FacilioCommand {
 		
 		long connectedAppWidgetId = (long) context.get(FacilioConstants.ContextNames.ID);
 		String widgetLinkName = (String) context.get(FacilioConstants.ContextNames.WIDGET_LINK_NAME);
+		String linkName = (String) context.get(FacilioConstants.ContextNames.LINK_NAME);
+		Long connectedAppId = (Long) context.get(FacilioConstants.ContextNames.CONNECTED_APP_ID);
 		
 		ConnectedAppWidgetContext connectedAppWidget = null;
 		if (connectedAppWidgetId > 0) {
@@ -26,6 +28,9 @@ public class GetConnectedAppWidgetCommand extends FacilioCommand {
 				
 				connectedAppWidget = ConnectedAppAPI.getConnectedAppWidget(connectedAppLink, widgetLink);
 			}
+		}
+		else if (connectedAppId != null && connectedAppId > 0 && linkName != null) {
+			connectedAppWidget = ConnectedAppAPI.getConnectedAppWidget(connectedAppId, linkName);
 		}
 		if (connectedAppWidget != null) {
 			ConnectedAppContext connectedApp = (ConnectedAppContext) ConnectedAppAPI.getConnectedApp(connectedAppWidget.getConnectedAppId());

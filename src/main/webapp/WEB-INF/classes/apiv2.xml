@@ -4480,6 +4480,16 @@
 			method="viewWidget">
 		</action>
 		
+		<action name="exportWidgetAsPdf"
+			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
+			method="exportWidgetAsPdf">
+		</action>
+		
+		<action name="exportWidgetAsImage"
+			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
+			method="exportWidgetAsImage">
+		</action>
+		
 		<action name="widgetList"
 			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
 			method="connectedAppWidgetList">
