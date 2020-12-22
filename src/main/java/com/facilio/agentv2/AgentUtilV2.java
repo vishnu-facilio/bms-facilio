@@ -277,12 +277,21 @@ public class AgentUtilV2
 
 
     private boolean updateAgent(FacilioAgent agent, JSONObject jsonObject) throws Exception {
+    	refreshAgent(agent);
         boolean isDone = AgentApiV2.editAgent(agent, jsonObject, true);
         if (isDone) {
             agentMap.replace(agent.getName(), agent);
         }
         return isDone;
     }
+    
+    private void refreshAgent(FacilioAgent agent) throws Exception {
+
+        FacilioAgent agentFromDb = AgentApiV2.getAgent(agent.getName());
+        if (agentFromDb!=null) {
+            agent.setProcessorVersion(agentFromDb.getProcessorVersion());
+        }
+}
 
     public FacilioAgent getFacilioAgent(String agentName) throws Exception {
         FacilioAgent agent = agentMap.get(agentName);

@@ -30,6 +30,13 @@ public class AddPreventiveMaintenanceCommand extends FacilioCommand {
 		PreventiveMaintenance pm = (PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 		addDefaultProps(pm, context);
 		addResource(pm);
+
+		if (pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTI_SITE) {
+			if (CollectionUtils.isNotEmpty(pm.getSiteIds()) && pm.getSiteIds().size() == 1) {
+				pm.setSiteId(pm.getSiteIds().get(0));
+			}
+		}
+
 		Map<String, Object> pmProps = FieldUtil.getAsProperties(pm);
 		pmProps.put("woGenerationStatus", 0);
 		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()

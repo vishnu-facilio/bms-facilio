@@ -35,6 +35,13 @@ public class UpdatePreventiveMaintenanceCommand extends FacilioCommand{
 		PreventiveMaintenance oldPm = ((List<PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST)).get(0);
 		
 		updateDefaultProps(newPm, context);
+
+		if (newPm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTI_SITE) {
+			if (CollectionUtils.isNotEmpty(newPm.getSiteIds()) && newPm.getSiteIds().size() == 1) {
+				newPm.setSiteId(newPm.getSiteIds().get(0));
+			}
+		}
+
 		Map<String, Object> pmProps = FieldUtil.getAsProperties(newPm);
 		if (newPm.getBaseSpaceId() == null || newPm.getBaseSpaceId() == -1) {
 			pmProps.put("baseSpaceId", -99);
