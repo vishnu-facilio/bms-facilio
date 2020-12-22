@@ -34,6 +34,8 @@ import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCom
 import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.itemtypes.SetItemTypesUnitCommandV3;
+import com.facilio.bmsconsoleV3.commands.jobplan.AddJobPlanTasksCommand;
+import com.facilio.bmsconsoleV3.commands.jobplan.FillJobPlanDetailsCommand;
 import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.DeleteReceivableByPOIdV3;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.FetchPODetailsCommandV3;
@@ -74,6 +76,10 @@ import com.facilio.bmsconsoleV3.context.budget.ChartOfAccountContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.*;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnnouncementContext;
+import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
+import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
+import com.facilio.bmsconsoleV3.context.facilitybooking.AmenitiesContext;
+import com.facilio.bmsconsoleV3.context.facilitybooking.FacilityContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.*;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
@@ -1046,6 +1052,22 @@ public class APIv3Config {
                 .list()
                 .summary()
                 .delete().afterDelete(new CancelBookingsForSlotsCommand())
+
+                .build();
+    }
+
+    @Module("jobplan")
+    public static Supplier<V3Config> getJobPlan() {
+        return () -> new V3Config(JobPlanContext.class, new ModuleCustomFieldCount30())
+                .create()
+                    .afterSave(new AddJobPlanTasksCommand())
+                .update()
+                .beforeSave(new ValidateSlotCommand())
+                .delete()
+                .list()
+                .summary()
+                    .afterFetch(new FillJobPlanDetailsCommand())
+                .delete()
 
                 .build();
     }

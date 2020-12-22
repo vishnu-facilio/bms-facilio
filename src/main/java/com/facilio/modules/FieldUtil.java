@@ -479,7 +479,9 @@ public class FieldUtil {
 					FacilioConstants.ContextNames.TRANSACTION,
 					FacilioConstants.ContextNames.Tenant.AUDIENCE,
 					FacilioConstants.ContextNames.FacilityBooking.FACILITY,
-					FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING
+					FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING,
+					FacilioConstants.ContextNames.JOB_PLAN
+
 					))
 			);
 

@@ -30,6 +30,9 @@ import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.Announcem
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementSharingInfoContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnnouncementContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.*;
+import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
+import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTaskSectionContext;
+import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTasksContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PoAssociatedTermsContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderLineItemContext;
@@ -966,9 +969,6 @@ public class FacilioConstants {
 		public static final String PREVENTIVE_MAINTENANCE_ENDTIME = "preventivemaintenanceEndtime";
 		public static final String PM_TRIGGER = "trigger";
 
-		public static final String JOB_PLAN = "jobPlan";
-		public static final String JOB_PLAN_LIST = "jobPlans";
-		
 		public static final String WO_DUE_STARTTIME = "woDueStarttime";
 		public static final String WO_DUE_ENDTIME = "woDueEndtime";
 		public static final String WO_LIST_COUNT = "woListCount";
@@ -1844,7 +1844,15 @@ public class FacilioConstants {
 		public static final String ORGID = "orgId";
 		public static final String TIME_ZONE = "timezone";
 		public static final String WEATHER_STATION_ID = "weatherStationId";
-		
+
+		public static final String JOB_PLAN = "jobplan";
+		public static final String JOB_PLAN_LIST = "jobPlans";
+		public static final String JOB_PLAN_SECTION = "jobplansection";
+		public static final String JOB_PLAN_TASK = "jobplantask";
+
+		public static final String AUDIENCE_SHARING = "audienceSharing";
+
+
 		public static class WorkPermit {
 			public static final String WORK_PERMIT_TYPE_CHECKLIST = "workpermittypechecklist";
 			public static final String WORK_PERMIT_TYPE_CHECKLIST_CATEGORY = "workpermittypechecklistcategory";
@@ -2265,6 +2273,10 @@ public class FacilioConstants {
 			classMap.put(ControlScheduleUtil.CONTROL_GROUP_ASSET_CATEGORY_MODULE_NAME, ControlGroupAssetCategory.class);
 			classMap.put(ControlScheduleUtil.CONTROL_GROUP_ASSET_MODULE_NAME, ControlGroupAssetContext.class);
 			classMap.put(ControlScheduleUtil.CONTROL_GROUP_ASSET_FIELD_MODULE_NAME, ControlGroupFieldContext.class);
+
+			classMap.put(JOB_PLAN, JobPlanContext.class);
+			classMap.put(JOB_PLAN_SECTION, JobPlanTaskSectionContext.class);
+			classMap.put(JOB_PLAN_TASK, JobPlanTasksContext.class);
 
 			return classMap;
 		}
