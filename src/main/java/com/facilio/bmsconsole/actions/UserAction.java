@@ -352,6 +352,7 @@ public class UserAction extends FacilioAction {
 		}
 		user.setUserType(UserType.USER.getValue());
 		context.put(FacilioConstants.ContextNames.USER, user);
+		context.put(FacilioConstants.ContextNames.APPLICATION_ID, appId);
 		context.put(FacilioConstants.ContextNames.IS_EMAIL_VERIFICATION_NEEDED, emailVerificationNeeded);
 		context.put(FacilioConstants.ContextNames.ACCESSIBLE_SPACE, accessibleSpace);
 		
