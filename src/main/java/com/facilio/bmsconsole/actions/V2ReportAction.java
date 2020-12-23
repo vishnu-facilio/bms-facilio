@@ -1034,7 +1034,7 @@ public class V2ReportAction extends FacilioAction {
 	}
 	
 	public String getSubModulesListForReports() throws Exception {
-		List<FacilioModule> subModulesList = ReportFactoryFields.getSubModulesList(moduleName);
+		Set<FacilioModule> subModulesList = ReportFactoryFields.getSubModulesList(moduleName);
 		
 		setResult("modules", subModulesList);
 		return SUCCESS;

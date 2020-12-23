@@ -21,8 +21,10 @@ import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ReportFactoryFields {
@@ -805,13 +807,13 @@ public class ReportFactoryFields {
 		}
 		return fields;
 	}
-	public static List<FacilioModule> getSubModulesList(String moduleName) throws Exception {
+	public static Set<FacilioModule> getSubModulesList(String moduleName) throws Exception {
 		ModuleBean modBean = (ModuleBean)BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
-		List<FacilioModule> modules = new ArrayList<>();
+		Set<FacilioModule> modules = new HashSet<>();
 		if(!module.isCustom()) {
-			modules = (List<FacilioModule>) modBean.getSubModules(moduleName, ModuleType.BASE_ENTITY, ModuleType.SUB_ENTITY, ModuleType.TIME_LOG, ModuleType.SLA_TIME)
-												.stream().filter(submodule -> !submodule.isCustom()).collect(Collectors.toList());
+			modules = modBean.getSubModules(moduleName, ModuleType.SUB_ENTITY, ModuleType.TIME_LOG, ModuleType.SLA_TIME)
+												.stream().filter(submodule -> !submodule.isCustom()).collect(Collectors.toSet());
 		}
 		return modules;
 	}
