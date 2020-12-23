@@ -535,5 +535,25 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new CreatePaymentRecordForBookingCommand());
         return c;
     }
+    
+    public static FacilioChain getAddControlScheduleChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddControlScheduleCommand());
+        return c;
+    }
+    
+    public static FacilioChain getAddControlGroupChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddControlGroupV2Command());
+        return c;
+    }
+    
+    public static FacilioChain planControlGroupSlotsAndRoutines() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new PlanControlGroupSlots());
+        c.addCommand(new PlanControlGroupFinalSlots());
+        c.addCommand(new PlanControlGroupCommands());
+        return c;
+    }
 
 }

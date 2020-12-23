@@ -11,6 +11,10 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 
+import con.facilio.control.ControlGroupRoutineContext;
+import con.facilio.control.ControlScheduleContext;
+import con.facilio.control.ControlScheduleExceptionContext;
+
 public class ControlActionCommandContext extends ModuleBaseWithCustomFields {
 
 	/**
@@ -28,6 +32,47 @@ public class ControlActionCommandContext extends ModuleBaseWithCustomFields {
 	User executedBy;
 	ReadingDataMeta rdm;
 	FacilioField field;
+	
+	ControlScheduleContext schedule;
+	ControlScheduleExceptionContext exception;
+	ControlGroupRoutineContext routine;
+	
+	public ControlActionCommandContext() {
+		
+	}
+	
+	public ControlActionCommandContext(ResourceContext resource,long fieldId,String value,long executedTime) {
+		this.resource = resource;
+		this.fieldId = fieldId;
+		this.value = value;
+		this.executedTime = executedTime;
+	}
+	
+	public ControlActionCommandContext(ResourceContext resource,long fieldId,String value,long executedTime,ControlScheduleContext schedule) {
+		this.resource = resource;
+		this.fieldId = fieldId;
+		this.value = value;
+		this.executedTime = executedTime;
+		this.schedule = schedule;
+	}
+	
+	public ControlActionCommandContext(ResourceContext resource,long fieldId,String value,long executedTime,ControlScheduleContext schedule,ControlScheduleExceptionContext exception) {
+		this.resource = resource;
+		this.fieldId = fieldId;
+		this.value = value;
+		this.executedTime = executedTime;
+		this.schedule = schedule;
+		this.exception = exception;
+	}
+	
+	public ControlActionCommandContext(ResourceContext resource,long fieldId,String value,long executedTime,ControlScheduleContext schedule,ControlGroupRoutineContext routine) {
+		this.resource = resource;
+		this.fieldId = fieldId;
+		this.value = value;
+		this.executedTime = executedTime;
+		this.schedule = schedule;
+		this.routine = routine;
+	}
 	
 	public FacilioField getField() {
 		return field;
@@ -179,6 +224,7 @@ public class ControlActionCommandContext extends ModuleBaseWithCustomFields {
 		SUCCESS(1, "Success"),
 		PENDING(2, "Pending"),
 		ERROR(3, "Error"),
+		SCHEDULED(4, "Scheduled"),
 		;
 
 		int intVal;
@@ -211,6 +257,30 @@ public class ControlActionCommandContext extends ModuleBaseWithCustomFields {
 		public static Map<Integer, Status> getAllOptions() {
 			return optionMap;
 		}
+	}
+
+	public ControlScheduleContext getSchedule() {
+		return schedule;
+	}
+
+	public void setSchedule(ControlScheduleContext schedule) {
+		this.schedule = schedule;
+	}
+
+	public ControlScheduleExceptionContext getException() {
+		return exception;
+	}
+
+	public void setException(ControlScheduleExceptionContext exception) {
+		this.exception = exception;
+	}
+
+	public ControlGroupRoutineContext getRoutine() {
+		return routine;
+	}
+
+	public void setRoutine(ControlGroupRoutineContext routine) {
+		this.routine = routine;
 	}
 
 }
