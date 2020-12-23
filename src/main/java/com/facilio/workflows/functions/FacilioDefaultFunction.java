@@ -6,10 +6,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.DashboardContext;
-import com.facilio.bmsconsole.context.EnergyMeterContext;
-import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.cards.util.CardUtil;
@@ -704,6 +701,31 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 				return user.getName();
 			}
 			return null;
+		}
+	},
+	IS_USER_IN_SITE_SCOPE(26, "isUserInSiteScope") {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			Long siteId = (Long) objects[0];
+			Long assignedToId = (Long) objects[1];
+			User assignedTo = AccountUtil.getUserBean().getUser(assignedToId, true);
+			List<Long> accessibleSpace = assignedTo.getAccessibleSpace();
+			Map<Long, BaseSpaceContext> idVsBaseSpace = SpaceAPI.getBaseSpaceMap(accessibleSpace);
+			Set<Long> userSiteIds = new HashSet<>();
+			if (accessibleSpace != null && !accessibleSpace.isEmpty()) {
+				for (long id : accessibleSpace) {
+					BaseSpaceContext space = idVsBaseSpace.get(id);
+					if (space.getSpaceTypeEnum() == BaseSpaceContext.SpaceType.SITE) {
+						userSiteIds.add(space.getId());
+					} else {
+						userSiteIds.add(space.getSiteId());
+					}
+				}
+			}
+			if (!userSiteIds.isEmpty() && !userSiteIds.contains(siteId)) {
+				return false;
+			}
+			return  true;
 		}
 	},
 	GET_FROM_OBJECT(10, "getFromObject") {
