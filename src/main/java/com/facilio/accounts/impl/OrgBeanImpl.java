@@ -132,8 +132,9 @@ public class OrgBeanImpl implements OrgBean {
 				selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("ouid"), appUserIds, NumberOperators.NOT_EQUALS));
 			}
 		}
-
-		selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("applicationId"), String.valueOf(appId), NumberOperators.EQUALS));
+		else {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("applicationId"), String.valueOf(appId), NumberOperators.EQUALS));
+		}
 		
 		if(checkAccessibleSites) {
 			List<Long> accessibleSpace = currentUser.getAccessibleSpace();
