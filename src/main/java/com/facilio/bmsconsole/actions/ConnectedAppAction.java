@@ -663,7 +663,7 @@ public class ConnectedAppAction extends FacilioAction {
 		ConnectedAppContext connectedApp = (ConnectedAppContext) viewConnectedAppWidgetChain.getContext().get(FacilioConstants.ContextNames.CONNECTED_APP);
 		ConnectedAppWidgetContext connectedAppWidget = (ConnectedAppWidgetContext) viewConnectedAppWidgetChain.getContext().get(FacilioConstants.ContextNames.CONNECTED_APP_WIDGET);
 		
-		String url = FacilioProperties.getClientAppUrl() + connectedApp.getLinkName() + "/" + connectedAppWidget.getLinkName();
+		String url = FacilioProperties.getClientAppUrl() + "/app/pdf/" + connectedApp.getLinkName() + "/" + connectedAppWidget.getLinkName();
 		
 		String downloadUrl = PdfUtil.exportWidget(url, getExportOptionsJSON(), getWidgetContextJSON(), FileFormat.PDF);
 		setResult("url", downloadUrl);
@@ -687,7 +687,7 @@ public class ConnectedAppAction extends FacilioAction {
 		ConnectedAppContext connectedApp = (ConnectedAppContext) viewConnectedAppWidgetChain.getContext().get(FacilioConstants.ContextNames.CONNECTED_APP);
 		ConnectedAppWidgetContext connectedAppWidget = (ConnectedAppWidgetContext) viewConnectedAppWidgetChain.getContext().get(FacilioConstants.ContextNames.CONNECTED_APP_WIDGET);
 		
-		String url = FacilioProperties.getClientAppUrl() + connectedApp.getLinkName() + "/" + connectedAppWidget.getLinkName();
+		String url = FacilioProperties.getClientAppUrl() + "/app/pdf/" + connectedApp.getLinkName() + "/" + connectedAppWidget.getLinkName();
 		
 		String downloadUrl = PdfUtil.exportWidget(url, getExportOptionsJSON(), getWidgetContextJSON(), FileFormat.IMAGE);
 		setResult("url", downloadUrl);
