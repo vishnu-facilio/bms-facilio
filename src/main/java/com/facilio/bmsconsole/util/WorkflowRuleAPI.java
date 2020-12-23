@@ -914,7 +914,9 @@ public class WorkflowRuleAPI {
 						case APPROVAL_STATE_TRANSITION:
 						case CUSTOM_BUTTON:
 							ApprovalRulesAPI.deleteApproverRuleChildren((ApproverWorkflowRuleContext) rule);
-							StateFlowRulesAPI.deleteFormRuleContext((FormInterface) rule);
+							if (StringUtils.isEmpty(((CustomButtonRuleContext) rule).getFormModuleName())) {
+                                StateFlowRulesAPI.deleteFormRuleContext((FormInterface) rule);
+                            }
 							break;
 						case SCORING_RULE:
 							ScoringRuleAPI.deleteField((ScoringRuleContext) rule);
