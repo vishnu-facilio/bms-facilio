@@ -201,7 +201,7 @@ public class GetPointsAction extends AgentActionV2 {
 	 */
 	private void sanityCheck(GetPointRequest point) throws Exception {
 		
-		if (getControllerType() == null || getDeviceId() == null) {
+		if (getControllerType() == null) {
 			throw new IllegalArgumentException("Controller type/deviceId cannot be null");
 		}
 		point.ofType(FacilioControllerType.valueOf(controllerType));
