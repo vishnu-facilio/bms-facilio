@@ -7598,7 +7598,7 @@ public class ViewFactory {
 
 		FacilioModule module = ModuleFactory.getAnnouncementModule();
 
-		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("sysCreatedTime", "SYS_CREATED_TIME", FieldType.DATE_TIME), false));
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
@@ -7616,7 +7616,13 @@ public class ViewFactory {
 		FacilioModule module = ModuleFactory.getPeopleAnnouncementModule();
 		FacilioModule announcementModule = ModuleFactory.getAnnouncementModule();
 
-		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "People_Announcements.ID", FieldType.NUMBER), true));
+		FacilioField sysCreatedTime = new FacilioField();
+		sysCreatedTime.setName("sysCreatedTime");
+		sysCreatedTime.setColumnName("SYS_CREATED_TIME");
+		sysCreatedTime.setDataType(FieldType.DATE_TIME);
+		sysCreatedTime.setModule(announcementModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(sysCreatedTime, false));
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
@@ -7702,7 +7708,7 @@ public class ViewFactory {
 
 		FacilioModule module = ModuleFactory.getDealsAndOffersModule();
 
-		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("sysCreatedTime", "SYS_CREATED_TIME", FieldType.DATE_TIME), false));
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
@@ -7723,7 +7729,7 @@ public class ViewFactory {
 
 		FacilioModule module = ModuleFactory.getNeighbourhoodModule();
 
-		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("sysCreatedTime", "SYS_CREATED_TIME", FieldType.DATE_TIME), false));
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
@@ -7744,7 +7750,7 @@ public class ViewFactory {
 
 		FacilioModule module = ModuleFactory.getNewsAndInformationModule();
 
-		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("sysCreatedTime", "SYS_CREATED_TIME", FieldType.DATE_TIME), false));
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");

@@ -103,14 +103,14 @@ public class OrgBeanImpl implements OrgBean {
     @Override
 	public List<User> getAppUsers(long orgId, long appId, boolean checkAccessibleSites, boolean fetchNonAppUsers) throws Exception {
     	
-	    	User currentUser = AccountUtil.getCurrentAccount().getUser();
+		User currentUser = AccountUtil.getCurrentAccount().getUser();
 		if(currentUser == null){
 			return null;
 		}
 		
-	    	if(appId <= 0) {
-	    		appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
-	    	}
+		if(appId <= 0) {
+			appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+		}
 	    	
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getAppOrgUserFields());
@@ -131,10 +131,8 @@ public class OrgBeanImpl implements OrgBean {
 			if (appUserIds != null) {
 				selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("ouid"), appUserIds, NumberOperators.NOT_EQUALS));
 			}
-			
-			appId = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP).getId();
 		}
-		
+
 		selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("applicationId"), String.valueOf(appId), NumberOperators.EQUALS));
 		
 		if(checkAccessibleSites) {
