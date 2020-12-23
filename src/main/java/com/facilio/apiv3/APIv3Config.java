@@ -1062,7 +1062,7 @@ public class APIv3Config {
                 .create()
                     .afterSave(new AddJobPlanTasksCommand())
                 .update()
-                .beforeSave(new ValidateSlotCommand())
+                    .afterSave(new AddJobPlanTasksCommand())
                 .delete()
                 .list()
                 .summary()

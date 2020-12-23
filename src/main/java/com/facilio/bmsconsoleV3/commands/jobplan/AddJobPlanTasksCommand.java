@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.jobplan;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTaskSectionContext;
@@ -40,6 +41,7 @@ public class AddJobPlanTasksCommand extends FacilioCommand {
                 JobPlanAPI.deleteJobPlanTasks(section.getId());
                 for(JobPlanTasksContext task : taskList) {
                     task.setTaskSection(section);
+                    task.setCreatedBy(AccountUtil.getCurrentUser());
                 }
                 V3RecordAPI.addRecord(false, taskList, jobPlanTaskModule, fields);
             }
