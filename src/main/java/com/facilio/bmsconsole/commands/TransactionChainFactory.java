@@ -4971,7 +4971,7 @@ public class TransactionChainFactory {
 		c.addCommand(new ExecuteStateFlowCommand());
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 
-		c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
 		
 		return c;
 	}
@@ -4982,7 +4982,7 @@ public class TransactionChainFactory {
 		c.addCommand(new GenericGetModuleDataListCommand());
 		c.addCommand(new UpdateStateForModuleDataCommand());
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
-		c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
 		
 
 		return c;
