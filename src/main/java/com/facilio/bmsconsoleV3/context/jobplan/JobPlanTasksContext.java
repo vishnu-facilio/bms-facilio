@@ -85,61 +85,14 @@ public class JobPlanTasksContext extends V3TaskContext {
 
     private Long spaceCategoryId;
 
-//    private Boolean preRequest;
-//
-//    public Boolean isPreRequest() {
-//        if (preRequest != null) {
-//            return preRequest.booleanValue();
-//        }
-//        return false;
-//    }
-//
-//    public void setPreRequest(Boolean preRequest) {
-//        this.preRequest = preRequest;
-//    }
-//    public void getPreRequest(Boolean preRequest) {
-//        this.preRequest = preRequest;
-//    }
-//
-//    private String subject;
-//    public String getSubject() {
-//        return subject;
-//    }
-//    public void setSubject(String subject) {
-//        this.subject = subject;
-//    }
-//
-//    private String description;
-//    public String getDescription() {
-//        return description;
-//    }
-//    public void setDescription(String description) {
-//        this.description = description;
-//    }
-//
-//    private Boolean attachmentRequired;
-//    public Boolean getAttachmentRequired() {
-//        return attachmentRequired;
-//    }
-//    public void setAttachmentRequired(boolean attachmentRequired) {
-//        this.attachmentRequired = attachmentRequired;
-//    }
-//    public Boolean isAttachmentRequired() {
-//        if(attachmentRequired != null) {
-//            return attachmentRequired.booleanValue();
-//        }
-//        return false;
-//    }
-//
-//    private Integer sequence;
-//    public Integer getSequence() {
-//        return sequence;
-//    }
-//    public void setSequence(Integer sequence) {
-//        this.sequence = sequence;
-//    }
+    private JobPlanContext jobPlan;
 
+    public JobPlanContext getJobPlan() {
+        return jobPlan;
+    }
 
-
+    public void setJobPlan(JobPlanContext jobPlan) {
+        this.jobPlan = jobPlan;
+    }
 }
 

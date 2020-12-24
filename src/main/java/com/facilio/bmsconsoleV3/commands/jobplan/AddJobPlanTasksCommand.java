@@ -41,6 +41,7 @@ public class AddJobPlanTasksCommand extends FacilioCommand {
                 JobPlanAPI.deleteJobPlanTasks(section.getId());
                 for(JobPlanTasksContext task : taskList) {
                     task.setTaskSection(section);
+                    task.setJobPlan(section.getJobPlan());
                     task.setCreatedBy(AccountUtil.getCurrentUser());
                 }
                 V3RecordAPI.addRecord(false, taskList, jobPlanTaskModule, fields);

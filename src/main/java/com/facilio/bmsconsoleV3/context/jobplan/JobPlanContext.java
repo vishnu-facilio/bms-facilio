@@ -75,4 +75,24 @@ public class JobPlanContext extends V3Context {
     public void setTaskSectionList(List<JobPlanTaskSectionContext> taskSectionList) {
         this.taskSectionList = taskSectionList;
     }
+
+    private Long assetCategoryId;
+
+    public Long getAssetCategoryId() {
+        return assetCategoryId;
+    }
+
+    public void setAssetCategoryId(Long assetCategoryId) {
+        this.assetCategoryId = assetCategoryId;
+    }
+
+    public Long getSpaceCategoryId() {
+        return spaceCategoryId;
+    }
+
+    public void setSpaceCategoryId(Long spaceCategoryId) {
+        this.spaceCategoryId = spaceCategoryId;
+    }
+
+    private Long spaceCategoryId;
 }
