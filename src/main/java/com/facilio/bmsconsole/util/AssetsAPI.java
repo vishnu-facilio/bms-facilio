@@ -986,8 +986,8 @@ public class AssetsAPI {
 		asset.setConnected(isConnected);
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
-		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
 
 		UpdateRecordBuilder<AssetContext> updateBuilder = new UpdateRecordBuilder<AssetContext>()
 				.module(module)

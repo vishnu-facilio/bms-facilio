@@ -242,6 +242,7 @@ public class FieldFactory {
             workOrderFieldsInclude.add("moduleState");
             workOrderFieldsInclude.add("type");
             workOrderFieldsInclude.add("vendor");
+            workOrderFieldsInclude.add("tenant");
             workOrderFieldsInclude.add("sendForApproval");
             workOrderFieldsInclude.add("prerequisiteEnabled");
             workOrderFieldsInclude.add("preRequestStatus");
@@ -7949,6 +7950,12 @@ public class FieldFactory {
         return getField(name, colName, module, FieldType.NUMBER);
     }
 
+    private static FacilioField getSystemField(String name, String displayName, String colName, FacilioModule module,
+            FieldType type) {
+    		FacilioField field = getField(name, displayName, colName, module, type);
+    		field.setDefault(true);
+    		return field;
+    }
 
     public static FacilioField getField(String name, String displayName, String colName, FacilioModule module,
                                         FieldType type) {

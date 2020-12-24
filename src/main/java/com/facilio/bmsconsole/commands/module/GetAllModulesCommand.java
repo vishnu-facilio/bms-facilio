@@ -1,0 +1,75 @@
+package com.facilio.bmsconsole.commands.module;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioModule.ModuleType;
+
+public class GetAllModulesCommand extends FacilioCommand {
+	
+	private static final List<String> MODULES = Arrays.asList(new String[] {
+			ContextNames.WORK_ORDER,
+			ContextNames.ASSET,
+			ContextNames.VENDORS,
+			ContextNames.VISITOR_LOGGING,
+			ContextNames.PURCHASE_CONTRACTS,
+			ContextNames.LABOUR_CONTRACTS,
+			ContextNames.RENTAL_LEASE_CONTRACTS,
+			ContextNames.WARRANTY_CONTRACTS,
+			ContextNames.SERVICE,
+			ContextNames.TENANT,
+			ContextNames.TENANT_UNIT_SPACE,
+			ContextNames.PURCHASE_REQUEST,
+			ContextNames.PURCHASE_ORDER,
+			ContextNames.SERVICE_REQUEST,
+			ContextNames.QUOTE,
+			ContextNames.WorkPermit.WORKPERMIT,
+		});
+
+	@Override
+	public boolean executeCommand(Context context) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		//List<FacilioModule> modules = modBean.getModuleList(ModuleType.BASE_ENTITY);
+		
+		List<JSONObject> systemModules = new ArrayList<JSONObject>();
+		List<JSONObject> customModules = new ArrayList<JSONObject>();
+		
+		for(String moduleName: MODULES) {
+			if (AccountUtil.isModuleLicenseEnabled(moduleName)) {
+				FacilioModule module = modBean.getModule(moduleName);
+				systemModules.add(getModuleJson(module));
+			}
+		}
+		
+		List<FacilioModule> modules = modBean.getModuleList(ModuleType.BASE_ENTITY, true);
+		for(FacilioModule module: modules) {
+			customModules.add(getModuleJson(module));
+		}
+		
+		context.put("systemModules", systemModules);
+		context.put("customModules", customModules);
+		
+		return false;
+	}
+	
+	private JSONObject getModuleJson(FacilioModule module) {
+		JSONObject obj = new JSONObject();
+		obj.put("name" , module.getName());
+		obj.put("displayName" , module.getDisplayName());
+		obj.put("moduleId" , module.getModuleId());
+		return obj;
+	}
+	
+
+}

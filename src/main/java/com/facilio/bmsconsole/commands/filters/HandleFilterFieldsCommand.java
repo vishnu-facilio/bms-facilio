@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.context.filters.FilterFieldContext;
 import com.facilio.bmsconsole.context.filters.FilterOperator;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.operators.BuildingOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
@@ -143,6 +144,8 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
         }
         else {
             switch (module.getName()) {
+                case  ContextNames.WORK_ORDER:
+            	    		return filterOutFields(fields, FieldFactory.Fields.workOrderFieldsInclude, FilterType.INCLUDE);
                 case FacilioConstants.ContextNames.QUOTE:
                     return filterOutFields(fields, FieldFactory.Fields.quoteFieldsInclude, FilterType.INCLUDE);
                 case FacilioConstants.ContextNames.SENSOR_ROLLUP_ALARM:

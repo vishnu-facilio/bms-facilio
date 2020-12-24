@@ -665,6 +665,12 @@ public class LookupSpecialTypeUtil {
 		if (MapUtils.isEmpty(prop)) {
 			return null;
 		}
+		String primaryFieldName = getPrimaryFieldName(specialType);
+		return primaryFieldName != null ? prop.get(primaryFieldName) : null;
+	}
+	
+	// TODO IsMainField property should be set in field object itself and return primary field using that
+	public static String getPrimaryFieldName(String specialType) {
 		switch (specialType) {
 			case FacilioConstants.ContextNames.USERS:
 			case FacilioConstants.ContextNames.GROUPS:
@@ -673,13 +679,13 @@ public class LookupSpecialTypeUtil {
 			case FacilioConstants.ContextNames.FORMULA_FIELD:
 			case FacilioConstants.ContextNames.READING_RULE_MODULE:
 			case FacilioConstants.ContextNames.SLA_RULE_MODULE:
-				return prop.get("name");
+				return "name";
 			case FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE:
-				return prop.get("title");
+				return "title";
 			case EventConstants.EventContextNames.EVENT:
-				return prop.get("eventMessage");
+				return "eventMessage";
 			case FacilioConstants.ContextNames.SENSOR_RULE_MODULE:
-				return prop.get("sensorRuleTypeEnum");
+				return "sensorRuleTypeEnum";
 			default:
 				return null;
 		}

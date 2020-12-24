@@ -93,6 +93,11 @@ public class FilterFieldContext {
     public String getDisplayType() {
         return field == null ? null : field.getDisplayType() == null ? defaultDisplayTypeForBackwardCompatibility(field.getDataTypeEnum()) : field.getDisplayType().name();
     }
+    
+    @JSON(serialize = false)
+    public FacilioField getField() {
+        return field;
+    }
 
     private String defaultDisplayTypeForBackwardCompatibility (FieldType dataType) {
         if (dataType != null) {

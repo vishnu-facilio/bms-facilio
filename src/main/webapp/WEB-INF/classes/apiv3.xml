@@ -184,5 +184,15 @@
             <param name="moduleName">{1}</param>
         </action>
     </package>
+    
+    <package name="moduleApiv3" namespace="/api/v3/modules/list" extends="v3Api">
+        <action name="all" class="com.facilio.bmsconsoleV3.actions.V3ModuleAction" method="moduleList"></action>
+    </package>
+    
+    <package name="placeholderApiv3" namespace="/api/v3/placeholders" extends="v3Api">
+        <action name="*" class="com.facilio.bmsconsoleV3.actions.V3CommonAction" method="fetchPlaceholderFields">
+            <param name="moduleName">{1}</param>
+        </action>
+    </package>
 
 </struts>

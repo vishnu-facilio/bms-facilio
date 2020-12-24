@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.commands.anomaly.GetAnomalyMetricsCommand;
 import com.facilio.bmsconsole.commands.anomaly.GetEnergyByCDDCommand;
 import com.facilio.bmsconsole.commands.filters.FetchOperatorsForFiltersCommand;
 import com.facilio.bmsconsole.commands.filters.HandleFilterFieldsCommand;
+import com.facilio.bmsconsole.commands.module.GetAllModulesCommand;
 import com.facilio.bmsconsole.commands.picklist.ConstructFieldOptionForPicklist;
 import com.facilio.bmsconsole.commands.picklist.HandleDefaultIdAndOrderByForPicklist;
 import com.facilio.bmsconsole.commands.picklist.SpecialPickListFieldsCommand;
@@ -2655,6 +2656,14 @@ public class ReadOnlyChainFactory {
 
 		return chain;
 	}
+	
+	public static FacilioChain getPlaceholderFields() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(getFilterableFields());
+		chain.addCommand(new FetchPlaceholderFieldsCommand());
+
+		return chain;
+	}
 
 	public static FacilioChain fetchLabels() {
 		FacilioChain c = getDefaultChain();
@@ -2696,5 +2705,12 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new ExecuteCardWorkflowCommand());
 		c.addCommand(new ApplyConditionalFormattingForCard());
 		return c;
+	}
+	
+	public static FacilioChain geAllModulesChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetAllModulesCommand());
+
+		return chain;
 	}
 }

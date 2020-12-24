@@ -23,6 +23,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.service.FacilioService;
 import com.facilio.util.RequestUtil;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -322,6 +323,8 @@ public class AccountUtil {
 		}
     }
 
+	private static Map<String, Long> moduleVsLicense;
+	
     public enum FeatureLicense {
 		MAINTENANCE (1),
 		ALARMS (2),
@@ -336,14 +339,14 @@ public class AccountUtil {
 		APPROVAL (1024),
 		MOBILE_DASHBOARD (2048),
 		CONTROL_ACTIONS (4096),
-		INVENTORY (8192),
+		INVENTORY (8192, new String[] {ContextNames.PURCHASE_REQUEST, ContextNames.PURCHASE_ORDER}),
 		SCHEDULED_WO (16384),
-		TENANTS (32768),
-		HUDSON_YARDS (65536), // TEMP
+		TENANTS (32768, new String[] {ContextNames.TENANT, ContextNames.TENANT_UNIT_SPACE}),
+		HUDSON_YARDS (65536, new String[] {ContextNames.WorkPermit.WORKPERMIT}), // TEMP
 		CONNECTEDAPPS (131072),
 		M_AND_V (262144),
 		GRAPHICS (524288),
-		CONTRACT (1048576),
+		CONTRACT (1048576, new String[] {ContextNames.SERVICE, ContextNames.PURCHASE_CONTRACTS, ContextNames.LABOUR_CONTRACTS, ContextNames.RENTAL_LEASE_CONTRACTS, ContextNames.WARRANTY_CONTRACTS}),
         NEW_ALARMS (2097152),
         DEVELOPER_SPACE (4194304),
 		SKIP_TRIGGERS (8388608),
@@ -351,20 +354,20 @@ public class AccountUtil {
 		ANOMALY(33554432),
 		READING_FIELD_UNITS_VALIDATION (67108864),
 		DEVICES(134217728),
-		VISITOR(268435456),
+		VISITOR(268435456, new String[] {ContextNames.VISITOR_LOGGING}),
 		KPI (536870912),
-		SERVICE_REQUEST(1073741824),
+		SERVICE_REQUEST(1073741824, new String[] {ContextNames.SERVICE_REQUEST}),
 		SAFETY_PLAN(2147483648L),
-		CLIENT(4294967296L),
+		CLIENT(4294967296L, new String[] {ContextNames.CLIENT}),
 		WEB_TAB(8589934592L),
 		BIM(17179869184L),
-		PEOPLE_CONTACTS(34359738368L),
+		PEOPLE_CONTACTS(34359738368L, new String[] {ContextNames.PEOPLE}),
 		NEW_APPROVALS(68719476736L),
 		CHATBOT(137438953472L),
 		SCOPING(274877906944L),
 		OPERATIONAL_ALARM(549755813888L),
 		FIELD_PERMISSIONS(1099511627776L),
-		QUOTATION(2199023255552L),
+		QUOTATION(2199023255552L,  new String[] {ContextNames.QUOTE}),
 		ENERGY_STAR_INTEG(4398046511104L),
 		ASSET_DEPRECIATION(8796093022208L), // 2^43
 		CUSTOM_MAIL(17592186044416L),
@@ -376,14 +379,23 @@ public class AccountUtil {
 		CUSTOM_BUTTON(1125899906842624l),
 		MULTISITEPM(2251799813685248l) // 2 ^ 51
 		;
+    		// Add Module name if license is added for specific module
 		
 		private long license;	
+		private String[] modules;
 
 		FeatureLicense(long license) {
+			this(license, null);
+		}
+		FeatureLicense(long license, String[] modules) {
 			this.license = license;
+			this.modules = modules;
 		}
 		public long getLicense() {
 			return license;
+		}
+		public String[] getModules() {
+			return modules;
 		}
 		public static FeatureLicense getFeatureLicense (long value) {
 			return FEATURE_MAP.get(value);
@@ -396,12 +408,29 @@ public class AccountUtil {
 		private static final Map<Long, FeatureLicense> FEATURE_MAP = Collections.unmodifiableMap(initFeatureMap());
 		private static Map<Long, FeatureLicense> initFeatureMap() {
 			Map<Long, FeatureLicense> typeMap = new HashMap<>();
+			Map<String, Long> moduleMap = new HashMap<>();
 			for(FeatureLicense fLicense : values()) {
 				typeMap.put(fLicense.getLicense(), fLicense);
+				if (fLicense.getModules() != null) {
+					for (String module : fLicense.getModules()){
+						moduleMap.put(module, fLicense.getLicense());
+					}
+				}
 			}
+			moduleVsLicense = Collections.unmodifiableMap(moduleMap);
 			return typeMap;
 		}
 	}
+    
+    /*private static Map<String, FeatureLicense> moduleVsLicense = Collections.unmodifiableMap(initializeLicenseRelation());
+    private static  Map<String, FeatureLicense> initializeLicenseRelation() {
+	    	Map<String, FeatureLicense> licenseMap = new HashMap();
+	    	licenseMap.put(ContextNames.TENANT, FeatureLicense.TENANTS);
+	    	licenseMap.put(ContextNames.TENANT_UNIT_SPACE, FeatureLicense.TENANTS);
+	    	licenseMap.put(ContextNames.PEOPLE, FeatureLicense.PEOPLE_CONTACTS);
+	    	licenseMap.put(ContextNames.CLIENT, FeatureLicense.CLIENT);
+	    	return licenseMap;
+    }*/
 
     
     public static long getOrgFeatureLicense(long orgId) throws Exception
@@ -444,7 +473,10 @@ public class AccountUtil {
 		return (getFeatureLicense() & featureLicense.getLicense()) == featureLicense.getLicense();
 	}
 	
-	
+	public static boolean isModuleLicenseEnabled(String moduleName) throws Exception {
+		Long license = moduleVsLicense.get(moduleName);
+		return license == null || isFeatureEnabled(FeatureLicense.getFeatureLicense(license));
+	}
 	
 	
 	

@@ -228,6 +228,14 @@ public class KPIContext implements Serializable {
 		this.dateFieldId = dateFieldId;
 	}
 	
+	private String dateFieldName;
+	public String getDateFieldName() {
+		return dateFieldName;
+	}
+	public void setDateFieldName(String dateFieldName) {
+		this.dateFieldName = dateFieldName;
+	}
+
 	private FacilioField dateField;
 	@JSON(serialize = false)
 	@JsonIgnore
@@ -237,6 +245,7 @@ public class KPIContext implements Serializable {
 	@JsonIgnore
 	public void setDateField(FacilioField dateField) {
 		this.dateField = dateField;
+		setDateFieldName(dateField.getName());
 	}
 	
 	private DateOperators dateOperator;
