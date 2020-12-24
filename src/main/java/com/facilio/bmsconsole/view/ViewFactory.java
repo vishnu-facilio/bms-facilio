@@ -367,17 +367,20 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllPurchaseRequestView().setOrder(order++));
+		/*
 		views.put("open", getOpenPurchaseRequest().setOrder(order++));
 		views.put("pending", getPurchaseRequestForStatus("pending", "Pending", 1).setOrder(order++));
 		views.put("overdue", getOverDuePurchaseRequest().setOrder(order++));
 		views.put("approved", getPurchaseRequestForStatus("approved", "Approved", 2).setOrder(order++));
 		views.put("rejected", getPurchaseRequestForStatus("rejected", "Rejected", 3).setOrder(order++));
 		views.put("completed", getPurchaseRequestForStatus("completed", "Completed", 4).setOrder(order++));
+		 */
 		viewsMap.put(FacilioConstants.ContextNames.PURCHASE_REQUEST, views);
 
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllPurchaseOrderView().setOrder(order++));
+		/*
 		views.put("open", getOpenPurchaseOrder().setOrder(order++));
 		views.put("pending", getPurchaseOrderForStatus("pending", "Pending", 1).setOrder(order++));
 		views.put("overdue", getOverDuePurchaseOrder().setOrder(order++));
@@ -385,6 +388,7 @@ public class ViewFactory {
 		views.put("ongoing", getOnGoingPurchaseOrder().setOrder(order++));
 		views.put("rejected", getPurchaseOrderForStatus("rejected", "Rejected", 3).setOrder(order++));
 		views.put("completed", getPurchaseOrderForStatus("completed", "Completed", 7).setOrder(order++));
+		*/
 		
 		viewsMap.put(FacilioConstants.ContextNames.PURCHASE_ORDER, views);
 
@@ -4665,8 +4669,8 @@ public class ViewFactory {
 	
 	private static FacilioView getAllPurchaseRequestView() {
 		FacilioField localId = new FacilioField();
-		localId.setName("localId");
-		localId.setColumnName("LOCAL_ID");
+		localId.setName("id");
+		localId.setColumnName("ID");
 		localId.setDataType(FieldType.NUMBER);
 		localId.setModule(ModuleFactory.getPurchaseRequestModule());
 
@@ -4820,8 +4824,8 @@ public class ViewFactory {
 	
 	private static FacilioView getAllPurchaseOrderView() {
 		FacilioField localId = new FacilioField();
-		localId.setName("localId");
-		localId.setColumnName("LOCAL_ID");
+		localId.setName("id");
+		localId.setColumnName("ID");
 		localId.setDataType(FieldType.NUMBER);
 		localId.setModule(ModuleFactory.getPurchaseOrderModule());
 
