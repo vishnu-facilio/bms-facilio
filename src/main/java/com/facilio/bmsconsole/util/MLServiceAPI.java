@@ -62,8 +62,8 @@ public class MLServiceAPI {
 	
 	public static List<String> getReadingListForScenario(String scenario) throws Exception {
 		List<Map<String, Object>> scenarioResult = getScenarioInfo(scenario); 
-		LOGGER.info("RECORD BUILDER.. "+scenarioResult);
-		LOGGER.info("RECORD BUILDER size.. "+scenarioResult.size());
+//		LOGGER.info("RECORD BUILDER.. "+scenarioResult);
+		LOGGER.info("Scenario count : "+scenarioResult.size());
 		if(scenarioResult.size() == 0) {
 			return null;
 		}
@@ -122,7 +122,7 @@ public class MLServiceAPI {
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("value"), "-1", NumberOperators.NOT_EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("tableName"), StringUtils.join(mlReadingTables, ","), StringOperators.ISN_T))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("name"), StringUtils.join(readingFields, ","), StringOperators.IS));
-		LOGGER.info(genericSelectBuilder.constructSelectStatement());
+//		LOGGER.info(genericSelectBuilder.constructSelectStatement());
 		return genericSelectBuilder.get();
 	}
 

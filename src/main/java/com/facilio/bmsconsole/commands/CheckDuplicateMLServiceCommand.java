@@ -20,14 +20,14 @@ public class CheckDuplicateMLServiceCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 
 		MLServiceContext mlServiceContext = (MLServiceContext) context.get(FacilioConstants.ContextNames.ML_MODEL_INFO);
-		LOGGER.info("Start of CheckDuplicateMLServiceCommand for usecase id "+mlServiceContext.getUseCaseId());
+//		LOGGER.info("Start of CheckDuplicateMLServiceCommand for usecase id "+mlServiceContext.getUseCaseId());
 		try {
 			checkDuplicateScenario(mlServiceContext);
 		}catch(Exception e){
 			LOGGER.info("Failed in CheckDuplicateMLServiceCommand for usecase id "+mlServiceContext.getUseCaseId());
 			return true;
 		}
-		LOGGER.info("End of CheckDuplicateMLServiceCommand for usecase id "+mlServiceContext.getUseCaseId());
+//		LOGGER.info("End of CheckDuplicateMLServiceCommand for usecase id "+mlServiceContext.getUseCaseId());
 		return false;
 
 	}

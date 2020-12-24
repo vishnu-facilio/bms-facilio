@@ -155,6 +155,7 @@ public class ConstructReadingForMLServiceCommand extends FacilioCommand {
 			LOGGER.info("setting workflowId :: "+workflowId);
 		}
 		mlServiceRow.put("modelName", mlServiceContext.getModelName());
+		mlServiceRow.put("modelType", mlServiceContext.getModelType());
 		mlServiceRow.put("scenario", mlServiceContext.getScenario());
 		mlServiceRow.put("mlModelMeta", mlServiceContext.getReqJson().toString());
 		

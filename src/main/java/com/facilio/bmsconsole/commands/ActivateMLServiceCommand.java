@@ -44,7 +44,7 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 		MLServiceContext mlServiceContext = (MLServiceContext) context.get(FacilioConstants.ContextNames.ML_MODEL_INFO);
 		try {
 			LOGGER.info("Start of ActivateMLServiceCommand");
-			LOGGER.info(mlServiceContext.getMlResponse().getModuleInfo());
+//			LOGGER.info(mlServiceContext.getMlResponse().getModuleInfo());
 			MLResponseContext mlResponseContext = mlServiceContext.getMlResponse();
 
 			long assetId = mlResponseContext.getAssetid();
@@ -58,15 +58,15 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 			List<Map<String, Object>> readingFieldsDetails = MLServiceAPI.getReadingFields(assetId, readingVariables);
 			
 			for(MLCustomModuleContext moduleContext : mlResponseContext.getModuleInfo()) {
-				LOGGER.info("MAPPPSSS:::"+mlCustomModuleMap);
-				LOGGER.info("MODULEEEEEEEEEEE name :: "+moduleContext.getModelPath());
-				LOGGER.info("Starting ::"+moduleContext);
+//				LOGGER.info("MAPPPSSS:::"+mlCustomModuleMap);
+//				LOGGER.info("MODULEEEEEEEEEEE name :: "+moduleContext.getModelPath());
+//				LOGGER.info("Starting ::"+moduleContext);
 				long mlID = addMLModule(moduleContext, scenario, assetId);
-				LOGGER.info("addMLModule ::"+moduleContext);
+//				LOGGER.info("addMLModule ::"+moduleContext);
 				addMLVariables(mlID, assetId, moduleContext, readingFieldsDetails, mlCustomModuleMap);
-				LOGGER.info("addMLVariables ::"+moduleContext);
+//				LOGGER.info("addMLVariables ::"+moduleContext);
 				addMLModelVariables(mlID, mlServiceContext, moduleContext, mlResponseContext.getAssetid());
-				LOGGER.info("addMLModelVariables ::"+moduleContext);
+//				LOGGER.info("addMLModelVariables ::"+moduleContext);
 				try {
 					ScheduleInfo info = new ScheduleInfo();
 					String moduleType = moduleContext.getType();
@@ -127,7 +127,7 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 			MLAPI.addMLModelVariables(mlID,"workflowId",String.valueOf(mlServiceContext.getWorkflowId()));
 		}
 
-		int sleepTime = 2;
+		int sleepTime = 1;
 		LOGGER.info("I am sleeping for next "+sleepTime+" sec while MLModelVariables entry");
 		Thread.sleep(1000 * sleepTime);
 	}
@@ -161,20 +161,20 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 			MLCustomModuleContext prevModuleContext = mlCustomModuleMap.get(prevModuleName);
 			FacilioModule prevModule = modBean.getModule(prevModuleContext.getMlReadingModuleId());
 			Map<String, List<String>> subFields = prevModuleContext.getFields();
-			LOGGER.info("parentModuleSection");
-			LOGGER.info("prevModule - facilio:: "+prevModule);
-			LOGGER.info("prevModule Fields - facilio:: "+prevModule.getFields());
-			LOGGER.info("prevModule - local:: "+prevModuleContext.getMlReadingModuleId());
-			LOGGER.info("prevModule Fields - local:: "+prevModuleContext.getRequestFields());
-			LOGGER.info("prevModule subFields - local:: "+subFields);
+//			LOGGER.info("parentModuleSection");
+//			LOGGER.info("prevModule - facilio:: "+prevModule);
+//			LOGGER.info("prevModule Fields - facilio:: "+prevModule.getFields());
+//			LOGGER.info("prevModule - local:: "+prevModuleContext.getMlReadingModuleId());
+//			LOGGER.info("prevModule Fields - local:: "+prevModuleContext.getRequestFields());
+//			LOGGER.info("prevModule subFields - local:: "+subFields);
 
 			List<String> parentFields = moduleContext.getParentFields();
-			LOGGER.info("parentFields :: "+parentFields);
+//			LOGGER.info("parentFields :: "+parentFields);
 			List<FacilioField> finalFields = prevModuleContext.getRequestFields().stream()
 					.filter( field -> parentFields.contains(field.getName()) )
 					.collect(Collectors.toList());
 
-			LOGGER.info("finalFields :: "+finalFields);
+//			LOGGER.info("finalFields :: "+finalFields);
 
 			boolean first = true;
 			FacilioField parentField = modBean.getField("parentId", prevModule.getName());
@@ -197,24 +197,24 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 			String readingModuleName = (scenario + moduleContext.getModuleName());
 			FacilioModule readingModule = modBean.getModule(readingModuleName.toLowerCase());
 
-			LOGGER.info(" ---- readingModuleName ---"+readingModuleName);
-			LOGGER.info(" ---- readingModuleName ---"+readingModuleName.toLowerCase());
-			LOGGER.info(" ---- readingModuleName ---"+readingModule);
+//			LOGGER.info(" ---- readingModuleName ---"+readingModuleName);
+//			LOGGER.info(" ---- readingModuleName ---"+readingModuleName.toLowerCase());
+//			LOGGER.info(" ---- readingModuleName ---"+readingModule);
 
 			List<FacilioField> mlFields = readingModule == null ? getCustomFields(moduleContext.getFields(), false) : modBean.getAllFields(readingModule.getName());
 			moduleContext.setRequestFields(mlFields);
-			LOGGER.info(" -- mlFields -- "+mlFields);
+//			LOGGER.info(" -- mlFields -- "+mlFields);
 			MLAPI.addReading(Collections.singletonList(assetId),readingModuleName,mlFields,ModuleFactory.getMLReadingModule().getTableName(),readingModule);
 
 			String logReadingModuleName = readingModuleName + "Log";  
 			FacilioModule logReadingModule = modBean.getModule(logReadingModuleName.toLowerCase());
 
-			LOGGER.info(" ---- logReadingModuleName ---"+logReadingModuleName);
-			LOGGER.info(" ---- logReadingModuleName ---"+logReadingModuleName.toLowerCase());
-			LOGGER.info(" ---- logReadingModuleName ---"+logReadingModule);
+//			LOGGER.info(" ---- logReadingModuleName ---"+logReadingModuleName);
+//			LOGGER.info(" ---- logReadingModuleName ---"+logReadingModuleName.toLowerCase());
+//			LOGGER.info(" ---- logReadingModuleName ---"+logReadingModule);
 
 			List<FacilioField> mlLogFields = logReadingModule == null ? getCustomFields(moduleContext.getFields(), true) : modBean.getAllFields(logReadingModule.getName());
-			LOGGER.info(" --ml logField -- "+mlLogFields);
+//			LOGGER.info(" --ml logField -- "+mlLogFields);
 			MLAPI.addReading(Collections.singletonList(assetId), logReadingModuleName, mlLogFields,ModuleFactory.getMLLogReadingModule().getTableName(),ModuleType.PREDICTED_READING, logReadingModule);
 
 			readingModule = modBean.getModule(readingModuleName.toLowerCase());
@@ -242,15 +242,15 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 		int count = 1;
 
 		if(isLogModule) {
-			LOGGER.info("I am mllogreading..");
+			LOGGER.info("I am in mllogreading..");
 		} else {
-			LOGGER.info("I am mllreading..");
+			LOGGER.info("I am in mllreading..");
 		}
 		if(booleanFields!=null) {
 			for(String field : booleanFields) {
 				String displayName = field.toUpperCase();
 				displayName = isLogModule ? displayName+"_LOG" : displayName;
-				LOGGER.info(isLogModule+" :: "+field +" :: "+displayName);
+//				LOGGER.info(isLogModule+" :: "+field +" :: "+displayName);
 				fields.add(FieldFactory.getField(field, displayName, dataType+"CF"+count, module, FieldType.BOOLEAN));
 				count += 1;
 			}
@@ -262,7 +262,7 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 			for(String field : decimanFields) {
 				String displayName = field.toUpperCase();
 				displayName = isLogModule ? displayName+"_LOG" : displayName;
-				LOGGER.info(isLogModule+" :: "+field +" :: "+displayName);
+//				LOGGER.info(isLogModule+" :: "+field +" :: "+displayName);
 				fields.add(FieldFactory.getField(field, displayName, dataType+"CF"+count, module, FieldType.DECIMAL));
 				count += 1;
 			}

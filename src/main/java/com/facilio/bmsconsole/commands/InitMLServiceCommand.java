@@ -55,27 +55,29 @@ public class InitMLServiceCommand extends FacilioCommand {
 				String error = "Error_ML "+ postURL + " usecase ID : "+mlServiceContext.getUseCaseId()+" ERROR MESSAGE : "+"Response is not valid. RESULT : "+result;
 				LOGGER.fatal(error);
 				mlServiceContext.setStatus(error);
+				MLServiceAPI.updateMLServiceStatus(mlServiceContext.getUseCaseId(), result);
 			} else {
-//				LOGGER.info("\nmlresponse :: \n"+result);
+				//				LOGGER.info("\nmlresponse :: \n"+result);
 
 				JSONParser parser = new JSONParser();
 				JSONObject response = (JSONObject) parser.parse(result);
-//				JSONObject response = new JSONObject(result);
-//				Map<String,Object> response = new ObjectMapper().readValue(result, HashMap.class);
+				//				JSONObject response = new JSONObject(result);
+				//				Map<String,Object> response = new ObjectMapper().readValue(result, HashMap.class);
 				MLResponseContext mlResponse = FieldUtil.getAsBeanFromJson(response, MLResponseContext.class);
 				MLServiceAPI.updateMLServiceStatus(mlResponse.getUsecaseId(), mlResponse.getMessage());
-				LOGGER.info("\nML Status has been updated :: \n"+result);
+				LOGGER.info("\nML Status has been updated...");
+//				LOGGER.info(result);
 				mlServiceContext.setMlResponse(mlResponse);
 				if(mlResponse!=null) {
-					mlServiceContext.setStatus(mlResponse.getMessage());
+					mlServiceContext.setStatus(mlResponse.getMessage() +" for usecase id : "+ mlServiceContext.getUseCaseId());
 				}
 			}
 		}catch(Exception e){
-			if(!e.getMessage().contains("ML error")){
-				String error = "Error_JAVA "+ FacilioProperties.getMlModelBuildingApi() + " usecase ID : "+mlServiceContext.getUseCaseId()+" FILE : InitMLServiceCommand "+" ERROR MESSAGE : "+e;
-				LOGGER.fatal(error);
-				mlServiceContext.setStatus(error);
-			}
+			String errMsg = "ML Api hit failed";
+			String error = "Error_ML "+ FacilioProperties.getMlModelBuildingApi() + " usecase ID : "+mlServiceContext.getUseCaseId()+" FILE : InitMLServiceCommand "+" ERROR MESSAGE : "+errMsg;
+			LOGGER.fatal(error);
+			mlServiceContext.setStatus(error);
+			MLServiceAPI.updateMLServiceStatus(mlServiceContext.getUseCaseId(), errMsg);
 		}
 		LOGGER.info("End of InitMLModelCommand for usecase id "+mlServiceContext.getUseCaseId());
 		return false;

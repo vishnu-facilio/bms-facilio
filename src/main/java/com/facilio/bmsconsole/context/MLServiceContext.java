@@ -17,6 +17,7 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 	 * User given input variables 
 	 */
 	private String modelName;
+	private String modelType;
 	private String scenario;
 	private JSONArray readingVariables;
 	private JSONObject assetDetails;
@@ -24,6 +25,12 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
     private JSONObject groupingMethod;
     private JSONObject workflowInfo;
     private JSONArray filteringMethod;
+    
+    /**
+     * For development purpose
+     */
+    private long startTime;
+    private long endTime;
     
     /**
      * Internal usage variables 
@@ -50,6 +57,14 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 	
 	public void setModelName(String modelName) {
 		this.modelName = modelName;
+	}
+	
+	public String getModelType() {
+		return modelType;
+	}
+	
+	public void setModelType(String modelType) {
+		this.modelType = modelType;
 	}
 	
 	public JSONObject getMlVariables() {
@@ -103,6 +118,7 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 	public JSONObject getReqJson() throws JSONException {
 		JSONObject jsonRes = new JSONObject();
 		jsonRes.put("modelName", this.modelName);
+		jsonRes.put("modelType", this.modelType);
 		jsonRes.put("scenario", this.scenario);
 		jsonRes.put("assetDetails", this.assetDetails);
 		jsonRes.put("readingVariables", this.readingVariables);
@@ -171,11 +187,27 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 
 	@Override
 	public String toString() {
-		return "MLServiceContext [modelName=" + modelName + ", scenario=" + scenario + ", readingVariables="
+		return "MLServiceContext [modelName=" + modelName + ", modelType=" + modelType + ", scenario=" + scenario + ", readingVariables="
 				+ readingVariables + ", assetDetails=" + assetDetails + ", mlVariables=" + mlVariables
 				+ ", filteringMethod=" + filteringMethod + ", groupingMethod=" + groupingMethod + ", workflowInfo="
 				+ workflowInfo + ", orgDetails=" + orgDetails + ", useCaseId="
 				+ useCaseId + ", workflowId=" + workflowId + ", status=" + status + "]"; //excluding dataObject and MLResponse
+	}
+
+	public long getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(long startTime) {
+		this.startTime = startTime;
+	}
+
+	public long getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(long endTime) {
+		this.endTime = endTime;
 	}
 
 }
