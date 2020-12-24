@@ -63,16 +63,18 @@ public class RollUpFieldUtil {
 		
 		for(ReadingDataMeta rollUpData:rollUpFieldData) 
 		{			
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioField rollUpFieldToBeUpdated = modBean.getFieldFromDB(rollUpData.getFieldId());
+			
 			FacilioField parentRollUpField = rollUpData.getField();
 			Map<String,Object> prop = new HashMap<String,Object>();
-			prop.put(parentRollUpField.getName(), rollUpData.getValue());
+			prop.put(rollUpFieldToBeUpdated.getName(), rollUpData.getValue());
 			
 			UpdateRecordBuilder<ModuleBaseWithCustomFields> updateBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
-					.table(parentRollUpField.getModule().getTableName())
-					.module(parentRollUpField.getModule())
-					.fields(Collections.singletonList(parentRollUpField))
-					.andCondition(CriteriaAPI.getIdCondition(rollUpData.getReadingDataId(), parentRollUpField.getModule()));
-			
+					.moduleName(parentRollUpField.getModule().getName()) 
+					.fields(Collections.singletonList(rollUpFieldToBeUpdated))
+					.andCondition(CriteriaAPI.getCondition(parentRollUpField.getModule().getTableName()+".ID", "id", ""+rollUpData.getReadingDataId(), NumberOperators.EQUALS));
+
 			updateBuilder.updateViaMap(prop);
 		}
 	}
