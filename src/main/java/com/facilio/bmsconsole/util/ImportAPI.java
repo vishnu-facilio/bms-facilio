@@ -585,7 +585,7 @@ public class ImportAPI {
 			} else {
 				for (FacilioField field : fieldsList) {
 					if (!ImportAPI.isRemovableFieldOnImport(field.getName())) {
-						if (field.getDisplayType() == FacilioField.FieldDisplayType.ADDRESS || field.getDisplayType() == FacilioField.FieldDisplayType.GEO_LOCATION) {
+						if (field.getDisplayType() == FacilioField.FieldDisplayType.ADDRESS) {
 							fields.addAll(Arrays.asList(field.getName() + "_name", field.getName() + "_street", field.getName() + "_city", field.getName() + "_state", field.getName() + "_country", field.getName() + "_zip", field.getName() + "_lat", field.getName() + "_lng"));
 						} else {
 							fields.add(field.getName());
@@ -593,7 +593,7 @@ public class ImportAPI {
 					}
 				}
 
-				if (importSetting != null && (importSetting != ImportProcessContext.ImportSetting.INSERT.getValue() || importSetting != ImportProcessContext.ImportSetting.INSERT_SKIP.getValue())) {
+				if (importSetting != null && (importSetting != ImportProcessContext.ImportSetting.INSERT.getValue() && importSetting != ImportProcessContext.ImportSetting.INSERT_SKIP.getValue())) {
 					if (!fieldsMap.containsKey("localId")) {
 						fields.add("id");
 					}
@@ -605,6 +605,10 @@ public class ImportAPI {
 					fields.remove("space");
 					fields.remove("resourceType");
 					fields.remove("localId");
+					if (importSetting != null && (importSetting != ImportProcessContext.ImportSetting.INSERT.getValue() && importSetting != ImportProcessContext.ImportSetting.INSERT_SKIP.getValue())) {
+						fields.add("id");
+					}
+
 					if(importMode == null || importMode == 1) {
 					if(module.equals(FacilioConstants.ContextNames.ENERGY_METER)) {
 						fields.remove("purposeSpace");
