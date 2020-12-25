@@ -51,7 +51,7 @@ public class IdsAction extends AgentActionV2
             LOGGER.info(" discovering points for device " + getRecordIds());
             List<Long> deviceIds = getRecordIds();
             if( !deviceIds.isEmpty() ){
-                if(FieldDeviceApi.discoverPoints(deviceIds)){
+                if(FieldDeviceApi.discoverPoint(deviceIds)){
                     setResult(AgentConstants.RESULT,SUCCESS);
                     setResponseCode(HttpURLConnection.HTTP_OK);
                     return SUCCESS;

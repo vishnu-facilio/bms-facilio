@@ -1,15 +1,10 @@
 package com.facilio.agentv2.device;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+import com.amazonaws.services.dynamodbv2.xspec.L;
+import com.facilio.agentv2.controller.ControllerApiV2;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -187,6 +182,20 @@ public class FieldDeviceApi {
         return new ArrayList<>();
     }
 
+    private static Controller getControllers(List<Long> controllerId) throws Exception {
+        FacilioModule module = ModuleFactory.getNewControllerModule();
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .select(FieldFactory.getControllersField())
+                .table(module.getTableName())
+                .andCondition(CriteriaAPI.getIdCondition(controllerId,module));
+        Map<String, Object> props = builder.fetchFirst();
+        if(props != null && !props.isEmpty()) {
+            Controller controller = ControllerApiV2.makeControllerFromMap(props,FacilioControllerType.valueOf((Integer)props.get(AgentConstants.CONTROLLER_TYPE)));
+            return controller;
+        }
+        return null;
+    }
+
     /**
      * @param agentId can be null
      * @return
@@ -302,6 +311,17 @@ public class FieldDeviceApi {
         return false;
     }
 
+    public static boolean discoverPoint(List<Long> controllerId) throws Exception {
+        try {
+            Controller controller = getControllers(controllerId);
+            Objects.requireNonNull(controller,"Controller doesn't exist");
+            ControllerMessenger.discoverPoints(controller);
+            return true;
+        }catch (Exception e){
+            LOGGER.error("Exception while discoverPoints -> ", e);
+           throw e;
+        }
+    }
 
     public static long getAgentDeviceCount(List<Long> agentIds) {
         return getDeviceCount(agentIds, null);
