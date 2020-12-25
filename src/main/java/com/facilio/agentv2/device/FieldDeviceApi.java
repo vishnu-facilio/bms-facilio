@@ -1,19 +1,10 @@
 package com.facilio.agentv2.device;
 
-import java.sql.SQLException;
-import java.util.*;
-
-import com.amazonaws.services.dynamodbv2.xspec.L;
-import com.facilio.agentv2.controller.ControllerApiV2;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.actions.GetPointsAction;
 import com.facilio.agentv2.controller.Controller;
+import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.controller.ControllerUtilV2;
 import com.facilio.agentv2.iotmessage.ControllerMessenger;
 import com.facilio.aws.util.FacilioProperties;
@@ -27,12 +18,15 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.modules.BmsAggregateOperators;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
+import java.sql.SQLException;
+import java.util.*;
 
 public class FieldDeviceApi {
 
