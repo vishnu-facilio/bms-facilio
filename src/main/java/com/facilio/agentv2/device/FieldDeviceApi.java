@@ -8,6 +8,7 @@ import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.controller.ControllerUtilV2;
 import com.facilio.agentv2.iotmessage.ControllerMessenger;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.beans.ModuleBean;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -18,6 +19,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.lang3.StringUtils;
@@ -184,12 +186,24 @@ public class FieldDeviceApi {
                 .andCondition(CriteriaAPI.getIdCondition(controllerId,module));
         Map<String, Object> props = builder.fetchFirst();
         if(props != null && !props.isEmpty()) {
-            Controller controller = ControllerApiV2.makeControllerFromMap(props,FacilioControllerType.valueOf((Integer)props.get(AgentConstants.CONTROLLER_TYPE)));
+        	FacilioControllerType type = FacilioControllerType.valueOf((Integer)props.get(AgentConstants.CONTROLLER_TYPE));
+            Controller controller = ControllerApiV2.makeControllerFromMap(getControllerProps(type, controllerId),type);
+            controller.setAgentId((long)props.get(AgentConstants.AGENT_ID));
             return controller;
         }
         return null;
     }
 
+    private static Map<String,Object> getControllerProps(FacilioControllerType type,List<Long> controllerId) throws Exception{
+    	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+    	String moduleName = ControllerApiV2.getControllerModuleName(type);
+    	FacilioModule module = modBean.getModule(moduleName);
+    	 GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                 .select(modBean.getAllFields(module.getName()))
+                 .table(module.getTableName())
+                 .andCondition(CriteriaAPI.getIdCondition(controllerId,module));
+		return  builder.fetchFirst();
+    }
     /**
      * @param agentId can be null
      * @return
