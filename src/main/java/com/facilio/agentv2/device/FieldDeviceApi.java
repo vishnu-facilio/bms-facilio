@@ -178,17 +178,26 @@ public class FieldDeviceApi {
         return new ArrayList<>();
     }
 
-    private static Controller getControllers(List<Long> controllerId) throws Exception {
+    public static Controller getControllers(List<Long> controllerId) throws Exception {
         FacilioModule module = ModuleFactory.getNewControllerModule();
+        FacilioModule resourceModule = ModuleFactory.getResourceModule();
+        List<FacilioField> fields = new ArrayList<FacilioField>();
+        fields.add(FieldFactory.getNameField(resourceModule));
+        fields.addAll(FieldFactory.getControllersField());
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .select(FieldFactory.getControllersField())
+                .select(fields)
                 .table(module.getTableName())
+                .innerJoin(resourceModule.getTableName())
+                .on(resourceModule.getTableName()+".ID = "+module.getTableName()+".ID")
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getSysDeletedTimeField(resourceModule), "NULL", CommonOperators.IS_EMPTY))
                 .andCondition(CriteriaAPI.getIdCondition(controllerId,module));
         Map<String, Object> props = builder.fetchFirst();
         if(props != null && !props.isEmpty()) {
         	FacilioControllerType type = FacilioControllerType.valueOf((Integer)props.get(AgentConstants.CONTROLLER_TYPE));
             Controller controller = ControllerApiV2.makeControllerFromMap(getControllerProps(type, controllerId),type);
             controller.setAgentId((long)props.get(AgentConstants.AGENT_ID));
+            controller.setName((String)props.get(AgentConstants.NAME));
+            controller.setId((Long)props.get(AgentConstants.ID));
             return controller;
         }
         return null;
@@ -199,7 +208,7 @@ public class FieldDeviceApi {
     	String moduleName = ControllerApiV2.getControllerModuleName(type);
     	FacilioModule module = modBean.getModule(moduleName);
     	 GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                 .select(modBean.getAllFields(module.getName()))
+                 .select(modBean.getModuleFields(moduleName))
                  .table(module.getTableName())
                  .andCondition(CriteriaAPI.getIdCondition(controllerId,module));
 		return  builder.fetchFirst();
