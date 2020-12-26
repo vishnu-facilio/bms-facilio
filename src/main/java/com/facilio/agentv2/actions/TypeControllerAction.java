@@ -61,24 +61,4 @@ public class TypeControllerAction extends ControllerActions {
         return SUCCESS;
     }
 
-    /**
-     * Lists all points for a controller
-     * @return
-     */
-    public String getControllerPoints(){ //TODO use pointId
-        try {
-
-            List<Point> points = PointsAPI.getControllerPoints(FacilioControllerType.valueOf(getControllerType()), getControllerId());
-            JSONArray array = new JSONArray();
-            points.forEach(point -> array.add(point.toJSON()));
-            setResult(AgentConstants.DATA, array);
-                setResult(AgentConstants.RESULT, SUCCESS);
-                return SUCCESS;
-        }catch (Exception e){
-            LOGGER.info("Exception occurred while getting point",e);
-            setResult(AgentConstants.EXCEPTION,e.getMessage());
-        }
-        return SUCCESS;
-    }
-    
 }

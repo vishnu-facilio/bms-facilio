@@ -62,24 +62,6 @@ import com.facilio.services.messageQueue.MessageQueueTopic;
 
 public class AgentAction extends AgentActionV2 {
     private static final Logger LOGGER = LogManager.getLogger(AgentAction.class.getName());
-    private static final List<Integer> FILTER_INSTANCES = new ArrayList<>();
-
-    static {
-    	FILTER_INSTANCES.add(BACNetUtil.InstanceType.ANALOG_INPUT.ordinal());//0
-    	FILTER_INSTANCES.add(BACNetUtil.InstanceType.ANALOG_OUTPUT.ordinal());
-    	FILTER_INSTANCES.add(BACNetUtil.InstanceType.ANALOG_VALUE.ordinal());
-    	FILTER_INSTANCES.add(BACNetUtil.InstanceType.BINARY_INPUT.ordinal());
-    	FILTER_INSTANCES.add(BACNetUtil.InstanceType.BINARY_OUTPUT.ordinal());
-    	FILTER_INSTANCES.add(BACNetUtil.InstanceType.BINARY_VALUE.ordinal());
-    	FILTER_INSTANCES.add(BACNetUtil.InstanceType.CALENDAR.ordinal());
-    	FILTER_INSTANCES.add(BACNetUtil.InstanceType.COMMAND.ordinal());//7
-    	FILTER_INSTANCES.add(BACNetUtil.InstanceType.MULTI_STATE_INPUT.ordinal());//13
-    	FILTER_INSTANCES.add(BACNetUtil.InstanceType.MULTI_STATE_OUTPUT.ordinal());
-    	FILTER_INSTANCES.add(BACNetUtil.InstanceType.MULTI_STATE_VALUE.ordinal());//19
-    }
-
-    public static final String FILETR_JOIN = StringUtils.join(FILTER_INSTANCES, ",");
-    
     private String instanceType;
     
     /* public String createPolicy(){
@@ -390,133 +372,6 @@ public class AgentAction extends AgentActionV2 {
             ok();
         } catch (Exception e) {
             LOGGER.info("Exception occurred while getting overview");
-            setResult(AgentConstants.EXCEPTION,e.getMessage());
-            internalError();
-        }
-        return SUCCESS;
-    }
-
-    public String getConfiguredPoints() {
-        GetPointRequest getPointRequest = new GetPointRequest()
-                .filterConfigurePoints();
-
-        try {
-            if ((controllerType != null) && (controllerType > -1)) {
-                getPointRequest.ofType(FacilioControllerType.valueOf(controllerType));
-                if(controllerType == FacilioControllerType.BACNET_IP.asInt()) {
-                	getPointRequest.withCriteria(getBacNetIpInstanceFilter());
-                }
-            }
-            if ((deviceId != null)&&(deviceId > 0)) {
-                getPointRequest.withDeviceId(deviceId);
-            } else if ((controllerId != null) && (controllerId > 0)) {
-                getPointRequest.withControllerId(controllerId);
-            }
-            if(StringUtils.isNotEmpty(instanceType)) {
-            	getPointRequest.withCriteria(getInstanceTypeFilter());
-            }
-            if(StringUtils.isNotEmpty(getQuerySearch())) {
-            	getPointRequest.querySearch(AgentConstants.COL_NAME, getQuerySearch());
-            }
-            getPointRequest.pagination(constructListContext(new FacilioContext()));
-            List<Map<String, Object>> points = getPointRequest.getPointsData();
-            setResult(AgentConstants.DATA, points);
-            ok();
-        } catch (Exception e) {
-            LOGGER.info("Exception  occurred while getting points ", e);
-            setResult(AgentConstants.EXCEPTION,e.getMessage());
-            internalError();
-        }
-        return SUCCESS;
-    }
-
-    public String getSubscribedPoints() {
-        GetPointRequest getPointRequest = new GetPointRequest()
-                .filterSubsctibedPoints();
-        try {
-            if ((controllerType != null) && (controllerType > -1)) {
-                getPointRequest.ofType(FacilioControllerType.valueOf(controllerType));
-            }
-            if ((deviceId != null)&&(deviceId > 0)) {
-                getPointRequest.withDeviceId(deviceId);
-            } else if ((controllerId != null) && (controllerId > 0)) {
-                getPointRequest.withControllerId(controllerId);
-            }
-            if(StringUtils.isNotEmpty(instanceType)) {
-            	getPointRequest.withCriteria(getInstanceTypeFilter());
-            }
-            if(StringUtils.isNotEmpty(getQuerySearch())) {
-            	getPointRequest.querySearch(AgentConstants.COL_NAME, getQuerySearch());
-            }
-            getPointRequest.pagination(constructListContext(new FacilioContext()));
-            List<Map<String, Object>> points = getPointRequest.getPointsData();
-            setResult(AgentConstants.DATA, points);
-            ok();
-        } catch (Exception e) {
-            LOGGER.info("Exception  occurred while getting points ", e);
-            setResult(AgentConstants.EXCEPTION,e.getMessage());
-            internalError();
-        }
-        return SUCCESS;
-    }
-
-    public String getUnconfiguredPoints() {
-        GetPointRequest getPointRequest = new GetPointRequest()
-                .filterUnConfigurePoints();
-        try {
-            if ((controllerType != null) && (controllerType > -1)) {
-                getPointRequest.ofType(FacilioControllerType.valueOf(controllerType));
-                if(controllerType == FacilioControllerType.BACNET_IP.asInt()) {
-                	getPointRequest.withCriteria(getBacNetIpInstanceFilter());
-                }
-            }
-            if ((deviceId != null)&&(deviceId > 0)) {
-                getPointRequest.withDeviceId(deviceId);
-            } else if ((controllerId != null) && (controllerId > 0)) {
-                getPointRequest.withControllerId(controllerId);
-            }
-            if(StringUtils.isNotEmpty(instanceType)) {
-            	getPointRequest.withCriteria(getInstanceTypeFilter());
-            }
-            if(StringUtils.isNotEmpty(getQuerySearch())) {
-            	getPointRequest.querySearch(AgentConstants.COL_NAME, getQuerySearch());
-            }
-            getPointRequest.pagination(constructListContext(new FacilioContext()));
-            List<Map<String, Object>> points = getPointRequest.getPointsData();
-            setResult(AgentConstants.DATA, points);
-            ok();
-        } catch (Exception e) {
-            LOGGER.info("Exception  occurred while getting points ", e);
-            setResult(AgentConstants.EXCEPTION,e.getMessage());
-            internalError();
-        }
-        return SUCCESS;
-    }
-
-    public String getCommissionedPoints() {
-        GetPointRequest getPointRequest = new GetPointRequest()
-                .filterCommissionedPoints();
-        try {
-            if ((controllerType != null) && (controllerType > -1)) {
-                getPointRequest.ofType(FacilioControllerType.valueOf(controllerType));
-            }
-            if ((deviceId != null)&&(deviceId > 0)) {
-                getPointRequest.withDeviceId(deviceId);
-            } else if ((controllerId != null) && (controllerId > 0)) {
-                getPointRequest.withControllerId(controllerId);
-            }
-            if(StringUtils.isNotEmpty(instanceType)) {
-            	getPointRequest.withCriteria(getInstanceTypeFilter());
-            }
-            if(StringUtils.isNotEmpty(getQuerySearch())) {
-            	getPointRequest.querySearch(AgentConstants.COL_NAME, getQuerySearch());
-            }
-            getPointRequest.pagination(constructListContext(new FacilioContext()));
-            List<Map<String, Object>> points = getPointRequest.getPointsData();
-            setResult(AgentConstants.DATA, points);
-            ok();
-        } catch (Exception e) {
-            LOGGER.info("Exception  occurred while getting points ", e);
             setResult(AgentConstants.EXCEPTION,e.getMessage());
             internalError();
         }
@@ -869,19 +724,6 @@ public class AgentAction extends AgentActionV2 {
 	public void updateAgentControl() throws Exception {
 		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD");
 		bean.disableOrEnableAgent(getAgentId(), getDisable());
-	} 
-
-	private Criteria getInstanceTypeFilter() {
-		String[] instanceTypeList = instanceType.split(","); 
-    	Criteria criteria = new Criteria();
-    	criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(FieldFactory.getBACnetIPPointFields()).get(AgentConstants.INSTANCE_TYPE), StringUtils.join(instanceTypeList, ","), NumberOperators.EQUALS));
-    	return criteria;
-	}
-
-	private Criteria getBacNetIpInstanceFilter() {
-		Criteria criteria = new Criteria();
-    	criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(FieldFactory.getBACnetIPPointFields()).get(AgentConstants.INSTANCE_TYPE), FILETR_JOIN, NumberOperators.EQUALS));
-    	return criteria;
 	}
 
 }

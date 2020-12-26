@@ -291,17 +291,10 @@
 
         <action name="count" class="com.facilio.agentv2.AgentAction" method="PointsCount"> <!--DONE-->
         </action>
-		<action name="getCount" class="com.facilio.agentv2.actions.TypeDevices" method="getCount"> <!--DONE-->
-        </action>
         <action name="pointscount" class="com.facilio.agentv2.actions.GetPointsAction" method="getCount"> <!--DONE-->
         </action>
         <action name="getPoints" class="com.facilio.agentv2.actions.GetPointsAction" method="getPoints"> <!--DONE-->
         </action>
-        <!--<action name="listDevicePoints" class="com.facilio.agentv2.actions.TypeDevices" method="listDeviceTypePoints"> &lt;!&ndash;DONE&ndash;&gt; &lt;!&ndash;DONE&ndash;&gt;
-        </action>
-
-        <action name="listControllerPoints"  class="com.facilio.agentv2.actions.TypeControllerAction" method="getControllerPoints">
-        </action>-->
 
         <action name="set" class="com.facilio.agentv2.actions.SetValueAction" method="setValue">
         </action>
@@ -329,37 +322,6 @@
 
         <action name="remove" class="com.facilio.agentv2.actions.controllerTypeIdsAction"
                 method="removePoints"> <!--DONE-->
-        </action>
-
-        <action name="getConfPoints" class="com.facilio.agentv2.AgentAction" method="getConfiguredPoints"> <!--DONE-->
-        </action>
-        <action name="configuredCount" class="com.facilio.agentv2.actions.TypeDevices"
-                method="getConfiguredPointsCount"> <!--DONE-->
-        </action>
-
-        <action name="getSubPoints" class="com.facilio.agentv2.AgentAction"
-                method="getSubscribedPoints"> <!--DONE-->
-        </action>
-
-        <action name="subscribedCount" class="com.facilio.agentv2.actions.TypeDevices"
-                method="getSubscribedPointsCount"> <!--DONE-->
-        </action>
-
-        <action name="getUnconfPoints" class="com.facilio.agentv2.AgentAction"
-                method="getUnconfiguredPoints"> <!--DONE-->
-        </action>
-
-        <action name="unconfiguredCount" class="com.facilio.agentv2.actions.TypeDevices"
-                method="getUnConfiguredPointsCount"> <!--DONE-->
-        </action>
-
-        <action name="getCommPoints" class="com.facilio.agentv2.AgentAction"
-                method="getCommissionedPoints"> <!--DONE-->
-        </action>
-
-
-        <action name="commissionedCount" class="com.facilio.agentv2.actions.TypeDevices"
-                method="getCommissionedPointsCount"> <!--DONE-->
         </action>
 
         <!--.. list points using controllerId..-->

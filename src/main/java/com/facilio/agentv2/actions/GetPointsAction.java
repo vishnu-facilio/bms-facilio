@@ -1,6 +1,3 @@
-/**
- * @author arunkumar
- */
 package com.facilio.agentv2.actions;
 
 import java.util.ArrayList;
@@ -153,15 +150,11 @@ public class GetPointsAction extends AgentActionV2 {
 	}
 
 	private long getPointCount(PointStatus status) throws Exception {
-		try {
-			GetPointRequest point = new GetPointRequest();
-			sanityCheck(point);
-			pointFilter(status, point);
-			point.count();
-			return (long) point.getPointsData().get(0).getOrDefault(AgentConstants.ID, 0L);
-		} catch (Exception e) {
-			throw e;
-		}
+		GetPointRequest point = new GetPointRequest();
+		sanityCheck(point);
+		pointFilter(status, point);
+		point.count();
+		return (long) point.getPointsData().get(0).getOrDefault(AgentConstants.ID, 0L);
 	}
 
 	/**
@@ -169,9 +162,8 @@ public class GetPointsAction extends AgentActionV2 {
 	 *
 	 * @param status the enum type value
 	 * @param point Object reference
-	 * @throws if none of the conditions satisfied, then throws IllegalArgumentException.
 	 */
-	private void pointFilter(PointStatus status, GetPointRequest point) throws Exception {
+	private void pointFilter(PointStatus status, GetPointRequest point) {
 		if(status == null) {
 			return;
 		}
@@ -201,36 +193,31 @@ public class GetPointsAction extends AgentActionV2 {
 	 */
 	private void sanityCheck(GetPointRequest point) throws Exception {
 		
-		if (getControllerType() == null) {
-			throw new IllegalArgumentException("Controller type/deviceId cannot be null");
+		if (getControllerType() == null || getControllerId() == null) {
+			throw new IllegalArgumentException("Controller type/controllerId cannot be null");
 		}
 		point.ofType(FacilioControllerType.valueOf(controllerType));
+		point.withControllerId(controllerId);
+		Criteria criteria = new Criteria();
 		if (controllerType == FacilioControllerType.BACNET_IP.asInt()) {
-			Criteria criteria = new Criteria();
 			criteria.addAndCondition(CriteriaAPI.getCondition(BACNET_POINT_MAP.get(AgentConstants.INSTANCE_TYPE),
 					FILETR_JOIN, NumberOperators.EQUALS));
 			point.withCriteria(criteria);
 		}
-		if (deviceId > 0) {
-			point.withDeviceId(deviceId);
-		}
-		if (deviceId == 0 && controllerType == 0) {
-			List<Long> deviceIds = getDeviceIds(getAgentId());
-			if (CollectionUtils.isNotEmpty(deviceIds)) {
-				Criteria criteria = new Criteria();
+
+		if (controllerId == 0 && controllerType == 0) {
+			List<Long> controllersIds = getControllerIds(getAgentId());
+			if (CollectionUtils.isNotEmpty(controllersIds)) {
 				criteria.addAndCondition(CriteriaAPI.getCondition(POINT_MAP.get(AgentConstants.LOGICAL),
 						String.valueOf(true), BooleanOperators.IS));
 				point.withCriteria(criteria);
-				point.withDeviceIds(deviceIds);
+				point.withControllerIds(controllersIds);
 			} else {
-				throw new IllegalArgumentException("deviceIds should not be null for getting Virtual points.");
+				throw new IllegalArgumentException("ControllersIds should not be null for getting Virtual points.");
 			}
 		}
 		if (querySearch != null && !querySearch.trim().isEmpty()) {
 			point.querySearch(AgentConstants.COL_NAME, querySearch);
-		}
-		if (getControllerId() != null && getControllerId() > 0) {
-			point.withControllerId(controllerId);
 		}
 	}
 	/**
@@ -241,10 +228,10 @@ public class GetPointsAction extends AgentActionV2 {
 		UNCONFIRURED, CONFIGURED, SUBSCRIBED, COMMISSIONED
 	}
 
-	//Getting all deviceIds for specific agentId	
-	private List<Long> getDeviceIds(long agentId) throws Exception {
+	//Getting all controllerIds for specific agentId
+	private List<Long> getControllerIds(long agentId) throws Exception {
 		List<FacilioField> fields = new ArrayList<>();
-		FacilioModule module = ModuleFactory.getFieldDeviceModule();
+		FacilioModule module = ModuleFactory.getNewControllerModule();
 		fields.add(FieldFactory.getIdField(module));
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().select(fields)
 				.table(module.getTableName()).andCondition(CriteriaAPI.getCondition(
@@ -257,7 +244,7 @@ public class GetPointsAction extends AgentActionV2 {
 		GetPointsAction req = new GetPointsAction();
 		req.setAgentId(agentId);
 		req.setControllerType(0);
-		req.setDeviceId(0L);
-		return (req.getPointCount(null) > 0) ? true:false;
+		req.setControllerId(0L);
+		return req.getPointCount(null) > 0;
 	}
 }
