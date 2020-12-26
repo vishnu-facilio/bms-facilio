@@ -197,7 +197,9 @@ public class GetPointsAction extends AgentActionV2 {
 			throw new IllegalArgumentException("Controller type/controllerId cannot be null");
 		}
 		point.ofType(FacilioControllerType.valueOf(controllerType));
-		point.withControllerId(controllerId);
+		if(controllerId > 0){
+			point.withControllerId(controllerId);
+		}
 		Criteria criteria = new Criteria();
 		if (controllerType == FacilioControllerType.BACNET_IP.asInt()) {
 			criteria.addAndCondition(CriteriaAPI.getCondition(BACNET_POINT_MAP.get(AgentConstants.INSTANCE_TYPE),
