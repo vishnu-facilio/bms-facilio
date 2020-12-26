@@ -62,21 +62,13 @@ public class GetPointRequest {
         }
     }
 
-    public GetPointRequest withControllerId(long controllerId) throws Exception {
-        if (controllerId > 0) {
-            return withControllerIds(Collections.singletonList(controllerId));
-        } else {
-            throw new Exception(" controller id cane be less than 1");
-        }
+    public GetPointRequest withControllerId (long controllerId) throws Exception {
+        return withControllerIds(Collections.singletonList(controllerId));
     }
-    
-    public GetPointRequest withControllerIds(List<Long> controllerIds) throws Exception {
-        if (CollectionUtils.isNotEmpty(controllerIds)) {
-            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(POINT_MODULE), controllerIds, NumberOperators.EQUALS));
-            return this;
-        } else {
-            throw new Exception(" controller ids cannot be empty");
-        }
+
+    public GetPointRequest withControllerIds ( List<Long> controllerIds ) throws Exception {
+        criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(POINT_MODULE),controllerIds,NumberOperators.EQUALS));
+        return this;
     }
 
     public GetPointRequest filterConfigurePoints() {
