@@ -178,7 +178,7 @@ public class FieldDeviceApi {
         return new ArrayList<>();
     }
 
-    public static Controller getControllers(List<Long> controllerId) throws Exception {
+    public static Controller getControllers(List<Long> controllerId,Long agentId) throws Exception {
         FacilioModule module = ModuleFactory.getNewControllerModule();
         FacilioModule resourceModule = ModuleFactory.getResourceModule();
         List<FacilioField> fields = new ArrayList<FacilioField>();
@@ -191,6 +191,10 @@ public class FieldDeviceApi {
                 .on(resourceModule.getTableName()+".ID = "+module.getTableName()+".ID")
                 .andCondition(CriteriaAPI.getCondition(FieldFactory.getSysDeletedTimeField(resourceModule), "NULL", CommonOperators.IS_EMPTY))
                 .andCondition(CriteriaAPI.getIdCondition(controllerId,module));
+                if(agentId != null){
+                    builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(module),String.valueOf(agentId),NumberOperators.EQUALS));
+                }
+
         Map<String, Object> props = builder.fetchFirst();
         if(props != null && !props.isEmpty()) {
         	FacilioControllerType type = FacilioControllerType.valueOf((Integer)props.get(AgentConstants.CONTROLLER_TYPE));
@@ -330,7 +334,7 @@ public class FieldDeviceApi {
 
     public static boolean discoverPoint(List<Long> controllerId) throws Exception {
         try {
-            Controller controller = getControllers(controllerId);
+            Controller controller = getControllers(controllerId,null);
             Objects.requireNonNull(controller,"Controller doesn't exist");
             ControllerMessenger.discoverPoints(controller);
             return true;
