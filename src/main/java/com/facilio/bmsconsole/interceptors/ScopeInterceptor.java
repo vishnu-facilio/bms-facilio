@@ -311,27 +311,27 @@ public class ScopeInterceptor extends AbstractInterceptor {
                 int status = 200;
                 try {
                     data = getAuditData(arg0);
-                    if (StringUtils.isNotEmpty(remoteIPAddress) && data != null) {
-                        data.setRemoteIPAddress(remoteIPAddress);
-                    }
-                    if (data != null && orgIdList.contains(orgId)) {
-                        AuditData finalData = data;
-                        FacilioService.runAsServiceWihReturn(() -> audit.add(finalData));
-                        data.setId(finalData.getId());
-                    }
+//                    if (StringUtils.isNotEmpty(remoteIPAddress) && data != null) {
+//                        data.setRemoteIPAddress(remoteIPAddress);
+//                    }
+//                    if (data != null && orgIdList.contains(orgId)) {
+//                        AuditData finalData = data;
+//                        FacilioService.runAsServiceWihReturn(() -> audit.add(finalData));
+//                        data.setId(finalData.getId());
+//                    }
                     return arg0.invoke();
                 } catch (Exception e) {
                     status = 500;
                     LOGGER.info("Exception from action classs " + e.getMessage());
                     throw e;
-                } finally {
-                    if (data != null && orgIdList.contains(orgId)) {
-                        data.setEndTime(System.currentTimeMillis());
-                        data.setStatus(status);
-                        data.setQueryCount(AccountUtil.getCurrentAccount().getTotalQueries());
-                        AuditData finalData1 = data;
-                        FacilioService.runAsServiceWihReturn(() -> audit.update(finalData1));
-                    }
+                } finally { // temp disabled Facilio audit data
+//                    if (data != null && orgIdList.contains(orgId)) {
+//                        data.setEndTime(System.currentTimeMillis());
+//                        data.setStatus(status);
+//                        data.setQueryCount(AccountUtil.getCurrentAccount().getTotalQueries());
+//                        AuditData finalData1 = data;
+//                        FacilioService.runAsServiceWihReturn(() -> audit.update(finalData1));
+//                    }
                 }
             }
         } catch (Exception e) {
