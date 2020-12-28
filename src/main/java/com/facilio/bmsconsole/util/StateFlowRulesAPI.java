@@ -492,7 +492,8 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		if (CollectionUtils.isNotEmpty(stateFlows)) {
 			list = new ArrayList<>();
 
-			Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, record, WorkflowRuleAPI.getOrgPlaceHolders());
+			// not using any placeholders, because for getting available buttons we are not using placeholders for now
+			Map<String, Object> recordPlaceHolders = new HashMap<>(); // WorkflowRuleAPI.getRecordPlaceHolders(moduleName, record, WorkflowRuleAPI.getOrgPlaceHolders());
 			List<UpdateChangeSet> changeSet = getDefaultFieldChangeSet(moduleName, record.getId());
 
 			Iterator<WorkflowRuleContext> iterator = stateFlows.iterator();
