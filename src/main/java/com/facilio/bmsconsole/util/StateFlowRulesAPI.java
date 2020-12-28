@@ -29,7 +29,6 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.FacilioModule.ModuleType;
-import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
 import org.apache.commons.chain.Context;
@@ -168,24 +167,17 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		}
 
 		// Update start and end time of the record
-		if (facilioStatus.getType() == StatusType.CLOSED) {
-			if (timerField != null && prop.get(timerField.getEndTimeFieldName()) == null) {
-				FacilioModule timeLogModule = getTimeLogModule(module);
-				if (timeLogModule != null) {
-					Map<String, Object> lastTimerLog = TimerLogUtil.getLastTimerLog(timeLogModule, record.getId());
-					if (lastTimerLog != null) {
-						prop.put(timerField.getEndTimeFieldName(), lastTimerLog.get("endTime"));
-					}
-				}
-			}
-		}
-		else if (facilioStatus.isTimerEnabled() && facilioStatus.getType() == StatusType.OPEN) {
-			if (timerField != null) {
+		if (timerField != null && timerField.isTimerConfigured()) {
+			if (facilioStatus.isTimerEnabled()) {
 				if (prop.get(timerField.getEndTimeFieldName()) != null) {
 					prop.put(timerField.getEndTimeFieldName(), -99);
 				}
 				if (prop.get(timerField.getStartTimeFieldName()) == null) {
 					prop.put(timerField.getStartTimeFieldName(), record.getCurrentTime());
+				}
+			} else if (prop.get(timerField.getStartTimeFieldName()) != null) {    // already we passed through time field
+				if (prop.get(timerField.getEndTimeFieldName()) == null) {
+					prop.put(timerField.getEndTimeFieldName(), record.getCurrentTime());
 				}
 			}
 		}
@@ -198,15 +190,15 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			fields.add(modBean.getField("status", module.getName()));
 			prop.put("status", FieldUtil.getAsProperties(facilioStatus));
 
-			if (facilioStatus.getStatus().equals("Resolved") &&
-					record.getStateFlowId() == StateFlowRulesAPI.getDefaultStateFlow(module).getId()) {
-				if (timerField != null) {
-					prop.put(timerField.getEndTimeFieldName(), record.getCurrentTime());
-				}
-			}
+//			if (facilioStatus.getStatus().equals("Resolved") &&
+//					record.getStateFlowId() == StateFlowRulesAPI.getDefaultStateFlow(module).getId()) {
+//				if (timerField != null) {
+//					prop.put(timerField.getEndTimeFieldName(), record.getCurrentTime());
+//				}
+//			}
 		}
 
-		if (timerField != null && timerField.isTimerEnabled()) {
+		if (timerField != null && timerField.isTimerConfigured()) {
 			fields.addAll(timerField.getAllFields(modBean, module.getName()));
 		}
 		if (includeStateFlowChange) {
@@ -319,7 +311,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 	}
 
 	private static void handleTimerUpdation(Map<String, Object> prop, FacilioStatus ticketStatus, TimerField timerField, FacilioModule module, ModuleBaseWithCustomFields record) throws Exception {
-		if (timerField == null || !timerField.isTimerEnabled()) {
+		if (timerField == null || !timerField.isTimerConfigured()) {
 			return;
 		}
 

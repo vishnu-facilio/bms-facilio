@@ -50,7 +50,7 @@ public class TimerFieldUtil {
 			return endTimeFieldName;
 		}
 		
-		public boolean isTimerEnabled() {
+		public boolean isTimerConfigured() {
 			return StringUtils.isNotEmpty(totalTimeFieldName) && StringUtils.isNotEmpty(resumeTimeFieldName) &&
 					StringUtils.isNotEmpty(startTimeFieldName) && StringUtils.isNotEmpty(endTimeFieldName);
 		}
@@ -64,7 +64,7 @@ public class TimerFieldUtil {
 
 		public List<FacilioField> getAllFields(ModuleBean modBean, String moduleName) throws Exception {
 			List<FacilioField> fields = new ArrayList<>();
-			if (isTimerEnabled()) {
+			if (isTimerConfigured()) {
 				fields.add(modBean.getField(totalTimeFieldName, moduleName));
 				fields.add(modBean.getField(resumeTimeFieldName, moduleName));
 				fields.add(modBean.getField(startTimeFieldName, moduleName));
