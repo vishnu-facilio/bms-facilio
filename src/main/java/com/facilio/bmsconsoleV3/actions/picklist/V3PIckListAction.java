@@ -74,7 +74,7 @@ public class V3PIckListAction extends V3Action {
         this._default = _default;
     }
 
-    private int page;
+    private int page = 1;
     public void setPage(int page) {
         this.page = page;
     }
@@ -82,7 +82,7 @@ public class V3PIckListAction extends V3Action {
         return this.page;
     }
 
-    public int perPage = 40;
+    public int perPage = 50;
     public void setPerPage(int perPage) {
         this.perPage = perPage;
     }
