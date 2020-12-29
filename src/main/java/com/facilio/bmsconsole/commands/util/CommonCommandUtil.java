@@ -168,8 +168,8 @@ public class CommonCommandUtil {
 			}
 		}
 		long timeTaken = System.currentTimeMillis() - time;
-		if (level == 0) {
-			String msg = MessageFormat.format("### time taken in first level of Append Module Name key is {0}", timeTaken);
+		if (level == 0 && timeTaken > 50) {
+			String msg = MessageFormat.format("### time taken in first level of appendModuleNameInKey with ModuleName ({0}) is {1}", String.valueOf(moduleName), timeTaken);
 			if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 274) {
 				LOGGER.info(msg);
 			}
