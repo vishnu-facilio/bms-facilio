@@ -276,6 +276,7 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 
 	@Override
 	public boolean postExecute() throws Exception {
+		long time = System.currentTimeMillis();
 		try {
 			if (postRules != null && !postRules.isEmpty()) {
 				fetchAndExecuteRules((FacilioContext) context, true, null);
@@ -284,7 +285,16 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 		catch (Exception e) {
 			LOGGER.error("OnPostExecuteRule:: Error occurred on post execution of workflow rule", e);
 		}
-		
+		long executionTime = System.currentTimeMillis() - time;
+		if (executionTime > 50) {
+			if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 274) {
+				LOGGER.info("### time taken in postExecute: " + this.getClass().getSimpleName() + ": " + executionTime);
+			}
+			else {
+				LOGGER.debug("### time taken in postExecute: " + this.getClass().getSimpleName() + ": " + executionTime);
+			}
+		}
+
 		return false;
 	}
 	
