@@ -97,7 +97,8 @@ public class TransactionChainFactory {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new LoadAllFieldsCommand());
 			c.addCommand(new AddNotesCommand());
-			c.addCommand(new ExecuteNoteWorkflowCommand());
+			c.addCommand(new ForkChainToInstantJobCommand()
+					.addCommand(new ExecuteNoteWorkflowCommand()));
 			c.addCommand(new AddNoteTicketActivityCommand());
 //			c.setPostTransactionChain(getUpdateTicketNotesChain());
 			c.addCommand(new AddActivitiesCommand());
