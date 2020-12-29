@@ -188,7 +188,7 @@ public class UserBeanImpl implements UserBean {
 		if(CollectionUtils.isNotEmpty(mapList)) {
 			IAMUserUtil.setIAMUserPropsv3(mapList, orgId, false);
 			if(CollectionUtils.isNotEmpty(mapList)) {
-				return createUserFromProps(mapList.get(0), false, false, false);
+				return createUserFromProps(mapList.get(0), false, false, null);
 			}
 		}
 		return null;
@@ -432,7 +432,7 @@ public class UserBeanImpl implements UserBean {
 		if (props != null && !props.isEmpty()) {
 			IAMUserUtil.setIAMUserPropsv3(props, AccountUtil.getCurrentOrg().getOrgId(), false);
 			if(CollectionUtils.isNotEmpty(props)) {
-				User user = createUserFromProps(props.get(0), true, true, false); // Giving as false because user cannot
+				User user = createUserFromProps(props.get(0), true, true, null); // Giving as false because user cannot
 																					// accept invite via portal APIs
 				return user;
 			}
@@ -487,7 +487,7 @@ public class UserBeanImpl implements UserBean {
 		if (props != null && !props.isEmpty()) {
 			IAMUserUtil.setIAMUserPropsv3(props, AccountUtil.getCurrentOrg().getOrgId(), fetchDeleted);
 			if(CollectionUtils.isNotEmpty(props)) {
-				User user = createUserFromProps(props.get(0), true, true, false);
+				User user = createUserFromProps(props.get(0), true, true, null);
 				return user;
 			}
 		}
@@ -506,15 +506,24 @@ public class UserBeanImpl implements UserBean {
 	}
 
 	@Override
-	public User getUser(long appId, long orgId, long userId) throws Exception {
+	public User getUser(long appId, long orgId, long userId, String appDomain) throws Exception {
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(userId), NumberOperators.EQUALS));
 			
 		GenericSelectRecordBuilder selectRecordBuilder = fetchUserSelectBuilder(appId, criteria, orgId, null);
+		AppDomain appDomainObj = null;
+		if(appId > 0){
+			if(StringUtils.isEmpty(appDomain)){
+				appDomain = AccountUtil.getDefaultAppDomain();
+			}
+			appDomainObj = IAMAppUtil.getAppDomain(appDomain);
+			selectRecordBuilder.innerJoin("Application").on("Application.ID = ORG_User_Apps.APPLICATION_ID");
+			selectRecordBuilder.andCondition(CriteriaAPI.getCondition("DOMAIN_TYPE", "domainType", String.valueOf(appDomainObj.getAppDomainType()), NumberOperators.EQUALS));
+		}
 		List<Map<String , Object>> mapList = selectRecordBuilder.get();
 		if(CollectionUtils.isNotEmpty(mapList)) {
 			IAMUserUtil.setIAMUserPropsv3(mapList, orgId, false);
-			User user = createUserFromProps(mapList.get(0), true, true, false);
+			User user = createUserFromProps(mapList.get(0), true, true, appDomainObj);
 			if(user.isActive()) {
 				return user;
 			}
@@ -545,7 +554,7 @@ public class UserBeanImpl implements UserBean {
 		if (props != null && !props.isEmpty()) {
 			IAMUserUtil.setIAMUserPropsv3(props, (long)props.get(0).get("orgId"), false);
 			if(CollectionUtils.isNotEmpty(props)) {
-				User user = createUserFromProps(props.get(0), withRole, true, false);
+				User user = createUserFromProps(props.get(0), withRole, true, null);
 				return user;
 			}
 		}
@@ -593,7 +602,7 @@ public class UserBeanImpl implements UserBean {
 			List<User> users = new ArrayList<>();
 			IAMUserUtil.setIAMUserPropsv3(props, AccountUtil.getCurrentOrg().getOrgId(), fetchDeleted);
 			for (Map<String, Object> prop : props) {
-				User user = createUserFromProps(prop, true, true, false);
+				User user = createUserFromProps(prop, true, true, null);
 				if(fetchOnlyActiveUsers) {
 					if(user.isActive()) {
 						users.add(user);
@@ -617,7 +626,7 @@ public class UserBeanImpl implements UserBean {
 			IAMUserUtil.setIAMUserPropsv3(props, AccountUtil.getCurrentOrg().getOrgId(), false);
 			Map<Long, List<User>> userMap = new HashMap<>();
 			for (Map<String, Object> prop : props) {
-				User user = createUserFromProps(prop, false, false, false);
+				User user = createUserFromProps(prop, false, false, null);
 
 				List<User> users = userMap.get(user.getRoleId());
 				if (users == null) {
@@ -642,7 +651,7 @@ public class UserBeanImpl implements UserBean {
 			IAMUserUtil.setIAMUserPropsv3(props, AccountUtil.getCurrentOrg().getOrgId(), false);
 			List<User> users = new ArrayList<>();
 			for (Map<String, Object> prop : props) {
-				User user = createUserFromProps(prop, false, false, false);
+				User user = createUserFromProps(prop, false, false, null);
 				users.add(user);
 			}
 			return users;
@@ -665,7 +674,7 @@ public class UserBeanImpl implements UserBean {
 				List<User> users = new ArrayList<>();
 				IAMUserUtil.setIAMUserPropsv3(props, AccountUtil.getCurrentOrg().getOrgId(), false);
 				for (Map<String, Object> prop : props) {
-					User user = createUserFromProps(prop, false, true, false);
+					User user = createUserFromProps(prop, false, true, null);
 					if (user.getAccessibleSpace() == null || user.getAccessibleSpace().isEmpty()
 							|| !Collections.disjoint(parentIds, user.getAccessibleSpace())) {
 						users.add(user);
@@ -711,7 +720,7 @@ public class UserBeanImpl implements UserBean {
 			IAMUserUtil.setIAMUserPropsv3(props, AccountUtil.getCurrentOrg().getOrgId(), true);
 			Map<Long, User> users = new HashMap<>();
 			for (Map<String, Object> prop : props) {
-				User user = createUserFromProps(prop, true, true, false);
+				User user = createUserFromProps(prop, true, true, null);
 				users.put(user.getId(), user);
 			}
 			return users;
@@ -879,7 +888,7 @@ public class UserBeanImpl implements UserBean {
 	}
 
 	public static User createUserFromProps(Map<String, Object> prop, boolean fetchRole, boolean fetchSpace,
-			boolean isPortalRequest) throws Exception {
+			AppDomain appDomain) throws Exception {
 		User user = FieldUtil.getAsBeanFromMap(prop, User.class);
 		user.setId((long)prop.get("ouid"));
 		if (fetchRole) {
@@ -895,10 +904,12 @@ public class UserBeanImpl implements UserBean {
 		}
 
 		if(prop.get("applicationId") != null){
-			AppDomain appDomainObj = ApplicationApi.getAppDomainForApplication((long)prop.get("applicationId"));
-			user.setAppDomain(appDomainObj);
+			if(appDomain == null){
+				appDomain = ApplicationApi.getAppDomainForApplication((long) prop.get("applicationId"));
+			}
+			user.setAppDomain(appDomain);
 			user.setApplicationId((long)prop.get("applicationId"));
-			user.setAppType(appDomainObj.getAppType());
+			user.setAppType(appDomain.getAppType());
 		}
 		
 		
@@ -954,7 +965,7 @@ public class UserBeanImpl implements UserBean {
 	@Override
 	public boolean acceptUser(User user) throws Exception {
 		// TODO Auto-generated method stub
-		    User appUser = getUser(-1, user.getOrgId(), user.getUid());
+		    User appUser = getUser(-1, user.getOrgId(), user.getUid(), null);
 		    if(appUser != null && appUser.isActive()) {
 				FacilioField inviteAcceptStatus = new FacilioField();
 				inviteAcceptStatus.setName("inviteAcceptStatus");
@@ -1017,7 +1028,7 @@ public class UserBeanImpl implements UserBean {
 	public Account getPermalinkAccount(long appId, IAMAccount iamAccount) throws Exception {
 		// TODO Auto-generated method stub
 	  if(iamAccount != null) {
-	      User user = getUser(appId, iamAccount.getUser().getOrgId(), iamAccount.getUser().getUid());
+	      User user = getUser(appId, iamAccount.getUser().getOrgId(), iamAccount.getUser().getUid(), null);
 	      Account account = new Account(iamAccount.getOrg(), user);
 	      return account;
 	  }
@@ -1122,7 +1133,7 @@ public class UserBeanImpl implements UserBean {
 			if(CollectionUtils.isNotEmpty(mapList)) {
 				IAMUserUtil.setIAMUserPropsv3(mapList, currentOrg.getOrgId(), false);
 				mapList.get(0).putAll(props);
-				User user = createUserFromProps(mapList.get(0), true, true, false);
+				User user = createUserFromProps(mapList.get(0), true, true, null);
 				return user;
 			}
 		}
@@ -1144,7 +1155,7 @@ public class UserBeanImpl implements UserBean {
 		List<Map<String , Object>> mapList = selectRecordBuilder.get();
 		if(CollectionUtils.isNotEmpty(mapList)) {
 			mapList.get(0).putAll(props);
-			User user = createUserFromProps(mapList.get(0), fetchRole, fetchSpace, isPortalUser);
+			User user = createUserFromProps(mapList.get(0), fetchRole, fetchSpace, null);
 			return user;
 		}
 		return null;

@@ -179,7 +179,7 @@ public class OrgBeanImpl implements OrgBean {
 			List<User> users = new ArrayList<>();
 			IAMUserUtil.setIAMUserPropsv3(props, orgId, false);
 			for(Map<String, Object> prop : props) {
-				User user = UserBeanImpl.createUserFromProps(prop, true, true, false);
+				User user = UserBeanImpl.createUserFromProps(prop, true, true, null);
 				UserBean userBean = (UserBean) BeanFactory.lookup("UserBean", user.getOrgId());
 				user.setGroups(userBean.getAccessibleGroupList(user.getOuid()));
 				users.add(user);
@@ -310,7 +310,7 @@ public class OrgBeanImpl implements OrgBean {
 		if (props != null && !props.isEmpty()) {
 			IAMUserUtil.setIAMUserPropsv3(props, orgId, false);
 			if(CollectionUtils.isNotEmpty(props)) {
-				return UserBeanImpl.createUserFromProps(props.get(0), true, false, false);
+				return UserBeanImpl.createUserFromProps(props.get(0), true, false, null);
 			}
 		}
 		return null;
@@ -401,7 +401,7 @@ public class OrgBeanImpl implements OrgBean {
 			List<User> users = new ArrayList<>();
 			IAMUserUtil.setIAMUserPropsv3(props, orgId, false);
 			for(Map<String, Object> prop : props) {
-				User user = UserBeanImpl.createUserFromProps(prop, false, false, false);
+				User user = UserBeanImpl.createUserFromProps(prop, false, false, null);
 				if(status) {
 					if(user.isActive()) {
 						users.add(user);

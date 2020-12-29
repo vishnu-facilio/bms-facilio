@@ -947,14 +947,15 @@ public class ApplicationApi {
         return -1;
     }
 
-    public static long getApplicationIdForAppDomain(String appDomain) throws Exception {
+    public static ApplicationContext getApplicationIdForAppDomain(String appDomain) throws Exception {
 
         AppDomain appDomainObj = IAMAppUtil.getAppDomain(appDomain);
         if (appDomainObj == null) {
             throw new IllegalArgumentException("Invalid app domain");
         }
-        long appId = ApplicationApi.getApplicationIdForApp(appDomainObj);
-        return appId;
+        ApplicationContext app = getApplicationForId(ApplicationApi.getApplicationIdForApp(appDomainObj));
+        app.setAppDomain(appDomainObj);
+        return app;
     }
 
     public static List<ApplicationContext> getApplicationsForOrgUser(long ouId, String appDomain) throws Exception {
@@ -978,7 +979,11 @@ public class ApplicationApi {
 
         List<Map<String, Object>> props = selectBuilder.get();
         if (CollectionUtils.isNotEmpty(props)) {
-            return FieldUtil.getAsBeanListFromMapList(props, ApplicationContext.class);
+            List<ApplicationContext> appsList = FieldUtil.getAsBeanListFromMapList(props, ApplicationContext.class);
+            for(ApplicationContext app : appsList){
+                app.setAppDomain(appDomainObj);
+            }
+            return appsList;
         }
         return null;
 
@@ -993,11 +998,11 @@ public class ApplicationApi {
         return applications;
     }
 
-    public static void setThisAppForUser(User user, long appId) throws Exception {
-        AppDomain appDomain = getAppDomainForApplication(appId);
-        user.setAppDomain(appDomain);
-        user.setApplicationId(appId);
-        user.setAppType(appDomain.getAppType());
+    public static void setThisAppForUser(User user, ApplicationContext app) throws Exception {
+        AppDomain domain = app.getAppDomain();
+        user.setAppDomain(domain);
+        user.setApplicationId(app.getId());
+        user.setAppType(domain.getAppType());
 
     }
 

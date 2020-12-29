@@ -155,7 +155,7 @@ public class GetRecommendedUsersCommand extends FacilioCommand {
         if (CollectionUtils.isNotEmpty(userProps)) {
         	IAMUserUtil.setIAMUserPropsv3(userProps, AccountUtil.getCurrentOrg().getOrgId(), false);
             for (Map<String, Object> prop : userProps) {
-                usersWithRole.add(UserBeanImpl.createUserFromProps(prop, false, false, false));
+                usersWithRole.add(UserBeanImpl.createUserFromProps(prop, false, false, null));
             }
         }
         return usersWithRole;

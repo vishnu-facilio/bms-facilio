@@ -128,7 +128,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
                 	if(StringUtils.isEmpty(authorisationReqd) || authorisationReqd.equals("true")) {
                 	    boolean relaxedAccess = false;
                 	    if(appId > 0) {
-                            user = AccountUtil.getUserBean().getUser(appId, iamAccount.getOrg().getOrgId(), iamAccount.getUser().getUid());
+                            user = AccountUtil.getUserBean().getUser(appId, iamAccount.getOrg().getOrgId(), iamAccount.getUser().getUid(), request.getServerName());
                         }
                         if (appId > 0 && user == null) {
 	                        //return "usernotinapp";
@@ -140,7 +140,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
 	                        relaxedAccess = true;
 	                    }
 	                    if(relaxedAccess) {
-	                        user = AccountUtil.getUserBean().getUser(-1, iamAccount.getOrg().getOrgId(), iamAccount.getUser().getUid());
+	                        user = AccountUtil.getUserBean().getUser(-1, iamAccount.getOrg().getOrgId(), iamAccount.getUser().getUid(), null);
                             if(user == null) {
                                 return "unauthorized";
                             }
@@ -148,7 +148,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
                             //setting the first permissible application(corresponding to this domain) if exists to this user
                             List<ApplicationContext> permissibleAppsForThisDomain = ApplicationApi.getApplicationsForOrgUser(user.getOuid(), request.getServerName());
                             if (CollectionUtils.isNotEmpty(permissibleAppsForThisDomain)) {
-                                ApplicationApi.setThisAppForUser(user, permissibleAppsForThisDomain.get(0).getId());
+                                ApplicationApi.setThisAppForUser(user, permissibleAppsForThisDomain.get(0));
                             } else {
                                 //return "usernotinapp";
                                 //temp handling - need to be removed

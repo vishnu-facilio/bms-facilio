@@ -39,7 +39,7 @@ public interface UserBean {
 
 	public User getUser(long ouid, boolean fetchDeleted) throws Exception;
 	
-	public User getUser(long appId, long orgId, long userId) throws Exception;
+	public User getUser(long appId, long orgId, long userId, String appDomain) throws Exception;
 
 	public User getUserInternal(long ouid, boolean withRole) throws Exception;
 	
