@@ -64,6 +64,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -123,8 +124,13 @@ public class CommonCommandUtil {
 			DBUtil.closeAll(conn, pstmt, rs);
 		}
 	}
-	
+
 	public static void appendModuleNameInKey(String moduleName, String prefix, Map<String, Object> beanMap, Map<String, Object> placeHolders) throws Exception {
+		appendModuleNameInKey(moduleName, prefix, beanMap, placeHolders, 0);
+	}
+	
+	public static void appendModuleNameInKey(String moduleName, String prefix, Map<String, Object> beanMap, Map<String, Object> placeHolders, int level) throws Exception {
+		long time = System.currentTimeMillis();
 		if(beanMap != null) {
 			if(moduleName != null && !moduleName.isEmpty() && !LookupSpecialTypeUtil.isSpecialType(moduleName)) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -143,7 +149,7 @@ public class CommonCommandUtil {
 								props = FieldUtil.getAsProperties(lookupVal);
 //								}
 								String childModuleName = lookupField.getLookupModule() == null?lookupField.getSpecialType():lookupField.getLookupModule().getName();
-								appendModuleNameInKey(childModuleName, prefix+"."+field.getName(), props, placeHolders);
+								appendModuleNameInKey(childModuleName, prefix+"."+field.getName(), props, placeHolders, level+1);
 							}
 						}
 						else {
@@ -154,11 +160,21 @@ public class CommonCommandUtil {
 			}
 			for(Map.Entry<String, Object> entry : beanMap.entrySet()) {
 				if(entry.getValue() instanceof Map<?, ?>) {
-					appendModuleNameInKey(null, prefix+"."+entry.getKey(), (Map<String, Object>) entry.getValue(), placeHolders);
+					appendModuleNameInKey(null, prefix+"."+entry.getKey(), (Map<String, Object>) entry.getValue(), placeHolders, level+1);
 				}
 				else {
 					placeHolders.put(prefix+"."+entry.getKey(), entry.getValue());
 				}
+			}
+		}
+		long timeTaken = System.currentTimeMillis() - time;
+		if (level == 0) {
+			String msg = MessageFormat.format("### time taken in first level of Append Module Name key is {0}", timeTaken);
+			if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 274) {
+				LOGGER.info(msg);
+			}
+			else {
+				LOGGER.debug(msg);
 			}
 		}
 	}
