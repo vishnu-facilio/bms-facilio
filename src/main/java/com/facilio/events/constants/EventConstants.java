@@ -3,6 +3,7 @@ package com.facilio.events.constants;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.facilio.agentv2.AgentConstants;
 import com.facilio.bmsconsole.commands.GetExportValueField;
 import com.facilio.bmsconsole.commands.UpdateEventCountCommand;
 import com.facilio.chain.FacilioChain;
@@ -531,7 +532,7 @@ public class EventConstants {
 			List<FacilioField> fields = new ArrayList<>();
 			
 			fields.add(FieldFactory.getIdField(module));
-			/*fields.add(FieldFactory.getOrgIdField(module));*/
+			fields.add(FieldFactory.getNewAgentIdField(module));
 			
 			FacilioField node = new FacilioField();
 			node.setName(EventConstants.EventContextNames.SOURCE);

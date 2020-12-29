@@ -89,6 +89,15 @@ public class EventContext {
 		this.controllerId = controllerId;
 	}
 
+	private long agentId = -1;
+	public long getAgentId () {
+		return agentId;
+	}
+
+	public void setAgentId ( long agentId ) {
+		this.agentId = agentId;
+	}
+
 	private String eventMessage;
 	public String getEventMessage() {
 		if (eventMessage == null && condition != null) {

@@ -48,7 +48,7 @@ public class InsertNewEventsCommand extends FacilioCommand {
 					}
 				}
 				else {
-					EventAPI.addSourceToResourceMapping(((BMSEventContext) baseEvent).getSource(), orgId, controllerId);
+					EventAPI.addSourceToResourceMapping(((BMSEventContext) baseEvent).getSource(), orgId, controllerId,((BMSEventContext) baseEvent).getAgentId());
 				}
 			}
 		}

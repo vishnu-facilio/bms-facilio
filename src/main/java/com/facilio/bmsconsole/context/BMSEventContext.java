@@ -31,9 +31,16 @@ public class BMSEventContext extends BaseEventContext {
     public void setController(long controller) {
         this.controller = controller;
     }
+    	
+    private long agentId = -1;
 
-
-    @Override
+    public long getAgentId() {
+		return agentId;
+	}
+	public void setAgentId(long agentId) {
+		this.agentId = agentId;
+	}
+	@Override
     public boolean shouldIgnore() {
         if (StringUtils.isEmpty(condition) || StringUtils.isEmpty(source)) {
             return true;

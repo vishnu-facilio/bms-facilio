@@ -11,6 +11,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.agentv2.AgentApiV2;
+import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.FacilioAgent;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -176,6 +179,9 @@ public class EventAPI {
 		    	else if (key.equals("comment")) {
 		    		event.setComment(value);
 		    	}
+				else if (key.equals(AgentConstants.AGENT)) {
+					event.setAgentId(getAgent(value));
+				}
 		    	else {
 		    		event.addAdditionInfo(key, value);
 		    	}
@@ -203,11 +209,19 @@ public class EventAPI {
 	    		}
 	    	}
 	    	else {
-	    		addSourceToResourceMapping(event.getSource(), orgId,event.getControllerId());
+	    		addSourceToResourceMapping(event.getSource(), orgId,event.getControllerId(), event.getAgentId());
 	    	}
 	    }
 	    
 	    return event;
+	}
+
+	public static long getAgent(String agentKey) throws Exception {
+		FacilioAgent agent = AgentApiV2.getAgent(agentKey);
+		if(agent != null) {
+			return agent.getId();
+		}
+		return -1;
 	}
 	
 	public static void updateEvent(EventContext event, long orgId) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
@@ -244,11 +258,12 @@ public class EventAPI {
 		return -1;
 	}
 
-	public static long addSourceToResourceMapping(String source, long orgId,long controllerId) throws SQLException, RuntimeException {
+	public static long addSourceToResourceMapping(String source, long orgId,long controllerId,long agentId) throws SQLException, RuntimeException {
 		Map<String, Object> prop = new HashMap<>();
 		prop.put("orgId", orgId);
 		prop.put(EventConstants.EventContextNames.SOURCE, source);
 		prop.put(EventConstants.EventContextNames.CONTROLLER_ID, controllerId);
+		prop.put(AgentConstants.AGENT_ID, agentId);
 
 		GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
 																.table(EventConstants.EventModuleFactory.getSourceToResourceMappingModule().getTableName())
