@@ -153,7 +153,7 @@ public class CommonCommandUtil {
 		if (id != null && id != -1 && level > 0) {
 			Map<String, Object> placeHolders = getFromFieldPlaceHoldersCache(moduleName, id);
 			if (MapUtils.isNotEmpty(placeHolders)) {
-				LOGGER.info("Returning from field place holders cache");
+				LOGGER.debug(MessageFormat.format("Returning from field place holders cache for {0}", constructCacheKey(moduleName, id)));
 				return placeHolders;
 			}
 		}
@@ -183,7 +183,7 @@ public class CommonCommandUtil {
 
 			if (id != null && id != -1 && level > 0) {
 				addToFieldPlaceHoldersCache(moduleName, id, placeHolders);
-				LOGGER.info("Added to field place holders cache");
+				LOGGER.debug(MessageFormat.format("Added to field place holders cache for {0}", constructCacheKey(moduleName, id)));
 			}
 		}
 		return placeHolders;
