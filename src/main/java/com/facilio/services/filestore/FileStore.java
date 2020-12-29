@@ -1,7 +1,10 @@
 package com.facilio.services.filestore;
 
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,13 +12,17 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 import javax.imageio.ImageIO;
 
-import com.facilio.util.FacilioUtil;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -38,6 +45,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.FacilioUtil;
 
 public abstract class FileStore {
 
@@ -922,7 +930,7 @@ public abstract class FileStore {
 	public byte[] writeCompressedFile(String namespace, long fileId, File file, String contentType, ByteArrayOutputStream baos, String compressedFilePath) throws Exception {
 		if (contentType.contains("image/")) {
 			try(FileInputStream fis = new FileInputStream(file);) {
-
+				long beforeCompress = System.currentTimeMillis();
 				BufferedImage imBuff = ImageIO.read(fis);
 				ImageScaleUtil.compressImage(imBuff, baos, contentType);
 
@@ -935,6 +943,10 @@ public abstract class FileStore {
 
 				baos.flush();
 				imBuff.flush();
+				
+				long executionTime = System.currentTimeMillis() - beforeCompress;
+				// if the execution takes more than 50 millis, log them
+				LOGGER.debug("### compress time taken - " + fileId + ":: " + executionTime);
 
 				/*ResizedFileInfo info = new ResizedFileInfo();
 				info.setFileId(fileId);
