@@ -912,6 +912,11 @@ public class WorkflowRuleAPI {
 							break;
 						case STATE_RULE:
 						case APPROVAL_STATE_TRANSITION:
+							ApprovalRulesAPI.deleteApproverRuleChildren((ApproverWorkflowRuleContext) rule);
+							if (StringUtils.isEmpty(((AbstractStateTransitionRuleContext) rule).getFormModuleName())) {
+								StateFlowRulesAPI.deleteFormRuleContext((FormInterface) rule);
+							}
+							break;
 						case CUSTOM_BUTTON:
 							ApprovalRulesAPI.deleteApproverRuleChildren((ApproverWorkflowRuleContext) rule);
 							if (StringUtils.isEmpty(((CustomButtonRuleContext) rule).getFormModuleName())) {
