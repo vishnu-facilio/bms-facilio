@@ -10,7 +10,6 @@ import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
@@ -86,30 +85,16 @@ public class GetWorkOrderCommand extends FacilioCommand {
 				context.put(FacilioConstants.ContextNames.WORK_ORDER, workOrder);
 				context.put(FacilioConstants.ContextNames.RECORD, workOrder);
 				
-				TicketAPI.loadTicketLookups(Collections.singleton(workOrder));
+				TicketAPI.loadWorkOrderLookups(Collections.singleton(workOrder));
 				long afterLookup = System.currentTimeMillis();
 				
-				String msg = MessageFormat.format("### time taken for GetWo fetch is {1}, lookup fetch : {2}", afterFetch - beforeFetch, afterLookup - afterFetch);
+				String msg = MessageFormat.format("### time taken for GetWo fetch is {0}, lookup fetch : {1}", afterFetch - beforeFetch, afterLookup - afterFetch);
 				if (AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getOrgId() == 274 || AccountUtil.getCurrentOrg().getOrgId() == 317) ) {
 					LOGGER.info(msg);
 				}
 				else {
 					LOGGER.debug(msg);
 				}
-				
-				if (workOrder.getRequester() != null) {
-					List<User> users = AccountUtil.getUserBean().getUsers(null, false, true, Collections.singletonList(workOrder.getRequester().getId()));
-					if (users != null && !users.isEmpty()) {
-						workOrder.setRequester(users.get(0));
-					}
-				}
-				if (workOrder.getRequestedBy() != null) {
-					List<User> users = AccountUtil.getUserBean().getUsers(null, false, true, Collections.singletonList(workOrder.getRequestedBy().getId()));
-					if (users != null && !users.isEmpty()) {
-						workOrder.setRequestedBy(users.get(0));
-					}
-				}
-
 //				if ((AccountUtil.getCurrentOrg().getId() == 146 || AccountUtil.getCurrentOrg().getId() == 155) && workOrder != null) {
 					LOGGER.debug("Workorder subject : "+ workOrder.getSubject()+"\n Description : "+workOrder.getDescription());
 //				}
