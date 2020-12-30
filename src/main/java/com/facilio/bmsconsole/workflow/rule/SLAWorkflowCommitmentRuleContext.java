@@ -1,26 +1,23 @@
 package com.facilio.bmsconsole.workflow.rule;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
-import com.facilio.bmsconsole.commands.AddOrUpdateSLABreachJobCommand;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BusinessHoursList;
 import com.facilio.bmsconsole.util.BusinessHoursAPI;
 import com.facilio.bmsconsole.util.SLAWorkflowAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
-import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.util.FacilioUtil;
+import com.facilio.tasker.FacilioTimer;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -28,7 +25,10 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
 
@@ -137,57 +137,18 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
         super.executeTrueActions(record, context, placeHolders);
     }
 
-    public static void addEscalationJobs(Long parentRuleId, List<SLAWorkflowEscalationContext> escalations, FacilioModule module, FacilioField dueField, Criteria criteria, ModuleBaseWithCustomFields moduleRecord, SLAEntityContext slaEntity) throws Exception {
-        if (CollectionUtils.isNotEmpty(escalations)) {
-            AddOrUpdateSLABreachJobCommand.deleteAllExistingSLASingleRecordJob(Collections.singletonList(moduleRecord), "_Escalation_", StringOperators.CONTAINS, module);
-            int count = 0;
-            for (SLAWorkflowEscalationContext escalation : escalations) {
-                count++;
-
-                Long value = (Long) FieldUtil.getValue(moduleRecord, dueField);
-                if (value == null) {
-                    // don't assign any escalations
-                    continue;
-                }
-
-                value = value + (escalation.getInterval() * 1000);
-                if (!FacilioUtil.isEmptyOrNull(value) && (value) < System.currentTimeMillis()) {
-                    continue;
-                }
-
-                WorkflowRuleContext workflowRuleContext = new WorkflowRuleContext();
-                workflowRuleContext.setName(slaEntity.getName() + "_Escalation_" + count);
-                workflowRuleContext.setRuleType(RuleType.RECORD_SPECIFIC_RULE);
-                workflowRuleContext.setActivityType(EventType.SCHEDULED);
-                workflowRuleContext.setModule(module);
-                workflowRuleContext.setParentId(moduleRecord.getId());
-
-                workflowRuleContext.setCriteria(criteria);
-                workflowRuleContext.setDateFieldId(dueField.getFieldId());
-
-                workflowRuleContext.setInterval(escalation.getInterval());
-                workflowRuleContext.setScheduleType(escalation.getTypeEnum());
-
-                FacilioChain recordRuleChain = TransactionChainFactory.getAddOrUpdateRecordRuleChain();
-                FacilioContext recordRuleContext = recordRuleChain.getContext();
-                recordRuleContext.put(FacilioConstants.ContextNames.RECORD, workflowRuleContext);
-                List<ActionContext> actions = escalation.getActions();
-                if (actions == null) {
-                    actions = new ArrayList<>();
-                }
-                actions.add(getDefaultSLAEscalationTriggeredAction(count, slaEntity));
-                recordRuleContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, actions);
-                recordRuleChain.execute();
-
-                GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
-                        .table(ModuleFactory.getSLAEscalationWorkflowRuleRelModule().getTableName())
-                        .fields(FieldFactory.getSLAEscalationWorkflowRuleRelFields());
-                Map<String, Object> map = new HashMap<>();
-                map.put("slaPolicyId", parentRuleId);
-                map.put("workflowRuleId", workflowRuleContext.getId());
-                insertRecordBuilder.insert(map);
-            }
-        }
+    public static void addEscalationJobs(Long parentRuleId, List<SLAWorkflowEscalationContext> escalations,
+                                         FacilioModule module, FacilioField dueField, Criteria criteria,
+                                         ModuleBaseWithCustomFields moduleRecord, SLAEntityContext slaEntity) throws Exception {
+        FacilioContext context = new FacilioContext();
+        context.put(FacilioConstants.ContextNames.PARENT_RULE_ID, parentRuleId);
+        context.put(FacilioConstants.ContextNames.SLA_POLICY_ESCALATION_LIST, escalations);
+        context.put(FacilioConstants.ContextNames.MODULE, module);
+        context.put(FacilioConstants.ContextNames.DATE_FIELD, dueField);
+        context.put(FacilioConstants.ContextNames.CRITERIA, criteria);
+        context.put(FacilioConstants.ContextNames.MODULE_DATA, moduleRecord);
+        context.put(FacilioConstants.ContextNames.SLA_ENTITY, slaEntity);
+        FacilioTimer.scheduleInstantJob("AddSLAEscalation", context);
     }
 
     private void addSLATriggeredActivity(Context context, ModuleBaseWithCustomFields record, SLAPolicyContext slaPolicy, Long oldDate, Long newDate, SLAEntityContext slaEntity) throws Exception {
@@ -199,21 +160,6 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
 
         CommonCommandUtil.addActivityToContext(record.getId(), System.currentTimeMillis(), WorkOrderActivityType.SLA_ACTIVATED, infoJson,
                 (FacilioContext) context);
-    }
-
-    private static ActionContext getDefaultSLAEscalationTriggeredAction(int count, SLAEntityContext slaEntity) {
-        ActionContext actionContext = new ActionContext();
-        actionContext.setActionType(ActionType.ACTIVITY_FOR_MODULE_RECORD);
-        JSONObject json = new JSONObject();
-        json.put("activityType", WorkOrderActivityType.SLA_ESCALATION_TRIGGERED.getValue());
-        JSONObject infoJson = new JSONObject();
-        infoJson.put("stage", count);
-        infoJson.put("slaEntity", slaEntity.getName());
-        infoJson.put("message", "Stage " + count + " escalation raised");
-        json.put("info", infoJson);
-        actionContext.setTemplateJson(json);
-        actionContext.setStatus(true);
-        return actionContext;
     }
 
     public static class SLAEntityDuration {
