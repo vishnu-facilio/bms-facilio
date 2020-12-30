@@ -214,6 +214,11 @@ public class CommonCommandUtil {
 
 	private static final int MAX_LEVEL_FOR_PLACEHOLDERS = 3;
 	public static void appendModuleNameInKey(String moduleName, String prefix, Map<String, Object> beanMap, Map<String, Object> placeHolders, int level) throws Exception {
+		if (FacilioProperties.isProduction()
+				&& AccountUtil.getCurrentUser() != null && AccountUtil.getCurrentUser().getId() == 1339162) {
+			LOGGER.info("Skipping the method call for the user: " + 1339162);
+			return;
+		}
 		if (level >= MAX_LEVEL_FOR_PLACEHOLDERS) {
 			return;
 		}
