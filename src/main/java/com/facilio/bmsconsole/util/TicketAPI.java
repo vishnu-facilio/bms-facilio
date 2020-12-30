@@ -1129,30 +1129,32 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT);
 		
-		List<Long> tenantIds = tickets.stream()
-				.filter(ticket -> ticket != null && ticket.getTenant() != null)
-				.map(ticket -> ticket.getTenant().getId())
-				.collect(Collectors.toList());
-
 		if(tickets != null && !tickets.isEmpty()) {
-			SelectRecordsBuilder<TenantContext> builder = new SelectRecordsBuilder<TenantContext>()
-														.module(module)
-														.beanClass(TenantContext.class)
-														.select(modBean.getAllFields(module.getName()))
-														.andCondition(CriteriaAPI.getIdCondition(tenantIds, module))
-														;
-			Map<Long, TenantContext> tenants = builder.getAsMap();
-			if(MapUtils.isNotEmpty(tenants)) {
-				for(TicketContext ticket : tickets) {
-					if (ticket != null) {
-						TenantContext tenant = ticket.getTenant();
-						if(tenant != null) {
-							TenantContext tenantDetail = tenants.get(tenant.getId());
-							ticket.setTenant(tenantDetail);
+			
+			List<Long> tenantIds = tickets.stream()
+					.filter(ticket -> ticket != null && ticket.getTenant() != null)
+					.map(ticket -> ticket.getTenant().getId())
+					.collect(Collectors.toList());
+			if (CollectionUtils.isNotEmpty(tenantIds)) {
+				SelectRecordsBuilder<TenantContext> builder = new SelectRecordsBuilder<TenantContext>()
+						.module(module)
+						.beanClass(TenantContext.class)
+						.select(modBean.getAllFields(module.getName()))
+						.andCondition(CriteriaAPI.getIdCondition(tenantIds, module))
+						;
+				Map<Long, TenantContext> tenants = builder.getAsMap();
+				if(MapUtils.isNotEmpty(tenants)) {
+					for(TicketContext ticket : tickets) {
+						if (ticket != null) {
+							TenantContext tenant = ticket.getTenant();
+							if(tenant != null) {
+								TenantContext tenantDetail = tenants.get(tenant.getId());
+								ticket.setTenant(tenantDetail);
+							}
 						}
 					}
 				}
-		  }
+			}
 	   }
 	}
 
