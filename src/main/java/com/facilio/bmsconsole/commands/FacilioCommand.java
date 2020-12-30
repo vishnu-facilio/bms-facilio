@@ -1,11 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.accounts.util.AccountUtil;
+import java.text.MessageFormat;
+
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.chain.Filter;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
+import com.facilio.accounts.util.AccountUtil;
 
 public abstract class FacilioCommand implements Command, Filter {
 	
@@ -14,15 +17,19 @@ public abstract class FacilioCommand implements Command, Filter {
 	@Override
 	public final boolean execute(Context context) throws Exception {
 		long currentMillis = System.currentTimeMillis();
+		int selectCount = AccountUtil.getCurrentSelectQuery(), pSelectCount = AccountUtil.getCurrentPublicSelectQuery();
 		boolean result = executeCommand(context);
 		long executionTime = System.currentTimeMillis() - currentMillis;
 		// if the execution takes more than 50 millis, log them
-		if (executionTime > 50) {
-			if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 274) {
-				LOGGER.info("### time taken: " + this.getClass().getSimpleName() + ": " + executionTime);
+		int totalSelect = AccountUtil.getCurrentSelectQuery() - selectCount;
+		int totalPublicSelect = AccountUtil.getCurrentPublicSelectQuery() - pSelectCount;
+		if (executionTime > 50 || totalSelect > 10 || totalPublicSelect > 10) {
+			String msg = MessageFormat.format("### time taken for command ({0}) is {1}, select : {2}, pSelect : {3}", this.getClass().getSimpleName(), executionTime, totalSelect, totalPublicSelect);
+			if (AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getOrgId() == 274 || AccountUtil.getCurrentOrg().getOrgId() == 317) ) {
+				LOGGER.info(msg);
 			}
 			else {
-				LOGGER.debug("### time taken: " + this.getClass().getSimpleName() + ": " + executionTime);
+				LOGGER.debug(msg);
 			}
 		}
 

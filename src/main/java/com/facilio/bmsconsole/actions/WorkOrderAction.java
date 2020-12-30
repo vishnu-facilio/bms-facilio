@@ -3,28 +3,32 @@ package com.facilio.bmsconsole.actions;
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.facilio.bmsconsole.workflow.rule.*;
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.ActivityContext;
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -71,6 +75,11 @@ import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.workflow.rule.ActionContext;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsole.workflow.rule.TicketActivity;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -84,7 +93,6 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.services.factory.FacilioFactory;
 import com.facilio.tasker.ScheduleInfo;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -188,7 +196,6 @@ public class WorkOrderAction extends FacilioAction {
 	}
 
 	public String addWorkOrder(WorkOrderContext workorder) throws Exception {
-		try {
 		if (workorder.getSourceTypeEnum() == null) {
 			workorder.setSourceType(TicketContext.SourceType.WEB_ORDER);
 		}
@@ -222,16 +229,6 @@ public class WorkOrderAction extends FacilioAction {
 		addWorkOrder.execute(context);
 		
 		setWorkOrderId(workorder.getId());
-		}
-		catch (Exception e) {
-			JSONObject inComingDetails = new JSONObject();
-			inComingDetails.put("workorder", FieldUtil.getAsJSON(workorder));
-			if (tasks != null) {
-				inComingDetails.put("tasks", FieldUtil.getAsJSON(tasks));
-			}
-			sendErrorMail(e, inComingDetails);
-			throw e;
-		}
 		return SUCCESS;
 	}
 
@@ -1466,21 +1463,12 @@ public class WorkOrderAction extends FacilioAction {
 
 	public String deleteWorkOrder() throws Exception {
 		FacilioContext context = new FacilioContext();
-		try {
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 
 		FacilioChain deleteWorkOrder = FacilioChainFactory.getDeleteWorkOrderChain();
 		deleteWorkOrder.execute(context);
 		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
-	}
-	catch (Exception e) {
-		JSONObject inComingDetails = new JSONObject();
-		inComingDetails.put("Event Type, deleteWorkOrder", EventType.DELETE);
-		inComingDetails.put("RECORD_ID_LIST", id);
-		sendErrorMail(e, inComingDetails);
-		throw e;
-	}
 		return SUCCESS;
 	}
 
@@ -1588,7 +1576,6 @@ public class WorkOrderAction extends FacilioAction {
 	}
 
 	private String updateWorkOrder(FacilioContext context) throws Exception {
-		try {
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
@@ -1599,38 +1586,12 @@ public class WorkOrderAction extends FacilioAction {
 		updateWorkOrder.execute(context);
 		rowsUpdated = (Integer) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
 		setWorkOrders((List<WorkOrderContext>) context.get(ContextNames.RECORD_LIST));
-	}
-	catch (Exception e) {
-		JSONObject inComingDetails = new JSONObject();
-		if (workorder.getAssignedTo() != null && workorder.getAssignedTo().getId() > -1) {
-			User user = new User();
-			user.setId(workorder.getAssignedTo().getId());
-			user.setName(workorder.getAssignedTo().getName());
-			workorder.setAssignedTo(user);
-		}
-		if (workorder.getAssignedBy() != null && workorder.getAssignedBy().getId() > -1) {
-			User user = new User();
-			user.setId(workorder.getAssignedBy().getId());
-			user.setName(workorder.getAssignedBy().getName());
-			workorder.setAssignedBy(user);
-		}
-		inComingDetails.put("workorder", FieldUtil.getAsJSON(workorder));
-		inComingDetails.put("RECORD_ID_LIST", id);
-		inComingDetails.put("stateTransitionId", stateTransitionId);
-		String qrVal = (String) context.get(FacilioConstants.ContextNames.QR_VALUE);
-		if (qrVal != null) {
-			inComingDetails.put("qrVal", qrVal);
-		}
-		sendErrorMail(e, inComingDetails);
-		throw e;
-	}
 		return SUCCESS;
 	}
 
 	public String viewWorkOrder() throws Exception {
 
 		FacilioContext context = new FacilioContext();
-		try {
 		context.put(FacilioConstants.ContextNames.ID, getWorkOrderId());
 
 		FacilioChain getWorkOrderChain = ReadOnlyChainFactory.getWorkOrderDetailsChain();
@@ -1639,13 +1600,6 @@ public class WorkOrderAction extends FacilioAction {
 		setWorkorder((WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER));
 		setAvailableStates((List<WorkflowRuleContext>) context.get("availableStates"));
 		setCurrentState((FacilioStatus) context.get("currentState"));
-	}
-	catch (Exception e) {
-		JSONObject inComingDetails = new JSONObject();
-		inComingDetails.put("WorkOrderId", getWorkOrderId());
-		sendErrorMail(e, inComingDetails);
-		throw e;
-	}
 		return SUCCESS;
 	}
 	
@@ -1750,44 +1704,6 @@ public class WorkOrderAction extends FacilioAction {
 		this.modifiedTime = modifiedTime;
 	}
 
-	private void sendErrorMail(Exception e, JSONObject inComingDetails) throws Exception {
-		// TODO Auto-generated method stub
-		String errorTrace = null;
-		StringBuilder body = new StringBuilder("\n\nDetails: \n");
-		if (e != null && FacilioProperties.isProduction() ) {
-			if (e instanceof IllegalArgumentException && AccountUtil.getCurrentOrg().getOrgId() != 155) {
-				if (e.getMessage().equals("Please close all tasks before closing/resolving the workorder")  || e.getMessage().equals("Please close all tasks before closing the workorder")
-						|| e.getMessage().equals("Tasks should be completed before resolve") || (AccountUtil.getCurrentOrg().getOrgId() == 315 && e.getMessage().equals("Scanned QR code does not match associated asset"))) {
-					return;
-				}
-				errorTrace = ExceptionUtils.getStackTrace(e);
-				body.append(inComingDetails.toString())
-				.append("\nOrgId: ")
-				.append(AccountUtil.getCurrentOrg().getOrgId())
-				.append("\nUser: ")
-				.append(AccountUtil.getCurrentUser().getName()).append(" - ").append(AccountUtil.getCurrentUser().getOuid())
-				.append("\nDevice Type: ")
-				.append(AccountUtil.getCurrentAccount().getDeviceType())
-				.append("\nUrl: ")
-				.append(ServletActionContext.getRequest().getRequestURI())
-				.append("\n\n-----------------\n\n")
-				.append("------------------\n\nStackTrace : \n--------\n")
-				.append(errorTrace);
-				String message = e.getMessage();
-				JSONObject mailJson = new JSONObject();
-				mailJson.put("sender", "noreply@facilio.com");
-				mailJson.put("to", "shaan@facilio.com, tharani@facilio.com");
-				mailJson.put("subject", "Workorder Exception");
-				mailJson.put("message", body.toString());
-				FacilioFactory.getEmailClient().sendEmail(mailJson);
-			}
-			else {
-				CommonCommandUtil.emailException(WorkOrderAction.class.getName(), "Error in Workorder api", e, inComingDetails.toString());
-			}
-		}
-	}
-
-	
 	private Boolean showViewsCount;
 	public Boolean getShowViewsCount() {
 		if (showViewsCount == null) {
@@ -2129,7 +2045,6 @@ public class WorkOrderAction extends FacilioAction {
 		List<Long> ids = Arrays.asList(strNew.split(",")).stream().map(Long::parseLong).collect(Collectors.toList());		
 		context.put(FacilioConstants.ContextNames.WO_IDS, ids);
 		}
-		try {
 		if (isApproval()) {
 			setViewName("approval_" + getViewName());
 		}
@@ -2228,16 +2143,6 @@ public class WorkOrderAction extends FacilioAction {
 		FacilioView cv = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		if (cv != null) {
 			setViewDisplayName(cv.getDisplayName());
-		}
-		}
-		catch (Exception e) {
-			JSONObject inComingDetails = new JSONObject();
-			inComingDetails.put("ViewName", getViewName());
-			inComingDetails.put("StartTime", getStartTime());
-			inComingDetails.put("EndTime", getEndTime());
-			inComingDetails.put("isApproval", isApproval());
-			sendErrorMail(e, inComingDetails);
-			throw e;
 		}
 		return SUCCESS;
 	}
@@ -2544,7 +2449,6 @@ public class WorkOrderAction extends FacilioAction {
 	}
 
 	public String getActivitiesList() throws Exception {
-		try {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.TICKET_ID, workOrderId);
 
@@ -2552,19 +2456,11 @@ public class WorkOrderAction extends FacilioAction {
 		activitiesChain.execute(context);
 
 		setActivities((List<TicketActivity>) context.get(FacilioConstants.TicketActivity.TICKET_ACTIVITIES));
-		}
-		catch (Exception e) {
-			JSONObject inComingDetails = new JSONObject();
-			inComingDetails.put("workOrderId", workOrderId);
-			sendErrorMail(e, inComingDetails);
-			throw e;
-		}
 
 		return SUCCESS;
 	}
 	public String fetchActivity() throws Exception {
 		FacilioContext context = new FacilioContext();
-		try {
 		context.put(FacilioConstants.ContextNames.PARENT_ID, workOrderId);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
 		
@@ -2596,13 +2492,6 @@ public class WorkOrderAction extends FacilioAction {
 		}
 	  }
 		setResult("activity", woActivities);
-	}
-	catch (Exception e) {
-		JSONObject inComingDetails = new JSONObject();
-		inComingDetails.put("PARENT_ID", workOrderId);
-		sendErrorMail(e, inComingDetails);
-		throw e;
-	}
 		return SUCCESS;
 	}
 

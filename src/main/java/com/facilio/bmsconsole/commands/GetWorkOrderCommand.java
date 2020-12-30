@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
@@ -14,7 +13,6 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
@@ -86,7 +84,6 @@ public class GetWorkOrderCommand extends FacilioCommand {
 				context.put(FacilioConstants.ContextNames.WORK_ORDER, workOrder);
 				context.put(FacilioConstants.ContextNames.RECORD, workOrder);
 				
-				TicketAPI.loadRelatedModules(workOrder);
 				TicketAPI.loadTicketLookups(Collections.singleton(workOrder));
 				if (workOrder.getRequester() != null) {
 					List<User> users = AccountUtil.getUserBean().getUsers(null, false, true, Collections.singletonList(workOrder.getRequester().getId()));
@@ -99,11 +96,6 @@ public class GetWorkOrderCommand extends FacilioCommand {
 					if (users != null && !users.isEmpty()) {
 						workOrder.setRequestedBy(users.get(0));
 					}
-				}
-				Map<Long, List<TaskContext>> taskMap = workOrder.getTasks();
-				if (taskMap != null) {
-					List<TaskContext> tasks = taskMap.values().stream().flatMap(c -> c.stream()).collect(Collectors.toList());
-					context.put(FacilioConstants.ContextNames.TASK_LIST, tasks);
 				}
 
 //				if ((AccountUtil.getCurrentOrg().getId() == 146 || AccountUtil.getCurrentOrg().getId() == 155) && workOrder != null) {

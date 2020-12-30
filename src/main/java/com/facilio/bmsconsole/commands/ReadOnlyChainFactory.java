@@ -205,7 +205,6 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetWorkOrderCommand());
 		c.addCommand(new GetWorkorderHazardsCommand());
 		c.addCommand(new GetAvailableStateCommand());
-		c.addCommand(new GetTaskInputDataCommand());
 		c.addCommand(new FetchApprovalRulesCommand());
 		c.addCommand(new FetchSourceTypeDetailsForWorkorderCommand());
 		c.addCommand(new FetchStateflowAndSlaCommand());

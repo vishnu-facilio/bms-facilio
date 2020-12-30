@@ -95,6 +95,14 @@ public class AccountUtil {
 		currentAccount.remove();
 	}
 	
+	public static int getCurrentSelectQuery() {
+		return getCurrentAccount() != null ? getCurrentAccount().getSelectQueries() : 0;
+	}
+
+	public static int getCurrentPublicSelectQuery() {
+		return getCurrentAccount() != null ? getCurrentAccount().getPublicSelectQueries() : 0;
+	}
+	
 	public static Object getSwitchScopingFieldValue(String fieldName) {
 		if (currentAccount.get() != null) {
 			Map<String, Object> switchScopingMap = currentAccount.get().getSwitchScopingMap();

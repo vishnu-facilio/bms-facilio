@@ -930,7 +930,6 @@ public abstract class FileStore {
 	public byte[] writeCompressedFile(String namespace, long fileId, File file, String contentType, ByteArrayOutputStream baos, String compressedFilePath) throws Exception {
 		if (contentType.contains("image/")) {
 			try(FileInputStream fis = new FileInputStream(file);) {
-				long beforeCompress = System.currentTimeMillis();
 				BufferedImage imBuff = ImageIO.read(fis);
 				ImageScaleUtil.compressImage(imBuff, baos, contentType);
 
@@ -944,10 +943,6 @@ public abstract class FileStore {
 				baos.flush();
 				imBuff.flush();
 				
-				long executionTime = System.currentTimeMillis() - beforeCompress;
-				// if the execution takes more than 50 millis, log them
-				LOGGER.debug("### compress time taken - " + fileId + ":: " + executionTime);
-
 				/*ResizedFileInfo info = new ResizedFileInfo();
 				info.setFileId(fileId);
 				info.setQuality(COMPRESS_QUALITY);
