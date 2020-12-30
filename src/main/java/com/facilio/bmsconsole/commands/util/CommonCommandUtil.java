@@ -204,12 +204,21 @@ public class CommonCommandUtil {
 		appendModuleNameInKey(moduleName, prefix, beanMap, placeHolders, 0);
 	}
 
+	private static int getCurrentSelectQuery() {
+		return AccountUtil.getCurrentAccount() != null ? AccountUtil.getCurrentAccount().getSelectQueries() : 0;
+	}
+
+	private static int getCurrentPublicSelectQuery() {
+		return AccountUtil.getCurrentAccount() != null ? AccountUtil.getCurrentAccount().getPublicSelectQueries() : 0;
+	}
+
 	private static final int MAX_LEVEL_FOR_PLACEHOLDERS = 3;
 	public static void appendModuleNameInKey(String moduleName, String prefix, Map<String, Object> beanMap, Map<String, Object> placeHolders, int level) throws Exception {
 		if (level >= MAX_LEVEL_FOR_PLACEHOLDERS) {
 			return;
 		}
 		long time = System.currentTimeMillis();
+		int selectCount = getCurrentSelectQuery(), pSelectCount = getCurrentPublicSelectQuery();
 		if(beanMap != null) {
 			if (StringUtils.isNotEmpty(moduleName) && !LookupSpecialTypeUtil.isSpecialType(moduleName)) {
 				Map<String, Object> fieldPlaceHolders = constructFieldPlaceHolders(moduleName, prefix, beanMap, level);
@@ -220,8 +229,10 @@ public class CommonCommandUtil {
 			addPropsWithPrefix(prefix, beanMap, placeHolders);
 		}
 		long timeTaken = System.currentTimeMillis() - time;
-		if (level == 0 && timeTaken > 50) {
-			String msg = MessageFormat.format("### time taken in first level of appendModuleNameInKey with ModuleName ({0}) is {1}", String.valueOf(moduleName), timeTaken);
+		int totalSelect = getCurrentSelectQuery() - selectCount;
+		int totalPublicSelect = getCurrentPublicSelectQuery() - pSelectCount;
+		if (level == 0 && (timeTaken > 50 || totalSelect > 10 || totalPublicSelect > 10)) {
+			String msg = MessageFormat.format("### time taken in first level of appendModuleNameInKey with ModuleName ({0}) is {1}, select : {2}, pSelect : {3}", String.valueOf(moduleName), timeTaken, totalSelect, totalPublicSelect);
 			if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 274) {
 				LOGGER.info(msg);
 			}
