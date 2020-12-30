@@ -38,6 +38,7 @@ import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.log4j.LogManager;
@@ -1127,26 +1128,30 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 	private static void loadTicketTenants(Collection<? extends TicketContext> tickets) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT);
+		
+		List<Long> tenantIds = tickets.stream()
+				.filter(ticket -> ticket != null && ticket.getTenant() != null)
+				.map(ticket -> ticket.getTenant().getId())
+				.collect(Collectors.toList());
 
 		if(tickets != null && !tickets.isEmpty()) {
 			SelectRecordsBuilder<TenantContext> builder = new SelectRecordsBuilder<TenantContext>()
 														.module(module)
 														.beanClass(TenantContext.class)
-														.select(modBean.getAllFields(FacilioConstants.ContextNames.TENANT))
+														.select(modBean.getAllFields(module.getName()))
+														.andCondition(CriteriaAPI.getIdCondition(tenantIds, module))
 														;
-			List<TenantContext> tenantList = builder.get();
-			if(tenantList.size() > 0) {
-			TenantsAPI.loadTenantLookups(tenantList);
-			Map<Long, TenantContext> tenants = FieldUtil.getAsMap(tenantList);
-			for(TicketContext ticket : tickets) {
-				if (ticket != null) {
-					TenantContext tenant = ticket.getTenant();
-					if(tenant != null) {
-						TenantContext tenantDetail = tenants.get(tenant.getId());
-						ticket.setTenant(tenantDetail);
+			Map<Long, TenantContext> tenants = builder.getAsMap();
+			if(MapUtils.isNotEmpty(tenants)) {
+				for(TicketContext ticket : tickets) {
+					if (ticket != null) {
+						TenantContext tenant = ticket.getTenant();
+						if(tenant != null) {
+							TenantContext tenantDetail = tenants.get(tenant.getId());
+							ticket.setTenant(tenantDetail);
+						}
 					}
 				}
-			}
 		  }
 	   }
 	}

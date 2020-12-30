@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -33,7 +34,7 @@ public class GetWorkOrderCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		
 		long workOrderId = (long) context.get(FacilioConstants.ContextNames.ID);
-		
+		long beforeFetch = System.currentTimeMillis();
 		if(workOrderId > 0) {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
@@ -78,6 +79,7 @@ public class GetWorkOrderCommand extends FacilioCommand {
 			builder.fetchSupplement((LookupField) fieldMap.get("type"));
 			
 			List<WorkOrderContext> workOrders = builder.get();
+			long afterFetch = System.currentTimeMillis();
 			if(workOrders.size() > 0) {
 				WorkOrderContext workOrder = workOrders.get(0);
 				
@@ -85,6 +87,16 @@ public class GetWorkOrderCommand extends FacilioCommand {
 				context.put(FacilioConstants.ContextNames.RECORD, workOrder);
 				
 				TicketAPI.loadTicketLookups(Collections.singleton(workOrder));
+				long afterLookup = System.currentTimeMillis();
+				
+				String msg = MessageFormat.format("### time taken for GetWo fetch is {1}, lookup fetch : {2}", afterFetch - beforeFetch, afterLookup - afterFetch);
+				if (AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getOrgId() == 274 || AccountUtil.getCurrentOrg().getOrgId() == 317) ) {
+					LOGGER.info(msg);
+				}
+				else {
+					LOGGER.debug(msg);
+				}
+				
 				if (workOrder.getRequester() != null) {
 					List<User> users = AccountUtil.getUserBean().getUsers(null, false, true, Collections.singletonList(workOrder.getRequester().getId()));
 					if (users != null && !users.isEmpty()) {
