@@ -405,7 +405,7 @@ public class S3FileStore extends FileStore {
 			try(ByteArrayOutputStream baos = new ByteArrayOutputStream();) {
 				String resizedFilePath = getRootPath(namespace) + File.separator + fileId + "-compressed";
 				byte[] imageInByte = writeCompressedFile(namespace, fileId, file, contentType, baos, resizedFilePath);
-				long afterCompress = System.currentTimeMillis() - beforeCompress;
+				long afterCompress = System.currentTimeMillis();
 				if (imageInByte != null) {
 					writeStreamToS3(imageInByte, resizedFilePath);
 				}
