@@ -110,10 +110,12 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
                 log("Updated Time value: " + timeValue);
 
                 Long oldTime = (Long) FieldUtil.getValue(moduleRecord, dueField);
-                if (oldTime != null && timeValue != null && oldTime.equals(timeValue)) {
-                    // skip updating
-                    log("skip updated: " + oldTime + "; timevalue: " + timeValue);
-                    continue;
+                if (oldTime != null && timeValue != null) {
+                    if ((oldTime / 1000) == (timeValue / 1000)) { // checking in second level
+                        // skip updating
+                        log("skip updated: " + oldTime + "; timevalue: " + timeValue);
+                        continue;
+                    }
                 }
                 addSLATriggeredActivity(context, moduleRecord, slaPolicy, oldTime, timeValue, slaEntity);
                 FieldUtil.setValue(moduleRecord, dueField, timeValue);
