@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import javax.transaction.Status;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -218,10 +219,24 @@ public class FacilioChain extends ChainBase {
 				Iterator<PostTransactionCommand> iterator = newList.iterator();
 				while (iterator.hasNext()) {
 					PostTransactionCommand postTransactionCommand = iterator.next();
+					long time = System.currentTimeMillis();
+					int selectCount = AccountUtil.getCurrentSelectQuery(), pSelectCount = AccountUtil.getCurrentPublicSelectQuery();
 					if (onSuccess) {
 						postTransactionCommand.postExecute();
 					} else {
 						postTransactionCommand.onError();
+					}
+					long executionTime = System.currentTimeMillis() - time;
+					int totalSelect = AccountUtil.getCurrentSelectQuery() - selectCount;
+					int totalPublicSelect = AccountUtil.getCurrentPublicSelectQuery() - pSelectCount;
+					if (executionTime > 50 || totalSelect > 10 || totalPublicSelect > 10) {
+						String msg = MessageFormat.format("### time taken for {0} of {1} is {2}, select : {3}, pSelect : {4}", onSuccess ? "postExecute" : "onError", postTransactionCommand.getClass().getSimpleName(), executionTime, totalSelect, totalPublicSelect);
+						if (AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getOrgId() == 274 || AccountUtil.getCurrentOrg().getOrgId() == 317) ) {
+							LOGGER.info(msg);
+						}
+						else {
+							LOGGER.debug(msg);
+						}
 					}
 				}
 			}
