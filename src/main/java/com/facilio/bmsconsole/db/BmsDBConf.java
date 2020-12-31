@@ -467,7 +467,12 @@ public class BmsDBConf extends DBConf {
     public void incrementInstantJobFileAddTime(long duration) {
         AccountUtil.incrementInstantJobFileAddTime(duration);
     }
-    
+
+    @Override
+    public void setJsonConversionTime(long jsonConversionTime) {
+        AccountUtil.setJsonConversionTime(jsonConversionTime);
+    }
+
 
     private class SelectQueryCache {
 

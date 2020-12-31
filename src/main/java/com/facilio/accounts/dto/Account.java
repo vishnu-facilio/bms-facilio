@@ -12,7 +12,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.struts2.ServletActionContext;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.context.ConnectedDeviceContext;
 import com.facilio.screen.context.RemoteScreenContext;
@@ -69,6 +68,7 @@ public class Account implements AccountsInterface<User>, Serializable{
 	private long publicRedisPutTime = 0L;
 	private long publicRedisDeleteTime = 0L;
 	private long publicInstantJobFileAddTime = 0L;
+	private long jsonConversionTime = 0L;
 
 	private Deque<Boolean> publicAccess = new ArrayDeque<>();
 	private Map<Long, Map<String, Object>> scopingMap;
@@ -298,6 +298,13 @@ public class Account implements AccountsInterface<User>, Serializable{
 		else {
 			this.publicInstantJobFileAddTime += fileAddedTime;
 		}
+	}
+
+	public long getJsonConversionTime() {
+		return jsonConversionTime;
+	}
+	public void setJsonConversionTime(long jsonConversionTime) {
+		this.jsonConversionTime = jsonConversionTime;
 	}
 
 	public int getRedisQueries() {
@@ -582,6 +589,7 @@ public class Account implements AccountsInterface<User>, Serializable{
 		publicRedisPutTime = 0L;
 		publicRedisDeleteTime = 0L;
 		publicInstantJobFileAddTime = 0L;
+		jsonConversionTime = 0L;
 
 		if (redisLocalCache != null) {//Better for gc I guess
 			redisLocalCache.clear();

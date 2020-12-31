@@ -62,12 +62,11 @@ public class AccessLogFilter implements Filter {
 
             filterChain.doFilter(servletRequest, response);
 
-            String message = DUMMY_MSG;
+            StringBuilder message = new StringBuilder();
             int responseSize = 0;
             if (AccountUtil.getCurrentAccount() != null) {
                 Account account = AccountUtil.getCurrentAccount();
-                message = new StringBuilder()
-                        .append("select : ").append(account.getSelectQueries()).append(" time : ").append(account.getSelectQueriesTime())
+                message.append("select : ").append(account.getSelectQueries()).append(" time : ").append(account.getSelectQueriesTime())
                         .append(", update : ").append(account.getUpdateQueries()).append(" time : ").append(account.getUpdateQueriesTime())
                         .append(", insert : ").append(account.getInsertQueries()).append(" time : ").append(account.getInsertQueriesTime())
                         .append(", delete : ").append(account.getDeleteQueries()).append(" time : ").append(account.getDeleteQueriesTime())
@@ -81,15 +80,20 @@ public class AccessLogFilter implements Filter {
                         .append(", pRget : ").append(account.getPublicRedisGetCount()).append(" time : ").append(account.getPublicRedisGetTime())
                         .append(", pRput : ").append(account.getPublicRedisPutCount()).append(" time : ").append(account.getPublicRedisPutTime())
                         .append(", pRdel : ").append(account.getPublicRedisDeleteCount()).append(" time : ").append(account.getPublicRedisDeleteTime())
-                        .toString();
+                        .append(", jsonConversionTime : ").append(account.getJsonConversionTime())
+                        ;
+            }
+            else {
+                message.append(DUMMY_MSG);
             }
 
             if (ENABLE_FHR) {
                 responseSize = ((FacilioHttpResponse) response).getLengthInBytes();
-                message = message + "  data: " + responseSize;
+                message.append(", data : ").append(responseSize);
             }
-            System.out.println("Response size in Access => "+responseSize);
-            LoggingEvent event = new LoggingEvent(LOGGER.getName(), LOGGER, Level.INFO, message, null);
+//            System.out.println("Response size in Access => "+responseSize);
+//            System.out.println(message.toString());
+            LoggingEvent event = new LoggingEvent(LOGGER.getName(), LOGGER, Level.INFO, message.toString(), null);
 
             if (AccountUtil.getCurrentAccount() != null) {
                 Account account = AccountUtil.getCurrentAccount();
@@ -111,7 +115,8 @@ public class AccessLogFilter implements Filter {
                 event.setProperty("ijobfiletime", String.valueOf(account.getInstantJobFileAddTime()));
                 event.setProperty("ftqueries", String.valueOf(account.getTotalQueries()));
                 event.setProperty("ftqtime", String.valueOf(account.getTotalQueryTime()));
-                
+                event.setProperty("fdatasize", String.valueOf(responseSize));
+                event.setProperty("fjsonconvtime", String.valueOf(account.getJsonConversionTime()));
             }
 
             RequestUtil.addRequestLogEvents(request, event);

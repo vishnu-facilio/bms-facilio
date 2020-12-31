@@ -257,6 +257,12 @@ public class AccountUtil {
 			currentAccount.get().incrementInstantJobFileAddTime(duration);
 		}
 	}
+
+	public static void setJsonConversionTime (long jsonConversionTime) {
+		if(currentAccount.get() != null) {
+			currentAccount.get().setJsonConversionTime(jsonConversionTime);
+		}
+	}
 	
 	public static UserBean getUserBean() throws Exception {
 		UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
