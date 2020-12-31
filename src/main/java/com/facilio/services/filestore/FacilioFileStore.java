@@ -1,15 +1,27 @@
 package com.facilio.services.filestore;
 
-import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-
-import javax.imageio.ImageIO;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -17,7 +29,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.aws.util.FacilioProperties;
-import com.facilio.bmsconsole.util.ImageScaleUtil;
 import com.facilio.fs.FileInfo;
 
 public class FacilioFileStore extends FileStore {
@@ -424,16 +435,14 @@ public class FacilioFileStore extends FileStore {
 	}
 
     @Override
-	public void addComppressedFile(String namespace, long fileId, String fileName, File file, String contentType) throws Exception {
-		if (contentType.contains("image/")) {
-			try(ByteArrayOutputStream baos = new ByteArrayOutputStream();) {
-				String resizedFilePath = getRootPath(namespace) + File.separator + fileId + "-compressed";
-				byte[] imageInByte = writeCompressedFile(namespace, fileId, file, contentType, baos, resizedFilePath);
-				if (imageInByte != null) {
-					postFile(namespace, fileId, fileName, contentType, imageInByte);
-				}
-            }
-		}
+	public void addCompressedFile(String namespace, long fileId, FileInfo fileInfo) throws Exception {
+    		try(ByteArrayOutputStream baos = new ByteArrayOutputStream();) {
+			String resizedFilePath = getRootPath(namespace) + File.separator + fileId + "-compressed";
+			byte[] imageInByte = writeCompressedFile(namespace, fileId, fileInfo, baos, resizedFilePath);
+			if (imageInByte != null) {
+				postFile(namespace, fileId, fileInfo.getFileName(), fileInfo.getContentType(), imageInByte);
+			}
+        }
 	}
 
     private int postFile(String namespace, long fileId, String fileName, String contentType, byte[] imageInByte) throws Exception {

@@ -107,7 +107,7 @@ public class LocalFileStore extends FileStore {
 
 			updateFileEntry(namespace, fileId, fileName, filePath, fileSize, contentType);
 
-			addComppressedFile(namespace, fileId, fileName, file, contentType);
+			scheduleCompressJob(namespace, fileId, contentType);
 
 		} catch (IOException ioe) {
 			deleteFileEntry(namespace, fileId);
@@ -289,10 +289,10 @@ public class LocalFileStore extends FileStore {
 	}
 
 	@Override
-	public void addComppressedFile(String namespace, long fileId, String fileName, File file,String contentType) throws Exception {
+	public void addCompressedFile(String namespace, long fileId, FileInfo fileInfo) throws Exception {
 		try(ByteArrayOutputStream baos = new ByteArrayOutputStream();) {
 			String resizedFilePath = getRootPath(namespace) + File.separator + fileId + "-compressed" +".jpg";
-			byte[] imageInBytes = writeCompressedFile(namespace, fileId, file, contentType, baos, resizedFilePath);
+			byte[] imageInBytes = writeCompressedFile(namespace, fileId, fileInfo, baos, resizedFilePath);
 			if (imageInBytes != null) {
 				File createFile = new File(resizedFilePath);
 				createFile.createNewFile();

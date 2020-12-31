@@ -11,7 +11,6 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.security.Security;
 import java.security.spec.InvalidKeySpecException;
-import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -102,12 +101,10 @@ public class S3FileStore extends FileStore {
 		long fileSize = file.length();
 
 		try {
-			long beforeS3 = System.currentTimeMillis();
 			PutObjectResult rs = AwsUtil.getAmazonS3Client().putObject(getBucketName(), filePath, file);
-			long executionTime = System.currentTimeMillis() - beforeS3;
 			if (rs != null) {
 				updateFileEntry(namespace, fileId, fileName, filePath, fileSize, contentType);
-				addComppressedFile(namespace, fileId, fileName, file, contentType, executionTime);
+				scheduleCompressJob(namespace, fileId, contentType);
 				return fileId;
 			}
 			else {
@@ -395,27 +392,16 @@ public class S3FileStore extends FileStore {
 	}
 	
 	@Override
-	public void addComppressedFile(String namespace, long fileId,  String fileName, File file, String contentType) throws Exception {
-		addComppressedFile(namespace, fileId, fileName, file, contentType, 0);
-	}
-
-	public void addComppressedFile(String namespace, long fileId,  String fileName, File file, String contentType, long s3ExecutionTime) throws Exception {
-		if (contentType.contains("image/")) {
-			long beforeCompress = System.currentTimeMillis();
-			try(ByteArrayOutputStream baos = new ByteArrayOutputStream();) {
-				String resizedFilePath = getRootPath(namespace) + File.separator + fileId + "-compressed";
-				byte[] imageInByte = writeCompressedFile(namespace, fileId, file, contentType, baos, resizedFilePath);
-				long afterCompress = System.currentTimeMillis();
-				if (imageInByte != null) {
-					writeStreamToS3(imageInByte, resizedFilePath);
-				}
-				long afterS3 = System.currentTimeMillis() - afterCompress;
-				String msg = MessageFormat.format("### time taken for file ({0}) to S3 is {1}, compress : {2}, compressed file to S3 : {3}", fileId, s3ExecutionTime, afterCompress-beforeCompress, afterS3);
-				addLogger(msg);
-			} 
+	public void addCompressedFile(String namespace, long fileId, FileInfo fileInfo) throws Exception {
+		try(ByteArrayOutputStream baos = new ByteArrayOutputStream();) {
+			String resizedFilePath = getRootPath(namespace) + File.separator + fileId + "-compressed";
+			byte[] imageInByte = writeCompressedFile(namespace, fileId, fileInfo , baos, resizedFilePath);
+			if (imageInByte != null) {
+				writeStreamToS3(imageInByte, resizedFilePath);
+			}
 		}
 	}
-	
+
 	private PutObjectResult writeStreamToS3(byte[] imageInByte, String filePath) throws IOException {
 		try (ByteArrayInputStream bis = new ByteArrayInputStream(imageInByte);) {
 			ObjectMetadata metaData = new ObjectMetadata();

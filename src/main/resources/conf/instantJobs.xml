@@ -20,4 +20,5 @@
     <job name="ReadingPostProcessingJob" classname='com.facilio.bmsconsole.instant.jobs.ReadingPostProcessingJob' transactionTimeout= '900' />
     <job name="SendNotificationJob" classname='com.facilio.bmsconsole.instant.jobs.SendNotificationJob' transactionTimeout= '900' />
     <job name="AddSLAEscalation" classname='com.facilio.bmsconsole.instant.jobs.AddSLAEscalationJob' transactionTimeout= '900' />
+    <job name="CompressImageJob" classname='com.facilio.bmsconsole.instant.jobs.CompressImageJob' transactionTimeout= '900' />
 </instantjob>

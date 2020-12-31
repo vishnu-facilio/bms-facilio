@@ -3,7 +3,6 @@ package com.facilio.services.filestore;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -32,6 +31,8 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.util.FileJWTUtil;
 import com.facilio.bmsconsole.util.ImageScaleUtil;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -45,6 +46,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.tasker.FacilioTimer;
 import com.facilio.util.FacilioUtil;
 
 public abstract class FileStore {
@@ -402,7 +404,7 @@ public abstract class FileStore {
 	}
 	public abstract long addFile(String namespace, String fileName, String content, String contentType) throws Exception;
 
-	public abstract void addComppressedFile(String namespace, long fileId, String fileName, File file, String contentType) throws Exception;
+	public abstract void addCompressedFile(String namespace, long fileId, FileInfo fileInfo) throws Exception;
 
 	public FileInfo getFileInfo(long fileId) throws Exception {
 		return getFileInfo(DEFAULT_NAMESPACE, fileId);
@@ -926,38 +928,34 @@ public abstract class FileStore {
 	public abstract boolean removeSecretFile(String tag) throws Exception;
 
 	public abstract boolean isSecretFileExists(String fileName);
-
-	public byte[] writeCompressedFile(String namespace, long fileId, File file, String contentType, ByteArrayOutputStream baos, String compressedFilePath) throws Exception {
+	
+	protected void scheduleCompressJob(String namespace, long fileId, String contentType) throws Exception {
 		if (contentType.contains("image/")) {
-			try(FileInputStream fis = new FileInputStream(file);) {
-				BufferedImage imBuff = ImageIO.read(fis);
-				ImageScaleUtil.compressImage(imBuff, baos, contentType);
+			FacilioContext context = new FacilioContext();
+			context.put(ContextNames.FILE_NAME_SPACE, namespace);
+			context.put(ContextNames.FILE_ID, fileId);
+			FacilioTimer.scheduleInstantJob("CompressImageJob", context);
+		}
+	}
 
-				byte[] imageInByte = baos.toByteArray();
-				if (imageInByte.length >= file.length()) {	// Small files may be compressed to more size bcz of metadata
-					return null;
-				}
+	public byte[] writeCompressedFile(String namespace, long fileId, FileInfo fileInfo, ByteArrayOutputStream baos, String compressedFilePath) throws Exception {
+		try (InputStream inputStream = this.readFile(namespace, fileId, true)){
+			BufferedImage imBuff = ImageIO.read(inputStream);
+			ImageScaleUtil.compressImage(imBuff, baos, fileInfo.getContentType());
 
-				updateFileEntry(namespace, fileId, compressedFilePath, imageInByte.length);
-
-				baos.flush();
-				imBuff.flush();
-				
-				/*ResizedFileInfo info = new ResizedFileInfo();
-				info.setFileId(fileId);
-				info.setQuality(COMPRESS_QUALITY);
-				info.setFilePath(compressedFilePath);
-				info.setFileSize(imageInByte.length);
-				info.setContentType("image/png");
-				info.setGeneratedTime(System.currentTimeMillis());
-
-				addResizedFileEntry(Collections.singletonList(info));*/
-
-				return imageInByte;
+			byte[] imageInByte = baos.toByteArray();
+			if (imageInByte.length >= fileInfo.getFileSize()) {	// Small files may be compressed to more size bcz of metadata
+				return null;
 			}
-			catch (Exception e) {
-				LOGGER.error("Error while compressing", e);
-			}
+			updateFileEntry(namespace, fileId, compressedFilePath, imageInByte.length);
+
+			baos.flush();
+			imBuff.flush();
+
+			return imageInByte;
+		}
+		catch (Exception e) {
+			LOGGER.error("Error while compressing", e);
 		}
 		return null;
 	}

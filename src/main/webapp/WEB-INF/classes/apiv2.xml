@@ -131,6 +131,11 @@
 		<action name="basespace"
 			class="com.facilio.bmsconsole.actions.BaseSpaceAction"
 			method="v2baseSpaceList">
+			<result name="success" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
 		</action>
 
 		<action name="attachments"

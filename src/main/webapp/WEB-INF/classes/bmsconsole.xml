@@ -237,7 +237,9 @@
 		<action name="basespace" class="com.facilio.bmsconsole.actions.BaseSpaceAction"
 			method="baseSpaceList">
 			<result name="success" type="json">
+				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">basespaces,basespaces\[\d+\],basespaces\[\d+\].*</param>
+				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
 		<action name="alarm" class="com.facilio.bmsconsole.actions.AlarmAction"
