@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.context.PMTriggerContext.TriggerExectionSource;
 import com.facilio.bmsconsole.context.WorkflowRuleResourceLoggerContext.Status;
 import com.facilio.bmsconsole.context.sensor.SensorRuleType;
 import com.facilio.bmsconsole.context.sensor.SensorRuleTypeValidationInterface;
+import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -64,20 +65,13 @@ public class BaseScheduleContext implements Serializable {
 		return parentRecord;
 	}
 	
-	public void saveRecords(List<ModuleBaseWithCustomFields> childRecords) throws Exception{
-		
+	public void saveRecords(List<? extends ModuleBaseWithCustomFields> childRecords) throws Exception{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(moduleId);
-
-		InsertRecordBuilder<ModuleBaseWithCustomFields> insertBuilder = new InsertRecordBuilder<ModuleBaseWithCustomFields>()
-				.moduleName(module.getName())
-				.fields(modBean.getAllFields(module.getName()));
-		
-		insertBuilder.addRecords(childRecords);
-		insertBuilder.save();
+		FacilioModule module = modBean.getModule(moduleId);	
+		RecordAPI.addRecord(true, childRecords, module.getExtendModule(), modBean.getAllFields(module.getExtendModule().getName()));
 	}
 	
-	public void saveAsV3Records(List<ModuleBaseWithCustomFields> childRecords) throws Exception{
+	public void saveAsV3Records(List<? extends ModuleBaseWithCustomFields> childRecords) throws Exception{
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleId);

@@ -99,25 +99,26 @@ public class InviteVisitorContextV3 extends BaseVisitContextV3 {
 		return false;
 	}
 	
-	public InviteVisitorContextV3 getChildLog(long expectedCheckInTime) throws Exception {
-		InviteVisitorContextV3 childLog = FieldUtil.cloneBean(this, InviteVisitorContextV3.class);
-		childLog.setExpectedCheckInTime(expectedCheckInTime * 1000);
-		childLog.setExpectedCheckOutTime((expectedCheckInTime * 1000)
+	public InviteVisitorContextV3 getChildInvite(long expectedCheckInTime) throws Exception {
+		InviteVisitorContextV3 childInvite = FieldUtil.cloneBean(this, InviteVisitorContextV3.class);
+		childInvite.setExpectedCheckInTime(expectedCheckInTime * 1000);
+		childInvite.setExpectedCheckOutTime((expectedCheckInTime * 1000)
 				+ (this.getExpectedVisitDuration() != null ? this.getExpectedVisitDuration() : 0));
-		childLog.setIsRecurring(false);
-		//childLog.setParentLogId(this.getId());
-		childLog.setIsInviteApprovalNeeded(false);
+		childInvite.setIsRecurring(false);
+		childInvite.setParentInviteId(this.getId());
+		childInvite.setIsInviteApprovalNeeded(false);
 		if (this.getVisitor() != null) {
-			childLog.setVisitorName(this.getVisitorName());
-			childLog.setVisitorEmail(this.getVisitorEmail());
-			childLog.setVisitorPhone(this.getVisitorPhone());
+			childInvite.setVisitorName(this.getVisitorName());
+			childInvite.setVisitorEmail(this.getVisitorEmail());
+			childInvite.setVisitorPhone(this.getVisitorPhone());
 		}
 		FacilioStatus status = VisitorManagementAPI.getLogStatus("Upcoming");
 		if (status != null) {
-			childLog.setModuleState(status);
+			childInvite.setModuleState(status);
 		}
-		childLog.setIsInvitationSent(true);
-		return childLog;
+		childInvite.setLogGeneratedUpto(null);
+		childInvite.setIsInvitationSent(true);
+		return childInvite;
 	}
 
 	public Long getGroupId() {

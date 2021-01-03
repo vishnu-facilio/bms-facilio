@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsoleV3.context.BaseVisitContextV3;
 import com.facilio.bmsconsoleV3.context.InviteVisitorContextV3;
+import com.facilio.bmsconsoleV3.context.RecurringInviteVisitorContextV3;
 import com.facilio.bmsconsoleV3.context.V3VisitorContext;
 import com.facilio.bmsconsoleV3.context.V3VisitorLoggingContext;
 import com.facilio.bmsconsoleV3.context.V3WatchListContext;
@@ -80,6 +81,7 @@ import com.facilio.modules.fields.LookupField;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.tasker.ScheduleInfo.FrequencyType;
 import com.facilio.time.DateTimeUtil;
+import com.facilio.trigger.util.TriggerUtil;
 import com.facilio.workflows.context.WorkflowContext;
 
 public class V3VisitorManagementAPI {
@@ -360,6 +362,67 @@ public class V3VisitorManagementAPI {
 //        }
         return records;
 
+    }
+    
+    public static InviteVisitorContextV3 getVisitorInviteTriggers(long inviteId, String passCode, boolean fetchTriggers) throws Exception {
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.INVITE_VISITOR);
+        List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.INVITE_VISITOR);
+        SelectRecordsBuilder<InviteVisitorContextV3> builder = new SelectRecordsBuilder<InviteVisitorContextV3>()
+                .module(module)
+                .beanClass(InviteVisitorContextV3.class)
+                .select(fields)
+
+                ;
+        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+        List<LookupField> additionaLookups = new ArrayList<LookupField>();
+
+        if(inviteId > 0) {
+            builder.andCondition(CriteriaAPI.getIdCondition(inviteId, module));
+        }
+
+        if(StringUtils.isNotEmpty(passCode)) {
+            builder.andCondition(CriteriaAPI.getCondition("PASSCODE", "passcode", passCode, StringOperators.IS));
+        }
+
+        LookupField contactField = (LookupField) fieldsAsMap.get("visitor");
+        LookupField hostField = (LookupField) fieldsAsMap.get("host");
+        LookupField moduleStateField = (LookupField)fieldsAsMap.get("moduleState");
+        LookupField visitorTypefield = (LookupField)fieldsAsMap.get("visitorType");
+        LookupField vendorfield = (LookupField)fieldsAsMap.get("vendor");
+        if(AccountUtil.isFeatureEnabled(FeatureLicense.TENANTS)) {
+            LookupField tenant = (LookupField)fieldsAsMap.get("tenant");
+            additionaLookups.add(tenant);
+        }
+        LookupField requestedBy = (LookupField)fieldsAsMap.get("requestedBy");
+
+        additionaLookups.add(contactField);
+        additionaLookups.add(hostField);
+        additionaLookups.add(moduleStateField);
+        additionaLookups.add(visitorTypefield);
+        additionaLookups.add(requestedBy);
+        additionaLookups.add(vendorfield);
+        builder.fetchSupplements(additionaLookups);
+
+        InviteVisitorContextV3 record = builder.fetchFirst();
+        if(record != null && fetchTriggers && record.isRecurring()) {
+        	RecurringInviteVisitorContextV3 recurringInvite = (RecurringInviteVisitorContextV3) record;
+        	if(recurringInvite != null && recurringInvite.getId() != -1) {
+        		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+        				.table(ModuleFactory.getBaseSchedulerModule().getTableName())
+                        .select(FieldFactory.getBaseSchedulerFields())
+                        .andCondition(CriteriaAPI.getCondition("RECORD_ID", "recordId", " "+recurringInvite.getId(), NumberOperators.EQUALS));
+        	
+        		List<Map<String, Object>> map = selectBuilder.get();
+                if(CollectionUtils.isNotEmpty(map)) {
+                	recurringInvite.setScheduleTrigger((FieldUtil.getAsBeanFromMap(map.get(0), BaseScheduleContext.class)));
+                	recurringInvite.setScheduleId(recurringInvite.getScheduleTrigger().getId());
+                }
+            	return recurringInvite;
+        	}
+        }
+        return record;
     }
     
     public static List<BaseVisitContextV3> getBaseVisit(long logId, String passCode, boolean fetchTriggers) throws Exception {
@@ -2356,6 +2419,23 @@ public class V3VisitorManagementAPI {
 
         return startTime + (maxSchedulingDays * 24 * 60 * 60);
     }
+    
+    public static long getScheduleEndTime(long startTime, BaseScheduleContext scheduleTrigger) {
+    	
+        long triggerEndTime = (scheduleTrigger.getEndTime() != null && scheduleTrigger.getEndTime() != -1l) ? scheduleTrigger.getEndTime()/1000 : 0l;
+        int maxSchedulingDays = TriggerUtil.getMaxSchedulingDaysForScheduleFrequency(scheduleTrigger.getScheduleInfo());
+        
+        long scheduledEndTime = -1l;
+        if (startTime == -1) {
+        	scheduledEndTime = DateTimeUtil.getDayStartTime(maxSchedulingDays, true) - 1;
+        }
+        else {
+            scheduledEndTime = startTime + (maxSchedulingDays * 24 * 60 * 60); //in seconds
+        }        
+        
+        long endTime = (triggerEndTime != 0l && triggerEndTime < scheduledEndTime) ? triggerEndTime : scheduledEndTime;     
+        return endTime;
+    }
 
     public static long getStartTime(int action, V3VisitorLoggingContext log, PMTriggerContext trigger) {
         long startTime = -1;
@@ -2374,6 +2454,24 @@ public class V3VisitorManagementAPI {
 
         return startTimeInSecond;
     }
+    
+    public static List<InviteVisitorContextV3> getChildInviteSchedules(Long startTime, long endTime, BaseScheduleContext scheduleTrigger, RecurringInviteVisitorContextV3 parentVisitorInvite) throws Exception {	
+    	List<InviteVisitorContextV3> childInvites = new ArrayList<>();
+    	long generatedUpto = 0;
+    	
+    	if(startTime != null) {
+    		while (startTime <= endTime) {
+    			generatedUpto = startTime;
+    			InviteVisitorContextV3 childInvite = parentVisitorInvite.getChildInvite(startTime);
+    			childInvites.add(childInvite);
+    			startTime = scheduleTrigger.getScheduleInfo().nextExecutionTime(startTime);
+    		}
+    	}
+		
+		parentVisitorInvite.setLogGeneratedUpto(generatedUpto * 1000);
+		scheduleTrigger.setGeneratedUptoTime(generatedUpto * 1000);
+		return childInvites;	
+    }
 
     public static void updateGeneratedUptoInLogAndAddChildren(PMTriggerContext trigger, V3VisitorLoggingContext parentLog, List<V3VisitorLoggingContext> children) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -2383,7 +2481,7 @@ public class V3VisitorManagementAPI {
         V3RecordAPI.updateRecord(parentLog, module, fields);
         updateTrigger(trigger);
     }
-
+    
     public static void updateTrigger(PMTriggerContext trigger) throws Exception {
         GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder()
                 .table(ModuleFactory.getVisitorLogTriggersModule().getTableName())
@@ -2391,7 +2489,22 @@ public class V3VisitorManagementAPI {
                 .andCondition(CriteriaAPI.getIdCondition(trigger.getId(), ModuleFactory.getVisitorLogTriggersModule()));
         update.update(FieldUtil.getAsProperties(trigger));
     }
+    
+    public static void updateGeneratedUptoInParentInviteAndTrigger(BaseScheduleContext scheduleTrigger, RecurringInviteVisitorContextV3 parentVisitorInvite) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+//      V3RecordAPI.addRecord(true, childInvites, modBean.getModule(FacilioConstants.ContextNames.INVITE_VISITOR), modBean.getAllFields(FacilioConstants.ContextNames.INVITE_VISITOR));
+        V3RecordAPI.updateRecord(parentVisitorInvite, modBean.getModule(FacilioConstants.ContextNames.RECURRING_INVITE_VISITOR), modBean.getAllFields(FacilioConstants.ContextNames.RECURRING_INVITE_VISITOR));
+        updateRecurringInviteScheduler(scheduleTrigger);
+    }
 
+    public static void updateRecurringInviteScheduler(BaseScheduleContext baseScheduleContext) throws Exception {
+  	   GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder()
+  	            .table(ModuleFactory.getBaseSchedulerModule().getTableName())
+  	            .fields(FieldFactory.getBaseSchedulerFields())
+  	            .andCondition(CriteriaAPI.getIdCondition(baseScheduleContext.getId(), ModuleFactory.getBaseSchedulerModule()));
+  	   update.update(FieldUtil.getAsProperties(baseScheduleContext));
+  	}
+    
     public enum ScheduleActions {
         GENERATION,
         NIGHTLY;

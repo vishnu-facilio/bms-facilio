@@ -21,6 +21,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.tasker.ScheduleInfo;
 import com.facilio.time.DateTimeUtil;
 
 public class TriggerUtil {
@@ -194,5 +195,29 @@ public class TriggerUtil {
 				.addRecords(FieldUtil.getAsMapList(rels, TriggerActionRel.class));
 
 		insert.save();
+	}
+	
+	public static int getMaxSchedulingDaysForScheduleFrequency(ScheduleInfo scheduleInfo){
+		
+		switch(scheduleInfo.getFrequencyTypeEnum()) 
+		{
+			case DO_NOT_REPEAT:
+				return -1;
+			case DAILY:
+				return 21;
+			case WEEKLY:
+				return 8*2;
+			case MONTHLY_DAY:
+			case MONTHLY_WEEK:
+			case YEARLY:
+			case YEARLY_WEEK:
+			case QUARTERLY_DAY:
+			case QUARTERLY_WEEK:
+			case HALF_YEARLY_DAY:
+			case HALF_YEARLY_WEEK:
+				return 366;
+			default:
+				return -1;	
+		}
 	}
 }

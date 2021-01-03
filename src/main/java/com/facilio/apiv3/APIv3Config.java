@@ -385,7 +385,7 @@ public class APIv3Config {
     
     @Module("visitorlog")
     public static Supplier<V3Config> getVisitorLog() {
-        return () -> new V3Config(VisitorLogContextV3.class)
+        return () -> new V3Config(VisitorLogContextV3.class, null)
                 .create()
                 	.beforeSave(TransactionChainFactoryV3.getVisitorLogBeforeSaveOnCreateChain())
                 	.afterTransaction(TransactionChainFactoryV3.getVisitorLogAfterSaveOnCreateChain())
@@ -402,7 +402,7 @@ public class APIv3Config {
     
     @Module("invitevisitor")
     public static Supplier<V3Config> getInviteVisitor() {
-        return () -> new V3Config(InviteVisitorContextV3.class)
+        return () -> new V3Config(InviteVisitorContextV3.class, null)
                 .create()
                     .beforeSave(TransactionChainFactoryV3.getInviteVisitorBeforeSaveOnCreateChain())
                     .afterTransaction(TransactionChainFactoryV3.getInviteVisitorAfterSaveOnCreateChain())
@@ -419,7 +419,7 @@ public class APIv3Config {
     
     @Module("recurringinvitevisitor")
     public static Supplier<V3Config> getRecurringInviteVisitor() {
-        return () -> new V3Config(RecurringInviteVisitorContextV3.class)
+        return () -> new V3Config(RecurringInviteVisitorContextV3.class, null)
                 .create()
                     .beforeSave(TransactionChainFactoryV3.getRecurringInviteVisitorBeforeSaveOnCreateChain())
                     .afterTransaction(TransactionChainFactoryV3.getRecurringInviteVisitorAfterSaveOnCreateChain())
@@ -437,7 +437,7 @@ public class APIv3Config {
     
     @Module("basevisit")
     public static Supplier<V3Config> getBaseVisit() {
-        return () -> new V3Config(BaseVisitContextV3.class)
+        return () -> new V3Config(BaseVisitContextV3.class, new ModuleCustomFieldCount30())
                 .summary()
                     .beforeFetch(ReadOnlyChainFactoryV3.getBaseVisitBeforeFetchOnListChain())
                     .afterFetch(new ValidateBaseVisitDetailAndLogCommand())

@@ -1631,7 +1631,7 @@ public class FacilioConstants {
 		public static final String VISITOR_LOG = "visitorlog";
 		public static final String INVITE_VISITOR = "invitevisitor";
 		public static final String RECURRING_INVITE_VISITOR = "recurringinvitevisitor";
-
+		public static final String BASE_SCHEDULE_ID = "baseScheduleId";
 		
 		public static final int SITE_BOUNDARY_RADIUS = 1000; //meter 
 		public static final int ASSET_BOUNDARY_RADIUS = 10; //meter 
