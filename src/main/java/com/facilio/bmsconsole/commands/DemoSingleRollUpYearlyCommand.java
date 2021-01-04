@@ -107,7 +107,7 @@ public class DemoSingleRollUpYearlyCommand extends FacilioCommand{
 			for(int currentWeek = startWeek; currentWeek <= endWeek; currentWeek++) 
 			{	
 				ZonedDateTime thisYearWeekStartZdt = DateTimeUtil.getWeekStartTimeOf(thisYearStartZdt.with(DateTimeUtil.getWeekFields().weekOfWeekBasedYear(), currentWeek));
-				ZonedDateTime lastYearWeekStartZdt = DateTimeUtil.getWeekStartTimeOf(thisYearStartZdt.minusYears(1).with(DateTimeUtil.getWeekFields().weekOfWeekBasedYear(), currentWeek));
+				ZonedDateTime lastYearWeekStartZdt = DateTimeUtil.getWeekStartTimeOf(thisYearStartZdt.minusYears(2).with(DateTimeUtil.getWeekFields().weekOfWeekBasedYear(), currentWeek));
 				ZonedDateTime lastYearWeekEndZdt = DateTimeUtil.getWeekEndTimeOf(lastYearWeekStartZdt);
 				
 				long lastYearWeekStart = lastYearWeekStartZdt.toInstant().toEpochMilli();
