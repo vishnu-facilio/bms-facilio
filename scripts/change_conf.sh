@@ -29,7 +29,7 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "production_deployment" ]; then
     echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
 fi
 
-if [ "$DEPLOYMENT_GROUP_NAME" = "production-scheduler" ]; then
+if [ "$DEPLOYMENT_GROUP_NAME" = "production-scheduler" ] || [ "$DEPLOYMENT_GROUP_NAME" = "production-scheduler-app" ]; then
     echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
     cp $FACILIO_HOME/deployment-files/log4j-scheduler.properties $CLASSES_DIR/log4j.properties
     cp $FACILIO_HOME/deployment-files/awsprops-scheduler.properties $CONF_DIR/awsprops.properties
