@@ -273,8 +273,8 @@ public class EnergyDataDeltaCalculationCommand extends FacilioCommand {
 				//need to mark as hourly violation..
 				type=MarkType.HIGH_VALUE_HOURLY_VIOLATION;
 				
-				markedList.add(MarkingUtil.getMarkedReading(reading,deltaFieldId,moduleId,type,currentReading,lastReading));
-				reading.setMarked(true);
+//				markedList.add(MarkingUtil.getMarkedReading(reading,deltaFieldId,moduleId,type,currentReading,lastReading));
+//				reading.setMarked(true);
 
 			}
 			
