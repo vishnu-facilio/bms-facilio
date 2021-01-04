@@ -33,47 +33,21 @@ public class PdfUtil {
 		if (formats != null && formats.length > 0) {
 			format = formats[0];
 		}
-		File pdfDirectory = new File(System.getProperty("java.io.tmpdir")+"/"+AccountUtil.getCurrentOrg().getOrgId()+"/");
-		String pdfFileLocation = null;
-		boolean directoryExits = (pdfDirectory.exists() && pdfDirectory.isDirectory());
-		if( ! directoryExits) {
-			directoryExits = pdfDirectory.mkdirs();
+		String pdfFileLocation = getFileLocation(format);
+		String serverName = getServerName();
+		if (StringUtils.isEmpty(htmlContent)) {
+			htmlContent = "false";
 		}
-
-		if(directoryExits) {
-			try {
-				String token = IAMUserUtil.createJWT("id", "auth0", String.valueOf(AccountUtil.getCurrentUser().getUid()), System.currentTimeMillis()+60*60000);
-				File pdfFile = File.createTempFile("report-", format.getExtention(), pdfDirectory);
-				pdfFileLocation = pdfFile.getAbsolutePath();
-				String serverName = FacilioProperties.getAppDomain();
-				if(serverName != null) {
-					String[] server = serverName.split(":");
-					serverName = server[0];
-					if (FacilioProperties.getEnvironment().equals("stage")) {
-						HttpServletRequest request = ServletActionContext.getRequest();
-						serverName = request.getServerName().replace(RequestUtil.getProtocol(request)+"://", StringUtils.EMPTY);
-					}
-				}
-				if (StringUtils.isEmpty(htmlContent)) {
-					htmlContent = "false";
-				}
-				if (additionalInfo == null) {
-					additionalInfo = new JSONObject();
-				}
-				additionalInfo.put("orgId", String.valueOf(AccountUtil.getCurrentOrg().getOrgId()));
-				additionalInfo.put("orgDomain", AccountUtil.getCurrentOrg().getDomain());
-				if (AccountUtil.getCurrentSiteId() != -1) {
-					additionalInfo.put("currentSite", AccountUtil.getCurrentSiteId());
-				}
-				
-
-				String[] command = new String[] {NODE, RENDER_PUPETTEER_JS, url, pdfFileLocation, token, serverName, htmlContent, additionalInfo.toString()};
-				int exitStatus = CommandExecutor.execute(command);
-				LOGGER.debug("Converted to pdf with exit status : " + exitStatus + " and file " + pdfFile.getAbsolutePath());
-			}catch(IOException e) {
-				LOGGER.info("Exception occurred", e);
-			}
+		if (additionalInfo == null) {
+			additionalInfo = new JSONObject();
 		}
+		setAdditionalInfo(additionalInfo);
+		
+
+		String[] command = new String[] {NODE, RENDER_PUPETTEER_JS, url, pdfFileLocation, getToken(), serverName, htmlContent, additionalInfo.toString()};
+		int exitStatus = CommandExecutor.execute(command);
+		LOGGER.debug("Converted to pdf with exit status : " + exitStatus + " and file " + pdfFileLocation);
+		
 		return pdfFileLocation;
 	}
 	
@@ -82,51 +56,59 @@ public class PdfUtil {
 		if (formats != null && formats.length > 0) {
 			format = formats[0];
 		}
+		String pdfFileLocation = getFileLocation(format);
+		String serverName = getServerName();
+		JSONObject additionalInfo = new JSONObject();
+		setAdditionalInfo(additionalInfo);
+		
+		if (exportOptions == null) {
+			exportOptions = new JSONObject();
+		}
+		
+		if (widgetContext == null) {
+			widgetContext = new JSONObject();
+		}
+
+		String[] command = new String[] {NODE, RENDER_PUPETTEER_JS_WIDGET, url, pdfFileLocation, getToken(), serverName, format.toString(), additionalInfo.toString(), exportOptions.toString(), widgetContext.toString()};
+		int exitStatus = CommandExecutor.execute(command);
+		LOGGER.debug("Converted to pdf with exit status : " + exitStatus + " and file " + pdfFileLocation);
+		
+		return pdfFileLocation;
+	}
+	
+	private static String getServerName() {
+		HttpServletRequest request = ServletActionContext.getRequest();
+		return request.getServerName().replace(RequestUtil.getProtocol(request)+"://", StringUtils.EMPTY);
+	}
+	
+	private static String getToken() {
+		return IAMUserUtil.createJWT("id", "auth0", String.valueOf(AccountUtil.getCurrentUser().getUid()), System.currentTimeMillis()+60*60000);
+	}
+	
+	private static String getFileLocation(FileFormat format) {
 		File pdfDirectory = new File(System.getProperty("java.io.tmpdir")+"/"+AccountUtil.getCurrentOrg().getOrgId()+"/");
 		String pdfFileLocation = null;
 		boolean directoryExits = (pdfDirectory.exists() && pdfDirectory.isDirectory());
 		if( ! directoryExits) {
 			directoryExits = pdfDirectory.mkdirs();
 		}
-
 		if(directoryExits) {
 			try {
-				String token = IAMUserUtil.createJWT("id", "auth0", String.valueOf(AccountUtil.getCurrentUser().getUid()), System.currentTimeMillis()+60*60000);
 				File pdfFile = File.createTempFile("report-", format.getExtention(), pdfDirectory);
 				pdfFileLocation = pdfFile.getAbsolutePath();
-				String serverName = FacilioProperties.getAppDomain();
-				if(serverName != null) {
-					String[] server = serverName.split(":");
-					serverName = server[0];
-					if (FacilioProperties.getEnvironment().equals("stage")) {
-						HttpServletRequest request = ServletActionContext.getRequest();
-						serverName = request.getServerName().replace(RequestUtil.getProtocol(request)+"://", StringUtils.EMPTY);
-					}
-				}
-				
-				JSONObject additionalInfo = new JSONObject();
-				additionalInfo.put("orgId", String.valueOf(AccountUtil.getCurrentOrg().getOrgId()));
-				additionalInfo.put("orgDomain", AccountUtil.getCurrentOrg().getDomain());
-				if (AccountUtil.getCurrentSiteId() != -1) {
-					additionalInfo.put("currentSite", AccountUtil.getCurrentSiteId());
-				}
-				
-				if (exportOptions == null) {
-					exportOptions = new JSONObject();
-				}
-				
-				if (widgetContext == null) {
-					widgetContext = new JSONObject();
-				}
-
-				String[] command = new String[] {NODE, RENDER_PUPETTEER_JS_WIDGET, url, pdfFileLocation, token, serverName, format.toString(), additionalInfo.toString(), exportOptions.toString(), widgetContext.toString()};
-				int exitStatus = CommandExecutor.execute(command);
-				LOGGER.debug("Converted to pdf with exit status : " + exitStatus + " and file " + pdfFile.getAbsolutePath());
-			}catch(IOException e) {
+			} catch (IOException e) {
 				LOGGER.info("Exception occurred", e);
 			}
 		}
 		return pdfFileLocation;
+	}
+	
+	private static void setAdditionalInfo(JSONObject additionalInfo) {
+		additionalInfo.put("orgId", String.valueOf(AccountUtil.getCurrentOrg().getOrgId()));
+		additionalInfo.put("orgDomain", AccountUtil.getCurrentOrg().getDomain());
+		if (AccountUtil.getCurrentSiteId() != -1) {
+			additionalInfo.put("currentSite", AccountUtil.getCurrentSiteId());
+		}
 	}
 
 	public static String exportUrlAsPdf(String url, FileFormat... formats){
