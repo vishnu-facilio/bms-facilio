@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +38,8 @@ public class WorkflowContext implements Serializable {
 	 */
 	
 	private static final long serialVersionUID = 1L;
+	
+	private static org.apache.log4j.Logger log = org.apache.log4j.LogManager.getLogger(WorkflowUtil.class.getName());
 
 	private static final Logger LOGGER = Logger.getLogger(WorkflowContext.class.getName());
 	
@@ -442,67 +445,80 @@ public class WorkflowContext implements Serializable {
 	
 	public Object executeWorkflow() throws Exception {
 		
+		long currentMillis = System.currentTimeMillis();
+		int selectCount = AccountUtil.getCurrentSelectQuery(), pSelectCount = AccountUtil.getCurrentPublicSelectQuery();
+		
 		Object result = null;
 		
-		if(isV2Script()) {
-			
-			try {
-				WorkflowV2Parser parser = getParser(this.getWorkflowV2String());
-		        ParseTree tree = parser.parse();
-		        
-		        if(!getErrorListener().hasErrors()) {
-		        	WorkflowFunctionVisitor visitor = new WorkflowFunctionVisitor();
-			        visitor.setWorkflowContext(this);
-			        visitor.visitFunctionHeader(tree);
-			        visitor.setParams(params);
-			        fillDefaultGlobalVariables(globalParameters);
-			        visitor.setGlobalParams(globalParameters);
-			        visitor.visit(tree);
-		        }
-		        else {
-		        	if(isThrowExceptionForSyntaxError()) {
-		        		throw new Exception(getErrorListener().getErrorsAsString());
-		        	}
-		        	else {
-		        		LOGGER.log(Level.SEVERE, "Workflow - "+id+" has syntax errors - "+getErrorListener().getErrorsAsString());
-		        	}
-		        }
-		        
-		        return this.getReturnValue();
+		try {
+			if(isV2Script()) {
+				
+				try {
+					WorkflowV2Parser parser = getParser(this.getWorkflowV2String());
+			        ParseTree tree = parser.parse();
+			        
+			        if(!getErrorListener().hasErrors()) {
+			        	WorkflowFunctionVisitor visitor = new WorkflowFunctionVisitor();
+				        visitor.setWorkflowContext(this);
+				        visitor.visitFunctionHeader(tree);
+				        visitor.setParams(params);
+				        fillDefaultGlobalVariables(globalParameters);
+				        visitor.setGlobalParams(globalParameters);
+				        visitor.visit(tree);
+			        }
+			        else {
+			        	if(isThrowExceptionForSyntaxError()) {
+			        		throw new Exception(getErrorListener().getErrorsAsString());
+			        	}
+			        	else {
+			        		LOGGER.log(Level.SEVERE, "Workflow - "+id+" has syntax errors - "+getErrorListener().getErrorsAsString());
+			        	}
+			        }
+			        
+			        return this.getReturnValue();
+				}
+				catch(Exception e) {
+					this.getLogStringBuilder().append("ERROR ::: "+e.getMessage()+"\n");
+					LOGGER.log(Level.SEVERE, e.getMessage(), e);
+					throw e;
+				}
 			}
-			catch(Exception e) {
-				this.getLogStringBuilder().append("ERROR ::: "+e.getMessage()+"\n");
-				LOGGER.log(Level.SEVERE, e.getMessage(), e);
-				throw e;
+			
+			variableResultMap = new HashMap<String,Object>();
+			for(ParameterContext parameter:parameters) {
+				variableResultMap.put(parameter.getName(), parameter.getValue());
+			}
+			
+			if(globalParameters != null && !globalParameters.isEmpty()) {
+				
+				variableResultMap.putAll(globalParameters);
+			}
+			
+			if (expressions != null) {
+				
+				WorkflowUtil.executeExpression(expressions,this);
+				
+				if(getResultEvaluator() == null && isSingleExpression() && expressions.get(0) instanceof ExpressionContext) {
+					ExpressionContext exp = (ExpressionContext) expressions.get(0);
+					return variableResultMap.get(exp.getName());
+				}
+			}
+			if(isTerminateExecution()) {
+				LOGGER.info("workflow --- "+this.getId()+" has been terminated");
+				result = 0;
+			}
+			else {
+				result =  WorkflowUtil.evaluateExpression(getResultEvaluator(),variableResultMap, isIgnoreNullParams);
 			}
 		}
-		
-		variableResultMap = new HashMap<String,Object>();
-		for(ParameterContext parameter:parameters) {
-			variableResultMap.put(parameter.getName(), parameter.getValue());
+		finally {
+			long executionTime = System.currentTimeMillis() - currentMillis;
+			int totalSelect = AccountUtil.getCurrentSelectQuery() - selectCount;
+			int totalPublicSelect = AccountUtil.getCurrentPublicSelectQuery() - pSelectCount;
+			String msg = MessageFormat.format("### time taken for workflow ({0}) is {1}, select : {2}, pSelect : {3}", this.getId(), executionTime, totalSelect, totalPublicSelect);
+			log.debug(msg);
 		}
 		
-		if(globalParameters != null && !globalParameters.isEmpty()) {
-			
-			variableResultMap.putAll(globalParameters);
-		}
-		
-		if (expressions != null) {
-			
-			WorkflowUtil.executeExpression(expressions,this);
-			
-			if(getResultEvaluator() == null && isSingleExpression() && expressions.get(0) instanceof ExpressionContext) {
-				ExpressionContext exp = (ExpressionContext) expressions.get(0);
-				return variableResultMap.get(exp.getName());
-			}
-		}
-		if(isTerminateExecution()) {
-			LOGGER.info("workflow --- "+this.getId()+" has been terminated");
-			return 0;
-		}
-		
-		
-		result =  WorkflowUtil.evaluateExpression(getResultEvaluator(),variableResultMap, isIgnoreNullParams);
 		return result;
 	}
 	
