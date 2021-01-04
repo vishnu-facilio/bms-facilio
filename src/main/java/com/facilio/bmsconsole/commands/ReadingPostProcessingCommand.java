@@ -8,6 +8,8 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -43,9 +45,25 @@ public class ReadingPostProcessingCommand extends FacilioCommand {
 
     private void executeWorkflowsRules (Context context) {
         try {
-            FacilioChain executeWorkflowChain = ReadOnlyChainFactory.executeWorkflowsForReadingChain();
-            executeWorkflowChain.setContext((FacilioContext) context);
-            executeWorkflowChain.execute();
+        	boolean isReadingRuleWorkflowExecution = false;
+        	Map<String, String> orgInfoMap = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.IS_READING_RULE_WORKFLOW_EXECUTION);
+			if(orgInfoMap != null && MapUtils.isNotEmpty(orgInfoMap)) {
+				String isReadingRuleWorkflowExecutionProp = orgInfoMap.get(FacilioConstants.OrgInfoKeys.IS_READING_RULE_WORKFLOW_EXECUTION);
+				if (isReadingRuleWorkflowExecutionProp != null && !isReadingRuleWorkflowExecutionProp.isEmpty() && StringUtils.isNotEmpty(isReadingRuleWorkflowExecutionProp) && Boolean.valueOf(isReadingRuleWorkflowExecutionProp) != null && Boolean.parseBoolean(isReadingRuleWorkflowExecutionProp)){
+					isReadingRuleWorkflowExecution = true;
+				}	
+        	}
+			
+			if(isReadingRuleWorkflowExecution) {
+				FacilioChain executeReadingRuleChain = ReadOnlyChainFactory.executeReadingRuleChain();
+        		executeReadingRuleChain.setContext((FacilioContext) context);
+        		executeReadingRuleChain.execute();
+			}
+        	else {
+        		FacilioChain executeWorkflowChain = ReadOnlyChainFactory.executeWorkflowsForReadingChain();
+                executeWorkflowChain.setContext((FacilioContext) context);
+                executeWorkflowChain.execute();
+        	}    
         }
         catch (Exception e) {
             Map<String, List<ReadingContext>> readingMap = (Map<String, List<ReadingContext>>) context.get(FacilioConstants.ContextNames.RECORD_MAP);

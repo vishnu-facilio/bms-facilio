@@ -614,7 +614,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		if (workflowFlag) {
 			context.put(FacilioConstants.ContextNames.IS_PRE_EVENT, true);
 			BaseEventContext event = constructPreEvent(new JSONObject(), (ReadingContext) reading, context);
-			ActionType.addAlarm(event, new JSONObject(), context, this, reading);
+			ActionType.addAlarm(event, new JSONObject(), context, this, reading, null);
 			return true;
 		}
 		else {
@@ -1069,6 +1069,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 
 		preEvent.setPreviousValue((Map<String, ReadingDataMeta>) context.getOrDefault(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META, null));
 		addDefaultEventProps(event, eventObj, reading);
+		ReadingRuleAPI.checkIfHistoricalOrLiveEvent(context, event);
 
 		return event;
 	}
@@ -1129,6 +1130,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		}
 		
 		addDefaultEventProps(event, obj, reading);
+		ReadingRuleAPI.checkIfHistoricalOrLiveEvent(context, event);
 
 		return event;
 	}
@@ -1155,6 +1157,10 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		if (isHistorical == null) {
 			isHistorical = false;
 		}
+		
+		Boolean isReadingRuleWorkflowExecution = (Boolean) context.get(FacilioConstants.ContextNames.IS_READING_RULE_WORKFLOW_EXECUTION);
+		isReadingRuleWorkflowExecution = isReadingRuleWorkflowExecution != null ? isReadingRuleWorkflowExecution : false;
+		
 		Map<Long, ReadingRuleAlarmMeta> metaMap = null;
 		if (isHistorical) {
 			//metaMap = (Map<Long, ReadingRuleAlarmMeta>) context.get(FacilioConstants.ContextNames.READING_RULE_ALARM_META);
@@ -1164,6 +1170,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 				ReadingEventContext previousEventMeta = (ReadingEventContext)previousBaseEventMeta;
 				if (previousEventMeta != null && previousEventMeta.getSeverityString() != null && !previousEventMeta.getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) {
 					ReadingEventContext clearEvent = constructClearEvent(resource, ttime, previousEventMeta.getEventMessage());
+					ReadingRuleAPI.checkIfHistoricalOrLiveEvent(context, clearEvent);
 					context.put(EventConstants.EventContextNames.EVENT_LIST, Collections.singletonList(clearEvent));
 				}				
 			}
@@ -1180,6 +1187,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 //			LOGGER.info("Alarm meta before clearing : "+alarmMeta);
 			alarmMeta.setClear(true);
 			ReadingEventContext event = constructClearEvent(resource, ttime, alarmMeta.getSubject());
+			ReadingRuleAPI.checkIfHistoricalOrLiveEvent(context, event);
 //			JSONObject json = AlarmAPI.constructClearEvent(alarm, "System auto cleared Alarm because associated rule executed clear condition for the associated resource", ttime);
 //			if (alarm.getSourceTypeEnum() == SourceType.THRESHOLD_ALARM) {
 //				json.put("readingDataId", readingDataId);
@@ -1192,11 +1200,16 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 //			LOGGER.info("Clear event : "+FieldUtil.getAsJSON(event).toJSONString()+"\n Alarm Meta : "+alarmMeta);
 			context.put(EventConstants.EventContextNames.EVENT_LIST, Collections.singletonList(event));
 			if (!isHistorical) {
-				FacilioChain addEvent = TransactionChainFactory.getV2AddEventChain(false);
-				FacilioContext addEventContext = addEvent.getContext();
-				addEventContext.put(EventConstants.EventContextNames.EVENT_LIST, context.get(EventConstants.EventContextNames.EVENT_LIST));
-				addEventContext.put(EventConstants.EventContextNames.EVENT_RULE_LIST, context.get(EventConstants.EventContextNames.EVENT_RULE_LIST));
-				addEvent.execute();
+				if(isReadingRuleWorkflowExecution)  { //For live reading rule event insertion
+					ReadingRuleAPI.insertEventsWithoutAlarmOccurrenceProcessed(Collections.singletonList(event), BaseAlarmContext.Type.READING_ALARM);
+				}
+				else {
+					FacilioChain addEvent = TransactionChainFactory.getV2AddEventChain(false);
+					FacilioContext addEventContext = addEvent.getContext();
+					addEventContext.put(EventConstants.EventContextNames.EVENT_LIST, context.get(EventConstants.EventContextNames.EVENT_LIST));
+					addEventContext.put(EventConstants.EventContextNames.EVENT_RULE_LIST, context.get(EventConstants.EventContextNames.EVENT_RULE_LIST));
+					addEvent.execute();
+				}
 			}
 			return event;
 		}
@@ -1219,7 +1232,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		}
 		return event;
 	}
-
+	
 	private DateRange getRange(ReadingContext reading) {
 		DateRange range = null;
 		switch (this.getThresholdTypeEnum()) {

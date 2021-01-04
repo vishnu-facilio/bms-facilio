@@ -4,17 +4,25 @@ import com.facilio.activity.AlarmActivityType;
 import com.facilio.agent.alarms.AgentEventContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
+import com.facilio.bmsconsole.context.WorkflowRuleResourceLoggerContext.Status;
 import com.facilio.bmsconsole.context.sensor.SensorEventContext;
 import com.facilio.bmsconsole.context.sensor.SensorRollUpEventContext;
+import com.facilio.bmsconsole.context.sensor.SensorRuleType;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.events.context.EventContext;
 import com.facilio.events.context.EventContext.EventInternalState;
 import com.facilio.events.context.EventContext.EventState;
+import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.time.DateTimeUtil;
 import com.fasterxml.jackson.annotation.JsonInclude;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -422,4 +430,76 @@ public class BaseEventContext extends ModuleBaseWithCustomFields {
     public BaseEventContext createAdditionClearEvent(AlarmOccurrenceContext alarmOccurrence) {
         return null;
     }
+    
+    private Boolean isLiveEvent;  
+    
+    public boolean isLiveEvent() {
+    	if (isLiveEvent != null) {
+			return isLiveEvent.booleanValue();
+		}
+		return false;	
+	}
+    
+    public Boolean getIsLiveEvent() {
+        return isLiveEvent;
+    }
+ 
+	public void setIsLiveEvent(Boolean isLiveEvent) {
+		this.isLiveEvent = isLiveEvent;
+	}
+
+	private EventProcessingStatus eventProcessingStatus;
+    
+    public int getEventProcessingStatus() {
+		if (eventProcessingStatus != null) {
+			return eventProcessingStatus.getIndex();
+		}
+		return -1;
+	}
+	public EventProcessingStatus getEventProcessingStatusAsEnum() {
+		return eventProcessingStatus;
+	}
+	public void setEventProcessingStatus(int statusint) {
+		this.eventProcessingStatus = EventProcessingStatus.getAllOptions().get(statusint);
+	}
+	public void setEventProcessingStatusAsEnum(EventProcessingStatus status) {
+		this.eventProcessingStatus = eventProcessingStatus;
+	}
+	
+    public enum EventProcessingStatus implements FacilioEnum{
+		
+		UNPROCESSED(1),
+		ALARM_GENERATED(2),
+		;
+
+		int intVal;
+		private EventProcessingStatus(int intVal) {
+			this.intVal = intVal;
+		}
+		
+		@Override
+		public int getIndex() {
+			return intVal;
+		}
+		
+		@Override
+		public String getValue() {
+	        return name();
+		}
+
+		private static final Map<Integer, EventProcessingStatus> optionMap = Collections.unmodifiableMap(initTypeMap());
+		private static Map<Integer, EventProcessingStatus> initTypeMap() {
+			Map<Integer, EventProcessingStatus> typeMap = new HashMap<>();
+
+			for (EventProcessingStatus status : values()) {
+				typeMap.put(status.getIndex(), status);
+			}
+			return typeMap;
+		}
+
+
+		public static Map<Integer, EventProcessingStatus> getAllOptions() {
+			return optionMap;
+		}	
+	}
 }

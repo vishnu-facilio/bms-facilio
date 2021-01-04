@@ -19,6 +19,7 @@
 	 <job name='FormulaLeafTriggerer' classname = 'com.facilio.bmsconsole.jobs.FormulaLeafTriggerJob' transactionTimeout='300000'/>
 	 <job name='ScheduledFormulaCalculator' classname = 'com.facilio.bmsconsole.jobs.ScheduledFormulaCalculatorJob' transactionTimeout='300000'/>
 	 <job name='SingleResourceHistoricalFormulaFieldCalculator' classname = 'com.facilio.bmsconsole.jobs.SingleResourceHistoricalFormulaCalculatorJob' transactionTimeout='900000'/>
+	 <job name='LiveEventsToAlarmProcessingJob' classname = 'com.facilio.bmsconsole.jobs.LiveEventsToAlarmProcessingJob' transactionTimeout='300000'/>
 
 	<!-- Weather Data Job -->
 	 <job name='WeatherData' classname = 'com.facilio.bmsconsole.jobs.WeatherDataJob' transactionTimeout='300000'/>

@@ -173,9 +173,9 @@ public class NewEventAPI {
 
 		List<BaseEventContext> newList = new ArrayList<>();
 		for (Type type : map.keySet()) {
-			if (CollectionUtils.isNotEmpty(map.get(type))) {
-				continue;
-			}
+//			if (CollectionUtils.isNotEmpty(map.get(type))) {
+//				continue;
+//			}
 			String moduleName = NewEventAPI.getEventModuleName(type);
 			FacilioModule module = modBean.getModule(moduleName);
 

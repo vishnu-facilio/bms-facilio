@@ -1209,7 +1209,6 @@ public class TransactionChainFactory {
 			c.addCommand(new AddMarkedReadingValuesCommand());
 //			c.addCommand(new SpaceBudIntegrationCommand());	//For RMZ-SpaceBud com.facilio.agentIntegration
 			c.addCommand(new ReadingUnitConversionToDisplayUnit());
-			c.addCommand(new EnableParallelWorkflowRuleJobsExecution());
 			return c;
 		}
 
@@ -4049,7 +4048,13 @@ public class TransactionChainFactory {
 			c.addCommand(new HistoricalAlarmProcessingCommand());
 			return c;
 		}
-
+		
+		public static FacilioChain getExecuteLiveEventsToAlarmProcessingJob() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new ExecuteLiveEventsToAlarmProcessingCommand());
+			return c;
+		}
+		
 		public static FacilioChain getExecuteFormulaFieldJobCalculationCommand() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new FormulaFieldJobCalculationCommand());
