@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -24,7 +27,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-
+@Getter @Setter
 public class GetPointsAction extends AgentActionV2 {
 
 	private static final long serialVersionUID = 1L;
@@ -50,63 +53,11 @@ public class GetPointsAction extends AgentActionV2 {
 	private static final String FILETR_JOIN = StringUtils.join(FILTER_INSTANCES, ",");
 
 	private String querySearch;
-
-	public String getQuerySearch() {
-		return querySearch;
-	}
-
-	public void setQuerySearch(String querySearch) {
-		this.querySearch = querySearch;
-	}
-
 	private String status;
-
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
 	private Long deviceId;
-
-	public Long getDeviceId() {
-		return deviceId;
-	}
-
-	public void setDeviceId(Long deviceId) {
-		this.deviceId = deviceId;
-	}
-
 	private Integer controllerType;
-	public Integer getControllerType() {
-		return controllerType;
-	}
-
-	public void setControllerType(Integer controllerType) {
-		this.controllerType = controllerType;
-	}
-
 	private Long controllerId;
-
-	public Long getControllerId() {
-		return controllerId;
-	}
-
-	public void setControllerId(Long controllerId) {
-		this.controllerId = controllerId;
-	}
-	
 	private Long agentId;
-	public Long getAgentId() {
-		return agentId;
-	}
-
-	public void setAgentId(Long agentId) {
-		this.agentId = agentId;
-	}
-
 	/**
 	 * Get the Point count.Based on the Point filter. e.g.UNCONFIGURED..etc.
 	 *
