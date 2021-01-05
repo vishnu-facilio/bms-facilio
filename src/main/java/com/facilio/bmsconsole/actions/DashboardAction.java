@@ -6517,6 +6517,9 @@ public class DashboardAction extends FacilioAction {
 		if(dashboardMeta.get("mobileEnabled") != null) {
 			this.dashboard.setMobileEnabled((boolean)dashboardMeta.get("mobileEnabled"));
 		}
+		if (dashboardMeta.get("tabEnabled") != null) {
+			this.dashboard.setTabEnabled((boolean) dashboardMeta.get("tabEnabled"));
+		}
 		this.dashboard.setDashboardName((String) dashboardMeta.get("dashboardName"));
 		
 		if(dashboardMeta.get("clientMetaJsonString") != null) {
