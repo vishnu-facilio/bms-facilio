@@ -1,0 +1,37 @@
+global :
+  include :
+    - 339
+#  exclude :
+#    - 1
+executors :
+  - name : default
+    tableName : InstantJobQueue
+    maxThreads : 10 #optional default 10
+    queueSize : 100 #optional default 100
+    dataRetention : 3 #in days
+    pollingFrequency : 5000 #in milliseconds
+
+  - name : rule
+    tableName : RuleInstantJobQueue
+    maxThreads : 20
+    queueSize : 100
+    dataRetention : 1 #in days
+    pollingFrequency : 5000 #in milliseconds
+#    include :
+#      - 350
+#      - 214
+#    exclude :
+#      - 3
+#      - 4
+
+  - name : datamigration
+    tableName : ReadingDataMigrationInstantJobQueue
+    dataRetention : 1 #in days
+    pollingFrequency : 5000 #in milliseconds
+
+  - name : formula
+    tableName : FormulaInstantJobQueue
+    maxThreads : 20
+    queueSize : 100
+    dataRetention : 1 #in days
+    pollingFrequency : 5000 #in milliseconds
