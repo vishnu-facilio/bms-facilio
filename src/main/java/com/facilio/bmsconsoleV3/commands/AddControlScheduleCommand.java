@@ -6,6 +6,10 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.InsertRecordBuilder;
@@ -24,10 +28,27 @@ public class AddControlScheduleCommand extends FacilioCommand {
 		
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         
+        ControlScheduleContext schedule = controlScheduleWrapper.getControlScheduleContext();
+        
+        if(schedule.getBusinessHour() == null) {
+        	
+        	FacilioChain addBusinessHourChain = TransactionChainFactory.addBusinessHourChain();
+        	
+        	FacilioContext newContext = addBusinessHourChain.getContext();
+        	newContext.put(FacilioConstants.ContextNames.BUSINESS_HOUR, schedule.getBusinessHoursContext());
+        	newContext.put(FacilioConstants.ContextNames.RESOURCE_ID, -1l);
+    		
+    		addBusinessHourChain.execute();
+    		
+    		long businessHourId = (long) newContext.get(FacilioConstants.ContextNames.ID);
+    		
+    		schedule.setBusinessHour(businessHourId);
+        }
+        
         List<FacilioField> controlScheduleFields = modBean.getAllFields(ControlScheduleUtil.CONTROL_SCHEDULE_MODULE_NAME);
         
         InsertRecordBuilder<ControlScheduleContext> insert = new InsertRecordBuilder<ControlScheduleContext>()
-    			.addRecord(controlScheduleWrapper.getControlScheduleContext())
+    			.addRecord(schedule)
     			.fields(controlScheduleFields)
     			.moduleName(ControlScheduleUtil.CONTROL_SCHEDULE_MODULE_NAME)
     			;
