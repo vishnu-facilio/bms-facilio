@@ -109,30 +109,32 @@ public class AddFieldsCommand extends FacilioCommand {
 	private void setColumnName(FacilioField field, Map<FieldType, List<String>> existingColumns) throws Exception {
 		FieldType dataType = field.getDataTypeEnum();
 		if(dataType != null) {
-			List<String> existingColumnNames = existingColumns.get(dataType);
-			if(existingColumnNames == null) {
-				existingColumnNames = new ArrayList<>();
-				existingColumns.put(dataType, existingColumnNames);
-			}
-			if(field.getColumnName() == null || field.getColumnName().isEmpty()) {
-				V3Config v3Config = ChainUtil.getV3Config(field.getModule().getName());
-				String newColumnName;
-				if (v3Config != null) {
-					if (v3Config.getCustomFieldsCount() != null) {
-						newColumnName = v3Config.getCustomFieldsCount().getNewColumnNameForFieldType(dataType.getTypeAsInt(), existingColumnNames);
+			if (!dataType.isMultiRecord()) {
+				List<String> existingColumnNames = existingColumns.get(dataType);
+				if (existingColumnNames == null) {
+					existingColumnNames = new ArrayList<>();
+					existingColumns.put(dataType, existingColumnNames);
+				}
+				if (field.getColumnName() == null || field.getColumnName().isEmpty()) {
+					V3Config v3Config = ChainUtil.getV3Config(field.getModule().getName());
+					String newColumnName;
+					if (v3Config != null) {
+						if (v3Config.getCustomFieldsCount() != null) {
+							newColumnName = v3Config.getCustomFieldsCount().getNewColumnNameForFieldType(dataType.getTypeAsInt(), existingColumnNames);
 
+						} else {
+							throw new IllegalArgumentException("No column available for the Field type");
+						}
 					} else {
-						throw new IllegalArgumentException("No column available for the Field type");
+						newColumnName = new ModuleCustomFieldCount50().getNewColumnNameForFieldType(dataType.getTypeAsInt(), existingColumnNames);
 					}
-				} else {
-					newColumnName = new ModuleCustomFieldCount50().getNewColumnNameForFieldType(dataType.getTypeAsInt(), existingColumnNames);
+					if (StringUtils.isEmpty(newColumnName)) {
+						throw new IllegalArgumentException("No more column available for the Field type");
+					}
+					field.setColumnName(newColumnName);
 				}
-				if (StringUtils.isEmpty(newColumnName)) {
-					throw new IllegalArgumentException("No more column available for the Field type");
-				}
-				field.setColumnName(newColumnName);
+				existingColumnNames.add(field.getColumnName());
 			}
-			existingColumnNames.add(field.getColumnName());
 		}
 		else {
 			throw new IllegalArgumentException("Invalid Data Type Value");
