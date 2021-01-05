@@ -2,6 +2,7 @@
 package com.facilio.bmsconsole.interceptors;
 
 import java.net.URL;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.facilio.accounts.dto.Organization;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -50,7 +52,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 
 	@Override
 	public String intercept(ActionInvocation arg0) throws Exception {
-
+		long time = System.currentTimeMillis();
 		HttpServletRequest request = ServletActionContext.getRequest();
 		try {
 
@@ -100,7 +102,20 @@ public class AuthInterceptor extends AbstractInterceptor {
 		}
 
 		request.getAttribute("iamAccount");
+		long timeTaken = System.currentTimeMillis() - time;
+		logTimeTaken(this.getClass().getSimpleName(), timeTaken, request);
 		return arg0.invoke();
+	}
+
+	public static final void logTimeTaken(String className, long timeTaken, HttpServletRequest request) {
+		if (timeTaken > 50 &&
+				request != null &&
+				StringUtils.isNotEmpty(request.getRequestURI()) &&
+				(request.getRequestURI().endsWith("/workorders/close")
+						|| request.getRequestURI().endsWith("/workorders/update"))
+		) {
+			LOGGER.info(MessageFormat.format("Time taken in {0} for uri {1} is {2}", className, request.getRequestURI(), timeTaken));
+		}
 	}
 	
 	private String handleLogin() throws Exception {

@@ -103,7 +103,7 @@ public class WorkOrderAction extends FacilioAction {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static Logger log = LogManager.getLogger(WorkOrderAction.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(WorkOrderAction.class.getName());
 
     public String getCurrentView() {
         return currentView;
@@ -1414,6 +1414,9 @@ public class WorkOrderAction extends FacilioAction {
 	}
 
 	public String closeWorkOrder() throws Exception {
+		if (AccountUtil.getCurrentOrg().getId() == 274) {
+			LOGGER.info("Close WO called");
+		}
 		FacilioContext context = new FacilioContext();
 		if (StringUtils.isNotEmpty(workOrderString) && workorder == null) {
 			setWorkordercontex(workOrderString);
@@ -1473,6 +1476,9 @@ public class WorkOrderAction extends FacilioAction {
 	}
 
 	public String updateWorkOrder() throws Exception {
+		if (AccountUtil.getCurrentOrg().getId() == 274) {
+			LOGGER.info("Update WO called");
+		}
 		FacilioContext context = new FacilioContext();
 		if (StringUtils.isNotEmpty(workOrderString) && workorder == null) {
 			setWorkordercontex(workOrderString);
@@ -1936,7 +1942,7 @@ public class WorkOrderAction extends FacilioAction {
 			re = (JSONArray) parser.parse(convertDeleteReadingRulesListString);
 
 		} catch (Exception e) {
-			log.info("Exception occurred ", e);
+			LOGGER.info("Exception occurred ", e);
 		}
 		return re;
 	}
@@ -1996,7 +2002,7 @@ public class WorkOrderAction extends FacilioAction {
 				}
 			}
 		} catch (Exception e) {
-			log.info("Exception occurred ", e);
+			LOGGER.info("Exception occurred ", e);
 			throw e;
 		}
 	}

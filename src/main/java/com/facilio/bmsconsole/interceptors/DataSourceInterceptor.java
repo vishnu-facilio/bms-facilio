@@ -35,6 +35,7 @@ public class DataSourceInterceptor extends AbstractInterceptor {
 
 	@Override
 	public String intercept(ActionInvocation invocation) throws Exception {
+		long time = System.currentTimeMillis();
 		HttpServletRequest request = ServletActionContext.getRequest();
 		IAMAccount iamAccount = (IAMAccount) request.getAttribute("iamAccount");
 		//remote screen handling
@@ -86,6 +87,8 @@ public class DataSourceInterceptor extends AbstractInterceptor {
               	}
 			}
 		}
+		long timeTaken = System.currentTimeMillis() - time;
+		AuthInterceptor.logTimeTaken(this.getClass().getSimpleName(), timeTaken, request);
 		return invocation.invoke();
 	}
 	

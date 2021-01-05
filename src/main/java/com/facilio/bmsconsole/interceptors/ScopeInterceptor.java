@@ -56,7 +56,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
 
     @Override
     public String intercept(ActionInvocation arg0) throws Exception {
-
+        long startTime = System.currentTimeMillis();
         HttpServletRequest request = ServletActionContext.getRequest();
         IAMAccount iamAccount = (IAMAccount) request.getAttribute("iamAccount");
         if (iamAccount != null) {
@@ -75,7 +75,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
                     AccountUtil.setCurrentAccount(account);
                 } else {
                     LOGGER.log(Level.DEBUG, "Invalid remote Screen");
-                    return Action.LOGIN;
+                    return logAndReturn(Action.LOGIN, null, startTime, request);
                 }
             } else if (request.getAttribute("device") != null && request.getAttribute("device") instanceof ConnectedDeviceContext) {
                 ConnectedDeviceContext connectedDevice = (ConnectedDeviceContext) request.getAttribute("device");
@@ -91,13 +91,13 @@ public class ScopeInterceptor extends AbstractInterceptor {
                     AccountUtil.setCurrentAccount(account);
                 } else {
                     LOGGER.log(Level.DEBUG, "Invalid Device screen");
-                    return Action.LOGIN;
+                    return logAndReturn(Action.LOGIN, null, startTime, request);
                 }
             } else {
                 User user = null;
                 if (iamAccount.getOrg() == null) {
                     LOGGER.log(Level.DEBUG, "User seems to have been deactivated");
-                    return Action.LOGIN;
+                    return logAndReturn(Action.LOGIN, null, startTime, request);
                 }
                 Account tempAccount = new Account(iamAccount.getOrg(), user);
                 AccountUtil.setCurrentAccount(tempAccount);
@@ -142,7 +142,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
 	                    if(relaxedAccess) {
 	                        user = AccountUtil.getUserBean().getUser(-1, iamAccount.getOrg().getOrgId(), iamAccount.getUser().getUid(), null);
                             if(user == null) {
-                                return "unauthorized";
+                                return logAndReturn("unauthorized", null, startTime, request);
                             }
                             //fetching permissible apps for this user corresponding to this domain
                             //setting the first permissible application(corresponding to this domain) if exists to this user
@@ -252,7 +252,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
                         }
                         boolean isNewPerm = isNewPermission != null && Boolean.parseBoolean(isNewPermission.getValue());
                         if (action != null && action.getValue() != null && moduleName != null && moduleName.getValue() != null && !isAuthorizedAccess(moduleName.getValue(), action.getValue(), isNewPerm)) {
-                            return "unauthorized";
+                            return logAndReturn("unauthorized", null, startTime, request);
                         }
 
                         String lang = currentAccount.getUser().getLanguage();
@@ -277,7 +277,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
             } else {
                 String authRequired = ActionContext.getContext().getParameters().get("auth").getValue();
                 if (authRequired == null || "".equalsIgnoreCase(authRequired.trim()) || "true".equalsIgnoreCase(authRequired)) {
-                    return Action.LOGIN;
+                    return logAndReturn(Action.LOGIN, null, startTime, request);
                 }
             }
 
@@ -286,13 +286,13 @@ public class ScopeInterceptor extends AbstractInterceptor {
                     String useremail = currentAccount.getUser().getEmail();
                     if (!useremail.endsWith(FacilioProperties.getConfig("admin.domain"))) {
                         LOGGER.log(Level.DEBUG, "you are not allowed to access this page from");
-                        return Action.LOGIN;
+                        return logAndReturn(Action.LOGIN, null, startTime, request);
                     }
                 }
             }
         } catch (Exception e) {
             LOGGER.log(Level.FATAL, "error in auth interceptor", e);
-            return Action.LOGIN;
+            return logAndReturn(Action.LOGIN, null, startTime, request);
         }
 
         try {
@@ -300,7 +300,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
             AccountUtil.setRequestParams(request.getParameterMap());
             String remoteIPAddress = request.getRemoteAddr();
             if (false) {  // make false to intercept
-                return arg0.invoke();
+                return logAndReturn(null, arg0, startTime, request);
             } else {
                 AuditData data = null;
                 FacilioAudit audit = new DBAudit();
@@ -319,7 +319,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
 //                        FacilioService.runAsServiceWihReturn(() -> audit.add(finalData));
 //                        data.setId(finalData.getId());
 //                    }
-                    return arg0.invoke();
+                    return logAndReturn(null, arg0, startTime, request);
                 } catch (Exception e) {
                     status = 500;
                     LOGGER.info("Exception from action classs " + e.getMessage());
@@ -340,6 +340,12 @@ public class ScopeInterceptor extends AbstractInterceptor {
             LOGGER.log(Level.FATAL, "error thrown from action class", e);
             throw e;
         }
+    }
+
+    private String logAndReturn(String returnStr, ActionInvocation invoke, long startTime, HttpServletRequest request) throws Exception {
+        long timeTaken = System.currentTimeMillis() - startTime;
+        AuthInterceptor.logTimeTaken(this.getClass().getSimpleName(), timeTaken, request);
+        return invoke == null ? returnStr : invoke.invoke();
     }
 
     private AuditData getAuditData(ActionInvocation actionInvocation) {

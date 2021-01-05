@@ -19,6 +19,7 @@ public class CacheInterceptor extends AbstractInterceptor {
 
 	@Override
 	public String intercept(ActionInvocation arg0) throws Exception {
+		long time = System.currentTimeMillis();
 		HttpServletRequest request = ServletActionContext.getRequest();
 		
 		MultiReadServletRequest multiReadServletRequest = new MultiReadServletRequest(request);
@@ -40,7 +41,8 @@ public class CacheInterceptor extends AbstractInterceptor {
 				}
 //			}
 		}
-		
+		long timeTaken = System.currentTimeMillis() - time;
+		AuthInterceptor.logTimeTaken(this.getClass().getSimpleName(), timeTaken, request);
 		return arg0.invoke();
 //		  HttpServletRequest request =
 //				  ServletActionContext.getRequest();
