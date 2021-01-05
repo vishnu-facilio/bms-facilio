@@ -25,6 +25,8 @@ files:
     destination: /home/facilio
   - source: /awsprops-scheduler.properties
     destination: /home/facilio/deployment-files/
+  - source: /awsprops-scheduler-app.properties
+    destination: /home/facilio/deployment-files/
   - source: /awsprops-kinesis.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-stage.properties
@@ -39,6 +41,8 @@ files:
     destination: /home/facilio/deployment-files/
   - source: /log4j-scheduler.properties
     destination: /home/facilio/deployment-files/
+  - source: /log4j-scheduler-app.properties
+    destination: /home/facilio/deployment-files/
   - source: /log4j-kinesis.properties
     destination: /home/facilio/deployment-files/
   - source: /agentIntegration-production.properties
@@ -48,13 +52,13 @@ files:
   - source: /awsprops-sp-user.properties
     destination: /home/facilio/deployment-files/
   - source: /executors-org.xml
-      destination: /home/facilio/deployment-files/
+    destination: /home/facilio/deployment-files/
   - source: /executors-production.xml
-      destination: /home/facilio/deployment-files/
+    destination: /home/facilio/deployment-files/
   - source: /instantjobexecutors-org.yml
-      destination: /home/facilio/deployment-files/
+    destination: /home/facilio/deployment-files/
   - source: /instantjobexecutors-production.yml
-      destination: /home/facilio/deployment-files/
+    destination: /home/facilio/deployment-files/
 
 permissions:
   - object: /home/facilio
