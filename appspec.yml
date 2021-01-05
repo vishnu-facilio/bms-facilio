@@ -47,6 +47,14 @@ files:
     destination: /home/facilio/deployment-files/
   - source: /awsprops-sp-user.properties
     destination: /home/facilio/deployment-files/
+  - source: /executors-org.xml
+      destination: /home/facilio/deployment-files/
+  - source: /executors-production.xml
+      destination: /home/facilio/deployment-files/
+  - source: /instantjobexecutors-org.yml
+      destination: /home/facilio/deployment-files/
+  - source: /instantjobexecutors-production.yml
+      destination: /home/facilio/deployment-files/
 
 permissions:
   - object: /home/facilio
