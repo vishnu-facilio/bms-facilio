@@ -16,6 +16,7 @@ public class ControlGroupAssetCategory extends V3Context {
 	String name;
 	ControlGroupContext controlGroup;
 	AssetCategoryContext assetCategory;
+	ControlGroupSection controlGroupSection;
 	
 	public String getName() {
 		return name;
@@ -48,5 +49,11 @@ public class ControlGroupAssetCategory extends V3Context {
 	public void addControlAsset(ControlGroupAssetContext controlAsset) {
 		this.controlAssets = this.controlAssets == null ? new ArrayList<ControlGroupAssetContext>() : this.controlAssets; 
 		this.controlAssets.add(controlAsset);
+	}
+	public ControlGroupSection getControlGroupSection() {
+		return controlGroupSection;
+	}
+	public void setControlGroupSection(ControlGroupSection controlGroupSection) {
+		this.controlGroupSection = controlGroupSection;
 	}
 }

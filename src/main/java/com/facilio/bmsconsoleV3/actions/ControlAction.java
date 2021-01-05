@@ -4,12 +4,10 @@ import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.control.util.ControlScheduleUtil;
-import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.v3.V3Action;
 
 import con.facilio.control.ControlGroupContext;
-import con.facilio.control.ControlGroupWrapper;
-import con.facilio.control.ControlScheduleWrapper;
+import con.facilio.control.ControlScheduleContext;
 
 public class ControlAction extends V3Action {
 
@@ -18,30 +16,17 @@ public class ControlAction extends V3Action {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	ControlScheduleWrapper controlScheduleWrapper;
-	ControlGroupWrapper controlGroupWrapper;
+	ControlScheduleContext controlScheduleContext;
+	ControlGroupContext controlGroupContext;
 	
-	public ControlScheduleWrapper getControlScheduleWrapper() {
-		return controlScheduleWrapper;
-	}
-
-	public void setControlScheduleWrapper(ControlScheduleWrapper controlScheduleWrapper) {
-		this.controlScheduleWrapper = controlScheduleWrapper;
-	}
-	public ControlGroupWrapper getControlGroupWrapper() {
-		return controlGroupWrapper;
-	}
-
-	public void setControlGroupWrapper(ControlGroupWrapper controlGroupWrapper) {
-		this.controlGroupWrapper = controlGroupWrapper;
-	}
+	
 	
 	public String addControlSchedule() throws Exception {
 		FacilioChain chain = TransactionChainFactoryV3.getAddControlScheduleChain();
 		FacilioContext context = chain.getContext();
-		context.put(ControlScheduleUtil.CONTROL_SCHEDULE_WRAPPER, controlScheduleWrapper);
+		context.put(ControlScheduleUtil.CONTROL_SCHEDULE_CONTEXT, controlScheduleContext);
 		chain.execute();
-		setData(ControlScheduleUtil.CONTROL_SCHEDULE_WRAPPER, controlScheduleWrapper);
+		setData(ControlScheduleUtil.CONTROL_SCHEDULE_CONTEXT, controlScheduleContext);
         return SUCCESS;
 	}
 
@@ -49,11 +34,11 @@ public class ControlAction extends V3Action {
 		try {
 			FacilioChain chain = TransactionChainFactoryV3.getAddControlGroupChain();
 			FacilioContext context = chain.getContext();
-			context.put(ControlScheduleUtil.CONTROL_GROUP_WRAPPER, controlGroupWrapper);
+			context.put(ControlScheduleUtil.CONTROL_GROUP_CONTEXT, controlGroupContext);
 			chain.execute();
-			setData(ControlScheduleUtil.CONTROL_GROUP_WRAPPER, controlGroupWrapper);
+			setData(ControlScheduleUtil.CONTROL_GROUP_CONTEXT, controlGroupContext);
 			
-			long groupId = controlGroupWrapper.getControlGroupContext().getId();
+			long groupId = controlGroupContext.getId();
 			
 			FacilioChain chain1 = TransactionChainFactoryV3.planControlGroupSlotsAndRoutines();
 			
@@ -69,5 +54,21 @@ public class ControlAction extends V3Action {
 			e.printStackTrace();
 			return ERROR;
 		}
+	}
+
+	public ControlGroupContext getControlGroupContext() {
+		return controlGroupContext;
+	}
+
+	public void setControlGroupContext(ControlGroupContext controlGroupContext) {
+		this.controlGroupContext = controlGroupContext;
+	}
+
+	public ControlScheduleContext getControlScheduleContext() {
+		return controlScheduleContext;
+	}
+
+	public void setControlScheduleContext(ControlScheduleContext controlScheduleContext) {
+		this.controlScheduleContext = controlScheduleContext;
 	}
 }

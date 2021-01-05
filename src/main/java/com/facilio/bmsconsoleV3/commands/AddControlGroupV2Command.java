@@ -8,6 +8,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.InsertRecordBuilder;
@@ -17,7 +18,7 @@ import con.facilio.control.ControlGroupAssetCategory;
 import con.facilio.control.ControlGroupAssetContext;
 import con.facilio.control.ControlGroupContext;
 import con.facilio.control.ControlGroupFieldContext;
-import con.facilio.control.ControlGroupWrapper;
+import con.facilio.control.ControlGroupSection;
 
 public class AddControlGroupV2Command extends FacilioCommand {
 
@@ -25,52 +26,72 @@ public class AddControlGroupV2Command extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		ControlGroupWrapper controlGroupWrapper = (ControlGroupWrapper) context.get(ControlScheduleUtil.CONTROL_GROUP_WRAPPER);
+		ControlGroupContext controlGroupContext = (ControlGroupContext) context.get(ControlScheduleUtil.CONTROL_GROUP_CONTEXT);
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		if(controlGroupWrapper != null) {
+		if(controlGroupContext != null) {
 			
 			List<FacilioField> controlGroupFields = modBean.getAllFields(ControlScheduleUtil.CONTROL_GROUP_MODULE_NAME);
 			
 			InsertRecordBuilder<ControlGroupContext> insert = new InsertRecordBuilder<ControlGroupContext>()
-	    			.addRecord(controlGroupWrapper.getControlGroupContext())
+	    			.addRecord(controlGroupContext)
 	    			.fields(controlGroupFields)
 	    			.moduleName(ControlScheduleUtil.CONTROL_GROUP_MODULE_NAME)
 	    			;
 	        
 	        insert.save();
 	        
-	        for(ControlGroupAssetCategory category : controlGroupWrapper.getControlGroupAssetCategories()) {
-	        	category.setControlGroup(controlGroupWrapper.getControlGroupContext());
+	        List<ControlGroupSection> sections = controlGroupContext.getSections();
+	        for(ControlGroupSection section : sections) {
+	        	section.setControlGroup(controlGroupContext);
 	        }
 	        
+	        controlGroupContext.setSections(null);
 	        
-	        List<FacilioField> controlGroupCategoryFields = modBean.getAllFields(ControlScheduleUtil.CONTROL_GROUP_ASSET_CATEGORY_MODULE_NAME);
+	        List<FacilioField> controlGroupSectionFields = modBean.getAllFields(ControlScheduleUtil.CONTROL_GROUP_SECTION_MODULE_NAME);
 			
-			InsertRecordBuilder<ControlGroupAssetCategory> insert1 = new InsertRecordBuilder<ControlGroupAssetCategory>()
-	    			.addRecords(controlGroupWrapper.getControlGroupAssetCategories())
-	    			.fields(controlGroupCategoryFields)
-	    			.moduleName(ControlScheduleUtil.CONTROL_GROUP_ASSET_CATEGORY_MODULE_NAME)
+			InsertRecordBuilder<ControlGroupSection> insert1 = new InsertRecordBuilder<ControlGroupSection>()
+	    			.addRecords(sections)
+	    			.fields(controlGroupSectionFields)
+	    			.moduleName(ControlScheduleUtil.CONTROL_GROUP_SECTION_MODULE_NAME)
 	    			;
 	        
 			insert1.save();
 	        
+			List<ControlGroupAssetCategory> categories = new ArrayList<ControlGroupAssetCategory>();
+			for(ControlGroupSection section : sections) {
+				for(ControlGroupAssetCategory category : section.getCategories()) {
+					category.setControlGroupSection(section);
+					category.setControlGroup(controlGroupContext);
+					categories.add(category);
+				}
+				section.setCategories(null);
+			}
 	        
-	        Map<String, List<ControlGroupAssetContext>> assetVsCategoryMap = controlGroupWrapper.getControlGroupAssetMap();
+	        List<FacilioField> controlGroupCategoryFields = modBean.getAllFields(ControlScheduleUtil.CONTROL_GROUP_ASSET_CATEGORY_MODULE_NAME);
+			
+			InsertRecordBuilder<ControlGroupAssetCategory> insert11 = new InsertRecordBuilder<ControlGroupAssetCategory>()
+	    			.addRecords(categories)
+	    			.fields(controlGroupCategoryFields)
+	    			.moduleName(ControlScheduleUtil.CONTROL_GROUP_ASSET_CATEGORY_MODULE_NAME)
+	    			;
+	        
+			insert11.save();
+	        
 	        
 	        List<ControlGroupAssetContext> assetGroupList = new ArrayList<ControlGroupAssetContext>();
 	        
-	        for(ControlGroupAssetCategory category : controlGroupWrapper.getControlGroupAssetCategories()) {
+	        for(ControlGroupAssetCategory category : categories) {
 	        	
-	        	List<ControlGroupAssetContext> assetList = assetVsCategoryMap.get(category.getAssetCategory().getId()+"");
-	        	if(assetList != null) {
-	        		for(ControlGroupAssetContext asset : assetList) {
-		        		asset.setControlGroupAssetCategory(category);
-		        		asset.setControlGroup(controlGroupWrapper.getControlGroupContext());
-		        		assetGroupList.add(asset);
-		        	}
+	        	for(ControlGroupAssetContext asset : category.getControlAssets()) {
+	        		
+	        		asset.setControlGroup(controlGroupContext);
+	        		asset.setControlGroupAssetCategory(category);
+	        		
+	        		assetGroupList.add(asset);
 	        	}
+	        	category.setControlAssets(null);
 	        }
 	        if(!assetGroupList.isEmpty()) {
 		        List<FacilioField> controlGroupAssetFields = modBean.getAllFields(ControlScheduleUtil.CONTROL_GROUP_ASSET_MODULE_NAME);
@@ -84,20 +105,17 @@ public class AddControlGroupV2Command extends FacilioCommand {
 				insert2.save();
 	        }
 	        
-	        Map<String, List<ControlGroupFieldContext>> fieldMap = controlGroupWrapper.getControlGroupFieldMap();
-	        
 	        List<ControlGroupFieldContext> fieldLists = new ArrayList<ControlGroupFieldContext>();
 	        
 	        for(ControlGroupAssetContext asset : assetGroupList) {
 	        	
-	        	List<ControlGroupFieldContext> fieldList = fieldMap.get(asset.getAsset().getId()+"");
-	        	if(fieldList != null) {
-	        		for(ControlGroupFieldContext field : fieldList) {
-		        		field.setControlGroupAsset(asset);
-		        		field.setControlGroup(controlGroupWrapper.getControlGroupContext());
-		        		fieldLists.add(field);
-		        	}
+	        	for(ControlGroupFieldContext controlField : asset.getControlFields()) {
+	        		controlField.setControlGroup(controlGroupContext);
+	        		controlField.setControlGroupAsset(asset);
+	        		fieldLists.add(controlField);
 	        	}
+	        	
+	        	asset.setControlFields(null);
 	        }
 	        
 	        if(!fieldLists.isEmpty()) {

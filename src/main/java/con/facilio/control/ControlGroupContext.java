@@ -43,14 +43,7 @@ public class ControlGroupContext extends V3Context {
 		this.controlSchedule = controlSchedule;
 	}
 	
-	List<ControlGroupAssetCategory> categories;
-
-	public List<ControlGroupAssetCategory> getCategories() {
-		return categories;
-	}
-	public void setCategories(List<ControlGroupAssetCategory> categories) {
-		this.categories = categories;
-	}
+	List<ControlGroupSection> sections;
 
 	List<ControlGroupRoutineContext> routines;
 
@@ -59,6 +52,13 @@ public class ControlGroupContext extends V3Context {
 	}
 	public void setRoutines(List<ControlGroupRoutineContext> routines) {
 		this.routines = routines;
+	}
+	
+	public List<ControlGroupSection> getSections() {
+		return sections;
+	}
+	public void setSections(List<ControlGroupSection> sections) {
+		this.sections = sections;
 	}
 	
 	

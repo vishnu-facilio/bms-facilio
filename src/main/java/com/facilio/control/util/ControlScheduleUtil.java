@@ -29,6 +29,7 @@ import con.facilio.control.ControlGroupAssetContext;
 import con.facilio.control.ControlGroupContext;
 import con.facilio.control.ControlGroupFieldContext;
 import con.facilio.control.ControlGroupRoutineContext;
+import con.facilio.control.ControlGroupSection;
 import con.facilio.control.ControlScheduleContext;
 import con.facilio.control.ControlScheduleExceptionContext;
 import con.facilio.control.ControlScheduleGroupedSlot;
@@ -39,6 +40,7 @@ public class ControlScheduleUtil {
 	public static final String CONTROL_SCHEDULE_MODULE_NAME = "controlSchedule";
 	public static final String CONTROL_SCHEDULE_EXCEPTION_MODULE_NAME = "controlScheduleException";
 	public static final String CONTROL_GROUP_MODULE_NAME = "controlGroupv2";
+	public static final String CONTROL_GROUP_SECTION_MODULE_NAME = "controlGroupSection";
 	public static final String CONTROL_GROUP_ASSET_CATEGORY_MODULE_NAME = "controlGroupAssetCategory";
 	public static final String CONTROL_GROUP_ASSET_MODULE_NAME = "controlGroupAsset";
 	public static final String CONTROL_GROUP_ASSET_FIELD_MODULE_NAME = "controlGroupField";
@@ -48,8 +50,8 @@ public class ControlScheduleUtil {
 	public static final String CONTROL_SCHEDULE_PLANNED_SLOTS_MODULE_NAME = "controlScheduleGroupedSlots";
 	
 	
-	public static final String CONTROL_SCHEDULE_WRAPPER = "controlScheduleWrapper";
-	public static final String CONTROL_GROUP_WRAPPER = "controlGroupWrapper";
+	public static final String CONTROL_SCHEDULE_CONTEXT = "controlScheduleContext";
+	public static final String CONTROL_GROUP_CONTEXT = "controlGroupContext";
 	
 	public static final String CONTROL_GROUP_UNPLANNED_SLOTS = "controlGroupUnplanedSlots";
 	public static final String CONTROL_GROUP_PLANNED_SLOTS = "controlGroupplanedSlots";
@@ -78,22 +80,27 @@ public class ControlScheduleUtil {
 		
 		for(ControlScheduleGroupedSlot slot : slots) {
 			
-			List<ControlGroupAssetCategory> categories = group.getCategories();
+			group.getSections();
 			
-			for(ControlGroupAssetCategory category : categories) {
+			for(ControlGroupSection section : group.getSections()) {
 				
-				if(category.getControlAssets() != null) {
+				List<ControlGroupAssetCategory> categories = section.getCategories();
+				
+				for(ControlGroupAssetCategory category : categories) {
 					
-					for(ControlGroupAssetContext controlAsset  : category.getControlAssets()) {
+					if(category.getControlAssets() != null) {
 						
-						if(controlAsset.getControlFields() != null) {
-							for(ControlGroupFieldContext controlField :  controlAsset.getControlFields()) {
-								
-								if(controlField.getTrueVal() != null) {
-									commands.add(new ControlActionCommandContext(controlAsset.getAsset(), controlField.getFieldId(), controlField.getTrueVal(),slot.getStartTime(),slot.getSchedule()));
-								}
-								if(controlField.getFalseVal() != null) {
-									commands.add(new ControlActionCommandContext(controlAsset.getAsset(), controlField.getFieldId(), controlField.getFalseVal(),slot.getEndTime(),slot.getSchedule()));
+						for(ControlGroupAssetContext controlAsset  : category.getControlAssets()) {
+							
+							if(controlAsset.getControlFields() != null) {
+								for(ControlGroupFieldContext controlField :  controlAsset.getControlFields()) {
+									
+									if(controlField.getTrueVal() != null) {
+										commands.add(new ControlActionCommandContext(controlAsset.getAsset(), controlField.getFieldId(), controlField.getTrueVal(),slot.getStartTime(),slot.getSchedule()));
+									}
+									if(controlField.getFalseVal() != null) {
+										commands.add(new ControlActionCommandContext(controlAsset.getAsset(), controlField.getFieldId(), controlField.getFalseVal(),slot.getEndTime(),slot.getSchedule()));
+									}
 								}
 							}
 						}
@@ -313,14 +320,25 @@ public class ControlScheduleUtil {
 		
 		group.setControlSchedule(getControlSchedule(group.getControlSchedule().getId()));
 		
-		List<ControlGroupAssetCategory> categories =  ControlScheduleUtil.fetchRecord(ControlGroupAssetCategory.class, CONTROL_GROUP_ASSET_CATEGORY_MODULE_NAME, null,CriteriaAPI.getCondition("CONTROL_GROUP", "controlGroup", ""+group.getId(), NumberOperators.EQUALS));
+		List<ControlGroupSection> sections =  ControlScheduleUtil.fetchRecord(ControlGroupSection.class, CONTROL_GROUP_SECTION_MODULE_NAME, null,CriteriaAPI.getCondition("CONTROL_GROUP", "controlGroup", ""+group.getId(), NumberOperators.EQUALS));
 		
-		group.setCategories(categories);
+		group.setSections(sections);
+		
+		Map<Long,ControlGroupSection> sectionMap = new HashMap<Long, ControlGroupSection>();
+		
+		for(ControlGroupSection section : sections) {
+			sectionMap.put(section.getId(), section);
+		}
+		
+		List<ControlGroupAssetCategory> categories =  ControlScheduleUtil.fetchRecord(ControlGroupAssetCategory.class, CONTROL_GROUP_ASSET_CATEGORY_MODULE_NAME, null,CriteriaAPI.getCondition("CONTROL_GROUP", "controlGroup", ""+group.getId(), NumberOperators.EQUALS));
 		
 		Map<Long,ControlGroupAssetCategory> categoryMap = new HashMap<Long, ControlGroupAssetCategory>();
 		
 		for(ControlGroupAssetCategory category : categories) {
 			categoryMap.put(category.getId(), category);
+			
+			ControlGroupSection section = sectionMap.get(category.getControlGroupSection().getId());
+			section.addCategory(category);
 		}
 		
 		List<ControlGroupAssetContext> assets =  ControlScheduleUtil.fetchRecord(ControlGroupAssetContext.class, CONTROL_GROUP_ASSET_MODULE_NAME, null,CriteriaAPI.getCondition("CONTROL_GROUP_ASSET_CATEGORY", "controlGroupAssetCategory", StringUtils.join(categoryMap.keySet(), ","), NumberOperators.EQUALS));
