@@ -530,10 +530,10 @@ public class FieldUtil {
 					facilioField = (FileField) FieldUtil.getAsBeanFromMap(fieldJson, FileField.class);
 					break;
 				case MULTI_ENUM:
-					facilioField = (FileField) FieldUtil.getAsBeanFromMap(fieldJson, MultiEnumField.class);
+					facilioField = (MultiEnumField) FieldUtil.getAsBeanFromMap(fieldJson, MultiEnumField.class);
 					break;
 				case MULTI_LOOKUP:
-					facilioField = (FileField) FieldUtil.getAsBeanFromMap(fieldJson, MultiLookupField.class);
+					facilioField = (MultiLookupField) FieldUtil.getAsBeanFromMap(fieldJson, MultiLookupField.class);
 					break;
 				default:
 					facilioField = (FacilioField) FieldUtil.getAsBeanFromMap(fieldJson, FacilioField.class);
