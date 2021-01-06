@@ -1,9 +1,6 @@
 package com.facilio.bmsconsole.jobs;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.facilio.db.transaction.FacilioTransactionManager;
@@ -142,8 +139,15 @@ public class PMNewScheduler extends FacilioJob {
 			// PreventiveMaintenanceAPI.addJobPlanSectionsToWorkorderTemplate(pm, workorderTemplate); 								   un command here to start using job plans
 			if (workorderTemplate != null) {
 				;
+				List<Long> scope;
+				Long baseSpaceId = pm.getBaseSpaceId();
+				if (baseSpaceId == null || baseSpaceId < 0) {
+					scope = PreventiveMaintenanceAPI.getPMSites(pm.getId());
+				} else {
+					scope = Arrays.asList(baseSpaceId);
+				}
 				//TODO
-				List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),PreventiveMaintenanceAPI.getPMSites(pm.getId()),pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts(), true);
+				List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(), scope, pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts(), true);
 				//TODO
 				Map<Long, PMResourcePlannerContext> pmResourcePlanner = PreventiveMaintenanceAPI.getPMResourcesPlanner(pm.getId());
 				//TODO
