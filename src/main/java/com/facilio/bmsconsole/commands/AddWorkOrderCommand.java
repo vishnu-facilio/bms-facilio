@@ -1,5 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
@@ -16,11 +27,7 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-
-import java.util.*;
-import java.util.logging.Logger;
+import com.facilio.modules.fields.SupplementRecord;
 
 public class AddWorkOrderCommand extends FacilioCommand {
 	
@@ -76,8 +83,6 @@ public class AddWorkOrderCommand extends FacilioCommand {
 
 			TicketAPI.updateTicketAssignedBy(workOrder);
 			
-			CommonCommandUtil.handleLookupFormData(fields, workOrder.getData());
-			
 			InsertRecordBuilder<WorkOrderContext> builder = new InsertRecordBuilder<WorkOrderContext>()
 																.moduleName(moduleName)
 																.fields(fields)
@@ -92,6 +97,12 @@ public class AddWorkOrderCommand extends FacilioCommand {
 
 			if ((AccountUtil.getCurrentOrg().getId() == 146 || AccountUtil.getCurrentOrg().getId() == 155) && workOrder != null) {
 				LOGGER.info("Workorder subject : "+ workOrder.getSubject()+"\n Description : "+workOrder.getDescription());
+			}
+			
+			List<SupplementRecord> supplements = new ArrayList<>();
+			CommonCommandUtil.handleFormDataAndSupplement(fields, workOrder.getData(), supplements);
+			if(!supplements.isEmpty()) {
+				builder.insertSupplements(supplements);
 			}
 			
 			long workOrderId = builder.insert(workOrder);

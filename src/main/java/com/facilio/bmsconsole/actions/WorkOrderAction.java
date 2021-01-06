@@ -215,6 +215,7 @@ public class WorkOrderAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, this.attachedFiles);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, this.attachedFilesFileName);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.attachedFilesContentType);
+ 		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTEXT_LIST, this.ticketattachments);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_TYPE, this.attachmentType);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
 		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
@@ -1563,6 +1564,7 @@ public class WorkOrderAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, this.attachedFiles);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, this.attachedFilesFileName);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.attachedFilesContentType);
+ 		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTEXT_LIST, this.ticketattachments);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_TYPE, this.attachmentType);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
  		if (qrVal != null) {
@@ -1743,6 +1745,7 @@ public class WorkOrderAction extends FacilioAction {
 	private List<File> attachedFiles;
 	private List<String> attachedFilesFileName;
 	private List<String> attachedFilesContentType;
+	private List<AttachmentContext> ticketattachments;
 	private AttachmentType attachmentType;
 	
 	public int getAttachmentType() {
@@ -1773,7 +1776,13 @@ public class WorkOrderAction extends FacilioAction {
 	public void setAttachedFilesContentType(List<String> attachedFilesContentType) {
 		this.attachedFilesContentType = attachedFilesContentType;
 	}
-	
+	public List<AttachmentContext> getTicketattachments() {
+		return ticketattachments;
+	}
+	public void setTicketattachments(List<AttachmentContext> ticketattachments) {
+		this.ticketattachments = ticketattachments;
+	}
+
 	private String taskSectionString;
 	
 	public String getTaskSectionString() {

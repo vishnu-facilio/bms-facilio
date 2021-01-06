@@ -38,7 +38,6 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
 import com.amazonaws.services.s3.model.S3Object;
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.util.ImageScaleUtil;
@@ -438,15 +437,6 @@ public class S3FileStore extends FileStore {
 		}
 		LOGGER.info("size of delete rows :"+fileIds.size());
 		return deleteFileEntries(namespace, fileIds);
-	}
-	
-	private void addLogger(String msg) {
-		if (AccountUtil.getCurrentOrg() != null &&  (AccountUtil.getCurrentOrg().getOrgId() == 274 || AccountUtil.getCurrentOrg().getOrgId() == 317) ) {
-			LOGGER.info(msg);
-		}
-		else {
-			LOGGER.info(msg);
-		}
 	}
 	
 }

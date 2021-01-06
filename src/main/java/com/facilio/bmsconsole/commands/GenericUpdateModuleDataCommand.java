@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.chain.Context;
@@ -13,6 +14,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.SupplementRecord;
 
 public class GenericUpdateModuleDataCommand extends FacilioCommand {
 
@@ -31,8 +33,6 @@ public class GenericUpdateModuleDataCommand extends FacilioCommand {
 				fields = modBean.getAllFields(moduleName);
 			}
 			
-			CommonCommandUtil.handleLookupFormData(fields, record.getData());
-			
 			UpdateRecordBuilder<ModuleBaseWithCustomFields> updateBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
 																					.module(module)
 																					.fields(fields)
@@ -41,6 +41,12 @@ public class GenericUpdateModuleDataCommand extends FacilioCommand {
 			Boolean withChangeSet = (Boolean) context.get(FacilioConstants.ContextNames.WITH_CHANGE_SET);
 			if (withChangeSet != null && withChangeSet) {
 				updateBuilder.withChangeSet(ModuleBaseWithCustomFields.class);
+			}
+			
+			List<SupplementRecord> supplements = new ArrayList<>();
+			CommonCommandUtil.handleFormDataAndSupplement(fields, record.getData(), supplements);
+			if(!supplements.isEmpty()) {
+				updateBuilder.updateSupplements(supplements);
 			}
 			
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, updateBuilder.update(record));

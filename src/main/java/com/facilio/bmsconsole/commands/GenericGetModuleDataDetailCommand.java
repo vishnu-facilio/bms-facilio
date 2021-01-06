@@ -16,6 +16,7 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.SupplementRecord;
 
 public class GenericGetModuleDataDetailCommand extends FacilioCommand {
 
@@ -62,10 +63,16 @@ public class GenericGetModuleDataDetailCommand extends FacilioCommand {
 				builder.skipModuleCriteria();
 			}
 
+			// TODO remove this and use FETCH_SUPPLEMENTS
 			List<LookupField>fetchLookup = (List<LookupField>) context.get(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST);
 			if (CollectionUtils.isNotEmpty(fetchLookup)) {
 				builder.fetchSupplements(fetchLookup);
 			}
+			
+			List<SupplementRecord> supplementFields = (List<SupplementRecord>) context.get(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS);
+	        if (CollectionUtils.isNotEmpty(supplementFields)) {
+	        		builder.fetchSupplements(supplementFields);
+	        }
 			
 			List<ModuleBaseWithCustomFields> records = builder.get();
 			if(records.size() > 0) {

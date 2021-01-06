@@ -36,6 +36,9 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.MultiEnumField;
+import com.facilio.modules.fields.MultiLookupField;
+import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.queue.FacilioQueueException;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.time.DateTimeUtil;
@@ -993,18 +996,36 @@ public class CommonCommandUtil {
 		}
 		return result;
 	}
-
+	
 	public static void handleLookupFormData(List<FacilioField> fields, Map<String, Object> data) {
+		handleFormDataAndSupplement(fields, data, new ArrayList<>());
+	}
+
+	public static void handleFormDataAndSupplement(List<FacilioField> fields, Map<String, Object> data, List<SupplementRecord> supplements) {
 		if (data == null) {
 			return;
 		}
 		for(FacilioField field: fields) {
-			if (field.getDataTypeEnum() != null && field.getDataTypeEnum() == FieldType.LOOKUP) {
-				if (data.get(field.getName()) != null) {
-					String val = data.get(field.getName()).toString();
-					if (NumberUtils.isCreatable(val)) {
-						data.put(field.getName(), FieldUtil.getEmptyLookedUpProp(Long.parseLong(val)));
+			if (data.get(field.getName()) != null && field.getDataTypeEnum() != null) {
+				switch(field.getDataTypeEnum()) {
+					case LOOKUP: {
+						String val = data.get(field.getName()).toString();
+						if (NumberUtils.isCreatable(val)) {
+							data.put(field.getName(), FieldUtil.getEmptyLookedUpProp(Long.parseLong(val)));
+						}
 					}
+					break;
+					case MULTI_LOOKUP:
+						supplements.add((MultiLookupField)field);
+						break;
+					case MULTI_ENUM: {
+						if (!(data.get(field.getName()) instanceof List)) { 
+							String val = data.get(field.getName()).toString();
+							data.put(field.getName(),Arrays.asList(val.split(",")));
+						}
+						supplements.add((MultiEnumField)field);
+					}
+					break;
 				}
 			}
 		}

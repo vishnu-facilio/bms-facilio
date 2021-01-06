@@ -1,5 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.constants.FacilioConstants;
@@ -8,9 +13,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Context;
-
-import java.util.List;
+import com.facilio.modules.fields.SupplementRecord;
 
 public class GenericAddModuleDataCommand extends FacilioCommand {
 
@@ -29,7 +32,6 @@ public class GenericAddModuleDataCommand extends FacilioCommand {
 				fields = modBean.getAllFields(moduleName);
 			}
 			
-			CommonCommandUtil.handleLookupFormData(fields, record.getData());
 			InsertRecordBuilder<ModuleBaseWithCustomFields> insertRecordBuilder = new InsertRecordBuilder<ModuleBaseWithCustomFields>()
 																						.module(module)
 																						.fields(fields)
@@ -44,6 +46,13 @@ public class GenericAddModuleDataCommand extends FacilioCommand {
 			if (withChangeSet != null && withChangeSet) {
 				insertRecordBuilder.withChangeSet();
 			}
+			
+			List<SupplementRecord> supplements = new ArrayList<>();
+			CommonCommandUtil.handleFormDataAndSupplement(fields, record.getData(), supplements);
+			if(!supplements.isEmpty()) {
+				insertRecordBuilder.insertSupplements(supplements);
+			}
+			
 			long id = insertRecordBuilder.insert(record);
 			record.setId(id);
 			context.put(FacilioConstants.ContextNames.RECORD_ID, id);
