@@ -496,9 +496,14 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
-	public static FacilioChain executeSpecifcRuleTypeWorkflowsForReadingChain(WorkflowRuleContext.RuleType[] ruleTypes) {
+	public static FacilioChain executeSpecifcRuleTypeWorkflowsForReadingChain(WorkflowRuleContext.RuleType[] ruleTypes, boolean isReadingRuleWorkflowExecution) {
 		FacilioChain c = getDefaultChain();
-		c.addCommand(new ExecuteAllWorkflowsCommand(false, ruleTypes));
+		if(isReadingRuleWorkflowExecution) {
+			c.addCommand(new ExecuteReadingRuleCommand(false, ruleTypes));
+		}
+		else {
+			c.addCommand(new ExecuteAllWorkflowsCommand(false, ruleTypes));
+		}
 		return c;
 	}
 	

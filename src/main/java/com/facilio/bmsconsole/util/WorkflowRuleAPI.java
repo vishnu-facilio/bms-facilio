@@ -1152,7 +1152,9 @@ public class WorkflowRuleAPI {
 		newContext.put(EventConstants.EventContextNames.PREVIOUS_EVENT_META, (ReadingEventContext)context.get(EventConstants.EventContextNames.PREVIOUS_EVENT_META));	
 		newContext.put(EventConstants.EventContextNames.EVENT_RULE_LIST, context.get(EventConstants.EventContextNames.EVENT_RULE_LIST));	
 		newContext.put(FacilioConstants.ContextNames.READING_RULE_ALARM_OCCURANCE, (AlarmOccurrenceContext) context.get(FacilioConstants.ContextNames.READING_RULE_ALARM_OCCURANCE));	
-		newContext.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, context.get(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME));	
+		newContext.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, context.get(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME));
+		newContext.put(FacilioConstants.ContextNames.IS_READING_RULE_WORKFLOW_EXECUTION, (Boolean)context.get(FacilioConstants.ContextNames.IS_READING_RULE_WORKFLOW_EXECUTION));
+
 		return newContext;
 	}
 

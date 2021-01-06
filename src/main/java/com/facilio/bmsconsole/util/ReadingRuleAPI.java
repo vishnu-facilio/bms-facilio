@@ -1000,6 +1000,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		recordContextFilteredForRuleExecution.put(EventConstants.EventContextNames.EVENT_RULE_LIST, context.get(EventConstants.EventContextNames.EVENT_RULE_LIST));	
 		recordContextFilteredForRuleExecution.put(FacilioConstants.ContextNames.READING_RULE_ALARM_OCCURANCE, (AlarmOccurrenceContext) context.get(FacilioConstants.ContextNames.READING_RULE_ALARM_OCCURANCE));	
 		recordContextFilteredForRuleExecution.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, context.get(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME));	
+		recordContextFilteredForRuleExecution.put(FacilioConstants.ContextNames.IS_READING_RULE_WORKFLOW_EXECUTION, (Boolean)context.get(FacilioConstants.ContextNames.IS_READING_RULE_WORKFLOW_EXECUTION));
 
 		instantParallelWorkflowRuleJobContext.put(FacilioConstants.ContextNames.RECORD_CONTEXT_FOR_RULE_EXECUTION, recordContextFilteredForRuleExecution);
 		instantParallelWorkflowRuleJobContext.put(FacilioConstants.ContextNames.WORKFLOW_PARALLEL_RULE_EXECUTION_MAP, workflowRuleExecutionMap);

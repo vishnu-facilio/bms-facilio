@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.StringUtils;
+
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -30,8 +33,18 @@ public class ParallelRecordBasedWorkflowRuleExecutionJob extends InstantJob{
 		try {
 			workflowRuleExecutionMap = (HashMap<String, Object>) context.get(FacilioConstants.ContextNames.WORKFLOW_PARALLEL_RULE_EXECUTION_MAP);	
 			if(workflowRuleExecutionMap != null && !workflowRuleExecutionMap.isEmpty()) {
+				
+				boolean executeReadingRuleCommand = true;
+	        	Map<String, String> orgInfoMap = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.EXECUTE_READING_RULE_COMMAND);
+				if(orgInfoMap != null && MapUtils.isNotEmpty(orgInfoMap)) {
+					String executeReadingRuleCommandProp = orgInfoMap.get(FacilioConstants.OrgInfoKeys.EXECUTE_READING_RULE_COMMAND);
+					if (executeReadingRuleCommandProp != null && !executeReadingRuleCommandProp.isEmpty() && StringUtils.isNotEmpty(executeReadingRuleCommandProp) && Boolean.valueOf(executeReadingRuleCommandProp) != null && !Boolean.parseBoolean(executeReadingRuleCommandProp)){
+						executeReadingRuleCommand = false;
+					}	
+	        	}
+				
 				WorkflowRuleContext.RuleType[] ruleTypes = (WorkflowRuleContext.RuleType[]) workflowRuleExecutionMap.get(FacilioConstants.ContextNames.RULE_TYPES);
-				FacilioChain executeWorkflowChain = ReadOnlyChainFactory.executeSpecifcRuleTypeWorkflowsForReadingChain(ruleTypes);
+				FacilioChain executeWorkflowChain = ReadOnlyChainFactory.executeSpecifcRuleTypeWorkflowsForReadingChain(ruleTypes, executeReadingRuleCommand);
 
 				FacilioContext filteredContextForRecordSpecificRulesExecution = executeWorkflowChain.getContext();
 
@@ -43,6 +56,7 @@ public class ParallelRecordBasedWorkflowRuleExecutionJob extends InstantJob{
 				filteredContextForRecordSpecificRulesExecution.put(FacilioConstants.ContextNames.RECORD, (Object) workflowRuleExecutionMap.get(FacilioConstants.ContextNames.RECORD));
 				filteredContextForRecordSpecificRulesExecution.put(FacilioConstants.ContextNames.CHANGE_SET, (Map<Long, List<UpdateChangeSet>>)  workflowRuleExecutionMap.get(FacilioConstants.ContextNames.CHANGE_SET));
 				filteredContextForRecordSpecificRulesExecution.put(FacilioConstants.ContextNames.EVENT_TYPE_LIST, (List<EventType>) workflowRuleExecutionMap.get(FacilioConstants.ContextNames.EVENT_TYPE_LIST));
+				filteredContextForRecordSpecificRulesExecution.put(FacilioConstants.ContextNames.IS_PARALLEL_RULE_EXECUTION, Boolean.FALSE);
 				executeWorkflowChain.execute();
 				
 				LOGGER.info("ParallelRecordBasedWorkflowRuleExecutionJob executed for record: "+(Object)workflowRuleExecutionMap.get(FacilioConstants.ContextNames.RECORD) +" ModuleName -- " + (String)workflowRuleExecutionMap.get(FacilioConstants.ContextNames.MODULE_NAME));		

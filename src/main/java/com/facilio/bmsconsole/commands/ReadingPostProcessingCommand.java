@@ -45,16 +45,16 @@ public class ReadingPostProcessingCommand extends FacilioCommand {
 
     private void executeWorkflowsRules (Context context) {
         try {
-        	boolean isReadingRuleWorkflowExecution = false;
-        	Map<String, String> orgInfoMap = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.IS_READING_RULE_WORKFLOW_EXECUTION);
+        	boolean executeReadingRuleCommand = true;
+        	Map<String, String> orgInfoMap = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.EXECUTE_READING_RULE_COMMAND);
 			if(orgInfoMap != null && MapUtils.isNotEmpty(orgInfoMap)) {
-				String isReadingRuleWorkflowExecutionProp = orgInfoMap.get(FacilioConstants.OrgInfoKeys.IS_READING_RULE_WORKFLOW_EXECUTION);
-				if (isReadingRuleWorkflowExecutionProp != null && !isReadingRuleWorkflowExecutionProp.isEmpty() && StringUtils.isNotEmpty(isReadingRuleWorkflowExecutionProp) && Boolean.valueOf(isReadingRuleWorkflowExecutionProp) != null && Boolean.parseBoolean(isReadingRuleWorkflowExecutionProp)){
-					isReadingRuleWorkflowExecution = true;
+				String executeReadingRuleCommandProp = orgInfoMap.get(FacilioConstants.OrgInfoKeys.EXECUTE_READING_RULE_COMMAND);
+				if (executeReadingRuleCommandProp != null && !executeReadingRuleCommandProp.isEmpty() && StringUtils.isNotEmpty(executeReadingRuleCommandProp) && Boolean.valueOf(executeReadingRuleCommandProp) != null && !Boolean.parseBoolean(executeReadingRuleCommandProp)){
+					executeReadingRuleCommand = false;
 				}	
         	}
 			
-			if(isReadingRuleWorkflowExecution) {
+			if(executeReadingRuleCommand) {
 				FacilioChain executeReadingRuleChain = ReadOnlyChainFactory.executeReadingRuleChain();
         		executeReadingRuleChain.setContext((FacilioContext) context);
         		executeReadingRuleChain.execute();

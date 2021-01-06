@@ -87,7 +87,7 @@ public class ExecuteLiveEventsToAlarmProcessingCommand extends FacilioCommand{
 				FacilioChain addEvent = TransactionChainFactory.getV2AddEventChain(false);
 				addEvent.getContext().put(EventConstants.EventContextNames.EVENT_LIST, baseEvents);
 				addEvent.getContext().put(EventConstants.EventContextNames.IS_HISTORICAL_EVENT, false);
-				addEvent.getContext().put(EventConstants.EventContextNames.CONSTRUCT_HISTORICAL_AUTO_CLEAR_EVENT, true);
+				addEvent.getContext().put(EventConstants.EventContextNames.CONSTRUCT_HISTORICAL_AUTO_CLEAR_EVENT, false);
 				addEvent.getContext().put(EventConstants.EventContextNames.LAST_OCCURRENCE_OF_PREVIOUS_BATCH, lastOccurrenceOfPreviousBatchMap);
 				addEvent.execute();
 				

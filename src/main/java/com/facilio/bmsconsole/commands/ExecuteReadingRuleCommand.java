@@ -65,7 +65,17 @@ public class ExecuteReadingRuleCommand extends ExecuteAllWorkflowsCommand {
 			}
 			List<EventType> activities = CommonCommandUtil.getEventTypes(context);
 			if(activities != null) {
-				context.put(FacilioConstants.ContextNames.IS_READING_RULE_WORKFLOW_EXECUTION, true);
+				
+				boolean isReadingRuleWorkflowExecution = false;
+	        	Map<String, String> orgInfoMap = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.IS_READING_RULE_WORKFLOW_EXECUTION);
+				if(orgInfoMap != null && MapUtils.isNotEmpty(orgInfoMap)) {
+					String isReadingRuleWorkflowExecutionProp = orgInfoMap.get(FacilioConstants.OrgInfoKeys.IS_READING_RULE_WORKFLOW_EXECUTION);
+					if (isReadingRuleWorkflowExecutionProp != null && !isReadingRuleWorkflowExecutionProp.isEmpty() && StringUtils.isNotEmpty(isReadingRuleWorkflowExecutionProp) && Boolean.valueOf(isReadingRuleWorkflowExecutionProp) != null && Boolean.parseBoolean(isReadingRuleWorkflowExecutionProp)){
+						isReadingRuleWorkflowExecution = true;
+					}	
+	        	}			
+				context.put(FacilioConstants.ContextNames.IS_READING_RULE_WORKFLOW_EXECUTION, isReadingRuleWorkflowExecution);
+				
 				Map<Long, List<UpdateChangeSet>> currentChangeSet = changeSetMap == null ? null : changeSetMap.get(moduleName);
 				if (currentChangeSet != null && !currentChangeSet.isEmpty()) {
 					activities.add(EventType.FIELD_CHANGE);
