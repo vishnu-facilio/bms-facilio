@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.commands.picklist.ConstructFieldOptionForPicklist;
 import com.facilio.bmsconsole.commands.picklist.HandleDefaultIdAndOrderByForPicklist;
 import com.facilio.bmsconsole.commands.picklist.SpecialPickListFieldsCommand;
 import com.facilio.bmsconsole.commands.reservation.FetchAttendeesCommand;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsole.workflow.rule.impact.GetAllAlarmImpactsCommand;
@@ -488,9 +489,21 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
-	public static FacilioChain executeSpecifcRuleTypeWorkflowsForReadingChain(WorkflowRuleContext.RuleType[] ruleTypes) {
+	public static FacilioChain executeReadingRuleChain() {
 		FacilioChain c = getDefaultChain();
-		c.addCommand(new ExecuteAllWorkflowsCommand(false, ruleTypes));
+		c.addCommand(new ExecuteReadingRuleCommand(false, WorkflowRuleAPI.getAllowedInstantJobWorkflowRuleTypes()));
+		c.addCommand(new ExecuteSensorRuleCommand());
+		return c;
+	}
+	
+	public static FacilioChain executeSpecifcRuleTypeWorkflowsForReadingChain(WorkflowRuleContext.RuleType[] ruleTypes, boolean isReadingRuleWorkflowExecution) {
+		FacilioChain c = getDefaultChain();
+		if(isReadingRuleWorkflowExecution) {
+			c.addCommand(new ExecuteReadingRuleCommand(false, ruleTypes));
+		}
+		else {
+			c.addCommand(new ExecuteAllWorkflowsCommand(false, ruleTypes));
+		}
 		return c;
 	}
 	

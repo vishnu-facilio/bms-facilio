@@ -22,11 +22,14 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
+import com.facilio.bmsconsole.context.AlarmSeverityContext;
 import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.BaseEventContext;
 import com.facilio.bmsconsole.context.ReadingAlarm;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingEventContext;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ThresholdType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
@@ -50,6 +53,7 @@ import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateChangeSet;
@@ -520,6 +524,41 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		}
 		return readingRuleContexts;
 	}
+	
+	public static void checkIfHistoricalOrLiveEvent(Context context, BaseEventContext event) {
+		Boolean isHistorical = (Boolean) context.get(EventConstants.EventContextNames.IS_HISTORICAL_EVENT);
+		isHistorical = (isHistorical != null) ? isHistorical : false;
+		event.setIsLiveEvent(!isHistorical);
+	}
+	
+	public static void insertEventsWithoutAlarmOccurrenceProcessed(List<BaseEventContext> events, Type type) throws Exception
+	{	
+		List<AlarmSeverityContext> alarmSeverityList = AlarmAPI.getAlarmSeverityList();
+		HashMap<String,AlarmSeverityContext> alarmSeverityStringMap = new HashMap<String,AlarmSeverityContext>();
+		for(AlarmSeverityContext alarmSeverity:alarmSeverityList) {
+			alarmSeverityStringMap.put(alarmSeverity.getSeverity(),alarmSeverity);	
+		}
+		
+		for(BaseEventContext event:events)
+		{	
+			event.setSeverity(alarmSeverityStringMap.get(event.getSeverityString()));
+			event.setMessageKey(event.constructMessageKey());
+			event.setAlarmOccurrence(null);
+			event.setBaseAlarm(null);
+			event.setIsLiveEvent(true);
+			event.setEventProcessingStatus(BaseEventContext.EventProcessingStatus.UNPROCESSED.getIndex());
+		}
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		String moduleName = NewEventAPI.getEventModuleName(type);	
+		InsertRecordBuilder<BaseEventContext> builder = new InsertRecordBuilder<BaseEventContext>()
+				.moduleName(moduleName)
+				.fields(modBean.getAllFields(moduleName));
+
+		builder.addRecords(events);
+		builder.save();			
+	}
+	
 	public static void addClearEvent(Context context, Map<String, Object> placeHolders, ReadingRuleContext readingRuleContext, long readingDataId, Object readingVal, long ttime, long resourceId) throws Exception {
 		
 		Map<Long, ReadingRuleAlarmMeta> alarmMetaMap = (Map<Long, ReadingRuleAlarmMeta>) context.get(FacilioConstants.ContextNames.READING_RULE_ALARM_META);
@@ -961,6 +1000,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		recordContextFilteredForRuleExecution.put(EventConstants.EventContextNames.EVENT_RULE_LIST, context.get(EventConstants.EventContextNames.EVENT_RULE_LIST));	
 		recordContextFilteredForRuleExecution.put(FacilioConstants.ContextNames.READING_RULE_ALARM_OCCURANCE, (AlarmOccurrenceContext) context.get(FacilioConstants.ContextNames.READING_RULE_ALARM_OCCURANCE));	
 		recordContextFilteredForRuleExecution.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, context.get(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME));	
+		recordContextFilteredForRuleExecution.put(FacilioConstants.ContextNames.IS_READING_RULE_WORKFLOW_EXECUTION, (Boolean)context.get(FacilioConstants.ContextNames.IS_READING_RULE_WORKFLOW_EXECUTION));
 
 		instantParallelWorkflowRuleJobContext.put(FacilioConstants.ContextNames.RECORD_CONTEXT_FOR_RULE_EXECUTION, recordContextFilteredForRuleExecution);
 		instantParallelWorkflowRuleJobContext.put(FacilioConstants.ContextNames.WORKFLOW_PARALLEL_RULE_EXECUTION_MAP, workflowRuleExecutionMap);

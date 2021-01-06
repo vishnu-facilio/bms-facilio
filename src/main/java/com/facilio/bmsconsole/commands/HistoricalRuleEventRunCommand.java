@@ -248,6 +248,7 @@ public class HistoricalRuleEventRunCommand extends FacilioCommand implements Pos
 			event.setMessageKey(event.constructMessageKey());
 			event.setAlarmOccurrence(null);
 			event.setBaseAlarm(null);
+			event.setIsLiveEvent(false);
 		}
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

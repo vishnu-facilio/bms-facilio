@@ -994,6 +994,7 @@ public class FacilioConstants {
 		public static final String WORKFLOW_PARALLEL_RULE_EXECUTION_MAP = "workflowParallelRuleExecutionMap";
 		public static final String RECORD_CONTEXT_FOR_RULE_EXECUTION = "recordContextForRuleExecution";
 		public static final String IS_PARALLEL_RULE_EXECUTION= "isParallelRuleExecution";
+		public static final String IS_READING_RULE_WORKFLOW_EXECUTION= "isReadingRuleWorkflowExecution";
 		public static final String PARENT_RULE_FIELD = "parentRuleField";
 		public static final String ON_SUCCESS_FIELD = "onSuccessField";
 		public static final String WORKFLOW_RULE_CACHE_MAP = "workflowRuleCacheMap";
@@ -2242,6 +2243,8 @@ public class FacilioConstants {
 		public static final String ENERGY_COST_CONSTANT = "energyCostConstant";
 		public static final String ENERGY_CARBON_CONSTANT = "energyCarbonConstant";
 		public static final String IS_PARALLEL_RULE_EXECUTION= "isParallelRuleExecution";
+		public static final String IS_READING_RULE_WORKFLOW_EXECUTION= "isReadingRuleWorkflowExecution";
+		public static final String EXECUTE_READING_RULE_COMMAND= "executeReadingRuleCommand";
 		public static final String FORK_READING_POST_PROCESSING = "forkReadingPostProcessing";
 		public static final String IS_PARALLEL_FORMULA_EXECUTION= "isParallelFormulaExecution";
 		public static final String CALCULATE_VM_THROUGH_FORMULA = "calculateVmThroughFormula";

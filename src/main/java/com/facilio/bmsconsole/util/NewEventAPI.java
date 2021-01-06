@@ -20,6 +20,8 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
+
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
@@ -173,9 +175,9 @@ public class NewEventAPI {
 
 		List<BaseEventContext> newList = new ArrayList<>();
 		for (Type type : map.keySet()) {
-			if (CollectionUtils.isNotEmpty(map.get(type))) {
-				continue;
-			}
+//			if (CollectionUtils.isNotEmpty(map.get(type))) {
+//				continue;
+//			}
 			String moduleName = NewEventAPI.getEventModuleName(type);
 			FacilioModule module = modBean.getModule(moduleName);
 
@@ -184,6 +186,20 @@ public class NewEventAPI {
 					.select(modBean.getAllFields(module.getName()))
 					.beanClass(NewEventAPI.getEventClass(type))
 					.andCondition(CriteriaAPI.getIdCondition(map.get(type), module));
+			
+			if(moduleName.equals(FacilioConstants.ContextNames.PRE_EVENT)) {
+				List<FacilioField> fields = modBean.getAllFields(moduleName);
+			    Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+			    
+		        List<LookupField> additionaLookups = new ArrayList<LookupField>();
+		        LookupField ruleField = (LookupField) fieldsAsMap.get("rule");
+		        LookupField subRuleField = (LookupField) fieldsAsMap.get("subRule");
+		        additionaLookups.add(ruleField);
+		        additionaLookups.add(subRuleField);
+		        
+		        builder.fetchSupplements(additionaLookups);
+			}		       
+
 			newList.addAll(builder.get());
 		}
 		return newList;

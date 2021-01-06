@@ -263,9 +263,13 @@ public class PreEventContext extends BaseEventContext {
         if (isHistorical == null) {
             isHistorical = false;
         }
+        
+		ReadingRuleAPI.checkIfHistoricalOrLiveEvent(context, this);
+        Boolean isReadingRuleWorkflowExecution = (Boolean) context.get(FacilioConstants.ContextNames.IS_READING_RULE_WORKFLOW_EXECUTION);
+		isReadingRuleWorkflowExecution = isReadingRuleWorkflowExecution != null ? isReadingRuleWorkflowExecution : false; 
+		
         Map<Long, ReadingRuleAlarmMeta> metaMap = null;
-        if (isHistorical) {
-        	
+        if (isHistorical) { 	
         	BaseEventContext previousBaseEventMeta = (BaseEventContext)context.get(EventConstants.EventContextNames.PREVIOUS_EVENT_META);
 			if(previousBaseEventMeta != null && previousBaseEventMeta instanceof PreEventContext) 
 			{
@@ -289,11 +293,16 @@ public class PreEventContext extends BaseEventContext {
             this.setMessage(alarmMeta.getSubject());
             context.put(EventConstants.EventContextNames.EVENT_LIST, Collections.singletonList(this));
             if (!isHistorical) {
-                FacilioChain addEvent = TransactionChainFactory.getV2AddEventChain(false);
-                FacilioContext addEventContext = addEvent.getContext();
-                addEventContext.put(EventConstants.EventContextNames.EVENT_LIST, context.get(EventConstants.EventContextNames.EVENT_LIST));
-                addEventContext.put(EventConstants.EventContextNames.EVENT_RULE_LIST, context.get(EventConstants.EventContextNames.EVENT_RULE_LIST));
-                addEvent.execute();
+            	if(isReadingRuleWorkflowExecution)  { //For live reading rule event insertion
+					ReadingRuleAPI.insertEventsWithoutAlarmOccurrenceProcessed(Collections.singletonList(this), BaseAlarmContext.Type.PRE_ALARM);
+				}
+				else {
+					FacilioChain addEvent = TransactionChainFactory.getV2AddEventChain(false);
+	                FacilioContext addEventContext = addEvent.getContext();
+	                addEventContext.put(EventConstants.EventContextNames.EVENT_LIST, context.get(EventConstants.EventContextNames.EVENT_LIST));
+	                addEventContext.put(EventConstants.EventContextNames.EVENT_RULE_LIST, context.get(EventConstants.EventContextNames.EVENT_RULE_LIST));
+	                addEvent.execute();
+				}
             }
         }
     }

@@ -49,13 +49,13 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = LogManager.getLogger(ExecuteAllWorkflowsCommand.class.getName());
-	private RuleType[] ruleTypes;
-	private boolean propagateError = true;
+	protected RuleType[] ruleTypes;
+	protected boolean propagateError = true;
 	
-	private Map<String, List> recordMap;
-	private Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap;
+	protected Map<String, List> recordMap;
+	protected Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap;
 	private Context context;
-	private Map<String,List<WorkflowRuleContext>> postRules;
+	protected Map<String,List<WorkflowRuleContext>> postRules;
 	
 	public ExecuteAllWorkflowsCommand(RuleType... ruleTypes) {
 		// TODO Auto-generated constructor stub
@@ -72,37 +72,21 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 	public boolean executeCommand(Context context) throws Exception {
 		try {
 			long startTime = System.currentTimeMillis();
-			ParallelRuleExecutionProp isParallelRuleExecutionEnum = null;
 			Boolean historyReading = (Boolean) context.get(FacilioConstants.ContextNames.HISTORY_READINGS);
 			if (historyReading != null && historyReading==true) {
 				return false;
 			}
-			//FacilioProperties.isProduction() && 
-			Boolean parallelRuleExecutionProp = (Boolean) context.get(FacilioConstants.ContextNames.IS_PARALLEL_RULE_EXECUTION);
-			parallelRuleExecutionProp = parallelRuleExecutionProp != null ? parallelRuleExecutionProp : Boolean.FALSE;
-			if(parallelRuleExecutionProp) {
-				Map<String, String> orgInfoMap = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.IS_PARALLEL_RULE_EXECUTION);
-				if(orgInfoMap != null && MapUtils.isNotEmpty(orgInfoMap)) {
-					String isParallelRuleExecutionProp = orgInfoMap.get(FacilioConstants.OrgInfoKeys.IS_PARALLEL_RULE_EXECUTION);
-					if (isParallelRuleExecutionProp != null && !isParallelRuleExecutionProp.isEmpty() && StringUtils.isNotEmpty(isParallelRuleExecutionProp) && Integer.valueOf(isParallelRuleExecutionProp) != null) {
-						isParallelRuleExecutionEnum = ParallelRuleExecutionProp.valueOf(Integer.valueOf(isParallelRuleExecutionProp));
-					}
-				}
-			}	
 					
 			recordMap = CommonCommandUtil.getRecordMap((FacilioContext) context);
 			changeSetMap = CommonCommandUtil.getChangeSetMap((FacilioContext) context);
 			if(recordMap != null && !recordMap.isEmpty()) {
 				postRules = new HashMap<>();
 				this.context = context;
-				fetchAndExecuteRules((FacilioContext) context, false, isParallelRuleExecutionEnum);
+				fetchAndExecuteRules((FacilioContext) context, false);
 				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
 					LOGGER.info("Time taken to Execute workflows for modules : " + recordMap.keySet() + " is " + (System.currentTimeMillis() - startTime) + " : " + getPrintDebug());
 				}
 			}
-//			if (AccountUtil.getCurrentOrg().getId() == 78l) {
-//				LOGGER.info("ExecuteAllWorkflowsCommand Time taken to Execute workflows for modules : "+recordMap.keySet()+" is "+(System.currentTimeMillis() - startTime) + " : " + getPrintDebug());	
-//			}
 		}
 		catch(Exception e) {
 			StringBuilder builder = new StringBuilder("Error during execution of rules of type : ")
@@ -111,6 +95,7 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 											.append(" this.propagateError " +this.propagateError)
 											.append(" for this.ruleTypes "+Arrays.toString(ruleTypes))
 											;
+			e.printStackTrace();
 			LOGGER.error(builder.toString(), e);
 //			CommonCommandUtil.emailException("RULE EXECUTION FAILED - "+AccountUtil.getCurrentOrg().getId(),builder.toString(), e);
 			if (propagateError) {
@@ -143,7 +128,7 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 		return parentCriteria;
 	}
 
-	private void fetchAndExecuteRules(FacilioContext context, boolean isPostExecute, ParallelRuleExecutionProp isParallelRuleExecutionEnum) throws Exception {
+	protected void fetchAndExecuteRules(FacilioContext context, boolean isPostExecute) throws Exception {
 		for (Map.Entry<String, List> entry : recordMap.entrySet()) {
 			String moduleName = entry.getKey();
 			if (moduleName == null || moduleName.isEmpty() || entry.getValue() == null || entry.getValue().isEmpty()) {
@@ -155,109 +140,61 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 				Map<Long, List<UpdateChangeSet>> currentChangeSet = changeSetMap == null ? null : changeSetMap.get(moduleName);
 				if (currentChangeSet != null && !currentChangeSet.isEmpty()) {
 					activities.add(EventType.FIELD_CHANGE);
-				}
+				}	
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule module = modBean.getModule(moduleName);
 				
-				if(isParallelRuleExecutionEnum !=null && isParallelRuleExecutionEnum == ParallelRuleExecutionProp.MODULE_BASED) {	
-					System.out.println("moduleName Jobcreated"+moduleName);
-					FacilioTimer.scheduleInstantJob("rule","ParallelModuleBasedWorkflowRuleExecutionJob", WorkflowRuleAPI.addAdditionalPropsForModuleBasedInstantJob(moduleName, new LinkedList<>(entry.getValue()), currentChangeSet, activities, context, ruleTypes));				
-				}
-				else 
-				{	
-					System.out.println("moduleName JobNotcreated"+moduleName);
-					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-					FacilioModule module = modBean.getModule(moduleName);
-					
-					long currentTime = System.currentTimeMillis();
-					List<WorkflowRuleContext> workflowRules;
-					if (isPostExecute ) {
-						if (postRules.containsKey(moduleName)) {
-							workflowRules = postRules.get(moduleName);
-						}
-						else {
-							continue;
-						}
+				long currentTime = System.currentTimeMillis();
+				List<WorkflowRuleContext> workflowRules;
+				if (isPostExecute ) {
+					if (postRules.containsKey(moduleName)) {
+						workflowRules = postRules.get(moduleName);
 					}
 					else {
-						workflowRules = getWorkflowRules(module, activities, entry.getValue(), context);
+						continue;
 					}
+				}
+				else {
+					workflowRules = getWorkflowRules(module, activities, entry.getValue(), context);
+				}
 
-					if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
-						LOGGER.info("Time taken to fetch workflow: " + (System.currentTimeMillis() - currentTime) + " : " + getPrintDebug());
-					}
-					currentTime = System.currentTimeMillis();
-					if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
-						LOGGER.info(MessageFormat.format("Number of (rules, records, parallalExecution) : ({0}, {1}, {2})",
-								(workflowRules == null ? 0 : workflowRules.size()),
-								(entry.getValue() == null ? 0 : entry.getValue().size()),
-								isParallelRuleExecutionEnum
-								)
-						);
-					}
-
-					Map<String, List<WorkflowRuleContext>> workflowRuleCacheMap = new HashMap<String, List<WorkflowRuleContext>>();
-					if (workflowRules != null && !workflowRules.isEmpty()) {
-						long processStartTime = System.currentTimeMillis();
-						
-						List<WorkflowRuleContext> postRulesList = null;
-						if (!isPostExecute) {
-							postRulesList = postRules.get(moduleName);
-							if (postRulesList == null) {
-								postRulesList = new ArrayList<>();
-							}
+				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
+					LOGGER.info("Time taken to fetch workflow: " + (System.currentTimeMillis() - currentTime) + " : " + getPrintDebug());
+				}
+				Map<String, List<WorkflowRuleContext>> workflowRuleCacheMap = new HashMap<String, List<WorkflowRuleContext>>();
+				if (workflowRules != null && !workflowRules.isEmpty()) {
+					List<WorkflowRuleContext> postRulesList = null;
+					if (!isPostExecute) {
+						postRulesList = postRules.get(moduleName);
+						if (postRulesList == null) {
+							postRulesList = new ArrayList<>();
 						}
-						
-						LinkedHashMap<RuleType, List<WorkflowRuleContext>> ruleTypeVsWorkflowRules = WorkflowRuleAPI.groupWorkflowRulesByRuletype(workflowRules, postRulesList);
-						if (postRulesList != null && !postRulesList.isEmpty()) {
-							postRules.put(moduleName, postRulesList);
-						}
-						List<WorkflowRuleContext> workflowRulesExcludingReadingRule = new LinkedList<WorkflowRuleContext>();
-						List<WorkflowRuleContext> readingRules = new LinkedList<WorkflowRuleContext>();
-						WorkflowRuleAPI.groupWorkflowRulesByInstantJobs(ruleTypeVsWorkflowRules, workflowRulesExcludingReadingRule, readingRules);
-						LOGGER.debug(MessageFormat.format("Time taken for splitting rules : {0}", System.currentTimeMillis() - processStartTime));
-						
-						List records = new LinkedList<>(entry.getValue());
-						Iterator it = records.iterator();
-						long totalInstantJobAddTime = 0;
-						int jobs = 0;
-
-						while (it.hasNext()) {
-							Object record = it.next();		
-							if(isParallelRuleExecutionEnum!=null && isParallelRuleExecutionEnum == ParallelRuleExecutionProp.RECORD_BASED) {
-								processStartTime = System.currentTimeMillis();									
-								if(readingRules != null && !readingRules.isEmpty())  {
-									FacilioTimer.scheduleInstantJob("rule","ParallelRecordBasedWorkflowRuleExecutionJob", ReadingRuleAPI.addAdditionalPropsForRecordBasedInstantJob(module, record, currentChangeSet, activities, context, WorkflowRuleAPI.getAllowedInstantJobWorkflowRuleTypes()));
-									jobs++;
-									long timeTaken = System.currentTimeMillis() - processStartTime;
-									totalInstantJobAddTime += timeTaken;
-								}
-								if(workflowRulesExcludingReadingRule != null && !workflowRulesExcludingReadingRule.isEmpty())  {
-									FacilioTimer.scheduleInstantJob("rule","ParallelRecordBasedWorkflowRuleExecutionJob", WorkflowRuleAPI.addAdditionalPropsForNonReadingRuleRecordBasedInstantJob(module, record, currentChangeSet, activities, context, WorkflowRuleAPI.getNonReadingRuleWorkflowRuleTypes(ruleTypes)));
-									jobs++;
-									long timeTaken = System.currentTimeMillis() - processStartTime;
-									totalInstantJobAddTime += timeTaken;
-								}			
-							}
-							else {
-								List<UpdateChangeSet> changeSet = currentChangeSet == null ? null : currentChangeSet.get( ((ModuleBaseWithCustomFields)record).getId() );
-								Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(module.getName(), record, getOrgPlaceHolders());
-								WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(workflowRules, module, record, changeSet, recordPlaceHolders, context,propagateError, workflowRuleCacheMap, false, activities);
-							}		
-						}
-						if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
-							LOGGER.info(MessageFormat.format("Total Time taken for adding {0} instant jobs : {1}", jobs, totalInstantJobAddTime));
-						}
-					}
-					if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
-						LOGGER.info("Time taken to execute workflow: " + (System.currentTimeMillis() - currentTime) + " : " + getPrintDebug());
 					}
 					
+					if (postRulesList != null && !postRulesList.isEmpty()) {
+						postRules.put(moduleName, postRulesList);
+					}
+					
+					List records = new LinkedList<>(entry.getValue());
+					Iterator it = records.iterator();
+
+					while (it.hasNext()) {
+						Object record = it.next();			
+						List<UpdateChangeSet> changeSet = currentChangeSet == null ? null : currentChangeSet.get( ((ModuleBaseWithCustomFields)record).getId() );
+						Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(module.getName(), record, getOrgPlaceHolders());
+						WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(workflowRules, module, record, changeSet, recordPlaceHolders, context,propagateError, workflowRuleCacheMap, false, activities);
+								
+					}
+				}
+				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
+					LOGGER.info("Time taken to execute workflow: " + (System.currentTimeMillis() - currentTime) + " : " + getPrintDebug());
 				}	
 			}
 		}
 	}
 
 	private Map<String, Object> orgPlaceHolders = null;
-	private Map<String, Object> getOrgPlaceHolders() throws Exception {
+	protected Map<String, Object> getOrgPlaceHolders() throws Exception {
 		if (orgPlaceHolders == null) {
 			orgPlaceHolders = WorkflowRuleAPI.getOrgPlaceHolders();
 		}
@@ -279,7 +216,7 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 		long time = System.currentTimeMillis();
 		try {
 			if (postRules != null && !postRules.isEmpty()) {
-				fetchAndExecuteRules((FacilioContext) context, true, null);
+				fetchAndExecuteRules((FacilioContext) context, true);
 			}
 		}
 		catch (Exception e) {
