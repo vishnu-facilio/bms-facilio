@@ -34,6 +34,25 @@ public class ControlAction extends V3Action {
         return SUCCESS;
 	}
 	
+	public String updateControlScheduleException() throws Exception {
+		FacilioChain chain = TransactionChainFactoryV3.getUpdateControlScheduleExceptionChain();
+		FacilioContext context = chain.getContext();
+		context.put(ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_CONTEXT, exception);
+		chain.execute();
+		setData(ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_CONTEXT, exception);
+        return SUCCESS;
+	}
+	
+	public String deleteControlScheduleException() throws Exception {
+		FacilioChain chain = TransactionChainFactoryV3.getGenricDeleteChain();
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID, exception.getId());
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_MODULE_NAME);
+		chain.execute();
+		setData(ControlScheduleUtil.CONTROL_SCHEDULE_CONTEXT, exception);
+        return SUCCESS;
+	}
+	
 	public String addControlGroupRoutine() throws Exception {
 		FacilioChain chain = TransactionChainFactoryV3.getAddControlGroupRoutineChain();
 		FacilioContext context = chain.getContext();

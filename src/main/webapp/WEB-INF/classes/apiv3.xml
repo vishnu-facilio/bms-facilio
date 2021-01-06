@@ -194,7 +194,7 @@
         </action>
 		<action name="exception"
                 class="com.facilio.bmsconsoleV3.actions.ControlAction"
-                method="addControlScheduleException">
+                method="updateControlScheduleException">
         </action>
         <action name="routine"
                 class="com.facilio.bmsconsoleV3.actions.ControlAction"
@@ -213,7 +213,7 @@
         </action>
 		<action name="exception"
                 class="com.facilio.bmsconsoleV3.actions.ControlAction"
-                method="addControlScheduleException">
+                method="deleteControlScheduleException">
         </action>
         <action name="routine"
                 class="com.facilio.bmsconsoleV3.actions.ControlAction"
