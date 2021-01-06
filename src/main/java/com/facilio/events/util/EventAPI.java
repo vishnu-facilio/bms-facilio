@@ -14,6 +14,9 @@ import java.util.Map;
 import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.BmsAggregateOperators;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -58,7 +61,9 @@ public class EventAPI {
 //    }
 	
 	private static final Logger LOGGER = LogManager.getLogger(EventAPI.class.getName());
-	
+	private static final FacilioModule SOURCE_TO_RESOURCE_MODULE = EventConstants.EventModuleFactory.getSourceToResourceMappingModule();
+	private static final List<FacilioField> SOURCE_TO_RESOURCE_FIELDS = EventConstants.EventFieldFactory.getSourceToResourceMappingFields();
+
 	public static void populateProcessEventParams(FacilioContext context, long timestamp, JSONObject object, List<EventRuleContext> eventRules, Map<String, Integer> eventCountMap, long lastEventTime) {
     	context.put(EventConstants.EventContextNames.EVENT_RULE_LIST, eventRules);
     	context.put(EventConstants.EventContextNames.EVENT_TIMESTAMP, timestamp);
@@ -266,8 +271,8 @@ public class EventAPI {
 		prop.put(AgentConstants.AGENT_ID, agentId);
 
 		GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
-																.table(EventConstants.EventModuleFactory.getSourceToResourceMappingModule().getTableName())
-																.fields(EventConstants.EventFieldFactory.getSourceToResourceMappingFields())
+																.table(SOURCE_TO_RESOURCE_MODULE.getTableName())
+																.fields(SOURCE_TO_RESOURCE_FIELDS)
 																.addRecord(prop);
 		
 		insertRecordBuilder.save();
@@ -275,46 +280,65 @@ public class EventAPI {
 	}
 	
 	public static void updateResourceForSource(long assetId, String source, long orgId,long controllerId) throws SQLException {
-		FacilioModule module=EventConstants.EventModuleFactory.getSourceToResourceMappingModule();
 		Map<String, Object> prop = new HashMap<>();
 		prop.put(EventConstants.EventContextNames.RESOURCE_ID, assetId);
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-														.table(module.getTableName())
-														.fields(EventConstants.EventFieldFactory.getSourceToResourceMappingFields())
+														.table(SOURCE_TO_RESOURCE_MODULE.getTableName())
+														.fields(SOURCE_TO_RESOURCE_FIELDS)
 //														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition("SOURCE",EventConstants.EventContextNames.SOURCE, source, StringOperators.IS))
-														.andCondition(getControllerIdCondition(controllerId, module));		
+														.andCondition(getControllerIdCondition(controllerId, SOURCE_TO_RESOURCE_MODULE));
 		updateBuilder.update(prop);
 	}
 
 	public static Map<String, Object> getSource(long id) throws Exception {
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-				.table(EventConstants.EventModuleFactory.getSourceToResourceMappingModule().getTableName())
-				.select(EventConstants.EventFieldFactory.getSourceToResourceMappingFields())
-				.andCondition(CriteriaAPI.getIdCondition(id, EventConstants.EventModuleFactory.getSourceToResourceMappingModule()));
+				.table(SOURCE_TO_RESOURCE_MODULE.getTableName())
+				.select(SOURCE_TO_RESOURCE_FIELDS)
+				.andCondition(CriteriaAPI.getIdCondition(id,SOURCE_TO_RESOURCE_MODULE));
 		return selectRecordBuilder.fetchFirst();
 	}
 	
 	public static void updateResourceForSource(long assetId, long id, long orgId) throws SQLException {
-		FacilioModule module=EventConstants.EventModuleFactory.getSourceToResourceMappingModule();
 		Map<String, Object> prop = new HashMap<>();
 		prop.put(EventConstants.EventContextNames.RESOURCE_ID, assetId);
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-														.table(module.getTableName())
-														.fields(EventConstants.EventFieldFactory.getSourceToResourceMappingFields())
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-														.andCondition(CriteriaAPI.getIdCondition(id, module));		
+														.table(SOURCE_TO_RESOURCE_MODULE.getTableName())
+														.fields(SOURCE_TO_RESOURCE_FIELDS)
+														.andCondition(CriteriaAPI.getIdCondition(id, SOURCE_TO_RESOURCE_MODULE));
 		updateBuilder.update(prop);
 	}
-	public static List<Map<String, Object>> getAllSources(long orgId) throws Exception {
+	public static List<Map<String, Object>> getAllSources(FacilioContext context) throws Exception {
+		boolean fetchCount = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_COUNT, false);
+		JSONObject pagination = (JSONObject) context.getOrDefault(FacilioConstants.ContextNames.PAGINATION,null);
+		long agentId = (long)context.getOrDefault(AgentConstants.AGENT_ID,-1);
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-																.table(EventConstants.EventModuleFactory.getSourceToResourceMappingModule().getTableName())
-																.select(EventConstants.EventFieldFactory.getSourceToResourceMappingFields())
-																.andCustomWhere("ORGID = ?", orgId);
+																.table(SOURCE_TO_RESOURCE_MODULE.getTableName())
+																.select(SOURCE_TO_RESOURCE_FIELDS);
+		if(agentId > 0){
+			selectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(SOURCE_TO_RESOURCE_MODULE),String.valueOf(agentId),NumberOperators.EQUALS));
+		}
+		if (pagination != null && !pagination.isEmpty()) {
+			int page = (int) pagination.get("page");
+			int perPage = (int) pagination.get("perPage");
 
+			int offset = ((page - 1) * perPage);
+			if (offset < 0) {
+				offset = 0;
+			}
+			selectRecordBuilder.offset(offset);
+			selectRecordBuilder.limit(perPage);
+		}
+//		else { temp comment..
+//			selectRecordBuilder.limit(50);
+//		}
+		if (fetchCount) {
+			selectRecordBuilder.select(new ArrayList<>()).aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT,
+					FieldFactory.getIdField(SOURCE_TO_RESOURCE_MODULE));
+		}
 		return selectRecordBuilder.get();
 	}
-	
+
 	public static EventContext getEvent(long id) throws Exception {
 		List<EventContext> events = getEvents(Collections.singletonList(id));
 		if (CollectionUtils.isNotEmpty(events)) {

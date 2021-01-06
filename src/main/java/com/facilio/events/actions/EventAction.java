@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.agentv2.AgentConstants;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
@@ -24,12 +27,14 @@ import com.facilio.events.util.EventAPI;
 import com.facilio.events.util.EventRulesAPI;
 
 @SuppressWarnings("serial")
+@Getter @Setter
 public class EventAction extends FacilioAction {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private long agentId=-1;
 	private JSONObject payload;
 	public JSONObject getPayload() {
 		return payload;
@@ -298,7 +303,10 @@ public class EventAction extends FacilioAction {
 	}
 	
 	public String getAllSources() throws Exception {
-		setSources(EventAPI.getAllSources(AccountUtil.getCurrentOrg().getOrgId()));
+		FacilioContext context =new FacilioContext();
+		context.put(FacilioConstants.ContextNames.PAGINATION,getPagination());
+		context.put(AgentConstants.AGENT_ID,getAgentId());
+		setSources(EventAPI.getAllSources(context));
 		setResult("sources", getSources());
 		if (getSources() != null) {
 			List<Long> resourceIds = getSources().stream().filter(source -> source.get("resourceId") != null)
@@ -310,7 +318,14 @@ public class EventAction extends FacilioAction {
 		}
 		return SUCCESS;
 	}
-	
+
+	public String getCount() throws Exception {
+		FacilioContext context =new FacilioContext();
+		context.put(FacilioConstants.ContextNames.FETCH_COUNT,true);
+		context.put(AgentConstants.AGENT_ID,getAgentId());
+		setResult("count", EventAPI.getAllSources(context).get(0).get(AgentConstants.ID));
+		return SUCCESS;
+	}
 	public String updateSourceWithResource() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, id);
