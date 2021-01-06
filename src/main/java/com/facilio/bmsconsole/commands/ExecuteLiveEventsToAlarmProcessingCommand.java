@@ -78,7 +78,6 @@ public class ExecuteLiveEventsToAlarmProcessingCommand extends FacilioCommand{
 				setSeverityPropsForBaseEvents(baseEvents);
 			}
 			
-			//final batch of historical events to proceed with system autoclear
 			if (baseEvents != null && !baseEvents.isEmpty())
 			{
 				baseEvents = NewEventAPI.getExtendedEvent(baseEvents);
@@ -116,6 +115,7 @@ public class ExecuteLiveEventsToAlarmProcessingCommand extends FacilioCommand{
 				baseEvent.setSeverity(alarmSeverityMap.get(baseEvent.getSeverity().getId()));
 				baseEvent.getSeverity().setSeverity(alarmSeverityMap.get(baseEvent.getSeverity().getId()).getSeverity());
 				baseEvent.setSeverityString(alarmSeverityMap.get(baseEvent.getSeverity().getId()).getSeverity());
+				baseEvent.setEventProcessingStatus(BaseEventContext.EventProcessingStatus.ALARM_GENERATED.getIndex());
 			}				
 		}
 	}
