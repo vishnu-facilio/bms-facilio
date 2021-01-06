@@ -58,26 +58,6 @@ public class AddControlScheduleCommand extends FacilioCommand {
         
         insert.save();
         
-        if(schedule.getExceptions() != null) {
-        	
-        	GenericInsertRecordBuilder insert1 = new GenericInsertRecordBuilder()
-        			.table(ModuleFactory.getControlScheduleVsExceptionModule().getTableName())
-        			.fields(FieldFactory.getControlScheduleVsExceptionFields())
-        			;
-        	
-        	for(ControlScheduleExceptionContext exception : schedule.getExceptions()) {
-        		Map<String,Object> exceptionMap = new HashMap<String, Object>();
-        		
-        		exceptionMap.put("scheduleId", schedule.getId());
-        		exceptionMap.put("exceptionId", exception.getId());
-        		exceptionMap.put("orgId", schedule.getOrgId());
-        		
-        		insert1.addRecord(exceptionMap);
-        	}
-        	
-        	insert1.save();
-        }
-        
 		return false;
 	}
 

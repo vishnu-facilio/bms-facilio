@@ -539,6 +539,20 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getAddControlScheduleChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddControlScheduleCommand());
+        c.addCommand(new DeleteAndAddControlScheduleExceptionCommand());
+        return c;
+    }
+    
+    public static FacilioChain getUpdateControlScheduleChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new UpdateControlScheduleCommand());
+        c.addCommand(new DeleteAndAddControlScheduleExceptionCommand());
+        return c;
+    }
+    
+    public static FacilioChain getGenricDeleteChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GenericDeleteCommand());
         return c;
     }
     

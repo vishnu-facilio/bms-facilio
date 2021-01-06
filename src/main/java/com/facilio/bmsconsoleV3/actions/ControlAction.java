@@ -3,6 +3,7 @@ package com.facilio.bmsconsoleV3.actions;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.v3.V3Action;
 
@@ -47,6 +48,25 @@ public class ControlAction extends V3Action {
 		FacilioChain chain = TransactionChainFactoryV3.getAddControlScheduleChain();
 		FacilioContext context = chain.getContext();
 		context.put(ControlScheduleUtil.CONTROL_SCHEDULE_CONTEXT, controlScheduleContext);
+		chain.execute();
+		setData(ControlScheduleUtil.CONTROL_SCHEDULE_CONTEXT, controlScheduleContext);
+        return SUCCESS;
+	}
+	
+	public String updateControlSchedule() throws Exception {
+		FacilioChain chain = TransactionChainFactoryV3.getUpdateControlScheduleChain();
+		FacilioContext context = chain.getContext();
+		context.put(ControlScheduleUtil.CONTROL_SCHEDULE_CONTEXT, controlScheduleContext);
+		chain.execute();
+		setData(ControlScheduleUtil.CONTROL_SCHEDULE_CONTEXT, controlScheduleContext);
+        return SUCCESS;
+	}
+	
+	public String deleteControlSchedule() throws Exception {
+		FacilioChain chain = TransactionChainFactoryV3.getGenricDeleteChain();
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID, controlScheduleContext.getId());
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, ControlScheduleUtil.CONTROL_SCHEDULE_MODULE_NAME);
 		chain.execute();
 		setData(ControlScheduleUtil.CONTROL_SCHEDULE_CONTEXT, controlScheduleContext);
         return SUCCESS;
