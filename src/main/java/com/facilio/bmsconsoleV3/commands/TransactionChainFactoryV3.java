@@ -548,6 +548,12 @@ public class TransactionChainFactoryV3 {
         return c;
     }
     
+    public static FacilioChain getAddControlGroupRoutineChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddControlGroupRoutineCommand());
+        return c;
+    }
+    
     public static FacilioChain getAddControlGroupChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddControlGroupV2Command());

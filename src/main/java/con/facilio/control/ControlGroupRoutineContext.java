@@ -9,6 +9,10 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.v3.context.V3Context;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter @Setter
 public class ControlGroupRoutineContext extends V3Context {
 
 	/**
@@ -20,27 +24,6 @@ public class ControlGroupRoutineContext extends V3Context {
 	ControlGroupContext controlGroup;
 	JSONObject scheduleJson;
 	Integer sequence;
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public ControlGroupContext getControlGroup() {
-		return controlGroup;
-	}
-	public void setControlGroup(ControlGroupContext controlGroup) {
-		this.controlGroup = controlGroup;
-	}
-	public JSONObject getScheduleJson() {
-		return scheduleJson;
-	}
-	public void setScheduleJson(JSONObject scheduleJson) {
-		this.scheduleJson = scheduleJson;
-	}
-	public Integer getSequence() {
-		return sequence;
-	}
 	
 	public ScheduleInfo scheduleAsObj() throws Exception {
 		if(getScheduleJson() != null) {
@@ -49,21 +32,11 @@ public class ControlGroupRoutineContext extends V3Context {
 		return null;
 	}
 	
-	public void setSequence(Integer sequence) {
-		this.sequence = sequence;
-	}
+	List<ControlGroupRoutineSectionContext> sections;
 	
-	List<ControlGroupFieldContext> fields;
-	
-	public List<ControlGroupFieldContext> getFields() {
-		return fields;
-	}
-	public void setFields(List<ControlGroupFieldContext> fields) {
-		this.fields = fields;
-	}
-	public void addField(ControlGroupFieldContext field) {
-		this.fields = this.fields == null ? new ArrayList<ControlGroupFieldContext>() : this.fields; 
+	public void addSection(ControlGroupRoutineSectionContext section) {
+		this.sections = this.sections == null ? new ArrayList<ControlGroupRoutineSectionContext>() : this.sections; 
 		
-		this.fields.add(field);
+		this.sections.add(section);
 	}
 }

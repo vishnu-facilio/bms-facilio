@@ -7,6 +7,7 @@ import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.v3.V3Action;
 
 import con.facilio.control.ControlGroupContext;
+import con.facilio.control.ControlGroupRoutineContext;
 import con.facilio.control.ControlScheduleContext;
 import con.facilio.control.ControlScheduleExceptionContext;
 
@@ -21,6 +22,7 @@ public class ControlAction extends V3Action {
 	ControlGroupContext controlGroupContext;
 	
 	ControlScheduleExceptionContext exception;
+	ControlGroupRoutineContext routine;
 	
 	public String addControlScheduleException() throws Exception {
 		FacilioChain chain = TransactionChainFactoryV3.getAddControlScheduleExceptionChain();
@@ -28,6 +30,15 @@ public class ControlAction extends V3Action {
 		context.put(ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_CONTEXT, exception);
 		chain.execute();
 		setData(ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_CONTEXT, exception);
+        return SUCCESS;
+	}
+	
+	public String addControlGroupRoutine() throws Exception {
+		FacilioChain chain = TransactionChainFactoryV3.getAddControlGroupRoutineChain();
+		FacilioContext context = chain.getContext();
+		context.put(ControlScheduleUtil.CONTROL_GROUP_ROUTINE_CONTEXT, routine);
+		chain.execute();
+		setData(ControlScheduleUtil.CONTROL_GROUP_ROUTINE_CONTEXT, routine);
         return SUCCESS;
 	}
 	
@@ -91,5 +102,15 @@ public class ControlAction extends V3Action {
 
 	public void setException(ControlScheduleExceptionContext exception) {
 		this.exception = exception;
+	}
+
+
+	public ControlGroupRoutineContext getRoutine() {
+		return routine;
+	}
+
+
+	public void setRoutine(ControlGroupRoutineContext routine) {
+		this.routine = routine;
 	}
 }

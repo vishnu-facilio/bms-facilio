@@ -177,6 +177,10 @@
                 class="com.facilio.bmsconsoleV3.actions.ControlAction"
                 method="addControlScheduleException">
         </action>
+        <action name="routine"
+                class="com.facilio.bmsconsoleV3.actions.ControlAction"
+                method="addControlGroupRoutine">
+        </action>
     </package>
 	
     <package name="picklistApiv3" namespace="/api/v3/picklist"

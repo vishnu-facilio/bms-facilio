@@ -15,6 +15,7 @@ public class ControlGroupFieldContext extends V3Context {
 	ControlGroupContext controlGroup;
 	ControlGroupAssetContext controlGroupAsset;
 	ControlGroupRoutineContext routine;
+	ControlGroupRoutineSectionContext routineSection;
 	Long fieldId;
 	FacilioField field;
 	String trueVal;
@@ -169,5 +170,19 @@ public class ControlGroupFieldContext extends V3Context {
 
 	public void setFalseVal(String falseVal) {
 		this.falseVal = falseVal;
+	}
+
+
+
+
+	public ControlGroupRoutineSectionContext getRoutineSection() {
+		return routineSection;
+	}
+
+
+
+
+	public void setRoutineSection(ControlGroupRoutineSectionContext routineSection) {
+		this.routineSection = routineSection;
 	}
 } 

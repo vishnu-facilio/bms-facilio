@@ -29,6 +29,7 @@ import con.facilio.control.ControlGroupAssetContext;
 import con.facilio.control.ControlGroupContext;
 import con.facilio.control.ControlGroupFieldContext;
 import con.facilio.control.ControlGroupRoutineContext;
+import con.facilio.control.ControlGroupRoutineSectionContext;
 import con.facilio.control.ControlGroupSection;
 import con.facilio.control.ControlScheduleContext;
 import con.facilio.control.ControlScheduleExceptionContext;
@@ -45,14 +46,15 @@ public class ControlScheduleUtil {
 	public static final String CONTROL_GROUP_ASSET_MODULE_NAME = "controlGroupAsset";
 	public static final String CONTROL_GROUP_ASSET_FIELD_MODULE_NAME = "controlGroupField";
 	public static final String CONTROL_GROUP_ROUTINE_MODULE_NAME = "controlGroupRoutine";
+	public static final String CONTROL_GROUP_ROUTINE_SECTION_MODULE_NAME = "controlGroupRoutineSection";
 	
 	public static final String CONTROL_SCHEDULE_UNPLANNED_SLOTS_MODULE_NAME = "controlScheduleSlots";
 	public static final String CONTROL_SCHEDULE_PLANNED_SLOTS_MODULE_NAME = "controlScheduleGroupedSlots";
 	
-	
 	public static final String CONTROL_SCHEDULE_EXCEPTION_CONTEXT = "controlScheduleExceptionContext";
 	public static final String CONTROL_SCHEDULE_CONTEXT = "controlScheduleContext";
 	public static final String CONTROL_GROUP_CONTEXT = "controlGroupContext";
+	public static final String CONTROL_GROUP_ROUTINE_CONTEXT = "controlGroupRoutineContext";
 	
 	public static final String CONTROL_GROUP_UNPLANNED_SLOTS = "controlGroupUnplanedSlots";
 	public static final String CONTROL_GROUP_PLANNED_SLOTS = "controlGroupplanedSlots";
@@ -64,7 +66,12 @@ public class ControlScheduleUtil {
 		
 		for(ControlScheduleSlot slot : slots) {
 			if(slot.getRoutine() != null) {
-				List<ControlGroupFieldContext> controlFields = slot.getRoutine().getFields();
+				List<ControlGroupFieldContext> controlFields = new ArrayList<>();
+				List<ControlGroupRoutineSectionContext> sections = slot.getRoutine().getSections();
+				
+				for(ControlGroupRoutineSectionContext section :sections) {
+					controlFields.addAll(section.getFields());
+				}
 				
 				for(ControlGroupFieldContext controlField : controlFields) {
 					
@@ -374,15 +381,15 @@ public class ControlScheduleUtil {
 			routineMap.put(routine.getId(), routine);
 		}
 		
-		if(!routineMap.isEmpty()) {
-			List<ControlGroupFieldContext> routinefields =  ControlScheduleUtil.fetchRecord(ControlGroupFieldContext.class, CONTROL_GROUP_ASSET_FIELD_MODULE_NAME, null,CriteriaAPI.getCondition("ROUTINE_ID", "routine", StringUtils.join(routineMap.keySet(), ","), NumberOperators.EQUALS));
-			
-			for(ControlGroupFieldContext routinefield :routinefields) {
-				
-				ControlGroupRoutineContext routine = routineMap.get(routinefield.getRoutine().getId());
-				routine.addField(routinefield);
-			}
-		}
+//		if(!routineMap.isEmpty()) {
+//			List<ControlGroupFieldContext> routinefields =  ControlScheduleUtil.fetchRecord(ControlGroupFieldContext.class, CONTROL_GROUP_ASSET_FIELD_MODULE_NAME, null,CriteriaAPI.getCondition("ROUTINE_ID", "routine", StringUtils.join(routineMap.keySet(), ","), NumberOperators.EQUALS));
+//			
+//			for(ControlGroupFieldContext routinefield :routinefields) {
+//				
+//				ControlGroupRoutineContext routine = routineMap.get(routinefield.getRoutine().getId());
+//				routine.addField(routinefield);
+//			}
+//		}
 		
 		return group;
 	}
