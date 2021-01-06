@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
 
 import com.facilio.modules.FieldUtil;
 import com.facilio.tasker.ScheduleInfo;
+import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.V3Context;
 
 import lombok.Getter;
@@ -25,9 +27,20 @@ public class ControlGroupRoutineContext extends V3Context {
 	JSONObject scheduleJson;
 	Integer sequence;
 	
+	public String getScheduleJson() {
+		if(scheduleJson != null) {
+			return scheduleJson.toJSONString();
+		}
+		return null;
+	}
+	
+	public void setScheduleJson(String scheduleJson) throws ParseException {
+		this.scheduleJson = FacilioUtil.parseJson(scheduleJson);
+	}
+	
 	public ScheduleInfo scheduleAsObj() throws Exception {
 		if(getScheduleJson() != null) {
-			return FieldUtil.getAsBeanFromJson(getScheduleJson(), ScheduleInfo.class);
+			return FieldUtil.getAsBeanFromJson(scheduleJson, ScheduleInfo.class);
 		}
 		return null;
 	}

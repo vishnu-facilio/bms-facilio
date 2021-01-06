@@ -60,15 +60,15 @@ public class ControlAction extends V3Action {
 			chain.execute();
 			setData(ControlScheduleUtil.CONTROL_GROUP_CONTEXT, controlGroupContext);
 			
-			long groupId = controlGroupContext.getId();
-			
-			FacilioChain chain1 = TransactionChainFactoryV3.planControlGroupSlotsAndRoutines();
-			
-			FacilioContext context1 = chain1.getContext();
-			
-			context1.put(ControlScheduleUtil.CONTROL_GROUP_MODULE_NAME, ControlScheduleUtil.getControlGroup(groupId));
-			
-			chain1.execute();
+//			long groupId = controlGroupContext.getId();
+//			
+//			FacilioChain chain1 = TransactionChainFactoryV3.planControlGroupSlotsAndRoutines();
+//			
+//			FacilioContext context1 = chain1.getContext();
+//			
+//			context1.put(ControlScheduleUtil.CONTROL_GROUP_MODULE_NAME, ControlScheduleUtil.getControlGroup(groupId));
+//			
+//			chain1.execute();
 			
 	        return SUCCESS;
 		}

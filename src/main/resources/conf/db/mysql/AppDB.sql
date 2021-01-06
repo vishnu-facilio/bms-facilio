@@ -28265,7 +28265,6 @@ CREATE TABLE IF NOT EXISTS Facility_Booking_Payments (
   `ORGID` BIGINT NOT NULL,
   `MODULEID` BIGINT NOT NULL,
   `FORM_ID` BIGINT NULL,
-  `CONTROL_SCHEDULE` BIGINT NOT NULL,
   `TYPE` INT NOT NULL,
   `OFF_SCHEDULE` BOOLEAN null,
   `START_SCHEDULE_JSON` VARCHAR(1000) NULL,
@@ -28274,11 +28273,6 @@ CREATE TABLE IF NOT EXISTS Facility_Booking_Payments (
   `END_TIME` BIGINT NULL,
   `EXCLUDE_PARENT_SCHEDULE` TINYINT NULL,
   PRIMARY KEY (`ID`),
-  CONSTRAINT `Control_Schedule_Exceptions_fk_control_schedule`
-    FOREIGN KEY (`CONTROL_SCHEDULE`)
-    REFERENCES  `Control_Schedule` (`ID`)
-    ON DELETE CASCADE
-    ON UPDATE NO ACTION,
   CONSTRAINT `Control_Schedule_Exceptions_fk_module_id`
   FOREIGN KEY (`MODULEID`)
   REFERENCES  `Modules` (`MODULEID`)
@@ -28286,6 +28280,24 @@ CREATE TABLE IF NOT EXISTS Facility_Booking_Payments (
   ON UPDATE NO ACTION,
   CONSTRAINT Control_Schedule_Exceptions_FK_FORM_ID FOREIGN KEY (FORM_ID) REFERENCES Forms(ID) ON DELETE SET NULL);
 
+  CREATE TABLE `bmslocal`.`Control_Schedule_vs_Exception` (
+  `ID` BIGINT NOT NULL AUTO_INCREMENT,
+  `ORGID` BIGINT NOT NULL,
+  `SCHEDULE_ID` BIGINT NOT NULL,
+  `EXCEPTION_ID` BIGINT NOT NULL,
+  PRIMARY KEY (`ID`),
+  INDEX `Control_Schedule_vs_Exception_schedule_id_idx` (`SCHEDULE_ID` ASC) VISIBLE,
+  INDEX `Control_Schedule_vs_Exception_exception_id_idx` (`EXCEPTION_ID` ASC) VISIBLE,
+  CONSTRAINT `Control_Schedule_vs_Exception_schedule_id`
+    FOREIGN KEY (`SCHEDULE_ID`)
+    REFERENCES `bmslocal`.`Control_Schedule` (`ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `Control_Schedule_vs_Exception_exception_id`
+    FOREIGN KEY (`EXCEPTION_ID`)
+    REFERENCES `bmslocal`.`Control_Schedule_Exceptions` (`ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
 
    CREATE TABLE IF NOT EXISTS  `Control_Group_V2` (
   `ID` BIGINT NOT NULL AUTO_INCREMENT,
@@ -28318,6 +28330,34 @@ CREATE TABLE IF NOT EXISTS Facility_Booking_Payments (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
     CONSTRAINT Control_Group_V2_FK_FORM_ID FOREIGN KEY (FORM_ID) REFERENCES Forms(ID) ON DELETE SET NULL);
+    
+    
+ CREATE TABLE `Control_Group_V2_Section` (
+  `ID` BIGINT NOT NULL AUTO_INCREMENT,
+  `NAME` VARCHAR(100) NOT NULL,
+  `ORGID` BIGINT NOT NULL,
+  `MODULEID` BIGINT NOT NULL,
+  `FORM_ID` BIGINT NULL,
+  `CONTROL_GROUP` BIGINT(20) NOT NULL,
+  `TYPE` INT NOT NULL,
+  PRIMARY KEY (`ID`),
+  INDEX `Control_Group_V2_Section_module_id_idx` (`MODULEID` ASC) VISIBLE,
+  INDEX `Control_Group_V2_Section_form_id_idx` (`FORM_ID` ASC) VISIBLE,
+  CONSTRAINT `Control_Group_V2_Section_module_id`
+    FOREIGN KEY (`MODULEID`)
+    REFERENCES `Modules` (`MODULEID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `Control_Group_V2_Section_form_id`
+    FOREIGN KEY (`FORM_ID`)
+    REFERENCES `Forms` (`ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `Control_Group_V2_Section_group_id`
+    FOREIGN KEY (`CONTROL_GROUP`)
+    REFERENCES `Control_Group_V2` (`ID`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION);
 
 
  CREATE TABLE IF NOT EXISTS  `Control_Group_V2_Asset_Category` (
@@ -28326,6 +28366,7 @@ CREATE TABLE IF NOT EXISTS Facility_Booking_Payments (
   `MODULEID` BIGINT NOT NULL,
   `FORM_ID` BIGINT NULL,
   `NAME` VARCHAR(100) NULL,
+  `CONTROL_GROUP_SECTION` BIGINT NOT NULL
   `CONTROL_GROUP` BIGINT NOT NULL,
   `ASSET_CATEGORY` BIGINT NOT NULL,
   PRIMARY KEY (`ID`),
@@ -28342,6 +28383,11 @@ CREATE TABLE IF NOT EXISTS Facility_Booking_Payments (
     REFERENCES  `Control_Group_V2` (`ID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
+  CONSTRAINT `Control_Group_V2_Asset_Category_section_id`
+  	FOREIGN KEY (`CONTROL_GROUP_SECTION`)
+  	REFERENCES `Control_Group_V2_Section` (`ID`)
+  	ON DELETE NO ACTION
+  	ON UPDATE NO ACTION,
   CONSTRAINT `Control_Group_Assets_Category_asset_category_id`
     FOREIGN KEY (`ASSET_CATEGORY`)
     REFERENCES  `Asset_Categories` (`ID`)
@@ -28402,6 +28448,35 @@ CREATE TABLE IF NOT EXISTS Facility_Booking_Payments (
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
     CONSTRAINT Control_Group_V2_Routine_FK_FORM_ID FOREIGN KEY (FORM_ID) REFERENCES Forms(ID) ON DELETE SET NULL);
+    
+ CREATE TABLE `Control_Group_V2_Routine_Section` (
+  `ID` BIGINT NOT NULL AUTO_INCREMENT,
+  `ORGID` BIGINT NOT NULL,
+  `MODULEID` BIGINT NOT NULL,
+  `FORM_ID` BIGINT NULL,
+  `NAME` VARCHAR(250) NOT NULL,
+  `CONTROL_ROUTINE` BIGINT NOT NULL,
+  `CONTROL_SECTION` BIGINT NOT NULL,
+  `CONTROL_CATEGORY` BIGINT NOT NULL,
+  PRIMARY KEY (`ID`),
+  INDEX `Control_Group_Routine_Section_routineId_idx` (`CONTROL_ROUTINE` ASC) VISIBLE,
+  INDEX `Control_Group_V2_Routine_Section_category_id_idx` (`CONTROL_CATEGORY` ASC) VISIBLE,
+  INDEX `Control_Group_Routine_Section_section_id_idx` (`CONTROL_SECTION` ASC) VISIBLE,
+  CONSTRAINT `Control_Group_Routine_Section_routineId`
+    FOREIGN KEY (`CONTROL_ROUTINE`)
+    REFERENCES `Control_Group_V2_Routine` (`ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `Control_Group_Routine_Section_section_id`
+    FOREIGN KEY (`CONTROL_SECTION`)
+    REFERENCES `Control_Group_V2_Section` (`ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `Control_Group_V2_Routine_Section_category_id`
+    FOREIGN KEY (`CONTROL_CATEGORY`)
+    REFERENCES `Control_Group_V2_Asset_Category` (`ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
 
  CREATE TABLE IF NOT EXISTS  `Control_Group_V2_Field` (
   `ID` BIGINT NOT NULL AUTO_INCREMENT,
@@ -28413,6 +28488,7 @@ CREATE TABLE IF NOT EXISTS Facility_Booking_Payments (
   `CONTROL_GROUP` BIGINT NOT NULL,
   `CONTROL_GROUP_ASSET` BIGINT NOT NULL,
   `ROUTINE_ID` BIGINT NULL,
+  `ROUTINE_SECTION_ID` BIGINT NULL,
   `FIELD_ID` BIGINT NOT NULL,
   `TRUE_VAL` VARCHAR(100) NULL,
   `FALSE_VAL` VARCHAR(100) NULL,
@@ -28437,6 +28513,11 @@ CREATE TABLE IF NOT EXISTS Facility_Booking_Payments (
     REFERENCES  `Fields` (`FIELDID`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
+  CONSTRAINT `Control_Group_V2_Field_routine_section_id`
+  FOREIGN KEY (`ROUTINE_SECTION_ID`)
+  REFERENCES `Control_Group_V2_Routine_Section` (`ID`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION,
   CONSTRAINT `Control_Group_V2_Field_routine`
     FOREIGN KEY (`ROUTINE_ID`)
     REFERENCES  `Control_Group_V2_Routine` (`ID`)
