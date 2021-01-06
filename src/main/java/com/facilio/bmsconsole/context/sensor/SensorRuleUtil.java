@@ -264,10 +264,12 @@ public class SensorRuleUtil {
 							}
 							
 							if(metaMap != null) { 									//to avoid validations not started for evaluation
-								fieldSensorRuleList++;
 								SensorRuleAlarmMeta alarmMeta = metaMap != null ? metaMap.get(reading.getParentId()) : null;
-								if (alarmMeta != null && alarmMeta.isClear()) { //Check if all are clear
-									canClearFieldEventList++;
+								if (alarmMeta != null) { //Check if all are clear
+									fieldSensorRuleList++;
+									if(alarmMeta.isClear()) {
+										canClearFieldEventList++;
+									}
 								}	
 							}									
 						}
@@ -303,10 +305,12 @@ public class SensorRuleUtil {
 						}
 						
 						if(metaMap != null) {
-							meterSensorRuleList++;
 							SensorRuleAlarmMeta alarmMeta = metaMap != null ? metaMap.get(reading.getParentId()) : null;
-							if (alarmMeta != null && alarmMeta.isClear()) { ///Check if all are clear
-								canClearAssetRollUpEventList++;					
+							if (alarmMeta != null) { ///Check if all are clear
+								meterSensorRuleList++;
+								if(alarmMeta.isClear()) {
+									canClearAssetRollUpEventList++;	
+								}						
 							}
 						}
 					}
