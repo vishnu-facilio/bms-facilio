@@ -1,6 +1,8 @@
 package com.facilio.bmsconsoleV3.commands;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Context;
 
@@ -11,11 +13,16 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.control.util.ControlScheduleUtil;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.InsertRecordBuilder;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.mysql.fabric.xmlrpc.base.Array;
 
 import con.facilio.control.ControlScheduleContext;
+import con.facilio.control.ControlScheduleExceptionContext;
 
 public class AddControlScheduleCommand extends FacilioCommand {
 
@@ -51,22 +58,25 @@ public class AddControlScheduleCommand extends FacilioCommand {
         
         insert.save();
         
-//        if(controlScheduleWrapper.getExceptions() != null) {
-//        	
-//        	List<FacilioField> controlScheduleExceptionFields = modBean.getAllFields(ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_MODULE_NAME);
-//        	
-//        	for(ControlScheduleExceptionContext exception : controlScheduleWrapper.getExceptions()) {
-//        		exception.setControlSchedule(controlScheduleWrapper.getControlScheduleContext());
-//        	}
-//        	
-//        	InsertRecordBuilder<ControlScheduleExceptionContext> insert1 = new InsertRecordBuilder<ControlScheduleExceptionContext>()
-//        			.addRecords(controlScheduleWrapper.getExceptions())
-//        			.fields(controlScheduleExceptionFields)
-//        			.moduleName(ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_MODULE_NAME)
-//        			;
-//            
-//            insert1.save();
-//        }
+        if(schedule.getExceptions() != null) {
+        	
+        	GenericInsertRecordBuilder insert1 = new GenericInsertRecordBuilder()
+        			.table(ModuleFactory.getControlScheduleVsExceptionModule().getTableName())
+        			.fields(FieldFactory.getControlScheduleVsExceptionFields())
+        			;
+        	
+        	for(ControlScheduleExceptionContext exception : schedule.getExceptions()) {
+        		Map<String,Object> exceptionMap = new HashMap<String, Object>();
+        		
+        		exceptionMap.put("scheduleId", schedule.getId());
+        		exceptionMap.put("exceptionId", exception.getId());
+        		exceptionMap.put("orgId", schedule.getOrgId());
+        		
+        		insert1.addRecord(exceptionMap);
+        	}
+        	
+        	insert1.save();
+        }
         
 		return false;
 	}
