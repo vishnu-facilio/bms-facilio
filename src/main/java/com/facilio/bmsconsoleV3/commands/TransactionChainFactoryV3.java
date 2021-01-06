@@ -571,6 +571,15 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getAddControlGroupRoutineChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddControlGroupRoutineCommand());
+        c.addCommand(new AddControlGroupRoutineSectionAndFieldCommand());
+        return c;
+    }
+    
+    public static FacilioChain getUpdateControlGroupRoutineChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new UpdateControlGroupRoutineCommand());
+        c.addCommand(new DeleteControlGroupRoutineSectionAndFieldCommand());
+        c.addCommand(new AddControlGroupRoutineSectionAndFieldCommand());
         return c;
     }
     
