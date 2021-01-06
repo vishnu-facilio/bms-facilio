@@ -9,6 +9,8 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.MultiEnumField;
+import com.facilio.modules.fields.MultiLookupField;
 
 public class UpdateFieldCommand extends FacilioCommand {
 
@@ -25,9 +27,14 @@ public class UpdateFieldCommand extends FacilioCommand {
 				if (facilioField.getDisplayName().equals(field.getDisplayName()) && facilioField.getFieldId() != field.getFieldId()) {
 					throw new IllegalArgumentException("Field Display Name Duplication Is Not Allowed");
 				}
-				
 			}
-			
+			if (field instanceof MultiEnumField) {
+				((MultiEnumField)field).setRelModule(((MultiEnumField)updateField).getRelModule());
+				((MultiEnumField)field).setRelModuleId(((MultiEnumField)updateField).getRelModuleId());
+			} else if(field instanceof MultiLookupField) {
+				((MultiLookupField)field).setRelModule(((MultiLookupField)updateField).getRelModule());
+				((MultiLookupField)field).setRelModuleId(((MultiLookupField)updateField).getRelModuleId());
+			}
 		}
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		context.put(FacilioConstants.ContextNames.ROWS_UPDATED, modBean.updateField(field));
