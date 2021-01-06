@@ -50,6 +50,7 @@ public class ControlScheduleUtil {
 	public static final String CONTROL_SCHEDULE_PLANNED_SLOTS_MODULE_NAME = "controlScheduleGroupedSlots";
 	
 	
+	public static final String CONTROL_SCHEDULE_EXCEPTION_CONTEXT = "controlScheduleExceptionContext";
 	public static final String CONTROL_SCHEDULE_CONTEXT = "controlScheduleContext";
 	public static final String CONTROL_GROUP_CONTEXT = "controlGroupContext";
 	

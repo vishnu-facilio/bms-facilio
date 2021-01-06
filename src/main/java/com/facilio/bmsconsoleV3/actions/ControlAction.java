@@ -8,6 +8,7 @@ import com.facilio.v3.V3Action;
 
 import con.facilio.control.ControlGroupContext;
 import con.facilio.control.ControlScheduleContext;
+import con.facilio.control.ControlScheduleExceptionContext;
 
 public class ControlAction extends V3Action {
 
@@ -19,6 +20,16 @@ public class ControlAction extends V3Action {
 	ControlScheduleContext controlScheduleContext;
 	ControlGroupContext controlGroupContext;
 	
+	ControlScheduleExceptionContext exception;
+	
+	public String addControlScheduleException() throws Exception {
+		FacilioChain chain = TransactionChainFactoryV3.getAddControlScheduleExceptionChain();
+		FacilioContext context = chain.getContext();
+		context.put(ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_CONTEXT, exception);
+		chain.execute();
+		setData(ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_CONTEXT, exception);
+        return SUCCESS;
+	}
 	
 	
 	public String addControlSchedule() throws Exception {
@@ -70,5 +81,15 @@ public class ControlAction extends V3Action {
 
 	public void setControlScheduleContext(ControlScheduleContext controlScheduleContext) {
 		this.controlScheduleContext = controlScheduleContext;
+	}
+
+
+	public ControlScheduleExceptionContext getException() {
+		return exception;
+	}
+
+
+	public void setException(ControlScheduleExceptionContext exception) {
+		this.exception = exception;
 	}
 }

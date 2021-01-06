@@ -9409,5 +9409,14 @@ public class FieldFactory {
         fields.add(getField("triggerActionId", "TRIGGER_ACTION_ID", module, FieldType.NUMBER));
         return fields;
     }
+    
+    public static List<FacilioField> getControlScheduleVsExceptionFields() {
+        FacilioModule module = ModuleFactory.getControlScheduleVsExceptionModule();
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField(module));
+        fields.add(getField("scheduleId", "SCHEDULE_ID", module, FieldType.NUMBER));
+        fields.add(getField("exceptionId", "EXCEPTION_ID", module, FieldType.NUMBER));
+        return fields;
+    }
 }
 

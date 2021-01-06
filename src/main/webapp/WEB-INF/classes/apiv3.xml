@@ -164,16 +164,19 @@
     </package>
 
 
-	<package name="controls" namespace="/api/v3/control" extends="v3Api">
-        <action name="addSchedule"
+	<package name="controls" namespace="/api/v3/control/add" extends="v3Api">
+        <action name="schedule"
                 class="com.facilio.bmsconsoleV3.actions.ControlAction"
                 method="addControlSchedule">
         </action>
-		<action name="addGroup"
+		<action name="group"
                 class="com.facilio.bmsconsoleV3.actions.ControlAction"
                 method="addControlGroup">
         </action>
-
+		<action name="exception"
+                class="com.facilio.bmsconsoleV3.actions.ControlAction"
+                method="addControlScheduleException">
+        </action>
     </package>
 	
     <package name="picklistApiv3" namespace="/api/v3/picklist"

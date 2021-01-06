@@ -542,6 +542,12 @@ public class TransactionChainFactoryV3 {
         return c;
     }
     
+    public static FacilioChain getAddControlScheduleExceptionChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddControlScheduleExceptionCommand());
+        return c;
+    }
+    
     public static FacilioChain getAddControlGroupChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddControlGroupV2Command());

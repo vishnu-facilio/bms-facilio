@@ -4336,5 +4336,13 @@ public class ModuleFactory {
 		module.setTableName("Trigger_Include_Exclude_Resource");
 		return module;
 	}
+	
+	public static FacilioModule getControlScheduleVsExceptionModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("controlScheduleVsException");
+		module.setDisplayName("ControlScheduleVsException");
+		module.setTableName("Control_Schedule_vs_Exception");
+		return module;
+	}
 
 }

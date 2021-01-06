@@ -22,7 +22,6 @@ public class ControlScheduleExceptionContext extends V3Context {
 	 */
 	private static final long serialVersionUID = 1L;
 	String name;
-	ControlScheduleContext controlSchedule;
 	Type type;
 	JSONObject startSchedule;
 	JSONObject endSchedule;
@@ -59,14 +58,6 @@ public class ControlScheduleExceptionContext extends V3Context {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public ControlScheduleContext getControlSchedule() {
-		return controlSchedule;
-	}
-
-	public void setControlSchedule(ControlScheduleContext controlSchedule) {
-		this.controlSchedule = controlSchedule;
 	}
 
 	public int getType() {
