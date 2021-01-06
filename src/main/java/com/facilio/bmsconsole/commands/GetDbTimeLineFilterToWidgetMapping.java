@@ -98,7 +98,6 @@ public class GetDbTimeLineFilterToWidgetMapping extends FacilioCommand {
 				// for analytics charts always ttime
 				if (widget.getWidgetType() == DashboardWidgetContext.WidgetType.CHART) {
 
-					long widgetId = widget.getId();
 
 					WidgetChartContext chartWidget = (WidgetChartContext) widget;
 					chartWidget.getNewReportId();
@@ -169,7 +168,7 @@ public class GetDbTimeLineFilterToWidgetMapping extends FacilioCommand {
 				else if (widget.getWidgetType() == DashboardWidgetContext.WidgetType.LIST_VIEW)
 				{
 					String dateFieldName = (String) widgetSettings.get("dateField");
-					if(dateField!=null)
+					if(dateFieldName!=null)
 					{
 						dateField=new HashMap<>(
 								Collections.singletonMap("dateField", dateFieldName));
