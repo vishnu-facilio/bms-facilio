@@ -1,10 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -115,7 +111,14 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
             switch (pm.getTriggerTypeEnum()) {
                 case ONLY_SCHEDULE_TRIGGER:
                     if (workorderTemplate != null) {
-                        List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),pm.getSiteIds(),pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts(), true);
+                        List<Long> scope;
+                        Long baseSpaceId = pm.getBaseSpaceId();
+                        if (baseSpaceId == null || baseSpaceId < 0) {
+                            scope = pm.getSiteIds();
+                        } else {
+                            scope = Arrays.asList(baseSpaceId);
+                        }
+                        List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),scope,pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts(), true);
                         Map<Long, PMResourcePlannerContext> pmResourcePlanner = PreventiveMaintenanceAPI.getPMResourcesPlanner(pm.getId());
                         List<ResourceContext> resourceObjs = ResourceAPI.getResources(resourceIds, false); // ?
                         Map<Long, ResourceContext> resourceMap = new HashMap<>();
