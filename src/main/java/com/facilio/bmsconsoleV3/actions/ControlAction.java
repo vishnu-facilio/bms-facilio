@@ -11,7 +11,10 @@ import con.facilio.control.ControlGroupContext;
 import con.facilio.control.ControlGroupRoutineContext;
 import con.facilio.control.ControlScheduleContext;
 import con.facilio.control.ControlScheduleExceptionContext;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter @Setter
 public class ControlAction extends V3Action {
 
 	/**
@@ -21,7 +24,6 @@ public class ControlAction extends V3Action {
 	
 	ControlScheduleContext controlScheduleContext;
 	ControlGroupContext controlGroupContext;
-	
 	ControlScheduleExceptionContext exception;
 	ControlGroupRoutineContext routine;
 	
@@ -118,15 +120,22 @@ public class ControlAction extends V3Action {
 			chain.execute();
 			setData(ControlScheduleUtil.CONTROL_GROUP_CONTEXT, controlGroupContext);
 			
-//			long groupId = controlGroupContext.getId();
-//			
-//			FacilioChain chain1 = TransactionChainFactoryV3.planControlGroupSlotsAndRoutines();
-//			
-//			FacilioContext context1 = chain1.getContext();
-//			
-//			context1.put(ControlScheduleUtil.CONTROL_GROUP_MODULE_NAME, ControlScheduleUtil.getControlGroup(groupId));
-//			
-//			chain1.execute();
+	        return SUCCESS;
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+	
+	public String updateControlGroup() throws Exception {
+		try {
+			FacilioChain chain = TransactionChainFactoryV3.getUpdateControlGroupChain();
+			FacilioContext context = chain.getContext();
+			context.put(ControlScheduleUtil.CONTROL_GROUP_CONTEXT, controlGroupContext);
+			context.put(ControlScheduleUtil.CONTROL_GROUP_CONTEXT_OLD, controlGroupContext);
+			chain.execute();
+			setData(ControlScheduleUtil.CONTROL_GROUP_CONTEXT, controlGroupContext);
 			
 	        return SUCCESS;
 		}
@@ -135,40 +144,21 @@ public class ControlAction extends V3Action {
 			return ERROR;
 		}
 	}
-
-	public ControlGroupContext getControlGroupContext() {
-		return controlGroupContext;
-	}
-
-	public void setControlGroupContext(ControlGroupContext controlGroupContext) {
-		this.controlGroupContext = controlGroupContext;
-	}
-
-	public ControlScheduleContext getControlScheduleContext() {
-		return controlScheduleContext;
-	}
-
-	public void setControlScheduleContext(ControlScheduleContext controlScheduleContext) {
-		this.controlScheduleContext = controlScheduleContext;
-	}
-
-
-	public ControlScheduleExceptionContext getException() {
-		return exception;
-	}
-
-
-	public void setException(ControlScheduleExceptionContext exception) {
-		this.exception = exception;
-	}
-
-
-	public ControlGroupRoutineContext getRoutine() {
-		return routine;
-	}
-
-
-	public void setRoutine(ControlGroupRoutineContext routine) {
-		this.routine = routine;
+	
+	public String deleteControlGroup() throws Exception {
+		try {
+			FacilioChain chain = TransactionChainFactoryV3.getGenricDeleteChain();
+			FacilioContext context = chain.getContext();
+			context.put(FacilioConstants.ContextNames.RECORD_ID, controlGroupContext.getId());
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, ControlScheduleUtil.CONTROL_GROUP_MODULE_NAME);
+			chain.execute();
+			setData(ControlScheduleUtil.CONTROL_SCHEDULE_CONTEXT, controlGroupContext);
+			
+	        return SUCCESS;
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
 	}
 }

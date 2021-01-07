@@ -190,7 +190,7 @@
         </action>
 		<action name="group"
                 class="com.facilio.bmsconsoleV3.actions.ControlAction"
-                method="addControlGroup">
+                method="updateControlGroup">
         </action>
 		<action name="exception"
                 class="com.facilio.bmsconsoleV3.actions.ControlAction"
@@ -209,7 +209,7 @@
         </action>
 		<action name="group"
                 class="com.facilio.bmsconsoleV3.actions.ControlAction"
-                method="addControlGroup">
+                method="deleteControlGroup">
         </action>
 		<action name="exception"
                 class="com.facilio.bmsconsoleV3.actions.ControlAction"

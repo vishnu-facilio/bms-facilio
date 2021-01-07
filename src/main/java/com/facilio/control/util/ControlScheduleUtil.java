@@ -54,6 +54,7 @@ public class ControlScheduleUtil {
 	public static final String CONTROL_SCHEDULE_EXCEPTION_CONTEXT = "controlScheduleExceptionContext";
 	public static final String CONTROL_SCHEDULE_CONTEXT = "controlScheduleContext";
 	public static final String CONTROL_GROUP_CONTEXT = "controlGroupContext";
+	public static final String CONTROL_GROUP_CONTEXT_OLD = "controlGroupContextOld";
 	public static final String CONTROL_GROUP_ROUTINE_CONTEXT = "controlGroupRoutineContext";
 	
 	public static final String CONTROL_GROUP_UNPLANNED_SLOTS = "controlGroupUnplanedSlots";
