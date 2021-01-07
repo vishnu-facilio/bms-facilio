@@ -2,6 +2,9 @@ package com.facilio.tasker;
 
 import java.util.List;
 
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.chain.FacilioChain;
+import com.facilio.constants.FacilioConstants;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -162,5 +165,13 @@ public class FacilioTimer {
 		
 		return startTimeInSecond;
 	}
-	
+
+	public static void scheduleInstantJobInPostTransaction(String jobName, FacilioContext instantJobContext) throws Exception {
+		FacilioChain chain = TransactionChainFactory.getAddInstantJobChain();
+		FacilioContext context = chain.getContext();
+		context.putAll(instantJobContext);
+
+		context.put(FacilioConstants.ContextNames.INSTANT_JOB_NAME, jobName);
+		chain.execute();
+	}
 }

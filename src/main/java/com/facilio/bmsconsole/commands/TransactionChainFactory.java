@@ -5873,6 +5873,12 @@ public class TransactionChainFactory {
 		});
 		return chain;
 	}
+
+	public static FacilioChain getAddInstantJobChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddInstantJobCommand());
+		return chain;
+	}
 }
 
 

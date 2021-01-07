@@ -1571,6 +1571,7 @@ public class FacilioConstants {
 		public static final String IS_MARK_AS_DELETE = "markAsDelete";
 				public static final String JOB = "jobContext";
 		public static final String JOB_NAME = "jobName";
+		public static final String INSTANT_JOB_NAME = "instantJobName";
 
 //		public static final String SUPPORT_STATEFLOW = "supportStateFlow";
 		

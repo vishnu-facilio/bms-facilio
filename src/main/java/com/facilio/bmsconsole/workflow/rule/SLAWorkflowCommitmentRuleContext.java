@@ -142,15 +142,15 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
     public static void addEscalationJobs(Long parentRuleId, List<SLAWorkflowEscalationContext> escalations,
                                          FacilioModule module, FacilioField dueField, Criteria criteria,
                                          ModuleBaseWithCustomFields moduleRecord, SLAEntityContext slaEntity) throws Exception {
-        FacilioContext context = new FacilioContext();
-        context.put(FacilioConstants.ContextNames.PARENT_RULE_ID, parentRuleId);
-        context.put(FacilioConstants.ContextNames.SLA_POLICY_ESCALATION_LIST, escalations);
-        context.put(FacilioConstants.ContextNames.MODULE, module);
-        context.put(FacilioConstants.ContextNames.DATE_FIELD, dueField);
-        context.put(FacilioConstants.ContextNames.CRITERIA, criteria);
-        context.put(FacilioConstants.ContextNames.MODULE_DATA, moduleRecord);
-        context.put(FacilioConstants.ContextNames.SLA_ENTITY, slaEntity);
-        FacilioTimer.scheduleInstantJob("AddSLAEscalation", context);
+        FacilioContext instantJobContext = new FacilioContext();
+        instantJobContext.put(FacilioConstants.ContextNames.PARENT_RULE_ID, parentRuleId);
+        instantJobContext.put(FacilioConstants.ContextNames.SLA_POLICY_ESCALATION_LIST, escalations);
+        instantJobContext.put(FacilioConstants.ContextNames.MODULE, module);
+        instantJobContext.put(FacilioConstants.ContextNames.DATE_FIELD, dueField);
+        instantJobContext.put(FacilioConstants.ContextNames.CRITERIA, criteria);
+        instantJobContext.put(FacilioConstants.ContextNames.MODULE_DATA, moduleRecord);
+        instantJobContext.put(FacilioConstants.ContextNames.SLA_ENTITY, slaEntity);
+        FacilioTimer.scheduleInstantJobInPostTransaction("AddSLAEscalation", instantJobContext);
     }
 
     private void addSLATriggeredActivity(Context context, ModuleBaseWithCustomFields record, SLAPolicyContext slaPolicy, Long oldDate, Long newDate, SLAEntityContext slaEntity) throws Exception {
