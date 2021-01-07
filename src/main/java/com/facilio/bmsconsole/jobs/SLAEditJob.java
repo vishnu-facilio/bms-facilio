@@ -107,7 +107,7 @@ public class SLAEditJob extends FacilioJob {
                         moduleRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(module), String.valueOf(lastRecordId), NumberOperators.GREATER_THAN));
                     }
                     List<? extends ModuleBaseWithCustomFields> moduleRecords = moduleRecordBuilder.get();
-                    if (CollectionUtils.isEmpty(moduleRecords) || moduleRecords.size() < LIMIT) {
+                    if (CollectionUtils.isEmpty(moduleRecords)) {
                         // all records for this particular sla entity is completed..
                         SLAWorkflowAPI.deleteEditJobDetails(jobId, slaEntityId);
                     }

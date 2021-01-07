@@ -54,7 +54,7 @@ public class AddSLAPolicyEscalationsCommand extends FacilioCommand {
                     Long workflowRuleId = (Long) map.get("workflowRuleId");
                     workflowRuleIds.add(workflowRuleId);
                 }
-                WorkflowRuleAPI.deleteWorkFlowRules(workflowRuleIds);
+                WorkflowRuleAPI.inActivateWorkFlowRules(workflowRuleIds);
 
                 GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder()
                         .table(ModuleFactory.getSLAEscalationWorkflowRuleRelModule().getTableName())

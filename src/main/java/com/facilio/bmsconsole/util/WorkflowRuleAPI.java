@@ -870,6 +870,16 @@ public class WorkflowRuleAPI {
 		onSuccessParentKey = (onSuccessParentKey == null) ? Boolean.FALSE : onSuccessParentKey;
 		return onSuccessParentKey ? (parentRuleId + "_" + 1) : (parentRuleId + "_" + 0);			
 	}
+
+	public static void inActivateWorkFlowRules(List<Long> workflowIds) throws Exception {
+		GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+				.table(ModuleFactory.getWorkflowRuleModule().getTableName())
+				.fields(Collections.singletonList(FieldFactory.getField("status", "STATUS", ModuleFactory.getWorkflowRuleModule(), FieldType.BOOLEAN)))
+				.andCondition(CriteriaAPI.getIdCondition(workflowIds, ModuleFactory.getWorkflowRuleModule()));
+		Map<String, Object> map = new HashMap<>();
+		map.put("status", false);
+		builder.update(map);
+	}
 	
 	public static void deleteWorkFlowRules(List<Long> workflowIds) throws Exception {
 		if (workflowIds != null && !workflowIds.isEmpty()) {
