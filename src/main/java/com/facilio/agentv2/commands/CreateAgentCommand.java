@@ -6,8 +6,6 @@ import com.facilio.agent.integration.DownloadCertFile;
 import com.facilio.agentv2.AgentAction;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.service.FacilioService;
-import com.facilio.services.factory.FacilioFactory;
-import com.facilio.services.filestore.FileStore;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 
@@ -48,7 +46,7 @@ public class CreateAgentCommand extends AgentV2Command {
                 case NIAGARA:
                     createPolicy(agent);
                     return true;
-                case REST:
+                case CLOUD:
                     AgentApiV2.scheduleRestJob(agent);
                     return true;
             }

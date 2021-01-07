@@ -88,7 +88,7 @@ public class DataProcessorV2
             }else {
                 payload.put(AgentConstants.TIMESTAMP,timeStamp);
             }
-            if (agent.getAgentType() != AgentType.REST.getKey()) {
+            if (agent.getAgentType() != AgentType.CLOUD.getKey()) {
                 agent.setLastDataReceivedTime(timeStamp);
                 AgentApiV2.updateAgentLastDataRevievedTime(agent);
             }
@@ -274,7 +274,7 @@ public class DataProcessorV2
                             return controller;
                         } else {
                             FacilioAgent agent = AgentApiV2.getAgent(agentId);
-                            if (agent.getAgentType() == AgentType.REST.getKey()) {
+                            if (agent.getAgentType() == AgentType.CLOUD.getKey()) {
                                 MiscController miscController = new MiscController(agent.getId(), AccountUtil.getCurrentOrg().getOrgId());
                                 miscController.setName(((JSONObject) (payload.get(AgentConstants.CONTROLLER))).get(AgentConstants.NAME).toString());
                                 miscController.setDataInterval(agent.getInterval() * 60 * 1000);
@@ -410,7 +410,7 @@ public class DataProcessorV2
             if (controller == null) {
                 int type = Integer.parseInt(payload.get(AgentConstants.CONTROLLER_TYPE).toString());
                 FacilioAgent agent = AgentApiV2.getAgent(getAgentId(payload.get("agent").toString()));
-                if (type == FacilioControllerType.MISC.asInt() && agent.getAgentType() == AgentType.REST.getKey()) {
+                if (type == FacilioControllerType.MISC.asInt() && agent.getAgentType() == AgentType.CLOUD.getKey()) {
                     String name = ((JSONObject) payload.get("controller")).get("name").toString();
                     context.put(AgentConstants.CONTROLLER_NAME, name);
                 }

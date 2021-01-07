@@ -15,7 +15,6 @@ import java.util.Set;
 import com.facilio.chain.FacilioChain;
 import com.facilio.tasker.FacilioTimer;
 import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -44,7 +43,6 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -87,7 +85,7 @@ public class AgentApiV2 {
         FacilioContext context = new FacilioContext();
         agent.setCreatedTime(System.currentTimeMillis());
         agent.setLastDataReceivedTime(-1);
-        if (AgentType.valueOf(agent.getAgentType()) == AgentType.REST) {
+        if (agent.getAgentType() == AgentType.CLOUD.getKey()) {
             agent.setConnected(true);
         }
         agent.setLastModifiedTime(agent.getCreatedTime());
@@ -129,7 +127,7 @@ public class AgentApiV2 {
             if (agent.getInterval() != currDataInterval) {
                 agent.setInterval(currDataInterval);
                 agent.setLastModifiedTime(currTime);
-                if(AgentType.valueOf(agent.getAgentType()) == AgentType.REST) {
+                if(agent.getAgentType() == AgentType.CLOUD.getKey()) {
                 		FacilioTimer.deleteJob(agent.getId(), Job.CLOUD_AGENT_JOB_NAME);
                 		scheduleRestJob(agent);
                 }

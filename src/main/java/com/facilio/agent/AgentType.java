@@ -8,7 +8,7 @@ public enum AgentType {
 	CUSTOM(0, "custom"),
 	FACILIO(1, "facilio"),
 	NIAGARA(2, "niagara"),
-    REST(3,"rest"),
+    CLOUD(3,"cloud"),
 	WATTSENSE(4,"wattsense");
 
 

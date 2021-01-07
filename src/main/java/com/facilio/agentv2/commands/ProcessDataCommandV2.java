@@ -1,15 +1,9 @@
 package com.facilio.agentv2.commands;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentType;
-import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.controller.Controller;
-import com.facilio.agentv2.controller.ControllerApiV2;
-import com.facilio.agentv2.device.Device;
-import com.facilio.agentv2.device.FieldDeviceApi;
-import com.facilio.agentv2.misc.MiscController;
 import com.facilio.agentv2.misc.MiscPoint;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -71,7 +65,7 @@ public class ProcessDataCommandV2 extends AgentV2Command {
 
                     if( ! pointNames.isEmpty()){
                         List<Map<String, Object>> pointsFromDb = getPointsFromDb(pointNames,controller);
-                        if (pointsFromDb.size() < pointNames.size() && controller != null && controller.getAgent().getAgentType() == AgentType.REST.getKey()) {
+                        if (pointsFromDb.size() < pointNames.size() && controller != null && controller.getAgent().getAgentType() == AgentType.CLOUD.getKey()) {
                                 Set<String> pointsFromDbSet = new HashSet<>();
                                 pointsFromDb.forEach(row -> pointsFromDbSet.add(row.get("name").toString()));
                                 Set<String> pointNamesSet = new HashSet<>(pointNames);
