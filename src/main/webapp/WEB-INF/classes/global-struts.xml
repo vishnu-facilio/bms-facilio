@@ -12,6 +12,7 @@
 	<constant name="struts.multipart.maxSize" value="15000000" />
 	<bean type="org.apache.struts2.json.JSONWriter" name="facilioJSONWriter" class="com.facilio.FacilioJSONWriter" scope="prototype" />
 	<constant name="struts.json.writer" value="facilioJSONWriter"/>
+	<constant name="struts.multipart.parser" value="jakarta-stream" />
 
 	<include file="basestruts.xml" />
 	<include file="baseapiv1.xml" />
