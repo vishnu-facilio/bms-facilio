@@ -252,4 +252,5 @@ public class AgentConstants
     public static final String LOGICAL = "logical";
 
     public static final String API_KEY = "apiKey";
+    public static final String INBOUND_CONNECTION_ID="inboundConnectionId";
 }

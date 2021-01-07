@@ -1,11 +1,16 @@
 package com.facilio.agentv2.actions;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.service.FacilioService;
 import com.facilio.workflows.context.WorkflowContext;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,6 +21,9 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
+
 @Setter @Getter
 public class AddAgentAction extends AgentActionV2
 {
@@ -38,7 +46,7 @@ public class AddAgentAction extends AgentActionV2
     private String displayName;
     private WorkflowContext workflow;
     private Integer agentType;
-
+    private Long orgUserId=-1L;
 	public String createAgent() {
         try {
             FacilioChain addAgentChain = TransactionChainFactory.createAgentChain();
@@ -55,7 +63,8 @@ public class AddAgentAction extends AgentActionV2
                 agent.setProcessorVersion(2);
             }
             if(getAgentType() == AgentType.REST.getKey()){
-                agent.setApiKey(generateKey(getAgentName()));
+                long inboundId = FacilioService.runAsServiceWihReturn(()->insertApiKey(getAgentName(),getOrgUserId()));
+                agent.setInBoundConnectionId(inboundId);
             }
             context.put(AgentConstants.AGENT,agent);
             addAgentChain.execute();
@@ -72,5 +81,20 @@ public class AddAgentAction extends AgentActionV2
 
     private String generateKey ( String agentName ) {
         return Base64.getEncoder().encodeToString(agentName.getBytes());
+    }
+
+    private long insertApiKey(String agentName,long orgUserId) throws Exception {
+        Map<String,Object> prop = new HashMap<>();
+        prop.put(AgentConstants.API_KEY,generateKey(agentName));
+        prop.put("sender",agentName);
+        prop.put(AgentConstants.NAME,agentName);
+        prop.put(AgentConstants.CREATED_TIME,System.currentTimeMillis());
+        prop.put(AgentConstants.AUTH_KEY,1L);
+        prop.put(AgentConstants.ORGID,AccountUtil.getCurrentOrg().getOrgId());
+        prop.put(AgentConstants.CREATED_BY,orgUserId);
+        GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+        .fields(FieldFactory.getInboundConnectionsFields())
+        .table(ModuleFactory.getInboundConnectionsModule().getTableName());
+       return builder.insert(prop);
     }
 }
