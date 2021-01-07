@@ -4,11 +4,11 @@ import com.facilio.modules.FacilioEnum;
 
 public enum SensorRuleType implements FacilioEnum{
 	
-	CONTINUOUSLY_RECEIVING_SAME_VALUE("Same value received continiously for {timeInterval} hours",new ValidateContinuouslyReceivingSameValueInSensorRule(),false, false),
+	CONTINUOUSLY_RECEIVING_SAME_VALUE("Same value received continuously for {timeInterval} hours",new ValidateContinuouslyReceivingSameValueInSensorRule(),false, false),
 	PERMISSIBLE_LIMIT_VIOLATION("Range is outside of {lowerLimit} and {upperLimit}",new ValidatePermissibleLimitViolationInSensorRule(), false, false, true),
 	NEGATIVE_VALUE("Meter reads negative value",new ValidateNegativeValueInSensorRule(), true, true, true),
 	DECREMENTAL_VALUE("Meter has decremental readings",new ValidateDecrementalValueInSensorRule(), true, true),
-	SAME_VALUE_WITH_ZERO_DELTA("Same meter reading for {timeInterval} occurrences",new ValidateSameValueWithZeroDeltaInSensorRule(), true, true),
+	SAME_VALUE_WITH_ZERO_DELTA("Same meter reading for {timeInterval} hours",new ValidateSameValueWithZeroDeltaInSensorRule(), true, true),
 	MEAN_VARIATION("Energy consumption is greater than {averageBoundPercentage}% compared to past {timeInterval} days",new ValidateMeanVariationInSensorRule(), true, true),
 	;
 	

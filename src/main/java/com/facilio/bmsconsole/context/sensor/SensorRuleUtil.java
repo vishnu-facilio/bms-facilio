@@ -22,6 +22,7 @@ import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.RollUpField;
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleAlarmMeta;
@@ -191,6 +192,9 @@ public class SensorRuleUtil {
 			
 			for(ReadingContext reading: readings) 
 			{
+				if(reading.getSourceTypeEnum() == SourceType.SYSTEM) {
+					continue;
+				}
 				boolean isFirstAssetSensorRule = true;
 				for(Long readingFieldId: fieldSensorRulesMap.keySet()) 
 				{
@@ -546,7 +550,7 @@ public class SensorRuleUtil {
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get(numberField.getName()),CommonOperators.IS_NOT_EMPTY))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(resourceId), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("ttime"), String.valueOf(ttime), NumberOperators.LESS_THAN))
-				.orderBy("TTIME").limit(1);			
+				.orderBy("TTIME DESC").limit(1);			
 		ReadingContext readingContext = selectBuilder.fetchFirst();
 		return readingContext;
 	}
