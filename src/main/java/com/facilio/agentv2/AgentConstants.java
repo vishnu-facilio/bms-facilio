@@ -250,4 +250,6 @@ public class AgentConstants
 
     public static final String COL_NAME = "NAME";
     public static final String LOGICAL = "logical";
+
+    public static final String API_KEY = "apiKey";
 }

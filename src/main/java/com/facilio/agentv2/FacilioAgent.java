@@ -2,12 +2,14 @@ package com.facilio.agentv2;
 
 import java.io.Serializable;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.json.simple.JSONObject;
 
 import com.facilio.agent.AgentKeys;
 import com.facilio.workflows.context.WorkflowContext;
 import com.fasterxml.jackson.annotation.JsonInclude;
-
+@Setter @Getter
 public class FacilioAgent implements Serializable {
 
 
@@ -48,7 +50,7 @@ public class FacilioAgent implements Serializable {
     public void setWorkflowId(long workflowId) {
         this.workflowId = workflowId;
     }
-    
+
     private WorkflowContext workflow;
     public WorkflowContext getWorkflow() {
 		return workflow;
@@ -211,6 +213,9 @@ public class FacilioAgent implements Serializable {
         this.agentType = agentType;
     }
 
+    @JsonInclude
+    private  String apiKey;
+
     public JSONObject toJSON(){
         JSONObject payload = new JSONObject();
         long currTime = System.currentTimeMillis();
@@ -229,6 +234,7 @@ public class FacilioAgent implements Serializable {
         payload.put(AgentKeys.DISPLAY_NAME,getDisplayName());
         payload.put(AgentKeys.WRITABLE, getWritable());
         payload.put("agentType",getAgentType());
+        payload.put(AgentConstants.API_KEY,getApiKey());
         if(createdTime>0){
             payload.put(AgentKeys.CREATED_TIME,getCreatedTime());
         }else {

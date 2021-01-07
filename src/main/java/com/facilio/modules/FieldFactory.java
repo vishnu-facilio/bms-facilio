@@ -595,6 +595,7 @@ public class FieldFactory {
         fields.add(getField("recordId", "RECORD_ID", module, FieldType.NUMBER));
         fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.NUMBER));
         fields.add(getField("agentType", "AGENT_TYPE", module, FieldType.NUMBER));
+        fields.add(getStringField(AgentConstants.API_KEY,"API_KEY",module));
         return fields;
     }
 

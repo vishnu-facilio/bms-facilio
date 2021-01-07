@@ -7,13 +7,16 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.workflows.context.WorkflowContext;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-
+import java.util.Base64;
+@Setter @Getter
 public class AddAgentAction extends AgentActionV2
 {
     private static final Logger LOGGER = LogManager.getLogger(AddAgentAction.class.getName());
@@ -30,50 +33,10 @@ public class AddAgentAction extends AgentActionV2
     @NotNull
     @Min(value = 1,message = "Site can't be less than 1")
     private Long siteId;
-
-    public String getAgentName() { return agentName; }
-    public void setAgentName(String agentName) { this.agentName = agentName; }
-
-    public Long getDataInterval() { return dataInterval; }
-    public void setDataInterval(Long dataInterval) { this.dataInterval = dataInterval; }
-
-    public Long getSiteId() { return siteId; }
-    public void setSiteId(Long siteId) { this.siteId = siteId; }
-
-    public String getType() { return type; }
-    public void setType(String type) { this.type = type;}
-
     private String type;
-    
-    
-
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
-
     @NotNull @Size(min = 2,max = 100)
     private String displayName;
-
     private WorkflowContext workflow;
-    public WorkflowContext getWorkflow() {
-		return workflow;
-	}
-	public void setWorkflow(WorkflowContext workflow) {
-		this.workflow = workflow;
-	}
-
-    public Integer getAgentType() {
-        return agentType;
-    }
-
-    public void setAgentType(Integer agentType) {
-        this.agentType = agentType;
-    }
-
     private Integer agentType;
 
 	public String createAgent() {
@@ -91,6 +54,9 @@ public class AddAgentAction extends AgentActionV2
             if (getAgentType() != AgentType.CUSTOM.getKey()) {
                 agent.setProcessorVersion(2);
             }
+            if(getAgentType() == AgentType.REST.getKey()){
+                agent.setApiKey(generateKey(getAgentName()));
+            }
             context.put(AgentConstants.AGENT,agent);
             addAgentChain.execute();
             setResult(AgentConstants.RESULT, SUCCESS);
@@ -102,5 +68,9 @@ public class AddAgentAction extends AgentActionV2
             internalError();
         }
         return SUCCESS;
+    }
+
+    private String generateKey ( String agentName ) {
+        return Base64.getEncoder().encodeToString(agentName.getBytes());
     }
 }
