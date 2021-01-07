@@ -133,7 +133,7 @@ public class ControlAction extends V3Action {
 			FacilioChain chain = TransactionChainFactoryV3.getUpdateControlGroupChain();
 			FacilioContext context = chain.getContext();
 			context.put(ControlScheduleUtil.CONTROL_GROUP_CONTEXT, controlGroupContext);
-			context.put(ControlScheduleUtil.CONTROL_GROUP_CONTEXT_OLD, controlGroupContext);
+			context.put(ControlScheduleUtil.CONTROL_GROUP_CONTEXT_OLD, ControlScheduleUtil.getControlGroup(controlGroupContext.getId()));
 			chain.execute();
 			setData(ControlScheduleUtil.CONTROL_GROUP_CONTEXT, controlGroupContext);
 			

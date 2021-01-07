@@ -100,7 +100,9 @@ public class UpdateControlGroupRelatedV2Command extends FacilioCommand {
 		
 		for(ControlGroupAssetCategory category :categories) {
 			
-			for(ControlGroupAssetContext asset : category.getControlAssets()) {
+			 List<ControlGroupAssetContext> assets = category.getControlAssets();
+			 category.setControlAssets(null);
+			for(ControlGroupAssetContext asset : assets) {
 				
 				asset.setControlGroupAssetCategory(category);
 				asset.setControlGroup(category.getControlGroup());
@@ -122,7 +124,6 @@ public class UpdateControlGroupRelatedV2Command extends FacilioCommand {
 				}
 			}
 			
-			category.setControlAssets(null);
 		}
 		
 		for(ControlGroupAssetCategory category : oldCategories) {
@@ -159,13 +160,15 @@ public class UpdateControlGroupRelatedV2Command extends FacilioCommand {
 		
 		for(ControlGroupSection section :sections) {
 			
-			for(ControlGroupAssetCategory category : section.getCategories()) {
+			List<ControlGroupAssetCategory> categories = section.getCategories();
+			section.setCategories(null);
+			for(ControlGroupAssetCategory category :categories) {
 				
 				category.setControlGroupSection(section);
 				category.setControlGroup(section.getControlGroup());
 				allCategories.add(category);
 				
-				if(section.getId() < 0) {
+				if(category.getId() < 0) {
 					addCategories.add(category);
 				}
 				else {
@@ -180,8 +183,6 @@ public class UpdateControlGroupRelatedV2Command extends FacilioCommand {
 					update.update(category);
 				}
 			}
-			
-			section.setCategories(null);
 		}
 		
 		for(ControlGroupSection section : oldSections) {
@@ -232,6 +233,13 @@ public class UpdateControlGroupRelatedV2Command extends FacilioCommand {
 						.andCondition(CriteriaAPI.getIdCondition(section.getId(), modBean.getModule(ControlScheduleUtil.CONTROL_GROUP_SECTION_MODULE_NAME)));
 				
 				update.update(section);
+			}
+		}
+		
+		for(ControlGroupSection section : controlGroupContextOld.getSections()) {
+			
+			if(!newIdList.contains(section.getId())) {
+				deletedSectionIdList.add(section.getId());
 			}
 		}
 		

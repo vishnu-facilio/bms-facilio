@@ -312,9 +312,9 @@ public class ControlScheduleUtil {
 		
 		schedule.setBusinessHoursContext(BusinessHoursAPI.getBusinessHours(Collections.singletonList(schedule.getBusinessHour())).get(0));
 		
-		List<ControlScheduleExceptionContext> exceptions =  ControlScheduleUtil.fetchRecord(ControlScheduleExceptionContext.class, CONTROL_SCHEDULE_EXCEPTION_MODULE_NAME, null,CriteriaAPI.getCondition("CONTROL_SCHEDULE", "controlSchedule", ""+scheduleId, NumberOperators.EQUALS));
+		//List<ControlScheduleExceptionContext> exceptions =  ControlScheduleUtil.fetchRecord(ControlScheduleExceptionContext.class, CONTROL_SCHEDULE_EXCEPTION_MODULE_NAME, null,CriteriaAPI.getCondition("CONTROL_SCHEDULE", "controlSchedule", ""+scheduleId, NumberOperators.EQUALS));
 		
-		schedule.setExceptions(exceptions);
+		//schedule.setExceptions(exceptions);
 		
 		return schedule;
 	}
@@ -382,15 +382,24 @@ public class ControlScheduleUtil {
 			routineMap.put(routine.getId(), routine);
 		}
 		
-//		if(!routineMap.isEmpty()) {
-//			List<ControlGroupFieldContext> routinefields =  ControlScheduleUtil.fetchRecord(ControlGroupFieldContext.class, CONTROL_GROUP_ASSET_FIELD_MODULE_NAME, null,CriteriaAPI.getCondition("ROUTINE_ID", "routine", StringUtils.join(routineMap.keySet(), ","), NumberOperators.EQUALS));
-//			
-//			for(ControlGroupFieldContext routinefield :routinefields) {
-//				
-//				ControlGroupRoutineContext routine = routineMap.get(routinefield.getRoutine().getId());
-//				routine.addField(routinefield);
-//			}
-//		}
+		if(!routineMap.isEmpty()) {
+			List<ControlGroupRoutineSectionContext> routineSections =  ControlScheduleUtil.fetchRecord(ControlGroupRoutineSectionContext.class, CONTROL_GROUP_ROUTINE_SECTION_MODULE_NAME, null,CriteriaAPI.getCondition("CONTROL_ROUTINE", "routine", StringUtils.join(routineMap.keySet(), ","), NumberOperators.EQUALS));
+			
+			Map<Long,ControlGroupRoutineSectionContext> routineSectionMap = new HashMap<Long, ControlGroupRoutineSectionContext>();
+			for(ControlGroupRoutineSectionContext routineSection : routineSections) {
+				
+				ControlGroupRoutineContext routine = routineMap.get(routineSection.getRoutine().getId());
+				routine.addSection(routineSection);
+				routineSectionMap.put(routineSection.getId(), routineSection);
+			}
+			
+			List<ControlGroupFieldContext> routineSectionsFields =  ControlScheduleUtil.fetchRecord(ControlGroupFieldContext.class, CONTROL_GROUP_ASSET_FIELD_MODULE_NAME, null,CriteriaAPI.getCondition("ROUTINE_ID", "routine", StringUtils.join(routineMap.keySet(), ","), NumberOperators.EQUALS));
+			
+			for(ControlGroupFieldContext routineSectionsField : routineSectionsFields) {
+				ControlGroupRoutineSectionContext section = routineSectionMap.get(routineSectionsField.getRoutineSection().getId());
+				section.addField(routineSectionsField);
+			}
+		}
 		
 		return group;
 	}
