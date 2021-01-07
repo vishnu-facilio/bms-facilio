@@ -361,7 +361,6 @@ public enum ActionType {
 				}
 			} catch (Exception e) {
 				LOGGER.error("Exception occurred ", e);
-				e.printStackTrace();
 			}
 		}
 

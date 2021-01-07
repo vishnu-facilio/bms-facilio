@@ -95,7 +95,6 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 											.append(" this.propagateError " +this.propagateError)
 											.append(" for this.ruleTypes "+Arrays.toString(ruleTypes))
 											;
-			e.printStackTrace();
 			LOGGER.error(builder.toString(), e);
 //			CommonCommandUtil.emailException("RULE EXECUTION FAILED - "+AccountUtil.getCurrentOrg().getId(),builder.toString(), e);
 			if (propagateError) {
