@@ -90,7 +90,7 @@ public class AddAgentAction extends AgentActionV2
         prop.put("sender",agentName);
         prop.put(AgentConstants.NAME,agentName);
         prop.put(AgentConstants.CREATED_TIME,System.currentTimeMillis());
-        prop.put(AgentConstants.AUTH_KEY,1);
+        prop.put("authType",1);
         prop.put(AgentConstants.ORGID,orgId);
         prop.put(AgentConstants.CREATED_BY,orgUserId);
         GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()

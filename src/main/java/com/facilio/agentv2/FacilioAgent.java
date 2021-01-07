@@ -213,8 +213,6 @@ public class FacilioAgent implements Serializable {
         this.agentType = agentType;
     }
 
-    private  String apiKey;
-
     @JsonInclude
     private long inBoundConnectionId =-1;
     public JSONObject toJSON(){
