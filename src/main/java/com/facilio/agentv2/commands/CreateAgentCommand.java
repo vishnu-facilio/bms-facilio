@@ -44,6 +44,7 @@ public class CreateAgentCommand extends AgentV2Command {
                     break;
                 case FACILIO:
                 case NIAGARA:
+                case REST:
                     createPolicy(agent);
                     return true;
                 case CLOUD:
