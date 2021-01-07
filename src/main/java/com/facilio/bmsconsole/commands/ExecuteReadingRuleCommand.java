@@ -16,6 +16,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
@@ -47,7 +48,7 @@ public class ExecuteReadingRuleCommand extends ExecuteAllWorkflowsCommand {
 		ParallelRuleExecutionProp isParallelRuleExecutionEnum = null; 
 		Boolean parallelRuleExecutionProp = (Boolean) context.get(FacilioConstants.ContextNames.IS_PARALLEL_RULE_EXECUTION);
 		parallelRuleExecutionProp = parallelRuleExecutionProp != null ? parallelRuleExecutionProp : Boolean.TRUE;
-		if(parallelRuleExecutionProp) { //FacilioProperties.isProduction() &&
+		if(FacilioProperties.isProduction() && parallelRuleExecutionProp) { 
 			Map<String, String> orgInfoMap = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.IS_PARALLEL_RULE_EXECUTION);
 			if(orgInfoMap != null && MapUtils.isNotEmpty(orgInfoMap)) {
 				String isParallelRuleExecutionProp = orgInfoMap.get(FacilioConstants.OrgInfoKeys.IS_PARALLEL_RULE_EXECUTION);
