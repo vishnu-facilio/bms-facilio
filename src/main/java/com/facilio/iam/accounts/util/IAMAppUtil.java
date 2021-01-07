@@ -8,6 +8,7 @@ import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.sso.AccountSSO;
+import com.facilio.accounts.sso.DomainSSO;
 import com.facilio.accounts.sso.SSOUtil;
 import com.facilio.service.FacilioService;
 import org.json.simple.JSONObject;
@@ -42,9 +43,10 @@ public class IAMAppUtil {
 	public static JSONObject getAppDomainInfo(String serverName) throws Exception {
 		AppDomain appDomain = getAppDomain(serverName);
 		boolean isCustomDomain = AppDomain.DomainType.valueOf(appDomain.getDomainType()) == AppDomain.DomainType.CUSTOM;
+		boolean isPortalDomain = AppDomainType.FACILIO != appDomain.getAppDomainTypeEnum();
 		JSONObject resultJSON = new JSONObject();
 		resultJSON.put("isCustomDomain", isCustomDomain);
-		if (isCustomDomain) {
+		if (isCustomDomain && !isPortalDomain) {
 			long orgId = appDomain.getOrgId();
 			Organization org = IAMOrgUtil.getOrg(orgId);
 			AccountSSO sso = IAMOrgUtil.getAccountSSO(org.getDomain());
@@ -60,6 +62,16 @@ public class IAMAppUtil {
 				}
 			}
 			resultJSON.put("logo_url", org.getLogoUrl());
+		}
+
+		if (isPortalDomain) {
+			DomainSSO domainSSODetails = IAMOrgUtil.getDomainSSODetails(appDomain.getDomain());
+			if (domainSSODetails != null && domainSSODetails.getIsActive()) {
+				resultJSON.put("isSSOEnabled", true);
+				String ssoEndpoint = SSOUtil.getDomainSSOEndpoint(appDomain.getDomain());
+				resultJSON.put("ssoEndPoint", ssoEndpoint);
+				resultJSON.put("isSLOEnabled", false); // TODO handle SLO
+			}
 		}
 
 		return resultJSON;

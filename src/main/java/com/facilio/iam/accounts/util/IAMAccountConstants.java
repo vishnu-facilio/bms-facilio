@@ -775,6 +775,14 @@ public class IAMAccountConstants {
 
 			return fields;
 		}
+
+		public static FacilioModule getDomainSSOModule() {
+			FacilioModule domainSSOModule = new FacilioModule();
+			domainSSOModule.setName("domainSSO");
+			domainSSOModule.setDisplayName("Domain SSO");
+			domainSSOModule.setTableName("Domain_SSO");
+			return domainSSOModule;
+		}
 		
 		public static FacilioModule getAccountSSOModule() {
 			FacilioModule accountSSOModule = new FacilioModule();
@@ -784,6 +792,84 @@ public class IAMAccountConstants {
 
 			return accountSSOModule;
 		}
+
+		public static List<FacilioField> getDomainSSOFields() {
+			FacilioModule module = getDomainSSOModule();
+			List<FacilioField> fields = new ArrayList<>();
+
+			FacilioField id = new FacilioField();
+			id.setName("id");
+			id.setDataType(FieldType.ID);
+			id.setColumnName("ID");
+			id.setModule(module);
+			fields.add(id);
+
+			FacilioField appDomainId = new FacilioField();
+			appDomainId.setName("appDomainID");
+			appDomainId.setDataType(FieldType.NUMBER);
+			appDomainId.setColumnName("APP_DOMAIN_ID");
+			appDomainId.setModule(module);
+			fields.add(appDomainId);
+
+			FacilioField name = new FacilioField();
+			name.setName("name");
+			name.setDataType(FieldType.STRING);
+			name.setColumnName("NAME");
+			name.setModule(module);
+			fields.add(name);
+
+			FacilioField type = new FacilioField();
+			type.setName("ssoType");
+			type.setDataType(FieldType.NUMBER);
+			type.setColumnName("TYPE");
+			type.setModule(module);
+			fields.add(type);
+
+			FacilioField config = new FacilioField();
+			config.setName("configJSON");
+			config.setDataType(FieldType.STRING);
+			config.setColumnName("CONFIG");
+			config.setModule(module);
+			fields.add(config);
+
+			FacilioField isActive = new FacilioField();
+			isActive.setName("isActive");
+			isActive.setDataType(FieldType.BOOLEAN);
+			isActive.setColumnName("IS_ACTIVE");
+			isActive.setModule(module);
+			fields.add(isActive);
+
+			FacilioField createdTime = new FacilioField();
+			createdTime.setName("createdTime");
+			createdTime.setDataType(FieldType.NUMBER);
+			createdTime.setColumnName("CREATED_TIME");
+			createdTime.setModule(module);
+			fields.add(createdTime);
+
+			FacilioField createdBy = new FacilioField();
+			createdBy.setName("createdBy");
+			createdBy.setDataType(FieldType.NUMBER);
+			createdBy.setColumnName("CREATED_BY");
+			createdBy.setModule(module);
+			fields.add(createdBy);
+
+			FacilioField modifiedTime = new FacilioField();
+			modifiedTime.setName("modifiedTime");
+			modifiedTime.setDataType(FieldType.NUMBER);
+			modifiedTime.setColumnName("MODIFIED_TIME");
+			modifiedTime.setModule(module);
+			fields.add(modifiedTime);
+
+			FacilioField modifiedBy = new FacilioField();
+			modifiedBy.setName("modifiedBy");
+			modifiedBy.setDataType(FieldType.NUMBER);
+			modifiedBy.setColumnName("MODIFIED_BY");
+			modifiedBy.setModule(module);
+			fields.add(modifiedBy);
+
+			return fields;
+		}
+
 		
 		public static List<FacilioField> getAccountSSOFields() {
 			

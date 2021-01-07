@@ -7,11 +7,17 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.facilio.accounts.dto.AppDomain;
+import com.facilio.accounts.sso.DomainSSO;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.util.SupportEmailAPI;
+import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.service.FacilioService;
 import com.facilio.services.email.ImapsClient;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.var;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 
@@ -160,6 +166,10 @@ public String importData() throws Exception {
 		AccountUtil.getOrgBean().updateOrg(AccountUtil.getCurrentOrg().getOrgId(), org);
 		return SUCCESS;
 	}
+
+	@Getter
+	@Setter
+	private DomainSSO domainSSO;
 	
 	private AccountSSO sso;
 	
@@ -210,7 +220,45 @@ public String importData() throws Exception {
 	public void setErrorMessage(String errorMessage) {
 		this.errorMessage = errorMessage;
 	}
-	
+
+	public String updatePortalSSOSettings() throws Exception {
+		if (domainSSO == null) {
+			return ERROR;
+		}
+
+		if (domainSSO.getId() <= 0) {
+			domainSSO.setCreatedBy(AccountUtil.getCurrentUser().getId());
+			domainSSO.setCreatedTime(System.currentTimeMillis());
+		}
+		domainSSO.setModifiedBy(AccountUtil.getCurrentUser().getId());
+		domainSSO.setModifiedTime(System.currentTimeMillis());
+
+		if (domainSSO.getConfig() != null) {
+			SamlSSOConfig ssoConfig = (SamlSSOConfig) sso.getSSOConfig();
+			if (ssoConfig.getCertificate() != null) {
+				try {
+					SAMLUtil.loadCertificate(ssoConfig.getCertificate());
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+					setErrorMessage("Invalid certificate.");
+					return ERROR;
+				}
+			}
+		}
+
+		var appDomainType = AppDomain.AppDomainType.getByServiceName(getAppDomainType());
+		var appDomain = IAMAppUtil.getAppDomainForType(appDomainType.getIndex(), AccountUtil.getCurrentOrg().getOrgId()).get(0);
+
+		domainSSO.setAppDomainId(appDomain.getId());
+
+		IAMOrgUtil.addOrUpdateDomainSSO(domainSSO);
+
+		setDomainSSO(IAMOrgUtil.getDomainSSODetails(domainSSO.getId()));
+
+		return SUCCESS;
+	}
+
 	public String updateSSOSettings() throws Exception {
 		
 		if (sso != null) {
@@ -240,6 +288,21 @@ public String importData() throws Exception {
 			setSso(IAMOrgUtil.getAccountSSO(AccountUtil.getCurrentOrg().getOrgId()));
 		}
 		
+		return SUCCESS;
+	}
+
+	@Getter
+	@Setter
+	private String appDomainType;
+
+	public String getPortalSSOSettings() throws Exception {
+		var appDomainType = AppDomain.AppDomainType.getByServiceName(getAppDomainType());
+		var appDomain = IAMAppUtil.getAppDomainForType(appDomainType.getIndex(), AccountUtil.getCurrentOrg().getOrgId()).get(0);
+		var domainSSODetails = IAMOrgUtil.getDomainSSODetails(appDomain.getDomain());
+		setDomainSSO(domainSSODetails);
+		setSpEntityId(SSOUtil.getSPMetadataURL(domainSSODetails));
+		setSpMetadataURL(SSOUtil.getSPMetadataURL(domainSSODetails));
+		setSpAcsURL(SSOUtil.getSPAcsURL(domainSSODetails));
 		return SUCCESS;
 	}
 	

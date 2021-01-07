@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.facilio.accounts.sso.DomainSSO;
 import com.facilio.auth.cookie.FacilioCookie;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.struts2.ServletActionContext;
@@ -64,6 +65,43 @@ public class FacilioSSOAction extends FacilioAction {
 	public InputStream getResultStream() {
 		return resultStream;
 	}
+
+
+	public String domainLogin() throws Exception {
+		if (getDomain() == null) {
+			setResponseCode(1);
+			String message = "Invalid domain or Single Sign-On is not enabled for this domain.";
+			resultStream = new ByteArrayInputStream(message.getBytes());
+			return ERROR;
+		}
+
+		DomainSSO domainSSO = IAMOrgUtil.getDomainSSODetails(getDomain());
+		if (domainSSO == null || domainSSO.getIsActive() == null || !domainSSO.getIsActive()) {
+			setResponseCode(1);
+			String message = "Invalid domain or Single Sign-On is not enabled for this domain.";
+			resultStream = new ByteArrayInputStream(message.getBytes());
+			return ERROR;
+		}
+
+		SamlSSOConfig ssoConfig = (SamlSSOConfig) domainSSO.getConfig();
+
+		SAMLServiceProvider samlClient = new SAMLServiceProvider(SSOUtil.getSPMetadataURL(domainSSO), SSOUtil.getSPAcsURL(domainSSO), ssoConfig.getEntityId(), ssoConfig.getLoginUrl(), ssoConfig.getCertificate());
+		String samlRequest = samlClient.getSAMLRequest();
+
+		String relayState = (getRelay() != null && !getRelay().trim().isEmpty()) ? getRelay() : null;
+
+		URIBuilder builder = new URIBuilder(ssoConfig.getLoginUrl());
+		builder.addParameter("SAMLRequest", samlRequest);
+		if (relayState != null) {
+			builder.addParameter("RelayState", relayState);
+		}
+
+		String ssoURL = builder.build().toURL().toString();
+
+		HttpServletResponse response= (HttpServletResponse) ActionContext.getContext().get(ServletActionContext.HTTP_RESPONSE);
+		response.sendRedirect(ssoURL);
+		return SUCCESS;
+	}
 	
 	public String login() throws Exception {
 		
@@ -111,6 +149,35 @@ public class FacilioSSOAction extends FacilioAction {
 	public void setDownloadStream(InputStream downloadStream) {
 		this.downloadStream = downloadStream;
 	}
+
+	public String domainMetaData() throws Exception {
+		if (getSsoToken() == null || !isValidSSOToken(getSsoToken())) {
+			setResponseCode(1);
+			String message = "Invalid SSO Access.";
+			resultStream = new ByteArrayInputStream(message.getBytes());
+			return ERROR;
+		}
+
+		String str = SSOUtil.base64Decode(getSsoToken());
+		long appDomainId = Long.parseLong(str.split("_")[0]);
+		long dSsoId = Long.parseLong(str.split("_")[1]);
+
+		DomainSSO domainSSODetails = IAMOrgUtil.getDomainSSODetails(dSsoId);
+
+		if (domainSSODetails == null || domainSSODetails.getIsActive() == null || !domainSSODetails.getIsActive()) {
+			setResponseCode(1);
+			String message = "Invalid SSO Access.";
+			resultStream = new ByteArrayInputStream(message.getBytes());
+			return ERROR;
+		}
+
+
+		String xmlString = SSOUtil.getSPMetadataXML(domainSSODetails);
+
+		this.downloadStream = new ByteArrayInputStream(xmlString.getBytes());
+
+		return SUCCESS;
+	}
 	
 	public String metadata() throws Exception {
 		
@@ -140,6 +207,35 @@ public class FacilioSSOAction extends FacilioAction {
 		
 		this.downloadStream = new ByteArrayInputStream(xmlString.getBytes());
 		
+		return SUCCESS;
+	}
+
+	public String domainAcs() throws Exception {
+		String message = null;
+
+		HttpServletResponse response= (HttpServletResponse) ActionContext.getContext().get(ServletActionContext.HTTP_RESPONSE);
+		HttpServletRequest request = ServletActionContext.getRequest();
+		String isWebView = FacilioCookie.getUserCookie(request, "fc.isWebView");
+
+		if (getSsoToken() != null && isValidSSOToken(getSsoToken())) {
+			FacilioAuthAction authAction = new FacilioAuthAction();
+			authAction.setSsoToken(getSsoToken());
+			authAction.domainSSOSignIn();
+			JSONObject result = authAction.getResult();
+			if (result.containsKey("url")) {
+				response.sendRedirect((String) result.get("url"));
+				return SUCCESS;
+			}
+			else {
+				message = (String) result.get("message");
+			}
+		}
+		else {
+			message = "Invalid SSO Access.";
+		}
+
+		String loginUrl = SSOUtil.getSPLoginURL("true".equalsIgnoreCase(isWebView)) + "?ssoError=" + URLEncoder.encode(message, "UTF-8");
+		response.sendRedirect(loginUrl);
 		return SUCCESS;
 	}
 	

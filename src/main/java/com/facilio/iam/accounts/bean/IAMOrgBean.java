@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import com.facilio.accounts.sso.DomainSSO;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.IAMAccount;
@@ -35,12 +36,18 @@ public interface IAMOrgBean {
 	public List<Organization> getOrgs(List<Long> orgIds) throws Exception ;
 
  	public List<IAMUser> getAllOrgUsersv2(long orgId) throws Exception;
+
+ 	public boolean addOrUpdateDomainSSO(DomainSSO sso) throws Exception;
  	
  	public boolean addOrUpdateAccountSSO(long orgId, AccountSSO sso) throws Exception;
 	
 	public AccountSSO getAccountSSO(long orgId) throws Exception;
 
 	public List<AccountSSO> getAccountSSO(List<Long> orgIds) throws Exception;
+
+	public DomainSSO getDomainSSODetails(long domainSSOId) throws Exception;
+
+	public DomainSSO getDomainSSODetails(String domain) throws Exception;
 	
 	public AccountSSO getAccountSSO(String orgDomain) throws Exception;
 	

@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.facilio.util.RequestUtil;
 import com.opensymphony.xwork2.ActionContext;
+import lombok.var;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.struts2.ServletActionContext;
@@ -61,6 +62,11 @@ public class SSOUtil {
 		
 		return FacilioProperties.getClientAppUrl();
 	}
+
+	public static String getSPMetadataURL(DomainSSO domainSSO) {
+		var domainSSOKey = base64EncodeUrlSafe(domainSSO.getAppDomainId()+"_"+ domainSSO.getId());
+		return getCurrentAppURL() + "/dsso/metadata/" + domainSSOKey;
+	}
 	
 	public static String getSPMetadataURL(AccountSSO sso) {
 		
@@ -70,6 +76,12 @@ public class SSOUtil {
 		
 		return metadataUrl;
 	}
+
+	public static String getSPAcsURL(DomainSSO domainSSO) {
+		String ssoKey = base64EncodeUrlSafe(domainSSO.getAppDomainId() + "_" + domainSSO.getId());
+
+		return getCurrentAppURL() + "/dsso/acs/" + ssoKey;
+	}
 	
 	public static String getSPAcsURL(AccountSSO sso) {
 		
@@ -78,6 +90,10 @@ public class SSOUtil {
 		String acsUrl = getCurrentAppURL() + "/sso/acs/" + ssoKey;
 		
 		return acsUrl;
+	}
+
+	public static String getSPLogoutURL() {
+		return getCurrentAppURL() + "/app/logout";
 	}
 	
 	public static String getSPLogoutURL(AccountSSO sso) {
@@ -101,12 +117,32 @@ public class SSOUtil {
 		String domainLoginURL = getCurrentAppURL() + "/domainlogin/" + IAMOrgUtil.getOrg(orgId).getDomain();
 		return domainLoginURL;
 	}
+
+	public static String getDomainSSOEndpoint(String domain) {
+		return getCurrentAppURL() + "/dsso/" + domain;
+	}
 	
 	public static String getSSOEndpoint(String domain) {
 		
 		String ssoEndpoint = getCurrentAppURL() + "/sso/" + domain;
 		
 		return ssoEndpoint;
+	}
+
+	public static String getSPMetadataXML(DomainSSO domainSSO) throws Exception {
+		String spEntityId = getSPMetadataURL(domainSSO);
+		String spAcsUrl = getSPAcsURL(domainSSO);
+		String spLogoutUrl = getSPLogoutURL();
+
+		XMLBuilder builder = XMLBuilder.create("md:EntityDescriptor").attr("xmlns:md", "urn:oasis:names:tc:SAML:2.0:metadata").attr("entityID", spEntityId);
+
+		XMLBuilder spsElm = builder.element("md:SPSSODescriptor").attr("AuthnRequestsSigned", "false").attr("WantAssertionsSigned", "true").attr("protocolSupportEnumeration", "urn:oasis:names:tc:SAML:2.0:protocol");
+
+		spsElm.element("md:NameIDFormat").text("urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress").p()
+				.element("md:AssertionConsumerService").attr("Binding", "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST").attr("Location", spAcsUrl).attr("index", "0").attr("isDefault", "true").p()
+				.element("md:SingleLogoutService").attr("Binding", "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST").attr("Location", spLogoutUrl).p();
+
+		return builder.getAsXMLString();
 	}
 	
 	public static String getSPMetadataXML(AccountSSO sso) throws Exception {

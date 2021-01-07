@@ -3,7 +3,10 @@ package com.facilio.iam.accounts.impl;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.facilio.accounts.sso.DomainSSO;
+import lombok.var;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONObject;
 
@@ -369,6 +372,48 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 	}
 
 	@Override
+	public boolean addOrUpdateDomainSSO(DomainSSO domainSSO) throws Exception {
+		var dbSso = getDomainSSODetailsByAppDomainId(domainSSO.getAppDomainId());
+		if (dbSso == null) {
+			return addDomainSSOEntry(domainSSO);
+		} else {
+			return updateDomainSSOEntry(domainSSO);
+		}
+	}
+
+	private boolean addDomainSSOEntry(DomainSSO domainSSO) throws Exception {
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.fields(IAMAccountConstants.getDomainSSOFields())
+				.table(IAMAccountConstants.getDomainSSOModule().getTableName());
+
+		Map<String, Object> props = FieldUtil.getAsProperties(domainSSO);
+		props.put("ssoType", domainSSO.getSsoType());
+		insertBuilder.addRecord(props);
+		insertBuilder.save();
+
+		long ssoId = (Long) props.get("id");
+		domainSSO.setId(ssoId);
+		return true;
+	}
+
+	private boolean updateDomainSSOEntry(DomainSSO domainSSO) throws Exception {
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(IAMAccountConstants.getDomainSSOModule().getTableName())
+				.fields(IAMAccountConstants.getDomainSSOFields());
+
+		updateBuilder.andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(domainSSO.getId()), NumberOperators.EQUALS));
+
+		Map<String, Object> props = FieldUtil.getAsProperties(domainSSO);
+		int updatedRows = updateBuilder.update(props);
+		if (updatedRows > 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	@Override
 	public boolean addOrUpdateAccountSSO(long orgId, AccountSSO sso) throws Exception {
 		AccountSSO dbSso = getAccountSSO(orgId);
 		
@@ -424,6 +469,55 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 			return sso;
 		}
 		return null;
+	}
+
+	private DomainSSO getDomainSSODetailsByAppDomainId(long appDomainId) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(IAMAccountConstants.getDomainSSOFields())
+				.table(IAMAccountConstants.getDomainSSOModule().getTableName());
+
+		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.ID", "appDomainId", appDomainId+"", NumberOperators.EQUALS));
+		var maps = selectBuilder.get();
+		if (CollectionUtils.isEmpty(maps)) {
+			return null;
+		}
+
+		DomainSSO sso = FieldUtil.getAsBeanFromMap(maps.get(0), DomainSSO.class);
+		return sso;
+	}
+
+	@Override
+	public DomainSSO getDomainSSODetails(long domainSSOId) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(IAMAccountConstants.getDomainSSOFields())
+				.table(IAMAccountConstants.getDomainSSOModule().getTableName());
+
+		selectBuilder.andCondition(CriteriaAPI.getCondition("ID", "id", domainSSOId+"", NumberOperators.EQUALS));
+		var maps = selectBuilder.get();
+		if (CollectionUtils.isEmpty(maps)) {
+			return null;
+		}
+
+		DomainSSO sso = FieldUtil.getAsBeanFromMap(maps.get(0), DomainSSO.class);
+		return sso;
+	}
+
+	@Override
+	public DomainSSO getDomainSSODetails(String domain) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(IAMAccountConstants.getDomainSSOFields())
+				.table(IAMAccountConstants.getDomainSSOModule().getTableName())
+				.innerJoin("App_Domain")
+				.on("App_Domain.ID = Domain_SSO.APP_DOMAIN_ID");
+
+		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.DOMAIN", "domain", domain, StringOperators.IS));
+		var maps = selectBuilder.get();
+		if (CollectionUtils.isEmpty(maps)) {
+			return null;
+		}
+
+		DomainSSO sso = FieldUtil.getAsBeanFromMap(maps.get(0), DomainSSO.class);
+		return sso;
 	}
 
 	private List<Map<String, Object>> getAccountSSODetails(List<Long> orgIds) throws Exception{

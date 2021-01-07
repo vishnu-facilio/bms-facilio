@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.facilio.accounts.sso.DomainSSO;
 import com.facilio.bmsconsole.util.AESEncryption;
 import com.facilio.iam.accounts.util.*;
 import org.apache.commons.collections4.MapUtils;
@@ -812,6 +813,117 @@ public class FacilioAuthAction extends FacilioAction {
 	
 	public String getSsoToken() {
 		return this.ssoToken;
+	}
+
+	public String domainSSOSignIn() throws Exception {
+		HttpServletRequest request = ServletActionContext.getRequest();
+
+		String samlResponse = request.getParameter("SAMLResponse");
+		String relayState = request.getParameter("RelayState");
+
+		try {
+			if (getSsoToken() == null || samlResponse == null) {
+				setResponseCode(1);
+				setResult("message", "Invalid SSO access.");
+				return ERROR;
+			}
+
+			String str = SSOUtil.base64Decode(getSsoToken());
+			long appDomainId = Long.parseLong(str.split("_")[0]);
+			long ssoId = Long.parseLong(str.split("_")[1]);
+
+			DomainSSO sso = IAMOrgUtil.getDomainSSODetails(ssoId);
+			if (sso == null || sso.getIsActive() == null || !sso.getIsActive()) {
+				setResponseCode(1);
+				setResult("message", "Invalid SSO access.");
+				return ERROR;
+			}
+
+			SamlSSOConfig ssoConfig = (SamlSSOConfig) sso.getConfig();
+
+			SAMLServiceProvider samlClient = new SAMLServiceProvider(SSOUtil.getSPMetadataURL(sso), SSOUtil.getSPAcsURL(sso), ssoConfig.getEntityId(), ssoConfig.getLoginUrl(), ssoConfig.getCertificate());
+			SAMLResponse resp = samlClient.validateSAMLResponse(samlResponse, "POST");
+
+			String email = resp.getNameId();
+
+			try {
+				LOGGER.info("validateSSOSignIn()");
+				String authtoken = null;
+				boolean portalUser = false;
+				String appDomain = request.getServerName();
+				AppDomain appdomainObj = IAMAppUtil.getAppDomain(appDomain);
+				if(appdomainObj != null && appdomainObj.getAppDomainTypeEnum() != AppDomainType.FACILIO) {
+					portalUser = true;
+				}
+
+				String userAgent = request.getHeader("User-Agent");
+				userAgent = userAgent != null ? userAgent : "";
+				userAgent = "sso:" + userAgent;
+				String ipAddress = request.getHeader("X-Forwarded-For");
+				String serverName = request.getServerName();
+				String[] domainNameArray = serverName.split("\\.");
+
+				String domainName = "app";
+				if (domainNameArray.length > 2) {
+					String awsDomain = FacilioProperties.getDomain();
+					if(StringUtils.isEmpty(awsDomain)) {
+						awsDomain = "facilio";
+					}
+					if(!domainNameArray[1].equals(awsDomain) ) {
+						domainName = domainNameArray[0];
+					}
+				}
+
+				ipAddress = (ipAddress == null || "".equals(ipAddress.trim())) ? request.getRemoteAddr() : ipAddress;
+				String userType = "web";
+				String deviceType = request.getHeader("X-Device-Type");
+				if (!StringUtils.isEmpty(deviceType)
+						&& ("android".equalsIgnoreCase(deviceType) || "ios".equalsIgnoreCase(deviceType))) {
+					userType = "mobile";
+				}
+
+				LOGGER.info("validateLogin() : domainName : " + domainName);
+
+				authtoken = IAMUserUtil.verifyLoginWithoutPassword(email, userAgent, userType, ipAddress, request.getServerName(), null);
+				setResult("token", authtoken);
+				setResult("username", email);
+				boolean isWebView = false;
+				if (relayState != null && (relayState.indexOf("http") >= 0)) {
+					setResult("url", relayState);
+				}
+				else {
+					if (relayState != null && "mobile".equals(relayState)) {
+						isWebView = true;
+						setWebViewCookies();
+						setResult("url", SSOUtil.getLoginSuccessURL(true));
+					} else {
+						setResult("url", SSOUtil.getLoginSuccessURL(false));
+					}
+				}
+
+				addAuthCookies(authtoken, portalUser, false, request, isWebView || "mobile".equals(userType));
+			}
+			catch (Exception e) {
+				LOGGER.log(Level.INFO, "Exception while validating sso signin, ", e);
+				setResponseCode(1);
+				Exception ex = e;
+				while (ex != null) {
+					if (ex instanceof AccountException) {
+						setResult("message", ex.getMessage());
+						break;
+					}
+					ex = (Exception) ex.getCause();
+				}
+				return ERROR;
+			}
+		}
+		catch (Exception e) {
+			LOGGER.log(Level.INFO, "Exception while validating SAMLResponse, ", e);
+			setResponseCode(1);
+			setResult("message", "Invalid SSO access.");
+			return ERROR;
+		}
+		return SUCCESS;
 	}
 	
 	public String ssoSignIn() throws Exception {

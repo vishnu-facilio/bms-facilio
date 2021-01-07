@@ -7,6 +7,7 @@ import java.util.Map;
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.sso.AccountSSO;
+import com.facilio.accounts.sso.DomainSSO;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.modules.FieldUtil;
@@ -66,9 +67,21 @@ public class IAMOrgUtil {
 		}
 		return org;
 	}
+
+	public static boolean addOrUpdateDomainSSO(DomainSSO domainSSO) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getOrgBean().addOrUpdateDomainSSO(domainSSO));
+	}
 	
 	public static boolean addOrUpdateAccountSSO(long orgId, AccountSSO sso) throws Exception {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getOrgBean().addOrUpdateAccountSSO(orgId, sso));
+	}
+
+	public static DomainSSO getDomainSSODetails(String domain) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getOrgBean().getDomainSSODetails(domain));
+	}
+
+	public static DomainSSO getDomainSSODetails(long domainSSOId) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getOrgBean().getDomainSSODetails(domainSSOId));
 	}
 	
 	public static AccountSSO getAccountSSO(long orgId) throws Exception {
