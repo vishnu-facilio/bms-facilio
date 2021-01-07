@@ -16,7 +16,7 @@ public class InviteVisitorContextV3 extends BaseVisitContextV3 {
 	private Boolean isRecurring;
 	private Long logGeneratedUpto;
 	private Boolean isInvitationSent;
-	private Long groupId;
+	private GroupInviteContextV3 groupId;
 	private Long parentInviteId;
 	private Boolean isInvited;
 	private Boolean hasCheckedIn;
@@ -121,11 +121,11 @@ public class InviteVisitorContextV3 extends BaseVisitContextV3 {
 		return childInvite;
 	}
 
-	public Long getGroupId() {
+	public GroupInviteContextV3 getGroupId() {
 		return groupId;
 	}
 
-	public void setGroupId(Long groupId) {
+	public void setGroupId(GroupInviteContextV3 groupId) {
 		this.groupId = groupId;
 	}
 
