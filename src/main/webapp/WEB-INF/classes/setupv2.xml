@@ -26,7 +26,7 @@
 	</package>
 
 	<package name="portalssoApiV2" namespace="/api/v2/setup/portalsso" extends="v2Api">
-			<action name="update" class="com.facilio.bmsconsole.actions.SetupActions" method="updatePortalSSOSettings">
+		<action name="update" class="com.facilio.bmsconsole.actions.SetupActions" method="updatePortalSSOSettings">
 			<param name="moduleName">setup</param>
 			<param name="permission">GENERAL,COMPANY_PROFILE</param>
 			<result name="success" type="json">
@@ -46,11 +46,6 @@
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">^domainInfo.*</param>
 			</result>
-		</action>
-
-		<action name="delete" class="com.facilio.bmsconsole.actions.SetupActions" method="deleteSSOSettings">
-			<param name="moduleName">setup</param>
-			<param name="permission">GENERAL,COMPANY_PROFILE</param>
 		</action>
 
 		<action name="get" class="com.facilio.bmsconsole.actions.SetupActions" method="getPortalSSOSettings">
