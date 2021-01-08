@@ -214,7 +214,7 @@ public class FacilioAgent implements Serializable {
     }
 
     @JsonInclude
-    private long inBoundConnectionId =-1;
+    private long inboundConnectionId =-1;
     public JSONObject toJSON(){
         JSONObject payload = new JSONObject();
         long currTime = System.currentTimeMillis();
@@ -233,7 +233,7 @@ public class FacilioAgent implements Serializable {
         payload.put(AgentKeys.DISPLAY_NAME,getDisplayName());
         payload.put(AgentKeys.WRITABLE, getWritable());
         payload.put("agentType",getAgentType());
-        payload.put(AgentConstants.INBOUND_CONNECTION_ID,getInBoundConnectionId());
+        payload.put(AgentConstants.INBOUND_CONNECTION_ID,getInboundConnectionId());
         if(createdTime>0){
             payload.put(AgentKeys.CREATED_TIME,getCreatedTime());
         }else {

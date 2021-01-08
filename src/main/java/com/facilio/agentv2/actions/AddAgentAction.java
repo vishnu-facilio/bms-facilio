@@ -65,7 +65,7 @@ public class AddAgentAction extends AgentActionV2
             if(getAgentType() == AgentType.REST.getKey()){
                 long orgId = AccountUtil.getCurrentOrg().getOrgId();
                 long inboundId = FacilioService.runAsServiceWihReturn(()->insertApiKey(getAgentName(),getOrgUserId(),orgId));
-                agent.setInBoundConnectionId(inboundId);
+                agent.setInboundConnectionId(inboundId);
             }
             context.put(AgentConstants.AGENT,agent);
             addAgentChain.execute();

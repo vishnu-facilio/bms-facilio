@@ -1,5 +1,19 @@
 package com.facilio.modules;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.tuple.Pair;
+
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
@@ -9,12 +23,13 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.tasker.tasks.EventUtil;
-import com.facilio.modules.fields.*;
-import org.apache.commons.lang3.tuple.Pair;
-
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import com.facilio.modules.fields.BooleanField;
+import com.facilio.modules.fields.EnumField;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.FileField;
+import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.NumberField;
+import com.facilio.modules.fields.SystemEnumField;
 
 public class FieldFactory {
 
@@ -9198,7 +9213,7 @@ public class FieldFactory {
 	        fields.add(getField("authType", "AUTH_TYPE", module, FieldType.NUMBER));
 	        fields.add(getField("apiKey", "API_KEY", module, FieldType.STRING));
 	        fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
-	        fields.add(getField("createdBy", "CREATED_BY", module, FieldType.ENUM));
+	        fields.add(getField("createdBy", "CREATED_BY", module, FieldType.NUMBER));
 	        return fields;
 	 }
 
