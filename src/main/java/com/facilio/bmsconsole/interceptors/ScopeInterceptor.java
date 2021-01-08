@@ -123,43 +123,46 @@ public class ScopeInterceptor extends AbstractInterceptor {
                 	
                     throw new AccountException(ErrorCode.INVALID_APP_DOMAIN, "invalid app linkName");
                 }
-                if (iamAccount.getUser() != null) {
-                    String authorisationReqd = ActionContext.getContext().getParameters().get("authorise").getValue();
-                	if(StringUtils.isEmpty(authorisationReqd) || authorisationReqd.equals("true")) {
-                	    boolean relaxedAccess = false;
-                	    if(appId > 0) {
-                            user = AccountUtil.getUserBean().getUser(appId, iamAccount.getOrg().getOrgId(), iamAccount.getUser().getUid(), request.getServerName());
+                //setting the current user scope to super admin scope when the user is not resolved from auth interceptor in the case of public portals access
+                if (iamAccount.getUser() == null) {
+                    User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(iamAccount.getOrg().getOrgId());
+                    iamAccount.setUser(superAdmin);
+                }
+                String authorisationReqd = ActionContext.getContext().getParameters().get("authorise").getValue();
+                if(StringUtils.isEmpty(authorisationReqd) || authorisationReqd.equals("true")) {
+                    boolean relaxedAccess = false;
+                    if(appId > 0) {
+                        user = AccountUtil.getUserBean().getUser(appId, iamAccount.getOrg().getOrgId(), iamAccount.getUser().getUid(), request.getServerName());
+                    }
+                    if (appId > 0 && user == null) {
+                        //return "usernotinapp";
+                        //temp handling - need to be removed
+                        LOGGER.log(Level.DEBUG, "User - id " + iamAccount.getUser().getUid() + "doesnt have access to this app - id " + appId + " of org - id " + iamAccount.getOrg().getOrgId());
+                        relaxedAccess = true;
+                    }
+                    else if(appId <= 0) { // case whn there is no app link name in api(mainly for fetch details)
+                        relaxedAccess = true;
+                    }
+                    if(relaxedAccess) {
+                        user = AccountUtil.getUserBean().getUser(-1, iamAccount.getOrg().getOrgId(), iamAccount.getUser().getUid(), null);
+                        if(user == null) {
+                            return logAndReturn("unauthorized", null, startTime, request);
                         }
-                        if (appId > 0 && user == null) {
-	                        //return "usernotinapp";
+                        //fetching permissible apps for this user corresponding to this domain
+                        //setting the first permissible application(corresponding to this domain) if exists to this user
+                        List<ApplicationContext> permissibleAppsForThisDomain = ApplicationApi.getApplicationsForOrgUser(user.getOuid(), request.getServerName());
+                        if (CollectionUtils.isNotEmpty(permissibleAppsForThisDomain)) {
+                            ApplicationApi.setThisAppForUser(user, permissibleAppsForThisDomain.get(0));
+                        } else {
+                            //return "usernotinapp";
                             //temp handling - need to be removed
-                            LOGGER.log(Level.DEBUG, "User - id " + iamAccount.getUser().getUid() + "doesnt have access to this app - id " + appId + " of org - id " + iamAccount.getOrg().getOrgId());
-                            relaxedAccess = true;
-                        }
-	                    else if(appId <= 0) { // case whn there is no app link name in api(mainly for fetch details)
-	                        relaxedAccess = true;
-	                    }
-	                    if(relaxedAccess) {
-	                        user = AccountUtil.getUserBean().getUser(-1, iamAccount.getOrg().getOrgId(), iamAccount.getUser().getUid(), null);
-                            if(user == null) {
-                                return logAndReturn("unauthorized", null, startTime, request);
-                            }
-                            //fetching permissible apps for this user corresponding to this domain
-                            //setting the first permissible application(corresponding to this domain) if exists to this user
-                            List<ApplicationContext> permissibleAppsForThisDomain = ApplicationApi.getApplicationsForOrgUser(user.getOuid(), request.getServerName());
-                            if (CollectionUtils.isNotEmpty(permissibleAppsForThisDomain)) {
-                                ApplicationApi.setThisAppForUser(user, permissibleAppsForThisDomain.get(0));
-                            } else {
-                                //return "usernotinapp";
-                                //temp handling - need to be removed
-                                LOGGER.log(Level.DEBUG, "User - id " + iamAccount.getUser().getUid() + "doesnt have access to any of the apps belonging to this domain " + request.getServerName() + " of org - id " + iamAccount.getOrg().getOrgId());
-                                ApplicationApi.setThisAppForUser(user, ApplicationApi.getApplicationIdForAppDomain(request.getServerName()));
-                            }
+                            LOGGER.log(Level.DEBUG, "User - id " + iamAccount.getUser().getUid() + "doesnt have access to any of the apps belonging to this domain " + request.getServerName() + " of org - id " + iamAccount.getOrg().getOrgId());
+                            ApplicationApi.setThisAppForUser(user, ApplicationApi.getApplicationIdForAppDomain(request.getServerName()));
                         }
                     }
-                	else {
-                		user = new User(iamAccount.getUser());
-                	}
+                }
+                else {
+                    user = new User(iamAccount.getUser());
                 }
                 Account account = new Account(iamAccount.getOrg(), user);
                 account.setUserSessionId(iamAccount.getUserSessionId());
