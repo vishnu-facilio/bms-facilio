@@ -20,6 +20,9 @@ import org.apache.log4j.Logger;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.xml.bind.DatatypeConverter;
+
+import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -80,13 +83,16 @@ public class AddAgentAction extends AgentActionV2
         return SUCCESS;
     }
 
-    private String generateKey ( String agentName ) {
-        return Base64.getEncoder().encodeToString(agentName.getBytes());
+    private String generateKey () {
+    	SecureRandom random = new SecureRandom();
+        byte bytes[] = new byte[256/8];
+        random.nextBytes(bytes);
+    	return DatatypeConverter.printHexBinary(bytes).toLowerCase();
     }
 
     private long insertApiKey(String agentName,long orgUserId,long orgId) throws Exception {
         Map<String,Object> prop = new HashMap<>();
-        prop.put(AgentConstants.API_KEY,generateKey(agentName));
+        prop.put(AgentConstants.API_KEY,generateKey());
         prop.put("sender",agentName);
         prop.put(AgentConstants.NAME,agentName);
         prop.put(AgentConstants.CREATED_TIME,System.currentTimeMillis());
