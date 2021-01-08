@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -55,6 +57,8 @@ import com.facilio.services.filestore.FileStore;
 import com.facilio.time.DateTimeUtil;
 
 public class ExportUtil {
+	
+	private static final Logger LOGGER = LogManager.getLogger(ExportUtil.class.getName());
 	
 	public static String exportData(FileFormat fileFormat, FacilioModule facilioModule, List<ViewField> fields, List<? extends ModuleBaseWithCustomFields> records, boolean isS3Url) throws Exception {
 		String fileUrl = null;
@@ -268,21 +272,26 @@ public class ExportUtil {
 	}
 	
 	private static void autoSizeColumns(HSSFSheet sheet) {
-		if (sheet.getPhysicalNumberOfRows() > 0) {
-			HSSFRow row = sheet.getRow(0);
-			Iterator<Cell> cellIterator = row.cellIterator();
-			while (cellIterator.hasNext()) {
-				Cell cell = cellIterator.next();
-				int columnIndex = cell.getColumnIndex();
-				sheet.autoSizeColumn(columnIndex);
-				int maxWidth = 10000;
-				if (sheet.getColumnWidth(columnIndex) > maxWidth) {
-					CellStyle style = cell.getCellStyle();
-					style.setWrapText(true); 
-					cell.setCellStyle(style);
-					sheet.setColumnWidth(columnIndex, maxWidth);
+		try {
+			if (sheet.getPhysicalNumberOfRows() > 0) {
+				HSSFRow row = sheet.getRow(0);
+				Iterator<Cell> cellIterator = row.cellIterator();
+				while (cellIterator.hasNext()) {
+					Cell cell = cellIterator.next();
+					int columnIndex = cell.getColumnIndex();
+					sheet.autoSizeColumn(columnIndex);
+					int maxWidth = 10000;
+					if (sheet.getColumnWidth(columnIndex) > maxWidth) {
+						CellStyle style = cell.getCellStyle();
+						style.setWrapText(true); 
+						cell.setCellStyle(style);
+						sheet.setColumnWidth(columnIndex, maxWidth);
+					}
 				}
 			}
+		}
+		catch (Exception e) {
+			LOGGER.error("Error while auto sizing column", e);
 		}
 	}
 	
