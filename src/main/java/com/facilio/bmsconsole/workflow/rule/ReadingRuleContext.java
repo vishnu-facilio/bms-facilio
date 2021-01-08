@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.bmsconsole.util.*;
 import com.google.gson.JsonObject;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.WordUtils;
@@ -69,6 +70,7 @@ import com.facilio.modules.fields.NumberField;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
+import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.WorkflowContext;
@@ -471,7 +473,20 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 	@Override
 	public boolean evaluateWorkflowExpression(String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
-		boolean workflowFlag = evalWorkflow(placeHolders, (Map<String, ReadingDataMeta>) context.get(FacilioConstants.ContextNames.CURRRENT_READING_DATA_META));
+		Map<String, ReadingDataMeta> currentRdmMap = (Map<String, ReadingDataMeta>) context.get(FacilioConstants.ContextNames.CURRRENT_READING_DATA_META);
+		if(currentRdmMap != null && MapUtils.isNotEmpty(currentRdmMap) && AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
+			for(ReadingDataMeta rdm :currentRdmMap.values()) {
+				if(rdm!= null && rdm.getValue() != null && rdm.getField() != null && rdm.getField() instanceof NumberField) {
+					NumberField numberField = (NumberField) rdm.getField();
+					Object value = UnitsUtil.convertToDisplayUnit(rdm.getValue(), numberField);	
+					if(value != null) {
+						rdm.setValue(value);
+					}		
+				}	
+			}
+		}
+		
+		boolean workflowFlag = evalWorkflow(placeHolders, currentRdmMap);
 		
 //		if (record == null) {
 //			return workflowFlag;
