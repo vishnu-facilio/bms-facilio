@@ -310,6 +310,24 @@ public class AssetsAPI {
 		return null;
 	}
 	
+	public static List<AssetCategoryContext> getSubCategory(Long assetCategoryId) throws Exception {
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET_CATEGORY);
+		
+		FacilioField parentCategoryField = modBean.getField("parentCategoryId", assetModule.getName());
+		
+		SelectRecordsBuilder<AssetCategoryContext> newSelectBuilder = new SelectRecordsBuilder<AssetCategoryContext>()
+				.module(assetModule)
+				.beanClass(AssetCategoryContext.class)
+				.andCondition(CriteriaAPI.getCondition(parentCategoryField, Collections.singletonList(assetCategoryId), NumberOperators.EQUALS))	// change to buildingIs if nedded
+				.select(modBean.getAllFields(FacilioConstants.ContextNames.ASSET_CATEGORY));
+		
+		 List<AssetCategoryContext> props = newSelectBuilder.get();
+		
+		return props;
+	}
+	
 	public static long getAssetId(String name, Long orgId) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

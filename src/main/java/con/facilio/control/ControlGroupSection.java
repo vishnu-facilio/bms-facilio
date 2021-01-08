@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.v3.context.V3Context;
 
 import lombok.Getter;
@@ -41,9 +43,44 @@ public class ControlGroupSection extends V3Context {
 	
 	public enum Section_Type {
 		
-		HVAC(1, "HVAC"),
-		LIGHTING(2, "Lighting"),
-		ELEVATOR(3, "Elevator"),
+		HVAC(1, "HVAC") {
+			@Override
+			public List<AssetCategoryContext> getAssetCategoryList() throws Exception {
+				// TODO Auto-generated method stub
+				List<AssetCategoryContext> categoryList = new ArrayList<AssetCategoryContext>();
+				AssetCategoryContext hvacCategory = AssetsAPI.getCategory(getName());
+				
+				if(hvacCategory != null) {
+					categoryList.add(hvacCategory);
+					List<AssetCategoryContext> childCategories = AssetsAPI.getSubCategory(hvacCategory.getId());
+					if(childCategories != null) {
+						categoryList.addAll(childCategories);
+					}
+				}
+				return categoryList;
+			}
+		},
+		LIGHTING(2, "Lighting") {
+			@Override
+			public List<AssetCategoryContext> getAssetCategoryList() throws Exception {
+				// TODO Auto-generated method stub
+				AssetCategoryContext category = AssetsAPI.getCategory(getName());
+				if(category != null) {
+					return Collections.singletonList(category);
+				}
+				return null;
+			}
+		},
+		ELEVATOR(3, "Elevator") {
+			@Override
+			public List<AssetCategoryContext> getAssetCategoryList() throws Exception {
+				AssetCategoryContext category = AssetsAPI.getCategory(getName());
+				if(category != null) {
+					return Collections.singletonList(category);
+				}
+				return null;
+			}
+		},
 		;
 
 		int intVal;
@@ -61,6 +98,8 @@ public class ControlGroupSection extends V3Context {
 			this.intVal = intVal;
 			this.name = name;
 		}
+		
+		public abstract List<AssetCategoryContext> getAssetCategoryList() throws Exception;
 
 		private static final Map<Integer, Section_Type> optionMap = Collections.unmodifiableMap(initTypeMap());
 
