@@ -5,66 +5,28 @@
 
 
 <struts>
-    <package name="iotBaseApiV3" strict-method-invocation="false"
+    <package name="iotPush" namespace="/api/v3/iot/data"
              extends="struts-default,json-default">
-
-        <global-results>
-            <result name="unauthorized" type="httpheader">
-                <param name="status">403</param>
-            </result>
-            <result name="invalid" type="httpheader">
-                <param name="status">400</param>
-            </result>
-
-            <result name="error" type="json">
-                <param name="ignoreHierarchy">false</param>
-                <param name="includeProperties">responseCode, message, stackTrace</param>
-            </result>
-            <result name="exception" type="chain">
-                <param name="actionName">handleException</param>
-                <param name="namespace">/v1/exception</param>
-            </result>
-            <result name="cachedResponse" type="chain">
-                <param name="actionName">cachedResponse</param>
-                <param name="namespace">/v2/cachedResponse</param>
-            </result>
-            <result name="success" type="json">
-                <param name="excludeNullProperties">true</param>
-                <param name="ignoreHierarchy">false</param>
-                <param name="includeProperties">^code.*,^data.*,^meta.*</param>
-            </result>
-            <result name="failure" type="json">
-                <param name="ignoreHierarchy">false</param>
-                <param name="includeProperties">^message.*,^code.*,^stackTrace.*</param>
-            </result>
-        </global-results>
-
-        <global-exception-mappings>
-            <exception-mapping exception="java.lang.Exception"
-                               result="exception"/>
-        </global-exception-mappings>
-    </package>
-
-    <package name="restAgentPushEndpoint" namespace="/api/v3/iot/data" extends="iotBaseApiV3">
         <interceptors>
-            <interceptor name="apikeyinterceptor"
-                         class="com.facilio.bmsconsole.interceptors.AgentApiKeyInterceptor"/>
-            <interceptor-stack name="defaultInterceptor">
+            <interceptor name="agentApiKeyInterceptor"
+                         class="com.facilio.bmsconsole.interceptors.AgentApiKeyInterceptor">
+            </interceptor>
+            <interceptor-stack name="agentApiInterceptorStack">
+                <interceptor-ref name="agentApiKeyInterceptor"/>
                 <interceptor-ref name="defaultStack"/>
                 <interceptor-ref name="json">
                     <param name="enableSMD">true</param>
                 </interceptor-ref>
             </interceptor-stack>
         </interceptors>
-
-        <default-interceptor-ref
-                name="apikeyinterceptor"/>
-
+        <default-interceptor-ref name="agentApiInterceptorStack"/>
         <action name="push"
                 class="com.facilio.agentv2.actions.RestAgentPushAction"
                 method="push">
+            <result name="success" type="json">
+                <param name="statusCode">200</param>
+            </result>
         </action>
-
     </package>
 
 </struts>

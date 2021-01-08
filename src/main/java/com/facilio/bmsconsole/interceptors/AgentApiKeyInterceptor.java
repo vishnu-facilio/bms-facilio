@@ -2,19 +2,18 @@ package com.facilio.bmsconsole.interceptors;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.actions.RestAgentPushAction;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.Interceptor;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
-import org.apache.struts2.dispatcher.HttpParameters;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -50,7 +49,8 @@ public class AgentApiKeyInterceptor implements Interceptor {
         HttpServletRequest request = ServletActionContext.getRequest();
         String apiKey = request.getHeader("x-api-key");
         if (apiKey != null) {
-            if (checkApiKey(apiKey)) {
+            if (checkApiKey(apiKey, actionInvocation)) {
+
                 actionInvocation.invoke();
                 return "success";
             }
@@ -58,16 +58,17 @@ public class AgentApiKeyInterceptor implements Interceptor {
         return "invalid api";
     }
 
-    private boolean checkApiKey(String apiKey) throws Exception {
+    private boolean checkApiKey(String apiKey, ActionInvocation actionInvocation) throws Exception {
         Map<String, FacilioField> fields = FieldFactory.getAsMap(FieldFactory.getInboundConnectionsFields());
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder().table(ModuleFactory.getInboundConnectionsModule().getTableName())
                 .select(fields.values())
                 .andCondition(CriteriaAPI.getCondition(fields.get(AgentConstants.API_KEY), apiKey, StringOperators.IS));
         List<Map<String, Object>> res = selectRecordBuilder.get();
         long orgId = (long) res.get(0).get(AgentConstants.ORGID);
-        String agentName = (String) res.get(0).get("sender");
+        String sender = (String) res.get(0).get("sender");
         AccountUtil.setCurrentAccount(orgId);
-        setAgent(agentName);
+        RestAgentPushAction action = (RestAgentPushAction) actionInvocation.getAction();
+        action.setSender(sender);
         return res.size() == 1;
     }
 }

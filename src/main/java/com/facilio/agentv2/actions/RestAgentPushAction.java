@@ -13,8 +13,15 @@ import javax.validation.constraints.NotNull;
 
 public class RestAgentPushAction extends FacilioAction {
     private static final Logger LOGGER = LogManager.getLogger(RestAgentPushAction.class.getName());
-    @NotNull
-    private String agent;
+    private String sender;
+
+    public String getSender() {
+        return sender;
+    }
+
+    public void setSender(String sender) {
+        this.sender = sender;
+    }
 
     public String getAgent() {
         return agent;
@@ -23,6 +30,8 @@ public class RestAgentPushAction extends FacilioAction {
     public void setAgent(String agent) {
         this.agent = agent;
     }
+
+    private String agent;
 
     @NotNull
     private JSONObject payload;
@@ -36,18 +45,25 @@ public class RestAgentPushAction extends FacilioAction {
     }
 
     public String push() {
-        LOGGER.info("payload : " + getPayload());
-        FacilioKafkaProducer producer = new FacilioKafkaProducer();
-        String topic = AccountUtil.getCurrentOrg().getDomain();
-        FacilioRecord record = new FacilioRecord(getAgent(), getPayload());
-        try {
-            producer.putRecord(topic, record);
-        } catch (Exception e) {
-            LOGGER.info("Exception while put record ", e);
+        if (getAgent().equals(getSender())) {
+            LOGGER.info("payload : " + getPayload());
+            FacilioKafkaProducer producer = new FacilioKafkaProducer();
+            String topic = AccountUtil.getCurrentOrg().getDomain();
+            JSONObject data = new JSONObject();
+            data.put("data", getPayload().toJSONString());
+            FacilioRecord record = new FacilioRecord(getSender(), data);
+            try {
+                producer.putRecord(topic, record);
+            } catch (Exception e) {
+                LOGGER.info("Exception while put record ", e);
+                return ERROR;
+            } finally {
+                producer.close();
+            }
+            return SUCCESS;
+        } else {
+            LOGGER.info("Agent did not match");
             return ERROR;
-        } finally {
-            producer.close();
         }
-        return SUCCESS;
     }
 }
