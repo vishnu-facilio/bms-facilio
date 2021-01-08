@@ -89,7 +89,10 @@ public class HistoricalAlarmOccurrenceDeletionCommand extends FacilioCommand imp
 //			}
 //			else{
 //				modifiedDateRange = WorkflowRuleHistoricalAlarmsAPI.deleteEntireAlarmOccurrences(ruleId, resourceId, actualStartTime, actualEndTime, AlarmOccurrenceContext.Type.READING);
-//			}
+//			}	
+			if(ruleJobType == RuleJobType.SENSOR_ROLLUP_ALARM) {
+				WorkflowRuleHistoricalAlarmsAPI.deleteAllAlarmOccurrencesBasedonCriteria(historyExecutionType.getOccurrenceDeletionCriteria(loggerInfo, Type.SENSOR_ALARM), historyExecutionType.getEventsProcessingCriteria(loggerInfo, Type.SENSOR_ALARM), modifiedDateRange.getStartTime(), modifiedDateRange.getEndTime(), Type.SENSOR_ALARM);
+			}
 						 		
 			updateParentRuleResourceLoggerToModifiedRangeAndEventGeneratingState(parentRuleResourceLoggerContext, modifiedDateRange);
 			

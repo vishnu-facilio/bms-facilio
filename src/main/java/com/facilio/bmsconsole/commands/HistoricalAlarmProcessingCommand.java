@@ -112,8 +112,19 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 				.module(eventModule)
 				.beanClass(NewEventAPI.getEventClass(type))
 				.andCriteria(fetchEventsCriteria)
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), lesserStartTime+","+greaterEndTime, DateOperators.BETWEEN))	
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), lesserStartTime+","+greaterEndTime, DateOperators.BETWEEN));
+		
+		if(type == Type.SENSOR_ROLLUP_ALARM) {
+			Criteria sensorEventsCriteria = new Criteria();
+			sensorEventsCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("eventType"), String.valueOf(Type.SENSOR_ALARM.getIndex()), NumberOperators.EQUALS));
+			sensorEventsCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("eventType"), String.valueOf(type.getIndex()), NumberOperators.EQUALS));
+			selectEventbuilder
+				.andCriteria(sensorEventsCriteria);
+		}
+		else {
+			selectEventbuilder
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("eventType"), String.valueOf(type.getIndex()), NumberOperators.EQUALS));
+		}
 		
 		HashMap<String, AlarmOccurrenceContext> lastOccurrenceOfPreviousBatchMap = new HashMap<String, AlarmOccurrenceContext>();
 		List<BaseEventContext> baseEvents = new ArrayList<BaseEventContext>();

@@ -81,7 +81,14 @@ public class RunThroughHistoricalRuleCommand extends FacilioCommand {
 		}
 		
 		int minutesInterval = 24*60; 								//As of now, splitting up the rule_resource job each day
-		List<DateRange> intervals = DateTimeUtil.getTimeIntervals(range.getStartTime(), range.getEndTime(), minutesInterval);
+		List<DateRange> intervals = new ArrayList<DateRange>();
+		if(ruleJobTypeEnum == RuleJobType.SENSOR_ROLLUP_ALARM) {
+			intervals.add(range);
+		}
+		else {
+			intervals = DateTimeUtil.getTimeIntervals(range.getStartTime(), range.getEndTime(), minutesInterval);		
+		}
+		
 		DateRange firstInterval = intervals.get(0);
 		DateRange lastInterval = intervals.get(intervals.size()-1);
 		

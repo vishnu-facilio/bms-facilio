@@ -22,7 +22,9 @@ public enum RuleJobType implements FacilioEnum {
 	OPERATION_ALARM,
 	RULE_ROLLUP_ALARM (new ExecuteHistoryForRuleRollUp(), 2),
 	ASSET_ROLLUP_ALARM (new ExecuteHistoryForAssetRollUp(), 2),
-	SENSOR_ALARM (new ExecuteHistoryForSensorRule(), 3),
+	SENSOR_ALARM,
+	SENSOR_ROLLUP_ALARM (new ExecuteHistoryForSensorRule(), 3),
+	MULTIVARIATE_ANOMALY_ALARM,
 	;
 	public int getIndex() {
 		return ordinal() + 1;
