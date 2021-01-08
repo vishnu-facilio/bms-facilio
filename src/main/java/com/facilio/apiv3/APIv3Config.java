@@ -78,9 +78,15 @@ import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistContex
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount10;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount30;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
+
+import con.facilio.control.ControlGroupContext;
+import con.facilio.control.ControlGroupRoutineContext;
+import con.facilio.control.ControlScheduleContext;
+import con.facilio.control.ControlScheduleExceptionContext;
 
 import java.util.function.Supplier;
 
@@ -146,6 +152,44 @@ public class APIv3Config {
                 .list()
                 .beforeFetch(ReadOnlyChainFactoryV3.getQuoteBeforeFetchChain())
 
+                .build();
+    }
+    
+    @Module(ControlScheduleUtil.CONTROL_SCHEDULE_MODULE_NAME)
+    public static Supplier<V3Config> getScheduleCRUD() {
+        return () -> new V3Config(ControlScheduleContext.class, null)
+                .create()
+                .beforeSave(TransactionChainFactoryV3.getAddControlScheduleBeforeSaveChain())
+                .afterSave(new DeleteAndAddControlScheduleExceptionCommand())
+                .update()
+                .beforeSave(TransactionChainFactoryV3.getUpdateControlScheduleBeforeSaveCommandChain())
+                .afterSave(new DeleteAndAddControlScheduleExceptionCommand())
+                .build();
+    }
+    
+    @Module(ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_MODULE_NAME)
+    public static Supplier<V3Config> getScheduleExceptionCRUD() {
+        return () -> new V3Config(ControlScheduleExceptionContext.class, null)
+                .build();
+    }
+    
+    @Module(ControlScheduleUtil.CONTROL_GROUP_ROUTINE_MODULE_NAME)
+    public static Supplier<V3Config> getGroupRoutineCRUD() {
+        return () -> new V3Config(ControlGroupRoutineContext.class, null)
+        		.create()
+                .afterSave(new AddControlGroupRoutineSectionAndFieldCommand())
+                .update()
+                .afterSave(TransactionChainFactoryV3.getUpdateControlGroupRoutineChain())
+                .build();
+    }
+    
+    @Module(ControlScheduleUtil.CONTROL_GROUP_MODULE_NAME)
+    public static Supplier<V3Config> getGroupCRUD() {
+        return () -> new V3Config(ControlGroupContext.class, null)
+        		.create()
+                .afterSave(TransactionChainFactoryV3.getAddControlGroupAfterSaveChain())
+                .update()
+                .afterSave(TransactionChainFactoryV3.getUpdateControlGroupAfterSaveChain())
                 .build();
     }
 

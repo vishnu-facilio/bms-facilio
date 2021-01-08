@@ -536,60 +536,32 @@ public class TransactionChainFactoryV3 {
         return c;
     }
     
-    public static FacilioChain getAddControlScheduleChain() {
+    public static FacilioChain getAddControlScheduleBeforeSaveChain() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new AddControlScheduleCommand());
-        c.addCommand(new DeleteAndAddControlScheduleExceptionCommand());
+        c.addCommand(new AddControlScheduleBeforeSaveCommand());
         return c;
     }
     
-    public static FacilioChain getUpdateControlScheduleChain() {
+    public static FacilioChain getUpdateControlScheduleBeforeSaveCommandChain() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new UpdateControlScheduleCommand());
-        c.addCommand(new DeleteAndAddControlScheduleExceptionCommand());
-        return c;
-    }
-    
-    public static FacilioChain getGenricDeleteChain() {
-        FacilioChain c = getDefaultChain();
-        c.addCommand(new GenericDeleteCommand());
-        return c;
-    }
-    
-    public static FacilioChain getAddControlScheduleExceptionChain() {
-        FacilioChain c = getDefaultChain();
-        c.addCommand(new AddControlScheduleExceptionCommand());
-        return c;
-    }
-    
-    public static FacilioChain getUpdateControlScheduleExceptionChain() {
-        FacilioChain c = getDefaultChain();
-        c.addCommand(new UpdateControlScheduleExceptionCommand());
-        return c;
-    }
-    
-    public static FacilioChain getAddControlGroupRoutineChain() {
-        FacilioChain c = getDefaultChain();
-        c.addCommand(new AddControlGroupRoutineCommand());
-        c.addCommand(new AddControlGroupRoutineSectionAndFieldCommand());
+        c.addCommand(new UpdateControlScheduleBeforeSaveCommand());
         return c;
     }
     
     public static FacilioChain getUpdateControlGroupRoutineChain() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new UpdateControlGroupRoutineCommand());
         c.addCommand(new DeleteControlGroupRoutineSectionAndFieldCommand());
         c.addCommand(new AddControlGroupRoutineSectionAndFieldCommand());
         return c;
     }
     
-    public static FacilioChain getAddControlGroupChain() {
+    public static FacilioChain getAddControlGroupAfterSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddControlGroupV2Command());
         return c;
     }
     
-    public static FacilioChain getUpdateControlGroupChain() {
+    public static FacilioChain getUpdateControlGroupAfterSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdateControlGroupV2Command());
         c.addCommand(new UpdateControlGroupRelatedV2Command());

@@ -18,6 +18,7 @@ import con.facilio.control.ControlGroupAssetCategory;
 import con.facilio.control.ControlGroupAssetContext;
 import con.facilio.control.ControlGroupContext;
 import con.facilio.control.ControlGroupFieldContext;
+import con.facilio.control.ControlGroupRoutineContext;
 import con.facilio.control.ControlGroupSection;
 
 public class AddControlGroupV2Command extends FacilioCommand {
@@ -26,21 +27,21 @@ public class AddControlGroupV2Command extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		ControlGroupContext controlGroupContext = (ControlGroupContext) context.get(ControlScheduleUtil.CONTROL_GROUP_CONTEXT);
+		ControlGroupContext controlGroupContext = (ControlGroupContext) ControlScheduleUtil.getObjectFormRecordMap(context, ControlScheduleUtil.CONTROL_GROUP_MODULE_NAME);
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		if(controlGroupContext != null) {
 			
-			List<FacilioField> controlGroupFields = modBean.getAllFields(ControlScheduleUtil.CONTROL_GROUP_MODULE_NAME);
-			
-			InsertRecordBuilder<ControlGroupContext> insert = new InsertRecordBuilder<ControlGroupContext>()
-	    			.addRecord(controlGroupContext)
-	    			.fields(controlGroupFields)
-	    			.moduleName(ControlScheduleUtil.CONTROL_GROUP_MODULE_NAME)
-	    			;
-	        
-	        insert.save();
+//			List<FacilioField> controlGroupFields = modBean.getAllFields(ControlScheduleUtil.CONTROL_GROUP_MODULE_NAME);
+//			
+//			InsertRecordBuilder<ControlGroupContext> insert = new InsertRecordBuilder<ControlGroupContext>()
+//	    			.addRecord(controlGroupContext)
+//	    			.fields(controlGroupFields)
+//	    			.moduleName(ControlScheduleUtil.CONTROL_GROUP_MODULE_NAME)
+//	    			;
+//	        
+//	        insert.save();
 	        
 	        List<ControlGroupSection> sections = controlGroupContext.getSections();
 	        for(ControlGroupSection section : sections) {

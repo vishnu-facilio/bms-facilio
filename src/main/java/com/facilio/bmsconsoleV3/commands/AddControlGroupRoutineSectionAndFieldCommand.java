@@ -16,6 +16,7 @@ import com.facilio.modules.fields.FacilioField;
 import con.facilio.control.ControlGroupFieldContext;
 import con.facilio.control.ControlGroupRoutineContext;
 import con.facilio.control.ControlGroupRoutineSectionContext;
+import con.facilio.control.ControlScheduleContext;
 
 public class AddControlGroupRoutineSectionAndFieldCommand extends FacilioCommand {
 
@@ -23,7 +24,7 @@ public class AddControlGroupRoutineSectionAndFieldCommand extends FacilioCommand
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		ControlGroupRoutineContext routine = (ControlGroupRoutineContext) context.get(ControlScheduleUtil.CONTROL_GROUP_ROUTINE_CONTEXT);
+		ControlGroupRoutineContext routine = (ControlGroupRoutineContext) ControlScheduleUtil.getObjectFormRecordMap(context, ControlScheduleUtil.CONTROL_GROUP_ROUTINE_MODULE_NAME);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		if(routine != null) {
 			List<ControlGroupRoutineSectionContext> sections = routine.getSections();

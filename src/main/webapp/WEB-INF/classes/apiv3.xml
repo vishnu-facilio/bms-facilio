@@ -163,64 +163,6 @@
 
     </package>
 
-
-	<package name="controlsAdd" namespace="/api/v3/control/add" extends="v3Api">
-        <action name="schedule"
-                class="com.facilio.bmsconsoleV3.actions.ControlAction"
-                method="addControlSchedule">
-        </action>
-		<action name="group"
-                class="com.facilio.bmsconsoleV3.actions.ControlAction"
-                method="addControlGroup">
-        </action>
-		<action name="exception"
-                class="com.facilio.bmsconsoleV3.actions.ControlAction"
-                method="addControlScheduleException">
-        </action>
-        <action name="routine"
-                class="com.facilio.bmsconsoleV3.actions.ControlAction"
-                method="addControlGroupRoutine">
-        </action>
-    </package>
-    
-    <package name="controlsUpdate" namespace="/api/v3/control/update" extends="v3Api">
-        <action name="schedule"
-                class="com.facilio.bmsconsoleV3.actions.ControlAction"
-                method="updateControlSchedule">
-        </action>
-		<action name="group"
-                class="com.facilio.bmsconsoleV3.actions.ControlAction"
-                method="updateControlGroup">
-        </action>
-		<action name="exception"
-                class="com.facilio.bmsconsoleV3.actions.ControlAction"
-                method="updateControlScheduleException">
-        </action>
-        <action name="routine"
-                class="com.facilio.bmsconsoleV3.actions.ControlAction"
-                method="updateControlGroupRoutine">
-        </action>
-    </package>
-    
-    <package name="controlsDelete" namespace="/api/v3/control/delete" extends="v3Api">
-        <action name="schedule"
-                class="com.facilio.bmsconsoleV3.actions.ControlAction"
-                method="deleteControlSchedule">
-        </action>
-		<action name="group"
-                class="com.facilio.bmsconsoleV3.actions.ControlAction"
-                method="deleteControlGroup">
-        </action>
-		<action name="exception"
-                class="com.facilio.bmsconsoleV3.actions.ControlAction"
-                method="deleteControlScheduleException">
-        </action>
-        <action name="routine"
-                class="com.facilio.bmsconsoleV3.actions.ControlAction"
-                method="deleteControlGroupRoutine">
-        </action>
-    </package>
-	
     <package name="picklistApiv3" namespace="/api/v3/picklist"
              extends="v3Api">
         <action name="*"

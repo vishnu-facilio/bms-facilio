@@ -6,11 +6,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.util.BusinessHoursAPI;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.controlaction.context.ControlActionCommandContext;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -402,6 +404,11 @@ public class ControlScheduleUtil {
 		}
 		
 		return group;
+	}
+	
+	public static Object getObjectFormRecordMap(Context context,String moduleName) {
+		List<Object> objectlist = (List<Object>) (((Map<String,Object>)context.get(FacilioConstants.ContextNames.RECORD_MAP)).get(moduleName));
+		return objectlist.get(0);
 	}
 	
 	

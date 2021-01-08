@@ -7,6 +7,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -22,7 +23,7 @@ public class DeleteAndAddControlScheduleExceptionCommand extends FacilioCommand 
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		ControlScheduleContext schedule = (ControlScheduleContext) context.get(ControlScheduleUtil.CONTROL_SCHEDULE_CONTEXT);
+		ControlScheduleContext schedule = (ControlScheduleContext) ControlScheduleUtil.getObjectFormRecordMap(context, ControlScheduleUtil.CONTROL_SCHEDULE_MODULE_NAME);
 		
 		GenericDeleteRecordBuilder delete = new GenericDeleteRecordBuilder()
 				.table(ModuleFactory.getControlScheduleVsExceptionModule().getTableName())
