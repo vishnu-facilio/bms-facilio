@@ -40,7 +40,7 @@ public class BaseSchedulerJob extends FacilioJob {
 		try {
 			jobId = (Long) jc.getJobId();
 			String jobName = (String) jc.getJobName();
-			List<BaseScheduleContext> baseSchedules = getBaseSchedules();
+			List<BaseScheduleContext> baseSchedules = getBaseSchedules(jobId);
 
 			JSONObject jobProps = BmsJobUtil.getJobProps(jobId, jobName);
 		    Boolean isUpdate = (jobProps != null) ? (Boolean) jobProps.getOrDefault("isUpdate", true) : true;
@@ -73,10 +73,11 @@ public class BaseSchedulerJob extends FacilioJob {
 		}
 	}
 	
-	private List<BaseScheduleContext> getBaseSchedules() throws Exception {	   
+	private List<BaseScheduleContext> getBaseSchedules(long jobId) throws Exception {	   
 	   GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getBaseSchedulerFields())
-				.table(ModuleFactory.getBaseSchedulerModule().getTableName());
+				.table(ModuleFactory.getBaseSchedulerModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("SCHEDULE_TYPE", "scheduleType", ""+jobId, NumberOperators.EQUALS));
 			
 	   	Criteria subCriteria = new Criteria();
 		subCriteria.addOrCondition(CriteriaAPI.getCondition("END_TIME", "endTime", "" + System.currentTimeMillis(), NumberOperators.GREATER_THAN));
