@@ -27,6 +27,8 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.jobs.FailedPMNewScheduler;
 import com.facilio.bmsconsole.jobs.PMNewScheduler;
 import com.facilio.bmsconsole.templates.*;
+import com.facilio.bmsconsoleV3.context.jobplan.PMJobPlanContextV3;
+import com.facilio.bmsconsoleV3.util.JobPlanAPI;
 import com.facilio.db.builder.*;
 import com.facilio.modules.*;
 import com.facilio.tasker.job.JobContext;
@@ -103,12 +105,12 @@ public class PreventiveMaintenanceAPI {
 	
 	public static void addJobPlanSectionsToWorkorderTemplate(PreventiveMaintenance pm,WorkorderTemplate workorderTemplate) {
 		try {
-			pm.setPmjobPlans(getJobPlanFromPM(pm.getId()));
+			pm.setJobPlanList(getJobPlanV3FromPM(pm.getId()));
 			
-			if(pm.getPmjobPlans() != null && !pm.getPmjobPlans().isEmpty()) {
+			if(CollectionUtils.isNotEmpty(pm.getJobPlanList())) {
 				
-				for(PMJobPlanContext pmJobPlan : pm.getPmjobPlans()) {
-					workorderTemplate.getSectionTemplates().addAll(pmJobPlan.prepareAndGetJobPlanSections());
+				for(PMJobPlanContextV3 pmJobPlan : pm.getJobPlanList()) {
+					workorderTemplate.setJobPlanTaskSections(pmJobPlan.prepareAndGetJobPlanSections());
 				}
 			}
 		}
@@ -670,6 +672,17 @@ public class PreventiveMaintenanceAPI {
 		BulkWorkOrderContext bulkWorkOrderContext = new BulkWorkOrderContext();
 		for (long nextExecutionTime: nextExecutionTimes) {
 			WorkorderTemplate clonedWoTemplate = FieldUtil.cloneBean(workorderTemplate, WorkorderTemplate.class);
+
+			PreventiveMaintenanceAPI.addJobPlanSectionsToWorkorderTemplate(pm, workorderTemplate);
+
+			if(CollectionUtils.isNotEmpty(workorderTemplate.getJobPlanTaskSections())) {
+				List<TaskSectionTemplate> sectionTemplates = new ArrayList<>();
+				for (TaskSectionTemplate sectionTemplate: workorderTemplate.getJobPlanTaskSections()) {
+					sectionTemplates.add(sectionTemplate);
+					clonedWoTemplate.setTaskTemplates(sectionTemplate.getTaskTemplates());
+				}
+				clonedWoTemplate.setSectionTemplates(sectionTemplates);
+			}
 
 			if (workorderTemplate.getSectionTemplates() != null) {
 				List<TaskSectionTemplate> sectionTemplates = new ArrayList<>();
@@ -4277,4 +4290,62 @@ public class PreventiveMaintenanceAPI {
 	}
 
 
+	public static void deleteJobPlansForPm(Long pmId) throws Exception {
+
+		FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
+		Map<String, FacilioField> fieldMap =  FieldFactory.getAsMap(FieldFactory.getPreventiveMaintenanceFields());
+
+		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder()
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("pmId"), String.valueOf(pmId), NumberOperators.EQUALS));
+		deleteRecordBuilder.delete();
+
+	}
+
+	public static void addJobPlansForPm(PreventiveMaintenance pm) throws Exception {
+		List<Map<String, Object>> paramsMap = new ArrayList<>();
+		for(PMJobPlanContextV3 pmJp : pm.getJobPlanList()) {
+			Map<String, Object> relProp = FieldUtil.getAsProperties(pmJp);
+			relProp.put("pmId", pm.getId());
+			paramsMap.add(relProp);
+		}
+
+		FacilioModule module = ModuleFactory.getPMJobPlanV3Module();
+		Map<String, FacilioField> fieldMap =  FieldFactory.getAsMap(FieldFactory.getPMJobPlanV3Fields());
+
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(module.getTableName())
+				.fields(FieldFactory.getPMJobPlanV3Fields())
+				;
+		insertBuilder.addRecords(paramsMap);
+
+		insertBuilder.save();
+	}
+
+	public static List<PMJobPlanContextV3> getJobPlanV3FromPM(long pmId) throws Exception {
+
+		FacilioModule module = ModuleFactory.getPMJobPlanV3Module();
+		List<FacilioField> fields = FieldFactory.getPMJobPlanV3Fields();
+		Map<String, FacilioField> pmFieldsMap = FieldFactory.getAsMap(fields);
+
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCondition(pmFieldsMap.get("pmId"), String.valueOf(pmId), NumberOperators.EQUALS))
+				;
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if(props != null && !props.isEmpty()) {
+
+			List<PMJobPlanContextV3> pmJobPlans = new ArrayList<>();
+			for(Map<String, Object> prop :props) {
+				PMJobPlanContextV3 pmJobPlan = FieldUtil.getAsBeanFromMap(prop, PMJobPlanContextV3.class);
+				pmJobPlan.setJobPlanContext(JobPlanAPI.getJobPlan(pmJobPlan.getJobPlanId()));
+				pmJobPlans.add(pmJobPlan);
+			}
+			return pmJobPlans;
+		}
+		return null;
+	}
 }

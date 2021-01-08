@@ -21,6 +21,7 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import org.apache.commons.collections4.CollectionUtils;
 
 public class AddPMRelFieldsCommand extends FacilioCommand {
 	
@@ -54,9 +55,18 @@ public class AddPMRelFieldsCommand extends FacilioCommand {
 				TemplateAPI.addIncludeExcludePropsForPM(pm);
 				prepareAndAddResourcePlanner(context, pm);
 			}
+			addPmJobPlans(pm);
 		}
 		return false;
 	}
+
+	private void addPmJobPlans(PreventiveMaintenance pm) throws Exception {
+		if(CollectionUtils.isNotEmpty(pm.getJobPlanList())) {
+			PreventiveMaintenanceAPI.deleteJobPlansForPm(pm.getId());
+			PreventiveMaintenanceAPI.addJobPlansForPm(pm);
+		}
+	}
+
 	private void prepareAndAddResourcePlanner(Context context, PreventiveMaintenance pm) throws Exception {
 		PreventiveMaintenance pm1 = PreventiveMaintenanceAPI.getPM(pm.getId(), false);
 		pm.setDefaultAllTriggers(pm1.getDefaultAllTriggers());

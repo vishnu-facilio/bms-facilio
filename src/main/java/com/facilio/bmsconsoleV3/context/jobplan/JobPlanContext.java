@@ -12,11 +12,14 @@ public class JobPlanContext extends V3Context {
     private JobPlanCategory jobPlanCategory;
 
     public enum JobPlanCategory implements FacilioEnum {
-        ALL_SITE("Company"),
-        ALL_BUILDING("Asset"),
-        ALL_FLOOR("Location"),
-        SPACE_CATEGORY("space"),
-        ASSET_CATEGORY("asset")
+        ALL_FLOORS("All Floors"),
+        ALL_SPACES("All Spaces"),
+        SPACE_CATEGORY("Space Category"),
+        ASSET_CATEGORY("Asset Category"),
+        CURRENT_ASSET("Current Asset"),
+        SPECIFIC_ASSET("Specific Asset"),
+        ALL_BUILDINGS("All Buildings"),
+        ALL_SITES("All Sites")
         ;
         private String name;
 
@@ -95,4 +98,17 @@ public class JobPlanContext extends V3Context {
     }
 
     private Long spaceCategoryId;
+
+    private Long resourceId;
+
+    public Long getResourceId() {
+        if(resourceId == null){
+            return getSiteId();
+        }
+        return resourceId;
+    }
+
+    public void setResourceId(Long resourceId) {
+        this.resourceId = resourceId;
+    }
 }

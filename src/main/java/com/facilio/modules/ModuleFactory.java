@@ -4443,4 +4443,12 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getPMJobPlanV3Module() {
+		FacilioModule pmJobPlan = new FacilioModule();
+		pmJobPlan.setName("pmJobPlan");
+		pmJobPlan.setDisplayName("PM Job Plans");
+		pmJobPlan.setTableName("PM_Job_Plans");
+		return pmJobPlan;
+	}
+
 }

@@ -450,6 +450,14 @@ public class WorkorderTemplate extends Template {
 	public void setSafetyPlanId(Long safetyPlanId) {
 		this.safetyPlanId = safetyPlanId;
 	}
-	
-	
+
+	private List<TaskSectionTemplate> jobPlanTaskSections;
+
+	public List<TaskSectionTemplate> getJobPlanTaskSections() {
+		return jobPlanTaskSections;
+	}
+
+	public void setJobPlanTaskSections(List<TaskSectionTemplate> jobPlanTaskSections) {
+		this.jobPlanTaskSections = jobPlanTaskSections;
+	}
 }

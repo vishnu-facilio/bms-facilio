@@ -9539,6 +9539,27 @@ public class FieldFactory {
         fields.add(getIdField(module));
         fields.add(getField("scheduleId", "SCHEDULE_ID", module, FieldType.NUMBER));
         fields.add(getField("exceptionId", "EXCEPTION_ID", module, FieldType.NUMBER));
+    }
+
+    public static List<FacilioField> getPMJobPlanV3Fields() {
+        FacilioModule module = ModuleFactory.getPMJobPlanV3Module();
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField(module));
+
+        FacilioField pmId = new FacilioField();
+        pmId.setName("pmId");
+        pmId.setDataType(FieldType.NUMBER);
+        pmId.setColumnName("PM_ID");
+        pmId.setModule(module);
+
+        FacilioField jobPlanId = new FacilioField();
+        jobPlanId.setName("jobPlanId");
+        jobPlanId.setDataType(FieldType.NUMBER);
+        jobPlanId.setColumnName("JOB_PLAN_ID");
+        jobPlanId.setModule(module);
+
+        fields.add(pmId);
+        fields.add(jobPlanId);
         return fields;
     }
 }

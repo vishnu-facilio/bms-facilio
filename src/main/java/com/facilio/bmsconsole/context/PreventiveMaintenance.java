@@ -9,6 +9,8 @@ import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.bmsconsole.util.PMStatus;
+import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
+import com.facilio.bmsconsoleV3.context.jobplan.PMJobPlanContextV3;
 
 public class PreventiveMaintenance extends ResourceContext {
 	
@@ -609,5 +611,13 @@ public class PreventiveMaintenance extends ResourceContext {
 											.toString();
 	}
 
+	private List<PMJobPlanContextV3> jobPlanList;
 
+	public List<PMJobPlanContextV3> getJobPlanList() {
+		return jobPlanList;
+	}
+
+	public void setJobPlanList(List<PMJobPlanContextV3> jobPlanList) {
+		this.jobPlanList = jobPlanList;
+	}
 }

@@ -30,6 +30,8 @@ import com.facilio.bmsconsole.workflow.rule.impact.AddOrUpdateAlarmImpactCommand
 import com.facilio.bmsconsole.workflow.rule.impact.util.AlarmImpactAPI;
 import com.facilio.bmsconsoleV3.commands.AddSignupDataCommandV3;
 import com.facilio.bmsconsoleV3.commands.imap.SaveMailMessageCommandV3;
+import com.facilio.bmsconsoleV3.commands.jobplan.AddJobPlanTasksCommand;
+import com.facilio.bmsconsoleV3.commands.jobplan.AddJobPlanTasksForWoCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.AssociateQuotationTermsCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.DisAssociateQuotationTermsCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.SendQuotationMailCommand;
@@ -378,6 +380,7 @@ public class TransactionChainFactory {
 		public static FacilioChain getAddTasksChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForTask());
+			c.addCommand(new AddJobPlanTasksForWoCommand());
 			c.addCommand(new ValidateTasksCommand());
 			c.addCommand(new LoadAllFieldsCommand());
 			c.addCommand(new AddTaskSectionsCommand());
