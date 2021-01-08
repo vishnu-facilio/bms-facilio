@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.opensymphony.xwork2.ActionContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -77,8 +78,14 @@ public class PdfUtil {
 	}
 	
 	private static String getServerName() {
-		HttpServletRequest request = ServletActionContext.getRequest();
-		return request.getServerName().replace(RequestUtil.getProtocol(request)+"://", StringUtils.EMPTY);
+		HttpServletRequest request = ActionContext.getContext() != null ? ServletActionContext.getRequest() : null;
+		if (request == null) {
+			String serverName = FacilioProperties.getAppDomain();
+			return serverName.split(":")[0];
+		}
+		else {
+			return request.getServerName().replace(RequestUtil.getProtocol(request)+"://", StringUtils.EMPTY);
+		}
 	}
 	
 	private static String getToken() {
