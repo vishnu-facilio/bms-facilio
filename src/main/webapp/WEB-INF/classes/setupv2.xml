@@ -25,6 +25,44 @@
 
 	</package>
 
+	<package name="portalssoApiV2" namespace="/api/v2/setup/portalsso" extends="v2Api">
+			<action name="update" class="com.facilio.bmsconsole.actions.SetupActions" method="updatePortalSSOSettings">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL,COMPANY_PROFILE</param>
+			<result name="success" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">^domainSSO.*</param>
+			</result>
+			<result name="error" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">errorMessage</param>
+			</result>
+		</action>
+
+		<action name="getDomainInfo" class="com.facilio.bmsconsole.actions.SetupActions" method="getDomainInfo">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL,COMPANY_PROFILE</param>
+			<result name="success" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">^domainInfo.*</param>
+			</result>
+		</action>
+
+		<action name="delete" class="com.facilio.bmsconsole.actions.SetupActions" method="deleteSSOSettings">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL,COMPANY_PROFILE</param>
+		</action>
+
+		<action name="get" class="com.facilio.bmsconsole.actions.SetupActions" method="getPortalSSOSettings">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL,COMPANY_PROFILE</param>
+			<result name="success" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">spEntityId, spMetadataURL, spAcsURL, ^domainSSO.*</param>
+			</result>
+		</action>
+	</package>
+
 	<package name="ssoApiV2" namespace="/api/v2/setup/sso" extends="v2Api">
 		<action name="update" class="com.facilio.bmsconsole.actions.SetupActions" method="updateSSOSettings">
 			<param name="moduleName">setup</param>

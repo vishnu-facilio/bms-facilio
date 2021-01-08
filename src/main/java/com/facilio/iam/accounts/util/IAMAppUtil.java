@@ -67,6 +67,7 @@ public class IAMAppUtil {
 		if (isPortalDomain) {
 			DomainSSO domainSSODetails = IAMOrgUtil.getDomainSSODetails(appDomain.getDomain());
 			if (domainSSODetails != null && domainSSODetails.getIsActive()) {
+				resultJSON.put("isPortal", true);
 				resultJSON.put("isSSOEnabled", true);
 				String ssoEndpoint = SSOUtil.getDomainSSOEndpoint(appDomain.getDomain());
 				resultJSON.put("ssoEndPoint", ssoEndpoint);

@@ -377,6 +377,7 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		if (dbSso == null) {
 			return addDomainSSOEntry(domainSSO);
 		} else {
+			domainSSO.setId(dbSso.getId());
 			return updateDomainSSOEntry(domainSSO);
 		}
 	}
@@ -474,7 +475,9 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 	private DomainSSO getDomainSSODetailsByAppDomainId(long appDomainId) throws Exception {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(IAMAccountConstants.getDomainSSOFields())
-				.table(IAMAccountConstants.getDomainSSOModule().getTableName());
+				.table(IAMAccountConstants.getDomainSSOModule().getTableName())
+				.innerJoin("App_Domain")
+				.on("App_Domain.ID = Domain_SSO.APP_DOMAIN_ID");
 
 		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.ID", "appDomainId", appDomainId+"", NumberOperators.EQUALS));
 		var maps = selectBuilder.get();

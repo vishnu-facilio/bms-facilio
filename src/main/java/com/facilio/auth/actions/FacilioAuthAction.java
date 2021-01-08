@@ -839,7 +839,7 @@ public class FacilioAuthAction extends FacilioAction {
 				return ERROR;
 			}
 
-			SamlSSOConfig ssoConfig = (SamlSSOConfig) sso.getConfig();
+			SamlSSOConfig ssoConfig = (SamlSSOConfig) sso.getSSOConfig();
 
 			SAMLServiceProvider samlClient = new SAMLServiceProvider(SSOUtil.getSPMetadataURL(sso), SSOUtil.getSPAcsURL(sso), ssoConfig.getEntityId(), ssoConfig.getLoginUrl(), ssoConfig.getCertificate());
 			SAMLResponse resp = samlClient.validateSAMLResponse(samlResponse, "POST");

@@ -45,8 +45,12 @@ import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
+import org.apache.struts2.interceptor.ServletRequestAware;
+import org.json.simple.JSONObject;
 
-public class SetupActions<T> extends ActionSupport {
+import javax.servlet.http.HttpServletRequest;
+
+public class SetupActions<T> extends ActionSupport implements ServletRequestAware {
 
 	/**
 	 * 
@@ -221,6 +225,15 @@ public String importData() throws Exception {
 		this.errorMessage = errorMessage;
 	}
 
+	@Getter
+	@Setter
+	private JSONObject domainInfo;
+
+	public String getDomainInfo() throws Exception {
+		this.domainInfo = IAMAppUtil.getAppDomainInfo(this.httpServletRequest.getServerName());
+		return SUCCESS;
+	}
+
 	public String updatePortalSSOSettings() throws Exception {
 		if (domainSSO == null) {
 			return ERROR;
@@ -234,7 +247,7 @@ public String importData() throws Exception {
 		domainSSO.setModifiedTime(System.currentTimeMillis());
 
 		if (domainSSO.getConfig() != null) {
-			SamlSSOConfig ssoConfig = (SamlSSOConfig) sso.getSSOConfig();
+			SamlSSOConfig ssoConfig = (SamlSSOConfig) domainSSO.getSSOConfig();
 			if (ssoConfig.getCertificate() != null) {
 				try {
 					SAMLUtil.loadCertificate(ssoConfig.getCertificate());
@@ -246,7 +259,7 @@ public String importData() throws Exception {
 				}
 			}
 		}
-
+		
 		var appDomainType = AppDomain.AppDomainType.getByServiceName(getAppDomainType());
 		var appDomain = IAMAppUtil.getAppDomainForType(appDomainType.getIndex(), AccountUtil.getCurrentOrg().getOrgId()).get(0);
 
@@ -655,5 +668,11 @@ public String importData() throws Exception {
 			}
 		}
 		return  SUCCESS;
+	}
+
+	private HttpServletRequest httpServletRequest;
+	@Override
+	public void setServletRequest(HttpServletRequest httpServletRequest) {
+		this.httpServletRequest = httpServletRequest;
 	}
 }

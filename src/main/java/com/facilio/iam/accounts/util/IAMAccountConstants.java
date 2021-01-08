@@ -805,7 +805,7 @@ public class IAMAccountConstants {
 			fields.add(id);
 
 			FacilioField appDomainId = new FacilioField();
-			appDomainId.setName("appDomainID");
+			appDomainId.setName("appDomainId");
 			appDomainId.setDataType(FieldType.NUMBER);
 			appDomainId.setColumnName("APP_DOMAIN_ID");
 			appDomainId.setModule(module);

@@ -83,7 +83,7 @@ public class FacilioSSOAction extends FacilioAction {
 			return ERROR;
 		}
 
-		SamlSSOConfig ssoConfig = (SamlSSOConfig) domainSSO.getConfig();
+		SamlSSOConfig ssoConfig = (SamlSSOConfig) domainSSO.getSSOConfig();
 
 		SAMLServiceProvider samlClient = new SAMLServiceProvider(SSOUtil.getSPMetadataURL(domainSSO), SSOUtil.getSPAcsURL(domainSSO), ssoConfig.getEntityId(), ssoConfig.getLoginUrl(), ssoConfig.getCertificate());
 		String samlRequest = samlClient.getSAMLRequest();
