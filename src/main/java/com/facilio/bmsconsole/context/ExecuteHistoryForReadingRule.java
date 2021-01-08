@@ -152,26 +152,28 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 
 			FacilioContext context = executeWorkflows(readingRule, readings, currentFields, fields, events, previousEventMeta);
 			
-//			if(context.containsKey(FacilioConstants.ContextNames.RULE_LOG_MODULE_DATA)) {
-//				
-//				ruleLogModuleDatas.addAll((List<ReadingContext>)context.get(FacilioConstants.ContextNames.RULE_LOG_MODULE_DATA));
-//			}
-//			
-//			if(readingRule.getDataModuleId() > 0 && readingRule.getDataModuleFieldId() > 0 && ruleLogModuleDatas.size() > 0) {
-//				
-//				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-//				
-//				FacilioModule ruleDataModule = modBean.getModule(readingRule.getDataModuleId());
-//				
-//				FacilioChain addRuleData = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
-//				
-//				FacilioContext newContext = addRuleData.getContext();
-//				newContext.put(FacilioConstants.ContextNames.MODULE_NAME, ruleDataModule.getName());
-//				newContext.put(FacilioConstants.ContextNames.READINGS, ruleLogModuleDatas);
-//				newContext.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.SYSTEM);
-//				newContext.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
-//				addRuleData.execute();
-//			}
+			if(context.containsKey(FacilioConstants.ContextNames.RULE_LOG_MODULE_DATA)) {
+				
+				ruleLogModuleDatas.addAll((List<ReadingContext>)context.get(FacilioConstants.ContextNames.RULE_LOG_MODULE_DATA));
+			}
+			
+			if(readingRule.getDataModuleId() > 0 && readingRule.getDataModuleFieldId() > 0 && ruleLogModuleDatas.size() > 0) {
+				
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				
+				FacilioModule ruleDataModule = modBean.getModule(readingRule.getDataModuleId());
+				
+				FacilioChain addRuleData = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
+				
+				FacilioContext newContext = addRuleData.getContext();
+				newContext.put(FacilioConstants.ContextNames.MODULE_NAME, ruleDataModule.getName());
+				newContext.put(FacilioConstants.ContextNames.READINGS, ruleLogModuleDatas);
+				newContext.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.SYSTEM);
+				newContext.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
+				newContext.put(FacilioConstants.ContextNames.IS_PARALLEL_RULE_EXECUTION, Boolean.FALSE);
+				newContext.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS,Boolean.FALSE);
+				addRuleData.execute();
+			}
 			
 			eventSpecialCaseStartTime = System.currentTimeMillis();
 			if(events != null && !events.isEmpty())
