@@ -205,9 +205,8 @@ public class WorkOrderAction extends FacilioAction {
 //			workorder.getRequester().setInviteAcceptStatus(true);
 //		}
 		context.put(FacilioConstants.ContextNames.REQUESTER, workorder.getRequester());
-		if (AccountUtil.getCurrentUser() == null) {
-			context.put(FacilioConstants.ContextNames.IS_PUBLIC_REQUEST, true);
-		}
+		context.put(FacilioConstants.ContextNames.IS_PUBLIC_REQUEST, getPublicRequest());
+
 		
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
@@ -2761,6 +2760,17 @@ public class WorkOrderAction extends FacilioAction {
 		this.customButtons = customButtons;
 	}
 
+	private Boolean publicRequest;
+	public Boolean getPublicRequest() {
+		if (publicRequest == null) {
+			return false;
+		}
+		return publicRequest;
+	}
+	public void setPublicRequest(Boolean publicRequest) {
+		this.publicRequest = publicRequest;
+	}
+
 	public String addPortalOrders() throws Exception {
 		if(workOrderString != null) {
 			setWorkordercontex(workOrderString);
@@ -2774,7 +2784,7 @@ public class WorkOrderAction extends FacilioAction {
 		workorder.setSendForApproval(true);
 		FacilioStatus preOpenStatus = TicketAPI.getStatus("preopen");
 		workorder.setStatus(preOpenStatus);
-		if (workorder.getRequester() == null && AccountUtil.getCurrentUser() != null) {
+		if (workorder.getRequester() == null && AccountUtil.getCurrentUser() != null && !getPublicRequest()) {
 			workorder.setRequester(AccountUtil.getCurrentUser());
 		}
 
