@@ -474,7 +474,11 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 	public boolean evaluateWorkflowExpression(String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		Map<String, ReadingDataMeta> currentRdmMap = (Map<String, ReadingDataMeta>) context.get(FacilioConstants.ContextNames.CURRRENT_READING_DATA_META);
-		if(currentRdmMap != null && MapUtils.isNotEmpty(currentRdmMap) && AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
+		
+		Boolean isHistorical = (Boolean) context.get(FacilioConstants.ContextNames.IS_HISTORICAL);
+		isHistorical = isHistorical != null ? isHistorical : false;
+		
+		if(currentRdmMap != null && MapUtils.isNotEmpty(currentRdmMap) && !isHistorical && AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
 			for(ReadingDataMeta rdm :currentRdmMap.values()) {
 				if(rdm!= null && rdm.getValue() != null && rdm.getField() != null && rdm.getField() instanceof NumberField) {
 					NumberField numberField = (NumberField) rdm.getField();
