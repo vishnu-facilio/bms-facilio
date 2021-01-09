@@ -1,18 +1,23 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.BmsAggregateOperators;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class GetAllFieldsCommand extends FacilioCommand {
 
@@ -102,7 +107,9 @@ public class GetAllFieldsCommand extends FacilioCommand {
 				} 
 				else if (moduleName.equals("workorder")) {
 					if(!fieldObject.isDefault()) {
-						fields.add(fieldObject);
+						if(fieldObject.getDataTypeEnum() != FieldType.MULTI_ENUM && fieldObject.getDataTypeEnum() != FieldType.MULTI_LOOKUP) {
+							fields.add(fieldObject);
+						}
 					}
 					else if(FieldFactory.Fields.workOrderFieldsInclude.contains(fieldObject.getName())) {
 						fields.add(fieldObject);
@@ -126,7 +133,9 @@ public class GetAllFieldsCommand extends FacilioCommand {
 				}
 				else if (moduleName.equals("asset")) {
 					if(!fieldObject.isDefault()) {
-						fields.add(fieldObject);
+						if(fieldObject.getDataTypeEnum() != FieldType.MULTI_ENUM && fieldObject.getDataTypeEnum() != FieldType.MULTI_LOOKUP) {
+							fields.add(fieldObject);
+						}
 					}
 					else if(FieldFactory.Fields.assetFieldsInclude.contains(fieldObject.getName())) {
 						fields.add(fieldObject);
@@ -134,7 +143,9 @@ public class GetAllFieldsCommand extends FacilioCommand {
 				}
 				else if (moduleName.equals("newreadingalarm") || moduleName.equals("bmsalarm") || moduleName.equals("mlAnomalyAlarm")) {
 					if(!fieldObject.isDefault()) {
-						fields.add(fieldObject);
+						if(fieldObject.getDataTypeEnum() != FieldType.MULTI_ENUM && fieldObject.getDataTypeEnum() != FieldType.MULTI_LOOKUP) {
+							fields.add(fieldObject);
+						}
 					}
 					else if(FieldFactory.Fields.newAlarmsFieldsInclude.contains(fieldObject.getName())) {
 						fields.add(fieldObject);
@@ -142,7 +153,9 @@ public class GetAllFieldsCommand extends FacilioCommand {
 				}
 				else if (moduleName.equals(ContextNames.OPERATION_ALARM)) {
 					if(!fieldObject.isDefault()) {
-						fields.add(fieldObject);
+						if(fieldObject.getDataTypeEnum() != FieldType.MULTI_ENUM && fieldObject.getDataTypeEnum() != FieldType.MULTI_LOOKUP) {
+							fields.add(fieldObject);
+						}
 					}
 					else if(FieldFactory.Fields.newOpAlarmsFieldsInclude.contains(fieldObject.getName())) {
 						fields.add(fieldObject);
@@ -162,7 +175,10 @@ public class GetAllFieldsCommand extends FacilioCommand {
 				if (field.getName().equals("stateFlowId")) {
 					fieldsToRemove.add(field);
 				}
-				if (field.getName().equals("moduleState") && mod.getStateFlowEnabled() != null && !mod.getStateFlowEnabled()) {
+				else if (field.getName().equals("moduleState") && mod.getStateFlowEnabled() != null && !mod.getStateFlowEnabled()) {
+					fieldsToRemove.add(field);
+				}
+				else if(field.getDataTypeEnum() == FieldType.MULTI_ENUM || field.getDataTypeEnum() == FieldType.MULTI_LOOKUP) {
 					fieldsToRemove.add(field);
 				}
 			}

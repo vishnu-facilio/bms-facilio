@@ -1,24 +1,5 @@
 package com.facilio.report.context;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.accounts.util.AccountUtil.FeatureLicense;
-import com.facilio.aws.util.FacilioProperties;
-import com.facilio.beans.ModuleBean;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.FacilioModule.ModuleType;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.NumberField;
-import com.facilio.report.context.ReportFactory.Alarm;
-import com.facilio.report.context.ReportFactory.ReportFacilioField;
-import com.facilio.report.context.ReportFactory.WorkOrder;
-import org.json.simple.JSONObject;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,6 +7,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.json.simple.JSONObject;
+
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
+import com.facilio.aws.util.FacilioProperties;
+import com.facilio.beans.ModuleBean;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioModule.ModuleType;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.NumberField;
+import com.facilio.report.context.ReportFactory.Alarm;
+import com.facilio.report.context.ReportFactory.ReportFacilioField;
+import com.facilio.report.context.ReportFactory.WorkOrder;
 
 public class ReportFactoryFields {
 	
@@ -88,8 +89,9 @@ public class ReportFactoryFields {
 		ModuleBean bean = (ModuleBean)BeanFactory.lookup("ModuleBean");
 		Map<String, FacilioField> fields = FieldFactory.getAsMap(bean.getAllFields("workorder"));
 		Map<String, FacilioField> customFields = new HashMap<String, FacilioField>();
-		if(bean.getAllCustomFields("workorder") != null) {
-			customFields = FieldFactory.getAsMap(bean.getAllCustomFields("workorder"));
+		List<FacilioField> customFieldsList = bean.getAllCustomFields("workorder");
+		if(customFieldsList != null) {
+			customFields = FieldFactory.getAsMap(customFieldsList.stream().filter(field -> field.getDataTypeEnum() != null && field.getDataTypeEnum() != FieldType.MULTI_ENUM && field.getDataTypeEnum() != FieldType.MULTI_LOOKUP).collect(Collectors.toList()));
 		}
 		List<FacilioField> selectedFields = new ArrayList<FacilioField>();
 		
