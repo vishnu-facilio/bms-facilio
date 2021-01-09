@@ -1456,4 +1456,9 @@
 		</action>
 	</package>
 	
+	<package name="filesServiceApiV2" namespace="/api/service/v3/modules/data" extends="newServicePortalApiV2">
+		<action name="files" class="com.facilio.v3.RESTAPIHandler" method="files">
+		</action>
+	</package>
+	
 </struts>

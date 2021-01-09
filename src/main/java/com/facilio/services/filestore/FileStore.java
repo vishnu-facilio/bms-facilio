@@ -394,10 +394,10 @@ public abstract class FileStore {
 	}
 	public abstract long addFile(String namespace, String fileName, File file, String contentType, int[] resize) throws Exception;
 
-	public long addOrphanedFile(String fileName, File file, String contentType, int[] resize) throws Exception {
-		return addOrphanedFile(DEFAULT_NAMESPACE, fileName, file, contentType, resize);
+	public long addOrphanedFile(String fileName, File file, String contentType) throws Exception {
+		return addOrphanedFile(DEFAULT_NAMESPACE, fileName, file, contentType);
 	}
-	public abstract long addOrphanedFile(String namespace, String fileName, File file, String contentType, int[] resize) throws Exception;
+	public abstract long addOrphanedFile(String namespace, String fileName, File file, String contentType) throws Exception;
 
 	public long addFile(String fileName, String content, String contentType) throws Exception {
 		return addFile(DEFAULT_NAMESPACE, fileName, content, contentType);

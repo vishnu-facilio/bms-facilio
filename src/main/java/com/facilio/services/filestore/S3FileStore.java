@@ -117,8 +117,8 @@ public class S3FileStore extends FileStore {
 	}
 
 	@Override
-	public long addOrphanedFile(String namespace, String fileName, File file, String contentType, int[] resize) throws Exception {
-		return addFile(namespace, fileName, file, contentType, resize, true);
+	public long addOrphanedFile(String namespace, String fileName, File file, String contentType) throws Exception {
+		return addFile(namespace, fileName, file, contentType, true);
 	}
 
 	private long addFile(String namespace, String fileName, File file, String contentType, int[] resize, boolean isOrphaned) throws Exception {

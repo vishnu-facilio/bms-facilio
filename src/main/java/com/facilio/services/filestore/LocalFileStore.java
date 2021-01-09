@@ -10,7 +10,11 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.IOUtils;
@@ -131,7 +135,7 @@ public class LocalFileStore extends FileStore {
 	}
 
 	@Override
-	public long addOrphanedFile(String namespace, String fileName, File file, String contentType, int[] resize) throws Exception {
+	public long addOrphanedFile(String namespace, String fileName, File file, String contentType) throws Exception {
 		return addFile(namespace, fileName, file, contentType, true);
 	}
 
