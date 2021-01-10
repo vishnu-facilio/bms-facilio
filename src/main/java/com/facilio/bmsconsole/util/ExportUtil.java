@@ -49,6 +49,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.fields.BaseEnumField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.LookupFieldMeta;
@@ -490,6 +491,9 @@ public class ExportUtil {
     }
 
 	private static Object getFormattedValue(Map<String, Map<Long, Object>> modVsData, FacilioField field, Object value) {
+		if (value == null) {
+			return null;
+		}
 		
 		switch(field.getDataTypeEnum()) {
 
@@ -535,7 +539,18 @@ public class ExportUtil {
 		case BOOLEAN:case DECIMAL:case MISC:case STRING:
 			break;
 			case ENUM:
-				break;
+				return ((BaseEnumField)field).getValue((int) value);
+			case MULTI_ENUM:
+				StringBuilder builder = new StringBuilder();
+				List<Integer> values = (ArrayList<Integer>) value;
+				for(int i = 0, size = values.size();i < size; i++) {
+					int indexValue = values.get(i);
+					builder.append(((BaseEnumField)field).getValue((int) indexValue));
+					if (i+1 != size) {
+						builder.append(", ");
+					}
+				}
+				return builder.toString();
 			case FILE:
 				break;
 			case COUNTER:
@@ -655,6 +670,8 @@ public class ExportUtil {
 		int limit = 5000;
 		Map<String, String> orgInfo = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.MODULE_EXPORT_LIMIT);
 		String orgLimit = orgInfo.get(FacilioConstants.OrgInfoKeys.MODULE_EXPORT_LIMIT);
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
 		if (moduleName.equals("asset")) {
 			FacilioChain viewDetailsChain = FacilioChainFactory.getViewDetailsChain();
 			viewDetailsChain.execute(context);
@@ -718,11 +735,9 @@ public class ExportUtil {
 		
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
 		if (moduleName.equals("asset")) {
 			ViewField id = new ViewField("id", "Id");
-			FacilioField idField = FieldFactory.getIdField(modBean.getModule(moduleName));
+			FacilioField idField = FieldFactory.getIdField(module);
 			id.setField(idField);
 			viewFields.add(id);
 		}
@@ -819,11 +834,18 @@ public class ExportUtil {
 		}
 
 		for (int j = 0; j < viewFields.size(); j++) {
-			if (viewFields.get(j).getField() != null && viewFields.get(j).getField().getDataTypeEnum() != null && viewFields.get(j).getField().getDataTypeEnum() == FieldType.FILE) {
+			ViewField viewField = viewFields.get(j);
+			FacilioField field = viewField.getField();
+			if (field != null && field.getDataTypeEnum() != null && field.getDataTypeEnum() == FieldType.FILE) {
 				viewFields.remove(viewFields.get(j));
 			}
-			else if (viewFields.get(j).getFieldName() != null && viewFields.get(j).getFieldName().equals("siteId")) {
-				viewFields.get(j).setField(FieldFactory.getSiteIdField(modBean.getModule(moduleName)));
+			else if (viewField.getFieldName() != null && viewField.getFieldName().equals("siteId")) {
+				viewField.setField(FieldFactory.getSiteIdField(module));
+			}
+			else if (field == null) {
+				if (FieldFactory.isSystemField(viewField.getFieldName())) {
+					viewField.setField(FieldFactory.getSystemField(viewField.getFieldName(), module));
+				}
 			}
 			
 		}

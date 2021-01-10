@@ -1,21 +1,18 @@
 package com.facilio.v3.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
-import com.facilio.modules.fields.BaseLookupField;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SupplementRecord;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class AddCustomLookupInSupplementCommand extends FacilioCommand {
 
@@ -27,7 +24,7 @@ public class AddCustomLookupInSupplementCommand extends FacilioCommand {
         List<FacilioField> allFields = modBean.getAllFields(moduleName);
         List<SupplementRecord> customLookupFields = new ArrayList<>();
         for (FacilioField f : allFields) {
-            if (!f.isDefault() && (f.getDataTypeEnum() == FieldType.LOOKUP || f.getDataTypeEnum() == FieldType.MULTI_LOOKUP)) {
+            if (!f.isDefault() && (f.getDataTypeEnum() == FieldType.LOOKUP || f.getDataTypeEnum() == FieldType.MULTI_LOOKUP || f.getDataTypeEnum() == FieldType.MULTI_ENUM)) {
                 customLookupFields.add((SupplementRecord) f);
             }
         }

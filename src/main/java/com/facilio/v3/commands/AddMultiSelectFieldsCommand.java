@@ -1,19 +1,23 @@
 package com.facilio.v3.commands;
 
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioCommand;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.MultiLookupField;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.SupplementRecord;
 
 public class AddMultiSelectFieldsCommand extends FacilioCommand {
     @Override
@@ -28,23 +32,23 @@ public class AddMultiSelectFieldsCommand extends FacilioCommand {
         List<ModuleBaseWithCustomFields> records = recordMap.get(module.getName());
 
         if(CollectionUtils.isNotEmpty(fields) && CollectionUtils.isNotEmpty(records)){
-            List<MultiLookupField> multiLookups = new ArrayList<MultiLookupField>();
-
+            List<SupplementRecord> supplements = new ArrayList<SupplementRecord>();
+            
+            List<Map<String, Object>> props = FieldUtil.getAsMapList(records, ModuleBaseWithCustomFields.class);
             for(FacilioField field : fields){
-                  if(field.getDataTypeEnum() == FieldType.MULTI_LOOKUP) {
-                      for(ModuleBaseWithCustomFields rec : records) {
-                          Map<String, Object> recMap = FieldUtil.getAsProperties(rec);
+                  if(field.getDataTypeEnum() == FieldType.MULTI_LOOKUP || field.getDataTypeEnum() == FieldType.MULTI_ENUM) {
+                      for(Map<String, Object> recMap : props) {
                           if(MapUtils.isNotEmpty(recMap)) {
                               if(recMap.containsKey(field.getName())){
-                                  multiLookups.add((MultiLookupField) field);
+                                  supplements.add((SupplementRecord) field);
                                   break;
                               }
                           }
                       }
                   }
               }
-            if(CollectionUtils.isNotEmpty(multiLookups)){
-                context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS,multiLookups);
+            if(CollectionUtils.isNotEmpty(supplements)){
+                context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS,supplements);
             }
 
         }
