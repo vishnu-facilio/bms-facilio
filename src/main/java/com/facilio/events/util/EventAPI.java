@@ -340,9 +340,9 @@ public class EventAPI {
 			selectRecordBuilder.offset(offset);
 			selectRecordBuilder.limit(perPage);
 		}
-//		else { temp comment..
-//			selectRecordBuilder.limit(50);
-//		}
+		else {
+			selectRecordBuilder.limit(50);
+		}
 		if (fetchCount) {
 			selectRecordBuilder.select(new ArrayList<>()).aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT,
 					FieldFactory.getIdField(SOURCE_TO_RESOURCE_MODULE));
