@@ -64,8 +64,10 @@ import com.facilio.bmsconsole.workflow.rule.ReadingRuleMetricContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.fs.FileInfo.FileFormat;
@@ -73,6 +75,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
@@ -1464,7 +1467,45 @@ public class V2ReportAction extends FacilioAction {
 			
 			Set readingMap = new HashSet();
 			if(readingruleContext.getWorkflowId() > 0) {
-				WorkflowContext workflow = WorkflowUtil.getWorkflowContext(readingruleContext.getWorkflowId(), true);
+				
+				WorkflowContext workflow = new WorkflowContext();
+				//To be removed. Temporary fix HCA demo.
+				if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
+					FacilioModule module = ModuleFactory.getWorkflowModule(); 
+					GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+							.select(FieldFactory.getWorkflowFields())
+							.table(module.getTableName())
+							.andCondition(CriteriaAPI.getIdCondition(readingruleContext.getWorkflowId(), module));
+					
+					List<Map<String, Object>> props = selectBuilder.get();
+					
+					WorkflowContext workflowContext = null;
+					if (props != null && !props.isEmpty() && props.get(0) != null) {
+						Map<String, Object> prop = props.get(0);
+						boolean isWithExpParsed = true;
+
+						workflowContext = FieldUtil.getAsBeanFromMap(prop, WorkflowContext.class);
+						if(workflowContext.isV2Script()) {
+							if(workflowContext.getWorkflowUIMode() == WorkflowContext.WorkflowUIMode.XML.getValue()) {
+								workflowContext = WorkflowUtil.getWorkflowContextFromString(workflowContext.getWorkflowString(),workflowContext);
+								if(isWithExpParsed) {
+									WorkflowUtil.parseExpression(workflowContext);
+								}
+							}
+							else if(workflowContext.getWorkflowUIMode() == WorkflowContext.WorkflowUIMode.GUI.getValue()) {
+								workflowContext.parseScript();		
+							}	
+							workflow = workflowContext;	
+						}
+						else {		
+							workflow = WorkflowUtil.getWorkflowContext(readingruleContext.getWorkflowId(), true);
+						}	
+					}
+				}
+				else {
+					workflow = WorkflowUtil.getWorkflowContext(readingruleContext.getWorkflowId(), true);
+				}
+				//To be removed. Temporary fix HCA demo.
 				
 				for(WorkflowExpression workflowExp:workflow.getExpressions()) {
 					
