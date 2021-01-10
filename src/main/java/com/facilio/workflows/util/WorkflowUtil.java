@@ -1166,7 +1166,15 @@ public class WorkflowUtil {
 		WorkflowContext workflow = FieldUtil.getAsBeanFromMap(prop, WorkflowContext.class);
 		if(workflow.isV2Script()) {
 			if(workflow.getWorkflowUIMode() == WorkflowContext.WorkflowUIMode.GUI.getValue()) {
-				workflow.parseScript();
+				if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
+					workflow = getWorkflowContextFromString(workflow.getWorkflowString(),workflow);
+					if(isWithExpParsed) {
+						parseExpression(workflow);
+					}
+				}
+				else {
+					workflow.parseScript();
+				}
 			}
 		}
 		else {
