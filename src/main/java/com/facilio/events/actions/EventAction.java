@@ -303,19 +303,18 @@ public class EventAction extends FacilioAction {
 	}
 	
 	public String getAllSources() throws Exception {
-		FacilioContext context =new FacilioContext();
-		context.put(FacilioConstants.ContextNames.PAGINATION,getPagination());
-		context.put(AgentConstants.AGENT_ID,getAgentId());
-		setSources(EventAPI.getAllSources(context));
-		setResult("sources", getSources());
-		if (getSources() != null) {
-			List<Long> resourceIds = getSources().stream().filter(source -> source.get("resourceId") != null)
-					.map(source -> (long)source.get("resourceId")).collect(Collectors.toList());
-			if (!resourceIds.isEmpty()) {
-				Map<Long, Map<String, Object>> resourceMap = ResourceAPI.getResourceMapFromIds(resourceIds, false);
-				setResult("resources", resourceMap);
-			}
+		try{
+			FacilioContext context =new FacilioContext();
+			context.put(FacilioConstants.ContextNames.PAGINATION,getPagination());
+			context.put(AgentConstants.AGENT_ID,getAgentId());
+			setSources(EventAPI.getAllSources(context));
+			setResult("sources", getSources());
+			setResponseCode(200);
+		}catch(Exception e){
+			setResult("error",e.getMessage());
+			setResponseCode(500);
 		}
+
 		return SUCCESS;
 	}
 

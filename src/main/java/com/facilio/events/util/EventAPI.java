@@ -14,7 +14,9 @@ import java.util.Map;
 import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
+import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.collections4.CollectionUtils;
@@ -311,10 +313,19 @@ public class EventAPI {
 	public static List<Map<String, Object>> getAllSources(FacilioContext context) throws Exception {
 		boolean fetchCount = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_COUNT, false);
 		JSONObject pagination = (JSONObject) context.getOrDefault(FacilioConstants.ContextNames.PAGINATION,null);
-		long agentId = (long)context.getOrDefault(AgentConstants.AGENT_ID,-1);
+		long agentId = (long)context.getOrDefault(AgentConstants.AGENT_ID,-1L);
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE));
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(fieldMap.get("name"));
+		fields.add(fieldMap.get("resourceType"));
+		fields.addAll(SOURCE_TO_RESOURCE_FIELDS);
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-																.table(SOURCE_TO_RESOURCE_MODULE.getTableName())
-																.select(SOURCE_TO_RESOURCE_FIELDS);
+				.select(fields)
+				.table(SOURCE_TO_RESOURCE_MODULE.getTableName())
+				.leftJoin(module.getTableName())
+				.on(SOURCE_TO_RESOURCE_MODULE.getTableName()+".RESOURCE_ID = Resources.ID");
 		if(agentId > 0){
 			selectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(SOURCE_TO_RESOURCE_MODULE),String.valueOf(agentId),NumberOperators.EQUALS));
 		}
