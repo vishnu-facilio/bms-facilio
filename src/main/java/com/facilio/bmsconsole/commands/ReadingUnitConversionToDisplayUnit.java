@@ -4,14 +4,17 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.MapUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -29,6 +32,7 @@ public class ReadingUnitConversionToDisplayUnit extends FacilioCommand {
 		long startTime = System.currentTimeMillis();
 		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
 		Map<String, ReadingDataMeta> metaMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
+		Map<String, ReadingDataMeta> currentReadingMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.CURRRENT_READING_DATA_META);
 		
 		if (readingMap != null && !readingMap.isEmpty()) {
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -56,6 +60,17 @@ public class ReadingUnitConversionToDisplayUnit extends FacilioCommand {
 											NumberField numberField = (NumberField) field;
 											Object value = UnitsUtil.convertToDisplayUnit(readingData.get(fieldName), numberField);
 											readingData.put(fieldName, value);
+										}
+										
+										if(currentReadingMap != null && MapUtils.isNotEmpty(currentReadingMap) && AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
+											ReadingDataMeta currentReadingDataMeta = currentReadingMap.get(ReadingsAPI.getRDMKey(reading.getParentId(), field));
+											if(currentReadingDataMeta!= null && currentReadingDataMeta.getValue() != null && currentReadingDataMeta.getField() != null && currentReadingDataMeta.getField() instanceof NumberField && !currentReadingDataMeta.getValue().equals("-1.0")) {
+												NumberField numberField = (NumberField) currentReadingDataMeta.getField();
+												Object value = UnitsUtil.convertToDisplayUnit(currentReadingDataMeta.getValue(), numberField);	
+												if(value != null) {
+													currentReadingDataMeta.setValue(value);
+												}				
+											}
 										}
 									}
 								}

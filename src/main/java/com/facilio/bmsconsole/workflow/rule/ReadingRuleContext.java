@@ -475,29 +475,29 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		// TODO Auto-generated method stub
 		Map<String, ReadingDataMeta> currentRdmMap = (Map<String, ReadingDataMeta>) context.get(FacilioConstants.ContextNames.CURRRENT_READING_DATA_META);
 		
-		Boolean isHistorical = (Boolean) context.get(FacilioConstants.ContextNames.IS_HISTORICAL);
-		isHistorical = isHistorical != null ? isHistorical : false;
-		
-		if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l && this.getWorkflow() != null && ((this.getWorkflow().getId() == 695l) || (this.getWorkflow().getId() == 699l) || (this.getWorkflow().getId() > 703l))) {
-			if(record != null && record instanceof ReadingContext && ((ReadingContext)record) != null) {
-				LOGGER.info("HCA ReadingRule recordReadingContext --- "+((ReadingContext)record).toString()+", moduleName --- "+moduleName+ " currentRdmMap: "+currentRdmMap);
-			}
-		}
-		
-		if(currentRdmMap != null && MapUtils.isNotEmpty(currentRdmMap) && !isHistorical && this.getRuleTypeEnum() == WorkflowRuleContext.RuleType.ALARM_TRIGGER_RULE && AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
-			for(ReadingDataMeta rdm :currentRdmMap.values()) {
-				if(rdm!= null && rdm.getValue() != null && rdm.getField() != null && rdm.getField() instanceof NumberField && !rdm.getValue().equals("-1.0")) {
-					NumberField numberField = (NumberField) rdm.getField();
-					Object value = UnitsUtil.convertToDisplayUnit(rdm.getValue(), numberField);	
-					if(value != null) {
-						rdm.setValue(value);
-						if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l && this.getWorkflow() != null && ((this.getWorkflow().getId() == 695l) || (this.getWorkflow().getId() == 699l) || (this.getWorkflow().getId() > 703l))) {
-							LOGGER.info("HCA ReadingRule record --- "+record+", moduleName --- "+moduleName+ " rdmFieldId: "+rdm.getField().getId()+ " ChangedRdmValue: "+rdm.getValue()+ " rdmParentId: "+ rdm.getResourceId());
-						}
-					}		
-				}	
-			}
-		}
+//		Boolean isHistorical = (Boolean) context.get(FacilioConstants.ContextNames.IS_HISTORICAL);
+//		isHistorical = isHistorical != null ? isHistorical : false;
+//		
+//		if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l && this.getWorkflow() != null && ((this.getWorkflow().getId() == 695l) || (this.getWorkflow().getId() == 699l) || (this.getWorkflow().getId() > 703l))) {
+//			if(record != null && record instanceof ReadingContext && ((ReadingContext)record) != null) {
+//				LOGGER.info("HCA ReadingRule recordReadingContext --- "+((ReadingContext)record).toString()+", moduleName --- "+moduleName+ " currentRdmMap: "+currentRdmMap);
+//			}
+//		}
+//		
+//		if(currentRdmMap != null && MapUtils.isNotEmpty(currentRdmMap) && !isHistorical && this.getRuleTypeEnum() == WorkflowRuleContext.RuleType.ALARM_TRIGGER_RULE && AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
+//			for(ReadingDataMeta rdm :currentRdmMap.values()) {
+//				if(rdm!= null && rdm.getValue() != null && rdm.getField() != null && rdm.getField() instanceof NumberField && !rdm.getValue().equals("-1.0")) {
+//					NumberField numberField = (NumberField) rdm.getField();
+//					Object value = UnitsUtil.convertToDisplayUnit(rdm.getValue(), numberField);	
+//					if(value != null) {
+//						rdm.setValue(value);
+//						if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l && this.getWorkflow() != null && ((this.getWorkflow().getId() == 695l) || (this.getWorkflow().getId() == 699l) || (this.getWorkflow().getId() > 703l))) {
+//							LOGGER.info("HCA ReadingRule record --- "+record+", moduleName --- "+moduleName+ " rdmFieldId: "+rdm.getField().getId()+ " ChangedRdmValue: "+rdm.getValue()+ " rdmParentId: "+ rdm.getResourceId());
+//						}
+//					}		
+//				}	
+//			}
+//		}
 		
 		boolean workflowFlag = evalWorkflow(placeHolders, currentRdmMap);
 		
