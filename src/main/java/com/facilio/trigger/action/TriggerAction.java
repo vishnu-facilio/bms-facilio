@@ -3,7 +3,7 @@ package com.facilio.trigger.action;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
-import com.facilio.trigger.context.Trigger;
+import com.facilio.trigger.context.BaseTriggerContext;
 import com.facilio.trigger.util.TriggerUtil;
 import com.facilio.v3.V3Action;
 
@@ -14,14 +14,14 @@ public class TriggerAction extends V3Action {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	Trigger triggerContext;
+	BaseTriggerContext triggerContext;
 	
 	
-	public Trigger getTriggerContext() {
+	public BaseTriggerContext getTriggerContext() {
 		return triggerContext;
 	}
 
-	public void setTriggerContext(Trigger triggerContext) {
+	public void setTriggerContext(BaseTriggerContext triggerContext) {
 		this.triggerContext = triggerContext;
 	}
 

@@ -23,21 +23,21 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
-import com.facilio.trigger.context.Trigger;
+import com.facilio.trigger.context.BaseTriggerContext;
 import com.facilio.trigger.context.TriggerAction;
 import com.facilio.trigger.context.TriggerInclExclContext;
 import com.facilio.trigger.context.TriggerLog;
-import com.facilio.trigger.context.Trigger_Type;
+import com.facilio.trigger.context.TriggerType;
 
 public class TriggerUtil {
 	
 	public static final String TRIGGER_CONTEXT = "triggerContext";
 	
-	public static void executeTriggerActions(List<Trigger> triggers, FacilioContext context) throws Exception {
+	public static void executeTriggerActions(List<BaseTriggerContext> triggers, FacilioContext context) throws Exception {
 		
 		List<TriggerLog> logs = new ArrayList<TriggerLog>();
 		
-		for(Trigger trigger :triggers) {
+		for(BaseTriggerContext trigger :triggers) {
 			
 			if(trigger.getTriggerActions() != null) {
 				
@@ -70,7 +70,7 @@ public class TriggerUtil {
 		insert.save();
 	}
 
-	public static Trigger getTrigger(long triggerId) throws Exception {
+	public static BaseTriggerContext getTrigger(long triggerId) throws Exception {
 		
 		List<FacilioField> fields = FieldFactory.getTriggerFields();
 		FacilioModule module = ModuleFactory.getTriggerModule();
@@ -82,14 +82,14 @@ public class TriggerUtil {
 		List<Map<String, Object>> props = select.get();
 		
 		if(props != null && !props.isEmpty()) {
-			Trigger trigger = FieldUtil.getAsBeanFromMap(props.get(0), Trigger.class);
+			BaseTriggerContext trigger = FieldUtil.getAsBeanFromMap(props.get(0), BaseTriggerContext.class);
 			fillTriggerExtras(Collections.singletonList(trigger));
 			return trigger;
 		}
 		return null;
 	}
 	
-	public static List<Trigger> getTriggers(FacilioModule module, List<EventType> activityTypes,Criteria criteria, Trigger_Type... triggerTypes) throws Exception {
+	public static List<BaseTriggerContext> getTriggers(FacilioModule module, List<EventType> activityTypes, Criteria criteria, TriggerType... triggerTypes) throws Exception {
 		FacilioModule triggerModule = ModuleFactory.getTriggerModule();
 		List<FacilioField> fields = FieldFactory.getTriggerFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -108,7 +108,7 @@ public class TriggerUtil {
 		
 		if(triggerTypes != null && triggerTypes.length > 0) {
 			StringJoiner ids = new StringJoiner(",");
-			for(Trigger_Type type : triggerTypes) {
+			for(TriggerType type : triggerTypes) {
 				ids.add(String.valueOf(type.getValue()));
 			}
 
@@ -137,7 +137,7 @@ public class TriggerUtil {
 
 		List<Map<String, Object>> props = select.get();
 
-		List<Trigger> triggers = FieldUtil.getAsBeanListFromMapList(props, Trigger.class);
+		List<BaseTriggerContext> triggers = FieldUtil.getAsBeanListFromMapList(props, BaseTriggerContext.class);
 		
 		if(triggers != null && !triggers.isEmpty()) {
 			fillTriggerExtras(triggers);
@@ -146,10 +146,10 @@ public class TriggerUtil {
 		return triggers;
 	}
 	
-	public static void fillTriggerExtras(List<Trigger> triggers) throws Exception {
+	public static void fillTriggerExtras(List<BaseTriggerContext> triggers) throws Exception {
 		
-		Map<Long,Trigger> triggerIDmap = new HashedMap<Long, Trigger>();
-		for(Trigger trigger : triggers) { 
+		Map<Long, BaseTriggerContext> triggerIDmap = new HashedMap<Long, BaseTriggerContext>();
+		for(BaseTriggerContext trigger : triggers) {
 			triggerIDmap.put(trigger.getId(), trigger); 
 		}
 		

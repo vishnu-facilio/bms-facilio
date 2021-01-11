@@ -4,7 +4,7 @@ import java.util.Map;
 
 import com.facilio.chain.FacilioContext;
 
-public enum Trigger_Type implements TriggerTypeInterface {
+public enum TriggerType implements TriggerTypeInterface {
 	
 	SCHEDULED {
 		@Override
@@ -20,19 +20,12 @@ public enum Trigger_Type implements TriggerTypeInterface {
 			return null;
 		}
 	},
-	CHILD_MODULE_TRIGGER {
-		@Override
-		public Map<String, Object> getParamsMap(FacilioContext context) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-	},
 	;
 	
 	public int getValue() {
 		return ordinal()+1;
 	}
-	public static Trigger_Type valueOf(int value) {
+	public static TriggerType valueOf(int value) {
 		if (value > 0 && value <= values().length) {
 			return values()[value - 1];
 		}

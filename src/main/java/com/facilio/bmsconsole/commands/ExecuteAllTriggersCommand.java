@@ -1,10 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -14,22 +10,16 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.util.ReadingRuleAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.tasker.FacilioTimer;
-import com.facilio.trigger.context.Trigger;
+import com.facilio.trigger.context.BaseTriggerContext;
 import com.facilio.trigger.util.TriggerUtil;
 
 public class ExecuteAllTriggersCommand extends FacilioCommand {
@@ -60,7 +50,7 @@ public class ExecuteAllTriggersCommand extends FacilioCommand {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioModule module = modBean.getModule(moduleName);
 				
-				List<Trigger> triggers = TriggerUtil.getTriggers(module, activities, null, null);
+				List<BaseTriggerContext> triggers = TriggerUtil.getTriggers(module, activities, null, null);
 
 				List records = new LinkedList<>(entry.getValue());
 				Iterator it = records.iterator();
@@ -68,7 +58,7 @@ public class ExecuteAllTriggersCommand extends FacilioCommand {
 				while (it.hasNext()) {
 					ModuleBaseWithCustomFields record = (ModuleBaseWithCustomFields) it.next();	
 					
-					for(Trigger trigger :triggers) {
+					for(BaseTriggerContext trigger :triggers) {
 						
 						List<Long> resourceList = trigger.getActualResourceList();
 						if(record.getData().containsKey("parentId") && resourceList != null && !resourceList.isEmpty()) {

@@ -11,7 +11,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
 
-public enum Trigger_Action_Type {
+public enum TriggerActionType {
 
 	FORMULA_CALCULATION(1) {
 
@@ -42,7 +42,7 @@ public enum Trigger_Action_Type {
 	
 	private int val;
 
-	private Trigger_Action_Type(int val) {
+	private TriggerActionType(int val) {
 		this.val = val;
 	}
 
@@ -52,17 +52,17 @@ public enum Trigger_Action_Type {
 
 	abstract public Object performAction(FacilioContext context,Long recordId) throws Exception;
 
-	public static Trigger_Action_Type getActionType(int actionTypeVal) {
+	public static TriggerActionType getActionType(int actionTypeVal) {
 		return TYPE_MAP.get(actionTypeVal);
 	}
 
-	private static final Map<Integer, Trigger_Action_Type> TYPE_MAP = Collections.unmodifiableMap(initTypeMap());
+	private static final Map<Integer, TriggerActionType> TYPE_MAP = Collections.unmodifiableMap(initTypeMap());
 
-	private static final Logger LOGGER = LogManager.getLogger(Trigger_Action_Type.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(TriggerActionType.class.getName());
 
-	private static Map<Integer, Trigger_Action_Type> initTypeMap() {
-		Map<Integer, Trigger_Action_Type> typeMap = new HashMap<>();
-		for (Trigger_Action_Type type : values()) {
+	private static Map<Integer, TriggerActionType> initTypeMap() {
+		Map<Integer, TriggerActionType> typeMap = new HashMap<>();
+		for (TriggerActionType type : values()) {
 			typeMap.put(type.getVal(), type);
 		}
 		return typeMap;
