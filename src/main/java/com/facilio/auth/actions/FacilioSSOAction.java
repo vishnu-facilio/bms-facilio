@@ -12,7 +12,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.facilio.accounts.sso.DomainSSO;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.cookie.FacilioCookie;
+import com.facilio.iam.accounts.util.IAMUtil;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
@@ -75,7 +77,7 @@ public class FacilioSSOAction extends FacilioAction {
 			return ERROR;
 		}
 
-		DomainSSO domainSSO = IAMOrgUtil.getDomainSSODetails(getDomain());
+		DomainSSO domainSSO = IAMOrgUtil.getDomainSSODetails(SSOUtil.base64Decode(getDomain()));
 		if (domainSSO == null || domainSSO.getIsActive() == null || !domainSSO.getIsActive()) {
 			setResponseCode(1);
 			String message = "Invalid domain or Single Sign-On is not enabled for this domain.";

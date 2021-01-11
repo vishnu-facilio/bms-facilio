@@ -119,7 +119,7 @@ public class SSOUtil {
 	}
 
 	public static String getDomainSSOEndpoint(String domain) {
-		return getCurrentAppURL() + "/dsso/" + domain;
+		return getCurrentAppURL() + "/dsso/" + base64EncodeUrlSafe(domain);
 	}
 	
 	public static String getSSOEndpoint(String domain) {
