@@ -565,6 +565,19 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 	}
 
 	@Override
+	public boolean deleteDomainSSO(String domain) throws Exception {
+		var appDomainType = AppDomain.AppDomainType.getByServiceName(domain);
+		var appDomain = IAMAppUtil.getAppDomainForType(appDomainType.getIndex(), AccountUtil.getCurrentOrg().getOrgId()).get(0);
+		var domainSSODetails = IAMOrgUtil.getDomainSSODetails(appDomain.getDomain());
+
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+				.table(IAMAccountConstants.getDomainSSOModule().getTableName());
+
+		builder.andCondition(CriteriaAPI.getIdCondition(domainSSODetails.getId(), IAMAccountConstants.getDomainSSOModule()));
+		return builder.delete() > 0;
+	}
+
+	@Override
 	public boolean deleteAccountSSO(long orgId) throws Exception {
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 				.table(IAMAccountConstants.getAccountSSOModule().getTableName());

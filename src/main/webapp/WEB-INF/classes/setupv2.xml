@@ -48,6 +48,11 @@
 			</result>
 		</action>
 
+		<action name="delete" class="com.facilio.bmsconsole.actions.SetupActions" method="deletePortalSSOSettings">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL,COMPANY_PROFILE</param>
+		</action>
+
 		<action name="get" class="com.facilio.bmsconsole.actions.SetupActions" method="getPortalSSOSettings">
 			<param name="moduleName">setup</param>
 			<param name="permission">GENERAL,COMPANY_PROFILE</param>

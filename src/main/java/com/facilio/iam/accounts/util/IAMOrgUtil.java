@@ -95,6 +95,10 @@ public class IAMOrgUtil {
 	public static AccountSSO getAccountSSO(String orgDomain) throws Exception {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getOrgBean().getAccountSSO(orgDomain));
 	}
+
+	public static boolean deleteDomainSSO(String domain) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getOrgBean().deleteDomainSSO(domain));
+	}
 	
 	public static boolean deleteAccountSSO(long orgId) throws Exception {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getOrgBean().deleteAccountSSO(orgId));

@@ -312,10 +312,17 @@ public String importData() throws Exception {
 		var appDomainType = AppDomain.AppDomainType.getByServiceName(getAppDomainType());
 		var appDomain = IAMAppUtil.getAppDomainForType(appDomainType.getIndex(), AccountUtil.getCurrentOrg().getOrgId()).get(0);
 		var domainSSODetails = IAMOrgUtil.getDomainSSODetails(appDomain.getDomain());
-		setDomainSSO(domainSSODetails);
-		setSpEntityId(SSOUtil.getSPMetadataURL(domainSSODetails));
-		setSpMetadataURL(SSOUtil.getSPMetadataURL(domainSSODetails));
-		setSpAcsURL(SSOUtil.getSPAcsURL(domainSSODetails));
+		if (domainSSODetails != null) {
+			setDomainSSO(domainSSODetails);
+			setSpEntityId(SSOUtil.getSPMetadataURL(domainSSODetails));
+			setSpMetadataURL(SSOUtil.getSPMetadataURL(domainSSODetails));
+			setSpAcsURL(SSOUtil.getSPAcsURL(domainSSODetails));
+		} else {
+			setDomainSSO(null);
+			setSpEntityId(null);
+			setSpMetadataURL(null);
+			setSpAcsURL(null);
+		}
 		return SUCCESS;
 	}
 	
@@ -335,6 +342,13 @@ public String importData() throws Exception {
 			setSpAcsURL(null);
 		}
 		
+		return SUCCESS;
+	}
+
+	public String deletePortalSSOSettings() throws Exception {
+		var appDomainType = AppDomain.AppDomainType.getByServiceName(getAppDomainType());
+		var appDomain = IAMAppUtil.getAppDomainForType(appDomainType.getIndex(), AccountUtil.getCurrentOrg().getOrgId()).get(0);
+		IAMOrgUtil.deleteDomainSSO(appDomain.getDomain());
 		return SUCCESS;
 	}
 	

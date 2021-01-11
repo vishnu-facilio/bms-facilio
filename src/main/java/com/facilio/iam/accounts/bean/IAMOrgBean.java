@@ -50,7 +50,9 @@ public interface IAMOrgBean {
 	public DomainSSO getDomainSSODetails(String domain) throws Exception;
 	
 	public AccountSSO getAccountSSO(String orgDomain) throws Exception;
-	
+
+	public boolean deleteDomainSSO(String domain) throws Exception;
+
 	public boolean deleteAccountSSO(long orgId) throws Exception;
 	
 	public Map<String,Boolean> getMfaSettings(long orgId) throws Exception;
