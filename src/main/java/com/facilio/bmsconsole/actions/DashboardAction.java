@@ -6578,6 +6578,37 @@ public class DashboardAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String updateDashboardTabsListWithWidgets() throws Exception {
+		if (dashboardMeta.containsKey("dashboardId")) {
+			Long dashboardId = (Long) dashboardMeta.get("dashboardId");
+			dashboard = DashboardUtil.getDashboardWithWidgets(dashboardId);
+			dashboard.setDashboardName((String) dashboardMeta.get("dashboardName"));
+			dashboard.setDashboardFolderId((Long) dashboardMeta.get("dashboardFolderId"));
+		}
+		
+		List dashboardTabs = (List) dashboardMeta.get("tabs");
+		for (int i=0; i < dashboardTabs.size(); i++) {
+			Map tab = (Map) dashboardTabs.get(i);
+			Long dashboardTabId = (Long) tab.get("tabId");
+			dashboardTabContext = DashboardUtil.getDashboardTabWithWidgets(dashboardTabId);
+			dashboardTabContext.setName((String)dashboardMeta.get("dashboardTabName"));
+			List dashboardWidgets = (List) dashboardMeta.get("dashboardWidgets");
+			
+			List<DashboardWidgetContext> widgets = getDashboardWidgetsFromWidgetMeta(dashboardWidgets);
+
+			dashboardTabContext.setDashboardWidgets(widgets);
+			
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.DASHBOARD_TAB, dashboardTabContext);
+			context.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
+			
+			FacilioChain updateDashboardChain = TransactionChainFactory.getUpdateDashboardTabChain();
+			updateDashboardChain.execute(context);
+		}
+		return SUCCESS;
+		
+	}
+	
 //	
 	private List<DashboardWidgetContext> getDashboardWidgetsFromWidgetMeta(List dashboardWidgets) {
 		List<DashboardWidgetContext> widgets = new ArrayList<>();

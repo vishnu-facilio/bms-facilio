@@ -3440,6 +3440,11 @@
 				<param name="includeProperties">^dashboardTabContext.*</param>
 			</result>
 		</action>
+		<action name="updateTabsList" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboardTabsListWithWidgets">
+			<result name="success" type="json">
+				<param name="includeProperties">^dashboardTabContext.*</param>
+			</result>
+		</action>
 		<action name="updateDashboard" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboards">
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboards.*</param>
