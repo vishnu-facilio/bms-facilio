@@ -184,6 +184,7 @@ public class FieldDeviceApi {
         List<FacilioField> fields = new ArrayList<FacilioField>();
         fields.add(FieldFactory.getNameField(resourceModule));
         fields.addAll(FieldFactory.getControllersField());
+
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .select(fields)
                 .table(module.getTableName())
@@ -197,8 +198,8 @@ public class FieldDeviceApi {
 
         Map<String, Object> props = builder.fetchFirst();
         if(props != null && !props.isEmpty()) {
-        	FacilioControllerType type = FacilioControllerType.valueOf((Integer)props.get(AgentConstants.CONTROLLER_TYPE));
-            Controller controller = ControllerApiV2.makeControllerFromMap(getControllerProps(type, controllerId),type);
+        	FacilioControllerType ctype = FacilioControllerType.valueOf((Integer)props.get(AgentConstants.CONTROLLER_TYPE));
+            Controller controller = ControllerApiV2.makeControllerFromMap(getControllerProps(ctype, controllerId),ctype);
             controller.setAgentId((long)props.get(AgentConstants.AGENT_ID));
             controller.setName((String)props.get(AgentConstants.NAME));
             controller.setId((Long)props.get(AgentConstants.ID));
@@ -211,10 +212,17 @@ public class FieldDeviceApi {
     	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
     	String moduleName = ControllerApiV2.getControllerModuleName(type);
     	FacilioModule module = modBean.getModule(moduleName);
+        List<FacilioField> fields = new ArrayList<FacilioField>();
     	 GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                 .select(modBean.getModuleFields(moduleName))
                  .table(module.getTableName())
                  .andCondition(CriteriaAPI.getIdCondition(controllerId,module));
+        if(type != null && type.asInt() == FacilioControllerType.MODBUS_RTU.asInt()){
+            fields.addAll(FieldFactory.getRtuNetworkFields());
+            builder.select(fields).innerJoin(ModuleFactory.getRtuNetworkModule().getTableName())
+                    .on(module.getTableName() + ".NETWORK_ID = " + ModuleFactory.getRtuNetworkModule().getTableName() + ".ID");
+        }else {
+            builder.select(modBean.getModuleFields(moduleName));
+        }
 		return  builder.fetchFirst();
     }
     /**
