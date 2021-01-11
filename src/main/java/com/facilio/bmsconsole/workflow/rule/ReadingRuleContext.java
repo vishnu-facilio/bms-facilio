@@ -492,7 +492,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 					if(value != null) {
 						rdm.setValue(value);
 						if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l && this.getWorkflow() != null && ((this.getWorkflow().getId() == 695l) || (this.getWorkflow().getId() == 699l) || (this.getWorkflow().getId() > 703l))) {
-							LOGGER.info("HCA ReadingRule record --- "+record+", moduleName --- "+moduleName+ " rdmFieldId: "+rdm.getFieldId()+ " ChangedRdmValue: "+rdm.getValue()+ "rdmParentId: "+ rdm.getResourceId());
+							LOGGER.info("HCA ReadingRule record --- "+record+", moduleName --- "+moduleName+ " rdmFieldId: "+rdm.getField().getId()+ " ChangedRdmValue: "+rdm.getValue()+ "rdmParentId: "+ rdm.getResourceId());
 						}
 					}		
 				}	
