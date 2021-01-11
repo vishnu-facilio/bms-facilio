@@ -116,6 +116,7 @@ public class SingleSharingContext implements Serializable {
 		FIELD,
 		APP,
 		TENANT,
+		VENDOR,
 		;
 		
 		public int getValue() {
@@ -152,6 +153,7 @@ public class SingleSharingContext implements Serializable {
 					break;
 				case FIELD:
 				case TENANT:
+				case VENDOR:
 					builder.append(fieldId);
 					break;
 				case APP:
