@@ -4818,6 +4818,14 @@ public class TransactionChainFactory {
 		return chain;
 	}
 
+	public static FacilioChain getUpdateTabsToGroupChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new DeleteTabForGroupCommand());
+		chain.addCommand(new CreateWebTabWebGroupCommand());
+		chain.addCommand(new AssociateTabGroupCommand());
+		return chain;
+	}
+
 	public static FacilioChain getDisAssociateTabGroupChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new DisAssociateTabGroupCommand());

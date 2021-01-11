@@ -5881,6 +5881,8 @@
 				class="com.facilio.bmsconsole.actions.WebTabAction" method="getTabListForGroup" />
 		<action name="associate"
 				class="com.facilio.bmsconsole.actions.WebTabAction" method="associateTabToGroupTab" />
+		<action name="addTabsToGroup"
+				class="com.facilio.bmsconsole.actions.WebTabAction" method="addTabsToGroup" />
 		<action name="disassociate"
 				class="com.facilio.bmsconsole.actions.WebTabAction" method="disAssociateTabToGroupTab" />
 		<action name="listForApp"
