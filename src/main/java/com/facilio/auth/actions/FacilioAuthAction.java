@@ -817,6 +817,8 @@ public class FacilioAuthAction extends FacilioAction {
 
 	public String domainSSOSignIn() throws Exception {
 		HttpServletRequest request = ServletActionContext.getRequest();
+		HttpServletResponse response = ServletActionContext.getResponse();
+
 
 		String samlResponse = request.getParameter("SAMLResponse");
 		String relayState = request.getParameter("RelayState");
@@ -902,6 +904,7 @@ public class FacilioAuthAction extends FacilioAction {
 				}
 
 				addAuthCookies(authtoken, portalUser, false, request, isWebView || "mobile".equals(userType));
+				FacilioCookie.addLoggedInCookie(response);
 			}
 			catch (Exception e) {
 				LOGGER.log(Level.INFO, "Exception while validating sso signin, ", e);
