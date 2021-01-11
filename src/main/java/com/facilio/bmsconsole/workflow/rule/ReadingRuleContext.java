@@ -478,9 +478,9 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		Boolean isHistorical = (Boolean) context.get(FacilioConstants.ContextNames.IS_HISTORICAL);
 		isHistorical = isHistorical != null ? isHistorical : false;
 		
-		if(currentRdmMap != null && MapUtils.isNotEmpty(currentRdmMap) && !isHistorical && AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
+		if(currentRdmMap != null && MapUtils.isNotEmpty(currentRdmMap) && !isHistorical && this.getRuleTypeEnum() == WorkflowRuleContext.RuleType.ALARM_TRIGGER_RULE && AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
 			for(ReadingDataMeta rdm :currentRdmMap.values()) {
-				if(rdm!= null && rdm.getValue() != null && rdm.getField() != null && rdm.getField() instanceof NumberField) {
+				if(rdm!= null && rdm.getValue() != null && rdm.getField() != null && rdm.getField() instanceof NumberField && !rdm.getValue().equals("-1.0")) {
 					NumberField numberField = (NumberField) rdm.getField();
 					Object value = UnitsUtil.convertToDisplayUnit(rdm.getValue(), numberField);	
 					if(value != null) {

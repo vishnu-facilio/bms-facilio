@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.collections.MapUtils;
+
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
@@ -16,6 +18,7 @@ import com.facilio.bmsconsole.util.CommonAPI;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -34,8 +37,10 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.NumberField;
 import com.facilio.report.util.DemoHelperUtil;
 import com.facilio.time.DateTimeUtil;
+import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.util.QueryUtil;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -389,6 +394,16 @@ public class ExpressionContext implements WorkflowExpression {
 							if(readingDataMeta == null) {
 								isRDMFromCache = false;
 								readingDataMeta = ReadingsAPI.getReadingDataMeta(Long.parseLong(parentIdString), select);
+								if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {				
+									if(readingDataMeta!= null && readingDataMeta.getValue() != null && !readingDataMeta.getValue().equals("-1.0") && readingDataMeta.getField() != null && readingDataMeta.getField() instanceof NumberField) {
+										NumberField numberField = (NumberField) readingDataMeta.getField();
+										Object value = UnitsUtil.convertToDisplayUnit(readingDataMeta.getValue(), numberField);	
+										if(value != null) {
+											readingDataMeta.setValue(value);
+											readingDataMeta.setActualValue(String.valueOf(value));
+										}													
+									}
+								}
 							}
 							if(readingDataMeta == null) {
 								throw new Exception("readingDataMeta is null for FieldName - "+fieldName +" moduleName - "+moduleName+" parentId - "+parentIdString);
