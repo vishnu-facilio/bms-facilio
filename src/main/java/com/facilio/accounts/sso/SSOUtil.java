@@ -63,9 +63,10 @@ public class SSOUtil {
 		return FacilioProperties.getClientAppUrl();
 	}
 
-	public static String getSPMetadataURL(DomainSSO domainSSO) {
+	public static String getSPMetadataURL(DomainSSO domainSSO) throws Exception {
 		var domainSSOKey = base64EncodeUrlSafe(domainSSO.getAppDomainId()+"_"+ domainSSO.getId());
-		return getCurrentAppURL() + "/dsso/metadata/" + domainSSOKey;
+		AppDomain appDomain = IAMAppUtil.getAppDomain(domainSSO.getAppDomainId());
+		return appDomain.getDomain() + "/dsso/metadata/" + domainSSOKey;
 	}
 	
 	public static String getSPMetadataURL(AccountSSO sso) {
@@ -77,10 +78,10 @@ public class SSOUtil {
 		return metadataUrl;
 	}
 
-	public static String getSPAcsURL(DomainSSO domainSSO) {
+	public static String getSPAcsURL(DomainSSO domainSSO) throws Exception {
 		String ssoKey = base64EncodeUrlSafe(domainSSO.getAppDomainId() + "_" + domainSSO.getId());
-
-		return getCurrentAppURL() + "/dsso/acs/" + ssoKey;
+		AppDomain appDomain = IAMAppUtil.getAppDomain(domainSSO.getAppDomainId());
+		return appDomain.getDomain() + "/dsso/acs/" + ssoKey;
 	}
 	
 	public static String getSPAcsURL(AccountSSO sso) {
@@ -94,6 +95,11 @@ public class SSOUtil {
 
 	public static String getSPLogoutURL() {
 		return getCurrentAppURL() + "/app/logout";
+	}
+
+	public static String getSPLogoutURL(DomainSSO domainSSO) throws Exception {
+		AppDomain appDomain = IAMAppUtil.getAppDomain(domainSSO.getAppDomainId());
+		return appDomain.getDomain() + "/app/logout";
 	}
 	
 	public static String getSPLogoutURL(AccountSSO sso) {
@@ -119,7 +125,7 @@ public class SSOUtil {
 	}
 
 	public static String getDomainSSOEndpoint(String domain) {
-		return getCurrentAppURL() + "/dsso/" + base64EncodeUrlSafe(domain);
+		return domain + "/dsso/" + base64EncodeUrlSafe(domain);
 	}
 	
 	public static String getSSOEndpoint(String domain) {
@@ -132,7 +138,7 @@ public class SSOUtil {
 	public static String getSPMetadataXML(DomainSSO domainSSO) throws Exception {
 		String spEntityId = getSPMetadataURL(domainSSO);
 		String spAcsUrl = getSPAcsURL(domainSSO);
-		String spLogoutUrl = getSPLogoutURL();
+		String spLogoutUrl = getSPLogoutURL(domainSSO);
 
 		XMLBuilder builder = XMLBuilder.create("md:EntityDescriptor").attr("xmlns:md", "urn:oasis:names:tc:SAML:2.0:metadata").attr("entityID", spEntityId);
 
