@@ -41,7 +41,7 @@ public class GenerateSensorRulesListCommand extends FacilioCommand {
 		FacilioField readingFieldObj = modBean.getField(readingFieldId);
 		List<SensorRuleContext> sensorRules = new ArrayList<>();
 		
-		if (readingFieldId > 0 && categoryId > 0) {	
+		if (readingFieldId > 0 && categoryId > 0 && readingFieldObj instanceof NumberField) {	
 			
 			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getSensorRuleFields());	
 			
