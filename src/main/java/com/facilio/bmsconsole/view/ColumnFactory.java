@@ -224,6 +224,7 @@ public class ColumnFactory {
 		columnMap.put("prterms-default", getDefaultTermsSubModuleColumns());
 
 		columnMap.put("budget-default", getDefaultBudgetColumns());
+		columnMap.put("controlGroupv2-default", getDefaultControlGroupColumns());
 
 		// Community Features
 		columnMap.put("announcement-default", getDefaultAnnouncementColumns());
@@ -1639,6 +1640,17 @@ public class ColumnFactory {
 		columns.add(new ViewField("focalPointType", "Scope"));
 		columns.add(new ViewField("totalIncome", "Total Income"));
 		columns.add(new ViewField("totalExpense", "Total Expense"));
+
+		return columns;
+
+	}
+
+	private static List<ViewField> getDefaultControlGroupColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("space", "Location"));
+		columns.add(new ViewField("controlSchedule", "Control Schedule"));
 
 		return columns;
 

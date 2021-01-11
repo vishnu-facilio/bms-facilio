@@ -895,6 +895,11 @@ public class ViewFactory {
 		views.put("all", getAllBudgetView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.Budget.BUDGET, views);
 
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllControlGroupView().setOrder(order++));
+		viewsMap.put("controlGroupv2", views);
+
 		return viewsMap;
 	}
 
@@ -7823,6 +7828,22 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All Budgets");
 		allView.setModuleName(module.getName());
+		allView.setSortFields(sortFields);
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		allView.setViewSharing(getSharingContext(appDomains));
+
+		return allView;
+	}
+
+	private static FacilioView getAllControlGroupView() {
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Groups");
+		allView.setModuleName("controlGroupv2");
 		allView.setSortFields(sortFields);
 
 		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
