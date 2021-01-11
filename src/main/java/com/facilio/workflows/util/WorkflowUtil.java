@@ -2384,6 +2384,9 @@ public class WorkflowUtil {
 			
 			WorkflowExpression wokflowExpresion = expressions.get(i);
 			
+			if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l && workflowContext != null && workflowContext.getCachedRDM() != null && ((workflowContext.getId() == 695l) || (workflowContext.getId() == 699l) || (workflowContext.getId() > 703l))) {
+				LOGGER.severe("HCA ReadingRule Workflow Id --- "+workflowContext.getId()+",  workflowContext.getCachedRDM() --- "+workflowContext.getCachedRDM()+ " workflowContext: "+workflowContext);
+			}
 			if(wokflowExpresion instanceof ExpressionContext) {
 				
 				ExpressionContext expressionContext = (ExpressionContext) wokflowExpresion;
@@ -2393,6 +2396,10 @@ public class WorkflowUtil {
 				Object res = expressionContext.execute(workflowContext);
 				if(expressionContext.getName() != null && !expressionContext.getName().isEmpty()) {
 					variableResultMap1.put(expressionContext.getName(), res);
+					
+					if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l && workflowContext != null && expressionContext != null && ((workflowContext.getId() == 695l) || (workflowContext.getId() == 699l) || (workflowContext.getId() > 703l))) {
+						LOGGER.severe("HCA ReadingRule WorkflowId --- "+workflowContext.getId()+", expressionContextName --- "+expressionContext.getName().toString()+ " resValue: "+res);
+					}
 				}
 			}
 			else if(wokflowExpresion instanceof IteratorContext) {
