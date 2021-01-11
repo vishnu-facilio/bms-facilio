@@ -6591,8 +6591,8 @@ public class DashboardAction extends FacilioAction {
 			Map tab = (Map) dashboardTabs.get(i);
 			Long dashboardTabId = (Long) tab.get("tabId");
 			dashboardTabContext = DashboardUtil.getDashboardTabWithWidgets(dashboardTabId);
-			dashboardTabContext.setName((String)dashboardMeta.get("dashboardTabName"));
-			List dashboardWidgets = (List) dashboardMeta.get("dashboardWidgets");
+			dashboardTabContext.setName((String)tab.get("dashboardTabName"));
+			List dashboardWidgets = (List) tab.get("dashboardWidgets");
 			
 			List<DashboardWidgetContext> widgets = getDashboardWidgetsFromWidgetMeta(dashboardWidgets);
 
