@@ -9213,7 +9213,6 @@ public class FieldFactory {
 	        fields.add(getField("authType", "AUTH_TYPE", module, FieldType.NUMBER));
 	        fields.add(getField("apiKey", "API_KEY", module, FieldType.STRING));
 	        fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
-	        fields.add(getField("createdBy", "CREATED_BY", module, FieldType.NUMBER));
 	        return fields;
 	 }
 

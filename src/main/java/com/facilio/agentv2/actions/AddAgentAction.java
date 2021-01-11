@@ -67,7 +67,7 @@ public class AddAgentAction extends AgentActionV2
             }
             if(getAgentType() == AgentType.REST.getKey()){
                 long orgId = AccountUtil.getCurrentOrg().getOrgId();
-                long inboundId = insertApiKey(getAgentName(),getOrgUserId(),orgId);
+                long inboundId = FacilioService.runAsServiceWihReturn(()->insertApiKey(getAgentName(),orgId));
                 agent.setInboundConnectionId(inboundId);
             }
             context.put(AgentConstants.AGENT,agent);
@@ -90,7 +90,7 @@ public class AddAgentAction extends AgentActionV2
     	return DatatypeConverter.printHexBinary(bytes).toLowerCase();
     }
 
-    private long insertApiKey(String agentName,long orgUserId,long orgId) throws Exception {
+    private long insertApiKey(String agentName,long orgId) throws Exception {
         Map<String,Object> prop = new HashMap<>();
         prop.put(AgentConstants.API_KEY,generateKey());
         prop.put("sender",agentName);
@@ -98,7 +98,6 @@ public class AddAgentAction extends AgentActionV2
         prop.put(AgentConstants.CREATED_TIME,System.currentTimeMillis());
         prop.put("authType",1);
         prop.put(AgentConstants.ORGID,orgId);
-        prop.put(AgentConstants.CREATED_BY,orgUserId);
         GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
         .fields(FieldFactory.getInboundConnectionsFields())
         .table(ModuleFactory.getInboundConnectionsModule().getTableName());
