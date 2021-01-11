@@ -68,7 +68,8 @@ const pupeteer = require(homedir + '/.npm-global/lib/node_modules/puppeteer');
         else
         {
         	await page.goto(pageUrl, {
-                waitUntil: 'networkidle0'
+                waitUntil: 'networkidle0',
+                timeout: 0
             });   	
         }
         
