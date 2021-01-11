@@ -218,6 +218,7 @@ public class FieldDeviceApi {
                  .andCondition(CriteriaAPI.getIdCondition(controllerId,module));
         if(type != null && type.asInt() == FacilioControllerType.MODBUS_RTU.asInt()){
             fields.addAll(FieldFactory.getRtuNetworkFields());
+            fields.addAll(modBean.getModuleFields(module.getName()));
             builder.select(fields).innerJoin(ModuleFactory.getRtuNetworkModule().getTableName())
                     .on(module.getTableName() + ".NETWORK_ID = " + ModuleFactory.getRtuNetworkModule().getTableName() + ".ID");
         }else {
