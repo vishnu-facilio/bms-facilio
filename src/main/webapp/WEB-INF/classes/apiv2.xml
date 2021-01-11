@@ -371,6 +371,8 @@
 				class="com.facilio.bmsconsole.actions.CustomButtonAction" method="getAllCustomButtons" />
 		<action name="delete"
 				class="com.facilio.bmsconsole.actions.CustomButtonAction" method="deleteCustomButton" />
+		<action name="reorder"
+				class="com.facilio.bmsconsole.actions.CustomButtonAction" method="reorderCustomButtons" />
 
 		<action name="getAvailableButtons"
 				class="com.facilio.bmsconsole.actions.CustomButtonAction" method="getAvailableButtons" />

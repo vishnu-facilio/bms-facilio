@@ -3,9 +3,12 @@ package com.facilio.bmsconsole.actions;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+
+import java.util.List;
 
 public class CustomButtonAction extends FacilioAction {
 
@@ -92,6 +95,25 @@ public class CustomButtonAction extends FacilioAction {
         chain.execute();
 
         setResult(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST, context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST));
+
+        return SUCCESS;
+    }
+
+    private List<Long> ids;
+    public List<Long> getIds() {
+        return ids;
+    }
+    public void setIds(List<Long> ids) {
+        this.ids = ids;
+    }
+
+    public String reorderCustomButtons() throws Exception {
+        FacilioChain chain = TransactionChainFactory.getReorderWorkflowRuleChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
+        context.put(FacilioConstants.ContextNames.RULE_TYPE, WorkflowRuleContext.RuleType.CUSTOM_BUTTON.getIntVal());
+        chain.execute();
 
         return SUCCESS;
     }

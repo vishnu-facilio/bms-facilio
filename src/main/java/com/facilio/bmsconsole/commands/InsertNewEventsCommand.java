@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.List;
 
+import com.facilio.bmsconsole.context.ResourceContext;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -44,7 +45,11 @@ public class InsertNewEventsCommand extends FacilioCommand {
 				long resourceId = EventAPI.getResourceFromSource(((BMSEventContext) baseEvent).getSource(), orgId, controllerId);
 				if(resourceId != -1) {
 					if (resourceId != 0) {
-						baseEvent.setResource(ResourceAPI.getResource(resourceId));
+						ResourceContext resource = ResourceAPI.getResource(resourceId);
+						baseEvent.setResource(resource);
+						if (resource != null && resource.getSiteId() > 0) {
+							baseEvent.setSiteId(resource.getSiteId());
+						}
 					}
 				}
 				else {
