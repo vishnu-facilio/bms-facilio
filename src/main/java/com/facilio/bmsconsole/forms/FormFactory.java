@@ -2288,7 +2288,11 @@ public class FormFactory {
 		categoryField.setAllowCreateOptions(true);
 		fields.add(categoryField);
 
-		fields.add(new FormField("announcementattachments", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, 5, 1));
+		descField.addToConfig("richText", true);
+
+		FormField attachment = new FormField("announcementattachments", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, 5, 1);
+		attachment.addToConfig("fileTypes", "image/*,.pdf,.doc,.docx");
+		fields.add(attachment);
 		fields.add(new FormField("announcementsharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 6, 1));
 		return fields;
 	}
@@ -2307,7 +2311,11 @@ public class FormFactory {
 		FormField descField = new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1);
 		descField.addToConfig("richText", true);
 		fields.add(descField);
-		fields.add(new FormField("newsandinformationattachments", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, 3, 1));
+
+		FormField attachment = new FormField("newsandinformationattachments", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, 3, 1);
+		attachment.addToConfig("fileTypes", "image/*,.pdf,.doc,.docx");
+		fields.add(attachment);
+
 		fields.add(new FormField("newsandinformationsharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 4, 1));
 
 		form.setFields(fields);
@@ -2335,7 +2343,12 @@ public class FormFactory {
 		fields.add(categoryField);
 
 		fields.add(new FormField("location", FieldDisplayType.GEO_LOCATION, "Location", Required.OPTIONAL, 4, 1));
-		fields.add(new FormField("neighbourhoodattachments", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, 5, 1));
+
+
+		FormField attachment = new FormField("neighbourhoodattachments", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, 5, 1);
+		attachment.addToConfig("fileTypes", "image/*,.pdf,.doc,.docx");
+		fields.add(attachment);
+
 		fields.add(new FormField("neighbourhoodsharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 6, 1));
 		form.setFields(fields);
 
@@ -2361,7 +2374,12 @@ public class FormFactory {
 		fields.add(categoryField);
 
 		fields.add(new FormField("location", FieldDisplayType.GEO_LOCATION, "Location", Required.OPTIONAL, 4, 1));
-		fields.add(new FormField("neighbourhoodattachments", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, 5, 1));
+
+
+		FormField attachment = new FormField("neighbourhoodattachments", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, 5, 1);
+		attachment.addToConfig("fileTypes", "image/*,.pdf,.doc,.docx");
+		fields.add(attachment);
+
 		form.setFields(fields);
 
 		return form;
@@ -2384,7 +2402,11 @@ public class FormFactory {
 		fields.add(new FormField("expiryDate", FieldDisplayType.DATE, "Expiry Date", Required.OPTIONAL, 3, 2));
 		fields.add(new FormField("dealer", FieldDisplayType.TEXTBOX, "Dealer", Required.REQUIRED, 4, 1));
 		fields.add(new FormField("neighbourhood", FieldDisplayType.LOOKUP_SIMPLE, "Neighbourhood", Required.REQUIRED, "neighbourhood",5, 1));
-		fields.add(new FormField("dealsandoffersattachments", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, 6, 1));
+
+		FormField attachment = new FormField("dealsandoffersattachments", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, 6, 1);
+		attachment.addToConfig("fileTypes", "image/*,.pdf,.doc,.docx");
+		fields.add(attachment);
+
 		fields.add(new FormField("dealsandofferssharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 7, 1));
 		form.setFields(fields);
 
@@ -2408,7 +2430,12 @@ public class FormFactory {
 		fields.add(new FormField("expiryDate", FieldDisplayType.DATE, "Expiry Date", Required.OPTIONAL, 3, 2));
 		fields.add(new FormField("dealer", FieldDisplayType.TEXTBOX, "Dealer", Required.REQUIRED, 4, 1));
 		fields.add(new FormField("neighbourhood", FieldDisplayType.LOOKUP_SIMPLE, "Neighbourhood", Required.REQUIRED, "neighbourhood",5, 1));
-		fields.add(new FormField("dealsandoffersattachments", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, 6, 1));
+
+
+		FormField attachment = new FormField("dealsandoffersattachments", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, 6, 1);
+		attachment.addToConfig("fileTypes", "image/*,.pdf,.doc,.docx");
+		fields.add(attachment);
+
 		form.setFields(fields);
 
 		return form;
