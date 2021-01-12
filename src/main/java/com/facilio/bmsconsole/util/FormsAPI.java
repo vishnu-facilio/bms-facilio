@@ -343,6 +343,9 @@ public class FormsAPI {
 				if(f.getFieldId() != -1) {
 					f.setName(null);
 				}
+				else if(f.getName() == null) {	// Notes field
+					f.setName(f.getDisplayName()+f.getSequenceNumber());
+				}
 				Map<String, Object> prop = FieldUtil.getAsProperties(f);
 				if (prop.get("required") == null) {
 					prop.put("required", false);
@@ -482,7 +485,7 @@ public class FormsAPI {
 		List<Long> dbSectionIds =  dbForm.getSections().stream().map(field -> field.getId()).collect(Collectors.toList());
 		
 		int sectionSeq = 1;
-		int formSeq = 1;
+		int fieldSeq = 1;
 		for(FormSection section: form.getSections()) {
 			section.setSequenceNumber(sectionSeq++);
 			if (section.getId() == -1) {
@@ -495,7 +498,7 @@ public class FormsAPI {
 			
 			
 			for(FormField field: section.getFields()) {
-				field.setSequenceNumber(formSeq++);
+				field.setSequenceNumber(fieldSeq++);
 				field.setSectionId(section.getId());
 				if (field.getId() == -1) {
 					fieldsToAdd.add(field);
@@ -505,6 +508,9 @@ public class FormsAPI {
 					field.setFormId(form.getId());
 					if (field.getFieldId() != -1) {
 						field.setName(null);
+					}
+					else if (field.getDisplayTypeEnum() == FieldDisplayType.NOTES) {
+						field.setName(field.getDisplayName()+fieldSeq);
 					}
 					fieldsToUpdate.add(field);
 				}
