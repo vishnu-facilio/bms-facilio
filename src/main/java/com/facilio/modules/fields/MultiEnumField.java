@@ -1,5 +1,9 @@
 package com.facilio.modules.fields;
 
+import java.util.List;
+
+import org.apache.commons.collections4.CollectionUtils;
+
 import com.facilio.modules.FacilioModule;
 
 public class MultiEnumField extends BaseEnumField implements SupplementRecord {
@@ -67,5 +71,20 @@ public class MultiEnumField extends BaseEnumField implements SupplementRecord {
     @Override
     public DeleteSupplementHandler newDeleteHandler() {
         return new MultiEnumCRUDHandler(this);
+    }
+    
+    public String getValue(List<Integer> indexes) {
+    		if (getValues() != null && CollectionUtils.isNotEmpty(indexes)) {
+    			StringBuilder builder = new StringBuilder();
+				for(int i = 0, size = indexes.size();i < size; i++) {
+					int indexValue = indexes.get(i);
+					builder.append(getValue((int) indexValue));
+					if (i+1 != size) {
+						builder.append(", ");
+					}
+				}
+				return builder.toString();
+    		}
+    		return null;
     }
 }

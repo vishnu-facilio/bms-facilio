@@ -10,6 +10,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.MultiEnumField;
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.exceptions.FunctionParamException;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -106,6 +107,10 @@ public enum FacilioModuleFunctions implements FacilioWorkflowFunctionInterface {
 				EnumField enumField = (EnumField) field;
 				int index = Integer.parseInt(objects[2].toString());
 				return enumField.getValue(index);
+			}
+			else if (field instanceof MultiEnumField) {
+				MultiEnumField enumField = (MultiEnumField) field;
+				return enumField.getValue((List<Integer>) objects[2]);
 			}
 
 			return null;

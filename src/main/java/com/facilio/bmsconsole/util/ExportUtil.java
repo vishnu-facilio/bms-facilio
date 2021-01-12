@@ -53,6 +53,7 @@ import com.facilio.modules.fields.BaseEnumField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.LookupFieldMeta;
+import com.facilio.modules.fields.MultiEnumField;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.time.DateTimeUtil;
@@ -541,16 +542,7 @@ public class ExportUtil {
 			case ENUM:
 				return ((BaseEnumField)field).getValue((int) value);
 			case MULTI_ENUM:
-				StringBuilder builder = new StringBuilder();
-				List<Integer> values = (ArrayList<Integer>) value;
-				for(int i = 0, size = values.size();i < size; i++) {
-					int indexValue = values.get(i);
-					builder.append(((BaseEnumField)field).getValue((int) indexValue));
-					if (i+1 != size) {
-						builder.append(", ");
-					}
-				}
-				return builder.toString();
+				return ((MultiEnumField)field).getValue((List) value);
 			case FILE:
 				break;
 			case COUNTER:

@@ -50,6 +50,9 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.MultiEnumField;
+import com.facilio.modules.fields.MultiLookupField;
+import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.util.QueryUtil;
@@ -521,9 +524,18 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 				selectBuilder.select(selectFields);
 			}
 			else {
-				List<FacilioField> fields = new ArrayList<>(modBean.getAllFields(module.getName()));
-				fields.add(FieldFactory.getIdField(module));
-				selectBuilder.select(fields);
+				List<FacilioField> selectFields = new ArrayList<>();
+				selectFields.add(FieldFactory.getIdField(module));
+				List<FacilioField> allFields = modBean.getAllFields(module.getName());
+				for(FacilioField field: allFields) {
+					if (field instanceof MultiEnumField || (!field.isDefault() && field instanceof MultiLookupField)) {
+						selectBuilder.fetchSupplement((SupplementRecord) field);
+					}
+					else {
+						selectFields.add(field);
+					}
+				}
+				selectBuilder.select(selectFields);
 			}
 			
 			if(dbParamContext.getSortByFieldName() != null) {
