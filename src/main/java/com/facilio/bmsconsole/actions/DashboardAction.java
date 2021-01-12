@@ -6520,6 +6520,9 @@ public class DashboardAction extends FacilioAction {
 		if (dashboardMeta.get("tabEnabled") != null) {
 			this.dashboard.setTabEnabled((boolean) dashboardMeta.get("tabEnabled"));
 		}
+		if (dashboardMeta.get("dashboardTabPlacement") != null) {
+			this.dashboard.setDashboardTabPlacement((int) dashboardMeta.get("dashboardTabPlacement"));
+		}
 		this.dashboard.setDashboardName((String) dashboardMeta.get("dashboardName"));
 		
 		if(dashboardMeta.get("clientMetaJsonString") != null) {
@@ -6562,6 +6565,9 @@ public class DashboardAction extends FacilioAction {
 			dashboard = DashboardUtil.getDashboardWithWidgets(dashboardId);
 			dashboard.setDashboardName((String) dashboardMeta.get("dashboardName"));
 			dashboard.setDashboardFolderId((Long) dashboardMeta.get("dashboardFolderId"));
+			if (dashboardMeta.get("dashboardTabPlacement") != null) {
+				dashboard.setDashboardTabPlacement((int) dashboardMeta.get("dashboardTabPlacement"));
+			}
 		}
 		List dashboardWidgets = (List) dashboardMeta.get("dashboardWidgets");
 		
@@ -6584,6 +6590,9 @@ public class DashboardAction extends FacilioAction {
 			dashboard = DashboardUtil.getDashboardWithWidgets(dashboardId);
 			dashboard.setDashboardName((String) dashboardMeta.get("dashboardName"));
 			dashboard.setDashboardFolderId((Long) dashboardMeta.get("dashboardFolderId"));
+			if (dashboardMeta.get("dashboardTabPlacement") != null) {
+				dashboard.setDashboardTabPlacement((int) dashboardMeta.get("dashboardTabPlacement"));
+			}
 		}
 		
 		List dashboardTabs = (List) dashboardMeta.get("tabs");
