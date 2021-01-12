@@ -1804,13 +1804,13 @@
                 
                   if(avgMin < 60){
                     avgWork = math().setPrecision(avgMin, 0);
-                    service.avgWorkDuration = avgWork + "Minutes";
+                    service.avgWorkDuration = avgWork + " Minutes";
                   }else if(avgHour < 24){
                     avgWork = math().setPrecision(avgHour, 0);
-                    service.avgWorkDuration = avgWork + "Hours";
+                    service.avgWorkDuration = avgWork + " Hours";
                   }else{
                     avgWork = math().setPrecision(avgdays, 0);
-                    service.avgWorkDuration = avgWork + "Days";
+                    service.avgWorkDuration = avgWork + " Days";
                   }
                   
               }
