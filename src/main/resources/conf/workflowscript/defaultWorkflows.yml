@@ -1653,14 +1653,18 @@
   	area1purple = 1314416;
     area2green = 1314417;
     area3orange = 1314418;
-  
-  	woOpenTillYesterday = 0;
+  	
+  	woTillYesterday = 0;
+  	woOpenTillYesterdayPercentage = 0;
 	totalWo = 0;
-    totalWoOpen = 0;
+  	totalWoOpen = 0;
+    totalWoOpenPercentage = 0;
     totalWoPlanned = 0;
     totalWoUnplanned = 0;
-    totalWoPlannedOpen = 0;
+  	totalWoPlannedOpen = 0;
     totalWoUnplannedOpen = 0;
+    totalWoPlannedOpenPercentage = 0;
+    totalWoUnplannedOpenPercentage = 0;
     totalWoArea1Purple = 0;
     totalWoArea2Green = 0;
     totalWoArea3Orange = 0;
@@ -1674,16 +1678,30 @@
  	 
   	date = new NameSpace("date"); 
 	today = date.getDateRange("Today");
-  
+  	
   	db = {
-        criteria: [createdTime != today && moduleState != null && moduleState == openticketStatus]
+        criteria: [createdTime != today]
         field: "id",
         aggregation: "count"
     };
   
-    woOpenTillYesterday = Module("workorder").fetch(db);
-  	log "Daily digest woOpenTillYesterday"+woOpenTillYesterday;
+    woTillYesterday = Module("workorder").fetch(db);
   
+  	if(woTillYesterday != 0){
+      db = {
+          criteria: [createdTime != today && moduleState != null && moduleState == openticketStatus]
+          field: "id",
+          aggregation: "count"
+      };
+
+      woOpenTillYesterday = Module("workorder").fetch(db);
+      woOpenTillYesterdayPercentage = (woOpenTillYesterday/woTillYesterday)*100;
+      if (woOpenTillYesterdayPercentage > 0) {
+        woOpenTillYesterdayPercentage = math().setPrecision(woOpenTillYesterdayPercentage, 0); 
+      }
+    }
+  
+  	
 	db = {
         criteria: [createdTime == today]
 	};
@@ -1702,23 +1720,40 @@
       	totalWoPlanned = Module("workorder").fetch(db);
       
       	totalWoUnplanned = totalWo - totalWoPlanned;
-     
+     	
       	db = {
           criteria: [createdTime == today && moduleState != null && moduleState == openticketStatus],
           field: "id",
           aggregation: "count"
         };  
       	totalWoOpen = Module("workorder").fetch(db);
+       	totalWoOpenPercentage = (totalWoOpen/totalWo)*100;
+      	if (totalWoOpenPercentage > 0) {
+          totalWoOpenPercentage = math().setPrecision(totalWoOpenPercentage, 0); 
+        }
       
-        db = {
-          criteria: [createdTime == today && sourceType == 5 && moduleState != null && moduleState == openticketStatus],
-          field: "id",
-          aggregation: "count"
-         };  
-        totalWoPlannedOpen = Module("workorder").fetch(db);
-
-        totalWoUnplannedOpen = totalWoOpen - totalWoPlannedOpen;
-
+      	if(totalWoPlanned != 0){
+        	db = {
+              criteria: [createdTime == today && sourceType == 5 && moduleState != null && moduleState == openticketStatus],
+              field: "id",
+              aggregation: "count"
+             };  
+            totalWoPlannedOpen = Module("workorder").fetch(db);
+            totalWoPlannedOpenPercentage = (totalWoPlannedOpen/totalWoPlanned)*100;
+            if (totalWoPlannedOpenPercentage > 0) {
+              totalWoPlannedOpenPercentage = math().setPrecision(totalWoPlannedOpenPercentage, 0); 
+            }
+        }
+      	
+      	if(totalWoUnplanned != 0){
+            totalWoUnplannedOpen = totalWoOpen - totalWoPlannedOpen;
+            totalWoUnplannedOpenPercentage = (totalWoUnplannedOpen/totalWoUnplanned)*100;
+          	if (totalWoUnplannedOpenPercentage > 0) {
+              totalWoUnplannedOpenPercentage = math().setPrecision(totalWoUnplannedOpenPercentage, 0); 
+            }
+        }
+      	
+      	
         db ={
           criteria:[name != null]
         };
@@ -1798,14 +1833,15 @@
       totalWoArea3Orange = Module("workorder").fetch(db);
        
 	}
-	  
-  	result.woOpenTillYesterday = woOpenTillYesterday;
+	 
+  	result.woTillYesterday = woTillYesterday;
+  	result.woOpenTillYesterdayPercentage = woOpenTillYesterdayPercentage;
 	result.totalWo = totalWo;
     result.totalWoOpen = totalWoOpen;
     result.totalWoPlanned = totalWoPlanned;
     result.totalWoUnplanned = totalWoUnplanned;
-    result.totalWoPlannedOpen = totalWoPlannedOpen;
-    result.totalWoUnplannedOpen = totalWoUnplannedOpen;
+    result.totalWoPlannedOpenPercentage = totalWoPlannedOpenPercentage;
+    result.totalWoUnplannedOpenPercentage = totalWoUnplannedOpenPercentage;
     result.totalWoArea1Purple = totalWoArea1Purple;
     result.totalWoArea2Green = totalWoArea2Green;
     result.totalWoArea3Orange = totalWoArea3Orange;
