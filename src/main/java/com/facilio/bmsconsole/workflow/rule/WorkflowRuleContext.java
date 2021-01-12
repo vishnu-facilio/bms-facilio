@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.workflow.rule;
 
 import java.io.Serializable;
 import java.sql.SQLTimeoutException;
+import java.text.MessageFormat;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -684,8 +685,8 @@ public class WorkflowRuleContext implements Serializable {
 			long workflowStartTime = System.currentTimeMillis();
 			workflowRule.setTerminateChildExecution(false);
 			boolean result = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(workflowRule, module.getName(), record, changeSet, recordPlaceHolders, context);
-			LOGGER.debug("Time take to execute workflow and actions: " + (System.currentTimeMillis() - workflowStartTime));
-			LOGGER.debug("Result of rule : "+workflowRule.getId()+" for record : "+record+" is "+result);
+			LOGGER.debug(MessageFormat.format("Time take to execute workflow {0} and actions: is {1} ",this.getId(), (System.currentTimeMillis() - workflowStartTime)));
+			LOGGER.debug(MessageFormat.format("Result of rule : {0} for record : {1} is {2}",workflowRule.getId(),record,result));
 		
 //			if((AccountUtil.getCurrentOrg().getId() == 231l && (workflowRule.getId() == 36242l || workflowRule.getId() == 36243l)) || (AccountUtil.getCurrentOrg().getId() == 78l)) {
 //				LOGGER.info("Time take to execute workflow and actions: " + (System.currentTimeMillis() - workflowStartTime));
