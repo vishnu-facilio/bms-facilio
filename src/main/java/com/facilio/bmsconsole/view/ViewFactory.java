@@ -7862,8 +7862,6 @@ public class ViewFactory {
 		allView.setDisplayName("All Groups");
 		allView.setModuleName("controlGroupv2");
 		allView.setSortFields(sortFields);
-
-		allView.setHidden(true);
 		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
 
 		return allView;
