@@ -1849,7 +1849,7 @@
   	result.woTillYesterday = woTillYesterday;
   	result.woOpenTillYesterdayPercentage = woOpenTillYesterdayPercentage;
 	result.totalWo = totalWo;
-    result.totalWoOpen = totalWoOpen;
+    result.totalWoOpenPercentage = totalWoOpenPercentage;
     result.totalWoPlanned = totalWoPlanned;
     result.totalWoUnplanned = totalWoUnplanned;
     result.totalWoPlannedOpenPercentage = totalWoPlannedOpenPercentage;
