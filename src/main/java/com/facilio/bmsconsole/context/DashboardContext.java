@@ -263,8 +263,7 @@ public class DashboardContext extends ModuleBaseWithCustomFields implements Clon
 	
 	public static enum DashboardTabPlacement {
 		TOP(1),
-		LEFT(2),
-		;
+		LEFT(2);
 		
 		private int intVal;
 		
