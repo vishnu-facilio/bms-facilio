@@ -344,7 +344,7 @@ public class FormsAPI {
 					f.setName(null);
 				}
 				else if(f.getName() == null) {	// Notes field
-					f.setName(f.getDisplayName()+f.getSequenceNumber());
+					f.setName(f.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]+","")+f.getSequenceNumber());
 				}
 				Map<String, Object> prop = FieldUtil.getAsProperties(f);
 				if (prop.get("required") == null) {
@@ -510,7 +510,7 @@ public class FormsAPI {
 						field.setName(null);
 					}
 					else if (field.getDisplayTypeEnum() == FieldDisplayType.NOTES) {
-						field.setName(field.getDisplayName()+fieldSeq);
+						field.setName(field.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]+","")+fieldSeq);
 					}
 					fieldsToUpdate.add(field);
 				}
