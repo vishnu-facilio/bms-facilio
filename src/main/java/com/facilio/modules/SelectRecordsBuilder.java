@@ -340,7 +340,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			}
 		}
 		long timeTaken = System.currentTimeMillis() - startTime;
-		LOGGER.debug("Time Taken to convert to bean list in SelectBuilder : "+timeTaken);
+		LOGGER.trace("Time Taken to convert to bean list in SelectBuilder : "+timeTaken);
 		return beans;
 	}
 	
@@ -351,7 +351,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			long getStartTime = System.currentTimeMillis();
 			List<Map<String, Object>> propList = getAsJustProps(false);
 			long getTimeTaken = System.currentTimeMillis() - getStartTime;
-			LOGGER.debug("Time Taken to get props in SelectBuilder : "+getTimeTaken);
+			LOGGER.trace("Time Taken to get props in SelectBuilder : "+getTimeTaken);
 			return convertPropsToBeans(propList);
 		}
 		catch (Exception e) {
