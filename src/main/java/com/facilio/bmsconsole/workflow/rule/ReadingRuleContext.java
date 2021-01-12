@@ -698,7 +698,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 	
 	private void updateLastValueForReadingRule(ReadingContext record) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
 		Criteria criteria = getCriteria();
-		if (criteria != null) {
+		if (criteria != null && this.getRuleTypeEnum() == WorkflowRuleContext.RuleType.PM_READING_RULE) {
 			Condition condition = criteria.getConditions().get("1");
 			long lastValue = new Double(record.getReading(condition.getFieldName()).toString()).longValue();
 			ReadingRuleAPI.updateLastValueInReadingRule(getId(), lastValue);
