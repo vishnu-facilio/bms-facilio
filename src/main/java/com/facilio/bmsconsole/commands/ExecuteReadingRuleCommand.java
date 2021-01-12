@@ -83,12 +83,10 @@ public class ExecuteReadingRuleCommand extends ExecuteAllWorkflowsCommand {
 				}
 				
 				if(isParallelRuleExecutionEnum !=null && isParallelRuleExecutionEnum == ParallelRuleExecutionProp.MODULE_BASED) {	
-					System.out.println("moduleName Jobcreated"+moduleName);
 					FacilioTimer.scheduleInstantJob("rule","ParallelModuleBasedWorkflowRuleExecutionJob", WorkflowRuleAPI.addAdditionalPropsForModuleBasedInstantJob(moduleName, new LinkedList<>(entry.getValue()), currentChangeSet, activities, context, ruleTypes));				
 				}
 				else 
 				{	
-					System.out.println("moduleName JobNotcreated"+moduleName);
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					FacilioModule module = modBean.getModule(moduleName);
 					
@@ -106,12 +104,12 @@ public class ExecuteReadingRuleCommand extends ExecuteAllWorkflowsCommand {
 						workflowRules = getWorkflowRules(module, activities, entry.getValue(), context);
 					}
 
-					if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
-						LOGGER.info("Time taken to fetch workflow: " + (System.currentTimeMillis() - currentTime));
+					if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339) {
+						LOGGER.info("Time taken to fetch workflow in ExecuteReadingRuleCommand: " + (System.currentTimeMillis() - currentTime));
 					}
 					currentTime = System.currentTimeMillis();
-					if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
-						LOGGER.info(MessageFormat.format("Number of (rules, records, parallalExecution) : ({0}, {1}, {2})",
+					if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339) {
+						LOGGER.info(MessageFormat.format("ExecuteReadingRuleCommand Number of (rules, records, parallalExecution) : ({0}, {1}, {2})",
 								(workflowRules == null ? 0 : workflowRules.size()),
 								(entry.getValue() == null ? 0 : entry.getValue().size()),
 								isParallelRuleExecutionEnum
@@ -168,12 +166,12 @@ public class ExecuteReadingRuleCommand extends ExecuteAllWorkflowsCommand {
 								WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(workflowRules, module, record, changeSet, recordPlaceHolders, context,propagateError, workflowRuleCacheMap, false, activities);
 							}		
 						}
-						if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
-							LOGGER.info(MessageFormat.format("Total Time taken for adding {0} instant jobs : {1}", jobs, totalInstantJobAddTime));
+						if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339) {
+							LOGGER.info(MessageFormat.format("ExecuteReadingRuleCommand Total Time taken for adding {0} instant jobs : {1}", jobs, totalInstantJobAddTime));
 						}
 					}
-					if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
-						LOGGER.info("Time taken to execute workflow: " + (System.currentTimeMillis() - currentTime));
+					if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339) {
+						LOGGER.info("ExecuteReadingRuleCommand Time taken to execute workflow: " + (System.currentTimeMillis() - currentTime));
 					}
 					
 				}	
