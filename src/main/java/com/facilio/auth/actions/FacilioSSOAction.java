@@ -264,6 +264,7 @@ public class FacilioSSOAction extends FacilioAction {
 			else {
 				message = (String) result.get("message");
 			}
+			FacilioCookie.addLoggedInCookie(response);
 		}
 		else {
 			message = "Invalid SSO Access.";
