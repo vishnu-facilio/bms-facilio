@@ -13,7 +13,7 @@ executors :
 
   - name : rule
     tableName : RuleInstantJobQueue
-    maxThreads : 20
+    maxThreads : 25
     queueSize : 100
     dataRetention : 1 #in days
     pollingFrequency : 5000 #in milliseconds
