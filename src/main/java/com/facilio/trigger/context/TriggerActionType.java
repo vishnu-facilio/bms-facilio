@@ -2,13 +2,18 @@ package com.facilio.trigger.context;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.UpdateChangeSet;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.chain.FacilioContext;
-import com.facilio.workflows.util.WorkflowUtil;
 
 
 public enum TriggerActionType {
@@ -16,26 +21,26 @@ public enum TriggerActionType {
 	FORMULA_CALCULATION(1) {
 
 		@Override
-		public Object performAction(FacilioContext context, Long recordId) throws Exception {
+		public void performAction(FacilioContext context, BaseTriggerContext trigger, String moduleName, ModuleBaseWithCustomFields record, List<UpdateChangeSet> changeSets, Long recordId) throws Exception {
 			// TODO Auto-generated method stub
-			return null;
 		}
 
 	},
 	RULE_EXECUTION(2) {
 
 		@Override
-		public Object performAction(FacilioContext context, Long recordId) throws Exception {
-			// TODO Auto-generated method stub
-			return null;
+		public void performAction(FacilioContext context, BaseTriggerContext trigger, String moduleName, ModuleBaseWithCustomFields record, List<UpdateChangeSet> changeSets, Long recordId) throws Exception {
+			WorkflowRuleContext workflowRule = WorkflowRuleAPI.getWorkflowRule(recordId);
+			Map<String, Object> orgPlaceHolders = WorkflowRuleAPI.getOrgPlaceHolders();
+			Map<String, Object> placeHolders = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, record, orgPlaceHolders);
+			WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(workflowRule, moduleName, record, changeSets, placeHolders, context);
 		}
 	},
-	SCRIPT_EXECTION(3) {
+	SCRIPT_EXECUTION(3) {
 
 		@Override
-		public Object performAction(FacilioContext context, Long recordId) throws Exception {
-			
-			return WorkflowUtil.getResult(recordId, null);
+		public void performAction(FacilioContext context, BaseTriggerContext trigger, String moduleName, ModuleBaseWithCustomFields record, List<UpdateChangeSet> changeSets, Long recordId) throws Exception {
+//			return WorkflowUtil.getResult(recordId, null);
 		}
 	},
 	;
@@ -50,7 +55,7 @@ public enum TriggerActionType {
 		return val;
 	}
 
-	abstract public Object performAction(FacilioContext context,Long recordId) throws Exception;
+	abstract public void performAction(FacilioContext context, BaseTriggerContext trigger, String moduleName, ModuleBaseWithCustomFields record, List<UpdateChangeSet> changeSets, Long recordId) throws Exception;
 
 	public static TriggerActionType getActionType(int actionTypeVal) {
 		return TYPE_MAP.get(actionTypeVal);

@@ -1,6 +1,10 @@
 package com.facilio.trigger.context;
 
 import com.facilio.chain.FacilioContext;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.UpdateChangeSet;
+
+import java.util.List;
 
 public class TriggerAction {
 
@@ -50,7 +54,7 @@ public class TriggerAction {
 		this.typeRefPrimaryId = typeRefPrimaryId;
 	}
 	
-	public Object execute(FacilioContext context) throws Exception {
-		return actionType.performAction(context, typeRefPrimaryId);
+	public void execute(FacilioContext context, BaseTriggerContext trigger, String moduleName, ModuleBaseWithCustomFields record, List<UpdateChangeSet> changeSets) throws Exception {
+		actionType.performAction(context, trigger, moduleName, record, changeSets, typeRefPrimaryId);
 	}
 }

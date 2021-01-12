@@ -6,7 +6,7 @@ import com.facilio.chain.FacilioContext;
 
 public enum TriggerType implements TriggerTypeInterface {
 	
-	SCHEDULED {
+	SLA_DUE_DATE_TRIGGER {
 		@Override
 		public Map<String, Object> getParamsMap(FacilioContext context) {
 			// TODO Auto-generated method stub

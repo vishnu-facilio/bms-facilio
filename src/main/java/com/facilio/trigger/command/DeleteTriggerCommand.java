@@ -1,5 +1,6 @@
 package com.facilio.trigger.command;
 
+import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
@@ -15,11 +16,11 @@ public class DeleteTriggerCommand extends FacilioCommand{
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		BaseTriggerContext trigger = (BaseTriggerContext)context.get(TriggerUtil.TRIGGER_CONTEXT);
+		long triggerId = (long) context.get(FacilioConstants.ContextNames.ID);
 		
 		GenericDeleteRecordBuilder delete = new GenericDeleteRecordBuilder()
 				.table(ModuleFactory.getTriggerModule().getTableName())
-				.andCondition(CriteriaAPI.getIdCondition(trigger.getId(), ModuleFactory.getTriggerModule()));
+				.andCondition(CriteriaAPI.getIdCondition(triggerId, ModuleFactory.getTriggerModule()));
 		
 		delete.delete();
 		

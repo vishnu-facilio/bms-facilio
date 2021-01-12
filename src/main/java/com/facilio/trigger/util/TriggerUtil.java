@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 
+import com.facilio.modules.*;
+import com.facilio.trigger.context.*;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
 
@@ -17,44 +20,31 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
-import com.facilio.trigger.context.BaseTriggerContext;
-import com.facilio.trigger.context.TriggerAction;
-import com.facilio.trigger.context.TriggerInclExclContext;
-import com.facilio.trigger.context.TriggerLog;
-import com.facilio.trigger.context.TriggerType;
 
 public class TriggerUtil {
 	
 	public static final String TRIGGER_CONTEXT = "triggerContext";
+	public static final String TRIGGERS_LIST = "triggerList";
 	
-	public static void executeTriggerActions(List<BaseTriggerContext> triggers, FacilioContext context) throws Exception {
-		
-		List<TriggerLog> logs = new ArrayList<TriggerLog>();
-		
+	public static void executeTriggerActions(List<BaseTriggerContext> triggers, FacilioContext context,
+											 String moduleName, ModuleBaseWithCustomFields record, List<UpdateChangeSet> changeSets) throws Exception {
+		List<TriggerLog> logs = new ArrayList<>();
 		for(BaseTriggerContext trigger :triggers) {
-			
-			if(trigger.getTriggerActions() != null) {
-				
-				for(TriggerAction action : trigger.getTriggerActions()) {
-					
-					action.execute((FacilioContext)context);
-				
-					TriggerLog log = new TriggerLog();
-					log.setTriggerId(trigger.getId());
-					log.setTriggerActionId(action.getId());
-					log.setExecutionTime(DateTimeUtil.getCurrenTime());
-					
-					logs.add(log);
+			if (trigger.shouldInvoke()) {
+				if (trigger.getTriggerActions() != null) {
+					for (TriggerAction action : trigger.getTriggerActions()) {
+						action.execute(context, trigger, moduleName, record, changeSets);
+						TriggerLog log = new TriggerLog();
+						log.setTriggerId(trigger.getId());
+						log.setTriggerActionId(action.getId());
+						log.setExecutionTime(DateTimeUtil.getCurrenTime());
+						logs.add(log);
+					}
 				}
 			}
 		}
-		
 		addTriggerLogs(logs);
 	}
 	
@@ -95,10 +85,8 @@ public class TriggerUtil {
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
 		Criteria cri = new Criteria();
-		
 		cri.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), module.getExtendedModuleIds(), NumberOperators.EQUALS));
-		cri.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("childModuleId"), module.getExtendedModuleIds(), NumberOperators.EQUALS));
-		
+
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
 				.table(triggerModule.getTableName())
 				.select(fields)
@@ -119,21 +107,13 @@ public class TriggerUtil {
 			select.andCriteria(criteria);
 		}
 		
-		StringBuilder activityTypeWhere = new StringBuilder();
-		List<Integer> values = new ArrayList<>();
-		boolean first = true;
-		for (EventType type : activityTypes) {
-			if(first) {
-				first = false;
+		if (CollectionUtils.isNotEmpty(activityTypes)) {
+			Criteria activityCriteria = new Criteria();
+			for (EventType type : activityTypes) {
+				activityCriteria.addOrCondition(CriteriaAPI.getCondition("EVENT_TYPE", "eventType", String.valueOf(type.getValue()), NumberOperators.EQUALS));
 			}
-			else {
-				activityTypeWhere.append(" OR ");
-			}
-			activityTypeWhere.append("? & Facilio_Trigger.EVENT_TYPE = ?");
-			values.add(type.getValue());
-			values.add(type.getValue());
+			select.andCriteria(activityCriteria);
 		}
-		select.andCustomWhere(activityTypeWhere.toString(), values.toArray());
 
 		List<Map<String, Object>> props = select.get();
 
@@ -171,21 +151,40 @@ public class TriggerUtil {
 			
 			triggerIDmap.get(triggerid).addTriggerAction(triggerAction);
 		}
-		
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getTriggerInclExclFields());
+	}
 
-		select = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getTriggerInclExclFields())
-				.table(ModuleFactory.getTriggerInclExclModule().getTableName())
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("triggerId"), StringUtils.join(triggerIDmap.keySet(), ","), NumberOperators.EQUALS));
-		
-		props = select.get();
-		
-		for(Map<String, Object> prop :props) {
-			Long triggerid = (Long)prop.get("triggerId");
-			TriggerInclExclContext triggerInclExcl = FieldUtil.getAsBeanFromMap(prop, TriggerInclExclContext.class);
-			triggerIDmap.get(triggerid).addTriggerInclExclResources(triggerInclExcl);
+	public static void deleteActionFromTrigger(long triggerId, long triggerActionId) {
+
+	}
+
+	public static void addActionToTrigger(BaseTriggerContext trigger, List<TriggerAction> actions) throws Exception {
+		trigger.setTriggerActions(actions);
+
+		List<TriggerActionRel> rels = new ArrayList<>();
+		for(TriggerAction action : trigger.getTriggerActions()) {
+			if(action.getId() < 0) {
+
+				Map<String, Object> props = FieldUtil.getAsProperties(action);
+
+				GenericInsertRecordBuilder insert = new GenericInsertRecordBuilder()
+						.table(ModuleFactory.getTriggerActionModule().getTableName())
+						.fields(FieldFactory.getTriggerActionFields())
+						.addRecord(props);
+
+				insert.save();
+
+				action.setId((long)props.get("id"));
+			}
+
+			TriggerActionRel rel = new TriggerActionRel(trigger.getId(),action.getId());
+			rels.add(rel);
 		}
-				
+
+		GenericInsertRecordBuilder insert = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getTriggerActionRelModule().getTableName())
+				.fields(FieldFactory.getTriggerActionRelFields())
+				.addRecords(FieldUtil.getAsMapList(rels, TriggerActionRel.class));
+
+		insert.save();
 	}
 }

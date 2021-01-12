@@ -80,4 +80,8 @@ public class BaseTriggerContext {
 		
 		triggerActions.add(action);
 	}
+
+	public boolean shouldInvoke() {
+		return true;
+	}
 }

@@ -479,20 +479,18 @@ public class TransactionChainFactoryV3 {
         return c;
     }
     
-    public static FacilioChain getTriggerAddChain() {
+    public static FacilioChain getTriggerAddOrUpdateChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddTriggerCommand());
 //        c.addCommand(new AddOrUpdateTriggerInclExclCommand());
         c.addCommand(new AddOrUpdateTriggerActionAndRelCommand());
         return c;
     }
-    
-    public static FacilioChain getTriggerUpdateChain() {
-        FacilioChain c = getDefaultChain();
-        c.addCommand(new UpdateTriggerCommand());
-        c.addCommand(new AddOrUpdateTriggerInclExclCommand());
-        c.addCommand(new AddOrUpdateTriggerActionAndRelCommand());
-        return c;
+
+    public static FacilioChain getAllTriggers() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new GetAllTriggersCommand());
+        return chain;
     }
     
     public static FacilioChain getTriggerDeleteChain() {

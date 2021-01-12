@@ -141,14 +141,13 @@
     </package>
     
     <package name="v3triggers" namespace="/api/v3/trigger" extends="v3Api">
-        <action name="add"
+        <action name="list"
                 class="com.facilio.trigger.action.TriggerAction"
-                method="addTrigger">
-        </action>
+                method="listTriggers" />
 
-        <action name="update"
+        <action name="addOrUpdate"
                 class="com.facilio.trigger.action.TriggerAction"
-                method="updateTrigger">
+                method="addOrUpdateTrigger">
         </action>
         
         <action name="delete"
