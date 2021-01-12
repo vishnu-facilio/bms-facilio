@@ -1050,7 +1050,7 @@ public class WorkflowRuleAPI {
 			for(WorkflowRuleContext workflowRule : workflowRules) {
 				long startTime = System.currentTimeMillis();
 				boolean stopFurtherExecution = workflowRule.executeRuleAndChildren(workflowRule, module, record, changeSet, recordPlaceHolders, context, propagateError, parentRule, onSuccess, workflowRuleCacheMap, isParallelRuleExecution, eventTypes, ruleTypes);
-				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
+				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339) {
 					LOGGER.info(MessageFormat.format("Time taken to execute rule : {0} is {1}", workflowRule.getName(), (System.currentTimeMillis() - startTime)));
 				}
 				if(stopFurtherExecution) {
