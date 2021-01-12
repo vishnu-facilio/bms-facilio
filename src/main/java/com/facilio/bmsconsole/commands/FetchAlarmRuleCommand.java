@@ -23,6 +23,7 @@ public class FetchAlarmRuleCommand extends FacilioCommand {
 		AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(id),readingAlarmRules);
 		alarmRule.addAlarmRCARules(ReadingRuleAPI.getAlarmRCARules(id));
 		alarmRule.getAlarmTriggerRule().setMatchedResources(null);
+		alarmRule.getPreRequsite().setMatchedResources(null);
 //		ReadingRuleAPI.setMatchedResources(alarmRule.getPreRequsite());
 		context.put(FacilioConstants.ContextNames.ALARM_RULE, alarmRule);
 
