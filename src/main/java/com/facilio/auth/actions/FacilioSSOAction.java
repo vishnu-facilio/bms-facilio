@@ -258,13 +258,13 @@ public class FacilioSSOAction extends FacilioAction {
 			
 			JSONObject result = authAction.getResult();
 			if (result.containsKey("url")) {
+				FacilioCookie.addLoggedInCookie(response);
 				response.sendRedirect((String) result.get("url"));
 				return SUCCESS;
 			}
 			else {
 				message = (String) result.get("message");
 			}
-			FacilioCookie.addLoggedInCookie(response);
 		}
 		else {
 			message = "Invalid SSO Access.";
