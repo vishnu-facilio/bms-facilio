@@ -955,6 +955,70 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 	
 	private void addRuleLogEntry(Context context,Object record,boolean isTrueAction) throws Exception {
 		
+		if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() != 339l) {
+			ReadingRuleContext currentRule = null;
+			if(isTrueAction) {
+				if(this.getRuleTypeEnum() == RuleType.ALARM_TRIGGER_RULE) {
+					currentRule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(getParentRuleId());
+				}
+				else {
+					return;
+				}
+			}
+			else {
+				if(this.getRuleTypeEnum() == RuleType.READING_RULE) {
+					currentRule = this;
+				}
+				else if (this.getRuleTypeEnum() == RuleType.ALARM_TRIGGER_RULE) {
+					currentRule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(getParentRuleId());
+				}
+				else {
+					return;
+				}
+			}
+			
+			if(currentRule.getDataModuleId() > 0 && currentRule.getDataModuleFieldId() > 0 && record instanceof ReadingContext) {
+				
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				
+				FacilioModule ruleDataModule = modBean.getModule(currentRule.getDataModuleId());
+				FacilioField ruledataField = modBean.getField(currentRule.getDataModuleFieldId());
+				
+				ReadingContext readingContext = (ReadingContext) record;
+				
+				ReadingContext ruleLogReadingContext = new ReadingContext();
+				
+				ruleLogReadingContext.setModuleId(ruleDataModule.getModuleId());
+				ruleLogReadingContext.setParentId(readingContext.getParentId());
+				ruleLogReadingContext.setTtime(readingContext.getTtime());
+				
+				ruleLogReadingContext.setDatum(ruledataField.getName(), isTrueAction);
+				
+				boolean isHistorical = (boolean) context.getOrDefault(FacilioConstants.ContextNames.IS_HISTORICAL, false);
+				
+				if(isHistorical) {
+					List<ReadingContext> ruleLogModuleDatas = (List<ReadingContext>) context.getOrDefault(FacilioConstants.ContextNames.RULE_LOG_MODULE_DATA, new ArrayList<ReadingContext>());
+					
+					ruleLogModuleDatas.add(ruleLogReadingContext);
+					
+					context.put(FacilioConstants.ContextNames.RULE_LOG_MODULE_DATA, ruleLogModuleDatas);
+				}
+				else {
+					
+					FacilioChain addRuleData = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
+					
+					FacilioContext newContext = addRuleData.getContext();
+					newContext.put(FacilioConstants.ContextNames.MODULE_NAME, ruleDataModule.getName());
+					newContext.put(FacilioConstants.ContextNames.READINGS, Collections.singletonList(ruleLogReadingContext));
+					newContext.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.SYSTEM);
+					newContext.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
+					newContext.put(FacilioConstants.ContextNames.IS_PARALLEL_RULE_EXECUTION, Boolean.FALSE);
+					newContext.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS,Boolean.FALSE);
+					addRuleData.execute();
+				}
+				
+			}
+		}
 		ReadingRuleContext currentRule = null;
 		if(isTrueAction) {
 			if(this.getRuleTypeEnum() == RuleType.ALARM_TRIGGER_RULE) {
