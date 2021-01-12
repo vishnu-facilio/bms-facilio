@@ -33,9 +33,15 @@ public class MiscPoint extends Point {
         if (pointMap == null || pointMap.isEmpty()) {
             throw new Exception(" Map for controller can't be null or empty ->" + pointMap);
         }
-        if(containsValueCheck(AgentConstants.PATH,pointMap)){
+        if (containsValueCheck(AgentConstants.NAME, pointMap)) {
             MiscPoint point = new MiscPoint();
-            point.setPath(((String)pointMap.get(AgentConstants.PATH)));
+            String name = pointMap.get(AgentConstants.NAME).toString();
+            point.setName(name);
+            if (pointMap.containsKey(AgentConstants.PATH)) {
+                point.setPath(pointMap.get(AgentConstants.PATH).toString());
+            } else {
+                point.setPath(name);
+            }
             if (pointMap.containsKey(AgentConstants.ID)) {
                 point.setId((Long) pointMap.get(AgentConstants.ID));
             }
@@ -44,7 +50,7 @@ public class MiscPoint extends Point {
             }
             return (MiscPoint) point.getPointObjectFromMap(pointMap);
         }
-        throw new Exception("Mandatory fields like "+AgentConstants.PATH+" might be missing from the input parameter -> "+pointMap);
+        throw new Exception("Mandatory fields like " + AgentConstants.NAME + " might be missing from the input parameter -> " + pointMap);
     }
 
     @Override
