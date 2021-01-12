@@ -66,7 +66,7 @@ public class SSOUtil {
 	public static String getSPMetadataURL(DomainSSO domainSSO) throws Exception {
 		var domainSSOKey = base64EncodeUrlSafe(domainSSO.getAppDomainId()+"_"+ domainSSO.getId());
 		AppDomain appDomain = IAMAppUtil.getAppDomain(domainSSO.getAppDomainId());
-		return appDomain.getDomain() + "/dsso/metadata/" + domainSSOKey;
+		return getProtocol() + "://" + appDomain.getDomain() + "/dsso/metadata/" + domainSSOKey;
 	}
 	
 	public static String getSPMetadataURL(AccountSSO sso) {
@@ -81,7 +81,7 @@ public class SSOUtil {
 	public static String getSPAcsURL(DomainSSO domainSSO) throws Exception {
 		String ssoKey = base64EncodeUrlSafe(domainSSO.getAppDomainId() + "_" + domainSSO.getId());
 		AppDomain appDomain = IAMAppUtil.getAppDomain(domainSSO.getAppDomainId());
-		return appDomain.getDomain() + "/dsso/acs/" + ssoKey;
+		return getProtocol() + "://" + appDomain.getDomain() + "/dsso/acs/" + ssoKey;
 	}
 	
 	public static String getSPAcsURL(AccountSSO sso) {
@@ -99,7 +99,7 @@ public class SSOUtil {
 
 	public static String getSPLogoutURL(DomainSSO domainSSO) throws Exception {
 		AppDomain appDomain = IAMAppUtil.getAppDomain(domainSSO.getAppDomainId());
-		return appDomain.getDomain() + "/app/logout";
+		return getProtocol() + "://" + appDomain.getDomain() + "/app/logout";
 	}
 	
 	public static String getSPLogoutURL(AccountSSO sso) {
@@ -125,7 +125,7 @@ public class SSOUtil {
 	}
 
 	public static String getDomainSSOEndpoint(String domain) {
-		return domain + "/dsso/" + base64EncodeUrlSafe(domain);
+		return getProtocol() + "://" + domain + "/dsso/" + base64EncodeUrlSafe(domain);
 	}
 	
 	public static String getSSOEndpoint(String domain) {
