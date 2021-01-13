@@ -262,7 +262,7 @@ public class EventAPI {
 
 	public static void updateSourceResource ( long sourceId ) throws SQLException {
 		Map<String, Object> map = new HashMap<>();
-		map.put(AgentConstants.RESOURCE_ID,null);
+		map.put(AgentConstants.RESOURCE_ID,-99L);
 		GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
 				.fields(SOURCE_TO_RESOURCE_FIELDS).table(SOURCE_TO_RESOURCE_MODULE.getTableName())
 				.andCondition(CriteriaAPI.getIdCondition(sourceId,SOURCE_TO_RESOURCE_MODULE));
