@@ -259,7 +259,8 @@ public class PreEventContext extends BaseEventContext {
 
 
     public void constructAndAddPreClearEvent(Context context) throws Exception {
-        Boolean isHistorical = (Boolean) context.get(EventConstants.EventContextNames.IS_HISTORICAL_EVENT);
+    	long startTime = System.currentTimeMillis();
+    	Boolean isHistorical = (Boolean) context.get(EventConstants.EventContextNames.IS_HISTORICAL_EVENT);
         if (isHistorical == null) {
             isHistorical = false;
         }
@@ -292,6 +293,9 @@ public class PreEventContext extends BaseEventContext {
             alarmMeta.setClear(true);
             this.setMessage(alarmMeta.getSubject());
             context.put(EventConstants.EventContextNames.EVENT_LIST, Collections.singletonList(this));
+            if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
+				LOGGER.info("Time taken to construct PreClearevent for rule  : "+rule.getId()+ " resource" + readingContext.getParentId() +" is "+(System.currentTimeMillis() - startTime));			
+			}
             if (!isHistorical) {
             	if(isReadingRuleWorkflowExecution)  { //For live reading rule event insertion
 					ReadingRuleAPI.insertEventsWithoutAlarmOccurrenceProcessed(Collections.singletonList(this), BaseAlarmContext.Type.PRE_ALARM);

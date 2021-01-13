@@ -987,9 +987,13 @@ public class WorkflowRuleAPI {
 	}
 	
 	public static boolean evaluateWorkflowAndExecuteActions(WorkflowRuleContext workflowRule, String moduleName, Object record, List<UpdateChangeSet> changeSet, Map<String, Object> recordPlaceHolders, FacilioContext context, boolean shouldExecute) throws Exception {
+		long startTime = System.currentTimeMillis();
 		Map<String, Object> rulePlaceHolders = workflowRule.constructPlaceHolders(moduleName, record, recordPlaceHolders, context);
 		boolean fieldChangeFlag = false, miscFlag = false, criteriaFlag = false, workflowFlag = false , siteId = false;
-
+		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
+			LOGGER.info("Time taken to construct rulePlaceholders: "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for record : "+record+" is "+(System.currentTimeMillis() - startTime));			
+		}
+		long criteriaCheckStartTime = System.currentTimeMillis();
 		siteId = workflowRule.evaluateSite(moduleName, record, rulePlaceHolders, context);
 		if (siteId) {
 			fieldChangeFlag = evalFieldChange(workflowRule, changeSet);
@@ -1002,6 +1006,9 @@ public class WorkflowRuleAPI {
 					}
 				}
 			}
+		}
+		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
+			LOGGER.info("Time taken to evaluate criteria and workflow flags: "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for record : "+record+" is "+(System.currentTimeMillis() - criteriaCheckStartTime));			
 		}
 		if (AccountUtil.getCurrentOrg().getId() == 286l && (workflowRule.getId() == 26740l)) {
 			LOGGER.error("Result of rule : "+workflowRule.getId()+" for record : "+record+" is \nSite ID : "+siteId+"\nField Change : "+fieldChangeFlag+"\nMisc Flag : "+miscFlag+"\nCriteria Flag : "+criteriaFlag+"\nWorkflow Flag : "+workflowFlag);
@@ -1028,6 +1035,7 @@ public class WorkflowRuleAPI {
 						" \n ResourceId: " +((ReadingContext) record).getParentId()+ " \n Ttime: " + ((ReadingContext) record).getTtime() +" \n ModuleId: " + ((ReadingContext) record).getModuleId());
 			}
 		}
+		long actionExecutionStartTime = System.currentTimeMillis();
 		if (shouldExecute) {
 			if(result) {
 				workflowRule.executeTrueActions(record, context, rulePlaceHolders);
@@ -1035,6 +1043,9 @@ public class WorkflowRuleAPI {
 			else {
 				workflowRule.executeFalseActions(record, context, rulePlaceHolders);
 			}
+		}
+		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
+			LOGGER.info("Time taken to execute readingRule actions: "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for record : "+record+" is "+(System.currentTimeMillis() - actionExecutionStartTime));			
 		}
 		return result;
 	}

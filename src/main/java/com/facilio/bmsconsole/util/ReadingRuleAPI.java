@@ -532,7 +532,8 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 	}
 	
 	public static void insertEventsWithoutAlarmOccurrenceProcessed(List<BaseEventContext> events, Type type) throws Exception
-	{	
+	{
+		long startTime = System.currentTimeMillis();
 		List<AlarmSeverityContext> alarmSeverityList = AlarmAPI.getAlarmSeverityList();
 		HashMap<String,AlarmSeverityContext> alarmSeverityStringMap = new HashMap<String,AlarmSeverityContext>();
 		for(AlarmSeverityContext alarmSeverity:alarmSeverityList) {
@@ -556,7 +557,10 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 				.fields(modBean.getAllFields(moduleName));
 
 		builder.addRecords(events);
-		builder.save();			
+		builder.save();	
+		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
+			LOGGER.info("Time taken to insert events for type  : "+type+ " events: " + events+" is "+(System.currentTimeMillis() - startTime));			
+		}
 	}
 	
 	public static void addClearEvent(Context context, Map<String, Object> placeHolders, ReadingRuleContext readingRuleContext, long readingDataId, Object readingVal, long ttime, long resourceId) throws Exception {

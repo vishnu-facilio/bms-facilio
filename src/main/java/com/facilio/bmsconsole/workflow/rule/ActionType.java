@@ -288,15 +288,23 @@ public enum ActionType {
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) {
 			try {
 				if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
+					long startTime = System.currentTimeMillis();
 					LOGGER.info("performAction for Rule:  "+currentRule.getId());
 					ReadingRuleContext readingrule = (ReadingRuleContext) currentRule;
 					Boolean addRule = false;
 					if (readingrule.getOverPeriod() > 0 || readingrule.getOccurences() > 0 || readingrule.isConsecutive() || readingrule.getThresholdType() == ReadingRuleContext.ThresholdType.FLAPPING.getValue()) {
 						BaseEventContext event =  ((ReadingRuleContext) currentRule).constructPreEvent(obj, (ReadingContext) currentRecord,context);
         				addAlarm(event, obj, context, readingrule, currentRecord, BaseAlarmContext.Type.PRE_ALARM);
+        				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
+        					LOGGER.info("Time taken to construct true PreEvent for currentRule  : "+currentRule.getId()+" is "+(System.currentTimeMillis() - startTime));			
+        				}
 					}
 					else {
+						long impactTime = System.currentTimeMillis();
 						BaseEventContext event = ((ReadingRuleContext) currentRule).constructEvent(obj, (ReadingContext) currentRecord,context);
+						if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
+        					LOGGER.info("Time taken to construct true ReadingEvent for currentRule  : "+currentRule.getId()+" is "+(System.currentTimeMillis() - startTime));			
+        				}
 						///handle impacts
 						JSONObject impacts = (JSONObject) obj.get("impact");
 						if (impacts != null && !impacts.isEmpty()) {
@@ -325,7 +333,13 @@ public enum ActionType {
 								}
 							}
 						}
+						if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
+							LOGGER.info("Time taken to in addAlarm actionType for IMPACT currentRuleId  : "+currentRule.getId() +" is "+(System.currentTimeMillis() - impactTime));			
+						}
 						addAlarm(event, obj, context, currentRule, currentRecord, BaseAlarmContext.Type.READING_ALARM);
+					}
+					if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
+						LOGGER.info("Time taken to in addAlarm actionType for currentRuleId  : "+currentRule.getId() +" is "+(System.currentTimeMillis() - startTime));			
 					}
 
 				} else {
@@ -1821,6 +1835,7 @@ public enum ActionType {
 	}
 
 	public static void addAlarm(BaseEventContext event, JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord, BaseAlarmContext.Type eventType) throws Exception {
+		long startTime = System.currentTimeMillis();
 		context.put(EventConstants.EventContextNames.EVENT_LIST, Collections.singletonList(event));
 		Boolean isHistorical = (Boolean) context.get(EventConstants.EventContextNames.IS_HISTORICAL_EVENT);
 		if (isHistorical == null) {
@@ -1831,6 +1846,9 @@ public enum ActionType {
 		isReadingRuleWorkflowExecution = isReadingRuleWorkflowExecution != null ? isReadingRuleWorkflowExecution : false;
 
 		if (!isHistorical) {
+			if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
+				LOGGER.info("Time taken in addAlarm to construct trueReadingEvent for currentRule  : "+currentRule.getId()+" is "+(System.currentTimeMillis() - startTime));			
+			}
 			if(isReadingRuleWorkflowExecution)  { //For live reading rule event insertion
 				ReadingRuleAPI.insertEventsWithoutAlarmOccurrenceProcessed(Collections.singletonList(event), eventType);
 			}

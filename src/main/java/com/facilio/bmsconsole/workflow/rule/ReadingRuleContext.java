@@ -938,7 +938,12 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 	@Override
 	public void executeTrueActions(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
 		long ruleId = getId();
+		long startTime = System.currentTimeMillis();
 		List<ActionContext>	actions = ActionAPI.getActiveActionsFromWorkflowRule(ruleId);
+		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
+			LOGGER.info("Time taken to fetch true actions for readingRule id : "+ruleId+" with actions : "+actions+" is "+(System.currentTimeMillis() - startTime));			
+		}
+		long actionstartTime = System.currentTimeMillis();
 		if(actions != null) {
 			for(ActionContext action : actions) {
 				if(alarmSeverityId != null) {
@@ -950,7 +955,14 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 				action.executeAction(placeHolders, context, this, record);
 			}
 		}
+		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
+			LOGGER.info("Time taken to execute true actions alone for readingRule id : "+ruleId+" with actions : "+actions+" is "+(System.currentTimeMillis() - actionstartTime));			
+		}
+		long ruleLogStartTime = System.currentTimeMillis();;
 		addRuleLogEntry(context,record, Boolean.TRUE);
+		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
+			LOGGER.info("Time taken to add RuleLogEntry : "+ruleId+ " for record: " + record + " with actions : "+actions+" is "+(System.currentTimeMillis() - ruleLogStartTime));			
+		}
 	}
 	
 	private void addRuleLogEntry(Context context,Object record,boolean isTrueAction) throws Exception {
@@ -1086,17 +1098,23 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 	@Override
 	public void executeFalseActions(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
 		// TODO Auto-generated method stub
+		long startTime = System.currentTimeMillis();
 		ReadingContext reading = (ReadingContext) record;
 		Object val = getMetric(reading);
 		if (val != null || getActivityTypeEnum().isPresent(EventType.SCHEDULED_READING_RULE.getValue())) {
 			if (clearAlarm()) {
-				if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
+				if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {		
+					boolean isPreEvent = false;
 					if (overPeriod > 0 || occurences > 0 || isConsecutive() || thresholdType == ReadingRuleContext.ThresholdType.FLAPPING) {
 						PreEventContext preEvent = constructPreClearEvent(reading, (ResourceContext) reading.getParent());
 						preEvent.constructAndAddPreClearEvent(context);
+						isPreEvent = true;
 					}
 					else  {
 						constructAndAddClearEvent(context, (ResourceContext) reading.getParent(), reading.getTtime());
+					}
+					if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
+						LOGGER.info("Time taken to execute false actions  : "+getId()+ " for isPreEvent: " + isPreEvent +" is "+(System.currentTimeMillis() - startTime));			
 					}
 				}
 				else {
@@ -1245,6 +1263,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 	}
 
 	public ReadingEventContext constructAndAddClearEvent(Context context, ResourceContext resource, long ttime) throws Exception {
+		long startTime = System.currentTimeMillis();
 		Boolean isHistorical = (Boolean) context.get(EventConstants.EventContextNames.IS_HISTORICAL_EVENT);
 		if (isHistorical == null) {
 			isHistorical = false;
@@ -1291,6 +1310,9 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 //			}
 //			LOGGER.info("Clear event : "+FieldUtil.getAsJSON(event).toJSONString()+"\n Alarm Meta : "+alarmMeta);
 			context.put(EventConstants.EventContextNames.EVENT_LIST, Collections.singletonList(event));
+			if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
+				LOGGER.info("Time taken to construct ReadingClearevent for rule  : "+this.getId()+ " resource" + resource.getId() +" is "+(System.currentTimeMillis() - startTime));			
+			}
 			if (!isHistorical) {
 				if(isReadingRuleWorkflowExecution)  { //For live reading rule event insertion
 					ReadingRuleAPI.insertEventsWithoutAlarmOccurrenceProcessed(Collections.singletonList(event), BaseAlarmContext.Type.READING_ALARM);

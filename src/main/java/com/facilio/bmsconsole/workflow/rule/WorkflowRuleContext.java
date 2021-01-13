@@ -484,8 +484,12 @@ public class WorkflowRuleContext implements Serializable {
 	
 	public void executeTrueActions(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
 		long ruleId = getId();
+		long startTime = System.currentTimeMillis();
 		if (actions == null) {
 			actions = ActionAPI.getActiveActionsFromWorkflowRule(ruleId);
+		}
+		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
+			LOGGER.info("Time taken to fetch actions for workflowrule id : "+ruleId+" with actions : "+actions+" is "+(System.currentTimeMillis() - startTime));			
 		}
 		if (AccountUtil.getCurrentOrg().getId() == 151) {
 			LOGGER.info("List of actions for "+this.getId()+" : "+actions);
@@ -687,7 +691,9 @@ public class WorkflowRuleContext implements Serializable {
 			boolean result = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(workflowRule, module.getName(), record, changeSet, recordPlaceHolders, context);
 			LOGGER.debug(MessageFormat.format("Time take to execute workflow {0} and actions: is {1} ",this.getId(), (System.currentTimeMillis() - workflowStartTime)));
 			LOGGER.debug(MessageFormat.format("Result of rule : {0} for record : {1} is {2}",workflowRule.getId(),record,result));
-		
+			if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
+				LOGGER.info("Time taken to execute workflow and actions: "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for module : "+module.getName()+" is "+(System.currentTimeMillis() - workflowStartTime));			
+			}
 //			if((AccountUtil.getCurrentOrg().getId() == 231l && (workflowRule.getId() == 36242l || workflowRule.getId() == 36243l)) || (AccountUtil.getCurrentOrg().getId() == 78l)) {
 //				LOGGER.info("Time take to execute workflow and actions: " + (System.currentTimeMillis() - workflowStartTime));
 //				LOGGER.info("Select Query Count till execution of workflow and actions" + AccountUtil.getCurrentAccount().getSelectQueries() + " Timetaken "+AccountUtil.getCurrentAccount().getSelectQueriesTime());
@@ -699,7 +705,10 @@ public class WorkflowRuleContext implements Serializable {
 					stopFurtherExecution = true;
 				}
 			}
-
+			if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
+				LOGGER.info("Time taken to execute rule : "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for module : "+module.getName()+" is "+(System.currentTimeMillis() - workflowStartTime));			
+			}
+			long startTimeToFetchChildRules = System.currentTimeMillis();
 			LOGGER.debug("Time taken to execute rule : "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for module : "+module.getName()+" is "+(System.currentTimeMillis() - workflowStartTime));
 			if(workflowRule.getRuleTypeEnum().isChildSupport() && !workflowRule.shouldTerminateChildExecution()) {
 				String workflowRuleKey = WorkflowRuleAPI.constructParentWorkflowRuleKey(workflowRule.getId(),result);
@@ -716,10 +725,13 @@ public class WorkflowRuleContext implements Serializable {
 						workflowRuleCacheMap.put(workflowRuleKey, currentWorkflows);
 					}
 				}	
+				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
+					LOGGER.info("Time taken to fetch child rule alone for rule : "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for module : "+module.getName()+" is "+(System.currentTimeMillis() - startTimeToFetchChildRules));			
+				}
 				WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(currentWorkflows, module, record, changeSet, recordPlaceHolders, context, propagateError, workflowRuleCacheMap, isParallelRuleExecution, eventTypes, ruleTypes);
 			}
 
-			if ((AccountUtil.getCurrentOrg().getId() == 231l && (workflowRule.getId() == 36242l || workflowRule.getId() == 36243l)) || (AccountUtil.getCurrentOrg().getId() == 78l)) {
+			if ((AccountUtil.getCurrentOrg().getId() == 339l) || (AccountUtil.getCurrentOrg().getId() == 78l)) {
 				LOGGER.info("Time taken including childrule execution -- for rule : "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for module : "+module.getName()+" is "+(System.currentTimeMillis() - workflowStartTime));	
 				LOGGER.info("Select Query Count including childrule execution  -- " + AccountUtil.getCurrentAccount().getSelectQueries() + " Timetaken till childrule execution "+AccountUtil.getCurrentAccount().getSelectQueriesTime());
 			}
