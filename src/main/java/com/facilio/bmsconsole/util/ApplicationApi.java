@@ -344,16 +344,16 @@ public class ApplicationApi {
 
 
         AppDomain servicePortalApp = IAMAppUtil.getAppDomain(org.getDomain() + "." + FacilioProperties.getOccupantAppDomain());
-        ApplicationContext servicePortalapplication = new ApplicationContext(orgId, "Occupant Portal", false, servicePortalApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Occupant Portal App", ApplicationContext.AppCategory.PORTALS.getIndex());
+        ApplicationContext servicePortalapplication = new ApplicationContext(orgId, "Occupant Portal", true, servicePortalApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Occupant Portal App", ApplicationContext.AppCategory.PORTALS.getIndex());
 
         AppDomain tenantPortalApp = IAMAppUtil.getAppDomain(org.getDomain() + "." + FacilioProperties.getTenantAppDomain());
-        ApplicationContext tenantPortalapplication = new ApplicationContext(orgId, "Tenant Portal", false, tenantPortalApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Tenant Portal App", ApplicationContext.AppCategory.PORTALS.getIndex());
+        ApplicationContext tenantPortalapplication = new ApplicationContext(orgId, "Tenant Portal", true, tenantPortalApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Tenant Portal App", ApplicationContext.AppCategory.PORTALS.getIndex());
 
         AppDomain vendorPortalApp = IAMAppUtil.getAppDomain(org.getDomain() + "." + FacilioProperties.getVendorAppDomain());
-        ApplicationContext vendorPortalapplication = new ApplicationContext(orgId, "Vendor Portal", false, vendorPortalApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Vendor Portal App", ApplicationContext.AppCategory.PORTALS.getIndex());
+        ApplicationContext vendorPortalapplication = new ApplicationContext(orgId, "Vendor Portal", true, vendorPortalApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Vendor Portal App", ApplicationContext.AppCategory.PORTALS.getIndex());
 
         AppDomain clientPortalApp = IAMAppUtil.getAppDomain(org.getDomain() + "." + FacilioProperties.getClientAppDomain());
-        ApplicationContext clientPortalapplication = new ApplicationContext(orgId, "Client Portal", false, clientPortalApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Client Portal App", ApplicationContext.AppCategory.PORTALS.getIndex());
+        ApplicationContext clientPortalapplication = new ApplicationContext(orgId, "Client Portal", true, clientPortalApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Client Portal App", ApplicationContext.AppCategory.PORTALS.getIndex());
 
         ApplicationContext facilioAgentApplication = new ApplicationContext(orgId, "Agent", false, facilioApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.FACILIO_AGENT_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Agent App", ApplicationContext.AppCategory.WORK_CENTERS.getIndex());
 
@@ -1097,6 +1097,15 @@ public class ApplicationApi {
         }
 
         return null;
+    }
+
+    public static ApplicationContext getDefaultOrFirstApp(List<ApplicationContext> applications) throws Exception {
+        for(ApplicationContext app : applications) {
+            if(app.isDefault()){
+                return app;
+            }
+        }
+        return applications.get(0);
     }
 
 }

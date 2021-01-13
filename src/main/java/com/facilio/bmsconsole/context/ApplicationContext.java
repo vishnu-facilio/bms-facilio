@@ -57,7 +57,8 @@ public class ApplicationContext implements Serializable{
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
+	//domain specific isDefault
 	private Boolean isDefault;
 	
 	public Boolean getIsDefault() {

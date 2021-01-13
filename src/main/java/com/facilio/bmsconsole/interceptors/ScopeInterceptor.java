@@ -150,7 +150,8 @@ public class ScopeInterceptor extends AbstractInterceptor {
                         //setting the first permissible application(corresponding to this domain) if exists to this user
                         List<ApplicationContext> permissibleAppsForThisDomain = ApplicationApi.getApplicationsForOrgUser(user.getOuid(), request.getServerName());
                         if (CollectionUtils.isNotEmpty(permissibleAppsForThisDomain)) {
-                            ApplicationApi.setThisAppForUser(user, permissibleAppsForThisDomain.get(0));
+                            ApplicationContext appToBeAssigned = ApplicationApi.getDefaultOrFirstApp(permissibleAppsForThisDomain);
+                            ApplicationApi.setThisAppForUser(user, appToBeAssigned);
                         } else {
                             //return "usernotinapp";
                             //temp handling - need to be removed
