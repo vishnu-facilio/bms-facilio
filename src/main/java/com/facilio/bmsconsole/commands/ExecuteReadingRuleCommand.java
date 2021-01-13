@@ -45,6 +45,9 @@ public class ExecuteReadingRuleCommand extends ExecuteAllWorkflowsCommand {
     @Override
 	protected void fetchAndExecuteRules(FacilioContext context, boolean isPostExecute) throws Exception 
     {	
+    	if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339) {
+    		return;
+    	}
 		ParallelRuleExecutionProp isParallelRuleExecutionEnum = null; 
 		Boolean parallelRuleExecutionProp = (Boolean) context.get(FacilioConstants.ContextNames.IS_PARALLEL_RULE_EXECUTION);
 		parallelRuleExecutionProp = parallelRuleExecutionProp != null ? parallelRuleExecutionProp : Boolean.TRUE;

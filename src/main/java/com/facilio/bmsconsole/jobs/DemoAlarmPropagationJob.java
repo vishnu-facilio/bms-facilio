@@ -28,6 +28,7 @@ public class DemoAlarmPropagationJob extends FacilioJob{
 			FacilioChain context = TransactionChainFactory.demoAlarmPropagationChain();
 			context.getContext().put(ContextNames.START_TIME, currentZdt);
 			context.getContext().put(ContextNames.DEMO_ROLLUP_JOB_ORG, jc.getOrgId());
+			context.getContext().put(ContextNames.JOB, jc.getJobId());
 			context.execute();
 			LOGGER.info("DemoAlarmPropagationJob Started Daily Demo Historical rule evaluation for zdt: "+currentZdt);
 		} catch (Exception e) {

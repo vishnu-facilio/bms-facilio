@@ -221,7 +221,7 @@ public class NewAlarmAPI {
 		}
 	}
 
-	private static List<LookupField> getLookupFields(Type type) throws Exception {
+	public static List<LookupField> getLookupFields(Type type) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<LookupField> lookupFields = null;
 		switch (type) {

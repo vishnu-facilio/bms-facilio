@@ -41,7 +41,10 @@ public class RunThroughHistoricalRuleCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		
-		final long maximumDailyEventRuleJobsPerOrg = 10000l; 
+		long maximumDailyEventRuleJobsPerOrg = 10000l; 
+		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339) {
+			maximumDailyEventRuleJobsPerOrg = 25000l;
+		}
 
 		DateRange range = (DateRange) context.get(FacilioConstants.ContextNames.DATE_RANGE);
 		Integer ruleJobType = (Integer) context.get(FacilioConstants.ContextNames.RULE_JOB_TYPE);
@@ -92,11 +95,13 @@ public class RunThroughHistoricalRuleCommand extends FacilioCommand {
 		DateRange firstInterval = intervals.get(0);
 		DateRange lastInterval = intervals.get(intervals.size()-1);
 		
-		long activeCurrentRuleResourceLogs = WorkflowRuleResourceLoggerAPI.getActiveWorkflowRuleResourceLogsByRuleAndResourceId(primaryId, secondaryIds, ruleJobType);
-		if(activeCurrentRuleResourceLogs > 0)
-		{
-			throw new Exception("Rule evaluation is already on progress for the selected asset(s).");
-		}
+		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() != 339) {
+			long activeCurrentRuleResourceLogs = WorkflowRuleResourceLoggerAPI.getActiveWorkflowRuleResourceLogsByRuleAndResourceId(primaryId, secondaryIds, ruleJobType);
+			if(activeCurrentRuleResourceLogs > 0)
+			{
+				throw new Exception("Rule evaluation is already on progress for the selected asset(s).");
+			}
+		}		
 		
 		long requestedDailyJobsCount = intervals.size() * secondaryIds.size();
 		long activeDailyEventRuleJobsAtPresent = WorkflowRuleHistoricalLogsAPI.getActiveDailyWorkflowRuleHistoricalLogsCount();	

@@ -11,19 +11,23 @@ import java.util.Map.Entry;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.yaml.snakeyaml.Yaml;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.DemoRollUpYearlyCommand;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
+import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.bmsconsole.context.ReadingAlarm;
 import com.facilio.bmsconsole.enums.RuleJobType;
 import com.facilio.bmsconsole.util.AlarmAPI;
+import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.bmsconsole.util.NewEventAPI;
 import com.facilio.chain.FacilioChain;
@@ -38,6 +42,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.tasker.job.JobContext;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
@@ -49,14 +54,39 @@ public class DemoAlarmPropagationCommand extends FacilioCommand{
 	public boolean executeCommand(Context context) throws Exception {
 		
 		Long orgId=(Long) context.get(ContextNames.DEMO_ROLLUP_JOB_ORG);
+		Long jobId=(Long) context.get(ContextNames.JOB);
 		ZonedDateTime currentTimeZdt = (ZonedDateTime) context.get(ContextNames.START_TIME);
 		long currentTime = currentTimeZdt.toInstant().toEpochMilli();
-		long yesterdayTime = DateTimeUtil.addDays(currentTime, -1);
-
+		
 		FacilioContext runThroughRuleChainContext = new FacilioContext();
-		runThroughRuleChainContext.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(DateTimeUtil.getDayStartTimeOf(yesterdayTime), DateTimeUtil.getDayEndTimeOf(yesterdayTime)));
 		runThroughRuleChainContext.put(FacilioConstants.ContextNames.RULE_JOB_TYPE, RuleJobType.READING_ALARM.getIndex());
+		
+		if (AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getOrgId() == 339 || AccountUtil.getCurrentOrg().getOrgId() == 1)) {
+			JSONObject jobProps = BmsJobUtil.getJobProps(jobId, "DemoAlarmPropagationJob");
+			if(jobProps == null) {
+				LOGGER.error("DemoAlarmPropagationJob empty jobProps");
+				return false;
+			}
+			LOGGER.info("DemoAlarmPropagationJob jobProps :"+jobProps);	
+			Integer jobInterval =Integer.valueOf(String.valueOf((Long)jobProps.get("jobInterval")));	
+			if(jobInterval == null && jobInterval <= 0) {
+				LOGGER.error("DemoAlarmPropagationJob empty interval");
+				return false;
+			}
+			
+			long dataInterval=15*60*1000; //15minutes
+			long endTime = currentTime/dataInterval;
 
+			long startTime = DateTimeUtil.addMinutes(endTime, -jobInterval);;
+			startTime = startTime/dataInterval;
+			
+			runThroughRuleChainContext.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(startTime, endTime));
+		}
+		else {
+			long yesterdayTime = DateTimeUtil.addDays(currentTime, -1);
+			runThroughRuleChainContext.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(DateTimeUtil.getDayStartTimeOf(yesterdayTime), DateTimeUtil.getDayEndTimeOf(yesterdayTime)));
+		}
+		
 		HashMap<Long, List<Long>> ruleIdVsResourceIds = getAllRulesFromReadingAlarms();
 		
 		if(ruleIdVsResourceIds != null && MapUtils.isNotEmpty(ruleIdVsResourceIds)) 
@@ -85,17 +115,22 @@ public class DemoAlarmPropagationCommand extends FacilioCommand{
     	FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.NEW_READING_ALARM);
     	List<FacilioField> allFields = modBean.getAllFields(module.getName());	
 
+    	List<LookupField> lookupFields = NewAlarmAPI.getLookupFields(BaseAlarmContext.Type.READING_ALARM);
 		SelectRecordsBuilder<ReadingAlarm> selectbuilder = new SelectRecordsBuilder<ReadingAlarm>()
 				.module(module)
 				.select(allFields)
 				.beanClass(ReadingAlarm.class);
+		
+		if (CollectionUtils.isNotEmpty(lookupFields)) {
+			selectbuilder.fetchSupplements(lookupFields);
+		}
 		
 		List<ReadingAlarm> readingAlarmList = selectbuilder.get();
 		if(readingAlarmList != null && !readingAlarmList.isEmpty()) 
 		{
 			for(ReadingAlarm readingAlarm:readingAlarmList) 
 			{
-				if(readingAlarm.getRule() != null && readingAlarm.getResource() != null) 
+				if(readingAlarm.getRule() != null && readingAlarm.getResource() != null && readingAlarm.getRule().isActive()) 
 				{
 					if(ruleIdVsResourceIds.containsKey(readingAlarm.getRule().getId())) 
 					{

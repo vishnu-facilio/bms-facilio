@@ -244,6 +244,27 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 						getOtherRDMs(reading.getParentId(), reading.getTtime(), supportFieldsRDM, rdmCache, lastItr, fields);
 						context.put(FacilioConstants.ContextNames.CURRRENT_READING_DATA_META, rdmCache);
 						
+						boolean shouldSkipCurrentReading = false;
+						if (AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getOrgId() == 339 || AccountUtil.getCurrentOrg().getOrgId() == 1)) {
+							long currentReadingTime = reading.getTtime();
+							for(WorkflowFieldContext workflowField:fields) {
+								long resourceId = reading.getParentId();
+								if(workflowField.getResourceId() != -1) {
+									resourceId = workflowField.getResourceId();
+								}
+								ReadingDataMeta currentFieldRDM = rdmCache.get(ReadingsAPI.getRDMKey(resourceId, workflowField.getField()));
+								if(currentFieldRDM == null) {
+									shouldSkipCurrentReading = true;
+								}
+								else if(currentFieldRDM != null && currentFieldRDM.getTtime() != currentReadingTime) {
+									shouldSkipCurrentReading = true;
+								}
+							}
+						}
+						if(shouldSkipCurrentReading) {
+							continue;
+						}
+						
 						Map<String, Object> recordPlaceHolders = new HashMap<>(placeHolders);
 						CommonCommandUtil.appendModuleNameInKey(readingRule.getReadingField().getModule().getName(), readingRule.getReadingField().getModule().getName(), FieldUtil.getAsProperties(reading), recordPlaceHolders);
 						
@@ -396,7 +417,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 					supportingValues.put(rdmKey, rdms);
 				}
 				else {	
-					if(canConstructErrorMessage && jobStatesMap != null){
+					if(canConstructErrorMessage && jobStatesMap != null && AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getOrgId() != 339 || AccountUtil.getCurrentOrg().getOrgId() != 1)) {
 						jobStatesMap.put("isManualFailed",true);
 						supportingValues.put(rdmKey, null);
 						ResourceContext currentResource = ResourceAPI.getResource(resourceId);
