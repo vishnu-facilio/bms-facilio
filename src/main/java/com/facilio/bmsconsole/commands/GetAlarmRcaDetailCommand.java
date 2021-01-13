@@ -1,10 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.ReadingAlarmOccurrenceContext;
-import com.facilio.bmsconsole.util.MLAPI;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -16,16 +20,14 @@ import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.time.DateRange;
-import org.apache.commons.chain.Context;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class GetAlarmRcaDetailCommand extends  FacilioCommand {
     @Override
@@ -105,6 +107,7 @@ public class GetAlarmRcaDetailCommand extends  FacilioCommand {
                 SelectRecordsBuilder<ReadingAlarmOccurrenceContext> builder = new SelectRecordsBuilder<ReadingAlarmOccurrenceContext>().module(module)
                         .beanClass(ReadingAlarmOccurrenceContext.class).select(selectFields)
                         .andCondition(CriteriaAPI.getCondition(fieldMap.get("rule"), rcaIds, NumberOperators.EQUALS))
+                        .andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), String.valueOf(baseAlarm.getResource().getId()), NumberOperators.EQUALS))
 //                    .fetchLookup(rulelookup)
                         .groupBy(fieldMap.get("rule").getCompleteColumnName());
                 if (occurrenceList != null && occurrenceList.size() > 0) {
