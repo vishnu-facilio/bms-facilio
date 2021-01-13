@@ -30,11 +30,16 @@ import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.bmsconsole.util.NewEventAPI;
+import com.facilio.bmsconsole.util.ReadingRuleAPI;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
@@ -71,9 +76,9 @@ public class DemoAlarmPropagationCommand extends FacilioCommand{
 			if(jobInterval == null && jobInterval <= 0) {
 				LOGGER.error("DemoAlarmPropagationJob empty interval");
 				return false;
-			}
+			}			
+//			currentTime = DateTimeUtil.addMinutes(currentTime, -15);
 			
-			currentTime = DateTimeUtil.addMinutes(currentTime, -15);
 			long dataInterval=15*60*1000; //15minutes
 			long endTime = (currentTime/dataInterval) * dataInterval;
 
@@ -115,42 +120,62 @@ public class DemoAlarmPropagationCommand extends FacilioCommand{
    {
 	   	HashMap<Long,List<Long>> ruleIdVsResourceIds = new HashMap<Long,List<Long>>();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-    	FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.NEW_READING_ALARM);
-    	List<FacilioField> allFields = modBean.getAllFields(module.getName());	
-
-    	List<LookupField> lookupFields = NewAlarmAPI.getLookupFields(BaseAlarmContext.Type.READING_ALARM);
-		SelectRecordsBuilder<ReadingAlarm> selectbuilder = new SelectRecordsBuilder<ReadingAlarm>()
-				.module(module)
-				.select(allFields)
-				.beanClass(ReadingAlarm.class);
 		
-		if (CollectionUtils.isNotEmpty(lookupFields)) {
-			selectbuilder.fetchSupplements(lookupFields);
+		if (AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getOrgId() == 339 || AccountUtil.getCurrentOrg().getOrgId() == 1)) {
+			Criteria criteria = new Criteria();
+			criteria.addAndCondition(CriteriaAPI.getCondition("RULE_TYPE", "ruleType", ""+RuleType.READING_RULE.getIntVal(), NumberOperators.EQUALS));
+			criteria.addAndCondition(CriteriaAPI.getCondition("STATUS", "status", ""+true, BooleanOperators.IS));
+			List<ReadingRuleContext> rules = ReadingRuleAPI.getReadingRules(criteria);
+			
+			if(rules != null && !rules.isEmpty()) {
+				for(ReadingRuleContext rule:rules) {
+					ReadingRuleAPI.setMatchedResources(rule);
+					if(rule.getMatchedResources() != null && MapUtils.isNotEmpty(rule.getMatchedResources()) && rule.getMatchedResources().keySet() != null) {
+						ruleIdVsResourceIds.put(rule.getId(), new ArrayList<Long>(rule.getMatchedResources().keySet()));
+					}	
+				}	
+			}			
+			return ruleIdVsResourceIds;
 		}
-		
-		List<ReadingAlarm> readingAlarmList = selectbuilder.get();
-		if(readingAlarmList != null && !readingAlarmList.isEmpty()) 
+		else 
 		{
-			for(ReadingAlarm readingAlarm:readingAlarmList) 
-			{
-				if(readingAlarm.getRule() != null && readingAlarm.getResource() != null && readingAlarm.getRule().isActive()) 
-				{
-					if(ruleIdVsResourceIds.containsKey(readingAlarm.getRule().getId())) 
-					{
-						List<Long> resourceIds = ruleIdVsResourceIds.get(readingAlarm.getRule().getId());
-						resourceIds.add(readingAlarm.getResource().getId());				
-					}
-					else
-					{
-						List<Long> resourceIds = new ArrayList<Long>();
-						resourceIds.add(readingAlarm.getResource().getId());
-						ruleIdVsResourceIds.put(readingAlarm.getRule().getId(), resourceIds);
-					}					
-				}
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.NEW_READING_ALARM);
+	    	List<FacilioField> allFields = modBean.getAllFields(module.getName());	
+
+	    	List<LookupField> lookupFields = NewAlarmAPI.getLookupFields(BaseAlarmContext.Type.READING_ALARM);
+			SelectRecordsBuilder<ReadingAlarm> selectbuilder = new SelectRecordsBuilder<ReadingAlarm>()
+					.module(module)
+					.select(allFields)
+					.beanClass(ReadingAlarm.class);
+			
+			if (CollectionUtils.isNotEmpty(lookupFields)) {
+				selectbuilder.fetchSupplements(lookupFields);
 			}
 			
-		}		
-		return ruleIdVsResourceIds;
+			List<ReadingAlarm> readingAlarmList = selectbuilder.get();
+			if(readingAlarmList != null && !readingAlarmList.isEmpty()) 
+			{
+				for(ReadingAlarm readingAlarm:readingAlarmList) 
+				{
+					if(readingAlarm.getRule() != null && readingAlarm.getResource() != null && readingAlarm.getRule().isActive()) 
+					{
+						if(ruleIdVsResourceIds.containsKey(readingAlarm.getRule().getId())) 
+						{
+							List<Long> resourceIds = ruleIdVsResourceIds.get(readingAlarm.getRule().getId());
+							resourceIds.add(readingAlarm.getResource().getId());				
+						}
+						else
+						{
+							List<Long> resourceIds = new ArrayList<Long>();
+							resourceIds.add(readingAlarm.getResource().getId());
+							ruleIdVsResourceIds.put(readingAlarm.getRule().getId(), resourceIds);
+						}					
+					}
+				}
+				
+			}		
+			return ruleIdVsResourceIds;
+		}
    }
 
 
