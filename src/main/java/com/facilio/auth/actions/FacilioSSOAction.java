@@ -225,6 +225,7 @@ public class FacilioSSOAction extends FacilioAction {
 			authAction.domainSSOSignIn();
 			JSONObject result = authAction.getResult();
 			if (result.containsKey("url")) {
+				FacilioCookie.addLoggedInCookie(response);
 				response.sendRedirect((String) result.get("url"));
 				return SUCCESS;
 			}
