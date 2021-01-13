@@ -1,7 +1,10 @@
 package com.facilio.events.context;
 
+import java.util.List;
 import java.util.StringJoiner;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -9,7 +12,7 @@ import org.json.simple.parser.ParseException;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
-
+@Getter @Setter
 public class EventContext {
 	private long id = -1;
 	public long getId() {
@@ -276,7 +279,7 @@ public class EventContext {
 	public void setSubRuleId(long subRuleId) {
 		this.subRuleId = subRuleId;
 	}
-
+	private List<String> sources;
 	public static final EventInternalState[] INETERNAL_STATES = EventInternalState.values();
 	public static enum EventInternalState {
 		ADDED,

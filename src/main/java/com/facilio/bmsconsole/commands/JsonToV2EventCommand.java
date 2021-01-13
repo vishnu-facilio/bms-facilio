@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
+import com.facilio.bmsconsole.context.BMSEventContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.bmsconsole.context.BaseEventContext;
@@ -14,6 +15,7 @@ import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +37,9 @@ public class JsonToV2EventCommand extends FacilioCommand {
 				if(jsonObject.containsKey(AgentConstants.AGENT)) {
 					long agentId = EventAPI.getAgent((String) jsonObject.get(AgentConstants.AGENT));
 					jsonObject.put(AgentConstants.AGENT_ID, agentId);
+				}
+				if(jsonObject.containsKey("sources") && jsonObject.get("source") != null){
+					jsonObject.put("sources",jsonObject.get("sources"));
 				}
 				BaseEventContext baseEvent = (BaseEventContext) FieldUtil.getAsBeanFromMap(jsonObject, NewEventAPI.getEventClass(type));
 				eventList.add(baseEvent);

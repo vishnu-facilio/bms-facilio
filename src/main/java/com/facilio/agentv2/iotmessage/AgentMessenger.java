@@ -165,6 +165,15 @@ public class AgentMessenger {
         return true;
     }
 
+    public static boolean discoverSources(Long agentId) throws Exception { // will change commad for discover sources..
+//        if (agentId > 0) {
+//            IotData data = constructNewIotAgentMessage(agentId, FacilioCommand.DISCOVER_CONTROLLERS, (FacilioContext) null, null);
+//            MessengerUtil.addAndPublishNewAgentData(data);
+//            return true;
+//        }
+        return true;
+    }
+
   /*  public static boolean sendConfigureModbusControllercommand(long agentId, long slaveId, String ip, long netwokId, FacilioControllerType controllerType) throws Exception {
         if((agentId > 0) && (slaveId > 0)){
             FacilioContext context = new FacilioContext();

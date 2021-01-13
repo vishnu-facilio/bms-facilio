@@ -1,10 +1,14 @@
 package com.facilio.events.actions;
 
+import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.iotmessage.AgentMessenger;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
@@ -42,7 +46,7 @@ public class EventAction extends FacilioAction {
 	public void setPayload(JSONObject payload) {
 		this.payload = payload;
 	}
-	
+	private long sourceId=-1;
 	public String addEvent() throws Exception {
 
 		FacilioContext context = new FacilioContext();
@@ -390,6 +394,40 @@ public class EventAction extends FacilioAction {
 	public String v2viewEvent() throws Exception{
 		eventDetail();
 		setResult(EventConstants.EventContextNames.EVENT, event);
+		return SUCCESS;
+	}
+
+	public String discoverSources() throws Exception {
+		try{
+			if(getAgentId() > 0){
+				AgentMessenger.discoverSources(agentId);
+				setResult(AgentConstants.DATA,"success");
+				setResponseCode(200);
+			}else {
+				setResult(AgentConstants.DATA,"agentId is null");
+				setResponseCode(404);
+			}
+		}catch (Exception e){
+			setResult(AgentConstants.DATA,e.getMessage());
+			setResponseCode(500);
+		}
+		return SUCCESS;
+	}
+
+	public String removeResource(){
+		try{
+			if(getSourceId() > 0){
+				EventAPI.updateSourceResource(sourceId);
+				setResult(AgentConstants.DATA,"success");
+				setResponseCode(200);
+			}else {
+				setResult(AgentConstants.DATA,"sourceId is null");
+				setResponseCode(404);
+			}
+		}catch (Exception e){
+			setResult(AgentConstants.DATA,e.getMessage());
+			setResponseCode(500);
+		}
 		return SUCCESS;
 	}
  }

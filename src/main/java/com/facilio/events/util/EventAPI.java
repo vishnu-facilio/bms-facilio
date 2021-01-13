@@ -148,8 +148,14 @@ public class EventAPI {
 	    {
 	    	String key = iterator.next();
 	    	if (key != null && !key.isEmpty() && payload.get(key) != null) {
-		    	String value = payload.get(key).toString();
-		    	if(key.equalsIgnoreCase("entity") || key.equalsIgnoreCase("condition"))
+				String value=null;
+				if(key.equalsIgnoreCase("sources")){
+					event.setSources ((List<String>)payload.get(key));
+					continue;
+				}else {
+					value = payload.get(key).toString();
+				}
+				if(key.equalsIgnoreCase("entity") || key.equalsIgnoreCase("condition"))
 		    	{
 		    		event.setCondition(value);
 		    	}
@@ -219,8 +225,31 @@ public class EventAPI {
 	    		addSourceToResourceMapping(event.getSource(), orgId,event.getControllerId(), event.getAgentId());
 	    	}
 	    }
-	    
+
+		if(event.getSources() != null && !event.getSources().isEmpty() && event.getAgentId() < 0) {
+			addBulkSources(event.getSources(),event.getAgentId());
+		}
 	    return event;
+	}
+
+	public static void addBulkSources(List<String> sources,long agentId) throws SQLException {
+		bulkAddSourceToResourceMapping(sources,agentId);
+	}
+
+	private static void bulkAddSourceToResourceMapping ( List<String> sources,long agentId ) throws SQLException {
+		List<Map<String, Object>> sourceList = new ArrayList<>();
+		sources.forEach(source -> {
+			Map<String, Object> map = new HashMap<>();
+			map.put("source",source);
+			map.put(AgentConstants.AGENT_ID,agentId);
+			sourceList.add(map);
+		});
+
+		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+				.fields(SOURCE_TO_RESOURCE_FIELDS)
+				.table(SOURCE_TO_RESOURCE_MODULE.getTableName())
+				.addRecords(sourceList);
+		builder.save();
 	}
 
 	public static long getAgent(String agentKey) throws Exception {
@@ -228,9 +257,18 @@ public class EventAPI {
 		if(agent != null) {
 			return agent.getId();
 		}
-		return -1;
+		return -1L;
 	}
-	
+
+	public static void updateSourceResource ( long sourceId ) throws SQLException {
+		Map<String, Object> map = new HashMap<>();
+		map.put(AgentConstants.RESOURCE_ID,null);
+		GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+				.fields(SOURCE_TO_RESOURCE_FIELDS).table(SOURCE_TO_RESOURCE_MODULE.getTableName())
+				.andCondition(CriteriaAPI.getIdCondition(sourceId,SOURCE_TO_RESOURCE_MODULE));
+		builder.update(map);
+	}
+
 	public static void updateEvent(EventContext event, long orgId) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
 		GenericUpdateRecordBuilder updatebuilder = new GenericUpdateRecordBuilder()
 				.table("Event")
@@ -349,7 +387,16 @@ public class EventAPI {
 		}
 		return selectRecordBuilder.get();
 	}
-
+public static void main(String[] args) {
+	JSONObject o = new JSONObject();
+	JSONArray arr = new  JSONArray();
+	arr.add("test1");
+	arr.add("test2");
+	arr.add("test3");
+	o.put("source", arr);
+	List<String> val = (List<String>)o.get("source");
+	System.out.println(val);
+}
 	public static EventContext getEvent(long id) throws Exception {
 		List<EventContext> events = getEvents(Collections.singletonList(id));
 		if (CollectionUtils.isNotEmpty(events)) {

@@ -248,6 +248,8 @@
 		<action name="sources" class="com.facilio.events.actions.EventAction" method="getAllSources"> </action>
 		<action name="count" class="com.facilio.events.actions.EventAction" method="getCount"> </action>
 		<action name="updatesource" class="com.facilio.events.actions.EventAction" method="updateSourceWithResource"></action>
+		<action name="discoverSource" class="com.facilio.events.actions.EventAction" method="discoverSources"></action>
+		<action name="removeResource" class="com.facilio.events.actions.EventAction" method="removeResource"></action>
 	</package>
 	
 	<package name="alarm" namespace="/api/v2/alarm" extends="v2Api">

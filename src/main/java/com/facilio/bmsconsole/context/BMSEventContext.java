@@ -1,7 +1,11 @@
 package com.facilio.bmsconsole.context;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.List;
+@Getter @Setter
 public class BMSEventContext extends BaseEventContext {
 
     /**
@@ -33,7 +37,7 @@ public class BMSEventContext extends BaseEventContext {
     }
     	
     private long agentId = -1;
-
+    private List<String> sources;
     public long getAgentId() {
 		return agentId;
 	}
