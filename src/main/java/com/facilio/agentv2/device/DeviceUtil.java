@@ -103,16 +103,17 @@ public class DeviceUtil {
     }
 
     private static boolean addDevicesAndControllers(List<Device> devices) throws Exception {
-        if (devices != null && !devices.isEmpty()) {
 
-            try{
-                for (Device device : devices) {
+        if (devices != null && !devices.isEmpty()) {
+            for (Device device : devices) {
+                try {
                     FieldDeviceApi.addFieldDevice(device);
                     ControllerUtilV2.fieldDeviceToController(device);
+                } catch (Exception e) {
+                    LOGGER.info("Exception while making controller from device", e);
                 }
-            }catch (Exception e){
-                LOGGER.info("Exception while making controller from device",e);
             }
+
             return true;
         }
         throw new Exception("Devices to add can't be empty");
