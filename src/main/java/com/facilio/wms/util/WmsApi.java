@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 
 import javax.websocket.EncodeException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.json.simple.JSONObject;
 
@@ -45,9 +46,14 @@ public class WmsApi
 	
 	private static Map<String, FacilioClientEndpoint> FACILIO_CLIENT_ENDPOINTS = new HashMap<>();
 	private static FacilioProducer producer;
+
+	private static boolean isWmsEnabled() {
+		String prop = FacilioProperties.getConfig("wms.v1.enable");
+		return StringUtils.isEmpty(prop) || prop.equals("true");
+	}
 	
 	static {
-		if(!FacilioProperties.isDevelopment()) {
+		if(!FacilioProperties.isDevelopment() && isWmsEnabled()) {
 			String socketUrl = FacilioProperties.getConfig("wms.domain");
 			if (socketUrl != null) {
 				WEBSOCKET_URL = "wss://"+socketUrl+"/websocket";
@@ -183,7 +189,7 @@ public class WmsApi
 			if (AccountUtil.getCurrentUser() != null) {
 				message.setFrom(AccountUtil.getCurrentUser().getId());
 			}
-			if (FacilioProperties.isDevelopment()) {
+			if (FacilioProperties.isDevelopment() || !isWmsEnabled()) {
 				SessionManager.getInstance().sendMessage(message);
 			} else {
 				sendToKafka(message.toJson());
