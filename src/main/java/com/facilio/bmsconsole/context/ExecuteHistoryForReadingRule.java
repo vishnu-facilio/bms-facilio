@@ -255,13 +255,16 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 								ReadingDataMeta currentFieldRDM = rdmCache.get(ReadingsAPI.getRDMKey(resourceId, workflowField.getField()));
 								if(currentFieldRDM == null) {
 									shouldSkipCurrentReading = true;
+									break;
 								}
 								else if(currentFieldRDM != null && currentFieldRDM.getTtime() != currentReadingTime) {
 									shouldSkipCurrentReading = true;
+									break;
 								}
 							}
 						}
 						if(shouldSkipCurrentReading) {
+							LOGGER.info("Skipping Scheduled Historical for ReadingRule: "+readingRule.getId()+" and reading " +reading+ ". WorkflowFields: "+fields);				
 							continue;
 						}
 						

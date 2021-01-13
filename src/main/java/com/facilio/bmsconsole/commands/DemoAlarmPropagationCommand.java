@@ -67,19 +67,22 @@ public class DemoAlarmPropagationCommand extends FacilioCommand{
 				LOGGER.error("DemoAlarmPropagationJob empty jobProps");
 				return false;
 			}
-			LOGGER.info("DemoAlarmPropagationJob jobProps :"+jobProps);	
 			Integer jobInterval =Integer.valueOf(String.valueOf((Long)jobProps.get("jobInterval")));	
 			if(jobInterval == null && jobInterval <= 0) {
 				LOGGER.error("DemoAlarmPropagationJob empty interval");
 				return false;
 			}
 			
+			currentTime = DateTimeUtil.addMinutes(currentTime, -15);
 			long dataInterval=15*60*1000; //15minutes
-			long endTime = currentTime/dataInterval;
+			long endTime = (currentTime/dataInterval) * dataInterval;
 
-			long startTime = DateTimeUtil.addMinutes(endTime, -jobInterval);;
-			startTime = startTime/dataInterval;
+			long startTime = DateTimeUtil.addMinutes(endTime, -jobInterval);
+			startTime = (startTime/dataInterval) * dataInterval;
+			endTime = endTime-1000;
 			
+			LOGGER.info("DemoAlarmPropagationJob jobProps: "+jobProps+ " startTime: "+startTime+" endTime: "+endTime);	
+
 			runThroughRuleChainContext.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(startTime, endTime));
 		}
 		else {
