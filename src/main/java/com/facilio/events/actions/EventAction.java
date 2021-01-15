@@ -39,6 +39,7 @@ public class EventAction extends FacilioAction {
 	 */
 	private static final long serialVersionUID = 1L;
 	private long agentId=-1;
+	private boolean mapped = false;
 	private JSONObject payload;
 	public JSONObject getPayload() {
 		return payload;
@@ -311,6 +312,7 @@ public class EventAction extends FacilioAction {
 			FacilioContext context =new FacilioContext();
 			context.put(FacilioConstants.ContextNames.PAGINATION,getPagination());
 			context.put(AgentConstants.AGENT_ID,getAgentId());
+			context.put("mapped",isMapped());
 			setSources(EventAPI.getAllSources(context));
 			setResult("sources", getSources());
 			setResponseCode(200);
@@ -326,6 +328,7 @@ public class EventAction extends FacilioAction {
 		FacilioContext context =new FacilioContext();
 		context.put(FacilioConstants.ContextNames.FETCH_COUNT,true);
 		context.put(AgentConstants.AGENT_ID,getAgentId());
+		context.put("mapped",isMapped());
 		setResult("count", EventAPI.getAllSources(context).get(0).get(AgentConstants.ID));
 		return SUCCESS;
 	}
