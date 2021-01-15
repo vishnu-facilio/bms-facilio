@@ -66,7 +66,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
     	Integer ruleJobType = (Integer) loggerInfo.get("ruleJobType");
     	RuleJobType ruleJobTypeEnum = RuleJobType.valueOf(ruleJobType);
 
-		ReadingRuleContext readingRule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(ruleId, false, true);
+		ReadingRuleContext readingRule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(ruleId, true, true);
 		ResourceContext currentResourceContext = ResourceAPI.getResource(resourceId);
 		if(readingRule == null || currentResourceContext == null || jobStatesMap == null || MapUtils.isEmpty(jobStatesMap) || jobId == -1 || dateRange == null || ruleJobTypeEnum == null) {
 			throw new Exception("Invalid params to execute daily reading event job: "+jobId);				
