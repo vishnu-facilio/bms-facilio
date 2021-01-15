@@ -32,6 +32,7 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
@@ -47,6 +48,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
+import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowFieldContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
@@ -66,7 +68,9 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
     	Integer ruleJobType = (Integer) loggerInfo.get("ruleJobType");
     	RuleJobType ruleJobTypeEnum = RuleJobType.valueOf(ruleJobType);
 
-		ReadingRuleContext readingRule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(ruleId, true, true);
+		ReadingRuleContext readingRule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(ruleId, false, true);
+		constructWorkflowAndCriteria(readingRule);
+		
 		ResourceContext currentResourceContext = ResourceAPI.getResource(resourceId);
 		if(readingRule == null || currentResourceContext == null || jobStatesMap == null || MapUtils.isEmpty(jobStatesMap) || jobId == -1 || dateRange == null || ruleJobTypeEnum == null) {
 			throw new Exception("Invalid params to execute daily reading event job: "+jobId);				
@@ -517,6 +521,28 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 		return extendedCurrentFields;
 	}
 	
+	private void constructWorkflowAndCriteria(ReadingRuleContext readingRule) throws Exception {
+		if(readingRule!= null) {
+			if(readingRule.getWorkflowId() > 0 && readingRule.getWorkflow() == null) {
+				Map<Long, WorkflowContext> workflowContextMap = WorkflowUtil.getWorkflowsAsMap(Collections.singletonList(readingRule.getWorkflowId()), true);
+				if(workflowContextMap != null && MapUtils.isNotEmpty(workflowContextMap)) {
+					WorkflowContext workflowContext = workflowContextMap.get(readingRule.getWorkflowId());
+					if(workflowContext != null) {
+						readingRule.setWorkflow(workflowContext);
+					}
+				}
+			}
+			if(readingRule.getCriteriaId() > 0 && readingRule.getCriteria() == null) {
+				Map<Long, Criteria> criteriaMap =  CriteriaAPI.getCriteriaAsMap(Collections.singletonList(readingRule.getCriteriaId()));
+				if(criteriaMap != null && MapUtils.isNotEmpty(criteriaMap)) {
+					Criteria criteria = criteriaMap.get(readingRule.getCriteriaId());
+					if(criteria != null) {
+						readingRule.setCriteria(criteria);
+					}
+				}
+			}
+		}	
+	}
 	
 	@Override
 	public List<Long> getMatchedSecondaryParamIds(JSONObject loggerInfo, Boolean isInclude) throws Exception 
