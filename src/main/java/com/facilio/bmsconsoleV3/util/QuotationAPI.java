@@ -147,8 +147,8 @@ public class QuotationAPI {
                 quotationTotalCost += totalTaxAmount;
             }
             record.setTotalTaxAmount(totalTaxAmount);
+            record.setTotalCost(quotationTotalCost);
         }
-        record.setTotalCost(quotationTotalCost);
     }
 
     public static Double relativeLineItemCost(Double unitPrice, Double quantity, Double subTotal, Double discountAmount) throws Exception {
