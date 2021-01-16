@@ -15,6 +15,7 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
@@ -275,11 +276,19 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			
 		}
 		else {
+			List<FacilioField> fields = modBean.getAllFields(module.getName());
 			UpdateRecordBuilder<ModuleBaseWithCustomFields> updateRecordBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
 					.module(module)
-					.fields(modBean.getAllFields(module.getName()))
+					.fields(fields)
 					.andCriteria(criteria);
+			
+			List<SupplementRecord> supplements = new ArrayList<>();
+			CommonCommandUtil.handleFormDataAndSupplement(fields, updateMap, supplements);
+			if(!supplements.isEmpty()) {
+				updateRecordBuilder.updateSupplements(supplements);
+			}
 			updateRecordBuilder.updateViaMap(updateMap);
+
 		}
 	}
 
