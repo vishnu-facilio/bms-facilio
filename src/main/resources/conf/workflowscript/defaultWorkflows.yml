@@ -1844,7 +1844,22 @@
       };
       totalWoArea3Orange = Module("workorder").fetch(db);
        
-	}
+	}else{
+      db ={
+          criteria:[name != null]
+        };
+    	
+      custom_services = Module("custom_services").fetch(db);
+      for each index,s in custom_services{
+        service = {};
+        service.id = s.id;
+        service.name = s.name;
+        service.totalWo = 0;
+        service.totalWoClose = 0;
+        service.avgWorkDuration = 0;
+        services.add(service);
+      }
+    }
 	 
   	result.woTillYesterday = woTillYesterday;
   	result.woOpenTillYesterdayPercentage = woOpenTillYesterdayPercentage;
