@@ -1297,7 +1297,8 @@ public class AssetsAPI {
 				.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("value"), "-1", StringOperators.ISN_T))
 				.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("value"), CommonOperators.IS_NOT_EMPTY))
 				.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("inputType"),
-				String.valueOf(ReadingInputType.HIDDEN_FORMULA_FIELD.getValue()), PickListOperators.ISN_T));
+				String.valueOf(ReadingInputType.HIDDEN_FORMULA_FIELD.getValue()), PickListOperators.ISN_T))
+				.limit(30000); //Temp
 		
 		if(fetchOnlyAlarmPoints) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("inputType"),
