@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <executors>
 	<global>
-		<include>339</include>
+		<include>339,405</include>
 <!--		<exclude>1</exclude>-->
 	</global>
 	<executor name="facilio" period="300" threads="25" /> <!-- Period in seconds -->
