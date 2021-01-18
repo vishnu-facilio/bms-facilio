@@ -23,7 +23,7 @@ public class DeleteAndAddControlScheduleExceptionCommand extends FacilioCommand 
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		ControlScheduleContext schedule = (ControlScheduleContext) ControlScheduleUtil.getObjectFormRecordMap(context, ControlScheduleUtil.CONTROL_SCHEDULE_MODULE_NAME);
+		ControlScheduleContext schedule = (ControlScheduleContext) ControlScheduleUtil.getObjectFromRecordMap(context, ControlScheduleUtil.CONTROL_SCHEDULE_MODULE_NAME);
 		
 		GenericDeleteRecordBuilder delete = new GenericDeleteRecordBuilder()
 				.table(ModuleFactory.getControlScheduleVsExceptionModule().getTableName())

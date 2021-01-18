@@ -164,6 +164,8 @@ public class APIv3Config {
                 .update()
                 .beforeSave(TransactionChainFactoryV3.getUpdateControlScheduleBeforeSaveCommandChain())
                 .afterSave(new DeleteAndAddControlScheduleExceptionCommand())
+                .summary()
+                .afterFetch(new ControlScheduleAfterFetchCommand())
                 .build();
     }
     

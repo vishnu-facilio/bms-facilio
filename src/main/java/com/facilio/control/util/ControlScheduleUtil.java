@@ -406,7 +406,7 @@ public class ControlScheduleUtil {
 		return group;
 	}
 	
-	public static Object getObjectFormRecordMap(Context context,String moduleName) {
+	public static Object getObjectFromRecordMap(Context context,String moduleName) {
 		List<Object> objectlist = (List<Object>) (((Map<String,Object>)context.get(FacilioConstants.ContextNames.RECORD_MAP)).get(moduleName));
 		return objectlist.get(0);
 	}

@@ -13,7 +13,7 @@ public class UpdateControlGroupV2Command extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		ControlGroupContext controlGroupContext = (ControlGroupContext) ControlScheduleUtil.getObjectFormRecordMap(context, ControlScheduleUtil.CONTROL_GROUP_MODULE_NAME);
+		ControlGroupContext controlGroupContext = (ControlGroupContext) ControlScheduleUtil.getObjectFromRecordMap(context, ControlScheduleUtil.CONTROL_GROUP_MODULE_NAME);
 		
 		context.put(ControlScheduleUtil.CONTROL_GROUP_CONTEXT_OLD, ControlScheduleUtil.getControlGroup(controlGroupContext.getId()));
 		
