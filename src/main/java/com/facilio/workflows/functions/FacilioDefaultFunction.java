@@ -172,6 +172,21 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			return fs.getPrivateUrl(fileId);
 		}
 	},
+	GET_FILE_NAME(6,"getFileName",WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.DECIMAL.getValue(),"fileId")) {
+
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			FileStore fs = FacilioFactory.getFileStore();
+			
+			Long fileId = null;
+			if(objects[0] != null) {
+				fileId = (long) Double.parseDouble(objects[0].toString());
+			}
+			
+			return fs.getFileInfo(fileId).getFileName();
+		}
+	},
 	
 	FETCH_DATA(6,"fetchData") {
 		@Override
