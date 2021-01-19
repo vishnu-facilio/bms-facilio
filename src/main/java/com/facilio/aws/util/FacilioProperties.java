@@ -115,6 +115,11 @@ public class FacilioProperties {
 
     private static boolean userAccessLog = false;
 
+    private static String senderEmail;
+    private static String senderName;
+    private static String mandrillUrl;
+    private static String mandrillApiKey;
+
     static {
         loadProperties();
     }
@@ -205,6 +210,11 @@ public class FacilioProperties {
                 mobileTenantportalAppScheme = PROPERTIES.getProperty("mobile.tenantportal.scheme");
                 mobileVendorportalAppScheme = PROPERTIES.getProperty("mobile.vendorportal.scheme");
                 mobileClientportalAppScheme = PROPERTIES.getProperty("mobile.clientportal.scheme");
+
+                senderEmail = PROPERTIES.getProperty("sender.email");
+                senderName = PROPERTIES.getProperty("sender.name");
+                mandrillUrl = PROPERTIES.getProperty("mandrill.url");
+                mandrillApiKey = PROPERTIES.getProperty("mandrill.apikey");
 
                 String cookieLifespanProp = PROPERTIES.getProperty("token.cookie.lifespan");
                 if (StringUtils.isNotEmpty(cookieLifespanProp)) {
@@ -665,5 +675,21 @@ public class FacilioProperties {
 
     public static boolean logUserAccessLog() {
         return userAccessLog;
+    }
+
+    public static String senderEmail() {
+        return senderEmail;
+    }
+
+    public static String senderName() {
+        return senderName;
+    }
+
+    public static String getMandrillUrl() {
+        return mandrillUrl;
+    }
+
+    public static String getMandrillApiKey() {
+        return mandrillApiKey;
     }
 }
