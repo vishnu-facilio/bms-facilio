@@ -308,7 +308,7 @@ public String importData() throws Exception {
 	@Setter
 	private String appDomainType;
 
-	public String getPortalSSOSettings() throws Exception {
+	public String fetchPortalSSOSettings() throws Exception {
 		var appDomainType = AppDomain.AppDomainType.getByServiceName(getAppDomainType());
 		var appDomain = IAMAppUtil.getAppDomainForType(appDomainType.getIndex(), AccountUtil.getCurrentOrg().getOrgId()).get(0);
 		var domainSSODetails = IAMOrgUtil.getDomainSSODetails(appDomain.getDomain());

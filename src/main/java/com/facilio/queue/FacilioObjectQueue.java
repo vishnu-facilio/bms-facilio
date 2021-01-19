@@ -30,8 +30,12 @@ public class FacilioObjectQueue {
 			return false;
 		}
 		String serializedString = Base64.encodeAsString(SerializationUtils.serialize(serializable));
-		long orgId = AccountUtil.getCurrentOrg().getId();
-		return FacilioService.runAsServiceWihReturn(() -> queueInstance.push(serializedString,orgId));
+		if (AccountUtil.getCurrentOrg() != null) {
+			return FacilioService.runAsServiceWihReturn(() -> queueInstance.push(serializedString,AccountUtil.getCurrentOrg().getOrgId()));
+		}
+		else {
+			return FacilioService.runAsServiceWihReturn(() -> queueInstance.push(serializedString,-1l));
+		}
 	}
 
 	public List<ObjectMessage> getObjects( int limit) throws Exception {
