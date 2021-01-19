@@ -300,6 +300,7 @@ public class AssetAction extends FacilioAction {
  		context.put(FacilioConstants.ContextNames.WITH_READINGS, this.getWithReadings());
  		context.put(FacilioConstants.ContextNames.WITH_WRITABLE_READINGS, this.getWithWritableReadings());
  		context.put(FacilioConstants.ContextNames.FETCH_CUSTOM_LOOKUPS, true);
+ 		context.put(FacilioConstants.ContextNames.FETCH_AS_MAP, getFetchPrimaryDetails());
  		FacilioChain assetList = FacilioChainFactory.getAssetListChain();
  		assetList.execute(context);
  		if (getCount()) {
@@ -307,12 +308,17 @@ public class AssetAction extends FacilioAction {
 			setResult("count", assetCount);
 		}
  		else {
- 			assets = (List<AssetContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
- 			// Temp...needs to handle in client
- 			if (assets == null) {
- 				assets = new ArrayList<>();
+ 			if (getFetchPrimaryDetails()) {
+ 				setResult("assets", context.get(FacilioConstants.ContextNames.RECORD_LIST_MAP));
  			}
- 			setResult("assets", assets);
+ 			else {
+ 				assets= (List<AssetContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+ 				// Temp...needs to handle in client
+ 				if (assets == null) {
+ 					assets = new ArrayList<>();
+ 				}
+ 				setResult("assets", assets);
+ 			}
  		}
 		return SUCCESS;
 	}
@@ -651,6 +657,17 @@ public class AssetAction extends FacilioAction {
 		this.withWritableReadings = withWritableReadings;
 	}
 	
+	private Boolean fetchPrimaryDetails;
+	public boolean getFetchPrimaryDetails() {
+		if(fetchPrimaryDetails == null) {
+			fetchPrimaryDetails = false;
+		}
+		return fetchPrimaryDetails;
+	}
+	public void setFetchPrimaryDetails(boolean fetchPrimaryDetails) {
+		this.fetchPrimaryDetails = fetchPrimaryDetails;
+	}
+
 	private String filterCriteria;
 	
 

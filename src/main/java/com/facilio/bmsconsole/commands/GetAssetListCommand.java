@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -38,6 +39,11 @@ public class GetAssetListCommand extends FacilioCommand {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
 		List<String> selectFields = (List<String>) context.get(FacilioConstants.ContextNames.FETCH_SELECTED_FIELDS);
+		
+		boolean fetchAsMap = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_AS_MAP, false); // for fetching only primary details
+		if (fetchAsMap) {
+			selectFields = Arrays.asList(new String[]{"name", "category"});
+		}
 		
 		Boolean getCount = (Boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_COUNT, false);
 		List<FacilioField> fields;
@@ -129,7 +135,7 @@ public class GetAssetListCommand extends FacilioCommand {
 		}
 		
 		List<LookupField>fetchLookup = (List<LookupField>) context.get(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST);
-		if (CollectionUtils.isNotEmpty(fetchLookup) && !getCount) {
+		if (CollectionUtils.isNotEmpty(fetchLookup) && !getCount && !fetchAsMap) {
 			builder.fetchSupplements(fetchLookup);
 		}
 		
@@ -152,22 +158,28 @@ public class GetAssetListCommand extends FacilioCommand {
 		}
 		// String.valueOf(inputType.getValue())
 		long getStartTime = System.currentTimeMillis();
-		List<AssetContext> records = builder.get();
-		long getTimeTaken = System.currentTimeMillis() - getStartTime;
-		LOGGER.debug("Time taken to execute Fetch assets in GetAssetListCommand : "+getTimeTaken);
-		
-		if (records != null && !records.isEmpty()) {
-			if (getCount != null && getCount) {
-				context.put(FacilioConstants.ContextNames.RECORD_COUNT, records.get(0).getData().get("count"));
+		if(!fetchAsMap) {
+			List<AssetContext> records = builder.get();
+			long getTimeTaken = System.currentTimeMillis() - getStartTime;
+			LOGGER.debug("Time taken to execute Fetch assets in GetAssetListCommand : "+getTimeTaken);
+			
+			if (records != null && !records.isEmpty()) {
+				if (getCount != null && getCount) {
+					context.put(FacilioConstants.ContextNames.RECORD_COUNT, records.get(0).getData().get("count"));
+				}
+				else {
+					AssetsAPI.loadAssetsLookups(records);
+					context.put(FacilioConstants.ContextNames.RECORD_LIST, records);
+				}
 			}
-			else {
-				AssetsAPI.loadAssetsLookups(records);
-				context.put(FacilioConstants.ContextNames.RECORD_LIST, records);
-			}
+			
+			long timeTaken = System.currentTimeMillis() - startTime;
+			LOGGER.debug("Time taken to execute GetAssetListCommand : "+timeTaken);
 		}
-		
-		long timeTaken = System.currentTimeMillis() - startTime;
-		LOGGER.debug("Time taken to execute GetAssetListCommand : "+timeTaken);
+		else {
+			List<Map<String, Object>> props = builder.getAsProps();
+			context.put(FacilioConstants.ContextNames.RECORD_LIST_MAP, props);
+		}
 		return false;
 	}
 }
