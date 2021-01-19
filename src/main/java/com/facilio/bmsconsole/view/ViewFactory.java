@@ -7428,16 +7428,17 @@ public class ViewFactory {
 		view.setDisplayName("Upcoming Visits");
 		Criteria criteria = new Criteria();
 		FacilioModule visitorLoggingModule = ModuleFactory.getVisitorLoggingModule();
-
+		
+		FacilioField preRegisterField = FieldFactory.getField("isPreregistered", "IS_PREREGISTERED", visitorLoggingModule,FieldType.BOOLEAN);
+		criteria.addAndCondition(CriteriaAPI.getCondition(preRegisterField, String.valueOf(true),BooleanOperators.IS));
 		criteria.addAndCondition(getVisitorLogStatusCriteria("Upcoming"));
 		view.setCriteria(criteria);
 		
-		FacilioModule visitorLogging = ModuleFactory.getVisitorLoggingModule();
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("expectedCheckInTime");
 		createdTime.setDataType(FieldType.DATE_TIME);
 		createdTime.setColumnName("EXPECTED_CHECKIN_TIME");
-		createdTime.setModule(visitorLogging);
+		createdTime.setModule(visitorLoggingModule);
 
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, true));
 		view.setSortFields(sortFields);
