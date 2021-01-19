@@ -897,6 +897,11 @@ public class ViewFactory {
 
 		order = 1;
 		views = new LinkedHashMap<>();
+		views.put("all", getAllChartOfAccountView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.Budget.CHART_OF_ACCOUNT, views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
 		views.put("all", getAllControlGroupView().setOrder(order++));
 		views.put("tenantAll", getTenantControlGroupView().setOrder(order++));
 		viewsMap.put("controlGroupv2", views);
@@ -7829,6 +7834,23 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All Budgets");
 		allView.setModuleName(module.getName());
+		allView.setSortFields(sortFields);
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		allView.setViewSharing(getSharingContext(appDomains));
+
+		return allView;
+	}
+
+	private static FacilioView getAllChartOfAccountView() {
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Chart of Accounts");
+		allView.setModuleName("chartofaccount");
 		allView.setSortFields(sortFields);
 
 		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
