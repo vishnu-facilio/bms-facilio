@@ -44,7 +44,7 @@ public class TriggerAction extends V3Action {
 		FacilioContext context = chain.getContext();
 		context.put(FacilioConstants.ContextNames.ID, getId());
 		chain.execute();
-		setData(TriggerUtil.TRIGGER_CONTEXT, trigger);
+		setMessage("Trigger deleted successfully!");
     	return SUCCESS;
 	}
 
@@ -63,7 +63,26 @@ public class TriggerAction extends V3Action {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
 		context.put(FacilioConstants.ContextNames.RECORD_ID, recordId);
 		chain.execute();
-		setData(TriggerUtil.TRIGGER_CONTEXT, trigger);
+		setMessage("Trigger executed successfully!");
     	return SUCCESS;
+	}
+
+	private Boolean status;
+	public Boolean getStatus() {
+		return status;
+	}
+	public void setStatus(Boolean status) {
+		this.status = status;
+	}
+
+	public String changeStatus() throws Exception {
+		FacilioChain chain = TransactionChainFactoryV3.getChangeStatusOfTriggerChain();
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.ID, getId());
+		context.put(FacilioConstants.ContextNames.STATUS, status);
+		chain.execute();
+
+		setMessage("Trigger status changed successfully");
+		return SUCCESS;
 	}
 }

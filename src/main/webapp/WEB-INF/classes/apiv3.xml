@@ -41,7 +41,7 @@
             <result name="success" type="json">
                 <param name="excludeNullProperties">true</param>
                 <param name="ignoreHierarchy">false</param>
-                <param name="includeProperties">^code.*,^data.*,^meta.*</param>
+                <param name="includeProperties">^code.*,^data.*,^meta.*,message</param>
             </result>
             <result name="failure" type="json">
                 <param name="ignoreHierarchy">false</param>
@@ -154,6 +154,9 @@
                 class="com.facilio.trigger.action.TriggerAction"
                 method="deleteTrigger">
         </action>
+        <action name="changeStatus"
+                class="com.facilio.trigger.action.TriggerAction"
+                method="changeStatus" />
         
         <action name="execute"
                 class="com.facilio.trigger.action.TriggerAction"

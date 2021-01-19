@@ -27,7 +27,9 @@ public class TriggerUtil {
 	
 	public static final String TRIGGER_CONTEXT = "triggerContext";
 	public static final String TRIGGERS_LIST = "triggerList";
-	
+	public static final String TRIGGER_ID = "triggerId";
+	public static final String INVOKE_TRIGGER_TYPE = "invokeTriggerType";
+
 	public static void executeTriggerActions(List<BaseTriggerContext> triggers, FacilioContext context,
 											 String moduleName, ModuleBaseWithCustomFields record, List<UpdateChangeSet> changeSets) throws Exception {
 		List<TriggerLog> logs = new ArrayList<>();
@@ -39,6 +41,9 @@ public class TriggerUtil {
 						TriggerLog log = new TriggerLog();
 						log.setTriggerId(trigger.getId());
 						log.setTriggerActionId(action.getId());
+						if (record != null) {
+							log.setRecordId(record.getId());
+						}
 						log.setExecutionTime(DateTimeUtil.getCurrenTime());
 						logs.add(log);
 					}
@@ -79,7 +84,7 @@ public class TriggerUtil {
 		return null;
 	}
 	
-	public static List<BaseTriggerContext> getTriggers(FacilioModule module, List<EventType> activityTypes, Criteria criteria, TriggerType... triggerTypes) throws Exception {
+	public static List<BaseTriggerContext> getTriggers(FacilioModule module, List<EventType> activityTypes, Criteria criteria, boolean onlyActive, TriggerType... triggerTypes) throws Exception {
 		FacilioModule triggerModule = ModuleFactory.getTriggerModule();
 		List<FacilioField> fields = FieldFactory.getTriggerFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -91,8 +96,11 @@ public class TriggerUtil {
 				.table(triggerModule.getTableName())
 				.select(fields)
 				.andCriteria(cri)
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), Boolean.TRUE.toString(), BooleanOperators.IS))
 				;
+
+		if (onlyActive) {
+			select.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), Boolean.TRUE.toString(), BooleanOperators.IS));
+		}
 		
 		if(triggerTypes != null && triggerTypes.length > 0) {
 			StringJoiner ids = new StringJoiner(",");

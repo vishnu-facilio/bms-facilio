@@ -260,6 +260,12 @@ public enum EventType {
 		public String getMessage(JSONObject json) {
 			return null;
 		}
+	},
+	INVOKE_TRIGGER(1 << 30) {
+		@Override
+		public String getMessage(JSONObject json) {
+			return null;
+		}
 	}
 	;
 

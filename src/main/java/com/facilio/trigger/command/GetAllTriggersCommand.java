@@ -22,7 +22,7 @@ public class GetAllTriggersCommand extends FacilioCommand {
             throw new IllegalArgumentException("Invalid module name");
         }
 
-        List<BaseTriggerContext> triggers = TriggerUtil.getTriggers(module, null, null, null);
+        List<BaseTriggerContext> triggers = TriggerUtil.getTriggers(module, null, null, false, null);
         context.put(TriggerUtil.TRIGGERS_LIST, triggers);
         return false;
     }

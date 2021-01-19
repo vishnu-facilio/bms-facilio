@@ -481,7 +481,7 @@ public class TransactionChainFactoryV3 {
     
     public static FacilioChain getTriggerAddOrUpdateChain() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new AddTriggerCommand());
+        c.addCommand(new AddOrUpdateTriggerCommand());
 //        c.addCommand(new AddOrUpdateTriggerInclExclCommand());
         c.addCommand(new AddOrUpdateTriggerActionAndRelCommand());
         return c;
@@ -574,4 +574,10 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain getChangeStatusOfTriggerChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new ChangeStatusOfTriggerCommand());
+        chain.addCommand(new AddOrUpdateTriggerCommand());
+        return chain;
+    }
 }
