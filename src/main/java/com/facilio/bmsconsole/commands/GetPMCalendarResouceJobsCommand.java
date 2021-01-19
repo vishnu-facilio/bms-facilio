@@ -57,6 +57,8 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 	PlannerType plannerType;
 	int rowDefaultSpan;
 	
+	int totalRecordCount = 0;
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -354,6 +356,7 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 					.innerJoin(pmTriggerTable).on(triggerField.getCompleteColumnName() + "=" + pmTriggerTable + ".ID")
 					.andCondition(CriteriaAPI.getCondition(resourceField, resourceIds, NumberOperators.EQUALS))
 					.orderBy(orderBy.toString())
+					.limit(totalRecordCount)
 					;
 			
 			props = dataBuilder.getAsProps();
@@ -371,7 +374,7 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 					Map<String, Object> titleData = titles.get(i);
 					List<Map<String, Object>> titleRow = (List<Map<String, Object>>) titleData.get("data");
 					Map<String, Object> leafNode = titleRow.get(titleRow.size() - 1);
-					int count = (int) (long) leafNode.get("count");
+					int count = (int)leafNode.get("count");
 					
 					List<Map<String, Object>> filteredList = props.subList(totalCount, totalCount+count);
 					
@@ -444,7 +447,9 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 					Map<String, Object> metricObj = new HashMap<>();
 					metricObj.put("name", metricFieldNameMap.get(metric));
 					metricObj.put("rowSpan", 1);
-					metricObj.put("count", prop.get(countField.getName()));
+					int count = (int) prop.get(countField.getName());
+					metricObj.put("count",count);
+					totalRecordCount += count;
 					
 					boolean enabled = metric.equals(PMPlannerAPI.PLANNED) || metric.equals(PMPlannerAPI.DUE);
 					
@@ -495,7 +500,9 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 					prevHeader.put("rowSpan", rowSpan + rowDefaultSpan);
 				}
 				if (i + 1 == size) {
-					prevHeader.put("count", prop.get(countField.getName()));
+					int count = (int)(long) prop.get(countField.getName());
+					prevHeader.put("count", count);
+					totalRecordCount += count;
 				}
 				row.put("editable", true);
 			}

@@ -4632,6 +4632,12 @@
 		</action>
 		<action name="fields" class="com.facilio.bmsconsole.actions.ModuleAction" 
 			method="v2getFieldsList">
+			<result name="success" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+				<param name="excludeNullProperties">true</param>
+				<param name="excludeProperties">result.fields.*\.(columnName|completeColumnName|tableName|inputName|module)</param>
+			</result>
 		</action>
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.ModuleAction"
