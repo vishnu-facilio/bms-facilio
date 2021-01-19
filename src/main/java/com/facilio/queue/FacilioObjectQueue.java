@@ -31,7 +31,8 @@ public class FacilioObjectQueue {
 		}
 		String serializedString = Base64.encodeAsString(SerializationUtils.serialize(serializable));
 		if (AccountUtil.getCurrentOrg() != null) {
-			return FacilioService.runAsServiceWihReturn(() -> queueInstance.push(serializedString,AccountUtil.getCurrentOrg().getOrgId()));
+			long orgId = AccountUtil.getCurrentOrg().getOrgId();
+			return FacilioService.runAsServiceWihReturn(() -> queueInstance.push(serializedString, orgId));
 		}
 		else {
 			return FacilioService.runAsServiceWihReturn(() -> queueInstance.push(serializedString,-1l));
