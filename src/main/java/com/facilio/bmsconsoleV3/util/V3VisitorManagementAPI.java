@@ -1016,6 +1016,14 @@ public class V3VisitorManagementAPI {
 
     }
     
+	public static FacilioStatus getInviteVisitorLogStatus(String statusString) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.INVITE_VISITOR);
+		FacilioStatus status = TicketAPI.getStatus(module, statusString);
+		return status;
+	
+	}
+    
     public static void updateInviteVisitorHasCheckedIn(InviteVisitorContextV3 vLog, boolean hasCheckedIn) throws Exception {
 
         if(vLog.getId() > 0) {

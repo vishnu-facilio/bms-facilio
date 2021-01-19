@@ -121,13 +121,22 @@ public class V3VisitorContext extends V3Context {
     private Long lastVisitedTime;
     private Long firstVisitedTime;
 
-    private V3PeopleContext lastVisitedHost;
+    private V3PeopleContext lastVisitedPeople;  
+    private ContactsContext lastVisitedHost;
    
-    public V3PeopleContext getLastVisitedHost() {
+	public V3PeopleContext getLastVisitedPeople() {
+		return lastVisitedPeople;
+	}
+
+	public void setLastVisitedPeople(V3PeopleContext lastVisitedPeople) {
+		this.lastVisitedPeople = lastVisitedPeople;
+	}
+
+	public ContactsContext getLastVisitedHost() {
 		return lastVisitedHost;
 	}
 
-	public void setLastVisitedHost(V3PeopleContext lastVisitedHost) {
+	public void setLastVisitedHost(ContactsContext lastVisitedHost) {
 		this.lastVisitedHost = lastVisitedHost;
 	}
 

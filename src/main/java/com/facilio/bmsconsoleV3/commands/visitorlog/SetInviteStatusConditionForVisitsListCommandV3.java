@@ -10,6 +10,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
+import com.facilio.bmsconsoleV3.util.V3VisitorManagementAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.modules.FacilioStatus;
@@ -25,8 +26,8 @@ public class SetInviteStatusConditionForVisitsListCommandV3  extends FacilioComm
            if(queryParams.containsKey("approvals")) {
                JSONObject status = new JSONObject();
 
-               FacilioStatus requestedStatus = VisitorManagementAPI.getInviteVisitorLogStatus("InviteRequested");
-               FacilioStatus rejectedStatus = VisitorManagementAPI.getInviteVisitorLogStatus("InviteRejected");
+               FacilioStatus requestedStatus = V3VisitorManagementAPI.getInviteVisitorLogStatus("InviteRequested");
+               FacilioStatus rejectedStatus = V3VisitorManagementAPI.getInviteVisitorLogStatus("InviteRejected");
 
                JSONArray possibleStatesIdArray = new JSONArray();
                possibleStatesIdArray.add(String.valueOf(requestedStatus.getId()));

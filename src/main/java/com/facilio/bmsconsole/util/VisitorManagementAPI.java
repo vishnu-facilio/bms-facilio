@@ -1949,14 +1949,6 @@ public class VisitorManagementAPI {
 	
 	}
 	
-	public static FacilioStatus getInviteVisitorLogStatus(String statusString) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.INVITE_VISITOR);
-		FacilioStatus status = TicketAPI.getStatus(module, statusString);
-		return status;
-	
-	}
-	
 	public static Map<Long, VisitorSettingsContext> getVisitorSettingsForType() throws Exception {
 		FacilioModule module = ModuleFactory.getVisitorSettingsModule();
 		List<FacilioField> fields = FieldFactory.getVisitorSettingsFields();
