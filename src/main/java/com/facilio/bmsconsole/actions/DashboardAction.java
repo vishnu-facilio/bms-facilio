@@ -6566,7 +6566,8 @@ public class DashboardAction extends FacilioAction {
 			dashboard.setDashboardName((String) dashboardMeta.get("dashboardName"));
 			dashboard.setDashboardFolderId((Long) dashboardMeta.get("dashboardFolderId"));
 			if (dashboardMeta.get("dashboardTabPlacement") != null) {
-				dashboard.setDashboardTabPlacement((int) dashboardMeta.get("dashboardTabPlacement"));
+				int dashboardTabPlacement  = ((Long) dashboardMeta.get("dashboardTabPlacement")).intValue();
+				dashboard.setDashboardTabPlacement(dashboardTabPlacement);
 			}
 		}
 		List dashboardWidgets = (List) dashboardMeta.get("dashboardWidgets");
