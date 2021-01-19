@@ -9,6 +9,7 @@ import java.util.Map;
 import com.facilio.bmsconsole.workflow.rule.ActionType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.services.email.EmailFactory;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.workflows.exceptions.FunctionParamException;
 import com.facilio.workflowv2.util.WorkflowV2Util;
@@ -25,7 +26,7 @@ public enum FacilioNotificationFunctions implements FacilioWorkflowFunctionInter
 				return null;
 			}
 			Map<String,Object> sendMailMap =  (Map<String, Object>) objects[0];
-			sendMailMap.put("sender", "noreply@facilio.com");
+			sendMailMap.put("sender", EmailFactory.getEmailClient().getNoReplyFromEmail());
 			Map<String,String> attachements = (Map<String,String>)sendMailMap.get("attachments");
 			
 			FacilioContext context = new FacilioContext();

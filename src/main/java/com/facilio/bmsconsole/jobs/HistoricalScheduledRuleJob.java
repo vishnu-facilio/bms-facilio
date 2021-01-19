@@ -3,12 +3,12 @@ package com.facilio.bmsconsole.jobs;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.services.email.EmailFactory;
 import com.facilio.services.factory.FacilioFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
@@ -59,7 +59,7 @@ public class HistoricalScheduledRuleJob extends FacilioJob {
 		
 		JSONObject json = new JSONObject();
 		json.put("to", "praveen@facilio.com, manthosh@facilio.com, shivaraj@facilio.com");
-		json.put("sender", "noreply@facilio.com");
+		json.put("sender", EmailFactory.getEmailClient().getNoReplyFromEmail());
 		json.put("subject", "Historical Run completed for Scheduled Rule : "+jc.getJobId());
 		json.put("message", "Total Time taken for Historical Run for Scheduled Rule : "+jc.getJobId()+" between "+startTime+" and "+endTime+" is "+timeTaken);
 		

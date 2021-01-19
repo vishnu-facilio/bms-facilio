@@ -5,12 +5,12 @@ package com.facilio.bmsconsole.jobs;
 
 import java.util.Map;
 
+import com.facilio.services.email.EmailFactory;
 import com.facilio.services.factory.FacilioFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.ReadingToolsAPI;
@@ -61,7 +61,7 @@ public class AdminDeltaCalculationJobs extends FacilioJob{
 			LOGGER.info(msg);
 				JSONObject json = new JSONObject();
 				json.put("to", email);
-				json.put("sender", "noreply@facilio.com");
+				json.put("sender", EmailFactory.getEmailClient().getNoReplyFromEmail());
 				json.put("subject", "Delta Calculation completed : "+jobId);
 				json.put("message", msg);
 				

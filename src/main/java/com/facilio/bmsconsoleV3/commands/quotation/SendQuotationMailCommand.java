@@ -11,6 +11,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo;
 import com.facilio.modules.FieldUtil;
 import com.facilio.pdf.PdfUtil;
+import com.facilio.services.email.EmailFactory;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -34,7 +35,7 @@ public class SendQuotationMailCommand extends FacilioCommand {
         String quotationPdfUrl = (String) context.get(FacilioConstants.ContextNames.QUOTE_PDF_URL);
         QuotationContext quotationContext = (QuotationContext) context.get(FacilioConstants.ContextNames.QUOTE);
 
-        emailTemplate.setFrom("noreply@facilio.com");
+        emailTemplate.setFrom(EmailFactory.getEmailClient().getNoReplyFromEmail());
 
         emailTemplate.setHtml(true); // TODO remove this temp setting here as client value is not getting set
 

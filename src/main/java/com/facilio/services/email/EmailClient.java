@@ -57,6 +57,21 @@ public abstract class EmailClient {
         return message;
     }
 
+    public static String getNoReplyFromEmail() {
+        return getFromEmail("noreply");
+    }
+
+    public static String getFromEmail(String localPart) {
+        StringBuilder builder = new StringBuilder(localPart)
+                                        .append("@");
+        if (AccountUtil.getCurrentOrg() != null) {
+            builder.append(AccountUtil.getCurrentOrg().getDomain()).append(".");
+        }
+        builder.append("facilio.com");
+
+        return builder.toString();
+    }
+
     public static MimeMessage constructMimeMessageContent(JSONObject mailJson, Session session,Map<String, String> files) throws Exception {
         String DefaultCharSet = MimeUtility.getDefaultJavaCharset();
 
