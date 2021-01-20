@@ -2913,6 +2913,7 @@ public class TransactionChainFactory {
 			//rollups work with record_list object in the context
 			chain.addCommand(new CopyToToolTransactionCommand());
 			chain.addCommand(getAddOrUdpateToolTransactionsChain());
+			chain.addCommand(new ExecuteAllWorkflowsCommand());
 			return chain;
 
 		}
