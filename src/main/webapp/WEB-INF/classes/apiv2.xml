@@ -3071,8 +3071,6 @@
 		</action>
 		<action name="delete" class="com.facilio.bmsconsole.actions.CommissionAction" method="deleteLog">
 		</action>
-		<action name="checkDraft" class="com.facilio.bmsconsole.actions.CommissionAction" method="checkDraft">
-		</action>
 		<action name="mapped" class="com.facilio.bmsconsole.actions.CommissionAction" method="pointsList">
 			<param name="fetchMapped">true</param>
 		</action>

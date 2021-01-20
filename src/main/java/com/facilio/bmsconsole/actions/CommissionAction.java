@@ -3,16 +3,13 @@
  */
 package com.facilio.bmsconsole.actions;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.CommissioningLogContext;
-import com.facilio.bmsconsole.util.CommissioningApi;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -157,15 +154,6 @@ public class CommissionAction extends FacilioAction{
 		
 		return SUCCESS;
 	}
-	
-	public String checkDraft() throws Exception {
-		
-		Long draftId = CommissioningApi.checkDraftMode(Collections.singletonList(controllerId));
-		setResult("id", draftId != null && draftId > 0 ? draftId : -1);
-		
-		return SUCCESS;
-	}
-	
 	
 	public String pointsList() throws Exception {
 		

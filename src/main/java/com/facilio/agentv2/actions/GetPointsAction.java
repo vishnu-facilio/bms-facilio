@@ -5,10 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -21,12 +17,14 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+
+import lombok.Getter;
+import lombok.Setter;
 @Getter @Setter
 public class GetPointsAction extends AgentActionV2 {
 
@@ -159,15 +157,7 @@ public class GetPointsAction extends AgentActionV2 {
 		}
 
 		if (controllerId == 0 && controllerType == 0) {
-			List<Long> controllersIds = getControllerIds(getAgentId());
-			if (CollectionUtils.isNotEmpty(controllersIds)) {
-				criteria.addAndCondition(CriteriaAPI.getCondition(POINT_MAP.get(AgentConstants.LOGICAL),
-						String.valueOf(true), BooleanOperators.IS));
-				point.withCriteria(criteria);
-				point.withControllerIds(controllersIds);
-			} else {
-				throw new IllegalArgumentException("ControllersIds should not be null for getting Virtual points.");
-			}
+			point.withLogicalControllers(getAgentId());
 		}
 		if (querySearch != null && !querySearch.trim().isEmpty()) {
 			point.querySearch(AgentConstants.COL_NAME, querySearch);

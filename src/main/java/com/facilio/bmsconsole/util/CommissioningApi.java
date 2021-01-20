@@ -33,6 +33,7 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
@@ -98,17 +99,24 @@ public class CommissioningApi {
 					if (log.getPoints() != null) {
 						setPointContext(log);
 					}
-					
+					if (log.isLogical()) {
+						Map<String,Object> logicalContrller = Collections.singletonMap("name", "Logical");
+						log.setControllers(Collections.singletonList(logicalContrller));
+					}
 					logIds.add(log.getId());
 					agentIds.add(log.getAgentId());
 				}
 				
 				Map<Long, List<Map<String, Object>>> controllerMap = getCommissionedControllers(logIds);
+				
 				List<FacilioAgent> agents = AgentApiV2.getAgents(agentIds);
 				Map<Long, FacilioAgent> agentMap = agents.stream().collect(Collectors.toMap(FacilioAgent::getId, Function.identity()));
 				
 				for(CommissioningLogContext log: logs) {
-					log.setControllers(controllerMap.get(log.getId()));
+					List<Map<String, Object>> controllers = controllerMap.get(log.getId());
+					if (controllers != null) {
+						log.setControllers(controllers);
+					}
 					log.setAgent(agentMap.get(log.getAgentId()));
 				}
 			}
@@ -134,17 +142,19 @@ public class CommissioningApi {
 				.select(fields)
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("commissioningLogId"), logIds, NumberOperators.EQUALS));
 		List<Map<String, Object>> props = builder.get();
-		List<Long> controllerIds = props.stream().map(prop -> (long) prop.get("controllerId")).collect(Collectors.toList());
-		Map<Long, Map<String, Object>> controllersMap = ResourceAPI.getResourceMapFromIds(controllerIds, true);
-		
-		for(Map<String, Object> prop: props) {
-			long logId = (long) prop.get("commissioningLogId");
-			List<Map<String, Object>> controllers = logControllerMap.get(logId);
-			if (controllers == null) {
-				controllers = new ArrayList<>();
-				logControllerMap.put(logId, controllers);
+		if (props != null) {
+			List<Long> controllerIds = props.stream().map(prop -> (long) prop.get("controllerId")).collect(Collectors.toList());
+			Map<Long, Map<String, Object>> controllersMap = ResourceAPI.getResourceMapFromIds(controllerIds, true);
+			
+			for(Map<String, Object> prop: props) {
+				long logId = (long) prop.get("commissioningLogId");
+				List<Map<String, Object>> controllers = logControllerMap.get(logId);
+				if (controllers == null) {
+					controllers = new ArrayList<>();
+					logControllerMap.put(logId, controllers);
+				}
+				controllers.add(controllersMap.get((Long) prop.get("controllerId")));
 			}
-			controllers.add(controllersMap.get((Long) prop.get("controllerId")));
 		}
 		return logControllerMap;
 	}
@@ -186,7 +196,7 @@ public class CommissioningApi {
 		return rdmList.stream().collect(Collectors.toMap(rdm -> ReadingsAPI.getRDMKey(rdm), Function.identity()));
 	}
 	
-	public static Long checkDraftMode(List<Long> controllerIds) throws Exception {
+	public static Long checkDraftMode(long agentId, List<Long> controllerIds) throws Exception {
 		FacilioModule module = ModuleFactory.getCommissioningLogModule();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getCommissioningLogFields());
 		FacilioModule controllerModule = ModuleFactory.getCommissioningLogControllerModule();
@@ -194,12 +204,18 @@ public class CommissioningApi {
 		
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(module.getTableName())
-				.innerJoin(controllerModule.getTableName())
-				.on(fieldMap.get("id").getCompleteColumnName()+"="+controllerFieldMap.get("commissioningLogId").getCompleteColumnName())
 				.select(Collections.singletonList(fieldMap.get("id")))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("publishedTime"), CommonOperators.IS_EMPTY))
-				.andCondition(CriteriaAPI.getCondition(controllerFieldMap.get("controllerId"), controllerIds, NumberOperators.EQUALS));
-				;
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("publishedTime"), CommonOperators.IS_EMPTY));
+		
+		if (CollectionUtils.isNotEmpty(controllerIds)) {
+			builder.innerJoin(controllerModule.getTableName())
+				   .on(fieldMap.get("id").getCompleteColumnName()+"="+controllerFieldMap.get("commissioningLogId").getCompleteColumnName())
+				   .andCondition(CriteriaAPI.getCondition(controllerFieldMap.get("controllerId"), controllerIds, NumberOperators.EQUALS));
+		}
+		else {
+			builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(module), String.valueOf(agentId), NumberOperators.EQUALS))
+				   .andCondition(CriteriaAPI.getCondition(fieldMap.get("logical"), String.valueOf(true), BooleanOperators.IS));
+		}
 				
 		Map<String, Object> props = builder.fetchFirst();
 		if (props != null && !props.isEmpty()) {

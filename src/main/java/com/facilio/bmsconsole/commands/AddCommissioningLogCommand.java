@@ -38,7 +38,9 @@ public class AddCommissioningLogCommand extends FacilioCommand {
 		long logId = (long) prop.get("id");
 		log.setId(logId);
 		
-		addControllers(log);
+		if (!log.isLogical()) {
+			addControllers(log);
+		}
 		
 		return false;
 	}
@@ -48,7 +50,14 @@ public class AddCommissioningLogCommand extends FacilioCommand {
 			throw new IllegalArgumentException("Please select controller type");
 		}
 		List<Long> controllerIds = log.getControllerIds();
-		Long draftId = CommissioningApi.checkDraftMode(controllerIds);
+		if (controllerIds.contains(0l)) {
+			if (controllerIds.size() > 1) {
+				throw new IllegalArgumentException("Logical controller cannot be selected with other controllers");
+			}
+			log.setLogical(true);
+			controllerIds = null;
+		}
+		Long draftId = CommissioningApi.checkDraftMode(log.getAgentId(), controllerIds);
 		if (draftId != null && draftId > 0) {
 			throw new IllegalArgumentException("Some controllers selected are already in draft mode");
 		}
