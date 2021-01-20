@@ -62,7 +62,7 @@ public class ReadingUnitConversionToDisplayUnit extends FacilioCommand {
 											readingData.put(fieldName, value);
 										}
 										
-										if(currentReadingMap != null && MapUtils.isNotEmpty(currentReadingMap) && AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
+										if(currentReadingMap != null && MapUtils.isNotEmpty(currentReadingMap)) {
 											ReadingDataMeta currentReadingDataMeta = currentReadingMap.get(ReadingsAPI.getRDMKey(reading.getParentId(), field));
 											if(currentReadingDataMeta!= null && currentReadingDataMeta.getValue() != null && currentReadingDataMeta.getField() != null && currentReadingDataMeta.getField() instanceof NumberField && !currentReadingDataMeta.getValue().equals("-1.0")) {
 												NumberField numberField = (NumberField) currentReadingDataMeta.getField();
