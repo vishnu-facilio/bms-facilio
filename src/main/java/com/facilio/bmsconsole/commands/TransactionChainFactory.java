@@ -2900,6 +2900,7 @@ public class TransactionChainFactory {
 			chain.addCommand(new UpdateStateForModuleDataCommand());
 			chain.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			chain.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
+			chain.addCommand(new ExecuteAllWorkflowsCommand());
 			return chain;
 		}
 
