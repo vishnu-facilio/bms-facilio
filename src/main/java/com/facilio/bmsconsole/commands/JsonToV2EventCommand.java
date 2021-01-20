@@ -13,6 +13,7 @@ import com.facilio.events.util.EventAPI;
 import com.facilio.modules.FieldUtil;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,8 +39,9 @@ public class JsonToV2EventCommand extends FacilioCommand {
 					long agentId = EventAPI.getAgent((String) jsonObject.get(AgentConstants.AGENT));
 					jsonObject.put(AgentConstants.AGENT_ID, agentId);
 				}
-				if(jsonObject.containsKey("sources") && jsonObject.get("source") != null){
-					jsonObject.put("sources",jsonObject.get("sources"));
+				if(jsonObject.containsKey(AgentConstants.DATA)){
+					List<Map<String,Object>> sourceList = (List<Map<String, Object>>)jsonObject.get(AgentConstants.DATA);
+					jsonObject.put("sources",sourceList);
 				}
 				BaseEventContext baseEvent = (BaseEventContext) FieldUtil.getAsBeanFromMap(jsonObject, NewEventAPI.getEventClass(type));
 				eventList.add(baseEvent);
@@ -57,5 +59,4 @@ public class JsonToV2EventCommand extends FacilioCommand {
 		}
 		return null;
 	}
-
 }
