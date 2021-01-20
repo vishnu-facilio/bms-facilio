@@ -151,6 +151,7 @@ public class DataProcessorV2
                     processStatus = processAgentEvents(agent, payload);
                     break;
                 case EVENTS:
+                case ALARM_SOURCE:
                     List<EventRuleContext> eventRules = new ArrayList<>();
                     ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
                     List<EventRuleContext> ruleList = bean.getActiveEventRules();

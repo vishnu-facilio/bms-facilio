@@ -150,8 +150,8 @@ public class EventAPI {
 	    	String key = iterator.next();
 	    	if (key != null && !key.isEmpty() && payload.get(key) != null) {
 				String value=null;
-				if(key.equalsIgnoreCase("sources")){
-					event.setSources ((List<String>)payload.get(key));
+				if(key.equals(AgentConstants.DATA)){
+					event.setSources ((List<Map<String, Object>>)payload.get(key));
 					continue;
 				}else {
 					value = payload.get(key).toString();
@@ -233,24 +233,26 @@ public class EventAPI {
 	    return event;
 	}
 
-	public static void addBulkSources(List<String> sources,long agentId) throws SQLException {
+	public static void addBulkSources(List<Map<String,Object>> sources,long agentId) {
 		bulkAddSourceToResourceMapping(sources,agentId);
 	}
 
-	private static void bulkAddSourceToResourceMapping ( List<String> sources,long agentId ) throws SQLException {
-		List<Map<String, Object>> sourceList = new ArrayList<>();
+	private static void bulkAddSourceToResourceMapping ( List<Map<String, Object>> sources,long agentId ) {
+		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder();
 		sources.forEach(source -> {
-			Map<String, Object> map = new HashMap<>();
-			map.put("source",source);
-			map.put(AgentConstants.AGENT_ID,agentId);
-			sourceList.add(map);
+			try {
+				Map<String, Object> map = new HashMap<>();
+				if(source.containsKey(AgentConstants.NAME) && source.get(AgentConstants.NAME) != null) {
+					map.put(AgentConstants.SOURCE,source.get(AgentConstants.NAME));
+					map.put(AgentConstants.AGENT_ID,agentId);
+					builder.fields(SOURCE_TO_RESOURCE_FIELDS)
+							.table(SOURCE_TO_RESOURCE_MODULE.getTableName())
+							.addRecord(map).save();
+				}
+			} catch (Exception e) {
+				LOGGER.error("Exception occurred while inserting alarm mapping sources. agentId " + agentId);
+			}
 		});
-
-		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
-				.fields(SOURCE_TO_RESOURCE_FIELDS)
-				.table(SOURCE_TO_RESOURCE_MODULE.getTableName())
-				.addRecords(sourceList);
-		builder.save();
 	}
 
 	public static long getAgent(String agentKey) throws Exception {
