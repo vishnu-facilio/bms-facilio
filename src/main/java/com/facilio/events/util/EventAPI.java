@@ -283,24 +283,6 @@ public class EventAPI {
 		return Collections.emptyMap();
 	}
 
-	public static void main ( String[] args ) {
-		List<Map<String,Object>> prop1 = new ArrayList<>();
-		List<Map<String,Object>> prop2 = new ArrayList<>();
-		Map<String,Object> map = new HashMap<>();
-		map.put("id",1L);
-		map.put("name","test");
-		map.put("test","animal");
-		Map<String,Object> map1 = new HashMap<>();
-		map1.put("id",2L);
-		map1.put("name","arun");
-		Map<String,Object> map2 = new HashMap<>();
-		map2.put("name","kumar");
-		prop1.add(map);
-		prop1.add(map1);
-		prop2.add(map1);
-		Map<String,Long> t = prop1.stream().collect(Collectors.toMap(p->(String)p.get("name"),p-> (long)p.get("id")));
-		System.out.println(t);
-	}
 	public static long getAgent(String agentKey) throws Exception {
 		FacilioAgent agent = AgentApiV2.getAgent(agentKey);
 		if(agent != null) {
