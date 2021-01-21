@@ -39,11 +39,7 @@ public class JsonToV2EventCommand extends FacilioCommand {
 					long agentId = EventAPI.getAgent((String) jsonObject.get(AgentConstants.AGENT));
 					jsonObject.put(AgentConstants.AGENT_ID, agentId);
 				}
-				if(jsonObject.containsKey(AgentConstants.DATA)){
-					List<Map<String,Object>> sourceList = (List<Map<String, Object>>)jsonObject.get(AgentConstants.DATA);
-					jsonObject.put("sources",sourceList);
-					jsonObject.remove("data"); // removed Data object because of conflict of pojo parent class with return type.
-				}
+
 				BaseEventContext baseEvent = (BaseEventContext) FieldUtil.getAsBeanFromMap(jsonObject, NewEventAPI.getEventClass(type));
 				eventList.add(baseEvent);
 			}
