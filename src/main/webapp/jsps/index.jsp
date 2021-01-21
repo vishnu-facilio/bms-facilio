@@ -47,7 +47,7 @@
 
         String staticUrlPropName = isDynamicClient ? "stage.static.url" : "static.url";
         String staticUrl = com.facilio.aws.util.FacilioProperties.getConfig(staticUrlPropName) + clientVersion;
-        boolean servicePortalDomain = false;
+        boolean servicePortalDomain = false;//used in client rendering to identify if the current req server is portal domain or not
         String brandName = com.facilio.aws.util.FacilioProperties.getConfig("rebrand.brand");
         String domain =com.facilio.aws.util.FacilioProperties.getConfig("rebrand.domain");
         String copyrightName =com.facilio.aws.util.FacilioProperties.getConfig("rebrand.copyright.name");
