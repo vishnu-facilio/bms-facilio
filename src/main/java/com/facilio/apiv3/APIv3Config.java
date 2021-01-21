@@ -200,6 +200,8 @@ public class APIv3Config {
                 .afterSave(TransactionChainFactoryV3.getAddControlGroupAfterSaveChain())
                 .update()
                 .afterSave(TransactionChainFactoryV3.getUpdateControlGroupAfterSaveChain())
+                .summary()
+                .afterFetch(new GetControlGroupCommand())
                 .build();
     }
 
