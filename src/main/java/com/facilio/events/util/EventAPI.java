@@ -1,44 +1,24 @@
 package com.facilio.events.util;
 
 
-import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.beans.ModuleBean;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.operators.CommonOperators;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.BmsAggregateOperators;
-import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.events.constants.EventConstants;
@@ -46,9 +26,21 @@ import com.facilio.events.context.EventContext;
 import com.facilio.events.context.EventContext.EventInternalState;
 import com.facilio.events.context.EventContext.EventState;
 import com.facilio.events.context.EventRuleContext;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
+import java.util.*;
 
 public class EventAPI {
 //	 public static long processEvents(long timestamp, JSONObject object, List<EventRule> eventRules, Map<String, Integer> eventCountMap, long lastEventTime) throws Exception {
@@ -234,53 +226,29 @@ public class EventAPI {
 	    return event;
 	}
 
-	public static void addBulkSources(List<Map<String,Object>> sources,long agentId) throws Exception {
-		bulkAddSourceToResourceMapping(sources,agentId);
+	public static boolean addBulkSources( List<Map<String,Object>> sources,long agentId) {
+		return bulkAddSourceToResourceMapping(sources,agentId);
 	}
 
-	private static void bulkAddSourceToResourceMapping ( List<Map<String, Object>> sources,long agentId ) throws Exception {
-		try{
-			Map<String,Long> existingSource = checkIfSourceExist(agentId);
-			List<Map<String,Object>> insertList = new ArrayList<>();
+	private static boolean bulkAddSourceToResourceMapping ( List<Map<String, Object>> sources,long agentId ) {
 			for (Map<String, Object> source : sources) {
-				if(source.containsKey(AgentConstants.NAME) && source.get(AgentConstants.NAME) != null) {
-					String sourceName = (String)source.get(AgentConstants.NAME);
-					if(existingSource != null && !existingSource.isEmpty()) {
-						if(sourceName.trim().equals(existingSource.get(sourceName.trim()))) {
-							continue;
-						}
+				try {
+					if(source.containsKey(AgentConstants.NAME) && source.get(AgentConstants.NAME) != null) {
+						String sourceName = (String)source.get(AgentConstants.NAME);
+						Map<String, Object> map = new HashMap<>();
+						map.put(AgentConstants.SOURCE,sourceName);
+						map.put(AgentConstants.AGENT_ID,agentId);
+						GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+								.fields(SOURCE_TO_RESOURCE_FIELDS)
+								.table(SOURCE_TO_RESOURCE_MODULE.getTableName())
+								.addRecord(map);
+						builder.save();
 					}
-					Map<String, Object> map = new HashMap<>();
-					map.put(AgentConstants.SOURCE,sourceName);
-					map.put(AgentConstants.AGENT_ID,agentId);
-					insertList.add(map);
+				} catch (SQLException e) {
+					LOGGER.error("Exception occurred while inserting alarm source : " + source.get(AgentConstants.NAME),e);
 				}
 			}
-			if(insertList == null || insertList.isEmpty()){
-				LOGGER.info("All sources are already existing..");
-				return;
-			}
-			GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
-					.fields(SOURCE_TO_RESOURCE_FIELDS)
-					.table(SOURCE_TO_RESOURCE_MODULE.getTableName())
-					.addRecords(insertList);
-			builder.save();
-		}catch(Exception e){
-			LOGGER.error("Exception occurred while inserting alarm source list ",e);
-			throw e;
-		}
-	}
-
-	private static Map<String,Long> checkIfSourceExist ( long agentId ) throws Exception {
-		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-				.table(SOURCE_TO_RESOURCE_MODULE.getTableName())
-				.select(SOURCE_TO_RESOURCE_FIELDS)
-				.andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(SOURCE_TO_RESOURCE_MODULE),String.valueOf(agentId),NumberOperators.EQUALS));
-		List<Map<String,Object>> props = selectRecordBuilder.get();
-		if(props != null && !props.isEmpty()){
-			return props.stream().collect(Collectors.toMap(p->(String)p.get(AgentConstants.SOURCE),p-> (long)p.get(AgentConstants.ID)));
-		}
-		return Collections.emptyMap();
+			return true;
 	}
 
 	public static long getAgent(String agentKey) throws Exception {
