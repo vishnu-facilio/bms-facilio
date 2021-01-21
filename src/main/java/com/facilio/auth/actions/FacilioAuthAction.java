@@ -837,6 +837,7 @@ public class FacilioAuthAction extends FacilioAction {
 			if (getSsoToken() == null || samlResponse == null) {
 				setResponseCode(1);
 				setResult("message", "Invalid SSO access.");
+				LOGGER.severe("missing sso token and saml response");
 				return ERROR;
 			}
 
@@ -848,6 +849,7 @@ public class FacilioAuthAction extends FacilioAction {
 			if (sso == null || sso.getIsActive() == null || !sso.getIsActive()) {
 				setResponseCode(1);
 				setResult("message", "Invalid SSO access.");
+				LOGGER.severe("domain sso inactive/missing");
 				return ERROR;
 			}
 			var isCreateUser = sso.getIsCreateUser() != null && sso.getIsCreateUser();
