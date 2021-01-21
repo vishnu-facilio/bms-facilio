@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
@@ -233,28 +234,73 @@ public class EventAPI {
 	    return event;
 	}
 
-	public static void addBulkSources(List<Map<String,Object>> sources,long agentId) {
+	public static void addBulkSources(List<Map<String,Object>> sources,long agentId) throws Exception {
 		bulkAddSourceToResourceMapping(sources,agentId);
 	}
 
-	private static void bulkAddSourceToResourceMapping ( List<Map<String, Object>> sources,long agentId ) {
-		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder();
-		sources.forEach(source -> {
-			try {
-				Map<String, Object> map = new HashMap<>();
+	private static void bulkAddSourceToResourceMapping ( List<Map<String, Object>> sources,long agentId ) throws Exception {
+		try{
+			Map<String,Long> existingSource = checkIfSourceExist(agentId);
+			List<Map<String,Object>> insertList = new ArrayList<>();
+			for (Map<String, Object> source : sources) {
 				if(source.containsKey(AgentConstants.NAME) && source.get(AgentConstants.NAME) != null) {
-					map.put(AgentConstants.SOURCE,source.get(AgentConstants.NAME));
+					String sourceName = (String)source.get(AgentConstants.NAME);
+					if(existingSource != null && !existingSource.isEmpty()) {
+						if(sourceName.trim().equals(existingSource.get(sourceName.trim()))) {
+							continue;
+						}
+					}
+					Map<String, Object> map = new HashMap<>();
+					map.put(AgentConstants.SOURCE,sourceName);
 					map.put(AgentConstants.AGENT_ID,agentId);
-					builder.fields(SOURCE_TO_RESOURCE_FIELDS)
-							.table(SOURCE_TO_RESOURCE_MODULE.getTableName())
-							.addRecord(map).save();
+					insertList.add(map);
 				}
-			} catch (Exception e) {
-				LOGGER.error("Exception occurred while inserting alarm mapping sources. agentId " + agentId);
 			}
-		});
+			if(insertList == null || insertList.isEmpty()){
+				LOGGER.info("All sources are already existing..");
+				return;
+			}
+			GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+					.fields(SOURCE_TO_RESOURCE_FIELDS)
+					.table(SOURCE_TO_RESOURCE_MODULE.getTableName())
+					.addRecords(insertList);
+			builder.save();
+		}catch(Exception e){
+			LOGGER.error("Exception occurred while inserting alarm source list ",e);
+			throw e;
+		}
 	}
 
+	private static Map<String,Long> checkIfSourceExist ( long agentId ) throws Exception {
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+				.table(SOURCE_TO_RESOURCE_MODULE.getTableName())
+				.select(SOURCE_TO_RESOURCE_FIELDS)
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(SOURCE_TO_RESOURCE_MODULE),String.valueOf(agentId),NumberOperators.EQUALS));
+		List<Map<String,Object>> props = selectRecordBuilder.get();
+		if(props != null && !props.isEmpty()){
+			return props.stream().collect(Collectors.toMap(p->(String)p.get(AgentConstants.NAME),p-> (long)p.get(AgentConstants.AGENT_ID)));
+		}
+		return Collections.emptyMap();
+	}
+
+	public static void main ( String[] args ) {
+		List<Map<String,Object>> prop1 = new ArrayList<>();
+		List<Map<String,Object>> prop2 = new ArrayList<>();
+		Map<String,Object> map = new HashMap<>();
+		map.put("id",1L);
+		map.put("name","test");
+		map.put("test","animal");
+		Map<String,Object> map1 = new HashMap<>();
+		map1.put("id",2L);
+		map1.put("name","arun");
+		Map<String,Object> map2 = new HashMap<>();
+		map2.put("name","kumar");
+		prop1.add(map);
+		prop1.add(map1);
+		prop2.add(map1);
+		Map<String,Long> t = prop1.stream().collect(Collectors.toMap(p->(String)p.get("name"),p-> (long)p.get("id")));
+		System.out.println(t);
+	}
 	public static long getAgent(String agentKey) throws Exception {
 		FacilioAgent agent = AgentApiV2.getAgent(agentKey);
 		if(agent != null) {
