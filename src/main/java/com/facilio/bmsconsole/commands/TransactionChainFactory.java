@@ -2908,12 +2908,12 @@ public class TransactionChainFactory {
 			FacilioChain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForInventoryRequest());
 			chain.addCommand(new AddOrUpdateInventoryRequestCommand());
+			chain.addCommand(new ExecuteAllWorkflowsCommand());
 			chain.addCommand(new LoadItemTransactionEntryInputCommand());
 			chain.addCommand(getAddOrUpdateItemTransactionsChain());
 			//rollups work with record_list object in the context
 			chain.addCommand(new CopyToToolTransactionCommand());
 			chain.addCommand(getAddOrUdpateToolTransactionsChain());
-			chain.addCommand(new ExecuteAllWorkflowsCommand());
 			return chain;
 
 		}
