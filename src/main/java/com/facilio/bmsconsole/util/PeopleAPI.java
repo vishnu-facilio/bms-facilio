@@ -544,6 +544,8 @@ public class PeopleAPI {
 		
 		if (!verifyUser) {
 			AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getOrgId(), user, true, false, identifier, false, false);
+		} else {
+			AccountUtil.getUserBean().createUser(AccountUtil.getCurrentOrg().getOrgId(), user, identifier, false, false);
 		}
 
 		return user;
