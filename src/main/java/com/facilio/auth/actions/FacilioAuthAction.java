@@ -920,6 +920,7 @@ public class FacilioAuthAction extends FacilioAction {
 				if (isCreateUser
 						&& (e instanceof AccountException)
 						&& ((AccountException) e).getErrorCode() == USER_DEACTIVATED_FROM_THE_ORG) {
+					LOGGER.log(Level.SEVERE, "Creating portal user");
 					return createPortalUserAndLogin(email);
 				}
 				LOGGER.log(Level.INFO, "Exception while validating sso signin, ", e);
@@ -946,6 +947,7 @@ public class FacilioAuthAction extends FacilioAction {
 
 	private String createPortalUserAndLogin(String email) throws Exception {
 		createPortalUser(email);
+		LOGGER.log(Level.SEVERE, "Created portal user");
 		return domainSSOSignIn();
 	}
 
