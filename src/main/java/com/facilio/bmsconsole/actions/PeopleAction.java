@@ -95,25 +95,20 @@ public class PeopleAction extends FacilioAction{
 	public String addPeople() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(peopleList)) {
-			addPeople(false);
+			FacilioChain c = TransactionChainFactory.addPeopleChain();
+			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
+			c.getContext().put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
+			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
+			
+			for(PeopleContext ppl : peopleList) {
+				ppl.parseFormData();
+				RecordAPI.handleCustomLookup(ppl.getData(), FacilioConstants.ContextNames.PEOPLE);
+			}
+			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, peopleList);
+			c.execute();
+			setResult(FacilioConstants.ContextNames.PEOPLE, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
 		}
 		return SUCCESS;
-	}
-
-	public void addPeople(boolean verifyStatus) throws Exception {
-		FacilioChain c = TransactionChainFactory.addPeopleChain();
-		c.getContext().put(FacilioConstants.ContextNames.VERIFY_USER, verifyStatus);
-		c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
-		c.getContext().put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
-		c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
-
-		for(PeopleContext ppl : peopleList) {
-			ppl.parseFormData();
-			RecordAPI.handleCustomLookup(ppl.getData(), FacilioConstants.ContextNames.PEOPLE);
-		}
-		c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, peopleList);
-		c.execute();
-		setResult(FacilioConstants.ContextNames.PEOPLE, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
 	}
 	
 	public String updatePeople() throws Exception {

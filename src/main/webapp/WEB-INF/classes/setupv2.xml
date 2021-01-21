@@ -61,11 +61,6 @@
 				<param name="includeProperties">spEntityId, spMetadataURL, spAcsURL, ^domainSSO.*</param>
 			</result>
 		</action>
-
-		<action name="updateCreateUserStatus" class="com.facilio.bmsconsole.actions.SetupActions" method="updateCreateUserStatus">
-			<param name="moduleName">setup</param>
-			<param name="permission">GENERAL,COMPANY_PROFILE</param>
-		</action>
 	</package>
 
 	<package name="ssoApiV2" namespace="/api/v2/setup/sso" extends="v2Api">

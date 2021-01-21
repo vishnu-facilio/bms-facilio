@@ -234,18 +234,6 @@ public String importData() throws Exception {
 		return SUCCESS;
 	}
 
-	@Getter
-	@Setter
-	private boolean createUserStatus;
-
-	public String updateCreateUserStatus() throws Exception {
-		var appDomainType = AppDomain.AppDomainType.getByServiceName(getAppDomainType());
-		var appDomain = IAMAppUtil.getAppDomainForType(appDomainType.getIndex(), AccountUtil.getCurrentOrg().getOrgId()).get(0);
-
-		IAMOrgUtil.updateDomainSSOStatus(appDomain.getDomain(), createUserStatus);
-		return SUCCESS;
-	}
-
 	public String updatePortalSSOSettings() throws Exception {
 		if (domainSSO == null) {
 			return ERROR;
