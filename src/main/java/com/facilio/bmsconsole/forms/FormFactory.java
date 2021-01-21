@@ -2491,8 +2491,8 @@ public class FormFactory {
 
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
-		fields.add(new FormField("fiscalYearStart", FieldDisplayType.NUMBER, "Fiscal Year Start", Required.REQUIRED, 2, 2));
-		fields.add(new FormField("fiscalYear", FieldDisplayType.NUMBER, "Fiscal Year", Required.REQUIRED, 2, 3));
+		fields.add(new FormField("fiscalYearStart", FieldDisplayType.SELECTBOX, "Fiscal Year Start", Required.REQUIRED, 2, 2));
+		fields.add(new FormField("fiscalYear", FieldDisplayType.SELECTBOX, "Fiscal Year", Required.REQUIRED, 2, 3));
 		fields.add(new FormField("focalPointType", FieldDisplayType.SELECTBOX, "Scope", Required.OPTIONAL, 3, 1));
 		fields.add(new FormField("focalPointResource", FieldDisplayType.WOASSETSPACECHOOSER, "Space/Asset", Required.OPTIONAL, 4, 1));
 		fields.add(new FormField("budgetamount", FieldDisplayType.BUDGET_AMOUNT, "Budget Amounts", Required.OPTIONAL, 5, 1));
