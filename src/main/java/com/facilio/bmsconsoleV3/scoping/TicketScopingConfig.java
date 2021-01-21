@@ -46,19 +46,10 @@ public class TicketScopingConfig extends ModuleScopingConfiguration {
             vendorScoping.setFieldValueGenerator("com.facilio.modules.UserValueGenerator");
             vendorScoping.setModuleId(module.getModuleId());
 
-            //adding scope in Occupant Portal
-            long occupantPortalScopingId = ApplicationApi.addScoping(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
-            ScopingConfigContext occupantScoping = new ScopingConfigContext();
-            occupantScoping.setFieldName("requester");
-            occupantScoping.setScopingId(occupantPortalScopingId);
-            occupantScoping.setOperatorId(36);
-            occupantScoping.setFieldValueGenerator("com.facilio.modules.UserValueGenerator");
-
             List<ScopingConfigContext> scopingList = new ArrayList<>();
             scopingList.add(scoping);
             scopingList.add(tenantScoping);
             scopingList.add(vendorScoping);
-            scopingList.add(occupantScoping);
 
             ApplicationApi.addScopingConfigForApp(scopingList);
 

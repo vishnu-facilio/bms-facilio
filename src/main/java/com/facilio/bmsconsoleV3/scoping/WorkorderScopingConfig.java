@@ -38,7 +38,11 @@ public class WorkorderScopingConfig extends ModuleScopingConfiguration {
             occupantScoping.setModuleId(module.getModuleId());
 
 
-            ApplicationApi.addScopingConfigForApp(Collections.singletonList(scoping));
+            List<ScopingConfigContext> scopingList = new ArrayList<>();
+            scopingList.add(scoping);
+            scopingList.add(occupantScoping);
+
+            ApplicationApi.addScopingConfigForApp(scopingList);
         }
         catch(Exception e){
             e.printStackTrace();
