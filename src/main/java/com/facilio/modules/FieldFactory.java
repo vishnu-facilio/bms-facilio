@@ -9080,6 +9080,7 @@ public class FieldFactory {
 		fields.add(getField("controllerType", "CONTROLLER_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("pointJsonStr", "POINT_JSON", module, FieldType.STRING));
 		fields.add(getField("clientMetaStr", "CLIENT_META_JSON", module, FieldType.STRING));
+		fields.add(getField("logical", "LOGICAL", module, FieldType.BOOLEAN));
 		return fields;
 	}
 	
