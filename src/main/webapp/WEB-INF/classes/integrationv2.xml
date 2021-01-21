@@ -31,6 +31,8 @@
 			<!-- <param name="moduleName">setup</param>
 			<param name="permission">USER_MANAGEMENT</param> -->
 		</action>
+		<action name="getUserByEmail"  class="com.facilio.bmsconsole.actions.UserAction" method="getUserByEmail">
+		</action>
 		<action name="logout" class="com.facilio.bmsconsole.actions.LoginAction" method="apiLogout">
 		<param name="authorise">false</param>
 		</action>
