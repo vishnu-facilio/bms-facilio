@@ -11,6 +11,7 @@ import com.facilio.services.email.EmailClient;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
 import org.json.simple.JSONObject;
 import com.cribbstechnologies.clients.mandrill.model.MandrillHtmlMessage;
 import com.cribbstechnologies.clients.mandrill.model.MandrillMessageRequest;
@@ -22,7 +23,9 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 
-import java.io.File;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -57,6 +60,11 @@ public class MandrillEmailClient extends EmailClient {
             if(FacilioProperties.getMandrillUrl() != null) {
                 baseUrl = FacilioProperties.getMandrillUrl();
             }
+            if(baseUrl.endsWith("/")) {
+                baseUrl =baseUrl+"1.0/messages/send.json";
+            } else {
+                baseUrl = baseUrl+"/1.0/messages/send.json";
+            }
             mandrillApiKey = FacilioProperties.getMandrillApiKey();
             config.setApiKey(mandrillApiKey);
             config.setApiVersion(API_VERSION);
@@ -85,8 +93,99 @@ public class MandrillEmailClient extends EmailClient {
         sendEmail(mailJson, new HashMap<>());
     }
 
+
+    private void sendEmailViaHttpConnection(JSONObject mailJson, Map<String, String> files) {
+        HttpURLConnection connection = null;
+        DataOutputStream outputStream = null;
+        BufferedReader inputReader = null;
+        try {
+            URL url = new URL(baseUrl);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+
+            outputStream = new DataOutputStream(connection.getOutputStream());
+            org.json.JSONObject mailContent = new org.json.JSONObject();
+            mailContent.put("key", mandrillApiKey);
+            org.json.JSONObject message = new org.json.JSONObject();
+            message.put("html", mailJson.get(MESSAGE));
+            // message.put("text", );
+            message.put("subject", mailJson.get(SUBJECT));
+            message.put("from_name", FacilioProperties.senderName());
+            message.put("from_email", FacilioProperties.senderEmail());
+
+            JSONArray recipientList = new JSONArray();
+
+            String toAddress = (String)mailJson.get(TO);
+
+            if(toAddress == null) {
+                return;
+            }
+            for(String address : toAddress.split(",")) {
+                org.json.JSONObject recipient = new org.json.JSONObject();
+                recipient.put("email", address);
+                recipientList.put(recipient);
+            }
+            message.put("to", recipientList);
+            if (files != null && !files.isEmpty()) {
+                JSONArray attachmentList = new JSONArray();
+                for (Map.Entry<String, String> fileEntry : files.entrySet()) {
+                    String fileUrl = fileEntry.getValue();
+                    File file = new File(fileUrl);
+                    byte[] encoded = Base64.encodeBase64(org.apache.commons.io.FileUtils.readFileToByteArray(file));
+                    String fileContent = new String(encoded, StandardCharsets.US_ASCII);
+                    org.json.JSONObject attachment = new org.json.JSONObject();
+                    attachment.put("type", Files.probeContentType(file.toPath()));
+                    attachment.put("name", fileEntry.getKey());
+                    attachment.put("content", fileContent);
+                    attachmentList.put(attachment);
+                }
+                message.put("attachments", attachmentList);
+            }
+            mailContent.put("message", message);
+
+            outputStream.writeBytes(mailContent.toString());
+            outputStream.flush();
+
+            inputReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String inputLine;
+            StringBuilder response = new StringBuilder();
+
+            while ((inputLine = inputReader.readLine()) != null) {
+                response.append(inputLine);
+            }
+            LOGGER.info(response.toString());
+        } catch (Exception e) {
+            LOGGER.info("Exception while sending email ", e);
+        } finally{
+            if(outputStream != null) {
+                try {
+                    outputStream.close();
+                } catch (IOException e) {
+                    LOGGER.info("Exception while closing stream: ", e);
+                }
+            }
+            if(inputReader != null) {
+                try {
+                    inputReader.close();
+                } catch (IOException e) {
+                    LOGGER.info("Exception while closing stream ", e);
+                }
+            }
+            if(connection != null) {
+                connection.disconnect();
+            }
+        }
+
+    }
+
     @Override
     public void sendEmail(JSONObject mailJson, Map<String, String> files) throws Exception {
+        sendEmailViaHttpConnection(mailJson, files);
+    }
+
+    private void sendEmailViaMandrillLibrary(JSONObject mailJson, Map<String, String> files) throws Exception {
         if( ! configurationSet) {
             return;
         }
