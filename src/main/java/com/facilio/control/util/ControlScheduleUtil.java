@@ -11,7 +11,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.BusinessHoursAPI;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.controlaction.context.ControlActionCommandContext;
 import com.facilio.db.criteria.Condition;
@@ -346,6 +348,8 @@ public class ControlScheduleUtil {
 		Map<Long,ControlGroupAssetCategory> categoryMap = new HashMap<Long, ControlGroupAssetCategory>();
 		
 		for(ControlGroupAssetCategory category : categories) {
+			
+			category.setAssetCategory(AssetsAPI.getCategoryForAsset(category.getAssetCategory().getId()));
 			categoryMap.put(category.getId(), category);
 			
 			ControlGroupSection section = sectionMap.get(category.getControlGroupSection().getId());
@@ -356,6 +360,8 @@ public class ControlScheduleUtil {
 		
 		Map<Long,ControlGroupAssetContext> assetMap = new HashMap<Long, ControlGroupAssetContext>();
 		for(ControlGroupAssetContext asset :assets) {
+			
+			asset.setAsset(ResourceAPI.getResource(asset.getAsset().getId()));
 			ControlGroupAssetCategory category = categoryMap.get(asset.getControlGroupAssetCategory().getId());
 			category.addControlAsset(asset);
 			assetMap.put(asset.getId(), asset);
