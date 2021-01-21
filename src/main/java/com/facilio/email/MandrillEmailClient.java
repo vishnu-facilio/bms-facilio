@@ -54,7 +54,9 @@ public class MandrillEmailClient extends EmailClient {
 
     private void setConfiguration() {
         try {
-            baseUrl = FacilioProperties.getMandrillUrl();
+            if(FacilioProperties.getMandrillUrl() != null) {
+                baseUrl = FacilioProperties.getMandrillUrl();
+            }
             mandrillApiKey = FacilioProperties.getMandrillApiKey();
             config.setApiKey(mandrillApiKey);
             config.setApiVersion(API_VERSION);
@@ -117,13 +119,14 @@ public class MandrillEmailClient extends EmailClient {
         try {
             SendMessageResponse response = messagesRequest.sendMessage(mmr);
             for(MessageResponse messageResponse: response.getList()) {
-                if( ! messageResponse.getStatus().equals("sent") || messageResponse.getRejectReason() != null) {
+                if( "sent".equalsIgnoreCase(messageResponse.getStatus())) {
+                    AwsUtil.logEmail(mailJson);
+                } else if (messageResponse.getRejectReason() != null) {
                     LOGGER.info("Email sending failed : to "+ messageResponse.getEmail() +" reason: " + messageResponse.getRejectReason() + " , status: " + messageResponse.getStatus());
                 }
             }
         } catch (RequestFailedException e) {
-            LOGGER.info("Exception while sending email");
+            LOGGER.info("Exception while sending email ", e);
         }
-        AwsUtil.logEmail(mailJson);
     }
 }
