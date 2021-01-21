@@ -24,8 +24,14 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.facilio.accounts.sso.DomainSSO;
+import com.facilio.bmsconsole.actions.PeopleAction;
+import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.util.AESEncryption;
+import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.iam.accounts.util.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.var;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
@@ -66,6 +72,9 @@ import io.sentry.SentryClient;
 import io.sentry.SentryClientFactory;
 import io.sentry.context.Context;
 import io.sentry.event.UserBuilder;
+
+import static com.facilio.iam.accounts.exceptions.AccountException.ErrorCode.ORG_DOMAIN_ALREADY_EXISTS;
+import static com.facilio.iam.accounts.exceptions.AccountException.ErrorCode.USER_DEACTIVATED_FROM_THE_ORG;
 
 public class FacilioAuthAction extends FacilioAction {
 
@@ -840,6 +849,7 @@ public class FacilioAuthAction extends FacilioAction {
 				setResult("message", "Invalid SSO access.");
 				return ERROR;
 			}
+			var isCreateUser = sso.getIsCreateUser() != null && sso.getIsCreateUser();
 
 			SamlSSOConfig ssoConfig = (SamlSSOConfig) sso.getSSOConfig();
 
@@ -907,6 +917,11 @@ public class FacilioAuthAction extends FacilioAction {
 				FacilioCookie.addLoggedInCookie(response);
 			}
 			catch (Exception e) {
+				if (isCreateUser
+						&& (e instanceof AccountException)
+						&& ((AccountException) e).getErrorCode() == USER_DEACTIVATED_FROM_THE_ORG) {
+					return createPortalUserAndLogin(email);
+				}
 				LOGGER.log(Level.INFO, "Exception while validating sso signin, ", e);
 				setResponseCode(1);
 				Exception ex = e;
@@ -928,7 +943,23 @@ public class FacilioAuthAction extends FacilioAction {
 		}
 		return SUCCESS;
 	}
-	
+
+	private String createPortalUserAndLogin(String email) throws Exception {
+		createPortalUser(email);
+		return domainSSOSignIn();
+	}
+
+	private void createPortalUser(String emailaddress) throws Exception {
+		PeopleAction peopleAction = new PeopleAction();
+		PeopleContext pplContext = new PeopleContext();
+		pplContext.setEmail(emailaddress);
+		pplContext.setName(emailaddress);
+		pplContext.setPeopleType(5);
+		pplContext.setIsOccupantPortalAccess(true);
+		peopleAction.setPeopleList(Arrays.asList(pplContext));
+		peopleAction.addPeople(true);
+	}
+
 	public String ssoSignIn() throws Exception {
 		
 		HttpServletRequest request = ServletActionContext.getRequest();

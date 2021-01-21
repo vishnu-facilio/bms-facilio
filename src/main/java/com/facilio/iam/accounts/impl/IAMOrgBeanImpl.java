@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.facilio.accounts.sso.DomainSSO;
+import com.facilio.modules.FieldFactory;
 import lombok.var;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
@@ -33,7 +34,6 @@ import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
@@ -562,6 +562,30 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 			return sso;
 		}
 		return null;
+	}
+
+	@Override
+	public boolean updateDomainSSOStatus(String domain, boolean status) throws Exception {
+		var appDomain = IAMAppUtil.getAppDomain(domain);
+		var domainSSODetails = IAMOrgUtil.getDomainSSODetails(appDomain.getDomain());
+
+		List<FacilioField> domainSSOFields = IAMAccountConstants.getDomainSSOFields();
+		Map<String, FacilioField> domainSSOFieldMap = FieldFactory.getAsMap(domainSSOFields);
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(IAMAccountConstants.getDomainSSOModule().getTableName())
+				.fields(Arrays.asList(domainSSOFieldMap.get("isCreateUser")));
+
+		updateBuilder.andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(domainSSODetails.getId()), NumberOperators.EQUALS));
+
+		Map<String, Object> props = new HashMap<>();
+		props.put("isCreateUser", status);
+		int updatedRows = updateBuilder.update(props);
+		if (updatedRows > 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
 	@Override

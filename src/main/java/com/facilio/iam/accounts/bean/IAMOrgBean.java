@@ -60,4 +60,6 @@ public interface IAMOrgBean {
 	public void enableTotp(long orgId) throws Exception ;
 	
 	public void disableTotp(long orgId) throws Exception;
+
+	public boolean updateDomainSSOStatus(String domain, boolean status) throws Exception;
 }

@@ -71,6 +71,10 @@ public class IAMOrgUtil {
 	public static boolean addOrUpdateDomainSSO(DomainSSO domainSSO) throws Exception {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getOrgBean().addOrUpdateDomainSSO(domainSSO));
 	}
+
+	public static boolean updateDomainSSOStatus(String domain, boolean status) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getOrgBean().updateDomainSSOStatus(domain, status));
+	}
 	
 	public static boolean addOrUpdateAccountSSO(long orgId, AccountSSO sso) throws Exception {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getOrgBean().addOrUpdateAccountSSO(orgId, sso));
