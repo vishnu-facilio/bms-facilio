@@ -46,6 +46,8 @@ public class IAMAppUtil {
 		boolean isPortalDomain = AppDomainType.FACILIO != appDomain.getAppDomainTypeEnum();
 		JSONObject resultJSON = new JSONObject();
 		resultJSON.put("isCustomDomain", isCustomDomain);
+		resultJSON.put("servicePortalDomain", isPortalDomain);
+
 		if (isCustomDomain && !isPortalDomain) {
 			long orgId = appDomain.getOrgId();
 			Organization org = IAMOrgUtil.getOrg(orgId);
