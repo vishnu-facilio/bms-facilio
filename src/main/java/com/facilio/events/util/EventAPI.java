@@ -278,7 +278,7 @@ public class EventAPI {
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(SOURCE_TO_RESOURCE_MODULE),String.valueOf(agentId),NumberOperators.EQUALS));
 		List<Map<String,Object>> props = selectRecordBuilder.get();
 		if(props != null && !props.isEmpty()){
-			return props.stream().collect(Collectors.toMap(p->(String)p.get(AgentConstants.NAME),p-> (long)p.get(AgentConstants.ID)));
+			return props.stream().collect(Collectors.toMap(p->(String)p.get(AgentConstants.SOURCE),p-> (long)p.get(AgentConstants.ID)));
 		}
 		return Collections.emptyMap();
 	}
