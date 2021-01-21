@@ -176,6 +176,10 @@ public class APIv3Config {
     @Module(ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_MODULE_NAME)
     public static Supplier<V3Config> getScheduleExceptionCRUD() {
         return () -> new V3Config(ControlScheduleExceptionContext.class, null)
+        		.create()
+                .beforeSave(new ControlScheduleExceptionBeforeSaveCommand())
+                .update()
+                .beforeSave(new ControlScheduleExceptionBeforeSaveCommand())
                 .build();
     }
     
