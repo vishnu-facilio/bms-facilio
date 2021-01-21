@@ -762,7 +762,7 @@ public class ApplicationApi {
             webTabs.add(new WebTabContext("Dashboard", "dashboard", WebTabContext.Type.DASHBOARD, null, appId, null));
             groupNameVsWebTabsMap.put("home", webTabs);
 
-            webTabGroups.add(new WebTabGroupContext("Work Requests", "workorder", layout.getId(), 201, groupOrder++));
+            webTabGroups.add(new WebTabGroupContext("My Requests", "workorder", layout.getId(), 201, groupOrder++));
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("Requests", "workorders", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("workorder").getModuleId()), appId, null));
             groupNameVsWebTabsMap.put("workorder", webTabs);
