@@ -29,6 +29,7 @@ import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.util.AESEncryption;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.iam.accounts.util.*;
+import com.google.common.base.Throwables;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.var;
@@ -918,8 +919,8 @@ public class FacilioAuthAction extends FacilioAction {
 			}
 			catch (Exception e) {
 				if (isCreateUser
-						&& (e instanceof AccountException)
-						&& ((AccountException) e).getErrorCode() == USER_DEACTIVATED_FROM_THE_ORG) {
+						&& (Throwables.getRootCause(e) instanceof AccountException)
+						&& ((AccountException) Throwables.getRootCause(e)).getErrorCode() == USER_DEACTIVATED_FROM_THE_ORG) {
 					LOGGER.log(Level.SEVERE, "Creating portal user");
 					return createPortalUserAndLogin(email);
 				}
