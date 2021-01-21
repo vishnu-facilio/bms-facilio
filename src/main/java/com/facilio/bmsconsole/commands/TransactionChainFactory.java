@@ -2909,6 +2909,7 @@ public class TransactionChainFactory {
 			chain.addCommand(SetTableNamesCommand.getForInventoryRequest());
 			chain.addCommand(new AddOrUpdateInventoryRequestCommand());
 			chain.addCommand(new LoadItemTransactionEntryInputCommand());
+			chain.addCommand(new ExecuteAllWorkflowsCommand());
 			chain.addCommand(getAddOrUpdateItemTransactionsChain());
 			//rollups work with record_list object in the context
 			chain.addCommand(new CopyToToolTransactionCommand());
