@@ -39,17 +39,16 @@ public class AddAgentAction extends AgentActionV2
 
     @Min(value = 10,message = "Data interval can't be less than 10")
     @NotNull
-    private Long dataInterval;
+    private long dataInterval;
 
     @NotNull
     @Min(value = 1,message = "Site can't be less than 1")
-    private Long siteId;
+    private long siteId;
     private String type;
     @NotNull @Size(min = 2,max = 100)
     private String displayName;
     private WorkflowContext workflow;
-    private Integer agentType;
-    private Long orgUserId=-1L;
+    private int agentType=-1;
 	public String createAgent() {
         try {
             FacilioChain addAgentChain = TransactionChainFactory.createAgentChain();
@@ -58,17 +57,22 @@ public class AddAgentAction extends AgentActionV2
             agent.setName(getAgentName());
             agent.setInterval(getDataInterval());
             agent.setSiteId(getSiteId()); //TODO validate SITE ID.
-            agent.setType(getType());
             agent.setAgentType(getAgentType());
             agent.setDisplayName(getDisplayName());
             agent.setWorkflow(getWorkflow());
-            if (getAgentType() != AgentType.CUSTOM.getKey()) {
+
+            if (agentType != AgentType.CUSTOM.getKey()) {
                 agent.setProcessorVersion(2);
             }
-            if(getAgentType() == AgentType.REST.getKey()){
-                long orgId = AccountUtil.getCurrentOrg().getOrgId();
-                long inboundId = FacilioService.runAsServiceWihReturn(()->insertApiKey(getAgentName(),orgId));
-                agent.setInboundConnectionId(inboundId);
+            switch (AgentType.valueOf(agentType)){
+                case REST:
+                    long orgId = AccountUtil.getCurrentOrg().getOrgId();
+                    long inboundId = FacilioService.runAsServiceWihReturn(()->insertApiKey(getAgentName(),orgId));
+                    agent.setInboundConnectionId(inboundId);
+                case CLOUD:
+                case CUSTOM:
+                    agent.setConnected(true);
+                    break;
             }
             context.put(AgentConstants.AGENT,agent);
             addAgentChain.execute();
