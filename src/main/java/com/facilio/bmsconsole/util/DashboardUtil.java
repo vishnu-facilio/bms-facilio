@@ -818,13 +818,13 @@ public class DashboardUtil {
 		return false;
 	}
 	
-	public static JSONArray getDashboardResponseJson(DashboardContext dashboard) {
+	public static JSONArray getDashboardResponseJson(DashboardContext dashboard, boolean optimize) {
 		List dashboards = new ArrayList<>();
 		dashboards.add(dashboard);
-		return getDashboardResponseJson(dashboards);
+		return getDashboardResponseJson(dashboards, optimize);
 	}
 	
-	public static JSONArray getDashboardResponseJson(List<DashboardContext> dashboards) {
+	public static JSONArray getDashboardResponseJson(List<DashboardContext> dashboards, boolean optimize) {
 		
 		JSONArray result = new JSONArray();
 		
@@ -834,7 +834,7 @@ public class DashboardUtil {
 			Collection<DashboardWidgetContext> dashboardWidgetContexts = dashboard.getDashboardWidgets();
 			JSONArray childrenArray = new JSONArray();
 			for(DashboardWidgetContext dashboardWidgetContext:dashboardWidgetContexts) {
-				childrenArray.add(dashboardWidgetContext.widgetJsonObject());
+				childrenArray.add(dashboardWidgetContext.widgetJsonObject(optimize));
 			}
 			JSONObject dashboardJson = new JSONObject();
 			dashboardJson.put("id", dashboard.getId());
@@ -869,7 +869,7 @@ public class DashboardUtil {
 			 Collection<DashboardWidgetContext> dashboardWidgetContexts = dashboardTab.getDashboardWidgets();
 			JSONArray childrenArray = new JSONArray();
 			for(DashboardWidgetContext dashboardWidgetContext:dashboardWidgetContexts) {
-				childrenArray.add(dashboardWidgetContext.widgetJsonObject());
+				childrenArray.add(dashboardWidgetContext.widgetJsonObject(false));
 			}
 			dashboardTab.setClientWidgetJson(childrenArray);
 		 }

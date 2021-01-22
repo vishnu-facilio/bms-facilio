@@ -6195,6 +6195,14 @@ public class DashboardAction extends FacilioAction {
 		this.dashboardFolders = dashboardFolders;
 	}
 	boolean getOnlyMobileDashboard;
+	
+	boolean optimize;
+	public boolean getOptimize() {
+		return optimize;
+	}
+	public void setOptimize(boolean optimize) {
+		this.optimize = optimize;
+	}
 	public boolean getGetOnlyMobileDashboard() {
 		return getOnlyMobileDashboard;
 	}
@@ -6757,7 +6765,7 @@ public class DashboardAction extends FacilioAction {
 			linkName = (dashboard != null) ? dashboard.getLinkName() : linkName;
 			if(dashboard != null) {
 				dashboard = DashboardUtil.getDashboardWithWidgets(dashboard.getId());
-				setDashboardJson(DashboardUtil.getDashboardResponseJson(dashboard));
+				setDashboardJson(DashboardUtil.getDashboardResponseJson(dashboard, false));
 				return SUCCESS;
 			}
 		}
@@ -6774,7 +6782,7 @@ public class DashboardAction extends FacilioAction {
 		}
 		
 		
-		setDashboardJson(DashboardUtil.getDashboardResponseJson(dashboard));
+		setDashboardJson(DashboardUtil.getDashboardResponseJson(dashboard, optimize));
 		return SUCCESS;
 	}
 	
