@@ -34,9 +34,10 @@ import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 
-public class RunThroughHistoricalRuleCommand extends FacilioCommand {
+public class RunThroughHistoricalRuleCommand extends FacilioCommand  implements PostTransactionCommand{
 	private static final Logger LOGGER = Logger.getLogger(RunThroughHistoricalRuleCommand.class.getName());
-
+	private List<Long> workflowRuleResourceParentLoggerIds = new ArrayList<Long>();
+	
 	@SuppressWarnings("null")
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -124,7 +125,6 @@ public class RunThroughHistoricalRuleCommand extends FacilioCommand {
 		WorkflowRuleLoggerContext workflowRuleLoggerContext = WorkflowRuleLoggerAPI.setWorkflowRuleLoggerContext(primaryId, secondaryIds.size(), range, ruleJobType);
 		WorkflowRuleLoggerAPI.addWorkflowRuleLogger(workflowRuleLoggerContext);
 		long parentRuleLoggerId = workflowRuleLoggerContext.getId();
-		List<Long> workflowRuleResourceParentLoggerIds = new ArrayList<Long>();
 		
 		String secondaryPropKeyName = historyRuleExecutionType.fetchSecondaryLoggerKey();
 		for(Long secondaryId :secondaryIds)
@@ -161,16 +161,28 @@ public class RunThroughHistoricalRuleCommand extends FacilioCommand {
 			}			
 		}	
 		
-		if(!workflowRuleResourceParentLoggerIds.isEmpty()) {
+//		if(!workflowRuleResourceParentLoggerIds.isEmpty()) {
+//			for(Long parentRuleResourceLoggerId :workflowRuleResourceParentLoggerIds)
+//			{		
+//				FacilioTimer.scheduleOneTimeJobWithDelay(parentRuleResourceLoggerId, "HistoricalAlarmOccurrenceDeletionJob", 30, "history");
+//				if(ruleJobTypeEnum == RuleJobType.RULE_ROLLUP_ALARM || ruleJobTypeEnum == RuleJobType.ASSET_ROLLUP_ALARM) {
+//					LOGGER.info("Added triggered RuleAssetRollUpJobs with jobId: " +parentRuleResourceLoggerId+ " for primary alarmRollUpId: " +primaryId+ " and secondary alarmRollUpIds: " +secondaryIds+ " with RuleJobType: " +ruleJobTypeEnum.getValue() + " at: "+System.currentTimeMillis());				
+//				}
+//			}
+//		}
+
+		return false;
+	}
+	
+	@Override
+	public boolean postExecute() throws Exception {
+		
+		if(workflowRuleResourceParentLoggerIds != null && !workflowRuleResourceParentLoggerIds.isEmpty()) {
 			for(Long parentRuleResourceLoggerId :workflowRuleResourceParentLoggerIds)
 			{		
 				FacilioTimer.scheduleOneTimeJobWithDelay(parentRuleResourceLoggerId, "HistoricalAlarmOccurrenceDeletionJob", 30, "history");
-				if(ruleJobTypeEnum == RuleJobType.RULE_ROLLUP_ALARM || ruleJobTypeEnum == RuleJobType.ASSET_ROLLUP_ALARM) {
-					LOGGER.info("Added triggered RuleAssetRollUpJobs with jobId: " +parentRuleResourceLoggerId+ " for primary alarmRollUpId: " +primaryId+ " and secondary alarmRollUpIds: " +secondaryIds+ " with RuleJobType: " +ruleJobTypeEnum.getValue() + " at: "+System.currentTimeMillis());				
-				}
 			}
 		}
-
 		return false;
 	}
 }
