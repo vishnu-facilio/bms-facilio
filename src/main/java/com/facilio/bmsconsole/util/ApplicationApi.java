@@ -453,6 +453,9 @@ public class ApplicationApi {
             configJSON.put("type", "alarmrule");
             webTabs.add(new WebTabContext("Alarm Notifications", "notification", WebTabContext.Type.CUSTOM, null, layout.getApplicationId(), configJSON));
             configJSON = new JSONObject();
+            configJSON.put("type","alarm_mapping");
+            webTabs.add(new WebTabContext("Alarm Mapping","alarmmapping",WebTabContext.Type.CUSTOM,null,layout.getApplicationId(),configJSON));
+            configJSON = new JSONObject();
             configJSON.put("type", "metrics");
             webTabs.add(new WebTabContext("Metrics", "metrics", WebTabContext.Type.CUSTOM,null, layout.getApplicationId(), configJSON));
             configJSON = new JSONObject();
