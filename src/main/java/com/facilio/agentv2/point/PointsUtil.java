@@ -125,8 +125,12 @@ public class PointsUtil
                     setPointWritable(pointJSON,point);
                     if (point != null) {
                         point.setControllerId(controller.getId());
+                        int agentType = agent.getAgentType();
+                        if(agentType == AgentType.REST.getKey() || agentType == AgentType.CLOUD.getKey()){
+                            point.setConfigureStatus(PointEnum.ConfigureStatus.CONFIGURED.getIndex());
+                        }
                         if (controller.getControllerType() == FacilioControllerType.MODBUS_IP.asInt() || controller.getControllerType() == FacilioControllerType.MODBUS_RTU.asInt()) {
-                            if (agent.getAgentType() == AgentType.FACILIO.getKey()) {
+                            if (agentType == AgentType.FACILIO.getKey()) {
                                 point.setConfigureStatus(PointEnum.ConfigureStatus.CONFIGURED.getIndex());
                             }
                         }
