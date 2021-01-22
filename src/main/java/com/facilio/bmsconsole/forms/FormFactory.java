@@ -394,7 +394,7 @@ public class FormFactory {
 		List<FacilioForm> adminDocumentsFormsList = Arrays.asList(getAdminDocumentsForm());
 		List<FacilioForm> budgetFormsList = Arrays.asList(getBudgetForm());
 		List<FacilioForm> chartOfAccountFormsList = Arrays.asList(getChartOfAccountForm());
-
+		List<FacilioForm> accountTypeForm = Arrays.asList(getAccountTypeForm());
 
 		List<FacilioForm> workPermitForm = Arrays.asList(getWorkPermitForm(),getPortalWorkPermitForm());
 		List<FacilioForm> workPermitTypeForm = Arrays.asList(getWorkPermitTypeForm());
@@ -445,7 +445,7 @@ public class FormFactory {
 				.put(FacilioConstants.ContextNames.Tenant.ADMIN_DOCUMENTS, getFormMap(adminDocumentsFormsList))
 				.put(FacilioConstants.ContextNames.Budget.BUDGET, getFormMap(budgetFormsList))
 				.put(ContextNames.Budget.CHART_OF_ACCOUNT, getFormMap(chartOfAccountFormsList))
-
+				.put(ContextNames.Budget.ACCOUNT_TYPE, getFormMap(accountTypeForm))
 				.build();
 	}
 	
@@ -2512,11 +2512,28 @@ public class FormFactory {
 
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
-		fields.add(new FormField("type", FieldDisplayType.LOOKUP_SIMPLE, "Type", Required.REQUIRED, "accounttype",2, 1));
+		FormField typeField = new FormField("type", FieldDisplayType.LOOKUP_SIMPLE, "Type", Required.REQUIRED, "accounttype",2, 1);
+		typeField.setAllowCreate(true);
+		fields.add(typeField);
 		fields.add(new FormField("parentAccount", FieldDisplayType.LOOKUP_SIMPLE, "Sub Account of", Required.OPTIONAL, "chartofaccount",3, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 4, 1));
 		form.setFields(fields);
 
+		return form;
+	}
+
+	private static FacilioForm getAccountTypeForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("Account Type");
+		form.setName("default_"+ ContextNames.Budget.ACCOUNT_TYPE +"_web");
+		form.setModule(ModuleFactory.getModule(ContextNames.Budget.ACCOUNT_TYPE));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFormType(FormType.WEB);
+
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("group", FieldDisplayType.SELECTBOX, "Group", Required.OPTIONAL,2, 1));
+		form.setFields(fields);
 		return form;
 	}
 
