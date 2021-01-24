@@ -1,6 +1,7 @@
 package com.facilio.events.context;
 
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 
 import lombok.Getter;
@@ -279,7 +280,7 @@ public class EventContext {
 	public void setSubRuleId(long subRuleId) {
 		this.subRuleId = subRuleId;
 	}
-	private List<String> sources;
+	private List<Map<String,Object>> sources;
 	public static final EventInternalState[] INETERNAL_STATES = EventInternalState.values();
 	public static enum EventInternalState {
 		ADDED,

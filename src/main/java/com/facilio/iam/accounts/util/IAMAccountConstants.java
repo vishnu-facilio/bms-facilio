@@ -839,6 +839,13 @@ public class IAMAccountConstants {
 			isActive.setModule(module);
 			fields.add(isActive);
 
+			FacilioField createUser = new FacilioField();
+			createUser.setName("isCreateUser");
+			createUser.setDataType(FieldType.BOOLEAN);
+			createUser.setColumnName("CREATE_USER");
+			createUser.setModule(module);
+			fields.add(createUser);
+
 			FacilioField createdTime = new FacilioField();
 			createdTime.setName("createdTime");
 			createdTime.setDataType(FieldType.NUMBER);

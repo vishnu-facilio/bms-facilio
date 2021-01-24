@@ -224,6 +224,7 @@ public class ColumnFactory {
 		columnMap.put("prterms-default", getDefaultTermsSubModuleColumns());
 
 		columnMap.put("budget-default", getDefaultBudgetColumns());
+		columnMap.put("chartofaccount-default", getDefaultChartOfAccountColumns());
 		columnMap.put("controlGroupv2-default", getDefaultControlGroupColumns());
 
 		// Community Features
@@ -1643,6 +1644,16 @@ public class ColumnFactory {
 
 		return columns;
 
+	}
+	private static List<ViewField> getDefaultChartOfAccountColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("type", "Type"));
+		columns.add(new ViewField("description", "Description"));
+		columns.add(new ViewField("parentAccount", "Parent Account"));
+
+		return columns;
 	}
 
 	private static List<ViewField> getDefaultControlGroupColumns() {

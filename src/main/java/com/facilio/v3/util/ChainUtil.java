@@ -17,6 +17,7 @@ import com.facilio.v3.annotation.Module;
 import com.facilio.v3.commands.*;
 import com.facilio.v3.context.AttachmentV3Context;
 import com.facilio.v3.context.CustomModuleDataV3;
+import com.facilio.v3.context.V3Context;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.reflections.Reflections;
@@ -401,7 +402,7 @@ public class ChainUtil {
             } else {
                 beanClass = FacilioConstants.ContextNames.getClassFromModule(module);
                 if (beanClass == null) {
-                    beanClass = ModuleBaseWithCustomFields.class;
+                    beanClass = V3Context.class;
                 }
             }
         }

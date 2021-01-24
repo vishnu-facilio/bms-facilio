@@ -23,6 +23,7 @@ import com.facilio.controlaction.commands.GetControllableCategoryFromSpaceListCo
 import com.facilio.controlaction.commands.GetIncludedSpaceListCommand;
 import com.facilio.energystar.command.*;
 import com.facilio.mv.command.FetchMVWidgetResultCommand;
+import com.facilio.trigger.context.TriggerType;
 import com.facilio.workflows.command.GetAllNameSpaceWithFunctionCommand;
 import com.facilio.workflows.command.GetAllScheduledWorkflowCommand;
 import org.apache.commons.chain.Context;
@@ -2698,7 +2699,7 @@ public class ReadOnlyChainFactory {
 
 	public static FacilioChain executeTriggersForReadingChain() {
 		FacilioChain c = getDefaultChain();
-		c.addCommand(new ExecuteAllTriggersCommand());
+		c.addCommand(new ExecuteAllTriggersCommand(TriggerType.MODULE_TRIGGER));
 		return c;	
 	}
 	public static FacilioChain getReplacePlaceHoldersChain() {

@@ -542,6 +542,7 @@ public class ControllerApiV2 {
                         Controller controller = makeControllerFromMap(controllerDatum, controllerType);
                         controllerDatum.put(AgentConstants.CONTROLLER, controller.getChildJSON());
                     }
+                    addLogicalController(agentId,controllerData);
                     controllers.addAll(controllerData);
                 } catch (Exception e) {
                     LOGGER.info(" exception while object mapping ", e);
@@ -595,6 +596,7 @@ public class ControllerApiV2 {
                         Controller controller = makeControllerFromMap(controllerDatum, controllerType);
                         controllerDatum.put(AgentConstants.CONTROLLER, controller.getChildJSON());
                     }
+                    addLogicalController(agentId,controllerData);
                     controllers.addAll(controllerData);
                 } catch (Exception e) {
                     LOGGER.info(" exception while object mapping ", e);
@@ -603,6 +605,16 @@ public class ControllerApiV2 {
         }
         return controllers;
     }    
+
+    private static void addLogicalController(long agentId , List<Map<String,Object>> controllerData) throws Exception {
+        if(GetPointsAction.isVirtualPointExist(agentId)) {
+            Map<String,Object> prop = new HashMap<String, Object>();
+            prop.put("id", 0L);
+            prop.put("controllerType",0);
+            prop.put("name", "Logical");
+            controllerData.add(prop);
+        }
+    }
 
     public static List<Map<String,Object>> getControllerTypes(Long agentId) throws Exception {
         List<FacilioField> fields = new ArrayList<>();

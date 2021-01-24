@@ -8505,6 +8505,22 @@ public class FieldFactory {
 
         return fields;
     }
+    
+    public static List<FacilioField> getBaseSchedulerFields() {
+        FacilioModule module = ModuleFactory.getBaseSchedulerModule();
+        List<FacilioField> fields = new ArrayList<>();
+
+        fields.add(getIdField(module));
+        fields.add(getModuleIdField(module));
+        fields.add(getField("recordId", "RECORD_ID", module, FieldType.NUMBER));
+        fields.add(getField("scheduleInfoJson", "SCHEDULE_INFO", module, FieldType.STRING));
+        fields.add(getField("startTime", "START_TIME", module, FieldType.NUMBER));
+        fields.add(getField("endTime", "END_TIME", module, FieldType.NUMBER));
+        fields.add(getField("scheduleType", "SCHEDULE_TYPE", module, FieldType.NUMBER));
+        fields.add(getField("generatedUptoTime", "GENERATED_UPTO_TIME", module, FieldType.NUMBER));
+
+        return fields;
+    }
 
     public static List<FacilioField> getPrinterFields() {
         FacilioModule module = ModuleFactory.getPrinterModule();
@@ -9064,6 +9080,7 @@ public class FieldFactory {
 		fields.add(getField("controllerType", "CONTROLLER_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("pointJsonStr", "POINT_JSON", module, FieldType.STRING));
 		fields.add(getField("clientMetaStr", "CLIENT_META_JSON", module, FieldType.STRING));
+		fields.add(getField("logical", "LOGICAL", module, FieldType.BOOLEAN));
 		return fields;
 	}
 	
@@ -9373,12 +9390,12 @@ public class FieldFactory {
         fields.add(getNameField(module));
         fields.add(getField("type", "TYPE", module, FieldType.NUMBER));
         fields.add(getField("moduleId", "MODULE_ID", module, FieldType.NUMBER));
-        fields.add(getField("childModuleId", "CHILD_MODULE_ID", module, FieldType.NUMBER));
-        fields.add(getField("assetCategoryId", "ASSET_CATEGORY_ID", module, FieldType.NUMBER));
-        fields.add(getField("fieldId", "FIELD_ID", module, FieldType.NUMBER));
+//        fields.add(getField("childModuleId", "CHILD_MODULE_ID", module, FieldType.NUMBER));
+//        fields.add(getField("assetCategoryId", "ASSET_CATEGORY_ID", module, FieldType.NUMBER));
+//        fields.add(getField("fieldId", "FIELD_ID", module, FieldType.NUMBER));
         fields.add(getField("eventType", "EVENT_TYPE", module, FieldType.NUMBER));
         fields.add(getField("status", "STATUS", module, FieldType.BOOLEAN));
-        fields.add(getField("extrainfo", "EXTRAINFO", module, FieldType.STRING));
+//        fields.add(getField("extrainfo", "EXTRAINFO", module, FieldType.STRING));
         return fields;
     }
     

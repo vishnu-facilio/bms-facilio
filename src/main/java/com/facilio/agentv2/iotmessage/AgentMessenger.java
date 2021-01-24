@@ -58,6 +58,7 @@ public class AgentMessenger {
                     messageBody.put(AgentConstants.PUBLISH_TYPE, PublishType.ACK.asInt());
                     break;
                 case SHUTDOWN:
+                case DISCOVER_ALARM_SOURCE:
                     break;
                 case CONTROLLER_STATUS:
                 case CONFIGURE:
@@ -166,11 +167,11 @@ public class AgentMessenger {
     }
 
     public static boolean discoverSources(Long agentId) throws Exception { // will change commad for discover sources..
-//        if (agentId > 0) {
-//            IotData data = constructNewIotAgentMessage(agentId, FacilioCommand.DISCOVER_CONTROLLERS, (FacilioContext) null, null);
-//            MessengerUtil.addAndPublishNewAgentData(data);
-//            return true;
-//        }
+        if (agentId > 0) {
+            IotData data = constructNewIotAgentMessage(agentId, FacilioCommand.DISCOVER_ALARM_SOURCE, (FacilioContext) null, null);
+            MessengerUtil.addAndPublishNewAgentData(data);
+            return true;
+        }
         return true;
     }
 

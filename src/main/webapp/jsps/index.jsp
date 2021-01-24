@@ -17,6 +17,7 @@
 <%@page import="org.apache.commons.lang3.StringUtils" %>
 <%@page import="com.facilio.util.FacilioIndexJsp" %>
 <%@page import="com.facilio.util.RequestUtil" %>
+<%@ page import="com.facilio.accounts.dto.AppDomain" %>
 
 <%@page contentType="text/html; charset=UTF-8" %>
 
@@ -46,25 +47,7 @@
 
         String staticUrlPropName = isDynamicClient ? "stage.static.url" : "static.url";
         String staticUrl = com.facilio.aws.util.FacilioProperties.getConfig(staticUrlPropName) + clientVersion;
-        String servicePortalDomain = com.facilio.aws.util.FacilioProperties.getOccupantAppDomain();
-        String allowedPortalDomain = com.facilio.aws.util.FacilioProperties.getPortalAppDomains();
-
-        if(StringUtils.isNotEmpty(allowedPortalDomain)){
-            String[] portaldomains = allowedPortalDomain.split(",");
-            if(portaldomains.length > 0){
-                List<String> allowedPortalsList = Arrays.asList(portaldomains);
-                String currentServer = request.getServerName();
-                String currentPortalDomain = null;
-                String[] currentDomainArray = currentServer.split("\\.");
-                if (currentDomainArray.length > 2) {
-                    currentPortalDomain = currentDomainArray[1]+ "." + currentDomainArray[2];
-                    if(allowedPortalsList.contains(currentPortalDomain)){
-                        servicePortalDomain = currentPortalDomain;
-                    }
-                }
-            }
-        }
-
+        boolean servicePortalDomain = false;//used in client rendering to identify if the current req server is portal domain or not
         String brandName = com.facilio.aws.util.FacilioProperties.getConfig("rebrand.brand");
         String domain =com.facilio.aws.util.FacilioProperties.getConfig("rebrand.domain");
         String copyrightName =com.facilio.aws.util.FacilioProperties.getConfig("rebrand.copyright.name");
@@ -96,6 +79,10 @@
         boolean isStageTest = request.getServerName().contains("samltest.facilio.in");
 
         JSONObject domainInfo = IAMAppUtil.getAppDomainInfo(request.getServerName());
+
+        if(domainInfo != null && domainInfo.containsKey("servicePortalDomain")) {
+            servicePortalDomain = (Boolean)domainInfo.get("servicePortalDomain");
+        }
 
         if (isSutherland) {
             copyrightInfo.put("name", "Sutherland Global Services, Inc");
@@ -139,7 +126,7 @@
         placeHolderParams.put("webpackPublicPath", staticUrl);
         placeHolderParams.put("title", title);
         placeHolderParams.put("favicon", faviconPath);
-        placeHolderParams.put("servicePortalDomain", servicePortalDomain);
+        placeHolderParams.put("servicePortalDomain", String.valueOf(servicePortalDomain));
         placeHolderParams.put("googleAuthEnable", Boolean.toString(googleAuthEnable));
         placeHolderParams.put("googleAuthClientId", googleAuthClientId);
 

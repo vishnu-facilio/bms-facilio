@@ -4,7 +4,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.json.simple.JSONObject;
-
 import com.facilio.report.util.ReportUtil;
 
 public class WidgetChartContext extends DashboardWidgetContext {
@@ -52,7 +51,7 @@ public class WidgetChartContext extends DashboardWidgetContext {
 		this.reportTemplate = reportTemplate;
 	}
 	@Override
-	public JSONObject widgetJsonObject() {
+	public JSONObject widgetJsonObject(boolean optimize) {
 		JSONObject resultJson = new JSONObject();
 		
 		resultJson.put("id", getId());
@@ -100,7 +99,9 @@ public class WidgetChartContext extends DashboardWidgetContext {
 		dataOptionsJson.put("newReportId", getNewReportId());
 		try {
 			if(getNewReportId() != null && getNewReportId() > 0) {
-				dataOptionsJson.put("newReport", ReportUtil.getReport(getNewReportId()));
+				if(optimize == false) {
+					dataOptionsJson.put("newReport", ReportUtil.getReport(getNewReportId(), true));
+				}
 				dataOptionsJson.put("reportTemplate", getReportTemplate());
 			}
 		}

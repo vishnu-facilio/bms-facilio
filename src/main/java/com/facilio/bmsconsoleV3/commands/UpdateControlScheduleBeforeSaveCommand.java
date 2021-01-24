@@ -19,7 +19,7 @@ public class UpdateControlScheduleBeforeSaveCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		ControlScheduleContext schedule = (ControlScheduleContext) ControlScheduleUtil.getObjectFormRecordMap(context, ControlScheduleUtil.CONTROL_SCHEDULE_MODULE_NAME);
+		ControlScheduleContext schedule = (ControlScheduleContext) ControlScheduleUtil.getObjectFromRecordMap(context, ControlScheduleUtil.CONTROL_SCHEDULE_MODULE_NAME);
 		
 		if(schedule.getId() > 0) {
 			

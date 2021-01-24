@@ -107,6 +107,7 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.VISITOR_INVITE,getVisitorInviteModule());
 		moduleMap.put(FacilioConstants.ContextNames.INSURANCE, getInsuranceModule());
 		moduleMap.put(ContextNames.VISITOR_LOGGING, getVisitorLogModule());
+		moduleMap.put(ContextNames.VISITOR_LOG, getVisitorLogModule());
 		moduleMap.put(ContextNames.WATCHLIST, getWatchListModule());
         moduleMap.put(ContextNames.CONTACT, getContactModule());
 		moduleMap.put(ContextNames.WorkPermit.WORKPERMIT, getWorkPermitModule());
@@ -3447,7 +3448,34 @@ public class ModuleFactory {
 		module.setTableName("Visitor_Logging");
 		return module;
 	}
-
+	
+	public static FacilioModule getBaseVisitorLogCheckInModule()
+	{
+		FacilioModule module=new FacilioModule();
+		module.setName(ContextNames.BASE_VISIT);
+		module.setDisplayName("Base Visits");
+		module.setTableName("BaseVisit");
+		return module;
+	}
+	
+	public static FacilioModule getVisitorLogCheckInModule()
+	{
+		FacilioModule module=new FacilioModule();
+		module.setName(ContextNames.VISITOR_LOG);
+		module.setDisplayName("Visits");
+		module.setTableName("VisitorLog");
+		return module;
+	}
+	
+	public static FacilioModule getInviteVisitorLogModule()
+	{
+		FacilioModule module=new FacilioModule();
+		module.setName(ContextNames.INVITE_VISITOR);
+		module.setDisplayName("Invites");
+		module.setTableName("InviteVisitor");
+		return module;
+	}
+	
 	public static FacilioModule getVisitorInviteModule()
 	{
 		FacilioModule module=new FacilioModule();
@@ -3571,6 +3599,14 @@ public class ModuleFactory {
 		pmTriggers.setName("visitorLogTrigger");
 		pmTriggers.setDisplayName("Visitor Log Triggers");
 		pmTriggers.setTableName("VisitorLog_Triggers");
+		return pmTriggers;
+	}
+	
+	public static FacilioModule getBaseSchedulerModule() {
+		FacilioModule pmTriggers = new FacilioModule();
+		pmTriggers.setName("baseScheduler");
+		pmTriggers.setDisplayName("Base Scheduler");
+		pmTriggers.setTableName("BaseScheduler");
 		return pmTriggers;
 	}
 

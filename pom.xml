@@ -82,12 +82,12 @@
 		<dependency>
 			<groupId>com.facilio</groupId>
 			<artifactId>agent-framework</artifactId>
-			<version>0.0.17</version>
+			<version>0.0.22</version>
 		</dependency>
 		<dependency>
 			<groupId>com.facilio.framework</groupId>
 			<artifactId>facilio-framework</artifactId>
-			<version>1.0.345</version>
+			<version>1.0.347</version>
 		</dependency>
 
 		<dependency>
@@ -405,6 +405,19 @@
 			<artifactId>nimbus-jose-jwt</artifactId>
 			<version>4.23</version>
 		</dependency>
+
+		<!-- dependency for mandrill email client -->
+		<dependency>
+			<groupId>com.cribbstechnologies.clients</groupId>
+			<artifactId>mandrillClient</artifactId>
+			<version>1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.6</version>
+		</dependency>
+		<!-- dependency for mandrill email client ends -->
 
 		<dependency>
 			<groupId>redis.clients</groupId>

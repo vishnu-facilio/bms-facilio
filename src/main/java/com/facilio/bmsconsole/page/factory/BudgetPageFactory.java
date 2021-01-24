@@ -27,7 +27,7 @@ public class BudgetPageFactory extends PageFactory {
         tab1Sec1.addWidget(remainingBudget);
 
         PageWidget budgetPrimaryDetails = new PageWidget(PageWidget.WidgetType.BUDGET_PRIMARY_DETAILS);
-        budgetPrimaryDetails.addToLayoutParams(tab1Sec1, 24, 4);
+        budgetPrimaryDetails.addToLayoutParams(tab1Sec1, 24, 5);
         tab1Sec1.addWidget(budgetPrimaryDetails);
 
         PageWidget budgetSplitUp = new PageWidget(PageWidget.WidgetType.BUDGET_SPLIT_UP);

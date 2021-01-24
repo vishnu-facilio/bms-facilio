@@ -61,4 +61,14 @@ public class ChartOfAccountContext extends V3Context {
         }
         return null;
     }
+
+    private Integer accountType;
+
+    public Integer getAccountType() {
+        return accountType;
+    }
+
+    public void setAccountType(Integer accountType) {
+        this.accountType = accountType;
+    }
 }

@@ -1,6 +1,7 @@
 package con.facilio.control;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Map;
 
 import org.json.simple.JSONObject;
@@ -25,6 +26,7 @@ public class ControlScheduleExceptionContext extends V3Context {
 	Type type;
 	JSONObject startSchedule;
 	JSONObject endSchedule;
+	String endScheduleTime;
 	Long startTime;
 	Long endTime;
 	boolean offSchedule;
@@ -67,6 +69,15 @@ public class ControlScheduleExceptionContext extends V3Context {
 		return -1;
 	}
 	
+	public void build() throws Exception {
+		if(startSchedule != null && endScheduleTime != null) {
+			ScheduleInfo startScheduleInfo = FieldUtil.getAsBeanFromJson(startSchedule, ScheduleInfo.class);
+			startScheduleInfo.setTimes(Collections.singletonList(endScheduleTime));
+			
+			endSchedule = FieldUtil.getAsJSON(startScheduleInfo);
+		}
+	}
+	
 	public Type getTypeEnum() {
 		return type;
 	}
@@ -104,6 +115,10 @@ public class ControlScheduleExceptionContext extends V3Context {
 	public void setStartSchedule(String startSchedule) throws ParseException {
 		this.startSchedule = FacilioUtil.parseJson(startSchedule);
 	}
+	
+	public void setStartScheduleJson(JSONObject startSchedule) throws ParseException {
+		this.startSchedule = startSchedule;
+	}
 
 	public String getEndSchedule() {
 		if(endSchedule != null) {
@@ -115,7 +130,7 @@ public class ControlScheduleExceptionContext extends V3Context {
 	public JSONObject getEndScheduleJson() {
 		return endSchedule;
 	}
-
+	
 	public void setEndSchedule(String endSchedule) throws ParseException {
 		this.endSchedule = FacilioUtil.parseJson(endSchedule);
 	}
@@ -158,5 +173,13 @@ public class ControlScheduleExceptionContext extends V3Context {
 
 	public void setExcludeSchedule(boolean excludeSchedule) {
 		this.excludeSchedule = excludeSchedule;
+	}
+
+	public String getEndScheduleTime() {
+		return endScheduleTime;
+	}
+
+	public void setEndScheduleTime(String endScheduleTime) {
+		this.endScheduleTime = endScheduleTime;
 	}
 }

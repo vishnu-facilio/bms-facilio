@@ -968,6 +968,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 				selectBuilder.limit(dataPoint.getLimit());
 			}
 		}
+		/*
 		else if (dataPoint.getxAxis().getDataTypeEnum() == FieldType.DATE_TIME || dataPoint.getxAxis().getDataTypeEnum() == FieldType.DATE) {
 
 			String orderBy = null;
@@ -978,7 +979,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 				orderBy = "MIN(" + dataPoint.getxAxis().getField().getCompleteColumnName() + ")";
 			}
 			selectBuilder.orderBy(orderBy);
-		}
+		}*/
 	}
 	
 	private void calculateBaseLineRange (ReportContext report) {

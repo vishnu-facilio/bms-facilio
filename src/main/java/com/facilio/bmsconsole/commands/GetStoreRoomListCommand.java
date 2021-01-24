@@ -1,17 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
-import com.facilio.accounts.util.AccountConstants.UserType;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
@@ -25,7 +16,13 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class GetStoreRoomListCommand extends FacilioCommand {
 
@@ -39,20 +36,15 @@ public class GetStoreRoomListCommand extends FacilioCommand {
 		FacilioModule module = modBean.getModule(moduleName);
 
 		Boolean getCount = (Boolean) context.get(FacilioConstants.ContextNames.FETCH_COUNT);
-		List<FacilioField> fields;
 		if (getCount == null) {
 			getCount = false;
-		}
-		if (getCount) {
-			fields = FieldFactory.getCountField(module);
-		} else {
-			fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		}
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 
 		long siteId = (long) context.get(FacilioConstants.ContextNames.WORK_ORDER_SITE_ID);
 		SelectRecordsBuilder<StoreRoomContext> builder = StoreroomApi.getStoreRoomListBuilder(siteId, false);
 		if (getCount) {
+			builder.select(FieldFactory.getCountField(module));
 			builder.setAggregation();
 		}
 
@@ -115,9 +107,7 @@ public class GetStoreRoomListCommand extends FacilioCommand {
 			builder.limit(perPage);
 		}
 
-		long getStartTime = System.currentTimeMillis();
 		List<StoreRoomContext> records = builder.get();
-		long getTimeTaken = System.currentTimeMillis() - getStartTime;
 
 		if (records != null && !records.isEmpty()) {
 			if (getCount != null && getCount) {
@@ -140,7 +130,6 @@ public class GetStoreRoomListCommand extends FacilioCommand {
 			}
 		}
 
-		long timeTaken = System.currentTimeMillis() - startTime;
 		return false;
 	}
 }

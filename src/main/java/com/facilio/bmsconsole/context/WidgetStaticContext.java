@@ -62,7 +62,7 @@ public class WidgetStaticContext extends DashboardWidgetContext {
 	}
 	
 	@Override
-	public JSONObject widgetJsonObject() {
+	public JSONObject widgetJsonObject(boolean optimize) {
 		JSONObject resultJson = new JSONObject();
 		
 		resultJson.put("id", getId());

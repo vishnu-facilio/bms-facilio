@@ -11,10 +11,10 @@ import javax.mail.internet.MimeMessage;
 import java.util.Map;
 import java.util.Properties;
 
-class FacilioEmailClient extends EmailClient {
+class SMTPEmailClient extends EmailClient {
 
-    private static final Logger LOGGER = LogManager.getLogger(FacilioEmailClient.class.getName());
-    private static final FacilioEmailClient INSTANCE = new FacilioEmailClient();
+    private static final Logger LOGGER = LogManager.getLogger(SMTPEmailClient.class.getName());
+    private static final SMTPEmailClient INSTANCE = new SMTPEmailClient();
 
     private static final String MAIL_USERNAME="mail.username";
     private static final String MAIL_FROM="mail.from";
@@ -29,7 +29,7 @@ class FacilioEmailClient extends EmailClient {
     private static final String SOCKET_FACTORY_PORT= "mail.smtp.socketFactory.port";
 
 
-    private FacilioEmailClient(){
+    private SMTPEmailClient(){
         LOGGER.info("FacilioEmail client created");
     }
     private static Properties getSMTPProperties() {
@@ -46,7 +46,7 @@ class FacilioEmailClient extends EmailClient {
 
         return props;
     }
-    public static FacilioEmailClient getClient(){
+    public static EmailClient getClient(){
         return INSTANCE;
     }
 

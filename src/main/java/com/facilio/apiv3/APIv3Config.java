@@ -52,6 +52,10 @@ import com.facilio.bmsconsoleV3.commands.vendor.AddOrUpdateLocationForVendorComm
 import com.facilio.bmsconsoleV3.commands.vendor.LoadVendorLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorcontact.LoadVendorContactLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitor.LoadVisitorLookUpCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.GetChildInvitesForGroupInviteCommand;
+import com.facilio.bmsconsoleV3.commands.visitorlog.GetScheduleTriggerForRecurringInviteCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.LoadRecordIdForPassCodeCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.ValidateBaseVisitDetailAndLogCommand;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.GetTriggerForRecurringLogCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.LoadVisitorLoggingLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.watchlist.CheckForExisitingWatchlistRecordsCommandV3;
@@ -164,12 +168,18 @@ public class APIv3Config {
                 .update()
                 .beforeSave(TransactionChainFactoryV3.getUpdateControlScheduleBeforeSaveCommandChain())
                 .afterSave(new DeleteAndAddControlScheduleExceptionCommand())
+                .summary()
+                .afterFetch(new ControlScheduleAfterFetchCommand())
                 .build();
     }
     
     @Module(ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_MODULE_NAME)
     public static Supplier<V3Config> getScheduleExceptionCRUD() {
         return () -> new V3Config(ControlScheduleExceptionContext.class, null)
+        		.create()
+                .beforeSave(new ControlScheduleExceptionBeforeSaveCommand())
+                .update()
+                .beforeSave(new ControlScheduleExceptionBeforeSaveCommand())
                 .build();
     }
     
@@ -190,6 +200,8 @@ public class APIv3Config {
                 .afterSave(TransactionChainFactoryV3.getAddControlGroupAfterSaveChain())
                 .update()
                 .afterSave(TransactionChainFactoryV3.getUpdateControlGroupAfterSaveChain())
+                .summary()
+                .afterFetch(new GetControlGroupCommand())
                 .build();
     }
 
@@ -375,6 +387,79 @@ public class APIv3Config {
                 .update()
                 .list()
                 .summary()
+                .build();
+    }
+    
+    @Module("visitorlog")
+    public static Supplier<V3Config> getVisitorLog() {
+        return () -> new V3Config(VisitorLogContextV3.class, null)
+                .create()
+                	.beforeSave(TransactionChainFactoryV3.getVisitorLogBeforeSaveOnCreateChain())
+                	.afterTransaction(TransactionChainFactoryV3.getVisitorLogAfterSaveOnCreateChain())
+                .update()
+            		.beforeSave(TransactionChainFactoryV3.getVisitorLogBeforeSaveOnUpdateChain())
+            		.afterTransaction(TransactionChainFactoryV3.getVisitorLogAfterSaveOnUpdateChain())
+                .list()
+                    .beforeFetch(new LoadVisitorLoggingLookupCommandV3())
+                    .showStateFlowList()
+                .summary()
+                    .beforeFetch(ReadOnlyChainFactoryV3.getVisitorLogBeforeFetchOnSummaryChain())
+                .build();
+    }
+    
+    @Module("invitevisitor")
+    public static Supplier<V3Config> getInviteVisitor() {
+        return () -> new V3Config(InviteVisitorContextV3.class, null)
+                .create()
+                    .beforeSave(TransactionChainFactoryV3.getInviteVisitorBeforeSaveOnCreateChain())
+                    .afterTransaction(TransactionChainFactoryV3.getInviteVisitorAfterSaveOnCreateChain())
+                .update()
+                   .beforeSave(TransactionChainFactoryV3.getInviteVisitorBeforeSaveOnUpdateChain())
+                   .afterTransaction(TransactionChainFactoryV3.getInviteVisitorAfterSaveOnUpdateChain())
+                .list()
+                    .beforeFetch(ReadOnlyChainFactoryV3.getInviteVisitorLogBeforeFetchOnListChain())
+                    .showStateFlowList()
+                .summary()
+                    .beforeFetch(new LoadVisitorLoggingLookupCommandV3())
+                .build();
+    }
+    
+    @Module("recurringinvitevisitor")
+    public static Supplier<V3Config> getRecurringInviteVisitor() {
+        return () -> new V3Config(RecurringInviteVisitorContextV3.class, null)
+                .create()
+                    .beforeSave(TransactionChainFactoryV3.getRecurringInviteVisitorBeforeSaveOnCreateChain())
+                    .afterTransaction(TransactionChainFactoryV3.getRecurringInviteVisitorAfterSaveOnCreateChain())
+                .update()
+                   .beforeSave(TransactionChainFactoryV3.getRecurringInviteVisitorBeforeSaveOnUpdateChain())
+                   .afterTransaction(TransactionChainFactoryV3.getInviteVisitorAfterSaveOnUpdateChain())
+                .list()
+                    .beforeFetch(ReadOnlyChainFactoryV3.getInviteVisitorLogBeforeFetchOnListChain())
+                    .showStateFlowList()
+                .summary()
+                    .beforeFetch(new LoadVisitorLoggingLookupCommandV3())
+                    .afterFetch(new GetScheduleTriggerForRecurringInviteCommandV3())
+                .build();
+    }
+    
+    @Module("groupinvite")
+    public static Supplier<V3Config> getGroupInviteVisitor() {
+        return () -> new V3Config(GroupInviteContextV3.class, null)
+                .create()      
+                .update()     
+                .list()
+                    .showStateFlowList()
+                .summary()
+                	.afterFetch(new GetChildInvitesForGroupInviteCommand())
+                .build();
+    }
+    
+    @Module("basevisit")
+    public static Supplier<V3Config> getBaseVisit() {
+        return () -> new V3Config(BaseVisitContextV3.class, new ModuleCustomFieldCount30())
+                .summary()
+                    .beforeFetch(ReadOnlyChainFactoryV3.getBaseVisitBeforeFetchOnListChain())
+                    .afterFetch(new ValidateBaseVisitDetailAndLogCommand())
                 .build();
     }
 

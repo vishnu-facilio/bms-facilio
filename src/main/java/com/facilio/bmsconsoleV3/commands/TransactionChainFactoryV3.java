@@ -41,6 +41,23 @@ import com.facilio.bmsconsoleV3.commands.vendorcontact.CheckForMandatoryVendorId
 import com.facilio.bmsconsoleV3.commands.vendorcontact.UpdateVendorContactAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitor.AddOrUpdateLocationForVisitorCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitor.CheckForVisitorDuplicationCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.AddNdaForVisitorLogModuleCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.AddNewVisitorWhileBaseVisitCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.AddOrUpdateScheduleInRecurringVisitorCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.AddOrUpdateVisitorFromBaseVisitCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.ChangeInviteVisitorStateCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.ChangeVisitorLogStateCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.CheckForWatchListRecordBaseVisitCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.GenerateQrInviteUrlForBaseVisitCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.LoadRecordIdForPassCodeCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.PreFillInviteVisitorCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.PreFillVisitorLogCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.PutOldVisitRecordsInInviteVisitorContextCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.PutOldVisitRecordsInVisitorLogContextCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.UpdateInviteVisitorStateInChangeSetCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.UpdateRecurringRecordIdForBaseScheduleTrigger;
+import com.facilio.bmsconsoleV3.commands.visitorlog.UpdateVisitorLogArrivedStateCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.VisitorFaceRecognitionForBaseVisitCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.*;
 import com.facilio.bmsconsoleV3.commands.workorder.*;
 import com.facilio.bmsconsoleV3.commands.workpermit.*;
@@ -128,6 +145,120 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new ChangeVisitorInviteStateCommandV3());
         return c;
     }
+    
+    public static FacilioChain getVisitorLogBeforeSaveOnCreateChain() {
+        FacilioChain c = getDefaultChain();
+
+        c.addCommand(new PutOldVisitRecordsInVisitorLogContextCommandV3()); //check-in related
+        c.addCommand(new AddNewVisitorWhileBaseVisitCommandV3());
+        c.addCommand(new PreFillVisitorLogCommandV3()); //check-in related
+        c.addCommand(new AddOrUpdateVisitorFromBaseVisitCommandV3());
+        c.addCommand(new CheckForWatchListRecordBaseVisitCommandV3());
+
+        return c;
+    }
+
+    public static FacilioChain getVisitorLogAfterSaveOnCreateChain() {
+        FacilioChain c = getDefaultChain();
+
+        c.addCommand(new UpdateVisitorLogArrivedStateCommandV3()); //check-in related
+        c.addCommand(new ChangeVisitorLogStateCommandV3()); //check-in related
+        c.addCommand(new ForkChainToInstantJobCommand()
+                .addCommand(new AddNdaForVisitorLogModuleCommandV3()) //check-in related
+                .addCommand(new GenerateQrInviteUrlForBaseVisitCommandV3())
+                .addCommand(new VisitorFaceRecognitionForBaseVisitCommandV3()));
+
+        return c;
+    }
+    
+    public static FacilioChain getVisitorLogBeforeSaveOnUpdateChain() {
+        FacilioChain c = getDefaultChain();
+
+        c.addCommand(new LoadRecordIdForPassCodeCommandV3());
+        c.addCommand(new PutOldVisitRecordsInVisitorLogContextCommandV3());
+        c.addCommand(new AddOrUpdateVisitorFromBaseVisitCommandV3());
+        return c;
+    }
+
+    public static FacilioChain getVisitorLogAfterSaveOnUpdateChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ChangeVisitorLogStateCommandV3());
+        return c;
+    }
+    
+    public static FacilioChain getInviteVisitorBeforeSaveOnCreateChain() {
+        FacilioChain c = getDefaultChain();
+
+        c.addCommand(new PutOldVisitRecordsInInviteVisitorContextCommandV3());
+        c.addCommand(new AddNewVisitorWhileBaseVisitCommandV3());
+        c.addCommand(new PreFillInviteVisitorCommandV3()); 
+        c.addCommand(new AddOrUpdateVisitorFromBaseVisitCommandV3());
+        c.addCommand(new CheckForWatchListRecordBaseVisitCommandV3());
+
+        return c;
+    }
+
+    public static FacilioChain getInviteVisitorAfterSaveOnCreateChain() {
+        FacilioChain c = getDefaultChain();
+
+        c.addCommand(new UpdateInviteVisitorStateInChangeSetCommandV3());
+        c.addCommand(new ChangeInviteVisitorStateCommandV3());
+        c.addCommand(new ForkChainToInstantJobCommand()
+                .addCommand(new GenerateQrInviteUrlForBaseVisitCommandV3())
+                .addCommand(new VisitorFaceRecognitionForBaseVisitCommandV3()));
+
+        return c;
+    }
+    
+    public static FacilioChain getInviteVisitorBeforeSaveOnUpdateChain() {
+        FacilioChain c = getDefaultChain();
+
+        c.addCommand(new PutOldVisitRecordsInInviteVisitorContextCommandV3());
+        c.addCommand(new AddOrUpdateVisitorFromBaseVisitCommandV3());
+
+        return c;
+    }
+
+    public static FacilioChain getInviteVisitorAfterSaveOnUpdateChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ChangeInviteVisitorStateCommandV3());
+        return c;
+    }
+    
+    public static FacilioChain getRecurringInviteVisitorBeforeSaveOnCreateChain() {
+        FacilioChain c = getDefaultChain();
+
+        c.addCommand(new PutOldVisitRecordsInInviteVisitorContextCommandV3());
+        c.addCommand(new AddNewVisitorWhileBaseVisitCommandV3());
+        c.addCommand(new PreFillInviteVisitorCommandV3()); 
+        c.addCommand(new AddOrUpdateVisitorFromBaseVisitCommandV3());
+        c.addCommand(new CheckForWatchListRecordBaseVisitCommandV3());
+		c.addCommand(new AddOrUpdateScheduleInRecurringVisitorCommandV3());
+        return c;
+    }
+    
+    public static FacilioChain getRecurringInviteVisitorAfterSaveOnCreateChain() {
+        FacilioChain c = getDefaultChain();
+        
+        c.addCommand(new UpdateInviteVisitorStateInChangeSetCommandV3());
+        c.addCommand(new ChangeInviteVisitorStateCommandV3());
+		c.addCommand(new UpdateRecurringRecordIdForBaseScheduleTrigger());
+        c.addCommand(new ForkChainToInstantJobCommand()
+                .addCommand(new GenerateQrInviteUrlForBaseVisitCommandV3())
+                .addCommand(new VisitorFaceRecognitionForBaseVisitCommandV3()));
+        return c;
+    }
+    
+    public static FacilioChain getRecurringInviteVisitorBeforeSaveOnUpdateChain() {
+        FacilioChain c = getDefaultChain();
+
+        c.addCommand(new PutOldVisitRecordsInInviteVisitorContextCommandV3());
+        c.addCommand(new AddOrUpdateVisitorFromBaseVisitCommandV3());
+		c.addCommand(new AddOrUpdateScheduleInRecurringVisitorCommandV3());
+
+        return c;
+    }
+
 
     public static FacilioChain getVisitorBeforeSaveOnAddChain() {
         FacilioChain c = getDefaultChain();
@@ -479,20 +610,18 @@ public class TransactionChainFactoryV3 {
         return c;
     }
     
-    public static FacilioChain getTriggerAddChain() {
+    public static FacilioChain getTriggerAddOrUpdateChain() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new AddTriggerCommand());
-        c.addCommand(new AddOrUpdateTriggerInclExclCommand());
+        c.addCommand(new AddOrUpdateTriggerCommand());
+//        c.addCommand(new AddOrUpdateTriggerInclExclCommand());
         c.addCommand(new AddOrUpdateTriggerActionAndRelCommand());
         return c;
     }
-    
-    public static FacilioChain getTriggerUpdateChain() {
-        FacilioChain c = getDefaultChain();
-        c.addCommand(new UpdateTriggerCommand());
-        c.addCommand(new AddOrUpdateTriggerInclExclCommand());
-        c.addCommand(new AddOrUpdateTriggerActionAndRelCommand());
-        return c;
+
+    public static FacilioChain getAllTriggers() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new GetAllTriggersCommand());
+        return chain;
     }
     
     public static FacilioChain getTriggerDeleteChain() {
@@ -576,4 +705,10 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain getChangeStatusOfTriggerChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new ChangeStatusOfTriggerCommand());
+        chain.addCommand(new AddOrUpdateTriggerCommand());
+        return chain;
+    }
 }

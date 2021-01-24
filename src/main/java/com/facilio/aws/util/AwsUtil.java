@@ -481,7 +481,7 @@ public class AwsUtil
 		}
 	}
 
-	private static void logEmail (JSONObject mailJson) throws Exception {
+	public static void logEmail (JSONObject mailJson) throws Exception {
 
 		try {
 			String toAddress = (String) mailJson.get("to");

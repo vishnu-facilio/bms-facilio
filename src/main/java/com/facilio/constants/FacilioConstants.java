@@ -146,6 +146,7 @@ public class FacilioConstants {
 	}
 
 	public static class ContextNames {
+		public static final String VERIFY_USER = "verifyUser";
 		public static final String RULE_LOG_MODULE_DATA = "ruleLogModuleData";
 		public static final String RULE_LOG_MODULE_DATA_LIST = "ruleLogModuleDataList";
 		public static final String FIELD_ACCESS_TYPE = "fieldAccessType";
@@ -1625,8 +1626,14 @@ public class FacilioConstants {
 		public static final String IS_EDIT = "isEdit";
 		public static final String PHONE_NUMBER = "phoneNumber";
 		public static final String PASSCODE = "passCode";
-		
-		
+		public static final String VISITOR_LOG_RECORDS = "visitorlogrecords";
+		public static final String INVITE_VISITOR_RECORDS = "visitorlogrecords";
+		public static final String BASE_VISIT = "basevisit";
+		public static final String VISITOR_LOG = "visitorlog";
+		public static final String INVITE_VISITOR = "invitevisitor";
+		public static final String RECURRING_INVITE_VISITOR = "recurringinvitevisitor";
+		public static final String GROUP_VISITOR_INVITE = "groupinvite";
+		public static final String BASE_SCHEDULE_ID = "baseScheduleId";
 		
 		public static final int SITE_BOUNDARY_RADIUS = 1000; //meter 
 		public static final int ASSET_BOUNDARY_RADIUS = 10; //meter 
@@ -2085,6 +2092,10 @@ public class FacilioConstants {
 			classMap.put(VISITOR_LOGGING, VisitorLoggingContext.class);
 			classMap.put(VISITOR_INVITE_REL, InviteVisitorRelContext.class);
 			classMap.put(VISITOR_TYPE,VisitorTypeContext.class);
+			classMap.put(BASE_VISIT, BaseVisitContextV3.class);
+			classMap.put(VISITOR_LOG, VisitorLogContextV3.class);
+			classMap.put(INVITE_VISITOR, InviteVisitorContextV3.class);
+			classMap.put(GROUP_VISITOR_INVITE, GroupInviteContextV3.class);
 			
 			classMap.put(ModuleNames.DEVICES, DeviceContext.class);
 

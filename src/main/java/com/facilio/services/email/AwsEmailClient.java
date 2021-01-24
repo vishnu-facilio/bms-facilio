@@ -28,9 +28,10 @@ class AwsEmailClient extends EmailClient {
             sendEmailViaAws(mailJson);
 
     }
-    public static AwsEmailClient getClient(){
+    public static EmailClient getClient(){
         return INSTANCE;
     }
+
     private void sendEmailViaAws(JSONObject mailJson) throws Exception  {
 
         if(canSendEmail(mailJson)) {

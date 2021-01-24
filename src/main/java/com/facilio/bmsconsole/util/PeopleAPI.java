@@ -320,8 +320,12 @@ public class PeopleAPI {
 	        }
 		}
 	}
-	
+
 	public static void updatePeoplePortalAccess(PeopleContext person, String linkName) throws Exception {
+		updatePeoplePortalAccess(person, linkName, false);
+	}
+	
+	public static void updatePeoplePortalAccess(PeopleContext person, String linkName, boolean verifyUser) throws Exception {
 	
 		PeopleContext existingPeople = (PeopleContext) RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE, person.getId());
 		if(StringUtils.isEmpty(existingPeople.getEmail()) && (existingPeople.isOccupantPortalAccess())){
@@ -340,7 +344,7 @@ public class PeopleAPI {
 				    	ApplicationApi.addUserInApp(user, false);
 					}
 					else {
-						addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP, appDomain.getIdentifier());
+						addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP, appDomain.getIdentifier(), verifyUser);
 					}
 				}
 				else {
@@ -514,8 +518,12 @@ public class PeopleAPI {
 		return user;
 		
 	}
-	
+
 	public static User addPortalAppUser(PeopleContext existingPeople, String linkName, String identifier) throws Exception {
+		return addPortalAppUser(existingPeople, linkName, linkName, false);
+	}
+	
+	public static User addPortalAppUser(PeopleContext existingPeople, String linkName, String identifier, boolean verifyUser) throws Exception {
 		if(StringUtils.isEmpty(linkName)) {
 			throw new IllegalArgumentException("Invalid link name");
 		}
@@ -525,7 +533,7 @@ public class PeopleAPI {
 		user.setEmail(existingPeople.getEmail());
 		user.setPhone(existingPeople.getPhone());
 		user.setName(existingPeople.getName());
-		user.setUserVerified(false);
+		user.setUserVerified(verifyUser);
 		user.setInviteAcceptStatus(false);
 		user.setInvitedTime(System.currentTimeMillis());
 		user.setPeopleId(existingPeople.getId());
@@ -534,8 +542,12 @@ public class PeopleAPI {
 		user.setApplicationId(appId);
 		user.setAppDomain(ApplicationApi.getAppDomainForApplication(appId));
 		
-		
-		AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getOrgId(), user, true, false, identifier, false, false);
+		if (!verifyUser) {
+			AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getOrgId(), user, true, false, identifier, false, false);
+		} else {
+			AccountUtil.getUserBean().createUser(AccountUtil.getCurrentOrg().getOrgId(), user, identifier, false, false);
+		}
+
 		return user;
 	}
 	

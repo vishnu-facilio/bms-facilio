@@ -5,6 +5,8 @@ import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
+import java.util.Map;
+
 @Getter @Setter
 public class BMSEventContext extends BaseEventContext {
 
@@ -37,7 +39,7 @@ public class BMSEventContext extends BaseEventContext {
     }
     	
     private long agentId = -1;
-    private List<String> sources;
+    private List<Map<String,Object>> sources;
     public long getAgentId() {
 		return agentId;
 	}

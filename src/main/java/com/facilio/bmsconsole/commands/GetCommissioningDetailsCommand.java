@@ -90,12 +90,17 @@ public class GetCommissioningDetailsCommand extends FacilioCommand {
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getPointFields());
 		GetPointRequest getPointRequest = new GetPointRequest()
 				.filterConfigurePoints()
-				.withControllerIds(log.getControllerIds())
 				.ofType(log.getControllerTypeEnum())
 //				.initBuilder(null)
 				.orderBy(fieldMap.get(AgentConstants.NAME).getCompleteColumnName())
 				.limit(-1);
 				;
+		if (log.isLogical()) {
+			getPointRequest.withLogicalControllers(log.getAgentId());
+		}
+		else {
+			getPointRequest.withControllerIds(log.getControllerIds());
+		}
 		if (CollectionUtils.isNotEmpty(log.getPoints())) {
 			List<Long> ids = (List<Long>) log.getPoints().stream().map(point -> (long) ((Map<String, Object>)point).get("id") )
 					.collect(Collectors.toList());
@@ -195,7 +200,7 @@ public class GetCommissioningDetailsCommand extends FacilioCommand {
 				header.put("name", AgentConstants.INSTANCE_TYPE);
 				typeHeaders.add(header);
 				break;
-			
+				
 		}
 		return typeHeaders;
 	}

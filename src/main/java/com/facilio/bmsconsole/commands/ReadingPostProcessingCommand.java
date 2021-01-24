@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.trigger.context.TriggerType;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;

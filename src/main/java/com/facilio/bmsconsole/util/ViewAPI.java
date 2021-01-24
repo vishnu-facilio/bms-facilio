@@ -641,7 +641,6 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 		}
 		
 
-		if (viewSharing != null && !viewSharing.isEmpty()) {
 			FacilioView defaultView = ViewFactory.getView(modBean.getModule(modId > 0 ? modId : view.getModuleId()), view.getName(), modBean);
 			if(defaultView == null) {
 				SingleSharingContext defaultAppSharing = SharingAPI.getCurrentAppTypeSharingForCustomViews();
@@ -665,7 +664,7 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 				viewSharing.add(newViewSharing);	
 			}
 			SharingAPI.addSharing(viewSharing, view.getId(), ModuleFactory.getViewSharingModule());
-		}
+		
 	}
 	
 	private static void setCriteriaValue(Criteria criteria) throws Exception {

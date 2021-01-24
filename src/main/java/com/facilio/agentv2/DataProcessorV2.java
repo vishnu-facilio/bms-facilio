@@ -27,6 +27,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.tasker.tasks.EventUtil;
+import com.facilio.events.util.EventAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -37,10 +38,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class DataProcessorV2
 {
@@ -150,6 +148,9 @@ public class DataProcessorV2
                 case AGENT_EVENTS:
                     processStatus = processAgentEvents(agent, payload);
                     break;
+                case ALARM_SOURCE:
+                    processStatus = processAlarmSourceEvents(agent,payload);
+                    break;
                 case EVENTS:
                     List<EventRuleContext> eventRules = new ArrayList<>();
                     ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
@@ -167,6 +168,18 @@ public class DataProcessorV2
         }
         LOGGER.info(" process status " + processStatus);
         return processStatus;
+    }
+
+    private boolean processAlarmSourceEvents ( FacilioAgent agent,JSONObject payload ) {
+        try {
+            if(payload.containsKey(AgentConstants.DATA)) {
+                List<Map<String, Object>> props = (List<Map<String, Object>>)payload.getOrDefault(AgentConstants.DATA,Collections.emptyList());
+                return !props.isEmpty() && EventAPI.addBulkSources(props,agent.getId());
+            }
+        } catch (Exception e) {
+            LOGGER.error("Exception occurred while adding bulk alarm source list");
+        }
+        return false;
     }
 
     private boolean processAck(FacilioAgent agent, JSONObject payload) {

@@ -18,9 +18,11 @@ import com.facilio.bmsconsoleV3.context.V3CustomModuleData;
 import com.facilio.bmsconsoleV3.context.V3MailMessageContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.util.V3AttachmentAPI;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.fs.FileInfo;
 import com.facilio.modules.fields.FileField;
 import com.facilio.services.filestore.FileStore;
+import com.facilio.trigger.util.TriggerUtil;
 import com.facilio.v3.context.AttachmentV3Context;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.ChainUtil;
@@ -1624,6 +1626,58 @@ public enum ActionType {
 				Class beanClass = FacilioConstants.ContextNames.getClassFromModule(module);
 				createContext.put(Constants.BEAN_CLASS, beanClass);
 				createRecordChain.execute();
+			}
+		}
+	},
+	INVOKE_TRIGGER(34) {
+		@Override
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
+			Long triggerId = (Long) obj.get(TriggerUtil.TRIGGER_ID);
+			if (triggerId == null) {
+				return;
+			}
+
+			List<ModuleBaseWithCustomFields> records = null;
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			final String invokeTriggerType = (String) obj.get(TriggerUtil.INVOKE_TRIGGER_TYPE);
+			switch (invokeTriggerType) {
+				case "lookup": {
+					if (currentRecord instanceof ModuleBaseWithCustomFields) {
+						Long lookupFieldId = (Long) obj.get(FacilioConstants.ContextNames.FIELD_ID);
+						FacilioField lookupField = modBean.getField(lookupFieldId);
+						if (lookupField instanceof LookupField) {
+							Object value = FieldUtil.getValue((ModuleBaseWithCustomFields) currentRecord, lookupField);
+							Long recordId = (value instanceof ModuleBaseWithCustomFields) ? ((ModuleBaseWithCustomFields) value).getId() : null;
+							if (recordId != null) {
+								records = Collections.singletonList(RecordAPI.getRecord(((LookupField) lookupField).getLookupModule().getName(), recordId));
+							}
+						}
+					}
+				}
+				case "criteria": {
+					String moduleName = (String) obj.get(FacilioConstants.ContextNames.MODULE_NAME);
+					JSONObject criteriaJSON = (JSONObject) obj.get(FacilioConstants.ContextNames.CRITERIA);
+					Criteria criteria = FieldUtil.getAsBeanFromJson(criteriaJSON, Criteria.class);
+					if (criteria != null && !criteria.isEmpty()) {
+						FacilioModule module = modBean.getModule(moduleName);
+						SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<>()
+								.beanClass(FacilioConstants.ContextNames.getClassFromModule(module))
+								.module(module)
+								.select(modBean.getAllFields(moduleName));
+						builder.andCriteria(criteria);
+						records = builder.get();
+					}
+
+				}
+			}
+
+			if (CollectionUtils.isNotEmpty(records)) {
+				FacilioChain triggerExecuteChain = TransactionChainFactoryV3.getTriggerExecuteChain();
+				FacilioContext triggerExecutionContext = triggerExecuteChain.getContext();
+				triggerExecutionContext.put(FacilioConstants.ContextNames.ID, triggerId);
+				triggerExecutionContext.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.INVOKE_TRIGGER);
+				triggerExecutionContext.put(FacilioConstants.ContextNames.RECORD_LIST, records);
+				triggerExecuteChain.execute();
 			}
 		}
 	}

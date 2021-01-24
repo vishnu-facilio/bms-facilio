@@ -289,7 +289,7 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 		this.widgetUrl = widgetUrl;
 	}
 	
-	public abstract JSONObject widgetJsonObject();
+	public abstract JSONObject widgetJsonObject(boolean optimize);
 	
 	public Long getDashboardTabId() {
 		return dashboardTabId;

@@ -16,7 +16,7 @@ public class AddControlScheduleBeforeSaveCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		
-		ControlScheduleContext schedule = (ControlScheduleContext) ControlScheduleUtil.getObjectFormRecordMap(context, ControlScheduleUtil.CONTROL_SCHEDULE_MODULE_NAME);
+		ControlScheduleContext schedule = (ControlScheduleContext) ControlScheduleUtil.getObjectFromRecordMap(context, ControlScheduleUtil.CONTROL_SCHEDULE_MODULE_NAME);
 		
         if(schedule.getBusinessHour() == null) {
         	

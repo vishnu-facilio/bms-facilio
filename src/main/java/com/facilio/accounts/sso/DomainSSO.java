@@ -75,6 +75,10 @@ public class DomainSSO {
 
     @Getter
     @Setter
+    private Boolean isCreateUser;
+
+    @Getter
+    @Setter
     private long createdTime;
 
     @Getter

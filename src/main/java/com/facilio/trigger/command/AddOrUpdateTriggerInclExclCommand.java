@@ -2,7 +2,6 @@ package com.facilio.trigger.command;
 
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
@@ -14,7 +13,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.trigger.context.Trigger;
+import com.facilio.trigger.context.BaseTriggerContext;
 import com.facilio.trigger.context.TriggerInclExclContext;
 import com.facilio.trigger.util.TriggerUtil;
 
@@ -24,7 +23,7 @@ public class AddOrUpdateTriggerInclExclCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		Trigger trigger = (Trigger)context.get(TriggerUtil.TRIGGER_CONTEXT);
+		BaseTriggerContext trigger = (BaseTriggerContext)context.get(TriggerUtil.TRIGGER_CONTEXT);
 		
 		Map<String, FacilioField> FieldMAp = FieldFactory.getAsMap(FieldFactory.getTriggerInclExclFields());
 		
@@ -34,19 +33,19 @@ public class AddOrUpdateTriggerInclExclCommand extends FacilioCommand {
 		
 		delete.delete();
 		
-		if(trigger.getInclExclResources() != null && !trigger.getInclExclResources().isEmpty()) {
-			
-			GenericInsertRecordBuilder insert = new GenericInsertRecordBuilder()
-					.table(ModuleFactory.getTriggerInclExclModule().getTableName())
-					.fields(FieldFactory.getTriggerInclExclFields());
-			
-			for(TriggerInclExclContext inclExcl : trigger.getInclExclResources()) {
-				inclExcl.setTriggerId(trigger.getId());
-				
-				insert.addRecord(FieldUtil.getAsProperties(inclExcl));
-			}
-			insert.save();
-		}
+//		if(trigger.getInclExclResources() != null && !trigger.getInclExclResources().isEmpty()) {
+//
+//			GenericInsertRecordBuilder insert = new GenericInsertRecordBuilder()
+//					.table(ModuleFactory.getTriggerInclExclModule().getTableName())
+//					.fields(FieldFactory.getTriggerInclExclFields());
+//
+//			for(TriggerInclExclContext inclExcl : trigger.getInclExclResources()) {
+//				inclExcl.setTriggerId(trigger.getId());
+//
+//				insert.addRecord(FieldUtil.getAsProperties(inclExcl));
+//			}
+//			insert.save();
+//		}
 		return false;
 	}
 

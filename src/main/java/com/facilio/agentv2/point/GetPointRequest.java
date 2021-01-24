@@ -2,9 +2,11 @@ package com.facilio.agentv2.point;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
@@ -15,12 +17,14 @@ import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.module.AgentFieldFactory;
 import com.facilio.agent.module.AgentModuleFactory;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.BmsAggregateOperators;
@@ -66,9 +70,21 @@ public class GetPointRequest {
         return withControllerIds(Collections.singletonList(controllerId));
     }
 
-    public GetPointRequest withControllerIds ( List<Long> controllerIds ) throws Exception {
+    public GetPointRequest withControllerIds ( Collection<Long> controllerIds ) throws Exception {
         criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(POINT_MODULE),controllerIds,NumberOperators.EQUALS));
         return this;
+    }
+    
+    public GetPointRequest withLogicalControllers(long agentId) throws Exception {
+    		Set<Long> controllersIds = ControllerApiV2.getControllerIds(Collections.singletonList(agentId));
+		if (CollectionUtils.isNotEmpty(controllersIds)) {
+			criteria.addAndCondition(CriteriaAPI.getCondition(POINT_MAP.get(AgentConstants.LOGICAL),
+					String.valueOf(true), BooleanOperators.IS));
+			withControllerIds(controllersIds);
+			return this;
+		} else {
+			throw new IllegalArgumentException("ControllersIds should not be null for getting Virtual points.");
+		}
     }
 
     public GetPointRequest filterConfigurePoints() {

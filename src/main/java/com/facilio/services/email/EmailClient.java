@@ -24,21 +24,21 @@ import java.util.Map;
 public abstract class EmailClient {
 
     private static final Logger LOGGER = LogManager.getLogger(EmailClient.class.getName());
-    static final String SENDER="sender";
-    static final String MESSAGE="message";
-    static final String SUBJECT="subject";
-    static final String CC="cc";
-    static final String BCC="bcc";
-    static final String MAIL_TYPE="mailType";
-    static final String CONTENT_TYPE_TEXT_HTML="text/html; charset=UTF-8";
+    protected static final String SENDER="sender";
+    protected static final String MESSAGE="message";
+    protected static final String SUBJECT="subject";
+    protected static final String CC="cc";
+    protected static final String BCC="bcc";
+    protected static final String MAIL_TYPE="mailType";
+    protected static final String CONTENT_TYPE_TEXT_HTML="text/html; charset=UTF-8";
     private static final String CONTENT_TYPE_TEXT_PLAIN="text/plain; charset=UTF-8";
     private static final String MIME_MULTIPART_SUBTYPE_ALTERNATIVE="alternative";
     private static final String MIME_MULTIPART_SUBTYPE_MIXED="mixed";
     private static final String CONTENT_TRANSFER_ENCODING="Content-Transfer-Encoding";
     private static final String BASE_64 = "base64";
-    static final String HTML="html";
+    protected static final String HTML="html";
     private static final String HOST = "host";
-    static final String TO = "to";
+    protected static final String TO = "to";
     private static final String ERROR_MAIL_FROM="mlerror@facilio.com";
     private static final String ERROR_MAIL_TO="ai@facilio.com";
     private static final String ERROR_AT_FACILIO="error@facilio.com";
@@ -55,6 +55,21 @@ public abstract class EmailClient {
         MimeMessage message = constructMimeMessageContent(mailJson,session,files);
         message.addHeader(HOST, FacilioProperties.getAppDomain());
         return message;
+    }
+
+    public static String getNoReplyFromEmail() {
+        return getFromEmail("noreply");
+    }
+
+    public static String getFromEmail(String localPart) {
+        StringBuilder builder = new StringBuilder(localPart)
+                                        .append("@");
+        if (AccountUtil.getCurrentOrg() != null) {
+            builder.append(AccountUtil.getCurrentOrg().getDomain()).append(".");
+        }
+        builder.append("facilio.com");
+
+        return builder.toString();
     }
 
     public static MimeMessage constructMimeMessageContent(JSONObject mailJson, Session session,Map<String, String> files) throws Exception {

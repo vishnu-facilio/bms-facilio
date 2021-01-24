@@ -393,17 +393,15 @@ public class ExpressionContext implements WorkflowExpression {
 							boolean isRDMFromCache = true;
 							if(readingDataMeta == null) {
 								isRDMFromCache = false;
-								readingDataMeta = ReadingsAPI.getReadingDataMeta(Long.parseLong(parentIdString), select);
-								if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {				
-									if(readingDataMeta!= null && readingDataMeta.getValue() != null && !readingDataMeta.getValue().equals("-1.0") && readingDataMeta.getField() != null && readingDataMeta.getField() instanceof NumberField) {
-										NumberField numberField = (NumberField) readingDataMeta.getField();
-										Object value = UnitsUtil.convertToDisplayUnit(readingDataMeta.getValue(), numberField);	
-										if(value != null) {
-											readingDataMeta.setValue(value);
-											readingDataMeta.setActualValue(String.valueOf(value));
-										}													
-									}
-								}
+								readingDataMeta = ReadingsAPI.getReadingDataMeta(Long.parseLong(parentIdString), select);						
+								if(readingDataMeta!= null && readingDataMeta.getValue() != null && !readingDataMeta.getValue().equals("-1.0") && readingDataMeta.getField() != null && readingDataMeta.getField() instanceof NumberField) {
+									NumberField numberField = (NumberField) readingDataMeta.getField();
+									Object value = UnitsUtil.convertToDisplayUnit(readingDataMeta.getValue(), numberField);	
+									if(value != null) {
+										readingDataMeta.setValue(value);
+										readingDataMeta.setActualValue(String.valueOf(value));
+									}													
+								}								
 							}
 							if(readingDataMeta == null) {
 								throw new Exception("readingDataMeta is null for FieldName - "+fieldName +" moduleName - "+moduleName+" parentId - "+parentIdString);

@@ -1,44 +1,52 @@
 package com.facilio.trigger.context;
 
 import com.facilio.chain.FacilioContext;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.UpdateChangeSet;
+
+import java.util.List;
 
 public class TriggerAction {
 
-	long id = -1;
-	long orgId = -1;
-	String name;
-	Trigger_Action_Type actionType;
-	long typeRefPrimaryId = -1;
+	private long id = -1;
 	public long getId() {
 		return id;
 	}
 	public void setId(long id) {
 		this.id = id;
 	}
+
+	private long orgId = -1;
 	public long getOrgId() {
 		return orgId;
 	}
 	public void setOrgId(long orgId) {
 		this.orgId = orgId;
 	}
+
+	private String name;
 	public String getName() {
 		return name;
 	}
 	public void setName(String name) {
 		this.name = name;
 	}
+
+	private TriggerActionType actionType;
 	public int getActionType() {
 		if(actionType != null) {
 			return actionType.getVal();
 		}
 		return -1;
 	}
-	public Trigger_Action_Type getActionTypeEnum() {
+	public TriggerActionType getActionTypeEnum() {
 		return actionType;
 	}
 	public void setActionType(int actionType) {
-		this.actionType = Trigger_Action_Type.getActionType(actionType);
+		this.actionType = TriggerActionType.getActionType(actionType);
 	}
+
+	private long typeRefPrimaryId = -1;
 	public long getTypeRefPrimaryId() {
 		return typeRefPrimaryId;
 	}
@@ -46,7 +54,7 @@ public class TriggerAction {
 		this.typeRefPrimaryId = typeRefPrimaryId;
 	}
 	
-	public Object execute(FacilioContext context) throws Exception {
-		return actionType.performAction(context, typeRefPrimaryId);
+	public void execute(FacilioContext context, BaseTriggerContext trigger, String moduleName, ModuleBaseWithCustomFields record, List<UpdateChangeSet> changeSets) throws Exception {
+		actionType.performAction(context, trigger, moduleName, record, changeSets, typeRefPrimaryId);
 	}
 }

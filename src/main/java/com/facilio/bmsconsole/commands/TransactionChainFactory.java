@@ -44,6 +44,7 @@ import com.facilio.events.commands.NewExecuteEventRulesCommand;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.modules.fields.relations.CalculateDependencyCommand;
 import com.facilio.mv.command.*;
+import com.facilio.trigger.context.TriggerType;
 import com.facilio.workflows.command.*;
 import org.apache.commons.chain.Context;
 
@@ -295,6 +296,8 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_RULE, RuleType.CHILD_APPROVAL_RULE, RuleType.REQUEST_APPROVAL_RULE, RuleType.REQUEST_REJECT_RULE));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+
+			c.addCommand(new ExecuteAllTriggersCommand(TriggerType.MODULE_TRIGGER));
 
 			if (sendNotification) {
 				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 218L) {
@@ -2897,6 +2900,7 @@ public class TransactionChainFactory {
 			chain.addCommand(new UpdateStateForModuleDataCommand());
 			chain.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			chain.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
+			chain.addCommand(new ExecuteAllWorkflowsCommand());
 			return chain;
 		}
 
@@ -2904,6 +2908,7 @@ public class TransactionChainFactory {
 			FacilioChain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForInventoryRequest());
 			chain.addCommand(new AddOrUpdateInventoryRequestCommand());
+			chain.addCommand(new ExecuteAllWorkflowsCommand());
 			chain.addCommand(new LoadItemTransactionEntryInputCommand());
 			chain.addCommand(getAddOrUpdateItemTransactionsChain());
 			//rollups work with record_list object in the context

@@ -2,10 +2,11 @@ package com.facilio.pdf;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.opensymphony.xwork2.ActionContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -21,6 +22,7 @@ import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.services.filestore.PublicFileUtil;
 import com.facilio.util.RequestUtil;
+import com.opensymphony.xwork2.ActionContext;
 
 public class PdfUtil {
 
@@ -35,7 +37,7 @@ public class PdfUtil {
 			format = formats[0];
 		}
 		String pdfFileLocation = getFileLocation(format);
-		String serverName = getServerName();
+		String serverName = getServerName(url);
 		if (StringUtils.isEmpty(htmlContent)) {
 			htmlContent = "false";
 		}
@@ -58,7 +60,7 @@ public class PdfUtil {
 			format = formats[0];
 		}
 		String pdfFileLocation = getFileLocation(format);
-		String serverName = getServerName();
+		String serverName = getServerName(url);
 		JSONObject additionalInfo = new JSONObject();
 		setAdditionalInfo(additionalInfo);
 		
@@ -77,13 +79,19 @@ public class PdfUtil {
 		return pdfFileLocation;
 	}
 	
-	private static String getServerName() {
+	private static String getServerName(String url) {
 		HttpServletRequest request = ActionContext.getContext() != null ? ServletActionContext.getRequest() : null;
 		if (request == null) {
 			String serverName = FacilioProperties.getAppDomain();
 			return serverName.split(":")[0];
 		}
 		else {
+			try {
+				URI uri = new URI(url);
+				return uri.getHost();
+			} catch (URISyntaxException e) {
+				LOGGER.info("Exception occurred", e);
+			}
 			return request.getServerName().replace(RequestUtil.getProtocol(request)+"://", StringUtils.EMPTY);
 		}
 	}

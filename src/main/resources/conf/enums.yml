@@ -145,4 +145,10 @@ enums:
   - name: ClickAction
     enumClassName: com.facilio.report.context.ReportSettings$ClickAction
 
+  - name: FiscalYear
+    enumClassName: com.facilio.bmsconsoleV3.context.budget.BudgetContext$FiscalYear
+
+  - name: FiscalYearStart
+    enumClassName: com.facilio.bmsconsoleV3.context.budget.BudgetContext$FiscalYearStart
+
 

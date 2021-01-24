@@ -453,6 +453,9 @@ public class ApplicationApi {
             configJSON.put("type", "alarmrule");
             webTabs.add(new WebTabContext("Alarm Notifications", "notification", WebTabContext.Type.CUSTOM, null, layout.getApplicationId(), configJSON));
             configJSON = new JSONObject();
+            configJSON.put("type","alarm_mapping");
+            webTabs.add(new WebTabContext("Alarm Mapping","alarmmapping",WebTabContext.Type.CUSTOM,null,layout.getApplicationId(),configJSON));
+            configJSON = new JSONObject();
             configJSON.put("type", "metrics");
             webTabs.add(new WebTabContext("Metrics", "metrics", WebTabContext.Type.CUSTOM,null, layout.getApplicationId(), configJSON));
             configJSON = new JSONObject();
@@ -762,7 +765,7 @@ public class ApplicationApi {
             webTabs.add(new WebTabContext("Dashboard", "dashboard", WebTabContext.Type.DASHBOARD, null, appId, null));
             groupNameVsWebTabsMap.put("home", webTabs);
 
-            webTabGroups.add(new WebTabGroupContext("Work Requests", "workorder", layout.getId(), 201, groupOrder++));
+            webTabGroups.add(new WebTabGroupContext("My Requests", "workorder", layout.getId(), 201, groupOrder++));
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("Requests", "workorders", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("workorder").getModuleId()), appId, null));
             groupNameVsWebTabsMap.put("workorder", webTabs);

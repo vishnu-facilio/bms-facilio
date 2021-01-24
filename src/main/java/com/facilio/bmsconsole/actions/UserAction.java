@@ -7,9 +7,14 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.facilio.accounts.bean.UserBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.iam.accounts.util.IAMUserUtil;
+import com.facilio.modules.FieldUtil;
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
@@ -118,6 +123,26 @@ public class UserAction extends FacilioAction {
 			return appDomain;
 		}
 		return AccountUtil.getDefaultAppDomain();
+	}
+
+	private String appLinkName;
+
+	public String getAppLinkName() {
+		return appLinkName;
+	}
+
+	public void setAppLinkName(String appLinkName) {
+		this.appLinkName = appLinkName;
+	}
+
+	private String email;
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public void setAppDomain(String appDomain) {
@@ -701,5 +726,26 @@ public class UserAction extends FacilioAction {
 		removeMobileSetting();
 		setResult(FacilioConstants.ContextNames.USER_MOBILE_SETTING, userMobileSetting);
 		return SUCCESS;
+	}
+
+	public String getUserByEmail() throws Exception {
+		ApplicationContext app = ApplicationApi.getApplicationForLinkName(appLinkName);
+		if(app == null) {
+			setResult("message", "Invalid app link name");
+			return ERROR;
+		}
+		List<AppDomain> appDomainList = IAMAppUtil.getAppDomainForType(app.getDomainType(), AccountUtil.getCurrentOrg().getOrgId());
+		if(CollectionUtils.isNotEmpty(appDomainList)){
+			User user = AccountUtil.getUserBean().getUserFromEmail(email, appDomainList.get(0).getIdentifier(), AccountUtil.getCurrentOrg().getOrgId());
+			if(user != null) {
+				setResult(FacilioConstants.ContextNames.USER, user);
+				return SUCCESS;
+			}
+		}
+		setResult("message", "Invalid user email");
+		return ERROR;
+
+
+
 	}
 }

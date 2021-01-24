@@ -779,7 +779,7 @@ public class ReadingsAPI {
 		return selectBuilder.fetchFirst();
 	}
 
-	private static final int CURRENT_TIME_BUFFER = 5 * 1000;
+	private static final int CURRENT_TIME_BUFFER = 5 * 60 * 1000; // Having 5 min buffer
 	public static Map<String, ReadingDataMeta> updateReadingDataMeta(List<FacilioField> fieldsList,List<ReadingContext> readingList,Map<String, ReadingDataMeta> metaMap) throws SQLException {
 
 

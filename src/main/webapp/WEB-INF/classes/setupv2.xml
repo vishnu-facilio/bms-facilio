@@ -53,13 +53,18 @@
 			<param name="permission">GENERAL,COMPANY_PROFILE</param>
 		</action>
 
-		<action name="get" class="com.facilio.bmsconsole.actions.SetupActions" method="getPortalSSOSettings">
+		<action name="get" class="com.facilio.bmsconsole.actions.SetupActions" method="fetchPortalSSOSettings">
 			<param name="moduleName">setup</param>
 			<param name="permission">GENERAL,COMPANY_PROFILE</param>
 			<result name="success" type="json">
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">spEntityId, spMetadataURL, spAcsURL, ^domainSSO.*</param>
 			</result>
+		</action>
+
+		<action name="updateCreateUserStatus" class="com.facilio.bmsconsole.actions.SetupActions" method="updateCreateUserStatus">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL,COMPANY_PROFILE</param>
 		</action>
 	</package>
 

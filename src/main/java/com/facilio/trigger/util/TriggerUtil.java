@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 
+import com.facilio.modules.*;
+import com.facilio.trigger.context.*;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
 
@@ -17,44 +20,37 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.tasker.ScheduleInfo;
 import com.facilio.time.DateTimeUtil;
-import com.facilio.trigger.context.Trigger;
-import com.facilio.trigger.context.TriggerAction;
-import com.facilio.trigger.context.TriggerInclExclContext;
-import com.facilio.trigger.context.TriggerLog;
-import com.facilio.trigger.context.Trigger_Type;
 
 public class TriggerUtil {
 	
 	public static final String TRIGGER_CONTEXT = "triggerContext";
-	
-	public static void executeTriggerActions(List<Trigger> triggers, FacilioContext context) throws Exception {
-		
-		List<TriggerLog> logs = new ArrayList<TriggerLog>();
-		
-		for(Trigger trigger :triggers) {
-			
-			if(trigger.getTriggerActions() != null) {
-				
-				for(TriggerAction action : trigger.getTriggerActions()) {
-					
-					action.execute((FacilioContext)context);
-				
-					TriggerLog log = new TriggerLog();
-					log.setTriggerId(trigger.getId());
-					log.setTriggerActionId(action.getId());
-					log.setExecutionTime(DateTimeUtil.getCurrenTime());
-					
-					logs.add(log);
+	public static final String TRIGGERS_LIST = "triggerList";
+	public static final String TRIGGER_ID = "triggerId";
+	public static final String INVOKE_TRIGGER_TYPE = "invokeTriggerType";
+
+	public static void executeTriggerActions(List<BaseTriggerContext> triggers, FacilioContext context,
+											 String moduleName, ModuleBaseWithCustomFields record, List<UpdateChangeSet> changeSets) throws Exception {
+		List<TriggerLog> logs = new ArrayList<>();
+		for(BaseTriggerContext trigger :triggers) {
+			if (trigger.shouldInvoke()) {
+				if (trigger.getTriggerActions() != null) {
+					for (TriggerAction action : trigger.getTriggerActions()) {
+						action.execute(context, trigger, moduleName, record, changeSets);
+						TriggerLog log = new TriggerLog();
+						log.setTriggerId(trigger.getId());
+						log.setTriggerActionId(action.getId());
+						if (record != null) {
+							log.setRecordId(record.getId());
+						}
+						log.setExecutionTime(DateTimeUtil.getCurrenTime());
+						logs.add(log);
+					}
 				}
 			}
 		}
-		
 		addTriggerLogs(logs);
 	}
 	
@@ -70,7 +66,7 @@ public class TriggerUtil {
 		insert.save();
 	}
 
-	public static Trigger getTrigger(long triggerId) throws Exception {
+	public static BaseTriggerContext getTrigger(long triggerId) throws Exception {
 		
 		List<FacilioField> fields = FieldFactory.getTriggerFields();
 		FacilioModule module = ModuleFactory.getTriggerModule();
@@ -82,33 +78,34 @@ public class TriggerUtil {
 		List<Map<String, Object>> props = select.get();
 		
 		if(props != null && !props.isEmpty()) {
-			Trigger trigger = FieldUtil.getAsBeanFromMap(props.get(0), Trigger.class);
+			BaseTriggerContext trigger = FieldUtil.getAsBeanFromMap(props.get(0), BaseTriggerContext.class);
 			fillTriggerExtras(Collections.singletonList(trigger));
 			return trigger;
 		}
 		return null;
 	}
 	
-	public static List<Trigger> getTriggers(FacilioModule module, List<EventType> activityTypes,Criteria criteria, Trigger_Type... triggerTypes) throws Exception {
+	public static List<BaseTriggerContext> getTriggers(FacilioModule module, List<EventType> activityTypes, Criteria criteria, boolean onlyActive, TriggerType... triggerTypes) throws Exception {
 		FacilioModule triggerModule = ModuleFactory.getTriggerModule();
 		List<FacilioField> fields = FieldFactory.getTriggerFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
 		Criteria cri = new Criteria();
-		
 		cri.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), module.getExtendedModuleIds(), NumberOperators.EQUALS));
-		cri.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("childModuleId"), module.getExtendedModuleIds(), NumberOperators.EQUALS));
-		
+
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
 				.table(triggerModule.getTableName())
 				.select(fields)
 				.andCriteria(cri)
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), Boolean.TRUE.toString(), BooleanOperators.IS))
 				;
+
+		if (onlyActive) {
+			select.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), Boolean.TRUE.toString(), BooleanOperators.IS));
+		}
 		
 		if(triggerTypes != null && triggerTypes.length > 0) {
 			StringJoiner ids = new StringJoiner(",");
-			for(Trigger_Type type : triggerTypes) {
+			for(TriggerType type : triggerTypes) {
 				ids.add(String.valueOf(type.getValue()));
 			}
 
@@ -119,25 +116,17 @@ public class TriggerUtil {
 			select.andCriteria(criteria);
 		}
 		
-		StringBuilder activityTypeWhere = new StringBuilder();
-		List<Integer> values = new ArrayList<>();
-		boolean first = true;
-		for (EventType type : activityTypes) {
-			if(first) {
-				first = false;
+		if (CollectionUtils.isNotEmpty(activityTypes)) {
+			Criteria activityCriteria = new Criteria();
+			for (EventType type : activityTypes) {
+				activityCriteria.addOrCondition(CriteriaAPI.getCondition("EVENT_TYPE", "eventType", String.valueOf(type.getValue()), NumberOperators.EQUALS));
 			}
-			else {
-				activityTypeWhere.append(" OR ");
-			}
-			activityTypeWhere.append("? & Facilio_Trigger.EVENT_TYPE = ?");
-			values.add(type.getValue());
-			values.add(type.getValue());
+			select.andCriteria(activityCriteria);
 		}
-		select.andCustomWhere(activityTypeWhere.toString(), values.toArray());
 
 		List<Map<String, Object>> props = select.get();
 
-		List<Trigger> triggers = FieldUtil.getAsBeanListFromMapList(props, Trigger.class);
+		List<BaseTriggerContext> triggers = FieldUtil.getAsBeanListFromMapList(props, BaseTriggerContext.class);
 		
 		if(triggers != null && !triggers.isEmpty()) {
 			fillTriggerExtras(triggers);
@@ -146,10 +135,10 @@ public class TriggerUtil {
 		return triggers;
 	}
 	
-	public static void fillTriggerExtras(List<Trigger> triggers) throws Exception {
+	public static void fillTriggerExtras(List<BaseTriggerContext> triggers) throws Exception {
 		
-		Map<Long,Trigger> triggerIDmap = new HashedMap<Long, Trigger>();
-		for(Trigger trigger : triggers) { 
+		Map<Long, BaseTriggerContext> triggerIDmap = new HashedMap<Long, BaseTriggerContext>();
+		for(BaseTriggerContext trigger : triggers) {
 			triggerIDmap.put(trigger.getId(), trigger); 
 		}
 		
@@ -171,21 +160,64 @@ public class TriggerUtil {
 			
 			triggerIDmap.get(triggerid).addTriggerAction(triggerAction);
 		}
-		
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getTriggerInclExclFields());
+	}
 
-		select = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getTriggerInclExclFields())
-				.table(ModuleFactory.getTriggerInclExclModule().getTableName())
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("triggerId"), StringUtils.join(triggerIDmap.keySet(), ","), NumberOperators.EQUALS));
-		
-		props = select.get();
-		
-		for(Map<String, Object> prop :props) {
-			Long triggerid = (Long)prop.get("triggerId");
-			TriggerInclExclContext triggerInclExcl = FieldUtil.getAsBeanFromMap(prop, TriggerInclExclContext.class);
-			triggerIDmap.get(triggerid).addTriggerInclExclResources(triggerInclExcl);
+	public static void deleteActionFromTrigger(long triggerId, long triggerActionId) {
+
+	}
+
+	public static void addActionToTrigger(BaseTriggerContext trigger, List<TriggerAction> actions) throws Exception {
+		trigger.setTriggerActions(actions);
+
+		List<TriggerActionRel> rels = new ArrayList<>();
+		for(TriggerAction action : trigger.getTriggerActions()) {
+			if(action.getId() < 0) {
+
+				Map<String, Object> props = FieldUtil.getAsProperties(action);
+
+				GenericInsertRecordBuilder insert = new GenericInsertRecordBuilder()
+						.table(ModuleFactory.getTriggerActionModule().getTableName())
+						.fields(FieldFactory.getTriggerActionFields())
+						.addRecord(props);
+
+				insert.save();
+
+				action.setId((long)props.get("id"));
+			}
+
+			TriggerActionRel rel = new TriggerActionRel(trigger.getId(),action.getId());
+			rels.add(rel);
 		}
-				
+
+		GenericInsertRecordBuilder insert = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getTriggerActionRelModule().getTableName())
+				.fields(FieldFactory.getTriggerActionRelFields())
+				.addRecords(FieldUtil.getAsMapList(rels, TriggerActionRel.class));
+
+		insert.save();
+	}
+	
+	public static int getMaxSchedulingDaysForScheduleFrequency(ScheduleInfo scheduleInfo){
+		
+		switch(scheduleInfo.getFrequencyTypeEnum()) 
+		{
+			case DO_NOT_REPEAT:
+				return -1;
+			case DAILY:
+				return 21;
+			case WEEKLY:
+				return 8*2;
+			case MONTHLY_DAY:
+			case MONTHLY_WEEK:
+			case YEARLY:
+			case YEARLY_WEEK:
+			case QUARTERLY_DAY:
+			case QUARTERLY_WEEK:
+			case HALF_YEARLY_DAY:
+			case HALF_YEARLY_WEEK:
+				return 366;
+			default:
+				return -1;	
+		}
 	}
 }

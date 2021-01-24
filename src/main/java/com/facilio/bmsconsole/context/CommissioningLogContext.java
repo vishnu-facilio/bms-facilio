@@ -190,7 +190,7 @@ public class CommissioningLogContext {
 	@JsonIgnore
 	public void setControllers(List<Map<String, Object>> controllers) {
 		this.controllers = controllers;
-		if (controllers != null && controllerIds == null) {
+		if (controllers != null && controllerIds == null && !isLogical()) {
 			this.controllerIds = controllers.stream().map(controller -> (long)controller.get("id")).collect(Collectors.toList());
 		}
 	}
@@ -217,5 +217,16 @@ public class CommissioningLogContext {
 	}
 	public void setControllerType(int type) {
 		this.controllerType = FacilioControllerType.valueOf(type);
+	}
+	
+	private Boolean logical;
+	public Boolean getLogical() {
+		return logical;
+	}
+	public void setLogical(Boolean logical) {
+		this.logical = logical;
+	} 
+	public boolean isLogical() {
+		return logical == null ? false : logical;
 	}
 }

@@ -41,7 +41,7 @@
             <result name="success" type="json">
                 <param name="excludeNullProperties">true</param>
                 <param name="ignoreHierarchy">false</param>
-                <param name="includeProperties">^code.*,^data.*,^meta.*</param>
+                <param name="includeProperties">^code.*,^data.*,^meta.*,message</param>
             </result>
             <result name="failure" type="json">
                 <param name="ignoreHierarchy">false</param>
@@ -141,20 +141,22 @@
     </package>
     
     <package name="v3triggers" namespace="/api/v3/trigger" extends="v3Api">
-        <action name="add"
+        <action name="list"
                 class="com.facilio.trigger.action.TriggerAction"
-                method="addTrigger">
-        </action>
+                method="listTriggers" />
 
-        <action name="update"
+        <action name="addOrUpdate"
                 class="com.facilio.trigger.action.TriggerAction"
-                method="updateTrigger">
+                method="addOrUpdateTrigger">
         </action>
         
         <action name="delete"
                 class="com.facilio.trigger.action.TriggerAction"
                 method="deleteTrigger">
         </action>
+        <action name="changeStatus"
+                class="com.facilio.trigger.action.TriggerAction"
+                method="changeStatus" />
         
         <action name="execute"
                 class="com.facilio.trigger.action.TriggerAction"

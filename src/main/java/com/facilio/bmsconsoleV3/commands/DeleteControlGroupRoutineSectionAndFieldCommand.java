@@ -20,7 +20,7 @@ public class DeleteControlGroupRoutineSectionAndFieldCommand extends FacilioComm
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		ControlGroupRoutineContext routine = (ControlGroupRoutineContext) ControlScheduleUtil.getObjectFormRecordMap(context, ControlScheduleUtil.CONTROL_GROUP_ROUTINE_MODULE_NAME);
+		ControlGroupRoutineContext routine = (ControlGroupRoutineContext) ControlScheduleUtil.getObjectFromRecordMap(context, ControlScheduleUtil.CONTROL_GROUP_ROUTINE_MODULE_NAME);
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		

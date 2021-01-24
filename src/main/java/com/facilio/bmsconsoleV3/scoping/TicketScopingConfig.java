@@ -50,6 +50,7 @@ public class TicketScopingConfig extends ModuleScopingConfiguration {
             scopingList.add(scoping);
             scopingList.add(tenantScoping);
             scopingList.add(vendorScoping);
+
             ApplicationApi.addScopingConfigForApp(scopingList);
 
 

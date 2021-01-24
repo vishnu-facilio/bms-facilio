@@ -13,10 +13,10 @@ public class BudgetContext extends V3Context {
     private String name;
 
     //start month  of fiscal year of budget
-    private Integer fiscalYear;
+    private FiscalYear fiscalYear;
 
     //year of budget
-    private Integer fiscalYearStart;
+    private FiscalYearStart fiscalYearStart;
 
     private Long startDate;
     private Long endDate;
@@ -80,22 +80,6 @@ public class BudgetContext extends V3Context {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Integer getFiscalYear() {
-        return fiscalYear;
-    }
-
-    public void setFiscalYear(Integer fiscalYear) {
-        this.fiscalYear = fiscalYear;
-    }
-
-    public Integer getFiscalYearStart() {
-        return fiscalYearStart;
-    }
-
-    public void setFiscalYearStart(Integer fiscalYearStart) {
-        this.fiscalYearStart = fiscalYearStart;
     }
 
     public Long getStartDate() {
@@ -184,4 +168,143 @@ public class BudgetContext extends V3Context {
         }
         return null;
     }
+
+
+    public enum FiscalYearStart implements FacilioEnum {
+        FY2019("2019"),
+        FY2020("2020"),
+        FY2021("2021"),
+        FY2022("2022"),
+        FY2023("2023"),
+        FY2024("2024"),
+        FY2025("2025"),
+        FY2026("2026"),
+        FY2027("2027"),
+        FY2028("2028"),
+        FY2029("2029"),
+        FY2030("2030");
+
+        private String name;
+
+        FiscalYearStart(String name) {
+            this.name = name;
+        }
+
+        public static FiscalYearStart valueOf(int value) {
+            if (value > 0 && value <= values().length) {
+                return values()[value - 1];
+            }
+            return null;
+        }
+
+        @Override
+        public int getIndex() {
+            return ordinal() + 1;
+        }
+
+        @Override
+        public String getValue() {
+            return name;
+        }
+    }
+
+    public void setFiscalYearStart(Integer type) {
+        if (type != null) {
+            this.fiscalYearStart = FiscalYearStart.valueOf(type);
+        }
+    }
+
+    public FiscalYearStart getFiscalYearStartEnum() {
+        return fiscalYearStart;
+    }
+    public Integer getFiscalYearStart() {
+        if (fiscalYearStart != null) {
+            return fiscalYearStart.getIndex();
+        }
+        return null;
+    }
+
+    public enum FiscalYear implements FacilioEnum {
+        JAN("January"),
+        FEB("February"),
+        MAR("March"),
+        APR("April"),
+        MAY("May"),
+        JUN("June"),
+        JUL("July"),
+        AUG("August"),
+        SEP("September"),
+        OCT("October"),
+        NOV("November"),
+        DEC("December")
+
+                ;
+        private String name;
+
+        FiscalYear(String name) {
+            this.name = name;
+        }
+
+        public static FiscalYear valueOf(int value) {
+            if (value > 0 && value <= values().length) {
+                return values()[value - 1];
+            }
+            return null;
+        }
+
+        @Override
+        public int getIndex() {
+            return ordinal() + 1;
+        }
+
+        @Override
+        public String getValue() {
+            return name;
+        }
+    }
+
+    public void setFiscalYear(Integer type) {
+        if (type != null) {
+            this.fiscalYear = FiscalYear.valueOf(type);
+        }
+    }
+
+    public FiscalYear getFiscalYearEnum() {
+        return fiscalYear;
+    }
+    public Integer getFiscalYear() {
+        if (fiscalYear != null) {
+            return fiscalYear.getIndex();
+        }
+        return null;
+    }
+
+
+    private Double actualTotalExpense;
+    private Double actualTotalIncome;
+
+    public Double getActualTotalIncome() {
+        return actualTotalIncome;
+    }
+
+    public void setActualTotalIncome(Double totalInc) {
+        if(totalInc != null) {
+            final DecimalFormat df = new DecimalFormat(BudgetAPI.CURRENCY_PATTERN);
+            this.actualTotalIncome = Double.valueOf(df.format(totalInc));
+        }
+    }
+
+    public Double getActualTotalExpense() {
+        return actualTotalExpense;
+    }
+
+    public void setActualTotalExpense(Double totalExp) {
+        if(totalExp != null) {
+            final DecimalFormat df = new DecimalFormat(BudgetAPI.CURRENCY_PATTERN);
+            this.actualTotalExpense = Double.valueOf(df.format(totalExp));
+        }
+    }
+
+
+
 }

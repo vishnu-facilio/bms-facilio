@@ -19,7 +19,6 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.RollUpField;
-import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -447,32 +446,13 @@ public class ModuleAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.FORM_TYPE, formTypes);
 		context.put("handleStateField", true);
 		
-		FacilioChain getFieldsChain = FacilioChainFactory.getGetFieldsWithTemplateChain();
+		FacilioChain getFieldsChain = FacilioChainFactory.getGetFieldsChain();
 		getFieldsChain.execute(context);
 	
 		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-		List<FacilioField> workorderFields = new ArrayList<>();
-		if(FacilioConstants.ContextNames.WORK_ORDER.equals(getModuleName()))
-		{
-			for(FacilioField field : fields)
-			{
-				if(field.getName().equals("tenant")) {
-					if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) {
-					workorderFields.add(field);
-					}
-					continue;
-				}
-				workorderFields.add(field);
-			}
-			setFields(workorderFields);
-		}
-		else
-		{
-			setFields(fields);
-		}
-		Map<Long, List<FacilioForm>> fieldVsForms = (Map<Long, List<FacilioForm>>) context.get(FacilioConstants.ContextNames.FORM_FIELD_MAP);
-		setResult("fields", getFields());
-		setResult("fieldVsForms", fieldVsForms);
+		setResult("fields", fields);
+//		Map<Long, List<FacilioForm>> fieldVsForms = (Map<Long, List<FacilioForm>>) context.get(FacilioConstants.ContextNames.FORM_FIELD_MAP);
+//		setResult("fieldVsForms", fieldVsForms);
 		
 		return SUCCESS;
 	}
