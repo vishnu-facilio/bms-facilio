@@ -4,6 +4,8 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ServiceCatalogContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.util.FormsAPI;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
@@ -37,7 +39,17 @@ public class GetServiceCatalogDetailsCommand extends FacilioCommand {
 
             ServiceCatalogContext serviceCatalog = FieldUtil.getAsBeanFromMap(prop, ServiceCatalogContext.class);
             long formId = serviceCatalog.getFormId();
-            FacilioForm form = FormsAPI.getFormFromDB(formId);
+            
+            
+            Context formMetaContext = new FacilioContext();
+    		
+            formMetaContext.put(FacilioConstants.ContextNames.FORM_ID, formId);
+            formMetaContext.put(FacilioConstants.ContextNames.FETCH_FORM_RULE_FIELDS, true);
+    		
+    		FacilioChain c = FacilioChainFactory.getFormMetaChain();
+    		c.execute(formMetaContext);
+    		
+    		FacilioForm form = (FacilioForm) formMetaContext.get(FacilioConstants.ContextNames.FORM);
             serviceCatalog.setForm(form);
 
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
