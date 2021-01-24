@@ -430,7 +430,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		}
 	}
 
-	private Set<FacilioField> computeFields(FacilioField orgIdField, FacilioField moduleIdField, List<FacilioField> deleteFields) {
+	private Set<FacilioField> computeFields(FacilioField orgIdField, FacilioField moduleIdField, List<FacilioField> deleteFields, FacilioModule extendedModule) {
 		Set<FacilioField> selectFields = new HashSet<>();
 		if (!isAggregation) {
 			selectFields.add(orgIdField);
@@ -439,8 +439,12 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			if (FieldUtil.isSystemFieldsPresent(module)) {
 				selectFields.addAll(FieldFactory.getSystemPointFields(module.getParentModule()));
 			}
-			if (FieldUtil.isBaseEntityRootModule(module)) {
-				selectFields.addAll(FieldFactory.getBaseModuleSystemFields(module));
+			if (module.getTypeEnum() == FacilioModule.ModuleType.BASE_ENTITY) {
+				FacilioModule rootModule = module;
+				if (extendedModule != null) {
+					rootModule = extendedModule;
+				}
+				selectFields.addAll(FieldFactory.getBaseModuleSystemFields(rootModule));
 			}
 			if (module.isTrashEnabled()) {
 				selectFields.addAll(deleteFields);
@@ -603,7 +607,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			
 			scopeFieldsAndCriteria = ScopeHandler.getInstance().getFieldsAndCriteriaForSelect(module, joinModules);
 
-			Set<FacilioField> selectFields = computeFields(orgIdField, moduleIdField, deleteFields);
+			Set<FacilioField> selectFields = computeFields(orgIdField, moduleIdField, deleteFields, extendedModule);
 			builder.select(selectFields);
 
 			builder.groupBy(groupBy);
