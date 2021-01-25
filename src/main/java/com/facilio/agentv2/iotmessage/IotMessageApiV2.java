@@ -253,11 +253,6 @@ public class IotMessageApiV2 {
     }
 
     private static void publishIotMessage(String client, JSONObject object) throws Exception {
-		if (!FacilioProperties.isProduction()) {
-		    LOGGER.info(" not production "+object);
-			return;
-		}
-
         if (FacilioProperties.isOnpremise()) {
             publishToRabbitMQ(client, object);
         } else {
