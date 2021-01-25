@@ -591,7 +591,7 @@ public class FieldFactory {
         FacilioModule module = ModuleFactory.getNewAgentModule();
         fields.add(getIdField(module));
         fields.add(getField(AgentConstants.DEVICE_DETAILS, "DEVICE_DETAILS", module, FieldType.STRING));
-        fields.add(getField(AgentConstants.CONNECTED, "CONNECTED", module, FieldType.BOOLEAN));
+        fields.add(getAgentConnectedField(module));
         fields.add(getAgentNameField(module));
         fields.add(getField(AgentConstants.DISPLAY_NAME, "DISPLAY_NAME", module, FieldType.STRING));
         fields.add(getField(AgentConstants.DATA_INTERVAL, "DATA_INTERVAL", module, FieldType.NUMBER));
@@ -616,6 +616,10 @@ public class FieldFactory {
 
     public static FacilioField getAgentTypeField(FacilioModule module) {
         return getField("agentType", "AGENT_TYPE", module, FieldType.NUMBER);
+    }
+
+    public static FacilioField getAgentConnectedField(FacilioModule module) {
+        return getField(AgentConstants.CONNECTED, "CONNECTED", module, FieldType.BOOLEAN);
     }
 
     public static FacilioField getNewAgentTypeField(FacilioModule module) {

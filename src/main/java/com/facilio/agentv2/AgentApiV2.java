@@ -348,6 +348,7 @@ public class AgentApiV2 {
         filterFields.add(FieldFactory.getIdField(agentDataModule));
         filterFields.add(FieldFactory.getNameField(agentDataModule));
         filterFields.add(FieldFactory.getNewAgentTypeField(agentDataModule));
+        filterFields.add(FieldFactory.getAgentConnectedField(agentDataModule));
         filterFields.add(FieldFactory.getAgentTypeField(agentDataModule));
         filterFields.add(FieldFactory.getField(AgentConstants.DISPLAY_NAME, "DISPLAY_NAME", agentDataModule, FieldType.STRING));
         
