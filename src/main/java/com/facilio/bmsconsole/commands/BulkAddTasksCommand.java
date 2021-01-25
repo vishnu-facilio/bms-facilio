@@ -155,6 +155,9 @@ public class BulkAddTasksCommand extends FacilioCommand implements PostTransacti
 					task.setParentTicketId(wo.getId());
 					task.setInputValue(task.getDefaultValue());
 					task.setCreatedBy(AccountUtil.getCurrentUser());
+					if (wo.getSiteId() > 0) {
+						task.setSiteId(wo.getSiteId());
+					}
 					bulkWorkOrderContext.getPrerequisiteContextList().add(task);
 				}
 				List<TaskContext> prerequisiteContexts = bulkWorkOrderContext.getPrerequisiteContextList().stream().filter(task -> task.getParentTicketId() == wo.getId()).collect(Collectors.toList());

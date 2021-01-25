@@ -319,27 +319,18 @@ public class UpdateWorkOrderCommand extends FacilioCommand {
 	}
 	
 	private void addActivity(WorkOrderContext workOrder, List<WorkOrderContext> oldWos, Map<Long, List<UpdateChangeSet>> changeSets, List<Long> recordIds, ModuleBean modBean, String moduleName, Context context) throws Exception {
-		if (workOrder.getSiteId() != -1) {
-			JSONObject info = new JSONObject();
-			JSONObject woupdate = new JSONObject();
-		    List<Object> wolist = new ArrayList<Object>();
-			info.put("field", "site");
-			info.put("displayName", "Site");
-			info.put("newValue", workOrder.getSiteId());
-			wolist.add(info);
-		    woupdate.put("woupdate", wolist);
-			CommonCommandUtil.addActivityToContext(recordIds.get(0), workOrder.getCurrentTime(), WorkOrderActivityType.UPDATE, woupdate, (FacilioContext) context);
-		}
 		if ( (workOrder.getAssignedTo() != null && workOrder.getAssignedTo().getId() != -1) || (workOrder.getAssignmentGroup() != null && workOrder.getAssignmentGroup().getId() != -1) ) {
 			for (WorkOrderContext oldWo: oldWos) {
 				addAssignmentActivity(workOrder, oldWo.getId(), oldWo, context);
 			}
-		} else if (workOrder.getVendor() != null && workOrder.getVendor().getId() != -1) {
+		} 
+		if (workOrder.getVendor() != null && workOrder.getVendor().getId() > 0) {
 			for (WorkOrderContext oldWo : oldWos) {
 				addVendorAssignmentActivity(workOrder, oldWo.getId(), oldWo, context);
 			}
 		}
-		else if (!changeSets.isEmpty() && workOrder.getApprovalStateEnum() == null && workOrder.getStatus() == null) {
+		List<String> specialFields = Arrays.asList(new String[] {"assignedBy", "assignedTo", "assignmentGroup", "vendor"});
+		 if (!changeSets.isEmpty() && workOrder.getApprovalStateEnum() == null && workOrder.getStatus() == null) {
 
 			Iterator it = recordIds.iterator();
 			List<UpdateChangeSet> changeSetList = null;
@@ -356,17 +347,22 @@ public class UpdateWorkOrderCommand extends FacilioCommand {
 				Object newValue = changeset.getNewValue();
 				FacilioField field = modBean.getField(fieldid, moduleName); 
 				
+				if (specialFields.contains(field.getName())) {
+					continue;
+				}
+				
 				JSONObject info = new JSONObject();
 				info.put("field", field.getName());
 				info.put("displayName", field.getDisplayName());
 				
-				if (field.getName().contains("resource")) {
-					ResourceContext resource = ResourceAPI.getResource((long) newValue);
-					info.put("newValue", resource.getName());
+				if (oldValue == null && newValue != null && newValue instanceof Long && ((long)newValue) == -99) {
+					continue;
 				}
-				else if(field.getName().contains("vendor") && workOrder.getVendor().getId() > 0) {
-					VendorContext vendor = InventoryApi.getVendor(workOrder.getVendor().getId());
-					info.put("newValue", vendor.getName());
+				
+				if (field.getName().contains("resource")) {
+					long resourceId = (long) newValue;
+					Map<String, Object> resource = ResourceAPI.getResourceMapFromIds(Collections.singletonList(resourceId), false).get(resourceId);
+					info.put("newValue", resource.get("name"));
 				}
 				else {
 					if (field.getName().contains("preRequisiteApproved")) {
