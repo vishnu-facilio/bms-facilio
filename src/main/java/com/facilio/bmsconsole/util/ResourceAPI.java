@@ -287,7 +287,7 @@ public class ResourceAPI {
 							if (record.getData().containsKey(resourceField.getName())) {
 								ModuleBaseWithCustomFields resource = (ModuleBaseWithCustomFields) record.getData()
 										.get(resourceField.getName());
-								if ((resource.getId() != -1)) {
+								if (resource != null && resource.getId() != -1) {
 									resourceIds.add(resource.getId());
 								}
 							}
