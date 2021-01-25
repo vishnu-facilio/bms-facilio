@@ -35,7 +35,6 @@ public class AddJobPlanTasksCommand extends FacilioCommand {
         if(CollectionUtils.isNotEmpty(taskSections)) {
             for(JobPlanTaskSectionContext section : taskSections) {
                 List<JobPlanTasksContext> taskList = FieldUtil.getAsBeanListFromMapList(section.getTasks(), JobPlanTasksContext.class);
-                section.setResourceId(section.getJobPlan().getResourceId());
                 if(CollectionUtils.isEmpty(taskList)) {
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Task list is mandatory for a task section");
                 }
@@ -43,7 +42,6 @@ public class AddJobPlanTasksCommand extends FacilioCommand {
                 for(JobPlanTasksContext task : taskList) {
                     task.setTaskSection(section);
                     task.setJobPlan(section.getJobPlan());
-                    task.setResourceId(section.getJobPlan().getResourceId());
                     task.setCreatedBy(AccountUtil.getCurrentUser());
                 }
                 V3RecordAPI.addRecord(false, taskList, jobPlanTaskModule, fields);

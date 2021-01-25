@@ -99,16 +99,5 @@ public class JobPlanContext extends V3Context {
 
     private Long spaceCategoryId;
 
-    private Long resourceId;
 
-    public Long getResourceId() {
-        if(resourceId == null){
-            return getSiteId();
-        }
-        return resourceId;
-    }
-
-    public void setResourceId(Long resourceId) {
-        this.resourceId = resourceId;
-    }
 }

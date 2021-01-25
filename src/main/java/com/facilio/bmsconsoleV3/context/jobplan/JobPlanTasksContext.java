@@ -98,14 +98,6 @@ public class JobPlanTasksContext extends V3TaskContext {
         this.jobPlan = jobPlan;
     }
 
-    private Long resourceId;
 
-    public Long getResourceId() {
-        return resourceId;
-    }
-
-    public void setResourceId(Long resourceId) {
-        this.resourceId = resourceId;
-    }
 }
 
