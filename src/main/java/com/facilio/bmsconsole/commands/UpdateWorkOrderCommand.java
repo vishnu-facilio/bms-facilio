@@ -355,7 +355,7 @@ public class UpdateWorkOrderCommand extends FacilioCommand {
 				info.put("field", field.getName());
 				info.put("displayName", field.getDisplayName());
 				
-				if (oldValue == null && newValue != null && newValue instanceof Long && ((long)newValue) == -99) {
+				if (oldValue == null && (newValue == null || (newValue instanceof Long && ((long)newValue) == -99)) ) {
 					continue;
 				}
 				
