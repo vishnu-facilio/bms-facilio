@@ -28,7 +28,7 @@ import com.facilio.bmsconsole.commands.reservation.ValidateAndSetReservationProp
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsole.workflow.rule.impact.AddOrUpdateAlarmImpactCommand;
 import com.facilio.bmsconsole.workflow.rule.impact.util.AlarmImpactAPI;
-import com.facilio.bmsconsoleV3.commands.AddDefaultScopingCommandV3;
+import com.facilio.bmsconsoleV3.commands.AddSignupDataCommandV3;
 import com.facilio.bmsconsoleV3.commands.imap.SaveMailMessageCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.AssociateQuotationTermsCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.DisAssociateQuotationTermsCommand;
@@ -66,7 +66,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddEventModuleCommand());
 			c.addCommand(new AddOrgInfoCommand());
 			c.addCommand(new CreateAppSuperAdminCommand());
-			c.addCommand(new AddDefaultScopingCommandV3());
+			c.addCommand(new AddSignupDataCommandV3());
 			c.addCommand(new AddEmployeeTypePeopleForUserAdditionCommand());
 			
 			return c;
