@@ -1,20 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
 import java.io.Serializable;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 
 import org.apache.commons.chain.Context;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -37,7 +33,6 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.tasker.FacilioTimer;
 
 public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTransactionCommand,Serializable
 {
@@ -152,24 +147,20 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 				}
 				else {
 					workflowRules = getWorkflowRules(module, activities, entry.getValue(), context);
-				}
-
-				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
-					LOGGER.info("Time taken to fetch workflow: " + (System.currentTimeMillis() - currentTime) + " : " + getPrintDebug());
-				}
-				Map<String, List<WorkflowRuleContext>> workflowRuleCacheMap = new HashMap<String, List<WorkflowRuleContext>>();
-				if (workflowRules != null && !workflowRules.isEmpty()) {
-					List<WorkflowRuleContext> postRulesList = null;
-					if (!isPostExecute) {
-						postRulesList = postRules.get(moduleName);
-						if (postRulesList == null) {
-							postRulesList = new ArrayList<>();
+					if (workflowRules != null) {
+						List<WorkflowRuleContext> postRulesList = new ArrayList<>();
+						handlePostRules(workflowRules, postRulesList);
+						if (!postRulesList.isEmpty()) {
+							postRules.put(moduleName, postRulesList);
 						}
 					}
-					
-					if (postRulesList != null && !postRulesList.isEmpty()) {
-						postRules.put(moduleName, postRulesList);
+					if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
+						LOGGER.info("Time taken to fetch workflow: " + (System.currentTimeMillis() - currentTime) + " : " + getPrintDebug());
 					}
+				}
+
+				Map<String, List<WorkflowRuleContext>> workflowRuleCacheMap = new HashMap<String, List<WorkflowRuleContext>>();
+				if (workflowRules != null && !workflowRules.isEmpty()) {
 					
 					List records = new LinkedList<>(entry.getValue());
 					Iterator it = records.iterator();
@@ -205,6 +196,17 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 			}
 		}
 		return sb.toString();
+	}
+	
+	private void handlePostRules(List<WorkflowRuleContext> workflowRules, List<WorkflowRuleContext> postRules) {
+		for (Iterator<WorkflowRuleContext> iterator = workflowRules.iterator(); iterator.hasNext(); ) {
+			WorkflowRuleContext workflowRule = iterator.next();
+			if (workflowRule.getRuleTypeEnum().isPostExecute()) {
+				postRules.add(workflowRule);
+				iterator.remove();
+				continue;
+			}
+		}
 	}
 
 	@Override
