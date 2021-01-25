@@ -9394,12 +9394,9 @@ public class FieldFactory {
         fields.add(getNameField(module));
         fields.add(getField("type", "TYPE", module, FieldType.NUMBER));
         fields.add(getField("moduleId", "MODULE_ID", module, FieldType.NUMBER));
-//        fields.add(getField("childModuleId", "CHILD_MODULE_ID", module, FieldType.NUMBER));
-//        fields.add(getField("assetCategoryId", "ASSET_CATEGORY_ID", module, FieldType.NUMBER));
-//        fields.add(getField("fieldId", "FIELD_ID", module, FieldType.NUMBER));
+        fields.add(getField("internal", "IS_INTERNAL", module, FieldType.BOOLEAN));
         fields.add(getField("eventType", "EVENT_TYPE", module, FieldType.NUMBER));
         fields.add(getField("status", "STATUS", module, FieldType.BOOLEAN));
-//        fields.add(getField("extrainfo", "EXTRAINFO", module, FieldType.STRING));
         return fields;
     }
     

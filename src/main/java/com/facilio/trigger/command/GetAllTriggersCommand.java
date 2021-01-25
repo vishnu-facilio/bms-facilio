@@ -8,7 +8,9 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.trigger.context.BaseTriggerContext;
 import com.facilio.trigger.util.TriggerUtil;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
 
+import java.util.Iterator;
 import java.util.List;
 
 public class GetAllTriggersCommand extends FacilioCommand {
@@ -23,6 +25,15 @@ public class GetAllTriggersCommand extends FacilioCommand {
         }
 
         List<BaseTriggerContext> triggers = TriggerUtil.getTriggers(module, null, null, false, null);
+        if (CollectionUtils.isNotEmpty(triggers)) {
+            Iterator<BaseTriggerContext> iterator = triggers.iterator();
+            while (iterator.hasNext()) {
+                BaseTriggerContext next = iterator.next();
+                if (next.isInternal()) {
+                    iterator.remove();
+                }
+            }
+        }
         context.put(TriggerUtil.TRIGGERS_LIST, triggers);
         return false;
     }

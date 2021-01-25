@@ -45,6 +45,20 @@ public class BaseTriggerContext {
 		this.moduleId = moduleId;
 	}
 
+	private Boolean internal;
+	public Boolean getInternal() {
+		return internal;
+	}
+	public void setInternal(Boolean internal) {
+		this.internal = internal;
+	}
+	public Boolean isInternal() {
+		if (internal == null) {
+			return false;
+		}
+		return internal;
+	}
+
 	private EventType eventType;
 	public EventType getEventTypeEnum() {
 		return eventType;

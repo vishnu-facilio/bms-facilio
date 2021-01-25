@@ -52,6 +52,10 @@ public class AddOrUpdateTriggerCommand extends FacilioCommand {
 			trigger.setStatus(true);
 		}
 
+		if (trigger.getInternal() == null) {
+			trigger.setInternal(false);
+		}
+
 		Map<String, Object> props = FieldUtil.getAsProperties(trigger);
 		if (trigger.getId() < 0) {
 			GenericInsertRecordBuilder insert = new GenericInsertRecordBuilder()
