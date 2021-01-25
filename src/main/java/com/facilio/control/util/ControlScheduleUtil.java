@@ -433,6 +433,7 @@ public class ControlScheduleUtil {
 		
 		for(ControlGroupFieldContext field :fields) {
 			
+			field.setField(modBean.getField(field.getFieldId()));
 			ControlGroupAssetContext asset = assetMap.get(field.getControlGroupAsset().getId());
 			
 			asset.addField(field);
