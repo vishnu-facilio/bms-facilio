@@ -3,6 +3,7 @@ package com.facilio.bmsconsoleV3.commands.jobplan;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTaskSectionContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTasksContext;
 import com.facilio.bmsconsoleV3.util.JobPlanAPI;
@@ -44,7 +45,7 @@ public class AddJobPlanTasksCommand extends FacilioCommand {
                     task.setJobPlan(section.getJobPlan());
                     task.setCreatedBy(AccountUtil.getCurrentUser());
                 }
-                V3RecordAPI.addRecord(false, taskList, jobPlanTaskModule, fields);
+                RecordAPI.addRecord(false, taskList, jobPlanTaskModule, fields);
             }
         }
         return false;

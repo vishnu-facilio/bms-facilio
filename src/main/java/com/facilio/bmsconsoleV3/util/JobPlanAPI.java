@@ -152,20 +152,28 @@ public class JobPlanAPI {
 
                 List<TaskContext> woTasks = new ArrayList<TaskContext>();
                 for(JobPlanTasksContext jobPlanTask :tasks) {
-                    List<Long> taskResourceIds = getMatchingResourceIdsForJobPlan(jobPlanTask.getJobPlanTaskCategory().intValue(), sectionResource.getId(), jobPlanTask.getSpaceCategoryId(), jobPlanTask.getAssetCategoryId());
-                    for(Long taskResourceId :taskResourceIds) {
-                        if (sectionCategory == JobPlanTaskSectionContext.JobPlanSectionCategory.ASSET_CATEGORY.getIndex() || sectionCategory == JobPlanTaskSectionContext.JobPlanSectionCategory.SPACE_CATEGORY.getIndex()) {
-                            if (ObjectUtils.compare(taskResourceId, resourceId) != 0) {
-                                continue;
+                    if(jobPlanTask.getJobPlanTaskCategory() != null) {
+                        List<Long> taskResourceIds = getMatchingResourceIdsForJobPlan(jobPlanTask.getJobPlanTaskCategory().intValue(), sectionResource.getId(), jobPlanTask.getSpaceCategoryId(), jobPlanTask.getAssetCategoryId());
+                        for (Long taskResourceId : taskResourceIds) {
+                            if (sectionCategory == JobPlanTaskSectionContext.JobPlanSectionCategory.ASSET_CATEGORY.getIndex() || sectionCategory == JobPlanTaskSectionContext.JobPlanSectionCategory.SPACE_CATEGORY.getIndex()) {
+                                if (ObjectUtils.compare(taskResourceId, resourceId) != 0) {
+                                    continue;
+                                }
                             }
-                        }
-                        ResourceContext taskResource = ResourceAPI.getResource(taskResourceId);
+                            ResourceContext taskResource = ResourceAPI.getResource(taskResourceId);
 
-                        jobPlanTask.setResource(taskResource);
-                        jobPlanTask.setSiteId(taskResource.getSiteId());
+                            jobPlanTask.setResource(taskResource);
+                            jobPlanTask.setSiteId(taskResource.getSiteId());
+                            TaskContext t = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(jobPlanTask), TaskContext.class);
+                            woTasks.add(t);
+                        }
+                    }
+                    else {
+                        jobPlanTask.setSiteId(sectionResource.getSiteId());
                         TaskContext t = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(jobPlanTask), TaskContext.class);
                         woTasks.add(t);
                     }
+
 
                 }
                 taskMap.put(sectionName, woTasks);
