@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.context.ApplicationLayoutContext;
 import com.facilio.bmsconsole.context.WebTabGroupContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -9,7 +8,6 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
@@ -57,9 +55,10 @@ public class AddOrUpdateTabGroupCommand extends FacilioCommand {
                         .table(ModuleFactory.getWebTabGroupModule().getTableName())
                         .fields(FieldFactory.getWebTabGroupFields());
                 long id = builder.insert(FieldUtil.getAsMapList(Collections.singletonList(tabGroup), WebTabGroupContext.class).get(0));
+                tabGroup.setId(id);
                 context.put(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID, id);
             }
-
+            context.put(FacilioConstants.ContextNames.WEB_TAB_GROUP, tabGroup);
         }
         return false;
     }

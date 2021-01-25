@@ -64,6 +64,7 @@ public class WebTabAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.WEB_TAB_GROUP, tabGroup);
 
         chain.execute();
+        setResult(FacilioConstants.ContextNames.WEB_TAB_GROUP, context.get(FacilioConstants.ContextNames.WEB_TAB_GROUP));
         return SUCCESS;
     }
 
