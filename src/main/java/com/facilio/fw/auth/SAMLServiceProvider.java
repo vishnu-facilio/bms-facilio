@@ -347,22 +347,24 @@ public class SAMLServiceProvider {
 	
 	private boolean validateAssertion(Document document) throws Exception {
 		Element assertion = (Element) document.getElementsByTagNameNS("*", "Assertion").item(0);
-		
-		Element issuerElm = (Element) assertion.getElementsByTagNameNS("*", "Issuer").item(0);
-		String issuer = issuerElm.getTextContent();
-		
-		if (getIdpEntityId() != null && !getIdpEntityId().trim().isEmpty()) {
-			if (issuer == null || !issuer.trim().equals(getIdpEntityId())) {
-				throw new Exception("The assertion issuer didn't match the expected value");
+		if (assertion != null) {
+			Element issuerElm = (Element) assertion.getElementsByTagNameNS("*", "Issuer").item(0);
+			String issuer = issuerElm.getTextContent();
+			
+			if (getIdpEntityId() != null && !getIdpEntityId().trim().isEmpty()) {
+				if (issuer == null || !issuer.trim().equals(getIdpEntityId())) {
+					throw new Exception("The assertion issuer didn't match the expected value");
+				}
 			}
+			
+			NodeList nameidTags = assertion.getElementsByTagNameNS("*", "NameID");
+			if (nameidTags == null || nameidTags.getLength() == 0) {
+				throw new Exception("The NameID value is missing from the SAML response; this is likely an IDP configuration issue");
+			}
+			
+			return this.validateConditions(assertion);
 		}
-		
-		NodeList nameidTags = assertion.getElementsByTagNameNS("*", "NameID");
-		if (nameidTags == null || nameidTags.getLength() == 0) {
-			throw new Exception("The NameID value is missing from the SAML response; this is likely an IDP configuration issue");
-		}
-		
-		return this.validateConditions(assertion);
+		return true;
 	}
 	
 	private boolean validateConditions(Element assertion) throws Exception {
