@@ -16,14 +16,18 @@ import com.facilio.bmsconsole.util.BusinessHoursAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.controlaction.context.ControlActionCommandContext;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
@@ -39,6 +43,8 @@ import con.facilio.control.ControlScheduleContext;
 import con.facilio.control.ControlScheduleExceptionContext;
 import con.facilio.control.ControlScheduleGroupedSlot;
 import con.facilio.control.ControlScheduleSlot;
+import con.facilio.control.ControlScheduleSlot.ControlScheduleSlotWrapperForDisplay;
+import con.facilio.control.ControlScheduleSlot.ControlScheduleWrapper;
 
 public class ControlScheduleUtil {
 
@@ -155,6 +161,40 @@ public class ControlScheduleUtil {
 		return mergeONAndOFFSchedules(allSlots);
 	}
 	
+	public static List<ControlScheduleSlot> slotsForDisplay(List<ControlScheduleSlot> controlSlots) {
+		
+		List<ControlScheduleSlot> slots = new ArrayList<ControlScheduleSlot>(); 
+		
+		ControlScheduleSlot temp = null;
+		
+		for(ControlScheduleSlot controlSlot : controlSlots) {
+			
+			if(temp == null) {
+				temp = controlSlot;
+			}
+			else {
+				if(temp.isTouching(controlSlot)) {
+					ControlScheduleSlotWrapperForDisplay slotForDisplay = temp.mergeForDisplay(controlSlot);
+					slots.addAll(slotForDisplay.getAsList());
+					ControlScheduleSlot lastBlock = slotForDisplay.getLast();
+					if(lastBlock.getException() == null) {
+						temp = lastBlock;
+						slots.remove(slots.size()-1);
+					}
+					else {
+						temp = null;
+					}
+				}
+				else {
+					slots.add(temp);
+					temp = controlSlot;
+				}
+			}
+		}
+		
+		return slots;
+	}
+	
 	
 	public static List<ControlScheduleSlot> planScheduleSlots(ControlGroupContext group, long startTime, long endTime) throws Exception {
 		
@@ -190,7 +230,7 @@ public class ControlScheduleUtil {
 						}
 					}
 					
-					slots.add(new ControlScheduleSlot(schedule,exception, dateRange.getStartTime(), dateRange.getEndTime()));
+					slots.add(new ControlScheduleSlot(group,schedule,exception, dateRange.getStartTime(), dateRange.getEndTime()));
 				}
 				
 			}
@@ -198,14 +238,14 @@ public class ControlScheduleUtil {
 		}
 		
 		for(DateRange businessHourRange :businessHourRanges) {
-			slots.add(new ControlScheduleSlot(schedule, businessHourRange.getStartTime(), businessHourRange.getEndTime()));
+			slots.add(new ControlScheduleSlot(group,schedule, businessHourRange.getStartTime(), businessHourRange.getEndTime()));
 		}
 		
 		if(routines != null) {
 			for(ControlGroupRoutineContext routine : routines) {
 				List<Long> routineTimes = routine.scheduleAsObj().nextExecutionTimes(startTime, endTime);
 				for(Long routineTime :routineTimes) {
-					slots.add(new ControlScheduleSlot(routine, routineTime));
+					slots.add(new ControlScheduleSlot(group,routine, routineTime));
 				}
 			}
 		}
@@ -230,7 +270,14 @@ public class ControlScheduleUtil {
 					temp = controlSlot;
 				}
 				else {
-					temp.mergeONAndOff(controlSlot);
+					ControlScheduleWrapper wrapper = temp.mergeONAndOff(controlSlot);
+					if(wrapper != null) {
+						if(wrapper.getTrimed() != null) {
+							groupedSlots.add(new ControlScheduleGroupedSlot(wrapper.getPrevious()));
+						}
+						temp = wrapper.getTrimed();
+					}
+					
 				}
 			}
 		}
@@ -316,10 +363,20 @@ public class ControlScheduleUtil {
 		
 		schedule.setBusinessHoursContext(BusinessHoursAPI.getBusinessHours(Collections.singletonList(schedule.getBusinessHour())).get(0));
 		
-		//List<ControlScheduleExceptionContext> exceptions =  ControlScheduleUtil.fetchRecord(ControlScheduleExceptionContext.class, CONTROL_SCHEDULE_EXCEPTION_MODULE_NAME, null,CriteriaAPI.getCondition("CONTROL_SCHEDULE", "controlSchedule", ""+scheduleId, NumberOperators.EQUALS));
+		FacilioModule exceptionModule = modBean.getModule(CONTROL_SCHEDULE_EXCEPTION_MODULE_NAME);
 		
-		//schedule.setExceptions(exceptions);
+		SelectRecordsBuilder<ControlScheduleExceptionContext> select = new SelectRecordsBuilder<ControlScheduleExceptionContext>()
+				.moduleName(CONTROL_SCHEDULE_EXCEPTION_MODULE_NAME)
+				.beanClass(ControlScheduleExceptionContext.class)
+				.select(modBean.getAllFields(CONTROL_SCHEDULE_EXCEPTION_MODULE_NAME))
+				.innerJoin(ModuleFactory.getControlScheduleVsExceptionModule().getTableName())
+				.on(ModuleFactory.getControlScheduleVsExceptionModule().getTableName()+".EXCEPTION_ID = "+exceptionModule.getTableName()+".ID")
+				.andCustomWhere(ModuleFactory.getControlScheduleVsExceptionModule().getTableName()+".SCHEDULE_ID = ?", scheduleId);
 		
+		List<ControlScheduleExceptionContext> exceptions = select.get();
+		
+		schedule.setExceptions(exceptions);
+
 		return schedule;
 	}
 	

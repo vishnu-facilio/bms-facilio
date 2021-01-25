@@ -171,6 +171,10 @@
                 class="com.facilio.bmsconsoleV3.actions.ControlAction"
                 method="getCategoryForType">
         </action>
+        <action name="getSlot"
+                class="com.facilio.bmsconsoleV3.actions.ControlAction"
+                method="getSlot">
+        </action>
 
     </package>
 

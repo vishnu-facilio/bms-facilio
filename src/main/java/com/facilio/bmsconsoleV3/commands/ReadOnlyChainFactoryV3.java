@@ -94,5 +94,10 @@ public class ReadOnlyChainFactoryV3 {
         return c;
     }
 
-
+    public static FacilioChain getControlGroupSlotsChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchControlGroupSlotCommmand());
+        c.addCommand(new ComputeControlGroupSlotCommmand());
+        return c;
+    }
 }

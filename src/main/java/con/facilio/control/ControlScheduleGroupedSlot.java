@@ -10,6 +10,7 @@ public class ControlScheduleGroupedSlot extends V3Context {
 	private static final long serialVersionUID = 1L;
 	
 	ControlScheduleContext schedule;
+	ControlGroupContext group;
 	
 	public ControlScheduleGroupedSlot () {
 		
@@ -18,6 +19,7 @@ public class ControlScheduleGroupedSlot extends V3Context {
 	public ControlScheduleGroupedSlot(ControlScheduleSlot slot) {
 		
 		schedule = slot.getSchedule();
+		group = slot.getGroup();
 		startTime = slot.getStartTime();
 		endTime = slot.getEndTime();
 	}
@@ -46,6 +48,14 @@ public class ControlScheduleGroupedSlot extends V3Context {
 
 	public void setSchedule(ControlScheduleContext schedule) {
 		this.schedule = schedule;
+	}
+
+	public ControlGroupContext getGroup() {
+		return group;
+	}
+
+	public void setGroup(ControlGroupContext group) {
+		this.group = group;
 	}
 	
 }

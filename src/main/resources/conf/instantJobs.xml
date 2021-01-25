@@ -21,5 +21,7 @@
     <job name="SendNotificationJob" classname='com.facilio.bmsconsole.instant.jobs.SendNotificationJob' transactionTimeout= '900' />
     <job name="AddSLAEscalation" classname='com.facilio.bmsconsole.instant.jobs.AddSLAEscalationJob' transactionTimeout= '900' />
     <job name="CompressImageJob" classname='com.facilio.bmsconsole.instant.jobs.CompressImageJob' transactionTimeout= '900' />
-    <job name='AddOneTimeBaseSchedulesJob' classname= 'com.facilio.bmsconsole.instant.jobs.AddOneTimeBaseSchedulesJob' transactionTimeout='900'/> --> 
+    <job name='AddOneTimeBaseSchedulesJob' classname= 'com.facilio.bmsconsole.instant.jobs.AddOneTimeBaseSchedulesJob' transactionTimeout='900'/> -->
+    
+    <job name='ControlScheduleSlotCreationJob' classname= 'com.facilio.bmsconsole.instant.jobs.ControlScheduleSlotCreationInstantJob' transactionTimeout='900'/> --> 
 </instantjob>

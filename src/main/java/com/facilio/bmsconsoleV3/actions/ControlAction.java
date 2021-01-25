@@ -3,6 +3,11 @@ package com.facilio.bmsconsoleV3.actions;
 import java.util.List;
 
 import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.v3.V3Action;
 
 import con.facilio.control.ControlGroupContext;
@@ -13,6 +18,7 @@ import con.facilio.control.ControlScheduleExceptionContext;
 import lombok.Getter;
 import lombok.Setter;
 
+@Setter @Getter
 public class ControlAction extends V3Action {
 
 	/**
@@ -22,6 +28,26 @@ public class ControlAction extends V3Action {
 	
 	ControlGroupSection.Section_Type type;
 	
+	long startTime;
+	long endTime;
+	ControlGroupContext group;
+	
+	public String getSlot() throws Exception {
+		
+		FacilioChain chain = ReadOnlyChainFactoryV3.getControlGroupSlotsChain();
+		
+		FacilioContext context = chain.getContext();
+		
+		context.put(FacilioConstants.ContextNames.START_TIME, startTime);
+		context.put(FacilioConstants.ContextNames.END_TIME, endTime);
+		context.put(ControlScheduleUtil.CONTROL_GROUP_CONTEXT, group);
+		
+		chain.execute();
+		
+		setData("slots", context.get(ControlScheduleUtil.CONTROL_GROUP_PLANNED_SLOTS));
+		
+		return SUCCESS;
+	}
 	
 	public String getCategoryForType() throws Exception {
 		

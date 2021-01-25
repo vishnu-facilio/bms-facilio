@@ -687,6 +687,7 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getAddControlGroupAfterSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddControlGroupV2Command());
+        c.addCommand(new PlanControlGroupSlotsCommand());
         return c;
     }
     
@@ -694,6 +695,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdateControlGroupV2Command());
         c.addCommand(new UpdateControlGroupRelatedV2Command());
+        c.addCommand(new PlanControlGroupSlotsCommand());
         return c;
     }
     

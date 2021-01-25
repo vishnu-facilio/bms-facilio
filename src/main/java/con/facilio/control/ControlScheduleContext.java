@@ -1,5 +1,6 @@
 package con.facilio.control;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.facilio.bmsconsole.context.BusinessHoursContext;
@@ -39,5 +40,10 @@ public class ControlScheduleContext extends V3Context {
 	}
 	public void setExceptions(List<ControlScheduleExceptionContext> exceptions) {
 		this.exceptions = exceptions;
+	}
+	
+	public void addException(ControlScheduleExceptionContext exception) {
+		this.exceptions = exceptions == null ? new ArrayList<ControlScheduleExceptionContext>() : exceptions;
+		this.exceptions.add(exception);
 	}
 }
