@@ -149,6 +149,7 @@ public class WebTabAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.WEB_TAB, getTab());
         context.put(FacilioConstants.ContextNames.NEW_PERMISSIONS, tab.getPermissions());
         chain.execute();
+        setResult(FacilioConstants.ContextNames.WEB_TAB, context.get(FacilioConstants.ContextNames.WEB_TAB));
         return SUCCESS;
     }
 

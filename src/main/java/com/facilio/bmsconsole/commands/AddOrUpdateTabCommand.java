@@ -66,6 +66,7 @@ public class AddOrUpdateTabCommand extends FacilioCommand {
                 tab.setId(tabId);
                 insertIntoTabIdAppIdMappingTable(tab);
             }
+           context.put(FacilioConstants.ContextNames.WEB_TAB,tab);
         }
         return false;
     }
