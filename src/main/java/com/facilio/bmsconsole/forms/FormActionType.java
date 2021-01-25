@@ -16,14 +16,12 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.FormRuleAPI;
 import com.facilio.bmsconsole.util.FormsAPI;
-import com.facilio.bmsconsole.workflow.rule.ActionType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.modules.FieldUtil;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.WorkflowContext;
@@ -171,6 +169,7 @@ public enum FormActionType {
 					if(condition.getValue() instanceof String && FormRuleAPI.containsPlaceHolders(condition.getValue())) {
 						String value = FormRuleAPI.replacePlaceHoldersAndGetResult(placeHolders, condition.getValue());
 						condition.setValue(value);
+						condition.setComputedWhereClause(null);
 					}
 				}
 				
