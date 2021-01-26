@@ -1105,7 +1105,16 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 			if (clearAlarm()) {
 				if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {		
 					boolean isPreEvent = false;
-					if (overPeriod > 0 || occurences > 0 || isConsecutive() || thresholdType == ReadingRuleContext.ThresholdType.FLAPPING) {
+					if(this.getRuleTypeEnum() == RuleType.READING_RULE) {
+						AlarmRuleContext alarmRule = (AlarmRuleContext)context.get(FacilioConstants.ContextNames.ALARM_RULE_META);
+						if(alarmRule != null && alarmRule.getPreRequsite().getId() == this.getId()) {
+							if(alarmRule.getAlarmTriggerRule().overPeriod > 0 || alarmRule.getAlarmTriggerRule().occurences > 0 || alarmRule.getAlarmTriggerRule().isConsecutive() || alarmRule.getAlarmTriggerRule().thresholdType == ReadingRuleContext.ThresholdType.FLAPPING) {
+								PreEventContext preEvent = constructPreClearEvent(reading, (ResourceContext) reading.getParent());
+								preEvent.constructAndAddPreClearEvent(context);isPreEvent = true;		
+							}
+						}	
+					}
+					else if (this.getRuleTypeEnum() == RuleType.ALARM_TRIGGER_RULE && (overPeriod > 0 || occurences > 0 || isConsecutive() || thresholdType == ReadingRuleContext.ThresholdType.FLAPPING)) {
 						PreEventContext preEvent = constructPreClearEvent(reading, (ResourceContext) reading.getParent());
 						preEvent.constructAndAddPreClearEvent(context);
 						isPreEvent = true;

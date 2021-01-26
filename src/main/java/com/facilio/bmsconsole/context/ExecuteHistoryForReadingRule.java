@@ -133,7 +133,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 			if(previousFetchStartReading != null)
 			{
 				Map<String, List<ReadingDataMeta>> beforeCurrentFields = prepareCurrentFieldsRDM(readingRule, previousFetchStartReading.getTtime(), startTime, resourceId, fields);
-				executeWorkflows(readingRule, Collections.singletonList(previousFetchStartReading), beforeCurrentFields, fields, beforeFetchFirstEvent, new BaseEventContext());
+				executeWorkflows(readingRule, alarmRule, Collections.singletonList(previousFetchStartReading), beforeCurrentFields, fields, beforeFetchFirstEvent, new BaseEventContext());
 				if(beforeFetchFirstEvent != null && !beforeFetchFirstEvent.isEmpty() && !beforeFetchFirstEvent.get(0).getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY))
 				{
 					previousEventMeta = beforeFetchFirstEvent.get(0);
@@ -154,7 +154,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 			startTime = readings.get(0).getTtime();
 			endTime = readings.get(readings.size() - 1).getTtime();
 
-			FacilioContext context = executeWorkflows(readingRule, readings, currentFields, fields, events, previousEventMeta);
+			FacilioContext context = executeWorkflows(readingRule, alarmRule, readings, currentFields, fields, events, previousEventMeta);
 			
 			if(context.containsKey(FacilioConstants.ContextNames.RULE_LOG_MODULE_DATA)) {
 				
@@ -194,7 +194,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 					{
 						Map<String, List<ReadingDataMeta>> extendedCurrentFields = prepareCurrentFieldsRDM(readingRule, endTime, nextSingleReading.getTtime(), resourceId, fields);
 						
-						executeWorkflows(readingRule, Collections.singletonList(nextSingleReading), extendedCurrentFields, fields, nextJobFirstEvent, previousEventMeta);
+						executeWorkflows(readingRule, alarmRule, Collections.singletonList(nextSingleReading), extendedCurrentFields, fields, nextJobFirstEvent, previousEventMeta);
 						if(nextJobFirstEvent != null && !nextJobFirstEvent.isEmpty() && nextJobFirstEvent.get(0).getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY))
 						{
 							events.add(nextJobFirstEvent.get(0));
@@ -212,7 +212,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 		return events;
 	}
 	
-	private FacilioContext executeWorkflows(ReadingRuleContext readingRule, List<ReadingContext> readings, Map<String, List<ReadingDataMeta>> supportFieldsRDM, List<WorkflowFieldContext> fields, List<BaseEventContext> baseEvents,BaseEventContext previousEventMeta) throws Exception
+	private FacilioContext executeWorkflows(ReadingRuleContext readingRule, AlarmRuleContext alarmRule, List<ReadingContext> readings, Map<String, List<ReadingDataMeta>> supportFieldsRDM, List<WorkflowFieldContext> fields, List<BaseEventContext> baseEvents,BaseEventContext previousEventMeta) throws Exception
 	{
 		int alarmCount = 0;
 		FacilioContext context = new FacilioContext();
@@ -227,6 +227,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 			context.put(FacilioConstants.ContextNames.READING_RULE_ALARM_META, alarmMetaMap);
 			context.put(EventConstants.EventContextNames.IS_HISTORICAL_EVENT, true);
 			context.put(FacilioConstants.ContextNames.IS_HISTORICAL, true);
+			context.put(FacilioConstants.ContextNames.ALARM_RULE_META, alarmRule);
 			ReadingDataMeta prevRDM = null;			
 			int itr = 0;
 			

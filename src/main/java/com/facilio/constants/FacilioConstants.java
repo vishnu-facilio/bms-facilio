@@ -1004,6 +1004,7 @@ public class FacilioConstants {
 		public static final String READING_RULE_MODULE = "readingrule";
 		public static final String READING_ALARM_RULES = "readingalarmrules";
 		public static final String READING_ALARM_RULE = "readingalarmrule";
+		public static final String ALARM_RULE_META = "alarmRuleMeta";
 		public static final String WORKORDER_ACTIVITY = "workorderactivity";
 		public static final String RULE_COUNT = "ruleCount";
 		public static final String RULES = "rules";
