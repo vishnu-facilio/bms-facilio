@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalDouble;
@@ -1638,6 +1639,10 @@ public class DashboardUtil {
 		List<Long> dashboardIds = new ArrayList<>(dashboardMap.keySet());
 		
 		List<DashboardContext> dashboardList = new ArrayList<DashboardContext>();
+		
+		List<Integer> portalList = new LinkedList<Integer>(); 
+		portalList.add(DashboardSharingContext.SharingType.PORTAL.getIntVal()); 
+		portalList.add(DashboardSharingContext.SharingType.ALL_PORTAL_USER.getIntVal()); 
 
 		
 		if (AccountUtil.getCurrentUser() != null && AccountUtil.getCurrentUser().getRole() != null && AccountUtil.getCurrentUser().getRole().getName().equals(AccountConstants.DefaultSuperAdmin.SUPER_ADMIN)) {
@@ -1658,8 +1663,8 @@ public class DashboardUtil {
 
 			}
 			else {
-				selectBuilder.andCustomWhere("Dashboard_Sharing.Sharing_type = ? ", DashboardSharingContext.SharingType.PORTAL.getIntVal());
-//				selectBuilder.andCustomWhere("Dashboard_Sharing.Sharing_type = ? ", DashboardSharingContext.SharingType.ALL_PORTAL_USER.getIntVal());
+//				selectBuilder.andCustomWhere("Dashboard_Sharing.Sharing_type = ? ", DashboardSharingContext.SharingType.PORTAL.getIntVal());
+				selectBuilder.andCondition(CriteriaAPI.getCondition("Dashboard_Sharing.Sharing_type", "sharingType", StringUtils.join(portalList, ","), NumberOperators.EQUALS));
 			}
 			
 			
