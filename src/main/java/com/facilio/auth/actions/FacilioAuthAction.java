@@ -956,13 +956,19 @@ public class FacilioAuthAction extends FacilioAction {
 
 	private void createPortalUser(String emailaddress) throws Exception {
 		PeopleAction peopleAction = new PeopleAction();
-		PeopleContext pplContext = new PeopleContext();
-		pplContext.setEmail(emailaddress);
-		pplContext.setName(emailaddress);
-		pplContext.setPeopleType(5);
-		pplContext.setIsOccupantPortalAccess(true);
-		peopleAction.setPeopleList(Arrays.asList(pplContext));
-		peopleAction.addPeople(true);
+		PeopleContext pplContext = PeopleAPI.getPeople(emailaddress);
+		if (pplContext == null) {
+			pplContext.setEmail(emailaddress);
+			pplContext.setName(emailaddress);
+			pplContext.setPeopleType(5);
+			pplContext.setIsOccupantPortalAccess(true);
+			peopleAction.setPeopleList(Arrays.asList(pplContext));
+			peopleAction.addPeople(true);
+		} else {
+			pplContext.setIsOccupantPortalAccess(true);
+			peopleAction.setPeopleList(Arrays.asList(pplContext));
+			peopleAction.updatePeople();
+		}
 	}
 
 	public String ssoSignIn() throws Exception {
