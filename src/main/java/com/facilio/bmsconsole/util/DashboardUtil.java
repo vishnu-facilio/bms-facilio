@@ -1654,12 +1654,12 @@ public class DashboardUtil {
 			
 			if(!isFromPortal) {
 				selectBuilder.andCustomWhere("Dashboard_Sharing.Sharing_type != ? ", DashboardSharingContext.SharingType.PORTAL.getIntVal());
-				selectBuilder.andCustomWhere("Dashboard_Sharing.Sharing_type != ? ", DashboardSharingContext.SharingType.ALL_PORTAL_USER.getIntVal());
+//				selectBuilder.andCustomWhere("Dashboard_Sharing.Sharing_type != ? ", DashboardSharingContext.SharingType.ALL_PORTAL_USER.getIntVal());
 
 			}
 			else {
 				selectBuilder.andCustomWhere("Dashboard_Sharing.Sharing_type = ? ", DashboardSharingContext.SharingType.PORTAL.getIntVal());
-				selectBuilder.andCustomWhere("Dashboard_Sharing.Sharing_type = ? ", DashboardSharingContext.SharingType.ALL_PORTAL_USER.getIntVal());
+//				selectBuilder.andCustomWhere("Dashboard_Sharing.Sharing_type = ? ", DashboardSharingContext.SharingType.ALL_PORTAL_USER.getIntVal());
 			}
 			
 			
