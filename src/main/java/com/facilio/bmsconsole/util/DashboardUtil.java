@@ -1638,6 +1638,7 @@ public class DashboardUtil {
 		List<Long> dashboardIds = new ArrayList<>(dashboardMap.keySet());
 		
 		List<DashboardContext> dashboardList = new ArrayList<DashboardContext>();
+
 		
 		if (AccountUtil.getCurrentUser() != null && AccountUtil.getCurrentUser().getRole() != null && AccountUtil.getCurrentUser().getRole().getName().equals(AccountConstants.DefaultSuperAdmin.SUPER_ADMIN)) {
 			dashboardList.addAll(dashboardMap.values());
@@ -1653,9 +1654,12 @@ public class DashboardUtil {
 			
 			if(!isFromPortal) {
 				selectBuilder.andCustomWhere("Dashboard_Sharing.Sharing_type != ? ", DashboardSharingContext.SharingType.PORTAL.getIntVal());
+				selectBuilder.andCustomWhere("Dashboard_Sharing.Sharing_type != ? ", DashboardSharingContext.SharingType.ALL_PORTAL_USER.getIntVal());
+
 			}
 			else {
 				selectBuilder.andCustomWhere("Dashboard_Sharing.Sharing_type = ? ", DashboardSharingContext.SharingType.PORTAL.getIntVal());
+				selectBuilder.andCustomWhere("Dashboard_Sharing.Sharing_type = ? ", DashboardSharingContext.SharingType.ALL_PORTAL_USER.getIntVal());
 			}
 			
 			
@@ -1692,6 +1696,9 @@ public class DashboardUtil {
 							else {
 								dashboardList.add(dashboardMap.get(dashboardSharing.getDashboardId()));
 							}
+						}
+						else if (dashboardSharing.getSharingTypeEnum().equals(SharingType.ALL_PORTAL_USER)) {
+							dashboardList.add(dashboardMap.get(dashboardSharing.getDashboardId()));
 						}
 					}
 				}

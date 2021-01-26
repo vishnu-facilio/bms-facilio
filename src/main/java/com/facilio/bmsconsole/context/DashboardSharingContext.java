@@ -74,7 +74,8 @@ public class DashboardSharingContext extends ModuleBaseWithCustomFields {
 		USER(1, "User"),
 		ROLE(2, "Role"),
 		GROUP(3, "Group"),
-		PORTAL(4,"Portal")
+		PORTAL(4,"Portal"),
+		ALL_PORTAL_USER(5, "All_Portal_User")
 		;
 		
 		private int intVal;
