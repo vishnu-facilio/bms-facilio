@@ -115,11 +115,20 @@ public class PeopleAction extends FacilioAction{
 		c.execute();
 		setResult(FacilioConstants.ContextNames.PEOPLE, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
 	}
-	
+
 	public String updatePeople() throws Exception {
+
+		if(!CollectionUtils.isEmpty(peopleList)) {
+			updatePeople(false);
+		}
+		return SUCCESS;
+	}
+	
+	public String updatePeople(boolean verifyStatus) throws Exception {
 		
 		if(!CollectionUtils.isEmpty(peopleList)) {
 			FacilioChain c = TransactionChainFactory.updatePeopleChain();
+			c.getContext().put(FacilioConstants.ContextNames.VERIFY_USER, verifyStatus);
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			

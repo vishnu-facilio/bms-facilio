@@ -967,7 +967,7 @@ public class FacilioAuthAction extends FacilioAction {
 		} else {
 			pplContext.setIsOccupantPortalAccess(true);
 			peopleAction.setPeopleList(Arrays.asList(pplContext));
-			peopleAction.updatePeople();
+			peopleAction.updatePeople(true);
 		}
 	}
 
