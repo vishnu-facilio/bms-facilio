@@ -1938,6 +1938,13 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static FacilioChain getDeleteVendorsChain(){
+			FacilioChain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForVendors());
+			c.addCommand(new GenericUpdateModuleDataCommand());
+			return c;
+		}
+		
 		public static FacilioChain getAddItemStatusChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForItemStatus());

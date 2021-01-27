@@ -260,6 +260,32 @@ public class VendorAction extends FacilioAction{
 		return SUCCESS;
 	}
 	
+	public String v2deleteVendors() throws Exception {
+		FacilioContext context = new FacilioContext();
+		
+		VendorContext vendor = new VendorContext();
+		vendor.setDeleted(true);
+		
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
+		context.put(FacilioConstants.ContextNames.RECORD, vendor);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, vendorsId);
+		
+		FacilioChain deleteVendorChain = TransactionChainFactory.getDeleteVendorsChain();
+		deleteVendorChain.execute(context);
+		setResult("vendorsId", vendorsId);
+		return SUCCESS;
+	}
+	
+	private List<Long> vendorsId;
+
+	public List<Long> getvendorsId() {
+		return vendorsId;
+	}
+
+	public void setVendorsId(List<Long> vendorsId) {
+		this.vendorsId = vendorsId;
+	}
+	
 	private boolean includeParentFilter;
 
 	public boolean getIncludeParentFilter() {
