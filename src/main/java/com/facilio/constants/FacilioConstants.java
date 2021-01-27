@@ -631,6 +631,13 @@ public class FacilioConstants {
 		public static final String REPORT_GROUP_BY_TIME_AGGR ="groupByTimeAggr";
 		public static final String REPORT_Y_AGGR = "yAggr";
 		public static final String REPORT_DATA = "reportData";
+		public static final String PIVOT_TABLE_DATA = "pivotTableData";
+		public static final String ROW_HEADERS="rowHeaders";
+		public static final String DATA_HEADERS="dataHeaders";
+		public static final String ROW_ALIAS="rowAlias";
+		public static final String DATA_ALIAS="dataAlias";
+		public static final String FORMATTING="formatting";
+		public static final String GET_MODULE_FROM_DP="getModuleFromDp";
 		public static final String REPORT_HANDLE_BOOLEAN = "reportHandleBoolean";
 		public static final String SHOULD_INCLUDE_MARKED = "shouldIncludeMarked";
 		public static final String ALLOW_FUTURE_DATA = "allowFutureData";
@@ -2418,6 +2425,8 @@ public class FacilioConstants {
 		public static final String LIMIT = "limit";
 		
 
+		public static final String ROWS = "rows";
+		public static final String DATA = "data";
 		public static final String X_AXIS = "xAxis";
 		public static final String Y_AXIS = "yAxis";
 		public static final String CATEGORY_COLUMN = "categoryCol";

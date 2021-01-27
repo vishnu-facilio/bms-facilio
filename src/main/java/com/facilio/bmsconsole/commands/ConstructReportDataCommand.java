@@ -42,7 +42,7 @@ import com.facilio.report.util.ReportUtil;
 
 public class ConstructReportDataCommand extends FacilioCommand {
 
-	private Collection<Map<String, Object>> initList(String sortAlias, boolean isTimeSeries) { //In case we wanna implement a sorted list
+	protected Collection<Map<String, Object>> initList(String sortAlias, boolean isTimeSeries) { //In case we wanna implement a sorted list
 	    if (isTimeSeries) {
             return new TreeSet<Map<String, Object>>((data1, data2) -> Long.compare((long) data1.get(sortAlias), (Long) data2.get(sortAlias)));
         }
@@ -53,7 +53,7 @@ public class ConstructReportDataCommand extends FacilioCommand {
 	
 //	private Map<Long, Map<Long, Object>> labelMap = new HashMap<>();
 
-    private boolean isTimeSeries (List<ReportDataContext> reportData) { //Temporary check
+    protected boolean isTimeSeries (List<ReportDataContext> reportData) { //Temporary check
 	    if (CollectionUtils.isNotEmpty(reportData)) {
 	        ReportDataPointContext dp = reportData.get(0).getDataPoints().get(0);
 	        if (CollectionUtils.isNotEmpty(dp.getGroupByFields())) {
@@ -193,15 +193,15 @@ public class ConstructReportDataCommand extends FacilioCommand {
 		}
 	}
 	
-	private String getyAlias(ReportDataPointContext dataPoint, ReportBaseLineContext baseLine) {
+	protected String getyAlias(ReportDataPointContext dataPoint, ReportBaseLineContext baseLine) {
 		return baseLine == null ? dataPoint.getAliases().get(FacilioConstants.Reports.ACTUAL_DATA) : dataPoint.getAliases().get(baseLine.getBaseLine().getName());
 	}
 	
-	private String getxAlias(ReportContext report) {
+	protected String getxAlias(ReportContext report) {
 		return report.getxAlias() == null ? FacilioConstants.ContextNames.REPORT_DEFAULT_X_ALIAS : report.getxAlias();
 	}
 	
-	private Object getBaseLineAdjustedXVal(Object xVal, ReportFieldContext xAxis, ReportBaseLineContext baseLine) throws Exception {
+	protected Object getBaseLineAdjustedXVal(Object xVal, ReportFieldContext xAxis, ReportBaseLineContext baseLine) throws Exception {
 		if (baseLine != null) {
 			switch (xAxis.getField().getDataTypeEnum()) {
 				case DATE:
@@ -316,7 +316,7 @@ public class ConstructReportDataCommand extends FacilioCommand {
 		}
 	}
 	
-	private Map<Long, Object> getLookUpMap(String specialType, FacilioModule lookupModule, List<Long> ids) throws Exception {
+	protected Map<Long, Object> getLookUpMap(String specialType, FacilioModule lookupModule, List<Long> ids) throws Exception {
 		Map<Long, Object> lookupMap = new HashMap<>();
 		
 		String moduleName = null;

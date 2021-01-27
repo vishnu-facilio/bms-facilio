@@ -28,6 +28,7 @@ import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.AddOrUpdateReportCommand;
 import com.facilio.bmsconsole.commands.ConstructReportData;
+import com.facilio.bmsconsole.commands.ConstructTabularReportData;
 import com.facilio.bmsconsole.commands.GenerateCriteriaFromFilterCommand;
 import com.facilio.bmsconsole.commands.GetCriteriaDataCommand;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
@@ -95,6 +96,8 @@ import com.facilio.report.context.ReportTemplateContext;
 import com.facilio.report.context.ReportUserFilterContext;
 import com.facilio.report.context.ReportYAxisContext;
 import com.facilio.report.context.WorkorderAnalysisContext;
+import com.facilio.report.context.ReportPivotTableRowsContext;
+import com.facilio.report.context.ReportPivotTableDataContext;
 import com.facilio.report.util.ReportUtil;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
@@ -104,6 +107,7 @@ import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.workflows.util.WorkflowUtil;
+
 
 public class V2ReportAction extends FacilioAction {
 	
@@ -1030,7 +1034,6 @@ public class V2ReportAction extends FacilioAction {
 	
 	public String getReportFields() throws Exception {
 		JSONObject reportFields = ReportFactoryFields.getReportFields(moduleName);
-		// JSONObject reportFields = ReportUtil.getReportFields(moduleName);
 		
 		setResult("meta", reportFields);
 		return SUCCESS;
@@ -1040,6 +1043,26 @@ public class V2ReportAction extends FacilioAction {
 		Set<FacilioModule> subModulesList = ReportFactoryFields.getSubModulesList(moduleName);
 		
 		setResult("modules", subModulesList);
+		return SUCCESS;
+	}
+	
+	public String getDataModuleList() throws Exception {
+		Set<FacilioModule> dataModulesList = ReportFactoryFields.getDataModulesList(moduleName);
+		setResult("modules", dataModulesList);
+		return SUCCESS;
+	}
+	
+	public String getTabularRowReportFields() throws Exception {
+		JSONObject reportFields = ReportFactoryFields.getTabularRowReportFields(moduleName);
+		
+		setResult("meta", reportFields);
+		return SUCCESS;
+	}
+	
+	public String getMetricsList() throws Exception {
+		Set<FacilioField> reportFields = ReportFactoryFields.getMetricsList(moduleName);
+		
+		setResult("Fields", reportFields);
 		return SUCCESS;
 	}
 	
@@ -2385,5 +2408,36 @@ public class V2ReportAction extends FacilioAction {
 		this.ids = ids;
 	}
 	
+	private List<ReportPivotTableRowsContext> rows = new ArrayList<ReportPivotTableRowsContext>();
+	public List<ReportPivotTableRowsContext> getRows() {
+		return rows;
+	}
+	public void setRows(List<ReportPivotTableRowsContext> rows) {
+		this.rows = rows;
+	}
 	
+	private List<ReportPivotTableDataContext> data = new ArrayList<ReportPivotTableDataContext>();
+	public List<ReportPivotTableDataContext> getData() {
+		return data;
+	}
+	public void setData(List<ReportPivotTableDataContext> data) {
+		this.data = data;
+	}
+
+	public String fetchTabularReportData() throws Exception {
+		FacilioChain c = FacilioChain.getNonTransactionChain();
+		FacilioContext context = c.getContext();
+		context.put(FacilioConstants.Reports.ROWS, rows);
+		context.put(FacilioConstants.Reports.DATA, data);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		c.addCommand(new ConstructTabularReportData());
+		c.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
+		c.execute();
+		setResult(FacilioConstants.ContextNames.ROW_HEADERS, context.get(FacilioConstants.ContextNames.ROW_HEADERS));
+		setResult(FacilioConstants.ContextNames.DATA_HEADERS, context.get(FacilioConstants.ContextNames.DATA_HEADERS));
+		setResult(FacilioConstants.ContextNames.ROW_ALIAS, context.get(FacilioConstants.ContextNames.ROW_ALIAS));
+		setResult(FacilioConstants.ContextNames.DATA_ALIAS, context.get(FacilioConstants.ContextNames.DATA_ALIAS));
+		setResult(FacilioConstants.ContextNames.PIVOT_TABLE_DATA, context.get(FacilioConstants.ContextNames.PIVOT_TABLE_DATA));
+		return SUCCESS;
+	}
 }

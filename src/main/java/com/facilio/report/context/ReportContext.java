@@ -694,7 +694,7 @@ public class ReportContext {
 	}
 
 	public enum ReportType {
-		READING_REPORT, WORKORDER_REPORT, REGRESSION_REPORT, TEMPLATE_REPORT;
+		READING_REPORT, WORKORDER_REPORT, REGRESSION_REPORT, TEMPLATE_REPORT, PIVOT_REPORT;
 
 		public int getValue() {
 			return ordinal() + 1;

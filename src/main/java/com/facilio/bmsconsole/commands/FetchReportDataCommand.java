@@ -50,6 +50,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = Logger.getLogger(FetchReportDataCommand.class.getName());
 	private FacilioModule baseModule;
+	private ReportType reportType;
 	private ModuleBean modBean;
 	private Boolean enableFutureData = false;
 	private LinkedHashMap<String, String> moduleVsAlias = new LinkedHashMap<String, String>();
@@ -60,6 +61,9 @@ public class FetchReportDataCommand extends FacilioCommand {
 		modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
+		if(report.getTypeEnum() != null){
+			reportType = report.getTypeEnum();
+		}
 		
 		if (report.getDataPoints() == null || report.getDataPoints().isEmpty()) {
 			return false;
@@ -88,8 +92,13 @@ public class FetchReportDataCommand extends FacilioCommand {
 
 		Boolean shouldIncludeMarked = (Boolean)
 				context.get(FacilioConstants.ContextNames.SHOULD_INCLUDE_MARKED);
+		Boolean getModuleFromDp = (Boolean)
+				context.get(FacilioConstants.ContextNames.GET_MODULE_FROM_DP);
 		if (shouldIncludeMarked == null) {
 			shouldIncludeMarked = false;
+		}
+		if (getModuleFromDp == null) {
+			getModuleFromDp = false;
 		}
 
 
@@ -137,7 +146,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 		ReportDataPointContext sortPoint = getSortPoint(dataPoints);
 		ReportDataContext sortedData = null;
 		if (sortPoint != null) {
-			sortedData = fetchDataForGroupedDPList(Collections.singletonList(sortPoint), report, false, null, shouldIncludeMarked);
+			sortedData = fetchDataForGroupedDPList(Collections.singletonList(sortPoint), report, false, null, shouldIncludeMarked, getModuleFromDp);
 			reportData.add(sortedData);
 		}
 		List<List<ReportDataPointContext>> groupedDataPoints = groupDataPoints(dataPoints, handleBooleanFields, report.getTypeEnum(), report.getxAggrEnum(), report.getDateRange());
@@ -148,7 +157,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 					dataPoints.remove(dataPointList.get(0));
 					report.setHasEdit(false);
 				}else{
-					ReportDataContext data = fetchDataForGroupedDPList(dataPointList, report, sortPoint != null, sortPoint == null ? null : sortedData.getxValues(), shouldIncludeMarked);
+					ReportDataContext data = fetchDataForGroupedDPList(dataPointList, report, sortPoint != null, sortPoint == null ? null : sortedData.getxValues(), shouldIncludeMarked, getModuleFromDp);
 					reportData.add(data);
 				}
 			}
@@ -181,7 +190,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 		return null;
 	}
 	
-	private ReportDataContext fetchDataForGroupedDPList (List<ReportDataPointContext> dataPointList, ReportContext report, boolean hasSortedDp, String xValues, boolean shouldIncludeMarked) throws Exception {
+	private ReportDataContext fetchDataForGroupedDPList (List<ReportDataPointContext> dataPointList, ReportContext report, boolean hasSortedDp, String xValues, boolean shouldIncludeMarked, boolean getModuleFromDp) throws Exception {
 		ReportDataContext data = new ReportDataContext();
 		data.setDataPoints(dataPointList);
 		
@@ -193,6 +202,8 @@ public class FetchReportDataCommand extends FacilioCommand {
 			} else {
 				baseModule = dp.getxAxis().getModule();
 			}
+		} else if (report.getTypeEnum() == ReportType.PIVOT_REPORT && getModuleFromDp) {
+			baseModule = dp.getyAxis().getModule();
 		} else {
 			baseModule = dp.getxAxis().getModule();
 		}
@@ -221,6 +232,14 @@ public class FetchReportDataCommand extends FacilioCommand {
 			applygroupByTimeAggr(dp,report.getgroupByTimeAggrEnum(),groupBy);
 		}
 		setYFieldsAndGroupByFields(dataPointList, fields, xAggrField, groupBy, dp, selectBuilder, addedModules);
+		if (report.getModuleId() > 0 && report.getTypeEnum() == ReportType.PIVOT_REPORT) {
+			FacilioModule reportModule = modBean.getModule(report.getModuleId());
+			if(!addedModules.contains(reportModule)) {
+				List<FacilioField> allFields = modBean.getAllFields(baseModule.getName()); // for now base module is enough
+				Map<String, LookupField> lookupFields = getLookupFields(allFields);
+				handleLookupJoin(lookupFields, reportModule, selectBuilder, addedModules, null);
+			}
+		}
 		List<FacilioField> cloneFields = new ArrayList<>();
 		for(FacilioField field : fields) {
 			if(field.getModule()!=null && (field.getModule().isCustom() && !baseModule.equals(field.getModule()))) {
@@ -841,6 +860,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 		FacilioModule prevModule = null;
 		while (module != null) {
 			if (lookupFields.containsKey(module.getName())) {
+				if(!addedModules.contains(module) || reportType != ReportType.PIVOT_REPORT) {
 				LookupField lookupFieldClone = lookupFields.get(module.getName()).clone();
 				if(lookupfieldId != null && lookupfieldId != -1) {
 					if(lookupFieldClone.getFieldId() == lookupfieldId) {
@@ -857,6 +877,32 @@ public class FetchReportDataCommand extends FacilioCommand {
 				applyJoin(joinOn, module, builder);
 				prevModule = module;
 				break;
+				}
+				} else {
+					prevModule = module;
+					break;
+				}
+			}
+			else if(lookupfieldId != null && lookupfieldId != -1 && reportType == ReportType.PIVOT_REPORT) {
+				LookupField lookupFieldClone = (LookupField) modBean.getField(lookupfieldId);
+				FacilioModule lookupModule = lookupFieldClone.getModule();
+				if (lookupFields.containsKey(lookupModule.getName())) {
+					LookupField relatedFieldClone = lookupFields.get(lookupModule.getName()).clone();
+					if(!addedModules.contains(lookupModule)) {
+						String joinOn = getJoinOn(relatedFieldClone);
+						builder.innerJoin(lookupModule.getTableName())
+						.on(joinOn);
+						builder.addJoinModules(Collections.singletonList(lookupModule));
+						addedModules.add(lookupModule);
+					}
+					if(!addedModules.contains(module)) {
+						String LookupjoinOn = getJoinOn(lookupFieldClone);
+						builder.innerJoin(module.getTableName())
+						.on(LookupjoinOn);
+						builder.addJoinModules(Collections.singletonList(module));
+						addedModules.add(module);
+					}
+					break;
 				}
 			}
 			if (stack == null) {

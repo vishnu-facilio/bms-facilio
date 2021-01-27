@@ -117,6 +117,13 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static FacilioChain newFetchTabularReportDataChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new FetchReportDataCommand());
+		c.addCommand(new ConstructTabularResultDataCommand());
+		return c;
+	}
+	
 	public static FacilioChain fetchReadingReportChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new CreateReadingAnalyticsReportCommand());
@@ -555,6 +562,14 @@ public class ReadOnlyChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new ReportSpecialHandlingCommand(true));
 		c.addCommand(newFetchReportDataChain());
+		c.addCommand(new ReportSpecialHandlingCommand(false));
+		return c;
+	}
+	
+	public static FacilioChain constructAndFetchTabularReportDataChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new ReportSpecialHandlingCommand(true));
+		c.addCommand(newFetchTabularReportDataChain());
 		c.addCommand(new ReportSpecialHandlingCommand(false));
 		return c;
 	}
