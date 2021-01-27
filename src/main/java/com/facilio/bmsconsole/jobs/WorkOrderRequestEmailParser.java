@@ -39,10 +39,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.io.File;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class WorkOrderRequestEmailParser extends FacilioJob {
 
@@ -138,14 +135,14 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 	private SupportEmailContext getSupportEmail(List<Address> toAddresses) throws Exception {
 		if(toAddresses != null) {
 			LOGGER.info("Support email addresses : "+toAddresses);
+			StringJoiner emails = new StringJoiner(",");
 			for(Address address : toAddresses) {
 				String email = ((InternetAddress) address).getAddress();
-				if(email.endsWith(".facilio.com")) {
-					SupportEmailContext supportEmail = SupportEmailAPI.getSupportEmailFromFwdEmail(email);
-					LOGGER.info("Support email object : "+supportEmail);
-					return supportEmail;
-				}
+				emails.add(email);
 			}
+			SupportEmailContext supportEmail = SupportEmailAPI.getSupportEmailFromFwdEmail(emails.toString());
+			LOGGER.info("Support email object : "+supportEmail);
+			return supportEmail;
 		}
 		return null;
 	}
