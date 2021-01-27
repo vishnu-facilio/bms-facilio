@@ -958,6 +958,7 @@ public class FacilioAuthAction extends FacilioAction {
 		PeopleAction peopleAction = new PeopleAction();
 		PeopleContext pplContext = PeopleAPI.getPeople(emailaddress);
 		if (pplContext == null) {
+			pplContext = new PeopleContext();
 			pplContext.setEmail(emailaddress);
 			pplContext.setName(emailaddress);
 			pplContext.setPeopleType(5);
