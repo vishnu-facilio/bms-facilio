@@ -19,6 +19,7 @@ public class PlanControlGroupSlotsCommand extends FacilioCommand {
 		
 		FacilioContext contextNew = new FacilioContext();
 		
+		controlGroupContext.setControlSchedule(ControlScheduleUtil.getControlSchedule(controlGroupContext.getControlSchedule().getId()));
 		contextNew.put(ControlScheduleUtil.CONTROL_GROUP_CONTEXT, controlGroupContext);
 		FacilioTimer.scheduleInstantJob("ControlScheduleSlotCreationJob",contextNew);
 		return false;
