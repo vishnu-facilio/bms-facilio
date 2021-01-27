@@ -176,4 +176,7 @@
 	<!-- Agent Data Missing Job-->
 	<job name="AgentDataMissing" classname="com.facilio.bmsconsole.jobs.DataProcessingAlertJob" transactionTimeout="420000"/>
 	<job name="AgentDataPending" classname="com.facilio.bmsconsole.jobs.DataPendingAlertJob" transactionTimeout="420000"/>
+	
+	
+	<job name='ControlScheduleSlotCreationJob' classname= 'com.facilio.bmsconsole.jobs.ControlScheduleSlotCreationJob' transactionTimeout='600000'/> -->
 </scheduler>

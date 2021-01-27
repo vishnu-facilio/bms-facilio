@@ -1,11 +1,11 @@
 package com.facilio.bmsconsoleV3.commands;
 
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
-import com.facilio.chain.FacilioContext;
+import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.control.util.ControlScheduleUtil;
-import com.facilio.tasker.FacilioTimer;
 
 import con.facilio.control.ControlGroupContext;
 
@@ -17,11 +17,14 @@ public class PlanControlGroupSlotsCommand extends FacilioCommand {
 		
 		ControlGroupContext controlGroupContext = (ControlGroupContext) ControlScheduleUtil.getObjectFromRecordMap(context, ControlScheduleUtil.CONTROL_GROUP_MODULE_NAME);
 		
-		FacilioContext contextNew = new FacilioContext();
+		JSONObject obj = new JSONObject();
 		
-		controlGroupContext.setControlSchedule(ControlScheduleUtil.getControlSchedule(controlGroupContext.getControlSchedule().getId()));
-		contextNew.put(ControlScheduleUtil.CONTROL_GROUP_CONTEXT, controlGroupContext);
-		FacilioTimer.scheduleInstantJob("ControlScheduleSlotCreationJob",contextNew);
+		obj.put(ControlScheduleUtil.CONTROL_GROUP_ID, controlGroupContext.getId());
+		
+		BmsJobUtil.deleteJobWithProps(controlGroupContext.getId(), "ControlScheduleSlotCreationJob");
+		
+		BmsJobUtil.scheduleOneTimeJobWithProps(controlGroupContext.getId(), "ControlScheduleSlotCreationJob", 5, "facilio", obj);
+
 		return false;
 	}
 
