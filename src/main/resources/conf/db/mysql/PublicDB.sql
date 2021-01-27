@@ -1,3 +1,5 @@
+-- Public Tables
+
 -- Create Organizations Table
 CREATE TABLE IF NOT EXISTS Organizations (
 	ORGID BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
