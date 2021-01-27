@@ -65,7 +65,7 @@ public class ProcessDataCommandV2 extends AgentV2Command {
 
                     if( ! pointNames.isEmpty()){
                         List<Map<String, Object>> pointsFromDb = getPointsFromDb(pointNames,controller);
-                        if (pointsFromDb.size() < pointNames.size() && controller != null && controller.getAgent().getAgentType() == AgentType.CLOUD.getKey()) {
+                        if (pointsFromDb.size() < pointNames.size() && controller != null && (controller.getAgent().getAgentType() == AgentType.CLOUD.getKey() || controller.getAgent().getAgentType() == AgentType.REST.getKey())) {
                                 Set<String> pointsFromDbSet = new HashSet<>();
                                 pointsFromDb.forEach(row -> pointsFromDbSet.add(row.get("name").toString()));
                                 Set<String> pointNamesSet = new HashSet<>(pointNames);
