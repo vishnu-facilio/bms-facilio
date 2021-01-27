@@ -1,14 +1,13 @@
 package com.facilio.bmsconsole.util;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.accounts.util.AccountConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -27,24 +26,30 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class SupportEmailAPI {
-	public static final String TABLE_NAME = "SupportEmails";
-	private static Logger log = LogManager.getLogger(SupportEmailAPI.class.getName());
+	private static final FacilioModule SUPPORT_EMAIL_MODULE = ModuleFactory.getSupportEmailsModule();
+	private static final List<FacilioField> SUPPORT_EMAIL_FIELDS = FieldFactory.getSupportEmailFields();
+	private static final Logger LOGGER = LogManager.getLogger(SupportEmailAPI.class.getName());
 
-	public static SupportEmailContext getSupportEmailFromFwdEmail(String fwdMail) throws Exception {
+	public static SupportEmailContext getSupportEmailFromFwdEmail(String email) throws Exception {
 		try {
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(SUPPORT_EMAIL_FIELDS);
+			FacilioField actualEmail = fieldMap.get("actualEmail"), fwdEmail = fieldMap.get("fwdEmail");
+
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-					.table(TABLE_NAME)
-					.select(FieldFactory.getSupportEmailFields())
-					.andCustomWhere("FWD_EMAIL = ?", fwdMail);
+					.table(SUPPORT_EMAIL_MODULE.getTableName())
+					.select(SUPPORT_EMAIL_FIELDS)
+					.orCondition(CriteriaAPI.getCondition(actualEmail, email, StringOperators.IS))
+					.orCondition(CriteriaAPI.getCondition(fwdEmail, email, StringOperators.IS))
+					;
 			
 			List<Map<String, Object>> emailList = builder.get();
 			if(emailList != null && emailList.size() > 0) {
-				Map<String, Object> email = emailList.get(0);
-				return getSupportEmailFromMap(email);
+				Map<String, Object> supportEmail = emailList.get(0);
+				return getSupportEmailFromMap(supportEmail);
 			}
 		}
 		catch(Exception e) {
-			log.info("Exception occurred ", e);
+			LOGGER.info("Exception occurred ", e);
 			throw e;
 		}
 		return null;
@@ -53,8 +58,8 @@ public class SupportEmailAPI {
 	public static SupportEmailContext getSupportEmailFromId(long orgId, long id) throws Exception {
 		try {
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-					.table(TABLE_NAME)
-					.select(FieldFactory.getSupportEmailFields())
+					.table(SUPPORT_EMAIL_MODULE.getTableName())
+					.select(SUPPORT_EMAIL_FIELDS)
 					.andCustomWhere("ORGID = ? AND ID = ?",orgId, id);
 			
 			List<Map<String, Object>> emailList = builder.get();
@@ -65,7 +70,7 @@ public class SupportEmailAPI {
 			}
 		}
 		catch(Exception e) {
-			log.info("Exception occurred ", e);
+			LOGGER.info("Exception occurred ", e);
 			throw e;
 		}
 		return null;
@@ -76,8 +81,8 @@ public class SupportEmailAPI {
 	public static List<SupportEmailContext> getSupportEmailsOfOrg(long orgId) throws Exception {
 		try {
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-					.table(TABLE_NAME)
-					.select(FieldFactory.getSupportEmailFields())
+					.table(SUPPORT_EMAIL_MODULE.getTableName())
+					.select(SUPPORT_EMAIL_FIELDS)
 					.andCustomWhere("ORGID = ?", orgId);
 			
 			List<Map<String, Object>> emailList = builder.get();
@@ -90,7 +95,7 @@ public class SupportEmailAPI {
 			}
 		}
 		catch(Exception e) {
-			log.info("Exception occurred ", e);
+			LOGGER.info("Exception occurred ", e);
 			throw e;
 		}
 		return null;
@@ -122,11 +127,10 @@ public class SupportEmailAPI {
 		}
 		System.out.println(emailProps);
 //		FacilioService.runAsService(() ->  addSupportEmailASservice(supportEmail, emailProps));
-		
-		List<FacilioField> fields = FieldFactory.getSupportEmailFields();
+
 		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
-												.table("SupportEmails")
-												.fields(fields)
+												.table(SUPPORT_EMAIL_MODULE.getTableName())
+												.fields(SUPPORT_EMAIL_FIELDS)
 												.addRecord(emailProps);
 		builder.save();
 		supportEmail.setId((long) emailProps.get("id"));
@@ -141,18 +145,17 @@ public class SupportEmailAPI {
 			emailProps.put("autoAssignGroup", ((Map<String, Object>)emailProps.get("autoAssignGroup")).get("id"));
 		}
 		emailProps.remove("id");
-		
-			List<FacilioField> fields = FieldFactory.getSupportEmailFields();
+
 			GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
-													.table("SupportEmails")
-													.fields(fields)
+													.table(SUPPORT_EMAIL_MODULE.getTableName())
+													.fields(SUPPORT_EMAIL_FIELDS)
 													.andCustomWhere("ID = ?", supportEmail.getId());
 			builder.update(emailProps);
 		}
 	
 	public static void deleteSupportEmail (long supportEmailId) throws Exception {
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
-				.table("SupportEmails")
+				.table(SUPPORT_EMAIL_MODULE.getTableName())
 				.andCustomWhere("ID = ?", supportEmailId);
 		builder.delete();
 	}
@@ -161,8 +164,8 @@ public class SupportEmailAPI {
 	public static List<SupportEmailContext> getImapsEmailsOfOrg(long orgId) throws Exception {
 
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getSupportEmailFields())
-				.table(ModuleFactory.getSupportEmailsModule().getTableName())
+				.select(SUPPORT_EMAIL_FIELDS)
+				.table(SUPPORT_EMAIL_MODULE.getTableName())
 				.andCondition(CriteriaAPI.getCondition("IS_CUSTOM_MAIL", "isCustomMail", String.valueOf(true), BooleanOperators.IS))
 				.andCustomWhere("ORGID = ?", orgId);
 				;
