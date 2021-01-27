@@ -8,12 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -860,6 +855,12 @@ public class FacilioAuthAction extends FacilioAction {
 			SAMLResponse resp = samlClient.validateSAMLResponse(samlResponse, "POST");
 
 			String email = resp.getNameId();
+			String name = findUserName(resp);
+
+			if (StringUtils.isEmpty(name)) {
+				name = email;
+			}
+
 
 			try {
 				LOGGER.info("validateSSOSignIn()");
@@ -924,7 +925,7 @@ public class FacilioAuthAction extends FacilioAction {
 						&& (Throwables.getRootCause(e) instanceof AccountException)
 						&& ((AccountException) Throwables.getRootCause(e)).getErrorCode() == USER_DEACTIVATED_FROM_THE_ORG) {
 					LOGGER.log(Level.SEVERE, "Creating portal user");
-					return createPortalUserAndLogin(email);
+					return createPortalUserAndLogin(email, name);
 				}
 				LOGGER.log(Level.INFO, "Exception while validating sso signin, ", e);
 				setResponseCode(1);
@@ -948,19 +949,52 @@ public class FacilioAuthAction extends FacilioAction {
 		return SUCCESS;
 	}
 
-	private String createPortalUserAndLogin(String email) throws Exception {
-		createPortalUser(email);
+	private String findUserName(SAMLResponse resp) {
+		Map<String, String> attributes = resp.getAttributes();
+		var name = "";
+		if (MapUtils.isNotEmpty(attributes)) {
+			Set<String> keys = attributes.keySet();
+			var found = false;
+			for (String key: keys) {
+				if (key.equalsIgnoreCase("name")) {
+					found = true;
+					name = attributes.get(key);
+					break;
+				}
+			}
+
+			if (!found) {
+				for (String key: keys) {
+					if (key.equalsIgnoreCase("firstname")) {
+						name = attributes.get(key);
+						break;
+					}
+				}
+
+				for (String key: keys) {
+					if (key.equalsIgnoreCase("lastname")) {
+						name = " " + attributes.get(key);
+						break;
+					}
+				}
+			}
+		}
+		return name;
+	}
+
+	private String createPortalUserAndLogin(String email, String name) throws Exception {
+		createPortalUser(email, name);
 		LOGGER.log(Level.SEVERE, "Created portal user");
 		return domainSSOSignIn();
 	}
 
-	private void createPortalUser(String emailaddress) throws Exception {
+	private void createPortalUser(String emailaddress, String name) throws Exception {
 		PeopleAction peopleAction = new PeopleAction();
 		PeopleContext pplContext = PeopleAPI.getPeople(emailaddress);
 		if (pplContext == null) {
 			pplContext = new PeopleContext();
 			pplContext.setEmail(emailaddress);
-			pplContext.setName(emailaddress);
+			pplContext.setName(name);
 			pplContext.setPeopleType(5);
 			pplContext.setIsOccupantPortalAccess(true);
 			peopleAction.setPeopleList(Arrays.asList(pplContext));
