@@ -15,6 +15,7 @@ import com.facilio.modules.FieldUtil;
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
@@ -729,23 +730,26 @@ public class UserAction extends FacilioAction {
 	}
 
 	public String getUserByEmail() throws Exception {
-		ApplicationContext app = ApplicationApi.getApplicationForLinkName(appLinkName);
-		if(app == null) {
-			setResult("message", "Invalid app link name");
-			return ERROR;
-		}
-		List<AppDomain> appDomainList = IAMAppUtil.getAppDomainForType(app.getDomainType(), AccountUtil.getCurrentOrg().getOrgId());
-		if(CollectionUtils.isNotEmpty(appDomainList)){
-			User user = AccountUtil.getUserBean().getUserFromEmail(email, appDomainList.get(0).getIdentifier(), AccountUtil.getCurrentOrg().getOrgId());
-			if(user != null) {
-				setResult(FacilioConstants.ContextNames.USER, user);
-				return SUCCESS;
+		if(StringUtils.isNotEmpty(email)) {
+			if (StringUtils.isEmpty(appLinkName)) {
+				appLinkName = FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP;
+			}
+			ApplicationContext app = ApplicationApi.getApplicationForLinkName(appLinkName);
+			if (app == null) {
+				setResult("message", "Invalid app link name");
+				return ERROR;
+			}
+			List<AppDomain> appDomainList = IAMAppUtil.getAppDomainForType(app.getDomainType(), AccountUtil.getCurrentOrg().getOrgId());
+			if (CollectionUtils.isNotEmpty(appDomainList)) {
+				User user = AccountUtil.getUserBean().getUserFromEmail(email, appDomainList.get(0).getIdentifier(), AccountUtil.getCurrentOrg().getOrgId());
+				if (user != null) {
+					setResult(FacilioConstants.ContextNames.USER, user);
+					return SUCCESS;
+				}
 			}
 		}
 		setResult("message", "Invalid user email");
 		return ERROR;
-
-
 
 	}
 }
