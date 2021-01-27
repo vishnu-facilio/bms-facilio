@@ -15,7 +15,12 @@ public class PlanControlGroupSlotsCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		FacilioTimer.scheduleInstantJob("ControlScheduleSlotCreationJob",(FacilioContext) context);
+		ControlGroupContext controlGroupContext = (ControlGroupContext) ControlScheduleUtil.getObjectFromRecordMap(context, ControlScheduleUtil.CONTROL_GROUP_MODULE_NAME);
+		
+		FacilioContext contextNew = new FacilioContext();
+		
+		contextNew.put(ControlScheduleUtil.CONTROL_GROUP_CONTEXT, controlGroupContext);
+		FacilioTimer.scheduleInstantJob("ControlScheduleSlotCreationJob",contextNew);
 		return false;
 	}
 
