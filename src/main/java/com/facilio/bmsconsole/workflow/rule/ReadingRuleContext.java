@@ -1112,16 +1112,21 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 								PreEventContext preEvent = constructPreClearEvent(reading, (ResourceContext) reading.getParent());
 								preEvent.constructAndAddPreClearEvent(context);isPreEvent = true;		
 							}
+							else  {
+								constructAndAddClearEvent(context, (ResourceContext) reading.getParent(), reading.getTtime());
+							}
 						}	
 					}
-					else if (this.getRuleTypeEnum() == RuleType.ALARM_TRIGGER_RULE && (overPeriod > 0 || occurences > 0 || isConsecutive() || thresholdType == ReadingRuleContext.ThresholdType.FLAPPING)) {
-						PreEventContext preEvent = constructPreClearEvent(reading, (ResourceContext) reading.getParent());
-						preEvent.constructAndAddPreClearEvent(context);
-						isPreEvent = true;
-					}
-					else  {
-						constructAndAddClearEvent(context, (ResourceContext) reading.getParent(), reading.getTtime());
-					}
+					else if (this.getRuleTypeEnum() == RuleType.ALARM_TRIGGER_RULE) { 
+						if(overPeriod > 0 || occurences > 0 || isConsecutive() || thresholdType == ReadingRuleContext.ThresholdType.FLAPPING) {
+							PreEventContext preEvent = constructPreClearEvent(reading, (ResourceContext) reading.getParent());
+							preEvent.constructAndAddPreClearEvent(context);
+							isPreEvent = true;
+						}
+						else  {
+							constructAndAddClearEvent(context, (ResourceContext) reading.getParent(), reading.getTtime());
+						}
+					}			
 					if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
 						LOGGER.info("Time taken to execute false actions  : "+getId()+ " for isPreEvent: " + isPreEvent +" is "+(System.currentTimeMillis() - startTime));			
 					}
