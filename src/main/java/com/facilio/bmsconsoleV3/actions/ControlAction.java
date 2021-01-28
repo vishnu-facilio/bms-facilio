@@ -53,6 +53,23 @@ public class ControlAction extends V3Action {
 		return SUCCESS;
 	}
 	
+	public String getTenantsToBePublished() throws Exception {
+		
+		FacilioChain chain = ReadOnlyChainFactoryV3.getTenantListToBePublished();
+		
+		FacilioContext context = chain.getContext();
+		
+		group = ControlScheduleUtil.getControlGroup(group.getId());
+		
+		context.put(ControlScheduleUtil.CONTROL_GROUP_CONTEXT, group);
+		
+		chain.execute();
+		
+		setData(FacilioConstants.ContextNames.TENANT_LIST, context.get(FacilioConstants.ContextNames.TENANT_LIST));
+		
+		return SUCCESS;
+	}
+	
 	public String getCategoryForType() throws Exception {
 		
 		List<AssetCategoryContext> categories = type.getAssetCategoryList();

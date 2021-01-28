@@ -100,4 +100,10 @@ public class ReadOnlyChainFactoryV3 {
         c.addCommand(new ComputeControlGroupSlotCommmand());
         return c;
     }
+    
+    public static FacilioChain getTenantListToBePublished() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchTenantsToBePublishedCommmand());
+        return c;
+    }
 }
