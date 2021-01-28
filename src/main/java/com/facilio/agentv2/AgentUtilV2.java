@@ -321,7 +321,7 @@ public class AgentUtilV2
            return offLineAgents++;
         }
         long diffInMins = (long)Math.floor((System.currentTimeMillis() - lastReceivedTime)/1000/60 << 0);
-        int interval = (int)map.getOrDefault(AgentConstants.DATA_INTERVAL,0);
+        long interval = (long)map.getOrDefault(AgentConstants.DATA_INTERVAL,0);
         if(diffInMins > interval * 2 ){
             offLineAgents ++;
             map.put(AgentConstants.CONNECTED,false);
