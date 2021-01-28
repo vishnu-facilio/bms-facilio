@@ -25,7 +25,7 @@ public class SensorAlarmPageFactory extends PageFactory {
         page.addTab(tab1);
         Section tab1Sec1 = page.new Section();
         tab1.addSection(tab1Sec1);
-        if (alarms.getLastWoId() > 0 || (alarms.getLastOccurrence().getAcknowledged() != null && alarms.getLastOccurrence().getAcknowledged())) {
+        if (alarms.getLastWoId() > 0 || (alarms.getLastOccurrence() != null && alarms.getLastOccurrence().getAcknowledged() != null && alarms.getLastOccurrence().getAcknowledged())) {
             addTimeLineWidget(tab1Sec1, alarms);
         }
         addAlarmDetailsWidget(tab1Sec1);
