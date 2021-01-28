@@ -135,7 +135,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 			if(previousFetchStartReading != null)
 			{
 				Map<String, List<ReadingDataMeta>> beforeCurrentFields = prepareCurrentFieldsRDM(readingRule, previousFetchStartReading.getTtime(), startTime, resourceId, fields);
-				executeWorkflows(readingRule, alarmRule, Collections.singletonList(previousFetchStartReading), beforeCurrentFields, fields, beforeFetchFirstEvent, new BaseEventContext());
+				executeWorkflows(readingRule, alarmRule, Collections.singletonList(previousFetchStartReading), beforeCurrentFields, fields, beforeFetchFirstEvent, new BaseEventContext(), currentResourceContext);
 				if(beforeFetchFirstEvent != null && !beforeFetchFirstEvent.isEmpty() && !beforeFetchFirstEvent.get(0).getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY))
 				{
 					previousEventMeta = beforeFetchFirstEvent.get(0);
@@ -156,7 +156,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 			startTime = readings.get(0).getTtime();
 			endTime = readings.get(readings.size() - 1).getTtime();
 
-			FacilioContext context = executeWorkflows(readingRule, alarmRule, readings, currentFields, fields, events, previousEventMeta);
+			FacilioContext context = executeWorkflows(readingRule, alarmRule, readings, currentFields, fields, events, previousEventMeta, currentResourceContext);
 			
 			if(context.containsKey(FacilioConstants.ContextNames.RULE_LOG_MODULE_DATA)) {
 				
@@ -196,7 +196,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 					{
 						Map<String, List<ReadingDataMeta>> extendedCurrentFields = prepareCurrentFieldsRDM(readingRule, endTime, nextSingleReading.getTtime(), resourceId, fields);
 						
-						executeWorkflows(readingRule, alarmRule, Collections.singletonList(nextSingleReading), extendedCurrentFields, fields, nextJobFirstEvent, previousEventMeta);
+						executeWorkflows(readingRule, alarmRule, Collections.singletonList(nextSingleReading), extendedCurrentFields, fields, nextJobFirstEvent, previousEventMeta, currentResourceContext);
 						if(nextJobFirstEvent != null && !nextJobFirstEvent.isEmpty() && nextJobFirstEvent.get(0).getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY))
 						{
 							events.add(nextJobFirstEvent.get(0));
@@ -214,7 +214,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 		return events;
 	}
 	
-	private FacilioContext executeWorkflows(ReadingRuleContext readingRule, AlarmRuleContext alarmRule, List<ReadingContext> readings, Map<String, List<ReadingDataMeta>> supportFieldsRDM, List<WorkflowFieldContext> fields, List<BaseEventContext> baseEvents,BaseEventContext previousEventMeta) throws Exception
+	private FacilioContext executeWorkflows(ReadingRuleContext readingRule, AlarmRuleContext alarmRule, List<ReadingContext> readings, Map<String, List<ReadingDataMeta>> supportFieldsRDM, List<WorkflowFieldContext> fields, List<BaseEventContext> baseEvents,BaseEventContext previousEventMeta, ResourceContext currentResourceContext) throws Exception
 	{
 		int alarmCount = 0;
 		FacilioContext context = new FacilioContext();
@@ -271,17 +271,25 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 							}
 							
 							boolean canSuppressAlarm = checkForSensorAlarmSuppression(fields, reading);
-							if(canSuppressAlarm && alarmRule != null) {
+							if(canSuppressAlarm && alarmRule != null && reading.getParentId() == currentResourceContext.getId()) 
+							{
 								shouldSkipCurrentReading = true;
-								if(alarmRule.getAlarmTriggerRule().getOverPeriod() > 0 || alarmRule.getAlarmTriggerRule().getOccurences() > 0 || alarmRule.getAlarmTriggerRule().isConsecutive() || alarmRule.getAlarmTriggerRule().getThresholdTypeEnum() == ReadingRuleContext.ThresholdType.FLAPPING) {
-									PreEventContext preEvent = readingRule.constructPreClearEvent(reading, (ResourceContext) reading.getParent());
+								context.put(EventConstants.EventContextNames.PREVIOUS_EVENT_META, previousEventMeta);
+								if(alarmRule.getAlarmTriggerRule().getOverPeriod() > 0 || alarmRule.getAlarmTriggerRule().getOccurences() > 0 || alarmRule.getAlarmTriggerRule().isConsecutive() || alarmRule.getAlarmTriggerRule().getThresholdTypeEnum() == ReadingRuleContext.ThresholdType.FLAPPING) {						
+									PreEventContext preEvent = readingRule.constructPreClearEvent(reading, currentResourceContext);
 									preEvent.setComment("Alarm was suppressed due to SensorEvent");
-									preEvent.constructAndAddPreClearEvent(context);	
+									preEvent.constructAndAddPreClearEvent(context);		
 								}
 								else  {
 									LOGGER.info("ReadingAlarm was suppressed due to SensorEvent for ReadingRule: "+readingRule.getId()+" and reading " +reading+ ". WorkflowFields: "+fields);				
-									readingRule.constructAndAddClearEvent(context, (ResourceContext) reading.getParent(), reading.getTtime());
+									readingRule.constructAndAddClearEvent(context, currentResourceContext, reading.getTtime());
 								}	
+								List<BaseEventContext> currentEvent = (List<BaseEventContext>) context.remove(EventConstants.EventContextNames.EVENT_LIST);
+								if (CollectionUtils.isNotEmpty(currentEvent)) {
+									prevRDM = currentRDM;
+									previousEventMeta = currentEvent.get(0);
+									baseEvents.addAll(currentEvent);
+								}
 							}	
 						}
 						if(shouldSkipCurrentReading) {
@@ -601,7 +609,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 	private boolean checkForSensorAlarmSuppression(List<WorkflowFieldContext> fields, ReadingContext reading) throws Exception {
 		
 		boolean isActiveSensorEventPresent = false;
-		if((ResourceContext) reading.getParent() != null && ((ResourceContext) reading.getParent()).getId()>0) {
+		if(reading.getParentId()>0) {
 			List<Long> fieldIds = new ArrayList<Long>();
 			for(WorkflowFieldContext field:fields) {
 				fieldIds.add(field.getFieldId());
@@ -616,7 +624,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 					.select(modBean.getAllFields(module.getName()))
 					.beanClass(SensorEventContext.class)
 					.andCondition(CriteriaAPI.getConditionFromList("READING_FIELD_ID", "readingFieldId", fieldIds, NumberOperators.EQUALS))
-					.andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resource",  ""+((ResourceContext)reading.getParent()).getId(), NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resource",  ""+reading.getParentId(), NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", ""+reading.getTtime(), NumberOperators.EQUALS))
 					.fetchSupplement((LookupField)fieldMap.get("severity"));
 			
@@ -624,7 +632,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 			
 			if (eventList != null && !eventList.isEmpty() && eventList.size()>0) {
 				for(SensorEventContext event:eventList) {
-					if(!event.getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) {
+					if(!event.getSeverity().getSeverity().equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) {
 						isActiveSensorEventPresent = true;
 						break;
 					}
