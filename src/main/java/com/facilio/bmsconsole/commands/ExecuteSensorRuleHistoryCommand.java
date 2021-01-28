@@ -12,39 +12,61 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.VisitorLoggingContext;
+import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.bmsconsole.context.sensor.SensorRollUpEventContext;
 import com.facilio.bmsconsole.context.sensor.SensorRuleContext;
 import com.facilio.bmsconsole.context.sensor.SensorRuleUtil;
 import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.BmsJobUtil;
+import com.facilio.bmsconsole.util.NewAlarmAPI;
+import com.facilio.bmsconsole.util.NewEventAPI;
+import com.facilio.bmsconsole.util.VisitorManagementAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleHistoricalAlarmsAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.tasker.job.FacilioJob;
+import com.facilio.tasker.job.JobContext;
 import com.facilio.time.DateRange;
 
-public class ExecuteSensorRuleHistoryCommand extends FacilioCommand {
+public class ExecuteSensorRuleHistoryCommand extends FacilioJob {
 
 	private static final Logger LOGGER = Logger.getLogger(ExecuteSensorRuleHistoryCommand.class.getName());
 	@Override
-	public boolean executeCommand(Context context) throws Exception {
+	public void execute(JobContext jc) throws Exception {
 		
 		try {
-			DateRange dateRange = (DateRange) context.get(FacilioConstants.ContextNames.DATE_RANGE);
-			Long assetCategoryId = (Long) context.get(FacilioConstants.ContextNames.ASSET_CATEGORY);
-			List<Long> assetIds = (List<Long>) context.get(FacilioConstants.ContextNames.ASSET_ID);
+			 JSONObject jobProps = BmsJobUtil.getJobProps(jc.getJobId(), "ExecuteSensorRuleHistoryJob");
+		     
+			DateRange dateRange = (DateRange) jobProps.get(FacilioConstants.ContextNames.DATE_RANGE);
+			Long assetCategoryId = (Long) jobProps.get(FacilioConstants.ContextNames.ASSET_CATEGORY);
+			List<Long> assetIds = (List<Long>) jobProps.get(FacilioConstants.ContextNames.ASSET_ID);
 
 			if(assetCategoryId == null || dateRange == null) {
-				throw new IllegalArgumentException("Insufficient params to execute sensor rule history");
+				throw new IllegalArgumentException("Insufficient params in job to execute sensor rule history");
 			}
 			if(assetIds == null || assetIds.isEmpty()) {
 				List<AssetContext> assets = AssetsAPI.getAssetListOfCategory(assetCategoryId);
 				assetIds = assets.stream().map(asset -> asset.getId()).collect(Collectors.toList());
 			}
 			
+			DateRange modifiedDateRange = WorkflowRuleHistoricalAlarmsAPI.deleteAllAlarmOccurrencesBasedonCriteria(getOccurrenceDeletionCriteria(assetIds, Type.SENSOR_ROLLUP_ALARM), getEventsProcessingCriteria(assetIds, Type.SENSOR_ROLLUP_ALARM), dateRange.getStartTime(), dateRange.getEndTime(), Type.SENSOR_ROLLUP_ALARM);
+			WorkflowRuleHistoricalAlarmsAPI.deleteAllAlarmOccurrencesBasedonCriteria(getOccurrenceDeletionCriteria(assetIds, Type.SENSOR_ALARM), getEventsProcessingCriteria(assetIds, Type.SENSOR_ALARM), modifiedDateRange.getStartTime(), modifiedDateRange.getEndTime(), Type.SENSOR_ALARM);
+	
 			List<SensorRuleContext> sensorRules = SensorRuleUtil.getSensorRuleByCategoryId(assetCategoryId, true);
 			List<ReadingContext> readings = new ArrayList<ReadingContext>();
 			List<SensorRollUpEventContext> sensorMeterRollUpEvents = new ArrayList<SensorRollUpEventContext>();
@@ -66,9 +88,30 @@ public class ExecuteSensorRuleHistoryCommand extends FacilioCommand {
 		catch(Exception e) {
 			LOGGER.log(Level.SEVERE, "Error in ExecuteSensorRuleHistoryCommand -- "+
 					" Exception: " + e.getMessage() , e);
-		}
+		}	
+	}
+	
+	private Criteria getOccurrenceDeletionCriteria(List<Long> resourceIds, Type type) throws Exception {
 		
-		return false;
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		AlarmOccurrenceContext.Type alarmOccurrenceType = NewAlarmAPI.getOccurrenceTypeFromAlarmType(type);
+		FacilioModule module = modBean.getModule(NewAlarmAPI.getOccurrenceModuleName(alarmOccurrenceType));
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
+		Criteria deletionCriteria = new Criteria();
+		deletionCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), ""+resourceIds, NumberOperators.EQUALS));
+
+		return deletionCriteria;
+	}
+	
+	private Criteria getEventsProcessingCriteria(List<Long> resourceIds, Type type) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		String moduleName = NewEventAPI.getEventModuleName(type);
+		FacilioModule eventModule = modBean.getModule(moduleName);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(eventModule.getName()));
+		Criteria fetchCriteria = new Criteria();
+		fetchCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), ""+resourceIds, NumberOperators.EQUALS));
+		return fetchCriteria;
 	}
 
 }

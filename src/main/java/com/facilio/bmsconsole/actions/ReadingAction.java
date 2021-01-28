@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,6 +35,8 @@ import com.facilio.bmsconsole.context.ResetCounterMetaContext;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLoggerContext;
 import com.facilio.bmsconsole.enums.SourceType;
+import com.facilio.bmsconsole.jobs.DemoAlarmPropagationJob;
+import com.facilio.bmsconsole.jobs.LiveEventsToAlarmProcessingJob;
 import com.facilio.bmsconsole.util.AggregatedEnergyConsumptionUtil;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.EnergyMeterUtilAPI;
@@ -51,6 +54,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.transaction.FacilioTransactionManager;
+import com.facilio.db.transaction.NewTransactionService;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -58,6 +62,8 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
+import com.facilio.tasker.job.FacilioJob;
+import com.facilio.tasker.job.JobContext;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.timeseries.TimeSeriesAPI;
@@ -1318,13 +1324,23 @@ public class ReadingAction extends FacilioAction {
 	}
 	
 	public String runThroughSensorRule() throws Exception {	
-		try {	
-			FacilioChain runThroughRuleChain = TransactionChainFactory.executeSensorRuleChain();
+		try {
+			if(startTime > endTime) {
+				throw new Exception("Start time should be less than the Endtime");
+			}
+			List<Long> resourceIds = null;
+			if(historicalLoggerAssetIds != null && !historicalLoggerAssetIds.isEmpty()) {
+				resourceIds = historicalLoggerAssetIds;
+			}
+			else if(historicalLoggerAssetId != null && !historicalLoggerAssetId.isEmpty() && StringUtils.isNotEmpty(historicalLoggerAssetId)) {
+				resourceIds = getIdListFromAssetId();
+			}
+			FacilioChain runThroughRuleChain = TransactionChainFactory.runThroughSensorRuleChain();
 			FacilioContext context = runThroughRuleChain.getContext();
 			
 			context.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(startTime, endTime));
 			context.put(FacilioConstants.ContextNames.ASSET_CATEGORY, getId());
-			context.put(FacilioConstants.ContextNames.ASSET_ID, getHistoricalLoggerAssetIds());
+			context.put(FacilioConstants.ContextNames.ASSET_ID, resourceIds);
 			runThroughRuleChain.execute();
 			
 			setResult("success", "Sensor Rule evaluation for the readings in the given period has been started");	
@@ -1410,11 +1426,10 @@ public class ReadingAction extends FacilioAction {
             FacilioChain chain = TransactionChainFactory.runDefaultFieldsMigration();
         	chain.execute();
  			LOGGER.info("NewSystemFieldsMigration Completed For -- "+AccountUtil.getCurrentOrg().getId());
-    		setResult("success", "NewSystemFieldsMigration Done.");
+    		setResult("success", "NewSystemFieldsMigration Done.");		
         }
         catch(Exception e){
         	LOGGER.error("NewSystemFieldsMigration Error Mig -- " +e+ "orgid -- "+AccountUtil.getCurrentOrg().getId());
-			FacilioTransactionManager.INSTANCE.getTransactionManager().setRollbackOnly();
     		setResult("success", "Failed NewSystemFieldsMigration.");
         }
 		return SUCCESS;	

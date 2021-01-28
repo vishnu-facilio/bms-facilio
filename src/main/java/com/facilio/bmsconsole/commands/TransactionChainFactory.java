@@ -171,11 +171,17 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
-		public static FacilioChain executeSensorRuleChain() {
+		public static FacilioChain runThroughSensorRuleChain() {
 			FacilioChain c = getDefaultChain();
-			c.addCommand(new ExecuteSensorRuleHistoryCommand());
+			c.addCommand(new RunThroughSensorRuleCommand());
 			return c;
 		}
+		
+//		public static FacilioChain executeSensorRuleChain() {
+//			FacilioChain c = getDefaultChain();
+//			c.addCommand(new ExecuteSensorRuleHistoryCommand());
+//			return c;
+//		}
 			
 		public static FacilioChain historicalScheduledRuleChain() {
 			FacilioChain c = getDefaultChain();
