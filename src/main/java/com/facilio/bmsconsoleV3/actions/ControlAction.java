@@ -38,6 +38,8 @@ public class ControlAction extends V3Action {
 		
 		FacilioContext context = chain.getContext();
 		
+		group = ControlScheduleUtil.getControlGroup(group.getId());
+		
 		context.put(FacilioConstants.ContextNames.START_TIME, startTime);
 		context.put(FacilioConstants.ContextNames.END_TIME, endTime);
 		context.put(ControlScheduleUtil.CONTROL_GROUP_CONTEXT, group);
@@ -45,6 +47,8 @@ public class ControlAction extends V3Action {
 		chain.execute();
 		
 		setData("slots", context.get(ControlScheduleUtil.CONTROL_GROUP_PLANNED_SLOTS));
+		
+		setData(ControlScheduleUtil.CONTROL_GROUP_CONTEXT, group);
 		
 		return SUCCESS;
 	}

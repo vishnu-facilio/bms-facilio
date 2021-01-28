@@ -1,10 +1,12 @@
 package com.facilio.bmsconsoleV3.commands;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.map.HashedMap;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
@@ -19,6 +21,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 
 import con.facilio.control.ControlGroupContext;
+import con.facilio.control.ControlScheduleExceptionContext;
 import con.facilio.control.ControlScheduleSlot;
 
 public class FetchControlGroupSlotCommmand extends FacilioCommand {
@@ -42,8 +45,31 @@ public class FetchControlGroupSlotCommmand extends FacilioCommand {
 		
 		List<ControlScheduleSlot> slots = ControlScheduleUtil.fetchRecord(ControlScheduleSlot.class, ControlScheduleUtil.CONTROL_SCHEDULE_UNPLANNED_SLOTS_MODULE_NAME, criteria, null);
 		
+		Map<Long, ControlScheduleExceptionContext> exceptionMap = getAsExceptionMap(group.getControlSchedule().getExceptions());
+		
+		for(ControlScheduleSlot slot :slots) {
+			if(slot.getException() != null) {
+				slot.setException(exceptionMap.get(slot.getException().getId()));
+			}
+		}
+		
 		context.put(ControlScheduleUtil.CONTROL_GROUP_PLANNED_SLOTS, slots);
 		return false;
 	}
 
+	
+	private Map<Long,ControlScheduleExceptionContext> getAsExceptionMap(List<ControlScheduleExceptionContext> exceptions) {
+		
+		if(exceptions != null) {
+			Map<Long,ControlScheduleExceptionContext> exceptionMap = new HashMap<Long, ControlScheduleExceptionContext>();
+			
+			for(ControlScheduleExceptionContext exception : exceptions) {
+				exceptionMap.put(exception.getId(), exception);
+			}
+			return exceptionMap;
+		}
+		return null;
+		
+		
+	}
 }
