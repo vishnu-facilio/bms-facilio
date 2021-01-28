@@ -594,12 +594,12 @@ public class FieldFactory {
         fields.add(getAgentConnectedField(module));
         fields.add(getAgentNameField(module));
         fields.add(getField(AgentConstants.DISPLAY_NAME, "DISPLAY_NAME", module, FieldType.STRING));
-        fields.add(getField(AgentConstants.DATA_INTERVAL, "DATA_INTERVAL", module, FieldType.NUMBER));
+        fields.add(getAgentDataIntervalField(module));
         fields.add(getNewAgentTypeField(module));
         fields.add(getField(AgentConstants.VERSION, "VERSION", module, FieldType.STRING));
         fields.add(getField(AgentConstants.LAST_MODIFIED_TIME, "LAST_MODIFIED_TIME", module, FieldType.NUMBER));
         fields.add(getCreatedTime(module));
-        fields.add(getField(AgentConstants.LAST_DATA_RECEIVED_TIME, "LAST_DATA_RECEIVED_TIME", module, FieldType.NUMBER));
+        fields.add(getAgentLastDataReveivedField(module));
         fields.add(getField(AgentConstants.SITE_ID, "SITE_ID", module, FieldType.NUMBER));
         fields.add(getWritableField(module));
         fields.add(getField(AgentConstants.PROCESSOR_VERSION, "PROCESSOR_VERSION", module, FieldType.NUMBER));
@@ -612,6 +612,14 @@ public class FieldFactory {
         fields.add(getField("agentType", "AGENT_TYPE", module, FieldType.NUMBER));
         fields.add(getNumberField(AgentConstants.INBOUND_CONNECTION_ID,"INBOUND_CONNECTION_ID",module));
         return fields;
+    }
+
+    public static FacilioField getAgentLastDataReveivedField(FacilioModule module) {
+        return getField(AgentConstants.LAST_DATA_RECEIVED_TIME, "LAST_DATA_RECEIVED_TIME", module, FieldType.NUMBER);
+    }
+
+    public static FacilioField getAgentDataIntervalField(FacilioModule module) {
+        return getField(AgentConstants.DATA_INTERVAL, "DATA_INTERVAL", module, FieldType.NUMBER);
     }
 
     public static FacilioField getAgentTypeField(FacilioModule module) {
