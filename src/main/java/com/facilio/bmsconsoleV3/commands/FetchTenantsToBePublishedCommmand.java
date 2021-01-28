@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
@@ -16,12 +17,14 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BuildingOperator;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 
 import con.facilio.control.ControlGroupContext;
+import con.facilio.control.ControlGroupTenentContext;
 
 public class FetchTenantsToBePublishedCommmand extends FacilioCommand {
 
@@ -34,17 +37,41 @@ public class FetchTenantsToBePublishedCommmand extends FacilioCommand {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TENANT_SPACES);
+		List<FacilioField> fields = modBean.getAllFields(ControlScheduleUtil.CONTROL_GROUP_TENENT_SHARING_MODULE_NAME);
 		
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
-		SelectRecordsBuilder<TenantSpaceContext> select = new SelectRecordsBuilder<TenantSpaceContext>()
+		SelectRecordsBuilder<ControlGroupTenentContext> select = new SelectRecordsBuilder<ControlGroupTenentContext>()
+				.select(fields)
+				.moduleName(ControlScheduleUtil.CONTROL_GROUP_TENENT_SHARING_MODULE_NAME)
+				.beanClass(ControlGroupTenentContext.class)
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentGroup"), group.getId()+"", NumberOperators.EQUALS));
+		
+		
+		List<ControlGroupTenentContext> sharedTenents = select.get();
+		
+		List<Long> alreadySharedTenents = new ArrayList<Long>();
+		for(ControlGroupTenentContext sharedTenent :sharedTenents) {
+			
+			alreadySharedTenents.add(sharedTenent.getTenant().getId());
+		}
+		
+		
+		fields = modBean.getAllFields(FacilioConstants.ContextNames.TENANT_SPACES);
+		
+		fieldMap = FieldFactory.getAsMap(fields);
+		
+		SelectRecordsBuilder<TenantSpaceContext> select1 = new SelectRecordsBuilder<TenantSpaceContext>()
 				.select(fields)
 				.moduleName(FacilioConstants.ContextNames.TENANT_SPACES)
 				.beanClass(TenantSpaceContext.class)
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("space"), group.getSpace().getId()+"", BuildingOperator.BUILDING_IS));
 		
-		List<TenantSpaceContext> tenantSpaces = select.get();
+		if(!alreadySharedTenents.isEmpty()) {
+			select1.andCondition(CriteriaAPI.getCondition(fieldMap.get("id"), StringUtils.join(alreadySharedTenents, ","), NumberOperators.NOT_EQUALS));
+		}
+		
+		List<TenantSpaceContext> tenantSpaces = select1.get();
 		
 		List<Long> tenantIds = new ArrayList<Long>();
 		
