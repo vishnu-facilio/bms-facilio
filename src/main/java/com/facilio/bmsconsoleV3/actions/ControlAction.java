@@ -3,7 +3,9 @@ package com.facilio.bmsconsoleV3.actions;
 import java.util.List;
 
 import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
+import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -31,6 +33,7 @@ public class ControlAction extends V3Action {
 	long startTime;
 	long endTime;
 	ControlGroupContext group;
+	TenantContext tenant;
 	
 	public String getSlot() throws Exception {
 		
@@ -66,6 +69,24 @@ public class ControlAction extends V3Action {
 		chain.execute();
 		
 		setData(FacilioConstants.ContextNames.TENANT_LIST, context.get(FacilioConstants.ContextNames.TENANT_LIST));
+		
+		return SUCCESS;
+	}
+	
+	public String publishToTenant() throws Exception {
+		
+		FacilioChain chain = TransactionChainFactoryV3.getControlGroupPublishChain();
+		
+		FacilioContext context = chain.getContext();
+		
+		group = ControlScheduleUtil.getControlGroup(group.getId());
+		
+		context.put(ControlScheduleUtil.CONTROL_GROUP_CONTEXT, group);
+		context.put(FacilioConstants.ContextNames.TENANT, tenant);
+		
+		chain.execute();
+		
+		setData(ControlScheduleUtil.CONTROL_GROUP_CONTEXT, context.get(ControlScheduleUtil.CONTROL_GROUP_CONTEXT));
 		
 		return SUCCESS;
 	}

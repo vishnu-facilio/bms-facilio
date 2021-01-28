@@ -713,4 +713,10 @@ public class TransactionChainFactoryV3 {
         chain.addCommand(new AddOrUpdateTriggerCommand());
         return chain;
     }
+    
+    public static FacilioChain getControlGroupPublishChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new ControlGroupPublishCommand());
+        return chain;
+    }
 }
