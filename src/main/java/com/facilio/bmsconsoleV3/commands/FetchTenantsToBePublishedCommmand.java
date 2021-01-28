@@ -14,6 +14,8 @@ import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.tenant.TenantSpaceContext;
 import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.control.ControlGroupContext;
+import com.facilio.control.ControlGroupTenentContext;
 import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BuildingOperator;
@@ -22,9 +24,6 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
-
-import con.facilio.control.ControlGroupContext;
-import con.facilio.control.ControlGroupTenentContext;
 
 public class FetchTenantsToBePublishedCommmand extends FacilioCommand {
 

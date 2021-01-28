@@ -7,9 +7,8 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.control.ControlScheduleContext;
 import com.facilio.control.util.ControlScheduleUtil;
-
-import con.facilio.control.ControlScheduleContext;
 
 public class AddControlScheduleBeforeSaveCommand extends FacilioCommand {
 

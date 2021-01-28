@@ -11,6 +11,9 @@ import org.apache.commons.collections4.map.HashedMap;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.control.ControlGroupContext;
+import com.facilio.control.ControlScheduleExceptionContext;
+import com.facilio.control.ControlScheduleSlot;
 import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -19,10 +22,6 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
-
-import con.facilio.control.ControlGroupContext;
-import con.facilio.control.ControlScheduleExceptionContext;
-import con.facilio.control.ControlScheduleSlot;
 
 public class FetchControlGroupSlotCommmand extends FacilioCommand {
 

@@ -9,6 +9,11 @@ import org.apache.commons.chain.Context;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.control.ControlGroupAssetCategory;
+import com.facilio.control.ControlGroupAssetContext;
+import com.facilio.control.ControlGroupContext;
+import com.facilio.control.ControlGroupFieldContext;
+import com.facilio.control.ControlGroupSection;
 import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
@@ -19,12 +24,6 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-
-import con.facilio.control.ControlGroupAssetCategory;
-import con.facilio.control.ControlGroupAssetContext;
-import con.facilio.control.ControlGroupContext;
-import con.facilio.control.ControlGroupFieldContext;
-import con.facilio.control.ControlGroupSection;
 
 public class UpdateControlGroupRelatedV2Command extends FacilioCommand {
 

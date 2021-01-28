@@ -7,9 +7,8 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.control.ControlScheduleSlot;
 import com.facilio.control.util.ControlScheduleUtil;
-
-import con.facilio.control.ControlScheduleSlot;
 
 public class ComputeControlGroupSlotCommmand extends FacilioCommand {
 

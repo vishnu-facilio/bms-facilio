@@ -5,14 +5,13 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.control.ControlGroupRoutineContext;
 import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-
-import con.facilio.control.ControlGroupRoutineContext;
 
 public class DeleteControlGroupRoutineSectionAndFieldCommand extends FacilioCommand {
 

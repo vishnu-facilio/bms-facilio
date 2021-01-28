@@ -6,12 +6,11 @@ import java.util.List;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.control.ControlGroupContext;
+import com.facilio.control.ControlScheduleGroupedSlot;
+import com.facilio.control.ControlScheduleSlot;
 import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.controlaction.context.ControlActionCommandContext;
-
-import con.facilio.control.ControlGroupContext;
-import con.facilio.control.ControlScheduleGroupedSlot;
-import con.facilio.control.ControlScheduleSlot;
 
 public class PlanControlGroupCommands extends FacilioCommand {
 

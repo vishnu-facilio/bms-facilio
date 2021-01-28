@@ -3,9 +3,8 @@ package com.facilio.bmsconsoleV3.commands;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.control.ControlGroupContext;
 import com.facilio.control.util.ControlScheduleUtil;
-
-import con.facilio.control.ControlGroupContext;
 
 public class UpdateControlGroupV2Command extends FacilioCommand {
 

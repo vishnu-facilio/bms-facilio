@@ -5,9 +5,8 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.util.BmsJobUtil;
+import com.facilio.control.ControlGroupContext;
 import com.facilio.control.util.ControlScheduleUtil;
-
-import con.facilio.control.ControlGroupContext;
 
 public class PlanControlGroupSlotsCommand extends FacilioCommand {
 

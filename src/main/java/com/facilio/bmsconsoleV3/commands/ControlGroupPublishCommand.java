@@ -5,9 +5,8 @@ import org.apache.commons.chain.Context;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.control.ControlGroupContext;
 import com.facilio.control.util.ControlScheduleUtil;
-
-import con.facilio.control.ControlGroupContext;
 
 public class ControlGroupPublishCommand extends FacilioCommand {
 

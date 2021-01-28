@@ -9,17 +9,16 @@ import org.apache.commons.chain.Context;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.page.Page.Section;
+import com.facilio.control.ControlGroupAssetCategory;
+import com.facilio.control.ControlGroupAssetContext;
+import com.facilio.control.ControlGroupContext;
+import com.facilio.control.ControlGroupFieldContext;
+import com.facilio.control.ControlGroupRoutineContext;
+import com.facilio.control.ControlGroupSection;
 import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-
-import con.facilio.control.ControlGroupAssetCategory;
-import con.facilio.control.ControlGroupAssetContext;
-import con.facilio.control.ControlGroupContext;
-import con.facilio.control.ControlGroupFieldContext;
-import con.facilio.control.ControlGroupRoutineContext;
-import con.facilio.control.ControlGroupSection;
 
 public class AddControlGroupV2Command extends FacilioCommand {
 

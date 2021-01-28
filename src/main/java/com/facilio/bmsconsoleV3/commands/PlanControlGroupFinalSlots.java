@@ -6,10 +6,9 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.control.ControlScheduleGroupedSlot;
+import com.facilio.control.ControlScheduleSlot;
 import com.facilio.control.util.ControlScheduleUtil;
-
-import con.facilio.control.ControlScheduleGroupedSlot;
-import con.facilio.control.ControlScheduleSlot;
 
 public class PlanControlGroupFinalSlots extends FacilioCommand {
 

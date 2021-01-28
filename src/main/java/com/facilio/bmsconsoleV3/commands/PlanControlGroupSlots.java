@@ -8,6 +8,9 @@ import org.apache.commons.chain.Context;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.control.ControlGroupContext;
+import com.facilio.control.ControlScheduleGroupedSlot;
+import com.facilio.control.ControlScheduleSlot;
 import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -19,10 +22,6 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
-
-import con.facilio.control.ControlGroupContext;
-import con.facilio.control.ControlScheduleGroupedSlot;
-import con.facilio.control.ControlScheduleSlot;
 
 public class PlanControlGroupSlots extends FacilioCommand {
 

@@ -9,9 +9,8 @@ import org.apache.commons.chain.Context;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.util.BusinessHoursAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.control.ControlScheduleContext;
 import com.facilio.control.util.ControlScheduleUtil;
-
-import con.facilio.control.ControlScheduleContext;
 
 public class ControlScheduleAfterFetchCommand extends FacilioCommand {
 
