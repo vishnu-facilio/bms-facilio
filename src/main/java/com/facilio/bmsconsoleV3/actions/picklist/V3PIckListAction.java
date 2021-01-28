@@ -23,7 +23,7 @@ public class V3PIckListAction extends V3Action {
             pickListChain.execute();
             setData(FacilioConstants.ContextNames.PICKLIST,pickListChain.getContext().get(FacilioConstants.ContextNames.PICKLIST));
             setMeta("moduleType", ((FacilioModule)pickListChain.getContext().get(FacilioConstants.ContextNames.MODULE)).getTypeEnum().name());
-            setMeta("localSearch", false);
+            setMeta("localSearch", pickListChain.getContext().getOrDefault(FacilioConstants.PickList.LOCAL_SEARCH, true));
         }
         return SUCCESS;
     }
