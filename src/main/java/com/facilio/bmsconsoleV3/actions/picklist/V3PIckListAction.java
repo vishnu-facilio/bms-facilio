@@ -15,6 +15,7 @@ public class V3PIckListAction extends V3Action {
         if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {
             setData(FacilioConstants.ContextNames.PICKLIST, LookupSpecialTypeUtil.getNewPickList(moduleName));
             setMeta("moduleType", FacilioModule.ModuleType.PICK_LIST.name());
+            setMeta("localSearch", true);
         }
         else {
             FacilioChain pickListChain = ReadOnlyChainFactory.newPicklistFromDataChain();
@@ -22,6 +23,7 @@ public class V3PIckListAction extends V3Action {
             pickListChain.execute();
             setData(FacilioConstants.ContextNames.PICKLIST,pickListChain.getContext().get(FacilioConstants.ContextNames.PICKLIST));
             setMeta("moduleType", ((FacilioModule)pickListChain.getContext().get(FacilioConstants.ContextNames.MODULE)).getTypeEnum().name());
+            setMeta("localSearch", false);
         }
         return SUCCESS;
     }
