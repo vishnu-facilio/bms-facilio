@@ -229,9 +229,7 @@ public class AgentApiV2 {
             if (!data.isEmpty()) {
                 for (Map<String, Object> datum : data) {
                     ids.add((Long) datum.get(AgentConstants.ID));
-                    if ((datum.get(AgentConstants.CONNECTED) == null) || (!(boolean) datum.get(AgentConstants.CONNECTED))) {
-                        offlineCount++;
-                    }
+                   offlineCount+= AgentUtilV2.getAgentOfflineStatus(datum);
                     if((datum.get(AgentConstants.SITE_ID) != null) && (((Number)datum.get(AgentConstants.SITE_ID)).longValue()>0) ){
                         siteSet.add((Long) datum.get(AgentConstants.SITE_ID));
                     }

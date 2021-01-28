@@ -19,12 +19,10 @@ import com.facilio.events.constants.EventConstants;
 import com.facilio.modules.FieldUtil;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.AckUtil;
-import org.apache.commons.lang.RandomStringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import java.security.SecureRandom;
 import java.util.*;
 
 public class AgentUtilV2
@@ -315,4 +313,19 @@ public class AgentUtilV2
        return UUID.randomUUID().toString().replace("-","");
     }
 
+    static int getAgentOfflineStatus( Map<String,Object> map) {
+        int offLineAgents =0;
+        long lastReceivedTime = (long)map.getOrDefault(AgentConstants.LAST_DATA_RECEIVED_TIME,0L);
+        if(lastReceivedTime == 0L){
+            map.put(AgentConstants.CONNECTED,false);
+           return offLineAgents++;
+        }
+        long diffInMins = (long)Math.floor((System.currentTimeMillis() - lastReceivedTime)/1000/60 << 0);
+        int interval = (int)map.getOrDefault(AgentConstants.DATA_INTERVAL,0);
+        if(diffInMins > interval * 2 ){
+            offLineAgents ++;
+            map.put(AgentConstants.CONNECTED,false);
+        }
+        return offLineAgents;
+    }
 }

@@ -91,28 +91,11 @@ public class AgentAction extends AgentActionV2 {
             constructListContext(context);
             List<Map<String, Object>> agentListData = AgentApiV2.getAgentListData(false);
             // AgentApiV2.listFacilioAgents(context);
-            long offLineAgents = 0;
+            int offLineAgents = 0;
             Set<Long> siteCount = new HashSet<>();
             for (Map<String, Object> agentListDatum : agentListData) {
-                if (agentListDatum.containsKey(AgentConstants.CONNECTED)) {
-                    if (agentListDatum.get(AgentConstants.CONNECTED) == null) {
-                        offLineAgents++;
-                        continue;
-                    }
-                    if (!(boolean) agentListDatum.get(AgentConstants.CONNECTED)) {
-                        offLineAgents++;
-                    }
-                } else {
-                    offLineAgents++;
-                }
+               offLineAgents += AgentUtilV2.getAgentOfflineStatus(agentListDatum);
             }
-           /* for (FacilioAgent agent : agents) {
-                jsonArray.add(agent.toJSON());
-                if( ! agent.getConnected()){
-                    offLineAgents++;
-                    siteCount.add(agent.getSiteId());
-                }
-            }*/
             setResult(AgentConstants.SITE_COUNT, siteCount.size());
             setResult(AgentConstants.TOTAL_COUNT, agentListData.size());
             setResult(AgentConstants.ACTIVE_COUNT, agentListData.size() - offLineAgents);
