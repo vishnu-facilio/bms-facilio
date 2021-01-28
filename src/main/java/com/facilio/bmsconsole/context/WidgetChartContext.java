@@ -99,9 +99,9 @@ public class WidgetChartContext extends DashboardWidgetContext {
 		dataOptionsJson.put("newReportId", getNewReportId());
 		try {
 			if(getNewReportId() != null && getNewReportId() > 0) {
-				if(optimize == false) {
-					dataOptionsJson.put("newReport", ReportUtil.getReport(getNewReportId(), true));
-				}
+//				if(optimize == false) {
+//					dataOptionsJson.put("newReport", ReportUtil.getReport(getNewReportId(), true));
+//				}
 				dataOptionsJson.put("reportTemplate", getReportTemplate());
 			}
 		}
