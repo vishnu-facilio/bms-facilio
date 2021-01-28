@@ -179,6 +179,10 @@
                 class="com.facilio.bmsconsoleV3.actions.ControlAction"
                 method="getTenantsToBePublished">
         </action>
+        <action name="publishToTenant"
+                class="com.facilio.bmsconsoleV3.actions.ControlAction"
+                method="publishToTenant">
+        </action>
     </package>
 
     <package name="picklistApiv3" namespace="/api/v3/picklist"
