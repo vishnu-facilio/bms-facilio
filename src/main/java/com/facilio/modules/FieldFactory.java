@@ -8448,9 +8448,11 @@ public class FieldFactory {
         fields.add(getField("name", "NAME", module, FieldType.STRING));
         fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
         fields.add(getField("photo", "PHOTO_ID", module, FieldType.FILE));
+        fields.add(getField("groupId", "GROUP_ID", module, FieldType.NUMBER));
+        fields.add(getField("type", "TYPE_ID", module, FieldType.NUMBER));
         fields.add(getField("moduleId", "MODULEID", module, FieldType.NUMBER));
         fields.add(getField("formId", "FORM_ID", module, FieldType.NUMBER));
-        fields.add(getField("groupId", "GROUP_ID", module, FieldType.NUMBER));
+        fields.add(getField("externalURL", "EXTERNAL_URL", module, FieldType.STRING));
 
         return fields;
     }

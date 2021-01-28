@@ -31,6 +31,8 @@ public class AddOrUpdateServiceCatalogCommand extends FacilioCommand {
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
         ServiceCatalogContext serviceCatalog = (ServiceCatalogContext) context.get(FacilioConstants.ContextNames.SERVICE_CATALOG);
         if (serviceCatalog != null && StringUtils.isNotEmpty(moduleName)) {
+            validateServiceCatalog(serviceCatalog);
+
             if (serviceCatalog.getId() > 0) {
                 updateServiceCatalog(serviceCatalog);
             }
@@ -46,6 +48,26 @@ public class AddOrUpdateServiceCatalogCommand extends FacilioCommand {
             }
         }
         return false;
+    }
+
+    private void validateServiceCatalog(ServiceCatalogContext serviceCatalog) throws Exception {
+        if (serviceCatalog.getTypeEnum() == null) {
+            serviceCatalog.setType(ServiceCatalogContext.Type.MODULE_FORM);
+        }
+
+        switch (serviceCatalog.getTypeEnum()) {
+            case MODULE_FORM:
+                if (serviceCatalog.getFormId() == -1) {
+                    throw new IllegalArgumentException("Form cannot be empty");
+                }
+                break;
+
+            case EXTERNAL_LINK:
+                if (StringUtils.isEmpty(serviceCatalog.getExternalURL())) {
+                    throw new IllegalArgumentException("External URL is not found");
+                }
+                break;
+        }
     }
 
     private void updateServiceCatalog(ServiceCatalogContext serviceCatalog) throws Exception {

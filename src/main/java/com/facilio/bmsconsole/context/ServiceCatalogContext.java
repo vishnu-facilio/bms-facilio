@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.context;
 import java.io.File;
 import java.io.Serializable;
 
+import com.facilio.modules.FacilioEnum;
 import org.apache.struts2.json.annotations.JSON;
 
 import com.facilio.bmsconsole.forms.FacilioForm;
@@ -76,6 +77,39 @@ public class ServiceCatalogContext implements Serializable, FormInterface {
 		this.photoContentType = photoContentType;
 	}
 
+    private long groupId = -1;
+    public long getGroupId() {
+        return groupId;
+    }
+    public void setGroupId(long groupId) {
+        this.groupId = groupId;
+    }
+
+    private ServiceCatalogGroupContext group;
+    public ServiceCatalogGroupContext getGroup() {
+        return group;
+    }
+    public void setGroup(ServiceCatalogGroupContext group) {
+        this.group = group;
+    }
+
+    private Type type;
+    public int getType() {
+        if (type != null) {
+            return type.getIndex();
+        }
+        return -1;
+    }
+    public Type getTypeEnum() {
+        return type;
+    }
+    public void setType(int type) {
+        this.type = Type.valueOf(type);
+    }
+    public void setType(Type type) {
+        this.type = type;
+    }
+
     private long moduleId;
     public long getModuleId() {
         return moduleId;
@@ -126,19 +160,39 @@ public class ServiceCatalogContext implements Serializable, FormInterface {
         this.form = form;
     }
 
-    private long groupId = -1;
-    public long getGroupId() {
-        return groupId;
+    private String externalURL;
+    public String getExternalURL() {
+        return externalURL;
     }
-    public void setGroupId(long groupId) {
-        this.groupId = groupId;
+    public void setExternalURL(String externalURL) {
+        this.externalURL = externalURL;
     }
-    
-    ServiceCatalogGroupContext group;
-	public ServiceCatalogGroupContext getGroup() {
-		return group;
-	}
-	public void setGroup(ServiceCatalogGroupContext group) {
-		this.group = group;
-	}
+
+    public enum Type implements FacilioEnum {
+	    MODULE_FORM("Module Form"),
+        EXTERNAL_LINK("External Link");
+
+	    private String name;
+
+        Type(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public int getIndex() {
+            return ordinal() + 1;
+        }
+
+        @Override
+        public String getValue() {
+            return name;
+        }
+
+        public static Type valueOf(int type) {
+            if (type > 0 && type <= values().length) {
+                return values()[type - 1];
+            }
+            return null;
+        }
+    }
 }
