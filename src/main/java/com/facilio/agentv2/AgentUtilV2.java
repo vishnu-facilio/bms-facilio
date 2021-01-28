@@ -315,15 +315,15 @@ public class AgentUtilV2
 
     static int getAgentOfflineStatus( Map<String,Object> map) {
         int offLineAgents =0;
-        long lastReceivedTime = (long)map.getOrDefault(AgentConstants.LAST_DATA_RECEIVED_TIME,0L);
-        if(lastReceivedTime == 0L){
+        Long lastReceivedTime = (Long)map.get(AgentConstants.LAST_DATA_RECEIVED_TIME);
+        if(lastReceivedTime == null){
             map.put(AgentConstants.CONNECTED,false);
-           return offLineAgents++;
+           return ++offLineAgents;
         }
         long diffInMins = (long)Math.floor((System.currentTimeMillis() - lastReceivedTime)/1000/60 << 0);
-        long interval = (long)map.getOrDefault(AgentConstants.DATA_INTERVAL,0);
+        long interval = (long)map.get(AgentConstants.DATA_INTERVAL);
         if(diffInMins > interval * 2 ){
-            offLineAgents ++;
+            ++offLineAgents;
             map.put(AgentConstants.CONNECTED,false);
         }
         return offLineAgents;
