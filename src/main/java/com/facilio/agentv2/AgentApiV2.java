@@ -154,16 +154,22 @@ public class AgentApiV2 {
         if (containsValueCheck(AgentConstants.WORKFLOW, jsonObject)) {
             WorkflowContext workflow = FieldUtil.getAsBeanFromMap((Map<String, Object>)jsonObject.get(AgentConstants.WORKFLOW), WorkflowContext.class);
             oldWorkflowId = agent.getWorkflowId();
+            LOGGER.info("workflow : " + workflow.getWorkflowV2String());
+            LOGGER.info("old workflow Id:" + oldWorkflowId);
             if(workflow.validateWorkflow()) {
-	        		long workflowId = WorkflowUtil.addWorkflow(workflow);
-	        		agent.setWorkflowId(workflowId);
-			}
+                LOGGER.info("Workflow validation succeeded");
+                long workflowId = WorkflowUtil.addWorkflow(workflow);
+                LOGGER.info("new Workflow ID :" + workflowId);
+                agent.setWorkflowId(workflowId);
+            }
 			else {
+                LOGGER.info("Workflow validation failed");
 				throw new IllegalArgumentException(agent.getWorkflow().getErrorListener().getErrorsAsString());
 			}
             
         }
         boolean status = updateAgent(agent);
+        LOGGER.info("Update status : " + status);
         if (oldWorkflowId != -1) {
         		WorkflowUtil.deleteWorkflow(oldWorkflowId);
         }
