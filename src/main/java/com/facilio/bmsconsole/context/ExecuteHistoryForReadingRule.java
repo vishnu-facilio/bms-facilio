@@ -16,6 +16,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.sensor.SensorEventContext;
 import com.facilio.bmsconsole.enums.RuleJobType;
 import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.bmsconsole.util.AlarmAPI;
@@ -47,6 +48,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.time.DateRange;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowFieldContext;
@@ -267,6 +269,20 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 									break;
 								}
 							}
+							
+							boolean canSuppressAlarm = checkForSensorAlarmSuppression(fields, reading);
+							if(canSuppressAlarm && alarmRule != null) {
+								shouldSkipCurrentReading = true;
+								if(alarmRule.getAlarmTriggerRule().getOverPeriod() > 0 || alarmRule.getAlarmTriggerRule().getOccurences() > 0 || alarmRule.getAlarmTriggerRule().isConsecutive() || alarmRule.getAlarmTriggerRule().getThresholdTypeEnum() == ReadingRuleContext.ThresholdType.FLAPPING) {
+									PreEventContext preEvent = readingRule.constructPreClearEvent(reading, (ResourceContext) reading.getParent());
+									preEvent.setComment("Alarm was suppressed due to SensorEvent");
+									preEvent.constructAndAddPreClearEvent(context);	
+								}
+								else  {
+									LOGGER.info("ReadingAlarm was suppressed due to SensorEvent for ReadingRule: "+readingRule.getId()+" and reading " +reading+ ". WorkflowFields: "+fields);				
+									readingRule.constructAndAddClearEvent(context, (ResourceContext) reading.getParent(), reading.getTtime());
+								}	
+							}	
 						}
 						if(shouldSkipCurrentReading) {
 							LOGGER.info("Skipping Scheduled Historical for ReadingRule: "+readingRule.getId()+" and reading " +reading+ ". WorkflowFields: "+fields);				
@@ -580,5 +596,41 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 				getAddEventChain.execute(addEventContext);
 			}
 		}
+	}
+	
+	private boolean checkForSensorAlarmSuppression(List<WorkflowFieldContext> fields, ReadingContext reading) throws Exception {
+		
+		boolean isActiveSensorEventPresent = false;
+		if((ResourceContext) reading.getParent() != null && ((ResourceContext) reading.getParent()).getId()>0) {
+			List<Long> fieldIds = new ArrayList<Long>();
+			for(WorkflowFieldContext field:fields) {
+				fieldIds.add(field.getFieldId());
+			}
+			
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SENSOR_EVENT);
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
+
+			SelectRecordsBuilder<SensorEventContext> builder = new SelectRecordsBuilder<SensorEventContext>()
+					.module(module)
+					.select(modBean.getAllFields(module.getName()))
+					.beanClass(SensorEventContext.class)
+					.andCondition(CriteriaAPI.getConditionFromList("READING_FIELD_ID", "readingFieldId", fieldIds, NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resource",  ""+((ResourceContext)reading.getParent()).getId(), NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", ""+reading.getTtime(), NumberOperators.EQUALS))
+					.fetchSupplement((LookupField)fieldMap.get("severity"));
+			
+			List<SensorEventContext> eventList = builder.get();
+			
+			if (eventList != null && !eventList.isEmpty() && eventList.size()>0) {
+				for(SensorEventContext event:eventList) {
+					if(!event.getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) {
+						isActiveSensorEventPresent = true;
+						break;
+					}
+				}
+			}
+		}
+		return isActiveSensorEventPresent;
 	}
 }
