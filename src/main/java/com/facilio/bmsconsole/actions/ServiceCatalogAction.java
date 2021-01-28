@@ -79,6 +79,14 @@ public class ServiceCatalogAction extends FacilioAction {
         return SUCCESS;
     }
 
+    private Boolean serviceCatalogGroupOrderBy;
+    public Boolean getServiceCatalogGroupOrderBy() {
+        return serviceCatalogGroupOrderBy;
+    }
+    public void setServiceCatalogGroupOrderBy(Boolean serviceCatalogGroupOrderBy) {
+        this.serviceCatalogGroupOrderBy = serviceCatalogGroupOrderBy;
+    }
+
     public String getServiceCatalogList() throws Exception {
         FacilioChain chain = ReadOnlyChainFactory.getServiceCatalogListChain();
         FacilioContext context = chain.getContext();
@@ -90,6 +98,7 @@ public class ServiceCatalogAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.SEARCH, searchString);
         context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
         context.put(FacilioConstants.ContextNames.FETCH_FULL_FORM, fetchFullForm);
+        context.put(FacilioConstants.ContextNames.SERVICE_CATALOG_GROUP_ORDER_BY, serviceCatalogGroupOrderBy);
 
         chain.execute();
 

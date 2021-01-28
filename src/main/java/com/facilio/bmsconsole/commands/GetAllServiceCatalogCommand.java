@@ -38,6 +38,7 @@ public class GetAllServiceCatalogCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         long groupId = (long) context.get(FacilioConstants.ContextNames.GROUP_ID);
         Boolean fetchComplaintType = (Boolean) context.get(FacilioConstants.ContextNames.FETCH_COMPLAINT_TYPE);
+        Boolean serviceCatalogGroupOrderBy = (Boolean) context.get(FacilioConstants.ContextNames.SERVICE_CATALOG_GROUP_ORDER_BY);
 
         List<FacilioField> fields = FieldFactory.getServiceCatalogFields();
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -71,6 +72,10 @@ public class GetAllServiceCatalogCommand extends FacilioCommand {
         if (fetchComplaintType == null || !fetchComplaintType) {
         		ServiceCatalogGroupContext complaintCategory = ServiceCatalogApi.getComplaintCategory();
         		builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("groupId") ,String.valueOf(complaintCategory.getId()), NumberOperators.NOT_EQUALS));
+        }
+
+        if (serviceCatalogGroupOrderBy != null && serviceCatalogGroupOrderBy) {
+            builder.orderBy(fieldMap.get("groupId").getCompleteColumnName() + " ASC, ID ASC");
         }
         
 

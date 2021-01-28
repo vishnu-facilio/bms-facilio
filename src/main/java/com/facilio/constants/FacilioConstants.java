@@ -166,6 +166,7 @@ public class FacilioConstants {
 		public static final String SERVICE_CATALOGS = "serviceCatalogs";
 		public static final String SERVICE_CATALOG_GROUP = "serviceCatalogGroup";
 		public static final String SERVICE_CATALOG_GROUPS = "serviceCatalogGroups";
+		public static final String SERVICE_CATALOG_GROUP_ORDER_BY = "serviceCatalogGroupOrderBy";
 
 		public static final String SUB_MODULES = "submodules";
 		public static final String TO_UPDATE_CHILD_MAP = "toUpdateChildMap";
