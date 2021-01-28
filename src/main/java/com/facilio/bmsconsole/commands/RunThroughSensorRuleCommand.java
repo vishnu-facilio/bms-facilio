@@ -30,12 +30,13 @@ public class RunThroughSensorRuleCommand extends FacilioCommand{
 		}
 		
 		JSONObject jsonObject = new JSONObject();
-		jsonObject.put(FacilioConstants.ContextNames.DATE_RANGE, range);
+		jsonObject.put(FacilioConstants.ContextNames.START_TIME, range.getStartTime());
+		jsonObject.put(FacilioConstants.ContextNames.END_TIME, range.getEndTime());
 		jsonObject.put(FacilioConstants.ContextNames.ASSET_CATEGORY, assetCategoryId);
 		jsonObject.put(FacilioConstants.ContextNames.ASSET_ID, assetIds);
 		
-		BmsJobUtil.deleteJobWithProps(assetCategoryId, "'ExecuteSensorRuleHistoryJob'");
-		BmsJobUtil.scheduleOneTimeJobWithProps(assetCategoryId, "'ExecuteSensorRuleHistoryJob'", 30, "history", jsonObject);
+		BmsJobUtil.deleteJobWithProps(assetCategoryId, "ExecuteSensorRuleHistoryJob");
+		BmsJobUtil.scheduleOneTimeJobWithProps(assetCategoryId, "ExecuteSensorRuleHistoryJob", 30, "history", jsonObject);
 
 		return false;
 	}

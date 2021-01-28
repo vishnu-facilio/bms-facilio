@@ -50,15 +50,17 @@ public class ExecuteSensorRuleHistoryCommand extends FacilioJob {
 	public void execute(JobContext jc) throws Exception {
 		
 		try {
-			 JSONObject jobProps = BmsJobUtil.getJobProps(jc.getJobId(), "ExecuteSensorRuleHistoryJob");
+			JSONObject jobProps = BmsJobUtil.getJobProps(jc.getJobId(), "ExecuteSensorRuleHistoryJob");
 		     
-			DateRange dateRange = (DateRange) jobProps.get(FacilioConstants.ContextNames.DATE_RANGE);
+			Long startTime = (Long) jobProps.get(FacilioConstants.ContextNames.START_TIME);
+			Long endTime = (Long) jobProps.get(FacilioConstants.ContextNames.END_TIME);
 			Long assetCategoryId = (Long) jobProps.get(FacilioConstants.ContextNames.ASSET_CATEGORY);
 			List<Long> assetIds = (List<Long>) jobProps.get(FacilioConstants.ContextNames.ASSET_ID);
 
-			if(assetCategoryId == null || dateRange == null) {
+			if(assetCategoryId == null || startTime == null || endTime == null || endTime == -1 || startTime == -1) {
 				throw new IllegalArgumentException("Insufficient params in job to execute sensor rule history");
-			}
+			}	
+			DateRange dateRange = new DateRange(startTime,endTime);
 			if(assetIds == null || assetIds.isEmpty()) {
 				List<AssetContext> assets = AssetsAPI.getAssetListOfCategory(assetCategoryId);
 				assetIds = assets.stream().map(asset -> asset.getId()).collect(Collectors.toList());
@@ -98,7 +100,7 @@ public class ExecuteSensorRuleHistoryCommand extends FacilioJob {
 		FacilioModule module = modBean.getModule(NewAlarmAPI.getOccurrenceModuleName(alarmOccurrenceType));
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
 		Criteria deletionCriteria = new Criteria();
-		deletionCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), ""+resourceIds, NumberOperators.EQUALS));
+		deletionCriteria.addAndCondition(CriteriaAPI.getConditionFromList("RESOURCE_ID", "resource", resourceIds, NumberOperators.EQUALS));
 
 		return deletionCriteria;
 	}
@@ -110,7 +112,7 @@ public class ExecuteSensorRuleHistoryCommand extends FacilioJob {
 		FacilioModule eventModule = modBean.getModule(moduleName);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(eventModule.getName()));
 		Criteria fetchCriteria = new Criteria();
-		fetchCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), ""+resourceIds, NumberOperators.EQUALS));
+		fetchCriteria.addAndCondition(CriteriaAPI.getConditionFromList("RESOURCE_ID", "resource", resourceIds, NumberOperators.EQUALS));
 		return fetchCriteria;
 	}
 
