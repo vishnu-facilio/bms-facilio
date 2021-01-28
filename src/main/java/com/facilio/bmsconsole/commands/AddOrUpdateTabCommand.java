@@ -1,7 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.TabIdAppIdMappingContext;
 import com.facilio.bmsconsole.context.WebTabContext;
+import com.facilio.bmsconsole.context.WebTabContext.Type;
 import com.facilio.bmsconsole.context.WebTabGroupContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.constants.FacilioConstants;
@@ -12,6 +14,8 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
@@ -19,9 +23,12 @@ import com.facilio.modules.ModuleFactory;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -48,6 +55,15 @@ public class AddOrUpdateTabCommand extends FacilioCommand {
 
             if (checkIfRouteAlreadyFound(tab)) {
                 throw new IllegalArgumentException("Route is already found for this app");
+            }
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            JSONParser parser = new JSONParser();
+            JSONObject configJson = (JSONObject) parser.parse(tab.getConfig());
+            if(tab.getTypeEnum().equals(Type.REPORT) && configJson.get("type").equals("analytic_reading") ) {
+            	FacilioModule module = modBean.getModule("energydata");
+            	tab.setModules(Collections.singletonList(module));
+            	Long moduleId = modBean.getModule("energydata").getModuleId();
+            	tab.setModuleIds(Collections.singletonList(moduleId));
             }
 
            if (tab.getId() > 0) {
