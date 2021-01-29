@@ -356,13 +356,22 @@ public class AgentApiV2 {
         filterFields.add(FieldFactory.getNewAgentTypeField(agentDataModule));
         filterFields.add(FieldFactory.getAgentConnectedField(agentDataModule));
         filterFields.add(FieldFactory.getAgentTypeField(agentDataModule));
+        filterFields.add(FieldFactory.getAgentLastDataReveivedField(agentDataModule));
+        filterFields.add(FieldFactory.getAgentDataIntervalField(agentDataModule));
         filterFields.add(FieldFactory.getField(AgentConstants.DISPLAY_NAME, "DISPLAY_NAME", agentDataModule, FieldType.STRING));
         
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(agentDataModule.getTableName())
                 .select(filterFields)
                 .andCondition(getDeletedTimeNullCondition(agentDataModule));
-        return selectRecordBuilder.get();
+        List<Map<String,Object>> list =  selectRecordBuilder.get();
+        if(list == null || list.isEmpty()){
+            return Collections.emptyList();
+        }
+        for(Map<String,Object> itr : list){
+            AgentUtilV2.getAgentOfflineStatus(itr);
+        }
+        return list;
     }
 
     public static Map<String, FacilioAgent> getWattsenseAgentsMap() throws Exception {
