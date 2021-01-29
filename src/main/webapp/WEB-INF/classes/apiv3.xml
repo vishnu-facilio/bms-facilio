@@ -183,6 +183,10 @@
                 class="com.facilio.bmsconsoleV3.actions.ControlAction"
                 method="publishToTenant">
         </action>
+        <action name="unPublishToTenant"
+                class="com.facilio.bmsconsoleV3.actions.ControlAction"
+                method="unPublishToTenant">
+        </action>
     </package>
 
     <package name="picklistApiv3" namespace="/api/v3/picklist"

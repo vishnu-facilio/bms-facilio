@@ -92,6 +92,24 @@ public class ControlAction extends V3Action {
 		return SUCCESS;
 	}
 	
+	public String unPublishToTenant() throws Exception {
+		
+		FacilioChain chain = TransactionChainFactoryV3.getControlGroupUnPublishChain();
+		
+		FacilioContext context = chain.getContext();
+		
+		group = ControlScheduleUtil.getControlGroup(group.getId());
+		
+		context.put(ControlScheduleUtil.CONTROL_GROUP_CONTEXT, group);
+		context.put(FacilioConstants.ContextNames.TENANT, tenant);
+		
+		chain.execute();
+		
+		setData(ControlScheduleUtil.CONTROL_GROUP_CONTEXT, context.get(ControlScheduleUtil.CONTROL_GROUP_CONTEXT));
+		
+		return SUCCESS;
+	}
+	
 	public String getCategoryForType() throws Exception {
 		
 		List<AssetCategoryContext> categories = type.getAssetCategoryList();

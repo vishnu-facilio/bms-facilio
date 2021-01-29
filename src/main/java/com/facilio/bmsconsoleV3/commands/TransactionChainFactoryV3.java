@@ -719,4 +719,10 @@ public class TransactionChainFactoryV3 {
         chain.addCommand(new ControlGroupPublishCommand());
         return chain;
     }
+    
+    public static FacilioChain getControlGroupUnPublishChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new ControlGroupUnPublishCommand());
+        return chain;
+    }
 }
