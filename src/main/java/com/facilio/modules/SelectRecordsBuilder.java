@@ -547,7 +547,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	}
 
 	private void handleLookup (List<Map<String, Object>> props, boolean isMap) {
-		lookupFields = actualSelectFields.stream().filter(f -> f.getDataTypeEnum() == FieldType.LOOKUP).map(f -> (LookupField)f).collect(Collectors.toList());
+		lookupFields = actualSelectFields.stream().filter(f -> f.getDataTypeEnum() == FieldType.LOOKUP).map(f -> (LookupField)f).collect(Collectors.toSet());
 		if (CollectionUtils.isNotEmpty(lookupFields)) {
 			for (Map<String, Object> record : props) {
 				for (LookupField field : lookupFields) {
