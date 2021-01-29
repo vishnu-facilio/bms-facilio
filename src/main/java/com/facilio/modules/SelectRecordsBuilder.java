@@ -26,6 +26,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.sql.Connection;
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -551,17 +552,22 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		if (CollectionUtils.isNotEmpty(lookupFields)) {
 			for (Map<String, Object> record : props) {
 				for (LookupField field : lookupFields) {
-					Long recordId = (Long) record.get(field.getName());
-					if (recordId != null) {
-						Map<String, Object> lookupRecord = null;
-						if (isMap) {
-							lookupRecord = new HashMap<>();
-							lookupRecord.put("id", recordId);
+					try {
+						Long recordId = (Long) record.get(field.getName());
+						if (recordId != null) {
+							Map<String, Object> lookupRecord = null;
+							if (isMap) {
+								lookupRecord = new HashMap<>();
+								lookupRecord.put("id", recordId);
+							} else {
+								lookupRecord = Collections.singletonMap("id", recordId);
+							}
+							record.put(field.getName(), lookupRecord);
 						}
-						else {
-							lookupRecord = Collections.singletonMap("id", recordId);
-						}
-						record.put(field.getName(), lookupRecord);
+					}
+					catch (Exception e) {
+						LOGGER.error(MessageFormat.format("Error occurred during lookup computation of field : {0}\nLookup Fields : {1}", field, lookupFields), e);
+						throw e;
 					}
 				}
 			}
