@@ -26,13 +26,13 @@ public class ConstructFieldOptionForPicklist extends FacilioCommand {
             boolean isResource = moduleName.equals(FacilioConstants.ContextNames.RESOURCE);
             pickList = RecordAPI.constructFieldOptionsFromRecords(records, defaultField, secondaryField, isResource);
             int pickListRecordCount = pickList == null ? 0 : pickList.size();
-
+            boolean localSearch = true;
             JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
-            // No null check because we have default values in V3PickListAction
-            // If null check is added, default value for page and perPage should be handled here
-            int page = (int) pagination.get("page");
-            int perPage = (int) pagination.get("perPage");
-            boolean localSearch = page == 1 && pickListRecordCount < perPage;
+            if (pagination != null) {
+                int page = (int) pagination.get("page");
+                int perPage = (int) pagination.get("perPage");
+                localSearch = page == 1 && pickListRecordCount < perPage;
+            }
             context.put(FacilioConstants.PickList.LOCAL_SEARCH, localSearch);
         }
         context.put(FacilioConstants.ContextNames.PICKLIST, pickList);
