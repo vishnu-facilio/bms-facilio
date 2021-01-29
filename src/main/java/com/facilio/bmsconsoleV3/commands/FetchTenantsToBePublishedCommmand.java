@@ -49,10 +49,10 @@ public class FetchTenantsToBePublishedCommmand extends FacilioCommand {
 		
 		List<ControlGroupTenentContext> sharedTenents = select.get();
 		
-		List<Long> alreadySharedTenents = new ArrayList<Long>();
+		List<Long> alreadySharedTenentIds = new ArrayList<Long>();
 		for(ControlGroupTenentContext sharedTenent :sharedTenents) {
 			
-			alreadySharedTenents.add(sharedTenent.getTenant().getId());
+			alreadySharedTenentIds.add(sharedTenent.getTenant().getId());
 		}
 		
 		
@@ -66,10 +66,6 @@ public class FetchTenantsToBePublishedCommmand extends FacilioCommand {
 				.beanClass(TenantSpaceContext.class)
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("space"), group.getSpace().getId()+"", BuildingOperator.BUILDING_IS));
 		
-		if(!alreadySharedTenents.isEmpty()) {
-			select1.andCondition(CriteriaAPI.getCondition(fieldMap.get("id"), StringUtils.join(alreadySharedTenents, ","), NumberOperators.NOT_EQUALS));
-		}
-		
 		List<TenantSpaceContext> tenantSpaces = select1.get();
 		
 		List<Long> tenantIds = new ArrayList<Long>();
@@ -82,8 +78,21 @@ public class FetchTenantsToBePublishedCommmand extends FacilioCommand {
 		
 		List<TenantContext> tenents = TenantsAPI.getTenants(tenantIds);
 		
+		List<TenantContext> alreadySharedTenants = new ArrayList<TenantContext>();
+		List<TenantContext> yetToBeSharedTenants = new ArrayList<TenantContext>();
 		
-		context.put(FacilioConstants.ContextNames.TENANT_LIST, tenents);
+		for(TenantContext tenent :tenents) {
+			if(alreadySharedTenentIds.contains(tenent.getId())) {
+				alreadySharedTenants.add(tenent);
+			}
+			else {
+				yetToBeSharedTenants.add(tenent);
+			}
+		}
+		
+		
+		context.put(FacilioConstants.ContextNames.TENANT_LIST, yetToBeSharedTenants);
+		context.put("alreadySharedTenantList", alreadySharedTenants);
 		
 		return false;
 	}

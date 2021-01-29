@@ -69,6 +69,7 @@ public class ControlAction extends V3Action {
 		chain.execute();
 		
 		setData(FacilioConstants.ContextNames.TENANT_LIST, context.get(FacilioConstants.ContextNames.TENANT_LIST));
+		setData("alreadySharedTenantList", context.get("alreadySharedTenantList"));
 		
 		return SUCCESS;
 	}
