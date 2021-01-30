@@ -1155,7 +1155,7 @@ public class AlarmAPI {
 	
 		SelectRecordsBuilder<AlarmOccurrenceContext> selectbuilder = new SelectRecordsBuilder<AlarmOccurrenceContext>()
 				.aggregate(NumberAggregateOperator.SUM, fieldMap.get("duration"))
-				.select(filteredFields)
+//				.select(filteredFields)
 				.module(module)
 				.beanClass(NewAlarmAPI.getOccurrenceClass(alarmOccurrenceType))
 				.moduleName(NewAlarmAPI.getOccurrenceModuleName(alarmOccurrenceType))
@@ -1254,7 +1254,7 @@ public class AlarmAPI {
 		filteredFields.remove(removeField);
 	
 		SelectRecordsBuilder<AlarmOccurrenceContext> selectbuilder = new SelectRecordsBuilder<AlarmOccurrenceContext>()
-				.select(filteredFields)
+//				.select(filteredFields)
 				.module(module)
 				.beanClass(NewAlarmAPI.getOccurrenceClass(alarmOccurrenceType))
 				.moduleName(NewAlarmAPI.getOccurrenceModuleName(alarmOccurrenceType))
