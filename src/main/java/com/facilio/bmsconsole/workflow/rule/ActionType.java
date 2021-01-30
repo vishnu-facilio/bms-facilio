@@ -911,7 +911,7 @@ public enum ActionType {
 					preEvent.constructAndAddPreClearEvent(context);
 				}
 				else  {
-					((ReadingRuleContext) currentRule).constructAndAddClearEvent(context, (ResourceContext) ((ReadingContext) currentRecord).getParent(), ((ReadingContext) currentRecord).getTtime());
+					((ReadingRuleContext) currentRule).constructAndAddClearEvent(context, (ResourceContext) ((ReadingContext) currentRecord).getParent(), ((ReadingContext) currentRecord).getTtime(), null);
 				}
 			}
 			else {

@@ -1113,7 +1113,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 								preEvent.constructAndAddPreClearEvent(context);isPreEvent = true;		
 							}
 							else  {
-								constructAndAddClearEvent(context, (ResourceContext) reading.getParent(), reading.getTtime());
+								constructAndAddClearEvent(context, (ResourceContext) reading.getParent(), reading.getTtime(), null);
 							}
 						}	
 					}
@@ -1124,7 +1124,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 							isPreEvent = true;
 						}
 						else  {
-							constructAndAddClearEvent(context, (ResourceContext) reading.getParent(), reading.getTtime());
+							constructAndAddClearEvent(context, (ResourceContext) reading.getParent(), reading.getTtime(), null);
 						}
 					}			
 					if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
@@ -1276,7 +1276,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		event.setCreatedTime(reading.getTtime());
 	}
 
-	public ReadingEventContext constructAndAddClearEvent(Context context, ResourceContext resource, long ttime) throws Exception {
+	public ReadingEventContext constructAndAddClearEvent(Context context, ResourceContext resource, long ttime, String comment) throws Exception {
 		long startTime = System.currentTimeMillis();
 		Boolean isHistorical = (Boolean) context.get(EventConstants.EventContextNames.IS_HISTORICAL_EVENT);
 		if (isHistorical == null) {
@@ -1294,7 +1294,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 			{
 				ReadingEventContext previousEventMeta = (ReadingEventContext)previousBaseEventMeta;
 				if (previousEventMeta != null && previousEventMeta.getSeverityString() != null && !previousEventMeta.getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) {
-					ReadingEventContext clearEvent = constructClearEvent(resource, ttime, previousEventMeta.getEventMessage());
+					ReadingEventContext clearEvent = constructClearEvent(resource, ttime, previousEventMeta.getEventMessage(), comment);
 					ReadingRuleAPI.checkIfHistoricalOrLiveEvent(context, clearEvent);
 					context.put(EventConstants.EventContextNames.EVENT_LIST, Collections.singletonList(clearEvent));
 				}				
@@ -1311,7 +1311,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		if (alarmMeta != null && !alarmMeta.isClear()) {
 //			LOGGER.info("Alarm meta before clearing : "+alarmMeta);
 			alarmMeta.setClear(true);
-			ReadingEventContext event = constructClearEvent(resource, ttime, alarmMeta.getSubject());
+			ReadingEventContext event = constructClearEvent(resource, ttime, alarmMeta.getSubject(),null);
 			ReadingRuleAPI.checkIfHistoricalOrLiveEvent(context, event);
 //			JSONObject json = AlarmAPI.constructClearEvent(alarm, "System auto cleared Alarm because associated rule executed clear condition for the associated resource", ttime);
 //			if (alarm.getSourceTypeEnum() == SourceType.THRESHOLD_ALARM) {
@@ -1343,14 +1343,15 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		}
 		return null;
 	}
-	public ReadingEventContext constructClearEvent(ResourceContext resource, long ttime, String eventMessage) throws Exception {
+	public ReadingEventContext constructClearEvent(ResourceContext resource, long ttime, String eventMessage, String comment) throws Exception {
 		ReadingEventContext event = new ReadingEventContext();
 		event.setResource(resource);
 		event.setReadingFieldId(this.getReadingFieldId());
 		event.setRuleId(this.getRuleGroupId());
 		event.setSubRuleId(this.getId());
 		event.setEventMessage(eventMessage);
-		event.setComment("System auto cleared Alarm because associated rule executed clear condition for the associated resource");
+		comment = (comment != null && StringUtils.isNotEmpty(comment)) ? comment : "System auto cleared Alarm because associated rule executed clear condition for the associated resource"; 
+		event.setComment(comment);
 		event.setCreatedTime(ttime);
 		event.setAutoClear(true);
 		event.setSiteId(resource.getSiteId());

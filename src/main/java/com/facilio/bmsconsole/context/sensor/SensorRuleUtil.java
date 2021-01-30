@@ -123,7 +123,7 @@ public class SensorRuleUtil {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 			.select(FieldFactory.getSensorRuleFields())
 			.table(ModuleFactory.getSensorRuleModule().getTableName())
-//			.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), "true", BooleanOperators.IS))
+			.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), "true", BooleanOperators.IS))
 			.andCondition(CriteriaAPI.getCondition(fieldMap.get("assetCategoryId"), ""+assetCategoryId, NumberOperators.EQUALS));
 							
 		List<Map<String, Object>> props = selectBuilder.get();

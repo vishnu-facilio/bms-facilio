@@ -364,7 +364,7 @@ private int executeWorkflows(ReadingRuleContext readingRule, List<ReadingContext
 	private void newClearLatestAlarm(ReadingEventContext event, ReadingRuleContext rule, List<ReadingEventContext> events) throws Exception {
 		if (event != null && !event.getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) {
 			int interval = ReadingsAPI.getDataInterval(event.getResource().getId(), rule.getReadingField());
-			ReadingEventContext clearEvent = rule.constructClearEvent(event.getResource(), event.getCreatedTime() + (interval * 60 * 1000),event.getEventMessage());
+			ReadingEventContext clearEvent = rule.constructClearEvent(event.getResource(), event.getCreatedTime() + (interval * 60 * 1000),event.getEventMessage(),null);
 			clearEvent.setComment("System auto cleared Historical Alarm because associated rule executed false for the associated resource");
 			if (clearEvent != null) {
 				events.add(clearEvent);
