@@ -177,6 +177,7 @@ public class APIv3Config {
         return () -> new V3Config(ControlScheduleExceptionContext.class, null)
         		.create()
                 .beforeSave(new ControlScheduleExceptionBeforeSaveCommand())
+                .afterSave(new ControlScheduleExceptionAfterSaveCommand())
                 .update()
                 .beforeSave(new ControlScheduleExceptionBeforeSaveCommand())
                 .build();

@@ -1,8 +1,6 @@
 package com.facilio.control;
 
-import java.io.IOException;
 import java.util.Collections;
-import java.util.Map;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
@@ -12,8 +10,6 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.V3Context;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 
 public class ControlScheduleExceptionContext extends V3Context {
 
@@ -31,6 +27,8 @@ public class ControlScheduleExceptionContext extends V3Context {
 	Long endTime;
 	boolean offSchedule;
 	boolean excludeSchedule;
+	
+	ControlScheduleContext schedule;		// only for client use case dont use it in code
 	
 	public static enum Type implements FacilioEnum {
         RECURING, 
@@ -181,5 +179,13 @@ public class ControlScheduleExceptionContext extends V3Context {
 
 	public void setEndScheduleTime(String endScheduleTime) {
 		this.endScheduleTime = endScheduleTime;
+	}
+	@Deprecated
+	public ControlScheduleContext getSchedule() {
+		return schedule;
+	}
+	@Deprecated
+	public void setSchedule(ControlScheduleContext schedule) {
+		this.schedule = schedule;
 	}
 }
