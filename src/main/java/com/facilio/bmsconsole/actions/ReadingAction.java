@@ -332,6 +332,7 @@ public class ReadingAction extends FacilioAction {
 	private String getCategoryReadings(FacilioModule module) throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EXCLUDE_EMPTY_FIELDS, excludeEmptyFields != null ? excludeEmptyFields : true);
+		context.put(FacilioConstants.ContextNames.FETCH_CONTROLLABLE_FIELDS, fetchControllableFields);
 		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, module);
 		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, getParentCategoryId());
 		if (StringUtils.isNotEmpty(getReadingType())) {
@@ -1060,6 +1061,8 @@ public class ReadingAction extends FacilioAction {
 	public void setExcludeEmptyFields(Boolean excludeEmptyFields) {
 		this.excludeEmptyFields = excludeEmptyFields;
 	}
+	
+	private Boolean fetchControllableFields;
 	
 	private long moduleId;
 	public void setModuleId(long moduleId) {
@@ -1809,6 +1812,14 @@ public class ReadingAction extends FacilioAction {
 	}
 	public void setFetchValidationRules(Boolean fetchValidationRules) {
 		this.fetchValidationRules = fetchValidationRules;
+	}
+
+	public Boolean getFetchControllableFields() {
+		return fetchControllableFields;
+	}
+
+	public void setFetchControllableFields(Boolean fetchControllableFields) {
+		this.fetchControllableFields = fetchControllableFields;
 	}
 
 }

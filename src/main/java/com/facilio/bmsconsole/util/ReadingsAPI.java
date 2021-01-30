@@ -973,7 +973,7 @@ public class ReadingsAPI {
 		return fieldNames;
 	}
 	
-	public static List<FacilioField> excludeDefaultAndEmptyReadingFields(List<FacilioField> fields,Long parentId, String filter, Boolean excludeEmptyFields) throws Exception {
+	public static List<FacilioField> excludeDefaultAndEmptyReadingFields(List<FacilioField> fields,Long parentId, String filter, Boolean excludeEmptyFields,boolean fetchControllableFields) throws Exception {
 		if (CollectionUtils.isEmpty(fields)) {
 			return Collections.EMPTY_LIST;
 		}
@@ -1001,8 +1001,14 @@ public class ReadingsAPI {
 		if (!inputTypes.isEmpty()) {
 			types = inputTypes.toArray(new ReadingInputType[inputTypes.size()]);
 		}
-		if (parentId > -1 || types != null || excludeEmptyFields) {
-			List<ReadingDataMeta> readingMetaDatas = getReadingDataMetaList(parentId > 0 ? parentId : null, fields, excludeEmptyFields, types);
+		if (parentId > -1 || types != null || excludeEmptyFields || fetchControllableFields) {
+			List<ReadingDataMeta> readingMetaDatas = null;
+			if(fetchControllableFields) {
+				readingMetaDatas = getReadingDataMetaList(parentId != null && parentId != -1 ? Collections.singletonList(parentId) : null, fields, excludeEmptyFields,null,null,ReadingType.WRITE, types);
+			}
+			else {
+				readingMetaDatas = getReadingDataMetaList(parentId > 0 ? parentId : null, fields, excludeEmptyFields, types);
+			}
 			if (readingMetaDatas != null) {
 				fieldsWithValues = readingMetaDatas.stream().map(meta -> meta.getFieldId()).collect(Collectors.toList());
 			}

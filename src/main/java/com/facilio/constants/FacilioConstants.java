@@ -1224,6 +1224,7 @@ public class FacilioConstants {
 		public static final String SORT_FIELDS_OBJECT = "sortFieldsObject";
 		
 		public static final String EXCLUDE_EMPTY_FIELDS = "exludeEmptyFields";
+		public static final String FETCH_CONTROLLABLE_FIELDS = "fetchControllableFields";
 		public static final String WITH_READINGS = "withReadings";
 		public static final String WITH_WRITABLE_READINGS = "withWritableReadings";
 		public static final String READING_ID = "readingId";
