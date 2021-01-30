@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.reservation.ReservationContext;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -927,12 +928,17 @@ public class ViewFactory {
 		views = new LinkedHashMap<>();
 		views.put("all", getAllChartOfAccountView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.Budget.CHART_OF_ACCOUNT, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllControlScheduleView().setOrder(order++));
+		viewsMap.put(ControlScheduleUtil.CONTROL_SCHEDULE_MODULE_NAME, views);
 
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllControlGroupView().setOrder(order++));
 		views.put("tenantAll", getTenantControlGroupView().setOrder(order++));
-		viewsMap.put("controlGroupv2", views);
+		viewsMap.put(ControlScheduleUtil.CONTROL_GROUP_MODULE_NAME, views);
 
 		return viewsMap;
 	}
@@ -8376,7 +8382,23 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Groups");
-		allView.setModuleName("controlGroupv2");
+		allView.setModuleName(ControlScheduleUtil.CONTROL_GROUP_MODULE_NAME);
+		allView.setSortFields(sortFields);
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		allView.setViewSharing(getSharingContext(appDomains));
+
+		return allView;
+	}
+	
+	private static FacilioView getAllControlScheduleView() {
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Schedules");
+		allView.setModuleName(ControlScheduleUtil.CONTROL_SCHEDULE_MODULE_NAME);
 		allView.setSortFields(sortFields);
 
 		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
