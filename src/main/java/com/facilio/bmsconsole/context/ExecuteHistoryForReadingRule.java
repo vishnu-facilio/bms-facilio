@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.context;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -135,7 +136,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 			if(previousFetchStartReading != null)
 			{
 				Map<String, List<ReadingDataMeta>> beforeCurrentFields = prepareCurrentFieldsRDM(readingRule, previousFetchStartReading.getTtime(), startTime, resourceId, fields);
-				executeWorkflows(readingRule, alarmRule, Collections.singletonList(previousFetchStartReading), beforeCurrentFields, fields, beforeFetchFirstEvent, new BaseEventContext(), currentResourceContext);
+				executeWorkflows(readingRule, alarmRule, Collections.singletonList(previousFetchStartReading), beforeCurrentFields, fields, beforeFetchFirstEvent, new BaseEventContext(), currentResourceContext, constructAssetTimeVsEventsMap(fields, resourceId, previousFetchStartReading.getTtime(), startTime));
 				if(beforeFetchFirstEvent != null && !beforeFetchFirstEvent.isEmpty() && !beforeFetchFirstEvent.get(0).getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY))
 				{
 					previousEventMeta = beforeFetchFirstEvent.get(0);
@@ -156,7 +157,8 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 			startTime = readings.get(0).getTtime();
 			endTime = readings.get(readings.size() - 1).getTtime();
 
-			FacilioContext context = executeWorkflows(readingRule, alarmRule, readings, currentFields, fields, events, previousEventMeta, currentResourceContext);
+			LinkedHashMap<Long,List<SensorEventContext>> assetTimeVsEventsMap = constructAssetTimeVsEventsMap(fields, resourceId, startTime, endTime);
+			FacilioContext context = executeWorkflows(readingRule, alarmRule, readings, currentFields, fields, events, previousEventMeta, currentResourceContext, assetTimeVsEventsMap);
 			
 			if(context.containsKey(FacilioConstants.ContextNames.RULE_LOG_MODULE_DATA)) {
 				
@@ -196,7 +198,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 					{
 						Map<String, List<ReadingDataMeta>> extendedCurrentFields = prepareCurrentFieldsRDM(readingRule, endTime, nextSingleReading.getTtime(), resourceId, fields);
 						
-						executeWorkflows(readingRule, alarmRule, Collections.singletonList(nextSingleReading), extendedCurrentFields, fields, nextJobFirstEvent, previousEventMeta, currentResourceContext);
+						executeWorkflows(readingRule, alarmRule, Collections.singletonList(nextSingleReading), extendedCurrentFields, fields, nextJobFirstEvent, previousEventMeta, currentResourceContext, constructAssetTimeVsEventsMap(fields, resourceId, endTime, nextSingleReading.getTtime()));
 						if(nextJobFirstEvent != null && !nextJobFirstEvent.isEmpty() && nextJobFirstEvent.get(0).getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY))
 						{
 							events.add(nextJobFirstEvent.get(0));
@@ -214,7 +216,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 		return events;
 	}
 	
-	private FacilioContext executeWorkflows(ReadingRuleContext readingRule, AlarmRuleContext alarmRule, List<ReadingContext> readings, Map<String, List<ReadingDataMeta>> supportFieldsRDM, List<WorkflowFieldContext> fields, List<BaseEventContext> baseEvents,BaseEventContext previousEventMeta, ResourceContext currentResourceContext) throws Exception
+	private FacilioContext executeWorkflows(ReadingRuleContext readingRule, AlarmRuleContext alarmRule, List<ReadingContext> readings, Map<String, List<ReadingDataMeta>> supportFieldsRDM, List<WorkflowFieldContext> fields, List<BaseEventContext> baseEvents,BaseEventContext previousEventMeta, ResourceContext currentResourceContext, LinkedHashMap<Long,List<SensorEventContext>> assetTimeVsEventsMap) throws Exception
 	{
 		int alarmCount = 0;
 		FacilioContext context = new FacilioContext();
@@ -270,7 +272,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 								}
 							}
 							
-							boolean canSuppressAlarm = checkForSensorAlarmSuppression(fields, reading);
+							boolean canSuppressAlarm = checkForSensorAlarmSuppression(assetTimeVsEventsMap, reading);
 							if(canSuppressAlarm && !shouldSkipCurrentReading && alarmRule != null && reading.getParentId() == currentResourceContext.getId()) 
 							{
 								shouldSkipCurrentReading = true;
@@ -606,33 +608,14 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 		}
 	}
 	
-	private boolean checkForSensorAlarmSuppression(List<WorkflowFieldContext> fields, ReadingContext reading) throws Exception {
+	private boolean checkForSensorAlarmSuppression(LinkedHashMap<Long,List<SensorEventContext>> assetTimeVsEventsMap, ReadingContext reading) throws Exception {
 		
 		boolean isActiveSensorEventPresent = false;
-		if(reading.getParentId()>0) {
-			List<Long> fieldIds = new ArrayList<Long>();
-			for(WorkflowFieldContext field:fields) {
-				fieldIds.add(field.getFieldId());
-			}
-			
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SENSOR_EVENT);
-			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
-
-			SelectRecordsBuilder<SensorEventContext> builder = new SelectRecordsBuilder<SensorEventContext>()
-					.module(module)
-					.select(modBean.getAllFields(module.getName()))
-					.beanClass(SensorEventContext.class)
-					.andCondition(CriteriaAPI.getConditionFromList("READING_FIELD_ID", "readingFieldId", fieldIds, NumberOperators.EQUALS))
-					.andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resource",  ""+reading.getParentId(), NumberOperators.EQUALS))
-					.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", ""+reading.getTtime(), NumberOperators.EQUALS))
-					.fetchSupplement((LookupField)fieldMap.get("severity"));
-			
-			List<SensorEventContext> eventList = builder.get();
-			
-			if (eventList != null && !eventList.isEmpty() && eventList.size()>0) {
-				for(SensorEventContext event:eventList) {
-					if(!event.getSeverity().getSeverity().equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) {
+		if(reading.getParentId()>0 && assetTimeVsEventsMap != null && !assetTimeVsEventsMap.isEmpty()) {
+			List<SensorEventContext> fieldEvents = assetTimeVsEventsMap.get(reading.getTtime());
+			if(fieldEvents != null && !fieldEvents.isEmpty() && fieldEvents.size()>0) {
+				for(SensorEventContext event: fieldEvents) {
+					if(event.getCreatedTime() == reading.getTtime() && !event.getSeverity().getSeverity().equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) {
 						isActiveSensorEventPresent = true;
 						break;
 					}
@@ -640,5 +623,46 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 			}
 		}
 		return isActiveSensorEventPresent;
+	}
+	
+	private LinkedHashMap<Long,List<SensorEventContext>> constructAssetTimeVsEventsMap(List<WorkflowFieldContext> fields, long resourceId, long startTime, long endTime) throws Exception {
+	
+		LinkedHashMap<Long, List<SensorEventContext>> assetTimeVsEventsMap = new LinkedHashMap<Long, List<SensorEventContext>>();
+		List<Long> fieldIds = new ArrayList<Long>();
+		for(WorkflowFieldContext field:fields) {
+			fieldIds.add(field.getFieldId());
+		}
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SENSOR_EVENT);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
+		List<FacilioField> selectFields = new ArrayList<FacilioField>();
+		selectFields.add(fieldMap.get("severity"));
+		selectFields.add(fieldMap.get("readingFieldId"));
+		selectFields.add(fieldMap.get("createdTime"));
+
+		SelectRecordsBuilder<SensorEventContext> builder = new SelectRecordsBuilder<SensorEventContext>()
+				.module(module)
+				.select(selectFields)
+				.beanClass(SensorEventContext.class)
+				.andCondition(CriteriaAPI.getConditionFromList("READING_FIELD_ID", "readingFieldId", fieldIds, NumberOperators.EQUALS)) //workflowfields
+				.andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resource",  ""+resourceId, NumberOperators.EQUALS)) //handling only for trigger metric now
+				.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN))
+				.fetchSupplement((LookupField)fieldMap.get("severity"));
+		
+		List<SensorEventContext> eventList = builder.get();
+		
+		if (eventList != null && !eventList.isEmpty() && eventList.size()>0) {
+			for(SensorEventContext event:eventList) {
+				List<SensorEventContext> list = assetTimeVsEventsMap.get(event.getCreatedTime());
+				if(list == null) {
+					list = new ArrayList<SensorEventContext>();
+					assetTimeVsEventsMap.put(event.getCreatedTime(), list);
+				}
+				list.add(event);
+			}
+		}
+		
+		return assetTimeVsEventsMap;
 	}
 }
