@@ -9,6 +9,7 @@ public enum FaultType implements FacilioEnum{
 	EQUIPMENT_FAULT("Equipment Fault"),
 	OPERATIONAL_FAULT("Operational Fault"),
 	SENSOR_FAULT("Sensor Fault"),
+	MECHANICAL_FAULT("Mechanical Fault"),
 	;
 	
 	private String name;
