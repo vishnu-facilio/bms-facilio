@@ -83,6 +83,11 @@ public class ControlSchedulePublishCommand extends FacilioCommand {
 		
 		chain.execute();
 		
+		scheduleTenent.setExceptions(null);					
+		scheduleTenent.setParentGroup(null);
+		
+		group.setControlSchedule(scheduleTenent);
+		
 		return false;
 	}
 
