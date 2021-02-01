@@ -1176,7 +1176,11 @@ public class AlarmAPI {
 		
 		List<Map<String, Object>> props = selectbuilder.getAsProps();
 		
-		BigDecimal duration = (BigDecimal) props.get(0).get("duration");
+		BigDecimal duration = null;
+		
+		if (props != null && !props.isEmpty() ) {
+			duration = (BigDecimal) props.get(0).get("duration");
+		}
 		
 		SelectRecordsBuilder<AlarmOccurrenceContext> selectBuilder = new SelectRecordsBuilder<AlarmOccurrenceContext>()
 				.select(allFields)
@@ -1274,8 +1278,12 @@ public class AlarmAPI {
 		
 		List<Map<String, Object>> props = selectbuilder.getAsProps();
 		
+		BigDecimal timeBetweeenOccurrence = null;
 		
-		BigDecimal timeBetweeenOccurrence = (BigDecimal) props.get(0).get("timeBetweeenOccurrence");
+		if (props != null && !props.isEmpty() ) {
+			timeBetweeenOccurrence = (BigDecimal) props.get(0).get("timeBetweeenOccurrence");
+		}
+		
 		return  timeBetweeenOccurrence;
 	}
 	
