@@ -1143,8 +1143,13 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 	public PreEventContext constructPreClearEvent(ReadingContext reading, ResourceContext resource) {
 
 		PreEventContext event = new PreEventContext();
-		event.setResource((ResourceContext) reading.getParent());
-
+		
+		if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339 && reading.getParent() == null) {
+			event.setResource(resource);
+		}
+		else {
+			event.setResource((ResourceContext) reading.getParent());
+		}
 		event.setReadingFieldId(this.getReadingFieldId());
 
 		ReadingRuleContext rule =  new ReadingRuleContext();
