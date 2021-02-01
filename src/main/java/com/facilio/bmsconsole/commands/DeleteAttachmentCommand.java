@@ -1,14 +1,22 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.activity.WorkOrderActivityType;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AttachmentContext;
+import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.util.AttachmentsAPI;
+import com.facilio.bmsconsole.util.WorkOrderAPI;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -28,6 +36,7 @@ public class DeleteAttachmentCommand extends FacilioCommand implements PostTrans
 		
 		List<Long> attachmentIdList = (List<Long>) context.get(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST);
 		moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+		Long recordId =  (Long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module =  modBean.getModule(moduleName);
 		
@@ -51,7 +60,26 @@ public class DeleteAttachmentCommand extends FacilioCommand implements PostTrans
 					List<Long> fileIds = attachments.stream().map(AttachmentContext::getFileId).collect(Collectors.toList());
 					FacilioFactory.getFileStore().deleteFiles(fileIds);
 				}
-			}
+			}			
+			else if(moduleName.equals(FacilioConstants.ContextNames.TASK_ATTACHMENTS) && recordId > 0) {
+				JSONArray attachmentNames = new JSONArray();
+	     		JSONObject attach = new JSONObject();
+				List<Object> attachmentActivity = new ArrayList<>();
+				
+    			TaskContext task = WorkOrderAPI.getTask(recordId);
+    			long parentAttachmentId = task.getParentTicketId();
+     			for(AttachmentContext attaches : attachments) {
+    				attachmentNames.add(attaches.getFileName());
+    		  		JSONObject info = new JSONObject();
+					info.put("subject", task.getSubject());
+					info.put("Filename", attaches.getFileName());
+					info.put("Url", attaches.getPreviewUrl());
+					info.put("type", attaches.getType());
+					attachmentActivity.add(info);
+    			}
+    			attach.put("taskattachment", attachmentActivity);
+    			CommonCommandUtil.addActivityToContext(parentAttachmentId, -1, WorkOrderActivityType.DELETE_TASK_ATTACHMENT, attach, (FacilioContext) context);
+     		} 
 			
 			GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 					.table(module.getTableName())

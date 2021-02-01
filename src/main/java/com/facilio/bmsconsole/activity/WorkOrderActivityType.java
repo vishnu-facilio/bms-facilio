@@ -184,6 +184,13 @@ public enum WorkOrderActivityType implements ActivityType {
 		public String constructMessage(JSONObject json) {
 			return "Service-level agreement has been activated";
 		}
+	},
+	DELETE_TASK_ATTACHMENT(82) {
+		@Override
+		public String constructMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return " deleted Task Attachment";
+		}	
 	}
 	;
 	private int value;

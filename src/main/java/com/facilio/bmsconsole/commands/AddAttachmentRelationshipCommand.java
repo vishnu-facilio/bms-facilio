@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.util.AttachmentsAPI;
+import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -101,7 +102,7 @@ public class AddAttachmentRelationshipCommand extends FacilioCommand implements 
 				CommonCommandUtil.addActivityToContext(recordId, -1, WorkOrderActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
      		}
      		else if(moduleName.equals(FacilioConstants.ContextNames.TASK_ATTACHMENTS)) {
-    			TaskContext task = getTask(recordId);
+    			TaskContext task = WorkOrderAPI.getTask(recordId);
     			long parentAttachmentId = task.getParentTicketId();
      			for(AttachmentContext attaches : attachments) {
     				attachmentNames.add(attaches.getFileName());
@@ -152,19 +153,4 @@ public class AddAttachmentRelationshipCommand extends FacilioCommand implements 
 		return false;
 	}
 	
-	private TaskContext getTask(long id) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TASK);
-		SelectRecordsBuilder<TaskContext> builder = new SelectRecordsBuilder<TaskContext>()
-														.module(module)
-														.beanClass(TaskContext.class)
-														.select(modBean.getAllFields(FacilioConstants.ContextNames.TASK))
-														.andCondition(CriteriaAPI.getIdCondition(id, module));
-		
-		List<TaskContext> tasks = builder.get();
-		if(CollectionUtils.isNotEmpty(tasks)) {
-			return tasks.get(0);
-		}
-		return null;
-	}
 }

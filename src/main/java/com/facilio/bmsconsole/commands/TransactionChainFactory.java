@@ -1270,6 +1270,15 @@ public class TransactionChainFactory {
 //			c.addCommand(getAddOrUpdateReadingValuesChain());
 			return c;
 		}
+		
+		public static FacilioChain getDeleteTaskAttachmentChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new DeleteAttachmentCommand());
+			c.addCommand(new AddActivitiesCommand());
+			
+			
+			return c;
+		}
 
 	public static FacilioChain getUpdatePreRequestChain() {
 		FacilioChain c = getDefaultChain();

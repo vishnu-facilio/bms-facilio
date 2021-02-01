@@ -1679,6 +1679,13 @@
 			<param name="moduleName">workorder</param>
 			<param name="permission">ADD_UPDATE_DELETE_TASK,UPDATE_TASK</param>
 		</action>
+		
+		<action name="deleteTaskAttachment"
+			class="com.facilio.bmsconsole.actions.TaskAction"
+			method="v2deleteTaskAttachment">
+			<param name="moduleName">taskattachments</param>
+			<param name="permission">ADD_UPDATE_DELETE_TASK,UPDATE_TASK</param>
+		</action>
 
 		<action name="closeAllTask"
 			class="com.facilio.bmsconsole.actions.TaskAction"

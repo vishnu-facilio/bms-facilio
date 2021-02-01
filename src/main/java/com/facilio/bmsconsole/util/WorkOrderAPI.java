@@ -32,6 +32,7 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.context.SpaceContext;
+import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketTypeContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderContext.AllowNegativePreRequisite;
@@ -2986,5 +2987,23 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 	   return builder.getAsProps();
 	   
    }
+   
+   public static TaskContext getTask(long id) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TASK);
+		SelectRecordsBuilder<TaskContext> builder = new SelectRecordsBuilder<TaskContext>()
+														.module(module)
+														.beanClass(TaskContext.class)
+														.select(modBean.getAllFields(FacilioConstants.ContextNames.TASK))
+														.andCondition(CriteriaAPI.getIdCondition(id, module));
+		
+		List<TaskContext> tasks = builder.get();
+		if(CollectionUtils.isNotEmpty(tasks)) {
+			return tasks.get(0);
+		}
+		return null;
+	}
+   
+   
   
  }

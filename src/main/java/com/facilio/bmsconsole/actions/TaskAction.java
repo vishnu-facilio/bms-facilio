@@ -192,6 +192,20 @@ public class TaskAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String v2deleteTaskAttachment() throws Exception {
+		
+		FacilioChain chain = TransactionChainFactory.getDeleteTaskAttachmentChain();
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID, this.recordId);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, this.module);
+		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
+		context.put(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST, attachmentId);
+		
+		chain.execute();
+		
+		return SUCCESS;
+	}
+	
 	private List<Long> id;
 	public List<Long> getId() {
 		return id;
