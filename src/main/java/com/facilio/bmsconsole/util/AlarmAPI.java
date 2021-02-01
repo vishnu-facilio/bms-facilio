@@ -1201,8 +1201,9 @@ public class AlarmAPI {
 			AlarmOccurrenceContext occurrence = (AlarmOccurrenceContext) prop.get(0);
 			if (occurrence.getCreatedTime() < range.getStartTime()) {
 				long differenceInDuration = (occurrence.getClearedTime() - range.getStartTime());
-				BigDecimal bigD = new BigDecimal(differenceInDuration);
-				bigD =  BigDecimal.valueOf(differenceInDuration);
+				long inSeconds = (differenceInDuration/1000);
+				BigDecimal bigD = new BigDecimal(inSeconds);
+				bigD =  BigDecimal.valueOf(inSeconds);
 				if (duration != null) {
 					duration = duration.add(bigD);
 				}else {
@@ -1230,8 +1231,9 @@ public class AlarmAPI {
 			AlarmOccurrenceContext occurrence = (AlarmOccurrenceContext) prop.get(0);
 			if (occurrence.getCreatedTime() > range.getStartTime() && occurrence.getClearedTime() == -1) {
 				long differenceInDuration = (occurrence.getCurrentTime() - occurrence.getCreatedTime());
-				BigDecimal bigD = new BigDecimal(differenceInDuration);
-				bigD =  BigDecimal.valueOf(differenceInDuration);
+				long inSeconds = (differenceInDuration/1000);
+				BigDecimal bigD = new BigDecimal(inSeconds);
+				bigD =  BigDecimal.valueOf(inSeconds);
 				if (duration != null) {
 					duration = duration.add(bigD);
 				}else {
