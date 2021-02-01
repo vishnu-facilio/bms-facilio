@@ -27,12 +27,12 @@ public class HandleDefaultIdAndOrderByForPicklist extends FacilioCommand {
         if (StringUtils.isEmpty(orderBy)) {
             orderBy = "ID DESC";
         }
-        if (module.getTypeEnum() != FacilioModule.ModuleType.PICK_LIST) {
+//        if (module.getTypeEnum() != FacilioModule.ModuleType.PICK_LIST) { //Removing this check since Picklist also can have more than 50 rows
             List<Long> defaultIds = (List<Long>) context.get(FacilioConstants.PickList.DEFAULT_ID_LIST);
             if (CollectionUtils.isNotEmpty(defaultIds)) {
                 orderBy = RecordAPI.getDefaultIdOrderBy(module, defaultIds, orderBy);
             }
-        }
+//        }
         context.put(FacilioConstants.ContextNames.SORTING_QUERY, orderBy);
         return false;
     }
