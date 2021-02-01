@@ -97,6 +97,11 @@ public class SensorRuleUtil {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule readingModule = modBean.getModule(moduleName);
 		FacilioModule categoryModule = modBean.getParentModule(readingModule.getModuleId());
+		
+		if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339 && categoryModule.getName().equals("vav")){
+			return null;
+		}
+		
 		if(categoryModule != null) {
 			List<SensorRuleContext> sensorRules = SensorRuleUtil.getSensorRuleByModuleId(categoryModule,isFetchSubProps);
 			return sensorRules;	
