@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.commands;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -49,10 +50,10 @@ public class FetchTenantsToBePublishedCommmand extends FacilioCommand {
 		
 		List<ControlGroupTenentContext> sharedTenents = select.get();
 		
-		List<Long> alreadySharedTenentIds = new ArrayList<Long>();
+		Map<Long,ControlGroupTenentContext> tenantIdVsSharedTenent = new HashMap<Long, ControlGroupTenentContext>();
 		for(ControlGroupTenentContext sharedTenent :sharedTenents) {
 			
-			alreadySharedTenentIds.add(sharedTenent.getTenant().getId());
+			tenantIdVsSharedTenent.put(sharedTenent.getTenant().getId(), sharedTenent);
 		}
 		
 		
@@ -78,12 +79,11 @@ public class FetchTenantsToBePublishedCommmand extends FacilioCommand {
 		
 		List<TenantContext> tenents = TenantsAPI.getTenants(tenantIds);
 		
-		List<TenantContext> alreadySharedTenants = new ArrayList<TenantContext>();
 		List<TenantContext> yetToBeSharedTenants = new ArrayList<TenantContext>();
 		
 		for(TenantContext tenent :tenents) {
-			if(alreadySharedTenentIds.contains(tenent.getId())) {
-				alreadySharedTenants.add(tenent);
+			if(tenantIdVsSharedTenent.containsKey(tenent.getId())) {
+				tenantIdVsSharedTenent.get(tenent.getId()).setTenant(tenent);
 			}
 			else {
 				yetToBeSharedTenants.add(tenent);
@@ -92,7 +92,7 @@ public class FetchTenantsToBePublishedCommmand extends FacilioCommand {
 		
 		
 		context.put(FacilioConstants.ContextNames.TENANT_LIST, yetToBeSharedTenants);
-		context.put("alreadySharedTenantList", alreadySharedTenants);
+		context.put("alreadySharedTenantList", sharedTenents);
 		
 		return false;
 	}
