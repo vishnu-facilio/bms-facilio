@@ -52,8 +52,8 @@ public class ControlGroupPublishCommand extends FacilioCommand {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		InsertRecordBuilder<ControlGroupTenentContext> insert = new InsertRecordBuilder<ControlGroupTenentContext>()
-				.moduleName(ControlScheduleUtil.CONTROL_GROUP_TENENT_SHARING_MODULE_NAME)
-				.fields(modBean.getAllFields(ControlScheduleUtil.CONTROL_GROUP_TENENT_SHARING_MODULE_NAME))
+				.moduleName(ControlScheduleUtil.CONTROL_GROUP_TENANT_SHARING_MODULE_NAME)
+				.fields(modBean.getAllFields(ControlScheduleUtil.CONTROL_GROUP_TENANT_SHARING_MODULE_NAME))
 				.addRecord(groupTenent);
 		
 		insert.save();

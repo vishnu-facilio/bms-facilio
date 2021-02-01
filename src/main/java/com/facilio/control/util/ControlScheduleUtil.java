@@ -56,7 +56,9 @@ public class ControlScheduleUtil {
 	public static final String CONTROL_GROUP_ASSET_FIELD_MODULE_NAME = "controlGroupField";
 	public static final String CONTROL_GROUP_ROUTINE_MODULE_NAME = "controlGroupRoutine";
 	public static final String CONTROL_GROUP_ROUTINE_SECTION_MODULE_NAME = "controlGroupRoutineSection";
-	public static final String CONTROL_GROUP_TENENT_SHARING_MODULE_NAME = "controlGroupv2TenantSharing";
+	public static final String CONTROL_GROUP_TENANT_SHARING_MODULE_NAME = "controlGroupv2TenantSharing";
+	public static final String CONTROL_SCHEDULE_TENANT_SHARING_MODULE_NAME = "controlScheduleTenant";
+	public static final String CONTROL_SCHEDULE_EXCEPTION_TENANT_SHARING_MODULE_NAME = "controlScheduleExceptionTenant";
 	
 	public static final String CONTROL_SCHEDULE_UNPLANNED_SLOTS_MODULE_NAME = "controlScheduleSlots";
 	public static final String CONTROL_SCHEDULE_PLANNED_SLOTS_MODULE_NAME = "controlScheduleGroupedSlots";

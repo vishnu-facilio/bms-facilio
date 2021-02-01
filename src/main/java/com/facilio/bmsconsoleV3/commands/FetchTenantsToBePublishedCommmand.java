@@ -36,13 +36,13 @@ public class FetchTenantsToBePublishedCommmand extends FacilioCommand {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		List<FacilioField> fields = modBean.getAllFields(ControlScheduleUtil.CONTROL_GROUP_TENENT_SHARING_MODULE_NAME);
+		List<FacilioField> fields = modBean.getAllFields(ControlScheduleUtil.CONTROL_GROUP_TENANT_SHARING_MODULE_NAME);
 		
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
 		SelectRecordsBuilder<ControlGroupTenentContext> select = new SelectRecordsBuilder<ControlGroupTenentContext>()
 				.select(fields)
-				.moduleName(ControlScheduleUtil.CONTROL_GROUP_TENENT_SHARING_MODULE_NAME)
+				.moduleName(ControlScheduleUtil.CONTROL_GROUP_TENANT_SHARING_MODULE_NAME)
 				.beanClass(ControlGroupTenentContext.class)
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentGroup"), group.getId()+"", NumberOperators.EQUALS));
 		

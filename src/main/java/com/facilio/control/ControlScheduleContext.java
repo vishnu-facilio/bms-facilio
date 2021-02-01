@@ -13,6 +13,7 @@ public class ControlScheduleContext extends V3Context {
 	private String name;
 	private Long businessHour;
 	BusinessHoursContext businessHoursContext;
+	List<ControlScheduleExceptionContext> exceptions;
 	
 	public String getName() {
 		return name;
@@ -32,8 +33,6 @@ public class ControlScheduleContext extends V3Context {
 	public void setBusinessHoursContext(BusinessHoursContext businessHoursContext) {
 		this.businessHoursContext = businessHoursContext;
 	}
-
-	List<ControlScheduleExceptionContext> exceptions;
 
 	public List<ControlScheduleExceptionContext> getExceptions() {
 		return exceptions;

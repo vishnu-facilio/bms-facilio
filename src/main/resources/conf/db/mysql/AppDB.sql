@@ -29047,6 +29047,7 @@ CREATE TABLE IF NOT EXISTS Control_Action_Command (
   COMMAND varchar(500) DEFAULT NULL,
   STATUS INT,
   `SCHEDULE_ID` BIGINT NULL,
+  `GROUP_ID` BIGINT NULL,
   `EXCEPTION_ID` BIGINT NULL,
   `ROUTINE_ID` BIGINT NULL,
   `SYS_DELETED` BOOLEAN,
@@ -29067,6 +29068,11 @@ CREATE TABLE IF NOT EXISTS Control_Action_Command (
   REFERENCES `Control_Schedule` (`ID`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION,
+  CONSTRAINT `Control_Action_Command_group_ids`
+  FOREIGN KEY (`GROUP_ID`)
+  REFERENCES `Control_Group_V2` (`ID`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION,
   CONSTRAINT `Control_Action_Command_control_schedule_exception`
   FOREIGN KEY (`EXCEPTION_ID`)
   REFERENCES `Control_Schedule_Exceptions` (`ID`)
@@ -29078,3 +29084,75 @@ CREATE TABLE IF NOT EXISTS Control_Action_Command (
   ON DELETE NO ACTION
   ON UPDATE NO ACTION
 );
+
+
+CREATE TABLE IF NOT EXISTS `Control_Schedule_Tenant` (
+  `ID` BIGINT NOT NULL,
+  `ORGID` BIGINT NOT NULL,
+  `MODULEID` BIGINT NOT NULL,
+  `FORM_ID` BIGINT,
+  `PARENT_SCHEDULE_ID` BIGINT NOT NULL,
+  `TENANT_ID` BIGINT NOT NULL,
+  `PARENT_GROUP_ID` BIGINT NOT NULL,
+  PRIMARY KEY (`ID`),
+  CONSTRAINT `Control_Schedule_Tenant_id`
+    FOREIGN KEY (`ID`)
+    REFERENCES `Control_Schedule` (`ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `Control_Schedule_Tenant_moduleid`
+    FOREIGN KEY (`MODULEID`)
+    REFERENCES `Modules` (`MODULEID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `Control_Schedule_Tenant_parent_schedule_id`
+    FOREIGN KEY (`PARENT_SCHEDULE_ID`)
+    REFERENCES `Control_Schedule` (`ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `Control_Schedule_Tenant_tenant_id`
+    FOREIGN KEY (`TENANT_ID`)
+    REFERENCES `Tenants` (`ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `Control_Schedule_Tenant_parent_group_id`
+    FOREIGN KEY (`PARENT_GROUP_ID`)
+    REFERENCES `Control_Group_V2` (`ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
+
+
+CREATE TABLE IF NOT EXISTS `Control_Schedule_Exception_Tenant` (
+  `ID` BIGINT NOT NULL,
+  `ORGID` BIGINT NOT NULL,
+  `MODULEID` BIGINT NOT NULL,
+  `FORM_ID` BIGINT,
+  `PARENT_EXCEPTION_ID` BIGINT NOT NULL,
+  `TENANT_ID` BIGINT NOT NULL,
+  `PARENT_GROUP_ID` BIGINT NOT NULL,
+  PRIMARY KEY (`ID`),
+  CONSTRAINT `Control_Schedule_Exception_Tenant_id`
+    FOREIGN KEY (`ID`)
+    REFERENCES `Control_Schedule_Exceptions` (`ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `Control_Schedule_Exception_Tenant_moduleid`
+    FOREIGN KEY (`MODULEID`)
+    REFERENCES `Modules` (`MODULEID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `Control_Schedule_Exception_Tenant_parent_exception_id`
+    FOREIGN KEY (`PARENT_EXCEPTION_ID`)
+    REFERENCES `Control_Schedule_Exceptions` (`ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `Control_Schedule_Exception_Tenant_tenant_id`
+    FOREIGN KEY (`TENANT_ID`)
+    REFERENCES `Tenants` (`ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `Control_Schedule_Exception_Tenant_parent_group_id`
+    FOREIGN KEY (`PARENT_GROUP_ID`)
+    REFERENCES `Control_Group_V2` (`ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);

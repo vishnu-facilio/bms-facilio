@@ -32,6 +32,7 @@ public class ControlActionCommandContext extends ModuleBaseWithCustomFields {
 	ReadingDataMeta rdm;
 	FacilioField field;
 	
+	ControlGroupContext group;
 	ControlScheduleContext schedule;
 	ControlScheduleExceptionContext exception;
 	ControlGroupRoutineContext routine;
@@ -280,6 +281,14 @@ public class ControlActionCommandContext extends ModuleBaseWithCustomFields {
 
 	public void setRoutine(ControlGroupRoutineContext routine) {
 		this.routine = routine;
+	}
+
+	public ControlGroupContext getGroup() {
+		return group;
+	}
+
+	public void setGroup(ControlGroupContext group) {
+		this.group = group;
 	}
 
 }
