@@ -192,7 +192,7 @@ public class SensorRuleUtil {
 			List<SensorRollUpEventContext> sensorFieldRollUpEvents = new ArrayList<SensorRollUpEventContext>();
 			
 			if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339l) {
-				LOGGER.info("fieldSensorRulesMap: "+ fieldSensorRulesMap+" assetReadingsMap "+assetReadingsMap);
+//				LOGGER.info("fieldSensorRulesMap: "+ fieldSensorRulesMap+" assetReadingsMap "+assetReadingsMap);
 			}
 			
 			for(ReadingContext reading: readings) 
@@ -219,7 +219,7 @@ public class SensorRuleUtil {
 							checkDefaultSeverityProps(defaultSeverityProps, sensorRuleValidatorPropsMap.get(sensorRule.getId()));
 							
 							if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339l) {
-								LOGGER.info("reading: "+ reading+" sensorRule "+sensorRule+ " result: "+result);
+//								LOGGER.info("reading: "+ reading+" sensorRule "+sensorRule+ " result: "+result);
 							}
 							
 							if(result) 
@@ -228,7 +228,7 @@ public class SensorRuleUtil {
 								sensorEvents.add(sensorEvent);
 								
 								if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339l) {
-									LOGGER.info("reading: "+ reading+" sensorRule "+sensorRule+ " sensorEvent: "+sensorEvent);
+//									LOGGER.info("reading: "+ reading+" sensorRule "+sensorRule+ " sensorEvent: "+sensorEvent);
 								}
 								
 								if(isFirstFieldSensorRule && !validatorType.getSensorRuleTypeFromValidator().isMeterRollUp()) {
@@ -237,7 +237,7 @@ public class SensorRuleUtil {
 									fieldSensorRollUpEventMeta.put(ReadingsAPI.getRDMKey(reading.getParentId(), sensorFieldRollUpEvent.getReadingField()), sensorFieldRollUpEvent);
 									
 									if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339l) {
-										LOGGER.info("reading: "+ reading+" sensorRule "+sensorRule+ " sensorFieldRollUpEvent: "+sensorFieldRollUpEvent);
+//										LOGGER.info("reading: "+ reading+" sensorRule "+sensorRule+ " sensorFieldRollUpEvent: "+sensorFieldRollUpEvent);
 									}
 									isFirstFieldSensorRule = false;
 								}
@@ -249,7 +249,7 @@ public class SensorRuleUtil {
 									isFirstAssetSensorRule = false;
 									
 									if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339l) {
-										LOGGER.info("reading: "+ reading+" sensorRule "+sensorRule+ " sensorAssetRollUpEvent: "+sensorAssetRollUpEvent);
+//										LOGGER.info("reading: "+ reading+" sensorRule "+sensorRule+ " sensorAssetRollUpEvent: "+sensorAssetRollUpEvent);
 									}
 								}
 							}
@@ -269,7 +269,7 @@ public class SensorRuleUtil {
 							Map<Long, SensorRuleAlarmMeta> metaMap = fieldSensorRule.getAlarmMetaMap();
 							
 							if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339l) {
-								LOGGER.info("reading: "+ reading+" fieldSensorRule: "+fieldSensorRule+ " metaMap: "+metaMap+ " canClearFieldEventList: "+canClearFieldEventList+ " fieldSensorRuleList: "+fieldSensorRuleList);
+//								LOGGER.info("reading: "+ reading+" fieldSensorRule: "+fieldSensorRule+ " metaMap: "+metaMap+ " canClearFieldEventList: "+canClearFieldEventList+ " fieldSensorRuleList: "+fieldSensorRuleList);
 							}
 							
 							if(metaMap != null) { 									//to avoid validations not started for evaluation
@@ -285,7 +285,7 @@ public class SensorRuleUtil {
 					}
 					
 					if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339l) {
-						LOGGER.info("reading: "+ reading+" fieldSensorRules "+fieldSensorRules+ " fieldSensorRollUpEventMetaMap: " +fieldSensorRollUpEventMeta+ " canClearFieldEventList: "+canClearFieldEventList+ " fieldSensorRuleList: "+fieldSensorRuleList);
+//						LOGGER.info("reading: "+ reading+" fieldSensorRules "+fieldSensorRules+ " fieldSensorRollUpEventMetaMap: " +fieldSensorRollUpEventMeta+ " canClearFieldEventList: "+canClearFieldEventList+ " fieldSensorRuleList: "+fieldSensorRuleList);
 					}
 					
 					if(canClearFieldEventList > 0 && fieldSensorRuleList > 0 && canClearFieldEventList == fieldSensorRuleList) {
@@ -297,7 +297,7 @@ public class SensorRuleUtil {
 							sensorFieldRollUpEvents.add(sensorFieldRollUpEvent);
 							
 							if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339l) {
-								LOGGER.info("reading: "+ reading+ " fieldSensorRollUpMetaEvent: "+fieldSensorRollUpMetaEvent);
+//								LOGGER.info("reading: "+ reading+ " fieldSensorRollUpMetaEvent: "+fieldSensorRollUpMetaEvent);
 							}
 							fieldSensorRollUpEventMeta.put(ReadingsAPI.getRDMKey(reading.getParentId(),sensorFieldRollUpEvent.getReadingField()), sensorFieldRollUpEvent);
 						}		
@@ -310,7 +310,7 @@ public class SensorRuleUtil {
 						Map<Long, SensorRuleAlarmMeta> metaMap = sensorRule.getAlarmMetaMap();
 						
 						if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339l) {
-							LOGGER.info("reading: "+ reading+" sensorRule: "+sensorRule+ " metaMap: "+metaMap+ " canClearAssetRollUpEventList: "+canClearAssetRollUpEventList+ " meterSensorRuleList: "+meterSensorRuleList);
+//							LOGGER.info("reading: "+ reading+" sensorRule: "+sensorRule+ " metaMap: "+metaMap+ " canClearAssetRollUpEventList: "+canClearAssetRollUpEventList+ " meterSensorRuleList: "+meterSensorRuleList);
 						}
 						
 						if(metaMap != null) {
@@ -326,7 +326,7 @@ public class SensorRuleUtil {
 				}
 				
 				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339l) {
-					LOGGER.info("reading: "+ reading+" AssetsensorRules: "+sensorRules+ " assetSensorRollUpEventMetaMap: "+assetSensorRollUpEventMeta+ " canClearAssetRollUpEventList: "+canClearAssetRollUpEventList+ " meterSensorRuleList: "+meterSensorRuleList);
+//					LOGGER.info("reading: "+ reading+" AssetsensorRules: "+sensorRules+ " assetSensorRollUpEventMetaMap: "+assetSensorRollUpEventMeta+ " canClearAssetRollUpEventList: "+canClearAssetRollUpEventList+ " meterSensorRuleList: "+meterSensorRuleList);
 				}
 				
 				if(canClearAssetRollUpEventList > 0 && meterSensorRuleList > 0 && canClearAssetRollUpEventList == meterSensorRuleList) {
@@ -336,7 +336,7 @@ public class SensorRuleUtil {
 						sensorMeterRollUpEvents.add(sensorAssetRollUpEvent);
 						
 						if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339l) {
-							LOGGER.info("reading: "+ reading+ " sensorAssetRollUpEvent: "+sensorAssetRollUpEvent);
+//							LOGGER.info("reading: "+ reading+ " sensorAssetRollUpEvent: "+sensorAssetRollUpEvent);
 						}
 						
 						assetSensorRollUpEventMeta.put(reading.getParentId(), sensorAssetRollUpEvent);
@@ -349,7 +349,7 @@ public class SensorRuleUtil {
 			baseEvents.addAll(sensorFieldRollUpEvents);
 			
 			if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339l) {
-				LOGGER.info("sensorEvents: "+ sensorEvents+ " sensorFieldRollUpEvents: "+sensorFieldRollUpEvents+ " sensorMeterRollUpEvents: "+sensorMeterRollUpEvents+" baseEvents "+baseEvents);
+//				LOGGER.info("sensorEvents: "+ sensorEvents+ " sensorFieldRollUpEvents: "+sensorFieldRollUpEvents+ " sensorMeterRollUpEvents: "+sensorMeterRollUpEvents+" baseEvents "+baseEvents);
 			}
 			
 			if(baseEvents != null && !baseEvents.isEmpty()) {
