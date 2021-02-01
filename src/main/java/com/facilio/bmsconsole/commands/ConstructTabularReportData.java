@@ -10,7 +10,10 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.Operator;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.FacilioModule;
@@ -151,6 +154,14 @@ public class ConstructTabularReportData extends FacilioCommand {
 				Criteria criteria = data.getCriteria();
 				if (criteria != null) {
 					dataPointContext.setCriteria(criteria);
+				}
+				if(data.getDateFieldId() != -1 && data.getDateFieldId() != -99 && data.getDatePeriod() != -1) {
+					FacilioField dateField = modBean.getField(data.getDateFieldId(), yAxisModule.getName());
+					Operator dateOperator = Operator.getOperator(data.getDatePeriod());
+					Criteria otherCrit = new Criteria();
+					Condition newCond = CriteriaAPI.getCondition(dateField, dateOperator);
+					otherCrit.addAndCondition(newCond);
+					dataPointContext.setOtherCriteria(otherCrit);
 				}
 		}
 

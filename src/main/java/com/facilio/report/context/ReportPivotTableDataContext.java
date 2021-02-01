@@ -1,7 +1,5 @@
 package com.facilio.report.context;
 
-import java.util.Map;
-
 import org.json.simple.JSONObject;
 
 import com.facilio.db.criteria.Criteria;
@@ -85,12 +83,22 @@ public class ReportPivotTableDataContext {
 		this.criteria = criteria;
 	}
 	
-	private String alias; 
-	public String getAlias() {
-		return alias;
+	private Integer datePeriod; 
+	public Integer getDatePeriod() {
+		return datePeriod;
 	}
-	public void setAlias(String alias) {
-		this.alias = alias;
+	public void setDatePeriod(Integer datePeriod) {
+		this.datePeriod = datePeriod;
+	}
+	
+	private long dateFieldId = -1;
+
+	public long getDateFieldId() {
+		return dateFieldId;
+	}
+
+	public void setDateFieldId(long dateFieldId) {
+		this.dateFieldId = dateFieldId;
 	}
 	
 	private JSONObject formatting;
@@ -100,6 +108,14 @@ public class ReportPivotTableDataContext {
 	}
 	public void setFormatting(JSONObject formatting) {
 		this.formatting = formatting;
+	}
+	
+	private String alias; 
+	public String getAlias() {
+		return alias;
+	}
+	public void setAlias(String alias) {
+		this.alias = alias;
 	}
 	
 	@Override
