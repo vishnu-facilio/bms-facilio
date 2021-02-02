@@ -520,7 +520,7 @@ public class PeopleAPI {
 	}
 
 	public static User addPortalAppUser(PeopleContext existingPeople, String linkName, String identifier) throws Exception {
-		return addPortalAppUser(existingPeople, linkName, linkName, false);
+		return addPortalAppUser(existingPeople, linkName, identifier, false);
 	}
 	
 	public static User addPortalAppUser(PeopleContext existingPeople, String linkName, String identifier, boolean verifyUser) throws Exception {
