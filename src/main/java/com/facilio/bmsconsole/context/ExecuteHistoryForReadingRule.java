@@ -536,6 +536,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 	}
 	
 	private ReadingContext fetchSingleReading(ReadingRuleContext readingRule, long resourceId, long ttime, Operator<String> NumberOperator, String orderBy) throws Exception {
+		long readingFetchStartTime = System.currentTimeMillis();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioField> fields = modBean.getAllFields(readingRule.getReadingField().getModule().getName());
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -562,6 +563,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 				long currentTime = (VAVReading.getTtime()/dataInterval) * dataInterval;
 				ZonedDateTime currentZdt = DateTimeUtil.getDateTime(currentTime);
 				if(currentZdt != null && currentZdt.getMinute() == 0 && currentZdt.getSecond() == 0) {
+					LOGGER.info("Timetaken to fetch SingleReading in HistoricalRuleEventRunCommand ruleId: "+readingRule.getId()+" and resourceId: " +resourceId+ " ttime : "+ttime+ " and time consumed: "+(System.currentTimeMillis()-readingFetchStartTime));				
 					return VAVReading;
 				}
 				else {
@@ -569,10 +571,12 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 				}
 			}
 			else {
+				LOGGER.info("Timetaken to fetch SingleReading in NullFetch in HistoricalRuleEventRunCommand ruleId: "+readingRule.getId()+" and resourceId: " +resourceId+ " ttime : "+ttime+ " and time consumed: "+(System.currentTimeMillis()-readingFetchStartTime));				
 				return null;
 			}
 		}
 		else {
+			LOGGER.info("Timetaken to fetch SingleReading in HistoricalRuleEventRunCommand ruleId: "+readingRule.getId()+" and resourceId: " +resourceId+ " ttime : "+ttime+ " and time consumed: "+(System.currentTimeMillis()-readingFetchStartTime));				
 			return selectBuilder.fetchFirst();
 		}
 	}
