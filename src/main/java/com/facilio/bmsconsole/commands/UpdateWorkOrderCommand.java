@@ -27,6 +27,7 @@ import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.InventoryApi;
+import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -48,6 +49,7 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SupplementRecord;
 
 public class UpdateWorkOrderCommand extends FacilioCommand {
@@ -361,15 +363,19 @@ public class UpdateWorkOrderCommand extends FacilioCommand {
 				
 				if (field.getName().contains("resource")) {
 					long resourceId = (long) newValue;
-					Map<String, Object> resource = ResourceAPI.getResourceMapFromIds(Collections.singletonList(resourceId), false).get(resourceId);
-					info.put("newValue", resource.get("name"));
+					newValue = ResourceAPI.getResourceMapFromIds(Collections.singletonList(resourceId), false).get(resourceId).get("name");
+				}
+				else if (!field.isDefault() && field instanceof LookupField) {
+					long recId = (long) newValue;
+					newValue = RecordAPI.getPrimaryValue(((LookupField)field).getLookupModule().getName(), recId);
+					info.put("recordId", recId);
 				}
 				else {
 					if (field.getName().contains("preRequisiteApproved")) {
 						updatingPrereqApproved = true;
 					}
-					info.put("newValue", newValue);
 				}
+				info.put("newValue", newValue);
 				info.put("oldValue", oldValue);
 	            wolist.add(info);
 

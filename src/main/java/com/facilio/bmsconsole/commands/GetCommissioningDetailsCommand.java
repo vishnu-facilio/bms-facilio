@@ -88,13 +88,15 @@ public class GetCommissioningDetailsCommand extends FacilioCommand {
 	private void setPoints(CommissioningLogContext log) throws Exception {
 		FacilioModule module = ModuleFactory.getPointModule();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getPointFields());
+		FacilioField orderBy = log.getControllerTypeEnum() == FacilioControllerType.NIAGARA ? fieldMap.get(AgentConstants.DISPLAY_NAME) : fieldMap.get(AgentConstants.NAME);
 		GetPointRequest getPointRequest = new GetPointRequest()
 				.filterConfigurePoints()
 				.ofType(log.getControllerTypeEnum())
 //				.initBuilder(null)
-				.orderBy(fieldMap.get(AgentConstants.NAME).getCompleteColumnName())
+				.orderBy(orderBy.getCompleteColumnName())
 				.limit(-1);
 				;
+		
 		if (log.isLogical()) {
 			getPointRequest.withLogicalControllers(log.getAgentId());
 		}
