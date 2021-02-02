@@ -1,9 +1,6 @@
 package com.facilio.fw;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.facilio.fw.cache.FacilioCache;
@@ -57,11 +54,35 @@ public class LRUCache<K, V> implements FacilioCache<K, V> {
 
 	private static FacilioCache<String, Object> fieldCachePS = new PubSubLRUCache<>("fieldCache", 2000);
 	private static FacilioCache<String, Object> fieldNameCachePS = new PubSubLRUCache<>("fieldNameCache", 2000);
-	private static FacilioCache<String, Object> modulefieldCachePS = new PubSubLRUCache<>("moduleFieldCache", 2000);
+	private static FacilioCache<String, Object> moduleFieldCachePS = new PubSubLRUCache<>("moduleFieldCache", 2000);
 	private static FacilioCache<String, Object> userSessionCachePS = new PubSubLRUCache<>("userSessionCache", 300);
 	private static FacilioCache<String, Object> moduleCachePS = new PubSubLRUCache<>("moduleCache", 2000);
 	private static FacilioCache<String, Long> queryCachePS = new PubSubLRUCache<>("queryCache", 500);
 	private static FacilioCache<String, Object> responseCachePS = new PubSubLRUCache<>("responseCache", 5000);
+	private static FacilioCache<String, Long> featureLicenseCachePS = new PubSubLRUCache<>("featureLicense", 1000);
+
+	private static final List<FacilioCache> CACHE_LIST = initCacheList();
+
+	// Add the cache in the following method for automatic purging
+	private static List<FacilioCache> initCacheList() {
+		List<FacilioCache> cacheList = new ArrayList<>();
+		cacheList.add(fieldCachePS);
+		cacheList.add(fieldNameCachePS);
+		cacheList.add(moduleFieldCachePS);
+		cacheList.add(userSessionCache);
+		cacheList.add(moduleCachePS);
+		cacheList.add(queryCachePS);
+		cacheList.add(responseCachePS);
+		cacheList.add(featureLicenseCachePS);
+
+		return Collections.unmodifiableList(cacheList);
+	}
+
+	public static void purgeAllCache() {
+		for (FacilioCache cache : CACHE_LIST) {
+			cache.purgeCache();
+		}
+	}
 
 
 	private long hitcount = 0;
@@ -83,7 +104,7 @@ public class LRUCache<K, V> implements FacilioCache<K, V> {
 //		if(FacilioProperties.isProduction()) {
 //			return modulefieldCache;
 //		}
-		return modulefieldCachePS;
+		return moduleFieldCachePS;
 	}
 	public static FacilioCache<String, Object> getFieldsCache() {
 //		if(FacilioProperties.isProduction()) {
@@ -116,6 +137,10 @@ public class LRUCache<K, V> implements FacilioCache<K, V> {
 	public static FacilioCache<String, Object> getResponseCache() {
 //		if(FacilioProperties.isProduction()){return responseCache;}
 		return responseCachePS;
+	}
+
+	public static FacilioCache<String, Long> getFeatureLicenseCache() {
+		return featureLicenseCachePS;
 	}
 
 	public String toString() {

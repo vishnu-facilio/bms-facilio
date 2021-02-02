@@ -47,7 +47,7 @@ public interface OrgBean {
 	
 	public boolean isFeatureEnabled(FeatureLicense featureLicense) throws Exception;
 
-	public long addLicence(long summodule) throws Exception;
+	public int addLicence(long summodule) throws Exception;
 	
 	public JSONObject orgInfo() throws Exception;
 	

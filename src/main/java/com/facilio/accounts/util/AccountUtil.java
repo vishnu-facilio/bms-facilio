@@ -456,35 +456,12 @@ public class AccountUtil {
     	
     }
 
-    	public static long getFeatureLicense() throws Exception {
-		long orgId = getCurrentOrg().getOrgId();
-		long module = 0;
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		try {
-			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("select MODULE from FeatureLicense where ORGID = ?");
-			pstmt.setLong(1, orgId);
-			rs = pstmt.executeQuery();
-			if(rs.next())
-			{
-				module = rs.getLong("MODULE");
-			}
-
-		}catch(Exception e)
-		{
-			throw e;
-		}
-		finally
-		{
-			DBUtil.closeAll(conn, pstmt, rs);
-		}	
-		return module;
+    public static long getFeatureLicense() throws Exception {
+    	return getOrgBean().getFeatureLicense();
 	}
 	
 	public static boolean isFeatureEnabled(FeatureLicense featureLicense) throws Exception {
-		return (getFeatureLicense() & featureLicense.getLicense()) == featureLicense.getLicense();
+		return getOrgBean().isFeatureEnabled(featureLicense);
 	}
 	
 	public static boolean isModuleLicenseEnabled(String moduleName) throws Exception {

@@ -14,7 +14,6 @@ import org.json.simple.JSONObject;
 import com.chargebee.internal.StringJoiner;
 import com.facilio.accounts.bean.OrgBean;
 import com.facilio.accounts.bean.UserBean;
-import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.Role;
@@ -40,7 +39,6 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.FacilioModule;
@@ -317,9 +315,8 @@ public class OrgBeanImpl implements OrgBean {
 	}
 	
 
+	@Override
 	public long getFeatureLicense() throws Exception{
-
-//    	String orgidString = String.valueOf(orgId);
     	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(AccountConstants.getFeatureLicenseFields())
 				.table(AccountConstants.getFeatureLicenseModule().getTableName());
@@ -327,18 +324,20 @@ public class OrgBeanImpl implements OrgBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (CollectionUtils.isNotEmpty(props)) {
-			Map<String, Object> modulemap=props.get(0);
-			return ((long) modulemap.get("module"));
+			Map<String, Object> moduleMap = props.get(0);
+			return ((long) moduleMap.get("module"));
 		}
-		return -1;
+		else {
+			throw new IllegalArgumentException("Invalid org id for geting feature license");
+		}
 	}
 	
 	@Override
 	public boolean isFeatureEnabled(FeatureLicense featureLicense) throws Exception {
-		return AccountUtil.isFeatureEnabled(featureLicense);
+		return (getFeatureLicense() & featureLicense.getLicense()) == featureLicense.getLicense();
 	}
 
-	public long  addLicence(long summodule) throws Exception{
+	public int addLicence(long summodule) throws Exception{
     	GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(AccountConstants.getFeatureLicenseModule().getTableName())
 				.fields(AccountConstants.getFeatureLicenseFields());
@@ -347,8 +346,8 @@ public class OrgBeanImpl implements OrgBean {
 	
 		Map<String, Object> props = new HashMap<>();
 		props.put("module", summodule);
-	 long value = updateBuilder.update(props);
-	 return value;
+	 	int value = updateBuilder.update(props);
+	 	return value;
 	}
 	
 	public JSONObject orgInfo() throws Exception{

@@ -67,6 +67,9 @@ function init() {
 <br>Response Cache = <textarea  style="width: 600px;height:150px;overflow-y:auto; margin-bottom:20px"><%
 	out.println(com.facilio.fw.LRUCache.getResponseCache());
 %></textarea>
+<br>Feature License Cache = <textarea  style="width: 600px;height:150px;overflow-y:auto; margin-bottom:20px"><%
+	out.println(com.facilio.fw.LRUCache.getFeatureLicenseCache());
+%></textarea>
 </div>
 
 <div style="margin-top:30px;">
