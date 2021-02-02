@@ -20,8 +20,12 @@ public class ControlScheduleGroupedSlot extends V3Context {
 		
 		schedule = slot.getSchedule();
 		group = slot.getGroup();
-		startTime = slot.getStartTime();
-		endTime = slot.getEndTime();
+		if(slot.getStartTime() != null) {
+			startTime = slot.getStartTime();
+		}
+		if(slot.getEndTime() != null) {
+			endTime = slot.getEndTime();
+		}
 	}
 	
 	

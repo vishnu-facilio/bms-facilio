@@ -105,6 +105,9 @@ public class ControlScheduleSlot extends V3Context implements Comparable<Control
 	
 	public boolean isTouching(ControlScheduleSlot that) {
 		
+		if(that.startTime == null || this.endTime == null || that.startTime == null || that.endTime == null) {
+			return Boolean.FALSE;
+		}
 		if(that.startTime >= this.startTime && that.startTime <= this.endTime) {
 			return Boolean.TRUE;
 		}
@@ -124,6 +127,7 @@ public class ControlScheduleSlot extends V3Context implements Comparable<Control
 			this.endTime = that.endTime;
 		}
 	}
+	
 	
 	public ControlScheduleWrapper mergeONAndOff(ControlScheduleSlot that) {		//assumption this.startTime < that.startTime
 		

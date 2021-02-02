@@ -257,6 +257,97 @@ public class ControlScheduleUtil {
 		return slots;
 	}
 	
+	public static List<ControlScheduleGroupedSlot> mergeSlotsForIgnoreNormalScheduleMode(List<ControlScheduleSlot> controlSlots) {					//controlSlots should sorted by startTime
+		
+		List<ControlScheduleGroupedSlot> groupedSlots = new ArrayList<ControlScheduleGroupedSlot>();
+		
+		ControlScheduleSlot temp = null;
+		
+		for(ControlScheduleSlot controlSlot :controlSlots) {
+			
+			if(temp == null) {
+				temp = controlSlot;
+			}
+			else {
+				
+				if(temp.isTouching(controlSlot)) {
+					temp = mergeForIgnoreNormalScheduleMode(temp, controlSlot);
+					if(temp != null) {
+						groupedSlots.add(new ControlScheduleGroupedSlot(temp));
+					}
+					if(controlSlot.getException() != null) {
+						temp = null;
+					}
+					else {
+						temp = controlSlot;
+					}
+				}
+				else {
+					if(temp.getException() != null) {
+						groupedSlots.add(new ControlScheduleGroupedSlot(temp));
+					}
+					temp = controlSlot;
+				}
+			}
+		}
+		
+		return groupedSlots;
+//		
+	}
+	
+	private static ControlScheduleSlot mergeForIgnoreNormalScheduleMode(ControlScheduleSlot first,ControlScheduleSlot second) {
+		if(first.getException() != null) {
+			if(first.getOffSchedule()) {
+				if(first.getEndTime() > second.getStartTime() && first.getEndTime() < second.getEndTime()) {
+					
+					first.setStartTime(first.getEndTime());
+					first.setEndTime(second.getStartTime());
+					
+					return first;
+				}
+				else {
+					first.setEndTime(second.getStartTime());
+					first.setStartTime(null);
+					return first;
+				}
+			}
+			else {
+				if(first.getEndTime() > second.getStartTime() && first.getEndTime() < second.getEndTime()) {
+					
+					first.setEndTime(null);
+					return first;
+				}
+				else {
+					return null; 	//excluding this case
+				}
+			}
+		}
+		else {
+			if(second.getOffSchedule()) {
+				if(second.getEndTime() >= first.getEndTime()) {
+					second.setEndTime(second.getStartTime());
+					second.setStartTime(null);
+					return second;
+				}
+				else {
+					Long temp = second.getStartTime();
+					second.setStartTime(second.getEndTime());
+					second.setEndTime(temp);
+					return second;
+				}
+			}
+			else {
+				if(second.getEndTime() > first.getEndTime()) {
+					second.setStartTime(first.getEndTime());
+					return second;
+				}
+				else {
+					return null;
+				}
+			}
+		}
+	}
+	
 	private static List<ControlScheduleGroupedSlot> mergeONAndOFFSchedules(List<ControlScheduleSlot> controlSlots) {					//controlSlots should sorted by startTime
 		
 		List<ControlScheduleGroupedSlot> groupedSlots = new ArrayList<ControlScheduleGroupedSlot>(); 
