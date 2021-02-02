@@ -57,13 +57,15 @@ public class AddOrUpdateTabCommand extends FacilioCommand {
                 throw new IllegalArgumentException("Route is already found for this app");
             }
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            JSONParser parser = new JSONParser();
-            JSONObject configJson = (JSONObject) parser.parse(tab.getConfig());
-            if(tab.getTypeEnum().equals(Type.REPORT) && configJson.get("type").equals("analytic_reading") ) {
-            	FacilioModule module = modBean.getModule("energydata");
-            	tab.setModules(Collections.singletonList(module));
-            	Long moduleId = modBean.getModule("energydata").getModuleId();
-            	tab.setModuleIds(Collections.singletonList(moduleId));
+            if(tab.getConfig() != null) {
+            	JSONParser parser = new JSONParser();
+                JSONObject configJson = (JSONObject) parser.parse(tab.getConfig());
+                if(tab.getTypeEnum().equals(Type.REPORT) && configJson.get("type").equals("analytic_reading") ) {
+                	FacilioModule module = modBean.getModule("energydata");
+                	tab.setModules(Collections.singletonList(module));
+                	Long moduleId = modBean.getModule("energydata").getModuleId();
+                	tab.setModuleIds(Collections.singletonList(moduleId));
+                }
             }
 
            if (tab.getId() > 0) {
