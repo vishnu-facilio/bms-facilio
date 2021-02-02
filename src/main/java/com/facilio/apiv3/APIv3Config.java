@@ -87,6 +87,7 @@ import com.facilio.control.ControlGroupRoutineContext;
 import com.facilio.control.ControlGroupTenentContext;
 import com.facilio.control.ControlScheduleContext;
 import com.facilio.control.ControlScheduleExceptionContext;
+import com.facilio.control.ControlScheduleTenantContext;
 import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
@@ -211,6 +212,14 @@ public class APIv3Config {
         return () -> new V3Config(ControlGroupTenentContext.class, null)
                 .summary()
                 .afterFetch(new GetControlGroupCommand())
+                .build();
+    }
+    
+    @Module(ControlScheduleUtil.CONTROL_SCHEDULE_TENANT_SHARING_MODULE_NAME)
+    public static Supplier<V3Config> getScheduleTennatCRUD() {
+        return () -> new V3Config(ControlScheduleTenantContext.class, null)
+                .summary()
+                .afterFetch(new ControlScheduleAfterFetchCommand())
                 .build();
     }
 

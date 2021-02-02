@@ -18,7 +18,7 @@ public class ControlScheduleAfterFetchCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		List<ControlScheduleContext> schedules = (List<ControlScheduleContext>) (((Map<String,Object>)context.get(FacilioConstants.ContextNames.RECORD_MAP)).get(ControlScheduleUtil.CONTROL_SCHEDULE_MODULE_NAME));
+		List<ControlScheduleContext> schedules = (List<ControlScheduleContext>) (((Map<String,Object>)context.get(FacilioConstants.ContextNames.RECORD_MAP)).get(context.get(FacilioConstants.ContextNames.MODULE_NAME)));
 		
 		for(ControlScheduleContext schedule : schedules) {
 			schedule.setBusinessHoursContext(BusinessHoursAPI.getBusinessHours(Collections.singletonList(schedule.getBusinessHour())).get(0));
