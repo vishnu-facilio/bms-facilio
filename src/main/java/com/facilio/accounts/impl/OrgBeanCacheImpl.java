@@ -24,9 +24,10 @@ public class OrgBeanCacheImpl extends OrgBeanImpl implements OrgBean  {
             featureLicense = super.getFeatureLicense();
             featureLicenseCache.put(key, featureLicense);
         }
+        /*
         else {
             LOGGER.info("Feature license cache is hit");
-        }
+        }*/
         return featureLicense;
     }
 
