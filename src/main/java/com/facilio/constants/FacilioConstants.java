@@ -41,6 +41,17 @@ import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitChecklistContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistCategoryContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeContext;
+import com.facilio.control.ControlGroupAssetCategory;
+import com.facilio.control.ControlGroupAssetContext;
+import com.facilio.control.ControlGroupFieldContext;
+import com.facilio.control.ControlGroupSection;
+import com.facilio.control.ControlGroupTenentContext;
+import com.facilio.control.ControlScheduleContext;
+import com.facilio.control.ControlScheduleExceptionContext;
+import com.facilio.control.ControlScheduleExceptionTenantContext;
+import com.facilio.control.ControlScheduleTenantContext;
+import com.facilio.control.util.ControlScheduleUtil;
+import com.facilio.controlaction.context.ControlGroupContext;
 import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
@@ -2220,6 +2231,21 @@ public class FacilioConstants {
 			classMap.put(FacilityBooking.AMENITY, AmenitiesContext.class);
 			classMap.put(FacilityBooking.FACILITY_ATTACHMENTS, AttachmentV3Context.class);
 			classMap.put(FacilityBooking.FACILITY_BOOKING_ATTACHMENTS, AttachmentV3Context.class);
+			
+			classMap.put(ControlScheduleUtil.CONTROL_SCHEDULE_MODULE_NAME, ControlScheduleContext.class);
+			classMap.put(ControlScheduleUtil.CONTROL_SCHEDULE_TENANT_SHARING_MODULE_NAME, ControlScheduleTenantContext.class);
+
+			classMap.put(ControlScheduleUtil.CONTROL_GROUP_MODULE_NAME, ControlGroupContext.class);
+			classMap.put(ControlScheduleUtil.CONTROL_GROUP_TENANT_SHARING_MODULE_NAME, ControlGroupTenentContext.class);
+			
+			classMap.put(ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_MODULE_NAME, ControlScheduleExceptionContext.class);
+			classMap.put(ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_TENANT_SHARING_MODULE_NAME, ControlScheduleExceptionTenantContext.class);
+			
+			classMap.put(ControlScheduleUtil.CONTROL_GROUP_SECTION_MODULE_NAME, ControlGroupSection.class);
+			
+			classMap.put(ControlScheduleUtil.CONTROL_GROUP_ASSET_CATEGORY_MODULE_NAME, ControlGroupAssetCategory.class);
+			classMap.put(ControlScheduleUtil.CONTROL_GROUP_ASSET_MODULE_NAME, ControlGroupAssetContext.class);
+			classMap.put(ControlScheduleUtil.CONTROL_GROUP_ASSET_FIELD_MODULE_NAME, ControlGroupFieldContext.class);
 
 			return classMap;
 		}

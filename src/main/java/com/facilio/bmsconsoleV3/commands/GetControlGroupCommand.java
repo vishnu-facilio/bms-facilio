@@ -17,13 +17,13 @@ public class GetControlGroupCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		ControlGroupContext controlGroupContext = (ControlGroupContext) ControlScheduleUtil.getObjectFromRecordMap(context, ControlScheduleUtil.CONTROL_GROUP_MODULE_NAME);
+		ControlGroupContext controlGroupContext = (ControlGroupContext) ControlScheduleUtil.getObjectFromRecordMap(context, (String)context.get(FacilioConstants.ContextNames.MODULE_NAME));
 		
-		controlGroupContext = ControlScheduleUtil.getControlGroup(controlGroupContext.getId());
+		controlGroupContext = ControlScheduleUtil.getControlGroup(controlGroupContext.getId(),(String)context.get(FacilioConstants.ContextNames.MODULE_NAME));
 		
 		 Map<String, Object> recordMap = (Map<String,Object>)context.get(FacilioConstants.ContextNames.RECORD_MAP);
 		 
-		 recordMap.put(ControlScheduleUtil.CONTROL_GROUP_MODULE_NAME, Collections.singletonList(controlGroupContext));
+		 recordMap.put((String)context.get(FacilioConstants.ContextNames.MODULE_NAME), Collections.singletonList(controlGroupContext));
 		
 		return false;
 	}

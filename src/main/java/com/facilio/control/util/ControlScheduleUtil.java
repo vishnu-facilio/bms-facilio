@@ -22,6 +22,7 @@ import com.facilio.control.ControlGroupFieldContext;
 import com.facilio.control.ControlGroupRoutineContext;
 import com.facilio.control.ControlGroupRoutineSectionContext;
 import com.facilio.control.ControlGroupSection;
+import com.facilio.control.ControlGroupTenentContext;
 import com.facilio.control.ControlScheduleContext;
 import com.facilio.control.ControlScheduleExceptionContext;
 import com.facilio.control.ControlScheduleGroupedSlot;
@@ -360,18 +361,31 @@ public class ControlScheduleUtil {
 	
 	public static ControlScheduleContext getControlSchedule(long scheduleId) throws Exception {
 		
+		return getControlSchedule(scheduleId, CONTROL_SCHEDULE_MODULE_NAME);
+	}
+	
+	public static ControlScheduleContext getControlSchedule(long scheduleId,String moduleName) throws Exception {
+		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		ControlScheduleContext schedule = (ControlScheduleContext) ControlScheduleUtil.fetchRecord(ControlScheduleContext.class, CONTROL_SCHEDULE_MODULE_NAME, null,CriteriaAPI.getIdCondition(scheduleId, modBean.getModule(CONTROL_SCHEDULE_MODULE_NAME))).get(0);
 		
 		schedule.setBusinessHoursContext(BusinessHoursAPI.getBusinessHours(Collections.singletonList(schedule.getBusinessHour())).get(0));
 		
-		FacilioModule exceptionModule = modBean.getModule(CONTROL_SCHEDULE_EXCEPTION_MODULE_NAME);
+		String exceptionModuleName = null;
+		if(moduleName.equals(CONTROL_SCHEDULE_MODULE_NAME)) {
+			exceptionModuleName = CONTROL_SCHEDULE_EXCEPTION_MODULE_NAME;
+		}
+		else if (moduleName.equals(CONTROL_SCHEDULE_TENANT_SHARING_MODULE_NAME)) {
+			exceptionModuleName = CONTROL_SCHEDULE_EXCEPTION_TENANT_SHARING_MODULE_NAME;
+		}
+		
+		FacilioModule exceptionModule = modBean.getModule(exceptionModuleName);
 		
 		SelectRecordsBuilder<ControlScheduleExceptionContext> select = new SelectRecordsBuilder<ControlScheduleExceptionContext>()
-				.moduleName(CONTROL_SCHEDULE_EXCEPTION_MODULE_NAME)
+				.moduleName(exceptionModuleName)
 				.beanClass(ControlScheduleExceptionContext.class)
-				.select(modBean.getAllFields(CONTROL_SCHEDULE_EXCEPTION_MODULE_NAME))
+				.select(modBean.getAllFields(exceptionModuleName))
 				.innerJoin(ModuleFactory.getControlScheduleVsExceptionModule().getTableName())
 				.on(ModuleFactory.getControlScheduleVsExceptionModule().getTableName()+".EXCEPTION_ID = "+exceptionModule.getTableName()+".ID")
 				.andCustomWhere(ModuleFactory.getControlScheduleVsExceptionModule().getTableName()+".SCHEDULE_ID = ?", scheduleId);
@@ -385,13 +399,31 @@ public class ControlScheduleUtil {
 	
 	public static ControlGroupContext getControlGroup(long groupId) throws Exception {
 		
+		return getControlGroup(groupId,CONTROL_GROUP_MODULE_NAME);
+	}
+	
+	public static ControlGroupContext getControlGroup(long groupId,String moduleName) throws Exception {
+		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		List<ControlGroupContext> groups = ControlScheduleUtil.fetchRecord(ControlGroupContext.class, CONTROL_GROUP_MODULE_NAME, null,CriteriaAPI.getIdCondition(groupId, modBean.getModule(CONTROL_GROUP_MODULE_NAME)));
-				
-		ControlGroupContext group = groups.get(0);
+		String controlScheduleModuleName = null;
+		ControlGroupContext group = null;
+		if(moduleName.equals(CONTROL_GROUP_MODULE_NAME)) {
+			controlScheduleModuleName = CONTROL_SCHEDULE_MODULE_NAME;
+			
+			List<ControlGroupContext> groups = ControlScheduleUtil.fetchRecord(ControlGroupContext.class, moduleName, null,CriteriaAPI.getIdCondition(groupId, modBean.getModule(moduleName)));
+			
+			group = groups.get(0);
+		}
+		else if (moduleName.equals(CONTROL_GROUP_TENANT_SHARING_MODULE_NAME)) {
+			controlScheduleModuleName = CONTROL_SCHEDULE_TENANT_SHARING_MODULE_NAME;
+			
+			List<ControlGroupTenentContext> groups = ControlScheduleUtil.fetchRecord(ControlGroupTenentContext.class, moduleName, null,CriteriaAPI.getIdCondition(groupId, modBean.getModule(moduleName)));
+			
+			group = groups.get(0);
+		}
 		
-		group.setControlSchedule(getControlSchedule(group.getControlSchedule().getId()));
+		group.setControlSchedule(getControlSchedule(group.getControlSchedule().getId(),controlScheduleModuleName));
 		
 		List<ControlGroupSection> sections =  ControlScheduleUtil.fetchRecord(ControlGroupSection.class, CONTROL_GROUP_SECTION_MODULE_NAME, null,CriteriaAPI.getCondition("CONTROL_GROUP", "controlGroup", ""+group.getId(), NumberOperators.EQUALS));
 		
@@ -496,7 +528,9 @@ public class ControlScheduleUtil {
 			builder.andCondition(condition);
 		}
 		
-		return builder.get();
+		List res = builder.get();
+		
+		return res;
 	}
 	
 	public static <E> void addRecord(String moduleName,List<E> records) throws Exception {

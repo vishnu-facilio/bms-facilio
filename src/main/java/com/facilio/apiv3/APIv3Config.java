@@ -84,6 +84,7 @@ import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount30
 import com.facilio.constants.FacilioConstants;
 import com.facilio.control.ControlGroupContext;
 import com.facilio.control.ControlGroupRoutineContext;
+import com.facilio.control.ControlGroupTenentContext;
 import com.facilio.control.ControlScheduleContext;
 import com.facilio.control.ControlScheduleExceptionContext;
 import com.facilio.control.util.ControlScheduleUtil;
@@ -200,6 +201,14 @@ public class APIv3Config {
                 .afterSave(TransactionChainFactoryV3.getAddControlGroupAfterSaveChain())
                 .update()
                 .afterSave(TransactionChainFactoryV3.getUpdateControlGroupAfterSaveChain())
+                .summary()
+                .afterFetch(new GetControlGroupCommand())
+                .build();
+    }
+    
+    @Module(ControlScheduleUtil.CONTROL_GROUP_TENANT_SHARING_MODULE_NAME)
+    public static Supplier<V3Config> getGroupTennatCRUD() {
+        return () -> new V3Config(ControlGroupTenentContext.class, null)
                 .summary()
                 .afterFetch(new GetControlGroupCommand())
                 .build();
