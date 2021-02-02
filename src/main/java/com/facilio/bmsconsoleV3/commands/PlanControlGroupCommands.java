@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.control.ControlGroupContext;
 import com.facilio.control.ControlScheduleGroupedSlot;
 import com.facilio.control.ControlScheduleSlot;
@@ -35,6 +36,11 @@ public class PlanControlGroupCommands extends FacilioCommand {
 		}
 		
 		List<ControlActionCommandContext> commands2 = ControlScheduleUtil.planCommandsForRoutines(routineSlots);
+		
+		if(commands2 != null && !commands2.isEmpty()) {
+			commands1.addAll(commands2);
+		}
+		ControlScheduleUtil.addRecord(FacilioConstants.ContextNames.CONTROL_ACTION_COMMAND_MODULE, commands1);
 		
 		
 		return false;

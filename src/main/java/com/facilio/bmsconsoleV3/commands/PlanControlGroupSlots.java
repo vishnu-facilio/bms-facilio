@@ -12,6 +12,7 @@ import com.facilio.control.ControlGroupContext;
 import com.facilio.control.ControlScheduleGroupedSlot;
 import com.facilio.control.ControlScheduleSlot;
 import com.facilio.control.util.ControlScheduleUtil;
+import com.facilio.controlaction.context.ControlActionCommandContext;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
@@ -69,6 +70,18 @@ public class PlanControlGroupSlots extends FacilioCommand {
 				;
 		
 		delete1.delete();
+		
+		List<FacilioField> controlCommandFields = modBean.getAllFields(FacilioConstants.ContextNames.CONTROL_ACTION_COMMAND_MODULE);
+		
+		Map<String, FacilioField> controlCommandFieldMap = FieldFactory.getAsMap(controlCommandFields);
+		
+		DeleteRecordBuilder<ControlActionCommandContext> delete2 = new  DeleteRecordBuilder<ControlActionCommandContext>()
+				.moduleName(FacilioConstants.ContextNames.CONTROL_ACTION_COMMAND_MODULE)
+				.andCondition(CriteriaAPI.getCondition(controlCommandFieldMap.get("group"), controlGroup.getId()+"", NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(controlCommandFieldMap.get("executedTime"), startTime+"", DateOperators.IS_AFTER))
+				;
+		
+		delete2.delete();
 	}
 
 }

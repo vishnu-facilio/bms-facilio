@@ -11,8 +11,12 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.context.ReadingDataMeta.ControlActionMode;
+import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingType;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.BusinessHoursAPI;
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.control.ControlGroupAssetCategory;
@@ -75,7 +79,7 @@ public class ControlScheduleUtil {
 	public static final String CONTROL_GROUP_PLANNED_SLOTS = "controlGroupplanedSlots";
 	
 	
-	public static List<ControlActionCommandContext> planCommandsForRoutines(List<ControlScheduleSlot> slots) {
+	public static List<ControlActionCommandContext> planCommandsForRoutines(List<ControlScheduleSlot> slots) throws Exception {
 		
 		List<ControlActionCommandContext> commands = new ArrayList<ControlActionCommandContext>();
 		
@@ -89,15 +93,21 @@ public class ControlScheduleUtil {
 				}
 				
 				for(ControlGroupFieldContext controlField : controlFields) {
+					ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(controlField.getControlGroupAsset().getAsset().getId(), controlField.getField());
+					boolean isControllableField = false;
+					if(rdm != null && rdm.isControllable() && rdm.getReadingTypeEnum() == ReadingType.WRITE) {
+						isControllableField = true;
+					}
+					ControlActionCommandContext.Status status = isControllableField == true ? ControlActionCommandContext.Status.SCHEDULED : ControlActionCommandContext.Status.SCHEDULED_WITH_NO_PERMISSION;  
 					
-					commands.add(new ControlActionCommandContext(controlField.getControlGroupAsset().getAsset(), controlField.getFieldId(), controlField.getTrueVal(),slot.getStartTime(),slot.getSchedule(),slot.getRoutine()));
+					commands.add(new ControlActionCommandContext(controlField.getControlGroupAsset().getAsset(), controlField.getFieldId(), controlField.getTrueVal(),slot.getStartTime(),slot.getGroup(),slot.getRoutine(),status,ControlActionMode.SANDBOX));
 				}
 			}
 		}
 		return commands;
 	}
 	
-	public static List<ControlActionCommandContext> planCommandsForSchedules(List<ControlScheduleGroupedSlot> slots,ControlGroupContext group) {
+	public static List<ControlActionCommandContext> planCommandsForSchedules(List<ControlScheduleGroupedSlot> slots,ControlGroupContext group) throws Exception {
 		
 		List<ControlActionCommandContext> commands = new ArrayList<ControlActionCommandContext>();
 		
@@ -118,11 +128,17 @@ public class ControlScheduleUtil {
 							if(controlAsset.getControlFields() != null) {
 								for(ControlGroupFieldContext controlField :  controlAsset.getControlFields()) {
 									
-									if(controlField.getTrueVal() != null) {
-										commands.add(new ControlActionCommandContext(controlAsset.getAsset(), controlField.getFieldId(), controlField.getTrueVal(),slot.getStartTime(),slot.getSchedule()));
+									ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(controlAsset.getAsset().getId(), controlField.getField());
+									boolean isControllableField = false;
+									if(rdm != null && rdm.isControllable() && rdm.getReadingTypeEnum() == ReadingType.WRITE) {
+										isControllableField = true;
 									}
-									if(controlField.getFalseVal() != null) {
-										commands.add(new ControlActionCommandContext(controlAsset.getAsset(), controlField.getFieldId(), controlField.getFalseVal(),slot.getEndTime(),slot.getSchedule()));
+									ControlActionCommandContext.Status status = isControllableField == true ? ControlActionCommandContext.Status.SCHEDULED : ControlActionCommandContext.Status.SCHEDULED_WITH_NO_PERMISSION;  
+									if(slot.getStartTime() > 0 && controlField.getTrueVal() != null) {
+										commands.add(new ControlActionCommandContext(controlAsset.getAsset(), controlField.getFieldId(), controlField.getTrueVal(),slot.getStartTime(),group,status,ControlActionMode.SANDBOX));
+									}
+									if(slot.getEndTime() > 0 && controlField.getFalseVal() != null) {
+										commands.add(new ControlActionCommandContext(controlAsset.getAsset(), controlField.getFieldId(), controlField.getFalseVal(),slot.getEndTime(),group,status,ControlActionMode.SANDBOX));
 									}
 								}
 							}

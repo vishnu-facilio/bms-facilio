@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ControlActionMode;
 import com.facilio.control.ControlGroupRoutineContext;
@@ -13,6 +14,7 @@ import com.facilio.control.ControlScheduleExceptionContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.control.ControlGroupContext;
 
 public class ControlActionCommandContext extends ModuleBaseWithCustomFields {
 
@@ -48,30 +50,44 @@ public class ControlActionCommandContext extends ModuleBaseWithCustomFields {
 		this.executedTime = executedTime;
 	}
 	
-	public ControlActionCommandContext(ResourceContext resource,long fieldId,String value,long executedTime,ControlScheduleContext schedule) {
+	public ControlActionCommandContext(ResourceContext resource,long fieldId,String value,long executedTime,ControlGroupContext group,Status status,ControlActionMode mode) {
 		this.resource = resource;
 		this.fieldId = fieldId;
 		this.value = value;
 		this.executedTime = executedTime;
-		this.schedule = schedule;
+		this.schedule = group.getControlSchedule();
+		this.group = group;
+		this.executedMode = Control_Action_Execute_Mode.SCHEDULE;
+		this.status = status;
+		this.controlActionMode = mode;
+		this.executedBy = AccountUtil.getCurrentUser();
 	}
 	
-	public ControlActionCommandContext(ResourceContext resource,long fieldId,String value,long executedTime,ControlScheduleContext schedule,ControlScheduleExceptionContext exception) {
+	public ControlActionCommandContext(ResourceContext resource,long fieldId,String value,long executedTime,ControlGroupContext group,ControlScheduleExceptionContext exception,ControlActionMode mode) {
 		this.resource = resource;
 		this.fieldId = fieldId;
 		this.value = value;
 		this.executedTime = executedTime;
-		this.schedule = schedule;
+		this.schedule = group.getControlSchedule();
+		this.group = group;
 		this.exception = exception;
+		this.executedMode = Control_Action_Execute_Mode.SCHEDULE;
+		this.controlActionMode = mode;
+		this.executedBy = AccountUtil.getCurrentUser();
 	}
 	
-	public ControlActionCommandContext(ResourceContext resource,long fieldId,String value,long executedTime,ControlScheduleContext schedule,ControlGroupRoutineContext routine) {
+	public ControlActionCommandContext(ResourceContext resource,long fieldId,String value,long executedTime,ControlGroupContext group,ControlGroupRoutineContext routine,Status status,ControlActionMode mode) {
 		this.resource = resource;
 		this.fieldId = fieldId;
 		this.value = value;
 		this.executedTime = executedTime;
-		this.schedule = schedule;
+		this.schedule = group.getControlSchedule();
+		this.group = group;
 		this.routine = routine;
+		this.executedMode = Control_Action_Execute_Mode.SCHEDULE;
+		this.status = status;
+		this.controlActionMode = mode;
+		this.executedBy = AccountUtil.getCurrentUser();
 	}
 	
 	public FacilioField getField() {
@@ -225,6 +241,7 @@ public class ControlActionCommandContext extends ModuleBaseWithCustomFields {
 		PENDING(2, "Pending"),
 		ERROR(3, "Error"),
 		SCHEDULED(4, "Scheduled"),
+		SCHEDULED_WITH_NO_PERMISSION(5, "Scheduled without permission"),
 		;
 
 		int intVal;
