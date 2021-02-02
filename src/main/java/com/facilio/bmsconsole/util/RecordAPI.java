@@ -92,10 +92,10 @@ public class RecordAPI {
 		List<FacilioField> fields;
 		FacilioField primaryField = modBean.getPrimaryField(modName);
 		if(fetchPrimary) {
-			fields = modBean.getAllFields(modName);
+			fields = Collections.singletonList(primaryField);
 		}
 		else {
-			fields = Collections.singletonList(primaryField);
+			fields = modBean.getAllFields(modName);
 		}
 		
 		Class beanClassName = FacilioConstants.ContextNames.getClassFromModule(module);
