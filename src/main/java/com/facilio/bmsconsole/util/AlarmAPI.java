@@ -1124,19 +1124,7 @@ public class AlarmAPI {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("IS_METER_ROLL_UP", "meterRollUp", Boolean.TRUE.toString(), BooleanOperators.IS));
 		
 		}
-		if (startTime > 0 && endTime > 0) {
-	
-			Criteria criteria = new Criteria();
-			criteria.addAndCondition(CriteriaAPI.getCondition("LAST_CREATED_TIME", "lastCreatedTime", "" + endTime, NumberOperators.LESS_THAN_EQUAL));
-			
-			Criteria subCriteria = new Criteria();
-			subCriteria.addOrCondition(CriteriaAPI.getCondition("LAST_CLEARED_TIME", "lastClearedTime", "" + startTime, NumberOperators.GREATER_THAN_EQUAL));
-			subCriteria.addOrCondition(CriteriaAPI.getCondition("LAST_CLEARED_TIME", "lastClearedTime", "", CommonOperators.IS_EMPTY));
-			criteria.andCriteria(subCriteria);
-			
-			
-			selectBuilder.andCriteria(criteria);
-		}
+
 		List<SensorAlarmContext> alarms = selectBuilder.get();
 		return alarms;
 	}

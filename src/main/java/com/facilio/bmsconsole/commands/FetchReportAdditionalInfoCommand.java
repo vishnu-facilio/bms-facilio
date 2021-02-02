@@ -181,17 +181,18 @@ public class FetchReportAdditionalInfoCommand extends FacilioCommand {
 						
 						
 						relatedAlarmOccurrences = NewAlarmAPI.getReadingAlarmOccurrences(relatedAlarm.getId(), report.getDateRange().getStartTime(), report.getDateRange().getEndTime());
-						relatedReportAggrData.put("alarms",  splitAlarmOccurrence(relatedAlarmOccurrences, report.getDateRange(), relatedAlarmMap));
 						
-						
-						for(Long key : relatedAlarmMap.keySet()) {
-							AlarmOccurrenceContext alarmOccurrenceContext = relatedAlarmMap.get(key);
-							alarmOccurrenceContext.setAlarm(alarmOccurrenceContext.getAlarm());
-							alarmOccurrenceContext.setSubject(alarmOccurrenceContext.getAlarm().getSubject());
+						if (relatedAlarmOccurrences != null && !relatedAlarmOccurrences.isEmpty()) {
+							relatedReportAggrData.put("alarms",  splitAlarmOccurrence(relatedAlarmOccurrences, report.getDateRange(), relatedAlarmMap));			
+							for(Long key : relatedAlarmMap.keySet()) {
+								AlarmOccurrenceContext alarmOccurrenceContext = relatedAlarmMap.get(key);
+								alarmOccurrenceContext.setAlarm(alarmOccurrenceContext.getAlarm());
+								alarmOccurrenceContext.setSubject(alarmOccurrenceContext.getAlarm().getSubject());
+							}
+							relatedReportAggrData.put("alarmInfo", relatedAlarmMap);
+							relatedReportAggrData.put("alarmTitle", relatedAlarm.getSubject());
+							alarmMetaList.add(relatedReportAggrData);							
 						}
-						relatedReportAggrData.put("alarmInfo", relatedAlarmMap);
-						relatedReportAggrData.put("alarmTitle", relatedAlarm.getSubject());
-						alarmMetaList.add(relatedReportAggrData);
 					}
 					if (alarmMetaList != null && !alarmMetaList.isEmpty()) {
 						reportAggrData.put("relatedAlarms",  alarmMetaList);
