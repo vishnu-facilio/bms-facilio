@@ -368,7 +368,7 @@ public class ControlScheduleUtil {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		ControlScheduleContext schedule = (ControlScheduleContext) ControlScheduleUtil.fetchRecord(ControlScheduleContext.class, CONTROL_SCHEDULE_MODULE_NAME, null,CriteriaAPI.getIdCondition(scheduleId, modBean.getModule(CONTROL_SCHEDULE_MODULE_NAME))).get(0);
+		ControlScheduleContext schedule = (ControlScheduleContext) ControlScheduleUtil.fetchRecord(ControlScheduleContext.class, moduleName, null,CriteriaAPI.getIdCondition(scheduleId, modBean.getModule(moduleName))).get(0);
 		
 		schedule.setBusinessHoursContext(BusinessHoursAPI.getBusinessHours(Collections.singletonList(schedule.getBusinessHour())).get(0));
 		
