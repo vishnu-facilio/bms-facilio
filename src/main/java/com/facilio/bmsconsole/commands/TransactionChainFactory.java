@@ -304,6 +304,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 
 			c.addCommand(new ExecuteAllTriggersCommand(TriggerType.MODULE_TRIGGER));
+			c.addCommand(new ExecuteScoringRulesCommand());
 
 			if (sendNotification) {
 				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 218L) {

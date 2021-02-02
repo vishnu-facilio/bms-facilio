@@ -80,7 +80,7 @@ public class ScoringRuleContext extends WorkflowRuleContext {
                         if (!updateParent) {
                             updateParent = scoringContext.shouldUpdateParent();
                         }
-                        float score = scoringContext.getScore(record, context, placeHolders);
+                        float score = scoringContext.getScore(record, context, placeHolders, getModuleId());
                         totalScore += score;
                     }
                     break;

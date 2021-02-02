@@ -1,19 +1,11 @@
 package com.facilio.bmsconsole.scoringrule;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
 import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -104,13 +96,13 @@ public class NodeScoringContext extends BaseScoringContext {
     }
 
     @Override
-    public float evaluatedScore(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
+    public float evaluatedScore(Object record, Context context, Map<String, Object> placeHolders, long moduleId) throws Exception {
         if (record instanceof ModuleBaseWithCustomFields) {
             ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) record;
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
             FacilioModule module = modBean.getModule(moduleRecord.getModuleId());
-            FacilioModule scoreModule = ScoringRuleAPI.getScoreModule(moduleRecord.getModuleId());
+            FacilioModule scoreModule = ScoringRuleAPI.getScoreModule(moduleId);
 
             switch (nodeType) {
                 case CURRENT_MODULE: {

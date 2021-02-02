@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.scoringrule;
 
 import com.facilio.db.criteria.manager.NamedCriteria;
-import com.facilio.db.criteria.manager.NamedCriteriaAPI;
 import org.apache.commons.chain.Context;
 
 import java.util.Map;
@@ -25,7 +24,7 @@ public class ConditionScoringContext extends BaseScoringContext {
     }
 
     @Override
-    public float evaluatedScore(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
+    public float evaluatedScore(Object record, Context context, Map<String, Object> placeHolders, long moduleId) throws Exception {
         if (namedCriteria != null) {
             boolean criteriaFlag = namedCriteria.evaluate(record, context, placeHolders);
             return criteriaFlag ? 1f : 0f;

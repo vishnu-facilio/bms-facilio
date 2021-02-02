@@ -85,9 +85,9 @@ public class BaseScoringContext implements Serializable {
         this.score = score;
     }
 
-    public float getScore(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
+    public float getScore(Object record, Context context, Map<String, Object> placeHolders, long moduleId) throws Exception {
         if (isDirty()) {
-            float v = evaluatedScore(record, context, placeHolders);
+            float v = evaluatedScore(record, context, placeHolders, moduleId);
             if (v < 0 || v > 1) {
                 throw new IllegalArgumentException("Evaluated score cannot be other than the range of [0 - 1]");
             }
@@ -111,7 +111,7 @@ public class BaseScoringContext implements Serializable {
     }
 
     // should return always 0 - 1
-    public float evaluatedScore(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
+    public float evaluatedScore(Object record, Context context, Map<String, Object> placeHolders, long moduleId) throws Exception {
         throw new MethodNotSupportedException("Sub-class didn't implemented this method");
     }
 
