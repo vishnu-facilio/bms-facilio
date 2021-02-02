@@ -2133,8 +2133,6 @@ public class FieldFactory {
         FacilioModule module = ModuleFactory.getScoringRuleModule();
 
         fields.add(getIdField(module));
-        fields.add(getField("scoreFieldId", "SCORING_FIELD_ID", module, FieldType.NUMBER));
-        fields.add(getField("draft", "DRAFT", module, FieldType.BOOLEAN));
         fields.add(getField("scoreType", "SCORE_TYPE", module, FieldType.SYSTEM_ENUM));
         fields.add(getField("scoreRange", "SCORE_RANGE", module, FieldType.NUMBER));
         fields.add(getField("scoreFieldName", "SCORE_FIELDNAME", module, FieldType.STRING));
@@ -2187,7 +2185,7 @@ public class FieldFactory {
         fields.add(getField("nodeType", "NODE_TYPE", module, FieldType.SYSTEM_ENUM));
         fields.add(getField("fieldId", "FIELD_ID", module, FieldType.NUMBER));
         fields.add(getField("fieldModuleId", "FIELD_MODULE_ID", module, FieldType.NUMBER));
-        fields.add(getField("scoringFieldId", "SCORING_FIELD_ID", module, FieldType.NUMBER));
+        fields.add(getField("scoreRuleId", "SCORE_RULE_ID", module, FieldType.NUMBER));
 
         return fields;
     }

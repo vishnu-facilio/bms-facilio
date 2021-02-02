@@ -62,12 +62,12 @@ public class NodeScoringContext extends BaseScoringContext {
         this.fieldModuleId = fieldModuleId;
     }
 
-    private long scoringFieldId = -1;
-    public long getScoringFieldId() {
-        return scoringFieldId;
+    private long scoreRuleId = -1;
+    public long getScoreRuleId() {
+        return scoreRuleId;
     }
-    public void setScoringFieldId(long scoringFieldId) {
-        this.scoringFieldId = scoringFieldId;
+    public void setScoreRuleId(long scoreRuleId) {
+        this.scoreRuleId = scoreRuleId;
     }
 
     @Override
@@ -90,8 +90,8 @@ public class NodeScoringContext extends BaseScoringContext {
             throw new IllegalArgumentException("Dependency type cannot be null");
         }
 
-        if (scoringFieldId < 0) {
-            throw new IllegalArgumentException("Score field cannot be empty");
+        if (scoreRuleId < 0) {
+            throw new IllegalArgumentException("Score rule cannot be empty");
         }
 
         switch (nodeType) {
@@ -110,80 +110,21 @@ public class NodeScoringContext extends BaseScoringContext {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
             FacilioModule module = modBean.getModule(moduleRecord.getModuleId());
+            FacilioModule scoreModule = ScoringRuleAPI.getScoreModule(moduleRecord.getModuleId());
 
             switch (nodeType) {
                 case CURRENT_MODULE: {
-                    Object value = FieldUtil.getValue(moduleRecord, scoringFieldId, module);
-                    if (value instanceof Number) {
-                        return ((Number) value).floatValue();
+                    ScoreContext scoreRecord = ScoringRuleAPI.getScoreRecord(scoreModule, scoreRuleId, moduleRecord);
+                    if (scoreRecord != null) {
+                        return scoreRecord.getScore();
                     }
                     return 0;
                 }
 
                 case PARENT_MODULE: {
-                    FacilioModule fieldModule = modBean.getModule(fieldModuleId);
-                    LookupField lookupField = (LookupField) modBean.getField(fieldId, fieldModule.getModuleId());
-
-                    Object value = FieldUtil.getValue(moduleRecord, lookupField);
-                    if (value instanceof ModuleBaseWithCustomFields) {
-                        // get parent module score field
-                        long recordId = ((ModuleBaseWithCustomFields) value).getId();
-                        FacilioField scoringField = modBean.getField(scoringFieldId, lookupField.getLookupModuleId());
-
-                        SelectRecordsBuilder builder = new SelectRecordsBuilder()
-                                .module(lookupField.getLookupModule())
-                                .beanClass(FacilioConstants.ContextNames.getClassFromModule(lookupField.getLookupModule()))
-                                .select(Collections.singletonList(scoringField))
-                                .andCondition(CriteriaAPI.getIdCondition(recordId, lookupField.getLookupModule()));
-                        List<Map<String, Object>> props = builder.getAsProps();
-                        if (CollectionUtils.isNotEmpty(props)) {
-                            Map<String, Object> map = props.get(0);
-                            Object o = map.get(scoringField.getName());
-                            if (o instanceof Number) {
-                                return ((Number) o).floatValue();
-                            }
-                        }
-                    }
-                    return 0;
-                }
-                case SUB_MODULE: {
-                    FacilioModule fieldModule = modBean.getModule(fieldModuleId);
-                    LookupField lookupField = (LookupField) modBean.getField(fieldId, fieldModule.getModuleId());
-
-                    FacilioField scoringField = modBean.getField(scoringFieldId, fieldModuleId);
-                    SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<>()
-                            .module(fieldModule)
-                            .beanClass(FacilioConstants.ContextNames.getClassFromModule(fieldModule))
-                            .aggregate(BmsAggregateOperators.NumberAggregateOperator.AVERAGE, scoringField)
-                            .andCondition(CriteriaAPI.getCondition(lookupField, String.valueOf(moduleRecord.getId()), NumberOperators.EQUALS));
-                    List<Map<String, Object>> props = selectBuilder.getAsProps();
-                    if (CollectionUtils.isNotEmpty(props)) {
-                        Map<String, Object> map = props.get(0);
-                        Object o = map.get(scoringField.getName());
-                        if (o instanceof Number) {
-                            return ((Number) o).floatValue();
-                        }
-                    }
-                    return 0;
-                }
-
-                default:
-                    throw new IllegalArgumentException("Invalid dependency type");
-            }
+//                    FacilioModule fieldModule = modBean.getModule(fieldModuleId);
+//                    LookupField lookupField = (LookupField) modBean.getField(fieldId, fieldModule.getModuleId());
 //
-//            if (fieldModuleId > 0 && fieldId > 0) {
-//                FacilioModule fieldModule = modBean.getModule(fieldModuleId);
-//                if (fieldModule == null) {
-//                    LOGGER.log(Level.WARNING, "Lookup module cannot be empty");
-//                    return 0;
-//                }
-//                LookupField lookupField = (LookupField) modBean.getField(fieldId, fieldModule.getModuleId());
-//                if (lookupField == null) {
-//                    LOGGER.log(Level.WARNING, "Lookup field cannot be empty");
-//                    return 0;
-//                }
-//
-//                if (module.isParentOrChildModule(lookupField.getModule())) {
 //                    Object value = FieldUtil.getValue(moduleRecord, lookupField);
 //                    if (value instanceof ModuleBaseWithCustomFields) {
 //                        // get parent module score field
@@ -204,9 +145,12 @@ public class NodeScoringContext extends BaseScoringContext {
 //                            }
 //                        }
 //                    }
-//                }
-//                else if (module.isParentOrChildModule(lookupField.getLookupModule())) {
-//                    // aggregate child module score field
+                    return 0;
+                }
+                case SUB_MODULE: {
+//                    FacilioModule fieldModule = modBean.getModule(fieldModuleId);
+//                    LookupField lookupField = (LookupField) modBean.getField(fieldId, fieldModule.getModuleId());
+//
 //                    FacilioField scoringField = modBean.getField(scoringFieldId, fieldModuleId);
 //                    SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<>()
 //                            .module(fieldModule)
@@ -221,14 +165,12 @@ public class NodeScoringContext extends BaseScoringContext {
 //                            return ((Number) o).floatValue();
 //                        }
 //                    }
-//                }
-//            }
-//            else {
-//                Object value = FieldUtil.getValue(moduleRecord, scoringFieldId, module);
-//                if (value instanceof Number) {
-//                    return ((Number) value).floatValue();
-//                }
-//            }
+                    return 0;
+                }
+
+                default:
+                    throw new IllegalArgumentException("Invalid dependency type");
+            }
         }
         return 0;
     }

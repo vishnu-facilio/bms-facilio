@@ -934,7 +934,7 @@ public class WorkflowRuleAPI {
                             }
 							break;
 						case SCORING_RULE:
-							ScoringRuleAPI.deleteField((ScoringRuleContext) rule);
+//							ScoringRuleAPI.deleteField((ScoringRuleContext) rule);
 							break;
 						default:
 							break;

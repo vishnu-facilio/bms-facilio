@@ -601,10 +601,10 @@ public class ModuleBeanImpl implements ModuleBean {
 								enumField.setValues(FacilioEnum.getEnumValues(enumField.getEnumName()));
 								field = enumField;
 								break;
-						case SCORE:
-							prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
-							field = FieldUtil.getAsBeanFromMap(prop, ScoreField.class);
-							break;
+//						case SCORE:
+//							prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
+//							field = FieldUtil.getAsBeanFromMap(prop, ScoreField.class);
+//							break;
 						default:
 							field = FieldUtil.getAsBeanFromMap(prop, FacilioField.class);
 							break;
@@ -1283,9 +1283,9 @@ public class ModuleBeanImpl implements ModuleBean {
 			else if (field instanceof MultiEnumField) {
 				extendendPropsCount = updateMultiEnumField((MultiEnumField) field);
 			}
-			else if (field instanceof ScoreField) {
-				extendendPropsCount = updateExtendedProps(ModuleFactory.getScoreFieldModule(), FieldFactory.getScoreFieldFields(), field);
-			}
+//			else if (field instanceof ScoreField) {
+//				extendendPropsCount = updateExtendedProps(ModuleFactory.getScoreFieldModule(), FieldFactory.getScoreFieldFields(), field);
+//			}
 
 			return Math.max(count, extendendPropsCount);
 		}

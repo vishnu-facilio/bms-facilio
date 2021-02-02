@@ -1,23 +1,20 @@
 package com.facilio.bmsconsole.scoringrule;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
-import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.manager.NamedCriteria;
 import com.facilio.db.criteria.manager.NamedCriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.ScoreField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -43,61 +40,55 @@ public class ScoringRuleAPI extends WorkflowRuleAPI {
                 break;
         }
 
-        if (StringUtils.isEmpty(rule.getScoreFieldName())) {
-            throw new IllegalArgumentException("ScoreField name cannot be empty");
-        }
+        for (ScoringCommitmentContext scoringCommitment : rule.getScoringCommitmentContexts()) {
 
-        if (!rule.isDraft()) {
-            for (ScoringCommitmentContext scoringCommitment : rule.getScoringCommitmentContexts()) {
+            List<BaseScoringContext> baseScoringContexts = scoringCommitment.getBaseScoringContexts();
+            if (CollectionUtils.isEmpty(baseScoringContexts)) {
+                throw new IllegalArgumentException("Scoring contexts cannot be empty");
+            }
+            float totalWeightage = 0f;
+            for (BaseScoringContext scoringContext : baseScoringContexts) {
+                scoringContext.validate();
+                totalWeightage += scoringContext.getWeightage();
+            }
 
-                List<BaseScoringContext> baseScoringContexts = scoringCommitment.getBaseScoringContexts();
-                if (CollectionUtils.isEmpty(baseScoringContexts)) {
-                    throw new IllegalArgumentException("Scoring contexts cannot be empty");
-                }
-                float totalWeightage = 0f;
-                for (BaseScoringContext scoringContext : baseScoringContexts) {
-                    scoringContext.validate();
-                    totalWeightage += scoringContext.getWeightage();
-                }
-
-                if (totalWeightage != 100f) {
-                    throw new IllegalArgumentException("Weightage should be always 100%");
-                }
+            if (totalWeightage != 100f) {
+                throw new IllegalArgumentException("Weightage should be always 100%");
             }
         }
     }
 
     public static void addScoringRuleChildren(ScoringRuleContext rule, boolean add) throws Exception {
         validateRule(rule);
-        if (add && !rule.isDraft()) {
-            createScoreField(rule);
-        }
+//        if (add && !rule.isDraft()) {
+//            createScoreField(rule);
+//        }
         addBaseScoringContexts(rule.getId(), rule.getScoringCommitmentContexts());
     }
 
-    private static void createScoreField(ScoringRuleContext scoringRuleContext) throws Exception {
-        String name = scoringRuleContext.getScoreFieldName();
-        name = name.toLowerCase().replaceAll("[^a-zA-Z0-9]+","");
-
-        ScoreField scoreField = new ScoreField();
-        scoreField.setName(name);
-        scoreField.setDefault(false);
-        scoreField.setDataType(FieldType.SCORE);
-        scoreField.setDisplayType(FacilioField.FieldDisplayType.DECIMAL);
-
-        // changing data
-        scoreField.setDisplayName(scoringRuleContext.getScoreFieldName());
-        scoreField.setScale(scoringRuleContext.getScoreRange());
-        scoreField.setType(scoringRuleContext.getScoreType());
-
-        FacilioChain chain = TransactionChainFactory.getAddFieldsChain();
-        FacilioContext addFieldContext = chain.getContext();
-        addFieldContext.put(FacilioConstants.ContextNames.ALLOW_SAME_FIELD_DISPLAY_NAME, true);
-        addFieldContext.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, Collections.singletonList(scoreField));
-        addFieldContext.put(FacilioConstants.ContextNames.MODULE, scoringRuleContext.getModule());
-        chain.execute();
-        scoringRuleContext.setScoreField(scoreField);
-    }
+//    private static void createScoreField(ScoringRuleContext scoringRuleContext) throws Exception {
+//        String name = scoringRuleContext.getScoreFieldName();
+//        name = name.toLowerCase().replaceAll("[^a-zA-Z0-9]+","");
+//
+//        ScoreField scoreField = new ScoreField();
+//        scoreField.setName(name);
+//        scoreField.setDefault(false);
+//        scoreField.setDataType(FieldType.SCORE);
+//        scoreField.setDisplayType(FacilioField.FieldDisplayType.DECIMAL);
+//
+//        // changing data
+//        scoreField.setDisplayName(scoringRuleContext.getScoreFieldName());
+//        scoreField.setScale(scoringRuleContext.getScoreRange());
+//        scoreField.setType(scoringRuleContext.getScoreType());
+//
+//        FacilioChain chain = TransactionChainFactory.getAddFieldsChain();
+//        FacilioContext addFieldContext = chain.getContext();
+//        addFieldContext.put(FacilioConstants.ContextNames.ALLOW_SAME_FIELD_DISPLAY_NAME, true);
+//        addFieldContext.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, Collections.singletonList(scoreField));
+//        addFieldContext.put(FacilioConstants.ContextNames.MODULE, scoringRuleContext.getModule());
+//        chain.execute();
+//        scoringRuleContext.setScoreField(scoreField);
+//    }
 
     private static Map<BaseScoringContext.Type, List<BaseScoringContext>> getScoringMap(List<BaseScoringContext> baseScoringContexts) {
         Map<BaseScoringContext.Type, List<BaseScoringContext>> map = new HashMap<>();
@@ -181,32 +172,32 @@ public class ScoringRuleAPI extends WorkflowRuleAPI {
 
     public static void updateScoringRule(ScoringRuleContext rule) throws Exception {
         ScoringRuleContext oldRule = (ScoringRuleContext) getWorkflowRule(rule.getId());
-        ScoreField scoreField = (ScoreField) oldRule.getScoreField();
-        if (!oldRule.isDraft()) {
-            rule.setScoreFieldId(oldRule.getScoreFieldId());
-            rule.setScoreField(scoreField);
-        }
+//        ScoreField scoreField = (ScoreField) oldRule.getScoreField();
+//        if (!oldRule.isDraft()) {
+//            rule.setScoreFieldId(oldRule.getScoreFieldId());
+//            rule.setScoreField(scoreField);
+//        }
         validateRule(rule);
 
         deleteScoringContext(rule.getId());
         addScoringRuleChildren(rule, false);
 
-        if (!oldRule.isDraft()) {
-            if (rule.isDraft()) {
-                throw new IllegalArgumentException("Cannot draft published scoring rule");
-            }
-
-            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            scoreField.setDisplayName(rule.getScoreFieldName());
-            scoreField.setType(rule.getScoreType());
-            scoreField.setScale(rule.getScoreRange());
-            modBean.updateField(scoreField);
-        }
-        else {
-            if (!rule.isDraft()) {
-                createScoreField(rule);
-            }
-        }
+//        if (!oldRule.isDraft()) {
+//            if (rule.isDraft()) {
+//                throw new IllegalArgumentException("Cannot draft published scoring rule");
+//            }
+//
+//            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+//            scoreField.setDisplayName(rule.getScoreFieldName());
+//            scoreField.setType(rule.getScoreType());
+//            scoreField.setScale(rule.getScoreRange());
+//            modBean.updateField(scoreField);
+//        }
+//        else {
+//            if (!rule.isDraft()) {
+//                createScoreField(rule);
+//            }
+//        }
 
         updateWorkflowRuleWithChildren(rule);
         updateExtendedRule(rule, ModuleFactory.getScoringRuleModule(), FieldFactory.getScoringRuleFields());
@@ -396,6 +387,49 @@ public class ScoringRuleAPI extends WorkflowRuleAPI {
         }
     }
 
+    public static ScoreContext getScoreRecord(FacilioModule scoreModule, long scoreRuleId, ModuleBaseWithCustomFields parent) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> allFields = modBean.getAllFields(scoreModule.getName());
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
+        SelectRecordsBuilder<ScoreContext> builder = new SelectRecordsBuilder<ScoreContext>()
+                .module(scoreModule)
+                .beanClass(ScoreContext.class)
+                .select(allFields)
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("parent"), String.valueOf(parent.getId()), PickListOperators.IS))
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("scoreRuleId"), String.valueOf(scoreRuleId), NumberOperators.EQUALS));
+        return builder.fetchFirst();
+    }
+
+    public static FacilioModule getScoreModule(long moduleId) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioModule> subModules = modBean.getSubModules(moduleId, FacilioModule.ModuleType.SCORE);
+        if (subModules.size() == 1) {
+            return subModules.get(0);
+        }
+        throw new IllegalArgumentException("Score module not configured");
+    }
+
+    public static void addOrUpdateScoreRecord(FacilioModule scoreModule, ScoreContext scoreContext) throws Exception {
+        if (scoreContext == null || scoreContext == null) {
+            return;
+        }
+        scoreContext.setCreatedTime(System.currentTimeMillis());
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        if (scoreContext.getId() > 0) {
+            UpdateRecordBuilder<ScoreContext> builder = new UpdateRecordBuilder<ScoreContext>()
+                    .module(scoreModule)
+                    .fields(modBean.getAllFields(scoreModule.getName()))
+                    .andCondition(CriteriaAPI.getIdCondition(scoreContext.getId(), scoreModule));
+            builder.update(scoreContext);
+        }
+        else {
+            InsertRecordBuilder<ScoreContext> builder = new InsertRecordBuilder<ScoreContext>()
+                    .module(scoreModule)
+                    .fields(modBean.getAllFields(scoreModule.getName()));
+            builder.insert(scoreContext);
+        }
+    }
+
 //    public static void addActualScore(List<Map<String, Object>> scores, long recordId, long recordModuleId) throws Exception {
 //        if (CollectionUtils.isEmpty(scores)) {
 //            return;
@@ -533,20 +567,20 @@ public class ScoringRuleAPI extends WorkflowRuleAPI {
 //        }
 //    }
 
-    public static void deleteField(ScoringRuleContext rule) throws Exception {
-        long scoreFieldId = rule.getScoreFieldId();
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-
-        FacilioModule module = modBean.getModule(rule.getModuleId());
-
-        // clear all data in that field
-        UpdateRecordBuilder<? extends ModuleBaseWithCustomFields> builder = new UpdateRecordBuilder<>()
-                .module(module)
-                .fields(Collections.singletonList(rule.getScoreField()));
-        Map<String, Object> map = new HashMap<>();
-        map.put(rule.getScoreField().getName(), -99);
-        builder.updateViaMap(map);
-
-        modBean.deleteField(scoreFieldId);
-    }
+//    public static void deleteField(ScoringRuleContext rule) throws Exception {
+//        long scoreFieldId = rule.getScoreFieldId();
+//        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+//
+//        FacilioModule module = modBean.getModule(rule.getModuleId());
+//
+//        // clear all data in that field
+//        UpdateRecordBuilder<? extends ModuleBaseWithCustomFields> builder = new UpdateRecordBuilder<>()
+//                .module(module)
+//                .fields(Collections.singletonList(rule.getScoreField()));
+//        Map<String, Object> map = new HashMap<>();
+//        map.put(rule.getScoreField().getName(), -99);
+//        builder.updateViaMap(map);
+//
+//        modBean.deleteField(scoreFieldId);
+//    }
 }

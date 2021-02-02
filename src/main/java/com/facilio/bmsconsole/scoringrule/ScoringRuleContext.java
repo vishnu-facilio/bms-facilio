@@ -3,14 +3,11 @@ package com.facilio.bmsconsole.scoringrule;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
-import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.UpdateRecordBuilder;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.ScoreField;
 import org.apache.commons.chain.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,33 +18,6 @@ public class ScoringRuleContext extends WorkflowRuleContext {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ScoringRuleContext.class.getSimpleName());
 
-    private long scoreFieldId = -1;
-    public long getScoreFieldId() {
-        return scoreFieldId;
-    }
-    public void setScoreFieldId(long scoreFieldId) {
-        this.scoreFieldId = scoreFieldId;
-    }
-
-    private FacilioField scoreField;
-    public FacilioField getScoreField() {
-        if (scoreField == null) {
-            if (scoreFieldId > 0) {
-                try {
-                    ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-                    scoreField = modBean.getField(scoreFieldId, getModuleId());
-                } catch (Exception ex) {}
-            }
-        }
-        return scoreField;
-    }
-    public void setScoreField(FacilioField scoreField) {
-        this.scoreField = scoreField;
-        if (scoreField != null) {
-            this.scoreFieldId = scoreField.getFieldId();
-        }
-    }
-
     private List<ScoringCommitmentContext> scoringCommitmentContexts;
     public List<ScoringCommitmentContext> getScoringCommitmentContexts() {
         return scoringCommitmentContexts;
@@ -56,18 +26,18 @@ public class ScoringRuleContext extends WorkflowRuleContext {
         this.scoringCommitmentContexts = scoringCommitmentContexts;
     }
 
-    private Boolean draft;
-    public Boolean getDraft() {
-        return draft;
-    }
-    public void setDraft(Boolean draft) {
-        this.draft = draft;
-    }
-    public Boolean isDraft() {
-        return draft == null || draft;
-    }
+//    private Boolean draft;
+//    public Boolean getDraft() {
+//        return draft;
+//    }
+//    public void setDraft(Boolean draft) {
+//        this.draft = draft;
+//    }
+//    public Boolean isDraft() {
+//        return draft == null || draft;
+//    }
 
-    private ScoreField.Type scoreType;
+    private ScoreType scoreType;
     public int getScoreType() {
         if (scoreType != null) {
             return scoreType.getIndex();
@@ -75,12 +45,12 @@ public class ScoringRuleContext extends WorkflowRuleContext {
         return -1;
     }
     public void setScoreType(int type) {
-        scoreType = ScoreField.Type.valueOf(type);
+        scoreType = ScoreType.valueOf(type);
     }
-    public ScoreField.Type getScoreTypeEnum() {
+    public ScoreType getScoreTypeEnum() {
         return scoreType;
     }
-    public void setScoreType(ScoreField.Type scoreType) {
+    public void setScoreType(ScoreType scoreType) {
         this.scoreType = scoreType;
     }
 
@@ -92,19 +62,8 @@ public class ScoringRuleContext extends WorkflowRuleContext {
         this.scoreRange = scoreRange;
     }
 
-    private String scoreFieldName;
-    public String getScoreFieldName() {
-        return scoreFieldName;
-    }
-    public void setScoreFieldName(String scoreFieldName) {
-        this.scoreFieldName = scoreFieldName;
-    }
-
     @Override
     public boolean evaluateMisc(String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
-        if (isDraft()) {
-            return false;
-        }
         return super.evaluateMisc(moduleName, record, placeHolders, context);
     }
 
@@ -129,54 +88,53 @@ public class ScoringRuleContext extends WorkflowRuleContext {
             }
 
             System.out.println("Total score: " + totalScore);
-            FacilioField scoreField = getScoreField();
-            if (scoreField == null) {
-                throw new IllegalArgumentException("Score Field cannot be empty");
+
+            // todo add data to scoring sub module
+            FacilioModule scoreModule = ScoringRuleAPI.getScoreModule(getModuleId());
+            ScoreContext scoreContext = ScoringRuleAPI.getScoreRecord(scoreModule, getId(), moduleRecord);
+            if (scoreContext == null) {
+                scoreContext = new ScoreContext();
+                scoreContext.setScoreRuleId(getId());
+                scoreContext.setParent(moduleRecord);
             }
-            else {
-                Object value = FieldUtil.getValue(moduleRecord, scoreField);
-                FieldUtil.setValue(moduleRecord, scoreField, totalScore);
-                UpdateRecordBuilder<ModuleBaseWithCustomFields> builder = new UpdateRecordBuilder<>()
-                        .module(getModule())
-                        .fields(Collections.singletonList(scoreField))
-                        .andCondition(CriteriaAPI.getIdCondition(moduleRecord.getId(), getModule()));
-                builder.update(moduleRecord);
+            scoreContext.setScore(totalScore);
+            ScoringRuleAPI.addOrUpdateScoreRecord(scoreModule, scoreContext);
 
                 // update only when the values are changed..
-                if (updateParent) {
-                    LOGGER.debug("Should update parent score also");
+            if (updateParent) {
+                LOGGER.debug("Should update parent score also");
 //                    ScoringRuleAPI.updateParentScores(moduleRecord, scoreFieldId, !(Objects.equals(value, totalScore)));
-                }
             }
+//            }
         }
     }
 
-//    public enum ScoreType implements FacilioEnum {
-//        PERCENTAGE("Percentage"),
-//        RANGE("Range"),
-//        ;
-//
-//        private String name;
-//
-//        ScoreType(String name) {
-//            this.name = name;
-//        }
-//
-//        @Override
-//        public int getIndex() {
-//            return ordinal() + 1;
-//        }
-//
-//        public static ScoreType valueOf(int type) {
-//            if (type > 0 && type <= values().length) {
-//                return values()[type - 1];
-//            }
-//            return null;
-//        }
-//
-//        @Override
-//        public String getValue() {
-//            return name;
-//        }
-//    }
+    public enum ScoreType implements FacilioEnum {
+        PERCENTAGE("Percentage"),
+        RANGE("Range"),
+        ;
+
+        private String name;
+
+        ScoreType(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public int getIndex() {
+            return ordinal() + 1;
+        }
+
+        public static ScoreType valueOf(int type) {
+            if (type > 0 && type <= values().length) {
+                return values()[type - 1];
+            }
+            return null;
+        }
+
+        @Override
+        public String getValue() {
+            return name;
+        }
+    }
 }
