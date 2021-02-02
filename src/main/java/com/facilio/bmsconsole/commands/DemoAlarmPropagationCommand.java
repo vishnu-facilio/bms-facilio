@@ -22,11 +22,13 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.DemoRollUpYearlyCommand;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.bmsconsole.context.ReadingAlarm;
 import com.facilio.bmsconsole.enums.RuleJobType;
 import com.facilio.bmsconsole.util.AlarmAPI;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.bmsconsole.util.NewEventAPI;
@@ -45,6 +47,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
@@ -95,7 +98,7 @@ public class DemoAlarmPropagationCommand extends FacilioCommand{
 			runThroughRuleChainContext.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(DateTimeUtil.getDayStartTimeOf(yesterdayTime), DateTimeUtil.getDayEndTimeOf(yesterdayTime)));
 		}
 		
-		HashMap<Long, List<Long>> ruleIdVsResourceIds = getAllRulesFromReadingAlarms();
+		HashMap<Long, List<Long>> ruleIdVsResourceIds = getAllRulesFromReadingAlarms(jobId);
 		
 		if(ruleIdVsResourceIds != null && MapUtils.isNotEmpty(ruleIdVsResourceIds)) 
 		{
@@ -116,8 +119,12 @@ public class DemoAlarmPropagationCommand extends FacilioCommand{
 		return false;
 	}
 
-   private HashMap<Long,List<Long>> getAllRulesFromReadingAlarms() throws Exception
+   private HashMap<Long,List<Long>> getAllRulesFromReadingAlarms(Long jobId) throws Exception
    {
+	   if(jobId == null) {
+		   return null;
+	   }
+	   
 	   	HashMap<Long,List<Long>> ruleIdVsResourceIds = new HashMap<Long,List<Long>>();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -125,6 +132,15 @@ public class DemoAlarmPropagationCommand extends FacilioCommand{
 			Criteria criteria = new Criteria();
 			criteria.addAndCondition(CriteriaAPI.getCondition("RULE_TYPE", "ruleType", ""+RuleType.READING_RULE.getIntVal(), NumberOperators.EQUALS));
 			criteria.addAndCondition(CriteriaAPI.getCondition("STATUS", "status", ""+true, BooleanOperators.IS));
+			
+			AssetCategoryContext assetCategory = AssetsAPI.getCategory("AHU");
+			if(jobId == 339l && assetCategory != null && assetCategory.getId() > 0) {	
+				criteria.addAndCondition(CriteriaAPI.getCondition("ASSET_CATEGORY_ID", "assetCategoryId", ""+assetCategory.getId(), NumberOperators.EQUALS));
+			}
+			else {
+				criteria.addAndCondition(CriteriaAPI.getCondition("ASSET_CATEGORY_ID", "assetCategoryId", ""+jobId, NumberOperators.EQUALS));
+			}
+			
 			List<ReadingRuleContext> rules = ReadingRuleAPI.getReadingRules(criteria);
 			
 			if(rules != null && !rules.isEmpty()) {

@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -21,6 +22,7 @@ import com.facilio.bmsconsole.context.sensor.SensorEventContext;
 import com.facilio.bmsconsole.enums.RuleJobType;
 import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.bmsconsole.util.AlarmAPI;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
@@ -51,6 +53,7 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.time.DateRange;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowFieldContext;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -491,17 +494,45 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 		FacilioField parentField = fieldMap.get("parentId");
 		FacilioField ttimeField = fieldMap.get("ttime");
 		
-		SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
-																.select(fields)
-																.module(readingRule.getReadingField().getModule())
-																.beanClass(ReadingContext.class)
-																.andCondition(CriteriaAPI.getCondition(parentField, String.valueOf(resourceId), PickListOperators.IS))
-																.andCondition(CriteriaAPI.getCondition(ttimeField, startTime+","+endTime, DateOperators.BETWEEN))
-																.andCondition(CriteriaAPI.getCondition(readingRule.getReadingField(), CommonOperators.IS_NOT_EMPTY))
-																.orderBy("TTIME")
-																;
-		
-		return selectBuilder.get();
+		AssetCategoryContext assetCategory = AssetsAPI.getCategory("VAV");
+		if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339 && assetCategory != null && assetCategory.getId() == readingRule.getAssetCategoryId()) {
+			SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
+					.select(fields)
+					.module(readingRule.getReadingField().getModule())
+					.beanClass(ReadingContext.class)
+					.andCondition(CriteriaAPI.getCondition(parentField, String.valueOf(resourceId), PickListOperators.IS))
+					.andCondition(CriteriaAPI.getCondition(ttimeField, startTime+","+endTime, DateOperators.BETWEEN))
+					.andCondition(CriteriaAPI.getCondition(readingRule.getReadingField(), CommonOperators.IS_NOT_EMPTY))
+					.orderBy("TTIME")
+					;
+			List<ReadingContext> VAVReadings = selectBuilder.get();
+			long dataInterval=15*60*1000; //15minutes
+			
+			List<ReadingContext> readings = new ArrayList<ReadingContext>();		
+			for(ReadingContext reading:VAVReadings) {
+				if(reading.getTtime() > 0) {
+					long ttime = (reading.getTtime()/dataInterval) * dataInterval;
+					ZonedDateTime currentZdt = DateTimeUtil.getDateTime(ttime);
+					if(currentZdt != null && currentZdt.getMinute() == 0 && currentZdt.getSecond() == 0) {
+						readings.add(reading);
+					}
+				}					
+			}
+			
+			return readings;
+		}
+		else {
+			SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
+					.select(fields)
+					.module(readingRule.getReadingField().getModule())
+					.beanClass(ReadingContext.class)
+					.andCondition(CriteriaAPI.getCondition(parentField, String.valueOf(resourceId), PickListOperators.IS))
+					.andCondition(CriteriaAPI.getCondition(ttimeField, startTime+","+endTime, DateOperators.BETWEEN))
+					.andCondition(CriteriaAPI.getCondition(readingRule.getReadingField(), CommonOperators.IS_NOT_EMPTY))
+					.orderBy("TTIME")
+					;	
+			return selectBuilder.get();
+		}	
 	}
 	
 	private ReadingContext fetchSingleReading(ReadingRuleContext readingRule, long resourceId, long ttime, Operator<String> NumberOperator, String orderBy) throws Exception {
@@ -521,7 +552,29 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 																.orderBy(orderBy).limit(1)
 																;
 		
-		return selectBuilder.fetchFirst();
+
+		AssetCategoryContext assetCategory = AssetsAPI.getCategory("VAV");
+		if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339 && assetCategory != null && assetCategory.getId() == readingRule.getAssetCategoryId()) {
+			ReadingContext VAVReading = selectBuilder.fetchFirst();
+			long dataInterval=15*60*1000; //15minutes
+			
+			if(VAVReading != null && VAVReading.getTtime() > 0) {
+				long currentTime = (VAVReading.getTtime()/dataInterval) * dataInterval;
+				ZonedDateTime currentZdt = DateTimeUtil.getDateTime(currentTime);
+				if(currentZdt != null && currentZdt.getMinute() == 0 && currentZdt.getSecond() == 0) {
+					return VAVReading;
+				}
+				else {
+					return fetchSingleReading(readingRule, resourceId, VAVReading.getTtime(), NumberOperator, orderBy);
+				}
+			}
+			else {
+				return null;
+			}
+		}
+		else {
+			return selectBuilder.fetchFirst();
+		}
 	}
 	
 	private Map<String, List<ReadingDataMeta>> prepareCurrentFieldsRDM(ReadingRuleContext rule, long startTime, long endTime, long resourceId, List<WorkflowFieldContext> fields) throws Exception
