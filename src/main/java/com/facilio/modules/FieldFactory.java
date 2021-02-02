@@ -1,19 +1,5 @@
 package com.facilio.modules;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.tuple.Pair;
-
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
@@ -23,13 +9,12 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.tasker.tasks.EventUtil;
-import com.facilio.modules.fields.BooleanField;
-import com.facilio.modules.fields.EnumField;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.FileField;
-import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.NumberField;
-import com.facilio.modules.fields.SystemEnumField;
+import com.facilio.modules.fields.*;
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class FieldFactory {
 
@@ -57,6 +42,7 @@ public class FieldFactory {
         lookupModuleVsSortFieldName.put("itemTypes", Pair.of("name", true));
         lookupModuleVsSortFieldName.put("toolTypes", Pair.of("name", true));
         lookupModuleVsSortFieldName.put("storeRoom", Pair.of("name", true));
+        lookupModuleVsSortFieldName.put("vendors", Pair.of("name", true));
         lookupModuleVsSortFieldName.put("invite", Pair.of("name", true));
         lookupModuleVsSortFieldName.put("visitor", Pair.of("name", true));
         lookupModuleVsSortFieldName.put("host", Pair.of("name", true));
