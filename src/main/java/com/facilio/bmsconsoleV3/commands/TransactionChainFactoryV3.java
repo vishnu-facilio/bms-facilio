@@ -730,6 +730,12 @@ public class TransactionChainFactoryV3 {
         return c;
     }
     
+    public static FacilioChain deleteControlGroupSlotChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new DeleteControlGroupSlotsCommand());
+        return c;
+    }
+    
     public static FacilioChain getUpdateControlGroupAfterSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdateControlGroupV2Command());
