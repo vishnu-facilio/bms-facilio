@@ -487,6 +487,20 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		Condition moduleCondition = CriteriaAPI.getCondition(moduleIdField, String.valueOf(module.getModuleId()), NumberOperators.EQUALS);
 		whereCondition.andCondition(moduleCondition);
 
+		// Doing this separately for extended module to avoid unnecessary field creation
+		long commonModuleId = module.hideFromParents() ? module.getModuleId() : -1;
+		FacilioModule extendedModule = module.getExtendModule();
+		while (extendedModule != null) {
+			if (commonModuleId == -1 && extendedModule.hideFromParents()) {
+				commonModuleId = extendedModule.getModuleId();
+			}
+
+			whereCondition.andCondition(CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getOrgId(), extendedModule));
+			whereCondition.andCondition(CriteriaAPI.getModuleIdIdCondition(commonModuleId == -1 ? extendedModule.getModuleId() : commonModuleId, extendedModule));
+
+			extendedModule = extendedModule.getExtendModule();
+		}
+
 		if (module.isTrashEnabled() && !fetchDeleted) {
 			whereCondition.andCondition(CriteriaAPI.getCondition(isDeletedField, String.valueOf(false), BooleanOperators.IS));
 		}

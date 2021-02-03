@@ -236,6 +236,10 @@ public class CriteriaAPI extends BaseCriteriaAPI {
 	public static Condition getOrgIdCondition(long orgId, FacilioModule module) {
 		return getCondition(AccountConstants.getOrgIdField(module), String.valueOf(orgId), NumberOperators.EQUALS);
 	}
+
+	public static Condition getModuleIdIdCondition(long moduleId, FacilioModule module) {
+		return getCondition(FieldFactory.getModuleIdField(module), String.valueOf(moduleId), NumberOperators.EQUALS);
+	}
 	
 	public static Condition getCurrentSiteIdCondition(FacilioModule module) {
 		return getCondition(FieldFactory.getSiteIdField(module), String.valueOf(AccountUtil.getCurrentSiteId()), NumberOperators.EQUALS);
