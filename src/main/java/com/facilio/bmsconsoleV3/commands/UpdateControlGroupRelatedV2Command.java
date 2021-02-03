@@ -9,6 +9,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.control.ControlGroupAssetCategory;
 import com.facilio.control.ControlGroupAssetContext;
 import com.facilio.control.ControlGroupContext;
@@ -33,7 +34,9 @@ public class UpdateControlGroupRelatedV2Command extends FacilioCommand {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		ControlGroupContext controlGroupContext = (ControlGroupContext) ControlScheduleUtil.getObjectFromRecordMap(context, ControlScheduleUtil.CONTROL_GROUP_MODULE_NAME);
+		String moduleName = (String)context.getOrDefault(FacilioConstants.ContextNames.MODULE_NAME, ControlScheduleUtil.CONTROL_GROUP_MODULE_NAME);
+		
+		ControlGroupContext controlGroupContext = (ControlGroupContext) ControlScheduleUtil.getObjectFromRecordMap(context, moduleName);
 		
 		ControlGroupContext controlGroupContextOld = (ControlGroupContext) context.get(ControlScheduleUtil.CONTROL_GROUP_CONTEXT_OLD);
 

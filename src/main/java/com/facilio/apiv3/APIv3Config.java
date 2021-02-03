@@ -233,6 +233,8 @@ public class APIv3Config {
     @Module(ControlScheduleUtil.CONTROL_GROUP_TENANT_SHARING_MODULE_NAME)
     public static Supplier<V3Config> getGroupTennatCRUD() {
         return () -> new V3Config(ControlGroupTenentContext.class, null)
+        		.update()
+                .afterSave(TransactionChainFactoryV3.getUpdateControlGroupAfterSaveChain())
                 .summary()
                 .afterFetch(new GetControlGroupCommand())
                 .list()
