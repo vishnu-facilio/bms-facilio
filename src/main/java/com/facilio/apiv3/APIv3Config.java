@@ -231,6 +231,10 @@ public class APIv3Config {
     @Module(FacilioConstants.ContextNames.CONTROL_ACTION_COMMAND_MODULE)
     public static Supplier<V3Config> getControlCommandCRUD() {
         return () -> new V3Config(ControlActionCommandContext.class, null)
+        		.summary()
+        		.beforeFetch(new ControlActionCommandSuppimentFieldSupplyCommand())
+        		.list()
+        		.beforeFetch(new ControlActionCommandSuppimentFieldSupplyCommand())
                 .build();
     }
 

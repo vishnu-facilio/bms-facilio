@@ -43,6 +43,7 @@ import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistContex
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeContext;
 import com.facilio.control.ControlGroupAssetCategory;
 import com.facilio.control.ControlGroupAssetContext;
+import com.facilio.control.ControlGroupContext;
 import com.facilio.control.ControlGroupFieldContext;
 import com.facilio.control.ControlGroupSection;
 import com.facilio.control.ControlGroupTenentContext;
@@ -51,7 +52,6 @@ import com.facilio.control.ControlScheduleExceptionContext;
 import com.facilio.control.ControlScheduleExceptionTenantContext;
 import com.facilio.control.ControlScheduleTenantContext;
 import com.facilio.control.util.ControlScheduleUtil;
-import com.facilio.controlaction.context.ControlGroupContext;
 import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
