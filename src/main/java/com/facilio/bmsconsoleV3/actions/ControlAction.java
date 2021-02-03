@@ -34,6 +34,7 @@ public class ControlAction extends V3Action {
 	long endTime;
 	ControlGroupContext group;
 	TenantContext tenant;
+	String moduleName;
 	
 	public String getSlot() throws Exception {
 		
@@ -41,11 +42,16 @@ public class ControlAction extends V3Action {
 		
 		FacilioContext context = chain.getContext();
 		
-		group = ControlScheduleUtil.getControlGroup(group.getId());
+		if(moduleName == null) {
+			moduleName = ControlScheduleUtil.CONTROL_GROUP_MODULE_NAME;
+		}
+		
+		group = ControlScheduleUtil.getControlGroup(group.getId(),moduleName);
 		
 		context.put(FacilioConstants.ContextNames.START_TIME, startTime);
 		context.put(FacilioConstants.ContextNames.END_TIME, endTime);
 		context.put(ControlScheduleUtil.CONTROL_GROUP_CONTEXT, group);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		
 		chain.execute();
 		
