@@ -191,6 +191,20 @@ public class APIv3Config {
                 .build();
     }
     
+    @Module(ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_TENANT_SHARING_MODULE_NAME)
+    public static Supplier<V3Config> getScheduleExceptionTenantCRUD() {
+        return () -> new V3Config(ControlScheduleExceptionContext.class, null)
+        		.create()
+                .beforeSave(new ControlScheduleExceptionBeforeSaveCommand())
+                .afterSave(TransactionChainFactoryV3.getAddControlScheduleExceptionAfterSaveChain())
+                .update()
+                .beforeSave(new ControlScheduleExceptionBeforeSaveCommand())
+                .afterSave(TransactionChainFactoryV3.getUpdateControlScheduleExceptionAfterSaveChain())
+                .delete()
+                .afterDelete(new PlanControlScheduleExceptionSlotCommand())
+                .build();
+    }
+    
     @Module(ControlScheduleUtil.CONTROL_GROUP_ROUTINE_MODULE_NAME)
     public static Supplier<V3Config> getGroupRoutineCRUD() {
         return () -> new V3Config(ControlGroupRoutineContext.class, null)
@@ -220,6 +234,8 @@ public class APIv3Config {
         return () -> new V3Config(ControlGroupTenentContext.class, null)
                 .summary()
                 .afterFetch(new GetControlGroupCommand())
+                .list()
+                .beforeFetch(new ControlGroupSuplimentFieldSupplyCommand())
                 .build();
     }
     

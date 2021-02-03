@@ -38,7 +38,8 @@ public class PlanControlScheduleExceptionSlotCommand extends FacilioCommand {
 			exception.setId(exceptionIds.get(0));
 		}
 		else {
-			exception = (ControlScheduleExceptionContext) ControlScheduleUtil.getObjectFromRecordMap(context, ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_MODULE_NAME);
+			String moduleName = (String) context.getOrDefault(FacilioConstants.ContextNames.MODULE_NAME,ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_MODULE_NAME);
+			exception = (ControlScheduleExceptionContext) ControlScheduleUtil.getObjectFromRecordMap(context, moduleName);
 		}
 		
 		List<Long> relatedScheduleIds = new ArrayList<Long>();

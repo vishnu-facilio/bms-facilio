@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.control.ControlScheduleExceptionContext;
 import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -17,7 +18,9 @@ public class ControlScheduleExceptionAfterSaveCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		
-		ControlScheduleExceptionContext exception = (ControlScheduleExceptionContext) ControlScheduleUtil.getObjectFromRecordMap(context, ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_MODULE_NAME);
+		String moduleName = (String) context.getOrDefault(FacilioConstants.ContextNames.MODULE_NAME,ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_MODULE_NAME);
+		
+		ControlScheduleExceptionContext exception = (ControlScheduleExceptionContext) ControlScheduleUtil.getObjectFromRecordMap(context, moduleName);
 		
 		if(exception.getSchedule() != null) {
 			GenericInsertRecordBuilder insert1 = new GenericInsertRecordBuilder()
