@@ -154,6 +154,10 @@ public class ReadingDataMeta implements Serializable {
 		}
 		return -1;
 	}
+	
+	public ControlActionMode getControlActionModeEnum() {
+		return controlActionMode;
+	}
 
 	public void setControlActionMode(int controlActionMode) {
 		if(controlActionMode > 0) {

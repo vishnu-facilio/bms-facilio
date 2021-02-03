@@ -93,25 +93,27 @@ public class ControlScheduleExceptionContext extends V3Context {
 	}
 	
 	public ScheduleInfo startScheduleAsObj() throws Exception {
-		if(getStartScheduleJSON() != null) {
-			return FieldUtil.getAsBeanFromJson(getStartScheduleJSON(), ScheduleInfo.class);
+		if(startScheduleJson() != null) {
+			return FieldUtil.getAsBeanFromJson(startScheduleJson(), ScheduleInfo.class);
 		}
 		return null;
 	}
 	
 	public ScheduleInfo endScheduleAsObj() throws Exception {
-		if(getEndScheduleJson() != null) {
-			return FieldUtil.getAsBeanFromJson(getEndScheduleJson(), ScheduleInfo.class);
+		if(endScheduleJson() != null) {
+			return FieldUtil.getAsBeanFromJson(endScheduleJson(), ScheduleInfo.class);
 		}
 		return null;
 	}
 	
-	public JSONObject getStartScheduleJSON() {
+	public JSONObject startScheduleJson() {
 		return startSchedule;
 	}
 
 	public void setStartSchedule(String startSchedule) throws ParseException {
-		this.startSchedule = FacilioUtil.parseJson(startSchedule);
+		if(this.startSchedule == null) {
+			this.startSchedule = FacilioUtil.parseJson(startSchedule);
+		}
 	}
 	
 	public void setStartScheduleJson(JSONObject startSchedule) throws ParseException {
@@ -125,7 +127,7 @@ public class ControlScheduleExceptionContext extends V3Context {
 		return null;
 	}
 	
-	public JSONObject getEndScheduleJson() {
+	public JSONObject endScheduleJson() {
 		return endSchedule;
 	}
 	

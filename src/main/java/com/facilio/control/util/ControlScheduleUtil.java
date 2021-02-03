@@ -100,7 +100,7 @@ public class ControlScheduleUtil {
 					}
 					ControlActionCommandContext.Status status = isControllableField == true ? ControlActionCommandContext.Status.SCHEDULED : ControlActionCommandContext.Status.SCHEDULED_WITH_NO_PERMISSION;  
 					
-					commands.add(new ControlActionCommandContext(controlField.getControlGroupAsset().getAsset(), controlField.getFieldId(), controlField.getTrueVal(),slot.getStartTime(),slot.getGroup(),slot.getRoutine(),status,ControlActionMode.SANDBOX));
+					commands.add(new ControlActionCommandContext(controlField.getControlGroupAsset().getAsset(), controlField.getFieldId(), controlField.getTrueVal(),slot.getStartTime(),slot.getGroup(),slot.getRoutine(),status,rdm.getControlActionModeEnum()));
 				}
 			}
 		}
@@ -135,10 +135,10 @@ public class ControlScheduleUtil {
 									}
 									ControlActionCommandContext.Status status = isControllableField == true ? ControlActionCommandContext.Status.SCHEDULED : ControlActionCommandContext.Status.SCHEDULED_WITH_NO_PERMISSION;  
 									if(slot.getStartTime() > 0 && controlField.getTrueVal() != null) {
-										commands.add(new ControlActionCommandContext(controlAsset.getAsset(), controlField.getFieldId(), controlField.getTrueVal(),slot.getStartTime(),group,status,ControlActionMode.SANDBOX));
+										commands.add(new ControlActionCommandContext(controlAsset.getAsset(), controlField.getFieldId(), controlField.getTrueVal(),slot.getStartTime(),group,status,rdm.getControlActionModeEnum()));
 									}
 									if(slot.getEndTime() > 0 && controlField.getFalseVal() != null) {
-										commands.add(new ControlActionCommandContext(controlAsset.getAsset(), controlField.getFieldId(), controlField.getFalseVal(),slot.getEndTime(),group,status,ControlActionMode.SANDBOX));
+										commands.add(new ControlActionCommandContext(controlAsset.getAsset(), controlField.getFieldId(), controlField.getFalseVal(),slot.getEndTime(),group,status,rdm.getControlActionModeEnum()));
 									}
 								}
 							}

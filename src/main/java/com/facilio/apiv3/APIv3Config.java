@@ -166,10 +166,10 @@ public class APIv3Config {
         return () -> new V3Config(ControlScheduleContext.class, null)
                 .create()
                 .beforeSave(TransactionChainFactoryV3.getAddControlScheduleBeforeSaveChain())
-                .afterSave(new DeleteAndAddControlScheduleExceptionCommand())
+                .afterSave(TransactionChainFactoryV3.getAddControlScheduleAfterSaveChain())
                 .update()
                 .beforeSave(TransactionChainFactoryV3.getUpdateControlScheduleBeforeSaveCommandChain())
-                .afterSave(new DeleteAndAddControlScheduleExceptionCommand())
+                .afterSave(TransactionChainFactoryV3.getUpdateControlScheduleAfterSaveCommandChain())
                 .summary()
                 .afterFetch(new ControlScheduleAfterFetchCommand())
                 .list()
@@ -182,9 +182,10 @@ public class APIv3Config {
         return () -> new V3Config(ControlScheduleExceptionContext.class, null)
         		.create()
                 .beforeSave(new ControlScheduleExceptionBeforeSaveCommand())
-                .afterSave(new ControlScheduleExceptionAfterSaveCommand())
+                .afterSave(TransactionChainFactoryV3.getAddControlScheduleExceptionAfterSaveChain())
                 .update()
                 .beforeSave(new ControlScheduleExceptionBeforeSaveCommand())
+                .afterSave(TransactionChainFactoryV3.getUpdateControlScheduleExceptionAfterSaveChain())
                 .build();
     }
     

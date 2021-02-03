@@ -671,6 +671,13 @@ public class TransactionChainFactoryV3 {
         return c;
     }
     
+    public static FacilioChain getAddControlScheduleAfterSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new DeleteAndAddControlScheduleExceptionCommand());
+        c.addCommand(new PlanControlScheduleSlotCommand());
+        return c;
+    }
+    
     public static FacilioChain getDeleteAndAddControlScheduleExceptionChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new DeleteAndAddControlScheduleExceptionCommand());
@@ -680,6 +687,27 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getUpdateControlScheduleBeforeSaveCommandChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdateControlScheduleBeforeSaveCommand());
+        return c;
+    }
+    
+    public static FacilioChain getUpdateControlScheduleAfterSaveCommandChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new DeleteAndAddControlScheduleExceptionCommand());
+        c.addCommand(new PlanControlScheduleSlotCommand());
+        return c;
+    }
+    
+    public static FacilioChain getAddControlScheduleExceptionAfterSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ControlScheduleExceptionAfterSaveCommand());
+        c.addCommand(new PlanControlScheduleExceptionSlotCommand());
+        return c;
+    }
+    
+    public static FacilioChain getUpdateControlScheduleExceptionAfterSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ControlScheduleExceptionAfterSaveCommand());
+        c.addCommand(new PlanControlScheduleExceptionSlotCommand());
         return c;
     }
     
