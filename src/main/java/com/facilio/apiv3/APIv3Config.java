@@ -87,6 +87,7 @@ import com.facilio.control.ControlGroupRoutineContext;
 import com.facilio.control.ControlGroupTenentContext;
 import com.facilio.control.ControlScheduleContext;
 import com.facilio.control.ControlScheduleExceptionContext;
+import com.facilio.control.ControlScheduleExceptionTenantContext;
 import com.facilio.control.ControlScheduleTenantContext;
 import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.controlaction.context.ControlActionCommandContext;
@@ -179,7 +180,7 @@ public class APIv3Config {
     
     @Module(ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_MODULE_NAME)
     public static Supplier<V3Config> getScheduleExceptionCRUD() {
-        return () -> new V3Config(ControlScheduleExceptionContext.class, null)
+        return () -> new V3Config(ControlScheduleExceptionTenantContext.class, null)
         		.create()
                 .beforeSave(new ControlScheduleExceptionBeforeSaveCommand())
                 .afterSave(TransactionChainFactoryV3.getAddControlScheduleExceptionAfterSaveChain())

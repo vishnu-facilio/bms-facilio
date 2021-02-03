@@ -33,12 +33,13 @@ public class PlanControlScheduleExceptionSlotCommand extends FacilioCommand {
 		
 		ControlScheduleExceptionContext exception = null;
 		
+		String moduleName = (String) context.getOrDefault(FacilioConstants.ContextNames.MODULE_NAME,ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_MODULE_NAME);
+		
 		if(exceptionIds != null && !exceptionIds.isEmpty()) {
 			exception = new ControlScheduleExceptionContext();
 			exception.setId(exceptionIds.get(0));
 		}
 		else {
-			String moduleName = (String) context.getOrDefault(FacilioConstants.ContextNames.MODULE_NAME,ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_MODULE_NAME);
 			exception = (ControlScheduleExceptionContext) ControlScheduleUtil.getObjectFromRecordMap(context, moduleName);
 		}
 		
@@ -63,7 +64,18 @@ public class PlanControlScheduleExceptionSlotCommand extends FacilioCommand {
 		
 		for(Long relatedScheduleId : relatedScheduleIds) {
 			
-			List<ControlGroupContext> groups = ControlScheduleUtil.fetchRecord(ControlGroupContext.class, ControlScheduleUtil.CONTROL_GROUP_MODULE_NAME, null, CriteriaAPI.getCondition("CONTROL_SCHEDULE", "controlSchedule", relatedScheduleId+"", NumberOperators.EQUALS));
+			String groupModuleName = null;
+			
+			if(moduleName.equals(ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_MODULE_NAME)) {
+				
+				groupModuleName = ControlScheduleUtil.CONTROL_GROUP_MODULE_NAME;
+			}
+			else if (moduleName.equals(ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_TENANT_SHARING_MODULE_NAME)) {
+				
+				groupModuleName = ControlScheduleUtil.CONTROL_GROUP_TENANT_SHARING_MODULE_NAME;
+			}
+			
+			List<ControlGroupContext> groups = ControlScheduleUtil.fetchRecord(ControlGroupContext.class, groupModuleName, null, CriteriaAPI.getCondition("CONTROL_SCHEDULE", "controlSchedule", relatedScheduleId+"", NumberOperators.EQUALS));
 			
 			boolean isPlanByJob = false;
 			
@@ -81,7 +93,7 @@ public class PlanControlScheduleExceptionSlotCommand extends FacilioCommand {
 
 					else {
 						
-						controlGroupContext = ControlScheduleUtil.getControlGroup(controlGroupContext.getId());
+						controlGroupContext = ControlScheduleUtil.getControlGroup(controlGroupContext.getId(),groupModuleName);
 						long startTime = DateTimeUtil.getDayStartTime();
 						
 						long endTime = DateTimeUtil.addMonths(startTime, 1);
