@@ -1,12 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReceivableContext;
@@ -21,6 +14,13 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.LookupFieldMeta;
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+
+import java.util.List;
+import java.util.Map;
 
 ;
 
@@ -63,7 +63,12 @@ public class GetReceivablesListCommand extends FacilioCommand {
 				builder.setAggregation();
 			}
 			else {
-				builder.fetchSupplement((LookupField)fieldsAsMap.get("poId"));
+				LookupFieldMeta poField = new LookupFieldMeta((LookupField) fieldsAsMap.get("poId"));
+				LookupField vendor = (LookupField) modBean.getField("vendor", FacilioConstants.ContextNames.PURCHASE_ORDER);
+				LookupField storeRoom = (LookupField) modBean.getField("storeRoom", FacilioConstants.ContextNames.PURCHASE_ORDER);
+				poField.addChildLookupField(vendor);
+				poField.addChildLookupField(storeRoom);
+				builder.fetchSupplement(poField);
 				
 			}
 			String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
