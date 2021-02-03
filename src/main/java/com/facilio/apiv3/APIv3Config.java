@@ -172,6 +172,8 @@ public class APIv3Config {
                 .afterSave(new DeleteAndAddControlScheduleExceptionCommand())
                 .summary()
                 .afterFetch(new ControlScheduleAfterFetchCommand())
+                .list()
+                .afterFetch(new ControlScheduleAfterFetchCommand())
                 .build();
     }
     
@@ -205,6 +207,8 @@ public class APIv3Config {
                 .afterSave(TransactionChainFactoryV3.getUpdateControlGroupAfterSaveChain())
                 .summary()
                 .afterFetch(new GetControlGroupCommand())
+                .list()
+                .beforeFetch(new ControlGroupSuplimentFieldSupplyCommand())
                 .build();
     }
     
