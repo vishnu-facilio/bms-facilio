@@ -225,6 +225,7 @@ public class ImportFieldFactory {
 			removedFields.add("cdd");
 			removedFields.add("hdd");
 			removedFields.add("wdd");
+			removedFields.add("space");
 
 		}
 		}

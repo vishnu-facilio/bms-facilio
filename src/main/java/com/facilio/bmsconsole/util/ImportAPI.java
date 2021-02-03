@@ -632,6 +632,8 @@ public class ImportAPI {
 					fields.add("space2");
 					fields.add("space3");
 					fields.add("asset");
+				} else if (isBaseSpaceExtendedModule(facilioModule)) {
+					fields.remove("space");
 				}
 		}
 			if (!AssetsAPI.isAssetsModule(facilioModule)
