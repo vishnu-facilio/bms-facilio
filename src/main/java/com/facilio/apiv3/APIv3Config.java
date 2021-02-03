@@ -89,6 +89,7 @@ import com.facilio.control.ControlScheduleContext;
 import com.facilio.control.ControlScheduleExceptionContext;
 import com.facilio.control.ControlScheduleTenantContext;
 import com.facilio.control.util.ControlScheduleUtil;
+import com.facilio.controlaction.context.ControlActionCommandContext;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
@@ -220,6 +221,12 @@ public class APIv3Config {
         return () -> new V3Config(ControlScheduleTenantContext.class, null)
                 .summary()
                 .afterFetch(new ControlScheduleAfterFetchCommand())
+                .build();
+    }
+    
+    @Module(FacilioConstants.ContextNames.CONTROL_ACTION_COMMAND_MODULE)
+    public static Supplier<V3Config> getControlCommandCRUD() {
+        return () -> new V3Config(ControlActionCommandContext.class, null)
                 .build();
     }
 
