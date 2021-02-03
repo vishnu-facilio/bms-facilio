@@ -1,6 +1,8 @@
 package com.facilio.bmsconsoleV3.commands;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -14,8 +16,11 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.control.ControlGroupContext;
 import com.facilio.control.ControlScheduleExceptionContext;
 import com.facilio.control.util.ControlScheduleUtil;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.time.DateTimeUtil;
 
 public class PlanControlScheduleExceptionSlotCommand extends FacilioCommand {
@@ -24,10 +29,40 @@ public class PlanControlScheduleExceptionSlotCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		ControlScheduleExceptionContext exception = (ControlScheduleExceptionContext) ControlScheduleUtil.getObjectFromRecordMap(context, ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_MODULE_NAME);
+		List<Long> exceptionIds = (List<Long>) context.get("recordIds");
 		
+		ControlScheduleExceptionContext exception = null;
+		
+		if(exceptionIds != null && !exceptionIds.isEmpty()) {
+			exception = new ControlScheduleExceptionContext();
+			exception.setId(exceptionIds.get(0));
+		}
+		else {
+			exception = (ControlScheduleExceptionContext) ControlScheduleUtil.getObjectFromRecordMap(context, ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_MODULE_NAME);
+		}
+		
+		List<Long> relatedScheduleIds = new ArrayList<Long>();
 		if(exception.getSchedule() != null) {
-			List<ControlGroupContext> groups = ControlScheduleUtil.fetchRecord(ControlGroupContext.class, ControlScheduleUtil.CONTROL_GROUP_MODULE_NAME, null, CriteriaAPI.getCondition("CONTROL_SCHEDULE", "controlSchedule", exception.getSchedule().getId()+"", NumberOperators.EQUALS));
+			relatedScheduleIds.add(exception.getSchedule().getId());
+		}
+		else {
+			GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
+					.table(ModuleFactory.getControlScheduleVsExceptionModule().getTableName())
+					.select(FieldFactory.getControlScheduleVsExceptionFields())
+					.andCustomWhere("EXCEPTION_ID = ?", exception.getId());
+			
+			List<Map<String, Object>> props = select.get();
+			
+			if(props != null) {
+				for(Map<String, Object> prop: props) {
+					relatedScheduleIds.add((long)prop.get("scheduleId"));
+				}
+			}
+		}
+		
+		for(Long relatedScheduleId : relatedScheduleIds) {
+			
+			List<ControlGroupContext> groups = ControlScheduleUtil.fetchRecord(ControlGroupContext.class, ControlScheduleUtil.CONTROL_GROUP_MODULE_NAME, null, CriteriaAPI.getCondition("CONTROL_SCHEDULE", "controlSchedule", relatedScheduleId+"", NumberOperators.EQUALS));
 			
 			boolean isPlanByJob = false;
 			
@@ -65,7 +100,13 @@ public class PlanControlScheduleExceptionSlotCommand extends FacilioCommand {
 				}
 			}
 		}
+		
 		return false;
+	}
+
+	private Object prop(List<Map<String, Object>> props) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

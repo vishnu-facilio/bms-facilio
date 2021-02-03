@@ -186,6 +186,8 @@ public class APIv3Config {
                 .update()
                 .beforeSave(new ControlScheduleExceptionBeforeSaveCommand())
                 .afterSave(TransactionChainFactoryV3.getUpdateControlScheduleExceptionAfterSaveChain())
+                .delete()
+                .afterDelete(new PlanControlScheduleExceptionSlotCommand())
                 .build();
     }
     

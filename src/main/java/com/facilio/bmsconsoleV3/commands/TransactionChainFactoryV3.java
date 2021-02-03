@@ -706,7 +706,6 @@ public class TransactionChainFactoryV3 {
     
     public static FacilioChain getUpdateControlScheduleExceptionAfterSaveChain() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new ControlScheduleExceptionAfterSaveCommand());
         c.addCommand(new PlanControlScheduleExceptionSlotCommand());
         return c;
     }
