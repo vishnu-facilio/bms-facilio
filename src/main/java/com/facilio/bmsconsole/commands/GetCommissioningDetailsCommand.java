@@ -36,8 +36,9 @@ public class GetCommissioningDetailsCommand extends FacilioCommand {
 		long id = (long) context.get(ContextNames.ID);
 		CommissioningLogContext log = CommissioningApi.commissioniongDetails(id);
 		setHeaders(log);
+		boolean isNiagra = log.getAgent().getAgentType() == AgentType.NIAGARA.getKey();
 		if (log.getPublishedTime() == -1) {
-			setPoints(log);
+			setPoints(log, isNiagra);
 		}
 
 		JSONArray points = log.getPoints();
@@ -47,7 +48,6 @@ public class GetCommissioningDetailsCommand extends FacilioCommand {
 			JSONArray finalPoints  = new JSONArray();
 			List<String> headers = log.getHeaders().stream().map(header -> (String)header.get("name")).collect(Collectors.toList());
 			Map<Integer, String> unitMap = new HashMap<>();
-			boolean isNiagra = log.getAgent().getAgentType() == AgentType.NIAGARA.getKey();
 			for(int i = 0, size = points.size(); i < size; i++) {
 				Map<String, Object> point = (Map<String, Object>) points.get(i);
 				if (point.get("resourceId") != null) {
@@ -85,10 +85,10 @@ public class GetCommissioningDetailsCommand extends FacilioCommand {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void setPoints(CommissioningLogContext log) throws Exception {
+	private void setPoints(CommissioningLogContext log, boolean isNiagra) throws Exception {
 		FacilioModule module = ModuleFactory.getPointModule();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getPointFields());
-		FacilioField orderBy = log.getControllerTypeEnum() == FacilioControllerType.NIAGARA ? fieldMap.get(AgentConstants.DISPLAY_NAME) : fieldMap.get(AgentConstants.NAME);
+		FacilioField orderBy = isNiagra ? fieldMap.get(AgentConstants.DISPLAY_NAME) : fieldMap.get(AgentConstants.NAME);
 		GetPointRequest getPointRequest = new GetPointRequest()
 				.filterConfigurePoints()
 				.ofType(log.getControllerTypeEnum())
