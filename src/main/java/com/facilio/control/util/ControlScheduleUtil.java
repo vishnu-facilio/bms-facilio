@@ -125,7 +125,7 @@ public class ControlScheduleUtil {
 						
 						for(ControlGroupAssetContext controlAsset  : category.getControlAssets()) {
 							
-							if(controlAsset.getControlFields() != null) {
+							if(controlAsset.getStatusEnum() != ControlGroupAssetContext.Status.CONTROL_PASSED_TO_CHILD && controlAsset.getControlFields() != null) {
 								for(ControlGroupFieldContext controlField :  controlAsset.getControlFields()) {
 									
 									ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(controlAsset.getAsset().getId(), controlField.getField());

@@ -60,15 +60,28 @@ public class ControlGroupPublishCommand extends FacilioCommand {
 		
 		planAssetsForTenant(groupTenent);
 		
-		FacilioChain chain = TransactionChainFactoryV3.getAddControlGroupAfterSaveChain();
+		FacilioChain chain = TransactionChainFactoryV3.getPlanControlGroupSlotChain();
 		
 		FacilioContext newContext = chain.getContext();
 		
-		Map<String, List<ControlGroupTenentContext>> map = Collections.singletonMap(ControlScheduleUtil.CONTROL_GROUP_MODULE_NAME, Collections.singletonList(groupTenent));
+		Map<String, List<ControlGroupContext>> map = Collections.singletonMap(ControlScheduleUtil.CONTROL_GROUP_MODULE_NAME, Collections.singletonList(group));
 		
 		newContext.put(FacilioConstants.ContextNames.RECORD_MAP, map);
 		
 		chain.execute();
+		
+		
+		
+		FacilioChain chain1 = TransactionChainFactoryV3.getAddControlGroupAfterSaveChain();
+		
+		FacilioContext newContext1 = chain1.getContext();
+		
+		Map<String, List<ControlGroupTenentContext>> map1 = Collections.singletonMap(ControlScheduleUtil.CONTROL_GROUP_TENANT_SHARING_MODULE_NAME, Collections.singletonList(groupTenent));
+		
+		newContext1.put(FacilioConstants.ContextNames.RECORD_MAP, map1);
+		newContext1.put(FacilioConstants.ContextNames.MODULE_NAME, ControlScheduleUtil.CONTROL_GROUP_TENANT_SHARING_MODULE_NAME);
+		
+		chain1.execute();
 		
 		return false;
 	}

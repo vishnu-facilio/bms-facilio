@@ -18,7 +18,8 @@ public class PlanControlGroupSlotsCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		ControlGroupContext controlGroupContext = (ControlGroupContext) ControlScheduleUtil.getObjectFromRecordMap(context, ControlScheduleUtil.CONTROL_GROUP_MODULE_NAME);
+		String moduleName = (String)context.getOrDefault(FacilioConstants.ContextNames.MODULE_NAME, ControlScheduleUtil.CONTROL_GROUP_MODULE_NAME);
+		ControlGroupContext controlGroupContext = (ControlGroupContext) ControlScheduleUtil.getObjectFromRecordMap(context, moduleName);
 		
 		boolean isPlanByJob = false;
 		
@@ -33,8 +34,8 @@ public class PlanControlGroupSlotsCommand extends FacilioCommand {
 		}
 
 		else {
-			
-			controlGroupContext = ControlScheduleUtil.getControlGroup(controlGroupContext.getId());
+			String currentModule = (String) context.getOrDefault(FacilioConstants.ContextNames.MODULE_NAME, ControlScheduleUtil.CONTROL_GROUP_MODULE_NAME);
+			controlGroupContext = ControlScheduleUtil.getControlGroup(controlGroupContext.getId(),currentModule);
 			long startTime = DateTimeUtil.getDayStartTime();
 			
 			long endTime = DateTimeUtil.addMonths(startTime, 1);

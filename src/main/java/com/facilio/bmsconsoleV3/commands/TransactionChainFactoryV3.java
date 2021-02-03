@@ -724,6 +724,12 @@ public class TransactionChainFactoryV3 {
         return c;
     }
     
+    public static FacilioChain getPlanControlGroupSlotChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new PlanControlGroupSlotsCommand());
+        return c;
+    }
+    
     public static FacilioChain getUpdateControlGroupAfterSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdateControlGroupV2Command());
