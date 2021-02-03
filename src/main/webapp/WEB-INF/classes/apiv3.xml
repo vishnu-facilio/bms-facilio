@@ -187,6 +187,10 @@
                 class="com.facilio.bmsconsoleV3.actions.ControlAction"
                 method="unPublishToTenant">
         </action>
+        <action name="resetTenantChanges"
+                class="com.facilio.bmsconsoleV3.actions.ControlAction"
+                method="resetTenantChanges">
+        </action>
     </package>
 
     <package name="picklistApiv3" namespace="/api/v3/picklist"

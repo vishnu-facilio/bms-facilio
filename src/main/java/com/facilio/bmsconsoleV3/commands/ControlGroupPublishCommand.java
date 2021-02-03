@@ -58,7 +58,8 @@ public class ControlGroupPublishCommand extends FacilioCommand {
 		
 		insert.save();
 		
-		planAssetsForTenant(groupTenent);
+		
+		ControlScheduleUtil.planAssetsForTenant(groupTenent);
 		
 		FacilioChain chain = TransactionChainFactoryV3.getPlanControlGroupSlotChain();
 		
@@ -85,110 +86,5 @@ public class ControlGroupPublishCommand extends FacilioCommand {
 		
 		return false;
 	}
-
-	private void planAssetsForTenant(ControlGroupTenentContext groupTenent) throws Exception {
-		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
-		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TENANT_SPACES);
-		
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		
-		SelectRecordsBuilder<TenantSpaceContext> select1 = new SelectRecordsBuilder<TenantSpaceContext>()
-				.select(fields)
-				.moduleName(FacilioConstants.ContextNames.TENANT_SPACES)
-				.beanClass(TenantSpaceContext.class)
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("tenant"), groupTenent.getTenant().getId()+"", NumberOperators.EQUALS));
-		
-		List<TenantSpaceContext> tenantSpaces = select1.get();
-		
-		List<Long> tenantSpaceList = new ArrayList<Long>();
-		
-		
-		for(TenantSpaceContext tenantSpace :tenantSpaces) {
-			tenantSpaceList.add(tenantSpace.getSpace().getId());
-		}
-		
-		fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
-		
-		fieldMap = FieldFactory.getAsMap(fields);
-		
-		SelectRecordsBuilder<AssetContext> select = new SelectRecordsBuilder<AssetContext>()
-				.select(fields)
-				.beanClass(AssetContext.class)
-				.moduleName(FacilioConstants.ContextNames.ASSET)
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("space"), StringUtils.join(tenantSpaceList, ","), BuildingOperator.BUILDING_IS));
-		
-		List<AssetContext> assets = select.get();
-		
-		if(assets == null || assets.isEmpty()) {
-			throw new Exception("This tenant has no assets associated");
-		}
-		List<Long> accesableAssetIds = new ArrayList<Long>(); 
-		for(AssetContext asset :assets) {
-			accesableAssetIds.add(asset.getId());
-		}
-		
-		List<ControlGroupSection> newSectionList = new ArrayList<ControlGroupSection>();
-		
-		List<ControlGroupAssetContext> assetListToBeMarked = new ArrayList<ControlGroupAssetContext>();
-		
-		for(ControlGroupSection section : groupTenent.getSections()) {
-			
-			List<ControlGroupAssetCategory> newAssetCategoryList = new ArrayList<ControlGroupAssetCategory>();
-			
-			for(ControlGroupAssetCategory category : section.getCategories()) {
-				
-				List<ControlGroupAssetContext> newAssetList = new ArrayList<ControlGroupAssetContext>();
-				for(ControlGroupAssetContext asset : category.getControlAssets()) {
-				
-					if(accesableAssetIds.contains(asset.getAsset().getId())) {
-						
-						assetListToBeMarked.add(asset);
-						
-						newAssetList.add(asset);
-					}
-				}
-				
-				if(!newAssetList.isEmpty()) {
-					category.setControlAssets(newAssetList);
-					newAssetCategoryList.add(category);
-				}
-			}
-			
-			if(!newAssetCategoryList.isEmpty()) {
-				section.setCategories(newAssetCategoryList);
-				
-				newSectionList.add(section);
-			}
-		}
-		
-		if(newSectionList.isEmpty()) {
-			throw new Exception("No asset matched with current group");
-		}
-		
-		groupTenent.setSections(newSectionList);
-		
-		if(!assetListToBeMarked.isEmpty()) {
-			
-			Map<String,Object> updateMap = new HashMap<String, Object>();
-			
-			updateMap.put("status", ControlGroupAssetContext.Status.CONTROL_PASSED_TO_CHILD.getIntVal());
-			
-			for(ControlGroupAssetContext asset : assetListToBeMarked) {
-				
-				UpdateRecordBuilder<ControlGroupAssetContext> update = new UpdateRecordBuilder<ControlGroupAssetContext>()
-						.fields(modBean.getAllFields(ControlScheduleUtil.CONTROL_GROUP_ASSET_MODULE_NAME))
-						.moduleName(ControlScheduleUtil.CONTROL_GROUP_ASSET_MODULE_NAME)
-						.andCondition(CriteriaAPI.getIdCondition(asset.getId(), modBean.getModule(ControlScheduleUtil.CONTROL_GROUP_ASSET_MODULE_NAME)));
-						
-				update.updateViaMap(updateMap);
-				
-			}
-		}
-		
-	}
-	
-	
 
 }

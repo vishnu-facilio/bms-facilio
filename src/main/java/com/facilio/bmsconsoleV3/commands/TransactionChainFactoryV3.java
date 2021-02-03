@@ -771,4 +771,12 @@ public class TransactionChainFactoryV3 {
         chain.addCommand(new ControlGroupUnPublishCommand());
         return chain;
     }
+    
+    public static FacilioChain controlGroupResetTenantChanges() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new GetParentcontrolGroupCommand());
+        chain.addCommand(new ResetControlScheduleAndExceptionsCommand());
+        chain.addCommand(new ResetControlGroupCommand());
+        return chain;
+    }
 }

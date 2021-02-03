@@ -34,57 +34,7 @@ public class ControlSchedulePublishCommand extends FacilioCommand {
 		
 		ControlScheduleContext schedule = group.getControlSchedule();
 		
-		ControlScheduleTenantContext scheduleTenent = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(schedule), ControlScheduleTenantContext.class);
-		
-		scheduleTenent.setTenant(tenant);
-		scheduleTenent.setParentGroup(group);
-		scheduleTenent.setParentSchedule(schedule);
-		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
-		InsertRecordBuilder<ControlScheduleTenantContext> insert = new InsertRecordBuilder<ControlScheduleTenantContext>()
-				.moduleName(ControlScheduleUtil.CONTROL_SCHEDULE_TENANT_SHARING_MODULE_NAME)
-				.fields(modBean.getAllFields(ControlScheduleUtil.CONTROL_SCHEDULE_TENANT_SHARING_MODULE_NAME))
-				.addRecord(scheduleTenent);
-		
-		insert.save();
-		
-		InsertRecordBuilder<ControlScheduleExceptionTenantContext> insert1 = new InsertRecordBuilder<ControlScheduleExceptionTenantContext>()
-				.moduleName(ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_TENANT_SHARING_MODULE_NAME)
-				.fields(modBean.getAllFields(ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_TENANT_SHARING_MODULE_NAME));
-		
-		List<ControlScheduleExceptionTenantContext> exceptionTenantList = new ArrayList<ControlScheduleExceptionTenantContext>();
-		for(ControlScheduleExceptionContext exception : schedule.getExceptions()) {
-			
-			ControlScheduleExceptionTenantContext exceptionTenant = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(exception), ControlScheduleExceptionTenantContext.class);
-			
-			exceptionTenant.setParentException(exception);
-			exceptionTenant.setTenant(tenant);
-			exceptionTenant.setParentGroup(group);
-			
-			insert1.addRecord(exceptionTenant);
-			exceptionTenantList.add(exceptionTenant);
-		}
-		
-		insert1.save();
-		
-		scheduleTenent.setExceptions(null);
-		for(ControlScheduleExceptionTenantContext exceptionTenant :exceptionTenantList) {
-			scheduleTenent.addException(exceptionTenant);
-		}
-		
-		FacilioChain chain = TransactionChainFactoryV3.getDeleteAndAddControlScheduleExceptionChain();
-		
-		FacilioContext newcontext = chain.getContext();
-		
-		Map<String, List<ControlScheduleContext>> map = Collections.singletonMap(ControlScheduleUtil.CONTROL_SCHEDULE_MODULE_NAME, Collections.singletonList(scheduleTenent));
-		
-		newcontext.put(FacilioConstants.ContextNames.RECORD_MAP, map);
-		
-		chain.execute();
-		
-		scheduleTenent.setExceptions(null);					
-		scheduleTenent.setParentGroup(null);
+		ControlScheduleTenantContext scheduleTenent = ControlScheduleUtil.controlScheduleToControlScheduleTenantShared(schedule, tenant, group);
 		
 		group.setControlSchedule(scheduleTenent);
 		

@@ -10,14 +10,20 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ControlActionMode;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingType;
+import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsole.tenant.TenantSpaceContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.BusinessHoursAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
+import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.control.ControlGroupAssetCategory;
 import com.facilio.control.ControlGroupAssetContext;
@@ -29,8 +35,10 @@ import com.facilio.control.ControlGroupSection;
 import com.facilio.control.ControlGroupTenentContext;
 import com.facilio.control.ControlScheduleContext;
 import com.facilio.control.ControlScheduleExceptionContext;
+import com.facilio.control.ControlScheduleExceptionTenantContext;
 import com.facilio.control.ControlScheduleGroupedSlot;
 import com.facilio.control.ControlScheduleSlot;
+import com.facilio.control.ControlScheduleTenantContext;
 import com.facilio.control.ControlScheduleSlot.ControlScheduleSlotWrapperForDisplay;
 import com.facilio.control.ControlScheduleSlot.ControlScheduleWrapper;
 import com.facilio.controlaction.context.ControlActionCommandContext;
@@ -38,6 +46,7 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BuildingOperator;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -50,6 +59,7 @@ import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
@@ -82,6 +92,166 @@ public class ControlScheduleUtil {
 	public static final String CONTROL_GROUP_UNPLANNED_SLOTS = "controlGroupUnplanedSlots";
 	public static final String CONTROL_GROUP_PLANNED_SLOTS = "controlGroupplanedSlots";
 	
+	
+	public static void planAssetsForTenant(ControlGroupTenentContext groupTenent) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TENANT_SPACES);
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
+		SelectRecordsBuilder<TenantSpaceContext> select1 = new SelectRecordsBuilder<TenantSpaceContext>()
+				.select(fields)
+				.moduleName(FacilioConstants.ContextNames.TENANT_SPACES)
+				.beanClass(TenantSpaceContext.class)
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("tenant"), groupTenent.getTenant().getId()+"", NumberOperators.EQUALS));
+		
+		List<TenantSpaceContext> tenantSpaces = select1.get();
+		
+		List<Long> tenantSpaceList = new ArrayList<Long>();
+		
+		
+		for(TenantSpaceContext tenantSpace :tenantSpaces) {
+			tenantSpaceList.add(tenantSpace.getSpace().getId());
+		}
+		
+		fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
+		
+		fieldMap = FieldFactory.getAsMap(fields);
+		
+		SelectRecordsBuilder<AssetContext> select = new SelectRecordsBuilder<AssetContext>()
+				.select(fields)
+				.beanClass(AssetContext.class)
+				.moduleName(FacilioConstants.ContextNames.ASSET)
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("space"), StringUtils.join(tenantSpaceList, ","), BuildingOperator.BUILDING_IS));
+		
+		List<AssetContext> assets = select.get();
+		
+		if(assets == null || assets.isEmpty()) {
+			throw new Exception("This tenant has no assets associated");
+		}
+		List<Long> accesableAssetIds = new ArrayList<Long>(); 
+		for(AssetContext asset :assets) {
+			accesableAssetIds.add(asset.getId());
+		}
+		
+		List<ControlGroupSection> newSectionList = new ArrayList<ControlGroupSection>();
+		
+		List<ControlGroupAssetContext> assetListToBeMarked = new ArrayList<ControlGroupAssetContext>();
+		
+		for(ControlGroupSection section : groupTenent.getSections()) {
+			
+			List<ControlGroupAssetCategory> newAssetCategoryList = new ArrayList<ControlGroupAssetCategory>();
+			
+			for(ControlGroupAssetCategory category : section.getCategories()) {
+				
+				List<ControlGroupAssetContext> newAssetList = new ArrayList<ControlGroupAssetContext>();
+				for(ControlGroupAssetContext asset : category.getControlAssets()) {
+				
+					if(accesableAssetIds.contains(asset.getAsset().getId())) {
+						
+						assetListToBeMarked.add(asset);
+						
+						newAssetList.add(asset);
+					}
+				}
+				
+				if(!newAssetList.isEmpty()) {
+					category.setControlAssets(newAssetList);
+					newAssetCategoryList.add(category);
+				}
+			}
+			
+			if(!newAssetCategoryList.isEmpty()) {
+				section.setCategories(newAssetCategoryList);
+				
+				newSectionList.add(section);
+			}
+		}
+		
+		if(newSectionList.isEmpty()) {
+			throw new Exception("No asset matched with current group");
+		}
+		
+		groupTenent.setSections(newSectionList);
+		
+		if(!assetListToBeMarked.isEmpty()) {
+			
+			Map<String,Object> updateMap = new HashMap<String, Object>();
+			
+			updateMap.put("status", ControlGroupAssetContext.Status.CONTROL_PASSED_TO_CHILD.getIntVal());
+			
+			for(ControlGroupAssetContext asset : assetListToBeMarked) {
+				
+				UpdateRecordBuilder<ControlGroupAssetContext> update = new UpdateRecordBuilder<ControlGroupAssetContext>()
+						.fields(modBean.getAllFields(ControlScheduleUtil.CONTROL_GROUP_ASSET_MODULE_NAME))
+						.moduleName(ControlScheduleUtil.CONTROL_GROUP_ASSET_MODULE_NAME)
+						.andCondition(CriteriaAPI.getIdCondition(asset.getId(), modBean.getModule(ControlScheduleUtil.CONTROL_GROUP_ASSET_MODULE_NAME)));
+						
+				update.updateViaMap(updateMap);
+				
+			}
+		}
+		
+	}
+	
+	public static ControlScheduleTenantContext controlScheduleToControlScheduleTenantShared(ControlScheduleContext schedule,TenantContext tenant,ControlGroupContext group) throws Exception {
+		
+		ControlScheduleTenantContext scheduleTenent = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(schedule), ControlScheduleTenantContext.class);
+		
+		scheduleTenent.setTenant(tenant);
+		scheduleTenent.setParentGroup(group);
+		scheduleTenent.setParentSchedule(schedule);
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		InsertRecordBuilder<ControlScheduleTenantContext> insert = new InsertRecordBuilder<ControlScheduleTenantContext>()
+				.moduleName(ControlScheduleUtil.CONTROL_SCHEDULE_TENANT_SHARING_MODULE_NAME)
+				.fields(modBean.getAllFields(ControlScheduleUtil.CONTROL_SCHEDULE_TENANT_SHARING_MODULE_NAME))
+				.addRecord(scheduleTenent);
+		
+		insert.save();
+		
+		InsertRecordBuilder<ControlScheduleExceptionTenantContext> insert1 = new InsertRecordBuilder<ControlScheduleExceptionTenantContext>()
+				.moduleName(ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_TENANT_SHARING_MODULE_NAME)
+				.fields(modBean.getAllFields(ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_TENANT_SHARING_MODULE_NAME));
+		
+		List<ControlScheduleExceptionTenantContext> exceptionTenantList = new ArrayList<ControlScheduleExceptionTenantContext>();
+		for(ControlScheduleExceptionContext exception : schedule.getExceptions()) {
+			
+			ControlScheduleExceptionTenantContext exceptionTenant = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(exception), ControlScheduleExceptionTenantContext.class);
+			
+			exceptionTenant.setParentException(exception);
+			exceptionTenant.setTenant(tenant);
+			exceptionTenant.setParentGroup(group);
+			
+			insert1.addRecord(exceptionTenant);
+			exceptionTenantList.add(exceptionTenant);
+		}
+		
+		insert1.save();
+		
+		scheduleTenent.setExceptions(null);
+		for(ControlScheduleExceptionTenantContext exceptionTenant :exceptionTenantList) {
+			scheduleTenent.addException(exceptionTenant);
+		}
+		
+		FacilioChain chain = TransactionChainFactoryV3.getDeleteAndAddControlScheduleExceptionChain();
+		
+		FacilioContext newcontext = chain.getContext();
+		
+		Map<String, List<ControlScheduleContext>> map = Collections.singletonMap(ControlScheduleUtil.CONTROL_SCHEDULE_MODULE_NAME, Collections.singletonList(scheduleTenent));
+		
+		newcontext.put(FacilioConstants.ContextNames.RECORD_MAP, map);
+		
+		chain.execute();
+		
+		scheduleTenent.setExceptions(null);					
+		scheduleTenent.setParentGroup(null);
+		
+		return scheduleTenent;
+	}
 	
 	public static void deleteSlotsAndGroupedSlots(ControlGroupContext controlGroup, long startTime, long endTime) throws Exception {
 		

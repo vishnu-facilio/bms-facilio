@@ -36,6 +36,20 @@ public class ControlAction extends V3Action {
 	TenantContext tenant;
 	String moduleName;
 	
+	public String resetTenantChanges() throws Exception {
+		
+		FacilioChain chain = TransactionChainFactoryV3.controlGroupResetTenantChanges();
+		
+		FacilioContext context = chain.getContext();
+		
+		context.put(ControlScheduleUtil.CONTROL_GROUP_CONTEXT, group);
+		context.put(FacilioConstants.ContextNames.TENANT, tenant);
+		
+		chain.execute();
+		
+		return SUCCESS;
+	}
+	
 	public String getSlot() throws Exception {
 		
 		FacilioChain chain = ReadOnlyChainFactoryV3.getControlGroupSlotsChain();
