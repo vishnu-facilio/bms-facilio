@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.view;
 
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
@@ -226,6 +227,8 @@ public class ColumnFactory {
 		columnMap.put("budget-default", getDefaultBudgetColumns());
 		columnMap.put("chartofaccount-default", getDefaultChartOfAccountColumns());
 		columnMap.put("controlGroupv2-default", getDefaultControlGroupColumns());
+		columnMap.put(ControlScheduleUtil.CONTROL_GROUP_TENANT_SHARING_MODULE_NAME+"-default", getDefaultControlGroupColumns());
+		columnMap.put(ControlScheduleUtil.CONTROL_SCHEDULE_MODULE_NAME+"-default", getDefaultControlScheduleColumns());
 
 		// Community Features
 		columnMap.put("announcement-default", getDefaultAnnouncementColumns());
@@ -1662,6 +1665,17 @@ public class ColumnFactory {
 		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("space", "Location"));
 		columns.add(new ViewField("controlSchedule", "Control Schedule"));
+
+		return columns;
+
+	}
+	
+	private static List<ViewField> getDefaultControlScheduleColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("sysCreatedTime", "Created Time"));
+		columns.add(new ViewField("sysCreatedBy", "Created By"));
 
 		return columns;
 

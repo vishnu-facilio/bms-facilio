@@ -172,8 +172,10 @@ public class APIv3Config {
                 .beforeSave(TransactionChainFactoryV3.getUpdateControlScheduleBeforeSaveCommandChain())
                 .afterSave(TransactionChainFactoryV3.getUpdateControlScheduleAfterSaveCommandChain())
                 .summary()
+                .beforeFetch(new ControlScheduleSuplimentFieldSupplyCommand())
                 .afterFetch(new ControlScheduleAfterFetchCommand())
                 .list()
+                .beforeFetch(new ControlScheduleSuplimentFieldSupplyCommand())
                 .afterFetch(new ControlScheduleAfterFetchCommand())
                 .build();
     }
