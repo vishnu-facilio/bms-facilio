@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.fs.FileInfo;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.pdf.PdfUtil;
@@ -23,7 +24,7 @@ import java.util.Map;
 
 public class V3MailMessageContext extends V3Context {
 
-    private static Logger logger = LogManager.getLogger(V3MailMessageContext.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(V3MailMessageContext.class.getName());
     private static final long serialVersionUID = 1L;
     private String from;
     public String getFrom() {
@@ -358,7 +359,10 @@ public class V3MailMessageContext extends V3Context {
     }
     private static void saveContentAsPdf (String s, V3MailMessageContext mailContext) throws IOException {
         Map<String, Object> attachmentObject = new HashMap<>();
-        File tmpFile = File.createTempFile("Email_Content", ".pdf");
+        File tmpFile = File.createTempFile("Email_Content_", ".pdf");
+        if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 155) {
+            LOGGER.info("PDF Content => \n"+s);
+        }
         String pdfFileLocation = PdfUtil.convertUrlToPdf(tmpFile.getPath(), s, null , FileInfo.FileFormat.PDF);
         File pdfFile = new File(pdfFileLocation);
         attachmentObject.put("file", pdfFile);
