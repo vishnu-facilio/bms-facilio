@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.actions;
 import java.io.File;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -154,9 +155,14 @@ public class FileAction extends FacilioAction {
 							setDayExpiry();
 							if (getIsDownload()) {
 								setContentType("application/x-download");
-								setFilename(fileInfo.getFileName());
+								setFilename(URLEncoder.encode(fileInfo.getFileName(), "UTF-8"));
 							} else {
-								setContentType(fileInfo.getContentType());
+								if (fileInfo.getFileName() != null && fileInfo.getFileName().trim().endsWith(".pdf")) {
+									setContentType("application/pdf");
+								}
+								else {
+									setContentType(fileInfo.getContentType());
+								}
 							}
 							return SUCCESS;
 						} else {
