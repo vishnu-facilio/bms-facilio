@@ -8412,7 +8412,7 @@ public class ViewFactory {
 	}
 
 	private static FacilioView getTenantControlGroupView() {
-		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "Control_Group_V2_Tenant_Sharing.ID", FieldType.NUMBER), true));
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
