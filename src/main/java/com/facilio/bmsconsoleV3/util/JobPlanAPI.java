@@ -126,7 +126,7 @@ public class JobPlanAPI {
     public static Map<String, List<TaskContext>> getTaskMapFromJobPlan(List<JobPlanTaskSectionContext> sections, Long woResourceId) throws Exception {
         Map<String, List<TaskContext>> taskMap = new LinkedHashMap<>();
         for(JobPlanTaskSectionContext jobPlanSection : sections ) {
-            List<Long> resourceIds = getMatchingResourceIdsForJobPlan(jobPlanSection.getJobPlanSectionCategory().intValue(), woResourceId, jobPlanSection.getSpaceCategoryId(), jobPlanSection.getAssetCategoryId());
+            List<Long> resourceIds = getMatchingResourceIdsForJobPlan(jobPlanSection.getJobPlanSectionCategory().intValue(), woResourceId, jobPlanSection.getSpaceCategoryId(), jobPlanSection.getAssetCategoryId(), -1L);
 
             Map<String, Integer> dupSectionNameCount = new HashMap<>();
             for(Long resourceId :resourceIds) {
@@ -153,7 +153,7 @@ public class JobPlanAPI {
                 List<TaskContext> woTasks = new ArrayList<TaskContext>();
                 for(JobPlanTasksContext jobPlanTask :tasks) {
                     if(jobPlanTask.getJobPlanTaskCategory() != null) {
-                        List<Long> taskResourceIds = getMatchingResourceIdsForJobPlan(jobPlanTask.getJobPlanTaskCategory().intValue(), sectionResource.getId(), jobPlanTask.getSpaceCategoryId(), jobPlanTask.getAssetCategoryId());
+                        List<Long> taskResourceIds = getMatchingResourceIdsForJobPlan(jobPlanTask.getJobPlanTaskCategory().intValue(), sectionResource.getId(), jobPlanTask.getSpaceCategoryId(), jobPlanTask.getAssetCategoryId(), -1L);
                         for (Long taskResourceId : taskResourceIds) {
                             if (sectionCategory == JobPlanTaskSectionContext.JobPlanSectionCategory.ASSET_CATEGORY.getIndex() || sectionCategory == JobPlanTaskSectionContext.JobPlanSectionCategory.SPACE_CATEGORY.getIndex()) {
                                 if (ObjectUtils.compare(taskResourceId, resourceId) != 0) {
@@ -182,7 +182,7 @@ public class JobPlanAPI {
         return taskMap;
     }
 
-    public static List<Long> getMatchingResourceIdsForJobPlan(Integer category, Long resourceId, Long spaceCategoryID, Long assetCategoryID) throws Exception {
+    public static List<Long> getMatchingResourceIdsForJobPlan(Integer category, Long resourceId, Long spaceCategoryID, Long assetCategoryID, Long currentAssetId) throws Exception {
 
         List<Long> selectedResourceIds = new ArrayList<>();
         switch(category) {
@@ -212,6 +212,12 @@ public class JobPlanAPI {
                 for(AssetContext asset :assets) {
                     selectedResourceIds.add(asset.getId());
                 }
+                break;
+            case 5:
+                selectedResourceIds.addAll(Collections.singletonList(resourceId));
+                break;
+            case 6:
+                selectedResourceIds.addAll(Collections.singletonList(currentAssetId));
                 break;
             default:
                 break;

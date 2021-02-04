@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.context;
 import com.facilio.accounts.dto.User;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.workflow.rule.*;
+import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.time.DateTimeUtil;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
@@ -635,5 +636,15 @@ public class WorkOrderContext extends TicketContext {
 	}
 	public void setScore(float score) {
 		this.score = score;
+	}
+
+	private JobPlanContext jobPlan;
+
+	public JobPlanContext getJobPlan() {
+		return jobPlan;
+	}
+
+	public void setJobPlan(JobPlanContext jobPlan) {
+		this.jobPlan = jobPlan;
 	}
 }

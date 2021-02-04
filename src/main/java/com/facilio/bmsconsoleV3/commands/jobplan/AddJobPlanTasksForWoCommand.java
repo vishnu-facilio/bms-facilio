@@ -21,15 +21,12 @@ public class AddJobPlanTasksForWoCommand extends FacilioCommand {
         WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
         if(workOrder.getPm() != null && workOrder.getResource() != null) {
             Map<String, List<TaskContext>> taskMap = (Map<String, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
-            List<PMJobPlanContextV3> pmJobPlans = PreventiveMaintenanceAPI.getJobPlanV3FromPM(workOrder.getPm().getId());
-            if(CollectionUtils.isNotEmpty(pmJobPlans)) {
-                for(PMJobPlanContextV3 pmJp : pmJobPlans){
-                    JobPlanContext jobPlan = pmJp.getJobPlanContext();
-                    List<JobPlanTaskSectionContext> taskSections = jobPlan.getTaskSectionList();
-                    if(CollectionUtils.isNotEmpty(taskSections)) {
-                        Map<String, List<TaskContext>> jobPlanTasks = JobPlanAPI.getTaskMapFromJobPlan(taskSections, workOrder.getResource().getId());
-                        taskMap.putAll(jobPlanTasks);
-                    }
+            JobPlanContext jobPlan = workOrder.getJobPlan();
+            if(jobPlan != null) {
+                List<JobPlanTaskSectionContext> taskSections = jobPlan.getTaskSectionList();
+                if (CollectionUtils.isNotEmpty(taskSections)) {
+                    Map<String, List<TaskContext>> jobPlanTasks = JobPlanAPI.getTaskMapFromJobPlan(taskSections, workOrder.getResource().getId());
+                    taskMap.putAll(jobPlanTasks);
                 }
             }
         }
