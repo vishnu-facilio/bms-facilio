@@ -9564,5 +9564,16 @@ public class FieldFactory {
         fields.add(jobPlanId);
         return fields;
     }
+
+    public static List<FacilioField> getPMJobPlanTriggerV3Fields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getPMJobPlanTriggersV3Module();
+
+        fields.add(getIdField(module));
+        fields.add(getField("pmjobPlanId", "PM_JOB_PLAN_ID", module, FieldType.NUMBER));
+        fields.add(getField("triggerId", "PM_TRIGGER_ID", module, FieldType.NUMBER));
+
+        return fields;
+    }
 }
 

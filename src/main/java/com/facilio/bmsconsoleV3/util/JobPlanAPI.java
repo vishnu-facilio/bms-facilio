@@ -11,9 +11,8 @@ import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsoleV3.context.V3TaskContext;
 import com.facilio.bmsconsoleV3.context.budget.BudgetAmountContext;
 import com.facilio.bmsconsoleV3.context.budget.BudgetMonthlyAmountContext;
+import com.facilio.bmsconsoleV3.context.jobplan.*;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
-import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTaskSectionContext;
-import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTasksContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -27,6 +26,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.log4j.Level;
 
+import java.lang.reflect.Field;
 import java.util.*;
 
 public class JobPlanAPI {
@@ -223,6 +223,49 @@ public class JobPlanAPI {
                 break;
         }
         return selectedResourceIds;
+    }
+
+    public static JobPlanContext getJobPlanForPMTrigger(Long pmTriggerId) throws Exception {
+
+        FacilioModule module = ModuleFactory.getPMJobPlanTriggersV3Module();
+        List<FacilioField> fields = FieldFactory.getPMJobPlanTriggerV3Fields();
+        Map<String, FacilioField> pmFieldsMap = FieldFactory.getAsMap(fields);
+
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .select(fields)
+                .table(module.getTableName())
+                .andCondition(CriteriaAPI.getCondition(pmFieldsMap.get("triggerId"), String.valueOf(pmTriggerId), NumberOperators.EQUALS))
+                ;
+
+        List<Map<String, Object>> props = selectBuilder.get();
+        if(CollectionUtils.isNotEmpty(props)) {
+            Long pmJobPlanID = (Long)props.get(0).get("pmjobPlanId");
+            PMJobPlanContextV3 pmJobPlan = getPMJobPlan(pmJobPlanID);
+            if(pmJobPlan != null){
+                Long jobPlanId = pmJobPlan.getJobPlanId();
+                JobPlanContext jobPlan = (JobPlanContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.JOB_PLAN, jobPlanId, JobPlanContext.class);
+                return jobPlan;
+            }
+        }
+        return null;
+    }
+
+    public static PMJobPlanContextV3 getPMJobPlan(Long id) throws Exception {
+
+        FacilioModule module = ModuleFactory.getPMJobPlanV3Module();
+        List<FacilioField> fields = FieldFactory.getPMJobPlanV3Fields();
+
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .select(fields)
+                .table(module.getTableName())
+                .andCondition(CriteriaAPI.getIdCondition(id, module))
+                ;
+
+        List<Map<String, Object>> props = selectBuilder.get();
+        if(CollectionUtils.isNotEmpty(props)) {
+            return FieldUtil.getAsBeanListFromMapList(props, PMJobPlanContextV3.class).get(0);
+        }
+        return null;
     }
 
 }

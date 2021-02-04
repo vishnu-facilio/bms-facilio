@@ -4451,4 +4451,13 @@ public class ModuleFactory {
 		return pmJobPlan;
 	}
 
+	public static FacilioModule getPMJobPlanTriggersV3Module() {
+		FacilioModule pmJobPlanTriggers = new FacilioModule();
+		pmJobPlanTriggers.setName("pmJobPlanTriggers");
+		pmJobPlanTriggers.setDisplayName("PM Job Plan Triggers");
+		pmJobPlanTriggers.setTableName("PM_Job_Plan_Triggers");
+		return pmJobPlanTriggers;
+	}
+
+
 }

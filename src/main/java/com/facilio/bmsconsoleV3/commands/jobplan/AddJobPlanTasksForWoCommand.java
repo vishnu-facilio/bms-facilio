@@ -21,7 +21,7 @@ public class AddJobPlanTasksForWoCommand extends FacilioCommand {
         WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
         if(workOrder.getPm() != null && workOrder.getResource() != null) {
             Map<String, List<TaskContext>> taskMap = (Map<String, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
-            JobPlanContext jobPlan = workOrder.getJobPlan();
+            JobPlanContext jobPlan = getJobPlanForWorkOrder(workOrder);
             if(jobPlan != null) {
                 List<JobPlanTaskSectionContext> taskSections = jobPlan.getTaskSectionList();
                 if (CollectionUtils.isNotEmpty(taskSections)) {
@@ -33,4 +33,14 @@ public class AddJobPlanTasksForWoCommand extends FacilioCommand {
 
         return false;
     }
+
+    private JobPlanContext getJobPlanForWorkOrder(WorkOrderContext wo) throws Exception {
+        if(wo.getPm() != null && wo.getTrigger() != null) {
+           return JobPlanAPI.getJobPlanForPMTrigger(wo.getTrigger().getId());
+        }
+        else if (wo.getJobPlan() != null) {
+            return wo.getJobPlan();
+        }
+        return null;
+     }
 }
