@@ -301,7 +301,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		return rule;
 	}
 	
-	private static void fetchAlarmMeta (ReadingRuleContext rule) throws Exception {
+	public static void fetchAlarmMeta (ReadingRuleContext rule) throws Exception {
 		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.NEW_READING_ALARM);

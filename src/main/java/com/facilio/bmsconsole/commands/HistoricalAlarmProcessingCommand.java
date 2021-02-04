@@ -76,8 +76,11 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 				DateRange modifiedDateRange = WorkflowRuleHistoricalAlarmsAPI.deleteAllAlarmOccurrencesBasedonCriteria(readingOccurenceDeletionCriteria, readingEventsDeletionCriteria, lesserStartTime, greaterEndTime, Type.READING_ALARM);
 				totalAlarmOccurrenceCount = fetchAndProcessAllEventsBasedOnAlarmDeletionRange(primaryRuleId, eventsFetchCriteria, modifiedDateRange.getStartTime(), modifiedDateRange.getEndTime(), Type.PRE_ALARM, totalAlarmOccurrenceCount);
 			}
-			else {	
-				totalAlarmOccurrenceCount = fetchAndProcessAllEventsBasedOnAlarmDeletionRange(primaryRuleId, eventsFetchCriteria, lesserStartTime, greaterEndTime, type, totalAlarmOccurrenceCount);				
+			else {
+				if(ruleJobType.getRollUpAlarmType() != null) {
+					fetchAndProcessAllEventsBasedOnAlarmDeletionRange(primaryRuleId, historyExecutionType.getEventsProcessingCriteria(loggerInfo, Type.valueOf(ruleJobType.getRollUpAlarmType().getIndex())), lesserStartTime, greaterEndTime, Type.valueOf(ruleJobType.getRollUpAlarmType().getIndex()), totalAlarmOccurrenceCount);
+				}
+				totalAlarmOccurrenceCount = fetchAndProcessAllEventsBasedOnAlarmDeletionRange(primaryRuleId, eventsFetchCriteria, lesserStartTime, greaterEndTime, type, totalAlarmOccurrenceCount);			
 			}			
 		
 			if(parentRuleResourceLoggerContext.getStatus() == WorkflowRuleResourceLoggerContext.Status.PARTIALLY_PROCESSED_STATE.getIntVal()) {
@@ -112,23 +115,12 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 				.module(eventModule)
 				.beanClass(NewEventAPI.getEventClass(type))
 				.andCriteria(fetchEventsCriteria)
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), lesserStartTime+","+greaterEndTime, DateOperators.BETWEEN));
-		
-		if(type == Type.SENSOR_ROLLUP_ALARM) {
-			Criteria sensorEventsCriteria = new Criteria();
-			sensorEventsCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("eventType"), String.valueOf(Type.SENSOR_ALARM.getIndex()), NumberOperators.EQUALS));
-			sensorEventsCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("eventType"), String.valueOf(type.getIndex()), NumberOperators.EQUALS));
-			selectEventbuilder
-				.andCriteria(sensorEventsCriteria);
-		}
-		else {
-			selectEventbuilder
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), lesserStartTime+","+greaterEndTime, DateOperators.BETWEEN))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("eventType"), String.valueOf(type.getIndex()), NumberOperators.EQUALS));
-		}
 		
 		HashMap<String, AlarmOccurrenceContext> lastOccurrenceOfPreviousBatchMap = new HashMap<String, AlarmOccurrenceContext>();
 		List<BaseEventContext> baseEvents = new ArrayList<BaseEventContext>();
-		SelectRecordsBuilder.BatchResult<BaseEventContext> batchSelect = selectEventbuilder.getInBatches("CREATED_TIME", EVENTS_FETCH_LIMIT_COUNT);
+		SelectRecordsBuilder.BatchResult<BaseEventContext> batchSelect = selectEventbuilder.getInBatches("CREATED_TIME, EVENT_TYPE", EVENTS_FETCH_LIMIT_COUNT);
 		
 		while(batchSelect.hasNext()) 
 		{
@@ -317,7 +309,9 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 			
 			AlarmRuleContext alarmRule = null;
 			if(type == Type.READING_ALARM || type == Type.PRE_ALARM) {
-				alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(ruleId),null);
+				alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(Collections.singletonList(ruleId), false, true),null);
+				ReadingRuleAPI.fetchAlarmMeta(alarmRule.getPreRequsite());
+				ReadingRuleAPI.fetchAlarmMeta(alarmRule.getAlarmTriggerRule());
 			}
 			
 			for(BaseEventContext baseEvent :baseEvents)

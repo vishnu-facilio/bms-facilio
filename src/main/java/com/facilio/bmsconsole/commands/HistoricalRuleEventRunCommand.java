@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import com.facilio.bmsconsole.context.*;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -120,7 +121,7 @@ public class HistoricalRuleEventRunCommand extends FacilioCommand implements Pos
 			
 			long eventInsertStartTime = System.currentTimeMillis();
 			if(baseEvents != null && !baseEvents.isEmpty()) {
-				insertEventsWithoutAlarmOccurrenceProcessed(baseEvents, type);			
+				insertEventsWithoutAlarmOccurrenceProcessed(baseEvents);			
 				LOGGER.info("HistoricalRuleEventRunCommand Events added in daily job: "+jobId+" PrimaryRule : "+primaryId+" for secondaryId : "+secondaryId+" between "+startTime+" and "+endTime+" Events Size  -- "+baseEvents.size()+ " Events -- "+baseEvents);						
 			}
 
@@ -234,7 +235,7 @@ public class HistoricalRuleEventRunCommand extends FacilioCommand implements Pos
 		}
 	}
 	
-	private void insertEventsWithoutAlarmOccurrenceProcessed(List<BaseEventContext> events, Type type) throws Exception
+	private void insertEventsWithoutAlarmOccurrenceProcessed(List<BaseEventContext> events) throws Exception
 	{	
 		List<AlarmSeverityContext> alarmSeverityList = AlarmAPI.getAlarmSeverityList();
 		HashMap<String,AlarmSeverityContext> alarmSeverityStringMap = new HashMap<String,AlarmSeverityContext>();
@@ -242,6 +243,8 @@ public class HistoricalRuleEventRunCommand extends FacilioCommand implements Pos
 			alarmSeverityStringMap.put(alarmSeverity.getSeverity(),alarmSeverity);	
 		}
 		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		Map<Type, List<BaseEventContext>> eventsMap = new HashMap<>();
 		for(BaseEventContext event:events)
 		{	
 			event.setSeverity(alarmSeverityStringMap.get(event.getSeverityString()));
@@ -249,16 +252,24 @@ public class HistoricalRuleEventRunCommand extends FacilioCommand implements Pos
 			event.setAlarmOccurrence(null);
 			event.setBaseAlarm(null);
 			event.setIsLiveEvent(false);
+			
+			List<BaseEventContext> list = eventsMap.get(event.getEventTypeEnum());
+			if (list == null) {
+				list = new ArrayList<>();
+				eventsMap.put(event.getEventTypeEnum(), list);
+			}
+			list.add(event);
 		}
 		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		String moduleName = NewEventAPI.getEventModuleName(type);	
-		InsertRecordBuilder<BaseEventContext> builder = new InsertRecordBuilder<BaseEventContext>()
-				.moduleName(moduleName)
-				.fields(modBean.getAllFields(moduleName));
-
-		builder.addRecords(events);
-		builder.save();			
+		if (MapUtils.isNotEmpty(eventsMap)) {
+			for (Type eventType : eventsMap.keySet()) {
+				String moduleName = NewEventAPI.getEventModuleName(eventType);
+				InsertRecordBuilder<BaseEventContext> insertBuilder = new InsertRecordBuilder<BaseEventContext>()
+						.moduleName(moduleName).fields(modBean.getAllFields(moduleName));
+				insertBuilder.addRecords(eventsMap.get(eventType));
+				insertBuilder.save();
+			}
+		}			
 	}
 	
 	private HashMap<String, Boolean> constructJobStates(Boolean isFirstIntervalJob, Boolean isLastIntervalJob, Boolean isManualFailed) throws Exception

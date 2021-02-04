@@ -57,7 +57,7 @@ public abstract class ExecuteHistoricalRule {
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
 		Criteria deletionCriteria = new Criteria();
 		for(String loggerInfoPropKeyName :getExecutionLoggerInfoProps()) { //occurrence fieldName
-			deletionCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(loggerInfoPropKeyName), String.valueOf((Long)loggerInfo.get(loggerInfoPropKeyName)), NumberOperators.EQUALS));
+			deletionCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(loggerInfoPropKeyName), String.valueOf(loggerInfo.get(loggerInfoPropKeyName)), NumberOperators.EQUALS));
 		}
 		return deletionCriteria;
 	}
@@ -70,7 +70,7 @@ public abstract class ExecuteHistoricalRule {
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(eventModule.getName()));
 		Criteria fetchCriteria = new Criteria();
 		for(String loggerInfoPropKeyName :getExecutionLoggerInfoProps()) { //event fieldName
-			fetchCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(loggerInfoPropKeyName), String.valueOf((Long)loggerInfo.get(loggerInfoPropKeyName)), NumberOperators.EQUALS));
+			fetchCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(loggerInfoPropKeyName), String.valueOf(loggerInfo.get(loggerInfoPropKeyName)), NumberOperators.EQUALS));
 		}
 		return fetchCriteria;
 	}

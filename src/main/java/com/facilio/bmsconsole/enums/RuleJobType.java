@@ -23,7 +23,7 @@ public enum RuleJobType implements FacilioEnum {
 	RULE_ROLLUP_ALARM (new ExecuteHistoryForRuleRollUp(), 2),
 	ASSET_ROLLUP_ALARM (new ExecuteHistoryForAssetRollUp(), 2),
 	SENSOR_ALARM,
-	SENSOR_ROLLUP_ALARM (new ExecuteHistoryForSensorRule(), 3),
+	SENSOR_ROLLUP_ALARM (new ExecuteHistoryForSensorRule(), 3, RuleJobType.SENSOR_ALARM),
 	MULTIVARIATE_ANOMALY_ALARM,
 	;
 	public int getIndex() {
@@ -47,6 +47,7 @@ public enum RuleJobType implements FacilioEnum {
 	
 	ExecuteHistoricalRule historyRuleExecutionType;
 	Integer hierarchyLevels = null;
+	RuleJobType rollUpAlarmType = null;
 	
 	RuleJobType(ExecuteHistoricalRule historyRuleExecutionType){
 		this.historyRuleExecutionType = historyRuleExecutionType;
@@ -57,10 +58,20 @@ public enum RuleJobType implements FacilioEnum {
 		this.hierarchyLevels = hierarchyLevels;
 	}
 	
+	RuleJobType(ExecuteHistoricalRule historyRuleExecutionType, int hierarchyLevels, RuleJobType rollUpAlarmType){
+		this.historyRuleExecutionType = historyRuleExecutionType;
+		this.hierarchyLevels = hierarchyLevels;
+		this.rollUpAlarmType = rollUpAlarmType;
+	}
+	
 	public ExecuteHistoricalRule getHistoryRuleExecutionType() {
 		return historyRuleExecutionType;
 	}
 	
+	public RuleJobType getRollUpAlarmType() {
+		return rollUpAlarmType;
+	}
+
 	public Integer getHierarchyLevels() {
 		return hierarchyLevels;
 	}

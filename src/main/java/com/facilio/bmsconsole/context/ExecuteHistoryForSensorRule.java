@@ -34,6 +34,7 @@ public class ExecuteHistoryForSensorRule extends ExecuteHistoricalRule{
 		List<String> defaultLoggerInfoPropList = new ArrayList<String>();
 //		defaultLoggerInfoPropList.add("sensorRule");
 		defaultLoggerInfoPropList.add("resource"); 
+		defaultLoggerInfoPropList.add("readingFieldId"); 
 		return defaultLoggerInfoPropList;
 	}
 	
@@ -44,21 +45,22 @@ public class ExecuteHistoryForSensorRule extends ExecuteHistoricalRule{
 		long processStartTime = System.currentTimeMillis();
     	Long assetId = (Long) loggerInfo.get("resource");
     	Integer ruleJobType = (Integer) loggerInfo.get("ruleJobType");
-    	RuleJobType ruleJobTypeEnum = RuleJobType.valueOf(ruleJobType);    
+    	RuleJobType ruleJobTypeEnum = RuleJobType.valueOf(ruleJobType);
+    	Long assetCategoryId = (Long) loggerInfo.get("assetCategoryId");
+    	String readingFieldIds = (String) loggerInfo.get("readingFieldId");
 
-		AssetContext currentAssetContext = AssetsAPI.getAssetInfo(assetId);
-		Long assetCategoryId = currentAssetContext.getCategory().getId();
-
-		if(assetCategoryId == null || currentAssetContext == null || jobStatesMap == null || MapUtils.isEmpty(jobStatesMap) || jobId == -1 || dateRange == null || ruleJobTypeEnum != RuleJobType.SENSOR_ALARM) {
+//		AssetContext currentAssetContext = AssetsAPI.getAssetInfo(assetId);
+//		Long assetCategoryId = currentAssetContext.getCategory().getId();
+   
+		if(assetCategoryId == null || jobStatesMap == null || MapUtils.isEmpty(jobStatesMap) || jobId == -1 || dateRange == null || ruleJobTypeEnum != RuleJobType.SENSOR_ROLLUP_ALARM) {
 			throw new Exception("Invalid params to execute daily " +ruleJobTypeEnum.getValue()+ " event job: "+jobId);				
 		}
-//		sensorRule.setMatchedResourceIds(Collections.singletonList(currentResourceContext.getId()));
 
 		boolean isFirstIntervalJob = Boolean.TRUE.equals((Boolean) jobStatesMap.get("isFirstIntervalJob"));
 		boolean isLastIntervalJob = Boolean.TRUE.equals((Boolean) jobStatesMap.get("isLastIntervalJob"));
 		Boolean isManualFailed = (Boolean) jobStatesMap.get("isManualFailed");
 		
-		List<SensorRuleContext> sensorRules = SensorRuleUtil.getSensorRuleByCategoryId(assetCategoryId, true);
+		List<SensorRuleContext> sensorRules = SensorRuleUtil.getSensorRuleByCategoryId(assetCategoryId, readingFieldIds, true);
 		List<ReadingContext> readings = new ArrayList<ReadingContext>();
 		List<SensorRollUpEventContext> sensorMeterRollUpEvents = new ArrayList<SensorRollUpEventContext>();
 		if(sensorRules != null && !sensorRules.isEmpty()) {	
@@ -72,7 +74,7 @@ public class ExecuteHistoryForSensorRule extends ExecuteHistoricalRule{
 					readings.addAll(fieldReadings);
 				}	
 			}
-			baseEvents.addAll(SensorRuleUtil.executeSensorRules(sensorRules,readings, true, sensorMeterRollUpEvents));
+			baseEvents = SensorRuleUtil.executeSensorRules(sensorRules,readings, true, sensorMeterRollUpEvents);
 		}	
 		LOGGER.info("Time taken for SensorRule HistoricalRun for jobId: " +jobId+ " is: " + (System.currentTimeMillis() - processStartTime));
 		return baseEvents;
@@ -81,9 +83,19 @@ public class ExecuteHistoryForSensorRule extends ExecuteHistoricalRule{
 	@Override
 	public List<Long> getMatchedSecondaryParamIds(JSONObject loggerInfo, Boolean isInclude) throws Exception 
 	{
-		String ruleKeyName = fetchPrimaryLoggerKey();
-		Long ruleId = (Long)loggerInfo.get(ruleKeyName);
-		List<Long> selectedResourceIds = (List<Long>) loggerInfo.get("resource");
+		String assetCategoryKeyName = fetchPrimaryLoggerKey();
+		Long assetCategoryId = (Long)loggerInfo.get(assetCategoryKeyName);
+		List<Long> selectedResourceIds = new ArrayList<Long>();
+		
+		if(assetCategoryId == null) {
+			List<AssetContext> assets = AssetsAPI.getAssetListOfCategory(assetCategoryId);
+			if(assets != null && !assets.isEmpty()) {
+				selectedResourceIds = assets.stream().map(asset -> asset.getId()).collect(Collectors.toList());
+			}
+		}
+		else {
+			selectedResourceIds = (List<Long>) loggerInfo.get("resource");
+		}
 //		SensorRuleContext sensorRule = SensorRuleUtil.getSensorRuleById(ruleId);
 //		if (sensorRule == null) {
 //			throw new IllegalArgumentException("Invalid sensor rule id to run through historical data.");
@@ -91,7 +103,16 @@ public class ExecuteHistoryForSensorRule extends ExecuteHistoricalRule{
 //		List<Long> matchedResourceIds = sensorRule.getMatchedResourcesIds();
 
 //		List<Long> finalResourceIds = WorkflowRuleHistoricalAlarmsAPI.getMatchedFinalSecondaryIds(selectedResourceIds, matchedResourceIds, isInclude);
-		return null;
+		return selectedResourceIds;
 	}
-
+	
+	@Override
+	public String fetchPrimaryLoggerKey() {
+		return "assetCategoryId";	
+	}
+	
+	@Override
+	public String fetchSecondaryLoggerKey() {
+		return "resource";	
+	}
 }

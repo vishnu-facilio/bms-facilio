@@ -118,7 +118,7 @@ public class SensorRuleUtil {
 		return getSensorRuleFromProps(props, isFetchSubProps);
 	}
 	
-	public static List<SensorRuleContext> getSensorRuleByCategoryId(long assetCategoryId, boolean isFetchSubProps) throws Exception {
+	public static List<SensorRuleContext> getSensorRuleByCategoryId(long assetCategoryId, String readingFieldIds, boolean isFetchSubProps) throws Exception {
 		
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getSensorRuleFields());
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -126,7 +126,12 @@ public class SensorRuleUtil {
 			.table(ModuleFactory.getSensorRuleModule().getTableName())
 			.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), "true", BooleanOperators.IS))
 			.andCondition(CriteriaAPI.getCondition(fieldMap.get("assetCategoryId"), ""+assetCategoryId, NumberOperators.EQUALS));
-							
+			
+		if(readingFieldIds != null && StringUtils.isNotEmpty(readingFieldIds)){
+			selectBuilder
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("readingFieldId"), readingFieldIds, NumberOperators.EQUALS));	
+		}
+
 		List<Map<String, Object>> props = selectBuilder.get();
 		return getSensorRuleFromProps(props, isFetchSubProps);
 	}
@@ -351,10 +356,10 @@ public class SensorRuleUtil {
 			if(baseEvents != null && !baseEvents.isEmpty()) {
 				if(isHistorical) {
 					baseEvents.addAll(sensorMeterRollUpEvents);				
-					FacilioChain addEventChain = TransactionChainFactory.getV2AddEventChain(isHistorical); //to be removed when handled in framework
-					addEventChain.getContext().put(EventConstants.EventContextNames.EVENT_LIST, baseEvents); 
-					addEventChain.getContext().put(EventConstants.EventContextNames.IS_HISTORICAL_EVENT, isHistorical);
-					addEventChain.execute();
+//					FacilioChain addEventChain = TransactionChainFactory.getV2AddEventChain(isHistorical); //to be removed when handled in framework
+//					addEventChain.getContext().put(EventConstants.EventContextNames.EVENT_LIST, baseEvents); 
+//					addEventChain.getContext().put(EventConstants.EventContextNames.IS_HISTORICAL_EVENT, isHistorical);
+//					addEventChain.execute();
 					return baseEvents;
 				}
 				else {
