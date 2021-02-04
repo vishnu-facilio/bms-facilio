@@ -20,7 +20,7 @@
         <global-results>
             <result name="success" type="stream">
                 <param name="contentType">${contentType}</param>
-                <param name="contentDisposition">attachment;filename="${filename}";filename*=UTF-8''${filename}</param>
+                <param name="contentDisposition">attachment;filename="${filename}"</param>
                 <param name="inputName">downloadStream</param>
                 <param name="bufferSize">1024</param>
             </result>

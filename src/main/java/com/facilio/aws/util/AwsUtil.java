@@ -453,8 +453,8 @@ public class AwsUtil
 		if (CollectionUtils.isNotEmpty(bcc)) {
 			destination.withBccAddresses(bcc);
 		}
-		Content subjectContent = new Content().withData((String) mailJson.get("subject")).withCharset("UTF-8");
-		Content bodyContent = new Content().withData((String) mailJson.get("message")).withCharset("UTF-8");
+		Content subjectContent = new Content().withData((String) mailJson.get("subject"));
+		Content bodyContent = new Content().withData((String) mailJson.get("message"));
 
 		Body body = null;
 		if(mailJson.get("mailType") != null && mailJson.get("mailType").equals("html")) {
