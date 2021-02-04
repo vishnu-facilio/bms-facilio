@@ -937,9 +937,12 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllControlGroupView().setOrder(order++));
-		views.put("tenantAll", getTenantControlGroupView().setOrder(order++));
 		viewsMap.put(ControlScheduleUtil.CONTROL_GROUP_MODULE_NAME, views);
 
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getTenantControlGroupView().setOrder(order++));
+		viewsMap.put(ControlScheduleUtil.CONTROL_GROUP_TENANT_SHARING_MODULE_NAME, views);
 		return viewsMap;
 	}
 
@@ -8412,9 +8415,9 @@ public class ViewFactory {
 		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
 
 		FacilioView allView = new FacilioView();
-		allView.setName("tenantAll");
+		allView.setName("all");
 		allView.setDisplayName("All Groups");
-		allView.setModuleName("controlGroupv2");
+		allView.setModuleName(ControlScheduleUtil.CONTROL_GROUP_TENANT_SHARING_MODULE_NAME);
 		allView.setSortFields(sortFields);
 		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
 
