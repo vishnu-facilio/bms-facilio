@@ -330,6 +330,13 @@ public class V2AlarmAction extends FacilioAction {
 		FacilioChain c = TransactionChainFactory.getV2AlarmOccurrenceCreateWO();
 		c.execute(context);
 		
+		WorkOrderContext wo = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
+		long woId = -1;
+		if (wo != null) {
+			woId = wo.getId();
+		}
+		setResult("woId", woId);
+		
 		return SUCCESS;
 	}
 	
