@@ -779,4 +779,11 @@ public class TransactionChainFactoryV3 {
         chain.addCommand(new ResetControlGroupCommand());
         return chain;
     }
+
+	public static FacilioChain getControlCommandExecutionCreateScheduleChain() {
+		// TODO Auto-generated method stub
+		FacilioChain chain = getDefaultChain();
+        chain.addCommand(new GetCommandsAndScheduleForExecutionCommand());
+        return chain;
+	}
 }

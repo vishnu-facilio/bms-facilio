@@ -171,13 +171,16 @@
     <job name='CloudAgent' classname='com.facilio.bmsconsole.jobs.CloudAgent' transactionTimeout="7200000"/>
 
 	<!-- create slots for facilities -->
-	<job name='CreateSlotForFacilities' classname= 'com.facilio.bmsconsoleV3.commands.facility.GenerateSlotCommand' transactionTimeout='600000'/> -->
-	<job name='ScheduleSlotCreation' classname= 'com.facilio.bmsconsoleV3.commands.facility.SlotCreationScheduler' transactionTimeout='600000'/> -->
+	<job name='CreateSlotForFacilities' classname= 'com.facilio.bmsconsoleV3.commands.facility.GenerateSlotCommand' transactionTimeout='600000'/>
+	<job name='ScheduleSlotCreation' classname= 'com.facilio.bmsconsoleV3.commands.facility.SlotCreationScheduler' transactionTimeout='600000'/>
 
 	<!-- Agent Data Missing Job-->
 	<job name="AgentDataMissing" classname="com.facilio.bmsconsole.jobs.DataProcessingAlertJob" transactionTimeout="420000"/>
 	<job name="AgentDataPending" classname="com.facilio.bmsconsole.jobs.DataPendingAlertJob" transactionTimeout="420000"/>
 	
 	
-	<job name='ControlScheduleSlotCreationJob' classname= 'com.facilio.bmsconsole.jobs.ControlScheduleSlotCreationJob' transactionTimeout='600000'/> -->
+	<job name='ControlScheduleSlotCreationJob' classname= 'com.facilio.bmsconsole.jobs.ControlScheduleSlotCreationJob' transactionTimeout='600000'/>
+	<job name='controlCommandExecutionCreateScheduleJob' classname= 'com.facilio.bmsconsole.jobs.ControlCommandExecutionCreateScheduleJob' transactionTimeout='600000'/>
+	<job name='controlCommandExecutionJob' classname= 'com.facilio.bmsconsole.jobs.ControlCommandExecutionJob' transactionTimeout='600000'/>
+	
 </scheduler>

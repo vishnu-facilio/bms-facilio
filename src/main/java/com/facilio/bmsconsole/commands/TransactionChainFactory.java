@@ -3949,6 +3949,15 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static FacilioChain getPushControlActionCommandChain() {
+			
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new PublishIOTMessageControlActionCommand());
+			c.addCommand(new MarkPublishedCommandStatusCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
+			return c;
+		}
+		
 		public static FacilioChain getExecuteControlActionCommandForControlGroupChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new FetchControlGroupCommand());
