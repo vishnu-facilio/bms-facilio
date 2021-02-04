@@ -11,6 +11,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
@@ -34,6 +35,9 @@ public class GetAllModulesCommand extends FacilioCommand {
 			ContextNames.SERVICE_REQUEST,
 			ContextNames.QUOTE,
 			ContextNames.WorkPermit.WORKPERMIT,
+			ControlScheduleUtil.CONTROL_SCHEDULE_MODULE_NAME,
+			ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_MODULE_NAME,
+			ControlScheduleUtil.CONTROL_GROUP_MODULE_NAME,
 		});
 
 	@Override
