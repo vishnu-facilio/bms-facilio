@@ -8,6 +8,8 @@ import java.util.Map;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
@@ -65,6 +67,8 @@ import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 
 public class ControlScheduleUtil {
+	
+	private static final Logger LOGGER = LogManager.getLogger(ControlScheduleUtil.class.getName());
 
 	public static final String CONTROL_SCHEDULE_MODULE_NAME = "controlSchedule";
 	public static final String CONTROL_SCHEDULE_EXCEPTION_MODULE_NAME = "controlScheduleException";
@@ -314,9 +318,7 @@ public class ControlScheduleUtil {
 					}
 					ControlActionCommandContext.Status status = isControllableField == true ? ControlActionCommandContext.Status.SCHEDULED : ControlActionCommandContext.Status.SCHEDULED_WITH_NO_PERMISSION;
 					
-					ControlActionMode actinMode = rdm.getControlActionModeEnum() == null ? ControlActionMode.SANDBOX : rdm.getControlActionModeEnum();
-					
-					commands.add(new ControlActionCommandContext(controlField.getControlGroupAsset().getAsset(), controlField.getFieldId(), controlField.getTrueVal(),slot.getStartTime(),slot.getGroup(),slot.getRoutine(),status,actinMode));
+					commands.add(new ControlActionCommandContext(controlField.getControlGroupAsset().getAsset(), controlField.getFieldId(), controlField.getTrueVal(),slot.getStartTime(),slot.getGroup(),slot.getRoutine(),status,rdm));
 				}
 			}
 		}
@@ -350,12 +352,11 @@ public class ControlScheduleUtil {
 										isControllableField = true;
 									}
 									ControlActionCommandContext.Status status = isControllableField == true ? ControlActionCommandContext.Status.SCHEDULED : ControlActionCommandContext.Status.SCHEDULED_WITH_NO_PERMISSION;  
-									ControlActionMode actinMode = rdm.getControlActionModeEnum() == null ? ControlActionMode.SANDBOX : rdm.getControlActionModeEnum();  
 									if(slot.getStartTime() > 0 && controlField.getTrueVal() != null) {
-										commands.add(new ControlActionCommandContext(controlAsset.getAsset(), controlField.getFieldId(), controlField.getTrueVal(),slot.getStartTime(),group,status,actinMode));
+										commands.add(new ControlActionCommandContext(controlAsset.getAsset(), controlField.getFieldId(), controlField.getTrueVal(),slot.getStartTime(),group,status,rdm));
 									}
 									if(slot.getEndTime() > 0 && controlField.getFalseVal() != null) {
-										commands.add(new ControlActionCommandContext(controlAsset.getAsset(), controlField.getFieldId(), controlField.getFalseVal(),slot.getEndTime(),group,status,actinMode));
+										commands.add(new ControlActionCommandContext(controlAsset.getAsset(), controlField.getFieldId(), controlField.getFalseVal(),slot.getEndTime(),group,status,rdm));
 									}
 								}
 							}
@@ -751,6 +752,7 @@ public class ControlScheduleUtil {
 		
 		List<ControlGroupSection> sections =  ControlScheduleUtil.fetchRecord(ControlGroupSection.class, CONTROL_GROUP_SECTION_MODULE_NAME, null,CriteriaAPI.getCondition("CONTROL_GROUP", "controlGroup", ""+group.getId(), NumberOperators.EQUALS));
 		
+		LOGGER.info("sections -- >"+sections);
 		group.setSections(sections);
 		
 		Map<Long,ControlGroupSection> sectionMap = new HashMap<Long, ControlGroupSection>();
@@ -761,12 +763,15 @@ public class ControlScheduleUtil {
 		
 		List<ControlGroupAssetCategory> categories =  ControlScheduleUtil.fetchRecord(ControlGroupAssetCategory.class, CONTROL_GROUP_ASSET_CATEGORY_MODULE_NAME, null,CriteriaAPI.getCondition("CONTROL_GROUP", "controlGroup", ""+group.getId(), NumberOperators.EQUALS));
 		
+		LOGGER.info("categories --> "+categories);
 		Map<Long,ControlGroupAssetCategory> categoryMap = new HashMap<Long, ControlGroupAssetCategory>();
 		
 		for(ControlGroupAssetCategory category : categories) {
 			
 			category.setAssetCategory(AssetsAPI.getCategoryForAsset(category.getAssetCategory().getId()));
 			categoryMap.put(category.getId(), category);
+			
+			LOGGER.info("categories section Id--> "+category.getControlGroupSection());
 			
 			ControlGroupSection section = sectionMap.get(category.getControlGroupSection().getId());
 			section.addCategory(category);

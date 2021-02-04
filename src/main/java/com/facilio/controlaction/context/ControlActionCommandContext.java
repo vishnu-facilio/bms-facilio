@@ -51,7 +51,7 @@ public class ControlActionCommandContext extends V3Context {
 		this.executedTime = executedTime;
 	}
 	
-	public ControlActionCommandContext(ResourceContext resource,long fieldId,String value,long executedTime,ControlGroupContext group,Status status,ControlActionMode mode) {
+	public ControlActionCommandContext(ResourceContext resource,long fieldId,String value,long executedTime,ControlGroupContext group,Status status,ReadingDataMeta rdm) {
 		this.resource = resource;
 		this.fieldId = fieldId;
 		this.value = value;
@@ -60,11 +60,13 @@ public class ControlActionCommandContext extends V3Context {
 		this.group = group;
 		this.executedMode = Control_Action_Execute_Mode.SCHEDULE;
 		this.status = status;
-		this.controlActionMode = mode;
 		this.executedBy = AccountUtil.getCurrentUser();
+		this.rdm = rdm;
+		ControlActionMode actinMode = rdm.getControlActionModeEnum() == null ? ControlActionMode.SANDBOX : rdm.getControlActionModeEnum();
+		this.controlActionMode = actinMode;
 	}
 	
-	public ControlActionCommandContext(ResourceContext resource,long fieldId,String value,long executedTime,ControlGroupContext group,ControlScheduleExceptionContext exception,ControlActionMode mode) {
+	public ControlActionCommandContext(ResourceContext resource,long fieldId,String value,long executedTime,ControlGroupContext group,ControlScheduleExceptionContext exception,ReadingDataMeta rdm) {
 		this.resource = resource;
 		this.fieldId = fieldId;
 		this.value = value;
@@ -73,11 +75,13 @@ public class ControlActionCommandContext extends V3Context {
 		this.group = group;
 		this.exception = exception;
 		this.executedMode = Control_Action_Execute_Mode.SCHEDULE;
-		this.controlActionMode = mode;
 		this.executedBy = AccountUtil.getCurrentUser();
+		this.rdm = rdm;
+		ControlActionMode actinMode = rdm.getControlActionModeEnum() == null ? ControlActionMode.SANDBOX : rdm.getControlActionModeEnum();
+		this.controlActionMode = actinMode;
 	}
 	
-	public ControlActionCommandContext(ResourceContext resource,long fieldId,String value,long executedTime,ControlGroupContext group,ControlGroupRoutineContext routine,Status status,ControlActionMode mode) {
+	public ControlActionCommandContext(ResourceContext resource,long fieldId,String value,long executedTime,ControlGroupContext group,ControlGroupRoutineContext routine,Status status,ReadingDataMeta rdm) {
 		this.resource = resource;
 		this.fieldId = fieldId;
 		this.value = value;
@@ -87,8 +91,10 @@ public class ControlActionCommandContext extends V3Context {
 		this.routine = routine;
 		this.executedMode = Control_Action_Execute_Mode.SCHEDULE;
 		this.status = status;
-		this.controlActionMode = mode;
 		this.executedBy = AccountUtil.getCurrentUser();
+		this.rdm = rdm;
+		ControlActionMode actinMode = rdm.getControlActionModeEnum() == null ? ControlActionMode.SANDBOX : rdm.getControlActionModeEnum();
+		this.controlActionMode = actinMode;
 	}
 	
 	public FacilioField getField() {
