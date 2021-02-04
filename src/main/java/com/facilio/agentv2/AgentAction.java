@@ -12,6 +12,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.chain.FacilioChain;
+import com.facilio.constants.FacilioConstants;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -709,4 +715,20 @@ public class AgentAction extends AgentActionV2 {
 		bean.disableOrEnableAgent(getAgentId(), getDisable());
 	}
 
+	@Getter @Setter
+    private WorkflowRuleContext workflowRule;
+    @Getter @Setter
+    private String moduleName;
+
+	public String addAgentWorkflowRule() throws Exception {
+        FacilioChain chain = TransactionChainFactory.addAgentWorkflowRuleChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
+        context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, getWorkflowRule());
+        chain.execute();
+
+        setResult(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRule);
+
+	    return SUCCESS;
+    }
 }

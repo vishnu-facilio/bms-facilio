@@ -214,7 +214,7 @@
                 <param name="bufferSize">1024</param>
             </result>
         </action>
-
+        <action name="addAgentWorkflowRule" class="com.facilio.agentv2.AgentAction" method="addAgentWorkflowRule"></action>
     </package>
 
     <package name="ControllerThreadApiV2" namespace="/api/v2/agent/threadDump" extends="agent">
