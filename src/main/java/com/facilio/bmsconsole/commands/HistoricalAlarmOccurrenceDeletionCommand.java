@@ -81,10 +81,11 @@ public class HistoricalAlarmOccurrenceDeletionCommand extends FacilioCommand imp
 			Criteria eventsFetchCriteria = historyExecutionType.getEventsProcessingCriteria(loggerInfo, type);
 
 			DateRange modifiedDateRange = WorkflowRuleHistoricalAlarmsAPI.deleteAllAlarmOccurrencesBasedonCriteria(deletionCriteria, eventsFetchCriteria, actualStartTime, actualEndTime, type);
-			if(ruleJobType.getRollUpAlarmType() != null) {
-				WorkflowRuleHistoricalAlarmsAPI.deleteAllAlarmOccurrencesBasedonCriteria(historyExecutionType.getOccurrenceDeletionCriteria(loggerInfo, Type.valueOf(ruleJobType.getRollUpAlarmType().getIndex())), historyExecutionType.getEventsProcessingCriteria(loggerInfo, Type.valueOf(ruleJobType.getRollUpAlarmType().getIndex())), actualStartTime, actualEndTime, Type.valueOf(ruleJobType.getRollUpAlarmType().getIndex()));
+			if(ruleJobType == RuleJobType.SENSOR_ROLLUP_ALARM && ruleJobType.getRollUpAlarmType() != null) {
+				WorkflowRuleHistoricalAlarmsAPI.deleteAllAlarmOccurrencesBasedonCriteria(deletionCriteria, eventsFetchCriteria, modifiedDateRange.getStartTime(), modifiedDateRange.getEndTime(), type);
+				WorkflowRuleHistoricalAlarmsAPI.deleteMultipleAlarmOccurrencesBasedonCriteria(historyExecutionType.getOccurrenceDeletionCriteria(loggerInfo, Type.valueOf(ruleJobType.getRollUpAlarmType().getIndex())), historyExecutionType.getEventsProcessingCriteria(loggerInfo, Type.valueOf(ruleJobType.getRollUpAlarmType().getIndex())), modifiedDateRange.getStartTime(), modifiedDateRange.getEndTime(), Type.valueOf(ruleJobType.getRollUpAlarmType().getIndex()));		
 			}
-						 		
+			 		
 			updateParentRuleResourceLoggerToModifiedRangeAndEventGeneratingState(parentRuleResourceLoggerContext, modifiedDateRange);
 			
 			triggerGroupedTimeSplitRuleResourceLoggers(parentRuleResourceLoggerId);		

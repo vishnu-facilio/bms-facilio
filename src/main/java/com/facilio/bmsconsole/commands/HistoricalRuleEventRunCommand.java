@@ -117,6 +117,7 @@ public class HistoricalRuleEventRunCommand extends FacilioCommand implements Pos
 			}
 			
 			jobStatesMap = constructJobStates(isFirstIntervalJob, isLastIntervalJob, false);
+			loggerInfo.put("ruleResourceLogger", secondaryRuleResourceLoggerContext);
 			List<BaseEventContext> baseEvents = historyExecutionType.executeRuleAndGenerateEvents(loggerInfo, dateRange, jobStatesMap, jobId);
 			
 			long eventInsertStartTime = System.currentTimeMillis();

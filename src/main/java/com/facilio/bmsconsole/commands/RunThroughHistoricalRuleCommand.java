@@ -5,10 +5,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.MapUtils;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -17,11 +20,14 @@ import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLoggerContext;
 import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLogsContext;
 import com.facilio.bmsconsole.context.WorkflowRuleLoggerContext;
 import com.facilio.bmsconsole.context.WorkflowRuleResourceLoggerContext;
+import com.facilio.bmsconsole.context.sensor.SensorRuleContext;
+import com.facilio.bmsconsole.context.sensor.SensorRuleUtil;
 import com.facilio.bmsconsole.enums.RuleJobType;
 import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.bmsconsole.util.NewEventAPI;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleHistoricalAlarmsAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleHistoricalLoggerUtil;
 import com.facilio.bmsconsole.util.WorkflowRuleHistoricalLogsAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleLoggerAPI;
@@ -30,6 +36,7 @@ import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
@@ -86,8 +93,11 @@ public class RunThroughHistoricalRuleCommand extends FacilioCommand  implements 
 		
 		int minutesInterval = 24*60; 								//As of now, splitting up the rule_resource job each day
 		List<DateRange> intervals = new ArrayList<DateRange>();
+		List<Long> sensorRuleFieldIds = null;
+
 		if(ruleJobTypeEnum == RuleJobType.SENSOR_ROLLUP_ALARM) {
 			intervals.add(range);
+			sensorRuleFieldIds = getSensorRuleFieldIds(loggerInfo, primaryPropKeyName);
 		}
 		else {
 			intervals = DateTimeUtil.getTimeIntervals(range.getStartTime(), range.getEndTime(), minutesInterval);		
@@ -128,37 +138,16 @@ public class RunThroughHistoricalRuleCommand extends FacilioCommand  implements 
 		
 		String secondaryPropKeyName = historyRuleExecutionType.fetchSecondaryLoggerKey();
 		for(Long secondaryId :secondaryIds)
-		{	
-			if(secondaryPropKeyName != null) {
-				loggerInfo.put(secondaryPropKeyName, secondaryId);
+		{
+			if(ruleJobTypeEnum == RuleJobType.SENSOR_ROLLUP_ALARM && sensorRuleFieldIds != null && !sensorRuleFieldIds.isEmpty()) {
+				for(Long fieldId:sensorRuleFieldIds) {
+					loggerInfo.put("readingFieldId", fieldId);
+					addWorkflowRuleHistoricalLoggers(secondaryId, intervals, firstInterval, lastInterval, parentRuleLoggerId, loggerInfo, secondaryPropKeyName, ruleJobType);
+				}
 			}
-			WorkflowRuleResourceLoggerContext workflowRuleResourceLoggerContext = WorkflowRuleResourceLoggerAPI.setWorkflowRuleResourceLoggerContext(parentRuleLoggerId, secondaryId, null, ruleJobType, loggerInfo);
-			WorkflowRuleResourceLoggerAPI.addWorkflowRuleResourceLogger(workflowRuleResourceLoggerContext);
-			long parentRuleResourceId = workflowRuleResourceLoggerContext.getId();
-			workflowRuleResourceParentLoggerIds.add(parentRuleResourceId);
-			
-			if(intervals.size() == 1 && (firstInterval.getStartTime() == lastInterval.getStartTime() && firstInterval.getEndTime() == lastInterval.getEndTime())){
-				WorkflowRuleHistoricalLogsContext workflowRuleHistoricalLogsContext = WorkflowRuleHistoricalLogsAPI.setWorkflowRuleHistoricalLogsContext(parentRuleResourceId, firstInterval, WorkflowRuleHistoricalLogsContext.LogState.FIRST_AS_WELL_AS_LAST.getIntVal(), ruleJobType);
-				WorkflowRuleHistoricalLogsAPI.addWorkflowRuleHistoricalLogsContext(workflowRuleHistoricalLogsContext);	
+			else {
+				addWorkflowRuleHistoricalLoggers(secondaryId, intervals, firstInterval, lastInterval, parentRuleLoggerId, loggerInfo, secondaryPropKeyName, ruleJobType);
 			}
-			else 
-			{
-				for(DateRange interval:intervals)
-				{			
-					WorkflowRuleHistoricalLogsContext workflowRuleHistoricalLogsContext = new WorkflowRuleHistoricalLogsContext();
-					
-					if(interval.getStartTime() == firstInterval.getStartTime() && interval.getEndTime() == firstInterval.getEndTime()) {
-						workflowRuleHistoricalLogsContext = WorkflowRuleHistoricalLogsAPI.setWorkflowRuleHistoricalLogsContext(parentRuleResourceId, interval, WorkflowRuleHistoricalLogsContext.LogState.IS_FIRST_JOB.getIntVal(), ruleJobType);	
-					}
-					else if(interval.getStartTime() == lastInterval.getStartTime() && interval.getEndTime() == lastInterval.getEndTime()) {
-						workflowRuleHistoricalLogsContext = WorkflowRuleHistoricalLogsAPI.setWorkflowRuleHistoricalLogsContext(parentRuleResourceId, interval, WorkflowRuleHistoricalLogsContext.LogState.IS_LAST_JOB.getIntVal(), ruleJobType);	
-					}
-					else {
-						workflowRuleHistoricalLogsContext = WorkflowRuleHistoricalLogsAPI.setWorkflowRuleHistoricalLogsContext(parentRuleResourceId, interval, null, ruleJobType);	
-					}	
-					WorkflowRuleHistoricalLogsAPI.addWorkflowRuleHistoricalLogsContext(workflowRuleHistoricalLogsContext);	
-				}		
-			}			
 		}	
 		
 //		if(!workflowRuleResourceParentLoggerIds.isEmpty()) {
@@ -172,6 +161,49 @@ public class RunThroughHistoricalRuleCommand extends FacilioCommand  implements 
 //		}
 
 		return false;
+	}
+	
+	private void addWorkflowRuleHistoricalLoggers(Long secondaryId, List<DateRange> intervals, DateRange firstInterval, DateRange lastInterval, long parentRuleLoggerId, JSONObject loggerInfo, String secondaryPropKeyName, Integer ruleJobType) throws Exception {
+		if(secondaryPropKeyName != null) {
+			loggerInfo.put(secondaryPropKeyName, secondaryId);
+		}
+		WorkflowRuleResourceLoggerContext workflowRuleResourceLoggerContext = WorkflowRuleResourceLoggerAPI.setWorkflowRuleResourceLoggerContext(parentRuleLoggerId, secondaryId, null, ruleJobType, loggerInfo);
+		WorkflowRuleResourceLoggerAPI.addWorkflowRuleResourceLogger(workflowRuleResourceLoggerContext);
+		long parentRuleResourceId = workflowRuleResourceLoggerContext.getId();
+		workflowRuleResourceParentLoggerIds.add(parentRuleResourceId);
+		
+		if(intervals.size() == 1 && (firstInterval.getStartTime() == lastInterval.getStartTime() && firstInterval.getEndTime() == lastInterval.getEndTime())){
+			WorkflowRuleHistoricalLogsContext workflowRuleHistoricalLogsContext = WorkflowRuleHistoricalLogsAPI.setWorkflowRuleHistoricalLogsContext(parentRuleResourceId, firstInterval, WorkflowRuleHistoricalLogsContext.LogState.FIRST_AS_WELL_AS_LAST.getIntVal(), ruleJobType);
+			WorkflowRuleHistoricalLogsAPI.addWorkflowRuleHistoricalLogsContext(workflowRuleHistoricalLogsContext);	
+		}
+		else 
+		{
+			for(DateRange interval:intervals)
+			{			
+				WorkflowRuleHistoricalLogsContext workflowRuleHistoricalLogsContext = new WorkflowRuleHistoricalLogsContext();
+				
+				if(interval.getStartTime() == firstInterval.getStartTime() && interval.getEndTime() == firstInterval.getEndTime()) {
+					workflowRuleHistoricalLogsContext = WorkflowRuleHistoricalLogsAPI.setWorkflowRuleHistoricalLogsContext(parentRuleResourceId, interval, WorkflowRuleHistoricalLogsContext.LogState.IS_FIRST_JOB.getIntVal(), ruleJobType);	
+				}
+				else if(interval.getStartTime() == lastInterval.getStartTime() && interval.getEndTime() == lastInterval.getEndTime()) {
+					workflowRuleHistoricalLogsContext = WorkflowRuleHistoricalLogsAPI.setWorkflowRuleHistoricalLogsContext(parentRuleResourceId, interval, WorkflowRuleHistoricalLogsContext.LogState.IS_LAST_JOB.getIntVal(), ruleJobType);	
+				}
+				else {
+					workflowRuleHistoricalLogsContext = WorkflowRuleHistoricalLogsAPI.setWorkflowRuleHistoricalLogsContext(parentRuleResourceId, interval, null, ruleJobType);	
+				}	
+				WorkflowRuleHistoricalLogsAPI.addWorkflowRuleHistoricalLogsContext(workflowRuleHistoricalLogsContext);	
+			}		
+		}			
+	}
+	
+	private List<Long> getSensorRuleFieldIds(JSONObject loggerInfo, String primaryPropKeyName) throws Exception {	
+		List<SensorRuleContext> sensorRules = SensorRuleUtil.getSensorRuleByCategoryId((Long)loggerInfo.get(primaryPropKeyName), null, false);
+		if(sensorRules != null && !sensorRules.isEmpty()) {	
+			Set<Long> sensorRuleFieldIds = sensorRules.stream().map(sensorRule -> sensorRule.getReadingFieldId()).collect(Collectors.toSet());
+			List<Long> matchedSensorRuleFieldIds = new ArrayList<Long>(sensorRuleFieldIds);
+			return WorkflowRuleHistoricalAlarmsAPI.getMatchedFinalSecondaryIds((List<Long>)loggerInfo.get("readingFieldId"), matchedSensorRuleFieldIds, true);
+		}	
+		return null;
 	}
 	
 	@Override

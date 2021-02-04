@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.util;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -71,6 +72,44 @@ public class WorkflowRuleHistoricalAlarmsAPI {
 			NewAlarmAPI.changeLatestAlarmOccurrence(baseAlarmContext);		
 		}
 		return new DateRange(startTime, endTime);	
+	}	
+	
+	public static void deleteMultipleAlarmOccurrencesBasedonCriteria(Criteria deletionCriteria, Criteria eventsFetchCriteria, long startTime, long endTime, Type type) throws Exception 
+	{		
+		List<AlarmOccurrenceContext> multipleAlarmOccurrenceList = NewAlarmAPI.getAllAlarmOccurrences(deletionCriteria, startTime, endTime, type);
+		
+		deleteAllEventsInExactWindow(eventsFetchCriteria, startTime, endTime, type);
+	
+		if (multipleAlarmOccurrenceList != null && !multipleAlarmOccurrenceList.isEmpty())
+		{
+			LinkedHashMap<Long,List<AlarmOccurrenceContext>> alarmIdVsOccurrencesMap = groupAlarmIdVsOccurrences(multipleAlarmOccurrenceList);
+			HashMap<Long,BaseAlarmContext> alarmMap = NewAlarmAPI.getBaseAlarmByIds(new ArrayList<Long>(alarmIdVsOccurrencesMap.keySet()));
+			
+			for(Long alarmId:alarmIdVsOccurrencesMap.keySet()) {
+				List<AlarmOccurrenceContext> alarmOccurrenceList = alarmIdVsOccurrencesMap.get(alarmId);
+				AlarmOccurrenceContext lastAlarmOccurrence = alarmOccurrenceList.get(alarmOccurrenceList.size() - 1);
+				BaseAlarmContext baseAlarmContext = alarmMap.get(alarmId);
+				
+				if (alarmOccurrenceList.get(0).getCreatedTime() < startTime) 
+				{
+					AlarmOccurrenceContext initialEdgeAlarmOccurrence = alarmOccurrenceList.get(0);				
+					clearAlarmOccurrenceIdForEdgeEvents(initialEdgeAlarmOccurrence, initialEdgeAlarmOccurrence.getCreatedTime(), startTime-1000); 
+					startTime = initialEdgeAlarmOccurrence.getCreatedTime();
+				}
+				if (lastAlarmOccurrence.getClearedTime() == -1 || lastAlarmOccurrence.getClearedTime() > endTime) 
+				{
+					BaseEventContext finalEvent = getFinalEventForAlarmOccurrence(lastAlarmOccurrence);
+					if(finalEvent != null && finalEvent.getCreatedTime() > endTime) {
+						clearAlarmOccurrenceIdForEdgeEvents(lastAlarmOccurrence, endTime+1000, finalEvent.getCreatedTime()); //avoid event deletion
+						endTime = finalEvent.getCreatedTime();
+					}
+				}			
+				List<Long> alarmOccurrenceIds = alarmOccurrenceList.stream().map(alarmOccurrence -> alarmOccurrence.getId()).collect(Collectors.toList());
+				deleteAllAlarmOccurences(baseAlarmContext,alarmOccurrenceIds,startTime,endTime);
+				NewAlarmAPI.updateBaseAlarmWithNoOfOccurences(baseAlarmContext);	
+				NewAlarmAPI.changeLatestAlarmOccurrence(baseAlarmContext);
+			}		
+		}
 	}	
 	
 	private static void clearAlarmOccurrenceIdForEdgeEvents(AlarmOccurrenceContext edgeAlarmOccurrence, long startTime, long endTime) throws Exception {
@@ -207,6 +246,20 @@ public class WorkflowRuleHistoricalAlarmsAPI {
 			throw new IllegalArgumentException("Not a valid Inclusion/Exclusion of Secondary Params for the given historical rule.");
 		}	
 		return finalSecondaryIds;
+	}
+	
+	private static LinkedHashMap<Long,List<AlarmOccurrenceContext>> groupAlarmIdVsOccurrences(List<AlarmOccurrenceContext> alarmOccurrenceList) {
+		LinkedHashMap<Long,List<AlarmOccurrenceContext>> alarmIdVsOccurrencesMap = new LinkedHashMap<Long,List<AlarmOccurrenceContext>>();
+		for(AlarmOccurrenceContext alarmOccurrence:alarmOccurrenceList)
+		{
+			List<AlarmOccurrenceContext> list = alarmIdVsOccurrencesMap.get(alarmOccurrence.getAlarm().getId());
+			if (list == null) {
+				list = new ArrayList<AlarmOccurrenceContext>();
+				alarmIdVsOccurrencesMap.put(alarmOccurrence.getAlarm().getId(), list);
+			}
+			list.add(alarmOccurrence);
+		}
+		return alarmIdVsOccurrencesMap;
 	}
 	
 }

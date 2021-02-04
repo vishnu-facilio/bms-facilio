@@ -1206,6 +1206,28 @@ public class NewAlarmAPI {
 		}
 		return null;	
 	}
+	
+	public static HashMap<Long,BaseAlarmContext> getBaseAlarmByIds(List<Long> baseAlarmIds) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_ALARM);
+		
+		SelectRecordsBuilder<BaseAlarmContext> selectBuilder = new SelectRecordsBuilder<BaseAlarmContext>()
+				.select(modBean.getAllFields(module.getName()))
+				.module(modBean.getModule(FacilioConstants.ContextNames.BASE_ALARM))
+				.beanClass(BaseAlarmContext.class)
+				.andCondition(CriteriaAPI.getIdCondition(baseAlarmIds, module));
+	
+		List<BaseAlarmContext> baseAlarmContextList = selectBuilder.get();
+		HashMap<Long,BaseAlarmContext> alarmMap = new HashMap<Long,BaseAlarmContext>();
+		
+		if (baseAlarmContextList != null && !baseAlarmContextList.isEmpty()) {
+			for(BaseAlarmContext baseAlarmContext:baseAlarmContextList) {
+				alarmMap.put(baseAlarmContext.getId(), baseAlarmContext);
+			}
+		}
+		return alarmMap;	
+	}
 
 	public static BaseAlarmContext getBaseAlarmByMessageKey(String key) throws Exception {
 

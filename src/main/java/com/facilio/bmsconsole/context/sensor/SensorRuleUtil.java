@@ -118,7 +118,7 @@ public class SensorRuleUtil {
 		return getSensorRuleFromProps(props, isFetchSubProps);
 	}
 	
-	public static List<SensorRuleContext> getSensorRuleByCategoryId(long assetCategoryId, String readingFieldIds, boolean isFetchSubProps) throws Exception {
+	public static List<SensorRuleContext> getSensorRuleByCategoryId(long assetCategoryId, List<Long> readingFieldIds, boolean isFetchSubProps) throws Exception {
 		
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getSensorRuleFields());
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -127,7 +127,7 @@ public class SensorRuleUtil {
 			.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), "true", BooleanOperators.IS))
 			.andCondition(CriteriaAPI.getCondition(fieldMap.get("assetCategoryId"), ""+assetCategoryId, NumberOperators.EQUALS));
 			
-		if(readingFieldIds != null && StringUtils.isNotEmpty(readingFieldIds)){
+		if(readingFieldIds != null && !readingFieldIds.isEmpty()){
 			selectBuilder
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("readingFieldId"), readingFieldIds, NumberOperators.EQUALS));	
 		}
