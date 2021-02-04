@@ -312,9 +312,11 @@ public class ControlScheduleUtil {
 					if(rdm != null && rdm.isControllable() && rdm.getReadingTypeEnum() == ReadingType.WRITE) {
 						isControllableField = true;
 					}
-					ControlActionCommandContext.Status status = isControllableField == true ? ControlActionCommandContext.Status.SCHEDULED : ControlActionCommandContext.Status.SCHEDULED_WITH_NO_PERMISSION;  
+					ControlActionCommandContext.Status status = isControllableField == true ? ControlActionCommandContext.Status.SCHEDULED : ControlActionCommandContext.Status.SCHEDULED_WITH_NO_PERMISSION;
 					
-					commands.add(new ControlActionCommandContext(controlField.getControlGroupAsset().getAsset(), controlField.getFieldId(), controlField.getTrueVal(),slot.getStartTime(),slot.getGroup(),slot.getRoutine(),status,rdm.getControlActionModeEnum()));
+					ControlActionMode actinMode = rdm.getControlActionModeEnum() == null ? ControlActionMode.SANDBOX : rdm.getControlActionModeEnum();
+					
+					commands.add(new ControlActionCommandContext(controlField.getControlGroupAsset().getAsset(), controlField.getFieldId(), controlField.getTrueVal(),slot.getStartTime(),slot.getGroup(),slot.getRoutine(),status,actinMode));
 				}
 			}
 		}
@@ -348,11 +350,12 @@ public class ControlScheduleUtil {
 										isControllableField = true;
 									}
 									ControlActionCommandContext.Status status = isControllableField == true ? ControlActionCommandContext.Status.SCHEDULED : ControlActionCommandContext.Status.SCHEDULED_WITH_NO_PERMISSION;  
+									ControlActionMode actinMode = rdm.getControlActionModeEnum() == null ? ControlActionMode.SANDBOX : rdm.getControlActionModeEnum();  
 									if(slot.getStartTime() > 0 && controlField.getTrueVal() != null) {
-										commands.add(new ControlActionCommandContext(controlAsset.getAsset(), controlField.getFieldId(), controlField.getTrueVal(),slot.getStartTime(),group,status,rdm.getControlActionModeEnum()));
+										commands.add(new ControlActionCommandContext(controlAsset.getAsset(), controlField.getFieldId(), controlField.getTrueVal(),slot.getStartTime(),group,status,actinMode));
 									}
 									if(slot.getEndTime() > 0 && controlField.getFalseVal() != null) {
-										commands.add(new ControlActionCommandContext(controlAsset.getAsset(), controlField.getFieldId(), controlField.getFalseVal(),slot.getEndTime(),group,status,rdm.getControlActionModeEnum()));
+										commands.add(new ControlActionCommandContext(controlAsset.getAsset(), controlField.getFieldId(), controlField.getFalseVal(),slot.getEndTime(),group,status,actinMode));
 									}
 								}
 							}
