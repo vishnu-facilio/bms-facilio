@@ -61,16 +61,19 @@ const pupeteer = require(homedir + '/.npm-global/lib/node_modules/puppeteer');
         
         if(htmlContent && htmlContent != "false")
         {
-        	await page.setContent(htmlContent, {
-                waitUntil: 'networkidle0'
-            })
+	        	const buff = Buffer.from(htmlContent, 'base64');
+	        	htmlContent = buff.toString('utf-8');
+	        	await page.setContent(htmlContent, {
+	                waitUntil: 'networkidle0',
+	                timeout: 0
+	            })
         }
         else
         {
-        	await page.goto(pageUrl, {
-                waitUntil: 'networkidle0',
-                timeout: 0
-            });   	
+	        	await page.goto(pageUrl, {
+	                waitUntil: 'networkidle0',
+	                timeout: 0
+	            });   	
         }
         
         if (isPdf) {

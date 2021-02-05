@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Base64;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -40,6 +41,9 @@ public class PdfUtil {
 		String serverName = getServerName(url);
 		if (StringUtils.isEmpty(htmlContent)) {
 			htmlContent = "false";
+		}
+		else {
+			htmlContent = Base64.getEncoder().encodeToString(htmlContent.getBytes());
 		}
 		if (additionalInfo == null) {
 			additionalInfo = new JSONObject();
