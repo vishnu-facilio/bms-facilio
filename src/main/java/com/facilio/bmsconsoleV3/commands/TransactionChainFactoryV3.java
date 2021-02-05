@@ -24,6 +24,9 @@ import com.facilio.bmsconsoleV3.commands.facility.CreatePaymentRecordForBookingC
 import com.facilio.bmsconsoleV3.commands.facility.SetCanEditForBookingCommand;
 import com.facilio.bmsconsoleV3.commands.facility.ValidateCancelBookingCommandV3;
 import com.facilio.bmsconsoleV3.commands.facility.ValidateFacilityBookingCommandV3;
+import com.facilio.bmsconsoleV3.commands.facility.*;
+import com.facilio.bmsconsoleV3.commands.jobplan.AddJobPlanPMsInContextCommand;
+import com.facilio.bmsconsoleV3.commands.jobplan.AddJobPlanTasksCommand;
 import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.UpdatePeoplePrimaryContactCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.POAfterCreateOrEditV3Command;
@@ -843,4 +846,12 @@ public class TransactionChainFactoryV3 {
         chain.addCommand(new GetCommandsAndScheduleForExecutionCommand());
         return chain;
 	}
+
+    public static FacilioChain getUpdateJobPlanChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new AddJobPlanTasksCommand());
+        chain.addCommand(new AddJobPlanPMsInContextCommand());
+        chain.addCommand(new ScheduleNewPMCommand(true));
+        return chain;
+    }
 }

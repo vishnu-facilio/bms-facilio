@@ -268,4 +268,22 @@ public class JobPlanAPI {
         return null;
     }
 
+    public static List<PMJobPlanContextV3> getPMForJobPlanId(Long jobPlanId) throws Exception {
+
+        FacilioModule module = ModuleFactory.getPMJobPlanV3Module();
+        List<FacilioField> fields = FieldFactory.getPMJobPlanV3Fields();
+
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .select(fields)
+                .table(module.getTableName())
+                .andCondition(CriteriaAPI.getCondition("JOB_PLAN_ID", "jobPlanId", String.valueOf(jobPlanId), NumberOperators.EQUALS))
+                ;
+
+        List<Map<String, Object>> props = selectBuilder.get();
+        if(CollectionUtils.isNotEmpty(props)) {
+            return FieldUtil.getAsBeanListFromMapList(props, PMJobPlanContextV3.class);
+        }
+        return null;
+    }
+
 }

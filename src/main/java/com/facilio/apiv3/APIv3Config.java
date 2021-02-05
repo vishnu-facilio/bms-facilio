@@ -1062,7 +1062,7 @@ public class APIv3Config {
                 .create()
                     .afterSave(new AddJobPlanTasksCommand())
                 .update()
-                    .afterSave(new AddJobPlanTasksCommand())
+                    .afterSave(TransactionChainFactoryV3.getUpdateJobPlanChain())
                 .delete()
                 .list()
                 .summary()
