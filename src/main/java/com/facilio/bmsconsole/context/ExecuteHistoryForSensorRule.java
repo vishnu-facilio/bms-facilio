@@ -58,7 +58,7 @@ public class ExecuteHistoryForSensorRule extends ExecuteHistoricalRule{
 		boolean isLastIntervalJob = Boolean.TRUE.equals((Boolean) jobStatesMap.get("isLastIntervalJob"));
 		Boolean isManualFailed = (Boolean) jobStatesMap.get("isManualFailed");
 		
-		List<SensorRuleContext> sensorRules = SensorRuleUtil.getSensorRuleByCategoryId(assetCategoryId, Collections.singletonList(readingFieldId), true);
+		List<SensorRuleContext> sensorRules = SensorRuleUtil.getSensorRuleByCategoryId(assetCategoryId, Collections.singletonList(readingFieldId), true, true);
 		List<ReadingContext> readings = new ArrayList<ReadingContext>();
 		List<SensorRollUpEventContext> sensorMeterRollUpEvents = new ArrayList<SensorRollUpEventContext>();
 		if(sensorRules != null && !sensorRules.isEmpty()) {	

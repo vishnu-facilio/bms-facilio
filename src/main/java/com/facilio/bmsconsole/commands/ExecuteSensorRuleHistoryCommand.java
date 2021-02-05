@@ -69,7 +69,7 @@ public class ExecuteSensorRuleHistoryCommand extends FacilioJob {
 			DateRange modifiedDateRange = WorkflowRuleHistoricalAlarmsAPI.deleteAllAlarmOccurrencesBasedonCriteria(getOccurrenceDeletionCriteria(assetIds, Type.SENSOR_ROLLUP_ALARM), getEventsProcessingCriteria(assetIds, Type.SENSOR_ROLLUP_ALARM), dateRange.getStartTime(), dateRange.getEndTime(), Type.SENSOR_ROLLUP_ALARM);
 			WorkflowRuleHistoricalAlarmsAPI.deleteAllAlarmOccurrencesBasedonCriteria(getOccurrenceDeletionCriteria(assetIds, Type.SENSOR_ALARM), getEventsProcessingCriteria(assetIds, Type.SENSOR_ALARM), modifiedDateRange.getStartTime(), modifiedDateRange.getEndTime(), Type.SENSOR_ALARM);
 	
-			List<SensorRuleContext> sensorRules = SensorRuleUtil.getSensorRuleByCategoryId(assetCategoryId, null, true);
+			List<SensorRuleContext> sensorRules = SensorRuleUtil.getSensorRuleByCategoryId(assetCategoryId, null, true, true);
 			List<ReadingContext> readings = new ArrayList<ReadingContext>();
 			List<SensorRollUpEventContext> sensorMeterRollUpEvents = new ArrayList<SensorRollUpEventContext>();
 			if(sensorRules != null && !sensorRules.isEmpty()) {	

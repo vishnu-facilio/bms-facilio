@@ -197,7 +197,7 @@ public class RunThroughHistoricalRuleCommand extends FacilioCommand  implements 
 	}
 	
 	private List<Long> getSensorRuleFieldIds(JSONObject loggerInfo, String primaryPropKeyName) throws Exception {	
-		List<SensorRuleContext> sensorRules = SensorRuleUtil.getSensorRuleByCategoryId((Long)loggerInfo.get(primaryPropKeyName), null, false);
+		List<SensorRuleContext> sensorRules = SensorRuleUtil.getSensorRuleByCategoryId((Long)loggerInfo.get(primaryPropKeyName), null, false, true);
 		if(sensorRules != null && !sensorRules.isEmpty()) {	
 			Set<Long> sensorRuleFieldIds = sensorRules.stream().map(sensorRule -> sensorRule.getReadingFieldId()).collect(Collectors.toSet());
 			List<Long> matchedSensorRuleFieldIds = new ArrayList<Long>(sensorRuleFieldIds);

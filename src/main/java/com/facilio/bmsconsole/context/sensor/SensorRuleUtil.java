@@ -78,7 +78,7 @@ public class SensorRuleUtil {
 			.andCondition(CriteriaAPI.getIdCondition(ruleIds, ModuleFactory.getSensorRuleModule()));
 							
 		List<Map<String, Object>> props = selectBuilder.get();
-		List<SensorRuleContext> sensorRuleList = getSensorRuleFromProps(props, true);
+		List<SensorRuleContext> sensorRuleList = getSensorRuleFromProps(props, true, false);
 		if (sensorRuleList != null && !sensorRuleList.isEmpty()) {
 			for(SensorRuleContext sensorRule: sensorRuleList) {
 				setMatchedResourcesIds(sensorRule);
@@ -93,19 +93,19 @@ public class SensorRuleUtil {
 		sensorRule.setMatchedResourceIds(assetIds);
 	}
 	
-	public static List<SensorRuleContext> fetchSensorRulesByModule(String moduleName, boolean isFetchSubProps) throws Exception {
+	public static List<SensorRuleContext> fetchSensorRulesByModule(String moduleName, boolean isFetchSubProps, boolean isHistorical) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule readingModule = modBean.getModule(moduleName);
 		FacilioModule categoryModule = modBean.getParentModule(readingModule.getModuleId());
 
 		if(categoryModule != null) {
-			List<SensorRuleContext> sensorRules = SensorRuleUtil.getSensorRuleByModuleId(categoryModule,isFetchSubProps);
+			List<SensorRuleContext> sensorRules = SensorRuleUtil.getSensorRuleByModuleId(categoryModule,isFetchSubProps, isHistorical);
 			return sensorRules;	
 		}
 		return null;
 	}
 	
-	public static List<SensorRuleContext> getSensorRuleByModuleId(FacilioModule childModule, boolean isFetchSubProps) throws Exception {
+	public static List<SensorRuleContext> getSensorRuleByModuleId(FacilioModule childModule, boolean isFetchSubProps,boolean isHistorical) throws Exception {
 		
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getSensorRuleFields());
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -115,10 +115,10 @@ public class SensorRuleUtil {
 			.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), childModule.getExtendedModuleIds(), NumberOperators.EQUALS));
 							
 		List<Map<String, Object>> props = selectBuilder.get();
-		return getSensorRuleFromProps(props, isFetchSubProps);
+		return getSensorRuleFromProps(props, isFetchSubProps, isHistorical);
 	}
 	
-	public static List<SensorRuleContext> getSensorRuleByCategoryId(long assetCategoryId, List<Long> readingFieldIds, boolean isFetchSubProps) throws Exception {
+	public static List<SensorRuleContext> getSensorRuleByCategoryId(long assetCategoryId, List<Long> readingFieldIds, boolean isFetchSubProps, boolean isHistorical) throws Exception {
 		
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getSensorRuleFields());
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -133,10 +133,10 @@ public class SensorRuleUtil {
 		}
 
 		List<Map<String, Object>> props = selectBuilder.get();
-		return getSensorRuleFromProps(props, isFetchSubProps);
+		return getSensorRuleFromProps(props, isFetchSubProps, isHistorical);
 	}
 	
-	public static List<SensorRuleContext> getSensorRuleFromProps(List<Map<String, Object>> props, boolean isFetchSubProps) throws Exception {
+	public static List<SensorRuleContext> getSensorRuleFromProps(List<Map<String, Object>> props, boolean isFetchSubProps, boolean isHistorical) throws Exception {
 		
 		if (props != null && !props.isEmpty()) {
 			
@@ -160,7 +160,9 @@ public class SensorRuleUtil {
 				{		
 					sensorRule.setReadingField(fieldMap.get(sensorRule.getReadingFieldId()));
 					sensorRule.setModule(modBean.getModule(sensorRule.getModuleId())); //category will be the rule module
-					fetchAlarmMeta(sensorRule);
+					if(!isHistorical) {
+						fetchAlarmMeta(sensorRule);
+					}
 				}
 			}
 			return sensorRules;

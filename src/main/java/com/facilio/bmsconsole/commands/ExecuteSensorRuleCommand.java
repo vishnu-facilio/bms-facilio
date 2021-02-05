@@ -53,7 +53,7 @@ public class ExecuteSensorRuleCommand extends FacilioCommand implements PostTran
 						LOGGER.log(Level.WARNING, "Module Name / Records is null/ empty while executing readings in ExecuteSensorRuleCommand ==> "+moduleName+"==>"+entry.getValue());
 						continue;
 					}
-					List<SensorRuleContext> sensorRules = SensorRuleUtil.fetchSensorRulesByModule(moduleName, true);
+					List<SensorRuleContext> sensorRules = SensorRuleUtil.fetchSensorRulesByModule(moduleName, true, false);
 					SensorRuleUtil.executeSensorRules(sensorRules,readings, false, sensorMeterRollUpEvents);	
 				}	
 			}			
