@@ -2,7 +2,9 @@ package com.facilio.bmsconsole.workflow.rule;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+import java.sql.SQLTimeoutException;
 import java.text.DecimalFormat;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -1591,8 +1593,82 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 	@Override
 	public boolean executeRuleAndChildren (WorkflowRuleContext workflowRule, FacilioModule module, Object record, List<UpdateChangeSet> changeSet, Map<String, Object> recordPlaceHolders, FacilioContext context,boolean propagateError, FacilioField parentRuleField, FacilioField onSuccessField, Map<String, List<WorkflowRuleContext>> workflowRuleCacheMap, boolean isParallelRuleExecution, List<EventType> eventTypes, RuleType... ruleTypes) throws Exception
 	{
-		return super.executeRuleAndChildren(workflowRule, module, record, changeSet, recordPlaceHolders, context, propagateError, parentRuleField, onSuccessField, workflowRuleCacheMap, isParallelRuleExecution, eventTypes, ruleTypes);		
+		try {		
+			long workflowStartTime = System.currentTimeMillis();
+			workflowRule.setTerminateChildExecution(false);
+			boolean result = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(workflowRule, module.getName(), record, changeSet, recordPlaceHolders, context);
+			LOGGER.debug(MessageFormat.format("Time take to execute workflow {0} and actions: is {1} ",this.getId(), (System.currentTimeMillis() - workflowStartTime)));
+			LOGGER.debug(MessageFormat.format("Result of rule : {0} for record : {1} is {2}",workflowRule.getId(),record,result));
+			if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
+				LOGGER.info("Time taken to execute workflow and actions: "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for module : "+module.getName()+" is "+(System.currentTimeMillis() - workflowStartTime));			
+			}
+			
+			boolean stopFurtherExecution = false;	
+			if (result) {
+				if(workflowRule.getRuleTypeEnum().stopFurtherRuleExecution()) {
+					stopFurtherExecution = true;
+				}
+			}
+			if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
+				LOGGER.info("Time taken to execute rule : "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for module : "+module.getName()+" is "+(System.currentTimeMillis() - workflowStartTime));			
+			}
+			long startTimeToFetchChildRules = System.currentTimeMillis();
+			LOGGER.debug("Time taken to execute rule : "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for module : "+module.getName()+" is "+(System.currentTimeMillis() - workflowStartTime));
+			if(workflowRule.getRuleTypeEnum().isChildSupport() && !workflowRule.shouldTerminateChildExecution()) {
+				String workflowRuleKey = WorkflowRuleAPI.constructParentWorkflowRuleKey(workflowRule.getId(),result);
+				List<WorkflowRuleContext> currentWorkflows = workflowRuleCacheMap.get(workflowRuleKey);	
+				if(currentWorkflows == null) {
+					Criteria criteria = new Criteria();
+					criteria.addAndCondition(CriteriaAPI.getCondition(parentRuleField, String.valueOf(workflowRule.getId()), NumberOperators.EQUALS));
+					criteria.addAndCondition(CriteriaAPI.getCondition(onSuccessField, String.valueOf(result), BooleanOperators.IS));
+					currentWorkflows = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(workflowRule.getModule(), eventTypes, criteria, false, true, ruleTypes);
+					for(WorkflowRuleContext rule:currentWorkflows) {
+						if(rule instanceof ReadingRuleContext) {
+							ReadingRuleContext readingRule = (ReadingRuleContext)rule;
+							if(readingRule.getMatchedResources()==null) {
+								readingRule.setMatchedResources(((ReadingRuleContext)workflowRule).getMatchedResources());
+							}
+							ReadingRuleAPI.constructWorkflowAndCriteria(readingRule);
+							ReadingRuleAPI.fetchAlarmMeta(readingRule);
+						}	
+					}
+					if(currentWorkflows == null) {
+						workflowRuleCacheMap.put(workflowRuleKey, Collections.EMPTY_LIST);
+					}
+					else {
+						workflowRuleCacheMap.put(workflowRuleKey, currentWorkflows);
+					}
+				}	
+				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
+					LOGGER.info("Time taken to fetch child rule alone for rule : "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for module : "+module.getName()+" is "+(System.currentTimeMillis() - startTimeToFetchChildRules));			
+				}
+				WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(currentWorkflows, module, record, changeSet, recordPlaceHolders, context, propagateError, workflowRuleCacheMap, isParallelRuleExecution, eventTypes, ruleTypes);
+			}
 
+			if ((AccountUtil.getCurrentOrg().getId() == 339l) || (AccountUtil.getCurrentOrg().getId() == 78l)) {
+				LOGGER.info("Time taken including childrule execution -- for rule : "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for module : "+module.getName()+" is "+(System.currentTimeMillis() - workflowStartTime));	
+				LOGGER.info("Select Query Count including childrule execution  -- " + AccountUtil.getCurrentAccount().getSelectQueries() + " Timetaken till childrule execution "+AccountUtil.getCurrentAccount().getSelectQueriesTime());
+			}
+			LOGGER.debug("Time taken to execute rule : "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for module : "+module.getName()+" including child rule execution is "+(System.currentTimeMillis() - workflowStartTime));
+			return stopFurtherExecution;
+		}
+		catch (Exception e) {
+			StringBuilder builder = new StringBuilder("Error during execution of rule : ");
+			builder.append(workflowRule.getId());
+			if (record instanceof ModuleBaseWithCustomFields) {
+				builder.append(" for Record : ")
+						.append(((ModuleBaseWithCustomFields)record).getId())
+						.append(" of module : ")
+						.append(module.getName());
+			}
+			LOGGER.error(builder.toString(), e);
+			
+			if (propagateError || (e instanceof SQLTimeoutException && e.getMessage().contains("Transaction timed out and so cannot get new connection"))) {
+				throw e;
+			}
+		}
+		return false;
+	
 //		if(isParallelRuleExecution) {	
 //			FacilioContext instantParallelWorkflowRuleJobContext = addAdditionalPropsForInstantJob(workflowRule, module, record, changeSet, recordPlaceHolders, propagateError, parentRuleField, onSuccessField, workflowRuleCacheMap, eventTypes, ruleTypes);	
 //

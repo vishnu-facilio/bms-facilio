@@ -75,7 +75,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
     	RuleJobType ruleJobTypeEnum = RuleJobType.valueOf(ruleJobType);
 
 		ReadingRuleContext readingRule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(ruleId, false, true);
-		constructWorkflowAndCriteria(readingRule);
+		ReadingRuleAPI.constructWorkflowAndCriteria(readingRule);
 		
 		ResourceContext currentResourceContext = ResourceAPI.getResource(resourceId);
 		if(readingRule == null || currentResourceContext == null || jobStatesMap == null || MapUtils.isEmpty(jobStatesMap) || jobId == -1 || dateRange == null || ruleJobTypeEnum == null) {
@@ -603,29 +603,6 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 			}
 		}
 		return extendedCurrentFields;
-	}
-	
-	private void constructWorkflowAndCriteria(ReadingRuleContext readingRule) throws Exception {
-		if(readingRule!= null) {
-			if(readingRule.getWorkflowId() > 0 && readingRule.getWorkflow() == null) {
-				Map<Long, WorkflowContext> workflowContextMap = WorkflowUtil.getWorkflowsAsMap(Collections.singletonList(readingRule.getWorkflowId()), true);
-				if(workflowContextMap != null && MapUtils.isNotEmpty(workflowContextMap)) {
-					WorkflowContext workflowContext = workflowContextMap.get(readingRule.getWorkflowId());
-					if(workflowContext != null) {
-						readingRule.setWorkflow(workflowContext);
-					}
-				}
-			}
-			if(readingRule.getCriteriaId() > 0 && readingRule.getCriteria() == null) {
-				Map<Long, Criteria> criteriaMap =  CriteriaAPI.getCriteriaAsMap(Collections.singletonList(readingRule.getCriteriaId()));
-				if(criteriaMap != null && MapUtils.isNotEmpty(criteriaMap)) {
-					Criteria criteria = criteriaMap.get(readingRule.getCriteriaId());
-					if(criteria != null) {
-						readingRule.setCriteria(criteria);
-					}
-				}
-			}
-		}	
 	}
 	
 	@Override

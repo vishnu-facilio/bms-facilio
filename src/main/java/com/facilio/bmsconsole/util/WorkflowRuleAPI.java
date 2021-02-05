@@ -541,6 +541,10 @@ public class WorkflowRuleAPI {
 	}
 	
 	public static List<WorkflowRuleContext> getActiveWorkflowRulesFromActivityAndRuleType(FacilioModule module, List<EventType> activityTypes,Criteria criteria, RuleType... ruleTypes) throws Exception {
+		return getActiveWorkflowRulesFromActivityAndRuleType(module,activityTypes, criteria, true, true, ruleTypes);
+	}
+	
+	public static List<WorkflowRuleContext> getActiveWorkflowRulesFromActivityAndRuleType(FacilioModule module, List<EventType> activityTypes,Criteria criteria, boolean fetchChildren, boolean fetchExtended, RuleType... ruleTypes) throws Exception {
 		FacilioModule ruleModule = ModuleFactory.getWorkflowRuleModule();
 		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -592,7 +596,7 @@ public class WorkflowRuleAPI {
 			LOGGER.info(MessageFormat.format("Rule query : {0}", ruleBuilder.toString()));
 		}
 
-		return getWorkFlowsFromMapList(props, true, true);
+		return getWorkFlowsFromMapList(props, fetchChildren, fetchExtended);
 	}
 	
 	protected static void deleteChildIdsForWorkflow(WorkflowRuleContext oldRule, WorkflowRuleContext newRule) throws Exception {

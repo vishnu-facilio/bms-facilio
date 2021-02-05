@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.workflow.rule.*;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -62,6 +63,8 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import com.facilio.workflows.context.ExpressionContext;
+import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.util.WorkflowUtil;
 
 ;
 
@@ -280,6 +283,29 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		}
 		
 		return readingRule;
+	}
+	
+	public static void constructWorkflowAndCriteria(ReadingRuleContext readingRule) throws Exception {
+		if(readingRule!= null) {
+			if(readingRule.getWorkflowId() > 0 && readingRule.getWorkflow() == null) {
+				Map<Long, WorkflowContext> workflowContextMap = WorkflowUtil.getWorkflowsAsMap(Collections.singletonList(readingRule.getWorkflowId()), true);
+				if(workflowContextMap != null && MapUtils.isNotEmpty(workflowContextMap)) {
+					WorkflowContext workflowContext = workflowContextMap.get(readingRule.getWorkflowId());
+					if(workflowContext != null) {
+						readingRule.setWorkflow(workflowContext);
+					}
+				}
+			}
+			if(readingRule.getCriteriaId() > 0 && readingRule.getCriteria() == null) {
+				Map<Long, Criteria> criteriaMap =  CriteriaAPI.getCriteriaAsMap(Collections.singletonList(readingRule.getCriteriaId()));
+				if(criteriaMap != null && MapUtils.isNotEmpty(criteriaMap)) {
+					Criteria criteria = criteriaMap.get(readingRule.getCriteriaId());
+					if(criteria != null) {
+						readingRule.setCriteria(criteria);
+					}
+				}
+			}
+		}	
 	}
 	
 	protected static ReadingRuleContext fetchReadingRuleMetricList(ReadingRuleContext rule) throws Exception {
