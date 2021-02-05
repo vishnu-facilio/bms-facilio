@@ -367,7 +367,7 @@ public class V3MailMessageContext extends V3Context {
         File pdfFile = new File(pdfFileLocation);
         attachmentObject.put("file", pdfFile);
         attachmentObject.put("fileFileName", tmpFile.getName());
-        attachmentObject.put("fileContentType", "pdf");
+        attachmentObject.put("fileContentType", "application/pdf");
         mailContext.addAttachmentList(attachmentObject);
     }
 }
