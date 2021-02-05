@@ -31,6 +31,10 @@ public enum TriggerActionType {
 		@Override
 		public void performAction(FacilioContext context, BaseTriggerContext trigger, String moduleName, ModuleBaseWithCustomFields record, List<UpdateChangeSet> changeSets, Long recordId) throws Exception {
 			WorkflowRuleContext workflowRule = WorkflowRuleAPI.getWorkflowRule(recordId);
+			if (workflowRule == null) {
+				return;
+			}
+
 			Map<String, Object> orgPlaceHolders = WorkflowRuleAPI.getOrgPlaceHolders();
 			Map<String, Object> placeHolders = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, record, orgPlaceHolders);
 			WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(workflowRule, moduleName, record, changeSets, placeHolders, context);

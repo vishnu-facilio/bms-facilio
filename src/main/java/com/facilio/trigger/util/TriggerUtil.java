@@ -1,11 +1,12 @@
 package com.facilio.trigger.util;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.StringJoiner;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.modules.*;
 import com.facilio.trigger.context.*;
 import org.apache.commons.collections4.CollectionUtils;
@@ -67,22 +68,23 @@ public class TriggerUtil {
 	}
 
 	public static BaseTriggerContext getTrigger(long triggerId) throws Exception {
-		
-		List<FacilioField> fields = FieldFactory.getTriggerFields();
-		FacilioModule module = ModuleFactory.getTriggerModule();
-		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
-													.select(fields)
-													.table(module.getTableName())
-													.andCondition(CriteriaAPI.getIdCondition(triggerId, module));
-		
-		List<Map<String, Object>> props = select.get();
-		
-		if(props != null && !props.isEmpty()) {
-			BaseTriggerContext trigger = FieldUtil.getAsBeanFromMap(props.get(0), BaseTriggerContext.class);
+		List<BaseTriggerContext> triggers = getTriggers(Collections.singletonList(triggerId));
+		if(CollectionUtils.isNotEmpty(triggers)) {
+			BaseTriggerContext trigger = triggers.get(0);
 			fillTriggerExtras(Collections.singletonList(trigger));
 			return trigger;
 		}
 		return null;
+	}
+
+	public static List<BaseTriggerContext> getTriggers(List<Long> ids) throws Exception {
+		List<FacilioField> fields = FieldFactory.getTriggerFields();
+		FacilioModule module = ModuleFactory.getTriggerModule();
+		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getIdCondition(ids, module));
+		return FieldUtil.getAsBeanListFromMapList(select.get(), BaseTriggerContext.class);
 	}
 	
 	public static List<BaseTriggerContext> getTriggers(FacilioModule module, List<EventType> activityTypes, Criteria criteria, boolean onlyActive, TriggerType... triggerTypes) throws Exception {
@@ -143,13 +145,10 @@ public class TriggerUtil {
 		}
 		
 		List<FacilioField> fields = FieldFactory.getTriggerActionFields();
-		fields.addAll(FieldFactory.getTriggerActionRelFields());
-		
+
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(ModuleFactory.getTriggerActionModule().getTableName())
-				.innerJoin(ModuleFactory.getTriggerActionRelModule().getTableName())
-				.on(ModuleFactory.getTriggerActionModule().getTableName()+".ID = "+ModuleFactory.getTriggerActionRelModule().getTableName() +".TRIGGER_ACTION_ID")
 				.andCondition(CriteriaAPI.getCondition("TRIGGER_ID", "triggerId", StringUtils.join(triggerIDmap.keySet(), ","), NumberOperators.EQUALS));
 
 		List<Map<String, Object>> props = select.get();
@@ -169,7 +168,6 @@ public class TriggerUtil {
 	public static void addActionToTrigger(BaseTriggerContext trigger, List<TriggerAction> actions) throws Exception {
 		trigger.setTriggerActions(actions);
 
-		List<TriggerActionRel> rels = new ArrayList<>();
 		for(TriggerAction action : trigger.getTriggerActions()) {
 			if(action.getId() < 0) {
 
@@ -184,17 +182,7 @@ public class TriggerUtil {
 
 				action.setId((long)props.get("id"));
 			}
-
-			TriggerActionRel rel = new TriggerActionRel(trigger.getId(),action.getId());
-			rels.add(rel);
 		}
-
-		GenericInsertRecordBuilder insert = new GenericInsertRecordBuilder()
-				.table(ModuleFactory.getTriggerActionRelModule().getTableName())
-				.fields(FieldFactory.getTriggerActionRelFields())
-				.addRecords(FieldUtil.getAsMapList(rels, TriggerActionRel.class));
-
-		insert.save();
 	}
 	
 	public static int getMaxSchedulingDaysForScheduleFrequency(ScheduleInfo scheduleInfo){
@@ -219,5 +207,59 @@ public class TriggerUtil {
 			default:
 				return -1;	
 		}
+	}
+
+	public static Map<Long, Set<BaseTriggerContext>> getRuleTriggerMap(List<Long> ruleIds) throws Exception {
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getTriggerActionModule().getTableName())
+				.select(FieldFactory.getTriggerActionFields())
+				.andCondition(CriteriaAPI.getCondition("TYPE", "actionType", String.valueOf(TriggerActionType.RULE_EXECUTION.getVal()), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("TYPE_PRIMARY_ID", "typeRefPrimaryId", StringUtils.join(ruleIds, ","), NumberOperators.EQUALS));
+		List<TriggerAction> actionList = FieldUtil.getAsBeanListFromMapList(builder.get(), TriggerAction.class);
+		if (CollectionUtils.isNotEmpty(actionList)) {
+			List<Long> triggerList = actionList.stream().map(TriggerAction::getTriggerId).collect(Collectors.toList());
+			Map<Long, BaseTriggerContext> triggerContextMap = getTriggers(triggerList).stream().collect(Collectors.toMap(BaseTriggerContext::getId, Function.identity()));
+			Map<Long, Set<BaseTriggerContext>> ruleVsTriggerMap = new HashMap<>();
+			for (TriggerAction action : actionList) {
+				Set<BaseTriggerContext> list = ruleVsTriggerMap.get(action.getTypeRefPrimaryId());
+				if (list == null) {
+					list = new HashSet<>();
+					ruleVsTriggerMap.put(action.getTypeRefPrimaryId(), list);
+				}
+				list.add(triggerContextMap.get(action.getTriggerId()));
+			}
+			return ruleVsTriggerMap;
+		}
+		return null;
+	}
+
+	public static void addTriggersForWorkflowRule(WorkflowRuleContext rule) throws Exception {
+		if (rule == null || CollectionUtils.isEmpty(rule.getTriggers())) {
+			return;
+		}
+
+		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getTriggerActionModule().getTableName())
+				.fields(FieldFactory.getTriggerActionFields());
+		for (BaseTriggerContext trigger : rule.getTriggers()) {
+			TriggerAction action = new TriggerAction();
+			action.setActionType(TriggerActionType.RULE_EXECUTION.getVal());
+			action.setTypeRefPrimaryId(rule.getId());
+			action.setTriggerId(trigger.getId());
+			builder.addRecord(FieldUtil.getAsProperties(action));
+		}
+		builder.save();
+	}
+
+	public static void deleteTriggersForWorkflowRule(WorkflowRuleContext rule) throws Exception {
+		if (rule == null) {
+			return;
+		}
+
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+				.table(ModuleFactory.getTriggerActionModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("TYPE", "actionType", String.valueOf(TriggerActionType.RULE_EXECUTION.getVal()), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("TYPE_PRIMARY_ID", "typeRefPrimaryId", String.valueOf(rule.getId()), NumberOperators.EQUALS));
+		builder.delete();
 	}
 }

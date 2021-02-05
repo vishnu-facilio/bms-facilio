@@ -17,7 +17,6 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.trigger.context.BaseTriggerContext;
 import com.facilio.trigger.context.TriggerAction;
-import com.facilio.trigger.context.TriggerActionRel;
 import com.facilio.trigger.util.TriggerUtil;
 
 public class AddOrUpdateTriggerActionAndRelCommand extends FacilioCommand {
@@ -28,15 +27,15 @@ public class AddOrUpdateTriggerActionAndRelCommand extends FacilioCommand {
 		
 		if(trigger.getTriggerActions() != null) {
 			
-			Map<String, FacilioField> triggerActionRelFieldMap = FieldFactory.getAsMap(FieldFactory.getTriggerActionRelFields());
+//			Map<String, FacilioField> triggerActionRelFieldMap = FieldFactory.getAsMap(FieldFactory.getTriggerActionRelFields());
 			
-			GenericDeleteRecordBuilder delete = new GenericDeleteRecordBuilder()
-					.table(ModuleFactory.getTriggerActionRelModule().getTableName())
-					.andCondition(CriteriaAPI.getCondition(triggerActionRelFieldMap.get("triggerId"), trigger.getId()+"", NumberOperators.EQUALS));
+//			GenericDeleteRecordBuilder delete = new GenericDeleteRecordBuilder()
+//					.table(ModuleFactory.getTriggerActionRelModule().getTableName())
+//					.andCondition(CriteriaAPI.getCondition(triggerActionRelFieldMap.get("triggerId"), trigger.getId()+"", NumberOperators.EQUALS));
 			
-			delete.delete();
+//			delete.delete();
 			
-			List<TriggerActionRel> rels = new ArrayList<TriggerActionRel>();
+//			List<TriggerActionRel> rels = new ArrayList<TriggerActionRel>();
 			
 			for(TriggerAction action : trigger.getTriggerActions()) {
 				if(action.getId() < 0) {
@@ -53,16 +52,16 @@ public class AddOrUpdateTriggerActionAndRelCommand extends FacilioCommand {
 					action.setId((long)props.get("id"));
 				}
 				
-				TriggerActionRel rel = new TriggerActionRel(trigger.getId(),action.getId());
-				rels.add(rel);
+//				TriggerActionRel rel = new TriggerActionRel(trigger.getId(),action.getId());
+//				rels.add(rel);
 			}
 			
-			GenericInsertRecordBuilder insert = new GenericInsertRecordBuilder()
-					.table(ModuleFactory.getTriggerActionRelModule().getTableName())
-					.fields(FieldFactory.getTriggerActionRelFields())
-					.addRecords(FieldUtil.getAsMapList(rels, TriggerActionRel.class));
-			
-			insert.save();
+//			GenericInsertRecordBuilder insert = new GenericInsertRecordBuilder()
+//					.table(ModuleFactory.getTriggerActionRelModule().getTableName())
+//					.fields(FieldFactory.getTriggerActionRelFields())
+//					.addRecords(FieldUtil.getAsMapList(rels, TriggerActionRel.class));
+//
+//			insert.save();
 		}
 		
 		return false;

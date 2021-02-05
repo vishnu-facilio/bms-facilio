@@ -9402,18 +9402,20 @@ public class FieldFactory {
         fields.add(getNameField(module));
         fields.add(getField("actionType", "TYPE", module, FieldType.NUMBER));
         fields.add(getField("typeRefPrimaryId", "TYPE_PRIMARY_ID", module, FieldType.NUMBER));
-        return fields;
-    }
-
-    public static List<FacilioField> getTriggerActionRelFields() {
-        FacilioModule module = ModuleFactory.getTriggerActionRelModule();
-        List<FacilioField> fields = new ArrayList<>();
-        fields.add(getIdField(module));
         fields.add(getField("triggerId", "TRIGGER_ID", module, FieldType.NUMBER));
-        fields.add(getField("triggerActionId", "TRIGGER_ACTION_ID", module, FieldType.NUMBER));
         fields.add(getField("executionOrder", "EXECUTION_ORDER", module, FieldType.NUMBER));
         return fields;
     }
+
+//    public static List<FacilioField> getTriggerActionRelFields() {
+//        FacilioModule module = ModuleFactory.getTriggerActionRelModule();
+//        List<FacilioField> fields = new ArrayList<>();
+//        fields.add(getIdField(module));
+//        fields.add(getField("triggerId", "TRIGGER_ID", module, FieldType.NUMBER));
+//        fields.add(getField("triggerActionId", "TRIGGER_ACTION_ID", module, FieldType.NUMBER));
+//        fields.add(getField("executionOrder", "EXECUTION_ORDER", module, FieldType.NUMBER));
+//        return fields;
+//    }
     
     public static List<FacilioField> getTriggerInclExclFields() {
         List<FacilioField> fields = new ArrayList<>();

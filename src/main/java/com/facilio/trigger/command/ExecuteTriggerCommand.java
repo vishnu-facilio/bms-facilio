@@ -27,6 +27,11 @@ public class ExecuteTriggerCommand extends FacilioCommand {
 		if (trigger == null) {
 			throw new IllegalArgumentException("Invalid trigger");
 		}
+		if (!trigger.isActive()) {
+			// don't trigger..
+			return false;
+		}
+
 		EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
 		if (eventType != null) {
 			if (trigger.getEventTypeEnum() != eventType) {

@@ -53,7 +53,23 @@ public class TriggerAction {
 	public void setTypeRefPrimaryId(long typeRefPrimaryId) {
 		this.typeRefPrimaryId = typeRefPrimaryId;
 	}
-	
+
+	private long triggerId = -1;
+	public long getTriggerId() {
+		return triggerId;
+	}
+	public void setTriggerId(long triggerId) {
+		this.triggerId = triggerId;
+	}
+
+	private int executionOrder = -1;
+	public int getExecutionOrder() {
+		return executionOrder;
+	}
+	public void setExecutionOrder(int executionOrder) {
+		this.executionOrder = executionOrder;
+	}
+
 	public void execute(FacilioContext context, BaseTriggerContext trigger, String moduleName, ModuleBaseWithCustomFields record, List<UpdateChangeSet> changeSets) throws Exception {
 		actionType.performAction(context, trigger, moduleName, record, changeSets, typeRefPrimaryId);
 	}

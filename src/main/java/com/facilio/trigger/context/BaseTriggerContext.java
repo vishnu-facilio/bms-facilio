@@ -80,6 +80,12 @@ public class BaseTriggerContext {
 	public void setStatus(Boolean status) {
 		this.status = status;
 	}
+	public Boolean isActive() {
+		if (status == null) {
+			return false;
+		}
+		return status;
+	}
 
 	List<TriggerAction> triggerActions;
 	public List<TriggerAction> getTriggerActions() {

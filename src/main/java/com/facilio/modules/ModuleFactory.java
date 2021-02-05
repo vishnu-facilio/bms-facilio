@@ -4347,14 +4347,14 @@ public class ModuleFactory {
 		return module;
 	}
 	
-	public static FacilioModule getTriggerActionRelModule()
-	{
-		FacilioModule module=new FacilioModule();
-		module.setName("triggerActionRel");
-		module.setDisplayName("Trigger_Action_Rel");
-		module.setTableName("Trigger_Action_Rel");
-		return module;
-	}
+//	public static FacilioModule getTriggerActionRelModule()
+//	{
+//		FacilioModule module=new FacilioModule();
+//		module.setName("triggerActionRel");
+//		module.setDisplayName("Trigger_Action_Rel");
+//		module.setTableName("Trigger_Action_Rel");
+//		return module;
+//	}
 	
 	public static FacilioModule getTriggerLogModule()
 	{

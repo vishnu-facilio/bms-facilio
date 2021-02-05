@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.trigger.context.BaseTriggerContext;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
@@ -255,6 +256,14 @@ public class WorkflowRuleContext implements Serializable {
 	public void setActivityType(int activityType) {
 		this.activity = activityType;
 		this.activityType = EventType.valueOf(activityType);
+	}
+
+	private List<BaseTriggerContext> triggers;
+	public List<BaseTriggerContext> getTriggers() {
+		return triggers;
+	}
+	public void setTriggers(List<BaseTriggerContext> triggers) {
+		this.triggers = triggers;
 	}
 
 	private EventType activityType;

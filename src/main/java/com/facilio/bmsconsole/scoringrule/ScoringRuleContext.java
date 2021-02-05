@@ -26,17 +26,6 @@ public class ScoringRuleContext extends WorkflowRuleContext {
         this.scoringCommitmentContexts = scoringCommitmentContexts;
     }
 
-//    private Boolean draft;
-//    public Boolean getDraft() {
-//        return draft;
-//    }
-//    public void setDraft(Boolean draft) {
-//        this.draft = draft;
-//    }
-//    public Boolean isDraft() {
-//        return draft == null || draft;
-//    }
-
     private ScoreType scoreType;
     public int getScoreType() {
         if (scoreType != null) {

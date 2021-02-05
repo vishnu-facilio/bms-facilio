@@ -27,7 +27,8 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateTimeUtil;
-import com.facilio.wms.message.Message;
+import com.facilio.trigger.context.BaseTriggerContext;
+import com.facilio.trigger.util.TriggerUtil;
 import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowContext.WorkflowUIMode;
@@ -35,7 +36,6 @@ import com.facilio.workflows.context.WorkflowFieldType;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowGlobalParamUtil;
 
-import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -174,6 +174,8 @@ public class WorkflowRuleAPI {
 			ScheduledRuleAPI.addScheduledRuleJob(rule);
 		}
 
+		TriggerUtil.addTriggersForWorkflowRule(rule);
+
 		return rule.getId();
 	}
 
@@ -294,6 +296,9 @@ public class WorkflowRuleAPI {
 				}
 			}
 		}
+
+		TriggerUtil.deleteTriggersForWorkflowRule(rule);
+		TriggerUtil.addTriggersForWorkflowRule(rule);
 		
 		if (rule.getName() == null) {
 			rule.setName(oldRule.getName());
@@ -749,6 +754,7 @@ public class WorkflowRuleAPI {
 			Map<Long, WorkflowContext> workflowMap = fetchChildren && !workflowIds.isEmpty() ? WorkflowUtil.getWorkflowsAsMap(workflowIds, true) : null;
 			Map<Long, Criteria> criteriaMap = fetchChildren && !criteriaIds.isEmpty() ? CriteriaAPI.getCriteriaAsMap(criteriaIds) : null;
 			Map<Long, List<FieldChangeFieldContext>> ruleFieldsMap = getFieldChangeFields(fieldChangeRuleIds);
+			Map<Long, Set<BaseTriggerContext>> ruleTriggerMap = fetchChildren ? TriggerUtil.getRuleTriggerMap(props.stream().map(prop -> (Long) prop.get("id")).collect(Collectors.toList())) : null;
 
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			for(Map<String, Object> prop : props) {
@@ -843,6 +849,10 @@ public class WorkflowRuleAPI {
 				long workflowId = rule.getWorkflowId();
 				if (fetchChildren && workflowId != -1) {
 					rule.setWorkflow(workflowMap.get(workflowId));
+				}
+
+				if (fetchChildren && MapUtils.isNotEmpty(ruleTriggerMap)) {
+					rule.setTriggers(new ArrayList<>(ruleTriggerMap.get(rule.getId())));
 				}
 
 				if (EventType.FIELD_CHANGE.isPresent(rule.getActivityType())) {
