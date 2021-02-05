@@ -915,6 +915,9 @@ public class WorkflowRuleAPI {
 					else if (EventType.SCHEDULED_READING_RULE.isPresent(rule.getActivityType())) {
 						FacilioTimer.deleteJob(rule.getId(), FacilioConstants.Job.SCHEDULED_READING_RULE_JOB_NAME);
 					}
+
+					// delete triggers for the particular rule
+					TriggerUtil.deleteTriggersForWorkflowRule(rule);
 				}
 			}
 			if (deleteIds.size() > 0) {
