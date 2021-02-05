@@ -6,6 +6,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.services.kafka.FacilioKafkaProducer;
+import com.facilio.services.procon.message.FacilioRecord;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -46,9 +49,22 @@ public class CloudAgent extends FacilioJob {
         }
     }
 
-    private void pushToMessageQueue(List<JSONObject> results) throws Exception {
+    private void pushToMessageQueue(FacilioAgent agent, List<JSONObject> results) throws Exception {
+
         for (JSONObject payload: results) {
-            TimeSeriesAPI.processPayLoad(0, payload, null);
+            //TimeSeriesAPI.processPayLoad(0, payload, null);
+            FacilioKafkaProducer producer = new FacilioKafkaProducer();
+            String topic = AccountUtil.getCurrentOrg().getDomain();
+            JSONObject data = new JSONObject();
+            data.put("data", payload.toJSONString());
+            FacilioRecord record = new FacilioRecord(agent.getName(), data);
+            try {
+                producer.putRecord(topic, record);
+            } catch (Exception e) {
+                LOGGER.info("Exception while put record ", e);
+            } finally {
+                producer.close();
+            }
         }
     }
 
@@ -83,7 +99,7 @@ public class CloudAgent extends FacilioJob {
         		throw new FacilioException("Fetching data from cloud failed");
         }
         else if (!results.isEmpty()) {
-            	pushToMessageQueue(results);            	
+            pushToMessageQueue(agent, results);
         }
         
         updateLastRecievedTime(agent, toTime);
