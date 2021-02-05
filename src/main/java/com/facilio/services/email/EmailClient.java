@@ -73,7 +73,7 @@ public abstract class EmailClient {
     }
 
     public static MimeMessage constructMimeMessageContent(JSONObject mailJson, Session session,Map<String, String> files) throws Exception {
-        String DefaultCharSet = MimeUtility.getDefaultJavaCharset();
+        //String DefaultCharSet = MimeUtility.getDefaultJavaCharset();
 
         String sender = (String) mailJson.get(SENDER);
 
@@ -97,7 +97,7 @@ public abstract class EmailClient {
         if(mailJson.get(MAIL_TYPE) != null && mailJson.get(MAIL_TYPE).equals(HTML)) {
             type = CONTENT_TYPE_TEXT_HTML;
         }
-        textPart.setContent(MimeUtility.encodeText((String) mailJson.get(MESSAGE),DefaultCharSet,"B"), type);
+        textPart.setContent((String) mailJson.get(MESSAGE), type);
         textPart.setHeader(CONTENT_TRANSFER_ENCODING, BASE_64);
         messageBody.addBodyPart(textPart);
 

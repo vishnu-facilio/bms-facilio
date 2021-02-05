@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import java.io.InputStream;
+import java.net.URLEncoder;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.chain.FacilioChain;
@@ -94,7 +95,8 @@ public class V3FileAction extends FacilioAction {
 			chain.execute();
 			setContentType((String) context.get(FacilioConstants.ContextNames.FILE_CONTENT_TYPE));
 			if (context.get(FacilioConstants.ContextNames.FILE_NAME) != null) {
-				setFilename((String) context.get(FacilioConstants.ContextNames.FILE_NAME));
+				String encodedFilename = URLEncoder.encode((String) context.get(FacilioConstants.ContextNames.FILE_NAME), "UTF-8").replace("+", " ");
+				setFilename(encodedFilename);
 			}
 			if (context.get(FacilioConstants.ContextNames.FILE_DOWNLOAD_STREAM) != null) {
 				setDownloadStream((InputStream) context.get(FacilioConstants.ContextNames.FILE_DOWNLOAD_STREAM));
