@@ -225,6 +225,7 @@ public class AgentApiV2 {
             fields.add(FieldFactory.getIdField(agentDataModule));
             fields.add(FieldFactory.getSiteIdField(agentDataModule));
             fields.add(FieldFactory.getAgentDataIntervalField(agentDataModule));
+            fields.add(FieldFactory.getAgentTypeField(agentDataModule));
             fields.add(FieldFactory.getAgentLastDataReveivedField(agentDataModule));
             List<Long> ids = new ArrayList<>();
             GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()

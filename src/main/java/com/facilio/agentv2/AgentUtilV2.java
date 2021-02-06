@@ -15,8 +15,15 @@ import com.facilio.bmsconsole.context.BaseEventContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.events.constants.EventConstants;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.AckUtil;
 import org.apache.log4j.LogManager;
@@ -24,6 +31,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class AgentUtilV2
 {
@@ -33,7 +41,10 @@ public class AgentUtilV2
 
     private Map<String, FacilioAgent> agentMap = new HashMap<>();
     private Map<Long, FacilioAgent> idVsAgentMap = new HashMap<>();
-
+    private static final String CONFIGURED_STATUS = "3";
+    private static final List<FacilioField> POINT_FIELDS = FieldFactory.getPointFields();
+    private static final FacilioModule POINT_MODULE = ModuleFactory.getPointModule();
+    private static final  Map<String, FacilioField> POINT_MAP = FieldFactory.getAsMap(POINT_FIELDS);
     public Map<Long, FacilioAgent> getAgentsFromIds(List<Long> agentIds) throws Exception {
         Map<Long, FacilioAgent> map = new HashMap<>();
         List<Long> idsNotInMap = new ArrayList<>();
@@ -313,20 +324,43 @@ public class AgentUtilV2
        return UUID.randomUUID().toString().replace("-","");
     }
 
-    static int getAgentOfflineStatus( Map<String,Object> map) {
+    static int getAgentOfflineStatus( Map<String,Object> map) throws Exception {
         int offLineAgents =0;
         Long lastReceivedTime = (Long)map.get(AgentConstants.LAST_DATA_RECEIVED_TIME);
         boolean connected = (boolean)map.get(AgentConstants.CONNECTED);
-        if(lastReceivedTime == null || !connected){
-            map.put(AgentConstants.CONNECTED,false);
+        long agentId = (long)map.get("id");
+        if(connected && lastReceivedTime == null){
+            return offLineAgents;
+        }
+        if(!connected){
            return ++offLineAgents;
         }
-        long diffInMins = (long)Math.floor((System.currentTimeMillis() - lastReceivedTime)/1000/60 << 0);
+        long diffInMins =  TimeUnit.MINUTES.toMinutes(System.currentTimeMillis() - lastReceivedTime);
         long interval = (long)map.getOrDefault(AgentConstants.DATA_INTERVAL,0L);
         if(diffInMins > interval * 2 ){
+            Integer agentType = (Integer)map.getOrDefault("agentType",null);
+            if(agentType !=null && (agentType == 0 || agentType == 3 || agentType == 4) &&  !isConfiguredPointExist(agentId)){
+                return offLineAgents;
+            }
             ++offLineAgents;
             map.put(AgentConstants.CONNECTED,false);
         }
         return offLineAgents;
+    }
+
+    private static boolean isConfiguredPointExist(long agentId) throws Exception {
+        Set<Long> controllerIds = ControllerApiV2.getControllerIds(Collections.singletonList(agentId));
+        if(controllerIds.isEmpty()){
+            return false;
+        }
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(POINT_MODULE.getTableName())
+                .select(POINT_FIELDS)
+                .andCondition(AgentApiV2.getDeletedTimeNullCondition(POINT_MODULE))
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(POINT_MODULE), controllerIds, NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(POINT_MAP.get(AgentConstants.CONFIGURE_STATUS), CONFIGURED_STATUS, NumberOperators.EQUALS))
+                .limit(1);
+        Map<String,Object> map = builder.fetchFirst();
+        return (map!= null && !map.isEmpty()) ;
     }
 }
