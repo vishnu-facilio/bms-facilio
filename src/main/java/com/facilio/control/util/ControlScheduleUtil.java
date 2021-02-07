@@ -752,7 +752,6 @@ public class ControlScheduleUtil {
 		
 		List<ControlGroupSection> sections =  ControlScheduleUtil.fetchRecord(ControlGroupSection.class, CONTROL_GROUP_SECTION_MODULE_NAME, null,CriteriaAPI.getCondition("CONTROL_GROUP", "controlGroup", ""+group.getId(), NumberOperators.EQUALS));
 		
-		LOGGER.info("sections -- >"+sections);
 		group.setSections(sections);
 		
 		Map<Long,ControlGroupSection> sectionMap = new HashMap<Long, ControlGroupSection>();
@@ -763,15 +762,12 @@ public class ControlScheduleUtil {
 		
 		List<ControlGroupAssetCategory> categories =  ControlScheduleUtil.fetchRecord(ControlGroupAssetCategory.class, CONTROL_GROUP_ASSET_CATEGORY_MODULE_NAME, null,CriteriaAPI.getCondition("CONTROL_GROUP", "controlGroup", ""+group.getId(), NumberOperators.EQUALS));
 		
-		LOGGER.info("categories --> "+categories);
 		Map<Long,ControlGroupAssetCategory> categoryMap = new HashMap<Long, ControlGroupAssetCategory>();
 		
 		for(ControlGroupAssetCategory category : categories) {
 			
 			category.setAssetCategory(AssetsAPI.getCategoryForAsset(category.getAssetCategory().getId()));
 			categoryMap.put(category.getId(), category);
-			
-			LOGGER.info("categories section Id--> "+category.getControlGroupSection());
 			
 			ControlGroupSection section = sectionMap.get(category.getControlGroupSection().getId());
 			section.addCategory(category);

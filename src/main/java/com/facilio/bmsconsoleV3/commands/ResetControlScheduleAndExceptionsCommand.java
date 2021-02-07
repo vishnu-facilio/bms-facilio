@@ -1,5 +1,8 @@
 package com.facilio.bmsconsoleV3.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -8,10 +11,14 @@ import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.control.ControlGroupContext;
 import com.facilio.control.ControlGroupTenentContext;
+import com.facilio.control.ControlScheduleContext;
+import com.facilio.control.ControlScheduleExceptionContext;
+import com.facilio.control.ControlScheduleExceptionTenantContext;
 import com.facilio.control.ControlScheduleTenantContext;
 import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.DeleteRecordBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 
 public class ResetControlScheduleAndExceptionsCommand extends FacilioCommand {
@@ -26,6 +33,8 @@ public class ResetControlScheduleAndExceptionsCommand extends FacilioCommand {
 		
 		ControlScheduleTenantContext scheduleTenent = ControlScheduleUtil.controlScheduleToControlScheduleTenantShared(parentGroup.getControlSchedule(), tenant, parentGroup);
 		
+		deleteOldControlSchedule(childGroup);
+		
 		childGroup.setControlSchedule(scheduleTenent);
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -39,6 +48,37 @@ public class ResetControlScheduleAndExceptionsCommand extends FacilioCommand {
 		update.update(childGroup);
 		
 		return false;
+	}
+
+	private void deleteOldControlSchedule(ControlGroupContext parentGroup) throws Exception {
+		// TODO Auto-generated method stub
+		
+		ControlScheduleContext schedule = parentGroup.getControlSchedule();
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		DeleteRecordBuilder<ControlScheduleTenantContext> delete = new DeleteRecordBuilder<ControlScheduleTenantContext>()
+				.moduleName(ControlScheduleUtil.CONTROL_SCHEDULE_TENANT_SHARING_MODULE_NAME)
+				.andCondition(CriteriaAPI.getIdCondition(schedule.getId(), modBean.getModule(ControlScheduleUtil.CONTROL_SCHEDULE_TENANT_SHARING_MODULE_NAME)))
+				;
+		
+		delete.markAsDelete();
+				
+		if(schedule.getExceptions() != null && !schedule.getExceptions().isEmpty()) {
+			
+			List<Long> exceptionsToBeDeleted = new ArrayList<Long>(); 
+			
+			for(ControlScheduleExceptionContext exception : schedule.getExceptions()) {
+				exceptionsToBeDeleted.add(exception.getId());
+			}
+			
+			DeleteRecordBuilder<ControlScheduleExceptionTenantContext> delete1 = new DeleteRecordBuilder<ControlScheduleExceptionTenantContext>()
+					.moduleName(ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_TENANT_SHARING_MODULE_NAME)
+					.andCondition(CriteriaAPI.getIdCondition(exceptionsToBeDeleted, modBean.getModule(ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_TENANT_SHARING_MODULE_NAME)))
+					;
+			
+			delete1.markAsDelete();
+		}
 	}
 
 }
