@@ -335,7 +335,7 @@ public class AgentUtilV2
         if(!connected){
            return ++offLineAgents;
         }
-        long diffInMins =  TimeUnit.MINUTES.toMinutes(System.currentTimeMillis() - lastReceivedTime);
+        long diffInMins =  (long)Math.floor((System.currentTimeMillis() - lastReceivedTime)/1000/60 << 0);
         long interval = (long)map.getOrDefault(AgentConstants.DATA_INTERVAL,0L);
         if(diffInMins > (interval * 2) ){
             Integer agentType = (Integer)map.getOrDefault("agentType",null);
