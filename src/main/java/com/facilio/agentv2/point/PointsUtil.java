@@ -126,7 +126,7 @@ public class PointsUtil
                     if (point != null) {
                         point.setControllerId(controller.getId());
                         int agentType = agent.getAgentType();
-                        if(agentType == AgentType.REST.getKey() || agentType == AgentType.CLOUD.getKey()){
+                        if(agentType == AgentType.CUSTOM.getKey() || agentType == AgentType.REST.getKey() || agentType == AgentType.CLOUD.getKey()){
                             point.setConfigureStatus(PointEnum.ConfigureStatus.CONFIGURED.getIndex());
                         }
                         if (controller.getControllerType() == FacilioControllerType.MODBUS_IP.asInt() || controller.getControllerType() == FacilioControllerType.MODBUS_RTU.asInt()) {

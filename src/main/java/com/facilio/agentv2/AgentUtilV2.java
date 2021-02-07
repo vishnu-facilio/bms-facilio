@@ -337,9 +337,9 @@ public class AgentUtilV2
         }
         long diffInMins =  TimeUnit.MINUTES.toMinutes(System.currentTimeMillis() - lastReceivedTime);
         long interval = (long)map.getOrDefault(AgentConstants.DATA_INTERVAL,0L);
-        if(diffInMins > interval * 2 ){
+        if(diffInMins > (interval * 2) ){
             Integer agentType = (Integer)map.getOrDefault("agentType",null);
-            if(agentType !=null && (agentType == 0 || agentType == 3 || agentType == 4) &&  !isConfiguredPointExist(agentId)){
+            if(agentType !=null &&  !isConfiguredPointExist(agentId)){
                 return offLineAgents;
             }
             ++offLineAgents;
