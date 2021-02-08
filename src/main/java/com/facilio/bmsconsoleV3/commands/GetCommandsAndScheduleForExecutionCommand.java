@@ -28,6 +28,8 @@ public class GetCommandsAndScheduleForExecutionCommand extends FacilioCommand {
 		long startTime = (long) context.get(FacilioConstants.ContextNames.START_TIME);
 		long endTime =  (long) context.get(FacilioConstants.ContextNames.END_TIME);
 		
+		endTime = endTime - 1;
+		
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.CONTROL_ACTION_COMMAND_MODULE);
 		
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
