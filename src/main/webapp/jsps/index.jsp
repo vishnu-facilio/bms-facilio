@@ -137,7 +137,7 @@
         String faviconPath = isIungoCitGroup ? "/statics/citgroup.ico":isBuildingstalk ? "/statics/machinestalk.ico" : isSutherland ? "/statics/sutherland.ico" : (isEcholtech || isStageTest) ? "/statics/echoltech-ico.png" : "/statics/favicon.png";
         if (isMoro) { 
         	faviconPath = "/statics/moro-fav.png";
-            title = "Moro"
+            title = "Moro";
         }
         
 
