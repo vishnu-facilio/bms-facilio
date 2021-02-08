@@ -1,9 +1,11 @@
 package com.facilio.apiv3;
 
 import com.facilio.activity.AddActivitiesCommand;
+import com.facilio.bmsconsole.commands.AddRequesterForServiceRequestCommand;
 import com.facilio.bmsconsole.commands.AssetDepreciationFetchAssetDetailsCommand;
 import com.facilio.bmsconsole.commands.ExecuteAllWorkflowsCommand;
 import com.facilio.bmsconsole.commands.ExecuteWorkFlowsBusinessLogicInPostTransactionCommand;
+import com.facilio.bmsconsole.commands.LoadServiceRequestLookupCommand;
 import com.facilio.bmsconsole.commands.ValidateAssetDepreciationCommand;
 import com.facilio.bmsconsole.context.AssetDepreciationContext;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
@@ -41,6 +43,8 @@ import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommand
 import com.facilio.bmsconsoleV3.commands.purchaseorder.*;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.*;
 import com.facilio.bmsconsoleV3.commands.quotation.*;
+import com.facilio.bmsconsoleV3.commands.servicerequest.AddRequesterForServiceRequestCommandV3;
+import com.facilio.bmsconsoleV3.commands.servicerequest.LoadServiceRequestLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.storeroom.LoadStoreRoomLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.storeroom.UpdateServingSitesinStoreRoomCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenant.FillTenantsLookupCommand;
@@ -290,6 +294,22 @@ public class APIv3Config {
                                      2. List of All Groups with the updating tax as child will be set as inactive and new Tax
                                         groups will be added with new tax id
          */
+    }
+    
+    @Module("serviceRequest")
+    public static Supplier<V3Config> getServiceRequest() {
+        return () -> new V3Config(V3ServiceRequestContext.class, new ModuleCustomFieldCount30())
+                .create()
+                    .beforeSave(new AddRequesterForServiceRequestCommandV3())
+                    .afterSave(new UpdateAttachmentsParentIdCommandV3())
+                    .afterSave(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand())
+                .update()
+                .delete()
+                .list()
+                    .beforeFetch(new LoadServiceRequestLookupCommandV3())
+                .summary()
+                    .beforeFetch(new LoadServiceRequestLookupCommandV3()) 
+                .build();
     }
 
     @Module("insurance")
