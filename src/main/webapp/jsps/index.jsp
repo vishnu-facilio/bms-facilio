@@ -76,7 +76,7 @@
 		
         boolean isEcholtech = request.getServerName().contains("echoltech.com");
 
-        boolean isMoro = request.getServerName().contains("morohub.com");
+        boolean isMoro = (request.getServerName().endsWith("morodigital.com")  || ( brandName != null && (brandName.indexOf("Moro") != -1 )));
 
         boolean isStageTest = request.getServerName().contains("samltest.facilio.in");
 
@@ -96,14 +96,7 @@
             rebrandInfo.put("copyright", copyrightInfo);
         }
 
-        if (isEcholtech) {
-            rebrandInfo.put("brandName", "Echol");
-            rebrandInfo.put("name", "Echol");
-            rebrandInfo.put("domain", "echoltech.com");
-            rebrandInfo.put("copyright", copyrightInfo);
-        }
-
-         if (isMoro) {
+        if (isMoro) {
             rebrandInfo.put("brandName", "Moro");
             copyrightInfo.put("year", "2021");
             rebrandInfo.put("name", "Moro");
@@ -111,7 +104,12 @@
             rebrandInfo.put("copyright", copyrightInfo);
         }
 
-
+        if (isEcholtech) {
+            rebrandInfo.put("brandName", "Echol");
+            rebrandInfo.put("name", "Echol");
+            rebrandInfo.put("domain", "echoltech.com");
+            rebrandInfo.put("copyright", copyrightInfo);
+        }
 
         if (isStageTest) {
             rebrandInfo.put("brandName", "Echol");
@@ -129,8 +127,9 @@
         String userAgent = request.getHeader("User-Agent");
         String title = isIungoCitGroup ? "iungo CIT Group Ltd":isBuildingstalk ? "BuildingsTalk" : isSutherland ? "Sutherland" : (isEcholtech || isStageTest) ? "Echol" : "Facilio";
         String faviconPath = isIungoCitGroup ? "/statics/citgroup.ico":isBuildingstalk ? "/statics/machinestalk.ico" : isSutherland ? "/statics/sutherland.ico" : (isEcholtech || isStageTest) ? "/statics/echoltech-ico.png" : "/statics/favicon.png";
-        if (isMoro) {
+        if (isMoro) { 
         	faviconPath = "/statics/moro-fav.png";
+            title = "Moro"
         }
         
 
