@@ -68,7 +68,9 @@ public class ControlGroupSection extends V3Context {
 				if(category != null) {
 					return Collections.singletonList(category);
 				}
-				return null;
+				else {
+					return AssetsAPI.getCategoryList();				// temp change
+				}
 			}
 		},
 		ELEVATOR(3, "Elevator") {
@@ -78,7 +80,9 @@ public class ControlGroupSection extends V3Context {
 				if(category != null) {
 					return Collections.singletonList(category);
 				}
-				return null;
+				else {
+					return AssetsAPI.getCategoryList();				// temo change
+				}
 			}
 		},
 		;
