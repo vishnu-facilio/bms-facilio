@@ -39,12 +39,12 @@ public class CreateAgentCommand extends AgentV2Command {
             long agentId = AgentApiV2.addAgent(agent);
             agent.setId(agentId);
             switch (AgentType.valueOf(agent.getAgentType())) {
-                case CUSTOM:
+                case REST:
                 case WATTSENSE:
                     break;
                 case FACILIO:
                 case NIAGARA:
-                case REST:
+                case CUSTOM:
                     createPolicy(agent);
                     return true;
                 case CLOUD:
