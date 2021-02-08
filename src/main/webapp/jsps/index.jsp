@@ -76,6 +76,8 @@
 		
         boolean isEcholtech = request.getServerName().contains("echoltech.com");
 
+        boolean isMoro = request.getServerName().contains("morohub.com");
+
         boolean isStageTest = request.getServerName().contains("samltest.facilio.in");
 
         JSONObject domainInfo = IAMAppUtil.getAppDomainInfo(request.getServerName());
@@ -101,6 +103,16 @@
             rebrandInfo.put("copyright", copyrightInfo);
         }
 
+         if (isMoro) {
+            rebrandInfo.put("brandName", "Moro");
+            copyrightInfo.put("year", "2021");
+            rebrandInfo.put("name", "Moro");
+            rebrandInfo.put("domain", "morohub.com");
+            rebrandInfo.put("copyright", copyrightInfo);
+        }
+
+
+
         if (isStageTest) {
             rebrandInfo.put("brandName", "Echol");
             rebrandInfo.put("name", "Echol");
@@ -116,7 +128,7 @@
 		}
         String userAgent = request.getHeader("User-Agent");
         String title = isIungoCitGroup ? "iungo CIT Group Ltd":isBuildingstalk ? "BuildingsTalk" : isSutherland ? "Sutherland" : (isEcholtech || isStageTest) ? "Echol" : "Facilio";
-        String faviconPath = isIungoCitGroup ? "/statics/citgroup.ico":isBuildingstalk ? "/statics/machinestalk.ico" : isSutherland ? "/statics/sutherland.ico" : (isEcholtech || isStageTest) ? "/statics/echoltech-ico.png" : "/statics/favicon.png";
+        String faviconPath = isIungoCitGroup ? "/statics/citgroup.ico":isBuildingstalk ? "/statics/machinestalk.ico" : isSutherland ? "/statics/sutherland.ico" : (isEcholtech || isStageTest) ? "/statics/echoltech-ico.png" : "/statics/favicon.png" ? "/statics/moro-fav.png": isMoro;
         
 
         Map<String, String> placeHolderParams = new HashMap<>();
