@@ -4,9 +4,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.bmsconsole.jobs.ControlCommandExecutionCreateScheduleJob;
 import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.controlaction.context.ControlActionCommandContext;
@@ -19,6 +22,8 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 
 public class GetCommandsAndScheduleForExecutionCommand extends FacilioCommand {
+	
+	private static final Logger LOGGER = LogManager.getLogger(GetCommandsAndScheduleForExecutionCommand.class.getName());
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -43,8 +48,14 @@ public class GetCommandsAndScheduleForExecutionCommand extends FacilioCommand {
 		
 		List<ControlActionCommandContext> commands = select.get();
 		
-		for(ControlActionCommandContext command :commands) {
-			BmsJobUtil.scheduleOneTimeJobWithProps(command.getId(), "controlCommandExecutionJob", command.getExecutedTime()/1000, "facilio", null);
+		if(commands != null && !commands.isEmpty()) {
+			LOGGER.info("No. of commands scheduled - "+commands.size());
+			for(ControlActionCommandContext command :commands) {
+				BmsJobUtil.scheduleOneTimeJobWithProps(command.getId(), "controlCommandExecutionJob", command.getExecutedTime()/1000, "facilio", null);
+			}
+		}
+		else {
+			LOGGER.info("No commands avaiable for the given range");
 		}
 		return false;
 	}
