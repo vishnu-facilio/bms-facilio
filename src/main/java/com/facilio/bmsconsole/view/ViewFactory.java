@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.context.reservation.ReservationContext;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.control.util.ControlScheduleUtil;
+import com.facilio.controlaction.context.ControlActionCommandContext;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -25,6 +26,7 @@ import com.facilio.modules.fields.*;
 import com.facilio.time.DateTimeUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.*;
@@ -943,6 +945,13 @@ public class ViewFactory {
 		views = new LinkedHashMap<>();
 		views.put("all", getTenantControlGroupView().setOrder(order++));
 		viewsMap.put(ControlScheduleUtil.CONTROL_GROUP_TENANT_SHARING_MODULE_NAME, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("upcoming", getUpcomingControlCommandView().setOrder(order++));
+		views.put("history", getHistoryControlCommandView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.CONTROL_ACTION_COMMAND_MODULE, views);
+		
 		return viewsMap;
 	}
 
@@ -8403,6 +8412,61 @@ public class ViewFactory {
 		allView.setDisplayName("All Schedules");
 		allView.setModuleName(ControlScheduleUtil.CONTROL_SCHEDULE_MODULE_NAME);
 		allView.setSortFields(sortFields);
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		allView.setViewSharing(getSharingContext(appDomains));
+
+		return allView;
+	}
+	
+	private static FacilioView getUpcomingControlCommandView() {
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("executedTime", "EXECUTED_TIME", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("upcoming");
+		allView.setDisplayName("Upcoming Commands");
+		allView.setModuleName(FacilioConstants.ContextNames.CONTROL_ACTION_COMMAND_MODULE);
+		allView.setSortFields(sortFields);
+		
+		Criteria criteria = new Criteria();
+		
+		List<Integer> upcomingStatusInt = new ArrayList<Integer>();
+		
+		upcomingStatusInt.add(ControlActionCommandContext.Status.SCHEDULED.getIntVal());
+		upcomingStatusInt.add(ControlActionCommandContext.Status.SCHEDULED_WITH_NO_PERMISSION.getIntVal());
+		
+		criteria.addAndCondition(CriteriaAPI.getCondition("STATUS", "status", StringUtils.join(upcomingStatusInt, ","), NumberOperators.EQUALS));
+		
+		allView.setCriteria(criteria);
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		allView.setViewSharing(getSharingContext(appDomains));
+
+		return allView;
+	}
+	
+	private static FacilioView getHistoryControlCommandView() {
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("executedTime", "EXECUTED_TIME", FieldType.NUMBER), false));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("history");
+		allView.setDisplayName("Command History");
+		allView.setModuleName(FacilioConstants.ContextNames.CONTROL_ACTION_COMMAND_MODULE);
+		allView.setSortFields(sortFields);
+		
+		List<Integer> historyStatusInt = new ArrayList<Integer>();
+		
+		historyStatusInt.add(ControlActionCommandContext.Status.SUCCESS.getIntVal());
+		historyStatusInt.add(ControlActionCommandContext.Status.ERROR.getIntVal());
+		historyStatusInt.add(ControlActionCommandContext.Status.PENDING.getIntVal());
+		
+		Criteria criteria = new Criteria();
+		
+		criteria.addAndCondition(CriteriaAPI.getCondition("STATUS", "status", StringUtils.join(historyStatusInt, ","), NumberOperators.EQUALS));
+		
+		allView.setCriteria(criteria);
 
 		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
 		appDomains.add(AppDomain.AppDomainType.FACILIO);
