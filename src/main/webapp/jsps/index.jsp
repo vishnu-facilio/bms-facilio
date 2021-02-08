@@ -128,7 +128,10 @@
 		}
         String userAgent = request.getHeader("User-Agent");
         String title = isIungoCitGroup ? "iungo CIT Group Ltd":isBuildingstalk ? "BuildingsTalk" : isSutherland ? "Sutherland" : (isEcholtech || isStageTest) ? "Echol" : "Facilio";
-        String faviconPath = isIungoCitGroup ? "/statics/citgroup.ico":isBuildingstalk ? "/statics/machinestalk.ico" : isSutherland ? "/statics/sutherland.ico" : (isEcholtech || isStageTest) ? "/statics/echoltech-ico.png" : "/statics/favicon.png" ? "/statics/moro-fav.png": isMoro;
+        String faviconPath = isIungoCitGroup ? "/statics/citgroup.ico":isBuildingstalk ? "/statics/machinestalk.ico" : isSutherland ? "/statics/sutherland.ico" : (isEcholtech || isStageTest) ? "/statics/echoltech-ico.png" : "/statics/favicon.png";
+        if (isMoro) {
+        	faviconPath = "/statics/moro-fav.png";
+        }
         
 
         Map<String, String> placeHolderParams = new HashMap<>();
