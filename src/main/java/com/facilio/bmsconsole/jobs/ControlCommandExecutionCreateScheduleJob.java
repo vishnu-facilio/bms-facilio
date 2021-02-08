@@ -17,6 +17,7 @@ public class ControlCommandExecutionCreateScheduleJob extends FacilioJob {
 	@Override
 	public void execute(JobContext jc) throws Exception {
 		try {
+			LOGGER.info("ControlCommandExecutionCreateScheduleJob started -- "+jc.getJobId());
 			long startTime = jc.getExecutionTime();
 			long endTime = DateTimeUtil.addMinutes(startTime*1000, 30);
 			
@@ -27,6 +28,7 @@ public class ControlCommandExecutionCreateScheduleJob extends FacilioJob {
 			 context.put(FacilioConstants.ContextNames.END_TIME, endTime);
 			 
 			 chain.execute();
+			 LOGGER.info("ControlCommandExecutionCreateScheduleJob completed -- "+jc.getJobId());
 		}
 		catch(Exception e) {
 			LOGGER.error("ControlCommandExecutionCreateScheduleJob Failed", e);

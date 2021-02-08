@@ -30,6 +30,8 @@ public class ControlCommandExecutionJob extends FacilioJob {
 		try {
 			long controlCommandId = jc.getJobId();
 			
+			LOGGER.info("ControlCommandExecutionJob started -- "+jc.getJobId());
+			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			
 			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.CONTROL_ACTION_COMMAND_MODULE);
@@ -54,6 +56,8 @@ public class ControlCommandExecutionJob extends FacilioJob {
 				
 				chain.execute();
 			}
+			LOGGER.info("ControlCommandExecutionJob command executed -- "+commands);
+			LOGGER.info("ControlCommandExecutionJob completed -- "+jc.getJobId());
 		}
 		catch(Exception e) {
 			LOGGER.error("ControlCommandExecutionCreateScheduleJob Failed", e);
