@@ -110,6 +110,7 @@ public class DemoAlarmPropagationCommand extends FacilioCommand{
 				JSONObject loggerInfo = new JSONObject();
 				loggerInfo.put("rule", ruleId);
 				loggerInfo.put("resource", resourceIds);
+				loggerInfo.put("skipLoggerUpdate", true);
 				runThroughRuleChainContext.put(FacilioConstants.ContextNames.HISTORICAL_RULE_LOGGER_PROPS, loggerInfo);
 				FacilioChain runThroughRuleChain = TransactionChainFactory.runThroughHistoricalRuleChain();
 				runThroughRuleChain.execute(runThroughRuleChainContext);

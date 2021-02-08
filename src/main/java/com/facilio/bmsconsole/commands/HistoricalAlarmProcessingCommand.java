@@ -174,30 +174,34 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 	@Override
 	public boolean postExecute() throws Exception {	
 		try {
+			JSONObject loggerInfo = parentRuleResourceLoggerContext.getLoggerInfo();
+			boolean skipLoggerUpdate = (loggerInfo != null && loggerInfo.get("skipLoggerUpdate") != null && (Boolean)loggerInfo.get("skipLoggerUpdate")) ? true : false;
 			
-			long parentRuleLoggerId = parentRuleResourceLoggerContext.getParentRuleLoggerId();
-			WorkflowRuleLoggerContext parentRuleLoggerContext = WorkflowRuleLoggerAPI.getWorkflowRuleLoggerById(parentRuleLoggerId);
-			List<Map<String, Object>> props = WorkflowRuleResourceLoggerAPI.getResolvedWorkflowRuleResourceLogsAndAlarmCountByParentRuleLoggerId(parentRuleLoggerId); //checking all resource childs completion count
-			
-			if(props != null && !props.isEmpty() && (long)props.get(0).get("parentRuleLoggerId") == parentRuleLoggerId) {		
-				if(props.get(0).get("count") != null) {
-					parentRuleLoggerContext.setResolvedResourcesCount((long) props.get(0).get("count"));	
+			if(!skipLoggerUpdate) {
+				long parentRuleLoggerId = parentRuleResourceLoggerContext.getParentRuleLoggerId();
+				WorkflowRuleLoggerContext parentRuleLoggerContext = WorkflowRuleLoggerAPI.getWorkflowRuleLoggerById(parentRuleLoggerId);
+				List<Map<String, Object>> props = WorkflowRuleResourceLoggerAPI.getResolvedWorkflowRuleResourceLogsAndAlarmCountByParentRuleLoggerId(parentRuleLoggerId); //checking all resource childs completion count
+				
+				if(props != null && !props.isEmpty() && (long)props.get(0).get("parentRuleLoggerId") == parentRuleLoggerId) {		
+					if(props.get(0).get("count") != null) {
+						parentRuleLoggerContext.setResolvedResourcesCount((long) props.get(0).get("count"));	
+					}
+					if(props.get(0).get("sum") != null)	{
+						parentRuleLoggerContext.setTotalAlarmCount(Long.valueOf(String.valueOf(props.get(0).get("sum"))));
+					}
 				}
-				if(props.get(0).get("sum") != null)	{
-					parentRuleLoggerContext.setTotalAlarmCount(Long.valueOf(String.valueOf(props.get(0).get("sum"))));
+				propagateStatusToRuleLog(parentRuleLoggerContext);			
+				int rowsUpdated = 0;
+				if(retryCount == 0) {
+					rowsUpdated = WorkflowRuleLoggerAPI.updateWorkflowRuleLogger(parentRuleLoggerContext,WorkflowRuleLoggerContext.Status.IN_PROGRESS.getIntVal());
 				}
-			}
-			propagateStatusToRuleLog(parentRuleLoggerContext);			
-			int rowsUpdated = 0;
-			if(retryCount == 0) {
-//				rowsUpdated = WorkflowRuleLoggerAPI.updateWorkflowRuleLogger(parentRuleLoggerContext,WorkflowRuleLoggerContext.Status.IN_PROGRESS.getIntVal());
-			}
-			else if(retryCount == 1) {
-//				rowsUpdated = WorkflowRuleLoggerAPI.updateWorkflowRuleLogger(parentRuleLoggerContext,WorkflowRuleLoggerContext.Status.RESCHEDULED.getIntVal());
-			}
-			
-			if(rowsUpdated == 1 && (parentRuleLoggerContext.getStatus() == WorkflowRuleLoggerContext.Status.RESOLVED.getIntVal() || parentRuleLoggerContext.getStatus() == WorkflowRuleLoggerContext.Status.PARTIALLY_COMPLETED.getIntVal())) {
-				checkforRollUpAlarms(parentRuleLoggerContext);
+				else if(retryCount == 1) {
+					rowsUpdated = WorkflowRuleLoggerAPI.updateWorkflowRuleLogger(parentRuleLoggerContext,WorkflowRuleLoggerContext.Status.RESCHEDULED.getIntVal());
+				}
+				
+				if(rowsUpdated == 1 && (parentRuleLoggerContext.getStatus() == WorkflowRuleLoggerContext.Status.RESOLVED.getIntVal() || parentRuleLoggerContext.getStatus() == WorkflowRuleLoggerContext.Status.PARTIALLY_COMPLETED.getIntVal())) {
+					checkforRollUpAlarms(parentRuleLoggerContext);
+				}
 			}
 		}
 		catch (Exception e) {		
@@ -223,20 +227,26 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 					NewTransactionService.newTransaction(() -> 
 					WorkflowRuleResourceLoggerAPI.updateWorkflowRuleResourceContextState(parentRuleResourceLoggerContext, WorkflowRuleResourceLoggerContext.Status.FAILED.getIntVal()));	
 				}	
-				long parentRuleLoggerId = parentRuleResourceLoggerContext.getParentRuleLoggerId();
-				WorkflowRuleLoggerContext parentRuleLoggerContext = WorkflowRuleLoggerAPI.getWorkflowRuleLoggerById(parentRuleLoggerId);
-				propagateStatusToRuleLog(parentRuleLoggerContext);
 				
-				int rowsUpdated = 0;
-				if(retryCount == 0) {
-//					rowsUpdated = WorkflowRuleLoggerAPI.updateWorkflowRuleLogger(parentRuleLoggerContext,WorkflowRuleLoggerContext.Status.IN_PROGRESS.getIntVal());
+				JSONObject loggerInfo = parentRuleResourceLoggerContext.getLoggerInfo();
+				boolean skipLoggerUpdate = (loggerInfo != null && loggerInfo.get("skipLoggerUpdate") != null && (Boolean)loggerInfo.get("skipLoggerUpdate")) ? true : false;
+				
+				if(!skipLoggerUpdate) {
+					long parentRuleLoggerId = parentRuleResourceLoggerContext.getParentRuleLoggerId();
+					WorkflowRuleLoggerContext parentRuleLoggerContext = WorkflowRuleLoggerAPI.getWorkflowRuleLoggerById(parentRuleLoggerId);
+					propagateStatusToRuleLog(parentRuleLoggerContext);
+					
+					int rowsUpdated = 0;
+					if(retryCount == 0) {
+						rowsUpdated = WorkflowRuleLoggerAPI.updateWorkflowRuleLogger(parentRuleLoggerContext,WorkflowRuleLoggerContext.Status.IN_PROGRESS.getIntVal());
+					}
+					else if(retryCount == 1) {
+						rowsUpdated = WorkflowRuleLoggerAPI.updateWorkflowRuleLogger(parentRuleLoggerContext,WorkflowRuleLoggerContext.Status.RESCHEDULED.getIntVal());
+					}
+	 				if(rowsUpdated == 1 && (parentRuleLoggerContext.getStatus() == WorkflowRuleLoggerContext.Status.RESOLVED.getIntVal() || parentRuleLoggerContext.getStatus() == WorkflowRuleLoggerContext.Status.PARTIALLY_COMPLETED.getIntVal())) {
+	 					checkforRollUpAlarms(parentRuleLoggerContext);
+	 				}
 				}
-				else if(retryCount == 1) {
-//					rowsUpdated = WorkflowRuleLoggerAPI.updateWorkflowRuleLogger(parentRuleLoggerContext,WorkflowRuleLoggerContext.Status.RESCHEDULED.getIntVal());
-				}
- 				if(rowsUpdated == 1 && (parentRuleLoggerContext.getStatus() == WorkflowRuleLoggerContext.Status.RESOLVED.getIntVal() || parentRuleLoggerContext.getStatus() == WorkflowRuleLoggerContext.Status.PARTIALLY_COMPLETED.getIntVal())) {
- 					checkforRollUpAlarms(parentRuleLoggerContext);
- 				}
 			}
 			else  {
 				LOGGER.severe("HISTORICAL RULE ALARM PROCESSING JOB IS NULL IN ONERROR FOR JOB -- " + parentRuleResourceLoggerId);
