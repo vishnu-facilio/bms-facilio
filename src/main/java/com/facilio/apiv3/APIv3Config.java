@@ -257,8 +257,10 @@ public class APIv3Config {
         return () -> new V3Config(ControlActionCommandContext.class, null)
         		.summary()
         		.beforeFetch(new ControlActionCommandSuppimentFieldSupplyCommand())
+        		.afterFetch(new ControlActionCommandAfterFetchCommand())
         		.list()
         		.beforeFetch(new ControlActionCommandSuppimentFieldSupplyCommand())
+        		.afterFetch(new ControlActionCommandAfterFetchCommand())
                 .build();
     }
 
