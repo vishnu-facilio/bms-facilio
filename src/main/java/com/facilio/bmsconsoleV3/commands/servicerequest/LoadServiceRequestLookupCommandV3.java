@@ -4,20 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.commands.FacilioField;
-import com.facilio.bmsconsole.commands.ModuleBean;
+import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.fw.BeanFactory;
 
-public class LoadServiceRequestLookupCommandV3 implements Command {
+public class LoadServiceRequestLookupCommandV3 extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
-		// TODO Auto-generated method stub
+	public boolean executeCommand(Context context) throws Exception {
 		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 

@@ -477,7 +477,14 @@ public class TransactionChainFactoryV3 {
 		c.addCommand(new AddClientUserCommandV3());
 		return c;
 	}
-
+	
+	public static FacilioChain getServiceRequestAfterSaveChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new UpdateAttachmentsParentIdCommandV3());
+		c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
+		return c;
+	}
+	
 	public static FacilioChain getUpdateAnnouncementAfterSaveChain() {
         FacilioChain c = getDefaultChain();
 	    c.addCommand(new UpdateAttachmentsParentIdCommandV3());
