@@ -2142,6 +2142,17 @@ public class FieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getScoringRuleTriggerCallRelFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getScoringRuleTriggerCallRelModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("ruleId", "RULE_ID", module, FieldType.NUMBER));
+        fields.add(getField("triggerId", "TRIGGER_ID", module, FieldType.NUMBER));
+
+        return fields;
+    }
+
     public static List<FacilioField> getScoringCommitmentFields() {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getScoringCommitmentModule();

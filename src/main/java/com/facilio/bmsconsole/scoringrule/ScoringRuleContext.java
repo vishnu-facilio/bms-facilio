@@ -8,6 +8,7 @@ import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.trigger.context.ScoringRuleTrigger;
 import org.apache.commons.chain.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,14 @@ public class ScoringRuleContext extends WorkflowRuleContext {
     }
     public void setScoringCommitmentContexts(List<ScoringCommitmentContext> scoringCommitmentContexts) {
         this.scoringCommitmentContexts = scoringCommitmentContexts;
+    }
+
+    private List<ScoringRuleTrigger> triggersToBeExecuted;
+    public List<ScoringRuleTrigger> getTriggersToBeExecuted() {
+        return triggersToBeExecuted;
+    }
+    public void setTriggersToBeExecuted(List<ScoringRuleTrigger> triggersToBeExecuted) {
+        this.triggersToBeExecuted = triggersToBeExecuted;
     }
 
     private ScoreType scoreType;
@@ -75,8 +84,6 @@ public class ScoringRuleContext extends WorkflowRuleContext {
                     break;
                 }
             }
-
-            System.out.println("Total score: " + totalScore);
 
             // todo add data to scoring sub module
             FacilioModule scoreModule = ScoringRuleAPI.getScoreModule(getModuleId());

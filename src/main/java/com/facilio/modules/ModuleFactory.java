@@ -668,6 +668,14 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getScoringRuleTriggerCallRelModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("scoringRuleTriggerCallRel");
+		module.setDisplayName("Scoring Rule Trigger Call Rel");
+		module.setTableName("ScoringRule_Trigger_Rel");
+		return module;
+	}
+
 	public static FacilioModule getScoringCommitmentModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("scoringCommitment");

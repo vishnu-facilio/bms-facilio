@@ -1,11 +1,22 @@
 package com.facilio.bmsconsole.scoringrule;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
+import com.facilio.chain.FacilioChain;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
+import com.facilio.modules.fields.LookupField;
+import com.facilio.trigger.context.ScoringRuleTrigger;
+import com.facilio.trigger.context.TriggerAction;
+import com.facilio.trigger.context.TriggerActionType;
+import com.facilio.trigger.context.TriggerType;
+import com.facilio.trigger.util.TriggerUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -73,6 +84,38 @@ public class NodeScoringContext extends BaseScoringContext {
     }
 
     @Override
+    public void afterSave(ScoringRuleContext rule) throws Exception {
+        if (nodeType == NodeType.CURRENT_MODULE) {
+            return;
+        }
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(rule.getModuleId());
+
+        // add trigger to be called parent rule
+        ScoringRuleTrigger trigger = new ScoringRuleTrigger();
+        trigger.setName("scoring_rule_" + scoreRuleId + "_dependency_" + getId());
+        trigger.setEventType(EventType.INVOKE_TRIGGER);
+        trigger.setType(TriggerType.MODULE_TRIGGER);
+        trigger.setInternal(true);
+        trigger.setModuleId(module.getModuleId());
+        trigger.setStatus(true);
+//        trigger.setScoringRuleId(rule.getId());
+
+        TriggerAction action = new TriggerAction();
+        action.setActionType(TriggerActionType.RULE_EXECUTION);
+        action.setTypeRefPrimaryId(rule.getId());
+        trigger.setTriggerActions(Collections.singletonList(action));
+
+        FacilioChain chain = TransactionChainFactoryV3.getTriggerAddOrUpdateChain();
+        chain.getContext().put(TriggerUtil.TRIGGER_CONTEXT, trigger);
+        chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
+        chain.execute();
+
+        ScoringRuleAPI.addTriggersToBeExecuted(scoreRuleId, trigger);
+    }
+
+    @Override
     public void validate() {
         super.validate();
         if (StringUtils.isEmpty(name)) {
@@ -101,7 +144,6 @@ public class NodeScoringContext extends BaseScoringContext {
             ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) record;
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
-            FacilioModule module = modBean.getModule(moduleRecord.getModuleId());
             FacilioModule scoreModule = ScoringRuleAPI.getScoreModule(moduleId);
 
             switch (nodeType) {
@@ -114,31 +156,22 @@ public class NodeScoringContext extends BaseScoringContext {
                 }
 
                 case PARENT_MODULE: {
-//                    FacilioModule fieldModule = modBean.getModule(fieldModuleId);
-//                    LookupField lookupField = (LookupField) modBean.getField(fieldId, fieldModule.getModuleId());
-//
-//                    Object value = FieldUtil.getValue(moduleRecord, lookupField);
-//                    if (value instanceof ModuleBaseWithCustomFields) {
-//                        // get parent module score field
-//                        long recordId = ((ModuleBaseWithCustomFields) value).getId();
-//                        FacilioField scoringField = modBean.getField(scoringFieldId, lookupField.getLookupModuleId());
-//
-//                        SelectRecordsBuilder builder = new SelectRecordsBuilder()
-//                                .module(lookupField.getLookupModule())
-//                                .beanClass(FacilioConstants.ContextNames.getClassFromModule(lookupField.getLookupModule()))
-//                                .select(Collections.singletonList(scoringField))
-//                                .andCondition(CriteriaAPI.getIdCondition(recordId, lookupField.getLookupModule()));
-//                        List<Map<String, Object>> props = builder.getAsProps();
-//                        if (CollectionUtils.isNotEmpty(props)) {
-//                            Map<String, Object> map = props.get(0);
-//                            Object o = map.get(scoringField.getName());
-//                            if (o instanceof Number) {
-//                                return ((Number) o).floatValue();
-//                            }
-//                        }
-//                    }
+                    FacilioModule fieldModule = modBean.getModule(fieldModuleId);
+                    LookupField lookupField = (LookupField) modBean.getField(fieldId, fieldModule.getModuleId());
+
+                    Object value = FieldUtil.getValue(moduleRecord, lookupField);
+                    if (value instanceof ModuleBaseWithCustomFields) {
+                        // get parent module score field
+                        FacilioModule parentScoreModule = ScoringRuleAPI.getScoreModule(lookupField.getLookupModuleId());
+                        ScoreContext scoreRecord = ScoringRuleAPI.getScoreRecord(parentScoreModule, scoreRuleId, (ModuleBaseWithCustomFields) value);
+
+                        if (scoreRecord == null) {
+                            return scoreRecord.getScore();
+                        }
+                    }
                     return 0;
                 }
+
                 case SUB_MODULE: {
 //                    FacilioModule fieldModule = modBean.getModule(fieldModuleId);
 //                    LookupField lookupField = (LookupField) modBean.getField(fieldId, fieldModule.getModuleId());

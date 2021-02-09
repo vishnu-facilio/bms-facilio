@@ -20,6 +20,12 @@ public enum TriggerType implements TriggerTypeInterface {
 			return null;
 		}
 	},
+	SCORING_RULE_TRIGGER {
+		@Override
+		public Map<String, Object> getParamsMap(FacilioContext context) {
+			return null;
+		}
+	}
 	;
 	
 	public int getValue() {

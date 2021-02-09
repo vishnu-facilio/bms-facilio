@@ -262,4 +262,16 @@ public class TriggerUtil {
 				.andCondition(CriteriaAPI.getCondition("TYPE_PRIMARY_ID", "typeRefPrimaryId", String.valueOf(rule.getId()), NumberOperators.EQUALS));
 		builder.delete();
 	}
+
+	public static void deleteTriggers(Collection<Long> triggerSet) throws Exception {
+		if (CollectionUtils.isEmpty(triggerSet)) {
+			return;
+		}
+
+		FacilioModule module = ModuleFactory.getTriggerModule();
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getIdCondition(triggerSet, module));
+		builder.delete();
+	}
 }

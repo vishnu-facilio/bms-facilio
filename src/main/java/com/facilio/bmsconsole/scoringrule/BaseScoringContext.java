@@ -134,6 +134,8 @@ public class BaseScoringContext implements Serializable {
         return false;
     }
 
+    public void afterSave(ScoringRuleContext rule) throws Exception {}
+
     public enum Type implements FacilioEnum {
         CONDITIONED("Conditioned"),
         NODE("Node");

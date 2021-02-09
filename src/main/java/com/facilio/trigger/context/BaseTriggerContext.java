@@ -1,9 +1,10 @@
 package com.facilio.trigger.context;
 
+import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import com.facilio.bmsconsole.workflow.rule.EventType;
 
 public class BaseTriggerContext {
 
@@ -24,6 +25,7 @@ public class BaseTriggerContext {
 	}
 
 	private TriggerType type;
+	@JsonInclude
 	public int getType() {
 		if(type != null) {
 			return type.getValue();
@@ -36,6 +38,9 @@ public class BaseTriggerContext {
 	public void setType(int type) {
 		this.type = TriggerType.valueOf(type);
 	}
+	public void setType(TriggerType type) {
+		this.type = type;
+	}
 
 	private long moduleId = -1;
 	public long getModuleId() {
@@ -46,6 +51,7 @@ public class BaseTriggerContext {
 	}
 
 	private Boolean internal;
+	@JsonInclude
 	public Boolean getInternal() {
 		return internal;
 	}
@@ -71,6 +77,9 @@ public class BaseTriggerContext {
 	}
 	public void setEventType(int eventType) {
 		this.eventType = EventType.valueOf(eventType);
+	}
+	public void setEventType(EventType eventType) {
+		this.eventType = eventType;
 	}
 
 	private Boolean status;

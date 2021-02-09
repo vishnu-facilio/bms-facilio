@@ -1,5 +1,8 @@
 package com.facilio.trigger.command;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.facilio.beans.ModuleBean;
@@ -8,6 +11,8 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.trigger.context.TriggerType;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
@@ -56,23 +61,68 @@ public class AddOrUpdateTriggerCommand extends FacilioCommand {
 			trigger.setInternal(false);
 		}
 
+		FacilioModule triggerModule = getTriggerModule(trigger.getTypeEnum());
+		List<FacilioModule> moduleOrder = new ArrayList<>();
+		while (triggerModule != null) {
+			moduleOrder.add(0, triggerModule);
+			triggerModule = triggerModule.getExtendModule();
+		}
+		List<FacilioField> triggerFields = getTriggerFields(trigger.getTypeEnum());
+		Map<FacilioModule, List<FacilioField>> triggerFieldMap = new HashMap<>();
+		for (FacilioField field : triggerFields) {
+			FacilioModule fieldModule = field.getModule();
+			List<FacilioField> list = triggerFieldMap.get(fieldModule);
+			if (list == null) {
+				list = new ArrayList<>();
+				triggerFieldMap.put(fieldModule, list);
+			}
+			list.add(field);
+		}
+
 		Map<String, Object> props = FieldUtil.getAsProperties(trigger);
 		if (trigger.getId() < 0) {
-			GenericInsertRecordBuilder insert = new GenericInsertRecordBuilder()
-					.table(ModuleFactory.getTriggerModule().getTableName())
-					.fields(FieldFactory.getTriggerFields())
-					.addRecord(props);
-			insert.save();
-			trigger.setId((long) props.get("id"));
+			for (FacilioModule mod : moduleOrder) {
+				GenericInsertRecordBuilder insert = new GenericInsertRecordBuilder()
+						.table(mod.getTableName())
+						.fields(triggerFieldMap.get(mod))
+						.addRecord(props);
+				insert.save();
+				trigger.setId((long) props.get("id"));
+			}
 		} else {
-			GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
-					.table(ModuleFactory.getTriggerModule().getTableName())
-					.fields(FieldFactory.getTriggerFields())
-					.andCondition(CriteriaAPI.getIdCondition(trigger.getId(), ModuleFactory.getTriggerModule()));
-			builder.update(props);
+			for (FacilioModule mod : moduleOrder) {
+				GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+						.table(mod.getTableName())
+						.fields(triggerFieldMap.get(mod))
+						.andCondition(CriteriaAPI.getIdCondition(trigger.getId(), ModuleFactory.getTriggerModule()));
+				builder.update(props);
+			}
 		}
 		
 		return false;
 	}
 
+	private FacilioModule getTriggerModule(TriggerType triggerType) {
+		switch (triggerType) {
+			case MODULE_TRIGGER:
+			case SLA_DUE_DATE_TRIGGER:
+			case SCORING_RULE_TRIGGER:
+				return ModuleFactory.getTriggerModule();
+
+			default:
+				throw new IllegalArgumentException("Invalid trigger type");
+		}
+	}
+
+	public List<FacilioField> getTriggerFields(TriggerType triggerType) {
+		switch (triggerType) {
+			case MODULE_TRIGGER:
+			case SLA_DUE_DATE_TRIGGER:
+			case SCORING_RULE_TRIGGER:
+				return FieldFactory.getTriggerFields();
+
+			default:
+				throw new IllegalArgumentException("Invalid trigger type");
+		}
+	}
 }

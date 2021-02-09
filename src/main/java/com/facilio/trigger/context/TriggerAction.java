@@ -45,6 +45,9 @@ public class TriggerAction {
 	public void setActionType(int actionType) {
 		this.actionType = TriggerActionType.getActionType(actionType);
 	}
+	public void setActionType(TriggerActionType type) {
+		this.actionType = type;
+	}
 
 	private long typeRefPrimaryId = -1;
 	public long getTypeRefPrimaryId() {
