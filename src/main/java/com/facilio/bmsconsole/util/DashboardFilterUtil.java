@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -45,7 +46,9 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.report.context.ReportContext;
@@ -142,7 +145,26 @@ public class DashboardFilterUtil {
 				if(filter.getCriteriaId()>0)
 				{
 				filter.setCriteria(CriteriaAPI.getCriteria(filter.getCriteriaId()));
+				
+				SelectRecordsBuilder<ModuleBaseWithCustomFields> selectRecordsBuilder=new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
+						.module(filter.getModule())
+						.select(Collections.singletonList(FieldFactory.getIdField(filter.getModule())))
+						.andCriteria(filter.getCriteria())
+						.beanClass(ModuleBaseWithCustomFields.class);
+						
+				List<ModuleBaseWithCustomFields>  optionRecords= selectRecordsBuilder.get();
+				
+				if(optionRecords!=null)
+				{
+				List<String> recordIds=optionRecords.stream().map(record->String.valueOf(record.getId())).collect(Collectors.toList());
+				filter.setSelectedOptionsRecordIds(recordIds);
 				}
+				
+				
+				
+				}
+				
+				
 				
 				//filter.setWidgetFieldMap(getUserFilterToWidgetColumnMapping(filter.getId()));
 

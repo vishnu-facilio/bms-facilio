@@ -38,11 +38,21 @@ public Map<Long, FacilioField> getCascadingFilters() {
 
 	private FacilioModule module;
 	
+	private List<String> selectedOptionsRecordIds;
+	
+	
 	
 	
 	
 	// default values is type string to handle  ,'all' ,'others' cases
 		
+	public List<String> getSelectedOptionsRecordIds() {
+		return selectedOptionsRecordIds;
+	}
+	@JSON(serialize = false)
+	public void setSelectedOptionsRecordIds(List<String> selectedOptionsRecordIds) {
+		this.selectedOptionsRecordIds = selectedOptionsRecordIds;
+	}
 	public FacilioModule getModule() {
 		return module;
 	}
