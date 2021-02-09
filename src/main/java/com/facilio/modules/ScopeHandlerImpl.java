@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.constants.FacilioConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -122,6 +123,11 @@ public class ScopeHandlerImpl extends ScopeHandler {
 				return constructScopingFieldsAndCriteria(module, joinModules, false);
 			}
 			else {
+				//special handling for altayer - tenants module inorder to temporarily support multi site scoping. can be removed once multi select lookup is handled
+				if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 407l && StringUtils.isNotEmpty(module.getName()) && module.getName().equals(FacilioConstants.ContextNames.TENANT)) {
+					return null;
+				}
+
 				if (FieldUtil.isSiteIdFieldPresent(module)) {
 			        return constructSiteFieldsAndCriteria(module, false);
 			    }
