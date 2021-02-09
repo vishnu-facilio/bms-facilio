@@ -42,8 +42,12 @@ import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
 import javax.xml.crypto.dsig.spec.TransformParameterSpec;
 
 import com.facilio.accounts.sso.SSOUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.*;
+import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
@@ -436,6 +440,14 @@ public class LoginAction extends FacilioAction {
 		data.put("ticketCategory", TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId()));
 		data.put("ticketPriority", TicketAPI.getPriorties(AccountUtil.getCurrentOrg().getOrgId()));
 		data.put("ticketType", TicketAPI.getTypes(AccountUtil.getCurrentOrg().getOrgId()));
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+		if (module != null) {
+			StateFlowRuleContext defaultStateFlow = StateFlowRulesAPI.getDefaultStateFlow(module);
+			if (defaultStateFlow != null) {
+				data.put("defaultWorkOrderStateFlowId", defaultStateFlow.getId());
+			}
+		}
 		
 		data.put("alarmSeverity", AlarmAPI.getAlarmSeverityList());
 		data.put("assetCategory", AssetsAPI.getCategoryList());
