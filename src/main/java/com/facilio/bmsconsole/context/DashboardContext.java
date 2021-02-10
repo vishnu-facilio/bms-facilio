@@ -144,6 +144,24 @@ public class DashboardContext extends ModuleBaseWithCustomFields implements Clon
 		this.dashboardSharingContext = this.dashboardSharingContext == null ? new ArrayList<>() : this.dashboardSharingContext; 
 		this.dashboardSharingContext.add(dashboardSharingContext);
 	}
+	
+	
+	
+	List<DashboardPublishContext> dashboardPublishingContext;
+	
+	public List<DashboardPublishContext> getDashboardPublishingContext() {
+		return dashboardPublishingContext;
+	}
+	public void setDashboardPublishingContext(List<DashboardPublishContext> dashboardPublishingContext) {
+		this.dashboardPublishingContext = dashboardPublishingContext;
+	}
+	public void adddashboardPublishingContext(DashboardPublishContext dashboardPublishingContext) {
+		
+		this.dashboardPublishingContext = this.dashboardPublishingContext == null ? new ArrayList<>() : this.dashboardPublishingContext; 
+		this.dashboardPublishingContext.add(dashboardPublishingContext);
+	}
+
+	
 
 	private String linkName;
 	

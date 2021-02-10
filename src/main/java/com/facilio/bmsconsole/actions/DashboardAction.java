@@ -6217,6 +6217,15 @@ public class DashboardAction extends FacilioAction {
 	public void setDashboardSharing(List<DashboardSharingContext> dashboardSharing) {
 		this.dashboardSharing = dashboardSharing;
 	}
+	
+	private List<DashboardPublishContext> dashboardPublishing;
+	
+	public List<DashboardPublishContext> getDashboardPublishing() {
+		return dashboardPublishing;
+	}
+	public void setDashboardPublishing(List<DashboardPublishContext> dashboardPublishing) {
+		this.dashboardPublishing = dashboardPublishing;
+	}
 	private JSONArray dashboardJson;
 	
 	public void setDashboardJson(JSONArray dashboardJson) {
@@ -6724,6 +6733,11 @@ public class DashboardAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String viewDashboardPublish() throws Exception {						// Using in client should be removed after removed in client
+		setDashboardPublishing(DashboardUtil.getDashboardPublishing(dashboardId));
+		return SUCCESS;
+	}
+	
 	public String getDashboardFolder() throws Exception {
 		
 		dashboardFolders = DashboardUtil.getDashboardFolder(moduleName);
@@ -6829,6 +6843,22 @@ public class DashboardAction extends FacilioAction {
 		DashboardUtil.updateDashboardPublishStatus(dashboard);
 		return SUCCESS;
 	}
+	
+	public String updateDashboardPublish() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		
+		if(dashboards == null && dashboard != null) {
+			dashboards = Collections.singletonList(dashboard);
+		}
+		context.put(FacilioConstants.ContextNames.DASHBOARDS, dashboards);
+		
+		FacilioChain updateDashboardChain = TransactionChainFactory.getUpdateDashboardPublishChain();
+		updateDashboardChain.execute(context);
+		
+		return SUCCESS;
+	}
+	
 	
 	public String toggleMobileDashboard() throws Exception {
 		if(buildingId != null) {

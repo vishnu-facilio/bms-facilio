@@ -32,6 +32,8 @@ import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardFolderContext;
+import com.facilio.bmsconsole.context.DashboardPublishContext;
+import com.facilio.bmsconsole.context.DashboardPublishContext.PublishingType;
 import com.facilio.bmsconsole.context.DashboardSharingContext;
 import com.facilio.bmsconsole.context.DashboardSharingContext.SharingType;
 import com.facilio.bmsconsole.context.DashboardTabContext;
@@ -1634,8 +1636,65 @@ public class DashboardUtil {
 		return getFilteredDashboards(dashboardMap,false);
 	}
 	
-	public static List<DashboardContext> getFilteredDashboards(Map<Long, DashboardContext> dashboardMap,boolean isFromPortal) throws Exception {
+	public static List<DashboardContext> getFilteredPortalDashboards(Map<Long, DashboardContext> dashboardMap) throws Exception {
 		
+		List<Long> dashboardIds = new ArrayList<>(dashboardMap.keySet());
+		
+		List<DashboardContext> dashboardList = new ArrayList<DashboardContext>();
+ 
+
+		
+		if (AccountUtil.getCurrentUser() != null && AccountUtil.getCurrentUser().getRole() != null && AccountUtil.getCurrentUser().getRole().getName().equals(AccountConstants.DefaultSuperAdmin.SUPER_ADMIN)) {
+			dashboardList.addAll(dashboardMap.values());
+			return dashboardList;
+		}
+		
+		if (!dashboardMap.isEmpty()) {
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+					.select(FieldFactory.getDashboardPublishingFields())
+					.table(ModuleFactory.getDashboardPublishingModule().getTableName())
+					.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
+					.andCondition(CriteriaAPI.getCondition("Dashboard_Publishing.DASHBOARD_ID", "dashboardId", StringUtils.join(dashboardIds, ","), NumberOperators.EQUALS));
+			
+			
+			
+			List<Map<String, Object>> props = selectBuilder.get();
+			
+			if (props != null && !props.isEmpty()) {
+				for (Map<String, Object> prop : props) {
+					DashboardPublishContext dashboardPublishing = FieldUtil.getAsBeanFromMap(prop, DashboardPublishContext.class);
+					if (dashboardIds.contains(dashboardPublishing.getDashboardId())) {
+						dashboardIds.remove(dashboardPublishing.getDashboardId());
+					}
+					
+					if(!dashboardList.contains(dashboardMap.get(dashboardPublishing.getDashboardId()))) {
+						
+						if (AccountUtil.getCurrentUser().getApplicationId() == dashboardPublishing.getAppId()) {
+							if (dashboardPublishing.getPublishingTypeEnum().equals(PublishingType.USER) && dashboardPublishing.getOrgUserId() == AccountUtil.getCurrentAccount().getUser().getOuid()) {
+								dashboardList.add(dashboardMap.get(dashboardPublishing.getDashboardId()));
+							}
+							else if (dashboardPublishing.getPublishingTypeEnum().equals(PublishingType.ALL_USER)) {
+								dashboardList.add(dashboardMap.get(dashboardPublishing.getDashboardId()));
+							}
+						}
+	
+					}
+				}
+				if(AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomainType.FACILIO) {
+					for (Long dashboardId : dashboardIds) {
+						dashboardList.add(dashboardMap.get(dashboardId));
+					}
+				}
+			}
+			else {
+				if(AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomainType.FACILIO) { 
+					dashboardList.addAll(dashboardMap.values());
+				}
+			}
+		}
+		return dashboardList;
+	}
+	public static List<DashboardContext> getOrginalFilteredDashboards(Map<Long, DashboardContext> dashboardMap,boolean isFromPortal) throws Exception {
 		List<Long> dashboardIds = new ArrayList<>(dashboardMap.keySet());
 		
 		List<DashboardContext> dashboardList = new ArrayList<DashboardContext>();
@@ -1721,6 +1780,11 @@ public class DashboardUtil {
 		}
 		return dashboardList;
 	}
+	public static List<DashboardContext> getFilteredDashboards(Map<Long, DashboardContext> dashboardMap,boolean isFromPortal) throws Exception {
+			
+		return getOrginalFilteredDashboards(dashboardMap, isFromPortal);
+		//return isFromPortal ? getFilteredPortalDashboards(dashboardMap): getOrginalFilteredDashboards(dashboardMap, false);
+	}
 	
 	public static List<DashboardSharingContext> getDashboardSharing(Long dashboardId) throws Exception {
 		
@@ -1762,6 +1826,49 @@ public class DashboardUtil {
 					.addRecords(dashboardSharingProps);
 		insertBuilder.save();
 	}
+	
+	
+	public static List<DashboardPublishContext> getDashboardPublishing(Long dashboardId) throws Exception {
+		
+		List<DashboardPublishContext> dashboardPublishList = new ArrayList<DashboardPublishContext>();
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getDashboardPublishingFields())
+				.table(ModuleFactory.getDashboardPublishingModule().getTableName())
+				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
+				.andCustomWhere("DASHBOARD_ID = ?", dashboardId);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+			
+		if (props != null && !props.isEmpty()) {
+			for (Map<String, Object> prop : props) {
+				DashboardPublishContext dashboardPublishing = FieldUtil.getAsBeanFromMap(prop, DashboardPublishContext.class);
+				dashboardPublishList.add(dashboardPublishing);	
+			}
+		}
+		return dashboardPublishList;
+	}
+	
+	public static void applyDashboardPublishing(Long dashboardId, List<DashboardPublishContext> dashboardPublishList) throws Exception {
+		
+		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+				.table(ModuleFactory.getDashboardPublishingModule().getTableName())
+				.andCustomWhere("DASHBOARD_ID = ?", dashboardId);
+		deleteBuilder.delete();
+		
+		List<Map<String, Object>> dashboardPublishingProps = new ArrayList<>();
+		long orgId = AccountUtil.getCurrentOrg().getId();
+		for(DashboardPublishContext dashboardPublishing : dashboardPublishList) {
+			dashboardPublishing.setOrgId(orgId);
+			dashboardPublishingProps.add(FieldUtil.getAsProperties(dashboardPublishing));
+		}
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+					.table(ModuleFactory.getDashboardPublishingModule().getTableName())
+					.fields(FieldFactory.getDashboardPublishingFields())
+					.addRecords(dashboardPublishingProps);
+		insertBuilder.save();
+	}
+	
 	
 	
 	// old reports related APIs 

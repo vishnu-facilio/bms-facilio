@@ -6896,6 +6896,19 @@ public class FieldFactory {
 
         return fields;
     }
+    
+    public static List<FacilioField> getDashboardPublishingFields() {
+        FacilioModule module = ModuleFactory.getDashboardPublishingModule();
+        List<FacilioField> fields = new ArrayList<>();
+
+        fields.add(getIdField(module));
+        fields.add(getField("dashboardId", "DASHBOARD_ID", module, FieldType.NUMBER));
+        fields.add(getField("orgUserId", "ORG_USERID", module, FieldType.NUMBER));
+        fields.add(getField("appId", "APP_ID", module, FieldType.NUMBER));
+        fields.add(getField("publishingType", "PUBLISHING_TYPE", module, FieldType.NUMBER));
+        fields.add(getField("featureLicense", "FEATURE_LICENSE", module, FieldType.STRING));
+        return fields;
+    }
 
 
     public static FacilioField getField(String name, String colName, FieldType type) {

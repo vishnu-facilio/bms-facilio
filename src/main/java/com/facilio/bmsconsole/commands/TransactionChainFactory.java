@@ -1560,6 +1560,12 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateDashboardsCommand());
 			return c;
 		}
+	    
+	    public static FacilioChain getUpdateDashboardPublishChain() {
+			FacilioChain c = FacilioChain.getTransactionChain();
+			c.addCommand(new updateDashboardPublishCommand());
+			return c;
+	    }
 
 	    public static FacilioChain getDeleteDashboardChain() {
 			FacilioChain c = FacilioChain.getTransactionChain();

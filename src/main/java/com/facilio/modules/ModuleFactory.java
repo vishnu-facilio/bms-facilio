@@ -2152,6 +2152,14 @@ public class ModuleFactory {
 		dashboardSharing.setTableName("Dashboard_Sharing");
 		return dashboardSharing;
 	}
+	
+	public static FacilioModule getDashboardPublishingModule() {
+		FacilioModule dashboardPublishing = new FacilioModule();
+		dashboardPublishing.setName("dashboardPublishing");
+		dashboardPublishing.setDisplayName("Dashboard Publishing");
+		dashboardPublishing.setTableName("Dashboard_Publishing");
+		return dashboardPublishing;
+	}
 
 	public static FacilioModule getViewSharingModule() {
 		FacilioModule viewSharing = new FacilioModule();

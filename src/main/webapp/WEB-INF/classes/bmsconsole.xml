@@ -3636,6 +3636,21 @@
 		</action>
 	</package>
 	
+	<package name="dashboardpublish" namespace="/api/dashboardpublish" extends="homeApi">
+	<action name="update" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboardPublish">
+			<result name="success" type="json">
+				<param name="includeProperties">^dashboards.*</param>
+			</result>
+		</action>
+		
+		<action name="*" class="com.facilio.bmsconsole.actions.DashboardAction" method="viewDashboardPublish">
+			<param name="dashboardId">{1}</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^dashboardPublishing.*</param>
+			</result>
+		</action>
+	</package>
+	
 	<package name="units" namespace="/api/units" extends="homeApi">
 		<action name="getDefaultMetricUnits" class="com.facilio.bmsconsole.actions.UnitAction" method="getDefaultMetricUnits">
 			<result name="success" type="json">
