@@ -3,9 +3,11 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.fw.BeanFactory;
+import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.modules.FacilioModule;
 import org.apache.commons.chain.Context;
 
@@ -31,7 +33,18 @@ public class GetApplicationDetails extends FacilioCommand {
 		application = ApplicationApi.getApplicationForId(appId);
 
 		if (application != null) {
-			List<ApplicationLayoutContext> appLayouts = null;
+			List<AppDomain> appDomainList = IAMAppUtil.getAppDomainForType(application.getDomainType(), AccountUtil.getCurrentOrg().getOrgId());
+			if(CollectionUtils.isNotEmpty(appDomainList)) {
+				application.setAppDomain(appDomainList.get(0));
+				for (AppDomain domain : appDomainList) {
+					//giving priority for custom domain
+					if (domain.getDomainTypeEnum() == AppDomain.DomainType.CUSTOM) {
+						application.setAppDomain(domain);
+						break;
+					}
+				}
+			}
+		    List<ApplicationLayoutContext> appLayouts = null;
 			if (fetchAllLayouts != null && fetchAllLayouts) {
 				appLayouts = ApplicationApi.getLayoutsForAppId(application.getId());
 			} else {
