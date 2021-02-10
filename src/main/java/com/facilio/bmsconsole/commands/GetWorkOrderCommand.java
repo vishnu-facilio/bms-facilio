@@ -60,6 +60,10 @@ public class GetWorkOrderCommand extends FacilioCommand {
 
 			//fetch vendor details
 			builder.fetchSupplement((LookupField) fieldMap.get("vendor"));
+
+			//fetch parent wo
+			builder.fetchSupplement((LookupField) fieldMap.get("parentWO"));
+
 			//fetch safetyPlan details
 			if(AccountUtil.isFeatureEnabled(FeatureLicense.SAFETY_PLAN)) {
 				builder.fetchSupplement((LookupField) fieldMap.get("safetyPlan"));
