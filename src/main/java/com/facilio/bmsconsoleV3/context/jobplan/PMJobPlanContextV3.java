@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.context.jobplan;
 
+import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.TaskTemplate;
@@ -97,5 +98,15 @@ public class PMJobPlanContextV3 implements Serializable {
        }
 
         return secTemplateList;
+    }
+
+    private List<PMTriggerContext> jpPmTriggers;
+
+    public List<PMTriggerContext> getJpPmTriggers() {
+        return jpPmTriggers;
+    }
+
+    public void setJpPmTriggers(List<PMTriggerContext> jpPmTriggers) {
+        this.jpPmTriggers = jpPmTriggers;
     }
 }

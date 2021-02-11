@@ -4304,10 +4304,22 @@ public class PreventiveMaintenanceAPI {
 
 	public static void addJobPlansForPm(PreventiveMaintenance pm) throws Exception {
 		List<Map<String, Object>> paramsMap = new ArrayList<>();
+		List<String> triggerNames = new ArrayList<>();
 		for(PMJobPlanContextV3 pmJp : pm.getJobPlanList()) {
+			if(CollectionUtils.isNotEmpty(pmJp.getJpPmTriggers())){
+				for(PMTriggerContext pmTrigger : pmJp.getJpPmTriggers()) {
+					if (!triggerNames.contains(pmTrigger.getName())){
+						triggerNames.add(pmTrigger.getName());
+					}
+					else {
+						throw new IllegalArgumentException("Please associate different triggers for every job plan");
+					}
+				}
+			}
 			Map<String, Object> relProp = FieldUtil.getAsProperties(pmJp);
 			relProp.put("pmId", pm.getId());
 			paramsMap.add(relProp);
+
 		}
 
 		FacilioModule module = ModuleFactory.getPMJobPlanV3Module();
