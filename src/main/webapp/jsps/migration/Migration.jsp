@@ -16,6 +16,10 @@
 <%@ page import="com.facilio.modules.fields.FacilioField" %>
 <%@ page import="com.facilio.modules.FieldType" %>
 
+<%@ page import="com.facilio.bmsconsole.util.DashboardUtil"%>
+<%@ page import="com.facilio.bmsconsole.context.DashboardSharingContext" %>
+<%@ page import="com.facilio.bmsconsole.context.DashboardPublishContext" %>
+<%@ page import="java.util.ArrayList" %>
 
 <%--
 
@@ -38,8 +42,47 @@
 
             // Have migration commands for each org
             // Transaction is only org level. If failed, have to continue from the last failed org and not from first
+                       	
+			List<DashboardSharingContext> dashboardSharingList = DashboardUtil.getDashboardSharingByType(4);
+			List<DashboardSharingContext> dashboardSharingList1 = DashboardUtil.getDashboardSharingByType(5);
 
-            LOGGER.info("Completed For -- "+AccountUtil.getCurrentOrg().getId());
+			List<DashboardPublishContext> dashboardPublishList = new ArrayList<DashboardPublishContext>();
+
+           	
+           	//System.out.println("list" + dashboardSharingList);
+			 for (DashboardSharingContext dashboardSharing : dashboardSharingList) {
+				 DashboardPublishContext dashboardPublish = new DashboardPublishContext();
+				 
+					 
+		         dashboardPublish.setOrgId(AccountUtil.getCurrentOrg().getId());
+		         dashboardPublish.setPublishingType(DashboardPublishContext.PublishingType.USER);
+				 dashboardPublish.setOrgUserId(dashboardSharing.getOrgUserId());
+				 dashboardPublish.setDashboardId(dashboardSharing.getDashboardId());
+				 
+				 
+				
+				 dashboardPublishList.add(dashboardPublish);
+	            }
+			 
+			
+			 for (DashboardSharingContext dashboardSharing : dashboardSharingList1) {
+				 DashboardPublishContext dashboardPublish = new DashboardPublishContext();
+				 
+					 
+		         dashboardPublish.setOrgId(AccountUtil.getCurrentOrg().getId());
+		         dashboardPublish.setPublishingType(DashboardPublishContext.PublishingType.ALL_USER);
+				 dashboardPublish.setOrgUserId(dashboardSharing.getOrgUserId());
+				 dashboardPublish.setDashboardId(dashboardSharing.getDashboardId());
+				 
+				
+				 dashboardPublishList.add(dashboardPublish);
+				 
+	            }
+			 
+			DashboardUtil.addDashboardPublishing(dashboardPublishList);
+			
+			
+            LOGGER.info("Completed test For --" + AccountUtil.getCurrentOrg().getId());
             response.getWriter().println("Completed For -- "+AccountUtil.getCurrentOrg().getId());
             return false;
         }

@@ -1806,6 +1806,28 @@ public class DashboardUtil {
 		}
 		return dashboardSharingList;
 	}
+
+		
+	public static List<DashboardSharingContext> getDashboardSharingByType(int sharingType) throws Exception { // to be removed after migration
+		
+		List<DashboardSharingContext> dashboardSharingList = new ArrayList<DashboardSharingContext>();
+	
+				GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getDashboardSharingModule().getTableName())
+				.select(FieldFactory.getDashboardSharingFields())
+				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
+				.andCustomWhere("SHARING_TYPE = ?", sharingType);
+
+		List<Map<String, Object>> props = selectBuilder.get();
+			
+		if (props != null && !props.isEmpty()) {
+			for (Map<String, Object> prop : props) {
+				DashboardSharingContext dashboardSharing = FieldUtil.getAsBeanFromMap(prop, DashboardSharingContext.class);
+				dashboardSharingList.add(dashboardSharing);	
+			}
+		}
+		return dashboardSharingList;
+	}
 	
 	public static void applyDashboardSharing(Long dashboardId, List<DashboardSharingContext> dashboardSharingList) throws Exception {
 		
@@ -1855,6 +1877,20 @@ public class DashboardUtil {
 				.table(ModuleFactory.getDashboardPublishingModule().getTableName())
 				.andCustomWhere("DASHBOARD_ID = ?", dashboardId);
 		deleteBuilder.delete();
+		
+		List<Map<String, Object>> dashboardPublishingProps = new ArrayList<>();
+		long orgId = AccountUtil.getCurrentOrg().getId();
+		for(DashboardPublishContext dashboardPublishing : dashboardPublishList) {
+			dashboardPublishing.setOrgId(orgId);
+			dashboardPublishingProps.add(FieldUtil.getAsProperties(dashboardPublishing));
+		}
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+					.table(ModuleFactory.getDashboardPublishingModule().getTableName())
+					.fields(FieldFactory.getDashboardPublishingFields())
+					.addRecords(dashboardPublishingProps);
+		insertBuilder.save();
+	}
+	public static void addDashboardPublishing(List<DashboardPublishContext> dashboardPublishList) throws Exception {
 		
 		List<Map<String, Object>> dashboardPublishingProps = new ArrayList<>();
 		long orgId = AccountUtil.getCurrentOrg().getId();

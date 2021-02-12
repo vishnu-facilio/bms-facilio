@@ -609,6 +609,7 @@ public class FacilioConstants {
 		public static final String REPORT_SPACE_FILTER_CONTEXT = "reportSpaceFilterContext";
 		public static final String WIDGET_TYPE = "widgetType";
 		public static final String IS_SKIP_LINKNAME_CHECK = "isSkip";
+		public static final String DASHBOARD_SHARING = "dashboardSharing";
 
 		
 		public static final String WIDGET_ID = "widgetId";
