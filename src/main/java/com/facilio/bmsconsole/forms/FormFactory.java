@@ -355,7 +355,7 @@ public class FormFactory {
 	}	
 	
 	private static Map<String, Map<String, FacilioForm>>  initFormsList() {
-		List<FacilioForm> woForms = Arrays.asList(getWebWorkOrderForm(), getServiceWorkOrderForm());
+		List<FacilioForm> woForms = Arrays.asList(getWebWorkOrderForm(), getServiceWorkOrderForm(), getAlarmWorkOrderForm());
 		List<FacilioForm> assetForms = Arrays.asList(getAssetForm(), getMobileAssetForm());
 		List<FacilioForm> energyMeterForm = Arrays.asList(getEnergyMeterForm());
 		List<FacilioForm> tenantForm = Arrays.asList(getTenantForm());
@@ -584,6 +584,18 @@ public class FormFactory {
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getWebWorkOrderFormFields());
 		form.setFormType(FormType.WEB);
+		return form;
+	}
+	
+	public static FacilioForm getAlarmWorkOrderForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("Alarm Workorder");
+		form.setName("alarm_workorder_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getAlarmWorkOrderFormFields());
+		form.setFormType(FormType.WEB);
+		form.setHideInList(true);
 		return form;
 	}
 	
@@ -870,6 +882,14 @@ public class FormFactory {
 
 
 		fields.add(new FormField("tasks", FieldDisplayType.TASKS, "TASKS", Required.OPTIONAL, 13, 1));
+		return Collections.unmodifiableList(fields);
+	}
+	
+	private static List<FormField> getAlarmWorkOrderFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(getSiteField());
+		fields.add(new FormField("assignment", FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", Required.OPTIONAL, 7, 1));
+		fields.add(getWoResourceField());
 		return Collections.unmodifiableList(fields);
 	}
 	
