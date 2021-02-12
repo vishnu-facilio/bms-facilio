@@ -485,6 +485,31 @@ public class TransactionChainFactoryV3 {
 		return c;
 	}
 	
+	public static FacilioChain getTenantUnitAfterSaveChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new UpdateHelperFieldsCommandV3());
+		c.addCommand(getSpaceReadingsChain());
+		c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
+		c.addCommand(new SetSpaceRecordForRollUpFieldCommandV3());
+		c.addCommand(new ExecuteRollUpFieldCommand());
+		return c;
+	}
+	
+	public static FacilioChain getTenantUnitAfterUpdateChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new SetSpaceRecordForRollUpFieldCommandV3());
+		c.addCommand(new ExecuteRollUpFieldCommand());
+		return c;
+	}
+	
+	public static FacilioChain getSpaceReadingsChain() {
+		FacilioChain c = FacilioChain.getNonTransactionChain();
+		c.addCommand(new GetSpaceSpecifcReadingsCommand());
+		c.addCommand(new GetCategoryReadingsCommand());
+		c.addCommand(new GetReadingFieldsCommand());
+		return c;
+	}
+	
 	public static FacilioChain getUpdateAnnouncementAfterSaveChain() {
         FacilioChain c = getDefaultChain();
 	    c.addCommand(new UpdateAttachmentsParentIdCommandV3());

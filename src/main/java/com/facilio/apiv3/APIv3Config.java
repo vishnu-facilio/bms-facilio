@@ -1,11 +1,10 @@
 package com.facilio.apiv3;
 
 import com.facilio.activity.AddActivitiesCommand;
-import com.facilio.bmsconsole.commands.AddRequesterForServiceRequestCommand;
 import com.facilio.bmsconsole.commands.AssetDepreciationFetchAssetDetailsCommand;
 import com.facilio.bmsconsole.commands.ExecuteAllWorkflowsCommand;
+import com.facilio.bmsconsole.commands.ExecuteRollUpFieldCommand;
 import com.facilio.bmsconsole.commands.ExecuteWorkFlowsBusinessLogicInPostTransactionCommand;
-import com.facilio.bmsconsole.commands.LoadServiceRequestLookupCommand;
 import com.facilio.bmsconsole.commands.ValidateAssetDepreciationCommand;
 import com.facilio.bmsconsole.context.AssetDepreciationContext;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
@@ -50,6 +49,7 @@ import com.facilio.bmsconsoleV3.commands.storeroom.UpdateServingSitesinStoreRoom
 import com.facilio.bmsconsoleV3.commands.tenant.FillTenantsLookupCommand;
 import com.facilio.bmsconsoleV3.commands.tenant.ValidateTenantSpaceCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantcontact.LoadTenantcontactLookupsCommandV3;
+import com.facilio.bmsconsoleV3.commands.tenantunit.AddSpaceCommandV3;
 import com.facilio.bmsconsoleV3.commands.tooltypes.LoadToolTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.tooltypes.SetToolTypesUnitCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendor.AddOrUpdateLocationForVendorCommandV3;
@@ -308,6 +308,22 @@ public class APIv3Config {
                     .beforeFetch(new LoadServiceRequestLookupCommandV3())
                 .summary()
                     .beforeFetch(new LoadServiceRequestLookupCommandV3()) 
+                .build();
+    }
+    
+    @Module("tenantunit")
+    public static Supplier<V3Config> getTenantUnit() {
+        return () -> new V3Config(V3TenantUnitSpaceContext.class, new ModuleCustomFieldCount30())
+                .create()
+                    .beforeSave(new AddSpaceCommandV3())
+                    .afterSave(TransactionChainFactoryV3.getTenantUnitAfterSaveChain())
+                .update()
+                	.afterSave(TransactionChainFactoryV3.getTenantUnitAfterUpdateChain())
+                .delete()
+                	.beforeDelete(new SetDeleteBaseSpaceRecordForRollUpFieldCommandV3())
+                	.afterDelete(new ExecuteRollUpFieldCommand())
+                .list()
+                .summary()
                 .build();
     }
 
