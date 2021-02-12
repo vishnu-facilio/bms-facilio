@@ -1669,13 +1669,20 @@ public class DashboardUtil {
 					
 					if(!dashboardList.contains(dashboardMap.get(dashboardPublishing.getDashboardId()))) {
 						
-						if (AccountUtil.getCurrentUser().getApplicationId() == dashboardPublishing.getAppId()) {
-							if (dashboardPublishing.getPublishingTypeEnum().equals(PublishingType.USER) && dashboardPublishing.getOrgUserId() == AccountUtil.getCurrentAccount().getUser().getOuid()) {
-								dashboardList.add(dashboardMap.get(dashboardPublishing.getDashboardId()));
-							}
-							else if (dashboardPublishing.getPublishingTypeEnum().equals(PublishingType.ALL_USER)) {
-								dashboardList.add(dashboardMap.get(dashboardPublishing.getDashboardId()));
-							}
+//						if (AccountUtil.getCurrentUser().getApplicationId() == dashboardPublishing.getAppId()) {
+//							if (dashboardPublishing.getPublishingTypeEnum().equals(PublishingType.USER) && dashboardPublishing.getOrgUserId() == AccountUtil.getCurrentAccount().getUser().getOuid()) {
+//								dashboardList.add(dashboardMap.get(dashboardPublishing.getDashboardId()));
+//							}
+//							else if (dashboardPublishing.getPublishingTypeEnum().equals(PublishingType.ALL_USER)) {
+//								dashboardList.add(dashboardMap.get(dashboardPublishing.getDashboardId()));
+//							}
+//						}
+						
+						if (dashboardPublishing.getPublishingTypeEnum().equals(PublishingType.USER) && dashboardPublishing.getOrgUserId() == AccountUtil.getCurrentAccount().getUser().getOuid()) {
+							dashboardList.add(dashboardMap.get(dashboardPublishing.getDashboardId()));
+						}
+						else if (dashboardPublishing.getPublishingTypeEnum().equals(PublishingType.ALL_USER)) {
+							dashboardList.add(dashboardMap.get(dashboardPublishing.getDashboardId()));
 						}
 	
 					}
