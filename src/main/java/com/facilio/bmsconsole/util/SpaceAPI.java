@@ -875,7 +875,6 @@ public class SpaceAPI {
 		SelectRecordsBuilder<BuildingContext> selectBuilder = new SelectRecordsBuilder<BuildingContext>()
 																	.select(fields)
 																	.module(module)
-																	.maxLevel(0)
 																	.beanClass(BuildingContext.class)
 																	.andCondition(CriteriaAPI.getCondition(fieldMap.get("spaceType"), String.valueOf(BaseSpaceContext.SpaceType.BUILDING.getIntVal()), NumberOperators.EQUALS))
 																	;
