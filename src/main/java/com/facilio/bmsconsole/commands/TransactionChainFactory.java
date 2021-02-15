@@ -5934,7 +5934,7 @@ public class TransactionChainFactory {
 	public static FacilioChain addAgentWorkflowRuleChain(){
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(getAddModuleWorkflowRuleChain());
-		chain.addCommand(new UpdateAgentWorkflowCommand());
+		//chain.addCommand(new UpdateAgentWorkflowCommand());
 		return chain;
 	}
 }
