@@ -98,6 +98,7 @@ public class FormFactory {
 		forms.put("new_vendor_contact_form", getNewVendorContactForm());
 		forms.put("client_contact_form", getClientContactForm());
 		forms.put("employee_form", geEmployeeContactForm());
+		forms.put("people_form", getPeopleForm());
 		forms.put("tenantunit_form", geTenantUnitSpaceForm());
 
 		return forms;
@@ -140,6 +141,7 @@ public class FormFactory {
 						.put(FacilioConstants.ContextNames.CLIENT_CONTACT, getClientContactForm())
 						.put(FacilioConstants.ContextNames.TENANT_UNIT_SPACE, geTenantUnitSpaceForm())
 						.put(FacilioConstants.ContextNames.EMPLOYEE, geEmployeeContactForm())
+						.put(ContextNames.PEOPLE, getPeopleForm())
 						.put(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS, getRentalLeaseContractForm())
 						.put(FacilioConstants.ContextNames.Reservation.RESERVATION, getReservationForm())
 						.put(FacilioConstants.ContextNames.ITEM_TYPES, getItemTypesForm())
@@ -386,6 +388,8 @@ public class FormFactory {
 		List<FacilioForm> clientContactFormsList = Arrays.asList(getClientContactForm());
 		List<FacilioForm> tenantUnitFormsList = Arrays.asList(geTenantUnitSpaceForm());
 		List<FacilioForm> employeeFormsList = Arrays.asList(geEmployeeContactForm());
+		List<FacilioForm> peopleFormsList = Arrays.asList(getPeopleForm());
+
 		List<FacilioForm> reservationFormsList = Arrays.asList(getReservationForm());
 		List<FacilioForm> rentalLeaseFormsList = Arrays.asList(getRentalLeaseContractForm());
 		List<FacilioForm> invReqFormsList = Arrays.asList(getInventoryRequestForm());
@@ -453,6 +457,8 @@ public class FormFactory {
 				.put(FacilioConstants.ContextNames.Budget.BUDGET, getFormMap(budgetFormsList))
 				.put(ContextNames.Budget.CHART_OF_ACCOUNT, getFormMap(chartOfAccountFormsList))
 				.put(ContextNames.Budget.ACCOUNT_TYPE, getFormMap(accountTypeForm))
+				.put(ContextNames.PEOPLE, getFormMap(peopleFormsList))
+
 				.build();
 	}
 	
@@ -2564,5 +2570,27 @@ public class FormFactory {
 		form.setFields(fields);
 		return form;
 	}
+
+	public static FacilioForm getPeopleForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("NEW PEOPLE");
+		form.setName("default_people_web");
+		form.setModule(ModuleFactory.getModule(ContextNames.PEOPLE));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getPeopleFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+
+	private static List<FormField> getPeopleFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("email", FieldDisplayType.TEXTBOX, "Email", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("phone", FieldDisplayType.TEXTBOX, "Phone", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("isOccupantPortalAccess", FieldDisplayType.DECISION_BOX, "Occupant Portal Access", Required.OPTIONAL, 4, 1));
+
+		return fields;
+	}
+
 
 }
