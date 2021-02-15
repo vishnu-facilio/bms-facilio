@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 
 public class ScoringRuleAPI extends WorkflowRuleAPI {
 
-    public static void validateRule(ScoringRuleContext rule) {
+    public static void validateRule(ScoringRuleContext rule) throws Exception {
         if (rule.getScoreTypeEnum() == null) {
             throw new IllegalArgumentException("Score type cannot be empty");
         }
@@ -45,7 +45,6 @@ public class ScoringRuleAPI extends WorkflowRuleAPI {
         }
 
         for (ScoringCommitmentContext scoringCommitment : rule.getScoringCommitmentContexts()) {
-
             List<BaseScoringContext> baseScoringContexts = scoringCommitment.getBaseScoringContexts();
             if (CollectionUtils.isEmpty(baseScoringContexts)) {
                 throw new IllegalArgumentException("Scoring contexts cannot be empty");

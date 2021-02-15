@@ -119,7 +119,7 @@ public class BaseScoringContext implements Serializable {
         return false;
     }
 
-    public void validate() {
+    public void validate() throws Exception {
         if (weightage == -1) {
             throw new IllegalArgumentException("weightage cannot be empty");
         }

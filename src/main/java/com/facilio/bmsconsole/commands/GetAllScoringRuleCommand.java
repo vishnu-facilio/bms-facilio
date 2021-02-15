@@ -17,6 +17,7 @@ import com.facilio.modules.ModuleFactory;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GetAllScoringRuleCommand extends FacilioCommand {
@@ -31,7 +32,7 @@ public class GetAllScoringRuleCommand extends FacilioCommand {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(moduleName);
         if (module == null) {
-            throw new Exception("Module cannot be empty");
+            throw new IllegalArgumentException("Module cannot be empty");
         }
 
         Criteria criteria = new Criteria();
@@ -41,6 +42,9 @@ public class GetAllScoringRuleCommand extends FacilioCommand {
         List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getExtendedWorkflowRules(ModuleFactory.getScoringRuleModule(), FieldFactory.getScoringRuleFields(),
                 criteria, null, null, ScoringRuleContext.class);
         workflowRules = WorkflowRuleAPI.getWorkFlowsFromMapList(FieldUtil.getAsMapList(workflowRules, StateFlowRuleContext.class), true, true);
+        if (workflowRules == null) {
+            workflowRules = new ArrayList<>();
+        };
         context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST, workflowRules);
 
         return false;

@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.scoringrule.ScoringCommitmentContext;
+import com.facilio.bmsconsole.scoringrule.ScoringRuleAPI;
 import com.facilio.bmsconsole.scoringrule.ScoringRuleContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
@@ -27,6 +28,11 @@ public class AddOrUpdateScoringRuleCommand extends FacilioCommand {
             FacilioModule module = modBean.getModule(moduleName);
             if (module == null) {
                 throw new IllegalArgumentException("Invalid module");
+            }
+
+            FacilioModule scoreModule = ScoringRuleAPI.getScoreModule(module.getModuleId());
+            if (scoreModule == null) {
+                throw new IllegalArgumentException("Scoring rule is not supported for module " + module.getDisplayName());
             }
 
             scoringRuleContext.setRuleType(WorkflowRuleContext.RuleType.SCORING_RULE);

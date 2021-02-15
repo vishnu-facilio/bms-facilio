@@ -134,7 +134,7 @@ public class NodeScoringContext extends BaseScoringContext {
     }
 
     @Override
-    public void validate() {
+    public void validate() throws Exception {
         super.validate();
         if (StringUtils.isEmpty(name)) {
             throw new IllegalArgumentException("Name cannot be empty");

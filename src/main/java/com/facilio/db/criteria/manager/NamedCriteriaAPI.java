@@ -70,12 +70,18 @@ public class NamedCriteriaAPI {
     }
 
     public static NamedCriteria getNamedCriteria(long id) throws Exception {
+        return getNamedCriteria(id, true);
+    }
+
+    public static NamedCriteria getNamedCriteria(long id, boolean populateChildren) throws Exception {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getNamedCriteriaModule().getTableName())
                 .select(FieldFactory.getNamedCriteriaFields())
                 .andCondition(CriteriaAPI.getIdCondition(id, ModuleFactory.getNamedCriteriaModule()));
         NamedCriteria namedCriteria = FieldUtil.getAsBeanFromMap(builder.fetchFirst(), NamedCriteria.class);
-        populateChildren(Collections.singletonList(namedCriteria));
+        if (populateChildren && namedCriteria != null) {
+            populateChildren(Collections.singletonList(namedCriteria));
+        }
         return namedCriteria;
     }
 
