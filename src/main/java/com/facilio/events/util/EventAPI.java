@@ -352,6 +352,7 @@ public class EventAPI {
 		JSONObject pagination = (JSONObject) context.getOrDefault(FacilioConstants.ContextNames.PAGINATION,null);
 		long agentId = (long)context.getOrDefault(AgentConstants.AGENT_ID,-1L);
 		boolean mapped = (boolean)context.getOrDefault("mapped",false);
+		String querySearch = (String)context.get("search");
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(SOURCE_TO_RESOURCE_FIELDS);
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
@@ -386,6 +387,9 @@ public class EventAPI {
 		}
 		else {
 			selectRecordBuilder.limit(50);
+		}
+		if(querySearch !=null && !querySearch.trim().isEmpty()){
+			selectRecordBuilder.andCustomWhere("SOURCE LIKE ?", "%"+querySearch+"%");
 		}
 		if (fetchCount) {
 			selectRecordBuilder.select(new ArrayList<>()).aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT,

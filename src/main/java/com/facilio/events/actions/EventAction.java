@@ -306,13 +306,15 @@ public class EventAction extends FacilioAction {
 		
 		return SUCCESS;
 	}
-	
+	@Setter @Getter
+	private String querySearch;
 	public String getAllSources() throws Exception {
 		try{
 			FacilioContext context =new FacilioContext();
 			context.put(FacilioConstants.ContextNames.PAGINATION,getPagination());
 			context.put(AgentConstants.AGENT_ID,getAgentId());
 			context.put("mapped",isMapped());
+			context.put("search",getQuerySearch());
 			setSources(EventAPI.getAllSources(context));
 			setResult("sources", getSources());
 			setResponseCode(200);
@@ -329,6 +331,7 @@ public class EventAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.FETCH_COUNT,true);
 		context.put(AgentConstants.AGENT_ID,getAgentId());
 		context.put("mapped",isMapped());
+		context.put("search",getQuerySearch());
 		setResult("count", EventAPI.getAllSources(context).get(0).get(AgentConstants.ID));
 		return SUCCESS;
 	}
