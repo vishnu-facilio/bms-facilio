@@ -12,7 +12,6 @@ import java.util.stream.IntStream;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.struts2.ServletActionContext;
 
@@ -32,7 +31,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 
 public class GetViewListCommand extends FacilioCommand {
@@ -47,6 +45,8 @@ public class GetViewListCommand extends FacilioCommand {
 
 		List<ViewGroups> viewGroups = new ArrayList<>();
 		
+		// ViewFactory views
+		Map<String,FacilioView> viewMap = ViewFactory.getModuleViews(moduleName, moduleObj);
 		
 		//db views
 		List<FacilioView> dbViews = new ArrayList<>();	
@@ -54,20 +54,15 @@ public class GetViewListCommand extends FacilioCommand {
 			dbViews = ViewAPI.getAllViews(moduleName);
 		} else {
 			if (!moduleName.equals("approval")) {
-				// Temp
-				if (moduleName.equals(ContextNames.ALARM_OCCURRENCE)) {
-					dbViews = ViewAPI.getAllViews(modBean.getModule(ContextNames.NEW_READING_ALARM).getModuleId());
-				}
-				else {
-					dbViews = ViewAPI.getAllViews(moduleObj.getModuleId());
-				}
+				dbViews = ViewAPI.getAllViews(moduleObj.getModuleId());
+			}
+			// Temp...till mobile alarm module is split
+			if (AccountUtil.getCurrentAccount().isFromMobile() && moduleName.equals(ContextNames.NEW_READING_ALARM)) {
+				addMobilelarmViews(modBean, dbViews, viewMap);
 			}
 		}
 		
 		
-		
-		// ViewFactory views
-		Map<String,FacilioView> viewMap = ViewFactory.getModuleViews(moduleName, moduleObj);
 		Map<Long, SharingContext<SingleSharingContext>> sharingMap = SharingAPI.getSharingMap(ModuleFactory.getViewSharingModule(), SingleSharingContext.class);
 		if (dbViews != null) {
 			for(FacilioView view: dbViews) {
@@ -358,6 +353,17 @@ public class GetViewListCommand extends FacilioCommand {
 			groupViews.set(0, group);
 
 		}
+	}
+	
+	private void addMobilelarmViews(ModuleBean modBean, List<FacilioView> dbViews, Map<String,FacilioView> viewMap) throws Exception {
+		List<String> alarmModules = Arrays.asList(new String[] {ContextNames.BMS_ALARM, ContextNames.AGENT_ALARM, ContextNames.SENSOR_ROLLUP_ALARM});
+		for(String moduleName: alarmModules) {
+			FacilioModule alarmModule = modBean.getModule(moduleName);
+			dbViews.addAll(ViewAPI.getAllViews(alarmModule.getModuleId()));
+			
+			viewMap.putAll(ViewFactory.getModuleViews(moduleName, alarmModule));
+		}
+		
 	}
 	
 }

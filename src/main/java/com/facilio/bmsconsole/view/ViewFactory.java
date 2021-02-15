@@ -517,6 +517,8 @@ public class ViewFactory {
 				.setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.NEW_READING_ALARM, views);
 
+		order = 1;
+		views = new LinkedHashMap<>();
 		views.put("bmsActive", getBmsAlarmSeverity("bmsActive", "Active Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, false).setOrder(order++));
 		views.put("bmsAlarm", getBmsAlarm("bmsAlarm", "All Alarms", true).setOrder(order++));
 		views.put("unacknowledgedbmsalarm", getBmsAlarmUnacknowledged().setOrder(order++));
@@ -524,11 +526,10 @@ public class ViewFactory {
 		views.put("bmsMajor", getBmsAlarmSeverity("bmsMajor", "Major Alarms", "Major", true).setOrder(order++));
 		views.put("bmsMinor", getBmsAlarmSeverity("bmsMinor", "Minor Alarms", "Minor", true).setOrder(order++));
 		views.put("bmsCleared", getBmsAlarmSeverity("bmsCleared", "Cleared Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true).setOrder(order++));
-		views.put("mlmvaAlarms", getMultivariateAnomalyAlarmOccurrenceViews().setOrder(order++));
-		views.put("agentAll", getAgentAlarmOccurrenceViews().setOrder(order++));
-		views.put("controllerAll",getControllerAlarmOccurrenceViews().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.BMS_ALARM, views);
 		
+		order = 1;
+		views = new LinkedHashMap<>();
 		views.put("sensorActive", getSensorAlarmSeverity("sensorActive", "Active Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, false).setOrder(order++));
 		views.put("sensorAlarm", getSensorAlarm("sensorAlarm", "All Alarms", true).setOrder(order++));
 		views.put("unacknowledgedSensorAlarm", getSensorAlarmUnacknowledged().setOrder(order++));
@@ -538,28 +539,7 @@ public class ViewFactory {
 		views.put("sensorCleared", getSensorAlarmSeverity("sensorCleared", "Cleared Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true).setOrder(order++));
 		views.put("sensorMeter", getSensorMeterAlarm().setOrder(order++));
 		views.put("sensorNonMeter", getSensorNonMeterAlarm().setOrder(order++));
-
 		viewsMap.put(FacilioConstants.ContextNames.SENSOR_ROLLUP_ALARM, views);
-
-
-		order = 1;
-		views = new LinkedHashMap<>();
-		views.put("all", getOccurrenceViews().setOrder(order++));
-		views.put("active", getAlarmOcccurrenceSeverity("active", "Active", FacilioConstants.Alarm.CLEAR_SEVERITY, false).setOrder(order++));
-		views.put("unacknowledged", getAlarmOccurrenceUnacknowledged().setOrder(order++));
-		views.put("critical", getAlarmOcccurrenceSeverity("critical", "Critical Alarms", "Critical", true).setOrder(order++));
-		views.put("major", getAlarmOcccurrenceSeverity("major", "Major Alarms", "Major", true).setOrder(order++));
-		views.put("minor", getAlarmOcccurrenceSeverity("minor", "Minor Alarms", "Minor", true).setOrder(order++));
-		views.put("cleared", getAlarmOcccurrenceSeverity("cleared", "Cleared Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true)
-				.setOrder(order++));
-		views.put("bmsAlarm", getBmsAlarmOccurrence("bmsAlarm", "All Bms Alarm", true).setOrder(order++));
-		views.put("bmsActive", getBmsOccurrenceAlarmSeverity("bmsActive", "Bms Active Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, false).setOrder(order++));
-		views.put("unacknowledgedbmsalarm", getBmsAlarmOccurrenceUnacknowledged().setOrder(order++));
-		views.put("bmsCritical", getBmsOccurrenceAlarmSeverity("bmsCritical", "Bms Critical Alarms", "Critical", true).setOrder(order++));
-		views.put("bmsMajor", getBmsOccurrenceAlarmSeverity("bmsMajor", "Bms Major Alarms", "Major", true).setOrder(order++));
-		views.put("bmsMinor", getBmsOccurrenceAlarmSeverity("bmsMinor", "Bms Minor Alarms", "Minor", true).setOrder(order++));
-		views.put("bmsCleared", getBmsOccurrenceAlarmSeverity("bmsCleared", "Bms Cleared Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true).setOrder(order++));
-		viewsMap.put(FacilioConstants.ContextNames.ALARM_OCCURRENCE, views);
 
 		order = 1;
 		views = new LinkedHashMap<>();
@@ -846,6 +826,7 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllTenantUnitSpace().setOrder(order++));
+		views.put("details", getAllTenantUnitSpaceDetailsView().setOrder(order++));
 
 		viewsMap.put(FacilioConstants.ContextNames.TENANT_UNIT_SPACE, views);
 
@@ -1094,7 +1075,17 @@ public class ViewFactory {
 		groupDetails.put("moduleName", FacilioConstants.ContextNames.NEW_READING_ALARM);
 		groupDetails.put("views", fddAlarms);
 		groupVsViews.add(groupDetails);
+		
+		groupDetails = new HashMap<>();
+		groupDetails.put("name", "customalarms");
+		groupDetails.put("displayName", "Custom Views");
+		groupDetails.put("type", "custom");
+		groupDetails.put("views", null);
+		groupVsViews.add(groupDetails);
+		
+		moduleVsGroup.put(FacilioConstants.ContextNames.NEW_READING_ALARM, groupVsViews);
 
+		groupVsViews = new ArrayList<>();
 		ArrayList<String> bmsAlarms = new ArrayList<String>();
 		bmsAlarms.add("bmsAlarm");
 		bmsAlarms.add("bmsActive");
@@ -1112,6 +1103,9 @@ public class ViewFactory {
 		groupDetails.put("views", bmsAlarms);
 		groupVsViews.add(groupDetails);
 		
+		moduleVsGroup.put(FacilioConstants.ContextNames.BMS_ALARM, groupVsViews);
+		
+		groupVsViews = new ArrayList<>();
 		ArrayList<String> agentAlarms = new ArrayList<String>();
 		agentAlarms.add("agentAll");
 		groupDetails = new HashMap<>();
@@ -1121,7 +1115,9 @@ public class ViewFactory {
 		groupDetails.put("views", agentAlarms);
 		groupVsViews.add(groupDetails);
 		
+		moduleVsGroup.put(FacilioConstants.ContextNames.AGENT_ALARM, groupVsViews);
 		
+		groupVsViews = new ArrayList<>();
 		ArrayList<String> sensorAlarms = new ArrayList<String>();
 		sensorAlarms.add("sensorAlarm");
 		sensorAlarms.add("sensorActive");
@@ -1140,44 +1136,10 @@ public class ViewFactory {
 		groupDetails.put("moduleName", FacilioConstants.ContextNames.SENSOR_ROLLUP_ALARM);
 		groupDetails.put("views", sensorAlarms);
 		groupVsViews.add(groupDetails);
-
-		try {	
-			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTIVARIATE_ANOMALY_ALARM)) {	
-			ArrayList<String> mlmvaAlarms = new ArrayList<String>();
-			mlmvaAlarms.add("mlmvaAlarms");
-			groupDetails = new HashMap<>();
-			groupDetails.put("name", "multivariateAnomalyAlarmViews");
-			groupDetails.put("displayName", "Insight Alarms");
-			groupDetails.put("moduleName", FacilioConstants.ContextNames.MULTIVARIATE_ANOMALY_ALARM);
-			groupDetails.put("views", mlmvaAlarms);
-			groupVsViews.add(groupDetails);
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			LOGGER.info("exception mlmvaalarms" +e);
-		}
 		
-		groupDetails = new HashMap<>();
-		groupDetails.put("name", "customalarms");
-		groupDetails.put("displayName", "Custom Views");
-		groupDetails.put("type", "custom");
-		groupDetails.put("views", null);
-		groupVsViews.add(groupDetails);
+		moduleVsGroup.put(FacilioConstants.ContextNames.SENSOR_ROLLUP_ALARM, groupVsViews);
 
-		moduleVsGroup.put(FacilioConstants.ContextNames.NEW_READING_ALARM, groupVsViews);
-
-//		ArrayList<String> operationalAlarms = new ArrayList<String>();
-//		operationalAlarms.add("all");
-//		operationalAlarms.add("active");
-//		operationalAlarms.add("cleared");
-//
-//		groupDetails = new HashMap<>();
-//		groupDetails.put("name", "operationalViews");
-//		groupDetails.put("displayName", "Operational Alarms");
-//		groupDetails.put("moduleName", FacilioConstants.ContextNames.OPERATION_ALARM);
-//		groupDetails.put("views", operationalAlarms);
-//		groupVsViews.add(groupDetails);
-
+		
 		groupVsViews = new ArrayList<>();
 		ArrayList<String> asset = new ArrayList<String>();
 		asset.add("all");
@@ -8043,6 +8005,24 @@ public class ViewFactory {
 		allView.setDisplayName("All Tenant Unit");
 		allView.setModuleName(tenantUnitSpaceModule.getName());
 		allView.setSortFields(sortFields);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return allView;
+	}
+	
+	private static FacilioView getAllTenantUnitSpaceDetailsView() {
+
+		FacilioModule tenantUnitSpaceModule = ModuleFactory.getTenantUnitSpaceModule();
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("name","NAME",FieldType.STRING), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("details");
+		allView.setDisplayName("All Tenant Units");
+		allView.setModuleName(tenantUnitSpaceModule.getName());
+		allView.setSortFields(sortFields);
+		allView.setHidden(true);
 
 		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
