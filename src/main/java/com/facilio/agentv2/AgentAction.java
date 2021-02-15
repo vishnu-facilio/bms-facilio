@@ -725,6 +725,7 @@ public class AgentAction extends AgentActionV2 {
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
         context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, getWorkflowRule());
+        context.put(AgentConstants.AGENT_ID,getAgentId());
         chain.execute();
 
         setResult(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRule);
