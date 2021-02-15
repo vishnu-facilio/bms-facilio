@@ -430,6 +430,10 @@ public class ControlScheduleUtil {
 			}
 		}
 		
+		if(temp != null) {
+			slots.add(temp);
+		}
+		
 		return slots;
 	}
 	
