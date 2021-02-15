@@ -376,12 +376,19 @@ public class ScoringRuleAPI extends WorkflowRuleAPI {
     }
 
     public static FacilioModule getScoreModule(long moduleId) throws Exception {
+        return getScoreModule(moduleId, true);
+    }
+
+    public static FacilioModule getScoreModule(long moduleId, boolean throwError) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<FacilioModule> subModules = modBean.getSubModules(moduleId, FacilioModule.ModuleType.SCORE);
         if (subModules.size() == 1) {
             return subModules.get(0);
         }
-        throw new IllegalArgumentException("Score module not configured");
+        if (throwError) {
+            throw new IllegalArgumentException("Score module not configured");
+        }
+        return null;
     }
 
     public static void addOrUpdateScoreRecord(FacilioModule scoreModule, ScoreContext scoreContext) throws Exception {

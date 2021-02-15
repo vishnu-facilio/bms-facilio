@@ -41,7 +41,7 @@ public class AddScoreSubModuleCommand extends FacilioCommand {
             throw new IllegalArgumentException("Invalid module");
         }
 
-        FacilioModule existingScoreModule = ScoringRuleAPI.getScoreModule(module.getModuleId());
+        FacilioModule existingScoreModule = ScoringRuleAPI.getScoreModule(module.getModuleId(), false);
         if (existingScoreModule != null) {
             throw new IllegalArgumentException("Scoring module is already configured");
         }
