@@ -41,6 +41,14 @@ public class ReportPivotTableRowsContext {
 		this.formatting = formatting;
 	}
 	
+	private String moduleName;
+	public String getModuleName() {
+		return moduleName;
+	}
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
+	
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub

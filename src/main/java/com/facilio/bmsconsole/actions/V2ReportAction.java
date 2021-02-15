@@ -2430,6 +2430,7 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.Reports.ROWS, rows);
 		context.put(FacilioConstants.Reports.DATA, data);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.CRITERIA, criteria);
 		c.addCommand(new ConstructTabularReportData());
 		c.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
 		c.execute();

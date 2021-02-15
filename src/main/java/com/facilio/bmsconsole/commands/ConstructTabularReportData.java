@@ -39,6 +39,7 @@ public class ConstructTabularReportData extends FacilioCommand {
 		ReportContext reportContext = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
 		List<ReportPivotTableRowsContext> rows = (List<ReportPivotTableRowsContext>) context.get(FacilioConstants.Reports.ROWS);
 		List<ReportPivotTableDataContext> data = (List<ReportPivotTableDataContext>) context.get(FacilioConstants.Reports.DATA);
+		Criteria basecriteria = (Criteria) context.get(FacilioConstants.ContextNames.CRITERIA);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		
 		if (reportContext == null) {
@@ -61,6 +62,10 @@ public class ConstructTabularReportData extends FacilioCommand {
 		context.put(FacilioConstants.ContextNames.MODULE, module);
 		
 		reportContext.setModuleId(module.getModuleId());
+		
+		if(basecriteria != null) {
+			reportContext.setCriteria(basecriteria);
+		}
 		
 		List<String> rowHeaders = new ArrayList<>();
 		List<String> dataHeaders = new ArrayList<>();
@@ -123,6 +128,7 @@ public class ConstructTabularReportData extends FacilioCommand {
 		if (firstRow.getLookupFieldId() != -1) {
 			xAxis.setLookupFieldId(firstRow.getLookupFieldId());
 		}
+		
 		if (xField == null) {
 			throw new Exception("atleast one row mandatory");
 		}
@@ -133,6 +139,9 @@ public class ConstructTabularReportData extends FacilioCommand {
 			xAxisModule = modBean.getModule(xField.getModuleId());
 		}
 		xAxis.setField(xAxisModule, xField);
+		if(firstRow.getModuleName() != null) {
+			xAxis.setModule(modBean.getModule(firstRow.getModuleName()));
+		}
 		dataPointContext.setxAxis(xAxis);
 		orderBy.add(xField.getCompleteColumnName());
 		dataPointContext.setOrderBy(orderBy);
@@ -179,6 +188,7 @@ public class ConstructTabularReportData extends FacilioCommand {
 				FacilioField field = modBean.getField(groupByRowField.getFieldId(), groupByRowField.getModule().getName());
 				
 				
+				
 				FacilioModule groupByModule = null;
 				if (field.getModule() != null) {
 					groupByModule = field.getModule();
@@ -190,7 +200,10 @@ public class ConstructTabularReportData extends FacilioCommand {
 					groupByField.setLookupFieldId(groupByRow.getLookupFieldId());
 				}
 				groupByField.setField(groupByModule, field);
-				groupByField.setAlias(field.getName()+'_'+groupByModule.getName());				
+				groupByField.setAlias(field.getName()+'_'+groupByModule.getName());	
+				if(groupByRow.getModuleName() != null) {
+					groupByField.setModule(modBean.getModule(groupByRow.getModuleName()));
+				}
 				groupByFields.add(groupByField);
 			}
 			dataPointContext.setGroupByFields(groupByFields);
