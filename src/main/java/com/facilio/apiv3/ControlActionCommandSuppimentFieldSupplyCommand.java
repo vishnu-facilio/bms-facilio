@@ -31,8 +31,7 @@ public class ControlActionCommandSuppimentFieldSupplyCommand extends FacilioComm
         fetchLookupsList.add((LookupField) fieldsAsMap.get("schedule"));
         fetchLookupsList.add((LookupField) fieldsAsMap.get("routine"));
         
-        LookupField sysCreatedBy = (LookupField) FieldFactory.getSystemField("sysCreatedBy", modBean.getModule(moduleName));
-        fetchLookupsList.add(sysCreatedBy);
+        fetchLookupsList.add((LookupField) fieldsAsMap.get("sysCreatedBy"));
 
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchLookupsList);
 

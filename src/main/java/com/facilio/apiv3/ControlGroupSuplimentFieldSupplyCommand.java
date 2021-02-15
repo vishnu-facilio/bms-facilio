@@ -28,10 +28,8 @@ public class ControlGroupSuplimentFieldSupplyCommand extends FacilioCommand {
         
         fetchLookupsList.add((LookupField) fieldsAsMap.get("space"));
         fetchLookupsList.add((LookupField) fieldsAsMap.get("controlSchedule"));
+        fetchLookupsList.add((LookupField) fieldsAsMap.get("sysCreatedBy"));
         
-        LookupField sysCreatedBy = (LookupField) FieldFactory.getSystemField("sysCreatedBy", modBean.getModule(moduleName));
-        fetchLookupsList.add(sysCreatedBy);
-
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchLookupsList);
 
 

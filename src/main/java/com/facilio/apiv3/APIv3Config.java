@@ -186,7 +186,7 @@ public class APIv3Config {
     
     @Module(ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_MODULE_NAME)
     public static Supplier<V3Config> getScheduleExceptionCRUD() {
-        return () -> new V3Config(ControlScheduleExceptionTenantContext.class, null)
+        return () -> new V3Config(ControlScheduleExceptionContext.class, null)
         		.create()
                 .beforeSave(new ControlScheduleExceptionBeforeSaveCommand())
                 .afterSave(TransactionChainFactoryV3.getAddControlScheduleExceptionAfterSaveChain())
@@ -200,7 +200,7 @@ public class APIv3Config {
     
     @Module(ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_TENANT_SHARING_MODULE_NAME)
     public static Supplier<V3Config> getScheduleExceptionTenantCRUD() {
-        return () -> new V3Config(ControlScheduleExceptionContext.class, null)
+        return () -> new V3Config(ControlScheduleExceptionTenantContext.class, null)		// to be changed to ControlScheduleExceptionTenantContext
         		.create()
                 .beforeSave(new ControlScheduleExceptionBeforeSaveCommand())
                 .afterSave(TransactionChainFactoryV3.getAddControlScheduleExceptionAfterSaveChain())
@@ -209,6 +209,10 @@ public class APIv3Config {
                 .afterSave(TransactionChainFactoryV3.getUpdateControlScheduleExceptionAfterSaveChain())
                 .delete()
                 .afterDelete(new PlanControlScheduleExceptionSlotCommand())
+                .summary()
+                .beforeFetch(new ControlScheduleExceptionTenantSupplementFieldSupplyCommand())
+                .list()
+                .beforeFetch(new ControlScheduleExceptionTenantSupplementFieldSupplyCommand())
                 .build();
     }
     

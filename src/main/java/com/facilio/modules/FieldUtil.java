@@ -479,18 +479,7 @@ public class FieldUtil {
 					FacilioConstants.ContextNames.TRANSACTION,
 					FacilioConstants.ContextNames.Tenant.AUDIENCE,
 					FacilioConstants.ContextNames.FacilityBooking.FACILITY,
-					FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING,
-					ControlScheduleUtil.CONTROL_SCHEDULE_MODULE_NAME,
-					ControlScheduleUtil.CONTROL_SCHEDULE_TENANT_SHARING_MODULE_NAME,
-					ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_MODULE_NAME,
-					ControlScheduleUtil.CONTROL_GROUP_MODULE_NAME,
-					ControlScheduleUtil.CONTROL_GROUP_SECTION_MODULE_NAME,
-					ControlScheduleUtil.CONTROL_GROUP_ASSET_CATEGORY_MODULE_NAME,
-					ControlScheduleUtil.CONTROL_GROUP_ASSET_MODULE_NAME,
-					ControlScheduleUtil.CONTROL_GROUP_ASSET_FIELD_MODULE_NAME,
-					ControlScheduleUtil.CONTROL_SCHEDULE_PLANNED_SLOTS_MODULE_NAME,
-					ControlScheduleUtil.CONTROL_SCHEDULE_UNPLANNED_SLOTS_MODULE_NAME,
-					FacilioConstants.ContextNames.CONTROL_ACTION_COMMAND_MODULE
+					FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING
 					))
 			);
 
