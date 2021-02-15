@@ -179,7 +179,7 @@ public class GetFormMetaCommand extends FacilioCommand {
 				customFields = defaultWoForm.getFields().stream().filter(field -> field.getField() != null && !field.getField().isDefault())
 								.map(field -> field.getField()).collect(Collectors.toList());
 			}
-			if (customFields != null && !customFields.isEmpty()) {
+			if (customFields != null && !customFields.isEmpty() && !form.isIgnoreCustomFields()) {
 				for (FacilioField f: customFields) {
 					fields.add(FormsAPI.getFormFieldFromFacilioField(f, ++count));
 				}

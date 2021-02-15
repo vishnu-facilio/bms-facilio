@@ -1,5 +1,17 @@
 package com.facilio.bmsconsole.forms;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.WorkOrderContext.WOUrgency;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
@@ -17,11 +29,6 @@ import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 public class FormFactory {
 	
@@ -596,6 +603,7 @@ public class FormFactory {
 		form.setFields(getAlarmWorkOrderFormFields());
 		form.setFormType(FormType.WEB);
 		form.setHideInList(true);
+		form.setIgnoreCustomFields(true);
 		return form;
 	}
 	
@@ -887,9 +895,9 @@ public class FormFactory {
 	
 	private static List<FormField> getAlarmWorkOrderFormFields() {
 		List<FormField> fields = new ArrayList<>();
-		fields.add(getSiteField());
-		fields.add(new FormField("assignment", FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", Required.OPTIONAL, 7, 1));
-		fields.add(getWoResourceField());
+		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "ticketcategory", 2, 1));
+		fields.add(new FormField("assignment", FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("priority", FieldDisplayType.LOOKUP_SIMPLE, "Priority", Required.OPTIONAL, "ticketpriority", 4, 1));
 		return Collections.unmodifiableList(fields);
 	}
 	

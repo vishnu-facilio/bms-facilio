@@ -37,6 +37,7 @@ public class FacilioForm implements Serializable {
 		this.showInMobile = form.showInMobile;
 		this.showInWeb = form.showInWeb;
 		this.hideInList = form.hideInList;
+		this.ignoreCustomFields = form.ignoreCustomFields;
 	}
 
 	private static final long serialVersionUID = 1L;
@@ -246,6 +247,21 @@ public class FacilioForm implements Serializable {
 	}
 	public void setStateFlowId(long stateFlowId) {
 		this.stateFlowId = stateFlowId;
+	}
+	
+	private Boolean ignoreCustomFields;
+	@JsonIgnore
+	@JSON(serialize=false)
+	public boolean isIgnoreCustomFields() {
+		if (ignoreCustomFields == null) {
+			return false;
+		}
+		return ignoreCustomFields;
+	}
+	@JsonIgnore
+	@JSON(serialize=false)
+	public void setIgnoreCustomFields(boolean ignoreCustomFields) {
+		this.ignoreCustomFields = ignoreCustomFields;
 	}
 
 	public enum FormType {
