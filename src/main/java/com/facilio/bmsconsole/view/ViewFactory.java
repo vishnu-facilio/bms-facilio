@@ -1076,13 +1076,6 @@ public class ViewFactory {
 		groupDetails.put("views", fddAlarms);
 		groupVsViews.add(groupDetails);
 		
-		groupDetails = new HashMap<>();
-		groupDetails.put("name", "customalarms");
-		groupDetails.put("displayName", "Custom Views");
-		groupDetails.put("type", "custom");
-		groupDetails.put("views", null);
-		groupVsViews.add(groupDetails);
-		
 		moduleVsGroup.put(FacilioConstants.ContextNames.NEW_READING_ALARM, groupVsViews);
 
 		groupVsViews = new ArrayList<>();
