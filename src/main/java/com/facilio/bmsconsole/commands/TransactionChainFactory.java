@@ -5937,6 +5937,12 @@ public class TransactionChainFactory {
 		//chain.addCommand(new UpdateAgentWorkflowCommand());
 		return chain;
 	}
+
+	public static FacilioChain addScoreSubModuleChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddScoreSubModuleCommand());
+		return chain;
+	}
 }
 
 

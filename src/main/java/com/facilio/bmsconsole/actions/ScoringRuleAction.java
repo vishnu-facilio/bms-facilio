@@ -83,4 +83,21 @@ public class ScoringRuleAction extends FacilioAction {
 
         return SUCCESS;
     }
+
+    private String tableName;
+    public String getTableName() {
+        return tableName;
+    }
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
+    }
+
+    public String addScoreSubModule() throws Exception {
+        FacilioChain chain = TransactionChainFactory.addScoreSubModuleChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
+        context.put(FacilioConstants.ContextNames.TABLE_NAME, tableName);
+        chain.execute();
+        return SUCCESS;
+    }
 }

@@ -551,6 +551,9 @@
 				class="com.facilio.bmsconsole.actions.ScoringRuleAction" method="addOrUpdateScoringRule" />
 		<action name="delete"
 				class="com.facilio.bmsconsole.actions.ScoringRuleAction" method="deleteScoringRule" />
+
+		<action name="configure"
+				class="com.facilio.bmsconsole.actions.ScoringRuleAction" method="addScoreSubModule" />
 	</package>
 
 	<package name="slaPolicy" namespace="/api/v2/slaPolicy" extends="v2Api">
