@@ -265,6 +265,12 @@ public class WorkflowRuleContext implements Serializable {
 	public void setTriggers(List<BaseTriggerContext> triggers) {
 		this.triggers = triggers;
 	}
+	public void addTrigger(BaseTriggerContext trigger) {
+		if (triggers == null) {
+			this.triggers = new ArrayList<>();
+		}
+		this.triggers.add(trigger);
+	}
 
 	private EventType activityType;
 	public void setActivityType(EventType activityType) {

@@ -8,6 +8,11 @@ public class ScoringRuleTrigger extends BaseTriggerContext {
     }
 
     @Override
+    public int getType() {
+        return getTypeEnum().getValue();
+    }
+
+    @Override
     public Boolean getInternal() {
         return true;
     }

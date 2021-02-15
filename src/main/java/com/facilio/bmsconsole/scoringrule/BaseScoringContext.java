@@ -18,7 +18,7 @@ import java.util.Objects;
         @JsonSubTypes.Type(value = NodeScoringContext.class, name = "2")
 })
 public class BaseScoringContext implements Serializable {
-    private long id;
+    private long id = -1;
     public long getId() {
         return id;
     }

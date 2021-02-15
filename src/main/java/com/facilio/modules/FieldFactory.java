@@ -2149,6 +2149,7 @@ public class FieldFactory {
         fields.add(getIdField(module));
         fields.add(getField("ruleId", "RULE_ID", module, FieldType.NUMBER));
         fields.add(getField("triggerId", "TRIGGER_ID", module, FieldType.NUMBER));
+        fields.add(getField("nodeScoringId", "NODE_SCORING_ID", module, FieldType.NUMBER));
 
         return fields;
     }
@@ -2200,6 +2201,7 @@ public class FieldFactory {
         fields.add(getField("fieldId", "FIELD_ID", module, FieldType.NUMBER));
         fields.add(getField("fieldModuleId", "FIELD_MODULE_ID", module, FieldType.NUMBER));
         fields.add(getField("scoreRuleId", "SCORE_RULE_ID", module, FieldType.NUMBER));
+        fields.add(getField("shouldBePropagated", "SHOULD_BE_PROPAGATED", module, FieldType.BOOLEAN));
 
         return fields;
     }

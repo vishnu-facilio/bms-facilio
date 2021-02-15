@@ -7,7 +7,6 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.manager.NamedCriteria;
 import com.facilio.db.criteria.manager.NamedCriteriaAPI;
@@ -132,6 +131,10 @@ public class ScoringRuleAPI extends WorkflowRuleAPI {
                     builder.save();
                 }
 
+                for (int k = 0; k < contextList.size(); k++) {
+                    contextList.get(k).setId((Long) mapList.get(k).get("id"));
+                }
+
                 for (BaseScoringContext scoringContext : contextList) {
                     scoringContext.afterSave(rule);
                 }
@@ -241,13 +244,27 @@ public class ScoringRuleAPI extends WorkflowRuleAPI {
         return list;
     }
 
-    public static List<BaseScoringContext> getBaseScoringContexts(List<Long> commitmentIds) throws Exception {
+    public static List<BaseScoringContext> getBaseScoringContextsOfCommitments(List<Long> commitmentIds) throws Exception {
         List<BaseScoringContext> list = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(commitmentIds)) {
             GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                     .table(ModuleFactory.getBaseScoringModule().getTableName())
                     .select(FieldFactory.getBaseScoringFields())
                     .andCondition(CriteriaAPI.getCondition("SCORING_COMMITMENT_ID", "scoringCommitmentId", StringUtils.join(commitmentIds, ","), NumberOperators.EQUALS));
+            List<BaseScoringContext> baseScoringContextList = FieldUtil.getAsBeanListFromMapList(builder.get(), BaseScoringContext.class);
+
+            list.addAll(getExtendedScoringContexts(baseScoringContextList));
+        }
+        return list;
+    }
+
+    public static List<BaseScoringContext> getBaseScoringContexts(List<Long> ids) throws Exception {
+        List<BaseScoringContext> list = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(ids)) {
+            GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                    .table(ModuleFactory.getBaseScoringModule().getTableName())
+                    .select(FieldFactory.getBaseScoringFields())
+                    .andCondition(CriteriaAPI.getIdCondition(ids, ModuleFactory.getBaseScoringModule()));
             List<BaseScoringContext> baseScoringContextList = FieldUtil.getAsBeanListFromMapList(builder.get(), BaseScoringContext.class);
 
             list.addAll(getExtendedScoringContexts(baseScoringContextList));
@@ -326,7 +343,7 @@ public class ScoringRuleAPI extends WorkflowRuleAPI {
                     }
                 }
 
-                List<BaseScoringContext> baseScoringContexts = getBaseScoringContexts(commitmentIds);
+                List<BaseScoringContext> baseScoringContexts = getBaseScoringContextsOfCommitments(commitmentIds);
                 if (CollectionUtils.isNotEmpty(baseScoringContexts)) {
                     Map<Long, List<BaseScoringContext>> map = new HashMap<>();
                     for (BaseScoringContext baseScoringContext : baseScoringContexts) {
@@ -389,7 +406,7 @@ public class ScoringRuleAPI extends WorkflowRuleAPI {
         }
     }
 
-    public static void addTriggersToBeExecuted(long scoreRuleId, ScoringRuleTrigger trigger) throws Exception {
+    public static void addTriggersToBeExecuted(long scoreRuleId, ScoringRuleTrigger trigger, long nodeScoringId) throws Exception {
         ScoringRuleContext scoreRule = (ScoringRuleContext) getWorkflowRule(scoreRuleId);
         if (scoreRule == null) {
             return;
@@ -401,6 +418,16 @@ public class ScoringRuleAPI extends WorkflowRuleAPI {
         Map<String, Object> map = new HashMap<>();
         map.put("ruleId", scoreRuleId);
         map.put("triggerId", trigger.getId());
+        map.put("nodeScoringId", nodeScoringId);
         builder.insert(map);
+    }
+
+    public static List<Map<String, Object>> getTriggersToBeExecuted(long scoreRuleId) throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getScoringRuleTriggerCallRelModule().getTableName())
+                .select(FieldFactory.getScoringRuleTriggerCallRelFields())
+                .andCondition(CriteriaAPI.getCondition("RULE_ID", "ruleId", String.valueOf(scoreRuleId), NumberOperators.EQUALS));
+        List<Map<String, Object>> maps = builder.get();
+        return maps;
     }
 }
