@@ -254,4 +254,6 @@ public class AgentConstants
     public static final String API_KEY = "apiKey";
     public static final String INBOUND_CONNECTION_ID="inboundConnectionId";
     public static final String SOURCE = "source";
+    public static final String AGENT_CONNECTION_LOST_WORKFLOW_ID = "connectionLostWorkflowId";
+    public static final String AGENT_CONNECTION_REGAIN_WORKFLOW_ID = "connectionRegainWorkflowId";
 }

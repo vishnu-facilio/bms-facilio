@@ -598,6 +598,8 @@ public class FieldFactory {
         fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.NUMBER));
         fields.add(getField("agentType", "AGENT_TYPE", module, FieldType.NUMBER));
         fields.add(getNumberField(AgentConstants.INBOUND_CONNECTION_ID,"INBOUND_CONNECTION_ID",module));
+        fields.add(getNumberField(AgentConstants.AGENT_CONNECTION_LOST_WORKFLOW_ID,"CONNECTION_LOST_WORKFLOW_ID",module));
+        fields.add(getNumberField(AgentConstants.AGENT_CONNECTION_REGAIN_WORKFLOW_ID,"CONNECTION_REGAIN_WORKFLOW_ID",module));
         return fields;
     }
 
