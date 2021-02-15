@@ -42,6 +42,17 @@ public class PeopleAction extends FacilioAction{
 		this.fetchCount = fetchCount;
 	}
 
+	private Boolean verifyStatus;
+	public Boolean getVerifyStatus() {
+		if (verifyStatus == null) {
+			return true;
+		}
+		return verifyStatus;
+	}
+	public void setVerifyStatus(Boolean verifyStatus) {
+		this.verifyStatus = verifyStatus;
+	}
+
 	private PeopleContext people;
 	private List<PeopleContext> peopleList;
 	
@@ -95,7 +106,7 @@ public class PeopleAction extends FacilioAction{
 	public String addPeople() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(peopleList)) {
-			addPeople(false);
+			addPeople(!getVerifyStatus());
 		}
 		return SUCCESS;
 	}
@@ -119,7 +130,7 @@ public class PeopleAction extends FacilioAction{
 	public String updatePeople() throws Exception {
 
 		if(!CollectionUtils.isEmpty(peopleList)) {
-			updatePeople(false);
+			updatePeople(!getVerifyStatus());
 		}
 		return SUCCESS;
 	}
