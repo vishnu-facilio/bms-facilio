@@ -92,6 +92,7 @@ import com.facilio.control.ControlGroupTenentContext;
 import com.facilio.control.ControlScheduleContext;
 import com.facilio.control.ControlScheduleExceptionContext;
 import com.facilio.control.ControlScheduleExceptionTenantContext;
+import com.facilio.control.ControlScheduleSlot;
 import com.facilio.control.ControlScheduleTenantContext;
 import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.controlaction.context.ControlActionCommandContext;
@@ -257,6 +258,17 @@ public class APIv3Config {
         return () -> new V3Config(ControlScheduleTenantContext.class, null)
                 .summary()
                 .afterFetch(new ControlScheduleAfterFetchCommand())
+                .build();
+    }
+    
+    @Module(ControlScheduleUtil.CONTROL_SCHEDULE_UNPLANNED_SLOTS_MODULE_NAME)
+    public static Supplier<V3Config> getControlSlotCRUD() {
+        return () -> new V3Config(ControlScheduleSlot.class, null)
+        		.update()
+        		.afterSave(TransactionChainFactoryV3.getUpdateOrDeleteControlGroupSlotAfterSaveChain())
+        		.delete()
+        		.beforeDelete(new FetchControlGroupSlotObjectForDelete())
+        		.afterDelete(TransactionChainFactoryV3.getUpdateOrDeleteControlGroupSlotAfterSaveChain())
                 .build();
     }
     

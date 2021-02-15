@@ -269,9 +269,17 @@ public class ControlScheduleUtil {
 				.moduleName(ControlScheduleUtil.CONTROL_SCHEDULE_UNPLANNED_SLOTS_MODULE_NAME)
 				.andCondition(CriteriaAPI.getCondition(slotFieldMap.get("group"), controlGroup.getId()+"", NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(slotFieldMap.get("startTime"), startTime+"", DateOperators.IS_AFTER))
+				.andCondition(CriteriaAPI.getCondition(slotFieldMap.get("endTime"), endTime+"", DateOperators.IS_BEFORE))
 				;
 		
 		delete.delete();
+		
+		deleteDeleteGroupedSlotAndCommands(controlGroup, startTime, endTime);
+	}
+	
+	public static void deleteDeleteGroupedSlotAndCommands(ControlGroupContext controlGroup, long startTime, long endTime) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		List<FacilioField> groupedSlotFields = modBean.getAllFields(ControlScheduleUtil.CONTROL_SCHEDULE_PLANNED_SLOTS_MODULE_NAME);
 		
@@ -280,6 +288,8 @@ public class ControlScheduleUtil {
 		DeleteRecordBuilder<ControlScheduleGroupedSlot> delete1 = new  DeleteRecordBuilder<ControlScheduleGroupedSlot>()
 				.moduleName(ControlScheduleUtil.CONTROL_SCHEDULE_PLANNED_SLOTS_MODULE_NAME)
 				.andCondition(CriteriaAPI.getCondition(groupedSlotFieldMap.get("group"), controlGroup.getId()+"", NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(groupedSlotFieldMap.get("startTime"), startTime+"", DateOperators.IS_AFTER))
+				.andCondition(CriteriaAPI.getCondition(groupedSlotFieldMap.get("endTime"), endTime+"", DateOperators.IS_BEFORE))
 				;
 		
 		delete1.delete();
@@ -292,6 +302,7 @@ public class ControlScheduleUtil {
 				.moduleName(FacilioConstants.ContextNames.CONTROL_ACTION_COMMAND_MODULE)
 				.andCondition(CriteriaAPI.getCondition(controlCommandFieldMap.get("group"), controlGroup.getId()+"", NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(controlCommandFieldMap.get("executedTime"), startTime+"", DateOperators.IS_AFTER))
+				.andCondition(CriteriaAPI.getCondition(controlCommandFieldMap.get("executedTime"), endTime+"", DateOperators.IS_BEFORE))
 				;
 		
 		delete2.delete();
