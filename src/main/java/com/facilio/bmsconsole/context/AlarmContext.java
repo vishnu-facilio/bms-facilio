@@ -389,7 +389,7 @@ public class AlarmContext extends TicketContext {
 			return null;
 		}
 		else {
-			return FacilioProperties.getConfig("clientapp.url")+"/app/fa/alarms/newsummary/"+super.getId();
+			return FacilioProperties.getConfig("clientapp.url")+"/app/fa/faults/newsummary/"+super.getId();
 		}
 	}
 	

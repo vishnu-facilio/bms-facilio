@@ -510,10 +510,10 @@ public class ViewFactory {
 		views.put("active", getReadingAlarmSeverity("active", "Active", FacilioConstants.Alarm.CLEAR_SEVERITY, false).setOrder(order++));
 		views.put("all", getAllReadingAlarmViews().setOrder(order++));
 		views.put("unacknowledged", getReadingAlarmUnacknowledged().setOrder(order++));
-		views.put("critical", getReadingAlarmSeverity("critical", "Critical Alarms", "Critical", true).setOrder(order++));
-		views.put("major", getReadingAlarmSeverity("major", "Major Alarms", "Major", true).setOrder(order++));
-		views.put("minor", getReadingAlarmSeverity("minor", "Minor Alarms", "Minor", true).setOrder(order++));
-		views.put("cleared", getReadingAlarmSeverity("cleared", "Cleared Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true)
+		views.put("critical", getReadingAlarmSeverity("critical", "Critical Faults", "Critical", true).setOrder(order++));
+		views.put("major", getReadingAlarmSeverity("major", "Major Faults", "Major", true).setOrder(order++));
+		views.put("minor", getReadingAlarmSeverity("minor", "Minor Faults", "Minor", true).setOrder(order++));
+		views.put("cleared", getReadingAlarmSeverity("cleared", "Cleared Faults", FacilioConstants.Alarm.CLEAR_SEVERITY, true)
 				.setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.NEW_READING_ALARM, views);
 
@@ -5839,7 +5839,7 @@ public class ViewFactory {
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
-		allView.setDisplayName("All Alarms");
+		allView.setDisplayName("All Faults");
 		allView.setModuleName("newreadingalarm");
 		allView.setCriteria(criteria);
 		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));

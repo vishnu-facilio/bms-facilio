@@ -3250,7 +3250,7 @@ public class ModuleFactory {
 	public static FacilioModule getReadingAlarmModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName(ContextNames.NEW_READING_ALARM);
-		module.setDisplayName("New Reading Alarm");
+		module.setDisplayName("Faults");
 		module.setTableName("ReadingAlarm");
 		return module;
 	}
