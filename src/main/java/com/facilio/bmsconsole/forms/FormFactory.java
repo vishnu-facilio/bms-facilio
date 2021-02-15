@@ -2588,6 +2588,7 @@ public class FormFactory {
 		fields.add(new FormField("email", FieldDisplayType.TEXTBOX, "Email", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("phone", FieldDisplayType.TEXTBOX, "Phone", Required.OPTIONAL, 3, 1));
 		fields.add(new FormField("isOccupantPortalAccess", FieldDisplayType.DECISION_BOX, "Occupant Portal Access", Required.OPTIONAL, 4, 1));
+		fields.add(new FormField("peopleType", FieldDisplayType.SELECTBOX, "People Type", Required.OPTIONAL, 5, 1));
 
 		return fields;
 	}
