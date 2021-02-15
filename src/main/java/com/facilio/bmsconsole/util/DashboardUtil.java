@@ -1789,8 +1789,8 @@ public class DashboardUtil {
 	}
 	public static List<DashboardContext> getFilteredDashboards(Map<Long, DashboardContext> dashboardMap,boolean isFromPortal) throws Exception {
 			
-		return getOrginalFilteredDashboards(dashboardMap, isFromPortal);
-		//return isFromPortal ? getFilteredPortalDashboards(dashboardMap): getOrginalFilteredDashboards(dashboardMap, false);
+//		return getOrginalFilteredDashboards(dashboardMap, isFromPortal);
+		return isFromPortal ? getFilteredPortalDashboards(dashboardMap): getOrginalFilteredDashboards(dashboardMap, isFromPortal);
 	}
 	
 	public static List<DashboardSharingContext> getDashboardSharing(Long dashboardId) throws Exception {
