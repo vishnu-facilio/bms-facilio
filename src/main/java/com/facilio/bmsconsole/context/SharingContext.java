@@ -1,9 +1,22 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import com.facilio.accounts.bean.GroupBean;
-import com.facilio.accounts.dto.*;
+import com.facilio.accounts.dto.AppDomain;
+import com.facilio.accounts.dto.Group;
+import com.facilio.accounts.dto.GroupMember;
+import com.facilio.accounts.dto.Role;
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.SingleSharingContext.SharingType;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.util.TenantsAPI;
@@ -13,10 +26,6 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class SharingContext<E extends SingleSharingContext> extends ArrayList<E> {
 
@@ -46,12 +55,21 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 			return true;
 		}
 
+		boolean isAppSharingMatched = true;
+		boolean matching = true;
 		for (SingleSharingContext permission : this) {
-			if (isMatching(permission, user, object)) {
-				return true;
+			if (permission.getTypeEnum() == SharingType.APP) {
+				isAppSharingMatched = isMatching(permission, user, object);
+			}
+			else {
+				matching = false;
+				if(isMatching(permission, user, object)) {
+					matching = true;
+					break;
+				}
 			}
 		}
-		return false;
+		return isAppSharingMatched && matching;
 	}
 
 	private boolean isMatching (SingleSharingContext permission, User user, Object object) throws Exception {
