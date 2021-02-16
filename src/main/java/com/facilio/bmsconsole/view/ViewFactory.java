@@ -937,6 +937,16 @@ public class ViewFactory {
 		views.put("upcoming", getUpcomingControlCommandView().setOrder(order++));
 		views.put("history", getHistoryControlCommandView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.CONTROL_ACTION_COMMAND_MODULE, views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllFacilityView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.FacilityBooking.FACILITY, views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllFacilityBookingView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING, views);
 		
 		return viewsMap;
 	}
@@ -8674,6 +8684,39 @@ public class ViewFactory {
 		return criteria;
 		
 		
+	}
+
+	private static FacilioView getAllFacilityView() {
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Facility");
+		allView.setModuleName(FacilioConstants.ContextNames.FacilityBooking.FACILITY);
+		allView.setSortFields(sortFields);
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		allView.setViewSharing(getSharingContext(appDomains));
+
+		return allView;
+	}
+
+	private static FacilioView getAllFacilityBookingView() {
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Facility Booking");
+		allView.setModuleName(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
+		allView.setSortFields(sortFields);
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		allView.setViewSharing(getSharingContext(appDomains));
+
+		return allView;
 	}
 
 }

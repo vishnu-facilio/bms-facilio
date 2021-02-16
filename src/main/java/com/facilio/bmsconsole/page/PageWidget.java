@@ -305,7 +305,17 @@ public class PageWidget {
 
 		// Purchase Module Widgets
 		PR_PREVIEW("prPreview"),
-		PO_PREVIEW("poPreview")
+		PO_PREVIEW("poPreview"),
+
+		// Facility Module Widgets
+		FACILITY_PHOTOS("facilityPhotos"),
+		FACILITY_FEATURES("facilityFeatures"),
+		FACILITY_SLOT_INFORMATION("facilitySlotInformation"),
+		FACILITY_SPECIAL_AVAILABILITY("facilitySpecialAvailability"),
+		BOOKING_INFO("bookingInfo"),
+		BOOKING_SLOT_INFORMATION("bookingSlotInformation"),
+		BOOKING_INTERNAL_ATTENDEES("bookingInternalAttendees"),
+		BOOKING_EXTERNAL_ATTENDEES("bookingExternalAttendees")
 
 		;
 		

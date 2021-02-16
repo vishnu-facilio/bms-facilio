@@ -138,6 +138,8 @@ public class ModuleFactory {
 		moduleMap.put(ContextNames.Tenant.ADMIN_DOCUMENTS, getAdminDocumentsModule());
 		moduleMap.put(ContextNames.Tenant.CONTACT_DIRECTORY, getContactDirectoryModule());
 		moduleMap.put(ContextNames.Budget.BUDGET, getBudgetModule());
+		moduleMap.put(ContextNames.FacilityBooking.FACILITY_BOOKING, getFacilityBookingModule());
+		moduleMap.put(ContextNames.FacilityBooking.FACILITY, getFacilityModule());
 
 		return moduleMap;
 	}
@@ -4394,6 +4396,24 @@ public class ModuleFactory {
 		module.setName("controlScheduleVsException");
 		module.setDisplayName("ControlScheduleVsException");
 		module.setTableName("Control_Schedule_vs_Exception");
+		return module;
+	}
+
+	public static FacilioModule getFacilityBookingModule()
+	{
+		FacilioModule module=new FacilioModule();
+		module.setName(ContextNames.FacilityBooking.FACILITY_BOOKING);
+		module.setDisplayName("Facility Booking");
+		module.setTableName("FacilityBooking");
+		return module;
+	}
+
+	public static FacilioModule getFacilityModule()
+	{
+		FacilioModule module=new FacilioModule();
+		module.setName(ContextNames.FacilityBooking.FACILITY);
+		module.setDisplayName("Facility");
+		module.setTableName("Facility");
 		return module;
 	}
 

@@ -354,6 +354,53 @@ public class FormFactory {
 				if (CollectionUtils.isNotEmpty(budgetAmountFields)) {
 					sections.add(budgetAmount);
 				}
+			}  else if (moduleName.equals(ContextNames.FacilityBooking.FACILITY)) {
+				List<FormSection> sections = new ArrayList<>();
+				List<FormField> defaultFields = new ArrayList<>();
+				List<FormField> slotAvailabilityFields = new ArrayList<>();
+
+				form.setSections(sections);
+				FormSection defaultSection = new FormSection("DETAILS", 1, defaultFields, false);
+				FormSection availabilitySection = new FormSection("AVAILABILITY", 2, slotAvailabilityFields, true);
+
+				form.getFields().forEach(field -> {
+					if (field.getDisplayTypeEnum() == FieldDisplayType.FACILITY_AVAILABILITY) {
+						slotAvailabilityFields.add(field);
+					} else {
+						defaultFields.add(field);
+					}
+				});
+				sections.add(defaultSection);
+				if (CollectionUtils.isNotEmpty(slotAvailabilityFields)) {
+					sections.add(availabilitySection);
+				}
+			} else if (moduleName.equals(ContextNames.FacilityBooking.FACILITY_BOOKING)) {
+				List<FormSection> sections = new ArrayList<>();
+				List<FormField> defaultFields = new ArrayList<>();
+				List<FormField> timeSlotFields = new ArrayList<>();
+				List<FormField> attendeeFields = new ArrayList<>();
+
+				form.setSections(sections);
+				FormSection defaultSection = new FormSection("DETAILS", 1, defaultFields, false);
+				FormSection timeSlotSection = new FormSection("TIME SLOTS", 2, timeSlotFields, false);
+				FormSection attendeeSection = new FormSection("ATTENDEES", 3, attendeeFields, true);
+
+				form.getFields().forEach(field -> {
+					if (field.getDisplayTypeEnum() == FieldDisplayType.FACILITY_BOOKING_SLOTS) {
+						timeSlotFields.add(field);
+					} else if (Arrays.asList("internalAttendees").contains(field.getName())) {
+						attendeeFields.add(field);
+					} else {
+						defaultFields.add(field);
+					}
+				});
+				sections.add(defaultSection);
+				if (CollectionUtils.isNotEmpty(timeSlotFields)) {
+					sections.add(timeSlotSection);
+				}
+				if (CollectionUtils.isNotEmpty(attendeeFields)) {
+					sections.add(attendeeSection);
+				}
 			}
 			else if (form.getSections() == null && form.getFields() != null) {
 				FormSection section = new FormSection("Default", 1, form.getFields(), false);
@@ -412,6 +459,9 @@ public class FormFactory {
 		List<FacilioForm> workPermitTypeChecklistCategoryForm = Arrays.asList(getWorkPermitTypeChecklistCategoryForm());
 		List<FacilioForm> workPermitTypeChecklistForm = Arrays.asList(getWorkPermitTypeChecklistForm());
 
+		List<FacilioForm> facilityFormsList = Arrays.asList(getFacilityCreationForm());
+		List<FacilioForm> facilityBookingFormsList = Arrays.asList(getFacilityBookingForm());
+
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
 				.put(FacilioConstants.ContextNames.ASSET, getFormMap(assetForms))
@@ -458,7 +508,8 @@ public class FormFactory {
 				.put(ContextNames.Budget.CHART_OF_ACCOUNT, getFormMap(chartOfAccountFormsList))
 				.put(ContextNames.Budget.ACCOUNT_TYPE, getFormMap(accountTypeForm))
 				.put(ContextNames.PEOPLE, getFormMap(peopleFormsList))
-
+				.put(ContextNames.FacilityBooking.FACILITY, getFormMap(facilityFormsList))
+				.put(ContextNames.FacilityBooking.FACILITY_BOOKING, getFormMap(facilityBookingFormsList))
 				.build();
 	}
 	
@@ -2594,5 +2645,48 @@ public class FormFactory {
 		return fields;
 	}
 
+	private static FacilioForm getFacilityCreationForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("Facility");
+		form.setName("default_"+ ContextNames.FacilityBooking.FACILITY +"_web");
+		form.setModule(ModuleFactory.getModule(ContextNames.FacilityBooking.FACILITY));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFormType(FormType.WEB);
+
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("facilityType", FieldDisplayType.SELECTBOX, "Facility Type", Required.OPTIONAL,2, 2));
+		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.OPTIONAL, "site",2, 3));
+		fields.add(new FormField("location", FieldDisplayType.SPACECHOOSER, "Location", Required.OPTIONAL,3, 2));
+		fields.add(new FormField("category", FieldDisplayType.SELECTBOX, "Category", Required.OPTIONAL,3, 3));
+		fields.add(new FormField("manager", FieldDisplayType.LOOKUP_SIMPLE, "Facility Manager", Required.OPTIONAL,4, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, "user",5, 1));
+		fields.add(new FormField("userGuidance", FieldDisplayType.TEXTAREA, "User Guidance", Required.OPTIONAL,6, 1));
+		fields.add(new FormField("capacity", FieldDisplayType.NUMBER, "Capacity", Required.OPTIONAL,7, 2));
+		fields.add(new FormField("slotDuration", FieldDisplayType.NUMBER, "Slot Duration", Required.OPTIONAL,7, 3));
+		fields.add(new FormField("isChargeable", FieldDisplayType.DECISION_BOX, "Is Chargeable", Required.OPTIONAL,8, 1));
+		fields.add(new FormField("amenities", FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Features / Amenties", Required.OPTIONAL,9, 1));
+		fields.add(new FormField("facilityWeekdayAvailability", FieldDisplayType.FACILITY_AVAILABILITY, "Availability", Required.OPTIONAL,10, 1));
+		form.setFields(fields);
+		return form;
+	}
+
+	private static FacilioForm getFacilityBookingForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("Facility");
+		form.setName("default_"+ ContextNames.FacilityBooking.FACILITY_BOOKING +"_web");
+		form.setModule(ModuleFactory.getModule(ContextNames.FacilityBooking.FACILITY_BOOKING));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFormType(FormType.WEB);
+
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("facility", FieldDisplayType.LOOKUP_SIMPLE, "Facility", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("reservedFor", FieldDisplayType.LOOKUP_SIMPLE, "Reserved For", Required.OPTIONAL,"user",2, 1));
+		fields.add(new FormField("capacity", FieldDisplayType.NUMBER, "Capacity", Required.OPTIONAL,3, 1));
+		fields.add(new FormField("timeSlots", FieldDisplayType.FACILITY_BOOKING_SLOTS, "Time Slots", Required.OPTIONAL,4, 1));
+		fields.add(new FormField("internalAttendees", FieldDisplayType.MULTI_USER_LIST, "Internal Attendees", Required.OPTIONAL,5, 1));
+		form.setFields(fields);
+		return form;
+	}
 
 }

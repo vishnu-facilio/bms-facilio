@@ -20,6 +20,8 @@ import com.facilio.bmsconsoleV3.context.communityfeatures.NeighbourhoodContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.NewsAndInformationContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnnouncementContext;
+import com.facilio.bmsconsoleV3.context.facilitybooking.FacilityContext;
+import com.facilio.bmsconsoleV3.context.facilitybooking.V3FacilityBookingContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
@@ -128,6 +130,10 @@ public class PageFactory {
 				return PurchaseModulesPageFactory.getPrPage((V3PurchaseRequestContext) record, module);
 			case ContextNames.PURCHASE_ORDER:
 				return PurchaseModulesPageFactory.getPoPage((V3PurchaseOrderContext) record, module);
+			case ContextNames.FacilityBooking.FACILITY:
+				return FacilityModulesPageFactory.getFacilityPage((FacilityContext) record, module);
+			case ContextNames.FacilityBooking.FACILITY_BOOKING:
+				return FacilityModulesPageFactory.getFacilityBookingPage((V3FacilityBookingContext) record, module);
 				
 		}
 		if (module.getExtendModule() == null) {	// temp

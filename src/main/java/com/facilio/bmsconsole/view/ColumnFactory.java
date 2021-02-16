@@ -232,6 +232,8 @@ public class ColumnFactory {
 		columnMap.put(ControlScheduleUtil.CONTROL_SCHEDULE_MODULE_NAME+"-default", getDefaultControlScheduleColumns());
 		columnMap.put(FacilioConstants.ContextNames.CONTROL_ACTION_COMMAND_MODULE+"-default", getDefaultControlCommandColumns());
 		columnMap.put(ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_TENANT_SHARING_MODULE_NAME+"-default", getControlScheduleExceptionTenantColumns());
+		columnMap.put(FacilioConstants.ContextNames.FacilityBooking.FACILITY + "-default", getDefaultFacilityColumns());
+		columnMap.put(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING + "-default", getDefaultFacilityBookingColumns());
 
 		// Community Features
 		columnMap.put("announcement-default", getDefaultAnnouncementColumns());
@@ -1716,6 +1718,35 @@ public class ColumnFactory {
 		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("sysCreatedTime", "Created Time"));
 		columns.add(new ViewField("sysCreatedBy", "Created By"));
+
+		return columns;
+
+	}
+
+	private static List<ViewField> getDefaultFacilityColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("description", "Description"));
+		columns.add(new ViewField("facilityType", "Facility Type"));
+		columns.add(new ViewField("category", "Category"));
+		columns.add(new ViewField("usageCapacity", "Usage Capacity"));
+		columns.add(new ViewField("isChargeable", "Is Chargeable"));
+		columns.add(new ViewField("securityDeposit", "Security Deposit"));
+		columns.add(new ViewField("pricePerSlot", "Price Per Slot"));
+
+		return columns;
+	}
+
+	private static List<ViewField> getDefaultFacilityBookingColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("description", "Description"));
+		columns.add(new ViewField("facility", "Facility"));
+		columns.add(new ViewField("reservedFor", "Reserved For"));
+		columns.add(new ViewField("noOfAttendees", "No. Of Attendees"));
+		columns.add(new ViewField("bookingAmount", "Booking Amount"));
 
 		return columns;
 
