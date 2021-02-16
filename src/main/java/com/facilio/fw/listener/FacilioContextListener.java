@@ -24,6 +24,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import com.facilio.agent.integration.queue.AgentIntegrationQueueFactory;
+import com.facilio.bmsconsoleV3.commands.AddSignupDataCommandV3;
 import com.facilio.tasker.FacilioInstantJobScheduler;
 import com.facilio.v3.RESTAPIHandler;
 import com.facilio.v3.util.ChainUtil;
@@ -111,6 +112,7 @@ public class FacilioContextListener implements ServletContextListener {
 			ActivityType.getActivityType(1);
 			FieldUtil.init();
 			FacilioEnum.getEnumValues("CostType");
+			AddSignupDataCommandV3.initSignUpDataClasses();
 //			migrateSchemaChanges();
 			initializeDB();
 			ServerInfo.registerServer();
@@ -120,7 +122,6 @@ public class FacilioContextListener implements ServletContextListener {
 			}
 
 			BeanFactory.initBeans();
-
 			FacilioScheduler.initScheduler();
 			FacilioInstantJobScheduler.init();
 			ChainUtil.initRESTAPIHandler("com.facilio.apiv3");

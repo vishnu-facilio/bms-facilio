@@ -1,0 +1,52 @@
+version: 1.0
+
+# The following classes should implement SignUpData interface and shouldn't have any state variables as only one instance will be created
+classes:
+  - com.facilio.bmsconsoleV3.signup.scoping.DealsAndOffersScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.ReservationScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.WorkPermitScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.NewsAndInformationScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.LabourScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.TenantScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.AgentMetricsScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.PreEventScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.AlarmOccuranceScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.NewReadingAlarmScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.ReadingAlarmOccuranceScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.QuotationScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.TicketScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.AssetScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.ResourceScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.OperationAlarmScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.SpaceScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.FloorScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.OperationEventScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.ReservationInternalAttendeesScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.PeopleScopingCofig
+  - com.facilio.bmsconsoleV3.signup.scoping.SiteScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.ContactDirectoryScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.PreAlarmScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.VendorScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.ServiceRequestScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.TenantContactScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.ReadingEventScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.BaseAlarmScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.MVprojectScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.ClientContactScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.OperationOccuranceScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.AdminDocumentsScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.ReadingAlarmScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.BaseEventScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.AlarmScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.WorkorderScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.ReservationExternalAttendeesScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.TenantUnitSpaceScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.TaskScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.BuildingScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.NeighbourhoodScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.PreAlarmOccuranceScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.InsuranceScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.ZoneScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.PeopleAnnouncementScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.VisitorLoggingScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.SafetyPlanScopingConfig
