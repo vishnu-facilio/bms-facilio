@@ -20,6 +20,7 @@ public class ControlScheduleSlot extends V3Context implements Comparable<Control
 	Long endTime;
 	Boolean offSchedule;
 	Integer routineSeq;
+	boolean edited;
 	
 	public ControlScheduleSlot() {
 		
@@ -300,4 +301,13 @@ public class ControlScheduleSlot extends V3Context implements Comparable<Control
 		
 		return slotForDisplay;
 	}
+
+	public boolean getEdited() {
+		if(getSysCreatedTime() != getSysModifiedTime()) {
+			return Boolean.TRUE;
+		}
+		return Boolean.FALSE;
+	}
+
+
 }
