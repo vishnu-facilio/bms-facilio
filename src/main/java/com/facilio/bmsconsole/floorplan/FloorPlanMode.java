@@ -113,6 +113,7 @@ public enum FloorPlanMode {
 	READINGS("readings"),
 	ALARMS("alarms"),
 	MAINTENANCE("maintenance"),
+	CUSTOMSCRIPT("customscript"),
 	PEOPLE("people");
 	
 	private static final Logger LOGGER = Logger.getLogger(FloorPlanMode.class.getName());
