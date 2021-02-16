@@ -270,6 +270,7 @@ public class ControlScheduleUtil {
 				.andCondition(CriteriaAPI.getCondition(slotFieldMap.get("group"), controlGroup.getId()+"", NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(slotFieldMap.get("startTime"), startTime+"", DateOperators.IS_AFTER))
 				.andCondition(CriteriaAPI.getCondition(slotFieldMap.get("endTime"), endTime+"", DateOperators.IS_BEFORE))
+				.andCustomWhere("SYS_CREATED_TIME = SYS_MODIFIED_TIME");
 				;
 		
 		delete.delete();
@@ -473,18 +474,26 @@ public class ControlScheduleUtil {
 				
 				List<DateRange> dateRanges = getExceptionRanges(exception, startTime, endTime);
 				
+				Map<Long, ControlScheduleSlot> timeVsSlotMap = fetchAlreadyEditedSlot(group,exception);
+				
 				for(DateRange dateRange :dateRanges) {
 					
-					if(exception.getExcludeSchedule()) {
-						long exceptionDate = DateTimeUtil.getDayStartTimeOf(dateRange.getStartTime());
-						DateRange businessHour = startTimeVsBusinessHoursRangeMap.get(exceptionDate);
-						if(!businessHoursToBeRemoved.contains(businessHour)) {
-							businessHoursToBeRemoved.add(businessHour);
+					if(timeVsSlotMap.get(DateTimeUtil.getDayStartTimeOf(dateRange.getStartTime())) == null) {
+						
+						if(exception.getExcludeSchedule()) {
+							long exceptionDate = DateTimeUtil.getDayStartTimeOf(dateRange.getStartTime());
+							DateRange businessHour = startTimeVsBusinessHoursRangeMap.get(exceptionDate);
+							if(!businessHoursToBeRemoved.contains(businessHour)) {
+								businessHoursToBeRemoved.add(businessHour);
+							}
 						}
+						
+						slots.add(new ControlScheduleSlot(group,schedule,exception, dateRange.getStartTime(), dateRange.getEndTime()));
 					}
 					
-					slots.add(new ControlScheduleSlot(group,schedule,exception, dateRange.getStartTime(), dateRange.getEndTime()));
 				}
+				
+				slots.addAll(timeVsSlotMap.values());
 				
 			}
 			businessHourRanges.removeAll(businessHoursToBeRemoved);
@@ -503,9 +512,46 @@ public class ControlScheduleUtil {
 			}
 		}
 		
+		
+		
 		return slots;
 	}
 	
+	private static Map<Long,ControlScheduleSlot> fetchAlreadyEditedSlot(ControlGroupContext group, ControlScheduleExceptionContext exception) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		List<FacilioField> fields = modBean.getAllFields(ControlScheduleUtil.CONTROL_SCHEDULE_UNPLANNED_SLOTS_MODULE_NAME);
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
+		Criteria criteria = new Criteria();
+		
+		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("group"), group.getId()+"", NumberOperators.EQUALS));
+		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("exception"), exception.getId()+"", NumberOperators.EQUALS));
+		
+		SelectRecordsBuilder<ControlScheduleSlot> builder = new SelectRecordsBuilder<ControlScheduleSlot>()
+				.module(modBean.getModule(ControlScheduleUtil.CONTROL_SCHEDULE_UNPLANNED_SLOTS_MODULE_NAME))
+				.select(fields)
+				.beanClass(ControlScheduleSlot.class)
+				.andCriteria(criteria)
+				.andCustomWhere("SYS_CREATED_TIME != SYS_MODIFIED_TIME");
+				;
+		
+		
+		List<ControlScheduleSlot> res = builder.get();
+		
+		Map<Long,ControlScheduleSlot> timeVsSlotMap = new HashMap<Long, ControlScheduleSlot>();
+		
+		for(ControlScheduleSlot slot :res) {
+			
+			timeVsSlotMap.put(DateTimeUtil.getDayStartTimeOf(slot.getStartTime()), slot);
+		}
+		
+		return timeVsSlotMap;
+		
+	}
+
 	public static List<ControlScheduleGroupedSlot> mergeSlotsForIgnoreNormalScheduleMode(List<ControlScheduleSlot> controlSlots) {					//controlSlots should sorted by startTime
 		
 		List<ControlScheduleGroupedSlot> groupedSlots = new ArrayList<ControlScheduleGroupedSlot>();
