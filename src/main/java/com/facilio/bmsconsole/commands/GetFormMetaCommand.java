@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormField.Required;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.util.FormsAPI;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -118,17 +119,6 @@ public class GetFormMetaCommand extends FacilioCommand {
 					form.getSections().get(0).getFields().addAll(0, FormFactory.getRequesterFormFields(true, true));
 				}
 			}
-			if (formName != null && formName.equalsIgnoreCase("multi_web_pm")) {
-				List<FormField> formFields = new ArrayList<>();
-				for (FormField f : form.getFields()) {
-					FacilioField field = f.getField();
-					if (field != null && !field.isDefault() && field.getDataTypeEnum() == FieldType.LOOKUP) {
-						continue;
-					}
-					formFields.add(f);
-				}
-				form.setFields(formFields);
-			}
 		}
 		
 		return false;
@@ -174,10 +164,14 @@ public class GetFormMetaCommand extends FacilioCommand {
 		}
 		else {
 			List<FacilioField> customFields = modBean.getAllCustomFields(moduleName);
-			if (form.getName().equalsIgnoreCase("web_pm") || form.getName().equalsIgnoreCase("multi_web_pm")) { // Temp...showing custom fields in standard form...will be removed once action in pm
+			boolean isMultiSiteForm = form.getName().equalsIgnoreCase("multi_web_pm");
+			if (form.getName().equalsIgnoreCase("web_pm") || isMultiSiteForm) { // Temp...showing custom fields in standard form...will be removed once action in pm
 				FacilioForm defaultWoForm = form = FormsAPI.getDefaultFormFromDBOrFactory(modBean.getModule(moduleName), FormType.WEB, true);
-				customFields = defaultWoForm.getFields().stream().filter(field -> field.getField() != null && !field.getField().isDefault())
-								.map(field -> field.getField()).collect(Collectors.toList());
+				long sitesCount = SpaceAPI.getSitesCount();
+				customFields = defaultWoForm.getFields().stream().filter(field -> 
+					field.getField() != null && !field.getField().isDefault() && 
+					(!isMultiSiteForm || field.getField().getDataTypeEnum() != FieldType.LOOKUP || sitesCount == 1)
+				).map(field -> field.getField()).collect(Collectors.toList());
 			}
 			if (customFields != null && !customFields.isEmpty() && !form.isIgnoreCustomFields()) {
 				for (FacilioField f: customFields) {

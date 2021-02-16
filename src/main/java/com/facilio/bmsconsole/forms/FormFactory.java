@@ -186,7 +186,7 @@ public class FormFactory {
 			return null;
 		}
 		FacilioForm form = forms.get(formName);
-		if (onlyFields == null || onlyFields.length == 0 || !onlyFields[0]) {
+		if (form != null && (onlyFields == null || onlyFields.length == 0 || !onlyFields[0])) {
 			form = new FacilioForm(form);
 			// TODO add sections in formfactory initialization itself once all client supports
 			if (moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER)) {
@@ -211,7 +211,7 @@ public class FormFactory {
 				 });
 				
 //				List<FormField> task = form.getFields().stream().filter(field -> field.getDisplayTypeEnum() == FieldDisplayType.TASKS).collect(Collectors.toList());
-				if (form.getFormTypeEnum() != FormType.PORTAL) {
+				if (form.getFormTypeEnum() != FormType.PORTAL && !taskFields.isEmpty()) {
 					FormSection taskSection = new FormSection("TASKS", i++, taskFields, true);
 					sections.add(taskSection);
 				}
@@ -364,7 +364,7 @@ public class FormFactory {
 	}	
 	
 	private static Map<String, Map<String, FacilioForm>>  initFormsList() {
-		List<FacilioForm> woForms = Arrays.asList(getWebWorkOrderForm(), getServiceWorkOrderForm(), getAlarmWorkOrderForm());
+		List<FacilioForm> woForms = Arrays.asList(getWebWorkOrderForm(), getServiceWorkOrderForm(), getAlarmWorkOrderForm(), getMultiPMForm());
 		List<FacilioForm> assetForms = Arrays.asList(getAssetForm(), getMobileAssetForm());
 		List<FacilioForm> energyMeterForm = Arrays.asList(getEnergyMeterForm());
 		List<FacilioForm> tenantForm = Arrays.asList(getTenantForm());
@@ -665,6 +665,7 @@ public class FormFactory {
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFormType(FormType.WEB);
 		form.setFields(getMultiSiteWebPMFormFields());
+		form.setHideInList(true);
 		return form;
 	}
 	

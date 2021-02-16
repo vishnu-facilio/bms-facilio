@@ -10,6 +10,7 @@ import org.apache.commons.collections.CollectionUtils;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FacilioForm.LabelPosition;
+import com.facilio.bmsconsole.forms.FormFactory;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormField.Required;
 import com.facilio.bmsconsole.forms.FormSection;
@@ -31,15 +32,14 @@ public class AddFormCommand extends FacilioCommand {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
 		
+		String defaultFormName = null;
 		if (form.getName() == null) {
 			form.setName(form.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
 		} else if (module.isCustom()) {
 			form.setName(form.getName().toLowerCase().replaceAll("[^a-zA-Z0-9_]+", ""));
 		} else {
-			form.setName(form.getName().replaceAll("[^a-zA-Z0-9_]+", ""));
+			defaultFormName = form.getName();
 		}
-
-		
 		
 		FacilioForm existingForm = FormsAPI.getFormFromDB(form.getName(), module);
 		if (existingForm != null) {
@@ -51,7 +51,16 @@ public class AddFormCommand extends FacilioCommand {
 		}
 		
 		if (form.getSections() == null && !module.isCustom()) {
-			FacilioForm defaultForm = FormsAPI.getDefaultForm(moduleName, form.getFormTypeEnum());
+			FacilioForm defaultForm = null;
+			if (defaultFormName != null) {
+				defaultForm = FormFactory.getForm(moduleName, defaultFormName);	// if form already present in factory
+			}
+			if (defaultForm == null) {
+				defaultForm = FormsAPI.getDefaultForm(moduleName, form.getFormTypeEnum());
+			}
+			else {
+				form = defaultForm;
+			}
 			if (defaultForm != null) {
 				if (CollectionUtils.isNotEmpty(defaultForm.getSections())) {
 					form.setSections(new ArrayList<>(defaultForm.getSections()));
