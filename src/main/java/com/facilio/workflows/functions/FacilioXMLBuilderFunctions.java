@@ -59,7 +59,7 @@ public enum FacilioXMLBuilderFunctions implements FacilioWorkflowFunctionInterfa
 			XMLBuilder xmlBuilder = (XMLBuilder) objects[0];
 			
 			String key = (String) objects[1];
-			String value = (String) objects[1];
+			String value = (String) objects[2];
 			return xmlBuilder.attr(key, value);
 		}
 		
@@ -86,6 +86,76 @@ public enum FacilioXMLBuilderFunctions implements FacilioWorkflowFunctionInterfa
 			
 			XMLBuilder xmlBuilder = (XMLBuilder) objects[0];
 			return xmlBuilder.getAsXMLString();
+		}
+		
+	},
+	
+	// parsing related functions
+	
+	
+	PARSE(7,"parse") {
+
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			
+			String xmlString = (String) objects[0];
+			return XMLBuilder.parse(xmlString);
+		}
+		
+	},
+	
+	GET_ALL_ELEMENT(8,"getAllElements") {
+
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			
+			XMLBuilder xmlBuilder = (XMLBuilder) objects[0];
+			String elementName = (String) objects[1];
+			
+			return xmlBuilder.getElementList(elementName);
+		}
+		
+	},
+	
+	GET_ELEMENT(9,"getElement") {
+
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			
+			XMLBuilder xmlBuilder = (XMLBuilder) objects[0];
+			String elementName = (String) objects[1];
+			
+			return xmlBuilder.getElement(elementName);
+		}
+		
+	},
+	
+	GET_TEXT(10,"getText") {
+
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			
+			XMLBuilder xmlBuilder = (XMLBuilder) objects[0];
+			
+			return xmlBuilder.getText();
+		}
+		
+	},
+	
+	GET_ATTRIBUTE(11,"getAttribute") {
+
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			
+			XMLBuilder xmlBuilder = (XMLBuilder) objects[0];
+			
+			String key = (String) objects[1];
+			return xmlBuilder.getAttribute(key);
 		}
 		
 	},
