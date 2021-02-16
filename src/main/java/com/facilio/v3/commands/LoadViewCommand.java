@@ -56,7 +56,7 @@ public class LoadViewCommand extends FacilioCommand {
 
             if(view == null) {
 
-                if (viewName.equals("hidden-all")) {
+                if (com.facilio.bmsconsole.commands.LoadViewCommand.VIEW_NAMES.contains(viewName)) {
                     viewName = "all";
                 }
 

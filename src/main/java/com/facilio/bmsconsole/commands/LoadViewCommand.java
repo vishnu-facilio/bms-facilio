@@ -36,6 +36,8 @@ import java.util.stream.Collectors;
 
 public class LoadViewCommand extends FacilioCommand {
 
+	public static final List<String> VIEW_NAMES = Arrays.asList("hidden-all", "pendingapproval");
+
 	private static final Logger LOGGER = LogManager.getLogger(LoadViewCommand.class.getName());
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -57,7 +59,7 @@ public class LoadViewCommand extends FacilioCommand {
 			
 			if(view == null) {
 				
-				if (viewName.equals("hidden-all")) {
+				if (VIEW_NAMES.contains(viewName)) {
 					viewName = "all";
 				}
 				
