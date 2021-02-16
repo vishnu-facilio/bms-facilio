@@ -1244,9 +1244,11 @@ public class V2ReportAction extends FacilioAction {
 		JSONArray dataPoints = new JSONArray();
 		if(readingRules != null && !readingRules.isEmpty() && readingRules.get(0) != null) {
 			
+			
+			Set readingMap = new HashSet();
 			for(ReadingRuleContext readingRule :readingRules) {
 				if(readingRule != null) {
-					dataPoints.addAll(getDataPointsJSONFromRule(readingRule, resource, alarmOccurrence));
+					dataPoints.addAll(getDataPointsJSONFromRule(readingRule, resource, alarmOccurrence, readingMap));
 				}
 			}
 			
@@ -1459,7 +1461,7 @@ public class V2ReportAction extends FacilioAction {
 		fields =  dataPoints.toJSONString();
 	}
 	
-	private JSONArray getDataPointsJSONFromRule(ReadingRuleContext readingruleContext, ResourceContext resource, AlarmOccurrenceContext alarm) throws Exception {
+	private JSONArray getDataPointsJSONFromRule(ReadingRuleContext readingruleContext, ResourceContext resource, AlarmOccurrenceContext alarm, Set readingMap) throws Exception {
 		JSONArray dataPoints = new JSONArray();
 		ResourceContext currentResource = resource;
 		
@@ -1488,7 +1490,7 @@ public class V2ReportAction extends FacilioAction {
 		
 		if(readingruleContext.getThresholdType() == ReadingRuleContext.ThresholdType.ADVANCED.getValue()) {
 			
-			Set readingMap = new HashSet();
+			
 			if(readingruleContext.getWorkflowId() > 0) {
 				
 				WorkflowContext workflow = new WorkflowContext();
