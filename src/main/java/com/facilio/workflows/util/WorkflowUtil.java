@@ -109,6 +109,7 @@ import com.facilio.workflows.functions.FacilioSystemFunctionNameSpace;
 import com.facilio.workflows.functions.FacilioSystemFunctions;
 import com.facilio.workflows.functions.FacilioWorkOrderFunctions;
 import com.facilio.workflows.functions.FacilioWorkflowFunctionInterface;
+import com.facilio.workflows.functions.FacilioXMLBuilderFunctions;
 import com.facilio.workflows.functions.MLFunctions;
 import com.facilio.workflows.functions.ThermoPhysicalR134aFunctions;
 import com.facilio.workflowv2.contexts.Value;
@@ -2145,7 +2146,9 @@ public class WorkflowUtil {
 				case BUSINESS_HOUR:
 					facilioWorkflowFunction = FacilioBusinessHourFunctions.getFacilioBusinessHourFunctions(functionName);
 					break;
-					
+				case XML_BUILDER:
+					facilioWorkflowFunction = FacilioXMLBuilderFunctions.getFacilioXMLBuilderFunctions(functionName);
+					break;
 			}
 		}
 		return facilioWorkflowFunction;
@@ -2255,6 +2258,9 @@ public class WorkflowUtil {
 					break;
 				case BUSINESS_HOUR:
 					facilioWorkflowFunction = new ArrayList<>( FacilioBusinessHourFunctions.getAllFunctions().values()); 
+					break;
+				case XML_BUILDER:
+					facilioWorkflowFunction = new ArrayList<>( FacilioXMLBuilderFunctions.getAllFunctions().values());
 					break;
 			}
 		}

@@ -53,6 +53,7 @@ import com.facilio.workflowv2.scope.Workflow_Scope;
 import com.facilio.workflowv2.util.UserFunctionAPI;
 import com.facilio.workflowv2.util.WorkflowV2TypeUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
+import com.facilio.xml.builder.XMLBuilder;
 
 public class WorkflowFunctionVisitor extends CommonParser<Value> {
 	
@@ -416,6 +417,10 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
                     	}
                     	else if(value.asObject() instanceof BusinessHoursContext) {
                     		wfFunctionContext.setNameSpace(FacilioSystemFunctionNameSpace.BUSINESS_HOUR.getName());
+                    		isDataTypeSpecificFunction = true;
+                    	}
+                    	else if(value.asObject() instanceof XMLBuilder) {
+                    		wfFunctionContext.setNameSpace(FacilioSystemFunctionNameSpace.XML_BUILDER.getName());
                     		isDataTypeSpecificFunction = true;
                     	}
                     	else if (value.asObject() instanceof FacilioSystemFunctionNameSpace) {

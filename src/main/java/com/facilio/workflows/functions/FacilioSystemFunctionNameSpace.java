@@ -40,6 +40,7 @@ public enum FacilioSystemFunctionNameSpace {
 	ORG_SPECIFIC(32,"orgSpecific"),
 	CONTROLS(33,"control"),
 	BUSINESS_HOUR(34,"businessHours"),
+	XML_BUILDER(35,"xml"),
 	;
 	
 	
