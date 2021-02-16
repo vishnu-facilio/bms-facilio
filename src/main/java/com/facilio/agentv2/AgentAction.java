@@ -371,25 +371,29 @@ public class AgentAction extends AgentActionV2 {
 		try {
 			if (AccountUtil.getCurrentOrg() != null) {
 				JSONArray alertsPoints = AdminAction.getAlertsPointsData(AccountUtil.getCurrentOrg().getDomain());
-				 JSONArray arr = new JSONArray();
-			        for(int i=0;i<alertsPoints.size();i++){
-				    	JSONObject addObj = (JSONObject) alertsPoints.get(i);
-				    	String msg = addObj.get("message").toString();
-					    JSONParser parser = new JSONParser();
-						JSONObject json = (JSONObject) parser.parse(msg);
-						long arrival=0l;
-						if(json.containsKey("timestamp")){
-							arrival = (long)json.get("timestamp");
-						}
-						addObj.put("timestamp", arrival);
-						addObj.put("id", i+1);
-					    arr.add(addObj);
-				    }
-				JSONObject lastRecord = (JSONObject) arr.get(arr.size() - 1);
-				setResult(AgentConstants.DATA, arr);
-				long receivedTime = (long) lastRecord.get("arrivalTime");
-				
-				setResult(AgentConstants.LAST_DATA_RECEIVED_TIME, receivedTime);
+                JSONArray arr = new JSONArray();
+                if(alertsPoints != null && !alertsPoints.isEmpty()) {
+                    int dataSize = alertsPoints.size();
+                    for(int i=0;i<dataSize;i++){
+                        JSONObject addObj = (JSONObject) alertsPoints.get(i);
+                        String msg = addObj.get("message").toString();
+                        JSONParser parser = new JSONParser();
+                        JSONObject json = (JSONObject) parser.parse(msg);
+                        long arrival=0L;
+                        if(json.containsKey("timestamp")){
+                            arrival = (long)json.get("timestamp");
+                        }
+                        addObj.put("timestamp", arrival);
+                        addObj.put("id", i+1);
+                        arr.add(addObj);
+                    }
+                    JSONObject lastRecord = (JSONObject) arr.get(arr.size() - 1);
+                    long receivedTime = (long) lastRecord.get("arrivalTime");
+                    setResult(AgentConstants.LAST_DATA_RECEIVED_TIME, receivedTime);
+                }else{
+                    LOGGER.error("kafka points data is empty..");
+                }
+                setResult(AgentConstants.DATA, arr);
 				ok();
 			}
 		} catch (Exception e) {
