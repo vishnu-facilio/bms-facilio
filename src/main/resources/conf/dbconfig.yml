@@ -5,7 +5,7 @@ dbPackage: com.facilio.db.builder.mysql #The package under which db specific ins
 dbConfigClass: com.facilio.bmsconsole.db.BmsDBConf #Default config class that implements DBConf Interface
 logQueries: false #Log all insert/select/update/delete queries
 operators: #Names of enum class that implements Operator Ifc with field types
-  - types: [STRING, NUMBER, DECIMAL, BOOLEAN, DATE, DATE_TIME, LOOKUP, ENUM, FILE, COUNTER ,ID] #In list can also specified in yaml
+  - types: [STRING, NUMBER, DECIMAL, BOOLEAN, DATE, DATE_TIME, LOOKUP, ENUM, SYSTEM_ENUM, FILE, COUNTER ,ID] #In list can also specified in yaml
     enumClassName: com.facilio.db.criteria.operators.CommonOperators
   - types: [STRING]
     enumClassName: com.facilio.db.criteria.operators.StringOperators
@@ -19,7 +19,7 @@ operators: #Names of enum class that implements Operator Ifc with field types
     enumClassName: com.facilio.db.criteria.operators.LookupOperator
   - types: [LOOKUP]
     enumClassName: com.facilio.db.criteria.operators.PickListOperators
-  - types: [ENUM]
+  - types: [ENUM, SYSTEM_ENUM]
     enumClassName: com.facilio.db.criteria.operators.EnumOperators
   - types: [LOOKUP]
     enumClassName: com.facilio.db.criteria.operators.BuildingOperator
