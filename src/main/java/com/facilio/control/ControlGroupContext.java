@@ -13,10 +13,10 @@ public class ControlGroupContext extends V3Context {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	String name;
-	SiteContext site;
-	BaseSpaceContext space;
-	ControlScheduleContext controlSchedule;
+	private String name;
+	private SiteContext site;
+	private BaseSpaceContext space;
+	private ControlScheduleContext controlSchedule;
 	
 	public String getName() {
 		return name;

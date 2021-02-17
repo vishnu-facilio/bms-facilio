@@ -9,10 +9,9 @@ public class ControlGroupTenentContext extends ControlGroupContext {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	
-	ControlGroupContext parentGroup;
-	TenantContext tenant;
-	ControlScheduleTenantContext controlScheduleChild;
+	private ControlGroupContext parentGroup;
+	private TenantContext tenant;
+	private ControlScheduleTenantContext controlScheduleChild;
 	public ControlGroupContext getParentGroup() {
 		return parentGroup;
 	}

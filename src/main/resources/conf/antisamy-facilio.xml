@@ -1795,6 +1795,17 @@ http://www.w3.org/TR/html401/struct/global.html
 	</common-attributes>
 
     <tag-rules>
+        <!-- Tags related to JavaScript -->
+
+        <tag name="script" action="remove"/>
+        <tag name="noscript" action="validate"/> <!-- although no javascript can fire inside a noscript tag, css is still a viable attack vector -->
+
+        <!-- Frame & related tags -->
+
+        <tag name="iframe" action="remove"/>
+        <tag name="frameset" action="remove"/>
+        <tag name="frame" action="remove"/>
+
         <tag name="div" action="validate"/>
         <tag name="i" action="validate"/>
         <tag name="p" action="validate"/>
