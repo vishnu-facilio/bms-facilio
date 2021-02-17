@@ -294,7 +294,7 @@ public class PreEventContext extends BaseEventContext {
             this.setMessage(alarmMeta.getSubject());
             context.put(EventConstants.EventContextNames.EVENT_LIST, Collections.singletonList(this));
             if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
-				LOGGER.info("Time taken to construct PreClearevent for rule  : "+rule.getId()+ " resource" + readingContext.getParentId() +" is "+(System.currentTimeMillis() - startTime));			
+//				LOGGER.info("Time taken to construct PreClearevent for rule  : "+rule.getId()+ " resource" + readingContext.getParentId() +" is "+(System.currentTimeMillis() - startTime));			
 			}
             if (!isHistorical) {
             	if(isReadingRuleWorkflowExecution)  { //For live reading rule event insertion

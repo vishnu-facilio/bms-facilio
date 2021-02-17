@@ -585,7 +585,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		builder.addRecords(events);
 		builder.save();	
 		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
-			LOGGER.info("Time taken to insert events for type  : "+type+ " events: " + events+" is "+(System.currentTimeMillis() - startTime));			
+//			LOGGER.info("Time taken to insert events for type  : "+type+ " events: " + events+" is "+(System.currentTimeMillis() - startTime));			
 		}
 	}
 	

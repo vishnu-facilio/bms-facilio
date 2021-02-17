@@ -943,7 +943,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		long startTime = System.currentTimeMillis();
 		List<ActionContext>	actions = ActionAPI.getActiveActionsFromWorkflowRule(ruleId);
 		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
-			LOGGER.info("Time taken to fetch true actions for readingRule id : "+ruleId+" with actions : "+actions+" is "+(System.currentTimeMillis() - startTime));			
+//			LOGGER.info("Time taken to fetch true actions for readingRule id : "+ruleId+" with actions : "+actions+" is "+(System.currentTimeMillis() - startTime));			
 		}
 		long actionstartTime = System.currentTimeMillis();
 		if(actions != null) {
@@ -958,12 +958,12 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 			}
 		}
 		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
-			LOGGER.info("Time taken to execute true actions alone for readingRule id : "+ruleId+" with actions : "+actions+" is "+(System.currentTimeMillis() - actionstartTime));			
+//			LOGGER.info("Time taken to execute true actions alone for readingRule id : "+ruleId+" with actions : "+actions+" is "+(System.currentTimeMillis() - actionstartTime));			
 		}
 		long ruleLogStartTime = System.currentTimeMillis();;
 		addRuleLogEntry(context,record, Boolean.TRUE);
 		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
-			LOGGER.info("Time taken to add RuleLogEntry : "+ruleId+ " for record: " + record + " with actions : "+actions+" is "+(System.currentTimeMillis() - ruleLogStartTime));			
+//			LOGGER.info("Time taken to add RuleLogEntry : "+ruleId+ " for record: " + record + " with actions : "+actions+" is "+(System.currentTimeMillis() - ruleLogStartTime));			
 		}
 	}
 	
@@ -1067,7 +1067,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 						}
 					}			
 					if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
-						LOGGER.info("Time taken to execute false actions  : "+getId()+ " for isPreEvent: " + isPreEvent +" is "+(System.currentTimeMillis() - startTime));			
+//						LOGGER.info("Time taken to execute false actions  : "+getId()+ " for isPreEvent: " + isPreEvent +" is "+(System.currentTimeMillis() - startTime));			
 					}
 				}
 				else {
@@ -1269,7 +1269,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 //			LOGGER.info("Clear event : "+FieldUtil.getAsJSON(event).toJSONString()+"\n Alarm Meta : "+alarmMeta);
 			context.put(EventConstants.EventContextNames.EVENT_LIST, Collections.singletonList(event));
 			if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
-				LOGGER.info("Time taken to construct ReadingClearevent for rule  : "+this.getId()+ " resource" + resource.getId() +" is "+(System.currentTimeMillis() - startTime));			
+//				LOGGER.info("Time taken to construct ReadingClearevent for rule  : "+this.getId()+ " resource" + resource.getId() +" is "+(System.currentTimeMillis() - startTime));			
 			}
 			if (!isHistorical) {
 				if(isReadingRuleWorkflowExecution)  { //For live reading rule event insertion

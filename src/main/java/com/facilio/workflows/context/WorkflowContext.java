@@ -517,7 +517,7 @@ public class WorkflowContext implements Serializable {
 			int totalPublicSelect = AccountUtil.getCurrentPublicSelectQuery() - pSelectCount;
 			String msg = MessageFormat.format("### time taken for workflow ({0}) is {1}, select : {2}, pSelect : {3}", this.getId(), executionTime, totalSelect, totalPublicSelect);
 			if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
-				log.info(msg);			
+//				log.info(msg);			
 			}
 			else {
 				log.debug(msg);

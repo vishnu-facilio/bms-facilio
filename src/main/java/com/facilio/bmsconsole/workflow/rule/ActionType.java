@@ -298,14 +298,14 @@ public enum ActionType {
 						BaseEventContext event =  ((ReadingRuleContext) currentRule).constructPreEvent(obj, (ReadingContext) currentRecord,context);
         				addAlarm(event, obj, context, readingrule, currentRecord, BaseAlarmContext.Type.PRE_ALARM);
         				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
-        					LOGGER.info("Time taken to construct true PreEvent for currentRule  : "+currentRule.getId()+" is "+(System.currentTimeMillis() - startTime));			
+//        					LOGGER.info("Time taken to construct true PreEvent for currentRule  : "+currentRule.getId()+" is "+(System.currentTimeMillis() - startTime));			
         				}
 					}
 					else {
 						long impactTime = System.currentTimeMillis();
 						BaseEventContext event = ((ReadingRuleContext) currentRule).constructEvent(obj, (ReadingContext) currentRecord,context);
 						if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
-        					LOGGER.info("Time taken to construct true ReadingEvent for currentRule  : "+currentRule.getId()+" is "+(System.currentTimeMillis() - startTime));			
+//        					LOGGER.info("Time taken to construct true ReadingEvent for currentRule  : "+currentRule.getId()+" is "+(System.currentTimeMillis() - startTime));			
         				}
 						///handle impacts
 						JSONObject impacts = (JSONObject) obj.get("impact");
@@ -336,12 +336,12 @@ public enum ActionType {
 							}
 						}
 						if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
-							LOGGER.info("Time taken to in addAlarm actionType for IMPACT currentRuleId  : "+currentRule.getId() +" is "+(System.currentTimeMillis() - impactTime));			
+//							LOGGER.info("Time taken to in addAlarm actionType for IMPACT currentRuleId  : "+currentRule.getId() +" is "+(System.currentTimeMillis() - impactTime));			
 						}
 						addAlarm(event, obj, context, currentRule, currentRecord, BaseAlarmContext.Type.READING_ALARM);
 					}
 					if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
-						LOGGER.info("Time taken to in addAlarm actionType for currentRuleId  : "+currentRule.getId() +" is "+(System.currentTimeMillis() - startTime));			
+//						LOGGER.info("Time taken to in addAlarm actionType for currentRuleId  : "+currentRule.getId() +" is "+(System.currentTimeMillis() - startTime));			
 					}
 
 				} else {
@@ -1901,7 +1901,7 @@ public enum ActionType {
 
 		if (!isHistorical) {
 			if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
-				LOGGER.info("Time taken in addAlarm to construct trueReadingEvent for currentRule  : "+currentRule.getId()+" is "+(System.currentTimeMillis() - startTime));			
+//				LOGGER.info("Time taken in addAlarm to construct trueReadingEvent for currentRule  : "+currentRule.getId()+" is "+(System.currentTimeMillis() - startTime));			
 			}
 			if(isReadingRuleWorkflowExecution)  { //For live reading rule event insertion
 				ReadingRuleAPI.insertEventsWithoutAlarmOccurrenceProcessed(Collections.singletonList(event), eventType);
