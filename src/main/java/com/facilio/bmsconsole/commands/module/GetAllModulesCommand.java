@@ -43,6 +43,7 @@ public class GetAllModulesCommand extends FacilioCommand {
 			ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_MODULE_NAME,
 			ControlScheduleUtil.CONTROL_GROUP_MODULE_NAME,
 			ControlScheduleUtil.CONTROL_GROUP_TENANT_SHARING_MODULE_NAME,
+			ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_TENANT_SHARING_MODULE_NAME,
 		});
 
 	@Override

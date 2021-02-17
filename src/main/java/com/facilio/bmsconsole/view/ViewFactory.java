@@ -916,6 +916,11 @@ public class ViewFactory {
 		views = new LinkedHashMap<>();
 		views.put("all", getAllControlScheduleView().setOrder(order++));
 		viewsMap.put(ControlScheduleUtil.CONTROL_SCHEDULE_MODULE_NAME, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllControlScheduleExceptionTenantView().setOrder(order++));
+		viewsMap.put(ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_TENANT_SHARING_MODULE_NAME, views);
 
 		order = 1;
 		views = new LinkedHashMap<>();
@@ -8384,6 +8389,22 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All Schedules");
 		allView.setModuleName(ControlScheduleUtil.CONTROL_SCHEDULE_MODULE_NAME);
+		allView.setSortFields(sortFields);
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		allView.setViewSharing(getSharingContext(appDomains));
+
+		return allView;
+	}
+	
+	private static FacilioView getAllControlScheduleExceptionTenantView() {
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Exceptions");
+		allView.setModuleName(ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_TENANT_SHARING_MODULE_NAME);
 		allView.setSortFields(sortFields);
 
 		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();

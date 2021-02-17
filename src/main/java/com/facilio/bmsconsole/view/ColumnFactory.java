@@ -231,6 +231,7 @@ public class ColumnFactory {
 		columnMap.put(ControlScheduleUtil.CONTROL_GROUP_TENANT_SHARING_MODULE_NAME+"-default", getDefaultControlGroupColumns());
 		columnMap.put(ControlScheduleUtil.CONTROL_SCHEDULE_MODULE_NAME+"-default", getDefaultControlScheduleColumns());
 		columnMap.put(FacilioConstants.ContextNames.CONTROL_ACTION_COMMAND_MODULE+"-default", getDefaultControlCommandColumns());
+		columnMap.put(ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_TENANT_SHARING_MODULE_NAME+"-default", getControlScheduleExceptionTenantColumns());
 
 		// Community Features
 		columnMap.put("announcement-default", getDefaultAnnouncementColumns());
@@ -1670,6 +1671,17 @@ public class ColumnFactory {
 
 		return columns;
 
+	}
+	
+	private static List<ViewField> getControlScheduleExceptionTenantColumns() {
+		// TODO Auto-generated method stub
+		
+		List<ViewField> columns = new ArrayList<ViewField>();
+
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("schedule", "Schedule"));
+		
+		return columns;
 	}
 	
 	private static List<ViewField> getDefaultControlCommandColumns() {
