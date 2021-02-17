@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.facilio.bmsconsole.context.ApplicationContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.struts2.ServletActionContext;
@@ -716,7 +717,15 @@ public class Account implements AccountsInterface<User>, Serializable{
 		}
 		this.shouldApplySwitchScope = shouldApplySwitchScope;
 	}
-	
-	
+
+	private ApplicationContext app;
+
+	public ApplicationContext getApp() {
+		return app;
+	}
+
+	public void setApp(ApplicationContext app) {
+		this.app = app;
+	}
 }
 

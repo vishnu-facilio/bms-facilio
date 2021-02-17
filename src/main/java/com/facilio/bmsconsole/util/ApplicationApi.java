@@ -880,16 +880,12 @@ public class ApplicationApi {
         }
     }
 
-    public static Map<Long, Map<String, Object>> getScopingMapForApp(long appId, long orgId) throws Exception {
+    public static Map<Long, Map<String, Object>> getScopingMapForApp(long scopingId, long orgId) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                 .select(FieldFactory.getScopingConfigFields())
                 .table("Scoping_Config")
-                .innerJoin("Scoping")
-                .on("Scoping.ID = Scoping_Config.SCOPING_ID")
-                .innerJoin("Application")
-                .on("Application.SCOPING_ID = Scoping.ID")
-                .andCondition(CriteriaAPI.getCondition("Application.ID", "appId", String.valueOf(appId), NumberOperators.EQUALS));
+                .andCondition(CriteriaAPI.getCondition("SCOPING_ID", "scopingId", String.valueOf(scopingId), NumberOperators.EQUALS));
 
         List<Map<String, Object>> props = selectBuilder.get();
         Map<Long, Map<String, Object>> moduleScoping = new HashMap<Long, Map<String, Object>>();

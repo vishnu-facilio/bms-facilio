@@ -8,6 +8,7 @@ import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.db.builder.DBUtil;
@@ -60,7 +61,11 @@ public class AccountUtil {
 		if(account != null && account.getUser() != null && account.getOrg() != null) {
 			long appId = account.getUser().getApplicationId();
 			if(appId > 0) {
-				account.setAppScopingMap(ApplicationApi.getScopingMapForApp(appId, account.getOrg().getOrgId()));
+				ApplicationContext app = ApplicationApi.getApplicationForId(appId);
+				if(app != null) {
+					account.setApp(app);
+					account.setAppScopingMap(ApplicationApi.getScopingMapForApp(app.getScopingId(), account.getOrg().getOrgId()));
+				}
 			}
 		}
 	}
@@ -87,6 +92,13 @@ public class AccountUtil {
 	public static User getCurrentUser() {
 		if (currentAccount.get() != null) {
 			return currentAccount.get().getUser();
+		}
+		return null;
+	}
+
+	public static ApplicationContext getCurrentApp() {
+		if (currentAccount.get() != null) {
+			return currentAccount.get().getApp();
 		}
 		return null;
 	}
