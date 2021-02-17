@@ -1156,15 +1156,15 @@ public class V3VisitorManagementAPI {
             Map<String, Object> updateMap = new HashMap<>();
             FacilioField lastVisitedTime = modBean.getField("lastVisitedTime", module.getName());
             FacilioField lastVisitedSpace = modBean.getField("lastVisitedSpace", module.getName());
-            FacilioField lastVisitedHost = modBean.getField("lastVisitedHost", module.getName());
+            FacilioField lastVisitedPeople = modBean.getField("lastVisitedPeople", module.getName());
             FacilioField firstVisitedTime = modBean.getField("firstVisitedTime", module.getName());
 
             updateMap.put("lastVisitedTime", visitorLog.getCheckInTime());
-            updateMap.put("lastVisitedHost", FieldUtil.getAsProperties(visitorLog.getHost()));
+            updateMap.put("lastVisitedPeople", FieldUtil.getAsProperties(visitorLog.getHost()));
 
             List<FacilioField> updatedfields = new ArrayList<FacilioField>();
             updatedfields.add(lastVisitedTime);
-            updatedfields.add(lastVisitedHost);
+            updatedfields.add(lastVisitedPeople);
 
             if(visitorLog.getVisitedSpace() != null) {
                 updateMap.put("lastVisitedSpace", FieldUtil.getAsProperties(visitorLog.getVisitedSpace()));

@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
@@ -34,8 +35,9 @@ public class ValidateBaseVisitDetailAndLogCommand extends FacilioCommand{
 	        Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
 	        List<BaseVisitContextV3> baseVisits = recordMap.get(moduleName);
 			long currentTime = System.currentTimeMillis();
-
-	        if(CollectionUtils.isNotEmpty(baseVisits)) {
+	        Map<String, List<Object>> queryParams = (Map<String, List<Object>>)context.get(Constants.QUERY_PARAMS);
+	        
+	        if(CollectionUtils.isNotEmpty(baseVisits) && MapUtils.isNotEmpty(queryParams) && (queryParams.containsKey("passCode") || queryParams.containsKey("contactNumber"))) {
 				for(BaseVisitContextV3 baseVisit:baseVisits) {
 					if(baseVisit.getChildVisitTypeEnum() == BaseVisitContextV3.ChildVisitType.INVITE) {
 						InviteVisitorContextV3 inviteVisit = V3VisitorManagementAPI.getInviteVisit(baseVisit.getId(), null, false);
