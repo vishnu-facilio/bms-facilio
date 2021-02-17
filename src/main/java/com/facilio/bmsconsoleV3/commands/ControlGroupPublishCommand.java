@@ -23,6 +23,7 @@ import com.facilio.control.ControlGroupAssetContext;
 import com.facilio.control.ControlGroupContext;
 import com.facilio.control.ControlGroupSection;
 import com.facilio.control.ControlGroupTenentContext;
+import com.facilio.control.ControlScheduleTenantContext;
 import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BuildingOperator;
@@ -46,8 +47,11 @@ public class ControlGroupPublishCommand extends FacilioCommand {
 		
 		ControlGroupTenentContext groupTenent = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(group), ControlGroupTenentContext.class);
 		
+		ControlScheduleTenantContext childSchedule = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(groupTenent.getControlSchedule()), ControlScheduleTenantContext.class);
+		
 		groupTenent.setTenant(tenant);
 		groupTenent.setParentGroup(group);
+		groupTenent.setControlScheduleChild(childSchedule);
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		

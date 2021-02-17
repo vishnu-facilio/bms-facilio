@@ -12,6 +12,7 @@ public class ControlGroupTenentContext extends ControlGroupContext {
 	
 	ControlGroupContext parentGroup;
 	TenantContext tenant;
+	ControlScheduleTenantContext controlScheduleChild;
 	public ControlGroupContext getParentGroup() {
 		return parentGroup;
 	}
@@ -23,5 +24,11 @@ public class ControlGroupTenentContext extends ControlGroupContext {
 	}
 	public void setTenant(TenantContext tenant) {
 		this.tenant = tenant;
+	}
+	public ControlScheduleTenantContext getControlScheduleChild() {
+		return controlScheduleChild;
+	}
+	public void setControlScheduleChild(ControlScheduleTenantContext controlScheduleChild) {
+		this.controlScheduleChild = controlScheduleChild;
 	}
 }

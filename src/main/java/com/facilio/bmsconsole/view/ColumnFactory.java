@@ -228,7 +228,7 @@ public class ColumnFactory {
 		columnMap.put("budget-default", getDefaultBudgetColumns());
 		columnMap.put("chartofaccount-default", getDefaultChartOfAccountColumns());
 		columnMap.put("controlGroupv2-default", getDefaultControlGroupColumns());
-		columnMap.put(ControlScheduleUtil.CONTROL_GROUP_TENANT_SHARING_MODULE_NAME+"-default", getDefaultControlGroupColumns());
+		columnMap.put(ControlScheduleUtil.CONTROL_GROUP_TENANT_SHARING_MODULE_NAME+"-default", getDefaultControlGroupTenantColumns());
 		columnMap.put(ControlScheduleUtil.CONTROL_SCHEDULE_MODULE_NAME+"-default", getDefaultControlScheduleColumns());
 		columnMap.put(FacilioConstants.ContextNames.CONTROL_ACTION_COMMAND_MODULE+"-default", getDefaultControlCommandColumns());
 		columnMap.put(ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_TENANT_SHARING_MODULE_NAME+"-default", getControlScheduleExceptionTenantColumns());
@@ -1668,6 +1668,17 @@ public class ColumnFactory {
 		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("space", "Location"));
 		columns.add(new ViewField("controlSchedule", "Control Schedule"));
+
+		return columns;
+
+	}
+	
+	private static List<ViewField> getDefaultControlGroupTenantColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("space", "Location"));
+		columns.add(new ViewField("controlScheduleChild", "Control Schedule"));
 
 		return columns;
 

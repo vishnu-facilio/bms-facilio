@@ -10,6 +10,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
@@ -29,6 +30,10 @@ public class ControlGroupSuplimentFieldSupplyCommand extends FacilioCommand {
         fetchLookupsList.add((LookupField) fieldsAsMap.get("space"));
         fetchLookupsList.add((LookupField) fieldsAsMap.get("controlSchedule"));
         fetchLookupsList.add((LookupField) fieldsAsMap.get("sysCreatedBy"));
+        
+        if(moduleName.equals(ControlScheduleUtil.CONTROL_GROUP_TENANT_SHARING_MODULE_NAME)) {
+        	fetchLookupsList.add((LookupField) fieldsAsMap.get("controlScheduleChild"));
+        }
         
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchLookupsList);
 

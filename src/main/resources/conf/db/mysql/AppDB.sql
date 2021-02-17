@@ -29041,6 +29041,7 @@ CREATE TABLE IF NOT EXISTS `Control_Group_V2_Tenant_Sharing` (
   `MODULEID` bigint(20) NOT NULL,
   `FORM_ID` bigint(20) DEFAULT NULL,
   `PARENT_GROUP_ID` bigint(20) NOT NULL,
+  `CONTROL_SCHEDULE_CHILD_ID` BIGINT(20) NOT NULL,
   `TENANT_ID` bigint(20) NOT NULL,
   `SYS_CREATED_TIME` bigint(20) DEFAULT NULL,
   `SYS_CREATED_BY` bigint(20) DEFAULT NULL,
@@ -29050,7 +29051,8 @@ CREATE TABLE IF NOT EXISTS `Control_Group_V2_Tenant_Sharing` (
   CONSTRAINT `Control_Group_V2_Tenant_Sharing_id_fk` FOREIGN KEY (`ID`) REFERENCES `Control_Group_V2` (`ID`),
   CONSTRAINT `Control_Group_V2_Tenant_Sharing_module_id` FOREIGN KEY (`MODULEID`) REFERENCES `Modules` (`MODULEID`),
   CONSTRAINT `Control_Group_V2_Tenant_Sharing_parent_group_id` FOREIGN KEY (`PARENT_GROUP_ID`) REFERENCES `Control_Group_V2` (`ID`),
-  CONSTRAINT `Control_Group_V2_Tenant_Sharing_tenent_id` FOREIGN KEY (`TENANT_ID`) REFERENCES `Tenants` (`ID`)
+  CONSTRAINT `Control_Group_V2_Tenant_Sharing_tenent_id` FOREIGN KEY (`TENANT_ID`) REFERENCES `Tenants` (`ID`),
+  CONSTRAINT `Control_Group_V2_Tenant_Sharing_control_schedule_child_id` FOREIGN KEY (`CONTROL_SCHEDULE_CHILD_ID`) REFERENCES `Control_Schedule_Tenant` (`ID`)
 );
 
 
