@@ -2425,6 +2425,14 @@ public class V2ReportAction extends FacilioAction {
 	public void setData(List<ReportPivotTableDataContext> data) {
 		this.data = data;
 	}
+	
+	private JSONObject sortBy;
+	public JSONObject getSortBy() {
+		return sortBy;
+	}
+	public void setSortBy(JSONObject sortBy) {
+		this.sortBy = sortBy;
+	}
 
 	public String fetchTabularReportData() throws Exception {
 		FacilioChain c = FacilioChain.getNonTransactionChain();
@@ -2433,6 +2441,7 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.Reports.DATA, data);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.CRITERIA, criteria);
+		context.put(FacilioConstants.ContextNames.SORTING, sortBy);
 		c.addCommand(new ConstructTabularReportData());
 		c.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
 		c.execute();

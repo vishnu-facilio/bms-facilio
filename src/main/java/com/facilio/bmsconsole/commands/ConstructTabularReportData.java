@@ -8,6 +8,8 @@ import java.util.Map;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
@@ -28,6 +30,7 @@ import com.facilio.report.context.ReportPivotFieldContext;
 import com.facilio.report.context.ReportPivotTableRowsContext;
 import com.facilio.report.context.ReportYAxisContext;
 import com.facilio.report.context.ReportContext.ReportType;
+import com.facilio.report.context.ReportDataPointContext.OrderByFunction;
 import com.facilio.report.context.ReportPivotTableDataContext;
 
 
@@ -43,6 +46,7 @@ public class ConstructTabularReportData extends FacilioCommand {
 		List<ReportPivotTableDataContext> data = (List<ReportPivotTableDataContext>) context.get(FacilioConstants.Reports.DATA);
 		Criteria basecriteria = (Criteria) context.get(FacilioConstants.ContextNames.CRITERIA);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+		JSONObject sortBy = (JSONObject) context.get(FacilioConstants.ContextNames.SORTING);
 		
 		if (reportContext == null) {
 			reportContext = new ReportContext();
@@ -76,7 +80,7 @@ public class ConstructTabularReportData extends FacilioCommand {
 		
 		for (int i = 0; i < data.size(); i++) {
 			ReportPivotTableDataContext yData = data.get(i);
-			addDataPointContext(modBean, reportContext, rows, yData, module);
+			addDataPointContext(modBean, reportContext, rows, yData, module, sortBy);
 			dataHeaders.add(yData.getAlias());
 			if(yData.getField() != null) {
 				Map<String,Object> dataDetails = new HashMap<>();
@@ -132,12 +136,12 @@ public class ConstructTabularReportData extends FacilioCommand {
 		return false;
 	}
 	
-	private void addDataPointContext(ModuleBean modBean, ReportContext reportContext, List<ReportPivotTableRowsContext> rows, ReportPivotTableDataContext data, FacilioModule module) throws Exception {
+	private void addDataPointContext(ModuleBean modBean, ReportContext reportContext, List<ReportPivotTableRowsContext> rows, ReportPivotTableDataContext data, FacilioModule module, JSONObject sortBy) throws Exception {
 		ReportDataPointContext dataPointContext = new ReportDataPointContext();
 		
 		ReportFieldContext xAxis = new ReportFieldContext();
 		ReportPivotTableRowsContext firstRow = rows.get(0);
-		List<String> orderBy = new ArrayList<>();
+		
 		
 		FacilioField xField = null;
 		FacilioModule xAxisModule = null;
@@ -166,11 +170,16 @@ public class ConstructTabularReportData extends FacilioCommand {
 			xAxis.setModule(modBean.getModule(firstRow.getModuleName()));
 		}
 		if(firstRow.getAlias() != null) {
-			xAxis.setAlias(firstRow.getAlias());;
+			xAxis.setAlias(firstRow.getAlias());
+			if(firstRow.getAlias().equals(sortBy.get("alias"))) {
+				dataPointContext.setOrderByFunc(OrderByFunction.valueOf(((Long)sortBy.get("order")).intValue()));
+				List<String> orderBy = new ArrayList<>();
+				orderBy.add(xField.getCompleteColumnName());
+				dataPointContext.setOrderBy(orderBy);
+				dataPointContext.setLimit(((Long)sortBy.get("limit")).intValue());
+			}
 		}
 		dataPointContext.setxAxis(xAxis);
-		orderBy.add(xField.getCompleteColumnName());
-		dataPointContext.setOrderBy(orderBy);
 		reportContext.setxAggr(0);
 		reportContext.setxAlias(firstRow.getAlias());
 		
@@ -215,6 +224,15 @@ public class ConstructTabularReportData extends FacilioCommand {
 				}
 				if(data.getAlias() != null) {
 					yAxis.setAlias(data.getAlias());
+					if(data.getAlias().equals(sortBy.get("alias"))) {
+						dataPointContext.setOrderByFunc(OrderByFunction.valueOf(((Long)sortBy.get("order")).intValue()));
+						List<String> orderBy = new ArrayList<>();
+						orderBy.add(getAggrCompleteColumnName(yField.getCompleteColumnName(), yAggr));
+						orderBy.add(xField.getCompleteColumnName());
+						dataPointContext.setOrderBy(orderBy);
+						dataPointContext.setLimit(((Long)sortBy.get("limit")).intValue());
+						dataPointContext.setDefaultSortPoint(true);
+					}
 				}
 				yAxis.setField(yAxisModule, yField);
 				yAxis.setAggr(yAggr);
@@ -247,6 +265,13 @@ public class ConstructTabularReportData extends FacilioCommand {
 				}
 				if(groupByRow.getAlias() != null) {
 					groupByField.setAlias(groupByRow.getAlias());
+					if(groupByField.getAlias().equals(sortBy.get("alias"))) {
+						dataPointContext.setOrderByFunc(OrderByFunction.valueOf(((Long)sortBy.get("order")).intValue()));
+						List<String> orderBy = new ArrayList<>();
+						orderBy.add(gField.getCompleteColumnName());
+						dataPointContext.setOrderBy(orderBy);
+						dataPointContext.setLimit(((Long)sortBy.get("limit")).intValue());
+					}
 				}
 				groupByField.setField(groupByModule, gField);
 				groupByField.setAlias(groupByRow.getAlias());	
@@ -258,11 +283,14 @@ public class ConstructTabularReportData extends FacilioCommand {
 			dataPointContext.setGroupByFields(groupByFields);
 		}
 		
-		dataPointContext.setOrderByFunc(3);
 		Map<String, String> aliases = new HashMap<>();
 		aliases.put("actual", data.getAlias());
 		dataPointContext.setAliases(aliases);
 		dataPointContext.setName(xField.getName());
 		reportContext.addDataPoint(dataPointContext);
+	}
+	
+	private static String getAggrCompleteColumnName (String name, AggregateOperator aggr) {
+		return aggr == null || aggr == CommonAggregateOperator.ACTUAL ? name : aggr.getStringValue()+"("+name+")";
 	}
 }
