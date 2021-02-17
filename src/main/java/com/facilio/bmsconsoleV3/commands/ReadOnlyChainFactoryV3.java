@@ -39,8 +39,15 @@ public class ReadOnlyChainFactoryV3 {
         c.addCommand(new LoadVisitorLoggingLookupCommandV3());
         return c;
     }
+    
+    public static FacilioChain getInviteVisitorBeforeFetchOnSummaryChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new LoadRecordIdForPassCodeCommandV3());
+        c.addCommand(new LoadVisitorLoggingLookupCommandV3());
+        return c;
+    }
  
-    public static FacilioChain getBaseVisitBeforeFetchOnListChain() {
+    public static FacilioChain getBaseVisitBeforeFetchOnSummaryChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new LoadRecordIdForPassCodeCommandV3());
         c.addCommand(new LoadVisitorLoggingLookupCommandV3());

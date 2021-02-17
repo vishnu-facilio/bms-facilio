@@ -34,7 +34,15 @@ public class PreFillInviteVisitorCommandV3 extends FacilioCommand {
                 CommonCommandUtil.handleLookupFormData(modBean.getAllFields(FacilioConstants.ContextNames.INVITE_VISITOR), vL.getData());
             	if(vL.getChildVisitTypeEnum() == null) {
             		vL.setChildVisitType(BaseVisitContextV3.ChildVisitType.INVITE);
-                }        
+                } 
+               	VisitorSettingsContext setting = settingsMap.get(vL.getVisitorType().getId());
+                if(setting != null) {
+                    vL.setIsInviteApprovalNeeded(setting.getApprovalRequiredForInvite());
+                    if(!vL.isInviteApprovalNeeded()) {
+                    	vL.setIsInvitationSent(true);
+                    	vL.setIsInvited(true);
+                    }
+                }
             }
         }
         return false;

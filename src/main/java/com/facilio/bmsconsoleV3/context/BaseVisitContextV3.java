@@ -3,6 +3,7 @@ package com.facilio.bmsconsoleV3.context;
 import java.io.File;
 
 import com.facilio.accounts.dto.User;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.context.VisitorTypeContext;
@@ -16,6 +17,7 @@ public class BaseVisitContextV3 extends V3Context {
 	private VisitorTypeContext visitorType;
     private V3PeopleContext host;
     private V3VisitorContext visitor;
+	private BaseSpaceContext visitedSpace;
     private Integer purposeOfVisit;
     private String purposeOfVisitEnum;
     
@@ -65,6 +67,14 @@ public class BaseVisitContextV3 extends V3Context {
 
 	public void setVisitor(V3VisitorContext visitor) {
 		this.visitor = visitor;
+	}
+
+	public BaseSpaceContext getVisitedSpace() {
+		return visitedSpace;
+	}
+
+	public void setVisitedSpace(BaseSpaceContext visitedSpace) {
+		this.visitedSpace = visitedSpace;
 	}
 
 	public Integer getPurposeOfVisit() {

@@ -1653,7 +1653,11 @@ public class FacilioConstants {
 		public static final String INVITE_VISITOR_RECORDS = "visitorlogrecords";
 		public static final String BASE_VISIT = "basevisit";
 		public static final String VISITOR_LOG = "visitorlog";
+		public static final String VISITOR_LOG_NOTES = "visitorlognotes";
+		public static final String VISITOR_LOG_ATTACHMENTS = "visitorlogattachments";
 		public static final String INVITE_VISITOR = "invitevisitor";
+		public static final String INVITE_VISITOR_NOTES = "invitevisitornotes";
+		public static final String INVITE_VISITOR_ATTACHMENTS = "invitevisitorattachments";
 		public static final String RECURRING_INVITE_VISITOR = "recurringinvitevisitor";
 		public static final String GROUP_VISITOR_INVITE = "groupinvite";
 		public static final String BASE_SCHEDULE_ID = "baseScheduleId";
@@ -1678,8 +1682,8 @@ public class FacilioConstants {
 		public static final String VISITOR_SETTINGS="visitorSettings";
 		public static final String DEFAULT_VISITOR_LOG_FORM_NAME="default_visitor_log_form";
 		public static final String DEFAULT_VISITOR_INVITE_FORM_NAME="default_visitor_invite_form";
-
-
+		public static final String DEFAULT_VISITOR_LOG_CHECKIN_FORM_NAME="default_visitor_log_checkin_form";
+		public static final String DEFAULT_INVITE_VISITOR_FORM_NAME="default_invite_visitor_form";
 
 		
 		public static final String CONTACT = "contact";
@@ -2117,7 +2121,9 @@ public class FacilioConstants {
 			classMap.put(VISITOR_TYPE,VisitorTypeContext.class);
 			classMap.put(BASE_VISIT, BaseVisitContextV3.class);
 			classMap.put(VISITOR_LOG, VisitorLogContextV3.class);
+			classMap.put(VISITOR_LOG_ATTACHMENTS, AttachmentV3Context.class);
 			classMap.put(INVITE_VISITOR, InviteVisitorContextV3.class);
+			classMap.put(INVITE_VISITOR_ATTACHMENTS, AttachmentV3Context.class);
 			classMap.put(GROUP_VISITOR_INVITE, GroupInviteContextV3.class);
 			
 			classMap.put(ModuleNames.DEVICES, DeviceContext.class);

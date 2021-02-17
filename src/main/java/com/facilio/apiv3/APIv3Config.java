@@ -530,7 +530,8 @@ public class APIv3Config {
                     .beforeFetch(ReadOnlyChainFactoryV3.getInviteVisitorLogBeforeFetchOnListChain())
                     .showStateFlowList()
                 .summary()
-                    .beforeFetch(new LoadVisitorLoggingLookupCommandV3())
+                	.beforeFetch(ReadOnlyChainFactoryV3.getInviteVisitorBeforeFetchOnSummaryChain())
+                	.afterFetch(new ValidateBaseVisitDetailAndLogCommand())
                 .build();
     }
     
@@ -568,7 +569,7 @@ public class APIv3Config {
     public static Supplier<V3Config> getBaseVisit() {
         return () -> new V3Config(BaseVisitContextV3.class, new ModuleCustomFieldCount30())
                 .summary()
-                    .beforeFetch(ReadOnlyChainFactoryV3.getBaseVisitBeforeFetchOnListChain())
+                    .beforeFetch(ReadOnlyChainFactoryV3.getBaseVisitBeforeFetchOnSummaryChain())
                     .afterFetch(new ValidateBaseVisitDetailAndLogCommand())
                 .build();
     }

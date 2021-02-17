@@ -50,11 +50,11 @@ public class ChangeInviteVisitorStateCommandV3  extends FacilioCommand {
                                 if (field != null) {
                                     if (field.getName().equals("moduleState") && changes.getNewValue()  != null) {
                                         FacilioStatus status = StateFlowRulesAPI.getStateContext((Long)changes.getNewValue());
-                                        if (status.getStatus().toString().trim().equals("Invited") || status.getStatus().toString().trim().equals("Upcoming")) {
-                                            V3VisitorManagementAPI.updateInviteVisitorInvitationStatus(record, true);
-                                        }
-                                        else if (status.getStatus().toString().trim().equals("hasCheckedIn")) {
-                                        	V3VisitorManagementAPI.updateInviteVisitorHasCheckedIn(record, true);
+//                                        if (status.getStatus().toString().trim().equals("Invited") || status.getStatus().toString().trim().equals("Upcoming")) {
+//                                            V3VisitorManagementAPI.updateInviteVisitorInvitationStatus(record, true);
+//                                        }
+                                          if(record.hasCheckedIn()) {
+//                                        	V3VisitorManagementAPI.updateInviteVisitorHasCheckedIn(record, true);
                                         	
                                             VisitorLogContextV3 vLogToBeAdded = FieldUtil.cloneBean(record, VisitorLogContextV3.class);
                                             VisitorLogContextV3 oldVLogToBeAdded = FieldUtil.cloneBean(oldRecords.get(0), VisitorLogContextV3.class);

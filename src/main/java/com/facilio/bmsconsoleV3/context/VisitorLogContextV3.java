@@ -14,7 +14,6 @@ public class VisitorLogContextV3 extends BaseVisitContextV3 {
     private Long actualVisitDuration;
     private Boolean isApprovalNeeded;
     private Boolean isOverStay;
-	private BaseSpaceContext visitedSpace;
     public Boolean isNdaSigned;
 	
     private Long ndaId;
@@ -45,14 +44,6 @@ public class VisitorLogContextV3 extends BaseVisitContextV3 {
 
 	public void setCheckOutTime(Long checkOutTime) {
 		this.checkOutTime = checkOutTime;
-	}
-
-	public BaseSpaceContext getVisitedSpace() {
-		return visitedSpace;
-	}
-
-	public void setVisitedSpace(BaseSpaceContext visitedSpace) {
-		this.visitedSpace = visitedSpace;
 	}
 
 	public Boolean getIsOverStay() {

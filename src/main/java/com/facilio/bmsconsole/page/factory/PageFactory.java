@@ -13,6 +13,8 @@ import com.facilio.bmsconsole.page.WidgetGroup.WidgetGroupType;
 import com.facilio.bmsconsole.templates.DefaultTemplate;
 import com.facilio.bmsconsole.util.ConnectedAppAPI;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
+import com.facilio.bmsconsoleV3.context.InviteVisitorContextV3;
+import com.facilio.bmsconsoleV3.context.VisitorLogContextV3;
 import com.facilio.bmsconsoleV3.context.communityfeatures.DealsAndOffersContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.NeighbourhoodContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.NewsAndInformationContext;
@@ -106,6 +108,10 @@ public class PageFactory {
 				return TenantUnitSpacePageFactory.getTenantUnitSpacePage((TenantUnitSpaceContext) record, module);
 			case ContextNames.QUOTE:
 				return QuotationPageFactory.getQuotationPage((QuotationContext) record, module);
+			case ContextNames.VISITOR_LOG:
+				return VisitorLogPageFactory.getVisitsPage((VisitorLogContextV3)record, module);
+			case ContextNames.INVITE_VISITOR:
+				return InviteVisitorPageFactory.getInvitesPage((InviteVisitorContextV3)record, module);
 			case ContextNames.Tenant.ANNOUNCEMENT:
 				return AnnouncementPageFactory.getAnnouncementPage((AnnouncementContext) record, module);
 			case ContextNames.Tenant.PEOPLE_ANNOUNCEMENTS:

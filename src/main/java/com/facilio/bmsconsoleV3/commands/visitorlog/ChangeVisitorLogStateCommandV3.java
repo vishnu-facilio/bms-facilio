@@ -65,8 +65,9 @@ public class ChangeVisitorLogStateCommandV3 extends FacilioCommand {
                                             if (record.getCheckInTime() == null ||  record.getCheckInTime() <= 0) {
                                                 V3VisitorManagementAPI.updateVisitorLogCheckInCheckoutTime(record, true, System.currentTimeMillis());
                                                 V3VisitorManagementAPI.updateVisitorRollUps(record, oldRecords.get(0));
-                                                V3VisitorManagementAPI.updateVisitorLastVisitRollUps(record);
                                             }
+                                            V3VisitorManagementAPI.updateVisitorLastVisitRollUps(record);
+
                                         } else if (status.getStatus().toString().trim().equals("CheckedOut")) {
                                             V3VisitorManagementAPI.updateVisitorLogCheckInCheckoutTime(record, false, System.currentTimeMillis());
                                             V3VisitorManagementAPI.updateVisitorLastVisitDurationRollUp(record);

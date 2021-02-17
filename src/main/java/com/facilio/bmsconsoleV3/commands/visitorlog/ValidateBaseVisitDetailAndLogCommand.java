@@ -81,20 +81,20 @@ public class ValidateBaseVisitDetailAndLogCommand extends FacilioCommand{
 							}	
 						}
 					}
-					else if(baseVisit.getChildVisitTypeEnum() == BaseVisitContextV3.ChildVisitType.VISIT) {
-						VisitorLogContextV3 vLog = V3VisitorManagementAPI.getActiveVisitorLogById(baseVisit.getVisitor().getId(), true, baseVisit.getId());
-						if(vLog != null) {
-							baseVisit = vLog;
-							if(vLog != null) {
-								List<WorkflowRuleContext> nextStateRule = StateFlowRulesAPI.getAvailableState(vLog.getStateFlowId(), vLog.getModuleState().getId(), FacilioConstants.ContextNames.VISITOR_LOG, vLog, (FacilioContext)context);
-								long nextTransitionId = nextStateRule.get(0).getId();
-								context.put(FacilioConstants.ContextNames.TRANSITION_ID, nextTransitionId);
-							}
-						}
-						else {
-			                throw new RESTException(ErrorCode.VALIDATION_ERROR, "No active visitor logs");
-						}
-					}
+//					else if(baseVisit.getChildVisitTypeEnum() == BaseVisitContextV3.ChildVisitType.VISIT) {
+//						VisitorLogContextV3 vLog = V3VisitorManagementAPI.getActiveVisitorLogById(baseVisit.getVisitor().getId(), true, baseVisit.getId());
+//						if(vLog != null) {
+//							baseVisit = vLog;
+//							if(vLog != null) {
+//								List<WorkflowRuleContext> nextStateRule = StateFlowRulesAPI.getAvailableState(vLog.getStateFlowId(), vLog.getModuleState().getId(), FacilioConstants.ContextNames.VISITOR_LOG, vLog, (FacilioContext)context);
+//								long nextTransitionId = nextStateRule.get(0).getId();
+//								context.put(FacilioConstants.ContextNames.TRANSITION_ID, nextTransitionId);
+//							}
+//						}
+//						else {
+//			                throw new RESTException(ErrorCode.VALIDATION_ERROR, "No active visitor logs");
+//						}
+//					}
 					else {
 		                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid Passcode/QR");
 
