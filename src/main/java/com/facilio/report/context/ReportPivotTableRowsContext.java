@@ -1,17 +1,6 @@
 package com.facilio.report.context;
 
-import java.util.HashMap;
-
 import org.json.simple.JSONObject;
-
-import com.facilio.modules.AggregateOperator;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FacilioModule.ModuleType;
-import com.facilio.modules.fields.BooleanField;
-import com.facilio.modules.fields.EnumField;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.NumberField;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ReportPivotTableRowsContext {
 	
@@ -23,12 +12,12 @@ public class ReportPivotTableRowsContext {
 		this.lookupFieldId = lookupFieldId;
 	}
 	
-	private FacilioField field;
+	private ReportPivotFieldContext field;
 
-	public FacilioField getField() {
+	public ReportPivotFieldContext getField() {
 		return field;
 	}
-	public void setField(FacilioField field) {
+	public void setField(ReportPivotFieldContext field) {
 		this.field = field;
 	}
 	
@@ -47,6 +36,14 @@ public class ReportPivotTableRowsContext {
 	}
 	public void setModuleName(String moduleName) {
 		this.moduleName = moduleName;
+	}
+	
+	private String alias; 
+	public String getAlias() {
+		return alias;
+	}
+	public void setAlias(String alias) {
+		this.alias = alias;
 	}
 	
 	@Override

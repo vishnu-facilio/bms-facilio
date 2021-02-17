@@ -18,11 +18,13 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
+import com.facilio.modules.BmsAggregateOperators.NumberAggregateOperator;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportGroupByField;
+import com.facilio.report.context.ReportPivotFieldContext;
 import com.facilio.report.context.ReportPivotTableRowsContext;
 import com.facilio.report.context.ReportYAxisContext;
 import com.facilio.report.context.ReportContext.ReportType;
@@ -78,7 +80,20 @@ public class ConstructTabularReportData extends FacilioCommand {
 			dataHeaders.add(yData.getAlias());
 			if(yData.getField() != null) {
 				Map<String,Object> dataDetails = new HashMap<>();
-				dataDetails.put("displayName", yData.getField().getDisplayName());
+				FacilioField yField = null;
+				if(yData.getReadingField() != null) {
+					if(yData.getReadingField().getId()>0) {
+					yField =  modBean.getField(yData.getReadingField().getId());
+					}
+				} else if (yData.getField() != null) {
+				if(yData.getField().getId()!=-1) {
+					yField = modBean.getField(yData.getField().getId(), yData.getField().getModuleId());
+				} else {
+					FacilioModule yAxisModule = modBean.getModule(yData.getField().getModuleId());
+					yField = modBean.getField(yData.getField().getName(), yAxisModule.getName());
+				}
+				}
+				dataDetails.put("displayName", yField!=null ? yField.getDisplayName():"");
 				dataDetails.put(FacilioConstants.ContextNames.FORMATTING, yData.getFormatting());
 				dataAlias.put(yData.getAlias(), dataDetails);
 			}
@@ -88,19 +103,24 @@ public class ConstructTabularReportData extends FacilioCommand {
 			for (int i = 0; i < rows.size(); i++) {
 				ReportPivotTableRowsContext groupByRow = rows.get(i);
 				
-				FacilioField groupByRowField = groupByRow.getField();
-				FacilioField field = modBean.getField(groupByRowField.getFieldId(), groupByRowField.getModule().getName());
+				ReportPivotFieldContext groupByRowField = groupByRow.getField();
 				FacilioModule groupByModule = null;
-				if (field.getModule() != null) {
-					groupByModule = field.getModule();
-				} else if(field.getModuleId() != -1) {
-					groupByModule = modBean.getModule(field.getModuleId());
+				FacilioField gField = null;
+				if(groupByRowField != null){
+					if (groupByRowField.getModuleId() != -1) {
+						groupByModule = modBean.getModule(groupByRowField.getModuleId());
+					}
+					if(groupByRowField.getId()!=-1) {
+						gField = modBean.getField(groupByRowField.getId(), groupByRowField.getModuleId());
+					} else {
+						gField = modBean.getField(groupByRowField.getName(), groupByModule.getName());
+					}
 				}
-				rowHeaders.add(field.getName()+'_'+groupByModule.getName());
+				rowHeaders.add(groupByRow.getAlias());
 				Map<String,Object> rowDetails = new HashMap<>();
-				rowDetails.put("displayName", field.getDisplayName());
+				rowDetails.put("displayName", gField.getDisplayName());
 				rowDetails.put(FacilioConstants.ContextNames.FORMATTING, groupByRow.getFormatting());
-				rowAlias.put(field.getName()+'_'+groupByModule.getName(), rowDetails);
+				rowAlias.put(groupByRow.getAlias(), rowDetails);
 			}
 		}
 		context.put(FacilioConstants.ContextNames.GET_MODULE_FROM_DP, true);
@@ -120,9 +140,18 @@ public class ConstructTabularReportData extends FacilioCommand {
 		List<String> orderBy = new ArrayList<>();
 		
 		FacilioField xField = null;
+		FacilioModule xAxisModule = null;
+		
 		if (firstRow != null && firstRow.getField() != null) {
-			FacilioField rowField = firstRow.getField();
-			xField = modBean.getField(rowField.getFieldId(), rowField.getModule().getName());
+			ReportPivotFieldContext rowField = firstRow.getField();
+			if (rowField.getModuleId() != -1) {
+				xAxisModule = modBean.getModule(rowField.getModuleId());
+			}
+			if(rowField.getId()!=-1) {
+				xField = modBean.getField(rowField.getId(), rowField.getModuleId());
+			} else {
+				xField = modBean.getField(rowField.getName(), rowField.getName());
+			}
 		}
 		
 		if (firstRow.getLookupFieldId() != -1) {
@@ -132,21 +161,18 @@ public class ConstructTabularReportData extends FacilioCommand {
 		if (xField == null) {
 			throw new Exception("atleast one row mandatory");
 		}
-		FacilioModule xAxisModule = null;
-		if (xField.getModule() != null) {
-			xAxisModule = xField.getModule();
-		} else if(xField.getModuleId() != -1) {
-			xAxisModule = modBean.getModule(xField.getModuleId());
-		}
 		xAxis.setField(xAxisModule, xField);
 		if(firstRow.getModuleName() != null) {
 			xAxis.setModule(modBean.getModule(firstRow.getModuleName()));
+		}
+		if(firstRow.getAlias() != null) {
+			xAxis.setAlias(firstRow.getAlias());;
 		}
 		dataPointContext.setxAxis(xAxis);
 		orderBy.add(xField.getCompleteColumnName());
 		dataPointContext.setOrderBy(orderBy);
 		reportContext.setxAggr(0);
-		reportContext.setxAlias(xField.getName()+"_"+xAxisModule.getName());
+		reportContext.setxAlias(firstRow.getAlias());
 		
 		
 		ReportYAxisContext yAxis = new ReportYAxisContext();
@@ -155,10 +181,8 @@ public class ConstructTabularReportData extends FacilioCommand {
 		AggregateOperator yAggr = CommonAggregateOperator.COUNT;
 		FacilioModule yAxisModule = null;
 		if (data != null) {
-				yAggr = data.getAggrEnum();
-				yField = data.getField();
-				if (yField.getModuleId() != -1) {
-					yAxisModule = modBean.getModule(yField.getModuleId());
+				if(data.getAggrEnum() != null) {
+					yAggr = data.getAggrEnum();
 				}
 				Criteria criteria = data.getCriteria();
 				if (criteria != null) {
@@ -172,11 +196,31 @@ public class ConstructTabularReportData extends FacilioCommand {
 					otherCrit.addAndCondition(newCond);
 					dataPointContext.setOtherCriteria(otherCrit);
 				}
+				if(data.getReadingField() != null) {
+					if(data.getReadingField().getId()>0) {
+					yField =  modBean.getField(data.getReadingField().getId());
+					}
+					yAxisModule = modBean.getModule(data.getReadingField().getModuleId());
+					//yAxisModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+					yAggr = NumberAggregateOperator.SUM;
+				} else if(data.getField() != null){
+					if (data.getField().getModuleId() > 0) {
+						yAxisModule = modBean.getModule(data.getField().getModuleId());
+					}
+					if(data.getField().getId() > 0) {
+						yField = modBean.getField(data.getField().getId(), data.getField().getModuleId());
+					} else {
+						yField = modBean.getField(data.getField().getName(), yAxisModule.getName());
+					}
+				}
+				if(data.getAlias() != null) {
+					yAxis.setAlias(data.getAlias());
+				}
+				yAxis.setField(yAxisModule, yField);
+				yAxis.setAggr(yAggr);
+				dataPointContext.setyAxis(yAxis);
+				//dataPointContext.setModuleName(FacilioConstants.ContextNames.RESOURCE);
 		}
-
-		yAxis.setAggr(yAggr);
-		yAxis.setField(yAxisModule, yField);
-		dataPointContext.setyAxis(yAxis);
 		
 		if (rows != null && rows.size()>1) {
 			List<ReportGroupByField> groupByFields = new ArrayList<>();
@@ -184,23 +228,28 @@ public class ConstructTabularReportData extends FacilioCommand {
 				ReportPivotTableRowsContext groupByRow = rows.get(i);
 				ReportGroupByField groupByField = new ReportGroupByField();
 				
-				FacilioField groupByRowField = groupByRow.getField();
-				FacilioField field = modBean.getField(groupByRowField.getFieldId(), groupByRowField.getModule().getName());
-				
-				
-				
+				ReportPivotFieldContext groupByRowField = groupByRow.getField();
 				FacilioModule groupByModule = null;
-				if (field.getModule() != null) {
-					groupByModule = field.getModule();
-				} else if(field.getModuleId() != -1) {
-					groupByModule = modBean.getModule(field.getModuleId());
+				FacilioField gField = null;
+				if(groupByRowField != null){
+					if (groupByRowField.getModuleId() > 0) {
+						groupByModule = modBean.getModule(groupByRowField.getModuleId());
+					}
+					if(groupByRowField.getId()> 0) {
+						gField = modBean.getField(groupByRowField.getId(), groupByRowField.getModuleId());
+					} else {
+						gField = modBean.getField(groupByRowField.getName(), groupByModule.getName());
+					}
 				}
 				
-				if (groupByRow.getLookupFieldId() != -1) {
+				if (groupByRow.getLookupFieldId() > 0) {
 					groupByField.setLookupFieldId(groupByRow.getLookupFieldId());
 				}
-				groupByField.setField(groupByModule, field);
-				groupByField.setAlias(field.getName()+'_'+groupByModule.getName());	
+				if(groupByRow.getAlias() != null) {
+					groupByField.setAlias(groupByRow.getAlias());
+				}
+				groupByField.setField(groupByModule, gField);
+				groupByField.setAlias(groupByRow.getAlias());	
 				if(groupByRow.getModuleName() != null) {
 					groupByField.setModule(modBean.getModule(groupByRow.getModuleName()));
 				}

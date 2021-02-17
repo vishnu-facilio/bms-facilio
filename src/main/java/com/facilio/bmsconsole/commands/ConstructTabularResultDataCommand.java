@@ -219,7 +219,7 @@ public class ConstructTabularResultDataCommand extends ConstructReportDataComman
 				lookupMap = this.getLookUpMap(specialType, lookupModule, null);
 			}
 			FacilioField field = reportFieldContext.getField();
-			labelMap.put(field.getName()+"_"+field.getModule().getName(), lookupMap);
+			labelMap.put(reportFieldContext.getAlias(), lookupMap);
 		}
 	}
 	
@@ -245,7 +245,7 @@ public class ConstructTabularResultDataCommand extends ConstructReportDataComman
 				} else {
 					lookupMap = this.getLookUpMap(specialType, lookupModule, ids);
 				}
-				labelMap.put(lookupField.getName()+"_"+lookupField.getModule().getName(), lookupMap);
+				labelMap.put(reportFieldContext.getAlias(), lookupMap);
 			}
 		}
 	}

@@ -4,7 +4,6 @@ import org.json.simple.JSONObject;
 
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.AggregateOperator;
-import com.facilio.modules.fields.FacilioField;
 
 public class ReportPivotTableDataContext {
 	private AggregateOperator aggr;
@@ -24,14 +23,24 @@ public class ReportPivotTableDataContext {
 		this.aggr = AggregateOperator.getAggregateOperator(aggr);
 	}
 	
-	private FacilioField field;
+	private ReportPivotFieldContext field;
 
-	public FacilioField getField() {
+	public ReportPivotFieldContext getField() {
 		return field;
 	}
-	public void setField(FacilioField field) {
+	public void setField(ReportPivotFieldContext field) {
 		this.field = field;
 	}
+	
+	private ReportPivotFieldContext readingField;
+	public ReportPivotFieldContext getReadingField(){
+		return readingField;
+	}
+	public void setReadingField(ReportPivotFieldContext readingField) {
+		this.readingField = readingField;
+		
+	}
+	
 
     // public static enum DataModuleType {
 	// 	MODULE,
