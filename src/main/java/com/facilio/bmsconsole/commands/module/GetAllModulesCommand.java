@@ -45,7 +45,14 @@ public class GetAllModulesCommand extends FacilioCommand {
 			ControlScheduleUtil.CONTROL_GROUP_TENANT_SHARING_MODULE_NAME,
 			ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_TENANT_SHARING_MODULE_NAME,
             ContextNames.VISITOR_LOG,
-            ContextNames.INVITE_VISITOR
+            ContextNames.INVITE_VISITOR,
+            ContextNames.Tenant.ANNOUNCEMENTS,
+            ContextNames.Tenant.NEIGHBOURHOOD,
+            ContextNames.Tenant.NEWS_AND_INFORMATION,
+            ContextNames.Tenant.DEALS_AND_OFFERS,
+            ContextNames.Tenant.ADMIN_DOCUMENTS,
+            ContextNames.Tenant.CONTACT_DIRECTORY,
+
     });
 
 	@Override
