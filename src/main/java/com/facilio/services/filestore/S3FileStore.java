@@ -301,11 +301,13 @@ public class S3FileStore extends FileStore {
 				Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
 				String encodedUrl = URLEncoder.encode(fileInfo.getFilePath(), "UTF-8");
 				String s3ObjectKey = encodedUrl+"?response-content-type="+URLEncoder.encode(fileInfo.getContentType(), "UTF-8");
+				
+				String encodedFilename = URLEncoder.encode(fileInfo.getFileName(), "UTF-8").replace("+", " ");
 				if(isDownloadable) {
-					s3ObjectKey = s3ObjectKey +"&response-content-disposition="+URLEncoder.encode("attachment; filename="+fileInfo.getFileName(),"UTF-8");
+					s3ObjectKey = s3ObjectKey +"&response-content-disposition="+URLEncoder.encode("attachment; filename="+encodedFilename,"UTF-8");
 				}
 				else {
-					s3ObjectKey = s3ObjectKey +"&response-content-disposition="+URLEncoder.encode("inline; filename="+fileInfo.getFileName(),"UTF-8");
+					s3ObjectKey = s3ObjectKey +"&response-content-disposition="+URLEncoder.encode("inline; filename="+encodedFilename,"UTF-8");
 				}
 				String keyPairId = FacilioProperties.getConfig("key.pair.id");
 				return CloudFrontUrlSigner.getSignedURLWithCannedPolicy(SignerUtils.Protocol.https, FacilioProperties.getConfig("files.url"), new File(PRIVATE_KEY_FILE_PATH), s3ObjectKey, keyPairId, new Date(System.currentTimeMillis()+getExpiration()));
