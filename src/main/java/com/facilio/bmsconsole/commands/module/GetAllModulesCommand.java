@@ -44,7 +44,9 @@ public class GetAllModulesCommand extends FacilioCommand {
 			ControlScheduleUtil.CONTROL_GROUP_MODULE_NAME,
 			ControlScheduleUtil.CONTROL_GROUP_TENANT_SHARING_MODULE_NAME,
 			ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_TENANT_SHARING_MODULE_NAME,
-		});
+            ContextNames.VISITOR_LOG,
+            ContextNames.INVITE_VISITOR
+    });
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
