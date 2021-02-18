@@ -117,7 +117,8 @@ public class ConnectedAppWidgetContext extends ModuleBaseWithCustomFields {
 		CREATE_RECORD,
 		EDIT_RECORD,
 		CREATE_RECORD_SIDEBAR,
-		CUSTOM_BUTTON;
+		CUSTOM_BUTTON,
+		FORM_BACKGROUND;
 
 		public int getValue() {
 			return ordinal() + 1;
