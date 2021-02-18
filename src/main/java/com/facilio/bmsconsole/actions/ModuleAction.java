@@ -708,6 +708,14 @@ public class ModuleAction extends FacilioAction {
 		this.stateTransitionId = stateTransitionId;
 	}
 
+	private Long approvalTransitionId = null;
+	public Long getApprovalTransitionId() {
+		return approvalTransitionId;
+	}
+	public void setApprovalTransitionId(Long approvalTransitionId) {
+		this.approvalTransitionId = approvalTransitionId;
+	}
+
 	private Map<String, Object> subFormFiles;
 	public Map<String, Object> getSubFormFiles() {
 		return subFormFiles;
@@ -767,6 +775,7 @@ public class ModuleAction extends FacilioAction {
 		FacilioContext context = updateModuleDataChain.getContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
+		context.put(FacilioConstants.ContextNames.APPROVAL_TRANSITION_ID, approvalTransitionId);
 
 		setModuleData();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);

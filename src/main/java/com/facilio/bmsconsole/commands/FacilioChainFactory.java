@@ -1938,6 +1938,7 @@ public class FacilioChainFactory {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new GenericUpdateModuleDataCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
+		c.addCommand(new ChangeApprovalStatusForModuleDataCommand());
 		c.addCommand(new UpdateStateForModuleDataCommand());
 		c.addCommand(new GenericAddSubModuleDataCommand());
 
