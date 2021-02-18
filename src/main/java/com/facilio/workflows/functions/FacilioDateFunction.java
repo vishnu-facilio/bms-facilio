@@ -806,6 +806,22 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 
 		}
 	},
+	GET_TODAY_END_TIME(39, "getDayEndTime") {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			
+			if(objects == null || objects.length == 0) {
+				return DateTimeUtil.getDayEndTimeOf(DateTimeUtil.getCurrenTime());
+			}
+			else {
+				long time = (long) Double.parseDouble(objects[0].toString());
+				return DateTimeUtil.getDayEndTimeOf(time);
+			}
+		}
+		public void checkParam(Object... objects) throws Exception {
+
+		}
+	},
 	;
 	private Integer value;
 	private String functionName;
