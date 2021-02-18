@@ -1,5 +1,6 @@
 package com.facilio.workflows.functions;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -200,6 +201,23 @@ public enum FacilioMapFunction implements FacilioWorkflowFunctionInterface {
 			String string = (String) objects[0];
 			
 			return FacilioUtil.parseJson(string).toJSONString();
+			
+		}
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects == null || objects.length < 1) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
+	KEYS(11, "keys") {
+
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			
+			checkParam(objects);
+			Map<String,Object> map = (Map<String, Object>) objects[0];
+			return new ArrayList<String>(map.keySet());
 			
 		}
 		
