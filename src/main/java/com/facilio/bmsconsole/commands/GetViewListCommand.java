@@ -43,7 +43,10 @@ public class GetViewListCommand extends FacilioCommand {
 		Map<String,FacilioView> viewMap = ViewFactory.getModuleViews(moduleName, moduleObj);
 		
 		//db group views
-		List<ViewGroups> viewGroups = ViewAPI.getAllGroups(moduleObj.getModuleId());
+		List<ViewGroups> viewGroups = new ArrayList<>();
+		if (moduleObj != null) {
+			viewGroups = ViewAPI.getAllGroups(moduleObj.getModuleId());
+		}
 		
 		//db views
 		List<FacilioView> dbViews = new ArrayList<>();	
