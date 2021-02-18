@@ -117,20 +117,20 @@ public enum FacilioListFunction implements FacilioWorkflowFunctionInterface {
 			checkParam(objects);
 			List<Object> list = (List<Object>) objects[0];
 			if(list.get(0) != null) {
-				if(list.get(0) instanceof String) {
+				if (FacilioUtil.isNumeric(list.get(0).toString())) {
+					List<Double> list1 = new ArrayList<>();
+					for(Object key :list) {
+						list1.add(Double.parseDouble(key.toString()));
+					}
+					Collections.sort(list1);
+					return list1;
+				}
+				else if(list.get(0) instanceof String) {
 					List<String> list1 = new ArrayList<>();
 					for(Object key :list) {
 						list1.add(key.toString());
 					}
 					
-					Collections.sort(list1);
-					return list1;
-				}
-				else if (FacilioUtil.isNumeric(list.get(0).toString())) {
-					List<Double> list1 = new ArrayList<>();
-					for(Object key :list) {
-						list1.add(Double.parseDouble(key.toString()));
-					}
 					Collections.sort(list1);
 					return list1;
 				}
