@@ -17,6 +17,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import com.facilio.modules.fields.FileField;
 import com.facilio.modules.fields.LookupField;
+import org.apache.commons.collections4.CollectionUtils;
 
 public class AddSystemFieldsCommand extends FacilioCommand {
 
@@ -75,8 +76,45 @@ public class AddSystemFieldsCommand extends FacilioCommand {
 			stateFlowIdField.setDefault(true);
 			stateFlowIdField.setDisplayType(FieldDisplayType.NUMBER);
 			fields.add(stateFlowIdField);
+
+			LookupField approvalStateField = (LookupField) FieldFactory.getField("approvalStatus", "Approval Status", "APPROVAL_STATE", module, FieldType.LOOKUP);
+			approvalStateField.setDefault(true);
+			approvalStateField.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
+			approvalStateField.setLookupModule(modBean.getModule("ticketstatus"));
+			fields.add(approvalStateField);
+
+			FacilioField approvalFlowIdField = FieldFactory.getField("approvalFlowId", "Approval Flow Id", "APPROVAL_FLOW_ID", module, FieldType.NUMBER);
+			approvalFlowIdField.setDefault(true);
+			approvalFlowIdField.setDisplayType(FieldDisplayType.NUMBER);
+			fields.add(approvalFlowIdField);
 		}
 		return false;
+	}
+
+	// temp migration code.. remove it
+	public static void addApprovalFlowFieldsForCustomModule() throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioModule> customModuleList = modBean.getModuleList(ModuleType.BASE_ENTITY, true);
+		if (CollectionUtils.isNotEmpty(customModuleList)) {
+			for (FacilioModule module : customModuleList) {
+				FacilioField approvalStatus = modBean.getField("approvalStatus", module.getName());
+				if (approvalStatus != null) {
+					// approval fields already exists
+					continue;
+				}
+
+				LookupField approvalStateField = (LookupField) FieldFactory.getField("approvalStatus", "Approval Status", "APPROVAL_STATE", module, FieldType.LOOKUP);
+				approvalStateField.setDefault(true);
+				approvalStateField.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
+				approvalStateField.setLookupModule(modBean.getModule("ticketstatus"));
+				modBean.addField(approvalStateField);
+
+				FacilioField approvalFlowIdField = FieldFactory.getField("approvalFlowId", "Approval Flow Id", "APPROVAL_FLOW_ID", module, FieldType.NUMBER);
+				approvalFlowIdField.setDefault(true);
+				approvalFlowIdField.setDisplayType(FieldDisplayType.NUMBER);
+				modBean.addField(approvalFlowIdField);
+			}
+		}
 	}
 
 }

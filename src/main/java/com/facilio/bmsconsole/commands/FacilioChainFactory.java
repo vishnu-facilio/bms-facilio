@@ -1921,7 +1921,15 @@ public class FacilioChainFactory {
 		c.addCommand(new SetLocalIDCommand());
 		c.addCommand(new GenericAddModuleDataCommand());
 		c.addCommand(new GenericAddSubModuleDataCommand());
-		c.addCommand(new ExecuteAllWorkflowsCommand());
+
+		c.addCommand(new ExecuteStateFlowCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
+		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+		c.addCommand(new ForkChainToInstantJobCommand(false)
+				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
+//		c.addCommand(new ExecuteAllWorkflowsCommand());
+
 		c.addCommand(new ExecuteRollUpFieldCommand());
 		return c;
 	}
@@ -1932,7 +1940,15 @@ public class FacilioChainFactory {
 		c.addCommand(new GenericGetModuleDataListCommand());
 		c.addCommand(new UpdateStateForModuleDataCommand());
 		c.addCommand(new GenericAddSubModuleDataCommand());
-		c.addCommand(new ExecuteAllWorkflowsCommand());
+
+		c.addCommand(new ExecuteStateFlowCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
+		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+		c.addCommand(new ForkChainToInstantJobCommand(false)
+				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
+//		c.addCommand(new ExecuteAllWorkflowsCommand());
+
 		c.addCommand(new ExecuteRollUpFieldCommand());
 		return c;
 	}
