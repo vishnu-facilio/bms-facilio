@@ -188,7 +188,7 @@ public class ApproverWorkflowRuleContext extends WorkflowRuleContext {
                 throw new IllegalArgumentException("At-least one approval should not be skipped");
             }
 
-            if (getApprovalOrderEnum() != ApprovalRuleContext.ApprovalOrder.SEQUENTIAL) {
+            if (getApprovalOrderEnum() == ApprovalRuleContext.ApprovalOrder.SEQUENTIAL) {
                 ApprovalRuleContext.addApprovalStep(record.getId(), null, skippedPendingApprovals, this);
             }
             checkAnyPendingApprovers.removeAll(skippedPendingApprovals);
