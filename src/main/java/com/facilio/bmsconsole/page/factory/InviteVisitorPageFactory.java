@@ -14,18 +14,17 @@ public class InviteVisitorPageFactory extends PageFactory {
     	Page page = new Page();
 
 		Tab tab1 = page.new Tab("summary");
+		page.addTab(tab1);
 
 		Section tab1Sec1 = page.new Section();
 		tab1.addSection(tab1Sec1);
+
 		PageWidget detailsWidget = new PageWidget(WidgetType.INVITES_PRIMARY_FIELDS);
 		detailsWidget.addToLayoutParams(tab1Sec1, 24, 4);
+		detailsWidget.setTitle("Basic Info");
 		tab1Sec1.addWidget(detailsWidget);
 
- 		page.addTab(tab1);
- 	    
- 	    Section tab1Sec2 = page.new Section();
- 		tab1.addSection(tab1Sec2);
- 		addSecondaryDetailsWidget(tab1Sec2);
+ 		addSecondaryDetailsWidget(tab1Sec1);
  	
  		return page;
      }
@@ -33,6 +32,7 @@ public class InviteVisitorPageFactory extends PageFactory {
      private static void addSecondaryDetailsWidget(Section section) {
  		PageWidget detailsWidget = new PageWidget(WidgetType.SECONDARY_DETAILS_WIDGET);
  		detailsWidget.addToLayoutParams(section, 24, 4);
+ 		detailsWidget.setTitle("Other Info");
  		section.addWidget(detailsWidget);
  	}
 
