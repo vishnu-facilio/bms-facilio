@@ -15,8 +15,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import com.facilio.modules.FieldUtil;
-import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -36,6 +34,7 @@ import com.facilio.fw.LRUCache;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FileField;
 import com.facilio.modules.fields.NumberField;
@@ -43,6 +42,7 @@ import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
+import com.facilio.util.FacilioUtil;
 
 public class BmsDBConf extends DBConf {
     private static final Logger LOGGER = LogManager.getLogger(BmsDBConf.class.getName());
@@ -301,8 +301,7 @@ public class BmsDBConf extends DBConf {
 					value.put("fileName", fileName);
 					value.put("contentType", fileType);
 					files.add(value);*/
-                    int[] resize = {80, 120, 360};
-                    long fileId = fs.addFile(fileName, file, fileType, resize);
+                    long fileId = fs.addFile(fileName, file, fileType);
                     value.put(field.getName(), fileId);
                 }
                 else if (value.get(field.getName()+"Id") != null) {

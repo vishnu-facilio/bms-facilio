@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.page.factory;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.Page.Tab;
@@ -33,6 +34,10 @@ public class CustomModulePageFactory extends PageFactory {
 	private static void addSecondaryDetailsWidget(Section section) {
 		PageWidget detailsWidget = new PageWidget(WidgetType.SECONDARY_DETAILS_WIDGET);
 		detailsWidget.addToLayoutParams(section, 24, 7);
+		// Temp..needs to move to db
+		if (AccountUtil.getCurrentOrg().getOrgId() == 406) {
+			detailsWidget.addToWidgetParams("sort", "form");
+		}
 		section.addWidget(detailsWidget);
 	}
 
