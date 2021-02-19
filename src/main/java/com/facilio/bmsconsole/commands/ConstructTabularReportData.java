@@ -30,6 +30,7 @@ import com.facilio.report.context.ReportPivotFieldContext;
 import com.facilio.report.context.ReportPivotTableRowsContext;
 import com.facilio.report.context.ReportYAxisContext;
 import com.facilio.report.context.ReportContext.ReportType;
+import com.facilio.report.context.ReportDataPointContext.DataPointType;
 import com.facilio.report.context.ReportDataPointContext.OrderByFunction;
 import com.facilio.report.context.ReportPivotTableDataContext;
 
@@ -98,6 +99,7 @@ public class ConstructTabularReportData extends FacilioCommand {
 				}
 				}
 				dataDetails.put("displayName", yField!=null ? yField.getDisplayName():"");
+				dataDetails.put(FacilioConstants.ContextNames.FIELD, yField);
 				dataDetails.put(FacilioConstants.ContextNames.FORMATTING, yData.getFormatting());
 				dataAlias.put(yData.getAlias(), dataDetails);
 			}
@@ -123,6 +125,7 @@ public class ConstructTabularReportData extends FacilioCommand {
 				rowHeaders.add(groupByRow.getAlias());
 				Map<String,Object> rowDetails = new HashMap<>();
 				rowDetails.put("displayName", gField.getDisplayName());
+				rowDetails.put(FacilioConstants.ContextNames.FIELD, gField);
 				rowDetails.put(FacilioConstants.ContextNames.FORMATTING, groupByRow.getFormatting());
 				rowAlias.put(groupByRow.getAlias(), rowDetails);
 			}
@@ -211,6 +214,7 @@ public class ConstructTabularReportData extends FacilioCommand {
 					}
 					yAxisModule = modBean.getModule(data.getReadingField().getModuleId());
 					//yAxisModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+					dataPointContext.setType(DataPointType.MODULE);
 					yAggr = NumberAggregateOperator.SUM;
 				} else if(data.getField() != null){
 					if (data.getField().getModuleId() > 0) {
