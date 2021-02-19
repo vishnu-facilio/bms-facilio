@@ -285,6 +285,9 @@ public class PageWidget {
 		
 		CONNNECTED_APP("connectedApp"),
 
+		VISITS_PRIMARY_FIELDS("visitsPrimaryFields"),
+		INVITES_PRIMARY_FIELDS("invitesPrimaryFields"),
+
 		// Community Features Widgets
 		PUBLISH_TO_INFO("publishToInfo"),
 		ANNOUNCEMENT_SECONDARY_DETAILS_WIDGET("announcementSecondaryDetailsWidget"),

@@ -26,28 +26,23 @@ public class VisitorLogPageFactory extends PageFactory {
 		page.addTab(tab1);
 
 		Section tab1Sec1 = page.new Section();
-		tab1.addSection(tab1Sec1);		
-	    addPrimaryDetailsWidget(tab1Sec1);
-	    
+		tab1.addSection(tab1Sec1);
+		PageWidget detailsWidget = new PageWidget(WidgetType.VISITS_PRIMARY_FIELDS);
+		detailsWidget.addToLayoutParams(tab1Sec1, 24, 4);
+		tab1Sec1.addWidget(detailsWidget);
+
 	    Section tab1Sec2 = page.new Section();
 		tab1.addSection(tab1Sec2);
 		addSecondaryDetailsWidget(tab1Sec2);
-	    
+
 	    Section tab1Sec3 = page.new Section();
 		tab1.addSection(tab1Sec3);
 		addCommonSubModuleWidget(tab1Sec3, visitorLogModule, visitorLog);
 	    
 		return page;
     }
-    
 
-    private static void addPrimaryDetailsWidget(Section section) {
-		PageWidget pageWidget = new PageWidget(WidgetType.PRIMARY_DETAILS_WIDGET);
-		pageWidget.addToLayoutParams(section, 24, 6);
-		section.addWidget(pageWidget);
-    }
-    
-    private static void addSecondaryDetailsWidget(Section section) {
+	private static void addSecondaryDetailsWidget(Section section) {
 		PageWidget detailsWidget = new PageWidget(WidgetType.SECONDARY_DETAILS_WIDGET);
 		detailsWidget.addToLayoutParams(section, 24, 4);
 		section.addWidget(detailsWidget);
