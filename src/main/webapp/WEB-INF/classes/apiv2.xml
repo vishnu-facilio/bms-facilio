@@ -624,7 +624,6 @@
 		<action name="module"
 				class="com.facilio.bmsconsole.actions.ModuleAction" method="automationModules" />
 	</package>
-	
 	<package name="permalinkToken" namespace="/api/v2/permalink" extends="v2Api">
 		<action name="details"
 				class="com.facilio.bmsconsole.actions.AccountsAction" method="details" />
@@ -6447,6 +6446,9 @@
 		
 	</package>
 	<package name="transactionrules" namespace="/api/v2/transactionrule" extends="v2Api">
+
+		<action name="module"
+				class="com.facilio.bmsconsole.actions.ModuleAction" method="transactionRuleModules" />
 
 		<action name="add" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="addTransactionRule">
 		</action>
