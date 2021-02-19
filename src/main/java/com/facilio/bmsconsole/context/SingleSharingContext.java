@@ -5,6 +5,12 @@ import java.util.List;
 
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.GroupMember;
+import com.facilio.beans.ModuleBean;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.FacilioUtil;
 
 public class SingleSharingContext implements Serializable {
 	
@@ -129,6 +135,23 @@ public class SingleSharingContext implements Serializable {
 			}
 			return null;
 		}
+	}
+
+	public boolean shouldSkip(Object object) throws Exception {
+		switch (getTypeEnum()) {
+			case FIELD:
+				if (object instanceof ModuleBaseWithCustomFields) {
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					FacilioField field = modBean.getField(getFieldId());
+
+					Object value = FieldUtil.getValue((ModuleBaseWithCustomFields) object, field);
+					if (FacilioUtil.isEmptyOrNull(value)) {
+						return true;
+					}
+				}
+				break;
+		}
+		return false;
 	}
 	
 	@Override

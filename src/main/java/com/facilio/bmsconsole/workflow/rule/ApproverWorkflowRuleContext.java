@@ -151,6 +151,7 @@ public class ApproverWorkflowRuleContext extends WorkflowRuleContext {
 
             List<SingleSharingContext> checkAnyPendingApprovers = checkAnyPendingApprovers(moduleRecord, matching);
             if (isAllApprovalRequired()) {
+                removeAnySkippedPendingApprovals(checkAnyPendingApprovers, moduleRecord);
                 shouldExecuteTrueActions = CollectionUtils.isEmpty(checkAnyPendingApprovers);
                 if (shouldExecuteTrueActions) {
                     deletePreviousApprovalSteps(moduleRecord.getId());
@@ -158,6 +159,40 @@ public class ApproverWorkflowRuleContext extends WorkflowRuleContext {
             }
         }
         return shouldExecuteTrueActions;
+    }
+
+    public void skipAnyPendingApprovals(ModuleBaseWithCustomFields record) throws Exception {
+        if (isAllApprovalRequired()) {
+            List<SingleSharingContext> checkAnyPendingApprovers = checkAnyPendingApprovers(record, null);
+            removeAnySkippedPendingApprovals(checkAnyPendingApprovers, record);
+        }
+    }
+
+    private void removeAnySkippedPendingApprovals(List<SingleSharingContext> checkAnyPendingApprovers, ModuleBaseWithCustomFields record) throws Exception {
+        if (CollectionUtils.isNotEmpty(checkAnyPendingApprovers) && CollectionUtils.isNotEmpty(approvers)) {
+            List<SingleSharingContext> skippedPendingApprovals = checkAnyPendingApprovers.stream().filter(singleSharingContext -> {
+                try {
+                    return singleSharingContext.shouldSkip(record);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return false;
+            }).collect(Collectors.toList());
+
+            if (CollectionUtils.isEmpty(skippedPendingApprovals)) {
+                // no one to be skipped
+                return;
+            }
+
+            if (approvers.size() == skippedPendingApprovals.size()) {
+                throw new IllegalArgumentException("At-least one approval should not be skipped");
+            }
+
+            if (getApprovalOrderEnum() != ApprovalRuleContext.ApprovalOrder.SEQUENTIAL) {
+                ApprovalRuleContext.addApprovalStep(record.getId(), null, skippedPendingApprovals, this);
+            }
+            checkAnyPendingApprovers.removeAll(skippedPendingApprovals);
+        }
     }
 
     private int deletePreviousApprovalSteps(long id) throws Exception {

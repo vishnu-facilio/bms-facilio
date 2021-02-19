@@ -5,6 +5,7 @@ import com.facilio.activity.ActivityType;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.CommonActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -15,11 +16,10 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ApprovalStateFlowRuleContext extends AbstractStateFlowRuleContext {
 
@@ -61,5 +61,17 @@ public class ApprovalStateFlowRuleContext extends AbstractStateFlowRuleContext {
             info.put("user", AccountUtil.getCurrentUser().getId());
         }
         CommonCommandUtil.addActivityToContext(moduleRecord.getId(), moduleRecord.getCurrentTime(), activityType, info, (FacilioContext) context);
+
+        Map<String, Long> stateId = new HashMap<>();
+        stateId.put("fromStateId", status.getId());
+        stateId.put("stateFlowId", moduleRecord.getApprovalFlowId());
+        List<WorkflowRuleContext> allStateTransitionList = StateFlowRulesAPI.getStateTransitions(Collections.singletonList(stateId), AbstractStateTransitionRuleContext.TransitionType.NORMAL);
+        if (CollectionUtils.isNotEmpty(allStateTransitionList)) {
+            for (WorkflowRuleContext rule : allStateTransitionList) {
+                if (rule instanceof ApproverWorkflowRuleContext) {
+                    ((ApproverWorkflowRuleContext) rule).skipAnyPendingApprovals(moduleRecord);
+                }
+            }
+        }
     }
 }
