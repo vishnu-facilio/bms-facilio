@@ -79,20 +79,46 @@ private static final String ALIAS = "alias";
 		String format = "EEEE, MMMM dd, yyyy hh:mm a";
 		
 		String xAlias = report.getxAlias() != null ? report.getxAlias() : "X";
+		Collection<Map<String, Object>> data = (Collection<Map<String, Object>>) reportData.get(FacilioConstants.ContextNames.DATA_KEY);
 		
-		ReportDataPointContext dataPoint = report.getDataPoints().get(0);
 		FacilioModule module = report.getModule();
-		ReportFieldContext xAxisReportField = dataPoint.getxAxis();
-		List<ReportGroupByField> groupByFields = dataPoint.getGroupByFields();
-		
 		AggregateOperator xAggr = report.getxAggrEnum();
 		if (xAggr != null && xAggr instanceof DateAggregateOperator) {
 			format = ((DateAggregateOperator) xAggr).getFormat();
 		}
 		
+		if(report.getDataPoints() != null && report.getDataPoints().size()>1) {
+			ReportDataPointContext firstdataPoint = report.getDataPoints().get(0);
+			ReportFieldContext xAxisReportField = firstdataPoint.getxAxis();
+			columns.add(handleXAxisLabel(module, xAxisReportField));
+				if (CollectionUtils.isNotEmpty(data)) {
+					for (Map<String, Object> row : data) {
+						Map<String, Object> newRow = new HashMap<>();
+						records.add(newRow);
+						
+						Object value = row.get(xAlias);
+						if (value == null) {
+							continue;
+						}
+						
+						newRow.put(handleXAxisLabel(module, xAxisReportField), handleData(xAxisReportField, value, format));
+						
+						for (ReportDataPointContext dataPoint : report.getDataPoints()) {
+							ReportYAxisContext getyAxis = dataPoint.getyAxis();
+							String yAlias = dataPoint.getAliases().get(FacilioConstants.Reports.ACTUAL_DATA);
+							String yAxisLable = handleYAxisLabel(module, getyAxis);
+							addColumn(columns, yAxisLable);
+							newRow.put(yAxisLable, handleData(getyAxis, row.get(yAlias), format));
+						}
+					}
+				}
+		} else {
+		ReportDataPointContext dataPoint = report.getDataPoints().get(0);
+		ReportFieldContext xAxisReportField = dataPoint.getxAxis();
+		List<ReportGroupByField> groupByFields = dataPoint.getGroupByFields();
+		
 		columns.add(handleXAxisLabel(module, xAxisReportField));
 
-		Collection<Map<String, Object>> data = (Collection<Map<String, Object>>) reportData.get(FacilioConstants.ContextNames.DATA_KEY);
 		if (CollectionUtils.isNotEmpty(data)) {
 			for (Map<String, Object> row : data) {
 				Map<String, Object> newRow = new HashMap<>();
@@ -139,6 +165,7 @@ private static final String ALIAS = "alias";
 					}
 				}
 			}
+		}
 		}
 		return records;
 	}
