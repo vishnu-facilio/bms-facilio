@@ -11,6 +11,8 @@ import java.io.File;
 import java.util.List;
 
 public class V3Action extends ActionSupport {
+	
+	public static final String FAILURE = "failure";
     private JSONObject data;
 	private JSONObject meta;
 	private JSONObject params;

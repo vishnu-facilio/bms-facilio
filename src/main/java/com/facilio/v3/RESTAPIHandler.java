@@ -678,4 +678,14 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
             }
         }
     }
+
+
+	public HttpServletRequest getHttpServletRequest() {
+		return httpServletRequest;
+	}
+
+	public HttpServletResponse getHttpServletResponse() {
+		return httpServletResponse;
+	}
+
 }
