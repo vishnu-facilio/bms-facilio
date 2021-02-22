@@ -1,6 +1,8 @@
 package com.facilio.v3;
 
 import com.facilio.aws.util.FacilioProperties;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
@@ -194,14 +196,14 @@ public class V3Action extends ActionSupport {
 		this.params = params;
 	}
 
+	@Getter @Setter
 	private List<File> files;
-	public List<File> getFiles() {
-		return files;
-	}
 
-	public void setFiles(List<File> files) {
-		this.files = files;
-	}
+	@Getter @Setter
+	private List<String> filesFileName;
+
+	@Getter @Setter
+	private List<String> filesContentType;
 
 	private List<String> fileNames;
 	public List<String> getFileNames() {

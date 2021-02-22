@@ -412,8 +412,8 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         transactionChain.addCommand(new AttachmentCommand());
         FacilioContext context = transactionChain.getContext();
 
-        Constants.setAttachmentFileNames(context, this.getFileNames());
-        Constants.setAttachmentContentTypes(context, this.getContentTypes());
+        Constants.setAttachmentFileNames(context, this.getFilesFileName());
+        Constants.setAttachmentContentTypes(context, this.getFilesContentType());
         Constants.setAttachmentFileList(context, this.getFiles());
 
         transactionChain.execute();
