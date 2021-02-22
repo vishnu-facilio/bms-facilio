@@ -335,6 +335,8 @@ public class ConnectionUtil {
 		
 		fillDefaultfields(connectionContext);
 		
+		fillState(connectionContext);
+		
 		Map<String, Object> prop = FieldUtil.getAsProperties(connectionContext);
 		
 		GenericInsertRecordBuilder insert = new GenericInsertRecordBuilder()
