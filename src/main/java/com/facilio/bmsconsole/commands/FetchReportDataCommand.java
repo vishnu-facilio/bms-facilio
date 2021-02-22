@@ -23,6 +23,7 @@ import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.DateAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.NumberAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.SpaceAggregateOperator;
+import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.report.context.*;
@@ -202,8 +203,12 @@ public class FetchReportDataCommand extends FacilioCommand {
 			} else {
 				baseModule = dp.getxAxis().getModule();
 			}
-		} else if (report.getTypeEnum() == ReportType.PIVOT_REPORT && getModuleFromDp) {
-			baseModule = dp.getyAxis().getModule();
+		} else if (report.getTypeEnum() == ReportType.PIVOT_REPORT && getModuleFromDp && dp.getyAxis().getModule()!= null) {
+			if( dp.getyAxis().getModule().getTypeEnum() == ModuleType.READING ){
+				baseModule = dp.getxAxis().getModule();
+			} else {
+				baseModule = dp.getyAxis().getModule();
+			}
 		} else {
 			baseModule = dp.getxAxis().getModule();
 		}
@@ -222,10 +227,12 @@ public class FetchReportDataCommand extends FacilioCommand {
 				selectBuilder.andCondition(CriteriaAPI.getCondition(marked, "false", BooleanOperators.IS));
 			}
 		}
-
+		List<FacilioField> fields = new ArrayList<>();
+		if (report.getTypeEnum() == ReportType.PIVOT_REPORT && dp.getyAxis().getModule()!= null && dp.getyAxis().getModule().getTypeEnum() == ModuleType.READING ) {
+			applyReadingResourceJoin(dp,selectBuilder, fields, addedModules);
+		} 
 		joinModuleIfRequred(dp.getyAxis(), selectBuilder, addedModules);
 		applyOrderByAndLimit(dp, selectBuilder);
-		List<FacilioField> fields = new ArrayList<>();
 		StringJoiner groupBy = new StringJoiner(",");
 		FacilioField xAggrField = applyXAggregation(dp, report.getxAggrEnum(), groupBy, selectBuilder, fields, addedModules);
 		if(report.getgroupByTimeAggr()>0){
@@ -242,7 +249,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 		}
 		List<FacilioField> cloneFields = new ArrayList<>();
 		for(FacilioField field : fields) {
-			if(field.getModule()!=null && (field.getModule().isCustom() && !baseModule.equals(field.getModule()))) {
+			if(field != null && field.getModule()!=null && (field.getModule().isCustom() && !baseModule.equals(field.getModule()))) {
 				String alias = getAndSetModuleAlias(field.getModule().getName());
 				FacilioField cloneField = field.clone();
 				cloneField.setTableAlias(alias);
@@ -962,6 +969,20 @@ public class FetchReportDataCommand extends FacilioCommand {
 		}
 		handleJoin(dp.getxAxis(), selectBuilder, addedModules);
 		return xAggrField;
+	}
+	
+	private void applyReadingResourceJoin(ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, List<FacilioField> fields, Set<FacilioModule> addedModules) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule yAxisModule = dp.getyAxis().getModule();
+		FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(yAxisModule.getName()));
+		
+		if (!isAlreadyAdded(addedModules, yAxisModule)) {
+			selectBuilder.addJoinModules(Collections.singletonList(yAxisModule));
+			selectBuilder.innerJoin(yAxisModule.getTableName())
+			.on(fieldMap.get("parentId").getCompleteColumnName() + " = " + resourceModule.getTableName()+".ID");
+			addedModules.add(yAxisModule);
+		}
 	}
 	
 	private void applygroupByTimeAggr(ReportDataPointContext dp, AggregateOperator groupByTimeAggr, StringJoiner groupBy) throws Exception {

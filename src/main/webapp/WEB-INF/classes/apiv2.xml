@@ -2371,6 +2371,14 @@
 			method="fetchTabularReportData">
 			<param name="cacheUrl">true</param>
 		</action>
+		<action name="savePivotReport"
+			class="com.facilio.bmsconsole.actions.V2ReportAction"
+			method="savePivotReport">
+		</action>
+		<action name="executePivotReport"
+			class="com.facilio.bmsconsole.actions.V2ReportAction"
+			method="executePivotReport">
+		</action>
 		<action name="readingReport"
 			class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="fetchReadingsData">

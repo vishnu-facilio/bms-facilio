@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -15,11 +16,13 @@ import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
@@ -1127,29 +1130,31 @@ public class ReportFactoryFields {
 	public static Set<FacilioModule> getDataModulesList(String moduleName) throws Exception {
 		ModuleBean modBean = (ModuleBean)BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
-		Set<FacilioModule> modules = new HashSet<>();
-		if(!module.isCustom()) {
-			modules = modBean.getSubModules(moduleName, ModuleType.BASE_ENTITY, ModuleType.SUB_ENTITY, ModuleType.TIME_LOG, ModuleType.SLA_TIME)
-												.stream().filter(submodule -> !submodule.isCustom()).collect(Collectors.toSet());
+		FacilioModule FieldsModule = ModuleFactory.getFieldsModule();
+		FacilioModule LookupFieldsModule = ModuleFactory.getLookupFieldsModule();
+		List<Long> selectModules = new ArrayList<Long>();
+		selectModules.add(module.getModuleId());
+		FacilioModule extendedModule = module.getExtendModule();
+		while(extendedModule != null) {
+			selectModules.add(extendedModule.getModuleId());
+			extendedModule = extendedModule.getExtendModule();
 		}
-//		Set<FacilioField> lookupFields = modBean.getAllFields(moduleName)
-//				.stream().filter(field -> field.getDataTypeEnum() == FieldType.LOOKUP).collect(Collectors.toSet());
-//		for(FacilioField field: lookupFields) {
-//			LookupField lookupField = (LookupField) field;
-//			FacilioModule lookupModule = lookupField.getLookupModule();
-//			if(lookupModule.getTypeEnum() == ModuleType.BASE_ENTITY) {
-//				modules.add(lookupModule);
-//			}
-//		}
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getModuleFields())
+				.table(ModuleFactory.getModuleModule().getTableName())
+				.innerJoin(ModuleFactory.getFieldsModule().getTableName())
+				.on("Fields.MODULEID = Modules.MODULEID")
+				.innerJoin(ModuleFactory.getLookupFieldsModule().getTableName())
+				.on("Fields.FIELDID = "+ ModuleFactory.getLookupFieldsModule().getTableName() +".FIELDID")
+				.andCustomWhere(ModuleFactory.getLookupFieldsModule().getTableName()+".LOOKUP_MODULE_ID IN ("+StringUtils.join(selectModules, ',')+")");
+		List<Map<String, Object>> props = builder.get();
+		Set<FacilioModule> modules = FieldUtil.getAsBeanListFromMapList(props, FacilioModule.class)
+				.stream().filter(submodule -> !submodule.isCustom()).collect(Collectors.toSet());
 		if(moduleName.equalsIgnoreCase("asset")) {
 			FacilioModule womodule = modBean.getModule("workorder");
 			modules.add(womodule);
 		}
 		modules.add(module);
-//		for (FacilioModule selectedmodule: modules) {
-//			List<FacilioField> modFields = modBean.getAllFields(selectedmodule.getName());
-//			selectedmodule.setFields(modFields);
-//		}
 		return modules;
 	}
 	public static Set<FacilioField> getMetricsList(String moduleName) throws Exception {

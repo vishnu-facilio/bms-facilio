@@ -83,7 +83,7 @@ public class ConstructTabularReportData extends FacilioCommand {
 			ReportPivotTableDataContext yData = data.get(i);
 			addDataPointContext(modBean, reportContext, rows, yData, module, sortBy);
 			dataHeaders.add(yData.getAlias());
-			if(yData.getField() != null) {
+			if(yData.getField() != null || yData.getReadingField() != null) {
 				Map<String,Object> dataDetails = new HashMap<>();
 				FacilioField yField = null;
 				if(yData.getReadingField() != null) {
@@ -213,8 +213,6 @@ public class ConstructTabularReportData extends FacilioCommand {
 					yField =  modBean.getField(data.getReadingField().getId());
 					}
 					yAxisModule = modBean.getModule(data.getReadingField().getModuleId());
-					//yAxisModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
-					dataPointContext.setType(DataPointType.MODULE);
 					yAggr = NumberAggregateOperator.SUM;
 				} else if(data.getField() != null){
 					if (data.getField().getModuleId() > 0) {

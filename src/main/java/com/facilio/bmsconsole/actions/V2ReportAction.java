@@ -91,6 +91,7 @@ import com.facilio.report.context.ReportDrilldownParamsContext;
 import com.facilio.report.context.ReportDrilldownPathContext;
 import com.facilio.report.context.ReportFactoryFields;
 import com.facilio.report.context.ReportFolderContext;
+import com.facilio.report.context.ReportPivotParamsContext;
 import com.facilio.report.context.ReportSettings;
 import com.facilio.report.context.ReportTemplateContext;
 import com.facilio.report.context.ReportUserFilterContext;
@@ -2445,6 +2446,75 @@ public class V2ReportAction extends FacilioAction {
 		c.addCommand(new ConstructTabularReportData());
 		c.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
 		c.execute();
+		setResult(FacilioConstants.ContextNames.ROW_HEADERS, context.get(FacilioConstants.ContextNames.ROW_HEADERS));
+		setResult(FacilioConstants.ContextNames.DATA_HEADERS, context.get(FacilioConstants.ContextNames.DATA_HEADERS));
+		setResult(FacilioConstants.ContextNames.ROW_ALIAS, context.get(FacilioConstants.ContextNames.ROW_ALIAS));
+		setResult(FacilioConstants.ContextNames.DATA_ALIAS, context.get(FacilioConstants.ContextNames.DATA_ALIAS));
+		setResult(FacilioConstants.ContextNames.PIVOT_TABLE_DATA, context.get(FacilioConstants.ContextNames.PIVOT_TABLE_DATA));
+		return SUCCESS;
+	}
+	
+	public String savePivotReport() throws Exception {
+		FacilioChain chain = FacilioChain.getTransactionChain();
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.Reports.ROWS, rows);
+		context.put(FacilioConstants.Reports.DATA, data);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.CRITERIA, criteria);
+		context.put(FacilioConstants.ContextNames.SORTING, sortBy);
+		
+		ReportPivotParamsContext pivotparams = new  ReportPivotParamsContext();
+		pivotparams.setRows(rows);
+		pivotparams.setData(data);
+		pivotparams.setModuleName(moduleName);
+		pivotparams.setCriteria(criteria);
+		pivotparams.setSortBy(sortBy);
+		
+		if (reportContext == null) {
+			reportContext = new ReportContext();
+			reportContext.setType(ReportType.PIVOT_REPORT);
+		}
+		
+		if (reportId > 0) {
+			ReportContext report = ReportUtil.getReport(reportId);
+			context.put(FacilioConstants.ContextNames.REPORT_ID,report.getId());
+			reportContext.setId(report.getId());
+			reportContext.setTabularState(FieldUtil.getAsJSON(pivotparams).toJSONString());
+		}
+		
+		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
+		
+		chain.addCommand(new ConstructTabularReportData());
+		chain.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
+		chain.addCommand(new AddOrUpdateReportCommand());
+		chain.execute(context);
+
+		setResult("message", "Report saved");
+		setResult("report", reportContext);
+		setResult(FacilioConstants.ContextNames.ROW_HEADERS, context.get(FacilioConstants.ContextNames.ROW_HEADERS));
+		setResult(FacilioConstants.ContextNames.DATA_HEADERS, context.get(FacilioConstants.ContextNames.DATA_HEADERS));
+		setResult(FacilioConstants.ContextNames.ROW_ALIAS, context.get(FacilioConstants.ContextNames.ROW_ALIAS));
+		setResult(FacilioConstants.ContextNames.DATA_ALIAS, context.get(FacilioConstants.ContextNames.DATA_ALIAS));
+		setResult(FacilioConstants.ContextNames.PIVOT_TABLE_DATA, context.get(FacilioConstants.ContextNames.PIVOT_TABLE_DATA));
+		return SUCCESS;
+	}
+	public String executePivotReport() throws Exception {
+		FacilioChain chain = FacilioChain.getNonTransactionChain();
+		FacilioContext context = new FacilioContext();
+
+		ReportContext reportContext = ReportUtil.getReport(reportId);
+		if (reportContext == null) {
+			throw new Exception("Report not found");
+		}
+		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, reportContext.getModule().getName());
+		if (startTime != -1 && endTime != -1) {
+			reportContext.setDateRange(new DateRange(startTime, endTime));
+		}
+		
+		chain.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
+		chain.execute(context);
+		setResult("report", reportContext);
 		setResult(FacilioConstants.ContextNames.ROW_HEADERS, context.get(FacilioConstants.ContextNames.ROW_HEADERS));
 		setResult(FacilioConstants.ContextNames.DATA_HEADERS, context.get(FacilioConstants.ContextNames.DATA_HEADERS));
 		setResult(FacilioConstants.ContextNames.ROW_ALIAS, context.get(FacilioConstants.ContextNames.ROW_ALIAS));

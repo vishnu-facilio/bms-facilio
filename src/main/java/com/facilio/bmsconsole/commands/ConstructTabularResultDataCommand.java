@@ -179,6 +179,7 @@ public class ConstructTabularResultDataCommand extends ConstructReportDataComman
 				}
 				break;
 			case ENUM:
+			case SYSTEM_ENUM:
 				Map<Integer,Object> enumMap = reportFieldContext.getEnumMap();
 				val = enumMap.get(val);
 				break;
