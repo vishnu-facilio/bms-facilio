@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
@@ -182,12 +183,18 @@ public class ReportUtil {
 		List<ReadingAnalysisContext> metrics = new ArrayList<>();
 		if(params != null) {
 			
+			
 			int xAggrInt = params.get("xAggr") != null ? Integer.parseInt(params.get("xAggr").toString()) : 0;
 			
 			AggregateOperator xAggr = AggregateOperator.getAggregateOperator(xAggrInt);
 			
-			DateOperators dateOperator = (DateOperators) Operator.getOperator(Integer.parseInt(params.get("dateOperator").toString()));
+			DateOperators dateOperator = params.get("dateOperator") != null?(DateOperators) Operator.getOperator(Integer.parseInt(params.get("dateOperator").toString())):null;
 			
+			if(params.get("fields") != null) {
+				JSONParser parser = new JSONParser();
+				JSONArray fieldArray = (JSONArray) parser.parse(params.get("fields").toString());
+				metrics = FieldUtil.getAsBeanListFromJsonArray(fieldArray, ReadingAnalysisContext.class);
+			} else {
 			ReportYAxisContext reportaxisContext = new ReportYAxisContext();
 			reportaxisContext.setFieldId((Long)params.get("fieldId"));
 			reportaxisContext.setAggr(Integer.parseInt(params.get("aggregateFunc").toString()));
@@ -202,13 +209,14 @@ public class ReportUtil {
 			readingAnalysisContext.setyAxis(reportaxisContext);
 			
 			metrics.add(readingAnalysisContext);
+			}
 			
 			if(params.get("startTime") != null && params.get("endTime") != null) {
 				
 				context.put(FacilioConstants.ContextNames.START_TIME, params.get("startTime"));
 				context.put(FacilioConstants.ContextNames.END_TIME, params.get("endTime"));
 			}
-			else {
+			else if(dateOperator != null){
 				
 				context.put(FacilioConstants.ContextNames.START_TIME, dateOperator.getRange(null).getStartTime());
 				context.put(FacilioConstants.ContextNames.END_TIME, dateOperator.getRange(null).getEndTime());
@@ -216,11 +224,18 @@ public class ReportUtil {
 			
 			context.put(FacilioConstants.ContextNames.REPORT_X_AGGR, xAggr);
 			context.put(FacilioConstants.ContextNames.REPORT_Y_FIELDS, metrics);
-			context.put(FacilioConstants.ContextNames.REPORT_MODE, ReportMode.TIMESERIES);
+			if(params.get("mode") != null) {
+				context.put(FacilioConstants.ContextNames.REPORT_MODE, ReportMode.valueOf(Integer.parseInt(params.get("mode").toString())));
+			} else {
+				context.put(FacilioConstants.ContextNames.REPORT_MODE, ReportMode.TIMESERIES);
+			}
 			context.put(FacilioConstants.ContextNames.REPORT_CALLING_FROM, "card");
 			context.put(FacilioConstants.ContextNames.REPORT_HANDLE_BOOLEAN, Boolean.TRUE);
-			context.put(FacilioConstants.ContextNames.ANALYTICS_TYPE, AnalyticsType.READINGS.getIntVal());
-			
+			if(params.get("analyticsType") != null) {
+				context.put(FacilioConstants.ContextNames.ANALYTICS_TYPE, Integer.parseInt(params.get("analyticsType").toString()));
+			} else {
+				context.put(FacilioConstants.ContextNames.ANALYTICS_TYPE, AnalyticsType.READINGS.getIntVal());
+			}
 			fetchReadingDataChain.execute();
 			
 			return context;
