@@ -60,7 +60,7 @@ public class AddOrUpdateTabCommand extends FacilioCommand {
             if(tab.getConfig() != null) {
             	JSONParser parser = new JSONParser();
                 JSONObject configJson = (JSONObject) parser.parse(tab.getConfig());
-                if(tab.getTypeEnum().equals(Type.REPORT) && configJson.get("type").equals("analytic_reading") ) {
+                if(tab.getTypeEnum().equals(Type.REPORT) && configJson.get("type").equals("analytics_reports") ) {
                 	FacilioModule module = modBean.getModule("energydata");
                 	tab.setModules(Collections.singletonList(module));
                 	Long moduleId = modBean.getModule("energydata").getModuleId();
