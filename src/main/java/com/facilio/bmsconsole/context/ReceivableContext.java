@@ -32,6 +32,25 @@ public class ReceivableContext extends ModuleBaseWithCustomFields {
 	}
 	
 	private V3PurchaseOrderContext poId;
+	private VendorContext vendor;
+
+	public VendorContext getVendor() {
+		return vendor;
+	}
+
+	public void setVendor(VendorContext vendor) {
+		this.vendor = vendor;
+	}
+
+	public StoreRoomContext getStoreRoom() {
+		return storeRoom;
+	}
+
+	public void setStoreRoom(StoreRoomContext storeRoom) {
+		this.storeRoom = storeRoom;
+	}
+
+	private StoreRoomContext storeRoom;
 	
 	
 	public V3PurchaseOrderContext getPoId() {

@@ -12,6 +12,7 @@ import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderLineItemContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3ReceivableContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
+import com.facilio.bmsconsoleV3.util.QuotationAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -63,6 +64,12 @@ public class POAfterCreateOrEditV3Command extends FacilioCommand {
                             receivableContext.setPoId(purchaseOrderContext);
                             receivableContext.setStatus(V3ReceivableContext.Status.YET_TO_RECEIVE);
                             receivableContext.setRequiredTime(purchaseOrderContext.getRequiredTime());
+                            if (QuotationAPI.lookupValueIsNotEmpty(purchaseOrderContext.getVendor())) {
+                                receivableContext.setVendor(purchaseOrderContext.getVendor());
+                            }
+                            if (QuotationAPI.lookupValueIsNotEmpty(purchaseOrderContext.getStoreRoom())) {
+                                receivableContext.setStoreRoom(purchaseOrderContext.getStoreRoom());
+                            }
                             RecordAPI.addRecord(true, Collections.singletonList(receivableContext), receivableModule, modBean.getAllFields(receivableModule.getName()));
 
                             List<V3TermsAndConditionContext> terms = PurchaseOrderAPI.fetchPoDefaultTermsV3();

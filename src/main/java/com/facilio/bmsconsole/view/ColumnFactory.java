@@ -693,10 +693,9 @@ public class ColumnFactory {
 	
 	private static List<ViewField> getDefaultReceivableColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
-//		columns.add(new ViewField("localId", "Receivable Id"));
-//		columns.add(new ViewField("poId", "Purchase Order ID"));
+		columns.add(new ViewField("vendor", "Vendor"));
+		columns.add(new ViewField("storeRoom", "Storeroom"));
 		columns.add(new ViewField("status", "Status"));
-//		columns.add(new ViewField("sysCreatedTime", "Created Time"));
 		return columns;
 	}
 	private static List<ViewField> getDefaultContractColumns() {

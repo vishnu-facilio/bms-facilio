@@ -1,7 +1,7 @@
 package com.facilio.bmsconsoleV3.context.purchaseorder;
 
-import com.facilio.bmsconsole.context.ReceivableContext.Status;
-import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
+import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
+import com.facilio.bmsconsoleV3.context.V3VendorContext;
 import com.facilio.v3.context.V3Context;
 
 public class V3ReceivableContext extends V3Context {
@@ -11,6 +11,24 @@ public class V3ReceivableContext extends V3Context {
 	private Status status;
 	private Long requiredTime;
 	private V3PurchaseOrderContext poId;
+	private V3VendorContext vendor;
+	private V3StoreRoomContext storeRoom;
+
+	public V3VendorContext getVendor() {
+		return vendor;
+	}
+
+	public void setVendor(V3VendorContext vendor) {
+		this.vendor = vendor;
+	}
+
+	public V3StoreRoomContext getStoreRoom() {
+		return storeRoom;
+	}
+
+	public void setStoreRoom(V3StoreRoomContext storeRoom) {
+		this.storeRoom = storeRoom;
+	}
 
 	public int getStatus() {
 		if (status != null) {

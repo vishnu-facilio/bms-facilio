@@ -19,6 +19,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -63,12 +64,11 @@ public class GetReceivablesListCommand extends FacilioCommand {
 				builder.setAggregation();
 			}
 			else {
-				LookupFieldMeta poField = new LookupFieldMeta((LookupField) fieldsAsMap.get("poId"));
-				LookupField vendor = (LookupField) modBean.getField("vendor", FacilioConstants.ContextNames.PURCHASE_ORDER);
-				LookupField storeRoom = (LookupField) modBean.getField("storeRoom", FacilioConstants.ContextNames.PURCHASE_ORDER);
-				poField.addChildLookupField(vendor);
-				poField.addChildLookupField(storeRoom);
-				builder.fetchSupplement(poField);
+				List<LookupField> fetchLookupsList = new ArrayList<LookupField>();
+				fetchLookupsList.add((LookupField) fieldsAsMap.get("poId"));
+				fetchLookupsList.add((LookupField) fieldsAsMap.get("vendor"));
+				fetchLookupsList.add((LookupField) fieldsAsMap.get("storeRoom"));
+				builder.fetchSupplements(fetchLookupsList);
 				
 			}
 			String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
