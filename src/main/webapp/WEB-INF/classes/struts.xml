@@ -11,10 +11,11 @@
 	<constant name="struts.action.excludePattern" value="/websocket/.*" />
 	<!-- <constant name="struts.multipart.maxSize" value="15000000" /> -->
 	<constant name="struts.multipart.maxSize" value="209715200" />
-	<constant name="struts.mapper.alwaysSelectFullNamespace" value="true" />
+	<constant name="struts.mapper.alwaysSelectFullNamespace" value="false" />
 	<bean type="org.apache.struts2.json.JSONWriter" name="facilioJSONWriter" class="com.facilio.FacilioJSONWriter" scope="prototype" />
 	<constant name="struts.json.writer" value="facilioJSONWriter"/>
 	<constant name="struts.multipart.parser" value="jakarta-stream" />
+	<constant name="struts.enable.SlashesInActionNames" value="true"/>
 
 	<include file="basestruts.xml" />
 	<include file="baseapiv1.xml" />
@@ -35,7 +36,7 @@
 	<include file="agent.xml"/>
 	<include file="apiv3.xml"/>
 	<include file="agentv3.xml"/>
-	
+	<include file="apiv4.xml"/>
 	<!-- Add packages here -->
 
 </struts>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+        "http://struts.apache.org/dtds/struts-2.5.dtd">
+
+
+<struts>
+	
+    <package name="v4BaseApi" strict-method-invocation="false"
+             extends="struts-default,json-default">
+        <result-types>
+            <result-type name="json"
+                         class="com.facilio.bmsconsole.interceptors.CacheResult" />
+        </result-types>
+        
+        <interceptors>
+            <interceptor name="cacheinterceptor"
+                         class="com.facilio.bmsconsole.interceptors.CacheInterceptor" />
+            <interceptor name="scopeinterceptor"
+                         class="com.facilio.bmsconsole.interceptors.ScopeInterceptor" />
+            <interceptor name="datasourceinterceptor"
+                         class="com.facilio.bmsconsole.interceptors.DataSourceInterceptor" />
+            <interceptor name="authinterceptor"
+                         class="com.facilio.bmsconsole.interceptors.AuthInterceptor" />
+            <interceptor-stack name="defaultInterceptor">
+                <interceptor-ref name="defaultStack" />
+                <interceptor-ref name="authinterceptor" />
+                <interceptor-ref name="datasourceinterceptor" />
+                <interceptor-ref name="scopeinterceptor" />
+                <interceptor-ref name="cacheinterceptor" />
+                <interceptor-ref name="json">
+                    <param name="enableSMD">true</param>
+                </interceptor-ref>
+            </interceptor-stack>
+        </interceptors>
+
+        <default-interceptor-ref name="defaultInterceptor" />
+
+        <global-results>
+            <result name="login" type="httpheader">
+                <param name="status">401</param>
+            </result>
+            <result name="unauthorized" type="httpheader">
+                <param name="status">403</param>
+            </result>
+            <result name="invalid" type="httpheader">
+				<param name="status">400</param>
+			</result>
+			<result name="usernotinapp" type="httpheader">
+				<param name="status">409</param>
+			</result>
+		
+			<result name="error" type="json">
+                <param name="ignoreHierarchy">false</param>
+                <param name="includeProperties">responseCode, message, stackTrace</param>
+            </result>
+            <result name="exception" type="chain">
+                <param name="actionName">handleException</param>
+                <param name="namespace">/v1/exception</param>
+            </result>
+            <result name="cachedResponse" type="chain">
+                <param name="actionName">cachedResponse</param>
+                <param name="namespace">/v2/cachedResponse</param>
+            </result>
+            <result name="success" type="json">
+                <param name="excludeNullProperties">true</param>
+                <param name="ignoreHierarchy">false</param>
+                <param name="includeProperties">^code.*,^data.*,^meta.*,message</param>
+            </result>
+            <result name="failure" type="json">
+                <param name="ignoreHierarchy">false</param>
+                <param name="includeProperties">^message.*,^code.*,^stackTrace.*</param>
+            </result>
+        </global-results>
+
+        <global-exception-mappings>
+            <exception-mapping exception="java.lang.Exception"
+                               result="exception" />
+        </global-exception-mappings>
+       
+    </package>
+    
+    <!-- <package name="v4Api1" extends="v4BaseApi" namespace="/api/v4">
+    	<action name="/{moduleName}/{recordId}" class="com.facilio.v4.action.RestAPIHandlerV4">
+        </action>
+        <action name="/{moduleName}" class="com.facilio.v4.action.RestAPIHandlerV4">
+        </action>
+	</package> -->
+	
+	
+	<package name="v4Api" extends="v4BaseApi" namespace="/api/v4">
+    	<action name="*/*" class="com.facilio.v4.action.RestAPIHandlerV4">
+    		<param name="moduleName">{1}</param>
+    		<param name="id">{2}</param>
+        </action>
+        <action name="*" class="com.facilio.v4.action.RestAPIHandlerV4">
+        	<param name="moduleName">{1}</param>
+        </action>
+	</package>
+</struts>
