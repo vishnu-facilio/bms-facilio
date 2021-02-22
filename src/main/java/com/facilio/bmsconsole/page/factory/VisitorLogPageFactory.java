@@ -41,6 +41,7 @@ public class VisitorLogPageFactory extends PageFactory {
 		tab1Sec1.addWidget(attachmentWidget);
 
 		PageWidget notesWidget = new PageWidget(WidgetType.COMMENT);
+		notesWidget.addToLayoutParams(tab1Sec1, 24, 6);
 		notesWidget.setTitle("Comments");
 		tab1Sec1.addWidget(notesWidget);
 	    
