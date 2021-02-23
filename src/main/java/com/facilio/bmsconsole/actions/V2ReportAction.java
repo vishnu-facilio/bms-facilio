@@ -2472,7 +2472,6 @@ public class V2ReportAction extends FacilioAction {
 		
 		if (reportContext == null) {
 			reportContext = new ReportContext();
-			reportContext.setType(ReportType.PIVOT_REPORT);
 		}
 		
 		if (reportId > 0) {
@@ -2481,6 +2480,7 @@ public class V2ReportAction extends FacilioAction {
 			reportContext.setId(report.getId());
 			reportContext.setTabularState(FieldUtil.getAsJSON(pivotparams).toJSONString());
 		}
+		reportContext.setType(ReportType.PIVOT_REPORT);
 		
 		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
 		
