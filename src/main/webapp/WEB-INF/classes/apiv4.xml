@@ -52,7 +52,7 @@
 		
 			<result name="error" type="json">
                 <param name="ignoreHierarchy">false</param>
-                <param name="includeProperties">responseCode, message, stackTrace</param>
+                <param name="includeProperties">responseCode, message</param>
             </result>
             <result name="exception" type="chain">
                 <param name="actionName">handleException</param>
@@ -69,7 +69,7 @@
             </result>
             <result name="failure" type="json">
                 <param name="ignoreHierarchy">false</param>
-                <param name="includeProperties">^message.*,^code.*,^stackTrace.*</param>
+                <param name="includeProperties">^message.*,^code.*</param>
             </result>
         </global-results>
 
