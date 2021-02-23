@@ -112,7 +112,7 @@ public class LoadRecordIdForPassCodeCommandV3 extends FacilioCommand {
         		}	
         	}
         	else {
-                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Please input a valid passcode or qr");
+//                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Please input a valid passcode or qr");
         	}	
         }
 	    

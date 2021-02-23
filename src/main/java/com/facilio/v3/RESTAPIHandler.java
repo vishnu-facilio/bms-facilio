@@ -89,6 +89,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
 
         V3Config v3Config = ChainUtil.getV3Config(moduleName);
 
+        Constants.setModuleName(context, moduleName);
         Constants.setV3config(context, v3Config);
         Class beanClass = ChainUtil.getBeanClass(v3Config, module);
         context.put(Constants.BEAN_CLASS, beanClass);
