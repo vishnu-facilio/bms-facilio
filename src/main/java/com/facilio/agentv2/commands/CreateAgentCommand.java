@@ -38,16 +38,20 @@ public class CreateAgentCommand extends AgentV2Command {
             }
             long agentId = AgentApiV2.addAgent(agent);
             agent.setId(agentId);
+            Organization currentOrg = AccountUtil.getCurrentOrg();
             switch (AgentType.valueOf(agent.getAgentType())) {
                 case REST:
                 case WATTSENSE:
+                    createMessageTopic(currentOrg);
                     break;
                 case FACILIO:
                 case NIAGARA:
                 case CUSTOM:
-                    createPolicy(agent);
+                    createMessageTopic(currentOrg);
+                    createPolicy(agent,currentOrg);
                     return true;
                 case CLOUD:
+                    createMessageTopic(currentOrg);
                     AgentApiV2.scheduleRestJob(agent);
                     return true;
             }
@@ -57,10 +61,9 @@ public class CreateAgentCommand extends AgentV2Command {
         }
     }
 
-    private void createPolicy(FacilioAgent agent) throws Exception {
+    private void createPolicy ( FacilioAgent agent,Organization currentOrg ) {
         try{
-            Organization currentOrg = AccountUtil.getCurrentOrg();
-            String orgMessageTopic = FacilioService.runAsServiceWihReturn(()-> AgentAction.getMessageTopic(currentOrg.getDomain(),currentOrg.getOrgId()));
+            String orgMessageTopic = createMessageTopic(currentOrg);
             LOGGER.info("download certificate current org domain is :" + orgMessageTopic);
             String certFileId = com.facilio.agent.FacilioAgent.getCertFileId("facilio");
             long orgId = Objects.requireNonNull(currentOrg.getOrgId());
@@ -72,5 +75,8 @@ public class CreateAgentCommand extends AgentV2Command {
         }catch (Exception e){
             LOGGER.error("Exception occurred while adding Agent cert .. ",e);
         }
+    }
+    private String createMessageTopic ( Organization currentOrg ) throws Exception {
+        return FacilioService.runAsServiceWihReturn(()-> AgentAction.getMessageTopic(currentOrg.getDomain(),currentOrg.getOrgId()));
     }
 }
