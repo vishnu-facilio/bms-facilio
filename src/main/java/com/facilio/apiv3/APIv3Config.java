@@ -59,6 +59,7 @@ import com.facilio.bmsconsoleV3.commands.visitor.LoadVisitorLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlog.GetChildInvitesForGroupInviteCommand;
 import com.facilio.bmsconsoleV3.commands.visitorlog.GetScheduleTriggerForRecurringInviteCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlog.LoadRecordIdForPassCodeCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.UpdateChildInvitesAfterSaveCommand;
 import com.facilio.bmsconsoleV3.commands.visitorlog.ValidateBaseVisitDetailAndLogCommand;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.GetTriggerForRecurringLogCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.LoadVisitorLoggingLookupCommandV3;
@@ -556,7 +557,8 @@ public class APIv3Config {
     @Module("groupinvite")
     public static Supplier<V3Config> getGroupInviteVisitor() {
         return () -> new V3Config(GroupInviteContextV3.class, null)
-                .create()      
+                .create()  
+                	.afterTransaction(new UpdateChildInvitesAfterSaveCommand())
                 .update()     
                 .list()
                     .showStateFlowList()
