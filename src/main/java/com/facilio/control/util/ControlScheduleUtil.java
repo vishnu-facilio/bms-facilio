@@ -717,7 +717,7 @@ public class ControlScheduleUtil {
 		return startTimeVsRangeMap;
 	}
 
-	private static List<DateRange> getExceptionRanges(ControlScheduleExceptionContext exception,long startTime, long endTime) throws Exception {
+	public static List<DateRange> getExceptionRanges(ControlScheduleExceptionContext exception,long startTime, long endTime) throws Exception {
 		
 		List<DateRange> dateRanges = new ArrayList<DateRange>();
 		

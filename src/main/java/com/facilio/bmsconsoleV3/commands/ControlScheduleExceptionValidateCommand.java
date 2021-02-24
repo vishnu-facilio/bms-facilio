@@ -14,6 +14,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.control.ControlScheduleContext;
 import com.facilio.control.ControlScheduleExceptionContext;
 import com.facilio.control.util.ControlScheduleUtil;
+import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -44,9 +45,18 @@ public class ControlScheduleExceptionValidateCommand extends FacilioCommand {
 
 	private void validateScheduleException(ControlScheduleExceptionContext exception,ControlScheduleContext schedule) throws Exception {
 		
-		if(exception.getTypeEnum() == ControlScheduleExceptionContext.Type.ONETIME) {
-			Long startTime = exception.getStartTime();
-			Long endTime = exception.getEndTime();
+		long weekStartTime = DateTimeUtil.getWeekStartTimeOf(DateTimeUtil.addDays(DateTimeUtil.getCurrenTime(), 7));
+		long weekEndTime = DateTimeUtil.addDays(weekStartTime, 7);
+		
+		List<DateRange> ranges = ControlScheduleUtil.getExceptionRanges(exception, weekStartTime, weekEndTime);
+		
+		for(DateRange range :ranges) {
+			
+			boolean isStartTimeWithinRange = false;
+			boolean isEndTimeWithinRange = false;
+			
+			Long startTime = range.getStartTime();
+			Long endTime = range.getEndTime();
 			
 			ZonedDateTime startDateTime = DateTimeUtil.getZonedDateTime(startTime);
 			ZonedDateTime endDateTime = DateTimeUtil.getZonedDateTime(endTime);
@@ -56,17 +66,15 @@ public class ControlScheduleExceptionValidateCommand extends FacilioCommand {
 			
 			DayOfWeek dayofWeek = startDateTime.getDayOfWeek();
 			
-			Map<DayOfWeek, List<Pair<java.time.LocalTime, java.time.LocalTime>>> map = schedule.getBusinessHoursContext().getAsMapBusinessHours();
+			Map<DayOfWeek, List<Pair<LocalTime, LocalTime>>> map = schedule.getBusinessHoursContext().getAsMapBusinessHours();
 			
-			List<Pair<java.time.LocalTime, java.time.LocalTime>> availableTimes = map.get(dayofWeek);
+			List<Pair<LocalTime, LocalTime>> availableTimes = map.get(dayofWeek);
 			
-			boolean isStartTimeWithinRange = false;
-			boolean isEndTimeWithinRange = false;
 			if(availableTimes != null) {
-				for(Pair<java.time.LocalTime, java.time.LocalTime> availableTime : availableTimes) {
+				for(Pair<LocalTime, LocalTime> availableTime : availableTimes) {
 					
-					java.time.LocalTime rangeSt = availableTime.getKey();
-					java.time.LocalTime rangeEt = availableTime.getValue();
+					LocalTime rangeSt = availableTime.getKey();
+					LocalTime rangeEt = availableTime.getValue();
 					if(stLocal.equals(rangeSt) || ( stLocal.isAfter(rangeSt) && stLocal.isBefore(rangeEt))) {
 						isStartTimeWithinRange = true;
 					}
@@ -75,7 +83,6 @@ public class ControlScheduleExceptionValidateCommand extends FacilioCommand {
 					}
 				}
 			}
-			
 			if(exception.isOffSchedule()) {
 				if(isStartTimeWithinRange != true ||  isEndTimeWithinRange != true) {
 					throw new RESTException(ErrorCode.VALIDATION_ERROR,"Schedule exception is not within range");
@@ -88,12 +95,6 @@ public class ControlScheduleExceptionValidateCommand extends FacilioCommand {
 				}
 			}
 		}
-		else {
-			
-		}
-	}
-
-	private void validateOffScheduleException(ControlScheduleExceptionContext exception,ControlScheduleContext schedule) {
 		
 	}
 
