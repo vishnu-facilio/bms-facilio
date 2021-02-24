@@ -204,10 +204,10 @@ public class APIv3Config {
     public static Supplier<V3Config> getScheduleExceptionTenantCRUD() {
         return () -> new V3Config(ControlScheduleExceptionTenantContext.class, null)		// to be changed to ControlScheduleExceptionTenantContext
         		.create()
-                .beforeSave(new ControlScheduleExceptionBeforeSaveCommand())
+                .beforeSave(TransactionChainFactoryV3.getAddControlScheduleExceptionBeforeSaveChain())
                 .afterSave(TransactionChainFactoryV3.getAddControlScheduleExceptionAfterSaveChain())
                 .update()
-                .beforeSave(new ControlScheduleExceptionBeforeSaveCommand())
+                .beforeSave(TransactionChainFactoryV3.getAddControlScheduleExceptionBeforeSaveChain())
                 .afterSave(TransactionChainFactoryV3.getUpdateControlScheduleExceptionAfterSaveChain())
                 .delete()
                 .afterDelete(new PlanControlScheduleExceptionSlotCommand())
