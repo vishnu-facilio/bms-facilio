@@ -43,14 +43,14 @@ public class ValidateBaseVisitDetailAndLogCommand extends FacilioCommand{
 						InviteVisitorContextV3 inviteVisit = V3VisitorManagementAPI.getInviteVisit(baseVisit.getId(), null, false);
 						if(inviteVisit != null) {
 							if(!inviteVisit.isRecurring()) {
-								if(inviteVisit.getExpectedCheckInTime() > 0) {
+								if(inviteVisit.getExpectedCheckInTime() != null && inviteVisit.getExpectedCheckInTime() > 0) {
 									if(currentTime < inviteVisit.getExpectedCheckInTime() && !DateTimeUtil.isSameDay(currentTime, inviteVisit.getExpectedCheckInTime()))
 									{
 						                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid checkin time");
 
 									}
 								}
-								if(inviteVisit.getExpectedCheckOutTime() > 0 && currentTime > inviteVisit.getExpectedCheckOutTime()) {
+								if(inviteVisit.getExpectedCheckOutTime() != null && inviteVisit.getExpectedCheckOutTime() > 0 && currentTime > inviteVisit.getExpectedCheckOutTime()) {
 					                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Passcode/qr Expired");
 
 								}

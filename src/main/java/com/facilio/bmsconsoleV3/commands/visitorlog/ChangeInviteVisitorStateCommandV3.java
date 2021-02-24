@@ -48,8 +48,8 @@ public class ChangeInviteVisitorStateCommandV3  extends FacilioCommand {
                             for (UpdateChangeSet changes : updatedSet) {
                                 FacilioField field = modBean.getField(changes.getFieldId());
                                 if (field != null) {
-                                    if (field.getName().equals("moduleState") && changes.getNewValue()  != null) {
-                                        FacilioStatus status = StateFlowRulesAPI.getStateContext((Long)changes.getNewValue());
+                                    if (changes.getNewValue() != null) {
+//                                        FacilioStatus status = StateFlowRulesAPI.getStateContext((Long)changes.getNewValue());
 //                                        if (status.getStatus().toString().trim().equals("Invited") || status.getStatus().toString().trim().equals("Upcoming")) {
 //                                            V3VisitorManagementAPI.updateInviteVisitorInvitationStatus(record, true);
 //                                        }
