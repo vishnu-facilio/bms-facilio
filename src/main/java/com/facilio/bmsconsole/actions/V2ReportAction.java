@@ -2478,8 +2478,8 @@ public class V2ReportAction extends FacilioAction {
 			ReportContext report = ReportUtil.getReport(reportId);
 			context.put(FacilioConstants.ContextNames.REPORT_ID,report.getId());
 			reportContext.setId(report.getId());
-			reportContext.setTabularState(FieldUtil.getAsJSON(pivotparams).toJSONString());
 		}
+		reportContext.setTabularState(FieldUtil.getAsJSON(pivotparams).toJSONString());
 		reportContext.setType(ReportType.PIVOT_REPORT);
 		
 		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
@@ -2511,7 +2511,15 @@ public class V2ReportAction extends FacilioAction {
 		if (startTime != -1 && endTime != -1) {
 			reportContext.setDateRange(new DateRange(startTime, endTime));
 		}
+		JSONParser parser = new JSONParser();
+		ReportPivotParamsContext pivotparams = FieldUtil.getAsBeanFromJson((JSONObject) parser.parse(reportContext.getTabularState()), ReportPivotParamsContext.class);
+		context.put(FacilioConstants.Reports.ROWS, pivotparams.getRows());
+		context.put(FacilioConstants.Reports.DATA, pivotparams.getData());
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, pivotparams.getModuleName());
+		context.put(FacilioConstants.ContextNames.CRITERIA, pivotparams.getCriteria());
+		context.put(FacilioConstants.ContextNames.SORTING, pivotparams.getSortBy());
 		
+		chain.addCommand(new ConstructTabularReportData());
 		chain.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
 		chain.execute(context);
 		setResult("report", reportContext);

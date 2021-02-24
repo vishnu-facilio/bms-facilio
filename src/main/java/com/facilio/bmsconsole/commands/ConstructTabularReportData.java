@@ -175,11 +175,11 @@ public class ConstructTabularReportData extends FacilioCommand {
 		if(firstRow.getAlias() != null) {
 			xAxis.setAlias(firstRow.getAlias());
 			if(firstRow.getAlias().equals(sortBy.get("alias"))) {
-				dataPointContext.setOrderByFunc(OrderByFunction.valueOf(((Long)sortBy.get("order")).intValue()));
+				dataPointContext.setOrderByFunc(OrderByFunction.valueOf(((Number)sortBy.get("order")).intValue()));
 				List<String> orderBy = new ArrayList<>();
 				orderBy.add(xField.getCompleteColumnName());
 				dataPointContext.setOrderBy(orderBy);
-				dataPointContext.setLimit(((Long)sortBy.get("limit")).intValue());
+				dataPointContext.setLimit(((Number)sortBy.get("limit")).intValue());
 			}
 		}
 		dataPointContext.setxAxis(xAxis);
@@ -227,12 +227,12 @@ public class ConstructTabularReportData extends FacilioCommand {
 				if(data.getAlias() != null) {
 					yAxis.setAlias(data.getAlias());
 					if(data.getAlias().equals(sortBy.get("alias"))) {
-						dataPointContext.setOrderByFunc(OrderByFunction.valueOf(((Long)sortBy.get("order")).intValue()));
+						dataPointContext.setOrderByFunc(OrderByFunction.valueOf(((Number)sortBy.get("order")).intValue()));
 						List<String> orderBy = new ArrayList<>();
 						orderBy.add(getAggrCompleteColumnName(yField.getCompleteColumnName(), yAggr));
 						orderBy.add(xField.getCompleteColumnName());
 						dataPointContext.setOrderBy(orderBy);
-						dataPointContext.setLimit(((Long)sortBy.get("limit")).intValue());
+						dataPointContext.setLimit(((Number)sortBy.get("limit")).intValue());
 						dataPointContext.setDefaultSortPoint(true);
 					}
 				}
@@ -268,11 +268,11 @@ public class ConstructTabularReportData extends FacilioCommand {
 				if(groupByRow.getAlias() != null) {
 					groupByField.setAlias(groupByRow.getAlias());
 					if(groupByField.getAlias().equals(sortBy.get("alias"))) {
-						dataPointContext.setOrderByFunc(OrderByFunction.valueOf(((Long)sortBy.get("order")).intValue()));
+						dataPointContext.setOrderByFunc(OrderByFunction.valueOf(((Number)sortBy.get("order")).intValue()));
 						List<String> orderBy = new ArrayList<>();
 						orderBy.add(gField.getCompleteColumnName());
 						dataPointContext.setOrderBy(orderBy);
-						dataPointContext.setLimit(((Long)sortBy.get("limit")).intValue());
+						dataPointContext.setLimit(((Number)sortBy.get("limit")).intValue());
 					}
 				}
 				groupByField.setField(groupByModule, gField);
