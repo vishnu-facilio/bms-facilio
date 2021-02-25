@@ -97,6 +97,16 @@ Map cardLayout(Map params) {
                 }
             }
             locationEntry["value"] = valueMap;
+            
+            // heatmap layer changes
+            val = valueMap.value;
+          	if (val != null) {
+              locationEntry["weight"] = val;
+            }
+          	
+          	if (val == null) {
+              locationEntry["weight"] = 0;
+            }
             values.push(locationEntry);
         }
     }
