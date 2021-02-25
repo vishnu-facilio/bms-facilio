@@ -3593,6 +3593,7 @@ public class FieldFactory {
         fields.add(displayName);
 
         fields.add(getModuleIdField(module));
+        fields.add(getField("appId", "APP_ID", module, FieldType.NUMBER));
         
         FacilioField groupOrder = new FacilioField();
         groupOrder.setName("sequenceNumber");

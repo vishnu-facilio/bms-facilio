@@ -15,9 +15,11 @@ import org.apache.commons.chain.Context;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.context.ViewGroups;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.SharingAPI;
 import com.facilio.bmsconsole.util.ViewAPI;
@@ -34,22 +36,32 @@ public class GetViewListCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
+        Long appId = (Long) context.getOrDefault(FacilioConstants.ContextNames.APP_ID, -1l);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule moduleObj = modBean.getModule(moduleName);
+		ApplicationContext app = null;
 
+		if (appId > 0) {
+			 app = ApplicationApi.getApplicationForId(appId);
+		}
+
+		Map<String,FacilioView> viewMap = new HashMap();
 
 		// ViewFactory views
-		Map<String,FacilioView> viewMap = ViewFactory.getModuleViews(moduleName, moduleObj);
+		if ((app != null && app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) || app == null)  {
+			 viewMap = ViewFactory.getModuleViews(moduleName, moduleObj);
+		}
 		
 		//db group views
 		List<ViewGroups> viewGroups = new ArrayList<>();
 		if (moduleObj != null) {
-			viewGroups = ViewAPI.getAllGroups(moduleObj.getModuleId());
+			viewGroups = ViewAPI.getAllGroups(moduleObj.getModuleId(), appId);
 		}
 		
 		//db views
 		List<FacilioView> dbViews = new ArrayList<>();	
+//		if ((app != null && app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) || app == null)  {
 		if (LookupSpecialTypeUtil.isSpecialType(moduleName)) {
 			dbViews = ViewAPI.getAllViews(moduleName);
 		} else {
@@ -61,10 +73,11 @@ public class GetViewListCommand extends FacilioCommand {
 				addMobilelarmViews(modBean, dbViews, viewMap, viewGroups);
 			}
 		}
+//	}
 		
 		
 		Map<Long, SharingContext<SingleSharingContext>> sharingMap = SharingAPI.getSharingMap(ModuleFactory.getViewSharingModule(), SingleSharingContext.class);
-		if (dbViews != null) {
+		if (!dbViews.isEmpty() && dbViews != null) {
 			for(FacilioView view: dbViews) {
 					viewMap.put(view.getName(), view);
 					if (sharingMap != null && sharingMap.containsKey(view.getId())) {
@@ -83,7 +96,7 @@ public class GetViewListCommand extends FacilioCommand {
 		});
 		
 		
-		if (dbViews != null && viewGroups != null) {
+		if (!dbViews.isEmpty() && !viewGroups.isEmpty() && dbViews != null && viewGroups != null) {
 			for(ViewGroups viewGroup : viewGroups) {
 				List<FacilioView> groupBasedViews = dbViews.stream().filter(view -> view.getGroupId() == viewGroup.getId()).collect(Collectors.toList());
 				if (groupBasedViews != null && groupBasedViews.size() > 0) {
@@ -130,7 +143,9 @@ public class GetViewListCommand extends FacilioCommand {
 			
 			
 			// groupViews from ViewFactory
-			List<Map<String, Object>> groupViews = new ArrayList<>(ViewFactory.getGroupVsViews(moduleName));
+			List<Map<String, Object>> groupViews = new ArrayList<>();
+			if ((app != null && app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) || app == null) {
+				 groupViews = new ArrayList<>(ViewFactory.getGroupVsViews(moduleName));
 			
 			if (!groupViews.isEmpty()) {
 					
@@ -213,6 +228,7 @@ public class GetViewListCommand extends FacilioCommand {
 					}
 				}
 			}
+		}
 			
 			sortGroupViews(groupViews, viewMap, viewGroups);
 			// TODO remove 
@@ -356,7 +372,7 @@ public class GetViewListCommand extends FacilioCommand {
 			
 			viewMap.putAll(ViewFactory.getModuleViews(moduleName, alarmModule));
 			
-			viewGroups.addAll(ViewAPI.getAllGroups(alarmModule.getModuleId()));
+			viewGroups.addAll(ViewAPI.getAllGroups(alarmModule.getModuleId(), -1));
 		}
 		
 	}
