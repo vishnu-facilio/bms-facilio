@@ -1172,33 +1172,105 @@ public class ReportFactoryFields {
 	public static JSONObject getTabularRowReportFields(String moduleName) throws Exception{
 		ModuleBean bean = (ModuleBean)BeanFactory.lookup("ModuleBean");
 		FacilioModule facilioModule = bean.getModule(moduleName);
-		Map<String, FacilioField> fields = FieldFactory.getAsMap(bean.getAllFields(moduleName));
-		List<FacilioField> selectedFields = new ArrayList<FacilioField>();
+		
+		List<FacilioField> allFields=bean.getAllFields(moduleName);
+//		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(bean.getAllFields(moduleName));		
+		List<FacilioField> selectedFields = new ArrayList<FacilioField>();		
 		Set<FacilioModule> lookUpModules = new HashSet<>();
 		
-		for(String fieldName: fields.keySet()) {
-			FacilioField field = fields.get(fieldName);
+		//collect lookup modules , also replace special lookups(basespace/resource) with child lookups
+		
+		for(FacilioField field: allFields) {
 			if(field.getDataType() == FieldType.LOOKUP.getTypeAsInt()) {
 				LookupField lookupField = (LookupField) field;
-				if(lookupField.getLookupModule().getTypeEnum() != FacilioModule.ModuleType.PICK_LIST && !"users".equalsIgnoreCase(lookupField.getLookupModule().getName())) {
-					lookUpModules.add(lookupField.getLookupModule());
+				if(lookupField.getLookupModule().getTypeEnum() != FacilioModule.ModuleType.PICK_LIST && !"users".equalsIgnoreCase(lookupField.getLookupModule().getName())) {										
+ 					FacilioModule lookupModule=lookupField.getLookupModule();
+					lookUpModules.add(lookupModule);
+					
+					if(lookupModule.getName().equals(FacilioConstants.ContextNames.BASE_SPACE)||lookupModule.getName().equals(FacilioConstants.ContextNames.RESOURCE))
+					{
+		
+						
+					
+						
+						LookupField siteField=(LookupField)field.clone();
+						FacilioModule siteModule=bean.getModule("site"); 
+						siteField.setLookupModule(siteModule);
+						siteField.setLookupModuleId(siteModule.getModuleId());
+						siteField.setDisplayName("Site");
+						selectedFields.add(siteField);
+						
+						LookupField buildingField=(LookupField)field.clone();
+						FacilioModule buildingModule=bean.getModule("building"); 
+						buildingField.setLookupModule(buildingModule);
+						buildingField.setLookupModuleId(buildingModule.getModuleId());
+						buildingField.setDisplayName("Building");
+						selectedFields.add(buildingField);
+						
+						LookupField floorField=(LookupField)field.clone();
+						FacilioModule floorModule=bean.getModule("floor"); 
+						floorField.setLookupModule(floorModule);
+						floorField.setLookupModuleId(floorModule.getModuleId());
+						floorField.setDisplayName("Floor");
+						selectedFields.add(floorField);
+						
+					
+						LookupField spaceField=(LookupField)field.clone();
+						FacilioModule spaceModule=bean.getModule("space"); 
+						spaceField.setLookupModule(spaceModule);
+						spaceField.setLookupModuleId(spaceModule.getModuleId());
+						spaceField.setDisplayName("Space");
+						selectedFields.add(spaceField);
+					
+						
+						if(lookupModule.getName().equals(FacilioConstants.ContextNames.RESOURCE))
+						{
+							LookupField assetField=(LookupField)field.clone();
+							FacilioModule assetModule=bean.getModule("asset"); 
+							assetField.setLookupModule(assetModule);
+							assetField.setLookupModuleId(assetModule.getModuleId());
+							assetField.setDisplayName("Asset");
+							selectedFields.add(assetField);
+							
+						}
+						
+					}
+					else {
+						selectedFields.add(field);
+					
+					}
 				}
-				selectedFields.add(fields.get(fieldName));
+			
 			}
 			else {
-				selectedFields.add(fields.get(fieldName));
+				selectedFields.add(field);
+				
 			}
+			
+
+		
 	}
 		if(facilioModule.isCustom() || moduleName.equalsIgnoreCase("quote")) {
 			selectedFields.addAll(FieldFactory.getSystemPointFields(facilioModule));
 		}
 		
 		JSONObject dimensionFieldMap = new JSONObject();
-		dimensionFieldMap.put(moduleName, getDimensionLookupFields(selectedFields));
+		System.out.println("Selected fields");
+		for(FacilioField field:selectedFields)
+		{
+			if(field.getDataTypeEnum()==FieldType.LOOKUP)
+			{
+				System.out.println("Field Name="+field.getDisplayName());
+				System.out.println("LookupModule Name="+((LookupField)field).getLookupModule().getName());
+				
+			}
+			
 		
+		}
+		
+		//FOR EACH lookup field in module , fill map -> lookupModuleName:lookupModule's fields
 		for(FacilioModule lookupModule:lookUpModules) {
 			if(lookupModule.getName().equalsIgnoreCase("resource")) {
-				
 				dimensionFieldMap.put(FacilioConstants.ContextNames.ASSET, getDimensionLookupFields(bean.getAllFields(FacilioConstants.ContextNames.ASSET)));
 				dimensionFieldMap.put(FacilioConstants.ContextNames.SITE, getDimensionLookupFields(bean.getAllFields(FacilioConstants.ContextNames.SITE)));
 				dimensionFieldMap.put(FacilioConstants.ContextNames.BUILDING, getDimensionLookupFields(bean.getAllFields(FacilioConstants.ContextNames.BUILDING)));
@@ -1206,6 +1278,7 @@ public class ReportFactoryFields {
 				dimensionFieldMap.put(FacilioConstants.ContextNames.SPACE, getDimensionLookupFields(bean.getAllFields(FacilioConstants.ContextNames.SPACE)));
 				
 			} else if(lookupModule.getName().equalsIgnoreCase("basespace")) {
+				
 				dimensionFieldMap.put(FacilioConstants.ContextNames.SITE, getDimensionLookupFields(bean.getAllFields(FacilioConstants.ContextNames.SITE)));
 				dimensionFieldMap.put(FacilioConstants.ContextNames.BUILDING, getDimensionLookupFields(bean.getAllFields(FacilioConstants.ContextNames.BUILDING)));
 				dimensionFieldMap.put(FacilioConstants.ContextNames.FLOOR, getDimensionLookupFields(bean.getAllFields(FacilioConstants.ContextNames.FLOOR)));
@@ -1215,6 +1288,11 @@ public class ReportFactoryFields {
 				dimensionFieldMap.put(lookupModule.getName(), getDimensionLookupFields(bean.getAllFields(lookupModule.getName())));
 			}
 		}
+		dimensionFieldMap.put(moduleName, getDimensionLookupFields(selectedFields));
+
+		
+		
+		//
 		
 		return dimensionFieldMap;
 	}
