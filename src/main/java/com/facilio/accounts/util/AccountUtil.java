@@ -23,6 +23,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.service.FacilioService;
+import com.facilio.service.FacilioServiceUtil;
 import com.facilio.util.RequestUtil;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import org.apache.commons.collections4.MapUtils;
@@ -41,6 +42,7 @@ public class AccountUtil {
 	public static void setCurrentAccount(Account account) throws Exception {
 		currentAccount.set(account);
 		setScopingMap(account);
+		FacilioServiceUtil.setCurrentService("app");
 	}
 	
 	public static void setCurrentAccount(long orgId) throws Exception {
