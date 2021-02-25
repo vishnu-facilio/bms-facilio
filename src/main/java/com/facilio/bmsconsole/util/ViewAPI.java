@@ -14,7 +14,6 @@ import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.context.ViewField;
@@ -23,7 +22,6 @@ import com.facilio.bmsconsole.context.SingleSharingContext.SharingType;
 import com.facilio.bmsconsole.view.ColumnFactory;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.FacilioView.ViewType;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -33,7 +31,6 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
@@ -91,7 +88,7 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 		
 	}
 	
-	public static List<ViewGroups> getAllGroups(long moduleId,long appId) throws Exception {
+	public static List<ViewGroups> getAllGroups(long moduleId) throws Exception {
 		
 		List<ViewGroups> viewGroups = new ArrayList<>();
 		if (moduleId > -1) {
@@ -99,26 +96,6 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 					.select(FieldFactory.getViewGroupFields())
 					.table(ModuleFactory.getViewGroupsModule().getTableName())
 					.andCondition(CriteriaAPI.getCondition("MODULEID","moduleId",String.valueOf(moduleId), NumberOperators.EQUALS));
-			
-			if (appId > 0) {
-				ApplicationContext app = ApplicationApi.getApplicationForId(appId);
-				if(app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
-					Condition condition1 = CriteriaAPI.getCondition("APP_ID","appId",String.valueOf(appId), NumberOperators.EQUALS);
-					Condition condition2 = CriteriaAPI.getCondition("APP_ID","appId","", CommonOperators.IS_EMPTY);
-					
-					Criteria criteria = new Criteria();					
-					criteria.addOrCondition(condition1);
-					criteria.addOrCondition(condition2);
-					
-					selectBuilder.andCriteria(criteria);
-				}
-				else {
-					selectBuilder.andCondition(CriteriaAPI.getCondition("APP_ID","appId",String.valueOf(appId), NumberOperators.EQUALS));
-				}
-			}
-			else {
-				selectBuilder.andCondition(CriteriaAPI.getCondition("APP_ID","appId","", CommonOperators.IS_EMPTY));
-			}
 			List<Map<String, Object>> props = selectBuilder.get();
 			
 			if (props != null && !props.isEmpty()) {

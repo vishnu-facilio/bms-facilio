@@ -36,16 +36,6 @@ public class ViewGroups {
 	
 	long orgId = -1;
 	
-	public long getAppId() {
-		return appId;
-	}
-
-	public void setAppId(long appId) {
-		this.appId = appId;
-	}
-
-	long appId = -1;
-	
 	public long getModuleId() {
 		return moduleId;
 	}
