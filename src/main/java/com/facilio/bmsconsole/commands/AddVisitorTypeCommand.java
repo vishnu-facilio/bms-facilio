@@ -51,7 +51,7 @@ public class AddVisitorTypeCommand extends FacilioCommand {
 		FacilioForm visitorLogFormTemplate = null;
 		FacilioForm visitorInviteFormTemplate= null;
 
-		if((!FacilioProperties.isProduction()) || (FacilioProperties.isProduction() && AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 155l)) {
+		if(isVisitorSplitModule) {
 			visitorLogFormTemplate=FormsAPI.getFormFromDB(FacilioConstants.ContextNames.DEFAULT_VISITOR_LOG_CHECKIN_FORM_NAME,modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOG));
 			visitorInviteFormTemplate=FormsAPI.getFormFromDB(FacilioConstants.ContextNames.DEFAULT_INVITE_VISITOR_FORM_NAME,modBean.getModule(FacilioConstants.ContextNames.INVITE_VISITOR));
 			
