@@ -2662,18 +2662,24 @@ public class FormFactory {
 		fields.add(new FormField("manager", FieldDisplayType.LOOKUP_SIMPLE, "Facility Manager", Required.OPTIONAL,4, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, "user",5, 1));
 		fields.add(new FormField("userGuidance", FieldDisplayType.TEXTAREA, "User Guidance", Required.OPTIONAL,6, 1));
-		fields.add(new FormField("capacity", FieldDisplayType.NUMBER, "Capacity", Required.OPTIONAL,7, 2));
-		fields.add(new FormField("slotDuration", FieldDisplayType.NUMBER, "Slot Duration", Required.OPTIONAL,7, 3));
-		fields.add(new FormField("isChargeable", FieldDisplayType.DECISION_BOX, "Is Chargeable", Required.OPTIONAL,8, 1));
-		fields.add(new FormField("amenities", FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Features / Amenties", Required.OPTIONAL,9, 1));
-		fields.add(new FormField("facilityWeekdayAvailability", FieldDisplayType.FACILITY_AVAILABILITY, "Availability", Required.OPTIONAL,10, 1));
+		fields.add(new FormField("usageCapacity", FieldDisplayType.NUMBER, "Usage Capacity", Required.OPTIONAL,7, 2));
+		fields.add(new FormField("bookingAdvancePeriodInDays", FieldDisplayType.NUMBER, "Booking Advance In Days", Required.OPTIONAL,7, 3));
+		fields.add(new FormField("maxSlotBookingAllowed", FieldDisplayType.NUMBER, "Max Slot Bookings Allowed", Required.OPTIONAL,8, 2));
+		fields.add(new FormField("maxAttendeeCountPerBooking", FieldDisplayType.NUMBER, "Maximum attendee Count Per Booking", Required.OPTIONAL,8, 3));
+		fields.add(new FormField("pricePerSlot", FieldDisplayType.NUMBER, "Price Per slot", Required.OPTIONAL,9, 2));
+		fields.add(new FormField("securityDeposit", FieldDisplayType.NUMBER, "Security Deposit", Required.OPTIONAL,9, 3));
+		fields.add(new FormField("isChargeable", FieldDisplayType.DECISION_BOX, "Is Chargeable", Required.OPTIONAL,10, 2));
+		fields.add(new FormField("isMultiBookingPerSlotAllowed", FieldDisplayType.DECISION_BOX, "Is Multi Booking Allowed Per slot", Required.OPTIONAL,10, 3));
+		fields.add(new FormField("slotDuration", FieldDisplayType.DURATION, "Slot Duration", Required.OPTIONAL,11, 1));
+		fields.add(new FormField("amenities", FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Features / Amenties", Required.OPTIONAL,12, 1));
+		fields.add(new FormField("facilityWeekdayAvailability", FieldDisplayType.FACILITY_AVAILABILITY, "Availability", Required.OPTIONAL,13, 1));
 		form.setFields(fields);
 		return form;
 	}
 
 	private static FacilioForm getFacilityBookingForm() {
 		FacilioForm form = new FacilioForm();
-		form.setDisplayName("Facility");
+		form.setDisplayName("Facility Booking");
 		form.setName("default_"+ ContextNames.FacilityBooking.FACILITY_BOOKING +"_web");
 		form.setModule(ModuleFactory.getModule(ContextNames.FacilityBooking.FACILITY_BOOKING));
 		form.setLabelPosition(LabelPosition.TOP);

@@ -16,6 +16,7 @@ import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.context.V3Context;
 import com.facilio.v3.util.CommandUtil;
@@ -312,12 +313,12 @@ public class FacilityAPI {
         String bookingSlots = FacilioConstants.ContextNames.FacilityBooking.BOOKING_SLOTS;
         List<FacilioField> fields = modBean.getAllFields(bookingSlots);
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
-
         SelectRecordsBuilder<BookingSlotsContext> builder = new SelectRecordsBuilder<BookingSlotsContext>()
                 .moduleName(bookingSlots)
                 .select(fields)
                 .beanClass(BookingSlotsContext.class)
-                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("booking"), String.valueOf(bookingId), NumberOperators.EQUALS));
+                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("booking"), String.valueOf(bookingId), NumberOperators.EQUALS))
+                .fetchSupplement((LookupField) fieldsAsMap.get("slot"));
 
         List<BookingSlotsContext> list = builder.get();
         return  list;
