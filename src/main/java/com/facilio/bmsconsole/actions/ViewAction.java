@@ -161,7 +161,14 @@ public class ViewAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	private long appId = -1;
 	
+	public long getAppId() {
+		return appId;
+	}
+	public void setAppId(long appId) {
+		this.appId = appId;
+	}
 	public String v2viewlist() throws Exception{
 		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS) && moduleName.equals("alarm")) {
 			setModuleName(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
@@ -169,6 +176,7 @@ public class ViewAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.GROUP_STATUS, getGroupStatus());
+		context.put(FacilioConstants.ContextNames.APP_ID, appId);
 
 		FacilioChain getViewListsChain = FacilioChainFactory.getViewListChain();
 		getViewListsChain.execute(context);
