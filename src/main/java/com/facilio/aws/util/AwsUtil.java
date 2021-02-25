@@ -29,6 +29,7 @@ import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.CommonAPI;
 import com.facilio.bmsconsole.util.CommonAPI.NotificationType;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.db.transaction.FacilioTransactionManager;
@@ -106,7 +107,7 @@ public class AwsUtil
 	private static final Object LOCK = new Object();
 
 	public static Map<String, Object> getClientInfoAsService() throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> getClientInfo());
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> getClientInfo());
 	}
 
 	public static Map<String, Object> getClientInfo() {
@@ -146,7 +147,7 @@ public class AwsUtil
 	public static int updateClientVersion(String newVersion, boolean isNewClientBuild) throws Exception {
 		com.facilio.accounts.dto.User currentUser = AccountUtil.getCurrentUser();
 		if (currentUser != null) {
-			return FacilioService.runAsServiceWihReturn(() -> updateClientVersionervice(newVersion, isNewClientBuild, currentUser.getId()));
+			return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> updateClientVersionervice(newVersion, isNewClientBuild, currentUser.getId()));
 		}
 		else {
 			throw new IllegalArgumentException("Current User cannot be null while updating Client Version");

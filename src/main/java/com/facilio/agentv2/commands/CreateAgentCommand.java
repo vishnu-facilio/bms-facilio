@@ -5,6 +5,7 @@ import com.facilio.agent.AgentType;
 import com.facilio.agent.integration.DownloadCertFile;
 import com.facilio.agentv2.AgentAction;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.service.FacilioService;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
@@ -77,6 +78,6 @@ public class CreateAgentCommand extends AgentV2Command {
         }
     }
     private String createMessageTopic ( Organization currentOrg ) throws Exception {
-        return FacilioService.runAsServiceWihReturn(()-> AgentAction.getMessageTopic(currentOrg.getDomain(),currentOrg.getOrgId()));
+        return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.AGENT_SERVICE,()-> AgentAction.getMessageTopic(currentOrg.getDomain(),currentOrg.getOrgId()));
     }
 }

@@ -416,7 +416,7 @@ public class AgentAction extends AgentActionV2 {
 		try {
 			Organization currentOrg = AccountUtil.getCurrentOrg();
 			LOGGER.info("Downld certificate called..orgId :"+currentOrg.getOrgId());
-			String orgMessageTopic = FacilioService.runAsServiceWihReturn(()->getMessageTopic(currentOrg.getDomain(),currentOrg.getOrgId()));
+			String orgMessageTopic = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.AGENT_SERVICE,()->getMessageTopic(currentOrg.getDomain(),currentOrg.getOrgId()));
 			LOGGER.info("download certificate current org domain is :" + orgMessageTopic);
 			com.facilio.agentv2.FacilioAgent agent = AgentApiV2.getAgent(agentId);
 			Objects.requireNonNull(agent, "no such agent");
@@ -476,7 +476,7 @@ public class AgentAction extends AgentActionV2 {
     			.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(AgentFieldFactory.getMessageTopicFields()).get("orgId"), String.valueOf(orgId), StringOperators.IS));
     	Map<String,Object> prop =	builder.fetchFirst();
     	if(MapUtils.isEmpty(prop)) {
-    		return 	FacilioService.runAsServiceWihReturn(()->MessageQueueTopic.addMsgTopic(domain, orgId)) ? domain:null;
+    		return 	FacilioService.runAsServiceWihReturn(FacilioConstants.Services.AGENT_SERVICE,()->MessageQueueTopic.addMsgTopic(domain, orgId)) ? domain:null;
     	}
     	return prop.get("topic").toString();
     }
@@ -697,7 +697,7 @@ public class AgentAction extends AgentActionV2 {
         try{
         	FacilioContext context = new FacilioContext();
         	context.put(AgentConstants.IS_LATEST_VERSION, getLatestVersion());
-        	setResult(AgentConstants.DATA, FacilioService.runAsServiceWihReturn(()->AgentVersionApi.listAgentVersions(context)));
+        	setResult(AgentConstants.DATA, FacilioService.runAsServiceWihReturn(FacilioConstants.Services.AGENT_SERVICE,()->AgentVersionApi.listAgentVersions(context)));
         }catch (Exception e){
             LOGGER.info("Exception occurred while getting versions +",e);
             setResult(AgentConstants.EXCEPTION,e.getMessage());

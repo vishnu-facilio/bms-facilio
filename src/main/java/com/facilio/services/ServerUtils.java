@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.transaction.SystemException;
 
+import com.facilio.constants.FacilioConstants;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -25,7 +26,7 @@ public class ServerUtils {
 
     private static final Logger LOGGER = LogManager.getLogger(ServerUtils.class.getName());
     public static Map<String, Object> getClientInfoAsService() throws Exception {
-        return FacilioService.runAsServiceWihReturn(() -> getClientInfo());
+        return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> getClientInfo());
     }
     public static Map<String, Object> getClientInfo() {
         Connection conn = null;
@@ -60,7 +61,7 @@ public class ServerUtils {
     public static int updateClientVersion(String newVersion, boolean isNewClientBuild) throws Exception {
         com.facilio.accounts.dto.User currentUser = AccountUtil.getCurrentUser();
         if (currentUser != null) {
-            return FacilioService.runAsServiceWihReturn(() -> updateClientVersionervice(newVersion, isNewClientBuild, currentUser.getId()));
+            return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> updateClientVersionervice(newVersion, isNewClientBuild, currentUser.getId()));
         }
         else {
             throw new IllegalArgumentException("Current User cannot be null while updating Client Version");

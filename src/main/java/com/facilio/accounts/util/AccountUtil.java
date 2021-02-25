@@ -11,6 +11,7 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.transaction.FacilioConnectionPool;
@@ -42,12 +43,12 @@ public class AccountUtil {
 	public static void setCurrentAccount(Account account) throws Exception {
 		currentAccount.set(account);
 		setScopingMap(account);
-		FacilioServiceUtil.setCurrentService("app");
+		FacilioServiceUtil.setCurrentService(FacilioConstants.Services.APP_SERVICE);
 	}
 	
 	public static void setCurrentAccount(long orgId) throws Exception {
 		Organization org = null;
-		org = FacilioService.runAsServiceWihReturn(() ->IAMUtil.getOrgBean().getOrgv2(orgId));
+		org = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() ->IAMUtil.getOrgBean().getOrgv2(orgId));
 		
 		if (org != null) {
 

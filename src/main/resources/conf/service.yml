@@ -1,0 +1,4 @@
+version: 1.0
+services:
+  - serviceName: app
+    handlerClass: com.facilio.accounts.util.AppDataSourceImpl

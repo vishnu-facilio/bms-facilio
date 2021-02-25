@@ -3,6 +3,7 @@ package com.facilio.queue;
 import java.util.List;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.queue.service.FacilioDbQueue;
 import com.facilio.queue.service.FacilioQueueService;
 import com.facilio.queue.service.QueueMessage;
@@ -16,19 +17,19 @@ public class FacilioQueueException {
 	}
 	public static boolean addException(String message) throws Exception {
 		long orgId = AccountUtil.getCurrentOrg().getId();
-		return  FacilioService.runAsServiceWihReturn(() ->getInstance().push(message,orgId));
+		return  FacilioService.runAsServiceWihReturn(FacilioConstants.Services.INSTANT_JOB_SERVICE,() ->getInstance().push(message,orgId));
 	}
 
 	public static List<QueueMessage> pull(int limit) throws Exception{
-		return FacilioService.runAsServiceWihReturn(() ->getInstance().pull(limit));
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.INSTANT_JOB_SERVICE,() ->getInstance().pull(limit));
 	}		
 
 	public static void deleteQueue(String messageId) throws Exception {
-		FacilioService.runAsService(() ->getInstance().delete(messageId));
+		FacilioService.runAsService(FacilioConstants.Services.INSTANT_JOB_SERVICE,() ->getInstance().delete(messageId));
 	}
 
 	public static boolean changeVisibilityTimeout(String receiptHandle, int visibilityTimeout) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() ->getInstance().changeVisibilityTimeout(receiptHandle, visibilityTimeout));
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.INSTANT_JOB_SERVICE,() ->getInstance().changeVisibilityTimeout(receiptHandle, visibilityTimeout));
 	}
 	
 	public static void deleteExceptionQueue(long deleteTime) throws Exception {
