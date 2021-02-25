@@ -50,7 +50,6 @@ import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
-import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.InsertRecordBuilder;
@@ -1493,45 +1492,9 @@ public static long getSitesCount() throws Exception {
 	}
 
 	public static long getWorkOrdersCount(long spaceId) throws Exception {
-		
-		FacilioField countFld = new FacilioField();
-		countFld.setName("count");
-		countFld.setColumnName("COUNT(*)");
-		countFld.setDataType(FieldType.NUMBER);
-
-		List<FacilioField> fields = new ArrayList<>();
-		fields.add(countFld);
-		
-		FacilioField resourceIdFld = new FacilioField();
-		resourceIdFld.setName("resourceId");
-		resourceIdFld.setColumnName("RESOURCE_ID");
-		resourceIdFld.setModule(ModuleFactory.getTicketsModule());
-		resourceIdFld.setDataType(FieldType.NUMBER);
-
-		Condition spaceCond = new Condition();
-		spaceCond.setField(resourceIdFld);
-		spaceCond.setOperator(BuildingOperator.BUILDING_IS);
-		spaceCond.setValue(spaceId+"");
-
-		long orgId = AccountUtil.getCurrentOrg().getOrgId();
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.select(fields)
-				.table("WorkOrders")
-				.innerJoin("Tickets")
-				.on("WorkOrders.ID = Tickets.ID")
-				.innerJoin("TicketStatus")
-				.on("Tickets.STATUS_ID = TicketStatus.ID")
-				.andCustomWhere("WorkOrders.ORGID=? AND Tickets.ORGID = ? AND TicketStatus.ORGID = ? AND TicketStatus.STATUS_TYPE = ?", orgId, orgId, orgId, FacilioStatus.StatusType.OPEN.getIntVal())
-				.andCondition(spaceCond);
-		
-		List<Map<String, Object>> rs = builder.get();
-		if (rs == null || rs.isEmpty()) {
-			return 0;
-		}
-		else {
-			return ((Number) rs.get(0).get("count")).longValue();
-		}
+		return WorkOrderAPI.getOpenWoCountByResource(spaceId, BuildingOperator.BUILDING_IS);
 	}
+	
 	public static long getV2AlarmCount (long spaceId) throws  Exception {
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

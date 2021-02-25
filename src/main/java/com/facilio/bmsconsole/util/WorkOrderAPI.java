@@ -52,8 +52,10 @@ import com.facilio.db.criteria.operators.BuildingOperator;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.Operator;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FacilioStatus.StatusType;
@@ -3004,6 +3006,21 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 		return null;
 	}
    
-   
+   public static long getOpenWoCountByResource(long resourceId, Operator<String> operator) throws Exception {
+	   ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+	   FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+	   List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
+	   Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+	   SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
+               .module(module)
+               .beanClass(WorkOrderContext.class)
+               .aggregate(CommonAggregateOperator.COUNT, FieldFactory.getIdField(module))
+               .andCondition(ViewFactory.getOpenStatusCondition())
+               .andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), String.valueOf(resourceId), operator))
+               ;
+	   
+	   return builder.fetchFirst().getId();
+   }
   
  }
