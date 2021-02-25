@@ -8,6 +8,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.chain.FacilioChain;
@@ -15,12 +16,17 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.control.ControlGroupContext;
 import com.facilio.control.ControlScheduleExceptionContext;
+import com.facilio.control.ControlScheduleSlot;
 import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.DeleteRecordBuilder;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 
 public class PlanControlScheduleExceptionSlotCommand extends FacilioCommand {
@@ -42,6 +48,8 @@ public class PlanControlScheduleExceptionSlotCommand extends FacilioCommand {
 		else {
 			exception = (ControlScheduleExceptionContext) ControlScheduleUtil.getObjectFromRecordMap(context, moduleName);
 		}
+		
+		deleteCurrentExceptionSlots(exception);
 		
 		List<Long> relatedScheduleIds = new ArrayList<Long>();
 		if(exception.getSchedule() != null) {
@@ -117,9 +125,21 @@ public class PlanControlScheduleExceptionSlotCommand extends FacilioCommand {
 		return false;
 	}
 
-	private Object prop(List<Map<String, Object>> props) {
-		// TODO Auto-generated method stub
-		return null;
+	private void deleteCurrentExceptionSlots(ControlScheduleExceptionContext exception) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		List<FacilioField> slotFields = modBean.getAllFields(ControlScheduleUtil.CONTROL_SCHEDULE_UNPLANNED_SLOTS_MODULE_NAME);
+		
+		Map<String, FacilioField> slotFieldMap = FieldFactory.getAsMap(slotFields);
+		
+		DeleteRecordBuilder<ControlScheduleSlot> delete = new  DeleteRecordBuilder<ControlScheduleSlot>()
+				.moduleName(ControlScheduleUtil.CONTROL_SCHEDULE_UNPLANNED_SLOTS_MODULE_NAME)
+				.andCondition(CriteriaAPI.getCondition(slotFieldMap.get("exception"), exception.getId()+"", NumberOperators.EQUALS))
+				;
+		
+		delete.delete();
 	}
+
 
 }
