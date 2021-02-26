@@ -2886,7 +2886,7 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 				if (workOrder.getSiteId() == -1) {
 					workOrder.setSiteId(tenant.getSiteId());
 				}
-				else if (tenant.getSiteId() != workOrder.getSiteId()) {
+				else if (tenant.getSiteId() > 0 && tenant.getSiteId() != workOrder.getSiteId()) {
 					throw new IllegalArgumentException("Tenant doesn't bellong to work order site");
 				}
 			}
