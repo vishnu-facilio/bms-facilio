@@ -136,7 +136,8 @@ public class GetViewListCommand extends FacilioCommand {
 		
 		if (fetchByGroup != null && fetchByGroup) {
 			
-			List<FacilioView> customViews = allViews.stream().filter(view -> view.getIsDefault() != null && !view.getIsDefault()).collect(Collectors.toList());
+			List<FacilioView> customViews = new ArrayList<>();
+			
 			Optional<FacilioView> upcomingView = allViews.stream()
 					.filter(view -> view.getIsDefault() != null && view.getIsDefault() && view.getName() != null && view.getName().equals("upcoming")).findFirst();
 
