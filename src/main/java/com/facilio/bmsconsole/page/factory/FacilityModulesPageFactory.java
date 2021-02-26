@@ -29,19 +29,19 @@ public class FacilityModulesPageFactory extends PageFactory{
         Page.Section tab1Sec3 = page.new Section("Features Available");
         tab1.addSection(tab1Sec3);
         PageWidget featuresWidget = new PageWidget(PageWidget.WidgetType.FACILITY_FEATURES);
-        featuresWidget.addToLayoutParams(tab1Sec3, 24, 3);
+        featuresWidget.addToLayoutParams(tab1Sec3, 24, 2);
         tab1Sec3.addWidget(featuresWidget);
 
         Page.Section tab1Sec4 = page.new Section("Slot Information");
         tab1.addSection(tab1Sec4);
         PageWidget slotInfoWidget = new PageWidget(PageWidget.WidgetType.FACILITY_SLOT_INFORMATION);
-        slotInfoWidget.addToLayoutParams(tab1Sec4, 24, 10);
+        slotInfoWidget.addToLayoutParams(tab1Sec4, 24, 4);
         tab1Sec4.addWidget(slotInfoWidget);
 
         Page.Section tab1Sec5 = page.new Section();
         tab1.addSection(tab1Sec5);
         PageWidget specialAvailabilityWidget = new PageWidget(PageWidget.WidgetType.FACILITY_SPECIAL_AVAILABILITY);
-        specialAvailabilityWidget.addToLayoutParams(tab1Sec5, 24, 6);
+        specialAvailabilityWidget.addToLayoutParams(tab1Sec5, 24, 4);
         tab1Sec5.addWidget(specialAvailabilityWidget);
 
         addCommonSubModuleWidget(tab1Sec5, module, record);
@@ -65,19 +65,19 @@ public class FacilityModulesPageFactory extends PageFactory{
         Page.Section tab1Sec2 = page.new Section("Slot Information");
         tab1.addSection(tab1Sec2);
         PageWidget slotInfo = new PageWidget(PageWidget.WidgetType.BOOKING_SLOT_INFORMATION);
-        slotInfo.addToLayoutParams(tab1Sec2, 24, 8);
+        slotInfo.addToLayoutParams(tab1Sec2, 24, 2);
         tab1Sec2.addWidget(slotInfo);
 
         Page.Section tab1Sec3 = page.new Section();
         tab1.addSection(tab1Sec3);
         PageWidget bookingInternalAttendeesWidget = new PageWidget(PageWidget.WidgetType.BOOKING_INTERNAL_ATTENDEES);
-        bookingInternalAttendeesWidget.addToLayoutParams(tab1Sec3, 24, 8);
+        bookingInternalAttendeesWidget.addToLayoutParams(tab1Sec3, 24, 2);
         tab1Sec3.addWidget(bookingInternalAttendeesWidget);
 
         Page.Section tab1Sec4 = page.new Section();
         tab1.addSection(tab1Sec4);
         PageWidget bookingExternalAttendeesWidget = new PageWidget(PageWidget.WidgetType.BOOKING_EXTERNAL_ATTENDEES);
-        bookingExternalAttendeesWidget.addToLayoutParams(tab1Sec4, 24, 8);
+        bookingExternalAttendeesWidget.addToLayoutParams(tab1Sec4, 24, 2);
         tab1Sec4.addWidget(bookingExternalAttendeesWidget);
 
         Page.Section tab1Sec5 = page.new Section();

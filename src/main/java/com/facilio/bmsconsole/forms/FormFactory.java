@@ -461,6 +461,7 @@ public class FormFactory {
 
 		List<FacilioForm> facilityFormsList = Arrays.asList(getFacilityCreationForm());
 		List<FacilioForm> facilityBookingFormsList = Arrays.asList(getFacilityBookingForm());
+		List<FacilioForm> facilitySpecialAvailabilityFormsList = Arrays.asList(getFacilitySpecialAvailabilityForm());
 
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
@@ -510,6 +511,7 @@ public class FormFactory {
 				.put(ContextNames.PEOPLE, getFormMap(peopleFormsList))
 				.put(ContextNames.FacilityBooking.FACILITY, getFormMap(facilityFormsList))
 				.put(ContextNames.FacilityBooking.FACILITY_BOOKING, getFormMap(facilityBookingFormsList))
+				.put(ContextNames.FacilityBooking.FACILITY_SPECIAL_AVAILABILITY, getFormMap(facilitySpecialAvailabilityFormsList))
 				.build();
 	}
 	
@@ -2679,7 +2681,7 @@ public class FormFactory {
 
 	private static FacilioForm getFacilityBookingForm() {
 		FacilioForm form = new FacilioForm();
-		form.setDisplayName("Facility Booking");
+		form.setDisplayName("Booking");
 		form.setName("default_"+ ContextNames.FacilityBooking.FACILITY_BOOKING +"_web");
 		form.setModule(ModuleFactory.getModule(ContextNames.FacilityBooking.FACILITY_BOOKING));
 		form.setLabelPosition(LabelPosition.TOP);
@@ -2688,9 +2690,28 @@ public class FormFactory {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("facility", FieldDisplayType.LOOKUP_SIMPLE, "Facility", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("reservedFor", FieldDisplayType.LOOKUP_SIMPLE, "Reserved For", Required.OPTIONAL,"user",2, 1));
-		fields.add(new FormField("capacity", FieldDisplayType.NUMBER, "Capacity", Required.OPTIONAL,3, 1));
-		fields.add(new FormField("timeSlots", FieldDisplayType.FACILITY_BOOKING_SLOTS, "Time Slots", Required.OPTIONAL,4, 1));
+		fields.add(new FormField("noOfAttendees", FieldDisplayType.NUMBER, "Number Of Attendees", Required.OPTIONAL,3, 1));
+		fields.add(new FormField("bookingslot", FieldDisplayType.FACILITY_BOOKING_SLOTS, "Time Slots", Required.OPTIONAL,4, 1));
 		fields.add(new FormField("internalAttendees", FieldDisplayType.MULTI_USER_LIST, "Internal Attendees", Required.OPTIONAL,5, 1));
+		form.setFields(fields);
+		return form;
+	}
+
+	private static FacilioForm getFacilitySpecialAvailabilityForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("Special Availability");
+		form.setName("default_"+ ContextNames.FacilityBooking.FACILITY_SPECIAL_AVAILABILITY +"_web");
+		form.setModule(ModuleFactory.getModule(ContextNames.FacilityBooking.FACILITY_SPECIAL_AVAILABILITY));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFormType(FormType.WEB);
+
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("startDate", FieldDisplayType.DATE, "Start Date", Required.OPTIONAL,"user",1, 2));
+		fields.add(new FormField("endDate", FieldDisplayType.DATE, "End Date", Required.OPTIONAL,1, 3));
+		fields.add(new FormField("startTime", FieldDisplayType.TIME, "Start Time", Required.OPTIONAL,2, 2));
+		fields.add(new FormField("endTime", FieldDisplayType.TIME, "End Time", Required.OPTIONAL,2, 3));
+		fields.add(new FormField("cost", FieldDisplayType.NUMBER, "Cost", Required.OPTIONAL,3, 2));
+		fields.add(new FormField("specialType", FieldDisplayType.SELECTBOX, "Type", Required.OPTIONAL,3, 3));
 		form.setFields(fields);
 		return form;
 	}
