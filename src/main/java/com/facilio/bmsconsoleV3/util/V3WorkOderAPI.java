@@ -40,7 +40,7 @@ public class V3WorkOderAPI {
                 if (workOrder.getSiteId() == -1) {
                     workOrder.setSiteId(tenant.getSiteId());
                 }
-                else if (tenant.getSiteId() != workOrder.getSiteId()) {
+                else if (tenant.getSiteId() > 0 && tenant.getSiteId() != workOrder.getSiteId()) {
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Tenant doesn't belong to work order site");
                 }
             }
