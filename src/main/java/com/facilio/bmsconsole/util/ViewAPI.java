@@ -17,15 +17,15 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
+import com.facilio.bmsconsole.context.SingleSharingContext.SharingType;
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.context.ViewGroups;
-import com.facilio.bmsconsole.context.SingleSharingContext.SharingType;
 import com.facilio.bmsconsole.view.ColumnFactory;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.FacilioView.ViewType;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.view.ViewFactory;
+import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -92,53 +92,41 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 	}
 	
 	public static List<ViewGroups> getAllGroups(long moduleId,long appId) throws Exception {
-		
+	
 		List<ViewGroups> viewGroups = new ArrayList<>();
 		if (moduleId > -1) {
+			List<FacilioField> fields = FieldFactory.getViewGroupFields();
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+	
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-					.select(FieldFactory.getViewGroupFields())
+					.select(fields)
 					.table(ModuleFactory.getViewGroupsModule().getTableName())
-					.andCondition(CriteriaAPI.getCondition("MODULEID","moduleId",String.valueOf(moduleId), NumberOperators.EQUALS));
-			
-			if (appId > 0) {
-				ApplicationContext app = ApplicationApi.getApplicationForId(appId);
-				if(app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
-					Condition condition1 = CriteriaAPI.getCondition("APP_ID","appId",String.valueOf(appId), NumberOperators.EQUALS);
-					Condition condition2 = CriteriaAPI.getCondition("APP_ID","appId","", CommonOperators.IS_EMPTY);
-					
-					Criteria criteria = new Criteria();					
-					criteria.addOrCondition(condition1);
-					criteria.addOrCondition(condition2);
-					
-					selectBuilder.andCriteria(criteria);
-				}
-				else {
-					selectBuilder.andCondition(CriteriaAPI.getCondition("APP_ID","appId",String.valueOf(appId), NumberOperators.EQUALS));
-				}
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"),String.valueOf(moduleId), NumberOperators.EQUALS));
+	
+			ApplicationContext app = appId <= 0 ? AccountUtil.getCurrentApp() : ApplicationApi.getApplicationForId(appId);
+			if (app == null) {
+				app = ApplicationApi.getApplicationForLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 			}
-			else {
-				ApplicationContext currentApp = AccountUtil.getCurrentApp();
-				
-				if(currentApp.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
-					selectBuilder.andCondition(CriteriaAPI.getCondition("APP_ID","appId","", CommonOperators.IS_EMPTY));
-				}else {
-					selectBuilder.andCondition(CriteriaAPI.getCondition("APP_ID","appId",String.valueOf(currentApp.getId()), NumberOperators.EQUALS));
-				}
+	
+			Criteria appCriteria = new Criteria();
+			appCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("appId"), String.valueOf(app.getId()), NumberOperators.EQUALS));
+			if(app.getLinkName().equals(ApplicationLinkNames.FACILIO_MAIN_APP)) {
+				appCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("appId"), CommonOperators.IS_EMPTY));
 			}
 			List<Map<String, Object>> props = selectBuilder.get();
-			
+	
 			if (props != null && !props.isEmpty()) {
-				
+	
 				for(Map<String, Object> prop : props) {
 					ViewGroups viewGroup = FieldUtil.getAsBeanFromMap(prop, ViewGroups.class);
 					viewGroups.add(viewGroup);
 				}
 			}
 		}
-		
+	
 		return viewGroups;
-		
-		
+	
+	
 	}
 
 	public static List<FacilioView> getAllViews(long moduleId, String... moduleName) throws Exception {
