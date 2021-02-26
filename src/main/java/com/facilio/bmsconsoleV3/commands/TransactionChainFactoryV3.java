@@ -785,6 +785,7 @@ public class TransactionChainFactoryV3 {
     
     public static FacilioChain getUpdateOrDeleteControlGroupSlotAfterSaveChain() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new DeleteExceptionsForOneTimeSlotCommand());
         c.addCommand(new FetchCurrentDaySlotsCommand());
         c.addCommand(new PlanControlGroupFinalSlots());
         c.addCommand(new PlanControlGroupCommands());

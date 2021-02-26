@@ -8,6 +8,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.control.ControlScheduleSlot;
@@ -32,6 +33,8 @@ public class FetchControlGroupSlotObjectForDelete extends FacilioCommand {
 		recordMap.put((String)context.get(FacilioConstants.ContextNames.MODULE_NAME), records);
 		
 		context.put(FacilioConstants.ContextNames.RECORD_MAP, recordMap);
+		
+		context.put(FacilioConstants.ContextNames.ACTION, "delete");
 		return false;
 	}
 
