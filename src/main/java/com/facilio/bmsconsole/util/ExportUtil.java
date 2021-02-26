@@ -146,6 +146,9 @@ public class ExportUtil {
 					}
 					else {
 						value =	getValue(recordProp, vf);
+						if(IsLookUpRecordDeleted(modVsData, field, value)) {
+							value = null;
+						}
 					}
 					if(value != null)
 					{
@@ -181,6 +184,44 @@ public class ExportUtil {
 	
 			return fileId;
 		}
+	}
+	
+	public static boolean IsLookUpRecordDeleted(Map<String, Map<Long, Object>> modVsData, FacilioField field, Object value) {
+		
+		if(value != null && field.getDataTypeEnum().equals(FieldType.LOOKUP)){
+			LookupField lookupField= (LookupField)field;
+			String moduleName=lookupField.getSpecialType();
+			if(!LookupSpecialTypeUtil.isSpecialType((moduleName))) {
+				moduleName= lookupField.getLookupModule().getName();
+			}
+			Map<Long,Object> idMap= modVsData.get(moduleName);
+			if(idMap!=null) {
+				
+				long val = 0;
+				if (value instanceof Map) {
+					val = (long)((Map) value).get("id");
+				}
+				else if (value instanceof String){
+					try {
+						val = Long.parseLong(value.toString());
+					}
+					catch(NumberFormatException e) {
+					}
+				}
+				else {
+					val = (long) value;
+				}
+				
+				if(idMap.get(val) == null) {
+					return true;
+				}
+				
+			}else {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	public static String exportDataAsXLS(String name, Map<String,Object> table, boolean isS3Url) throws Exception 
@@ -345,6 +386,9 @@ public class ExportUtil {
 					}
 					else {
 						value =	getValue(recordProp, vf);
+						if(IsLookUpRecordDeleted(modVsData, field, value)) {
+							value = null;
+						}
 					}
 		    			if(value != null)
 		    			{
