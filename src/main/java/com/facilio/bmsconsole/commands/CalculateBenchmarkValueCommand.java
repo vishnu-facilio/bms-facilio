@@ -64,7 +64,7 @@ public class CalculateBenchmarkValueCommand extends FacilioCommand {
 						if (areaUnit != null) {
 							BenchmarkUnit unit = new BenchmarkUnit();
 							unit.setFromUnit(areaUnit);
-							unit.setToUnit(UnitsUtil.getOrgDisplayUnit(AccountUtil.getCurrentOrg().getId(), Metric.AREA));
+							unit.setToUnit( AccountUtil.getOrgBean().getOrgDisplayUnit(Metric.AREA));
 							unit.setVal(area);
 							if (units == null) {
 								units = new ArrayList<>();

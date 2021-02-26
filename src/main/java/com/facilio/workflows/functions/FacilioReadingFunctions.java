@@ -375,7 +375,7 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 					}
 					int displayUnit = numberField.getUnitId();
 					if(displayUnit < 0) {
-						displayUnit = UnitsUtil.getOrgDisplayUnit(AccountUtil.getCurrentOrg().getId(), numberField.getMetric()).getUnitId();
+						displayUnit =  AccountUtil.getOrgBean().getOrgDisplayUnit(numberField.getMetric()).getUnitId();
 					}
 					
 					readingVal = UnitsUtil.convert(readingVal, displayUnit, inputUnit);

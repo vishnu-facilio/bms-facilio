@@ -1221,7 +1221,7 @@ public class FormulaFieldAPI {
 					return numberfield.getUnitEnum();
 				}
 				else {
-					return UnitsUtil.getOrgDisplayUnit(AccountUtil.getCurrentOrg().getId(), numberfield.getMetricEnum());
+					return  AccountUtil.getOrgBean().getOrgDisplayUnit(numberfield.getMetricEnum());
 				}
 			}
 		}

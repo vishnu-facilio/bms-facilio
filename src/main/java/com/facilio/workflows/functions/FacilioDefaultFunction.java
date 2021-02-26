@@ -251,7 +251,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 				metric = CardUtil.getMetic(moduleRefObject, fieldRefObject);
 			}
 			if(metric > 0) {
-				return UnitsUtil.getOrgDisplayUnit(AccountUtil.getCurrentOrg().getId(), metric);
+				return  AccountUtil.getOrgBean().getOrgDisplayUnit(metric);
 			}
 			return null;
 		}

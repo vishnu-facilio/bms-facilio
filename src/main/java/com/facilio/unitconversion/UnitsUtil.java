@@ -102,7 +102,7 @@ public class UnitsUtil {
 		if(from.getMetric().getMetricId() == Metric.CURRENCY.getMetricId()) {
 			return Double.parseDouble(value.toString());
 		}
-		Unit orgDisplayUnit = getOrgDisplayUnit(AccountUtil.getCurrentOrg().getOrgId(),from.getMetric().getMetricId());
+		Unit orgDisplayUnit = AccountUtil.getOrgBean().getOrgDisplayUnit(from.getMetric().getMetricId());
 		return convert(value, from, orgDisplayUnit);
 	}
 
@@ -124,7 +124,7 @@ public class UnitsUtil {
 				displayUnit = Unit.valueOf(numberField.getUnitId());
 			}
 			else {
-				displayUnit = getOrgDisplayUnit(AccountUtil.getCurrentOrg().getId(), numberField.getMetric());
+				displayUnit = AccountUtil.getOrgBean().getOrgDisplayUnit(numberField.getMetric());
 			}
 			return displayUnit;
 		}
@@ -162,7 +162,7 @@ public class UnitsUtil {
 		if(metricId == Metric.CURRENCY.getMetricId()) {
 			return Double.parseDouble(value.toString());
 		}
-		Unit orgDisplayUnit = getOrgDisplayUnit(AccountUtil.getCurrentOrg().getOrgId(),metricId);
+		Unit orgDisplayUnit = AccountUtil.getOrgBean().getOrgDisplayUnit(metricId);
 		return convert(value, Unit.valueOf(Metric.valueOf(metricId).getSiUnitId()) , orgDisplayUnit);
 	}
 	
@@ -205,7 +205,7 @@ public class UnitsUtil {
 			return false;
 	}
 	
-	public static Unit getOrgDisplayUnit(Long orgid, int metricId) throws Exception {
+	public static Unit getOrgDisplayUnit ( int metricId ) throws Exception {
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.table(ModuleFactory.getOrgUnitsModule().getTableName())
@@ -224,8 +224,8 @@ public class UnitsUtil {
 		return Unit.valueOf(Metric.valueOf(metricId).getSiUnitId());
 	}
 	
-	public static Unit getOrgDisplayUnit(Long orgid, Metric metric) throws Exception {
-		return getOrgDisplayUnit(orgid, metric.getMetricId());
+	public static Unit getOrgDisplayUnit ( Metric metric ) throws Exception {
+		return  getOrgDisplayUnit(metric.getMetricId());
 	} 
 	
 	public static List<OrgUnitsContext> getOrgUnitsList() throws Exception {

@@ -57,7 +57,7 @@ public class CardUtil {
 			int metricId = getMetic((String) params.get("moduleName"), (String) params.get("fieldName"));
 			
 			if(metricId > 0) {
-				return UnitsUtil.getOrgDisplayUnit(AccountUtil.getCurrentOrg().getId(), metricId);
+				return AccountUtil.getOrgBean().getOrgDisplayUnit(metricId);
 			}
 			if(field instanceof NumberField) {
 				NumberField numberField = (NumberField) field;

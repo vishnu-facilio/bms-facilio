@@ -3,6 +3,8 @@ package com.facilio.accounts.bean;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.unitconversion.Metric;
+import com.facilio.unitconversion.Unit;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.AppDomain.AppDomainType;
@@ -60,4 +62,12 @@ public interface OrgBean {
 	public void copyReadingValue(List<Map<String,Object>> porp, FacilioModule module, long targetOrgId, long targetAssetId, long timeDiff, List<FacilioField> fields, long targetId)throws Exception;
 	
 	public List getEnergyMeterList() throws Exception;
+
+	public Unit getOrgDisplayUnit(int metricId) throws Exception;
+
+	public Unit getOrgDisplayUnit(Metric metric) throws Exception;
+
+	public boolean updateOrgUnit(int metric,int unit) throws Exception;
+
+	public void updateOrgUnitsList(JSONObject metricUnitMap) throws Exception;
 }

@@ -1,16 +1,5 @@
 package com.facilio.accounts.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONObject;
-
 import com.chargebee.internal.StringJoiner;
 import com.facilio.accounts.bean.OrgBean;
 import com.facilio.accounts.bean.UserBean;
@@ -26,6 +15,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.copyAssetReadingCommand;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.context.OrgUnitsContext;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.SpaceAPI;
@@ -44,9 +34,19 @@ import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
+import com.facilio.unitconversion.Metric;
+import com.facilio.unitconversion.Unit;
+import com.facilio.unitconversion.UnitsUtil;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class OrgBeanImpl implements OrgBean {
 
@@ -69,12 +69,12 @@ public class OrgBeanImpl implements OrgBean {
 	public Organization getOrg(String orgDomain) throws Exception {
 		return IAMOrgUtil.getOrg(orgDomain);
 	}
-	
+
 	@Override
 	public List<Organization> getOrgs() throws Exception {
 		return IAMOrgUtil.getOrgs();
 	}
-	
+
 	@Override
 	public PortalInfoContext getPortalInfo(long id, boolean isPortalId) throws Exception {
 		FacilioModule portalInfoModule = AccountConstants.getPortalInfoModule();
@@ -91,31 +91,31 @@ public class OrgBeanImpl implements OrgBean {
 		Map<String, Object> portalMap = selectBuilder.fetchFirst();
 		return FieldUtil.getAsBeanFromMap(portalMap, PortalInfoContext.class);
 	}
-	
+
 	@Override
 	public List<User> getAppUsers(long orgId, long appId, boolean checkAccessibleSites)
 			throws Exception {
 		return getAppUsers(orgId, appId, checkAccessibleSites, false);
 	}
-	
+
     @Override
 	public List<User> getAppUsers(long orgId, long appId, boolean checkAccessibleSites, boolean fetchNonAppUsers) throws Exception {
-    	
+
 		User currentUser = AccountUtil.getCurrentAccount().getUser();
 		if(currentUser == null){
 			return null;
 		}
-		
+
 		if(appId <= 0) {
 			appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
 		}
-	    	
+
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getAppOrgUserFields());
 		fields.add(AccountConstants.getApplicationIdField());
-		
+
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		
+
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("ORG_Users")
@@ -123,7 +123,7 @@ public class OrgBeanImpl implements OrgBean {
 				.on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID")
 				.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS))
 				;
-		
+
 		if (fetchNonAppUsers) {
 			List<Long> appUserIds = getAppUserIds(appId, selectBuilder, fieldMap);
 			if (appUserIds != null) {
@@ -133,7 +133,7 @@ public class OrgBeanImpl implements OrgBean {
 		else {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("applicationId"), String.valueOf(appId), NumberOperators.EQUALS));
 		}
-		
+
 		if(checkAccessibleSites) {
 			List<Long> accessibleSpace = currentUser.getAccessibleSpace();
 			String siteIdCondition = "";
@@ -145,33 +145,33 @@ public class OrgBeanImpl implements OrgBean {
 						siteIds.add(baseSpace.getSiteId());
 					}
 				}
-				
+
 				if (!siteIds.isEmpty()) {
 					siteIdCondition = StringUtils.join(siteIds, ',');
 					siteIdCondition = "(" + siteIdCondition + ")";
 				}
 			}
-			
+
 			long currentSiteId = AccountUtil.getCurrentSiteId();
-			
+
 			String whereCondition = "";
 			if (currentSiteId > 0 && !siteIdCondition.isEmpty()) {
 				whereCondition = "((not exists(select 1 from Accessible_Space where Accessible_Space.ORG_USER_ID=ORG_Users.ORG_USERID)) OR (exists(select 1 from Accessible_Space where Accessible_Space.ORG_USER_ID=ORG_Users.ORG_USERID AND Accessible_Space.SITE_ID = " + String.valueOf(currentSiteId);
 				whereCondition += " and Accessible_Space.SITE_ID IN" + siteIdCondition + ")))" ;
 			} else if (currentSiteId > 0 && siteIdCondition.isEmpty()) {
-				whereCondition = "((not exists(select 1 from Accessible_Space where Accessible_Space.ORG_USER_ID=ORG_Users.ORG_USERID)) OR (exists(select 1 from Accessible_Space where Accessible_Space.ORG_USER_ID=ORG_Users.ORG_USERID AND Accessible_Space.SITE_ID = " + String.valueOf(currentSiteId) + ")))"; 
+				whereCondition = "((not exists(select 1 from Accessible_Space where Accessible_Space.ORG_USER_ID=ORG_Users.ORG_USERID)) OR (exists(select 1 from Accessible_Space where Accessible_Space.ORG_USER_ID=ORG_Users.ORG_USERID AND Accessible_Space.SITE_ID = " + String.valueOf(currentSiteId) + ")))";
 			} else if (currentSiteId <= 0 && !siteIdCondition.isEmpty()) {
 				whereCondition = "((not exists(select 1 from Accessible_Space where Accessible_Space.ORG_USER_ID=ORG_Users.ORG_USERID)) OR (exists(select 1 from Accessible_Space where Accessible_Space.ORG_USER_ID=ORG_Users.ORG_USERID ";
 				whereCondition += " and Accessible_Space.SITE_ID IN" + siteIdCondition + ")))" ;
 			}
-			
-			
+
+
 			if(!whereCondition.isEmpty()) {
 				selectBuilder
 					.andCustomWhere(whereCondition);
 			}
 		}
-		
+
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
@@ -186,22 +186,22 @@ public class OrgBeanImpl implements OrgBean {
 		}
 		return null;
 	}
-    
+
     private List<Long> getAppUserIds(long appId, GenericSelectRecordBuilder builder, Map<String, FacilioField> fieldMap) throws Exception {
     		List<Long> userIds = null;
-    		
+
     		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder(builder)
     					.select(Collections.singletonList(fieldMap.get("ouid")))
     					.andCondition(CriteriaAPI.getCondition(fieldMap.get("applicationId"), String.valueOf(appId), NumberOperators.EQUALS));
     					;
-    		
+
     		List<Map<String, Object>> props = selectBuilder.get();
     		if (CollectionUtils.isNotEmpty(props)) {
     			userIds = props.stream().map(prop -> (long) prop.get("ouid")).collect(Collectors.toList());
     		}
     		return userIds;
     }
-	
+
 	@Override
 	public List<User> getOrgUsers(long orgId, boolean status) throws Exception {
 		List<User> userList = getDefaultAppUsers(orgId);
@@ -216,15 +216,15 @@ public class OrgBeanImpl implements OrgBean {
 		}
 		return null;
 	}
-	
+
 	@Override
 	public List<User> getDefaultAppUsers(long orgId) throws Exception {
 		return getAppUsers(orgId, ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP), false);
 	}
-	
+
 	@Override
 	public Map<Long, User> getOrgUsersAsMap(long orgId) throws Exception {
-		
+
 		List<User> userList = getDefaultAppUsers(orgId);
 		Map<Long, User> map = new HashMap<Long, User>();
 		if(CollectionUtils.isNotEmpty(userList)) {
@@ -235,19 +235,19 @@ public class OrgBeanImpl implements OrgBean {
 		}
 		return null;
 	}
-	
+
 	private List<Map<String, Object>> fetchOrgUserProps (long orgId, Criteria criteria, List<Long> applicationIds) throws Exception {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getAppOrgUserFields());
-		
+
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("ORG_Users")
 				.innerJoin("ORG_User_Apps")
 				.on("ORG_User_Apps.ORG_USERID = ORG_Users.ORG_USERID")
-				
+
 				;
-		
+
 		if(criteria != null) {
 			selectBuilder.andCriteria(criteria);
 		}
@@ -259,7 +259,7 @@ public class OrgBeanImpl implements OrgBean {
 			}
 			selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.APPLICATION_ID", "applicationId", idString.toString(), NumberOperators.EQUALS));
 		}
-							
+
 		return selectBuilder.get();
 	}
 
@@ -277,21 +277,21 @@ public class OrgBeanImpl implements OrgBean {
 		}
 		return null;
 	}
-	
+
 	@Override
 	public User getSuperAdmin(long orgId) throws Exception {
-		
+
 		Role superAdminRole = AccountUtil.getRoleBean().getRole(orgId, AccountConstants.DefaultRole.SUPER_ADMIN, false);
 		long applicationId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
-		
+
 		if(superAdminRole == null) {
 			return null;
 		}
-		
+
 		List<FacilioField> fields = new ArrayList<>();
 		 fields.addAll(AccountConstants.getAppOrgUserFields());
 		fields.add(AccountConstants.getOrgIdField(AccountConstants.getAppOrgUserModule()));
-		
+
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("ORG_Users")
@@ -299,11 +299,11 @@ public class OrgBeanImpl implements OrgBean {
 				.on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID")
 				.innerJoin("Role")
 				.on("ORG_Users.ROLE_ID = Role.ROLE_ID");
-		
+
 		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.ROLE_ID", "roleId", String.valueOf(superAdminRole.getRoleId()), NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.APPLICATION_ID", "applicationId", String.valueOf(applicationId), NumberOperators.EQUALS));
-		
+
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			IAMUserUtil.setIAMUserPropsv3(props, orgId, false);
@@ -313,7 +313,7 @@ public class OrgBeanImpl implements OrgBean {
 		}
 		return null;
 	}
-	
+
 
 	@Override
 	public long getFeatureLicense() throws Exception{
@@ -321,7 +321,7 @@ public class OrgBeanImpl implements OrgBean {
 				.select(AccountConstants.getFeatureLicenseFields())
 				.table(AccountConstants.getFeatureLicenseModule().getTableName());
 //				.andCondition(CriteriaAPI.getCondition(AccountConstants.getOrgIdField(AccountConstants.getFeatureLicenseModule()), orgidString, StringOperators.IS));
-		
+
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (CollectionUtils.isNotEmpty(props)) {
 			Map<String, Object> moduleMap = props.get(0);
@@ -331,7 +331,7 @@ public class OrgBeanImpl implements OrgBean {
 			throw new IllegalArgumentException("Invalid org id for geting feature license");
 		}
 	}
-	
+
 	@Override
 	public boolean isFeatureEnabled(FeatureLicense featureLicense) throws Exception {
 		return (getFeatureLicense() & featureLicense.getLicense()) == featureLicense.getLicense();
@@ -341,15 +341,15 @@ public class OrgBeanImpl implements OrgBean {
     	GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(AccountConstants.getFeatureLicenseModule().getTableName())
 				.fields(AccountConstants.getFeatureLicenseFields());
-    	
+
     	updateBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(AccountUtil.getCurrentOrg().getId()), NumberOperators.EQUALS));
-	
+
 		Map<String, Object> props = new HashMap<>();
 		props.put("module", summodule);
 	 	int value = updateBuilder.update(props);
 	 	return value;
 	}
-	
+
 	public JSONObject orgInfo() throws Exception{
 		JSONObject result = new JSONObject();
     	FacilioModule module = AccountConstants.getOrgInfoModule();
@@ -357,36 +357,36 @@ public class OrgBeanImpl implements OrgBean {
 				.select(AccountConstants.getOrgInfoFields())
 				.table(module.getTableName());
 //				.andCustomWhere("ORGID = ?", orgId);
-		
+
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			for (Map<String, Object> prop : props) {
 				result.put(prop.get("name"), prop.get("value"));
 			}
-			
+
 		}
-			
+
 		return result;
 	}
 
-	@Override 
-    public List<User> getOrgPortalUsers(long orgId, long appId) throws Exception { 
+	@Override
+    public List<User> getOrgPortalUsers(long orgId, long appId) throws Exception {
       	return getAppUsers(orgId, appId, false);
     }
-	
-	@Override 
-    public List<User> getRequesterTypeUsers(long orgId, boolean status) throws Exception { 
+
+	@Override
+    public List<User> getRequesterTypeUsers(long orgId, boolean status) throws Exception {
   		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getAppOrgUserFields());
-		
+
 		String mainAppLinkNames = FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP +","+ FacilioConstants.ApplicationLinkNames.FACILIO_AGENT_APP;
-		
+
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("ORG_Users")
 		;
 		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
-	
+
 		fields.add(AccountConstants.getApplicationIdField());
 		selectBuilder.innerJoin("ORG_User_Apps")
 			.on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID")
@@ -394,7 +394,7 @@ public class OrgBeanImpl implements OrgBean {
 			.on("Application.ID = ORG_User_Apps.APPLICATION_ID")
 			;
 		selectBuilder.andCondition(CriteriaAPI.getCondition("LINK_NAME", "linkName", mainAppLinkNames, StringOperators.ISN_T));
-					
+
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
@@ -417,7 +417,7 @@ public class OrgBeanImpl implements OrgBean {
 
 	@Override
 	public void updateLoggerLevel(int level, long orgId) throws Exception {
-		 // TODO Auto-generated method stub 
+		 // TODO Auto-generated method stub
 		IAMOrgUtil.updateLoggerLevel(level, orgId);
 	}
 
@@ -425,11 +425,11 @@ public class OrgBeanImpl implements OrgBean {
 	public void copyReadingValue(List<Map<String, Object>> prop, FacilioModule module,long orgId,long assetId,long timeDiff, List<FacilioField> fields , long targetmodId) throws Exception {
 		// TODO Auto-generated method stub
 		copyAssetReadingCommand.insertAssetCopyValue(prop,module,orgId,assetId,timeDiff,fields , targetmodId);
-	} 
-	
+	}
+
 	@Override
 	public Organization getPortalOrg(long portalId, AppDomainType appType) throws Exception {
-		
+
 		PortalInfoContext portalInfo = getPortalInfo(portalId, true);
 		if (portalInfo == null) {
 			throw new IllegalArgumentException("Portal not found");
@@ -446,10 +446,10 @@ public class OrgBeanImpl implements OrgBean {
 
 		if(appType == AppDomainType.SERVICE_PORTAL) {
 	        if(portalInfo.getCustomDomain() != null) {
-	            org.setDomain(portalInfo.getCustomDomain()); 
-	        } else { 
+	            org.setDomain(portalInfo.getCustomDomain());
+	        } else {
 	            org.setDomain(org.getDomain() + "." + FacilioProperties.getOccupantAppDomain());
-	        } 
+	        }
 		}
 		else if(appType == AppDomainType.TENANT_PORTAL) {
 			org.setDomain(org.getDomain() + FacilioProperties.getTenantAppDomain());
@@ -460,21 +460,78 @@ public class OrgBeanImpl implements OrgBean {
 		else if(appType == AppDomainType.CLIENT_PORTAL) {
 			org.setDomain(org.getDomain() + FacilioProperties.getClientAppDomain());
 		}
-		
-	             
+
+
 	   return org;
 	}
-	
+
 	@Override
 	public List getEnergyMeterList() throws Exception {
-		
+
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CV_NAME, "all");
-		
+
 		FacilioChain getEnergyMeterListChain = FacilioChainFactory.getEnergyMeterListChain();
 		getEnergyMeterListChain.execute(context);
-		
+
 		return ((List<EnergyMeterContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST));
 	}
-	
+	@Override
+	public Unit getOrgDisplayUnit ( int metricId ) throws Exception {
+		List<FacilioField> fields = FieldFactory.getOrgUnitsFields();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getOrgUnitsModule().getTableName())
+				.select(fields)
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(fields).get("metric"),String.valueOf(metricId),NumberOperators.EQUALS));
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if(props != null && !props.isEmpty()) {
+			Map<String, Object> prop = props.get(0);
+			int unitid = (int)prop.get("unit");
+			return Unit.valueOf(unitid);
+		}
+		return Unit.valueOf(Metric.valueOf(metricId).getSiUnitId());
+	}
+
+	@Override
+	public Unit getOrgDisplayUnit ( Metric metric ) throws Exception {
+		return getOrgDisplayUnit(metric.getMetricId());
+	}
+
+	@Override
+	public boolean updateOrgUnit ( int metric,int unit ) throws Exception {
+		List<FacilioField> fields = FieldFactory.getOrgUnitsFields();
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(ModuleFactory.getOrgUnitsModule().getTableName())
+				.fields(fields)
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(fields).get("metric"),String.valueOf(metric),NumberOperators.EQUALS));
+
+		Map<String, Object> props = new HashMap<>();
+		props.put("unit",unit);
+		int updatedRows = updateBuilder.update(props);
+		return (updatedRows > 0);
+	}
+
+	@Override
+	public void updateOrgUnitsList ( JSONObject metricUnitMap ) throws Exception {
+		Objects.requireNonNull(metricUnitMap,"Exception occurrend while updating Org Display unit map is null");
+		List<OrgUnitsContext> orgUnitsContexts = UnitsUtil.getOrgUnitsList();
+		List<FacilioField> fields = FieldFactory.getOrgUnitsFields();
+		FacilioModule module = ModuleFactory.getOrgUnitsModule();
+		for(OrgUnitsContext orgUnitsContext :orgUnitsContexts) {
+			Integer unit = (Integer) metricUnitMap.get(orgUnitsContext.getMetric());
+			if(!unit.equals(orgUnitsContext.getUnit())) {
+
+				GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+						.table(module.getTableName())
+						.fields(fields)
+						.andCondition(CriteriaAPI.getIdCondition(orgUnitsContext.getId(),module));
+
+				Map<String, Object> props = new HashMap<>();
+				props.put("unit", unit);
+				updateBuilder.update(props);
+			}
+		}
+	}
+
 }
