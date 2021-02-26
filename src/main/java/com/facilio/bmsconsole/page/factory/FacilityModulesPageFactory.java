@@ -17,7 +17,7 @@ public class FacilityModulesPageFactory extends PageFactory{
         Page.Section tab1Sec1 = page.new Section();
         tab1.addSection(tab1Sec1);
         PageWidget previewWidget = new PageWidget(PageWidget.WidgetType.SECONDARY_DETAILS_WIDGET);
-        previewWidget.addToLayoutParams(tab1Sec1, 24, 5);
+        previewWidget.addToLayoutParams(tab1Sec1, 24, 6);
         tab1Sec1.addWidget(previewWidget);
 
         Page.Section tab1Sec2 = page.new Section("Photos");
