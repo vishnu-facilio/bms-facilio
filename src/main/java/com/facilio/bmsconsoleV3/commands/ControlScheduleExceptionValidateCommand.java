@@ -89,10 +89,10 @@ public class ControlScheduleExceptionValidateCommand extends FacilioCommand {
 				for(DateRange currentExceptionRange : currentExceptionRanges) {
 					
 					if(currentExceptionRange.getStartTime() >= slot.getStartTime() && currentExceptionRange.getStartTime() < slot.getEndTime()) {
-						throw new RESTException(ErrorCode.VALIDATION_ERROR,"Current Schedule is overlaping with a edited schedule - "+exception.getName() +" on " + DateTimeUtil.getFormattedTime(st,"dd-MMM-yyyy"));
+						throw new RESTException(ErrorCode.VALIDATION_ERROR,"Schedule is overlaping with a edited schedule - "+exception.getName() +" on " + DateTimeUtil.getFormattedTime(st,"dd-MMM-yyyy"));
 					}
 					if(currentExceptionRange.getEndTime() > slot.getStartTime() && currentExceptionRange.getEndTime() <= slot.getEndTime()) {
-						throw new RESTException(ErrorCode.VALIDATION_ERROR,"Current Schedule is overlaping with a edited schedule - "+exception.getName() +" on " + DateTimeUtil.getFormattedTime(st,"dd-MMM-yyyy"));
+						throw new RESTException(ErrorCode.VALIDATION_ERROR,"Schedule is overlaping with a edited schedule - "+exception.getName() +" on " + DateTimeUtil.getFormattedTime(st,"dd-MMM-yyyy"));
 					}
 				}
 			}
@@ -118,10 +118,10 @@ public class ControlScheduleExceptionValidateCommand extends FacilioCommand {
 					for(DateRange currentExceptionRange : currentExceptionRanges) {
 						
 						if(currentExceptionRange.getStartTime() >= range.getStartTime() && currentExceptionRange.getStartTime() < range.getEndTime()) {
-							throw new RESTException(ErrorCode.VALIDATION_ERROR,"Current Schedule is overlaping with schedule - on " + DateTimeUtil.getFormattedTime(range.getStartTime(),"dd-MMM-yyyy"));
+							throw new RESTException(ErrorCode.VALIDATION_ERROR,"Schedule is overlaping with another schedule");
 						}
 						if(currentExceptionRange.getEndTime() > range.getStartTime() && currentExceptionRange.getEndTime() <= range.getEndTime()) {
-							throw new RESTException(ErrorCode.VALIDATION_ERROR,"Current Schedule is overlaping with schedule - on " + DateTimeUtil.getFormattedTime(range.getStartTime(),"dd-MMM-yyyy"));
+							throw new RESTException(ErrorCode.VALIDATION_ERROR,"Schedule is overlaping with another schedule");
 						}
 					}
 				}
@@ -169,20 +169,20 @@ public class ControlScheduleExceptionValidateCommand extends FacilioCommand {
 					}
 					if(stLocal.isBefore(rangeSt) && etLocal.isAfter(rangeEt)) {
 						if(!exception.isOffSchedule()) {
-							throw new RESTException(ErrorCode.VALIDATION_ERROR,"Extended hour schedule is within the scheduled hours on "+dayofWeek.name());
+							throw new RESTException(ErrorCode.VALIDATION_ERROR,"Extended hour schedule is within the scheduled hours");
 						}
 					}
 				}
 			}
 			if(exception.isOffSchedule()) {
 				if(isStartTimeWithinRange != true ||  isEndTimeWithinRange != true) {
-					throw new RESTException(ErrorCode.VALIDATION_ERROR,"Reduced hour schedule is not within the scheduled hours on "+dayofWeek.name());
+					throw new RESTException(ErrorCode.VALIDATION_ERROR,"Reduced hour schedule is not within the scheduled hours");
 				}
 				
 			}
 			else {
 				if(isStartTimeWithinRange == true || isEndTimeWithinRange == true) {
-					throw new RESTException(ErrorCode.VALIDATION_ERROR,"Extended hour schedule is within the scheduled hours on "+dayofWeek.name());
+					throw new RESTException(ErrorCode.VALIDATION_ERROR,"Extended hour schedule is within the scheduled hours");
 				}
 			}
 		}
