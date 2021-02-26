@@ -21,6 +21,7 @@ import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
@@ -111,6 +112,9 @@ public class GetFormMetaCommand extends FacilioCommand {
 		else if(formId != null && formId > 0) {
 			form= FormsAPI.getFormFromDB(formId);
 			context.put(FacilioConstants.ContextNames.FORM, form);
+			if (form != null && formModuleName == null ) {
+				context.put(ContextNames.MODULE_NAME, form.getModule().getName());
+			}
 		}
 		if (form != null) {
 			if (AccountUtil.getCurrentUser() == null) {
