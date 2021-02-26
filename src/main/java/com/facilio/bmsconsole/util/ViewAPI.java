@@ -113,6 +113,7 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 			if(app.getLinkName().equals(ApplicationLinkNames.FACILIO_MAIN_APP)) {
 				appCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("appId"), CommonOperators.IS_EMPTY));
 			}
+			selectBuilder.andCriteria(appCriteria);
 			List<Map<String, Object>> props = selectBuilder.get();
 	
 			if (props != null && !props.isEmpty()) {
