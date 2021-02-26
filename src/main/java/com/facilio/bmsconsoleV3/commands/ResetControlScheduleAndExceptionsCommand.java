@@ -55,30 +55,7 @@ public class ResetControlScheduleAndExceptionsCommand extends FacilioCommand {
 		
 		ControlScheduleContext schedule = parentGroup.getControlSchedule();
 		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
-		DeleteRecordBuilder<ControlScheduleTenantContext> delete = new DeleteRecordBuilder<ControlScheduleTenantContext>()
-				.moduleName(ControlScheduleUtil.CONTROL_SCHEDULE_TENANT_SHARING_MODULE_NAME)
-				.andCondition(CriteriaAPI.getIdCondition(schedule.getId(), modBean.getModule(ControlScheduleUtil.CONTROL_SCHEDULE_TENANT_SHARING_MODULE_NAME)))
-				;
-		
-		delete.markAsDelete();
-				
-		if(schedule.getExceptions() != null && !schedule.getExceptions().isEmpty()) {
-			
-			List<Long> exceptionsToBeDeleted = new ArrayList<Long>(); 
-			
-			for(ControlScheduleExceptionContext exception : schedule.getExceptions()) {
-				exceptionsToBeDeleted.add(exception.getId());
-			}
-			
-			DeleteRecordBuilder<ControlScheduleExceptionTenantContext> delete1 = new DeleteRecordBuilder<ControlScheduleExceptionTenantContext>()
-					.moduleName(ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_TENANT_SHARING_MODULE_NAME)
-					.andCondition(CriteriaAPI.getIdCondition(exceptionsToBeDeleted, modBean.getModule(ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_TENANT_SHARING_MODULE_NAME)))
-					;
-			
-			delete1.markAsDelete();
-		}
+		ControlScheduleUtil.deleteControlScheduleRelated(schedule);
 	}
 
 }

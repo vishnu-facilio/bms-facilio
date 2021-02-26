@@ -18,9 +18,16 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.control.ControlGroupAssetCategory;
 import com.facilio.control.ControlGroupAssetContext;
 import com.facilio.control.ControlGroupContext;
+import com.facilio.control.ControlGroupFieldContext;
+import com.facilio.control.ControlGroupRoutineContext;
 import com.facilio.control.ControlGroupSection;
 import com.facilio.control.ControlGroupTenentContext;
+import com.facilio.control.ControlScheduleContext;
+import com.facilio.control.ControlScheduleExceptionContext;
+import com.facilio.control.ControlScheduleGroupedSlot;
+import com.facilio.control.ControlScheduleSlot;
 import com.facilio.control.util.ControlScheduleUtil;
+import com.facilio.controlaction.context.ControlActionCommandContext;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
@@ -55,16 +62,22 @@ public class ControlGroupUnPublishCommand extends FacilioCommand {
 		
 		List<ControlGroupTenentContext> sharedTenents = select.get();
 		
+		ControlGroupTenentContext childGroup = sharedTenents.get(0);
 		
-		planAssetBack(sharedTenents.get(0),group);
+		planAssetBack(childGroup,group);
 		
 		
 		DeleteRecordBuilder<ControlGroupTenentContext> delete = new DeleteRecordBuilder<ControlGroupTenentContext>()
 				.moduleName(ControlScheduleUtil.CONTROL_GROUP_TENANT_SHARING_MODULE_NAME)
-				.andCondition(CriteriaAPI.getIdCondition(sharedTenents.get(0).getId(), modBean.getModule(ControlScheduleUtil.CONTROL_GROUP_TENANT_SHARING_MODULE_NAME)));
+				.andCondition(CriteriaAPI.getIdCondition(childGroup.getId(), modBean.getModule(ControlScheduleUtil.CONTROL_GROUP_TENANT_SHARING_MODULE_NAME)));
 		
 		delete.markAsDelete();
 		
+		ControlScheduleContext schedule = ControlScheduleUtil.getControlSchedule(group.getControlSchedule().getId(),ControlScheduleUtil.CONTROL_SCHEDULE_TENANT_SHARING_MODULE_NAME);
+		
+		ControlScheduleUtil.deleteControlScheduleRelated(schedule);
+		ControlScheduleUtil.deleteControlGroupRelated(childGroup);
+		ControlScheduleUtil.deleteControlGroupSlotRelated(childGroup);
 		
 		FacilioChain chain = TransactionChainFactoryV3.getPlanControlGroupSlotChain();
 		
@@ -75,19 +88,6 @@ public class ControlGroupUnPublishCommand extends FacilioCommand {
 		newContext.put(FacilioConstants.ContextNames.RECORD_MAP, map);
 		
 		chain.execute();
-		
-		
-		
-		FacilioChain chain1 = TransactionChainFactoryV3.deleteControlGroupSlotChain();
-		
-		FacilioContext newContext1 = chain1.getContext();
-		
-		Map<String, List<ControlGroupTenentContext>> map1 = Collections.singletonMap(ControlScheduleUtil.CONTROL_GROUP_TENANT_SHARING_MODULE_NAME, Collections.singletonList(sharedTenents.get(0)));
-		
-		newContext1.put(FacilioConstants.ContextNames.RECORD_MAP, map1);
-		newContext1.put(FacilioConstants.ContextNames.MODULE_NAME, ControlScheduleUtil.CONTROL_GROUP_TENANT_SHARING_MODULE_NAME);
-		
-		chain1.execute();
 		
 		return false;
 	}

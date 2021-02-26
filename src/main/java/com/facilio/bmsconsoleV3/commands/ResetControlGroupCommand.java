@@ -35,17 +35,8 @@ public class ResetControlGroupCommand extends FacilioCommand {
 		ControlGroupContext parentGroup = (ControlGroupContext) context.get(ControlScheduleUtil.CONTROL_GROUP_CONTEXT_OLD);
 		TenantContext tenant = (TenantContext) context.get(FacilioConstants.ContextNames.TENANT);
 		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
-		List<FacilioField> sectionFields = modBean.getAllFields(ControlScheduleUtil.CONTROL_GROUP_SECTION_MODULE_NAME);
-		
-		Map<String, FacilioField> sectionFieldMap = FieldFactory.getAsMap(sectionFields);
-		
-		DeleteRecordBuilder<ControlGroupSection> delete = new DeleteRecordBuilder<ControlGroupSection>()
-				.moduleName(ControlScheduleUtil.CONTROL_GROUP_SECTION_MODULE_NAME)
-				.andCondition(CriteriaAPI.getCondition(sectionFieldMap.get("controlGroup"), childGroup.getId()+"", NumberOperators.EQUALS));
-		
-		delete.delete();
+		ControlScheduleUtil.deleteControlGroupRelated(childGroup);
+		ControlScheduleUtil.deleteControlGroupSlotRelated(childGroup);
 
 		childGroup.setSections(parentGroup.getSections());
 		

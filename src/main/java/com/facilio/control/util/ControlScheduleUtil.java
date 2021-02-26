@@ -96,6 +96,90 @@ public class ControlScheduleUtil {
 	public static final String CONTROL_GROUP_UNPLANNED_SLOTS = "controlGroupUnplanedSlots";
 	public static final String CONTROL_GROUP_PLANNED_SLOTS = "controlGroupplanedSlots";
 	
+	public static void deleteControlGroupSlotRelated(ControlGroupTenentContext childGroup) throws Exception {
+		
+		DeleteRecordBuilder<ControlScheduleSlot> delete = new DeleteRecordBuilder<ControlScheduleSlot>()
+				.moduleName(ControlScheduleUtil.CONTROL_SCHEDULE_UNPLANNED_SLOTS_MODULE_NAME)
+				.andCondition(CriteriaAPI.getCondition("GROUP_ID", "group", childGroup.getId()+"", NumberOperators.EQUALS));
+		
+		delete.markAsDelete();
+		
+		DeleteRecordBuilder<ControlScheduleGroupedSlot> delete1 = new DeleteRecordBuilder<ControlScheduleGroupedSlot>()
+				.moduleName(ControlScheduleUtil.CONTROL_SCHEDULE_PLANNED_SLOTS_MODULE_NAME)
+				.andCondition(CriteriaAPI.getCondition("GROUP_ID", "group", childGroup.getId()+"", NumberOperators.EQUALS));
+		
+		delete1.markAsDelete();
+		
+		DeleteRecordBuilder<ControlActionCommandContext> delete2 = new DeleteRecordBuilder<ControlActionCommandContext>()
+				.moduleName(FacilioConstants.ContextNames.CONTROL_ACTION_COMMAND_MODULE)
+				.andCondition(CriteriaAPI.getCondition("GROUP_ID", "group", childGroup.getId()+"", NumberOperators.EQUALS));
+		
+		delete2.markAsDelete();
+	}
+
+	public static void deleteControlGroupRelated(ControlGroupTenentContext childGroup) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		
+		DeleteRecordBuilder<ControlGroupSection> delete = new DeleteRecordBuilder<ControlGroupSection>()
+				.moduleName(ControlScheduleUtil.CONTROL_GROUP_SECTION_MODULE_NAME)
+				.andCondition(CriteriaAPI.getCondition("CONTROL_GROUP", "controlGroup", childGroup.getId()+"", NumberOperators.EQUALS));
+		
+		delete.markAsDelete();
+		
+		DeleteRecordBuilder<ControlGroupAssetCategory> delete1 = new DeleteRecordBuilder<ControlGroupAssetCategory>()
+				.moduleName(ControlScheduleUtil.CONTROL_GROUP_ASSET_CATEGORY_MODULE_NAME)
+				.andCondition(CriteriaAPI.getCondition("CONTROL_GROUP", "controlGroup", childGroup.getId()+"", NumberOperators.EQUALS));
+		
+		delete1.markAsDelete();
+		
+		DeleteRecordBuilder<ControlGroupAssetContext> delete2 = new DeleteRecordBuilder<ControlGroupAssetContext>()
+				.moduleName(ControlScheduleUtil.CONTROL_GROUP_ASSET_MODULE_NAME)
+				.andCondition(CriteriaAPI.getCondition("CONTROL_GROUP", "controlGroup", childGroup.getId()+"", NumberOperators.EQUALS));
+		
+		delete2.markAsDelete();
+		
+		DeleteRecordBuilder<ControlGroupFieldContext> delete3 = new DeleteRecordBuilder<ControlGroupFieldContext>()
+				.moduleName(ControlScheduleUtil.CONTROL_GROUP_ASSET_FIELD_MODULE_NAME)
+				.andCondition(CriteriaAPI.getCondition("CONTROL_GROUP", "controlGroup", childGroup.getId()+"", NumberOperators.EQUALS));
+		
+		delete3.markAsDelete();
+		
+		DeleteRecordBuilder<ControlGroupRoutineContext> delete4 = new DeleteRecordBuilder<ControlGroupRoutineContext>()
+				.moduleName(ControlScheduleUtil.CONTROL_GROUP_ROUTINE_MODULE_NAME)
+				.andCondition(CriteriaAPI.getCondition("CONTROL_GROUP", "controlGroup", childGroup.getId()+"", NumberOperators.EQUALS));
+		
+		delete4.markAsDelete();
+	}
+	
+	public static void deleteControlScheduleRelated(ControlScheduleContext schedule) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		
+		DeleteRecordBuilder<ControlGroupTenentContext> delete = new DeleteRecordBuilder<ControlGroupTenentContext>()
+				.moduleName(ControlScheduleUtil.CONTROL_SCHEDULE_TENANT_SHARING_MODULE_NAME)
+				.andCondition(CriteriaAPI.getIdCondition(schedule.getId(), modBean.getModule(ControlScheduleUtil.CONTROL_SCHEDULE_TENANT_SHARING_MODULE_NAME)));
+		
+		delete.markAsDelete();
+		
+		if(schedule.getExceptions() != null && !schedule.getExceptions().isEmpty()) {
+			List<Long> exceptionIds = new ArrayList<Long>();
+			
+			for(ControlScheduleExceptionContext exception : schedule.getExceptions()) {
+				
+				exceptionIds.add(exception.getId());
+			}
+			
+			DeleteRecordBuilder<ControlGroupTenentContext> delete1 = new DeleteRecordBuilder<ControlGroupTenentContext>()
+					.moduleName(ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_TENANT_SHARING_MODULE_NAME)
+					.andCondition(CriteriaAPI.getIdCondition(exceptionIds, modBean.getModule(ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_TENANT_SHARING_MODULE_NAME)));
+			
+			delete1.markAsDelete();
+		}
+		
+	}
 	
 	public static void planAssetsForTenant(ControlGroupTenentContext groupTenent) throws Exception {
 		

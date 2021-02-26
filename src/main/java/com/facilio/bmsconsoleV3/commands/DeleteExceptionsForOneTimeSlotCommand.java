@@ -51,7 +51,6 @@ public class DeleteExceptionsForOneTimeSlotCommand extends FacilioCommand {
 						;
 				
 				int res = delete.markAsDelete();
-				System.out.println(res);
 			}
 		}
 		
