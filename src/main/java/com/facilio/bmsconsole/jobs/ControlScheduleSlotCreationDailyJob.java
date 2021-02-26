@@ -28,7 +28,7 @@ public class ControlScheduleSlotCreationDailyJob extends FacilioJob {
 		
 		try {
 			
-			long currentDate = 1614364200000l;
+			long currentDate = DateTimeUtil.getDayStartTime();
 			
 			long startTime = DateTimeUtil.addDays(currentDate, 30);
 			
