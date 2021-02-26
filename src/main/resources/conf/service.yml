@@ -1,4 +1,24 @@
 version: 1.0
 services:
+  - serviceName: iam
+    instanceName: default
+    dbName: default
+
+  - serviceName: default
+    instanceName: default
+    dbName: default
+
+  - serviceName: jobs
+    instanceName: default
+    dbName: bms_jobs
+
+  - serviceName: instantJob
+    instanceName: default
+    dbName: bms_instantjob
+
+  - serviceName: agent
+    instanceName: default
+    dbName: bms_agent
+
   - serviceName: app
     handlerClass: com.facilio.accounts.util.AppDataSourceImpl
