@@ -117,7 +117,13 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 				}
 			}
 			else {
-				selectBuilder.andCondition(CriteriaAPI.getCondition("APP_ID","appId","", CommonOperators.IS_EMPTY));
+				ApplicationContext currentApp = AccountUtil.getCurrentApp();
+				
+				if(currentApp.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
+					selectBuilder.andCondition(CriteriaAPI.getCondition("APP_ID","appId","", CommonOperators.IS_EMPTY));
+				}else {
+					selectBuilder.andCondition(CriteriaAPI.getCondition("APP_ID","appId",String.valueOf(currentApp.getId()), NumberOperators.EQUALS));
+				}
 			}
 			List<Map<String, Object>> props = selectBuilder.get();
 			

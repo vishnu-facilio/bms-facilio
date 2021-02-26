@@ -41,6 +41,8 @@ public class GetViewListCommand extends FacilioCommand {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule moduleObj = modBean.getModule(moduleName);
 		ApplicationContext app = null;
+		ApplicationContext currentApp = AccountUtil.getCurrentApp();
+
 
 		if (appId > 0) {
 			 app = ApplicationApi.getApplicationForId(appId);
@@ -49,7 +51,8 @@ public class GetViewListCommand extends FacilioCommand {
 		Map<String,FacilioView> viewMap = new HashMap();
 
 		// ViewFactory views
-		if ((app != null && app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) || app == null)  {
+		if ((app != null && app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) || 
+				(app == null && currentApp.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)))  {
 			 viewMap = ViewFactory.getModuleViews(moduleName, moduleObj);
 		}
 		
@@ -61,7 +64,7 @@ public class GetViewListCommand extends FacilioCommand {
 		
 		//db views
 		List<FacilioView> dbViews = new ArrayList<>();	
-//		if ((app != null && app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) || app == null)  {
+
 		if (LookupSpecialTypeUtil.isSpecialType(moduleName)) {
 			dbViews = ViewAPI.getAllViews(moduleName);
 		} else {
@@ -73,7 +76,6 @@ public class GetViewListCommand extends FacilioCommand {
 				addMobilelarmViews(modBean, dbViews, viewMap, viewGroups);
 			}
 		}
-//	}
 		
 		
 		Map<Long, SharingContext<SingleSharingContext>> sharingMap = SharingAPI.getSharingMap(ModuleFactory.getViewSharingModule(), SingleSharingContext.class);
@@ -144,7 +146,8 @@ public class GetViewListCommand extends FacilioCommand {
 			
 			// groupViews from ViewFactory
 			List<Map<String, Object>> groupViews = new ArrayList<>();
-			if ((app != null && app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) || app == null) {
+			if ((app != null && app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) || 
+					(app == null && currentApp.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP))) {
 				 groupViews = new ArrayList<>(ViewFactory.getGroupVsViews(moduleName));
 			
 			if (!groupViews.isEmpty()) {
