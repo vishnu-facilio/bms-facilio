@@ -179,7 +179,7 @@
 	<job name="AgentDataPending" classname="com.facilio.bmsconsole.jobs.DataPendingAlertJob" transactionTimeout="420000"/>
 	
 	
-	<job name='ControlScheduleSlotCreationJob' classname= 'com.facilio.bmsconsole.jobs.ControlScheduleSlotCreationDailyJob' transactionTimeout='600000'/>
+	<job name='ControlScheduleSlotCreationDailyJob' classname= 'com.facilio.bmsconsole.jobs.ControlScheduleSlotCreationDailyJob' transactionTimeout='600000'/>
 	<job name='ControlScheduleSlotCreationJob' classname= 'com.facilio.bmsconsole.jobs.ControlScheduleSlotCreationJob' transactionTimeout='600000'/>
 	<job name='controlCommandExecutionCreateScheduleJob' classname= 'com.facilio.bmsconsole.jobs.ControlCommandExecutionCreateScheduleJob' transactionTimeout='600000'/>
 	<job name='controlCommandExecutionJob' classname= 'com.facilio.bmsconsole.jobs.ControlCommandExecutionJob' transactionTimeout='600000'/>
