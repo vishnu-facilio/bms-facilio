@@ -290,7 +290,7 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 			context.put(FacilioConstants.ContextNames.MODULE_NAME, field.getModule().getName());
 			context.put(FacilioConstants.ContextNames.READINGS, Collections.singletonList(reading));
 			context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.SCRIPT);
-			context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
+			context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, true);
 			
 			addCurrentReading.execute();
 			return null;
