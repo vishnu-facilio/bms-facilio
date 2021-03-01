@@ -156,6 +156,7 @@ public class ServiceRequestsAction extends FacilioAction {
 			FacilioChain c = TransactionChainFactory.updateServiceRequestChain();
 			serviceRequest.parseFormData();
 			c.getContext().put(FacilioConstants.ContextNames.RECORD, serviceRequest);
+			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, serviceRequestIds);
 			c.getContext().put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
 			c.getContext().put(FacilioConstants.ContextNames.REQUESTER, serviceRequest.getRequester());
@@ -172,6 +173,7 @@ public class ServiceRequestsAction extends FacilioAction {
 			FacilioChain c = FacilioChainFactory.deleteServiceRequestsChain();
 
 			c.getContext().put(FacilioConstants.ContextNames.IS_MARK_AS_DELETE, true);
+			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, serviceRequestIds);
 			c.execute();
 			setResult(FacilioConstants.ContextNames.RECORD_ID_LIST,
