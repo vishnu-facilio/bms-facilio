@@ -112,7 +112,7 @@ public class GetFormMetaCommand extends FacilioCommand {
 		else if(formId != null && formId > 0) {
 			form= FormsAPI.getFormFromDB(formId);
 			context.put(FacilioConstants.ContextNames.FORM, form);
-			if (form != null && formModuleName == null ) {
+			if (form != null) {
 				context.put(ContextNames.MODULE_NAME, form.getModule().getName());
 			}
 		}

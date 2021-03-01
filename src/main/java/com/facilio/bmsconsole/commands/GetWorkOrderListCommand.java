@@ -34,6 +34,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.fields.BaseLookupField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SupplementRecord;
@@ -224,7 +225,7 @@ public class GetWorkOrderListCommand extends FacilioCommand {
 				for (FacilioField field : fields) {
 					if (!field.isDefault()) {
 						if ((field.getDataTypeEnum() == FieldType.LOOKUP || field.getDataTypeEnum() == FieldType.MULTI_LOOKUP)) {
-							if (((LookupField) field).getSpecialType() == null) {
+							if (((BaseLookupField) field).getSpecialType() == null) {
 								customLookupFields.add((SupplementRecord) field);
 							}
 						}
