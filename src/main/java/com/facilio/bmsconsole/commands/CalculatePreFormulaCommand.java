@@ -57,6 +57,9 @@ public class CalculatePreFormulaCommand extends FacilioCommand {
 								for (int i = 0; i < readings.size(); i++) {
 									ReadingContext reading = readings.get(i);
 									ReadingContext transformedReading = calculateFormulas(reading, fieldMap, formulas, rdm, newRdmPairs);
+									if(AccountUtil.getCurrentOrg().getOrgId() == 410l) {
+										LOGGER.debug("transformedReading : "+transformedReading);
+									}
 									if (transformedReading != null) {
 										readings.set(i, transformedReading);
 									}
@@ -65,7 +68,6 @@ public class CalculatePreFormulaCommand extends FacilioCommand {
 						}
 					}
 				}
-				
 				if (!newRdmPairs.isEmpty()) {
 					List<ReadingDataMeta> metaList = ReadingsAPI.getReadingDataMetaList(newRdmPairs) ;
 					
