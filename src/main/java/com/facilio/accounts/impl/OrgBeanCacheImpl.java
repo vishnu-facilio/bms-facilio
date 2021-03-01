@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class OrgBeanCacheImpl extends OrgBeanImpl implements OrgBean {
@@ -77,13 +78,8 @@ public class OrgBeanCacheImpl extends OrgBeanImpl implements OrgBean {
         Objects.requireNonNull(AccountUtil.getCurrentOrg(),"Current Org cannot be null in AccountUtil while adding Org Display Unit");
         long orgId = AccountUtil.getCurrentOrg().getOrgId();
         super.updateOrgUnitsList(metricUnitMap);
-        List<OrgUnitsContext> orgUnitsContexts = UnitsUtil.getOrgUnitsList();
-
-        for (OrgUnitsContext orgUnitsContext : orgUnitsContexts) {
-            Integer unit = (Integer)metricUnitMap.get(orgUnitsContext.getMetric());
-            if(!unit.equals(orgUnitsContext.getUnit())) {
-                LRUCache.getOrgUnitCachePs().remove(CacheUtil.METRIC_KEY(orgId,unit));
-            }
-        }
+        metricUnitMap.keySet().forEach(metric ->{
+            LRUCache.getOrgUnitCachePs().remove(CacheUtil.METRIC_KEY(orgId,(Integer)metricUnitMap.get(metric)));
+        });
     }
 }

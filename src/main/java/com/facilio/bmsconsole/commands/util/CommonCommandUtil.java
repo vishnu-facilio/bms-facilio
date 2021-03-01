@@ -786,7 +786,7 @@ public class CommonCommandUtil {
 	}
 
 	public static List<OrgUnitsContext> orgUnitsList() throws Exception{
-		return UnitsUtil.getOrgUnitsList();
+		return AccountUtil.getOrgBean().getOrgUnitsList();
 	}
 	public static JSONObject metricWithUnits() {
 		JSONObject metricswithUnits = new JSONObject();

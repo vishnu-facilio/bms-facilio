@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.util.AccountUtil;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -185,7 +186,7 @@ public class UnitAction extends FacilioAction {
 			metricWithUnits.put(metric, unitsJson);
 		}
 		
-		orgUnitsList = UnitsUtil.getOrgUnitsList();
+		orgUnitsList = AccountUtil.getOrgBean().getOrgUnitsList();
 		
 		return SUCCESS;
 	}

@@ -515,7 +515,7 @@ public class OrgBeanImpl implements OrgBean {
 	@Override
 	public void updateOrgUnitsList ( JSONObject metricUnitMap ) throws Exception {
 		Objects.requireNonNull(metricUnitMap,"Exception occurrend while updating Org Display unit map is null");
-		List<OrgUnitsContext> orgUnitsContexts = UnitsUtil.getOrgUnitsList();
+		List<OrgUnitsContext> orgUnitsContexts = AccountUtil.getOrgBean().getOrgUnitsList();
 		List<FacilioField> fields = FieldFactory.getOrgUnitsFields();
 		FacilioModule module = ModuleFactory.getOrgUnitsModule();
 		for(OrgUnitsContext orgUnitsContext :orgUnitsContexts) {
@@ -532,6 +532,25 @@ public class OrgBeanImpl implements OrgBean {
 				updateBuilder.update(props);
 			}
 		}
+	}
+
+	@Override
+	public List<OrgUnitsContext> getOrgUnitsList () throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getOrgUnitsModule().getTableName())
+				.select(FieldFactory.getOrgUnitsFields());
+
+		List<Map<String, Object>> props = selectBuilder.get();
+
+		if (props != null && !props.isEmpty()) {
+			List<OrgUnitsContext> orgUnitsContexts = new ArrayList<>();
+			for(Map<String, Object> prop:props) {
+				OrgUnitsContext reportContext = FieldUtil.getAsBeanFromMap(prop, OrgUnitsContext.class);
+				orgUnitsContexts.add(reportContext);
+			}
+			return orgUnitsContexts;
+		}
+		return null;
 	}
 
 }

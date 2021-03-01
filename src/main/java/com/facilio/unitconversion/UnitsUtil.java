@@ -168,7 +168,7 @@ public class UnitsUtil {
 	
 	public static void updateOrgUnitsList(JSONObject metricUnitMap) throws Exception {
 		
-		List<OrgUnitsContext> orgUnitsContexts = UnitsUtil.getOrgUnitsList();
+		List<OrgUnitsContext> orgUnitsContexts = AccountUtil.getOrgBean().getOrgUnitsList();
 		
 		for(OrgUnitsContext orgUnitsContext :orgUnitsContexts) {
 			

@@ -3,6 +3,7 @@ package com.facilio.accounts.bean;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.OrgUnitsContext;
 import com.facilio.unitconversion.Metric;
 import com.facilio.unitconversion.Unit;
 import org.json.simple.JSONObject;
@@ -70,4 +71,6 @@ public interface OrgBean {
 	public boolean updateOrgUnit(int metric,int unit) throws Exception;
 
 	public void updateOrgUnitsList(JSONObject metricUnitMap) throws Exception;
+
+	public List<OrgUnitsContext> getOrgUnitsList() throws Exception;
 }
