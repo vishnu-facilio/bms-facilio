@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.util;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
@@ -1107,4 +1108,31 @@ public class ApplicationApi {
         return applications.get(0);
     }
 
+    public static List<ApplicationContext> getApplicationsContainsModule(String moduleName) throws Exception {
+    	
+    	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule moduleObj = modBean.getModule(moduleName);
+    	
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getTabIdAppIdMappingModule().getTableName())
+                .select(FieldFactory.getTabIdAppIdMappingFields())
+                .andCondition(CriteriaAPI.getCondition("MODULE_ID", "moduleId", String.valueOf(moduleObj.getModuleId()), NumberOperators.EQUALS));
+
+        List<TabIdAppIdMappingContext> list = FieldUtil.getAsBeanListFromMapList(builder.get(), TabIdAppIdMappingContext.class);
+        
+        if(CollectionUtils.isNotEmpty(list)) {
+        	
+        	Set<Long> appIdList = list.stream().map(TabIdAppIdMappingContext::getAppId).collect(Collectors.toSet());
+
+	        GenericSelectRecordBuilder appbuilder = new GenericSelectRecordBuilder()
+	                .table(ModuleFactory.getApplicationModule().getTableName())
+	                .select(FieldFactory.getApplicationFields())
+	                .andCondition(CriteriaAPI.getIdCondition(appIdList, ModuleFactory.getApplicationModule()))
+	                .orCondition(CriteriaAPI.getCondition("Application.APPLICATION_NAME", "name", "Facilio", StringOperators.IS));
+	
+	        return FieldUtil.getAsBeanListFromMapList(appbuilder.get(), ApplicationContext.class);
+        }
+        return null;
+    }
+    
 }
