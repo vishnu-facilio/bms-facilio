@@ -131,6 +131,22 @@ public class ApplicationAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.APPLICATION, context.get(FacilioConstants.ContextNames.APPLICATION));
 		return SUCCESS;
 	}
+	
+	public String getAllApplicationBasedOnModule() throws Exception {
+		FacilioChain chain = ReadOnlyChainFactory.getAllApplicationBasedOnModuleChain();
+		FacilioContext context = chain.getContext();
+		HttpServletRequest request = ServletActionContext.getRequest();
+
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
+		context.put(FacilioConstants.ContextNames.FETCH_MY_APPS, getFetchMyApps());
+		context.put(FacilioConstants.ContextNames.APP_DOMAIN, request.getServerName());
+
+		chain.execute();
+
+		setResult(FacilioConstants.ContextNames.APPLICATION, context.get(FacilioConstants.ContextNames.APPLICATION));
+		return SUCCESS;
+	}
+	
 
 	public String markApplicationAsDefault() throws Exception {
 		FacilioChain chain = TransactionChainFactory.markApplicationAsDefault();

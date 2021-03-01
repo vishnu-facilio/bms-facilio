@@ -2105,6 +2105,12 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetAllApplicationCommand());
 		return chain;
 	}
+	
+	public static FacilioChain getAllApplicationBasedOnModuleChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetAllApplicationBasedOnModuleCommand());
+		return chain;
+	}
 
 	public static FacilioChain getApplicationDetails() {
 		FacilioChain chain = getDefaultChain();

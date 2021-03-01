@@ -5877,6 +5877,8 @@
 			method="deleteApplication" />
 		<action name="list" class="com.facilio.bmsconsole.actions.ApplicationAction"
 			method="getAllApplication" />
+		<action name="fetchList" class="com.facilio.bmsconsole.actions.ApplicationAction"
+			method="getAllApplicationBasedOnModule" />
 		<action name="markAsDefault" class="com.facilio.bmsconsole.actions.ApplicationAction"
 			method="markApplicationAsDefault" />
 		<action name="fetchDetails" class="com.facilio.bmsconsole.actions.ApplicationAction"
