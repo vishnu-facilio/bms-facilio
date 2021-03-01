@@ -616,6 +616,8 @@ public class FacilioAuthAction extends FacilioAction {
 			appdomainObj = IAMAppUtil.getAppDomainForType(2, org.getOrgId()).get(0);
 		} else if ("tenant".equalsIgnoreCase(getLookUpType())) {
 			appdomainObj = IAMAppUtil.getAppDomainForType(3, org.getOrgId()).get(0);
+		} else if ("vendor".equalsIgnoreCase(getLookUpType())) {
+			appdomainObj = IAMAppUtil.getAppDomainForType(4, org.getOrgId()).get(0);
 		}
 
 		try {
