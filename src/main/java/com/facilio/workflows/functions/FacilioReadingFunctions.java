@@ -277,8 +277,14 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 			reading.addReading(field.getName(), readingValue);
 			
 			long ttime = -1;
+			boolean ajustTTime = false;
 			if(objects.length >2) {
-				ttime = (long) objects[2];
+				if(objects[2] instanceof Long) {
+					ttime = (long) objects[2];
+				}
+				else if(objects[2] instanceof Boolean) {
+					ajustTTime = (boolean) objects[2];
+				}
 			}
 			else {
 				ttime = DateTimeUtil.getCurrenTime();
@@ -290,7 +296,7 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 			context.put(FacilioConstants.ContextNames.MODULE_NAME, field.getModule().getName());
 			context.put(FacilioConstants.ContextNames.READINGS, Collections.singletonList(reading));
 			context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.SCRIPT);
-			context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, true);
+			context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, ajustTTime);
 			
 			addCurrentReading.execute();
 			return null;
