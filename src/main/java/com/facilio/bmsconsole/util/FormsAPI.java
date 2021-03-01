@@ -47,9 +47,9 @@ import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.BaseLookupField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
-import com.facilio.modules.fields.LookupField;
 
 public class FormsAPI {
 	
@@ -230,8 +230,8 @@ public class FormsAPI {
 		}
 		else if (field != null) {
 			formField.setField(field);
-			if (field instanceof LookupField) {
-				FacilioModule lookupMod = ((LookupField) field).getLookupModule();
+			if (field instanceof BaseLookupField) {
+				FacilioModule lookupMod = ((BaseLookupField) field).getLookupModule();
 				if (lookupMod != null) {
 					formField.setLookupModuleName(lookupMod.getName());
 				}
@@ -622,8 +622,8 @@ public class FormsAPI {
 		FormField formField = new FormField(facilioField.getName(), facilioField.getDisplayType(), facilioField.getDisplayName(), FormField.Required.OPTIONAL, count, 1);
 		formField.setField(facilioField);
 		formField.setFieldId(facilioField.getFieldId());
-		if (facilioField instanceof LookupField) {
-			formField.setLookupModuleName(((LookupField)facilioField).getLookupModule().getName());
+		if (facilioField instanceof BaseLookupField) {
+			formField.setLookupModuleName(((BaseLookupField)facilioField).getLookupModule().getName());
 		}
 		return formField;
 	}
