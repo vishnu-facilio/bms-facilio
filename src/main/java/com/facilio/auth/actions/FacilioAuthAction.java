@@ -575,6 +575,8 @@ public class FacilioAuthAction extends FacilioAction {
 			schemeCookie = new Cookie("fc.mobile.scheme", FacilioProperties.getMobileServiceportalAppScheme());
 		} else if (getLookUpType().equalsIgnoreCase("tenant")) {
 			schemeCookie = new Cookie("fc.mobile.scheme", FacilioProperties.getMobileTenantportalAppScheme());
+		} else if (getLookUpType().equalsIgnoreCase("vendor")) {
+			schemeCookie = new Cookie("fc.mobile.scheme", FacilioProperties.getMobileVendorportalAppScheme());
 		}
 
 		setTempCookieProperties(schemeCookie, false);
