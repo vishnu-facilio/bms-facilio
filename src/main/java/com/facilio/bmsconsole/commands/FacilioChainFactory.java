@@ -224,7 +224,7 @@ public class FacilioChainFactory {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForWorkOrder());
 		c.addCommand(new SplitDependentTicketsCommand());
-		c.addCommand(new DeleteTicketDependenciesCommand());
+		// c.addCommand(new DeleteTicketDependenciesCommand()); // Disabling this command since we are marking as deleted
 		c.addCommand(new DeleteTicketCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.MODULE_RULE_NOTIFICATION));
 		c.addCommand(new DeleteDataFromESCommand());
@@ -289,7 +289,7 @@ public class FacilioChainFactory {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForWorkOrderRequest());
 		c.addCommand(new SplitDependentTicketsCommand());
-		c.addCommand(new DeleteTicketDependenciesCommand());
+		// c.addCommand(new DeleteTicketDependenciesCommand());
 		c.addCommand(new DeleteTicketCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
 		return c;
@@ -1185,7 +1185,7 @@ public class FacilioChainFactory {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForWorkOrder());
 		c.addCommand(new SplitDependentTicketsCommand());
-		c.addCommand(new DeleteTicketDependenciesCommand());
+		// c.addCommand(new DeleteTicketDependenciesCommand());
 		c.addCommand(new DeleteTicketCommand());
 		return c;
 	}
