@@ -540,10 +540,8 @@ public class ApplicationApi {
 
             webTabGroups.add(new WebTabGroupContext("Visits", "visits", layout.getId(), 203, groupOrder++));
             webTabs = new ArrayList<>();
-            configJSON = new JSONObject();
-            configJSON.put("type", "visitorlogging");
-            webTabs.add(new WebTabContext("Visitor Invites", "visitorinvites", WebTabContext.Type.CUSTOM, Arrays.asList(modBean.getModule("visitorlogging").getModuleId()), appId, configJSON,  AccountUtil.FeatureLicense.VISITOR.getLicense()));
-            webTabs.add(new WebTabContext("Visits", "visits", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("visitorlogging").getModuleId()), appId, null, AccountUtil.FeatureLicense.VISITOR.getLicense()));
+            webTabs.add(new WebTabContext("Invites", "visitorinvites", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("invitevisitor").getModuleId()), appId, null,  AccountUtil.FeatureLicense.VISITOR.getLicense()));
+            webTabs.add(new WebTabContext("Visits", "visits", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("visitorlog").getModuleId()), appId, null, AccountUtil.FeatureLicense.VISITOR.getLicense()));
 
             groupNameVsWebTabsMap.put("visits", webTabs);
 
@@ -704,9 +702,7 @@ public class ApplicationApi {
 
             webTabGroups.add(new WebTabGroupContext("Invites", "visits", layout.getId(), 203, groupOrder++));
             webTabs = new ArrayList<>();
-            configJSON = new JSONObject();
-            configJSON.put("type", "visitorlogging");
-            webTabs.add(new WebTabContext("Invites", "visitorinvites", WebTabContext.Type.CUSTOM, Arrays.asList(modBean.getModule("visitorlogging").getModuleId()), appId, configJSON,  AccountUtil.FeatureLicense.VISITOR.getLicense()));
+            webTabs.add(new WebTabContext("Invites", "visitorinvites", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("invitevisitor").getModuleId()), appId, null,  AccountUtil.FeatureLicense.VISITOR.getLicense()));
             groupNameVsWebTabsMap.put("visits", webTabs);
 
             webTabGroups.add(new WebTabGroupContext("Insurance", "insurance", layout.getId(), 205, groupOrder++));
