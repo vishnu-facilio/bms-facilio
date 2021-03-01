@@ -55,21 +55,44 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 			return true;
 		}
 
-		boolean isAppSharingMatched = true;
-		boolean matching = true;
-		for (SingleSharingContext permission : this) {
-			if (permission.getTypeEnum() == SharingType.APP) {
-				isAppSharingMatched = isMatching(permission, user, object);
+		List<SingleSharingContext> appPermissions = new ArrayList<>();
+		List<SingleSharingContext> otherPermissions = new ArrayList<>();
+		stream().forEach(perm -> {
+			if (perm.getTypeEnum() == SharingType.APP) {
+				appPermissions.add(perm);
 			}
 			else {
-				matching = false;
-				if(isMatching(permission, user, object)) {
-					matching = true;
+				otherPermissions.add(perm);
+			}
+		});
+		
+		boolean isAppSharingMatched = false;
+		if (!appPermissions.isEmpty()) {
+			for (SingleSharingContext permission : appPermissions) {
+				isAppSharingMatched = isMatching(permission, user, object);
+				if (isAppSharingMatched) {
 					break;
 				}
 			}
 		}
-		return isAppSharingMatched && matching;
+		else {
+			isAppSharingMatched = true;
+		}
+		
+		boolean havePermission = false;
+		if (!otherPermissions.isEmpty()) {
+			for (SingleSharingContext permission : otherPermissions) {
+				havePermission = isMatching(permission, user, object);
+				if (havePermission) {
+					break;
+				}
+			}
+		}
+		else {
+			havePermission = true;
+		}
+		
+		return isAppSharingMatched && havePermission;
 	}
 
 	private boolean isMatching (SingleSharingContext permission, User user, Object object) throws Exception {
