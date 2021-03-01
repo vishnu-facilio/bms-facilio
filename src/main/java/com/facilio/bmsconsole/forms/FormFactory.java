@@ -2603,7 +2603,7 @@ public class FormFactory {
 		FormField typeField = new FormField("type", FieldDisplayType.LOOKUP_SIMPLE, "Type", Required.REQUIRED, "accounttype",2, 1);
 		typeField.setAllowCreate(true);
 		fields.add(typeField);
-		fields.add(new FormField("parentAccount", FieldDisplayType.LOOKUP_SIMPLE, "Sub Account of", Required.OPTIONAL, "chartofaccount",3, 1));
+		fields.add(new FormField("parentAccount", FieldDisplayType.LOOKUP_SIMPLE, "Parent Account", Required.OPTIONAL, "chartofaccount",3, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 4, 1));
 		form.setFields(fields);
 

@@ -15,12 +15,13 @@ public class GetTransactionRuleModulesCommand extends FacilioCommand{
     public boolean executeCommand(Context context) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<FacilioModule> modules = new ArrayList<>();
+        modules.add(modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER));
         if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY)) {
-            modules.add(modBean.getModule(FacilioConstants.ContextNames.WORKORDER_ITEMS));
-            modules.add(modBean.getModule(FacilioConstants.ContextNames.WORKORDER_TOOLS));
-            modules.add(modBean.getModule(FacilioConstants.ContextNames.WO_SERVICE));
-            modules.add(modBean.getModule(FacilioConstants.ContextNames.WO_LABOUR));
+            modules.add(modBean.getModule(FacilioConstants.ContextNames.PURCHASE_REQUEST));
             modules.add(modBean.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER));
+        }
+        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.QUOTATION)) {
+            modules.add(modBean.getModule(FacilioConstants.ContextNames.QUOTE));
         }
 
         context.put(FacilioConstants.ContextNames.MODULE_LIST, modules);

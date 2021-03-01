@@ -2,12 +2,15 @@ package com.facilio.bmsconsoleV3.util;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PMTriggerContext;
+import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsoleV3.context.V3PhotosContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.*;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
@@ -22,6 +25,7 @@ import com.facilio.v3.context.V3Context;
 import com.facilio.v3.util.CommandUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.awt.print.Book;
 import java.time.LocalTime;
@@ -355,6 +359,26 @@ public class FacilityAPI {
 
         List<BookingPaymentContext> list = builder.get();
         return  list;
+    }
+
+    public static List<V3PhotosContext> getFacilityPhotoId(Long facilityId) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.FacilityBooking.FACILITY_PHOTOS);
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.FacilityBooking.FACILITY_PHOTOS);
+        Condition idCondition = new Condition();
+        idCondition.setField(modBean.getField("parentId", module.getName()));
+        idCondition.setOperator(PickListOperators.IS);
+        idCondition.setValue(String.valueOf(facilityId));
+
+        SelectRecordsBuilder<V3PhotosContext> selectBuilder = new SelectRecordsBuilder<V3PhotosContext>()
+                .moduleName(module.getName())
+                .beanClass(V3PhotosContext.class)
+                .select(fields)
+                .table(module.getTableName())
+                .andCondition(idCondition);
+        List<V3PhotosContext> photos = selectBuilder.get();
+        return photos;
+
     }
 
 }

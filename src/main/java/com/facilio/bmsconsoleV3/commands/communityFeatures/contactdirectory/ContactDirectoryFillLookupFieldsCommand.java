@@ -24,7 +24,7 @@ public class ContactDirectoryFillLookupFieldsCommand extends FacilioCommand {
         List<FacilioField> fields = modBean.getAllFields(moduleName);
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
         List<LookupField> fetchLookupsList = new ArrayList<>();
-        fetchLookupsList.add((LookupField) fieldsAsMap.get("people"));
+        //fetchLookupsList.add((LookupField) fieldsAsMap.get("people"));
         LookupField sysCreatedBy = (LookupField) FieldFactory.getSystemField("sysCreatedBy", modBean.getModule(moduleName));
         fetchLookupsList.add(sysCreatedBy);
 

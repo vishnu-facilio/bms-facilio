@@ -1878,6 +1878,7 @@ public class FacilioConstants {
 			public static final String BOOKING_SLOTS = "bookingslot";
 			public static final String FACILITY_BOOKING_PAYMENTS = "bookingpayment";
 
+			public static final String FACILITY_PHOTOS = "facilityphotos";
 
 			public static final String END_DATE_TIME = "endDateTime";
 
@@ -2238,7 +2239,8 @@ public class FacilioConstants {
 			classMap.put(FacilityBooking.AMENITY, AmenitiesContext.class);
 			classMap.put(FacilityBooking.FACILITY_ATTACHMENTS, AttachmentV3Context.class);
 			classMap.put(FacilityBooking.FACILITY_BOOKING_ATTACHMENTS, AttachmentV3Context.class);
-			
+			classMap.put(FacilityBooking.FACILITY_PHOTOS, V3PhotosContext.class);
+
 			classMap.put(ControlScheduleUtil.CONTROL_SCHEDULE_MODULE_NAME, ControlScheduleContext.class);
 			classMap.put(ControlScheduleUtil.CONTROL_SCHEDULE_TENANT_SHARING_MODULE_NAME, ControlScheduleTenantContext.class);
 

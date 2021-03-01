@@ -41,7 +41,7 @@ public class RollUpTransactionAmountCommand extends FacilioCommand {
         FacilioField groupingTimeField = BmsAggregateOperators.DateAggregateOperator.MONTH.getSelectField(timeFieldCloned);
 
         List<FacilioField> selectFields = new ArrayList<>();
-        selectFields.add(BmsAggregateOperators.NumberAggregateOperator.MIN.getSelectField(timeFieldCloned));
+
         selectFields.add(fieldMap.get("account"));
         selectFields.add(fieldMap.get("transactionResource"));
         selectFields.add(fieldMap.get("transactionRollUpModuleName"));
@@ -61,7 +61,7 @@ public class RollUpTransactionAmountCommand extends FacilioCommand {
                 .groupBy(groupingTimeField.getCompleteColumnName()+ "," +fieldMap.get("account").getCompleteColumnName()+"," + fieldMap.get("transactionResource").getCompleteColumnName() +"," +fieldMap.get("transactionRollUpFieldName").getCompleteColumnName() +"," + fieldMap.get("transactionRollUpModuleName").getCompleteColumnName())
                 ;
 
-        builder.setAggregation();
+        builder.aggregate(BmsAggregateOperators.NumberAggregateOperator.MIN, timeFieldCloned);
         List<Map<String, Object>> mapList = builder.getAsProps();
 
         if(CollectionUtils.isNotEmpty(mapList)) {
@@ -78,7 +78,7 @@ public class RollUpTransactionAmountCommand extends FacilioCommand {
 
                 Map<String, Object> resourceMap = (Map<String, Object>)map.get("transactionResource");
                 String rollUpModName = (String)map.get("transactionRollUpModuleName");
-                Long minMonthStartDate = (Long)map.get(groupingTimeField.getName());
+                Long minMonthStartDate = (Long)map.get("transactionDate");
                 String rollUpFieldName = (String)map.get("transactionRollUpFieldName");
                 Map<String, Object> accountMap = (Map<String, Object>) map.get("account");
                 final DecimalFormat df = new DecimalFormat(BudgetAPI.CURRENCY_PATTERN);

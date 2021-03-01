@@ -121,5 +121,13 @@ public class V3FacilityBookingContext extends V3Context {
         this.slotList = slotList;
     }
 
+    private Long bookingDate;
 
+    public Long getBookingDate() {
+        return bookingDate;
+    }
+
+    public void setBookingDate(Long bookingDate) {
+        this.bookingDate = bookingDate;
+    }
 }

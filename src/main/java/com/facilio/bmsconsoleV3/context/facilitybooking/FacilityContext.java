@@ -3,6 +3,7 @@ package com.facilio.bmsconsoleV3.context.facilitybooking;
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
+import com.facilio.bmsconsoleV3.context.V3PhotosContext;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.v3.context.V3Context;
 
@@ -284,5 +285,15 @@ public class FacilityContext extends V3Context {
 
     public void setMaxAttendeeCountPerBooking(Integer maxAttendeeCountPerBooking) {
         this.maxAttendeeCountPerBooking = maxAttendeeCountPerBooking;
+    }
+
+    private List<V3PhotosContext> photos;
+
+    public List<V3PhotosContext> getPhotos() {
+        return photos;
+    }
+
+    public void setPhotos(List<V3PhotosContext> photos) {
+        this.photos = photos;
     }
 }

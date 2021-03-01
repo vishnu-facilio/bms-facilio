@@ -151,4 +151,6 @@ enums:
   - name: FiscalYearStart
     enumClassName: com.facilio.bmsconsoleV3.context.budget.BudgetContext$FiscalYearStart
 
+  - name: AmenityLogo
+    enumClassName: com.facilio.bmsconsoleV3.context.facilitybooking.AmenitiesContext$AmenityLogo
 

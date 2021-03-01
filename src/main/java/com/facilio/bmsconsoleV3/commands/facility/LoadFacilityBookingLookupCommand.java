@@ -26,7 +26,10 @@ public class LoadFacilityBookingLookupCommand extends FacilioCommand {
         List<FacilioField> fields = modBean.getAllFields(moduleName);
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
         List<SupplementRecord> fetchLookupsList = new ArrayList<>();
-        SupplementRecord facility = (SupplementRecord) fieldsAsMap.get("facility");
+        LookupFieldMeta facilityField = new LookupFieldMeta((LookupField) fieldsAsMap.get("facility"));
+        LookupField facilityLocationField = (LookupField) modBean.getField("location", FacilioConstants.ContextNames.FacilityBooking.FACILITY);
+        facilityField.addChildLookupField(facilityLocationField);
+
         SupplementRecord reservedFor = (SupplementRecord) fieldsAsMap.get("reservedFor");
 
         MultiLookupMeta internalAttendees = new MultiLookupMeta((MultiLookupField) fieldsAsMap.get("internalAttendees"));
@@ -39,7 +42,7 @@ public class LoadFacilityBookingLookupCommand extends FacilioCommand {
 
         internalAttendees.setSelectFields(selectFieldsList);
 
-        fetchLookupsList.add(facility);
+        fetchLookupsList.add(facilityField);
         fetchLookupsList.add(reservedFor);
         fetchLookupsList.add(internalAttendees);
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchLookupsList);
