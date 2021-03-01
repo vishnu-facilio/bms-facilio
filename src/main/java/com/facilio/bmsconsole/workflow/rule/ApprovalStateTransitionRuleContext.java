@@ -10,10 +10,7 @@ import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FacilioStatus;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.UpdateRecordBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -90,10 +87,21 @@ public class ApprovalStateTransitionRuleContext extends AbstractStateTransitionR
             moduleRecord.setApprovalStatus(facilioStatus);
         }
         fields.add(modBean.getField("approvalStatus", module.getName()));
+
+        // temp handling
+        ModuleBaseWithCustomFields baseModuleRecord = new ModuleBaseWithCustomFields();
+        baseModuleRecord.setId(moduleRecord.getId());
+        baseModuleRecord.setApprovalStatus(moduleRecord.getApprovalStatus());
+        baseModuleRecord.setApprovalFlowId(moduleRecord.getApprovalFlowId());
+        baseModuleRecord.setModuleId(moduleRecord.getModuleId());
+        baseModuleRecord.setFormId(moduleRecord.getFormId());
+        baseModuleRecord.setOrgId(moduleRecord.getOrgId());
+
+
         UpdateRecordBuilder<ModuleBaseWithCustomFields> updateBuilder = new UpdateRecordBuilder<>()
                 .module(module)
                 .fields(fields)
                 .andCondition(CriteriaAPI.getIdCondition(moduleRecord.getId(), module));
-        updateBuilder.update(moduleRecord);
+        updateBuilder.update(baseModuleRecord);
     }
 }
