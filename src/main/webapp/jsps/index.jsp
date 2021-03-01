@@ -172,6 +172,7 @@
                 else {
                     out.println("Internal Server Error. Please try after sometime");
                 }
+                response.setStatus(response.SC_INTERNAL_SERVER_ERROR);
             }
         }
         /* else {
@@ -181,6 +182,7 @@
         if (html == null || html.isEmpty()) {
             FacilioIndexJsp.LOGGER.error("Error occurred while loading client index.html from index.jsp");
             out.println("Internal Server Error. Please try after sometime");
+            response.setStatus(response.SC_INTERNAL_SERVER_ERROR);
         }
         else {
             StringSubstitutor substitutor = new StringSubstitutor(placeHolderParams, "{{", "}}");
@@ -191,5 +193,6 @@
     catch (Exception e) {
         FacilioIndexJsp.LOGGER.error("Error occurred in index.jsp", e);
         out.println("Internal Server Error. Please try after sometime");
+        response.setStatus(response.SC_INTERNAL_SERVER_ERROR);
     }
 %>
