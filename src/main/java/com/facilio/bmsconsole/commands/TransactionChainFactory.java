@@ -4909,6 +4909,10 @@ public class TransactionChainFactory {
 		c.addCommand(new AddAttachmentRelationshipCommand());
 		c.addCommand(new ExecuteStateFlowCommand());
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+		c.addCommand(new ForkChainToInstantJobCommand()
+				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
+		c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
+
 		return c;
 	}
 
@@ -4926,6 +4930,10 @@ public class TransactionChainFactory {
 		c.addCommand(new GenericGetModuleDataListCommand());
 		c.addCommand(new UpdateStateForModuleDataCommand());
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+		c.addCommand(new ForkChainToInstantJobCommand()
+				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
+		c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
+
 		return c;
 	}
 
