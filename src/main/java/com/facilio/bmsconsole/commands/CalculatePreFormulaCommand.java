@@ -11,6 +11,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
@@ -39,6 +40,9 @@ public class CalculatePreFormulaCommand extends FacilioCommand {
 			Map<String, List<FormulaFieldContext>> formulaMap = FormulaFieldAPI.getActivePreFormulasOfModule(readingMap.keySet());
 			LOGGER.debug("Pre Formulas of modules : "+readingMap.keySet());
 			LOGGER.debug(formulaMap);
+			if(AccountUtil.getCurrentOrg().getOrgId() == 410l) {
+				LOGGER.debug("recieved formula list : "+formulaMap);
+			}
 			if (formulaMap != null && !formulaMap.isEmpty()) {
 				List<Pair<Long, FacilioField>> newRdmPairs = new ArrayList<>();
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

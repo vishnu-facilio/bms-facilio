@@ -612,6 +612,11 @@ public class FormulaFieldAPI {
 				;
 
 		List<FormulaFieldContext> formulas = getFormulaFieldsFromProps(selectBuilder.get(), false);
+		
+		if(AccountUtil.getCurrentOrg().getOrgId() == 410l) {
+			LOGGER.debug("recieved formula list 1: "+formulas);
+			LOGGER.debug("selectBuilder: "+selectBuilder);
+		}
 		if (formulas != null && !formulas.isEmpty()) {
 			Map<String, List<FormulaFieldContext>> formulaMap = new HashMap<>();
 			for (FormulaFieldContext formula : formulas) {
@@ -621,6 +626,9 @@ public class FormulaFieldAPI {
 					formulaMap.put(formula.getModuleName(), formulaList);
 				}
 				formulaList.add(formula);
+			}
+			if(AccountUtil.getCurrentOrg().getOrgId() == 410l) {
+				LOGGER.debug("return map 1: "+formulaMap);
 			}
 			return formulaMap;
 		}
