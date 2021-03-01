@@ -40,9 +40,6 @@ public class CalculatePreFormulaCommand extends FacilioCommand {
 			Map<String, List<FormulaFieldContext>> formulaMap = FormulaFieldAPI.getActivePreFormulasOfModule(readingMap.keySet());
 			LOGGER.debug("Pre Formulas of modules : "+readingMap.keySet());
 			LOGGER.debug(formulaMap);
-			if(AccountUtil.getCurrentOrg().getOrgId() == 410l) {
-				LOGGER.debug("recieved formula list : "+formulaMap);
-			}
 			if (formulaMap != null && !formulaMap.isEmpty()) {
 				List<Pair<Long, FacilioField>> newRdmPairs = new ArrayList<>();
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -57,9 +54,6 @@ public class CalculatePreFormulaCommand extends FacilioCommand {
 								for (int i = 0; i < readings.size(); i++) {
 									ReadingContext reading = readings.get(i);
 									ReadingContext transformedReading = calculateFormulas(reading, fieldMap, formulas, rdm, newRdmPairs);
-									if(AccountUtil.getCurrentOrg().getOrgId() == 410l) {
-										LOGGER.debug("transformedReading : "+transformedReading);
-									}
 									if (transformedReading != null) {
 										readings.set(i, transformedReading);
 									}

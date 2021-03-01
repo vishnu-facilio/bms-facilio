@@ -292,9 +292,13 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 			
 			reading.setTtime(ttime);
 			
+			List<ReadingContext> readingList = new ArrayList<ReadingContext>();
+			
+			readingList.add(reading);
+			
 			FacilioContext context = addCurrentReading.getContext();
 			context.put(FacilioConstants.ContextNames.MODULE_NAME, field.getModule().getName());
-			context.put(FacilioConstants.ContextNames.READINGS, Collections.singletonList(reading));
+			context.put(FacilioConstants.ContextNames.READINGS, readingList);
 			context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.SCRIPT);
 			context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, ajustTTime);
 			
