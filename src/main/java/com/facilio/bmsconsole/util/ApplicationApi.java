@@ -1120,19 +1120,18 @@ public class ApplicationApi {
 
         List<TabIdAppIdMappingContext> list = FieldUtil.getAsBeanListFromMapList(builder.get(), TabIdAppIdMappingContext.class);
         
-        if(CollectionUtils.isNotEmpty(list)) {
-        	
-        	Set<Long> appIdList = list.stream().map(TabIdAppIdMappingContext::getAppId).collect(Collectors.toSet());
-
-	        GenericSelectRecordBuilder appbuilder = new GenericSelectRecordBuilder()
-	                .table(ModuleFactory.getApplicationModule().getTableName())
-	                .select(FieldFactory.getApplicationFields())
-	                .andCondition(CriteriaAPI.getIdCondition(appIdList, ModuleFactory.getApplicationModule()))
-	                .orCondition(CriteriaAPI.getCondition("Application.APPLICATION_NAME", "name", "Facilio", StringOperators.IS));
-	
-	        return FieldUtil.getAsBeanListFromMapList(appbuilder.get(), ApplicationContext.class);
+        GenericSelectRecordBuilder appbuilder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getApplicationModule().getTableName())
+                .select(FieldFactory.getApplicationFields())
+                ;
+        
+        if(CollectionUtils.isNotEmpty(list)) {   	
+        	Set<Long> appIdList = list.stream().map(TabIdAppIdMappingContext::getAppId).collect(Collectors.toSet());  
+        	appbuilder.andCondition(CriteriaAPI.getIdCondition(appIdList, ModuleFactory.getApplicationModule()));
+	        
         }
-        return null;
+        appbuilder.orCondition(CriteriaAPI.getCondition("Application.APPLICATION_NAME", "name", "Facilio", StringOperators.IS));
+        return FieldUtil.getAsBeanListFromMapList(appbuilder.get(), ApplicationContext.class);
     }
     
 }
