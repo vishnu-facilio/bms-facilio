@@ -47,4 +47,13 @@ public class ReportPivotParamsContext {
 	public void setCriteria(Criteria criteria) {
 		this.criteria = criteria;
 	}
+	
+	private JSONObject templateJSON;
+
+	public JSONObject getTemplateJSON() {
+		return templateJSON;
+	}
+	public void setTemplateJSON(JSONObject templateJSON) {
+		this.templateJSON = templateJSON;
+	}
 }

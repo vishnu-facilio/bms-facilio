@@ -1495,8 +1495,6 @@ public class V2ReportAction extends FacilioAction {
 			if(readingruleContext.getWorkflowId() > 0) {
 				
 				WorkflowContext workflow = new WorkflowContext();
-				//To be removed. Temporary fix HCA demo.
-				if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
 					FacilioModule module = ModuleFactory.getWorkflowModule(); 
 					GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 							.select(FieldFactory.getWorkflowFields())
@@ -1527,11 +1525,6 @@ public class V2ReportAction extends FacilioAction {
 							workflow = WorkflowUtil.getWorkflowContext(readingruleContext.getWorkflowId(), true);
 						}	
 					}
-				}
-				else {
-					workflow = WorkflowUtil.getWorkflowContext(readingruleContext.getWorkflowId(), true);
-				}
-				//To be removed. Temporary fix HCA demo.
 				
 				for(WorkflowExpression workflowExp:workflow.getExpressions()) {
 					
@@ -2434,6 +2427,15 @@ public class V2ReportAction extends FacilioAction {
 	public void setSortBy(JSONObject sortBy) {
 		this.sortBy = sortBy;
 	}
+	
+	private JSONObject templateJSON;
+
+	public JSONObject getTemplateJSON() {
+		return templateJSON;
+	}
+	public void setTemplateJSON(JSONObject templateJSON) {
+		this.templateJSON = templateJSON;
+	}
 
 	public String fetchTabularReportData() throws Exception {
 		FacilioChain c = FacilioChain.getNonTransactionChain();
@@ -2443,6 +2445,7 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.CRITERIA, criteria);
 		context.put(FacilioConstants.ContextNames.SORTING, sortBy);
+		context.put(FacilioConstants.ContextNames.TEMPLATE_JSON, templateJSON);
 		c.addCommand(new ConstructTabularReportData());
 		c.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
 		c.execute();
@@ -2462,6 +2465,7 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.CRITERIA, criteria);
 		context.put(FacilioConstants.ContextNames.SORTING, sortBy);
+		context.put(FacilioConstants.ContextNames.TEMPLATE_JSON, templateJSON);
 		
 		ReportPivotParamsContext pivotparams = new  ReportPivotParamsContext();
 		pivotparams.setRows(rows);
@@ -2469,6 +2473,7 @@ public class V2ReportAction extends FacilioAction {
 		pivotparams.setModuleName(moduleName);
 		pivotparams.setCriteria(criteria);
 		pivotparams.setSortBy(sortBy);
+		pivotparams.setTemplateJSON(templateJSON);
 		
 		if (reportContext == null) {
 			reportContext = new ReportContext();

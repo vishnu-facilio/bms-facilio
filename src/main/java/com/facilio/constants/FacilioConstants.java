@@ -1159,6 +1159,7 @@ public class FacilioConstants {
 		
 		public static final String CHART_STATE = "chartState";
 		public static final String TABULAR_STATE = "tabularState";
+		public static final String TEMPLATE_JSON = "templateJSON";
 		
 		public static final String COST = "cost";
 		public static final String COST_TYPE = "costType";
