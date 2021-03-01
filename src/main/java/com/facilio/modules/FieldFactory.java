@@ -166,123 +166,137 @@ public class FieldFactory {
 
 
     public static class Fields {
-        public static List<String> alarmsFieldsInclude = new ArrayList<String>();
+        public static enum FilterType {
+            INCLUDE (true),
+            EXCLUDE (false)
+            ;
 
-        static {
-            alarmsFieldsInclude.add("isAcknowledged");
-            alarmsFieldsInclude.add("sourceType");
-//			alarmsFieldsInclude.add("serialNumber");
-            alarmsFieldsInclude.add("clearedBy");
-            alarmsFieldsInclude.add("status");
-//			alarmsFieldsInclude.add("type");
-            alarmsFieldsInclude.add("alarmType");
-//			alarmsFieldsInclude.add("category");
-            alarmsFieldsInclude.add("resource");
-            alarmsFieldsInclude.add("severity");
-            alarmsFieldsInclude.add("alarmClass");
-            alarmsFieldsInclude.add("alarmPriority");
-            alarmsFieldsInclude.add("subject");
-            alarmsFieldsInclude.add("previousSeverity");
-            alarmsFieldsInclude.add("createdTime");
-            alarmsFieldsInclude.add("modifiedTime");
-            alarmsFieldsInclude.add("condition");
-            alarmsFieldsInclude.add("autoClear");
-//			alarmsFieldsInclude.add("noOfAttachments");
+            private FilterType(boolean filterBool) {
+                this.filterBool = filterBool;
+            }
+
+            private boolean filterBool;
+            public boolean getFilterBool() {
+                return filterBool;
+            }
         }
 
-        public static List<String> newAlarmsFieldsInclude = new ArrayList<String>();
-
-        static {
-            newAlarmsFieldsInclude.add("subject");
-            newAlarmsFieldsInclude.add("acknowledged");
-            newAlarmsFieldsInclude.add("acknowledgedBy");
-            newAlarmsFieldsInclude.add("severity");
-            newAlarmsFieldsInclude.add("acknowledgedTime");
-            newAlarmsFieldsInclude.add("lastClearedTime");
-            newAlarmsFieldsInclude.add("lastCreatedTime");
-            newAlarmsFieldsInclude.add("lastOccurredTime");
-            newAlarmsFieldsInclude.add("resource");
-            newAlarmsFieldsInclude.add("rule");
-            newAlarmsFieldsInclude.add("readingAlarmCategory");
-            newAlarmsFieldsInclude.add("faultType");
+        public static List<FacilioField> filterOutFields (List<FacilioField> fields, List<String> filterList, FilterType type) {
+            return fields.stream().
+                    filter(
+                            f -> !(type.getFilterBool() ^ filterList.contains(f.getName())) // This is XNOR behaviour. It should be true only if both isInclude and contains are true or if both are false
+                                    || !f.isDefault()
+                    ).collect(Collectors.toList());
         }
 
-        public static List<String> newOpAlarmsFieldsInclude = new ArrayList<String>();
+        public static final List<String> ALARMS_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[] {
+                "isAcknowledged",
+                "sourceType",
+                "serialNumber",
+                "clearedBy",
+                "status",
+                "type",
+                "alarmType",
+                "category",
+                "resource",
+                "severity",
+                "alarmClass",
+                "alarmPriority",
+                "subject",
+                "previousSeverity",
+                "createdTime",
+                "modifiedTime",
+                "condition",
+                "autoClear",
+                "noOfAttachments"
+        }));
 
-        static {
-            newOpAlarmsFieldsInclude.add("subject");
-            newOpAlarmsFieldsInclude.add("severity");
-            newOpAlarmsFieldsInclude.add("lastClearedTime");
-            newOpAlarmsFieldsInclude.add("lastCreatedTime");
-            newOpAlarmsFieldsInclude.add("lastOccurredTime");
-            newOpAlarmsFieldsInclude.add("resource");
-        }
+        public static final List<String> NEW_ALARMS_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[] {
+                "subject",
+                "acknowledged",
+                "acknowledgedBy",
+                "severity",
+                "acknowledgedTime",
+                "lastClearedTime",
+                "lastCreatedTime",
+                "lastOccurredTime",
+                "resource",
+                "rule",
+                "readingAlarmCategory",
+                "faultType"
+        }));
 
-        public static List<String> workOrderFieldsInclude = new ArrayList<String>();
+        public static final List<String> NEW_OP_ALARMS_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[] {
+                "subject",
+                "severity",
+                "lastClearedTime",
+                "lastCreatedTime",
+                "lastOccurredTime",
+                "resource"
+        }));
 
-        static {
-            workOrderFieldsInclude.add("actualWorkDuration");
-            workOrderFieldsInclude.add("subject");
-            workOrderFieldsInclude.add("actualWorkStart");
-            workOrderFieldsInclude.add("actualWorkEnd");
-            workOrderFieldsInclude.add("assignedBy");
-            workOrderFieldsInclude.add("assignedTo");
-            workOrderFieldsInclude.add("assignmentGroup");
-            workOrderFieldsInclude.add("category");
-            workOrderFieldsInclude.add("createdBy");
-            workOrderFieldsInclude.add("createdTime");
-            workOrderFieldsInclude.add("totalCost");
-            workOrderFieldsInclude.add("dueDate");
-            workOrderFieldsInclude.add("trigger");
-            workOrderFieldsInclude.add("modifiedTime");
-            workOrderFieldsInclude.add("noOfClosedTasks");
-            workOrderFieldsInclude.add("priority");
-            workOrderFieldsInclude.add("requester");
-            workOrderFieldsInclude.add("requestedBy");
-            workOrderFieldsInclude.add("resource");
-            workOrderFieldsInclude.add("scheduledStart");
-            workOrderFieldsInclude.add("sourceType");
-            workOrderFieldsInclude.add("moduleState");
-            workOrderFieldsInclude.add("type");
-            workOrderFieldsInclude.add("vendor");
-            workOrderFieldsInclude.add("tenant");
-            workOrderFieldsInclude.add("sendForApproval");
-            workOrderFieldsInclude.add("prerequisiteEnabled");
-            workOrderFieldsInclude.add("preRequestStatus");
-            workOrderFieldsInclude.add("responseDueDate");
+        public static final List<String> WORK_ORDER_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[] {
+                "actualWorkDuration",
+                "subject",
+                "actualWorkStart",
+                "actualWorkEnd",
+                "assignedBy",
+                "assignedTo",
+                "assignmentGroup",
+                "category",
+                "createdBy",
+                "createdTime",
+                "totalCost",
+                "dueDate",
+                "trigger",
+                "modifiedTime",
+                "noOfClosedTasks",
+                "priority",
+                "requester",
+                "requestedBy",
+                "resource",
+                "scheduledStart",
+                "sourceType",
+                "moduleState",
+                "type",
+                "vendor",
+                "tenant",
+                "client",
+                "sendForApproval",
+                "prerequisiteEnabled",
+                "preRequestStatus",
+                "responseDueDate",
+                "siteId",
+                "serialNumber"
+        }));
 
+        public static final List<String> ASSET_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[] {
+                "category",
+                "department",
+                "description",
+                "manufacturer",
+                "name",
+                "purchasedDate",
+                "qrVal",
+                "retireDate",
+                "serialNumber",
+                "state",
+                "supplier",
+                "tagNumber",
+                "type",
+                "space",
+                "unitPrice",
+                "warrantyExpiryDate",
+                "distanceMoved",
+                "connected",
+                "sysCreatedTime",
+                "sysCreatedBy",
+                "sysModifiedTime",
+                "sysModifiedBy",
+                "moduleState"
+        }));
 
-        }
-
-        public static List<String> assetFieldsInclude = new ArrayList<String>();
-
-        static {
-            assetFieldsInclude.add("category");
-            assetFieldsInclude.add("department");
-            assetFieldsInclude.add("description");
-            assetFieldsInclude.add("manufacturer");
-            assetFieldsInclude.add("name");
-            assetFieldsInclude.add("purchasedDate");
-            assetFieldsInclude.add("qrVal");
-            assetFieldsInclude.add("retireDate");
-            assetFieldsInclude.add("serialNumber");
-            assetFieldsInclude.add("state");
-            assetFieldsInclude.add("supplier");
-            assetFieldsInclude.add("tagNumber");
-            assetFieldsInclude.add("type");
-			assetFieldsInclude.add("space");
-            assetFieldsInclude.add("unitPrice");
-            assetFieldsInclude.add("warrantyExpiryDate");
-            assetFieldsInclude.add("distanceMoved");
-            assetFieldsInclude.add("connected");
-            assetFieldsInclude.add("sysCreatedTime");
-            assetFieldsInclude.add("sysCreatedBy");
-            assetFieldsInclude.add("sysModifiedTime");
-            assetFieldsInclude.add("sysModifiedBy");
-            assetFieldsInclude.add("moduleState");
-        }
-
-        public static List<String> quoteFieldsInclude = Collections.unmodifiableList(Arrays.asList(new String[] {
+        public static final List<String> QUOTE_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[] {
                 "subject",
                 "description",
                 "workorder",
@@ -303,50 +317,42 @@ public class FieldFactory {
                 "sysModifiedBy"
                                                                         }));
 
-        public static List<String> approvalFormFields = new ArrayList<String>();
+        public static final List<String> APPROVAL_FORM_FIELDS = Collections.unmodifiableList(Arrays.asList(new String[] {
+                "assignmentGroup",
+                "category",
+                "priority",
+                "resource",
+                "comment",
+                "dueDate"
+        }));
 
-        static {
-            approvalFormFields.add("assignmentGroup");
-            approvalFormFields.add("category");
-            approvalFormFields.add("priority");
-            approvalFormFields.add("resource");
-            approvalFormFields.add("comment");
-            approvalFormFields.add("dueDate");
-        }
+        public static final List<String> ENERGY_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[] {
+                "id"
+        }));
 
-        public static List<String> energyFieldsInclude = new ArrayList<String>();
+        public static final List<String> ENTITY_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[] {
+                "condition",
+                "source",
+                "resourceId",
+                "eventMessage",
+                "severity",
+                "createdTime",
+                "priority",
+                "alarmClass",
+                "state"
+        }));
 
-        static {
-            energyFieldsInclude.add("id");
-        }
-
-        public static List<String> entityFieldsInclucde = new ArrayList<String>();
-
-        static {
-            entityFieldsInclucde.add("condition");
-            entityFieldsInclucde.add("source");
-            entityFieldsInclucde.add("resourceId");
-            entityFieldsInclucde.add("eventMessage");
-            entityFieldsInclucde.add("severity");
-            entityFieldsInclucde.add("createdTime");
-            entityFieldsInclucde.add("priority");
-            entityFieldsInclucde.add("alarmClass");
-            entityFieldsInclucde.add("state");
-        }
-
-        public static Set<String> workorderRequestFieldInclude = new HashSet<String>();
-
-        static {
-            workorderRequestFieldInclude.add("subject");
-            workorderRequestFieldInclude.add("description");
-            workorderRequestFieldInclude.add("priority");
-            workorderRequestFieldInclude.add("category");
-            workorderRequestFieldInclude.add("resource");
-            workorderRequestFieldInclude.add("dueDate");
-            workorderRequestFieldInclude.add("requester");
-            workorderRequestFieldInclude.add("urgency");
-            workorderRequestFieldInclude.add("createdBy");
-        }
+        public static final Set<String> WORK_ORDER_REQUEST_FIELDS_INCLUDE = Collections.unmodifiableSet(Arrays.stream(new String[] {
+                "subject",
+                "description",
+                "priority",
+                "category",
+                "resource",
+                "dueDate",
+                "requester",
+                "urgency",
+                "createdBy"
+        }).collect(Collectors.toSet()));
     }
 
     public static List<FacilioField> getFormFields() {

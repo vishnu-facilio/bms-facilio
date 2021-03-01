@@ -169,7 +169,7 @@ public class FormAction extends FacilioAction {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");		
 		allFields.addAll(modBean.getAllFields("workorder"));
 		for(FacilioField fieldObject:allFields) {
-			if(FieldFactory.Fields.approvalFormFields.contains(fieldObject.getName()) || !fieldObject.isDefault()) {
+			if(FieldFactory.Fields.APPROVAL_FORM_FIELDS.contains(fieldObject.getName()) || !fieldObject.isDefault()) {
 				fields.add(fieldObject);
 			}
 		}

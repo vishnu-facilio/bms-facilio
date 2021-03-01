@@ -97,11 +97,11 @@ public class GetAllFieldsCommand extends FacilioCommand {
 		if (isFilter != null) {
 			for(FacilioField fieldObject:allFields) {
 				if (moduleName.equals(ContextNames.ALARM)) {
-					if(FieldFactory.Fields.alarmsFieldsInclude.contains(fieldObject.getName())) {
+					if(FieldFactory.Fields.ALARMS_FIELDS_INCLUDE.contains(fieldObject.getName())) {
 						fields.add(fieldObject);
 					}
 				} else if (moduleName.equals("event")) {
-					if(FieldFactory.Fields.entityFieldsInclucde.contains(fieldObject.getName())) {
+					if(FieldFactory.Fields.ENTITY_FIELDS_INCLUDE.contains(fieldObject.getName())) {
 						fields.add(fieldObject);
 					}
 				} 
@@ -111,7 +111,7 @@ public class GetAllFieldsCommand extends FacilioCommand {
 							fields.add(fieldObject);
 						}
 					}
-					else if(FieldFactory.Fields.workOrderFieldsInclude.contains(fieldObject.getName())) {
+					else if(FieldFactory.Fields.WORK_ORDER_FIELDS_INCLUDE.contains(fieldObject.getName())) {
 						fields.add(fieldObject);
 					}
 					else if(fieldObject.getName().equals("tenant") && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) {
@@ -137,7 +137,7 @@ public class GetAllFieldsCommand extends FacilioCommand {
 							fields.add(fieldObject);
 						}
 					}
-					else if(FieldFactory.Fields.assetFieldsInclude.contains(fieldObject.getName())) {
+					else if(FieldFactory.Fields.ASSET_FIELDS_INCLUDE.contains(fieldObject.getName())) {
 						fields.add(fieldObject);
 					}
 				}
@@ -147,7 +147,7 @@ public class GetAllFieldsCommand extends FacilioCommand {
 							fields.add(fieldObject);
 						}
 					}
-					else if(FieldFactory.Fields.newAlarmsFieldsInclude.contains(fieldObject.getName())) {
+					else if(FieldFactory.Fields.NEW_ALARMS_FIELDS_INCLUDE.contains(fieldObject.getName())) {
 						fields.add(fieldObject);
 					}
 				}
@@ -157,7 +157,7 @@ public class GetAllFieldsCommand extends FacilioCommand {
 							fields.add(fieldObject);
 						}
 					}
-					else if(FieldFactory.Fields.newOpAlarmsFieldsInclude.contains(fieldObject.getName())) {
+					else if(FieldFactory.Fields.NEW_OP_ALARMS_FIELDS_INCLUDE.contains(fieldObject.getName())) {
 						fields.add(fieldObject);
 					}
 				}

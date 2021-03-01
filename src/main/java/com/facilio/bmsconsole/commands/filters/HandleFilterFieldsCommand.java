@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands.filters;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.filters.FilterFieldContext;
@@ -57,7 +58,7 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
         return filterFields;
     }
 
-    private List<FacilioField> filterFields (FacilioModule module, List<FacilioField> fields) {
+    private List<FacilioField> filterFields (FacilioModule module, List<FacilioField> fields) throws Exception {
         fields = filterModuleFields(module, fields);
         return filterScopeFields(module, fields);
     }
@@ -75,6 +76,10 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
     }
 
     private FilterFieldContext createFilterField(FacilioModule module, FacilioField field) throws Exception { // We can do special handling here also maybe
+        if (field.getDataTypeEnum().isMultiRecord()) {
+            return null;
+        }
+
         switch (field.getDataTypeEnum()) {
             case FILE:
             case ID:
@@ -129,45 +134,36 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
         return filter;
     }
 
-    private List<FacilioField> filterOutFields (List<FacilioField> fields, List<String> filterList, FilterType type) {
-        return fields.stream().
-                filter(
-                        f -> !(type.getFilterBool() ^ filterList.contains(f.getName())) // This is XNOR behaviour. It should be true only if both isInclude and contains are true or if both are false
-                                || !f.isDefault()
-                ).collect(Collectors.toList());
-    }
-
     private static final List<String> SENSOR_ALARM_FIELDS_TO_HIDE = Arrays.asList(new String[] {"readingFieldId", "type", "noOfNotes", "lastWoId", "lastOccurrenceId", "key", "description", "noOfOccurrences"});
-    private List<FacilioField> filterModuleFields (FacilioModule module, List<FacilioField> fields) {
+    private static final String WORKORDER_CLIENT_FIELD = "client";
+    private static final String WORKORDER_TENANT_FIELD = "tenant";
+    private static final String WORKORDER_VENDOR_FIELD = "vendor";
+    private List<FacilioField> filterModuleFields (FacilioModule module, List<FacilioField> fields) throws Exception {
         if (AssetsAPI.isAssetsModule(module)) {
-            return filterOutFields(fields, FieldFactory.Fields.assetFieldsInclude, FilterType.INCLUDE);
+            return FieldFactory.Fields.filterOutFields(fields, FieldFactory.Fields.ASSET_FIELDS_INCLUDE, FieldFactory.Fields.FilterType.INCLUDE);
         }
         else {
             switch (module.getName()) {
                 case  ContextNames.WORK_ORDER:
-            	    		return filterOutFields(fields, FieldFactory.Fields.workOrderFieldsInclude, FilterType.INCLUDE);
+                    List<FacilioField> filteredFields = FieldFactory.Fields.filterOutFields(fields, FieldFactory.Fields.WORK_ORDER_FIELDS_INCLUDE, FieldFactory.Fields.FilterType.INCLUDE);
+                    List<String> splLicenseBasedFields = new ArrayList<>();
+                    if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLIENT)) {
+                        splLicenseBasedFields.add(WORKORDER_CLIENT_FIELD);
+                    }
+                    if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) {
+                        splLicenseBasedFields.add(WORKORDER_TENANT_FIELD);
+                    }
+                    if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY)) {
+                        splLicenseBasedFields.add(WORKORDER_VENDOR_FIELD);
+                    }
+                    return FieldFactory.Fields.filterOutFields(filteredFields, splLicenseBasedFields, FieldFactory.Fields.FilterType.EXCLUDE);
                 case FacilioConstants.ContextNames.QUOTE:
-                    return filterOutFields(fields, FieldFactory.Fields.quoteFieldsInclude, FilterType.INCLUDE);
+                    return FieldFactory.Fields.filterOutFields(fields, FieldFactory.Fields.QUOTE_FIELDS_INCLUDE, FieldFactory.Fields.FilterType.INCLUDE);
                 case FacilioConstants.ContextNames.SENSOR_ROLLUP_ALARM:
-                    return filterOutFields(fields, SENSOR_ALARM_FIELDS_TO_HIDE, FilterType.EXCLUDE);
+                    return FieldFactory.Fields.filterOutFields(fields, SENSOR_ALARM_FIELDS_TO_HIDE, FieldFactory.Fields.FilterType.EXCLUDE);
                 default:
                     return fields;
             }
-        }
-    }
-
-    private static enum FilterType {
-        INCLUDE (true),
-        EXCLUDE (false)
-        ;
-
-        private FilterType(boolean filterBool) {
-            this.filterBool = filterBool;
-        }
-
-        private boolean filterBool;
-        public boolean getFilterBool() {
-            return filterBool;
         }
     }
 }

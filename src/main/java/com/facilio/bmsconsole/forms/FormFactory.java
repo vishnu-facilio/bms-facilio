@@ -623,7 +623,7 @@ public class FormFactory {
 		List<FacilioField> facilioFields = new ArrayList(); 
 		int i = 0;
 		for(FacilioField fieldObject: allFields) {
-		if(FieldFactory.Fields.approvalFormFields.contains(fieldObject.getName()) || !fieldObject.isDefault()) {
+		if(FieldFactory.Fields.APPROVAL_FORM_FIELDS.contains(fieldObject.getName()) || !fieldObject.isDefault()) {
 			if (fieldObject.getName().equals("resource")) {
 				fields.add(new FormField(fieldObject.getFieldId(),fieldObject.getName(), FieldDisplayType.WOASSETSPACECHOOSER, "Space/Asset", Required.OPTIONAL, i++, 1));
 			} else if (fieldObject.getName().equals("assignmentGroup")) {

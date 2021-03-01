@@ -26,7 +26,7 @@ public class GetFormFieldsCommand extends FacilioCommand {
 		List<FormField> formFields = new ArrayList<>(); 
 		int i = 1;
 		for (FacilioField field: fields) {
-			if (FieldFactory.Fields.workorderRequestFieldInclude.contains(field.getName())) {
+			if (FieldFactory.Fields.WORK_ORDER_REQUEST_FIELDS_INCLUDE.contains(field.getName())) {
 				// Temp hack
 				if (moduleName.equals("workorderrequest")) {
 					if (field.getName().equals("resource")) {
