@@ -1739,10 +1739,8 @@ public class ColumnFactory {
 
 	private static List<ViewField> getDefaultFacilityBookingColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
-
-		columns.add(new ViewField("name", "Name"));
-		columns.add(new ViewField("description", "Description"));
 		columns.add(new ViewField("facility", "Facility"));
+		columns.add(new ViewField("description", "Description"));
 		columns.add(new ViewField("reservedFor", "Reserved For"));
 		columns.add(new ViewField("noOfAttendees", "No. Of Attendees"));
 		columns.add(new ViewField("bookingAmount", "Booking Amount"));
