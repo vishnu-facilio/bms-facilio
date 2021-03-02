@@ -57,8 +57,6 @@ public class OrgBeanCacheImpl extends OrgBeanImpl implements OrgBean {
         if(units == null) {
             units = super.getOrgDisplayUnit(metricId);
             orgUnitCache.put(key,units);
-        } else {
-          LOGGER.info("Org Display Unit  cache is hit");
         }
         return units;
     }
