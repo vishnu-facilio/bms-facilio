@@ -22,6 +22,7 @@ public class GetAllModulesCommand extends FacilioCommand {
 			ContextNames.WORK_ORDER,
 			ContextNames.ASSET,
 			ContextNames.VENDORS,
+			ContextNames.VENDOR_CONTACT,
 			ContextNames.VISITOR_LOGGING,
 			ContextNames.PURCHASE_CONTRACTS,
 			ContextNames.LABOUR_CONTRACTS,
