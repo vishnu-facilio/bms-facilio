@@ -227,6 +227,7 @@ public class ColumnFactory {
 
 		columnMap.put("budget-default", getDefaultBudgetColumns());
 		columnMap.put("chartofaccount-default", getDefaultChartOfAccountColumns());
+		columnMap.put("accounttype-default", getDefaultAccountTypeColumns());
 		columnMap.put("controlGroupv2-default", getDefaultControlGroupColumns());
 		columnMap.put(ControlScheduleUtil.CONTROL_GROUP_TENANT_SHARING_MODULE_NAME+"-default", getDefaultControlGroupTenantColumns());
 		columnMap.put(ControlScheduleUtil.CONTROL_SCHEDULE_MODULE_NAME+"-default", getDefaultControlScheduleColumns());
@@ -1660,6 +1661,15 @@ public class ColumnFactory {
 		columns.add(new ViewField("type", "Type"));
 		columns.add(new ViewField("description", "Description"));
 		columns.add(new ViewField("parentAccount", "Parent Account"));
+
+		return columns;
+	}
+	
+	private static List<ViewField> getDefaultAccountTypeColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("group", "Group"));
 
 		return columns;
 	}
