@@ -463,6 +463,102 @@ public class FacilioAuthAction extends FacilioAction {
 
 	private String digest;
 
+	public String vendorLoginWithPasswordAndDigest() throws Exception {
+		String digest = getDigest();
+		String emailFromDigest = null;
+		try {
+			emailFromDigest = IAMUserUtil.getEmailFromDigest(digest);
+		} catch (Exception e) {
+			LOGGER.log(Level.INFO, "Exception while validating password, ", e);
+			Exception ex = e;
+			while (ex != null) {
+				if (ex instanceof AccountException) {
+					setJsonresponse("message", ex.getMessage());
+					break;
+				}
+				ex = (Exception) ex.getCause();
+			}
+			setJsonresponse("errorcode", "2");
+			return ERROR;
+		}
+
+		if (StringUtils.isEmpty(emailFromDigest) || StringUtils.isEmpty(getPassword())) {
+			setJsonresponse("message", "Invalid username or password");
+			return ERROR;
+		}
+
+		try {
+			LOGGER.info("validateLogin() : username : " + getUsername()
+			);
+			String authtoken = null;
+			AppDomain appdomainObj = null;
+			Organization org = null;
+			if (StringUtils.isNotEmpty(getDomain())) {
+				org = IAMOrgUtil.getOrg(getDomain());
+			}
+			if (getLookUpType().equalsIgnoreCase("service")) {
+				if (org == null) {
+					List<Map<String, Object>> userData = IAMUserUtil.getUserData(emailFromDigest, AppDomain.GroupType.TENANT_OCCUPANT_PORTAL);
+					List<Long> orgIds = new ArrayList<>();
+					userData.forEach(i -> orgIds.add((long) i.get("orgId")));
+					org = IAMOrgUtil.getOrg(orgIds.get(0));
+					setDomain(org.getDomain());
+				}
+				appdomainObj = IAMAppUtil.getAppDomainForType(2, org.getOrgId()).get(0);
+			} else if (getLookUpType().equalsIgnoreCase("tenant")) {
+				if (org == null) {
+					List<Map<String, Object>> userData = IAMUserUtil.getUserData(emailFromDigest, AppDomain.GroupType.TENANT_OCCUPANT_PORTAL);
+					List<Long> orgIds = new ArrayList<>();
+					userData.forEach(i -> orgIds.add((long) i.get("orgId")));
+					org = IAMOrgUtil.getOrg(orgIds.get(0));
+					setDomain(org.getDomain());
+				}
+				appdomainObj = IAMAppUtil.getAppDomainForType(3, org.getOrgId()).get(0);
+			} else if (getLookUpType().equalsIgnoreCase("vendor")) {
+				if (org == null) {
+					List<Map<String, Object>> userData = IAMUserUtil.getUserData(emailFromDigest, AppDomain.GroupType.VENDOR_PORTAL);
+					List<Long> orgIds = new ArrayList<>();
+					userData.forEach(i -> orgIds.add((long) i.get("orgId")));
+					org = IAMOrgUtil.getOrg(orgIds.get(0));
+					setDomain(org.getDomain());
+				}
+				appdomainObj = IAMAppUtil.getAppDomainForType(4, org.getOrgId()).get(0);
+			}
+
+			HttpServletRequest request = ServletActionContext.getRequest();
+			HttpServletResponse resp = ServletActionContext.getResponse();
+			String userAgent = request.getHeader("User-Agent");
+			userAgent = userAgent != null ? userAgent : "";
+			String ipAddress = request.getHeader("X-Forwarded-For");
+			ipAddress = (ipAddress == null || "".equals(ipAddress.trim())) ? request.getRemoteAddr() : ipAddress;
+			String userType = "mobile";
+
+			authtoken = IAMUserUtil.verifyLoginPasswordv3(emailFromDigest, getPassword(), appdomainObj.getDomain(), userAgent, userType, ipAddress);
+			setJsonresponse("token", authtoken);
+			setJsonresponse("username", emailFromDigest);
+
+			//deleting .facilio.com cookie(temp handling)
+			FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.facilio","facilio.com");
+			FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.facilio","facilio.in");
+
+			addAuthCookies(authtoken, false, false, request, true);
+		} catch (Exception e) {
+			LOGGER.log(Level.INFO, "Exception while validating password, ", e);
+			Exception ex = e;
+			while (ex != null) {
+				if (ex instanceof AccountException) {
+					setJsonresponse("message", ex.getMessage());
+					break;
+				}
+				ex = (Exception) ex.getCause();
+			}
+			setJsonresponse("errorcode", "1");
+			return ERROR;
+		}
+		setServicePortalWebViewCookies();
+		return SUCCESS;
+	}
+
 	public String serviceLoginWithPasswordAndDigest() throws Exception {
 		String digest = getDigest();
 		String emailFromDigest = null;
@@ -554,6 +650,8 @@ public class FacilioAuthAction extends FacilioAction {
 		if (!StringUtils.isEmpty(getLookUpType())) {
 			if (getLookUpType().equals("service") || getLookUpType().equalsIgnoreCase("tenant")) {
 				return serviceLoginWithPasswordAndDigest();
+			} else if (getLookUpType().equals("vendor")) {
+				return vendorLoginWithPasswordAndDigest();
 			}
 		}
 		String digest = getDigest();
