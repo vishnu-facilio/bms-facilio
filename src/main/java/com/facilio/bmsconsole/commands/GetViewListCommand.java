@@ -246,6 +246,14 @@ public class GetViewListCommand extends FacilioCommand {
 			
 		}
 		else {
+			if (!viewGroups.isEmpty() && viewGroups != null) {
+				 allViews = new ArrayList<>();
+				for(ViewGroups viewGroup : viewGroups) {
+					if (viewGroup.getViews() != null && !viewGroup.getViews().isEmpty()) {
+						allViews.addAll(viewGroup.getViews());
+					}
+				}
+			}
 			allViews.sort(Comparator.comparing(FacilioView::getSequenceNumber, (s1, s2) -> {
 				if(s1 == s2){
 			         return 0;
