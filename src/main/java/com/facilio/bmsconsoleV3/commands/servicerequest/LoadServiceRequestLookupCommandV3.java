@@ -36,7 +36,7 @@ public class LoadServiceRequestLookupCommandV3 extends FacilioCommand {
 		additionaLookups.add(resourceField);
 		additionaLookups.add((LookupField) fieldsAsMap.get("assignmentGroup"));
 		additionaLookups.add((LookupField) fieldsAsMap.get("assignedTo"));
-		context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST, additionaLookups);
+		context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, additionaLookups);
 		return false;
 	}
 
