@@ -31,11 +31,13 @@ public class LoadServiceRequestLookupCommandV3 extends FacilioCommand {
 		LookupField priorityField = (LookupField) fieldsAsMap.get("urgency");
 		LookupField requesterField = (LookupField) fieldsAsMap.get("requester");
 		LookupField resourceField = (LookupField) fieldsAsMap.get("resource");
+		LookupField moduleStateField = (LookupField) fieldsAsMap.get("moduleState");
 		additionaLookups.add(priorityField);
 		additionaLookups.add(requesterField);
 		additionaLookups.add(resourceField);
 		additionaLookups.add((LookupField) fieldsAsMap.get("assignmentGroup"));
 		additionaLookups.add((LookupField) fieldsAsMap.get("assignedTo"));
+		additionaLookups.add(moduleStateField);
 		context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, additionaLookups);
 		return false;
 	}
