@@ -393,6 +393,20 @@ public class FacilioAuthAction extends FacilioAction {
 		return SUCCESS;
 	}
 
+	public String vendorlookup() {
+		String username = getUsername();
+		AppDomain.GroupType groupType = AppDomain.GroupType.VENDOR_PORTAL;
+		try {
+			Map<String, Object> loginModes = IAMUserUtil.getLoginModes(username, groupType);
+			setJsonresponse(loginModes);
+		} catch (Exception e) {
+			LOGGER.log(Level.INFO, "Exception while user lookup ", e);
+			setJsonresponse("errorcode", "2");
+			return ERROR;
+		}
+		return SUCCESS;
+	}
+
 	public String servicelookup() {
 		String username = getUsername();
 		AppDomain.GroupType groupType = AppDomain.GroupType.TENANT_OCCUPANT_PORTAL;
@@ -413,6 +427,8 @@ public class FacilioAuthAction extends FacilioAction {
 				return servicelookup();
 			} else if (getLookUpType().equals("tenant")) {
 				return servicelookup();
+			} else if (getLookUpType().equals("vendor")) {
+				return vendorlookup();
 			}
 		}
 		String username = getUsername();
