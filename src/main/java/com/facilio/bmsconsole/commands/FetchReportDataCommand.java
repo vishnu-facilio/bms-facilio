@@ -1035,7 +1035,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 				selectBuilder.limit(dataPoint.getLimit());
 			}
 		}
-		else if (dataPoint.getxAxis().getDataTypeEnum() == FieldType.DATE_TIME || dataPoint.getxAxis().getDataTypeEnum() == FieldType.DATE && xAggr == CommonAggregateOperator.ACTUAL) {
+		else if (dataPoint.getxAxis().getDataTypeEnum() == FieldType.DATE_TIME || dataPoint.getxAxis().getDataTypeEnum() == FieldType.DATE && xAggr != CommonAggregateOperator.ACTUAL) {
 
 			String orderBy = null;
 			if(dataPoint.getyAxis().getAggr() < 1) {
