@@ -2535,7 +2535,6 @@ public class FormFactory {
 		form.setFormType(FormType.WEB);
 
 		List<FormField> fields = new ArrayList<>();
-		fields.add(new FormField("people", FieldDisplayType.LOOKUP_SIMPLE, "People", Required.REQUIRED, "people",1, 1));
 		fields.add(new FormField("contactName", FieldDisplayType.TEXTBOX, "Contact Name", Required.REQUIRED, 2, 1));
 		fields.add(new FormField("contactEmail", FieldDisplayType.TEXTBOX, "Contact Email", Required.REQUIRED, 3, 1));
 		fields.add(new FormField("contactPhone", FieldDisplayType.TEXTBOX, "Contact Phone", Required.REQUIRED,4, 1));
