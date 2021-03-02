@@ -367,7 +367,7 @@ public class FacilityAPI {
         List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.FacilityBooking.FACILITY_PHOTOS);
         Condition idCondition = new Condition();
         idCondition.setField(modBean.getField("parentId", module.getName()));
-        idCondition.setOperator(PickListOperators.IS);
+        idCondition.setOperator(NumberOperators.EQUALS);
         idCondition.setValue(String.valueOf(facilityId));
 
         SelectRecordsBuilder<V3PhotosContext> selectBuilder = new SelectRecordsBuilder<V3PhotosContext>()

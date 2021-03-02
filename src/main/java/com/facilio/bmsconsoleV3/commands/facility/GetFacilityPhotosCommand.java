@@ -24,9 +24,9 @@ public class GetFacilityPhotosCommand extends FacilioCommand {
             for(Long id: recordIds) {
                 FacilityContext facility = (FacilityContext) CommandUtil.getModuleData(context, FacilioConstants.ContextNames.FacilityBooking.FACILITY, id);
                 if (facility != null) {
-                    List<V3PhotosContext> assetPhotos = FacilityAPI.getFacilityPhotoId(id);
-                    if(CollectionUtils.isNotEmpty(assetPhotos)) {
-                        facility.setPhotos(assetPhotos);
+                    List<V3PhotosContext> facilityPhotos = FacilityAPI.getFacilityPhotoId(id);
+                    if(CollectionUtils.isNotEmpty(facilityPhotos)) {
+                        facility.setPhotos(facilityPhotos);
                     }
                 }
 
