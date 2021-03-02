@@ -232,7 +232,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 			applyReadingResourceJoin(dp,selectBuilder, fields, addedModules);
 		} 
 		joinModuleIfRequred(dp.getyAxis(), selectBuilder, addedModules);
-		applyOrderByAndLimit(dp, selectBuilder);
+		applyOrderByAndLimit(dp, selectBuilder, report.getxAggrEnum());
 		StringJoiner groupBy = new StringJoiner(",");
 		FacilioField xAggrField = applyXAggregation(dp, report.getxAggrEnum(), groupBy, selectBuilder, fields, addedModules);
 		if(report.getgroupByTimeAggr()>0){
@@ -1018,7 +1018,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 		}
 	}
 
-	private void applyOrderByAndLimit (ReportDataPointContext dataPoint, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder) {
+	private void applyOrderByAndLimit (ReportDataPointContext dataPoint, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, AggregateOperator xAggr) {
 		if (dataPoint.getOrderBy() != null && !dataPoint.getOrderBy().isEmpty()) {
 
 			if (dataPoint.getOrderByFuncEnum() == null || dataPoint.getOrderByFuncEnum() == OrderByFunction.NONE) {
@@ -1035,8 +1035,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 				selectBuilder.limit(dataPoint.getLimit());
 			}
 		}
-		/*
-		else if (dataPoint.getxAxis().getDataTypeEnum() == FieldType.DATE_TIME || dataPoint.getxAxis().getDataTypeEnum() == FieldType.DATE) {
+		else if (dataPoint.getxAxis().getDataTypeEnum() == FieldType.DATE_TIME || dataPoint.getxAxis().getDataTypeEnum() == FieldType.DATE && xAggr == CommonAggregateOperator.ACTUAL) {
 
 			String orderBy = null;
 			if(dataPoint.getyAxis().getAggr() < 1) {
@@ -1046,7 +1045,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 				orderBy = "MIN(" + dataPoint.getxAxis().getField().getCompleteColumnName() + ")";
 			}
 			selectBuilder.orderBy(orderBy);
-		}*/
+		}
 	}
 	
 	private void calculateBaseLineRange (ReportContext report) {
