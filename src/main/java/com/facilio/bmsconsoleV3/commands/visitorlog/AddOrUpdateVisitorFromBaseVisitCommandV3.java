@@ -28,6 +28,9 @@ public class AddOrUpdateVisitorFromBaseVisitCommandV3 extends FacilioCommand {
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<BaseVisitContextV3> visitorLogs = recordMap.get(moduleName);
 
+        Boolean doNotRollUpVisitor = (Boolean) context.get(FacilioConstants.ContextNames.DO_NOT_ROLLUP_VISITOR);
+        doNotRollUpVisitor = doNotRollUpVisitor == null ? Boolean.FALSE : doNotRollUpVisitor;  
+
         if(CollectionUtils.isNotEmpty(visitorLogs)) {
 
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -44,7 +47,7 @@ public class AddOrUpdateVisitorFromBaseVisitCommandV3 extends FacilioCommand {
                         visitor.setIsReturningVisitor(false);
                         V3RecordAPI.addRecord(true, Collections.singletonList(visitor) , module, fields);
                     }
-                    else {
+                    else if(visitor != null && !doNotRollUpVisitor){
                         visitor.setEmail(vL.getVisitorEmail());
                         visitor.setPhone(vL.getVisitorPhone());
                         visitor.setName(vL.getVisitorName());

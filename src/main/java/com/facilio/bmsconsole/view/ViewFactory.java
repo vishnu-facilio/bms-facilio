@@ -7445,7 +7445,7 @@ public class ViewFactory {
 
 		FacilioView view = new FacilioView();
 		view.setName("upcoming");
-		view.setDisplayName("Upcoming Visits");
+		view.setDisplayName("Upcoming Invites");
 		Criteria criteria = new Criteria();
 		FacilioModule inviteVisitorModule = ModuleFactory.getInviteVisitorLogModule();
 

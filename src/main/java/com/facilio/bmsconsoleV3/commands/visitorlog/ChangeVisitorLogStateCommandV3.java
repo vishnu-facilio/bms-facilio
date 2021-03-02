@@ -60,6 +60,7 @@ public class ChangeVisitorLogStateCommandV3 extends FacilioCommand {
                                                 Constants.setRawInput(updatecontext, FieldUtil.getAsJSON(vLog));
                                                 updatecontext.put(FacilioConstants.ContextNames.TRANSITION_ID, nextTransitionId);
                                                 updatecontext.put(Constants.BEAN_CLASS, VisitorLogContextV3.class);
+                                                updatecontext.put(FacilioConstants.ContextNames.DO_NOT_ROLLUP_VISITOR, true);
                                                 updateChain.execute();
                                             }
                                             if (record.getCheckInTime() == null ||  record.getCheckInTime() <= 0) {
