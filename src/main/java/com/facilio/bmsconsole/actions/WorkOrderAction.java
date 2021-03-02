@@ -1430,7 +1430,6 @@ public class WorkOrderAction extends FacilioAction {
 			workorder.setSignatureFileName(signatureFileName);
 			workorder.setSignatureContentType(signatureContentType);
 		}
-		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CLOSE_WORK_ORDER);
 		context.put(FacilioConstants.ContextNames.ACTUAL_TIMINGS, actualTimings);
 
 
@@ -1441,6 +1440,8 @@ public class WorkOrderAction extends FacilioAction {
 		}
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		setUpdateWorkorderContext(context);
+		CommonCommandUtil.addEventType(EventType.CLOSE_WORK_ORDER, context);
+		
 
 		if (actualWorkDuration != -1) {
 			workorder.setActualWorkDuration(actualWorkDuration);
