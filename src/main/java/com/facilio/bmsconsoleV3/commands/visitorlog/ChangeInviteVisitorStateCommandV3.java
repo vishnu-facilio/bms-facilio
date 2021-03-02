@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.visitorlog;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,8 +37,11 @@ public class ChangeInviteVisitorStateCommandV3 extends FacilioCommand {
 		List<InviteVisitorContextV3> records = recordMap.get(moduleName);
 		Map<Long, List<UpdateChangeSet>> changeSet = Constants.getModuleChangeSets(context);
 
-		List<InviteVisitorContextV3> oldRecords = (List<InviteVisitorContextV3>) context
-				.get(FacilioConstants.ContextNames.INVITE_VISITOR_RECORDS);
+		List<InviteVisitorContextV3> oldRecords = (List<InviteVisitorContextV3>) context.get(FacilioConstants.ContextNames.INVITE_VISITOR_RECORDS);
+		Map<Long, InviteVisitorContextV3> oldRecordMap = new HashMap<Long, InviteVisitorContextV3>();
+		for(InviteVisitorContextV3 oldRecord:oldRecords) {
+			oldRecordMap.put(oldRecord.getId(), oldRecord);
+		}
 
 		if (MapUtils.isNotEmpty(changeSet)) {
 			if (CollectionUtils.isNotEmpty(records)) {
@@ -53,9 +57,11 @@ public class ChangeInviteVisitorStateCommandV3 extends FacilioCommand {
 //                          if (status.getStatus().toString().trim().equals("Invited") || status.getStatus().toString().trim().equals("Upcoming")) {
 //                             V3VisitorManagementAPI.updateInviteVisitorInvitationStatus(record, true);
 //                          }
-					if (record.hasCheckedIn()) {
+					
+					InviteVisitorContextV3 oldRecord = oldRecordMap.get(record.getId());
+					if (oldRecord.hasCheckedIn()) {
 						VisitorLogContextV3 vLogToBeAdded = FieldUtil.cloneBean(record, VisitorLogContextV3.class);
-						VisitorLogContextV3 oldVLogToBeAdded = FieldUtil.cloneBean(oldRecords.get(0),
+						VisitorLogContextV3 oldVLogToBeAdded = FieldUtil.cloneBean(oldRecord,
 								VisitorLogContextV3.class);
 
 						if (vLogToBeAdded.getCheckInTime() == null || vLogToBeAdded.getCheckInTime() <= 0) {
