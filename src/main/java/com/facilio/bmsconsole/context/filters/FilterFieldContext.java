@@ -74,8 +74,12 @@ public class FilterFieldContext {
     }
 
     @JSON(serialize = false)
-    public boolean isMainField() {
+    public boolean isMain() {
         return field == null ? false : field.isMainField();
+    }
+
+    public Boolean getMainField() { //Have separate getter to return null, so that this key is ignored in client response if it's not main field
+        return field == null ? null : field.getMainField();
     }
 
     public boolean isDefault() {
