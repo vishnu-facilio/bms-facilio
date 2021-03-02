@@ -7,6 +7,7 @@ import java.util.Map;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
@@ -35,14 +36,16 @@ public class ChangeInviteVisitorStateCommandV3 extends FacilioCommand {
 		String moduleName = Constants.getModuleName(context);
 		Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
 		List<InviteVisitorContextV3> records = recordMap.get(moduleName);
+        Map<String, List<Object>> queryParams = (Map<String, List<Object>>)context.get(Constants.QUERY_PARAMS);
 		Map<Long, List<UpdateChangeSet>> changeSet = Constants.getModuleChangeSets(context);
 
 		List<InviteVisitorContextV3> oldRecords = (List<InviteVisitorContextV3>) context.get(FacilioConstants.ContextNames.INVITE_VISITOR_RECORDS);
-		Map<Long, InviteVisitorContextV3> oldRecordMap = new HashMap<Long, InviteVisitorContextV3>();
-		for(InviteVisitorContextV3 oldRecord:oldRecords) {
-			oldRecordMap.put(oldRecord.getId(), oldRecord);
+		
+		boolean isInviteEdit = false;
+		if(queryParams.containsKey("isInviteEdit") && queryParams.get("isInviteEdit") != null && !queryParams.get("isInviteEdit").isEmpty() && queryParams.get("isInviteEdit").get(0) != null && StringUtils.isNotEmpty((String)queryParams.get("isInviteEdit").get(0)) && ((Boolean)Boolean.valueOf((String)queryParams.get("isInviteEdit").get(0)))){
+			isInviteEdit = true;
 		}
-
+		
 		if (MapUtils.isNotEmpty(changeSet)) {
 			if (CollectionUtils.isNotEmpty(records)) {
 				long time = System.currentTimeMillis();
@@ -58,10 +61,9 @@ public class ChangeInviteVisitorStateCommandV3 extends FacilioCommand {
 //                             V3VisitorManagementAPI.updateInviteVisitorInvitationStatus(record, true);
 //                          }
 					
-					InviteVisitorContextV3 oldRecord = oldRecordMap.get(record.getId());
-					if (oldRecord.hasCheckedIn()) {
+					if (record.hasCheckedIn() && !isInviteEdit) {
 						VisitorLogContextV3 vLogToBeAdded = FieldUtil.cloneBean(record, VisitorLogContextV3.class);
-						VisitorLogContextV3 oldVLogToBeAdded = FieldUtil.cloneBean(oldRecord,
+						VisitorLogContextV3 oldVLogToBeAdded = FieldUtil.cloneBean(oldRecords.get(0),
 								VisitorLogContextV3.class);
 
 						if (vLogToBeAdded.getCheckInTime() == null || vLogToBeAdded.getCheckInTime() <= 0) {
