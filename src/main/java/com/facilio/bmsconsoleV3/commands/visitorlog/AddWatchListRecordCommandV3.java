@@ -31,7 +31,7 @@ public class AddWatchListRecordCommandV3 extends FacilioCommand {
             List<WatchListContext> watchList = new ArrayList<>();
             for (VisitorLogContextV3 vL : visitorLogs) {
                 V3VisitorContext visitor = vL.getVisitor();
-                if(visitor != null && (vL.getIsVip() || vL.getIsBlocked())) {
+                if(visitor != null && (vL.isVip() || vL.isBlocked())) {
                 WatchListContext existing = VisitorManagementAPI.getBlockedWatchListRecordForPhoneNumber(visitor.getPhone(), visitor.getEmail());
                 if (existing == null) {
                     WatchListContext wL = new WatchListContext();
