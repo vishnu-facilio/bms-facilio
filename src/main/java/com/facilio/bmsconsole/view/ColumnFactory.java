@@ -234,7 +234,8 @@ public class ColumnFactory {
 		columnMap.put(ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_TENANT_SHARING_MODULE_NAME+"-default", getControlScheduleExceptionTenantColumns());
 		columnMap.put(FacilioConstants.ContextNames.FacilityBooking.FACILITY + "-default", getDefaultFacilityColumns());
 		columnMap.put(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING + "-default", getDefaultFacilityBookingColumns());
-
+		columnMap.put(FacilioConstants.ContextNames.FacilityBooking.AMENITY + "-default", getDefaultAmenityColumns());
+		
 		// Community Features
 		columnMap.put("announcement-default", getDefaultAnnouncementColumns());
 		columnMap.put("peopleannouncement-default", getDefaultAnnouncementColumns());
@@ -1748,5 +1749,16 @@ public class ColumnFactory {
 		return columns;
 
 	}
+
+	private static List<ViewField> getDefaultAmenityColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("description", "Description"));
+		columns.add(new ViewField("category", "Category"));
+
+		return columns;
+
+	}
+
 
 }

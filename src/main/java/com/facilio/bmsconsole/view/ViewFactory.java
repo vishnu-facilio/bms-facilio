@@ -8741,4 +8741,21 @@ public class ViewFactory {
 		return allView;
 	}
 
+	private static FacilioView getAllAmenitiesView() {
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Amenities");
+		allView.setModuleName(FacilioConstants.ContextNames.FacilityBooking.AMENITY);
+		allView.setSortFields(sortFields);
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		allView.setViewSharing(getSharingContext(appDomains));
+
+		return allView;
+	}
+
+
 }
