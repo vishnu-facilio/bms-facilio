@@ -53,9 +53,6 @@ public class ValidateBaseVisitDetailAndLogCommand extends FacilioCommand{
 								if(inviteVisit.getExpectedCheckOutTime() != null && inviteVisit.getExpectedCheckOutTime() > 0 && currentTime > inviteVisit.getExpectedCheckOutTime()) {
 					                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Passcode/qr Expired");
 								}
-								if(inviteVisit.hasCheckedIn()) {
-					                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Visitor Invite already Checked In");
-								}
 								if(inviteVisit != null) {
 									List<WorkflowRuleContext> nextStateRule = StateFlowRulesAPI.getAvailableState(inviteVisit.getStateFlowId(), inviteVisit.getModuleState().getId(), FacilioConstants.ContextNames.INVITE_VISITOR, inviteVisit, (FacilioContext)context);
 									if(CollectionUtils.isNotEmpty(nextStateRule)) {
