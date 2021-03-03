@@ -2599,11 +2599,12 @@ public class FormFactory {
 
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
-		FormField typeField = new FormField("type", FieldDisplayType.LOOKUP_SIMPLE, "Type", Required.REQUIRED, "accounttype",2, 1);
+		fields.add(new FormField("code", FieldDisplayType.TEXTBOX, "Code", Required.OPTIONAL,2, 1));
+		FormField typeField = new FormField("type", FieldDisplayType.LOOKUP_SIMPLE, "Type", Required.REQUIRED, "accounttype",3, 1);
 		typeField.setAllowCreate(true);
 		fields.add(typeField);
-		fields.add(new FormField("parentAccount", FieldDisplayType.LOOKUP_SIMPLE, "Parent Account", Required.OPTIONAL, "chartofaccount",3, 1));
-		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 4, 1));
+		fields.add(new FormField("parentAccount", FieldDisplayType.LOOKUP_SIMPLE, "Parent Account", Required.OPTIONAL, "chartofaccount",4, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 5, 1));
 		form.setFields(fields);
 
 		return form;
@@ -2694,7 +2695,7 @@ public class FormFactory {
 		fields.add(new FormField("reservedFor", FieldDisplayType.LOOKUP_SIMPLE, "Reserved For", Required.OPTIONAL,"user",2, 1));
 		fields.add(new FormField("noOfAttendees", FieldDisplayType.NUMBER, "Number Of Attendees", Required.OPTIONAL,3, 1));
 		fields.add(new FormField("bookingslot", FieldDisplayType.FACILITY_BOOKING_SLOTS, "Time Slots", Required.OPTIONAL,4, 1));
-		fields.add(new FormField("internalAttendees", FieldDisplayType.MULTI_USER_LIST, "Internal Attendees", Required.OPTIONAL,5, 1));
+		fields.add(new FormField("internalAttendees", FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Internal Attendees", Required.OPTIONAL,5, 1));
 		form.setFields(fields);
 		return form;
 	}
