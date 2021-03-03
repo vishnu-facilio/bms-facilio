@@ -323,6 +323,7 @@ public class TransactionChainFactory {
 			//c.addCommand(new ValidateFormCommand());
 			c.addCommand(new AddRequesterCommand());
 			c.addCommand(SetTableNamesCommand.getForWorkOrder());
+			c.addCommand(new UpdateTransactionEventTypeCommand());
 			c.addCommand(new ValidateWorkOrderFieldsCommand());
 			c.addCommand(new LoadAllFieldsCommand());
 			c.addCommand(new UpdateEventListForStateFlowCommand());
