@@ -3,11 +3,13 @@ package com.facilio.bmsconsole.commands;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.VisitorSettingsContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.chain.FacilioChain;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.modules.fields.FacilioField;
 
@@ -22,13 +24,24 @@ public class SyncVisitorSettingsWithFormCommand extends FacilioCommand{
 		
 		FacilioForm logForm=visitorSettingsContext.getVisitorLogForm();
 		FacilioForm inviteForm=visitorSettingsContext.getVisitorInviteForm();
+		
 		FormField loggingModuleHostField=logForm.getFieldsMap().get("host");
-		
 		FormField inviteModuleHostField=inviteForm.getFieldsMap().get("host");
-		
 		
 		FormField ndaField=logForm.getFieldsMap().get("nda");
 		FormField avatarField=logForm.getFieldsMap().get("avatar");
+		
+		JSONObject hostSetting = visitorSettingsContext.getHostSettings();
+		if(hostSetting != null && hostSetting.get("hostType") != null) {
+			if(hostSetting.get("hostType").equals("3")) {
+				loggingModuleHostField.setLookupModuleName(FacilioConstants.ContextNames.EMPLOYEE);
+				inviteModuleHostField.setLookupModuleName(FacilioConstants.ContextNames.EMPLOYEE);
+			}
+			else if(hostSetting.get("hostType").equals("1")) {
+				loggingModuleHostField.setLookupModuleName(FacilioConstants.ContextNames.TENANT_CONTACT);
+				inviteModuleHostField.setLookupModuleName(FacilioConstants.ContextNames.TENANT_CONTACT);
+			}
+		}
 		
 		//these fields A MUST IN VISITOR FORM
 		loggingModuleHostField.setHideField(!visitorSettingsContext.getHostEnabled());
@@ -55,8 +68,6 @@ public class SyncVisitorSettingsWithFormCommand extends FacilioCommand{
 		FacilioChain ndaFieldUpdateChain = TransactionChainFactory.getUpdateFormFieldChain();
 		ndaFieldUpdateChain.getContext().put(ContextNames.FORM_FIELD, ndaField);
 		ndaFieldUpdateChain.execute();
-		
-		
 
 		
 		return false;

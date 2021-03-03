@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
@@ -17,6 +18,7 @@ import com.facilio.bmsconsole.forms.FormFactory;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.util.FormsAPI;
+import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -36,7 +38,6 @@ public class AddVisitorTypeCommand extends FacilioCommand {
 		// Add Picklist entry for visitor and insert that ID Into settings table
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		boolean isVisitorSplitModule = true;
 		
 		VisitorTypeContext newVisitorType=(VisitorTypeContext)context.get(ContextNames.VISITOR_TYPE_PICKLIST_OPTION);
 		newVisitorType.setEnabled(true);
@@ -47,64 +48,37 @@ public class AddVisitorTypeCommand extends FacilioCommand {
 		addPicklistOptionChain.execute();
 		long visitorTypeId=(Long)picklistContext.get(FacilioConstants.ContextNames.RECORD_ID);
 		newVisitorType.setId(visitorTypeId);
+
+		FacilioForm visitorLogFormTemplate=FormsAPI.getFormFromDB(FacilioConstants.ContextNames.DEFAULT_VISITOR_LOG_CHECKIN_FORM_NAME,modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOG));
+		FacilioForm visitorInviteFormTemplate=FormsAPI.getFormFromDB(FacilioConstants.ContextNames.DEFAULT_INVITE_VISITOR_FORM_NAME,modBean.getModule(FacilioConstants.ContextNames.INVITE_VISITOR));
 		
-		FacilioForm visitorLogFormTemplate = null;
-		FacilioForm visitorInviteFormTemplate= null;
+		visitorLogFormTemplate.setId(-1);
+		visitorLogFormTemplate.setName(newVisitorType.getName()+"_"+newVisitorType.getId()+"visitor_log_checkin_form");
+		visitorLogFormTemplate.setDisplayName(newVisitorType.getName()+"_"+newVisitorType.getId()+"_visitor_log_checkin_form");
+		visitorLogFormTemplate.setFormType(FormType.WEB);
 
-		if(isVisitorSplitModule) {
-			visitorLogFormTemplate=FormsAPI.getFormFromDB(FacilioConstants.ContextNames.DEFAULT_VISITOR_LOG_CHECKIN_FORM_NAME,modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOG));
-			visitorInviteFormTemplate=FormsAPI.getFormFromDB(FacilioConstants.ContextNames.DEFAULT_INVITE_VISITOR_FORM_NAME,modBean.getModule(FacilioConstants.ContextNames.INVITE_VISITOR));
-			
-			visitorLogFormTemplate.setId(-1);
-			visitorLogFormTemplate.setName(newVisitorType.getName()+"_"+newVisitorType.getId()+"visitor_log_checkin_form");
-			visitorLogFormTemplate.setDisplayName(newVisitorType.getName()+"_"+newVisitorType.getId()+"_visitor_log_checkin_form");
-			visitorLogFormTemplate.setFormType(FormType.WEB);
-
-			visitorInviteFormTemplate.setId(-1);
-			visitorInviteFormTemplate.setName(newVisitorType.getName()+"_"+newVisitorType.getId()+"invite_visitor_form");
-			visitorInviteFormTemplate.setDisplayName(newVisitorType.getName()+"_"+newVisitorType.getId()+"_invite_visitor_form");
-			visitorInviteFormTemplate.setFormType(FormType.WEB);
-				
-			FacilioChain addVisitorLogFormChain=TransactionChainFactory.getAddFormCommand();
-			FacilioContext visitorLogFormContext=addVisitorLogFormChain.getContext();
-			visitorLogFormContext.put(ContextNames.MODULE_NAME, ContextNames.VISITOR_LOG);			
-			visitorLogFormContext.put(FacilioConstants.ContextNames.FORM, visitorLogFormTemplate);
-			addVisitorLogFormChain.execute();
-			
-			FacilioChain addVisitorInviteFormChain=TransactionChainFactory.getAddFormCommand();
-			FacilioContext visitorInviteFormContext=addVisitorInviteFormChain.getContext();
-			visitorInviteFormContext.put(ContextNames.MODULE_NAME, ContextNames.INVITE_VISITOR);			
-			visitorInviteFormContext.put(FacilioConstants.ContextNames.FORM, visitorInviteFormTemplate);
-			addVisitorInviteFormChain.execute();
-			
-		}
-		else {
-			FacilioModule visitorLoggingModule = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
-			visitorLogFormTemplate=FormsAPI.getFormFromDB(FacilioConstants.ContextNames.DEFAULT_VISITOR_LOG_FORM_NAME,visitorLoggingModule);
-			visitorInviteFormTemplate=FormsAPI.getFormFromDB(FacilioConstants.ContextNames.DEFAULT_VISITOR_INVITE_FORM_NAME,visitorLoggingModule);
-			
-			visitorLogFormTemplate.setId(-1);
-			visitorLogFormTemplate.setName(newVisitorType.getName()+"_"+newVisitorType.getId()+"visitor_log_form");
-			visitorLogFormTemplate.setDisplayName(newVisitorType.getName()+"_"+newVisitorType.getId()+"_visitor_log_form");
-			visitorLogFormTemplate.setFormType(FormType.WEB);
-
-			visitorInviteFormTemplate.setId(-1);
-			visitorInviteFormTemplate.setName(newVisitorType.getName()+"_"+newVisitorType.getId()+"visitor_invite_form");
-			visitorInviteFormTemplate.setDisplayName(newVisitorType.getName()+"_"+newVisitorType.getId()+"_visitor_invite_form");
-			visitorInviteFormTemplate.setFormType(FormType.WEB);
-				
-			FacilioChain addVisitorLogFormChain=TransactionChainFactory.getAddFormCommand();
-			FacilioContext visitorLogFormContext=addVisitorLogFormChain.getContext();
-			visitorLogFormContext.put(ContextNames.MODULE_NAME, ContextNames.VISITOR_LOGGING);			
-			visitorLogFormContext.put(FacilioConstants.ContextNames.FORM, visitorLogFormTemplate);
-			addVisitorLogFormChain.execute();
-			
-			FacilioChain addVisitorInviteFormChain=TransactionChainFactory.getAddFormCommand();
-			FacilioContext visitorInviteFormContext=addVisitorInviteFormChain.getContext();
-			visitorInviteFormContext.put(ContextNames.MODULE_NAME, ContextNames.VISITOR_LOGGING);			
-			visitorInviteFormContext.put(FacilioConstants.ContextNames.FORM, visitorInviteFormTemplate);
-			addVisitorInviteFormChain.execute();
-		}
+		visitorInviteFormTemplate.setId(-1);
+		visitorInviteFormTemplate.setName(newVisitorType.getName()+"_"+newVisitorType.getId()+"invite_visitor_form");
+		visitorInviteFormTemplate.setDisplayName(newVisitorType.getName()+"_"+newVisitorType.getId()+"_invite_visitor_form");
+		visitorInviteFormTemplate.setFormType(FormType.WEB);
+		
+		FormField visitorLogModuleHostField=visitorLogFormTemplate.getFieldsMap().get("host");
+		FormField inviteModuleHostField=visitorInviteFormTemplate.getFieldsMap().get("host");
+		
+		visitorLogModuleHostField.setLookupModuleName(FacilioConstants.ContextNames.EMPLOYEE);
+		inviteModuleHostField.setLookupModuleName(FacilioConstants.ContextNames.EMPLOYEE);
+		
+		FacilioChain addVisitorLogFormChain=TransactionChainFactory.getAddFormCommand();
+		FacilioContext visitorLogFormContext=addVisitorLogFormChain.getContext();
+		visitorLogFormContext.put(ContextNames.MODULE_NAME, ContextNames.VISITOR_LOG);			
+		visitorLogFormContext.put(FacilioConstants.ContextNames.FORM, visitorLogFormTemplate);
+		addVisitorLogFormChain.execute();
+		
+		FacilioChain addVisitorInviteFormChain=TransactionChainFactory.getAddFormCommand();
+		FacilioContext visitorInviteFormContext=addVisitorInviteFormChain.getContext();
+		visitorInviteFormContext.put(ContextNames.MODULE_NAME, ContextNames.INVITE_VISITOR);			
+		visitorInviteFormContext.put(FacilioConstants.ContextNames.FORM, visitorInviteFormTemplate);
+		addVisitorInviteFormChain.execute();
 		
 		FacilioModule visitorSettingsModule=ModuleFactory.getVisitorSettingsModule();
 		List<FacilioField> visitorSettingsFields=FieldFactory.getVisitorSettingsFields();

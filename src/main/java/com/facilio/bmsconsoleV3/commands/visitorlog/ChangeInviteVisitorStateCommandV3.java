@@ -38,7 +38,11 @@ public class ChangeInviteVisitorStateCommandV3 extends FacilioCommand {
 		List<InviteVisitorContextV3> records = recordMap.get(moduleName);
         Map<String, List<Object>> queryParams = (Map<String, List<Object>>)context.get(Constants.QUERY_PARAMS);
 		Map<Long, List<UpdateChangeSet>> changeSet = Constants.getModuleChangeSets(context);
-
+		List<InviteVisitorContextV3> oldInvites = (List<InviteVisitorContextV3>) context.get(FacilioConstants.ContextNames.OLD_INVITES);
+		Map<Long, InviteVisitorContextV3> oldInvitesMap = new HashMap<Long, InviteVisitorContextV3>();
+		for(InviteVisitorContextV3 oldRecord:oldInvites) {
+			oldInvitesMap.put(oldRecord.getId(), oldRecord);
+		}
 		List<InviteVisitorContextV3> oldRecords = (List<InviteVisitorContextV3>) context.get(FacilioConstants.ContextNames.INVITE_VISITOR_RECORDS);
 		
 		boolean isInviteEdit = false;
@@ -49,19 +53,9 @@ public class ChangeInviteVisitorStateCommandV3 extends FacilioCommand {
 		if (MapUtils.isNotEmpty(changeSet)) {
 			if (CollectionUtils.isNotEmpty(records)) {
 				long time = System.currentTimeMillis();
-				for (InviteVisitorContextV3 record : records) {
-//              	List<UpdateChangeSet> updatedSet = changeSet.get(record.getId());
-//                    if(updatedSet != null && !updatedSet.isEmpty()) {
-//                     for(UpdateChangeSet changes : updatedSet) {
-//                        FacilioField field = modBean.getField(changes.getFieldId());
-//                        if (field != null) {
-//                         	if (changes.getNewValue() != null) {
-//                          FacilioStatus status = StateFlowRulesAPI.getStateContext((Long)changes.getNewValue());
-//                          if (status.getStatus().toString().trim().equals("Invited") || status.getStatus().toString().trim().equals("Upcoming")) {
-//                             V3VisitorManagementAPI.updateInviteVisitorInvitationStatus(record, true);
-//                          }
-					
-					if (record.hasCheckedIn() && !isInviteEdit) {
+				for (InviteVisitorContextV3 record : records) {		
+					InviteVisitorContextV3 oldInvite = oldInvitesMap.get(record.getId());
+					if (oldInvite.hasCheckedIn() && !isInviteEdit) {
 						VisitorLogContextV3 vLogToBeAdded = FieldUtil.cloneBean(record, VisitorLogContextV3.class);
 						VisitorLogContextV3 oldVLogToBeAdded = FieldUtil.cloneBean(oldRecords.get(0),
 								VisitorLogContextV3.class);
@@ -89,12 +83,7 @@ public class ChangeInviteVisitorStateCommandV3 extends FacilioCommand {
 						addVisitorLogChainContext.put(FacilioConstants.ContextNames.PERMISSION_TYPE,
 								FieldPermissionContext.PermissionType.READ_WRITE);
 						addVisitorLogChain.execute();
-
 					}
-//                                    }
-//                                }
-//                            }
-//                        }
 				}
 			}
 		}

@@ -1,6 +1,8 @@
 package com.facilio.bmsconsoleV3.commands.visitorlog;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +30,12 @@ public class PutOldVisitRecordsInInviteVisitorContextCommandV3 extends FacilioCo
         String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<InviteVisitorContextV3> list = recordMap.get(moduleName);
-
+        
+        List<InviteVisitorContextV3> oldInvites = new ArrayList<InviteVisitorContextV3>();
+		for(InviteVisitorContextV3 oldRecord:list) {
+			oldInvites.add(oldRecord);
+		}
+        context.put(FacilioConstants.ContextNames.OLD_INVITES, oldInvites);
         context.put(FacilioConstants.ContextNames.INVITE_VISITOR_RECORDS, list);
         return false;
     }
