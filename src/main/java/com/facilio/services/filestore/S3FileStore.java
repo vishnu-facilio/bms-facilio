@@ -98,6 +98,8 @@ public class S3FileStore extends FileStore {
 		long fileId = addDummyFileEntry(namespace, fileName, false);
 		String filePath = getRootPath(namespace) + File.separator + fileId+"-"+fileName;
 		long fileSize = file.length();
+		LOGGER.debug("addFile: filePath: " + filePath);
+		LOGGER.debug("addFile: fileName: " + fileName);
 
 		try {
 			PutObjectResult rs = AwsUtil.getAmazonS3Client().putObject(getBucketName(), filePath, file);
