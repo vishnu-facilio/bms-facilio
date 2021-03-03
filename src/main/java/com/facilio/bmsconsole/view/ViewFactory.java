@@ -953,6 +953,11 @@ public class ViewFactory {
 		views.put("all", getAllFacilityBookingView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING, views);
 		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllAmenityView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.FacilityBooking.AMENITY, views);
+		
 		return viewsMap;
 	}
 
@@ -8732,6 +8737,23 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All Facility Booking");
 		allView.setModuleName(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
+		allView.setSortFields(sortFields);
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		allView.setViewSharing(getSharingContext(appDomains));
+
+		return allView;
+	}
+	
+	private static FacilioView getAllAmenityView() {
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Amenity");
+		allView.setModuleName(FacilioConstants.ContextNames.FacilityBooking.AMENITY);
 		allView.setSortFields(sortFields);
 
 		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
