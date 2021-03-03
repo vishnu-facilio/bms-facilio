@@ -2600,7 +2600,7 @@ public class FormFactory {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("code", FieldDisplayType.TEXTBOX, "Code", Required.OPTIONAL,2, 1));
-		FormField typeField = new FormField("type", FieldDisplayType.LOOKUP_SIMPLE, "Type", Required.REQUIRED, "accounttype",3, 1);
+		FormField typeField = new FormField("type", FieldDisplayType.LOOKUP_SIMPLE, "Account Type", Required.REQUIRED, "accounttype",3, 1);
 		typeField.setAllowCreate(true);
 		fields.add(typeField);
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 4, 1));
@@ -2619,7 +2619,7 @@ public class FormFactory {
 
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
-		fields.add(new FormField("group", FieldDisplayType.SELECTBOX, "Group", Required.OPTIONAL,2, 1));
+		fields.add(new FormField("group", FieldDisplayType.SELECTBOX, "Category", Required.OPTIONAL,2, 1));
 		form.setFields(fields);
 		return form;
 	}
