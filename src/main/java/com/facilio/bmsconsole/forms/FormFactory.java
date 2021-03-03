@@ -462,6 +462,7 @@ public class FormFactory {
 		List<FacilioForm> facilityFormsList = Arrays.asList(getFacilityCreationForm());
 		List<FacilioForm> facilityBookingFormsList = Arrays.asList(getFacilityBookingForm());
 		List<FacilioForm> facilitySpecialAvailabilityFormsList = Arrays.asList(getFacilitySpecialAvailabilityForm());
+		List<FacilioForm> amenityFormsList = Arrays.asList(getAmenityForm());
 
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
@@ -512,6 +513,7 @@ public class FormFactory {
 				.put(ContextNames.FacilityBooking.FACILITY, getFormMap(facilityFormsList))
 				.put(ContextNames.FacilityBooking.FACILITY_BOOKING, getFormMap(facilityBookingFormsList))
 				.put(ContextNames.FacilityBooking.FACILITY_SPECIAL_AVAILABILITY, getFormMap(facilitySpecialAvailabilityFormsList))
+				.put(ContextNames.FacilityBooking.AMENITY, getFormMap(amenityFormsList))
 				.build();
 	}
 	
@@ -2695,6 +2697,23 @@ public class FormFactory {
 		fields.add(new FormField("noOfAttendees", FieldDisplayType.NUMBER, "Number Of Attendees", Required.OPTIONAL,3, 1));
 		fields.add(new FormField("bookingslot", FieldDisplayType.FACILITY_BOOKING_SLOTS, "Time Slots", Required.OPTIONAL,4, 1));
 		fields.add(new FormField("internalAttendees", FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Internal Attendees", Required.OPTIONAL,5, 1));
+		form.setFields(fields);
+		return form;
+	}
+	
+	private static FacilioForm getAmenityForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("Amenity");
+		form.setName("default_"+ ContextNames.FacilityBooking.AMENITY +"_web");
+		form.setModule(ModuleFactory.getModule(ContextNames.FacilityBooking.AMENITY));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFormType(FormType.WEB);
+
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED,1, 1));
+		fields.add(new FormField("category", FieldDisplayType.SELECTBOX, "Category", Required.OPTIONAL,2, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL,3, 1));
+		fields.add(new FormField("amenityLogo", FieldDisplayType.SELECTBOX, "Amenity Logo", Required.OPTIONAL,4, 1));
 		form.setFields(fields);
 		return form;
 	}
