@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.actions.picklist;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.actions.PickListAction;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
@@ -19,6 +20,11 @@ public class V3PIckListAction extends V3Action {
         }
         else {
             FacilioChain pickListChain = ReadOnlyChainFactory.newPicklistFromDataChain();
+            
+            if(AccountUtil.getCurrentOrg().getOrgId() == 396 && "custom_activities_1".equals(moduleName)) { // Temp fix for CIT org custom_activities_1 module Picklist limit
+            	perPage = 150;
+            }
+            
             PickListAction.populatePicklistContext(pickListChain.getContext(), getModuleName(), getFilters(), getSearch(), getCriteria(), getClientCriteria(), getDefault(), getPage(), getPerPage());
             pickListChain.execute();
             setData(FacilioConstants.ContextNames.PICKLIST,pickListChain.getContext().get(FacilioConstants.ContextNames.PICKLIST));
