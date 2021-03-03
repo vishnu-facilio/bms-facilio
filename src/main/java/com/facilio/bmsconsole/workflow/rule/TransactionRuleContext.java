@@ -13,6 +13,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.context.V3Context;
 import com.facilio.v3.util.ChainUtil;
@@ -65,12 +66,25 @@ public class TransactionRuleContext extends WorkflowRuleContext{
         }
         String moduleName = (String) obj.get("creationModuleName");
         String sourceModName = (String) obj.get("transactionSourceModuleName");
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> fields = modBean.getAllFields(moduleName);
+        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
+
         obj.keySet().forEach(keyStr ->
         {
             Object keyvalue = (Object) obj.get(keyStr);
             try {
-                obj.put(keyStr, BeanUtils.getNestedProperty(currentRecord, (String)keyvalue));
-            }
+                FacilioField field = fieldsMap.get(keyStr);
+                String val = BeanUtils.getNestedProperty(currentRecord, (String)keyvalue);
+                if(field instanceof LookupField){
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("id", val);
+                    obj.put(keyStr, map);
+                }
+                else {
+                    obj.put(keyStr, val);
+                }
+               }
             catch(Exception e){
                 obj.put(keyStr, keyvalue);
             }
@@ -85,9 +99,10 @@ public class TransactionRuleContext extends WorkflowRuleContext{
         FacilioChain chain = null;
         FacilioContext recordContext = null;
         FacilioModule module = ChainUtil.getModule(moduleName);
-        //Class beanClass = FacilioConstants.ContextNames.getClassFromModule(module);
-        Class beanClass = V3CustomModuleData.class;
         recordMap.put(moduleName, Collections.singletonList(record));
+
+        Class beanClass = FacilioConstants.ContextNames.getClassFromModule(module);
+
 
         List<EventType> eventTypes = (List<EventType>) context.get(FacilioConstants.ContextNames.EVENT_TYPE_LIST);
         List<? extends V3Context> list = V3RecordAPI.getTransactionRecordsList(moduleName, sourceModName, ((ModuleBaseWithCustomFields) currentRecord).getId());
