@@ -85,7 +85,8 @@ public class TransactionRuleContext extends WorkflowRuleContext{
         FacilioChain chain = null;
         FacilioContext recordContext = null;
         FacilioModule module = ChainUtil.getModule(moduleName);
-        Class beanClass = FacilioConstants.ContextNames.getClassFromModule(module);
+        //Class beanClass = FacilioConstants.ContextNames.getClassFromModule(module);
+        Class beanClass = V3CustomModuleData.class;
         recordMap.put(moduleName, Collections.singletonList(record));
 
         List<EventType> eventTypes = (List<EventType>) context.get(FacilioConstants.ContextNames.EVENT_TYPE_LIST);
@@ -129,7 +130,7 @@ public class TransactionRuleContext extends WorkflowRuleContext{
     }
 
     public Boolean isValidated(){
-        if(transactionConfigJson == null || StringUtils.isEmpty((String)transactionConfigJson.get("transactionDate")) || StringUtils.isEmpty((String)transactionConfigJson.get("transactionName")) || StringUtils.isEmpty((String)transactionConfigJson.get("transactionSourceModuleName")) || StringUtils.isEmpty((String)transactionConfigJson.get("account"))
+        if(transactionConfigJson == null || StringUtils.isEmpty((String)transactionConfigJson.get("transactionDate")) || StringUtils.isEmpty((String)transactionConfigJson.get("transactionName")) || StringUtils.isEmpty((String)transactionConfigJson.get("transactionSourceModuleName")) || transactionConfigJson.get("account") instanceof Map
                 || StringUtils.isEmpty((String)transactionConfigJson.get("creationModuleName")) || StringUtils.isEmpty((String)transactionConfigJson.get("transactionAmount")) || StringUtils.isEmpty((String)transactionConfigJson.get("transactionType"))) {
             return  false;
         }
