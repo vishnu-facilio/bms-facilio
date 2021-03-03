@@ -37,7 +37,7 @@ public class AddOrUpdateMonthlyBudgetAmountCommandV3 extends FacilioCommand {
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<BudgetContext> budgetList = recordMap.get(FacilioConstants.ContextNames.Budget.BUDGET);
         if(CollectionUtils.isNotEmpty(budgetList)) {
-            List<BudgetAmountContext> budgetAmountList = BudgetAPI.setBudgetAmount(budgetList.get(0).getId(), false);
+            List<BudgetAmountContext> budgetAmountList = recordMap.get(FacilioConstants.ContextNames.Budget.BUDGET_AMOUNT);
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule budgetAmountModule = modBean.getModule(FacilioConstants.ContextNames.Budget.BUDGET_AMOUNT);
             List<FacilioField> fields = modBean.getAllFields(budgetAmountModule.getName());

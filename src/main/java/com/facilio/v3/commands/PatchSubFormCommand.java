@@ -9,6 +9,7 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.util.ChainUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -31,6 +32,7 @@ public class PatchSubFormCommand extends FacilioCommand {
         }
 
         String mainModuleName = Constants.getModuleName(context);
+        Map<String, List<ModuleBaseWithCustomFields>> recordMap = (Map<String, List<ModuleBaseWithCustomFields>>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
 
         for (ModuleBaseWithCustomFields record: records) {
             Map<String, List<Map<String, Object>>> subFormMap = record.getSubForm();
@@ -40,13 +42,15 @@ public class PatchSubFormCommand extends FacilioCommand {
 
             for (String moduleName : subFormMap.keySet()) {
                 List<Map<String, Object>> subForm = subFormMap.get(moduleName);
-                update(mainModuleName, moduleName, subForm, record.getId());
+                List<ModuleBaseWithCustomFields> beanList = update(mainModuleName, moduleName, subForm, record.getId());
+                recordMap.computeIfAbsent(moduleName, k -> new ArrayList<>());
+                recordMap.get(moduleName).addAll(beanList);
             }
         }
         return false;
     }
 
-    private void update(String mainModuleName, String moduleName, List<Map<String, Object>> subFormList, long recordId) throws Exception {
+    private List<ModuleBaseWithCustomFields> update(String mainModuleName, String moduleName, List<Map<String, Object>> subFormList, long recordId) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(moduleName);
         List<FacilioField> fields = modBean.getAllFields(moduleName);
@@ -55,6 +59,9 @@ public class PatchSubFormCommand extends FacilioCommand {
 
         Map<String, Object> parentObject = new HashMap<>();
         parentObject.put("id", recordId);
+
+        Class contextClass = ChainUtil.getBeanClass(null, module);
+        List<ModuleBaseWithCustomFields> beanList = new ArrayList<>();
 
         for (Map<String, Object> subForm: subFormList) {
             if (subForm.get("id") == null) {
@@ -66,7 +73,10 @@ public class PatchSubFormCommand extends FacilioCommand {
                     .andCondition(CriteriaAPI.getIdCondition((Long) subForm.get("id"), module));
             subForm.put(lookupField.getName(), parentObject);
             updateRecordBuilder.updateViaMap(subForm);
+
+            beanList.add((ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromMap(subForm, contextClass));
         }
+        return beanList;
     }
 
     private Map<String, LookupField> getAllLookupFields(ModuleBean modBean, FacilioModule module) throws Exception {
