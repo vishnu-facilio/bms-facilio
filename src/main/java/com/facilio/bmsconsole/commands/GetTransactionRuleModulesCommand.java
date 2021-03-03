@@ -6,6 +6,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,32 +26,41 @@ public class GetTransactionRuleModulesCommand extends FacilioCommand{
         woSubModules.add(modBean.getModule(FacilioConstants.ContextNames.WO_LABOUR));
         woSubModules.add(modBean.getModule(FacilioConstants.ContextNames.WO_SERVICE));
         woSubModules.add(modBean.getModule(FacilioConstants.ContextNames.WORKORDER_COST));
-        woSubModules.addAll(modBean.getSubModules(FacilioConstants.ContextNames.WORK_ORDER));
+
+        List<FacilioModule> otherSubMod = modBean.getSubModules(FacilioConstants.ContextNames.WORK_ORDER);
+        if(CollectionUtils.isNotEmpty(otherSubMod)) {
+            woSubModules.addAll(otherSubMod);
+        }
 
         subModules.put(FacilioConstants.ContextNames.WORK_ORDER, woSubModules);
 
         if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY)) {
-            List<FacilioModule> prSubModules = new ArrayList<>();
             modules.add(modBean.getModule(FacilioConstants.ContextNames.PURCHASE_REQUEST));
-            prSubModules.addAll(modBean.getSubModules(FacilioConstants.ContextNames.PURCHASE_REQUEST));
-            subModules.put(FacilioConstants.ContextNames.PURCHASE_REQUEST, prSubModules);
+            List<FacilioModule> otherPrSubMod = modBean.getSubModules(FacilioConstants.ContextNames.PURCHASE_REQUEST);
+            if(CollectionUtils.isNotEmpty(otherPrSubMod)) {
+                subModules.put(FacilioConstants.ContextNames.PURCHASE_REQUEST, otherPrSubMod);
 
-            List<FacilioModule> poSubModules = new ArrayList<>();
+            }
             modules.add(modBean.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER));
-            poSubModules.addAll(modBean.getSubModules(FacilioConstants.ContextNames.PURCHASE_ORDER));
-            subModules.put(FacilioConstants.ContextNames.PURCHASE_ORDER, poSubModules);
-
+            List<FacilioModule> otherPoSubMod = modBean.getSubModules(FacilioConstants.ContextNames.PURCHASE_ORDER);
+            if(CollectionUtils.isNotEmpty(otherPoSubMod)) {
+                subModules.put(FacilioConstants.ContextNames.PURCHASE_ORDER, otherPoSubMod);
+            }
         }
         if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.QUOTATION)) {
-            List<FacilioModule> quoteSubModules = new ArrayList<>();
             modules.add(modBean.getModule(FacilioConstants.ContextNames.QUOTE));
-            quoteSubModules.addAll(modBean.getSubModules(FacilioConstants.ContextNames.QUOTE));
-            subModules.put(FacilioConstants.ContextNames.QUOTE, quoteSubModules);
+            List<FacilioModule> otherQuoteSubMod = modBean.getSubModules(FacilioConstants.ContextNames.QUOTE);
+            if(CollectionUtils.isNotEmpty(otherQuoteSubMod)) {
+                subModules.put(FacilioConstants.ContextNames.QUOTE, otherQuoteSubMod);
+            }
+
         }
 
         modules.addAll(modBean.getModuleList(FacilioModule.ModuleType.BASE_ENTITY, true));
 
         context.put(FacilioConstants.ContextNames.MODULE_LIST, modules);
+        context.put(FacilioConstants.ContextNames.SUB_MODULES, subModules);
+
         return false;
     }
 }
