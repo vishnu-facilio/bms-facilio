@@ -2533,6 +2533,10 @@ public class V2ReportAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.ROW_ALIAS, context.get(FacilioConstants.ContextNames.ROW_ALIAS));
 		setResult(FacilioConstants.ContextNames.DATA_ALIAS, context.get(FacilioConstants.ContextNames.DATA_ALIAS));
 		setResult(FacilioConstants.ContextNames.PIVOT_TABLE_DATA, context.get(FacilioConstants.ContextNames.PIVOT_TABLE_DATA));
+		setResult(FacilioConstants.ContextNames.SORTING, pivotparams.getSortBy());
+		setResult(FacilioConstants.ContextNames.CRITERIA, pivotparams.getCriteria());
+		setResult(FacilioConstants.ContextNames.PIVOT_TEMPLATE_JSON, pivotparams.getTemplateJSON());
+		
 		return SUCCESS;
 	}
 }
