@@ -96,7 +96,17 @@ public class FetchRelationsCommand extends FacilioCommand {
                     ((Map) lookupFieldVsRecordMap.get(lookupFieldName)).putAll(props);
 
                     for (Map<String, Object> lookupModuleRecord : props.values()) {
-                        long lookupId = (long) ((Map) lookupModuleRecord.get(lookupFieldName)).get("id");
+                        long lookupId;
+                        Object object = lookupModuleRecord.get(lookupFieldName);
+                        // temp fix - since many sub module has parent as number field instead of lookup
+                        if (object instanceof Map) {
+                            lookupId = (long) ((Map) object).get("id");
+                        } else if (object instanceof Number) {
+                            lookupId = ((Number) object).longValue();
+                        } else {
+                            throw new IllegalArgumentException("Invalid id field value");
+                        }
+
                         if (virtualFieldMap.get(lookupId) == null) {
                             virtualFieldMap.put(lookupId, new ArrayList<>());
                         }
