@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.context.budget;
 
+import com.facilio.bmsconsoleV3.enums.Group;
 import com.facilio.v3.context.V3Context;
 
 public class ChartOfAccountContext extends V3Context {
@@ -52,23 +53,33 @@ public class ChartOfAccountContext extends V3Context {
 
     public Integer getAmountType() {
         if(this.type != null) {
-            if(type.getGroupEnum() == AccountTypeContext.Group.INCOME){
+            if(type.getGroupEnum() == Group.INCOME){
                 return BudgetAmountContext.AmountType.INCOME.getIndex();
             }
-            else if(type.getGroupEnum() == AccountTypeContext.Group.EXPENSE) {
+            else if(type.getGroupEnum() == Group.EXPENSE) {
                 return BudgetAmountContext.AmountType.EXPENSE.getIndex();
             }
         }
         return null;
     }
 
-    private Integer accountType;
+    private Group accountType;
 
-    public Integer getAccountType() {
+
+    public void setAccountType(Integer group) {
+        if (group != null) {
+            this.accountType = Group.valueOf(group);
+        }
+    }
+
+    public Group getAccountTypeEnum() {
         return accountType;
     }
-
-    public void setAccountType(Integer accountType) {
-        this.accountType = accountType;
+    public Integer getAccountType() {
+        if (accountType != null) {
+            return accountType.getIndex();
+        }
+        return null;
     }
+
 }
