@@ -71,7 +71,7 @@ public class BudgetContext extends V3Context {
 
     private ResourceContext focalPointResource;
     private Double totalIncome;
-    private Double totalExpenses;
+    private Double totalExpense;
     private Double totalNetIncome;
 
     public String getName() {
@@ -109,33 +109,18 @@ public class BudgetContext extends V3Context {
         }
     }
 
-    public Double getTotalExpenses() {
-        return totalExpenses;
+    public Double getTotalExpense() {
+        return totalExpense;
     }
 
-    public void setTotalExpenses(Double totalExpense) {
+    public void setTotalExpense(Double totalExpense) {
         if(totalExpense != null) {
             final DecimalFormat df = new DecimalFormat(BudgetAPI.CURRENCY_PATTERN);
-            this.totalExpenses = Double.valueOf(df.format(totalExpense));
+            this.totalExpense = Double.valueOf(df.format(totalExpense));
         }
     }
 
-    public Double getTotalNetIncome() {
-        totalNetIncome =  0d;
-        if(totalIncome != null)  {
-            totalNetIncome = totalIncome;
-        }
-        if(totalExpenses != null) {
-            totalNetIncome = totalNetIncome - totalExpenses;
-        }
-        return totalNetIncome;
-    }
-
-    public void setTotalNetIncome(Double totalNetIncome) {
-        this.totalNetIncome = totalNetIncome;
-    }
-
-    public ResourceContext getFocalPointResource() {
+   public ResourceContext getFocalPointResource() {
         return focalPointResource;
     }
 
@@ -162,9 +147,9 @@ public class BudgetContext extends V3Context {
     }
 
     public String getTotalExpensesString() {
-        if(totalExpenses != null) {
+        if(totalExpense != null) {
             final DecimalFormat df = new DecimalFormat(BudgetAPI.CURRENCY_PATTERN);
-            return df.format(this.totalExpenses);
+            return df.format(this.totalExpense);
         }
         return null;
     }
@@ -305,6 +290,20 @@ public class BudgetContext extends V3Context {
         }
     }
 
+    public Double getTotalNetIncome() {
+        totalNetIncome =  0d;
+        if(totalIncome != null)  {
+            totalNetIncome = totalIncome;
+        }
+        if(totalExpense != null) {
+            totalNetIncome = totalNetIncome - totalExpense;
+        }
+        return totalNetIncome;
+    }
+
+    public void setTotalNetIncome(Double totalNetIncome) {
+        this.totalNetIncome = totalNetIncome;
+    }
 
 
 }
