@@ -323,6 +323,7 @@ public class APIv3Config {
                 .delete()
                 .list()
                     .beforeFetch(new LoadServiceRequestLookupCommandV3())
+                    .showStateFlowList()
                 .summary()
                     .beforeFetch(new LoadServiceRequestLookupCommandV3()) 
                 .build();
