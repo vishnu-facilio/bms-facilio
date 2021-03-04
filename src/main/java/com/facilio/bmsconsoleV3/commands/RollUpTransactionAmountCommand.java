@@ -110,6 +110,9 @@ public class RollUpTransactionAmountCommand extends FacilioCommand {
         if(MapUtils.isNotEmpty(resourceMap) && resourceMap.containsKey("id")){
             builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), String.valueOf(resourceMap.get("id")), PickListOperators.IS));
         }
+        else {
+            builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), "1", CommonOperators.IS_EMPTY));
+        }
 
         List<Map<String, Object>> mapList = builder.getAsProps();
 
