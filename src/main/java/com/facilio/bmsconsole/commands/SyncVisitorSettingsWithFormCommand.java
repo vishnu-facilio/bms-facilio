@@ -31,17 +31,21 @@ public class SyncVisitorSettingsWithFormCommand extends FacilioCommand{
 		FormField ndaField=logForm.getFieldsMap().get("nda");
 		FormField avatarField=logForm.getFieldsMap().get("avatar");
 		
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("isFiltersEnabled", true);
+		
 		JSONObject hostSetting = visitorSettingsContext.getHostSettings();
 		if(hostSetting != null && hostSetting.get("hostType") != null) {
 			if(hostSetting.get("hostType").equals("3")) {
-				loggingModuleHostField.setLookupModuleName(FacilioConstants.ContextNames.EMPLOYEE);
-				inviteModuleHostField.setLookupModuleName(FacilioConstants.ContextNames.EMPLOYEE);
+				jsonObject.put("filterValue", 6); //default employee
 			}
 			else if(hostSetting.get("hostType").equals("1")) {
-				loggingModuleHostField.setLookupModuleName(FacilioConstants.ContextNames.TENANT_CONTACT);
-				inviteModuleHostField.setLookupModuleName(FacilioConstants.ContextNames.TENANT_CONTACT);
+				jsonObject.put("filterValue", 3); //tenant contact
 			}
 		}
+		
+		loggingModuleHostField.setConfig(jsonObject);
+		inviteModuleHostField.setConfig(jsonObject);
 		
 		//these fields A MUST IN VISITOR FORM
 		loggingModuleHostField.setHideField(!visitorSettingsContext.getHostEnabled());

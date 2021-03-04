@@ -64,9 +64,11 @@ public class AddVisitorTypeCommand extends FacilioCommand {
 		
 		FormField visitorLogModuleHostField=visitorLogFormTemplate.getFieldsMap().get("host");
 		FormField inviteModuleHostField=visitorInviteFormTemplate.getFieldsMap().get("host");
-		
-		visitorLogModuleHostField.setLookupModuleName(FacilioConstants.ContextNames.EMPLOYEE);
-		inviteModuleHostField.setLookupModuleName(FacilioConstants.ContextNames.EMPLOYEE);
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("filterValue", 6); //default employee
+		jsonObject.put("isFiltersEnabled", true);
+		visitorLogModuleHostField.setConfig(jsonObject);
+		inviteModuleHostField.setConfig(jsonObject);
 		
 		FacilioChain addVisitorLogFormChain=TransactionChainFactory.getAddFormCommand();
 		FacilioContext visitorLogFormContext=addVisitorLogFormChain.getContext();
