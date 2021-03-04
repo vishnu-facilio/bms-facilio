@@ -1130,8 +1130,6 @@ public class ReportFactoryFields {
 	public static Set<FacilioModule> getDataModulesList(String moduleName) throws Exception {
 		ModuleBean modBean = (ModuleBean)BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
-		FacilioModule FieldsModule = ModuleFactory.getFieldsModule();
-		FacilioModule LookupFieldsModule = ModuleFactory.getLookupFieldsModule();
 		List<Long> selectModules = new ArrayList<Long>();
 		selectModules.add(module.getModuleId());
 		FacilioModule extendedModule = module.getExtendModule();
@@ -1154,7 +1152,7 @@ public class ReportFactoryFields {
 			FacilioModule womodule = modBean.getModule("workorder");
 			modules.add(womodule);
 		}
-		modules.add(module);
+//		modules.add(module);
 		return modules;
 	}
 	public static Set<FacilioField> getMetricsList(String moduleName) throws Exception {
