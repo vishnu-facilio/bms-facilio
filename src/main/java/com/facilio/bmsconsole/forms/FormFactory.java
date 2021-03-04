@@ -2704,7 +2704,7 @@ public class FormFactory {
 	private static FacilioForm getFacilityBookingPortalForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("Booking");
-		form.setName("default_"+ ContextNames.FacilityBooking.FACILITY_BOOKING +"_web");
+		form.setName("default_"+ ContextNames.FacilityBooking.FACILITY_BOOKING +"_portal");
 		form.setModule(ModuleFactory.getModule(ContextNames.FacilityBooking.FACILITY_BOOKING));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFormType(FormType.PORTAL);
