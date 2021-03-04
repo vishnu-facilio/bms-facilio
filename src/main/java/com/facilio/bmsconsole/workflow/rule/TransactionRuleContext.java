@@ -70,26 +70,34 @@ public class TransactionRuleContext extends WorkflowRuleContext{
         List<FacilioField> fields = modBean.getAllFields(moduleName);
         Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
 
+        List<String> keysToBeRemoved = new ArrayList<>();
         obj.keySet().forEach(keyStr ->
         {
             Object keyvalue = (Object) obj.get(keyStr);
             try {
                 FacilioField field = fieldsMap.get(keyStr);
-                String val = BeanUtils.getNestedProperty(currentRecord, (String)keyvalue);
-                if(field instanceof LookupField){
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("id", val);
-                    obj.put(keyStr, map);
+                String val = BeanUtils.getNestedProperty(currentRecord, (String) keyvalue);
+                if (StringUtils.isNotEmpty(val)) {
+                    if (field instanceof LookupField) {
+                        Map<String, Object> map = new HashMap<>();
+                        map.put("id", val);
+                        obj.put(keyStr, map);
+                    } else {
+                        obj.put(keyStr, val);
+                    }
                 }
-                else {
-                    obj.put(keyStr, val);
-                }
-               }
-            catch(Exception e){
+            }
+            catch(NoSuchMethodException e){
                 obj.put(keyStr, keyvalue);
+            }
+            catch(Exception e){
+                keysToBeRemoved.add(String.valueOf(keyStr));
             }
 
         });
+        obj.keySet()
+                .removeIf(
+                        entry -> (keysToBeRemoved.contains(entry)));
         obj.put("transactionSourceRecordId", ((ModuleBaseWithCustomFields) currentRecord).getId());
 
         Class beanClassName = V3CustomModuleData.class;
