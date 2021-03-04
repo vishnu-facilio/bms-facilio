@@ -2,6 +2,10 @@ package com.facilio.bmsconsole.context;
 
 import java.util.List;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import com.facilio.accounts.dto.User;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.util.ConnectionUtil;
@@ -34,6 +38,7 @@ public class ConnectionContext {
 	String userName;
 	String password;
 	String audience;
+	String meta;
 	
 	public String getAudience() {
 		return audience;
@@ -438,6 +443,20 @@ public class ConnectionContext {
 				+ ", callBackURL=" + getCallBackURL() + ", expiryTime=" + expiryTime + ", sysCreatedTime=" + sysCreatedTime
 				+ ", sysModifiedTime=" + sysModifiedTime + ", sysCreatedBy="  + ", sysModifiedBy="
 				+ sysModifiedBy + "]";
+	}
+	public String getMeta() {
+		return meta;
+	}
+	public JSONObject getMetaJson() throws ParseException {
+		if(meta != null) {
+			JSONParser parser = new JSONParser();
+			JSONObject metaJson = (JSONObject) parser.parse(meta);
+			return metaJson;
+		}
+		return null;
+	}
+	public void setMeta(String meta) {
+		this.meta = meta;
 	}
 	
 }

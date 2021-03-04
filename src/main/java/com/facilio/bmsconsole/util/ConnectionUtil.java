@@ -66,6 +66,8 @@ public class ConnectionUtil {
 	public static final String AUDIENCE_STRING = "audience";
 
 	
+	public static final String DEFAULT_ACCESS_EXP_IN_SEC = "defaultAccessExpiryInSecond";
+	
 	public static final long MAX_TIME = 4102425000000l;
 
 	public static final String EQUALS = "=";
@@ -132,7 +134,17 @@ public class ConnectionUtil {
 				connectionContext.setExpiryTime(DateTimeUtil.getCurrenTime() + (expireTimeInSec * 1000));
 			}
 			else {
-				connectionContext.setExpiryTime(ConnectionUtil.MAX_TIME);
+				if(connectionContext.getMetaJson() != null && connectionContext.getMetaJson().containsKey(ConnectionUtil.DEFAULT_ACCESS_EXP_IN_SEC)) {
+					
+					long expireTimeInSec = (long) connectionContext.getMetaJson().get(ConnectionUtil.DEFAULT_ACCESS_EXP_IN_SEC);
+					
+					expireTimeInSec = expireTimeInSec - 60;
+
+					connectionContext.setExpiryTime(DateTimeUtil.getCurrenTime() + (expireTimeInSec * 1000));
+				}
+				else {
+					connectionContext.setExpiryTime(ConnectionUtil.MAX_TIME);
+				}
 			}
 			
 			ConnectionUtil.updateConnectionContext(connectionContext);
@@ -170,7 +182,17 @@ public class ConnectionUtil {
 
 			}
 			else {
-				connectionContext.setExpiryTime(ConnectionUtil.MAX_TIME);
+				if(connectionContext.getMetaJson() != null && connectionContext.getMetaJson().containsKey(ConnectionUtil.DEFAULT_ACCESS_EXP_IN_SEC)) {
+					
+					long expireTimeInSec = (long) connectionContext.getMetaJson().get(ConnectionUtil.DEFAULT_ACCESS_EXP_IN_SEC);
+					
+					expireTimeInSec = expireTimeInSec - 60;
+
+					connectionContext.setExpiryTime(DateTimeUtil.getCurrenTime() + (expireTimeInSec * 1000));
+				}
+				else {
+					connectionContext.setExpiryTime(ConnectionUtil.MAX_TIME);
+				}
 			}
 			ConnectionUtil.updateConnectionContext(connectionContext);
 		}
