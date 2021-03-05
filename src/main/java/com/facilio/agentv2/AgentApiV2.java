@@ -11,9 +11,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-import com.facilio.chain.FacilioChain;
-import com.facilio.tasker.FacilioTimer;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
@@ -25,6 +25,7 @@ import com.facilio.agent.AgentType;
 import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.Job;
@@ -43,6 +44,7 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -59,6 +61,11 @@ public class AgentApiV2 {
         FacilioContext context = new FacilioContext();
         context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
         return getAgents(context);
+    }
+    
+    public static Map<Long, FacilioAgent> getAgentMap(Collection<Long> ids) throws Exception {
+    		List<FacilioAgent> agents = getAgents(ids);
+		return agents.stream().collect(Collectors.toMap(FacilioAgent::getId, Function.identity()));
     }
 
     public static FacilioAgent getAgent(Long agentId) throws Exception {

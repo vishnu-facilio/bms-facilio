@@ -3,6 +3,7 @@ package com.facilio.agentv2.point;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,15 +13,13 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.agent.AgentType;
 import com.facilio.agent.controller.FacilioControllerType;
-import com.facilio.agent.controller.FacilioPointType;
 import com.facilio.agent.fw.constants.FacilioCommand;
 import com.facilio.agent.module.AgentFieldFactory;
 import com.facilio.agent.module.AgentModuleFactory;
@@ -972,4 +971,20 @@ public class PointsAPI {
         List<Map<String, Object>> rows = selectRecordBuilder.get();
         return getPointFromRows(rows);
     }
+    
+    public static List<Point> getPointData(Collection<Pair<Long, Long>> assetFieldPairs) throws Exception {
+		FacilioModule pointModule = ModuleFactory.getPointModule();
+		FacilioField readingField = FieldFactory.getPointFieldIdField(pointModule);
+		FacilioField resourceField = FieldFactory.getPointResourceIdField(pointModule);
+		Criteria criteriaList = new Criteria();
+		for(Pair<Long, Long> pair: assetFieldPairs) {
+			Criteria criteria = new Criteria();
+			criteria.addAndCondition(CriteriaAPI.getCondition(resourceField, String.valueOf(pair.getLeft()), NumberOperators.EQUALS));
+			criteria.addAndCondition(CriteriaAPI.getCondition(readingField, String.valueOf(pair.getRight()), NumberOperators.EQUALS));
+			criteriaList.orCriteria(criteria);
+		}
+		GetPointRequest getPointRequest = new GetPointRequest()
+				.withCriteria(criteriaList);
+		return getPointRequest.getPoints();
+	}
 }

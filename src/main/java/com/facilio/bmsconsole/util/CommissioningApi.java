@@ -108,9 +108,7 @@ public class CommissioningApi {
 				}
 				
 				Map<Long, List<Map<String, Object>>> controllerMap = getCommissionedControllers(logIds);
-				
-				List<FacilioAgent> agents = AgentApiV2.getAgents(agentIds);
-				Map<Long, FacilioAgent> agentMap = agents.stream().collect(Collectors.toMap(FacilioAgent::getId, Function.identity()));
+				Map<Long, FacilioAgent> agentMap = AgentApiV2.getAgentMap(agentIds);
 				
 				for(CommissioningLogContext log: logs) {
 					List<Map<String, Object>> controllers = controllerMap.get(log.getId());

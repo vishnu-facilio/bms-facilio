@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.util;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -79,22 +80,52 @@ public class RecordAPI {
 		if (LookupSpecialTypeUtil.isSpecialType(modName)) {
 			return LookupSpecialTypeUtil.getPrimaryFieldValue(modName, recId);
 		}
-		return getRecord(modName, recId, true);
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioField primaryField = modBean.getPrimaryField(modName);
+		List<FacilioField> fields = Collections.singletonList(primaryField);
+		
+		ModuleBaseWithCustomFields record = getRecord(modName, recId, fields);
+		
+		String primaryVal = null;
+		try {
+			primaryVal = (String) PropertyUtils.getProperty(record, primaryField.getName());
+		} catch (Exception e) {
+			primaryVal = String.valueOf(recId);
+		}
+		return primaryVal;
 	}
 	
 	public static ModuleBaseWithCustomFields getRecord (String modName, Long recId) throws Exception{
-		return (ModuleBaseWithCustomFields) getRecord(modName, recId, false);
+		return (ModuleBaseWithCustomFields) getRecord(modName, recId, null);
 	}
 	
-	public static Object getRecord (String modName, Long recId, boolean fetchPrimary) throws Exception{
+	public static ModuleBaseWithCustomFields getRecord (String modName, Long recId, List<FacilioField> fields) throws Exception{
+		List<? extends ModuleBaseWithCustomFields> records = getRecords(modName, Collections.singletonList(recId), fields);
+		if(CollectionUtils.isNotEmpty(records)) {
+			return records.get(0);
+		}
+		return null;
+	}
+	
+	public static List<? extends ModuleBaseWithCustomFields> getRecords(String modName, Collection<Long> ids) throws Exception {
+		return getRecords(modName, ids, null);
+	}
+	
+	public static List<? extends ModuleBaseWithCustomFields> getRecords(String modName, Collection<Long> ids, List<FacilioField> fields) throws Exception {
+		SelectRecordsBuilder builder = getRecordsBuilder(modName, ids, fields);
+		return builder.get();
+	}
+	
+	public static List<Map<String, Object>> getRecordsAsProps(String modName, Collection<Long> ids, List<FacilioField> fields) throws Exception {
+		SelectRecordsBuilder builder = getRecordsBuilder(modName, ids, fields);
+		return builder.getAsProps();
+	}
+	
+	private static SelectRecordsBuilder getRecordsBuilder(String modName, Collection<Long> ids, List<FacilioField> fields) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(modName);
-		List<FacilioField> fields;
-		FacilioField primaryField = modBean.getPrimaryField(modName);
-		if(fetchPrimary) {
-			fields = Collections.singletonList(primaryField);
-		}
-		else {
+		if (fields == null) {
 			fields = modBean.getAllFields(modName);
 		}
 		
@@ -106,26 +137,9 @@ public class RecordAPI {
 															.module(module)
 															.beanClass(beanClassName)
 															.select(fields)
-															.andCondition(CriteriaAPI.getIdCondition(Long.valueOf(recId), module))
+															.andCondition(CriteriaAPI.getIdCondition(ids, module))
 															;
-		
-		List<? extends ModuleBaseWithCustomFields> records = builder.get();
-		if(CollectionUtils.isNotEmpty(records)) {
-			ModuleBaseWithCustomFields record = records.get(0);
-			if (fetchPrimary) {
-				String primaryVal = null;
-				try {
-					primaryVal = (String) PropertyUtils.getProperty(record, primaryField.getName());
-				} catch (Exception e) {
-					primaryVal = String.valueOf(recId);
-				}
-				return primaryVal;
-			}
-			return record;
-		}
-		else {
-			return null;
-		}
+		return builder;
 	}
 	
 	public static ClientContext getClientForSite(long siteId) throws Exception {

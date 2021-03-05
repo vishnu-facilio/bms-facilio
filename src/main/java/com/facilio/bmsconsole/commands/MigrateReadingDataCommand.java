@@ -93,7 +93,7 @@ public class MigrateReadingDataCommand extends FacilioCommand {
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("instanceId"), String.valueOf(context.get("id")), NumberOperators.EQUALS))
 				;
 		
-		GenericBatchResult bs = builder.getInBatches(fieldMap.get("ttime").getCompleteColumnName(), 2);
+		GenericBatchResult bs = builder.getInBatches(fieldMap.get("ttime").getCompleteColumnName(), 5000);
 		
 		List<Long> dataIds = new ArrayList<>();
 		while (bs.hasNext()) {

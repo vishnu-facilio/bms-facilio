@@ -2,6 +2,7 @@ package com.facilio.agentv2.controller;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -40,9 +41,11 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.custom.CustomController;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
@@ -53,7 +56,6 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
@@ -816,5 +818,18 @@ public class ControllerApiV2 {
                 LOGGER.info("Unknown controller type " + controllerType);
         }
         return controllers;
+    }
+    
+    public static List<Map<String, Object>> getControllers(Collection<Long> ids) throws Exception {
+    		return (List<Map<String, Object>>) RecordAPI.getRecordsAsProps(ContextNames.CONTROLLER, ids, null);
+    }
+    
+    public static Map<Long, Map<String, Object>> getControllerMap(Collection<Long> ids) throws Exception {
+    		List<Map<String, Object>> controllers = getControllers(ids);
+    	 	if (CollectionUtils.isNotEmpty(controllers)) {
+    	 		return controllers.stream()
+                .collect(Collectors.toMap(controller -> (long) controller.get("id"), controller -> controller));
+    	 	}
+		return null;
     }
 }

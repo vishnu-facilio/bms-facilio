@@ -27,6 +27,10 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentUtil;
 import com.facilio.agent.FacilioAgent;
+import com.facilio.agentv2.AgentApiV2;
+import com.facilio.agentv2.controller.ControllerApiV2;
+import com.facilio.agentv2.point.Point;
+import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
@@ -1190,22 +1194,21 @@ public class ReadingsAPI {
 	}
 	
 	public static void setReadingInterval(List<ReadingContext> readings, Map<Long, FacilioModule> moduleMap) throws Exception {
-//		Map<Long, Integer> intervalMap = new HashMap<>();
-		int defaultInterval = DEFAULT_DATA_INTERVAL;
-		Map<String, String> orgInfo = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.DEFAULT_DATA_INTERVAL);
-		String defaultIntervalProp = orgInfo.get(FacilioConstants.OrgInfoKeys.DEFAULT_DATA_INTERVAL);
-		if (defaultIntervalProp != null && !defaultIntervalProp.isEmpty()) {
-			defaultInterval = Integer.parseInt(defaultIntervalProp);
-		}
-		
 		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		Set<Pair<Long, Long>> pairs = new HashSet<>();
 		Map<String, Map<String, FacilioField>> allFieldsMap = new HashMap<>();
+		List<ReadingContext> remainingReadings = new ArrayList<>();
 		for(ReadingContext reading: readings) {
 			Map<String, Object> readingMap = reading.getReadings();
 			if (readingMap != null) {
 				FacilioModule module = moduleMap != null ? moduleMap.get(reading.getModuleId()) : bean.getModule(reading.getModuleId());
+				if (module.getDataInterval() != -1) {
+					setInterval(reading, module.getDataInterval());
+					continue;
+				}
+				remainingReadings.add(reading);
+				
 				Map<String, FacilioField> fieldMap = null;
 				if (!allFieldsMap.containsKey(module.getName())) {
 					List<FacilioField> fields = bean.getAllFields(module.getName());
@@ -1226,6 +1229,56 @@ public class ReadingsAPI {
 			}
 		}
 		
+		if (remainingReadings.isEmpty()) {
+			return;
+		}
+		
+		List<Point> points = PointsAPI.getPointData(pairs);
+		if (CollectionUtils.isNotEmpty(points)) {
+			try {
+				setNewAgentDataInterval(points, remainingReadings);
+			}
+			catch (Exception e) {
+				LOGGER.error("Exception occurred on getting new interval", e);
+				// Temp. To be removed if no issues
+				setOldAgentDataInterval(pairs, remainingReadings);
+			}
+		}
+		else {
+			setOldAgentDataInterval(pairs, remainingReadings);
+		}
+		
+	}
+	
+	private static void setNewAgentDataInterval(List<Point> points, List<ReadingContext> readings) throws Exception {
+		int defaultInterval = getDefaultInterval();
+		Map<Long, Long> assetVsControllerIdMap = new HashMap<>();
+		Set<Long> controllerIds = new HashSet<>();
+		points.forEach(point -> {
+			long controllerId = point.getControllerId();
+			assetVsControllerIdMap.put(point.getResourceId(), controllerId);
+			controllerIds.add(controllerId);
+		});
+		Map<Long, Map<String, Object>> controllers = ControllerApiV2.getControllerMap(controllerIds);
+		List<Long> agentIds = controllers.values().stream().map(controller -> (long)controller.get("agentId")).collect(Collectors.toList());
+		Map<Long, com.facilio.agentv2.FacilioAgent> agentMap = AgentApiV2.getAgentMap(agentIds);
+		
+		
+		for (ReadingContext reading : readings) {
+			long controllerId = assetVsControllerIdMap.get(reading.getParentId());
+			Map<String, Object> controller = controllers.get(controllerId);
+			com.facilio.agentv2.FacilioAgent agent = agentMap.get((long)controller.get("agentId"));
+			if (agent.getInterval() > 0l) {
+				setInterval(reading, (int)agent.getInterval());
+			}
+			else {
+				setInterval(reading, defaultInterval);
+			}
+		}
+	}
+	
+	private static void setOldAgentDataInterval(Set<Pair<Long, Long>> pairs, List<ReadingContext> readings) throws Exception {
+		int defaultInterval = getDefaultInterval();
 		List<Map<String, Object>> instances = TimeSeriesAPI.getMappedInstances(pairs);
 		Map<Long, Long> assetVsControllerIdMap = new HashMap<>();
 		Set<Long> controllerIds = new HashSet<>();
@@ -1238,6 +1291,7 @@ public class ReadingsAPI {
 				}
 			});
 		}
+		
 		
 		Map<Long, ControllerContext> controllers = null;
 		Set<Long> agentIds = new HashSet<>();
@@ -1258,27 +1312,34 @@ public class ReadingsAPI {
 
 		
 		for (ReadingContext reading : readings) {
-			FacilioModule module = moduleMap != null ? moduleMap.get(reading.getModuleId()) : bean.getModule(reading.getModuleId());
 			int minuteInterval = defaultInterval;
-			if (module.getDataInterval() != -1) {
-				minuteInterval = module.getDataInterval();
+			long controllerId = assetVsControllerIdMap.get(reading.getParentId());
+			ControllerContext controller = controllers.get(controllerId);
+			if (controller.getDataInterval() != -1) {
+				minuteInterval = controller.getDataInterval();
 			}
-			else if (controllers != null && assetVsControllerIdMap.get(reading.getParentId()) != null) {
-				long controllerId = assetVsControllerIdMap.get(reading.getParentId());
-				ControllerContext controller = controllers.get(controllerId);
-				if (controller.getDataInterval() != -1) {
-					minuteInterval = controller.getDataInterval();
-				}
-				else if (controller.getAgentId() > 0) {
-					FacilioAgent agent = agentsMap.get(controller.getAgentId());
-					if (agent.getInterval() != null && agent.getInterval() > 0l) {
-						minuteInterval = agent.getInterval().intValue();
-					}
+			else if (controller.getAgentId() > 0) {
+				FacilioAgent agent = agentsMap.get(controller.getAgentId());
+				if (agent.getInterval() != null && agent.getInterval() > 0l) {
+					minuteInterval = agent.getInterval().intValue();
 				}
 			}
-			reading.setDatum("interval", minuteInterval);
-//			intervalMap.put(reading.getId(), minuteInterval);
+			setInterval(reading, minuteInterval);
 		}
+	}
+	
+	private static void setInterval(ReadingContext reading, int interval) {
+		reading.setDatum("interval", interval);
+	}
+	
+	private static int getDefaultInterval() throws Exception {
+		int defaultInterval = DEFAULT_DATA_INTERVAL;
+		Map<String, String> orgInfo = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.DEFAULT_DATA_INTERVAL);
+		String defaultIntervalProp = orgInfo.get(FacilioConstants.OrgInfoKeys.DEFAULT_DATA_INTERVAL);
+		if (defaultIntervalProp != null && !defaultIntervalProp.isEmpty()) {
+			defaultInterval = Integer.parseInt(defaultIntervalProp);
+		}
+		return defaultInterval;
 	}
 	
 	public static void deleteReadings(long parentId, List<FacilioField> readingFields, List<ReadingContext> readingsList) throws Exception {
