@@ -1313,15 +1313,17 @@ public class ReadingsAPI {
 		
 		for (ReadingContext reading : readings) {
 			int minuteInterval = defaultInterval;
-			long controllerId = assetVsControllerIdMap.get(reading.getParentId());
-			ControllerContext controller = controllers.get(controllerId);
-			if (controller.getDataInterval() != -1) {
-				minuteInterval = controller.getDataInterval();
-			}
-			else if (controller.getAgentId() > 0) {
-				FacilioAgent agent = agentsMap.get(controller.getAgentId());
-				if (agent.getInterval() != null && agent.getInterval() > 0l) {
-					minuteInterval = agent.getInterval().intValue();
+			if (controllers != null && assetVsControllerIdMap.get(reading.getParentId()) != null) {
+				long controllerId = assetVsControllerIdMap.get(reading.getParentId());
+				ControllerContext controller = controllers.get(controllerId);
+				if (controller.getDataInterval() != -1) {
+					minuteInterval = controller.getDataInterval();
+				}
+				else if (controller.getAgentId() > 0) {
+					FacilioAgent agent = agentsMap.get(controller.getAgentId());
+					if (agent.getInterval() != null && agent.getInterval() > 0l) {
+						minuteInterval = agent.getInterval().intValue();
+					}
 				}
 			}
 			setInterval(reading, minuteInterval);
