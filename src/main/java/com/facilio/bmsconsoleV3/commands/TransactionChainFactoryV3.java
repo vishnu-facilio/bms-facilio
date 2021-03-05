@@ -183,15 +183,19 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain getInviteVisitorAfterSaveOnCreateBeforeTransactionChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GenerateQrInviteUrlForBaseVisitCommandV3());
+        c.addCommand(new VisitorFaceRecognitionForBaseVisitCommandV3());
+        return c;
+    }
+
+
     public static FacilioChain getInviteVisitorAfterSaveOnCreateChain() {
         FacilioChain c = getDefaultChain();
 
         c.addCommand(new UpdateInviteVisitorStateInChangeSetCommandV3());
         c.addCommand(new ChangeInviteVisitorStateCommandV3());
-        c.addCommand(new ForkChainToInstantJobCommand()
-                .addCommand(new GenerateQrInviteUrlForBaseVisitCommandV3())
-                .addCommand(new VisitorFaceRecognitionForBaseVisitCommandV3()));
-
         return c;
     }
     

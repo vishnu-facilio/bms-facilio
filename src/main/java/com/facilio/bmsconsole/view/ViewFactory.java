@@ -7542,7 +7542,38 @@ public class ViewFactory {
 		statusField.setName("moduleState");
 		statusField.setColumnName("MODULE_STATE");
 		statusField.setDataType(FieldType.LOOKUP);
-		statusField.setModule(ModuleFactory.getVisitorLoggingModule());
+		statusField.setModule(ModuleFactory.getVisitorLogCheckInModule());
+		statusField.setLookupModule(ModuleFactory.getTicketStatusModule());
+
+		Condition condition = new Condition();
+		condition.setField(statusField);
+		condition.setOperator(LookupOperator.LOOKUP);
+		condition.setCriteriaValue(statusCriteria);
+
+		return condition;
+	}
+
+	public static Condition getVisitorInviteStatusCriteria(String status) {
+
+		FacilioField statusTypeField = new FacilioField();
+		statusTypeField.setName("status");
+		statusTypeField.setColumnName("STATUS");
+		statusTypeField.setDataType(FieldType.STRING);
+		statusTypeField.setModule(ModuleFactory.getTicketStatusModule());
+
+		Condition statusCondition = new Condition();
+		statusCondition.setField(statusTypeField);
+		statusCondition.setOperator(StringOperators.IS);
+		statusCondition.setValue(status);
+
+		Criteria statusCriteria = new Criteria() ;
+		statusCriteria.addAndCondition(statusCondition);
+
+		LookupField statusField = new LookupField();
+		statusField.setName("moduleState");
+		statusField.setColumnName("MODULE_STATE");
+		statusField.setDataType(FieldType.LOOKUP);
+		statusField.setModule(ModuleFactory.getInviteVisitorLogModule());
 		statusField.setLookupModule(ModuleFactory.getTicketStatusModule());
 
 		Condition condition = new Condition();

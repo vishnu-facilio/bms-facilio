@@ -1019,10 +1019,10 @@
 			<parameter name="org.domain" type="String" />
 			<parameter name="org.name" type="String" />
 			
-			<parameter name="visitorlogging.visitor.email"
+			<parameter name="visitorlog.visitor.email"
 				type="String" />
-			<parameter name="visitorlogging.checkInTimeString" type="String" />
-			<parameter name="visitorlogging.eventHost.name"
+			<parameter name="visitorlog.checkInTimeString" type="String" />
+			<parameter name="visitorlog.eventHost.name"
 				type="String" />
 		</workflow>
 	</template>
@@ -1031,12 +1031,12 @@
 			<parameter name="org.domain" type="String" />
 			<parameter name="org.name" type="String" />
 			
-			<parameter name="visitorlogging.visitor.phone"
+			<parameter name="visitorlog.visitor.phone"
 				type="String" />
-			<parameter name="visitorlogging.visitor.name"
+			<parameter name="visitorlog.visitor.name"
 				type="String" />
-			<parameter name="visitorlogging.checkInTimeString" type="String" />
-			<parameter name="visitorlogging.host.name"
+			<parameter name="visitorlog.checkInTimeString" type="String" />
+			<parameter name="visitorlog.host.name"
 				type="String" />
 		</workflow>
 	</template>
@@ -1046,10 +1046,10 @@
 			<parameter name="org.domain" type="String" />
 			<parameter name="org.name" type="String" />
 			
-			<parameter name="visitorlogging.visitor.email"
+			<parameter name="visitorlog.visitor.email"
 				type="String" />
-			<parameter name="visitorlogging.checkInTimeString" type="String" />
-			<parameter name="visitorlogging.eventHost.name"
+			<parameter name="visitorlog.checkInTimeString" type="String" />
+			<parameter name="visitorlog.eventHost.name"
 				type="String" />
 		</workflow>
 	</template>
@@ -1058,10 +1058,10 @@
 			<parameter name="org.domain" type="String" />
 			<parameter name="org.name" type="String" />
 			
-			<parameter name="visitorlogging.visitor.phone"
+			<parameter name="visitorlog.visitor.phone"
 				type="String" />
-			<parameter name="visitorlogging.checkInTimeString" type="String" />
-			<parameter name="visitorlogging.eventHost.name"
+			<parameter name="visitorlog.checkInTimeString" type="String" />
+			<parameter name="visitorlog.eventHost.name"
 				type="String" />
 		</workflow>
 	</template>
@@ -1071,10 +1071,10 @@
 			<parameter name="org.domain" type="String" />
 			<parameter name="org.name" type="String" />
 			
-			<parameter name="visitorlogging.visitor.email"
+			<parameter name="visitorlog.visitor.email"
 				type="String" />
-			<parameter name="visitorlogging.checkInTimeString" type="String" />
-			<parameter name="visitorlogging.eventHost.name"
+			<parameter name="visitorlog.checkInTimeString" type="String" />
+			<parameter name="visitorlog.eventHost.name"
 				type="String" />
 		</workflow>
 	</template>
@@ -1083,10 +1083,10 @@
 			<parameter name="org.domain" type="String" />
 			<parameter name="org.name" type="String" />
 			
-			<parameter name="visitorlogging.visitor.phone"
+			<parameter name="visitorlog.visitor.phone"
 				type="String" />
-			<parameter name="visitorlogging.checkInTimeString" type="String" />
-			<parameter name="visitorlogging.eventHost.name"
+			<parameter name="visitorlog.checkInTimeString" type="String" />
+			<parameter name="visitorlog.eventHost.name"
 				type="String" />
 		</workflow>
 	</template>
@@ -1096,10 +1096,10 @@
 			<parameter name="org.domain" type="String" />
 			<parameter name="org.name" type="String" />
 			
-			<parameter name="visitorlogging.visitor.email"
+			<parameter name="visitorlog.visitor.email"
 				type="String" />
-			<parameter name="visitorlogging.checkInTimeString" type="String" />
-			<parameter name="visitorlogging.eventHost.name"
+			<parameter name="visitorlog.checkInTimeString" type="String" />
+			<parameter name="visitorlog.eventHost.name"
 				type="String" />
 		</workflow>
 	</template>
@@ -1108,10 +1108,10 @@
 			<parameter name="org.domain" type="String" />
 			<parameter name="org.name" type="String" />
 			
-			<parameter name="visitorlogging.visitor.phone"
+			<parameter name="visitorlog.visitor.phone"
 				type="String" />
-			<parameter name="visitorlogging.checkInTimeString" type="String" />
-			<parameter name="visitorlogging.eventHost.name"
+			<parameter name="visitorlog.checkInTimeString" type="String" />
+			<parameter name="visitorlog.eventHost.name"
 				type="String" />
 		</workflow>
 	</template>
@@ -1121,12 +1121,12 @@
 			<parameter name="org.domain" type="String" />
 			<parameter name="org.name" type="String" />
 			
-			<parameter name="visitorlogging.visitor.name"
+			<parameter name="visitorlog.visitor.name"
 				type="String" />
-			<parameter name="visitorlogging.checkInTimeString" type="String" />
-			<parameter name="visitorlogging.eventHost.name"
+			<parameter name="visitorlog.checkInTimeString" type="String" />
+			<parameter name="visitorlog.eventHost.name"
 				type="String" />
-			<parameter name="visitorlogging.eventHost.email"
+			<parameter name="visitorlog.eventHost.email"
 				type="String" />
 		</workflow>
 	</template>
@@ -1135,11 +1135,11 @@
 			<parameter name="org.domain" type="String" />
 			<parameter name="org.name" type="String" />
 			
-			<parameter name="visitorlogging.visitor.name"
+			<parameter name="visitorlog.visitor.name"
 				type="String" />
-			<parameter name="visitorlogging.host.phone"
+			<parameter name="visitorlog.host.phone"
 				type="String" />
-			<parameter name="visitorlogging.host.name"
+			<parameter name="visitorlog.host.name"
 				type="String" />
 		</workflow>
 	</template>
@@ -1149,12 +1149,12 @@
 			<parameter name="org.domain" type="String" />
 			<parameter name="org.name" type="String" />
 			
-			<parameter name="visitorlogging.visitor.email"
+			<parameter name="visitorlog.visitor.email"
 				type="String" />
-			<parameter name="visitorlogging.checkInTimeString" type="String" />
-			<parameter name="visitorlogging.eventHost.name"
+			<parameter name="visitorlog.checkInTimeString" type="String" />
+			<parameter name="visitorlog.eventHost.name"
 				type="String" />
-			<parameter name="visitorlogging.eventHost.email"
+			<parameter name="visitorlog.eventHost.email"
 				type="String" />
 		</workflow>
 	</template>
@@ -1163,9 +1163,9 @@
 			<parameter name="org.domain" type="String" />
 			<parameter name="org.name" type="String" />
 			
-			<parameter name="visitorlogging.visitor.phone"
+			<parameter name="visitorlog.visitor.phone"
 				type="String" />
-			<parameter name="visitorlogging.visitor.name"
+			<parameter name="visitorlog.visitor.name"
 				type="String" />
 		
 		</workflow>
@@ -1177,12 +1177,12 @@
 			<parameter name="org.name" type="String" />
 			<parameter name="org.timezone" type="String" />
 		
-			<parameter name="visitorlogging"
+			<parameter name="visitorlog"
 				type="String" />
-			<parameter name="visitorlogging.id"
+			<parameter name="visitorlog.id"
 				type="String" />
 			 <expression name="vLog">
-				<function>resource.getVisitorLog(visitorlogging.id)
+				<function>resource.getVisitorLog(visitorlog.id)
 				</function>
 			</expression>
 			
@@ -1196,12 +1196,12 @@
 			<parameter name="org.name" type="String" />
 			<parameter name="org.timezone" type="String" />
 		
-			<parameter name="visitorlogging"
+			<parameter name="visitorlog"
 				type="String" />
-			<parameter name="visitorlogging.id"
+			<parameter name="visitorlog.id"
 				type="String" />
 			 <expression name="vLog">
-				<function>resource.getVisitorLog(visitorlogging.id)
+				<function>resource.getVisitorLog(visitorlog.id)
 				</function>
 			</expression>
 		</workflow>
@@ -1213,13 +1213,13 @@
 			<parameter name="org.name" type="String" />
 			<parameter name="org.timezone" type="String" />
 		
-			<parameter name="visitorlogging"
+			<parameter name="visitorlog"
 				type="String" />
-				<parameter name="visitorlogging.id"
+				<parameter name="visitorlog.id"
 				type="String" />
 			
 			 <expression name="vLog">
-				<function>resource.getVisitorLog(visitorlogging.id)
+				<function>resource.getVisitorLog(visitorlog.id)
 				</function>
 			</expression>
 			
@@ -1233,13 +1233,13 @@
 			<parameter name="org.name" type="String" />
 			<parameter name="org.timezone" type="String" />
 		
-			<parameter name="visitorlogging"
+			<parameter name="invitevisitor"
 				type="String" />
-			<parameter name="visitorlogging.id"
+			<parameter name="invitevisitor.id"
 				type="String" />
 			
 			 <expression name="vLog">
-				<function>resource.getVisitorLog(visitorlogging.id)
+				<function>resource.getVisitorInvite(invitevisitor.id)
 				</function>
 			</expression>
 			 <expression name="spaceObj">
@@ -1265,16 +1265,16 @@
 			<parameter name="org.timezone" type="String" />
 		
 			<parameter name="org.name" type="String" />
-			<parameter name="visitorlogging"
+			<parameter name="visitorlog"
 				type="String" />
-			<parameter name="visitorlogging.id"
+			<parameter name="visitorlog.id"
 				type="String" />
 			 <expression name="vLog">
-				<function>resource.getVisitorLog(visitorlogging.id)
+				<function>resource.getVisitorLog(visitorlog.id)
 				</function>
 			</expression>
 			 <expression name="getVisitorLogPermaLink">
-				<function>default.getTransitionPermaLink('https://app.facilio.com', visitorlogging.id, '/link/1' , 'visitorlogging')
+				<function>default.getTransitionPermaLink('https://app.facilio.com', visitorlog.id, '/link/1' , 'visitorlog')
 				</function>
 			</expression>
 			
@@ -1286,11 +1286,11 @@
 			<parameter name="org.domain" type="String" />
 			<parameter name="org.name" type="String" />
 			
-			<parameter name="visitorlogging.host.phone"
+			<parameter name="visitorlog.host.phone"
 				type="String" />
-			<parameter name="visitorlogging.host.name"
+			<parameter name="visitorlog.host.name"
 				type="String" />
-			<parameter name="visitorlogging.visitor.name"
+			<parameter name="visitorlog.visitor.name"
 				type="String" />
 		</workflow>
 	</template>
@@ -1300,12 +1300,12 @@
 			<parameter name="org.domain" type="String" />
 			<parameter name="org.name" type="String" />
 			<parameter name="org.timezone" type="String" />
-			<parameter name="visitorlogging"
+			<parameter name="invitevisitor"
 				type="String" />
-			<parameter name="visitorlogging.id"
+			<parameter name="invitevisitor.id"
 				type="String" />
 			<expression name="vLog">
-				<function>resource.getVisitorLog(visitorlogging.id)
+				<function>resource.getVisitorInvite(invitevisitor.id)
 				</function>
 			</expression>
 		</workflow>
@@ -1317,12 +1317,12 @@
 			<parameter name="org.timezone" type="String" />
 			<parameter name="org.name" type="String" />
 			
-			<parameter name="visitorlogging"
+			<parameter name="visitorlog"
 				type="String" />
-			<parameter name="visitorlogging.id"
+			<parameter name="visitorlog.id"
 				type="String" />
 			<expression name="vLog">
-				<function>resource.getVisitorLog(visitorlogging.id)
+				<function>resource.getVisitorLog(visitorlog.id)
 				</function>
 			</expression>			
 		</workflow>
@@ -1334,12 +1334,12 @@
 			<parameter name="org.timezone" type="String" />
 			<parameter name="org.name" type="String" />
 			
-			<parameter name="visitorlogging"
+			<parameter name="visitorlog"
 				type="String" />
-			<parameter name="visitorlogging.id"
+			<parameter name="visitorlog.id"
 				type="String" />	
 			<expression name="vLog">
-				<function>resource.getVisitorLog(visitorlogging.id)
+				<function>resource.getVisitorLog(visitorlog.id)
 				</function>
 			</expression>			
 		</workflow>
@@ -1351,13 +1351,13 @@
 			<parameter name="org.name" type="String" />
 			<parameter name="org.timezone" type="String" />
 		
-			<parameter name="visitorlogging"
+			<parameter name="visitorlog"
 				type="String" />
-				<parameter name="visitorlogging.id"
+				<parameter name="visitorlog.id"
 				type="String" />
 			
 			 <expression name="vLog">
-				<function>resource.getVisitorLog(visitorlogging.id)
+				<function>resource.getVisitorLog(visitorlog.id)
 				</function>
 			</expression>
 		</workflow>
@@ -1369,12 +1369,12 @@
 			<parameter name="org.timezone" type="String" />
 			<parameter name="org.name" type="String" />				
 			
-			<parameter name="visitorlogging"
+			<parameter name="visitorlog"
 				type="String" />
-			<parameter name="visitorlogging.id"
+			<parameter name="visitorlog.id"
 				type="String" />	
 			<expression name="vLog">
-				<function>resource.getVisitorLog(visitorlogging.id)
+				<function>resource.getVisitorLog(visitorlog.id)
 				</function>
 			</expression>					
 		</workflow>
@@ -1386,12 +1386,12 @@
 			<parameter name="org.timezone" type="String" />
 			<parameter name="org.name" type="String" />
 			
-			<parameter name="visitorlogging"
+			<parameter name="visitorlog"
 				type="String" />
-			<parameter name="visitorlogging.id"
+			<parameter name="visitorlog.id"
 				type="String" />	
 			<expression name="vLog">
-				<function>resource.getVisitorLog(visitorlogging.id)
+				<function>resource.getVisitorLog(visitorlog.id)
 				</function>
 			</expression>			
 		</workflow>
@@ -1404,12 +1404,12 @@
 			<parameter name="org.name" type="String" />
 			<parameter name="org.timezone" type="String" />
 		
-			<parameter name="visitorlogging"
+			<parameter name="visitorlog"
 				type="String" />
-			<parameter name="visitorlogging.id"
+			<parameter name="visitorlog.id"
 				type="String" />
 			 <expression name="vLog">
-				<function>resource.getVisitorLog(visitorlogging.id)
+				<function>resource.getVisitorLog(visitorlog.id)
 				</function>
 			</expression>
 			
@@ -1423,12 +1423,12 @@
 			<parameter name="org.name" type="String" />
 			<parameter name="org.timezone" type="String" />
 		
-			<parameter name="visitorlogging"
+			<parameter name="visitorlog"
 				type="String" />
-			<parameter name="visitorlogging.id"
+			<parameter name="visitorlog.id"
 				type="String" />
 			 <expression name="vLog">
-				<function>resource.getVisitorLog(visitorlogging.id)
+				<function>resource.getVisitorLog(visitorlog.id)
 				</function>
 			</expression>
 		
@@ -1462,12 +1462,12 @@
 			<parameter name="org.name" type="String" />
 			<parameter name="org.timezone" type="String" />
 		
-			<parameter name="visitorlogging"
+			<parameter name="visitorlog"
 				type="String" />
-			<parameter name="visitorlogging.id"
+			<parameter name="visitorlog.id"
 				type="String" />
 			 <expression name="vLog">
-				<function>resource.getVisitorLog(visitorlogging.id)
+				<function>resource.getVisitorLog(visitorlog.id)
 				</function>
 			</expression>
 		
@@ -1480,12 +1480,12 @@
 			<parameter name="org.name" type="String" />
 			<parameter name="org.timezone" type="String" />
 		
-			<parameter name="visitorlogging"
+			<parameter name="visitorlog"
 				type="String" />
-			<parameter name="visitorlogging.id"
+			<parameter name="visitorlog.id"
 				type="String" />
 			 <expression name="vLog">
-				<function>resource.getVisitorLog(visitorlogging.id)
+				<function>resource.getVisitorLog(visitorlog.id)
 				</function>
 			</expression>
 			
@@ -1498,12 +1498,12 @@
 			<parameter name="org.domain" type="String" />
 			<parameter name="org.name" type="String" />
 			<parameter name="org.timezone" type="String" />
-			<parameter name="visitorlogging"
+			<parameter name="visitorlog"
 				type="String" />
-			<parameter name="visitorlogging.id"
+			<parameter name="visitorlog.id"
 				type="String" />
 			<expression name="vLog">
-				<function>resource.getVisitorLog(visitorlogging.id)
+				<function>resource.getVisitorLog(visitorlog.id)
 				</function>
 			</expression>
 		</workflow>

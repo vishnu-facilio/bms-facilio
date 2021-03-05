@@ -15,6 +15,9 @@ import com.facilio.bmsconsole.util.InventoryApi;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
+import com.facilio.bmsconsoleV3.context.InviteVisitorContextV3;
+import com.facilio.bmsconsoleV3.context.VisitorLogContextV3;
+import com.facilio.bmsconsoleV3.util.V3VisitorManagementAPI;
 import com.facilio.workflows.exceptions.FunctionParamException;
 import com.facilio.workflows.util.WorkflowUtil;
 
@@ -63,7 +66,7 @@ public enum FacilioResourceFunction implements FacilioWorkflowFunctionInterface 
 		@Override
 		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
-			VisitorLoggingContext vLog = VisitorManagementAPI.getVisitorLoggingTriggers(Long.valueOf(objects[0].toString()), null, false);
+			VisitorLogContextV3 vLog = V3VisitorManagementAPI.getVisitorLogTriggers(Long.valueOf(objects[0].toString()), null, false);
 			return vLog;
 		
 		};
@@ -74,12 +77,12 @@ public enum FacilioResourceFunction implements FacilioWorkflowFunctionInterface 
 			}
 		}
 	},
-	GET_VISITOR_INVITE_REL(3,"getVisitorInviteRel") {
+	GET_VISITOR_INVITE(3,"getVisitorInvite") {
 		@Override
 		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
-			InviteVisitorRelContext rel = VisitorManagementAPI.getInviteVisitorRel(Long.valueOf(objects[0].toString()));
-			return rel;
+			InviteVisitorContextV3 invite = V3VisitorManagementAPI.getVisitorInviteTriggers(Long.valueOf(objects[0].toString()), null, false);
+			return invite;
 		
 		};
 		

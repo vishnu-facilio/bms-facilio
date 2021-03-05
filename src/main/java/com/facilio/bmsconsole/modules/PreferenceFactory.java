@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.modules;
 import java.util.*;
 
 import com.facilio.bmsconsoleV3.util.QuotationAPI;
+import com.facilio.bmsconsoleV3.util.V3VisitorManagementAPI;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -41,7 +42,8 @@ public class PreferenceFactory {
 	private static void initializeModuleMap() {
 		
 	//	modulePrefMap.put(FacilioConstants.ContextNames.CONTRACTS, getContractsModulePrefList());
-		modulePrefMap.put(FacilioConstants.ContextNames.VISITOR_LOGGING, getVisitorLogModulePrefList());
+		modulePrefMap.put(FacilioConstants.ContextNames.VISITOR_LOG, getVisitorLogModulePrefList());
+		modulePrefMap.put(FacilioConstants.ContextNames.INVITE_VISITOR, getVisitorInviteModulePrefList());
 		modulePrefMap.put(FacilioConstants.ContextNames.WATCHLIST, getWatchListModulePrefList());
 		modulePrefMap.put(FacilioConstants.ContextNames.VENDORS, getVendorModulePrefList());
 		modulePrefMap.put(FacilioConstants.ContextNames.VISITOR, getVisitorLogGeneralPrefList());
@@ -110,30 +112,44 @@ public class PreferenceFactory {
 		
 		List<Preference> visitorLogPreferences = new ArrayList<Preference>();
 		
-		visitorLogPreferences.add(VisitorManagementAPI.getHostMailNotificationsPref());
-		visitorLogPreferences.add(VisitorManagementAPI.getHostSmsNotificationsPref());
+		visitorLogPreferences.add(V3VisitorManagementAPI.getHostMailNotificationsPref());
+		visitorLogPreferences.add(V3VisitorManagementAPI.getHostSmsNotificationsPref());
 		
-		visitorLogPreferences.add(VisitorManagementAPI.getWelcomeMailNotificationsPref());
-		visitorLogPreferences.add(VisitorManagementAPI.getWelcomeSmsNotificationsPref());
+		visitorLogPreferences.add(V3VisitorManagementAPI.getWelcomeMailNotificationsPref());
+		visitorLogPreferences.add(V3VisitorManagementAPI.getWelcomeSmsNotificationsPref());
 		
-		visitorLogPreferences.add(VisitorManagementAPI.getThanksMailNotificationsPref());
-		visitorLogPreferences.add(VisitorManagementAPI.getThanksSmsNotificationsPref());
+		visitorLogPreferences.add(V3VisitorManagementAPI.getThanksMailNotificationsPref());
+		visitorLogPreferences.add(V3VisitorManagementAPI.getThanksSmsNotificationsPref());
 		
-		visitorLogPreferences.add(VisitorManagementAPI.getInviteMailNotificationsPref());
-		visitorLogPreferences.add(VisitorManagementAPI.getInviteSmsNotificationsPref());
+		visitorLogPreferences.add(V3VisitorManagementAPI.getInviteMailNotificationsPref());
+		visitorLogPreferences.add(V3VisitorManagementAPI.getInviteSmsNotificationsPref());
 		
-		visitorLogPreferences.add(VisitorManagementAPI.getApprovalMailNotificationsPref());
-		visitorLogPreferences.add(VisitorManagementAPI.getApprovalSmsNotificationsPref());
+		visitorLogPreferences.add(V3VisitorManagementAPI.getApprovalMailNotificationsPref());
+		visitorLogPreferences.add(V3VisitorManagementAPI.getApprovalSmsNotificationsPref());
 		
 		if(AccountUtil.getCurrentOrg().getOrgId() == 155 || AccountUtil.getCurrentOrg().getOrgId() == 210) {
-			visitorLogPreferences.add(VisitorManagementAPI.getWelcomeWhatsappNotificationsPref());
-			visitorLogPreferences.add(VisitorManagementAPI.getThanksWhatsappNotificationsPref());
-			visitorLogPreferences.add(VisitorManagementAPI.getInviteWhatsappNotificationsPref());
-			visitorLogPreferences.add(VisitorManagementAPI.getHostWhatsappNotificationsPref());
-			visitorLogPreferences.add(VisitorManagementAPI.getApprovalWhatsappNotificationsPref());
+			visitorLogPreferences.add(V3VisitorManagementAPI.getWelcomeWhatsappNotificationsPref());
+			visitorLogPreferences.add(V3VisitorManagementAPI.getThanksWhatsappNotificationsPref());
+			visitorLogPreferences.add(V3VisitorManagementAPI.getInviteWhatsappNotificationsPref());
+			visitorLogPreferences.add(V3VisitorManagementAPI.getHostWhatsappNotificationsPref());
+			visitorLogPreferences.add(V3VisitorManagementAPI.getApprovalWhatsappNotificationsPref());
 		}
 		
 		return visitorLogPreferences;
+	}
+
+	private static List<Preference> getVisitorInviteModulePrefList() {
+
+		List<Preference> visitorInvitePreferences = new ArrayList<Preference>();
+
+		visitorInvitePreferences.add(V3VisitorManagementAPI.getInviteMailNotificationsPref());
+		visitorInvitePreferences.add(V3VisitorManagementAPI.getInviteSmsNotificationsPref());
+
+		if(AccountUtil.getCurrentOrg().getOrgId() == 155 || AccountUtil.getCurrentOrg().getOrgId() == 210) {
+			visitorInvitePreferences.add(V3VisitorManagementAPI.getInviteWhatsappNotificationsPref());
+		}
+
+		return visitorInvitePreferences;
 	}
 	
 	private static List<Preference> getWatchListModulePrefList() {
@@ -161,7 +177,7 @@ public class PreferenceFactory {
 		
 		List<Preference> visitorLogGeneralPreferences = new ArrayList<Preference>();
 		
-		visitorLogGeneralPreferences.add(VisitorManagementAPI.getVisitorCheckOutPref());
+		visitorLogGeneralPreferences.add(V3VisitorManagementAPI.getVisitorCheckOutPref());
 		return visitorLogGeneralPreferences;
 	}
 

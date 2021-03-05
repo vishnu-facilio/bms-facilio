@@ -524,6 +524,7 @@ public class APIv3Config {
         return () -> new V3Config(InviteVisitorContextV3.class, null)
                 .create()
                     .beforeSave(TransactionChainFactoryV3.getInviteVisitorBeforeSaveOnCreateChain())
+                    .afterSave(TransactionChainFactoryV3.getInviteVisitorAfterSaveOnCreateBeforeTransactionChain())
                     .afterTransaction(TransactionChainFactoryV3.getInviteVisitorAfterSaveOnCreateChain())
                 .update()
                    .beforeSave(TransactionChainFactoryV3.getInviteVisitorBeforeSaveOnUpdateChain())

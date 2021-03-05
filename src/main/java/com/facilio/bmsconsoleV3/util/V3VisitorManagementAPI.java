@@ -196,56 +196,6 @@ public class V3VisitorManagementAPI {
         return records;
     }
     
-    public static Boolean checkExistingVisitorLogging(long logId) throws Exception {
-        long currenttime = System.currentTimeMillis();
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
-        List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.VISITOR_LOGGING);
-        SelectRecordsBuilder<V3VisitorLoggingContext> builder = new SelectRecordsBuilder<V3VisitorLoggingContext>()
-                .module(module)
-                .beanClass(V3VisitorLoggingContext.class)
-                .select(fields)
-                .andCondition(CriteriaAPI.getIdCondition(logId, module))
-
-                ;
-        FacilioStatus checkedOutStatus = TicketAPI.getStatus(module, "CheckedOut");
-
-        V3VisitorLoggingContext records = builder.fetchFirst();
-        if(records != null && records.getModuleState().getId() == checkedOutStatus.getId()) {
-            if(records.getCheckInTime() !=  null && currenttime >= records.getCheckInTime()) {
-                if(records.getExpectedCheckOutTime() == null || records.getExpectedCheckOutTime() <= 0) {
-                    return true;
-                }
-                if(records.getExpectedCheckOutTime() != null && records.getExpectedCheckOutTime() > 0 && currenttime <= records.getExpectedCheckOutTime()) {
-                    return true;
-                }
-                return false;
-            }
-            return false;
-        }
-        return null;
-
-    }
-
-    public static List<V3VisitorLoggingContext> getRecurringVisitorLogs() throws Exception {
-
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
-        List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.VISITOR_LOGGING);
-        Map<String, FacilioField> map = FieldFactory.getAsMap(fields);
-        SelectRecordsBuilder<V3VisitorLoggingContext> builder = new SelectRecordsBuilder<V3VisitorLoggingContext>()
-                .module(module)
-                .beanClass(V3VisitorLoggingContext.class)
-                .select(fields)
-                .andCondition(CriteriaAPI.getCondition("IS_RECURRING", "isRecurring", "true", BooleanOperators.IS))
-                .andCondition(CriteriaAPI.getCondition(map.get("parentLogId"),CommonOperators.IS_EMPTY))
-                ;
-
-        List<V3VisitorLoggingContext> records = builder.get();
-        return records;
-
-    }
-
     public static V3VisitorLoggingContext getVisitorLoggingTriggers(long logId, String passCode, boolean fetchTriggers) throws Exception {
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -363,7 +313,7 @@ public class V3VisitorManagementAPI {
         return records;
 
     }
-    
+
     public static InviteVisitorContextV3 getVisitorInviteTriggers(long inviteId, String passCode, boolean fetchTriggers) throws Exception {
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -1069,26 +1019,6 @@ public class V3VisitorManagementAPI {
 
     }
 
-    public static void checkOutVisitorLogging(String visitorPhoneNumber, FacilioContext context) throws Exception {
-
-        if(StringUtils.isNotEmpty(visitorPhoneNumber)) {
-            V3VisitorContext visitor = getVisitor(-1L, visitorPhoneNumber);
-            if(visitor == null) {
-                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid phone number");
-            }
-            V3VisitorLoggingContext activeLog = getVisitorLogging(visitor.getId(), true, -1);
-            if(activeLog == null) {
-                throw new RESTException(ErrorCode.VALIDATION_ERROR, "No active CheckIn Log found");
-            }
-            List<WorkflowRuleContext> nextStateRule = StateFlowRulesAPI.getAvailableState(activeLog.getStateFlowId(), activeLog.getModuleState().getId(), FacilioConstants.ContextNames.VISITOR_LOGGING, activeLog, context);
-            activeLog.setCheckOutTime(System.currentTimeMillis());
-            long nextTransitionId = nextStateRule.get(0).getId();
-            context.put("nextTransitionId", nextTransitionId);
-            context.put("visitorLogging", activeLog);
-        }
-
-    }
-    
     public static VisitorLogContextV3 checkOutVisitorLog(String visitorPhoneNumber, FacilioContext context) throws Exception {
 		
 		if(StringUtils.isNotEmpty(visitorPhoneNumber)) {
@@ -1502,7 +1432,7 @@ public class V3VisitorManagementAPI {
             @Override
             public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-                FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
+                FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.INVITE_VISITOR);
                 Long ruleId = saveInviteEmailNotificationPrefs(map, module.getName());
                 List<Long> ruleIdList = new ArrayList<>();
                 ruleIdList.add(ruleId);
@@ -1526,7 +1456,7 @@ public class V3VisitorManagementAPI {
             @Override
             public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-                FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
+                FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_INVITE);
                 Long ruleId = saveInviteSmsNotificationPrefs(map, module.getName());
                 List<Long> ruleIdList = new ArrayList<>();
                 ruleIdList.add(ruleId);
@@ -1549,7 +1479,7 @@ public class V3VisitorManagementAPI {
             @Override
             public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-                FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
+                FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_INVITE);
                 Long ruleId = saveInviteWhatsappNotificationPrefs(map, module.getName());
                 List<Long> ruleIdList = new ArrayList<>();
                 ruleIdList.add(ruleId);
@@ -1725,13 +1655,13 @@ public class V3VisitorManagementAPI {
         Condition condition = new Condition();
         condition.setFieldName("host");
         condition.setOperator(CommonOperators.IS_NOT_EMPTY);
-        condition.setColumnName("VisitorLogging.HOST");
+        condition.setColumnName("BaseVisitt.HOST");
 
         Condition isApprovalNeeded = new Condition();
         isApprovalNeeded.setFieldName("isApprovalNeeded");
         isApprovalNeeded.setOperator(BooleanOperators.IS);
         isApprovalNeeded.setValue("false");
-        isApprovalNeeded.setColumnName("VisitorLogging.IS_APPROVAL_NEEDED");
+        isApprovalNeeded.setColumnName("VisitorLog.IS_APPROVAL_NEEDED");
 
 
         Criteria criteria = new Criteria();
@@ -1775,13 +1705,13 @@ public class V3VisitorManagementAPI {
         Condition condition = new Condition();
         condition.setFieldName("host");
         condition.setOperator(CommonOperators.IS_NOT_EMPTY);
-        condition.setColumnName("VisitorLogging.HOST");
+        condition.setColumnName("BaseVisit.HOST");
 
         Condition isApprovalNeeded = new Condition();
         isApprovalNeeded.setFieldName("isApprovalNeeded");
         isApprovalNeeded.setOperator(BooleanOperators.IS);
         isApprovalNeeded.setValue("false");
-        isApprovalNeeded.setColumnName("VisitorLogging.IS_APPROVAL_NEEDED");
+        isApprovalNeeded.setColumnName("VisitorLog.IS_APPROVAL_NEEDED");
 
 
 
@@ -1825,13 +1755,13 @@ public class V3VisitorManagementAPI {
         Condition condition = new Condition();
         condition.setFieldName("host");
         condition.setOperator(CommonOperators.IS_NOT_EMPTY);
-        condition.setColumnName("VisitorLogging.HOST");
+        condition.setColumnName("BaseVisit.HOST");
 
         Condition isApprovalNeeded = new Condition();
         isApprovalNeeded.setFieldName("isApprovalNeeded");
         isApprovalNeeded.setOperator(BooleanOperators.IS);
         isApprovalNeeded.setValue("false");
-        isApprovalNeeded.setColumnName("VisitorLogging.IS_APPROVAL_NEEDED");
+        isApprovalNeeded.setColumnName("VisitorLog.IS_APPROVAL_NEEDED");
 
         Criteria criteria = new Criteria();
         criteria.addConditionMap(condition);
@@ -1872,7 +1802,7 @@ public class V3VisitorManagementAPI {
         Condition condition = new Condition();
         condition.setFieldName("visitor");
         condition.setOperator(CommonOperators.IS_NOT_EMPTY);
-        condition.setColumnName("VisitorLogging.VISITOR");
+        condition.setColumnName("BaseVisit.VISITOR");
 
         Criteria criteria = new Criteria();
         criteria.addConditionMap(condition);
@@ -1913,7 +1843,7 @@ public class V3VisitorManagementAPI {
         Condition condition = new Condition();
         condition.setFieldName("visitor");
         condition.setOperator(CommonOperators.IS_NOT_EMPTY);
-        condition.setColumnName("VisitorLogging.VISITOR");
+        condition.setColumnName("BaseVisit.VISITOR");
 
         Criteria criteria = new Criteria();
         criteria.addConditionMap(condition);
@@ -1954,7 +1884,7 @@ public class V3VisitorManagementAPI {
         Condition condition = new Condition();
         condition.setFieldName("visitor");
         condition.setOperator(CommonOperators.IS_NOT_EMPTY);
-        condition.setColumnName("VisitorLogging.VISITOR");
+        condition.setColumnName("BaseVisit.VISITOR");
 
         Criteria criteria = new Criteria();
         criteria.addConditionMap(condition);
@@ -1994,7 +1924,7 @@ public class V3VisitorManagementAPI {
         Condition condition = new Condition();
         condition.setFieldName("visitor");
         condition.setOperator(CommonOperators.IS_NOT_EMPTY);
-        condition.setColumnName("VisitorLogging.VISITOR");
+        condition.setColumnName("BaseVisit.VISITOR");
 
         Criteria criteria = new Criteria();
         criteria.addConditionMap(condition);
@@ -2035,7 +1965,7 @@ public class V3VisitorManagementAPI {
         Condition condition = new Condition();
         condition.setFieldName("visitor");
         condition.setOperator(CommonOperators.IS_NOT_EMPTY);
-        condition.setColumnName("VisitorLogging.VISITOR");
+        condition.setColumnName("BaseVisit.VISITOR");
 
         Criteria criteria = new Criteria();
         criteria.addConditionMap(condition);
@@ -2076,7 +2006,7 @@ public class V3VisitorManagementAPI {
         Condition condition = new Condition();
         condition.setFieldName("visitor");
         condition.setOperator(CommonOperators.IS_NOT_EMPTY);
-        condition.setColumnName("VisitorLogging.VISITOR");
+        condition.setColumnName("BaseVisit.VISITOR");
 
         Criteria criteria = new Criteria();
         criteria.addConditionMap(condition);
@@ -2117,21 +2047,14 @@ public class V3VisitorManagementAPI {
         Condition condition = new Condition();
         condition.setFieldName("visitor");
         condition.setOperator(CommonOperators.IS_NOT_EMPTY);
-        condition.setColumnName("Visitor_Logging.VISITOR");
-
-        Condition preregisteredCondition = new Condition();
-        preregisteredCondition.setFieldName("isPreregistered");
-        preregisteredCondition.setOperator(BooleanOperators.IS);
-        preregisteredCondition.setValue("true");
-        preregisteredCondition.setColumnName("Visitor_Logging.IS_PREREGISTERED");
+        condition.setColumnName("BaseVisit.VISITOR");
 
         Criteria criteria = new Criteria();
         criteria.addConditionMap(condition);
-        criteria.addConditionMap(preregisteredCondition);
-        criteria.addConditionMap(ViewFactory.getVisitorLogStatusCriteria("Upcoming"));
+        criteria.addConditionMap(ViewFactory.getVisitorInviteStatusCriteria("Upcoming"));
 
 
-        criteria.setPattern("(1 and 2 and 3)");
+        criteria.setPattern("(1 and 2)");
 
         workflowRuleContext.setCriteria(criteria);
 
@@ -2167,21 +2090,14 @@ public class V3VisitorManagementAPI {
         Condition condition = new Condition();
         condition.setFieldName("visitor");
         condition.setOperator(CommonOperators.IS_NOT_EMPTY);
-        condition.setColumnName("Visitor_Logging.VISITOR");
-
-        Condition preregisteredCondition = new Condition();
-        preregisteredCondition.setFieldName("isPreregistered");
-        preregisteredCondition.setOperator(BooleanOperators.IS);
-        preregisteredCondition.setValue("true");
-        preregisteredCondition.setColumnName("Visitor_Logging.IS_PREREGISTERED");
+        condition.setColumnName("BaseVisit.VISITOR");
 
         Criteria criteria = new Criteria();
         criteria.addConditionMap(condition);
-        criteria.addConditionMap(preregisteredCondition);
-        criteria.addConditionMap(ViewFactory.getVisitorLogStatusCriteria("Upcoming"));
+        criteria.addConditionMap(ViewFactory.getVisitorInviteStatusCriteria("Upcoming"));
 
 
-        criteria.setPattern("(1 and 2 and 3)");
+        criteria.setPattern("(1 and 2)");
 
         workflowRuleContext.setCriteria(criteria);
 
@@ -2216,21 +2132,14 @@ public class V3VisitorManagementAPI {
         Condition condition = new Condition();
         condition.setFieldName("visitor");
         condition.setOperator(CommonOperators.IS_NOT_EMPTY);
-        condition.setColumnName("Visitor_Logging.VISITOR");
-
-        Condition preregisteredCondition = new Condition();
-        preregisteredCondition.setFieldName("isPreregistered");
-        preregisteredCondition.setOperator(BooleanOperators.IS);
-        preregisteredCondition.setValue("true");
-        preregisteredCondition.setColumnName("Visitor_Logging.IS_PREREGISTERED");
+        condition.setColumnName("BaseVisit.VISITOR");
 
         Criteria criteria = new Criteria();
         criteria.addConditionMap(condition);
-        criteria.addConditionMap(preregisteredCondition);
         criteria.addConditionMap(ViewFactory.getVisitorLogStatusCriteria("Upcoming"));
 
 
-        criteria.setPattern("(1 and 2 and 3)");
+        criteria.setPattern("(1 and 2)");
 
         workflowRuleContext.setCriteria(criteria);
 
@@ -2263,26 +2172,19 @@ public class V3VisitorManagementAPI {
         Condition condition = new Condition();
         condition.setFieldName("host");
         condition.setOperator(CommonOperators.IS_NOT_EMPTY);
-        condition.setColumnName("VisitorLogging.HOST");
+        condition.setColumnName("BaseVisit.HOST");
 
         Condition isApprovalNeeded = new Condition();
         isApprovalNeeded.setFieldName("isApprovalNeeded");
         isApprovalNeeded.setOperator(BooleanOperators.IS);
         isApprovalNeeded.setValue("true");
-        isApprovalNeeded.setColumnName("VisitorLogging.IS_APPROVAL_NEEDED");
-
-        Condition isPreregistered = new Condition();
-        isPreregistered.setFieldName("isPreregistered");
-        isPreregistered.setOperator(BooleanOperators.IS);
-        isPreregistered.setValue("false");
-        isPreregistered.setColumnName("VisitorLogging.IS_PREREGISTERED");
+        isApprovalNeeded.setColumnName("VisitorLog.IS_APPROVAL_NEEDED");
 
         Criteria criteria = new Criteria();
         criteria.addConditionMap(condition);
         criteria.addConditionMap(isApprovalNeeded);
-        criteria.addConditionMap(isPreregistered);
 
-        criteria.setPattern("(1 and 2 and 3 and 4)");
+        criteria.setPattern("(1 and 2 and 3)");
         criteria.addConditionMap(ViewFactory.getVisitorLogStatusCriteria("Requested"));
 
         workflowRuleContext.setCriteria(criteria);
@@ -2318,27 +2220,19 @@ public class V3VisitorManagementAPI {
         Condition condition = new Condition();
         condition.setFieldName("host");
         condition.setOperator(CommonOperators.IS_NOT_EMPTY);
-        condition.setColumnName("VisitorLogging.HOST");
+        condition.setColumnName("BaseVisitt.HOST");
 
         Condition isApprovalNeeded = new Condition();
         isApprovalNeeded.setFieldName("isApprovalNeeded");
         isApprovalNeeded.setOperator(BooleanOperators.IS);
         isApprovalNeeded.setValue("true");
-        isApprovalNeeded.setColumnName("VisitorLogging.IS_APPROVAL_NEEDED");
-
-        Condition isPreregistered = new Condition();
-        isPreregistered.setFieldName("isPreregistered");
-        isPreregistered.setOperator(BooleanOperators.IS);
-        isPreregistered.setValue("false");
-        isPreregistered.setColumnName("VisitorLogging.IS_PREREGISTERED");
-
+        isApprovalNeeded.setColumnName("VisitorLog.IS_APPROVAL_NEEDED");
 
         Criteria criteria = new Criteria();
         criteria.addConditionMap(condition);
         criteria.addConditionMap(isApprovalNeeded);
-        criteria.addConditionMap(isPreregistered);
 
-        criteria.setPattern("(1 and 2 and 3 and 4)");
+        criteria.setPattern("(1 and 2 and 3)");
         criteria.addConditionMap(ViewFactory.getVisitorLogStatusCriteria("Requested"));
 
         workflowRuleContext.setCriteria(criteria);
@@ -2373,26 +2267,19 @@ public class V3VisitorManagementAPI {
         Condition condition = new Condition();
         condition.setFieldName("host");
         condition.setOperator(CommonOperators.IS_NOT_EMPTY);
-        condition.setColumnName("VisitorLogging.HOST");
+        condition.setColumnName("BaseVisit.HOST");
 
         Condition isApprovalNeeded = new Condition();
         isApprovalNeeded.setFieldName("isApprovalNeeded");
         isApprovalNeeded.setOperator(BooleanOperators.IS);
         isApprovalNeeded.setValue("true");
-        isApprovalNeeded.setColumnName("VisitorLogging.IS_APPROVAL_NEEDED");
-
-        Condition isPreregistered = new Condition();
-        isPreregistered.setFieldName("isPreregistered");
-        isPreregistered.setOperator(BooleanOperators.IS);
-        isPreregistered.setValue("false");
-        isPreregistered.setColumnName("VisitorLogging.IS_PREREGISTERED");
+        isApprovalNeeded.setColumnName("VisitorLog.IS_APPROVAL_NEEDED");
 
         Criteria criteria = new Criteria();
         criteria.addConditionMap(condition);
         criteria.addConditionMap(isApprovalNeeded);
-        criteria.addConditionMap(isPreregistered);
 
-        criteria.setPattern("(1 and 2 and 3 and 4)");
+        criteria.setPattern("(1 and 2 and 3)");
         criteria.addConditionMap(ViewFactory.getVisitorLogStatusCriteria("Requested"));
 
         workflowRuleContext.setCriteria(criteria);
@@ -2481,15 +2368,6 @@ public class V3VisitorManagementAPI {
 		return childInvites;	
     }
 
-    public static void updateGeneratedUptoInLogAndAddChildren(PMTriggerContext trigger, V3VisitorLoggingContext parentLog, List<V3VisitorLoggingContext> children) throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
-        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.VISITOR_LOGGING);
-        V3RecordAPI.addRecord(true, children, module, fields);
-        V3RecordAPI.updateRecord(parentLog, module, fields);
-        updateTrigger(trigger);
-    }
-    
     public static void updateTrigger(PMTriggerContext trigger) throws Exception {
         GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder()
                 .table(ModuleFactory.getVisitorLogTriggersModule().getTableName())
@@ -2527,26 +2405,6 @@ public class V3VisitorManagementAPI {
             }
             return null;
         }
-    }
-
-    public static void deleteUpcomingChildLogs(long parentLogId, long currentTime) throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
-        DeleteRecordBuilder<V3VisitorLoggingContext> deleteBuilder = new DeleteRecordBuilder<V3VisitorLoggingContext>()
-                .module(module)
-                .andCondition(CriteriaAPI.getCondition("PARENT_LOG_ID", "parentLogId", String.valueOf(parentLogId), NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition("EXPECTED_CHECKIN_TIME", "expectedCheckInTime", String.valueOf(currentTime), DateOperators.IS_AFTER));
-
-        deleteBuilder.markAsDelete();
-
-    }
-
-    public static FacilioStatus getLogStatus(String statusString) throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
-        FacilioStatus status = TicketAPI.getStatus(module, statusString);
-        return status;
-
     }
 
     public static Map<Long, VisitorSettingsContext> getVisitorSettingsForType() throws Exception {
@@ -2588,7 +2446,7 @@ public class V3VisitorManagementAPI {
 
     public static Long saveBlockedVisitorMailNotificationPrefs (Map<String, Object> map, String moduleName) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOG);
 
 
         WorkflowRuleContext workflowRuleContext = new WorkflowRuleContext();
@@ -2602,7 +2460,7 @@ public class V3VisitorManagementAPI {
         isBlocked.setFieldName("isBlocked");
         isBlocked.setOperator(BooleanOperators.IS);
         isBlocked.setValue("true");
-        isBlocked.setColumnName("VisitorLogging.IS_BLOCKED");
+        isBlocked.setColumnName("BaseVisit.IS_BLOCKED");
 
 
         Criteria criteria = new Criteria();
@@ -2670,7 +2528,7 @@ public class V3VisitorManagementAPI {
 
     public static Long saveVipVisitorMailNotificationPrefs (Map<String, Object> map, String moduleName) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOG);
 
 
         WorkflowRuleContext workflowRuleContext = new WorkflowRuleContext();
@@ -2684,7 +2542,7 @@ public class V3VisitorManagementAPI {
         isVip.setFieldName("isVip");
         isVip.setOperator(BooleanOperators.IS);
         isVip.setValue("true");
-        isVip.setColumnName("VisitorLogging.IS_VIP");
+        isVip.setColumnName("BaseVisit.IS_VIP");
 
 
         Criteria criteria = new Criteria();
@@ -2724,7 +2582,7 @@ public class V3VisitorManagementAPI {
 
     public static Long saveBlockedVisitorSmsNotificationPrefs (Map<String, Object> map, String moduleName) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOG);
 
 
         WorkflowRuleContext workflowRuleContext = new WorkflowRuleContext();
@@ -2738,7 +2596,7 @@ public class V3VisitorManagementAPI {
         isBlocked.setFieldName("isBlocked");
         isBlocked.setOperator(BooleanOperators.IS);
         isBlocked.setValue("true");
-        isBlocked.setColumnName("VisitorLogging.IS_BLOCKED");
+        isBlocked.setColumnName("BaseVisit.IS_BLOCKED");
 
 
         Criteria criteria = new Criteria();
@@ -2958,7 +2816,7 @@ public class V3VisitorManagementAPI {
 
     public static Long saveVipVisitorSmsNotificationPrefs (Map<String, Object> map, String moduleName) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOG);
 
 
         WorkflowRuleContext workflowRuleContext = new WorkflowRuleContext();
@@ -2972,7 +2830,7 @@ public class V3VisitorManagementAPI {
         isVip.setFieldName("isVip");
         isVip.setOperator(BooleanOperators.IS);
         isVip.setValue("true");
-        isVip.setColumnName("VisitorLogging.IS_VIP");
+        isVip.setColumnName("BaseVisit.IS_VIP");
 
 
         Criteria criteria = new Criteria();
@@ -3050,15 +2908,15 @@ public class V3VisitorManagementAPI {
 
     public static void autoCheckOutVisitors() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
-        List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.VISITOR_LOGGING);
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOG);
+        List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.VISITOR_LOG);
 
         FacilioStatus checkedInStatus = TicketAPI.getStatus(module, "CheckedIn");
         FacilioStatus checkedOutStatus = TicketAPI.getStatus(module, "CheckedOut");
 
         List<FacilioField> updatedfields = new ArrayList<FacilioField>();
 
-        UpdateRecordBuilder<V3VisitorLoggingContext> updateBuilder = new UpdateRecordBuilder<V3VisitorLoggingContext>()
+        UpdateRecordBuilder<VisitorLogContextV3> updateBuilder = new UpdateRecordBuilder<VisitorLogContextV3>()
                 .module(module)
                 .fields(updatedfields)
                 .andCondition(CriteriaAPI.getCondition("MODULE_STATE", "moduleState", String.valueOf(checkedInStatus.getId()), NumberOperators.EQUALS))
@@ -3075,5 +2933,7 @@ public class V3VisitorManagementAPI {
 
         updateBuilder.updateViaMap(updateMap);
     }
+
+
 
 }
