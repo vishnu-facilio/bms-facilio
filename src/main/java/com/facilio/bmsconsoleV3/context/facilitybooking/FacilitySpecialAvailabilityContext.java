@@ -26,8 +26,12 @@ public class FacilitySpecialAvailabilityContext extends V3Context {
             this.specialType = SpecialType.valueOf(specialType);
         }
     }
-    public SpecialType getSpecialTypeEnum() {
-        return specialType;
+    public String getSpecialTypeEnum() {
+        if (specialType != null) {
+
+            return specialType.getValue();
+        }
+        return null;
     }
 
     public static enum SpecialType implements FacilioEnum {

@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.page.factory;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsoleV3.context.facilitybooking.FacilityContext;
@@ -83,8 +84,9 @@ public class FacilityModulesPageFactory extends PageFactory{
         Page.Section tab1Sec5 = page.new Section();
         tab1.addSection(tab1Sec5);
 
-        addCommonSubModuleWidget(tab1Sec5, module, record);
-
+        if (!AccountUtil.getCurrentUser().isPortalUser()) {
+            addCommonSubModuleWidget(tab1Sec5, module, record);
+        }
 
         return page;
     }

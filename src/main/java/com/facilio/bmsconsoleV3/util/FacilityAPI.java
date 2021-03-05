@@ -100,11 +100,11 @@ public class FacilityAPI {
         }
     }
 
-    public static Boolean checkForUnavailability(Long slotStartTime, Long slotEndTime, List<FacilitySpecialAvailabilityContext> unavailabilityList) throws Exception {
+    public static Boolean checkForUnavailability(Long slotStartTime, Long slotEndTime, List<FacilitySpecialAvailabilityContext> unavailabilityList) {
 
         if (CollectionUtils.isNotEmpty(unavailabilityList)) {
             for(FacilitySpecialAvailabilityContext unavailability : unavailabilityList){
-                if(unavailability.getSpecialTypeEnum() != FacilitySpecialAvailabilityContext.SpecialType.SPECIAL_UNAVAILABILITY) {
+                if(unavailability.getSpecialType() != null && unavailability.getSpecialType() != FacilitySpecialAvailabilityContext.SpecialType.SPECIAL_UNAVAILABILITY.getIndex()) {
                     continue;
                 }
                 Long startTime = unavailability.getStartDate();
