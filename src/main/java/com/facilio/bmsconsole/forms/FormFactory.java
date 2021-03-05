@@ -2737,7 +2737,7 @@ public class FormFactory {
 		fields.add(new FormField("noOfAttendees", FieldDisplayType.NUMBER, "Number Of Attendees", Required.OPTIONAL,3, 1));
 		fields.add(new FormField("bookingslot", FieldDisplayType.FACILITY_BOOKING_SLOTS, "Time Slots", Required.OPTIONAL,4, 1));
 		fields.add(new FormField("internalAttendees", FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Internal Attendees", Required.OPTIONAL,5, 1));
-		fields.add(new FormField("tenant", FieldDisplayType.LOOKUP_POPUP, "Tenant", Required.OPTIONAL,6, 1));
+		fields.add(new FormField("tenant", FieldDisplayType.LOOKUP_SIMPLE, "Tenant", Required.OPTIONAL, "tenant", 6, 1));
 
 		form.setFields(fields);
 		return form;
