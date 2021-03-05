@@ -95,6 +95,7 @@ public class FormFactory {
 		forms.put("portalvendorDocumentForm",getPortalVendorDocumentForm());
 		forms.put("client_form", getClientForm());
 		forms.put("tenant_contact_form", getTenantContactForm());
+		forms.put("portal_tenant_contact_form", getTenantContactPortalForm());
 		forms.put("new_vendor_contact_form", getNewVendorContactForm());
 		forms.put("client_contact_form", getClientContactForm());
 		forms.put("employee_form", geEmployeeContactForm());
@@ -430,7 +431,7 @@ public class FormFactory {
 		List<FacilioForm> hazardFormsList = Arrays.asList(getHazardForm());
 		List<FacilioForm> precautionFormsList = Arrays.asList(getPrecautionForm());
 		List<FacilioForm> clientFormsList = Arrays.asList(getClientForm());
-		List<FacilioForm> tenantcontactFormsList = Arrays.asList(getTenantContactForm());
+		List<FacilioForm> tenantcontactFormsList = Arrays.asList(getTenantContactForm(), getTenantContactPortalForm());
 		List<FacilioForm> vendorContactFormsList = Arrays.asList(getNewVendorContactForm());
 		List<FacilioForm> clientContactFormsList = Arrays.asList(getClientContactForm());
 		List<FacilioForm> tenantUnitFormsList = Arrays.asList(geTenantUnitSpaceForm());
@@ -899,6 +900,17 @@ public class FormFactory {
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getTenantContactsFormField());
 		form.setFormType(FormType.WEB);
+		return form;
+	}
+
+	public static FacilioForm getTenantContactPortalForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("NEW TENANT CONTACT");
+		form.setName("default_tenantcontact_portal");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.TENANT_CONTACT));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getTenantContactsFormField());
+		form.setFormType(FormType.PORTAL);
 		return form;
 	}
 
