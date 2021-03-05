@@ -2,13 +2,14 @@ package com.facilio.agentv2;
 
 import java.io.Serializable;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.json.simple.JSONObject;
 
 import com.facilio.agent.AgentKeys;
 import com.facilio.workflows.context.WorkflowContext;
 import com.fasterxml.jackson.annotation.JsonInclude;
+
+import lombok.Getter;
+import lombok.Setter;
 @Setter @Getter
 public class FacilioAgent implements Serializable {
 
@@ -41,8 +42,7 @@ public class FacilioAgent implements Serializable {
     @JsonInclude
     private Boolean isDisable;
 
-    private long workflowId;
-
+    private long workflowId = -1;
     public long getWorkflowId() {
         return workflowId;
     }
