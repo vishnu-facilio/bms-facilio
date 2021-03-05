@@ -4,7 +4,7 @@
     <div class="navbar-header">
        
     
-        <a class="navbar-brand" href=""><img src = "https://static.facilio.in/admin/images/facilio-logo.png" />
+        <a class="navbar-brand" href=""><img src = "/admin/img/facilio-logo.png" />
         <span>Admin Console</span></a>
     </div>
     <!-- /.navbar-header -->

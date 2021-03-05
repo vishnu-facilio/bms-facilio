@@ -13,16 +13,14 @@
     
     	<title>Admin Console</title>  
 
-	    <script src="https://static.facilio.in/admin/js/jquery.js"></script>
-		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-		<script src="http://maps.google.com/maps/api/js?sensor=false&key=AIzaSyBRto3e31_woKTGsOMqgIjZtWUbX7ILyuw"></script>
-    	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-	    <link href="https://static.facilio.in/admin/css/bootstrap.min.css" rel="stylesheet">
-	    <link href="https://static.facilio.in/admin/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-	 	<link href="https://static.facilio.in/admin/css/sb-admin-2.css" rel="stylesheet">
-   	    <script src="https://static.facilio.in/admin/js/bootstrap.min.js"></script>
-		<script src="https://static.facilio.in/admin/js/sb-admin-2.js"></script>
-		<script src="https://static.facilio.in/admin/js/app.js"></script>
+	    <script src="/admin/js/jquery.js"></script>
+		<script src="/admin/js/jquery-ui.js"></script>
+	    <link href="/admin/css/bootstrap.min.css" rel="stylesheet">
+	    <link href="/admin/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+	 	<link href="/admin/css/sb-admin-2.css" rel="stylesheet">
+   	    <script src="/admin/js/bootstrap.min.js"></script>
+		<script src="/admin/js/sb-admin-2.js"></script>
+		<script src="/admin/js/app.js"></script>
 		<script>
 			var contextPath = "${pageContext.request.contextPath}";
 		</script>
