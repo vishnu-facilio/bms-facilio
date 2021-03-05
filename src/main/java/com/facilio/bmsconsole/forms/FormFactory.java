@@ -909,7 +909,7 @@ public class FormFactory {
 		form.setName("default_tenantcontact_portal");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.TENANT_CONTACT));
 		form.setLabelPosition(LabelPosition.LEFT);
-		form.setFields(getTenantContactsFormField());
+		form.setFields(getTenantContactsPortalFormField());
 		form.setFormType(FormType.PORTAL);
 		return form;
 	}
@@ -1290,6 +1290,16 @@ public class FormFactory {
 		fields.add(new FormField("tenant", FieldDisplayType.LOOKUP_SIMPLE, "Tenant", Required.REQUIRED, "tenant", 4, 1));
 		fields.add(new FormField("isPrimaryContact", FieldDisplayType.DECISION_BOX, "Primary Contact", Required.OPTIONAL, 5, 1));
 		
+		return fields;
+	}
+
+	private static List<FormField> getTenantContactsPortalFormField() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("email", FieldDisplayType.TEXTBOX, "Email", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("phone", FieldDisplayType.TEXTBOX, "Phone", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("tenant", FieldDisplayType.LOOKUP_SIMPLE, "Tenant", Required.REQUIRED, "tenant", 4, 1));
+
 		return fields;
 	}
 
@@ -2727,6 +2737,8 @@ public class FormFactory {
 		fields.add(new FormField("noOfAttendees", FieldDisplayType.NUMBER, "Number Of Attendees", Required.OPTIONAL,3, 1));
 		fields.add(new FormField("bookingslot", FieldDisplayType.FACILITY_BOOKING_SLOTS, "Time Slots", Required.OPTIONAL,4, 1));
 		fields.add(new FormField("internalAttendees", FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Internal Attendees", Required.OPTIONAL,5, 1));
+		fields.add(new FormField("tenant", FieldDisplayType.LOOKUP_POPUP, "Tenant", Required.OPTIONAL,6, 1));
+
 		form.setFields(fields);
 		return form;
 	}

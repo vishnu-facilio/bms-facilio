@@ -1,7 +1,9 @@
 package com.facilio.bmsconsoleV3.context.facilitybooking;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
+import com.facilio.bmsconsoleV3.context.V3TenantContext;
 import com.facilio.v3.context.V3Context;
 
 import java.util.List;
@@ -129,5 +131,24 @@ public class V3FacilityBookingContext extends V3Context {
 
     public void setBookingDate(Long bookingDate) {
         this.bookingDate = bookingDate;
+    }
+
+    private V3TenantContext tenant;
+    private User bookingRequestedBy;
+
+    public V3TenantContext getTenant() {
+        return tenant;
+    }
+
+    public void setTenant(V3TenantContext tenant) {
+        this.tenant = tenant;
+    }
+
+    public User getBookingRequestedBy() {
+        return bookingRequestedBy;
+    }
+
+    public void setBookingRequestedBy(User bookingRequestedBy) {
+        this.bookingRequestedBy = bookingRequestedBy;
     }
 }

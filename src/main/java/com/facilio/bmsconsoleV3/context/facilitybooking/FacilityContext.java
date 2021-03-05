@@ -4,6 +4,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.context.V3PhotosContext;
+import com.facilio.bmsconsoleV3.enums.Group;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.v3.context.V3Context;
 
@@ -36,7 +37,22 @@ public class FacilityContext extends V3Context {
     }
 
     public static enum FacilityType implements FacilioEnum {
-        ASSET, SPACE, OTHERS;
+        ASSET("Asset"),
+        SPACE("Space"),
+        OTHERS("Others");
+
+        private String name;
+
+        FacilityType(String name) {
+            this.name = name;
+        }
+
+        public static FacilityType valueOf(int value) {
+            if (value > 0 && value <= values().length) {
+                return values()[value - 1];
+            }
+            return null;
+        }
 
         @Override
         public int getIndex() {
@@ -45,14 +61,7 @@ public class FacilityContext extends V3Context {
 
         @Override
         public String getValue() {
-            return name();
-        }
-
-        public static FacilityType valueOf(int value) {
-            if (value > 0 && value <= values().length) {
-                return values()[value - 1];
-            }
-            return null;
+            return name;
         }
     }
 

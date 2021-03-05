@@ -31,7 +31,22 @@ public class FacilitySpecialAvailabilityContext extends V3Context {
     }
 
     public static enum SpecialType implements FacilioEnum {
-        SPECIAL_COST, SPECIAL_AVAILABILITY, SPECIAL_UNAVAILABILITY;
+        SPECIAL_COST("Special Cost"),
+        SPECIAL_AVAILABILITY("Special Availability"),
+        SPECIAL_UNAVAILABILITY("Special Unavailability");
+
+        private String name;
+
+        SpecialType(String name) {
+            this.name = name;
+        }
+
+        public static SpecialType valueOf(int value) {
+            if (value > 0 && value <= values().length) {
+                return values()[value - 1];
+            }
+            return null;
+        }
 
         @Override
         public int getIndex() {
@@ -40,14 +55,7 @@ public class FacilitySpecialAvailabilityContext extends V3Context {
 
         @Override
         public String getValue() {
-            return name();
-        }
-
-        public static SpecialType valueOf(int value) {
-            if (value > 0 && value <= values().length) {
-                return values()[value - 1];
-            }
-            return null;
+            return name;
         }
     }
 
@@ -151,5 +159,15 @@ public class FacilitySpecialAvailabilityContext extends V3Context {
             return df.format(this.cost);
         }
         return null;
+    }
+
+    private String remarks;
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
     }
 }

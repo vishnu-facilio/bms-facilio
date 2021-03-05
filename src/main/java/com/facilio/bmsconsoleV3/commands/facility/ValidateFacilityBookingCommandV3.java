@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.facility;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.facilitybooking.*;
@@ -37,6 +38,9 @@ public class ValidateFacilityBookingCommandV3 extends FacilioCommand {
             if (MapUtils.isEmpty(bodyParams) || (!bodyParams.containsKey("cancel") && !bodyParams.containsKey("cancelBooking"))) {
 
                 for (V3FacilityBookingContext booking : bookings) {
+                    if(booking.getId() <= 0) {
+                        booking.setBookingRequestedBy(AccountUtil.getCurrentUser());
+                    }
                     Map<String, List<Map<String, Object>>> subformMap = booking.getSubForm();
                     if (booking.getFacility() == null || booking.getFacility().getId() <= 0) {
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Facility is mandatory for a booking");
