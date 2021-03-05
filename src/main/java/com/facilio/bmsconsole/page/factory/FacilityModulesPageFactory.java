@@ -66,19 +66,19 @@ public class FacilityModulesPageFactory extends PageFactory{
         Page.Section tab1Sec2 = page.new Section("Slot Information");
         tab1.addSection(tab1Sec2);
         PageWidget slotInfo = new PageWidget(PageWidget.WidgetType.BOOKING_SLOT_INFORMATION);
-        slotInfo.addToLayoutParams(tab1Sec2, 24, 2);
+        slotInfo.addToLayoutParams(tab1Sec2, 24, 4);
         tab1Sec2.addWidget(slotInfo);
 
         Page.Section tab1Sec3 = page.new Section();
         tab1.addSection(tab1Sec3);
         PageWidget bookingInternalAttendeesWidget = new PageWidget(PageWidget.WidgetType.BOOKING_INTERNAL_ATTENDEES);
-        bookingInternalAttendeesWidget.addToLayoutParams(tab1Sec3, 24, 2);
+        bookingInternalAttendeesWidget.addToLayoutParams(tab1Sec3, 24, 4);
         tab1Sec3.addWidget(bookingInternalAttendeesWidget);
 
         Page.Section tab1Sec4 = page.new Section();
         tab1.addSection(tab1Sec4);
         PageWidget bookingExternalAttendeesWidget = new PageWidget(PageWidget.WidgetType.BOOKING_EXTERNAL_ATTENDEES);
-        bookingExternalAttendeesWidget.addToLayoutParams(tab1Sec4, 24, 2);
+        bookingExternalAttendeesWidget.addToLayoutParams(tab1Sec4, 24, 4);
         tab1Sec4.addWidget(bookingExternalAttendeesWidget);
 
         Page.Section tab1Sec5 = page.new Section();
