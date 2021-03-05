@@ -132,7 +132,8 @@ public class GenericAddSubModuleDataCommand extends FacilioCommand {
 	                        .module(mainModule)
 	                        .select(modBean.getAllFields(mainModuleName))
 	                        .beanClass(FacilioConstants.ContextNames.getClassFromModule(mainModule))
-	                        .andCondition(CriteriaAPI.getIdCondition(record.getId(), mainModule));
+	                        .andCondition(CriteriaAPI.getIdCondition(record.getId(), mainModule))
+	                        .skipModuleCriteria();
 	                ModuleBaseWithCustomFields updatedRecord = builder.fetchFirst();
 	                recordMap.put(mainModuleName, Collections.singletonList(updatedRecord));
 	
