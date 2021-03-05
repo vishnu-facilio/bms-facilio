@@ -73,6 +73,8 @@ public class GetModuleListCommand extends FacilioCommand {
 			}
 			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.BUDGET_MONITORING)) {
 				moduleList.add(modBean.getModule(ContextNames.Budget.BUDGET));
+			}
+			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.FACILITY_BOOKING)) {
 				moduleList.add(modBean.getModule(ContextNames.FacilityBooking.FACILITY));
 				moduleList.add(modBean.getModule(ContextNames.FacilityBooking.FACILITY_BOOKING));
 			}
