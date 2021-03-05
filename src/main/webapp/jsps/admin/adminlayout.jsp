@@ -13,14 +13,14 @@
     
     	<title>Admin Console</title>  
 
-	    <script src="/admin/js/jquery.js"></script>
-		<script src="/admin/js/jquery-ui.js"></script>
-	    <link href="/admin/css/bootstrap.min.css" rel="stylesheet">
-	    <link href="/admin/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-	 	<link href="/admin/css/sb-admin-2.css" rel="stylesheet">
-   	    <script src="/admin/js/bootstrap.min.js"></script>
-		<script src="/admin/js/sb-admin-2.js"></script>
-		<script src="/admin/js/app.js"></script>
+	    <script src="/jsps/admin/assets/js/jquery.js"></script>
+		<script src="/jsps/admin/assets/js/jquery-ui.js"></script>
+	    <link href="/jsps/admin/assets/css/bootstrap.min.css" rel="stylesheet">
+	    <link href="/jsps/admin/assets/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+	 	<link href="/jsps/admin/assets/css/sb-admin-2.css" rel="stylesheet">
+   	    <script src="/jsps/admin/assets/js/bootstrap.min.js"></script>
+		<script src="/jsps/admin/assets/js/sb-admin-2.js"></script>
+		<script src="/jsps/admin/assets/js/app.js"></script>
 		<script>
 			var contextPath = "${pageContext.request.contextPath}";
 		</script>
