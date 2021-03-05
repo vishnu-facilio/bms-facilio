@@ -4,8 +4,8 @@
     <div class="navbar-header">
        
     
-        <a class="navbar-brand" href=""><img src = "/jsps/admin/assets/img/facilio-logo.png" />
-        <span>Admin Console</span></a>
+        <a class="navbar-brand" href="">
+        <span>Facilio Admin Console</span></a>
     </div>
     <!-- /.navbar-header -->
 
