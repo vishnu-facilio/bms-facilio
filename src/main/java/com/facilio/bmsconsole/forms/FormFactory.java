@@ -2769,12 +2769,13 @@ public class FormFactory {
 		form.setFormType(FormType.WEB);
 
 		List<FormField> fields = new ArrayList<>();
-		fields.add(new FormField("startDate", FieldDisplayType.DATE, "Start Date", Required.OPTIONAL,"user",1, 2));
-		fields.add(new FormField("endDate", FieldDisplayType.DATE, "End Date", Required.OPTIONAL,1, 3));
-		fields.add(new FormField("startTime", FieldDisplayType.TIME, "Start Time", Required.OPTIONAL,2, 2));
-		fields.add(new FormField("endTime", FieldDisplayType.TIME, "End Time", Required.OPTIONAL,2, 3));
-		fields.add(new FormField("cost", FieldDisplayType.NUMBER, "Cost", Required.OPTIONAL,3, 2));
-		fields.add(new FormField("specialType", FieldDisplayType.SELECTBOX, "Type", Required.OPTIONAL,3, 3));
+		fields.add(new FormField("remarks", FieldDisplayType.TEXTBOX, "Remarks", Required.REQUIRED,1, 2));
+		fields.add(new FormField("startDate", FieldDisplayType.DATE, "Start Date", Required.OPTIONAL,"user",2, 2));
+		fields.add(new FormField("endDate", FieldDisplayType.DATE, "End Date", Required.OPTIONAL,2, 3));
+		fields.add(new FormField("startTime", FieldDisplayType.TIME, "Start Time", Required.OPTIONAL,3, 2));
+		fields.add(new FormField("endTime", FieldDisplayType.TIME, "End Time", Required.OPTIONAL,3, 3));
+		fields.add(new FormField("cost", FieldDisplayType.NUMBER, "Cost", Required.OPTIONAL,4, 2));
+		fields.add(new FormField("specialType", FieldDisplayType.SELECTBOX, "Type", Required.OPTIONAL,4, 3));
 		form.setFields(fields);
 		return form;
 	}

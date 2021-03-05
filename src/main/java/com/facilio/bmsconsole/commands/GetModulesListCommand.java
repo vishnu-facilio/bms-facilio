@@ -39,7 +39,9 @@ public class GetModulesListCommand extends FacilioCommand {
 			ContextNames.SERVICE_REQUEST,
 			ContextNames.QUOTE,
 			ContextNames.WorkPermit.WORKPERMIT,
-		});
+			ContextNames.FacilityBooking.FACILITY,
+			ContextNames.FacilityBooking.FACILITY_BOOKING,
+	});
 	
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
