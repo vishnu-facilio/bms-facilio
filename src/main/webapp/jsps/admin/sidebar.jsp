@@ -2,6 +2,7 @@
 <%@taglib uri="/struts-tags" prefix="s" %>
 <%@taglib uri="facilio-tags" prefix="f" %>
 <%@page import="java.util.Properties, org.apache.struts2.ServletActionContext" %>
+<%@page import="com.facilio.aws.util.FacilioProperties" %>
 <%
 Properties buildinfo = (Properties)ServletActionContext.getServletContext().getAttribute("buildinfo");
 if (buildinfo == null) {
@@ -69,14 +70,15 @@ if (buildinfo == null) {
                <span class="nav-title">Copy PM</span>
                </a>
            </li> --%>
-
-        	<li> 
+           
+				<li>
                <a href="agentversion">
                <span class="nav-icon">
               <i class=" sidebar-icon fa fa-info-circle fa-fw "></i> </span>
                <span class="nav-title">Agent Upgrade</span>
                </a>
            </li>
+        
            <li>
                <a href="data">
                <span class="nav-icon">
@@ -136,6 +138,11 @@ if (buildinfo == null) {
                 <span class="nav-title">Upload credentials</span>
                  </a>
            </li>
+
+           <% 
+           String rebrand = FacilioProperties.getConfig("rebrand.domain");
+           if (rebrand.equals("facilio.com")) { 
+       %>
 			<li>
                 <a href="getinstance">
                 <span class="nav-icon">
@@ -143,6 +150,7 @@ if (buildinfo == null) {
                 <span class="nav-title">AwsInstances</span>
                  </a>
            </li>
+           <% } %>
 			<li>
                 <a href="demorollupyearly">
                 <span class="nav-icon">

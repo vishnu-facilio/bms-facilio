@@ -19,13 +19,17 @@ java.sql.Timestamp,
        User usr = null;
        			if (email != null) {
        		AppDomain appDomain = IAMAppUtil.getAppDomain(AccountUtil.getDefaultAppDomain());
-      		usr = AccountUtil.getUserBean().getUser(email, appDomain.getIdentifier());//for now only main app  users
-      		sessions = AccountUtil.getUserBean().getUserSessions(usr.getUid(), null);
+       		try {
+       			usr = AccountUtil.getUserBean().getUser(email, appDomain.getIdentifier());//for now only main app  users
+          		sessions = AccountUtil.getUserBean().getUserSessions(usr.getUid(), null);
 
-      		long orgId = usr.getOrgId();
-      		long roleId = usr.getRoleId();
-      		if (AccountUtil.getRoleBean(orgId).getRole(roleId).getName().equalsIgnoreCase("Super Administrator")) {
-      			userList = AccountUtil.getOrgBean(orgId).getAppUsers(orgId, -1, false);
+          		long orgId = usr.getOrgId();
+          		long roleId = usr.getRoleId();
+          		if (AccountUtil.getRoleBean(orgId).getRole(roleId).getName().equalsIgnoreCase("Super Administrator")) {
+          			userList = AccountUtil.getOrgBean(orgId).getAppUsers(orgId, -1, false);
+       			}
+       		}
+       		catch (Exception e) {	
       		}
       	}
    %>

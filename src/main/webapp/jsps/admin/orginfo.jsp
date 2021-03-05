@@ -1,5 +1,6 @@
 <%@page import="com.facilio.logging.SysOutLogger"%>
 <%@page import="com.facilio.accounts.bean.OrgBean"%>
+<%@page import="com.facilio.aws.util.FacilioProperties" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
     <%@page import="com.facilio.accounts.util.AccountUtil,java.util.Comparator, com.facilio.accounts.dto.User,com.facilio.accounts.dto.*, java.util.*, java.util.Iterator ,org.json.simple.JSONObject,org.json.simple.JSONArray,java.util.List, com.facilio.accounts.dto.Organization ,org.json.simple.JSONObject,com.facilio.accounts.impl.OrgBeanImpl, com.facilio.bmsconsole.commands.util.CommonCommandUtil, com.facilio.accounts.util.AccountUtil.FeatureLicense"%>
@@ -192,7 +193,14 @@ function myLicenseFunction() {
 	<th class="org-th" style="text-align:center;max-width: 350px;width:350px;"> Email  </th>
 	<th class="org-th" style="text-align:center;max-width: 350px;width:350px;"> UserVerified</th>
 	<th class="org-th" style="max-width: 350px; width:350px;text-align: center;">Status</th>
+	
+	             <% 
+           String rebrand = FacilioProperties.getConfig("rebrand.domain");
+           if (rebrand.equals("facilio.com")) { 
+       %>
 	<th class="org-th" style="max-width: 350px;width:350px;text-align: center;">Activity</th>
+      
+       <% } %>
 	</tr>
 	 <% 
 	 if(users!=null){
@@ -205,7 +213,14 @@ function myLicenseFunction() {
 	<td  style="max-width: 350px;width:350px;"  align="center"><%=b.getEmail() %></td>
 	<td  style="max-width: 350px;width:350px;" align="center" id=<%=b.getId() %>><%=b.getUserVerified() %></td>
 	<td style="max-width: 350px;width:350px;text-align: center;"> <button type="button" onclick="view(<%=b.getUid()%>)">Update</button> </td>
-	<td   style="max-width: 350px;width:350px;"  align="center"><button type ="button" onclick="logs(<%=b.getOuid()%>)">Logs </button></td>
+	
+	                 <% 
+           String rebrand = FacilioProperties.getConfig("rebrand.domain");
+           if (rebrand.equals("facilio.com")) { 
+       %>
+       	<td   style="max-width: 350px;width:350px;"  align="center"><button type ="button" onclick="logs(<%=b.getOuid()%>)">Logs </button></td>
+      
+       <% } %>
 	</tr>
 <%
 }
