@@ -96,6 +96,7 @@ public class ReportFactoryFields {
 		if(customFieldsList != null) {
 			customFields = FieldFactory.getAsMap(customFieldsList.stream().filter(field -> field.getDataTypeEnum() != null && field.getDataTypeEnum() != FieldType.MULTI_ENUM && field.getDataTypeEnum() != FieldType.MULTI_LOOKUP).collect(Collectors.toList()));
 		}
+		HashMap<String,String> additonalModules = new HashMap<String,String>();
 		List<FacilioField> selectedFields = new ArrayList<FacilioField>();
 		
 		selectedFields.add(fields.get("createdTime"));
@@ -123,6 +124,14 @@ public class ReportFactoryFields {
 		if(customFields.size() != 0) {
 			for(String customFieldName: customFields.keySet()) {
 				selectedFields.add(customFields.get(customFieldName));
+				if(customFields.get(customFieldName).getDataType() == FieldType.LOOKUP.getTypeAsInt()) {
+					LookupField lookupField = (LookupField) customFields.get(customFieldName);
+					if(lookupField.getLookupModule().getTypeEnum() != FacilioModule.ModuleType.PICK_LIST && !"users".equalsIgnoreCase(lookupField.getLookupModule().getName())) {
+					if(!additonalModules.containsKey(lookupField.getDisplayName())) {
+						additonalModules.put(lookupField.getDisplayName(),lookupField.getLookupModule().getName());
+					}
+					}
+				}
 			}
 		}
 		
@@ -174,7 +183,20 @@ public class ReportFactoryFields {
 		dimensionListOrder.add("time");
 		dimensionListOrder.add("workorder");
 		dimensionListOrder.add("asset");
-		
+		HashMap<String, Long> moduleMap = (HashMap<String, Long>) rearrangedFields.get("moduleMap");
+		for(String module: additonalModules.keySet()) {
+			FacilioModule facilioModule = bean.getModule(additonalModules.get(module));
+			List<FacilioField> moduleFields = bean.getAllFields(additonalModules.get(module));
+
+			List<FacilioField> customModuleFields = bean.getAllCustomFields(additonalModules.get(module));
+			if(customModuleFields != null && !facilioModule.isCustom()) {
+				moduleFields.addAll(customModuleFields);
+			}
+			moduleMap.put(module.toLowerCase(), facilioModule.getModuleId());
+			dimensionFieldMap.put(module, moduleFields);
+			dimensionListOrder.add(module);
+		}
+		rearrangedFields.put("moduleMap", moduleMap);
 		rearrangedFields.put("dimensionListOrder", dimensionListOrder);
 		rearrangedFields.put("parentlookupFileds", lookUpModuleFieldMap);
 		rearrangedFields.put("displayName","workorders");
