@@ -63,7 +63,7 @@ public class CreatePaymentRecordForBookingCommand extends FacilioCommand {
                             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Slot is mandatory for a booking");
                         }
                         SlotContext slot = (SlotContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.FacilityBooking.SLOTS, bookingSlot.getSlot().getId(), SlotContext.class);
-                        if (slot != null) {
+                        if (slot != null && slot.getSlotCost() != null) {
                             amount = amount + slot.getSlotCost();
                         }
                     }
