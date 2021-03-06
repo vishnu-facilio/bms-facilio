@@ -12681,7 +12681,7 @@ VALUES (${orgId}, @FACILITY_SPECIAL_AVAILABILITY_MODULE_ID, 'remarks', 'Remarks'
 
 --v2 Facility Booking
 INSERT INTO Modules (ORGID, NAME, DISPLAY_NAME, TABLE_NAME, MODULE_TYPE, IS_TRASH_ENABLED)
-VALUES (${orgId}, 'facilitybooking', 'Facility Booking', 'FacilityBooking', @BASE_ENTITY_MODULE_TYPE, false);
+VALUES (${orgId}, 'facilitybooking', 'Booking', 'FacilityBooking', @BASE_ENTITY_MODULE_TYPE, false);
 SET @FACILITY_BOOKING_MODULE_ID := (SELECT LAST_INSERT_ID());
 INSERT INTO Module_Local_ID (ORGID, MODULE_NAME, LAST_LOCAL_ID) VALUES (${orgId}, 'facilitybooking', 0);
 
@@ -12829,7 +12829,7 @@ INSERT INTO NumberFields (FIELDID, ORGID) VALUES (@BOOKING_COUNT_ROLL_UP_FIELD_I
 
 --Job entry for slot creation
 
---INSERT INTO ${publicDb}.Jobs (JOBID, ORGID, JOBNAME, IS_ACTIVE, IS_PERIODIC, SCHEDULE_INFO, NEXT_EXECUTION_TIME, EXECUTOR_NAME, STATUS, JOB_SERVER_ID, TRANSACTION_TIMEOUT, CURRENT_EXECUTION_TIME) VALUES (${orgId}, ${orgId}, 'ScheduleSlotCreation', true, true, '{"times":["00:00"],"frequencyType":1,"frequencyTypeEnum":"DAILY"}', UNIX_TIMESTAMP()+30,'facilio', 3, 0, 1200000, UNIX_TIMESTAMP()*1000);
+INSERT INTO ${publicDb}.Jobs (JOBID, ORGID, JOBNAME, IS_ACTIVE, IS_PERIODIC, SCHEDULE_INFO, NEXT_EXECUTION_TIME, EXECUTOR_NAME, STATUS, JOB_SERVER_ID, TRANSACTION_TIMEOUT, CURRENT_EXECUTION_TIME) VALUES (${orgId}, ${orgId}, 'ScheduleSlotCreation', true, true, '{"times":["00:00"],"frequencyType":1,"frequencyTypeEnum":"DAILY"}', UNIX_TIMESTAMP()+30,'facilio', 3, 0, 1200000, UNIX_TIMESTAMP()*1000);
 
 --Facility Booking slots
 INSERT INTO Modules (ORGID, NAME, DISPLAY_NAME, TABLE_NAME, MODULE_TYPE) VALUES (${orgId}, 'bookingslot', 'Facility Booking Slots', 'FacilityBooking_Slots', @SUB_ENTITY_MODULE_TYPE);

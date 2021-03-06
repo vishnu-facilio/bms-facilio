@@ -2691,13 +2691,14 @@ public class FormFactory {
 		fields.add(new FormField("userGuidance", FieldDisplayType.TEXTAREA, "User Guidance", Required.OPTIONAL,6, 1));
 		fields.add(new FormField("usageCapacity", FieldDisplayType.NUMBER, "Usage Capacity", Required.OPTIONAL,7, 2));
 		fields.add(new FormField("bookingAdvancePeriodInDays", FieldDisplayType.NUMBER, "Booking Advance In Days", Required.OPTIONAL,7, 3));
-		fields.add(new FormField("maxSlotBookingAllowed", FieldDisplayType.NUMBER, "Max Slot Bookings Allowed", Required.OPTIONAL,8, 2));
+		fields.add(new FormField("maxSlotBookingAllowed", FieldDisplayType.NUMBER, "Max Slot Bookings Allowed Per Booking", Required.OPTIONAL,8, 2));
 		fields.add(new FormField("maxAttendeeCountPerBooking", FieldDisplayType.NUMBER, "Maximum attendee Count Per Booking", Required.OPTIONAL,8, 3));
-		fields.add(new FormField("pricePerSlot", FieldDisplayType.NUMBER, "Price Per slot", Required.OPTIONAL,9, 2));
-		fields.add(new FormField("securityDeposit", FieldDisplayType.NUMBER, "Security Deposit", Required.OPTIONAL,9, 3));
-		fields.add(new FormField("isChargeable", FieldDisplayType.DECISION_BOX, "Is Chargeable", Required.OPTIONAL,10, 2));
-		fields.add(new FormField("isMultiBookingPerSlotAllowed", FieldDisplayType.DECISION_BOX, "Is Multi Booking Allowed Per slot", Required.OPTIONAL,10, 3));
-		fields.add(new FormField("isAttendeeListNeeded", FieldDisplayType.DECISION_BOX, "Attendee List Needed", Required.OPTIONAL,11, 2));
+		fields.add(new FormField("isAttendeeListNeeded", FieldDisplayType.DECISION_BOX, "Attendee List Needed", Required.OPTIONAL,9, 2));
+		fields.add(new FormField("isMultiBookingPerSlotAllowed", FieldDisplayType.DECISION_BOX, "Is Multi Booking Allowed Per slot", Required.OPTIONAL,9, 3));
+		fields.add(new FormField("isChargeable", FieldDisplayType.DECISION_BOX, "Is Chargeable", Required.OPTIONAL,10, 1));
+		fields.add(new FormField("pricePerSlot", FieldDisplayType.NUMBER, "Price Per slot", Required.OPTIONAL,11, 2));
+		fields.add(new FormField("securityDeposit", FieldDisplayType.NUMBER, "Security Deposit", Required.OPTIONAL,11, 3));
+
 		fields.add(new FormField("slotDuration", FieldDisplayType.DURATION, "Slot Duration", Required.OPTIONAL,12, 1));
 		fields.add(new FormField("amenities", FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Features / Amenties", Required.OPTIONAL,13, 1));
 		fields.add(new FormField("facilityWeekdayAvailability", FieldDisplayType.FACILITY_AVAILABILITY, "Availability", Required.OPTIONAL,14, 1));
@@ -2769,13 +2770,13 @@ public class FormFactory {
 		form.setFormType(FormType.WEB);
 
 		List<FormField> fields = new ArrayList<>();
-		fields.add(new FormField("remarks", FieldDisplayType.TEXTBOX, "Remarks", Required.REQUIRED,1, 2));
-		fields.add(new FormField("startDate", FieldDisplayType.DATE, "Start Date", Required.OPTIONAL,"user",2, 2));
-		fields.add(new FormField("endDate", FieldDisplayType.DATE, "End Date", Required.OPTIONAL,2, 3));
-		fields.add(new FormField("startTime", FieldDisplayType.TIME, "Start Time", Required.OPTIONAL,3, 2));
-		fields.add(new FormField("endTime", FieldDisplayType.TIME, "End Time", Required.OPTIONAL,3, 3));
+		fields.add(new FormField("remarks", FieldDisplayType.TEXTBOX, "Remarks", Required.REQUIRED,1, 1));
+		fields.add(new FormField("startDate", FieldDisplayType.DATE, "Start Date", Required.REQUIRED,"user",2, 2));
+		fields.add(new FormField("endDate", FieldDisplayType.DATE, "End Date", Required.REQUIRED,2, 3));
+		fields.add(new FormField("startTime", FieldDisplayType.TIME, "Start Time", Required.REQUIRED,3, 2));
+		fields.add(new FormField("endTime", FieldDisplayType.TIME, "End Time", Required.REQUIRED,3, 3));
 		fields.add(new FormField("cost", FieldDisplayType.NUMBER, "Cost", Required.OPTIONAL,4, 2));
-		fields.add(new FormField("specialType", FieldDisplayType.SELECTBOX, "Type", Required.OPTIONAL,4, 3));
+		fields.add(new FormField("specialType", FieldDisplayType.SELECTBOX, "Type", Required.REQUIRED,4, 3));
 		form.setFields(fields);
 		return form;
 	}
