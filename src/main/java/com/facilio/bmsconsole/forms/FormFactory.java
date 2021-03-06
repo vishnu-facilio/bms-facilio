@@ -464,6 +464,7 @@ public class FormFactory {
 		List<FacilioForm> facilityBookingFormsList = Arrays.asList(getFacilityBookingForm(), getFacilityBookingPortalForm());
 		List<FacilioForm> facilitySpecialAvailabilityFormsList = Arrays.asList(getFacilitySpecialAvailabilityForm());
 		List<FacilioForm> amenityFormsList = Arrays.asList(getAmenityForm());
+		List<FacilioForm> externalAttendeeFormList = Arrays.asList(getExternalAttendeeForm());
 
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
@@ -515,6 +516,7 @@ public class FormFactory {
 				.put(ContextNames.FacilityBooking.FACILITY_BOOKING, getFormMap(facilityBookingFormsList))
 				.put(ContextNames.FacilityBooking.FACILITY_SPECIAL_AVAILABILITY, getFormMap(facilitySpecialAvailabilityFormsList))
 				.put(ContextNames.FacilityBooking.AMENITY, getFormMap(amenityFormsList))
+				.put(ContextNames.FacilityBooking.FACILITY_BOOKING_EXTERNAL_ATTENDEE, getFormMap(externalAttendeeFormList))
 				.build();
 	}
 	
@@ -2720,6 +2722,7 @@ public class FormFactory {
 		fields.add(new FormField("noOfAttendees", FieldDisplayType.NUMBER, "Number Of Attendees", Required.OPTIONAL,3, 1));
 		fields.add(new FormField("bookingslot", FieldDisplayType.FACILITY_BOOKING_SLOTS, "Time Slots", Required.OPTIONAL,4, 1));
 		fields.add(new FormField("internalAttendees", FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Internal Attendees", Required.OPTIONAL,5, 1));
+	
 		form.setFields(fields);
 		return form;
 	}
@@ -2757,6 +2760,23 @@ public class FormFactory {
 		fields.add(new FormField("category", FieldDisplayType.SELECTBOX, "Category", Required.OPTIONAL,2, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL,3, 1));
 		fields.add(new FormField("amenityLogo", FieldDisplayType.SELECTBOX, "Amenity Logo", Required.OPTIONAL,4, 1));
+		form.setFields(fields);
+		return form;
+	}
+
+	private static FacilioForm getExternalAttendeeForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("External Attendee");
+		form.setName("default_"+ ContextNames.FacilityBooking.FACILITY_BOOKING_EXTERNAL_ATTENDEE +"_web");
+		form.setModule(ModuleFactory.getModule(ContextNames.FacilityBooking.FACILITY_BOOKING_EXTERNAL_ATTENDEE));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFormType(FormType.WEB);
+
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED,1, 1));
+		fields.add(new FormField("email", FieldDisplayType.TEXTBOX, "Email", Required.OPTIONAL,2, 1));
+		fields.add(new FormField("Phone", FieldDisplayType.TEXTBOX, "Phone", Required.OPTIONAL,3, 1));
+		fields.add(new FormField("facilityBooking", FieldDisplayType.LOOKUP_SIMPLE, "Booking", Required.REQUIRED,4, 1));
 		form.setFields(fields);
 		return form;
 	}
