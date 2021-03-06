@@ -1036,6 +1036,7 @@ public class APIv3Config {
     public static Supplier<V3Config> getFacilitySpecialAvailability() {
         return () -> new V3Config(FacilitySpecialAvailabilityContext.class, new ModuleCustomFieldCount30())
                 .create()
+                    .beforeSave(new ValidateSpecialAvailabilityCommandV3())
                 .update()
                 .delete()
                 .list()
