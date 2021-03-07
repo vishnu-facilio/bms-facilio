@@ -215,8 +215,8 @@ function myLicenseFunction() {
 	<td style="max-width: 350px;width:350px;text-align: center;"> <button type="button" onclick="view(<%=b.getUid()%>)">Update</button> </td>
 	
 	                 <% 
-           String rebrand = FacilioProperties.getConfig("rebrand.domain");
-           if (rebrand.equals("facilio.com")) { 
+           String rebrandinfo = FacilioProperties.getConfig("rebrand.domain");
+           if (rebrandinfo.equals("facilio.com")) { 
        %>
        	<td   style="max-width: 350px;width:350px;"  align="center"><button type ="button" onclick="logs(<%=b.getOuid()%>)">Logs </button></td>
       
