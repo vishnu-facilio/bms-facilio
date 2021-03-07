@@ -12681,7 +12681,7 @@ VALUES (${orgId}, @FACILITY_SPECIAL_AVAILABILITY_MODULE_ID, 'remarks', 'Remarks'
 
 --v2 Facility Booking
 INSERT INTO Modules (ORGID, NAME, DISPLAY_NAME, TABLE_NAME, MODULE_TYPE, IS_TRASH_ENABLED, STATE_FLOW_ENABLED)
-VALUES (${orgId}, 'facilitybooking', 'Booking', 'FacilityBooking', @BASE_ENTITY_MODULE_TYPE, false, true);
+VALUES (${orgId}, 'facilitybooking', 'Booking', 'FacilityBooking', @BASE_ENTITY_MODULE_TYPE, true, true);
 SET @FACILITY_BOOKING_MODULE_ID := (SELECT LAST_INSERT_ID());
 INSERT INTO Module_Local_ID (ORGID, MODULE_NAME, LAST_LOCAL_ID) VALUES (${orgId}, 'facilitybooking', 0);
 
