@@ -27,7 +27,7 @@
                                       </div>
                                       <#if (vLog.visitedSpace) ?? >
                                       <div style="font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;color:#474a51;font-size:20px;line-height:30px;text-align:left;min-width:auto!important;letter-spacing: 0.6px;">
-                                          You have successfully checked in at ${vLog.visitedSpace.name} on ${(vLog.checkInTime)?number_to_datetime?string("YYYY-MM-dd HH:mm:ss")}.<#if (vLog.host) ??> You are on your way to meet ${vLog.host.name}.<#else>Have a Good Day!</#if>
+                                          You have successfully checked in at ${spaceName} on ${(vLog.checkInTime)?number_to_datetime?string("YYYY-MM-dd HH:mm:ss")}.<#if (vLog.host) ??> You are on your way to meet ${vLog.host.name}.<#else>Have a Good Day!</#if>
                                     </div>
                                     <#else>
                                      <div style="font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;color:#474a51;font-size:20px;line-height:30px;text-align:left;min-width:auto!important;letter-spacing: 0.6px;">
