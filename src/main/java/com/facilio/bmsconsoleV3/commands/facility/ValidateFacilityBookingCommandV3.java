@@ -100,7 +100,7 @@ public class ValidateFacilityBookingCommandV3 extends FacilioCommand {
                         bookingAttendeesCount += booking.getFacilityBookingExternalAttendee().size();
                     }
 
-                    if (bookingAttendeesCount < booking.getNoOfAttendees()) {
+                    if (bookingAttendeesCount != booking.getNoOfAttendees()) {
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Attendee List is not matching the booking count");
                     }
                 }
