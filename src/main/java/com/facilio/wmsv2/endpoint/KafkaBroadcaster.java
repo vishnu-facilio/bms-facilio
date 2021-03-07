@@ -71,7 +71,6 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
         executor.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                LOGGER.error("Consumer Runnable");
                 final JSONParser parser = new JSONParser();
                 ConsumerRecords<String, String> records = consumer.poll(1000);
                 for (ConsumerRecord<String, String> record : records) {
