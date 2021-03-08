@@ -430,7 +430,7 @@ public class APIv3Config {
     
     @Module("itemTypes")
     public static Supplier<V3Config> getItemTypes() {
-        return () -> new V3Config(V3ItemTypesContext.class, null)
+        return () -> new V3Config(V3ItemTypesContext.class, new ModuleCustomFieldCount30())
                 .create()
                 	.afterSave(TransactionChainFactoryV3.getItemOrToolTypesAfterSaveChain())
                 .update()
