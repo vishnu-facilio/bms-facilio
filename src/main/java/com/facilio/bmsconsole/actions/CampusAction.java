@@ -2,7 +2,9 @@ package com.facilio.bmsconsole.actions;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -21,6 +23,13 @@ public class CampusAction extends FacilioAction {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private long stateTransitionId = -1;
+	public long getStateTransitionId() {
+		return stateTransitionId;
+	}
+	public void setStateTransitionId(long stateTransitionId) {
+		this.stateTransitionId = stateTransitionId;
+	}
 
 	@SuppressWarnings("unchecked")
 	public String campusList() throws Exception 
@@ -73,6 +82,7 @@ public class CampusAction extends FacilioAction {
 			location.setId(locationId);
 		}
 		context.put(FacilioConstants.ContextNames.SITE, site);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		FacilioChain addCampus = FacilioChainFactory.getAddCampusChain();
 		addCampus.execute(context);
 		
@@ -105,6 +115,8 @@ public class CampusAction extends FacilioAction {
 		
 		context.put(FacilioConstants.ContextNames.BASE_SPACE, site);
 		context.put(FacilioConstants.ContextNames.SPACE_TYPE, "site");
+		CommonCommandUtil.addEventType(EventType.EDIT, context);
+		context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
 		FacilioChain updateCampus = FacilioChainFactory.getUpdateCampusChain();
 		updateCampus.execute(context);
 		setSite(site);

@@ -41,6 +41,9 @@ public class UpdateBaseSpaceCommand extends FacilioCommand {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
 			RecordAPI.updateRecord(baseSpace, module, modBean.getAllFields(moduleName));
+
+			baseSpace = (BaseSpaceContext) RecordAPI.getRecord(moduleName, baseSpace.getId());
+			context.put(FacilioConstants.ContextNames.BASE_SPACE, baseSpace);
 																		
 			context.put(FacilioConstants.ContextNames.RECORD_ID, baseSpace.getId());
 		}

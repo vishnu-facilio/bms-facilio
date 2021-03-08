@@ -50,3 +50,6 @@ classes:
   - com.facilio.bmsconsoleV3.signup.scoping.PeopleAnnouncementScopingConfig
   - com.facilio.bmsconsoleV3.signup.scoping.VisitorLoggingScopingConfig
   - com.facilio.bmsconsoleV3.signup.scoping.SafetyPlanScopingConfig
+
+    # adding site module
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.SiteModule

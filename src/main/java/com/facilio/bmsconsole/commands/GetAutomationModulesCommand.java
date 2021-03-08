@@ -19,6 +19,8 @@ public class GetAutomationModulesCommand extends FacilioCommand {
         modules.add(modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER));
         modules.add(modBean.getModule(FacilioConstants.ContextNames.ASSET));
         modules.add(modBean.getModule(FacilioConstants.ContextNames.VENDORS));
+        modules.add(modBean.getModule(FacilioConstants.ContextNames.SITE));
+
         if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.VISITOR)) {
      //   	modules.add(modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING));
             modules.add(modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOG));

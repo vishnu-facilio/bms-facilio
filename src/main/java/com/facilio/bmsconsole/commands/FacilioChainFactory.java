@@ -559,8 +559,10 @@ public class FacilioChainFactory {
 		c.addCommand(new AddCampusCommand());
 		c.addCommand(getSpaceReadingsChain());
 		c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
+		c.addCommand(new UpdateEventListForStateFlowCommand());
 		c.addCommand(new SetSiteRecordForRollUpFieldCommand());
 		c.addCommand(new ExecuteRollUpFieldCommand());
+		c.addCommand(new ExecuteStateFlowCommand());
 		return c;
 	}
 	
@@ -570,7 +572,13 @@ public class FacilioChainFactory {
 		c.addCommand(updateLocationChain());
 		c.addCommand(new UpdateBaseSpaceCommand());
 		c.addCommand(new SetBaseSpaceRecordForRollUpFieldCommand());
+		c.addCommand(new UpdateEventListForStateFlowCommand());
+		c.addCommand(new UpdateStateForModuleDataCommand());
 		c.addCommand(new ExecuteRollUpFieldCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
+		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+		c.addCommand(new ForkChainToInstantJobCommand()
+				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
 		return c;
 	}
 	
