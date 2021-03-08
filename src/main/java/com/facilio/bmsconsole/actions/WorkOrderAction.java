@@ -2987,4 +2987,17 @@ public class WorkOrderAction extends FacilioAction {
 	public void setToOrgId(long toOrgId) {
 		this.toOrgId = toOrgId;
 	}
+	
+	public String getRequesterWoCount() throws Exception {
+		
+		FacilioChain chain = ReadOnlyChainFactory.getRequesterWoCount();
+		FacilioContext context = chain.getContext();
+		chain.execute();
+		
+		setResult("all", context.get("all"));
+		setResult("open", context.get("open"));
+		setResult("closed", context.get("closed"));
+		
+		return SUCCESS;
+	}
 }

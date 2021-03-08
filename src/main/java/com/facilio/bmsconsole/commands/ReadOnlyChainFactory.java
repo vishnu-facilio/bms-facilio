@@ -2753,4 +2753,11 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetTransactionRuleModulesCommand());
 		return chain;
 	}
+	
+	public static FacilioChain getRequesterWoCount() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetRequesterWorkorderCountCommand());
+		return chain;
+	}
+
 }
