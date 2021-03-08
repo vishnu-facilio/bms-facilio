@@ -833,11 +833,30 @@ public class UserBeanImpl implements UserBean {
 		insertBuilder.save();
 	}
 
-	static Map<Long, List<Long>> getAccessibleSpaceList(Collection<Long> uids) throws Exception {
+	public static Map<Long, List<Long>> getAccessibleSpaceList(Collection<Long> uids) throws Exception {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(AccountConstants.getAccessbileSpaceFields())
 				.table(ModuleFactory.getAccessibleSpaceModule().getTableName()).andCondition(CriteriaAPI
 						.getCondition("ORG_USER_ID", "ouid", Strings.join(uids, ','), NumberOperators.EQUALS));
+
+		Map<Long, List<Long>> ouidsVsAccessibleSpace = new HashMap<>();
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			for (Map<String, Object> prop : props) {
+				if (ouidsVsAccessibleSpace.get(prop.get("ouid")) == null) {
+					ouidsVsAccessibleSpace.put((long) prop.get("ouid"), new ArrayList<>());
+				}
+				ouidsVsAccessibleSpace.get(prop.get("ouid")).add((Long) prop.get("bsid"));
+			}
+			return ouidsVsAccessibleSpace;
+		}
+		return Collections.emptyMap();
+	}
+
+	public static Map<Long, List<Long>> getAllUsersAccessibleSpaceList() throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(AccountConstants.getAccessbileSpaceFields())
+				.table(ModuleFactory.getAccessibleSpaceModule().getTableName());
 
 		Map<Long, List<Long>> ouidsVsAccessibleSpace = new HashMap<>();
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -884,6 +903,25 @@ public class UserBeanImpl implements UserBean {
 			return bsids;
 		}
 		return null;
+
+	}
+	public static Map<Long, List<Long>> getAllUsersAccessibleGroupList() throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(AccountConstants.getGroupMemberFields())
+				.table(AccountConstants.getGroupMemberModule().getTableName());
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		Map<Long, List<Long>> grpMap = new HashMap<>();
+		if (props != null && !props.isEmpty()) {
+			for (Map<String, Object> prop : props) {
+				if (grpMap.get(prop.get("ouid")) == null) {
+					grpMap.put((long) prop.get("ouid"), new ArrayList<>());
+				}
+				grpMap.get(prop.get("ouid")).add((Long) prop.get("groupId"));
+			}
+			return grpMap;
+		}
+		return Collections.emptyMap();
 
 	}
 

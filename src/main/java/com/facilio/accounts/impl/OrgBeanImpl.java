@@ -2,7 +2,9 @@ package com.facilio.accounts.impl;
 
 import com.chargebee.internal.StringJoiner;
 import com.facilio.accounts.bean.OrgBean;
+import com.facilio.accounts.bean.RoleBean;
 import com.facilio.accounts.bean.UserBean;
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.Role;
@@ -176,10 +178,34 @@ public class OrgBeanImpl implements OrgBean {
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
 			IAMUserUtil.setIAMUserPropsv3(props, orgId, false);
+			AppDomain appDomain = ApplicationApi.getAppDomainForApplication((long) props.get(0).get("applicationId"));
+			RoleBean roleBean = (RoleBean) BeanFactory.lookup("RoleBean", orgId);
+
+			List<Role> roles = roleBean.getRoles();
+			Map<Long, Role> roleMap = new HashMap<>();
+			for(Role role : roles){
+				roleMap.put(role.getId(), role);
+			}
+			Map<Long, List<Long>> accessibleSpaceListMap = UserBeanImpl.getAllUsersAccessibleSpaceList();
+			Map<Long, List<Long>> accessibleGroupListMap = UserBeanImpl.getAllUsersAccessibleGroupList();
+
 			for(Map<String, Object> prop : props) {
-				User user = UserBeanImpl.createUserFromProps(prop, true, true, null);
-				UserBean userBean = (UserBean) BeanFactory.lookup("UserBean", user.getOrgId());
-				user.setGroups(userBean.getAccessibleGroupList(user.getOuid()));
+				User user = FieldUtil.getAsBeanFromMap(prop, User.class);
+				user.setId((long)prop.get("ouid"));
+				if(prop.get("applicationId") != null){
+					user.setAppDomain(appDomain);
+					user.setApplicationId((long)prop.get("applicationId"));
+					user.setAppType(appDomain.getAppType());
+				}
+				if(user.getRoleId() > 0){
+					user.setRole(roleMap.get(user.getRoleId()));
+				}
+				if(accessibleSpaceListMap != null) {
+					user.setAccessibleSpace(accessibleSpaceListMap.get(user.getOuid()));
+				}
+				if(accessibleGroupListMap != null) {
+					user.setGroups(accessibleGroupListMap.get(user.getOuid()));
+				}
 				users.add(user);
 			}
 			return users;

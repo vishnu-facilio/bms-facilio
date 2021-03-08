@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.page.factory;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.Page.Tab;
@@ -25,7 +26,9 @@ public class CustomModulePageFactory extends PageFactory {
 		if (record == null) {
 			return page;
 		}
-		addRelatedListWidgets(tab1Sec1, record.getModuleId());
+		if(AccountUtil.getCurrentApp().getAppCategoryEnum() != ApplicationContext.AppCategory.PORTALS) {
+			addRelatedListWidgets(tab1Sec1, record.getModuleId());
+		}
 		addCommonSubModuleWidget(tab1Sec1, module, record);
 
 		return page;
