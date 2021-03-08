@@ -1,4 +1,4 @@
-package com.facilio.modules;
+	package com.facilio.modules;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.context.TenantUnitSpaceContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.bmsconsole.util.TenantsAPI;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -49,20 +51,51 @@ public class SiteValueGenerator extends ValueGenerator {
 			else if(appType == AppDomainType.TENANT_PORTAL.getIndex()) {
 				TenantContext tenant = PeopleAPI.getTenantForUser(AccountUtil.getCurrentUser().getId());
 				if(tenant != null) {
-					//for now one to one mapping for tenant -> sites.ll change in future.
-					return String.valueOf(tenant.getSiteId());
+					if(tenant.getSiteId() > 0) {
+						return String.valueOf(tenant.getSiteId());
+					}
+					//temp handling for multi site for tenant (altayer 407)
+					else {
+						List<TenantUnitSpaceContext> tenantUnits = TenantsAPI.getTenantUnitsForTenant(tenant.getId());
+						if(CollectionUtils.isNotEmpty(tenantUnits)) {
+							List<Long> siteIDs = new ArrayList<>();
+							for (TenantUnitSpaceContext tu :tenantUnits) {
+								siteIDs.add(tu.getSiteId());
+							}
+							return StringUtils.join(siteIDs, ",");
+						}
+					}
 				}
 			}
 			else if(appType == AppDomainType.CLIENT_PORTAL.getIndex()) {
 				
 			}
 			else if(appType == AppDomainType.SERVICE_PORTAL.getIndex()) {
-				List<SiteContext> sites = SpaceAPI.getAllSites(false);
-				if(CollectionUtils.isNotEmpty(sites)) {
-					for(SiteContext site : sites) {
-						values.add(site.getId());
+				TenantContext tenant = PeopleAPI.getTenantForUser(AccountUtil.getCurrentUser().getId());
+				if(tenant != null){
+					if(tenant.getSiteId() > 0) {
+						return String.valueOf(tenant.getSiteId());
 					}
-					return StringUtils.join(values, ",");
+					//temp handling for multi site for tenant (altayer 407)
+					else {
+						List<TenantUnitSpaceContext> tenantUnits = TenantsAPI.getTenantUnitsForTenant(tenant.getId());
+						if(CollectionUtils.isNotEmpty(tenantUnits)) {
+							List<Long> siteIDs = new ArrayList<>();
+							for (TenantUnitSpaceContext tu :tenantUnits) {
+								siteIDs.add(tu.getSiteId());
+							}
+							return StringUtils.join(siteIDs, ",");
+						}
+					}
+				}
+				else {
+					List<SiteContext> sites = SpaceAPI.getAllSites(false);
+					if (CollectionUtils.isNotEmpty(sites)) {
+						for (SiteContext site : sites) {
+							values.add(site.getId());
+						}
+						return StringUtils.join(values, ",");
+					}
 				}
 			}
 		}
