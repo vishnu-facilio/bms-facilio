@@ -2683,7 +2683,7 @@ public class FormFactory {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("facilityType", FieldDisplayType.SELECTBOX, "Facility Type", Required.OPTIONAL,2, 2));
-		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.OPTIONAL, "site",2, 3));
+		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site",2, 3));
 		fields.add(new FormField("location", FieldDisplayType.LOOKUP_SIMPLE, "Location", Required.OPTIONAL, "basespace", 3, 2));
 		FormField category = new FormField("category", FieldDisplayType.SELECTBOX, "Category", Required.OPTIONAL,3, 3);
 		category.setAllowCreate(true);
