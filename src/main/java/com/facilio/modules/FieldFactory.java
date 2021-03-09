@@ -6,10 +6,14 @@ import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.agent.AgentKeys;
 import com.facilio.agent.integration.AgentIntegrationKeys;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.tasker.tasks.EventUtil;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.*;
+import com.facilio.modules.fields.FacilioField.FieldDisplayType;
+
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
@@ -3262,21 +3266,24 @@ public class FieldFactory {
         return fields;
     }
 
-    public static List<FacilioField> getWorkOrderTemplateFields() {
+    public static List<FacilioField> getWorkOrderTemplateFields(){
         List<FacilioField> woTemplateFields = getWOrderTemplateFields();
         LookupField vendorField = (LookupField) getField("vendorId", "VENDOR_ID", ModuleFactory.getWorkOrderTemplateModule(), FieldType.LOOKUP);
         vendorField.setLookupModule(ModuleFactory.getVendorsModule());
+        vendorField.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
         woTemplateFields.add(vendorField);
 
         try {
             if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) {
                 LookupField tenantField = (LookupField) getField("tenantId", "TENANT_ID", ModuleFactory.getWorkOrderTemplateModule(), FieldType.LOOKUP);
                 tenantField.setLookupModule(ModuleFactory.getTenantsModule());
+                tenantField.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
                 woTemplateFields.add(tenantField);
             }
             if (AccountUtil.isFeatureEnabled(FeatureLicense.SAFETY_PLAN)) {
                 LookupField safetyPlanField = (LookupField) getField("safetyPlanId", "SAFETY_PLAN_ID", ModuleFactory.getWorkOrderTemplateModule(), FieldType.LOOKUP);
                 safetyPlanField.setLookupModule(ModuleFactory.getSafetyPlanModule());
+                safetyPlanField.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
                 woTemplateFields.add(safetyPlanField);
             }
         } catch (Exception e) {
@@ -3357,28 +3364,6 @@ public class FieldFactory {
         templateId.setModule(module);
         fields.add(templateId);
 
-        /*
-         * FacilioField spaceId = new FacilioField(); spaceId.setName("resourceId");
-         * spaceId.setDataType(FieldType.NUMBER); spaceId.setColumnName("RESOURCE_ID");
-         * spaceId.setModule(module); fields.add(spaceId);
-         *
-         * FacilioField assignedToId = new FacilioField();
-         * assignedToId.setName("assignedToid");
-         * assignedToId.setDataType(FieldType.NUMBER);
-         * assignedToId.setColumnName("ASSIGNED_TO_ID"); assignedToId.setModule(module);
-         * fields.add(assignedToId);
-         *
-         * FacilioField assignmentGroupId = new FacilioField();
-         * assignmentGroupId.setName("assignmentGroupId");
-         * assignmentGroupId.setDataType(FieldType.NUMBER);
-         * assignmentGroupId.setColumnName("ASSIGNMENT_GROUP_ID");
-         * assignmentGroupId.setModule(module); fields.add(assignmentGroupId);
-         *
-         * FacilioField typeId = new FacilioField(); typeId.setName("typeId");
-         * typeId.setDataType(FieldType.NUMBER); typeId.setColumnName("TYPE_ID");
-         * typeId.setModule(module); fields.add(typeId);
-         */
-
         fields.add(getField("triggerType", "TRIGGER_TYPE", module, FieldType.NUMBER));
         fields.add(getField("endTime", "END_TIME", module, FieldType.DATE_TIME));
         fields.add(getField("currentExecutionCount", "CURRENT_EXECUTION_COUNT", module, FieldType.NUMBER));
@@ -3389,9 +3374,22 @@ public class FieldFactory {
 
         fields.add(getSiteIdField(module));
 
-        fields.add(getField("baseSpaceId", "BASE_SPACE_ID", module, FieldType.LOOKUP));
-        fields.add(getField("spaceCategoryId", "SPACE_CATEGORY_ID", module, FieldType.LOOKUP));
-        fields.add(getField("assetCategoryId", "ASSET_CATEGORY_ID", module, FieldType.LOOKUP));
+        LookupField baseSpaceLookup = (LookupField) getField("baseSpaceId", "BASE_SPACE_ID", module, FieldType.LOOKUP);
+        baseSpaceLookup.setLookupModule(ModuleFactory.getBaseSpaceModule());
+        baseSpaceLookup.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
+        fields.add(baseSpaceLookup);
+        
+        LookupField spaceCategoryLookup = (LookupField) getField("spaceCategoryId", "SPACE_CATEGORY_ID", module, FieldType.LOOKUP);
+        spaceCategoryLookup.setLookupModule(ModuleFactory.getSpaceCategoryModule());
+        baseSpaceLookup.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
+        fields.add(spaceCategoryLookup);
+        
+        LookupField assetCategoryLookup = (LookupField) getField("assetCategoryId", "ASSET_CATEGORY_ID", module, FieldType.LOOKUP);
+        assetCategoryLookup.setLookupModule(ModuleFactory.getAssetCategoryModule());
+        baseSpaceLookup.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
+        fields.add(assetCategoryLookup);
+        
+        
         fields.add(getField("assignmentType", "ASSIGNMENT_TYPE", module, FieldType.NUMBER));
         fields.add(getField("pmCreationType", "PM_CREARTION_TYPE", module, FieldType.NUMBER));
         fields.add(getField("woGenerationStatus", "WO_GENERATION_STATUS", module, FieldType.BOOLEAN));
@@ -6183,41 +6181,52 @@ public class FieldFactory {
         return fields;
     }
 
-    public static List<FacilioField> getWOrderTemplateFields() {
+    public static List<FacilioField> getWOrderTemplateFields(){
         FacilioModule module = ModuleFactory.getWorkOrderTemplateModule();
         List<FacilioField> fields = new ArrayList<>();
-
+        
         fields.add(getIdField(module));
         fields.add(getField("subject", "SUBJECT", module, FieldType.STRING));
         fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
 
         LookupField statusField = (LookupField) getField("statusId", "STATUS_ID", module, FieldType.LOOKUP);
         statusField.setLookupModule(ModuleFactory.getTicketStatusModule());
+        statusField.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
         fields.add(statusField);
 
         LookupField priorityField = (LookupField) getField("priorityId", "PRIORITY_ID", module, FieldType.LOOKUP);
         priorityField.setLookupModule(ModuleFactory.getTicketPriorityModule());
+        priorityField.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
         fields.add(priorityField);
 
         LookupField categoryField = (LookupField) getField("categoryId", "CATEGORY_ID", module, FieldType.LOOKUP);
         categoryField.setLookupModule(ModuleFactory.getTicketCategoryModule());
+        categoryField.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
         fields.add(categoryField);
 
         LookupField typeField = (LookupField) getField("typeId", "TYPE_ID", module, FieldType.LOOKUP);
         typeField.setLookupModule(ModuleFactory.getTicketTypeModule());
+        typeField.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
         fields.add(typeField);
 
         LookupField groupField = (LookupField) getField("assignmentGroupId", "ASSIGNMENT_GROUP_ID", module,
                 FieldType.LOOKUP);
+        groupField.setDisplayType(FieldDisplayType.LOOKUP_POPUP);
         groupField.setSpecialType(FacilioConstants.ContextNames.GROUPS);
         fields.add(groupField);
 
         LookupField userField = (LookupField) getField("assignedToId", "ASSIGNED_TO_ID", module, FieldType.LOOKUP);
         userField.setSpecialType(FacilioConstants.ContextNames.USERS);
+        userField.setDisplayType(FieldDisplayType.LOOKUP_POPUP);
         fields.add(userField);
 
         fields.add(getField("qrEnabled", "QR_ENABLED", module, FieldType.BOOLEAN));
-        fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.STRING));
+        
+        LookupField resourceLookup = (LookupField) getField("resourceId", "RESOURCE_ID", module, FieldType.LOOKUP);
+        resourceLookup.setLookupModule(ModuleFactory.getResourceModule());
+        resourceLookup.setDisplayType(FieldDisplayType.LOOKUP_POPUP);
+        
+        fields.add(resourceLookup);
         fields.add(getField("duration", "DURATION", module, FieldType.NUMBER));
         fields.add(getField("additionalInfoJsonStr", "ADDITIONAL_INFO", module, FieldType.STRING));
 
@@ -7023,6 +7032,7 @@ public class FieldFactory {
         //fields.add(getOrgIdField(module));
         fields.add(getModuleIdField(module));
         fields.add(getSiteIdField(module));
+        fields.add(getField("moduleName", "MODULE_NAME", module, FieldType.STRING));
         fields.add(getField("uploadedBy", "UPLOADED_BY", module, FieldType.NUMBER));
         fields.add(getField("status", "STATUS", module, FieldType.NUMBER));
         fields.add(getField("columnHeadingString", "COLUMN_HEADING", module, FieldType.STRING));

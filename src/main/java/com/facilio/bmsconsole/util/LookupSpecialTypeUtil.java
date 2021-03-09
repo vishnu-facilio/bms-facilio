@@ -65,6 +65,8 @@ public class LookupSpecialTypeUtil {
 				|| FacilioConstants.ContextNames.SENSOR_RULE_MODULE.equals(specialType)
 				|| EventConstants.EventContextNames.EVENT.equals(specialType)
 				|| FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE.equals(specialType)
+				|| ModuleFactory.getTaskTemplateModule().getName().equals(specialType)
+				|| ModuleFactory.getTemplatesModule().getName().equals(specialType)
 				|| FacilioConstants.ContextNames.WORK_ORDER_TEMPLATE.equals(specialType)
 				|| FacilioConstants.ContextNames.FORMULA_FIELD.equals(specialType)
 				|| FacilioConstants.ContextNames.KPI.equals(specialType)
@@ -856,6 +858,12 @@ public class LookupSpecialTypeUtil {
 		else if(ContextNames.SENSOR_RULE_MODULE.equals(specialType)){
 			return ModuleFactory.getSensorRuleModule();
 		}
+		else if(ModuleFactory.getTaskTemplateModule().getName().equals(specialType)){
+			return ModuleFactory.getTaskTemplateModule();
+		}
+		else if(ModuleFactory.getTemplatesModule().getName().equals(specialType)){
+			return ModuleFactory.getTemplatesModule();
+		}
 		return null;
 	}
 	
@@ -941,6 +949,12 @@ public class LookupSpecialTypeUtil {
 		else  if (FacilioConstants.ContextNames.SENSOR_RULE_MODULE.equals(specialType)) {
 		    return  FieldFactory.getSensorRuleFields();
         }
+		else if(ModuleFactory.getTaskTemplateModule().getName().equals(specialType)){
+			return FieldFactory.getTaskTemplateFields();
+		}
+		else if(ModuleFactory.getTemplatesModule().getName().equals(specialType)){
+			return FieldFactory.getTemplateFields();
+		}
 		return null;
 	}
 	

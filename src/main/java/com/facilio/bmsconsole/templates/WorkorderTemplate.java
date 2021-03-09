@@ -91,22 +91,16 @@ public class WorkorderTemplate extends Template {
 		this.assignedToId = assignedToId;
 	}
 
-	private String resourceId = null;
-	public String getResourceId() {
+	private long resourceId = -1;
+	public long getResourceId() {
 		return resourceId;
 	}
 	public long getResourceIdVal() {
-		if (resourceId == null || !StringUtils.isNumeric(resourceId)) {
-			return -1;
-		}
-		return Long.parseLong(resourceId);
-	}
-	public void setResourceId(String resourceId) {
-		this.resourceId = resourceId;
+		return resourceId;
 	}
 	public void setResourceId(Long resourceId) {
 		if (resourceId != null && resourceId > -1) {
-			this.resourceId = String.valueOf(resourceId);
+			this.resourceId = resourceId;
 		}
 	}
 	
@@ -151,8 +145,10 @@ public class WorkorderTemplate extends Template {
 		return null;
 	}
 	public void setAdditionalInfoJsonStr(String jsonStr) throws ParseException {
-		JSONParser parser = new JSONParser();
-		additionInfo = (JSONObject) parser.parse(jsonStr);
+		if(jsonStr != null) {
+			JSONParser parser = new JSONParser();
+			additionInfo = (JSONObject) parser.parse(jsonStr);
+		}
 	}
 	
 	private long siteId = -1;
@@ -242,8 +238,8 @@ public class WorkorderTemplate extends Template {
 			if (assignedToId != -1) {
 				woProp.put("assignedTo", FieldUtil.getEmptyLookedUpProp(assignedToId));
 			}
-			if (resourceId != null && (StringUtils.isNumeric(resourceId) || fetchPlaceholders)) {
-				woProp.put("resource", getEmptyLookedUpProp(resourceId));
+			if (resourceId > 0) {
+				woProp.put("resource", FieldUtil.getEmptyLookedUpProp(resourceId));
 			}
 			if (tenantId != -1) {
 				woProp.put("tenant", FieldUtil.getEmptyLookedUpProp(tenantId));
@@ -311,7 +307,7 @@ public class WorkorderTemplate extends Template {
 				assignedToId = workorder.getAssignedTo().getId();
 			}
 			if (workorder.getResource() != null && workorder.getResource().getId() > -1) {
-				resourceId = String.valueOf(workorder.getResource().getId());
+				resourceId = workorder.getResource().getId();
 			}
 			
 			if (workorder.getSiteId() != -1) {

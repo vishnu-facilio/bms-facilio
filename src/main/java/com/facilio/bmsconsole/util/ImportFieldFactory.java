@@ -6,7 +6,9 @@ import com.facilio.bmsconsole.actions.ImportProcessContext.ImportSetting;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import org.json.simple.JSONArray;
@@ -124,20 +126,51 @@ public class ImportFieldFactory {
 		return fields;
 	}
 	public static List<FacilioField> getImportFieldsAsList(String moduleName) throws Exception{
+		
 		List<FacilioField> fields = new ArrayList<FacilioField>();
 		switch (moduleName) {
-		case "purchasedItem":{
-			fields = getPurchasedItemImportFields();
-			break;
-		}
-		case "purchasedTool":{
-			fields = getPurchasedToolImportFields();
-			break;
-		}
+			case "purchasedItem":{
+				fields = getPurchasedItemImportFields();
+				break;
+			}
+			case "purchasedTool":{
+				fields = getPurchasedToolImportFields();
+				break;
+			}
+			case "preventivemaintenance" :{
+				fields = getPMImportFields();
+				break;
+			}
+			case "tasktemplate" :{
+				fields = getPMTaskImportFields();
+				break;
+			}
 		}
 		return fields;
 	}
 	
+	public static List<FacilioField> getPMTaskImportFields() {
+		
+		List<FacilioField> fields = new ArrayList<FacilioField>();
+		
+		fields.addAll(FieldFactory.getTaskTemplateFields());
+		fields.addAll(FieldFactory.getTemplateFields());
+		fields.add(FieldFactory.getField("pmId","PM Id",null, ModuleFactory.getTaskTemplateModule(), FieldType.STRING));
+		fields.add(FieldFactory.getField("defaultValue","Default Value",null, ModuleFactory.getTaskTemplateModule(), FieldType.STRING));
+		fields.add(FieldFactory.getField("options","Option List",null, ModuleFactory.getTaskTemplateModule(), FieldType.STRING));
+		fields.add(FieldFactory.getField("sectionName","Section Name",null, ModuleFactory.getTaskTemplateModule(), FieldType.STRING));
+		return fields;
+	}
+
+	public static List<FacilioField> getPMImportFields() {
+		
+		List<FacilioField> fields = new ArrayList<FacilioField>();
+		
+		fields.addAll(FieldFactory.getPreventiveMaintenanceFields());
+		fields.addAll(FieldFactory.getWorkOrderTemplateFields());
+		return fields;
+	}
+
 	public static HashMap<String, FacilioField> getFacilioFieldMapping(String moduleName) throws Exception{
 		HashMap<String, FacilioField> fieldMapping = new HashMap<String, FacilioField>();
 		for(FacilioField field : getImportFieldsAsList(moduleName)) {

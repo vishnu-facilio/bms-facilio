@@ -1615,7 +1615,9 @@ public class TemplateAPI {
 		long templateId = insertTemplateWithExtendedProps(ModuleFactory.getWorkOrderTemplateModule(), FieldFactory.getWorkOrderTemplateFields(), templateProps); //inserting WO template
 		
 		addPrerequisiteApproverTemplateForWO(templateId,template.getPrerequisiteApproverTemplates());
-		addSectionTemplatesForWO(template.getSectionTemplates(), templateId,taskType, sectionType,preRequestType,preRequestSectionType);
+		if(template.getSectionTemplates() != null) {
+			addSectionTemplatesForWO(template.getSectionTemplates(), templateId,taskType, sectionType,preRequestType,preRequestSectionType);
+		}
 		return templateId;
 	}
 	private static void addPrerequisiteApproverTemplateForWO(long woTemplateId,List<PrerequisiteApproversTemplate> prerequisiteApproverTemplates) throws Exception{

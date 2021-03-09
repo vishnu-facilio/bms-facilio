@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.util.ImportFieldFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.time.DateTimeUtil;
@@ -75,7 +76,12 @@ public class UploadImportFileCommand extends FacilioCommand {
 			}
 		}
         else {
-        	importProcessContext.setModuleId(facilioModule.getModuleId());
+        	if(facilioModule.getModuleId() > 0) {
+        		importProcessContext.setModuleId(facilioModule.getModuleId());
+        	}
+        	else {
+        		importProcessContext.setModuleName(facilioModule.getName());
+        	}
         }
         importProcessContext.setStatus(ImportProcessContext.ImportStatus.UPLOAD_COMPLETE.getValue());
         
@@ -121,7 +127,7 @@ public class UploadImportFileCommand extends FacilioCommand {
         
         ImportAPI.addImportProcess(importProcessContext);
 		
-        if(moduleName.equals("purchasedTool") || moduleName.equals("purchasedItem")) {
+        if(moduleName.equals("purchasedTool") || moduleName.equals("purchasedItem") || moduleName.equals("preventivemaintenance") || moduleName.equals(ModuleFactory.getTaskTemplateModule().getName())) {
         	importProcessContext.setFacilioFieldMapping(ImportFieldFactory.getFacilioFieldMapping(moduleName));
         	importProcessContext.setFieldMapping(ImportFieldFactory.getFieldMapping(moduleName));
 

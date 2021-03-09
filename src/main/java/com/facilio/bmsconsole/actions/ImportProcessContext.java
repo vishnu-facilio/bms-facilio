@@ -45,6 +45,7 @@ public class ImportProcessContext implements Serializable,Cloneable
 	String fileName;
 	Long totalRows;
 	String firstRowString;
+	String moduleName;
 	private long siteId = -1;
 	
 	private long uploadedBy;
@@ -190,9 +191,13 @@ public class ImportProcessContext implements Serializable,Cloneable
 	}
 	
 	public FacilioModule getModule() throws Exception {
-		if(moduleId != null ) {
+		if(moduleId != null) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			return modBean.getModule(moduleId);
+		}
+		else if (moduleName != null) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			return modBean.getModule(moduleName);
 		}
 		return null;
 	}
@@ -346,9 +351,11 @@ public class ImportProcessContext implements Serializable,Cloneable
 								&& (getModule().getExtendModule() != null && getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.SPACE) == false)
 						) {
 							LookupField lookupField = (LookupField) field;
-							List<FacilioField> lookupFields = bean.getAllFields(lookupField.getLookupModule().getName());
-							for (FacilioField lookup : lookupFields) {
-								facilioFieldMapping.put(lookup.getName(), lookup);
+							if(lookupField.getLookupModule() != null) {
+								List<FacilioField> lookupFields = bean.getAllFields(lookupField.getLookupModule().getName());
+								for (FacilioField lookup : lookupFields) {
+									facilioFieldMapping.put(lookup.getName(), lookup);
+								}
 							}
 						}
 						else {
@@ -579,5 +586,11 @@ public class ImportProcessContext implements Serializable,Cloneable
 	
 	public Object clone() throws CloneNotSupportedException { 
 		return super.clone(); 
+	}
+	public String getModuleName() {
+		return moduleName;
+	}
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
 	}
 }

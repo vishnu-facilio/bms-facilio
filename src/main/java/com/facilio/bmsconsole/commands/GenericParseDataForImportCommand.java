@@ -352,6 +352,8 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 	private ArrayList<String> getRequiredFields(String moduleName){
 		ArrayList<String> fields = new ArrayList<String>();
 		switch (moduleName) {
+		
+			// fill pm required fields here 
 		}
 		return fields;
 	}
