@@ -313,7 +313,7 @@ public class WorkorderTemplate extends Template {
 				assignedToId = workorder.getAssignedTo().getId();
 			}
 			if (workorder.getResource() != null && workorder.getResource().getId() > -1) {
-				resourceId = String.valueOf(workorder.getResource().getId());;
+				resourceId = String.valueOf(workorder.getResource().getId());
 			}
 			
 			if (workorder.getSiteId() != -1) {
