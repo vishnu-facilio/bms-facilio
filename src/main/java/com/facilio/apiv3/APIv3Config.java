@@ -1058,11 +1058,5 @@ public class APIv3Config {
 
                 .build();
     }
-
-    @Module("site")
-    public static Supplier<V3Config> getSite() {
-        return () -> new V3Config()
-                .build();
-    }
 }
 
