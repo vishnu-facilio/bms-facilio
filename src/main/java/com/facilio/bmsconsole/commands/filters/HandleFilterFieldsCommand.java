@@ -10,6 +10,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.operators.BuildingOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.UserOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -17,6 +18,7 @@ import com.facilio.modules.ScopeHandler;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -113,11 +115,16 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
     }
 
     private void handleSpecialOperators (FilterFieldContext field) {
-        if (field.getLookupModule() != null &&
-                (   field.getLookupModule().getName().equals(FacilioConstants.ContextNames.RESOURCE)
-                        || field.getLookupModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE)
-                )) {
-            field.setOperators(Collections.singletonList(new FilterOperator(BuildingOperator.BUILDING_IS, "within", true)));
+        if (field.getLookupModule() != null && StringUtils.isNotEmpty(field.getLookupModule().getName()) ) {
+            switch (field.getLookupModule().getName()) {
+                case FacilioConstants.ContextNames.RESOURCE:
+                case FacilioConstants.ContextNames.BASE_SPACE:
+                    field.setOperators(Collections.singletonList(new FilterOperator(BuildingOperator.BUILDING_IS, "within", true)));
+                    break;
+                case FacilioConstants.ContextNames.USERS:
+                    field.setOperators(Collections.singletonList(new FilterOperator(UserOperators.ROLE_IS, "with role")));
+                    break;
+            }
         }
     }
 
