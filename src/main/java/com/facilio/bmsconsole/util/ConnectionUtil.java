@@ -23,6 +23,7 @@ import com.facilio.bmsconsole.context.ConnectionParamContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -407,6 +408,17 @@ public class ConnectionUtil {
 		insert1.save();
 		
 		connectionParamContext.setId((Long) prop.get("id"));
+	}
+	
+	public static int deleteConnectionParams(ConnectionContext connectionContext) throws Exception {
+		
+		 Map<String, FacilioField> fields = FieldFactory.getAsMap(FieldFactory.getConnectionParamFields());
+		
+		GenericDeleteRecordBuilder delete = new GenericDeleteRecordBuilder()
+				.table(ModuleFactory.getConnectionParamsModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fields.get("connectionId"), connectionContext.getId()+"", NumberOperators.EQUALS));
+
+		return delete.delete();
 	}
 
 	private static void fillDefaultfields(ConnectionContext connectionContext) throws NoSuchAlgorithmException {
