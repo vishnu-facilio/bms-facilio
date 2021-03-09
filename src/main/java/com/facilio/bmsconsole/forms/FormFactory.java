@@ -2697,13 +2697,13 @@ public class FormFactory {
 		fields.add(new FormField("maxAttendeeCountPerBooking", FieldDisplayType.NUMBER, "Maximum attendee Count Per Booking", Required.OPTIONAL,8, 3));
 		fields.add(new FormField("isAttendeeListNeeded", FieldDisplayType.DECISION_BOX, "Attendee List Needed", Required.REQUIRED,9, 2));
 		fields.add(new FormField("isMultiBookingPerSlotAllowed", FieldDisplayType.DECISION_BOX, "Is Multi Booking Allowed Per slot", Required.REQUIRED,9, 3));
-		fields.add(new FormField("isChargeable", FieldDisplayType.DECISION_BOX, "Is Chargeable", Required.REQUIRED,10, 1));
-		fields.add(new FormField("pricePerSlot", FieldDisplayType.NUMBER, "Price Per slot", Required.OPTIONAL,11, 2));
-		fields.add(new FormField("securityDeposit", FieldDisplayType.NUMBER, "Security Deposit", Required.OPTIONAL,11, 3));
-
-		fields.add(new FormField("slotDuration", FieldDisplayType.DURATION, "Slot Duration", Required.REQUIRED,12, 1));
-		fields.add(new FormField("amenities", FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Features / Amenties", Required.OPTIONAL,13, 1));
-		fields.add(new FormField("facilityWeekdayAvailability", FieldDisplayType.FACILITY_AVAILABILITY, "Availability", Required.REQUIRED,14, 1));
+		fields.add(new FormField("allowCancellationBefore", FieldDisplayType.NUMBER, "Allow Cancellation Before (Days)", Required.REQUIRED,10, 1));
+		fields.add(new FormField("isChargeable", FieldDisplayType.DECISION_BOX, "Is Chargeable", Required.REQUIRED,11, 1));
+		fields.add(new FormField("pricePerSlot", FieldDisplayType.NUMBER, "Price Per slot", Required.OPTIONAL,12, 2));
+		fields.add(new FormField("securityDeposit", FieldDisplayType.NUMBER, "Security Deposit", Required.OPTIONAL,12, 3));
+		fields.add(new FormField("slotDuration", FieldDisplayType.DURATION, "Slot Duration", Required.REQUIRED,13, 1));
+		fields.add(new FormField("amenities", FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Features / Amenties", Required.OPTIONAL,14, 1));
+		fields.add(new FormField("facilityWeekdayAvailability", FieldDisplayType.FACILITY_AVAILABILITY, "Availability", Required.REQUIRED,15, 1));
 		form.setFields(fields);
 		return form;
 	}

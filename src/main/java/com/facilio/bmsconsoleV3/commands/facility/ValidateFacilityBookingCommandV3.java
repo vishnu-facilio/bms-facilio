@@ -71,10 +71,10 @@ public class ValidateFacilityBookingCommandV3 extends FacilioCommand {
 
                             int bookedCount = slot.getBookingCount() != null ? slot.getBookingCount() : 0;
                             if (booking.getNoOfAttendees() != null && facility.getUsageCapacity() != null && booking.getNoOfAttendees() > (facility.getUsageCapacity() - bookedCount)) {
-                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "The current booking count exceeds the permitted bookings for the slot");
+                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "The current booking count exceeds the permitted bookings for the slot " + DateTimeUtil.getFormattedTime(slot.getSlotStartTime(), "HH:mm")+" - "+ DateTimeUtil.getFormattedTime(slot.getSlotEndTime(), "HH:mm"));
                             }
                             if (slot.getBookingCount() != null && slot.getBookingCount() > 0 && !facility.isMultiBookingPerSlotAllowed()) {
-                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Parallel booking in a slot is not allowed for this facility");
+                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Parallel booking is not allowed for this facility as a booking is already made in the slot " +  DateTimeUtil.getFormattedTime(slot.getSlotStartTime(), "HH:mm")+" - "+ DateTimeUtil.getFormattedTime(slot.getSlotEndTime(), "HH:mm"));
                             }
 
                             //setting booking count in slot

@@ -305,4 +305,14 @@ public class FacilityContext extends V3Context {
     public void setPhotos(List<V3PhotosContext> photos) {
         this.photos = photos;
     }
+
+    private Long allowCancellationBefore;
+
+    public Long getAllowCancellationBefore() {
+        return allowCancellationBefore;
+    }
+
+    public void setAllowCancellationBefore(Long allowCancellationBefore) {
+        this.allowCancellationBefore = allowCancellationBefore;
+    }
 }

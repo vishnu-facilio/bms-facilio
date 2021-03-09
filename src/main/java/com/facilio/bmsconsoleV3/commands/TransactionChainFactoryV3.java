@@ -676,6 +676,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         //c.addCommand(new ValidateCanEditBookingCommand());
         c.addCommand(new ValidateFacilityBookingCommandV3());
+        c.addCommand(new ValidateCancelBookingCommandV3());
         return c;
     }
 
