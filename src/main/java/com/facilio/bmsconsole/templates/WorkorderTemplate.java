@@ -91,16 +91,22 @@ public class WorkorderTemplate extends Template {
 		this.assignedToId = assignedToId;
 	}
 
-	private long resourceId = -1;
-	public long getResourceId() {
+	private String resourceId = null;
+	public String getResourceId() {
 		return resourceId;
 	}
 	public long getResourceIdVal() {
-		return resourceId;
+		if (resourceId == null || !StringUtils.isNumeric(resourceId)) {
+			return -1;
+		}
+		return Long.parseLong(resourceId);
+	}
+	public void setResourceId(String resourceId) {
+		this.resourceId = resourceId;
 	}
 	public void setResourceId(Long resourceId) {
 		if (resourceId != null && resourceId > -1) {
-			this.resourceId = resourceId;
+			this.resourceId = String.valueOf(resourceId);
 		}
 	}
 	
@@ -238,8 +244,8 @@ public class WorkorderTemplate extends Template {
 			if (assignedToId != -1) {
 				woProp.put("assignedTo", FieldUtil.getEmptyLookedUpProp(assignedToId));
 			}
-			if (resourceId > 0) {
-				woProp.put("resource", FieldUtil.getEmptyLookedUpProp(resourceId));
+			if (resourceId != null && (StringUtils.isNumeric(resourceId) || fetchPlaceholders)) {
+				woProp.put("resource", getEmptyLookedUpProp(resourceId));
 			}
 			if (tenantId != -1) {
 				woProp.put("tenant", FieldUtil.getEmptyLookedUpProp(tenantId));
@@ -307,7 +313,7 @@ public class WorkorderTemplate extends Template {
 				assignedToId = workorder.getAssignedTo().getId();
 			}
 			if (workorder.getResource() != null && workorder.getResource().getId() > -1) {
-				resourceId = workorder.getResource().getId();
+				resourceId = String.valueOf(workorder.getResource().getId());;
 			}
 			
 			if (workorder.getSiteId() != -1) {

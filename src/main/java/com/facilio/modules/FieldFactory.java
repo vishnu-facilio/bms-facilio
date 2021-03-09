@@ -6222,11 +6222,7 @@ public class FieldFactory {
 
         fields.add(getField("qrEnabled", "QR_ENABLED", module, FieldType.BOOLEAN));
         
-        LookupField resourceLookup = (LookupField) getField("resourceId", "RESOURCE_ID", module, FieldType.LOOKUP);
-        resourceLookup.setLookupModule(ModuleFactory.getResourceModule());
-        resourceLookup.setDisplayType(FieldDisplayType.LOOKUP_POPUP);
-        
-        fields.add(resourceLookup);
+        fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.STRING));
         fields.add(getField("duration", "DURATION", module, FieldType.NUMBER));
         fields.add(getField("additionalInfoJsonStr", "ADDITIONAL_INFO", module, FieldType.STRING));
 
