@@ -26,8 +26,8 @@ public class CustomModulePageFactory extends PageFactory {
 		if (record == null) {
 			return page;
 		}
-		if(AccountUtil.getCurrentApp().getAppCategoryEnum() != ApplicationContext.AppCategory.PORTALS) {
-			addRelatedListWidgets(tab1Sec1, record.getModuleId());
+		if(AccountUtil.getCurrentOrg().getOrgId() != 407l || AccountUtil.getCurrentApp().getAppCategoryEnum() != ApplicationContext.AppCategory.PORTALS) {
+		  	addRelatedListWidgets(tab1Sec1, record.getModuleId());
 		}
 		addCommonSubModuleWidget(tab1Sec1, module, record);
 
