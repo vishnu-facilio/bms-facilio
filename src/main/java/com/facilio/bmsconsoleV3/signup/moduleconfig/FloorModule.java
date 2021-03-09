@@ -71,36 +71,36 @@ public class FloorModule extends SignUpData {
             WorkflowRuleAPI.addWorkflowRule(activeToInactive);
 
             // adding form
-            FacilioForm defaultForm = new FacilioForm();
-            defaultForm.setName("standard");
-            defaultForm.setModule(floorModule);
-            defaultForm.setDisplayName("Standard");
-            defaultForm.setFormType(FacilioForm.FormType.WEB);
-            defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-            defaultForm.setShowInWeb(true);
-
-            FormSection section = new FormSection();
-            section.setName("Default Section");
-            section.setSectionType(FormSection.SectionType.FIELDS);
-            section.setShowLabel(true);
-
-            Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(floorModule.getName()));
-            List<FormField> fields = new ArrayList<>();
-            fields.add(new FormField(fieldMap.get("name").getFieldId(), "name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
-            fields.add(new FormField(fieldMap.get("description").getFieldId(), "description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
-            fields.add(new FormField(fieldMap.get("area").getFieldId(), "area", FacilioField.FieldDisplayType.DECIMAL, "Area", FormField.Required.OPTIONAL, 3, 1));
-            fields.add(new FormField(fieldMap.get("maxOccupancy").getFieldId(), "maxOccupancy", FacilioField.FieldDisplayType.NUMBER, "Max Occupancy", FormField.Required.OPTIONAL, 3, 1));
-            fields.add(new FormField("siteId", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED, 4, 1));
-
-            fields.add(new FormField(fieldMap.get("building").getFieldId(), "building", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Building", FormField.Required.OPTIONAL, 5, 1));
-
-            fields.add(new FormField(fieldMap.get("floorlevel").getFieldId(), "floorlevel", FacilioField.FieldDisplayType.NUMBER, "Floor Level", FormField.Required.OPTIONAL, 6, 1));
-
-            section.setFields(fields);
-            section.setSequenceNumber(1);
-
-            defaultForm.setSections(Collections.singletonList(section));
-            FormsAPI.createForm(defaultForm, floorModule);
+//            FacilioForm defaultForm = new FacilioForm();
+//            defaultForm.setName("standard");
+//            defaultForm.setModule(floorModule);
+//            defaultForm.setDisplayName("Standard");
+//            defaultForm.setFormType(FacilioForm.FormType.WEB);
+//            defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+//            defaultForm.setShowInWeb(true);
+//
+//            FormSection section = new FormSection();
+//            section.setName("Default Section");
+//            section.setSectionType(FormSection.SectionType.FIELDS);
+//            section.setShowLabel(true);
+//
+//            Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(floorModule.getName()));
+//            List<FormField> fields = new ArrayList<>();
+//            fields.add(new FormField(fieldMap.get("name").getFieldId(), "name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
+//            fields.add(new FormField(fieldMap.get("description").getFieldId(), "description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+//            fields.add(new FormField(fieldMap.get("area").getFieldId(), "area", FacilioField.FieldDisplayType.DECIMAL, "Area", FormField.Required.OPTIONAL, 3, 1));
+//            fields.add(new FormField(fieldMap.get("maxOccupancy").getFieldId(), "maxOccupancy", FacilioField.FieldDisplayType.NUMBER, "Max Occupancy", FormField.Required.OPTIONAL, 3, 1));
+//            fields.add(new FormField("siteId", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED, 4, 1));
+//
+//            fields.add(new FormField(fieldMap.get("building").getFieldId(), "building", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Building", FormField.Required.OPTIONAL, 5, 1));
+//
+//            fields.add(new FormField(fieldMap.get("floorlevel").getFieldId(), "floorlevel", FacilioField.FieldDisplayType.NUMBER, "Floor Level", FormField.Required.OPTIONAL, 6, 1));
+//
+//            section.setFields(fields);
+//            section.setSequenceNumber(1);
+//
+//            defaultForm.setSections(Collections.singletonList(section));
+//            FormsAPI.createForm(defaultForm, floorModule);
         } catch (Exception ex) {
             ex.printStackTrace();
         }

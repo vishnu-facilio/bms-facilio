@@ -70,54 +70,53 @@ public class SiteModule extends SignUpData {
             activeToInactive.setStateFlowId(stateFlowRuleContext.getId());
             WorkflowRuleAPI.addWorkflowRule(activeToInactive);
 
-            createSiteDefaultForm(modBean, siteModule);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
-    private static void createSiteDefaultForm(ModuleBean modBean, FacilioModule siteModule) throws Exception {
-        FacilioForm defaultForm = new FacilioForm();
-        defaultForm.setName("standard");
-        defaultForm.setModule(siteModule);
-        defaultForm.setDisplayName("Standard");
-        defaultForm.setFormType(FacilioForm.FormType.WEB);
-        defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        defaultForm.setShowInWeb(true);
-
-        FormSection section = new FormSection();
-        section.setName("Default Section");
-        section.setSectionType(FormSection.SectionType.FIELDS);
-        section.setShowLabel(true);
-
-        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(siteModule.getName()));
-        List<FormField> fields = new ArrayList<>();
-        fields.add(new FormField(fieldMap.get("name").getFieldId(), "name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
-        fields.add(new FormField(fieldMap.get("description").getFieldId(), "description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
-        fields.add(new FormField(fieldMap.get("area").getFieldId(), "area", FacilioField.FieldDisplayType.DECIMAL, "Area", FormField.Required.OPTIONAL, 3, 1));
-        fields.add(new FormField(fieldMap.get("maxOccupancy").getFieldId(), "maxOccupancy", FacilioField.FieldDisplayType.NUMBER, "Max Occupancy", FormField.Required.OPTIONAL, 3, 1));
-        fields.add(new FormField(fieldMap.get("location").getFieldId(), "location", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Location", FormField.Required.OPTIONAL, 4, 1));
-        fields.add(new FormField(fieldMap.get("managedBy").getFieldId(), "managedBy", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Managed By", FormField.Required.OPTIONAL, 5, 1));
-        fields.add(new FormField(fieldMap.get("siteType").getFieldId(), "siteType", FacilioField.FieldDisplayType.NUMBER, "Site Type", FormField.Required.OPTIONAL, 6, 1));
-        fields.add(new FormField(fieldMap.get("grossFloorArea").getFieldId(), "grossFloorArea", FacilioField.FieldDisplayType.DECIMAL, "Gross Floor Area", FormField.Required.OPTIONAL, 7, 1));
-        fields.add(new FormField(fieldMap.get("weatherStation").getFieldId(), "weatherStation", FacilioField.FieldDisplayType.NUMBER, "Weather Station", FormField.Required.OPTIONAL, 8, 1));
-        fields.add(new FormField(fieldMap.get("cddBaseTemperature").getFieldId(), "cddBaseTemperature", FacilioField.FieldDisplayType.DECIMAL, "CDD Base Temperature", FormField.Required.OPTIONAL, 9, 1));
-        fields.add(new FormField(fieldMap.get("hddBaseTemperature").getFieldId(), "hddBaseTemperature", FacilioField.FieldDisplayType.DECIMAL, "HDD Base Temperature", FormField.Required.OPTIONAL, 10, 1));
-        fields.add(new FormField(fieldMap.get("wddBaseTemperature").getFieldId(), "wddBaseTemperature", FacilioField.FieldDisplayType.DECIMAL, "WDD Base Temperature", FormField.Required.OPTIONAL, 11, 1));
-        fields.add(new FormField(fieldMap.get("timeZone").getFieldId(), "timeZone", FacilioField.FieldDisplayType.TEXTBOX, "Time Zone", FormField.Required.OPTIONAL, 12, 1));
-        fields.add(new FormField(fieldMap.get("client").getFieldId(), "client", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Client", FormField.Required.OPTIONAL, 13, 1));
-        fields.add(new FormField(fieldMap.get("boundaryRadius").getFieldId(), "boundaryRadius", FacilioField.FieldDisplayType.NUMBER, "Boundary Radius", FormField.Required.OPTIONAL, 14, 1));
-
-        section.setFields(fields);
-        section.setSequenceNumber(1);
-
-        defaultForm.setSections(Collections.singletonList(section));
-        FormsAPI.createForm(defaultForm, siteModule);
-    }
+//    private static void createSiteDefaultForm(ModuleBean modBean, FacilioModule siteModule) throws Exception {
+//        FacilioForm defaultForm = new FacilioForm();
+//        defaultForm.setName("standard");
+//        defaultForm.setModule(siteModule);
+//        defaultForm.setDisplayName("Standard");
+//        defaultForm.setFormType(FacilioForm.FormType.WEB);
+//        defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+//        defaultForm.setShowInWeb(true);
+//
+//        FormSection section = new FormSection();
+//        section.setName("Default Section");
+//        section.setSectionType(FormSection.SectionType.FIELDS);
+//        section.setShowLabel(true);
+//
+//        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(siteModule.getName()));
+//        List<FormField> fields = new ArrayList<>();
+//        fields.add(new FormField(fieldMap.get("name").getFieldId(), "name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
+//        fields.add(new FormField(fieldMap.get("description").getFieldId(), "description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+//        fields.add(new FormField(fieldMap.get("area").getFieldId(), "area", FacilioField.FieldDisplayType.DECIMAL, "Area", FormField.Required.OPTIONAL, 3, 1));
+//        fields.add(new FormField(fieldMap.get("maxOccupancy").getFieldId(), "maxOccupancy", FacilioField.FieldDisplayType.NUMBER, "Max Occupancy", FormField.Required.OPTIONAL, 3, 1));
+//        fields.add(new FormField(fieldMap.get("location").getFieldId(), "location", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Location", FormField.Required.OPTIONAL, 4, 1));
+//        fields.add(new FormField(fieldMap.get("managedBy").getFieldId(), "managedBy", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Managed By", FormField.Required.OPTIONAL, 5, 1));
+//        fields.add(new FormField(fieldMap.get("siteType").getFieldId(), "siteType", FacilioField.FieldDisplayType.NUMBER, "Site Type", FormField.Required.OPTIONAL, 6, 1));
+//        fields.add(new FormField(fieldMap.get("grossFloorArea").getFieldId(), "grossFloorArea", FacilioField.FieldDisplayType.DECIMAL, "Gross Floor Area", FormField.Required.OPTIONAL, 7, 1));
+//        fields.add(new FormField(fieldMap.get("weatherStation").getFieldId(), "weatherStation", FacilioField.FieldDisplayType.NUMBER, "Weather Station", FormField.Required.OPTIONAL, 8, 1));
+//        fields.add(new FormField(fieldMap.get("cddBaseTemperature").getFieldId(), "cddBaseTemperature", FacilioField.FieldDisplayType.DECIMAL, "CDD Base Temperature", FormField.Required.OPTIONAL, 9, 1));
+//        fields.add(new FormField(fieldMap.get("hddBaseTemperature").getFieldId(), "hddBaseTemperature", FacilioField.FieldDisplayType.DECIMAL, "HDD Base Temperature", FormField.Required.OPTIONAL, 10, 1));
+//        fields.add(new FormField(fieldMap.get("wddBaseTemperature").getFieldId(), "wddBaseTemperature", FacilioField.FieldDisplayType.DECIMAL, "WDD Base Temperature", FormField.Required.OPTIONAL, 11, 1));
+//        fields.add(new FormField(fieldMap.get("timeZone").getFieldId(), "timeZone", FacilioField.FieldDisplayType.TEXTBOX, "Time Zone", FormField.Required.OPTIONAL, 12, 1));
+//        fields.add(new FormField(fieldMap.get("client").getFieldId(), "client", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Client", FormField.Required.OPTIONAL, 13, 1));
+//        fields.add(new FormField(fieldMap.get("boundaryRadius").getFieldId(), "boundaryRadius", FacilioField.FieldDisplayType.NUMBER, "Boundary Radius", FormField.Required.OPTIONAL, 14, 1));
+//
+//        section.setFields(fields);
+//        section.setSequenceNumber(1);
+//
+//        defaultForm.setSections(Collections.singletonList(section));
+//        FormsAPI.createForm(defaultForm, siteModule);
+//    }
 
     public static void addStateflowFieldsToExistingSites() throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule siteModule = modBean.getModule(FacilioConstants.ContextNames.SITE);
-        createSiteDefaultForm(modBean, siteModule);
+//        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+//        FacilioModule siteModule = modBean.getModule(FacilioConstants.ContextNames.SITE);
+//        createSiteDefaultForm(modBean, siteModule);
     }
 }

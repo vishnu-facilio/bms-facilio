@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.facilio.modules.FacilioModule;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
@@ -101,6 +102,11 @@ public class FormFactory {
 		forms.put("employee_form", geEmployeeContactForm());
 		forms.put("people_form", getPeopleForm());
 		forms.put("tenantunit_form", geTenantUnitSpaceForm());
+
+		forms.put("site", getSiteForm());
+		forms.put("building", getBuildingForm());
+		forms.put("space", getSpaceForm());
+		forms.put("floor", getFloorForm());
 
 		return forms;
 	}
@@ -465,6 +471,10 @@ public class FormFactory {
 		List<FacilioForm> facilitySpecialAvailabilityFormsList = Arrays.asList(getFacilitySpecialAvailabilityForm());
 		List<FacilioForm> amenityFormsList = Arrays.asList(getAmenityForm());
 		List<FacilioForm> externalAttendeeFormList = Arrays.asList(getExternalAttendeeForm());
+		List<FacilioForm> siteFormList = Arrays.asList(getSiteForm());
+		List<FacilioForm> buildingFormList = Arrays.asList(getBuildingForm());
+		List<FacilioForm> spaceFormList = Arrays.asList(getSpaceForm());
+		List<FacilioForm> floorFormList = Arrays.asList(getFloorForm());
 
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
@@ -517,6 +527,10 @@ public class FormFactory {
 				.put(ContextNames.FacilityBooking.FACILITY_SPECIAL_AVAILABILITY, getFormMap(facilitySpecialAvailabilityFormsList))
 				.put(ContextNames.FacilityBooking.AMENITY, getFormMap(amenityFormsList))
 				.put(ContextNames.FacilityBooking.FACILITY_BOOKING_EXTERNAL_ATTENDEE, getFormMap(externalAttendeeFormList))
+				.put(ContextNames.SITE, getFormMap(siteFormList))
+				.put(ContextNames.BUILDING, getFormMap(buildingFormList))
+				.put(ContextNames.SPACE, getFormMap(spaceFormList))
+				.put(ContextNames.FLOOR, getFormMap(floorFormList))
 				.build();
 	}
 	
@@ -645,6 +659,116 @@ public class FormFactory {
 			fields.addAll(FormsAPI.getFormFieldsFromFacilioFields(facilioFields, i));
 		}
 		return Collections.unmodifiableList(fields);
+	}
+
+	public static FacilioForm getFloorForm() {
+		FacilioModule floorModule = ModuleFactory.getModule(ContextNames.FLOOR);
+
+		FacilioForm defaultForm = new FacilioForm();
+		defaultForm.setName("default_floor_web");
+		defaultForm.setModule(floorModule);
+		defaultForm.setDisplayName("Standard");
+		defaultForm.setFormType(FacilioForm.FormType.WEB);
+		defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+		defaultForm.setShowInWeb(true);
+
+//		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(floorModule.getName()));
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("area", FacilioField.FieldDisplayType.DECIMAL, "Area", FormField.Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("maxOccupancy", FacilioField.FieldDisplayType.NUMBER, "Max Occupancy", FormField.Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("siteId", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED, 4, 1));
+		fields.add(new FormField("building", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Building", FormField.Required.OPTIONAL, 5, 1));
+		fields.add(new FormField("floorlevel", FacilioField.FieldDisplayType.NUMBER, "Floor Level", FormField.Required.OPTIONAL, 6, 1));
+
+		defaultForm.setFields(fields);
+		return defaultForm;
+	}
+
+	public static FacilioForm getSpaceForm() {
+		FacilioModule spaceModule = ModuleFactory.getModule(ContextNames.SPACE);
+
+		FacilioForm defaultForm = new FacilioForm();
+		defaultForm.setName("default_space_web");
+		defaultForm.setModule(spaceModule);
+		defaultForm.setDisplayName("Standard");
+		defaultForm.setFormType(FacilioForm.FormType.WEB);
+		defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+		defaultForm.setShowInWeb(true);
+
+//		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(spaceModule.getName()));
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("area", FacilioField.FieldDisplayType.DECIMAL, "Area", FormField.Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("maxOccupancy", FacilioField.FieldDisplayType.NUMBER, "Max Occupancy", FormField.Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("siteId", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED, 4, 1));
+
+		fields.add(new FormField("building", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Building", FormField.Required.OPTIONAL, 5, 1));
+		fields.add(new FormField("floor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Floor", FormField.Required.OPTIONAL, 6, 1));
+
+		fields.add(new FormField("spaceCategory", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Space Category", FormField.Required.OPTIONAL, 7, 1));
+
+		defaultForm.setFields(fields);
+		return defaultForm;
+	}
+
+	public static FacilioForm getBuildingForm() {
+		FacilioModule buildingModule = ModuleFactory.getModule(ContextNames.BUILDING);
+
+		FacilioForm defaultForm = new FacilioForm();
+		defaultForm.setName("default_building_web");
+		defaultForm.setModule(buildingModule);
+		defaultForm.setDisplayName("Standard");
+		defaultForm.setFormType(FacilioForm.FormType.WEB);
+		defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+		defaultForm.setShowInWeb(true);
+
+//		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(buildingModule.getName()));
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("area", FacilioField.FieldDisplayType.DECIMAL, "Area", FormField.Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("maxOccupancy", FacilioField.FieldDisplayType.NUMBER, "Max Occupancy", FormField.Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("siteId", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED, 4, 1));
+
+		fields.add(new FormField("location", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Location", FormField.Required.OPTIONAL, 5, 1));
+		fields.add(new FormField("managedBy", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Managed By", FormField.Required.OPTIONAL, 6, 1));
+		fields.add(new FormField("grossFloorArea", FacilioField.FieldDisplayType.DECIMAL, "Gross Floor Area", FormField.Required.OPTIONAL, 7, 1));
+		defaultForm.setFields(fields);
+		return defaultForm;
+	}
+
+	public static FacilioForm getSiteForm() {
+		FacilioModule siteModule = ModuleFactory.getModule(ContextNames.SITE);
+
+		FacilioForm defaultForm = new FacilioForm();
+		defaultForm.setName("default_site_web");
+		defaultForm.setModule(siteModule);
+		defaultForm.setDisplayName("Standard");
+		defaultForm.setFormType(FacilioForm.FormType.WEB);
+		defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+		defaultForm.setShowInWeb(true);
+
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("area", FacilioField.FieldDisplayType.DECIMAL, "Area", FormField.Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("maxOccupancy", FacilioField.FieldDisplayType.NUMBER, "Max Occupancy", FormField.Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("location", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Location", FormField.Required.OPTIONAL, 4, 1));
+		fields.add(new FormField("managedBy", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Managed By", FormField.Required.OPTIONAL, 5, 1));
+		fields.add(new FormField("siteType", FacilioField.FieldDisplayType.NUMBER, "Site Type", FormField.Required.OPTIONAL, 6, 1));
+		fields.add(new FormField("grossFloorArea", FacilioField.FieldDisplayType.DECIMAL, "Gross Floor Area", FormField.Required.OPTIONAL, 7, 1));
+		fields.add(new FormField("weatherStation", FacilioField.FieldDisplayType.NUMBER, "Weather Station", FormField.Required.OPTIONAL, 8, 1));
+		fields.add(new FormField("cddBaseTemperature", FacilioField.FieldDisplayType.DECIMAL, "CDD Base Temperature", FormField.Required.OPTIONAL, 9, 1));
+		fields.add(new FormField("hddBaseTemperature", FacilioField.FieldDisplayType.DECIMAL, "HDD Base Temperature", FormField.Required.OPTIONAL, 10, 1));
+		fields.add(new FormField("wddBaseTemperature", FacilioField.FieldDisplayType.DECIMAL, "WDD Base Temperature", FormField.Required.OPTIONAL, 11, 1));
+		fields.add(new FormField("timeZone", FacilioField.FieldDisplayType.TEXTBOX, "Time Zone", FormField.Required.OPTIONAL, 12, 1));
+		fields.add(new FormField("client", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Client", FormField.Required.OPTIONAL, 13, 1));
+		fields.add(new FormField("boundaryRadius", FacilioField.FieldDisplayType.NUMBER, "Boundary Radius", FormField.Required.OPTIONAL, 14, 1));
+		defaultForm.setFields(fields);
+		return defaultForm;
 	}
 
 	public static FacilioForm getWebWorkOrderForm() {
