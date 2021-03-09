@@ -161,7 +161,7 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 
 		if (assetId > 0) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), String.valueOf(assetId), NumberOperators.EQUALS))
-					.andCondition(CriteriaAPI.getCondition(fieldMap.get("sourceType"), String.valueOf(TicketContext.SourceType.ANOMALY_ALARM.getIntVal()), NumberOperators.NOT_EQUALS))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("sourceType"), String.valueOf(TicketContext.SourceType.ANOMALY_ALARM.getIndex()), NumberOperators.NOT_EQUALS))
 					.groupBy(ruleField.getCompleteColumnName());
 		}
 		if ((assetIds != null && assetIds.size() > 0)) {
@@ -173,7 +173,7 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 		if (readingRuleId > 0) {
 			if (!isRca) {
 				selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("ruleId"), String.valueOf(readingRuleId), NumberOperators.EQUALS))
-						.andCondition(CriteriaAPI.getCondition(fieldMap.get("sourceType"), String.valueOf(TicketContext.SourceType.ANOMALY_ALARM.getIntVal()), NumberOperators.NOT_EQUALS))
+						.andCondition(CriteriaAPI.getCondition(fieldMap.get("sourceType"), String.valueOf(TicketContext.SourceType.ANOMALY_ALARM.getIndex()), NumberOperators.NOT_EQUALS))
 						.groupBy(resourceFieldColumn.getCompleteColumnName());
 			} else {
 

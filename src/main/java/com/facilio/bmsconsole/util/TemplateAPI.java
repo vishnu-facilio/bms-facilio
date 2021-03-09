@@ -1336,7 +1336,7 @@ public class TemplateAPI {
 		
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("formId"), formIds, NumberOperators.EQUALS));
-		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("sourceType"), String.valueOf(sourceType.getIntVal()), NumberOperators.EQUALS));
+		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("sourceType"), String.valueOf(sourceType.getIndex()), NumberOperators.EQUALS));
 		
 		 List<Map<String,Object>> props = getExtendedProps(ModuleFactory.getFormTemplatesModule(), fields, -1, criteria);
 		 if (CollectionUtils.isNotEmpty(props)) {

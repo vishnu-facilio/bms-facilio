@@ -387,7 +387,7 @@ public class V1AnomalyDetectorJob extends FacilioJob {
 			obj.put("timestamp", ttime);
 			obj.put("consumption", actualKWH);
 
-			obj.put("sourceType", SourceType.ANOMALY_ALARM.getIntVal());
+			obj.put("sourceType", SourceType.ANOMALY_ALARM.getIndex());
 			obj.put("readingFieldId", consumptionField.getFieldId());
 			obj.put("readingDataId", rowID);
 			obj.put("startTime", ttime);

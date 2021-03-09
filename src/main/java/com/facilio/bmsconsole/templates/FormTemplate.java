@@ -68,7 +68,7 @@ public class FormTemplate extends Template {
 	private SourceType sourceType;
 	public int getSourceType() {
 		if(sourceType != null) {
-			return sourceType.getIntVal();
+			return sourceType.getIndex();
 		}
 		else {
 			return -1;

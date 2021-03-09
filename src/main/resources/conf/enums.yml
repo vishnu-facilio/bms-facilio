@@ -154,3 +154,6 @@ enums:
   - name: AmenityLogo
     enumClassName: com.facilio.bmsconsoleV3.context.facilitybooking.AmenitiesContext$AmenityLogo
 
+  - name: TicketSourceType
+    enumClassName: com.facilio.bmsconsole.context.TicketContext$SourceType
+

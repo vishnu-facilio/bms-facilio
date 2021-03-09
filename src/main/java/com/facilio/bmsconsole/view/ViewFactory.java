@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.view;
 
 import com.facilio.accounts.dto.AppDomain;
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.*;
@@ -2534,7 +2533,7 @@ public class ViewFactory {
 		Condition sourceTypeCondition = new Condition();
 		sourceTypeCondition.setField(sourceType);
 		sourceTypeCondition.setOperator(NumberOperators.EQUALS);
-		sourceTypeCondition.setValue(String.valueOf(TicketContext.SourceType.PREVENTIVE_MAINTENANCE.getIntVal()));
+		sourceTypeCondition.setValue(String.valueOf(TicketContext.SourceType.PREVENTIVE_MAINTENANCE.getIndex()));
 
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(sourceTypeCondition);
@@ -2572,7 +2571,7 @@ public class ViewFactory {
 		Condition sourceTypeCondition = new Condition();
 		sourceTypeCondition.setField(sourceType);
 		sourceTypeCondition.setOperator(NumberOperators.NOT_EQUALS);
-		sourceTypeCondition.setValue(String.valueOf(TicketContext.SourceType.PREVENTIVE_MAINTENANCE.getIntVal()));
+		sourceTypeCondition.setValue(String.valueOf(TicketContext.SourceType.PREVENTIVE_MAINTENANCE.getIndex()));
 
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(sourceTypeCondition);
@@ -2884,7 +2883,7 @@ public class ViewFactory {
 		Condition alarmSourceCondition = new Condition();
 		alarmSourceCondition.setField(sourceField);
 		alarmSourceCondition.setOperator(NumberOperators.EQUALS);
-		alarmSourceCondition.setValue(String.valueOf(TicketContext.SourceType.ALARM.getIntVal()));
+		alarmSourceCondition.setValue(String.valueOf(TicketContext.SourceType.ALARM.getIndex()));
 
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(fireSafetyCategory);
@@ -3013,7 +3012,7 @@ public class ViewFactory {
 		Condition sourceCondition = new Condition();
 		sourceCondition.setField(sourceField);
 		sourceCondition.setOperator(isEqual ? NumberOperators.EQUALS : NumberOperators.NOT_EQUALS);
-		sourceCondition.setValue(String.valueOf(sourceType.getIntVal()));
+		sourceCondition.setValue(String.valueOf(sourceType.getIndex()));
 
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(sourceCondition);

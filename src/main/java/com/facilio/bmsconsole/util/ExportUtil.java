@@ -676,7 +676,7 @@ public class ExportUtil {
 			case "alarmType": 
 				return AlarmType.getType((int)value).getStringVal();
 			case "sourceType":
-				return SourceType.getType((int)value).getStringVal();
+				return SourceType.getType((int)value).getValue();
 		}
 		return null;
 	}

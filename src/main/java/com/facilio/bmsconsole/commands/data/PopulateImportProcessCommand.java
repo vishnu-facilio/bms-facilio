@@ -490,7 +490,7 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 				}
 				if(moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER)) {
 					for(ReadingContext reading :readingsList) {
-						reading.addReading("sourceType", TicketContext.SourceType.WEB_ORDER.getIntVal());
+						reading.addReading("sourceType", TicketContext.SourceType.WEB_ORDER.getIndex());
 					}
 				}
 				String tableName = module.getTableName();

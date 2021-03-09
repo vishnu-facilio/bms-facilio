@@ -17,7 +17,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.WordUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import java.util.logging.Level;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -73,7 +72,6 @@ import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.WorkflowContext;
-import com.facilio.workflows.util.WorkflowUtil;
 
 public class AlarmAPI {
 	private static final Logger LOGGER = LogManager.getLogger(AlarmAPI.class.getName());
@@ -108,13 +106,13 @@ public class AlarmAPI {
 			case THRESHOLD_ALARM:
 			case ANOMALY_ALARM:
 				ReadingAlarmContext readingAlarm = getReadingAlarmContext(alarm.getId());
-				event.put("sourceType", readingAlarm.getSourceTypeEnum().getIntVal());
+				event.put("sourceType", readingAlarm.getSourceTypeEnum().getIndex());
 				event.put("ruleId", readingAlarm.getRuleId());
 				event.put("readingFieldId", readingAlarm.getReadingFieldId());
 				break;
 			case ML_ALARM:
 				MLAlarmContext mlAlarm = getMLAlarmContext(alarm.getId());
-				event.put("sourceType", mlAlarm.getSourceTypeEnum().getIntVal());
+				event.put("sourceType", mlAlarm.getSourceTypeEnum().getIndex());
 				event.put("ruleId", mlAlarm.getRuleId());
 				event.put("readingFieldId", mlAlarm.getReadingFieldId());
 				break;
@@ -462,7 +460,7 @@ public class AlarmAPI {
 		
 		selectBuilder.andCriteria(criteria);
 		if(!isWithAnomaly) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("sourceType"), String.valueOf(SourceType.ANOMALY_ALARM.getIntVal()), NumberOperators.NOT_EQUALS));
+			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("sourceType"), String.valueOf(SourceType.ANOMALY_ALARM.getIndex()), NumberOperators.NOT_EQUALS));
 		}
 		return selectBuilder;
 	}
@@ -536,7 +534,7 @@ public class AlarmAPI {
 		if (rule.getBaselineId() != -1) {
 			obj.put("baselineId", rule.getBaselineId());
 		}
-		obj.put("sourceType", SourceType.THRESHOLD_ALARM.getIntVal());
+		obj.put("sourceType", SourceType.THRESHOLD_ALARM.getIndex());
 		DateRange range = getRange(rule, reading);
 		obj.put("startTime", range.getStartTime());
 		if (range.getEndTime() != -1) {
@@ -599,7 +597,7 @@ public class AlarmAPI {
 	}
 	
 	public static void addMLAlarmProps (JSONObject obj, ReadingRuleContext rule, Context context) throws Exception {
-		obj.put("sourceType", SourceType.ML_ALARM.getIntVal());
+		obj.put("sourceType", SourceType.ML_ALARM.getIndex());
 		obj.put("resourceId", rule.getResourceId());
 		
 		ResourceContext resource = ResourceAPI.getResource(rule.getResourceId());

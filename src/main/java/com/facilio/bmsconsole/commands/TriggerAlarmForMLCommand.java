@@ -268,7 +268,7 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 			obj.put("timestamp", data.get("ttime"));
 			obj.put("consumption", data.get("actualValue"));
 
-			obj.put("sourceType", SourceType.ANOMALY_ALARM.getIntVal());
+			obj.put("sourceType", SourceType.ANOMALY_ALARM.getIndex());
 			//obj.put("readingFieldId", consumptionField.getFieldId());
 			//obj.put("readingDataId", context.getId());
 			//obj.put("startTime", context.getTtime());

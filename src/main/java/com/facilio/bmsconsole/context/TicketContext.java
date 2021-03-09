@@ -4,6 +4,7 @@ import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.time.DateTimeUtil;
@@ -124,7 +125,7 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 	private SourceType sourceType;
 	public int getSourceType() {
 		if(sourceType != null) {
-			return sourceType.getIntVal();
+			return sourceType.getIndex();
 		}
 		else {
 			return -1;
@@ -132,7 +133,7 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 	}
 	public String getSourceTypeVal() {
 		if(sourceType != null) {
-			return sourceType.getStringVal();
+			return sourceType.getValue();
 		}
 		return null;
 	}
@@ -434,7 +435,7 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		return this.attachments;
 	}
 	
-	public static enum SourceType {
+	public static enum SourceType implements FacilioEnum<SourceType>  {
 		
 		WEB_ORDER(1, "Web Work Order"),
 		EMAIL_REQUEST(2, "E Mail Request"),
@@ -458,11 +459,13 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 			this.intVal = intVal;
 			this.strVal = strVal;
 		}
-		
-		public int getIntVal() {
+
+		@Override
+		public int getIndex() {
 			return intVal;
 		}
-		public String getStringVal() {
+
+		public String getValue() {
 			return strVal;
 		}
 		
@@ -475,7 +478,7 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 			Map<Integer, SourceType> typeMap = new HashMap<>();
 			
 			for(SourceType type : values()) {
-				typeMap.put(type.getIntVal(), type);
+				typeMap.put(type.getIndex(), type);
 			}
 			return typeMap;
 		}

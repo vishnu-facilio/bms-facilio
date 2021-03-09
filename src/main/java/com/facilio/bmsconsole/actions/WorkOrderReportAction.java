@@ -241,7 +241,7 @@ public class WorkOrderReportAction extends ActionSupport {
 		return SUCCESS;
 	}
 	public String preventiveMaintenance() throws Exception {
-		String preventiveCdn ="\""+FacilioConstants.Ticket.SOURCE_TYPE+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"=\",\"value\":[\""+TicketContext.SourceType.PREVENTIVE_MAINTENANCE.getIntVal()+"_\"]}";
+		String preventiveCdn ="\""+FacilioConstants.Ticket.SOURCE_TYPE+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"=\",\"value\":[\""+TicketContext.SourceType.PREVENTIVE_MAINTENANCE.getIndex()+"_\"]}";
 		String assetGroupBy = "{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Ticket.ASSET_ID+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\""+FacilioConstants.Ticket.ASSET_ID+"\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\"}";
 		String assetNotNullFilter = "\""+FacilioConstants.Ticket.ASSET_ID+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"is not empty\"}";
 		String spaceGroupBy = "{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Ticket.SPACE+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\""+FacilioConstants.Ticket.SPACE+"\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\"}";

@@ -310,7 +310,7 @@ public class HistoricalAnomalyDetectionJob extends FacilioJob
 					obj.put("timestamp", ttime);
 					obj.put("consumption", actualValue);
 	
-					obj.put("sourceType", SourceType.ANOMALY_ALARM.getIntVal());
+					obj.put("sourceType", SourceType.ANOMALY_ALARM.getIndex());
 					//obj.put("readingFieldId", mlVariableContext.getFieldID());
 					obj.put("startTime", ttime);
 					obj.put("readingMessage", message);

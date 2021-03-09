@@ -312,7 +312,7 @@ public class ProcessXLS extends FacilioCommand {
 				}
 				if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.WORK_ORDER)) {
 					for(ReadingContext reading :readingsList) {
-						reading.addReading("sourceType", TicketContext.SourceType.WEB_ORDER.getIntVal());
+						reading.addReading("sourceType", TicketContext.SourceType.WEB_ORDER.getIndex());
 					}
 				}
 				ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
