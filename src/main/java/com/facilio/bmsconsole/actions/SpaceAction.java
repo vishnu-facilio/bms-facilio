@@ -2,9 +2,11 @@ package com.facilio.bmsconsole.actions;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.SetTableNamesCommand;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.TenantsAPI;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -25,6 +27,13 @@ public class SpaceAction extends FacilioAction {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private long stateTransitionId = -1;
+	public long getStateTransitionId() {
+		return stateTransitionId;
+	}
+	public void setStateTransitionId(long stateTransitionId) {
+		this.stateTransitionId = stateTransitionId;
+	}
 
 	private int page;
 	public void setPage(int page) {
@@ -136,7 +145,9 @@ public class SpaceAction extends FacilioAction {
 			categoryId=spaceCategory.getId();
 		}
 		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, categoryId);
-		
+
+		CommonCommandUtil.addEventType(EventType.CREATE, context);
+
 		FacilioChain addSpace = FacilioChainFactory.getAddSpaceChain();
 		addSpace.execute(context);
 		
@@ -160,6 +171,10 @@ public class SpaceAction extends FacilioAction {
 		}
 		context.put(FacilioConstants.ContextNames.BASE_SPACE, space);
 		context.put(FacilioConstants.ContextNames.SPACE_TYPE, "space");
+
+		CommonCommandUtil.addEventType(EventType.EDIT, context);
+		context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
+
 		FacilioChain updateCampus = FacilioChainFactory.getUpdateCampusChain();
 		updateCampus.execute(context);
 		setSpace(space);

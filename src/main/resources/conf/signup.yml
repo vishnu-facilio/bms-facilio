@@ -53,3 +53,6 @@ classes:
 
     # adding site module
   - com.facilio.bmsconsoleV3.signup.moduleconfig.SiteModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.FloorModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.BuildingModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.SpaceModule

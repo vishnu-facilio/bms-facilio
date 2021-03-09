@@ -658,9 +658,11 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddBuildingCommand());
 		c.addCommand(getSpaceReadingsChain());
+		c.addCommand(new UpdateEventListForStateFlowCommand());
 		c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
 		c.addCommand(new SetBuildingRecordForRollUpFieldCommand());
 		c.addCommand(new ExecuteRollUpFieldCommand());
+		c.addCommand(new ExecuteStateFlowCommand());
 		return c;
 	}
 	
@@ -733,9 +735,11 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddFloorCommand());
 		c.addCommand(getSpaceReadingsChain());
+		c.addCommand(new UpdateEventListForStateFlowCommand());
 		c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
 		c.addCommand(new SetFloorRecordForRollUpFieldCommand());
 		c.addCommand(new ExecuteRollUpFieldCommand());
+		c.addCommand(new ExecuteStateFlowCommand());
 		return c;
 	}
 	
@@ -788,9 +792,11 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddSpaceCommand());
 		c.addCommand(getSpaceReadingsChain());
+		c.addCommand(new UpdateEventListForStateFlowCommand());
 		c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
 		c.addCommand(new SetSpaceRecordForRollUpFieldCommand());
 		c.addCommand(new ExecuteRollUpFieldCommand());
+		c.addCommand(new ExecuteStateFlowCommand());
 		return c;
 	}
 	

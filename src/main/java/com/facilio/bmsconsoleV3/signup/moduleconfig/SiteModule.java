@@ -2,6 +2,10 @@ package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
@@ -10,15 +14,14 @@ import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FacilioStatus;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.UpdateRecordBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class SiteModule extends SignUpData {
@@ -66,43 +69,55 @@ public class SiteModule extends SignUpData {
             activeToInactive.setType(AbstractStateTransitionRuleContext.TransitionType.NORMAL);
             activeToInactive.setStateFlowId(stateFlowRuleContext.getId());
             WorkflowRuleAPI.addWorkflowRule(activeToInactive);
+
+            createSiteDefaultForm(modBean, siteModule);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
+    private static void createSiteDefaultForm(ModuleBean modBean, FacilioModule siteModule) throws Exception {
+        FacilioForm defaultForm = new FacilioForm();
+        defaultForm.setName("standard");
+        defaultForm.setModule(siteModule);
+        defaultForm.setDisplayName("Standard");
+        defaultForm.setFormType(FacilioForm.FormType.WEB);
+        defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        defaultForm.setShowInWeb(true);
+
+        FormSection section = new FormSection();
+        section.setName("Default Section");
+        section.setSectionType(FormSection.SectionType.FIELDS);
+        section.setShowLabel(true);
+
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(siteModule.getName()));
+        List<FormField> fields = new ArrayList<>();
+        fields.add(new FormField(fieldMap.get("name").getFieldId(), "name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
+        fields.add(new FormField(fieldMap.get("description").getFieldId(), "description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+        fields.add(new FormField(fieldMap.get("area").getFieldId(), "area", FacilioField.FieldDisplayType.DECIMAL, "Area", FormField.Required.OPTIONAL, 3, 1));
+        fields.add(new FormField(fieldMap.get("maxOccupancy").getFieldId(), "maxOccupancy", FacilioField.FieldDisplayType.NUMBER, "Max Occupancy", FormField.Required.OPTIONAL, 3, 1));
+        fields.add(new FormField(fieldMap.get("location").getFieldId(), "location", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Location", FormField.Required.OPTIONAL, 4, 1));
+        fields.add(new FormField(fieldMap.get("managedBy").getFieldId(), "managedBy", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Managed By", FormField.Required.OPTIONAL, 5, 1));
+        fields.add(new FormField(fieldMap.get("siteType").getFieldId(), "siteType", FacilioField.FieldDisplayType.NUMBER, "Site Type", FormField.Required.OPTIONAL, 6, 1));
+        fields.add(new FormField(fieldMap.get("grossFloorArea").getFieldId(), "grossFloorArea", FacilioField.FieldDisplayType.DECIMAL, "Gross Floor Area", FormField.Required.OPTIONAL, 7, 1));
+        fields.add(new FormField(fieldMap.get("weatherStation").getFieldId(), "weatherStation", FacilioField.FieldDisplayType.NUMBER, "Weather Station", FormField.Required.OPTIONAL, 8, 1));
+        fields.add(new FormField(fieldMap.get("cddBaseTemperature").getFieldId(), "cddBaseTemperature", FacilioField.FieldDisplayType.DECIMAL, "CDD Base Temperature", FormField.Required.OPTIONAL, 9, 1));
+        fields.add(new FormField(fieldMap.get("hddBaseTemperature").getFieldId(), "hddBaseTemperature", FacilioField.FieldDisplayType.DECIMAL, "HDD Base Temperature", FormField.Required.OPTIONAL, 10, 1));
+        fields.add(new FormField(fieldMap.get("wddBaseTemperature").getFieldId(), "wddBaseTemperature", FacilioField.FieldDisplayType.DECIMAL, "WDD Base Temperature", FormField.Required.OPTIONAL, 11, 1));
+        fields.add(new FormField(fieldMap.get("timeZone").getFieldId(), "timeZone", FacilioField.FieldDisplayType.TEXTBOX, "Time Zone", FormField.Required.OPTIONAL, 12, 1));
+        fields.add(new FormField(fieldMap.get("client").getFieldId(), "client", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Client", FormField.Required.OPTIONAL, 13, 1));
+        fields.add(new FormField(fieldMap.get("boundaryRadius").getFieldId(), "boundaryRadius", FacilioField.FieldDisplayType.NUMBER, "Boundary Radius", FormField.Required.OPTIONAL, 14, 1));
+
+        section.setFields(fields);
+        section.setSequenceNumber(1);
+
+        defaultForm.setSections(Collections.singletonList(section));
+        FormsAPI.createForm(defaultForm, siteModule);
+    }
+
     public static void addStateflowFieldsToExistingSites() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule siteModule = modBean.getModule(FacilioConstants.ContextNames.SITE);
-
-        StateFlowRuleContext defaultStateFlow = StateFlowRulesAPI.getDefaultStateFlow(siteModule);
-        FacilioStatus active = TicketAPI.getStatus(siteModule, "active");
-
-        SelectRecordsBuilder<SiteContext> builder = new SelectRecordsBuilder<SiteContext>()
-                .module(siteModule)
-                .beanClass(SiteContext.class)
-                .select(modBean.getAllFields(siteModule.getName()));
-        SelectRecordsBuilder.BatchResult<SiteContext> batches = builder.getInBatches("ID", 100);
-
-        List<FacilioField> fields = new ArrayList<>();
-        fields.add(modBean.getField("moduleState", siteModule.getName()));
-        fields.add(modBean.getField("stateFlowId", siteModule.getName()));
-        while (batches.hasNext()) {
-            List<SiteContext> siteContexts = batches.get();
-            if (CollectionUtils.isNotEmpty(siteContexts)) {
-                for (SiteContext siteContext : siteContexts) {
-                    if (siteContext.getStateFlowId() <= 0) {
-                        siteContext.setModuleState(active);
-                        siteContext.setStateFlowId(defaultStateFlow.getId());
-
-                        UpdateRecordBuilder<SiteContext> updateRecordBuilder = new UpdateRecordBuilder<SiteContext>()
-                                .module(siteModule)
-                                .fields(fields)
-                                .andCondition(CriteriaAPI.getIdCondition(siteContexts.stream().map(SiteContext::getId).collect(Collectors.toList()), siteModule));
-                        updateRecordBuilder.update(siteContext);
-                    }
-                }
-            }
-        }
+        createSiteDefaultForm(modBean, siteModule);
     }
 }

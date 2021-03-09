@@ -5,7 +5,9 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.SetTableNamesCommand;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -33,6 +35,14 @@ public class BuildingAction extends FacilioAction {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+
+	private long stateTransitionId = -1;
+	public long getStateTransitionId() {
+		return stateTransitionId;
+	}
+	public void setStateTransitionId(long stateTransitionId) {
+		this.stateTransitionId = stateTransitionId;
+	}
 
 	@SuppressWarnings("unchecked")
 	public String buildingList() throws Exception 
@@ -129,6 +139,9 @@ public class BuildingAction extends FacilioAction {
 			location.setId(locationId);
 		}
 		context.put(FacilioConstants.ContextNames.BUILDING, building);
+
+		CommonCommandUtil.addEventType(EventType.CREATE, context);
+
 		FacilioChain addBuilding = FacilioChainFactory.getAddBuildingChain();
 		addBuilding.execute(context);
 		
@@ -164,6 +177,10 @@ public class BuildingAction extends FacilioAction {
 		
 		context.put(FacilioConstants.ContextNames.BASE_SPACE, building);
 		context.put(FacilioConstants.ContextNames.SPACE_TYPE, "building");
+
+		CommonCommandUtil.addEventType(EventType.EDIT, context);
+		context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
+
 		FacilioChain updateCampus = FacilioChainFactory.getUpdateCampusChain();
 		updateCampus.execute(context);
 		setBuilding(building);

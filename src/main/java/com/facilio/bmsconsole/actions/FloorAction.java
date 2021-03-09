@@ -2,8 +2,10 @@ package com.facilio.bmsconsole.actions;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.SetTableNamesCommand;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.RollUpFieldUtil;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -24,6 +26,14 @@ public class FloorAction extends FacilioAction {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+
+	private long stateTransitionId = -1;
+	public long getStateTransitionId() {
+		return stateTransitionId;
+	}
+	public void setStateTransitionId(long stateTransitionId) {
+		this.stateTransitionId = stateTransitionId;
+	}
 
 	@SuppressWarnings("unchecked")
 	public String floorList() throws Exception 
@@ -66,7 +76,9 @@ public class FloorAction extends FacilioAction {
 	{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.FLOOR, floor);
-		
+
+		CommonCommandUtil.addEventType(EventType.CREATE, context);
+
 		FacilioChain addFloor = FacilioChainFactory.getAddFloorChain();
 		addFloor.execute(context);
 		
@@ -80,6 +92,10 @@ public class FloorAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.BASE_SPACE, floor);
 		context.put(FacilioConstants.ContextNames.SPACE_TYPE, "floor");
+
+		CommonCommandUtil.addEventType(EventType.EDIT, context);
+		context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
+
 		FacilioChain updateCampus = FacilioChainFactory.getUpdateCampusChain();
 		updateCampus.execute(context);
 		setFloor(floor);
