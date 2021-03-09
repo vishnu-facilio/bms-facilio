@@ -281,13 +281,7 @@ public class ConnectionUtil {
 		List<Map<String, Object>> props = select.get();
 		List<ConnectionParamContext> list = new ArrayList<>();
 		for (Map<String, Object> prop:props){
-			ConnectionParamContext connectionParamContext = new ConnectionParamContext();
-			connectionParamContext.setConnectionId((Long) prop.get("connectionId"));
-			connectionParamContext.setId((Long) prop.get("id"));
-			connectionParamContext.setOrgId((Long)prop.get("orgId"));
-			connectionParamContext.setKey((String)prop.get("key"));
-			connectionParamContext.setValue((String)prop.get("value"));
-			connectionParamContext.setProperty((Boolean.parseBoolean(prop.get("isProperty").toString())));
+			ConnectionParamContext connectionParamContext = FieldUtil.getAsBeanFromMap(prop, ConnectionParamContext.class);
 			list.add(connectionParamContext);
 		}
 		return list;
@@ -323,7 +317,17 @@ public class ConnectionUtil {
 		List<Map<String, Object>> props = select.get();
 
 		if(props != null && !props.isEmpty()) {
-			return FieldUtil.getAsBeanListFromMapList(props, ConnectionContext.class);
+			
+			List<ConnectionContext> connectionList = new ArrayList<ConnectionContext>();
+			for(Map<String, Object> prop : props) {
+				
+				ConnectionContext connection = FieldUtil.getAsBeanFromMap(prop, ConnectionContext.class);
+				
+				connection.setConnectionParams(getConnectionParams(connection.getId()));
+				
+				connectionList.add(connection);
+			}
+			return connectionList;
 		}
 		return null;
 	}
