@@ -2,7 +2,6 @@ package com.facilio.bmsconsoleV3.commands.purchaseorder;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
-import com.facilio.bmsconsole.context.PurchaseOrderContext;
 import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
 import com.facilio.bmsconsole.util.PurchaseOrderAPI;
 import com.facilio.bmsconsole.util.RecordAPI;
@@ -11,7 +10,6 @@ import com.facilio.bmsconsoleV3.context.purchaseorder.V3PoAssociatedTermsContext
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderLineItemContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3ReceivableContext;
-import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
 import com.facilio.bmsconsoleV3.util.QuotationAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -22,7 +20,6 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
 
 import java.util.*;
 
@@ -98,27 +95,6 @@ public class POAfterCreateOrEditV3Command extends FacilioCommand {
                                 .module(module).fields(updatedFields)
                                 .andCondition(CriteriaAPI.getIdCondition(purchaseOrderContext.getId(), module));
                         updateBuilder.updateViaMap(map);
-                        Map<String, Object> bodyParams = Constants.getBodyParams(context);
-                        if (MapUtils.isNotEmpty(bodyParams) && bodyParams.containsKey(FacilioConstants.ContextNames.PR_IDS)) {
-                            List<Long> prIds = (List<Long>) bodyParams.get(FacilioConstants.ContextNames.PR_IDS);
-                            if (CollectionUtils.isNotEmpty(prIds)) {
-                                FacilioModule purchaseRequestModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_REQUEST);
-                                PurchaseOrderContext purchaseOrder = (PurchaseOrderContext) context.get(FacilioConstants.ContextNames.RECORD);
-                                Map<String, Object> updateMap = new HashMap<>();
-                                FacilioField statusField = modBean.getField("status", purchaseRequestModule.getName());
-                                FacilioField poField = modBean.getField("purchaseOrder", purchaseRequestModule.getName());
-                                updateMap.put("status", V3PurchaseRequestContext.Status.COMPLETED.ordinal() + 1);
-                                updateMap.put("purchaseOrder", FieldUtil.getAsProperties(purchaseOrder));
-                                List<FacilioField> updatedfields = new ArrayList<FacilioField>();
-                                updatedfields.add(poField);
-                                updatedfields.add(statusField);
-                                UpdateRecordBuilder<V3PurchaseRequestContext> updateBuilder2 = new UpdateRecordBuilder<V3PurchaseRequestContext>()
-                                        .module(purchaseRequestModule)
-                                        .fields(updatedfields)
-                                        .andCondition(CriteriaAPI.getIdCondition(prIds, purchaseRequestModule));
-                                updateBuilder2.updateViaMap(updateMap);
-                            }
-                        }
                     }
 
                 }

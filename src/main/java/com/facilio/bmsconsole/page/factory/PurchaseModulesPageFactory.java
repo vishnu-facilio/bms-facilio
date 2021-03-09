@@ -91,6 +91,7 @@ public class PurchaseModulesPageFactory extends PageFactory {
         Page.Section tab3Sec1 = page.new Section();
         tab3.addSection(tab3Sec1);
         addSubModuleRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.PO_ASSOCIATED_TERMS, module.getModuleId());
+        addSubModuleRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.PURCHASE_REQUEST, module.getModuleId());
 
 
         return page;

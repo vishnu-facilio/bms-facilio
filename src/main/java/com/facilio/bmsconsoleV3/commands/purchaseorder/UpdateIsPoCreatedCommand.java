@@ -50,6 +50,8 @@ public class UpdateIsPoCreatedCommand extends FacilioCommand {
                         if (pr != null) {
                             Map<String, Object> map = FieldUtil.getAsProperties(pr);
                             map.put("isPoCreated", true);
+                            map.put("status", V3PurchaseRequestContext.Status.COMPLETED.ordinal() + 1);
+                            map.put("purchaseOrder", FieldUtil.getAsProperties(po));
                             JSONObject json = new JSONObject();
                             json.putAll(map);
                             jsonList.add(json);
