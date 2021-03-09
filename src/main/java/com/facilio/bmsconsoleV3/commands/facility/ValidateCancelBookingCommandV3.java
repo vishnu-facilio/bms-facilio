@@ -38,7 +38,7 @@ public class ValidateCancelBookingCommandV3 extends FacilioCommand {
                         else {
                             facility = facilities.get(booking.getFacility().getId());
                         }
-                        if(facility != null){
+                        if(facility != null && facility.getAllowCancellationBefore() != null && facility.getAllowCancellationBefore() > 0){
                             Long cancellationAllowedTill = DateTimeUtil.minusDays(booking.getBookingDate(), facility.getAllowCancellationBefore().intValue());
                             if(DateTimeUtil.getDaysBetween(System.currentTimeMillis(), cancellationAllowedTill) < 0) {
                                 throw new RESTException(ErrorCode.VALIDATION_ERROR, "Cancellation of this booking is permitted until "+ DateTimeUtil.getFormattedTime(cancellationAllowedTill, "dd/MM/yyyy"));
