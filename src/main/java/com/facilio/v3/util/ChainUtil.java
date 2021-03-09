@@ -112,6 +112,7 @@ public class ChainUtil {
 
         addIfNotNull(nonTransactionChain, beforeFetchCommand);
 
+        nonTransactionChain.addCommand(new GenerateCriteriaForV4Command());
         nonTransactionChain.addCommand(new GenerateCriteriaFromFilterCommand());
         nonTransactionChain.addCommand(new GenerateSearchConditionCommand());
         nonTransactionChain.addCommand(new AddCustomLookupInSupplementCommand());

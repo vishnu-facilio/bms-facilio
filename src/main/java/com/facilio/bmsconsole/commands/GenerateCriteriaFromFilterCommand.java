@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.facilio.modules.FieldUtil;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -35,6 +36,10 @@ public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 	
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
+		boolean isV4 = Constants.isV4(context);
+		if (isV4) {
+			return false;
+		}
 		long startTime = System.currentTimeMillis();
 		JSONObject filters = (JSONObject) context.get(FacilioConstants.ContextNames.FILTERS);
 		if(filters != null && !filters.isEmpty()) {

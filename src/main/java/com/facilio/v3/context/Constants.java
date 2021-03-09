@@ -248,4 +248,21 @@ public class Constants {
         context.put(LIST_RELATION_RECORDS, relationRecords);
     }
 
+    public static void setFilterCriteria(Context context, Criteria criteria) {
+        context.put(FILTER_CRITERIA, criteria);
+    }
+
+    public static Criteria getFilterCriteria(Context context) {
+        return (Criteria) context.get(FILTER_CRITERIA);
+    }
+
+    private static final String IS_V4 = "isV4";
+    public static void setIsV4(Context context, boolean isV4) {
+        context.put(IS_V4, isV4);
+    }
+
+    public static boolean isV4(Context context) {
+        Boolean isV4 = (Boolean) context.get(IS_V4);
+        return isV4 != null && isV4;
+    }
 }
