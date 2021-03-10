@@ -55,6 +55,12 @@ public class ConnectionParamContext {
 	public void setProperty(boolean property) {
 		isProperty = property;
 	}
+	public void setIsProperty(boolean property) {
+		isProperty = property;
+	}
+	public boolean getIsProperty() {
+		return isProperty;
+	}
 	public String toString(){
 		return "{" +
 				"id:"+id + ","+
