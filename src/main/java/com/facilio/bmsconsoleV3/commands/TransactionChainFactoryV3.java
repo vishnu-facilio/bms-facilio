@@ -13,18 +13,22 @@ import com.facilio.bmsconsoleV3.commands.clientcontact.UpdateClientAppPortalAcce
 import com.facilio.bmsconsoleV3.commands.communityFeatures.admindocuments.AddOrUpdateAdminDocumentsSharingCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.*;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.contactdirectory.AddOrUpdateContactDirectorySharingCommandV3;
-import com.facilio.bmsconsoleV3.commands.communityFeatures.contactdirectory.AddPeopleIfNotExistsCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.dealsandoffers.AddOrUpdateDealsSharingInfoCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.AddOrUpdateNeighbourhoodSharingCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.NeighbourhoodAddLocationCommand;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.AddOrUpdateNewsSharingCommandV3;
 import com.facilio.bmsconsoleV3.commands.employee.AddPeopleTypeForEmployeeCommandV3;
 import com.facilio.bmsconsoleV3.commands.employee.UpdateEmployeePeopleAppPortalAccessCommandV3;
-import com.facilio.bmsconsoleV3.commands.facility.*;
+import com.facilio.bmsconsoleV3.commands.facility.CancelBookingCommand;
+import com.facilio.bmsconsoleV3.commands.facility.CreatePaymentRecordForBookingCommand;
+import com.facilio.bmsconsoleV3.commands.facility.SetCanEditForBookingCommand;
+import com.facilio.bmsconsoleV3.commands.facility.ValidateFacilityBookingCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.UpdatePeoplePrimaryContactCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.POAfterCreateOrEditV3Command;
+import com.facilio.bmsconsoleV3.commands.purchaseorder.POBeforeCreateOrEditV3Command;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.UpdateIsPoCreatedCommand;
+import com.facilio.bmsconsoleV3.commands.purchaserequest.PreFillAddPurchaseRequestCommand;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.PurchaseRequestTotalCostRollUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.InsertQuotationLineItemsAndActivitiesCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.QuotationValidationAndCostCalculationCommand;
@@ -513,6 +517,13 @@ public class TransactionChainFactoryV3 {
 		c.addCommand(new PurchaseRequestTotalCostRollUpCommandV3()); //update purchase request total cost
 		return c;
 	}
+    public static FacilioChain getAddPurchaseRequestBeforeSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SetLocalIdCommandV3());
+        c.addCommand(new PreFillAddPurchaseRequestCommand());
+        return c;
+    }
+
     public static FacilioChain addRecords () {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddRecordsCommandV3());
@@ -654,6 +665,13 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getTriggerExecuteChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ExecuteTriggerCommand());
+        return c;
+    }
+
+    public static FacilioChain getPoBeforeSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SetLocalIdCommandV3());
+        c.addCommand(new POBeforeCreateOrEditV3Command());
         return c;
     }
 

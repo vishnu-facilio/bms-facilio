@@ -1,11 +1,7 @@
 package com.facilio.apiv3;
 
 import com.facilio.activity.AddActivitiesCommand;
-import com.facilio.bmsconsole.commands.AssetDepreciationFetchAssetDetailsCommand;
-import com.facilio.bmsconsole.commands.ExecuteAllWorkflowsCommand;
-import com.facilio.bmsconsole.commands.ExecuteRollUpFieldCommand;
-import com.facilio.bmsconsole.commands.ExecuteWorkFlowsBusinessLogicInPostTransactionCommand;
-import com.facilio.bmsconsole.commands.ValidateAssetDepreciationCommand;
+import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.context.AssetDepreciationContext;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.*;
@@ -39,8 +35,13 @@ import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.itemtypes.SetItemTypesUnitCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
-import com.facilio.bmsconsoleV3.commands.purchaseorder.*;
-import com.facilio.bmsconsoleV3.commands.purchaserequest.*;
+import com.facilio.bmsconsoleV3.commands.purchaseorder.DeleteReceivableByPOIdV3;
+import com.facilio.bmsconsoleV3.commands.purchaseorder.FetchPODetailsCommandV3;
+import com.facilio.bmsconsoleV3.commands.purchaseorder.LoadPOSummaryLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.purchaseorder.POAfterCreateOrEditV3Command;
+import com.facilio.bmsconsoleV3.commands.purchaserequest.FetchPurchaseRequestDetailsCommandV3;
+import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPoPrListLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPurchaseRequestSummaryLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.*;
 import com.facilio.bmsconsoleV3.commands.servicerequest.AddRequesterForServiceRequestCommandV3;
 import com.facilio.bmsconsoleV3.commands.servicerequest.LoadServiceRequestLookupCommandV3;
@@ -58,7 +59,6 @@ import com.facilio.bmsconsoleV3.commands.vendorcontact.LoadVendorContactLookupCo
 import com.facilio.bmsconsoleV3.commands.visitor.LoadVisitorLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlog.GetChildInvitesForGroupInviteCommand;
 import com.facilio.bmsconsoleV3.commands.visitorlog.GetScheduleTriggerForRecurringInviteCommandV3;
-import com.facilio.bmsconsoleV3.commands.visitorlog.LoadRecordIdForPassCodeCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlog.UpdateChildInvitesAfterSaveCommand;
 import com.facilio.bmsconsoleV3.commands.visitorlog.ValidateBaseVisitDetailAndLogCommand;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.GetTriggerForRecurringLogCommandV3;
@@ -74,10 +74,8 @@ import com.facilio.bmsconsoleV3.context.budget.ChartOfAccountContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.*;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnnouncementContext;
-import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
-import com.facilio.bmsconsoleV3.context.facilitybooking.AmenitiesContext;
-import com.facilio.bmsconsoleV3.context.facilitybooking.FacilityContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.*;
+import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
@@ -87,14 +85,7 @@ import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistContex
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount10;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount30;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.control.ControlGroupContext;
-import com.facilio.control.ControlGroupRoutineContext;
-import com.facilio.control.ControlGroupTenentContext;
-import com.facilio.control.ControlScheduleContext;
-import com.facilio.control.ControlScheduleExceptionContext;
-import com.facilio.control.ControlScheduleExceptionTenantContext;
-import com.facilio.control.ControlScheduleSlot;
-import com.facilio.control.ControlScheduleTenantContext;
+import com.facilio.control.*;
 import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.controlaction.context.ControlActionCommandContext;
 import com.facilio.v3.V3Builder.V3Config;
@@ -405,10 +396,10 @@ public class APIv3Config {
     public static Supplier<V3Config> getPurchaseRequest() {
         return () -> new V3Config(V3PurchaseRequestContext.class, new ModuleCustomFieldCount30())
                 .create()
-            		.beforeSave(new PreFillAddPurchaseRequestCommand())
+            		.beforeSave(TransactionChainFactoryV3.getAddPurchaseRequestBeforeSaveChain())
                     .afterSave(TransactionChainFactoryV3.getAddPurchaseRequestAfterSaveChain())
                 .update()
-                	.beforeSave(new PreFillUpdatePurchaseRequestCommand()).afterSave(TransactionChainFactoryV3.getAddPurchaseRequestAfterSaveChain())
+                	.beforeSave(TransactionChainFactoryV3.getAddPurchaseRequestBeforeSaveChain()).afterSave(TransactionChainFactoryV3.getAddPurchaseRequestAfterSaveChain())
                 .list()
                     .beforeFetch(new LoadPoPrListLookupCommandV3())
                 .summary()
@@ -420,8 +411,8 @@ public class APIv3Config {
     @Module("purchaseorder")
     public static Supplier<V3Config> getPurchaseOrder() {
         return () -> new V3Config(V3PurchaseOrderContext.class, new ModuleCustomFieldCount30())
-                .create().beforeSave(new POBeforeCreateOrEditV3Command()).afterSave(TransactionChainFactoryV3.getPoAfterSaveChain())
-                .update().beforeSave(new POBeforeCreateOrEditV3Command()).afterSave(new POAfterCreateOrEditV3Command())
+                .create().beforeSave(TransactionChainFactoryV3.getPoBeforeSaveChain()).afterSave(TransactionChainFactoryV3.getPoAfterSaveChain())
+                .update().beforeSave(TransactionChainFactoryV3.getPoBeforeSaveChain()).afterSave(new POAfterCreateOrEditV3Command())
                 .list().beforeFetch(new LoadPoPrListLookupCommandV3())
                 .summary().beforeFetch(new LoadPOSummaryLookupCommandV3()).afterFetch(new FetchPODetailsCommandV3())
                 .delete().afterDelete(new DeleteReceivableByPOIdV3())

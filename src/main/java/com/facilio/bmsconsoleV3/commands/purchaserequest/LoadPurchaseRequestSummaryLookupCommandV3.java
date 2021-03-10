@@ -1,11 +1,5 @@
 package com.facilio.bmsconsoleV3.commands.purchaserequest;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Context;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -15,6 +9,11 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.LookupFieldMeta;
+import org.apache.commons.chain.Context;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class LoadPurchaseRequestSummaryLookupCommandV3 extends FacilioCommand {
 
@@ -41,10 +40,10 @@ public class LoadPurchaseRequestSummaryLookupCommandV3 extends FacilioCommand {
 		additionaLookups.add((LookupField) fieldsAsMap.get("shipToAddress"));
 		additionaLookups.add((LookupField) fieldsAsMap.get("billToAddress"));
 		additionaLookups.add((LookupField) fieldsAsMap.get("requestedBy"));
-//		additionaLookups.add((LookupField) fieldsAsMap.get("itemType"));
-//		additionaLookups.add((LookupField) fieldsAsMap.get("toolType"));
 		if(moduleName.contentEquals("purchaseorder")) {
 			additionaLookups.add((LookupField) fieldsAsMap.get("contract"));
+		} else if (moduleName.contentEquals("purchaserequest")) {
+			additionaLookups.add((LookupField) fieldsAsMap.get("purchaseOrder"));
 		}
 		
 		for (FacilioField field : fields) {
