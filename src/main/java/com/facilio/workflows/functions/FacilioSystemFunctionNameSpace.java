@@ -41,6 +41,7 @@ public enum FacilioSystemFunctionNameSpace {
 	CONTROLS(33,"control"),
 	BUSINESS_HOUR(34,"businessHours"),
 	XML_BUILDER(35,"xml"),
+	FILE(36,"file"),
 	;
 	
 	

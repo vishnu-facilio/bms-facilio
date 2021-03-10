@@ -90,6 +90,7 @@ import com.facilio.workflows.functions.FacilioDateRangeFunctions;
 import com.facilio.workflows.functions.FacilioDefaultFunction;
 import com.facilio.workflows.functions.FacilioEnergyMeterFunction;
 import com.facilio.workflows.functions.FacilioFieldFunctions;
+import com.facilio.workflows.functions.FacilioFileFunction;
 import com.facilio.workflows.functions.FacilioFunctionsParamType;
 import com.facilio.workflows.functions.FacilioHTTPFunctions;
 import com.facilio.workflows.functions.FacilioListFunction;
@@ -2149,6 +2150,9 @@ public class WorkflowUtil {
 				case XML_BUILDER:
 					facilioWorkflowFunction = FacilioXMLBuilderFunctions.getFacilioXMLBuilderFunctions(functionName);
 					break;
+				case FILE:
+					facilioWorkflowFunction = FacilioFileFunction.getFacilioFileFunction(functionName);
+					break;
 			}
 		}
 		return facilioWorkflowFunction;
@@ -2261,6 +2265,9 @@ public class WorkflowUtil {
 					break;
 				case XML_BUILDER:
 					facilioWorkflowFunction = new ArrayList<>( FacilioXMLBuilderFunctions.getAllFunctions().values());
+					break;
+				case FILE:
+					facilioWorkflowFunction = new ArrayList<>( FacilioFileFunction.getAllFunctions().values());
 					break;
 			}
 		}
