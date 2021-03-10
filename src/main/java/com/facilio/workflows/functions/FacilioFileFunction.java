@@ -1,11 +1,13 @@
 package com.facilio.workflows.functions;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.amazonaws.util.IOUtils;
+import com.facilio.ftp.FTPUtil;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 
@@ -26,6 +28,20 @@ public enum FacilioFileFunction implements FacilioWorkflowFunctionInterface  {
 			catch(Exception e) {
 				throw new RuntimeException("Cannot Read File :: "+fileId,e);
 			}
+		};
+	},
+	
+	PUT_FILE_TO_REMOTE_FS(1,"putFileToRemoteFileServer") {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			
+			String stringContent = objects[5].toString();
+			
+			InputStream is = new ByteArrayInputStream(stringContent.getBytes());
+			
+			FTPUtil.putFile(objects[0].toString(), objects[1].toString(), objects[2].toString(), objects[3].toString(), is, objects[4].toString());
+			
+			return null;
 		};
 	},
 	
