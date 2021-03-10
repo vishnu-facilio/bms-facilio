@@ -15,7 +15,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 
-public class FetchVisitorKioskConfigDetailsCommand extends FacilioCommand {
+public class FetchVisitorKioskDetailsCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -23,10 +23,10 @@ public class FetchVisitorKioskConfigDetailsCommand extends FacilioCommand {
 		long deviceId = (long) context.get(FacilioConstants.ContextNames.ID);
 
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getVisitorKioskConfigFields())
-				.table(ModuleFactory.getVisitorKioskConfigModule().getTableName());
+				.select(FieldFactory.getVisitorKioskFields())
+				.table(ModuleFactory.getVisitorKioskModule().getTableName());
 
-		selectBuilder.andCondition(CriteriaAPI.getIdCondition(deviceId, ModuleFactory.getVisitorKioskConfigModule()));
+		selectBuilder.andCondition(CriteriaAPI.getIdCondition(deviceId, ModuleFactory.getVisitorKioskModule()));
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {

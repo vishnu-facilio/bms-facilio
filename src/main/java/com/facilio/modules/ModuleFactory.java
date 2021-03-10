@@ -3650,10 +3650,10 @@ public class ModuleFactory {
 		module.setTableName("Printers");
 		return module;
 	}
-	public static FacilioModule getVisitorKioskConfigModule() {
+	public static FacilioModule getVisitorKioskModule() {
 		FacilioModule module = new FacilioModule();
-		module.setName(ModuleNames.VISITOR_KIOSK_CONFIG);
-		module.setDisplayName("Visitor Kiosk Config");
+		module.setName(ModuleNames.VISITOR_KIOSK);
+		module.setDisplayName("Visitor Kiosk");
 		module.setTableName("Devices_Visitor_Kiosk");
 		return module;
 	}

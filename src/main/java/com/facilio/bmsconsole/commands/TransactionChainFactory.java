@@ -4720,10 +4720,10 @@ public class TransactionChainFactory {
 
 
 
-	public static FacilioChain addOrUpdateVisitorKioskConfigChain()
+	public static FacilioChain addOrUpdateVisitorKioskChain()
 	{
 		FacilioChain chain =getDefaultChain();
-		chain.addCommand(new AddOrUpdateVisitorKioskConfigCommand());
+		chain.addCommand(new AddOrUpdateVisitorKioskCommand());
 		return chain;
 	}
 	public static FacilioChain getDeletePrinterChain() {

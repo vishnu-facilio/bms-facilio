@@ -641,7 +641,7 @@ public class LoginAction extends FacilioAction {
 			
 			if(device.getDeviceTypeEnum()==DeviceType.VISITOR_KIOSK)
 			{
-				VisitorKioskContext visitorKioskCtx=DevicesAPI.getVisitorKioskConfig(device.getId());
+				VisitorKioskContext visitorKioskCtx=DevicesAPI.getVisitorKioskDetails(device.getId());
 				data.put("visitorKiosk",visitorKioskCtx);
 			}
 			if(device.getDeviceTypeEnum()==DeviceType.FEEDBACK_KIOSK)

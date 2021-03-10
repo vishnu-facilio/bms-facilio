@@ -49,9 +49,9 @@ public class DevicesAPI {
 
 	}
 
-	public static VisitorKioskContext getVisitorKioskConfig(long deviceId) throws Exception {
+	public static VisitorKioskContext getVisitorKioskDetails(long deviceId) throws Exception {
 
-		FacilioChain visitorKioskConfigDetailsChain = ReadOnlyChainFactory.getVisitorKioskConfigDetailsChain();
+		FacilioChain visitorKioskConfigDetailsChain = ReadOnlyChainFactory.getVisitorKioskDetailsChain();
 		FacilioContext context = visitorKioskConfigDetailsChain.getContext();
 		context.put(FacilioConstants.ContextNames.ID, deviceId);
 		visitorKioskConfigDetailsChain.execute();

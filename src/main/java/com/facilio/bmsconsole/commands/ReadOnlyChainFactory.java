@@ -2054,9 +2054,9 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new V3FilePreviewCommad());
 		return chain;
 	}
-	public static FacilioChain getVisitorKioskConfigDetailsChain() {
+	public static FacilioChain getVisitorKioskDetailsChain() {
 		FacilioChain c = getDefaultChain();
-		c.addCommand(new FetchVisitorKioskConfigDetailsCommand());
+		c.addCommand(new FetchVisitorKioskDetailsCommand());
 		return c;
 	}
 	public static FacilioChain getVisitorKioskListChain() {

@@ -6,7 +6,7 @@ import java.util.Map;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.bmsconsole.actions.VisitorKioskConfigAction;
+import com.facilio.bmsconsole.actions.VisitorKioskAction;
 import com.facilio.bmsconsole.context.VisitorKioskContext;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -25,8 +25,8 @@ public class PrinterUtils {
 		if(printerId!=null&&printerId>0)
 		{
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-					.select(FieldFactory.getVisitorKioskConfigFields())
-					.table(ModuleFactory.getVisitorKioskConfigModule().getTableName())
+					.select(FieldFactory.getVisitorKioskFields())
+					.table(ModuleFactory.getVisitorKioskModule().getTableName())
 					.andCondition(CriteriaAPI.getCondition("PRINTER_ID","printerId",printerId+"",NumberOperators.EQUALS));
 			List<Map<String,Object>> visitorKioskProps= selectBuilder.get();
 			if(visitorKioskProps!=null&&visitorKioskProps.size()>0)

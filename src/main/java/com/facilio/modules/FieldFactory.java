@@ -8587,8 +8587,8 @@ public class FieldFactory {
         return fields;
     }
 
-    public static List<FacilioField> getVisitorKioskConfigFields() {
-        FacilioModule module = ModuleFactory.getVisitorKioskConfigModule();
+    public static List<FacilioField> getVisitorKioskFields() {
+        FacilioModule module = ModuleFactory.getVisitorKioskModule();
         List<FacilioField> fields = new ArrayList<>();
 
         fields.add(getField("id", "ID", module, FieldType.NUMBER));

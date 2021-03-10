@@ -16,36 +16,31 @@ import com.facilio.wms.constants.WmsEventType;
 import com.facilio.wms.message.WmsEvent;
 import com.facilio.wms.util.WmsApi;
 
-public class VisitorKioskConfigAction extends FacilioAction{
+public class VisitorKioskAction extends FacilioAction{
 	private static final long serialVersionUID = 1L;
-	private static Logger log = LogManager.getLogger(VisitorKioskConfigAction.class.getName());
-	private VisitorKioskContext visitorKioskConfig;
+	private static Logger log = LogManager.getLogger(VisitorKioskAction.class.getName());
+	private VisitorKioskContext visitorKiosk;
 	
-	public VisitorKioskContext getVisitorKioskConfig() {
-		return visitorKioskConfig;
-	}
+	
 
-	public void setVisitorKioskConfig(VisitorKioskContext visitorKioskConfig) {
-		this.visitorKioskConfig = visitorKioskConfig;
+	public VisitorKioskContext getVisitorKiosk() {
+		return visitorKiosk;
 	}
-
+	public void setVisitorKiosk(VisitorKioskContext visitorKiosk) {
+		this.visitorKiosk = visitorKiosk;
+	}
 	public String addOrUpdate() throws Exception
 	{
-		//set ID from context obj to IDfield in parent context,SINCE genericbuilder and module does not support lookups
-		if(visitorKioskConfig.getPrinter()!=null)
-		{	
-			visitorKioskConfig.setPrinterId(visitorKioskConfig.getPrinter().getId());
-			
-		}
+	
 		
-		FacilioChain addOrUpdateChain = TransactionChainFactory.addOrUpdateVisitorKioskConfigChain();
+		FacilioChain addOrUpdateChain = TransactionChainFactory.addOrUpdateVisitorKioskChain();
 		
     	FacilioContext addOrUpdateContext = addOrUpdateChain.getContext();
-    	VisitorKioskContext visitorKioskContext=getVisitorKioskConfig();
+    	VisitorKioskContext visitorKioskContext=getVisitorKiosk();
     	addOrUpdateContext.put(FacilioConstants.ContextNames.RECORD, visitorKioskContext);
 
-		addOrUpdateContext.put(FacilioConstants.ContextNames.MODULE, ModuleFactory.getVisitorKioskConfigModule());
-		addOrUpdateContext.put(FacilioConstants.ContextNames.FIELDS, FieldFactory.getVisitorKioskConfigFields());
+		addOrUpdateContext.put(FacilioConstants.ContextNames.MODULE, ModuleFactory.getVisitorKioskModule());
+		addOrUpdateContext.put(FacilioConstants.ContextNames.FIELDS, FieldFactory.getVisitorKioskFields());
 
     	addOrUpdateChain.execute();	
     	try {

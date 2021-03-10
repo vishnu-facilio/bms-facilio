@@ -5569,11 +5569,11 @@
 			
 	</package>
 	<package name="visitorKiosk" namespace="/api/v2/visitorKiosk" extends="v2Api">
-			<action name="add" class="com.facilio.bmsconsole.actions.VisitorKioskConfigAction" method="addOrUpdate">							
+			<action name="add" class="com.facilio.bmsconsole.actions.VisitorKioskAction" method="addOrUpdate">							
 			</action>
-			<action name="update" class="com.facilio.bmsconsole.actions.VisitorKioskConfigAction" method="addOrUpdate">							
+			<action name="update" class="com.facilio.bmsconsole.actions.VisitorKioskAction" method="addOrUpdate">							
 			</action>
-			<action name="list" class="com.facilio.bmsconsole.actions.VisitorKioskConfigAction" method="list">							
+			<action name="list" class="com.facilio.bmsconsole.actions.VisitorKioskAction" method="list">							
 			</action>
 	</package>
 	<package name="feedbackKiosk" namespace="/api/v2/feedbackKiosk" extends="v2Api">
