@@ -82,7 +82,12 @@ public class VisitorKioskListCommand extends FacilioCommand {
 		List<Long> printerIds=visitorKioskList.stream()
 				.filter(visitorKiosk -> visitorKiosk.getPrinterId() > 0)
 			   .map(visitorKiosk -> visitorKiosk.getPrinterId()).collect(Collectors.toList());
-     FacilioModule printerModule=ModuleFactory.getPrinterModule();
+		if(printerIds.isEmpty())
+		{
+			return ;
+		}
+		
+		FacilioModule printerModule=ModuleFactory.getPrinterModule();
 		GenericSelectRecordBuilder fetchPrinterBuilder=new GenericSelectRecordBuilder()
 				.table(printerModule.getTableName())
 				.select(FieldFactory.getPrinterFields()).andCondition(
