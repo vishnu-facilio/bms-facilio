@@ -22,6 +22,7 @@ import com.facilio.bmsconsoleV3.commands.employee.UpdateEmployeePeopleAppPortalA
 import com.facilio.bmsconsoleV3.commands.facility.CancelBookingCommand;
 import com.facilio.bmsconsoleV3.commands.facility.CreatePaymentRecordForBookingCommand;
 import com.facilio.bmsconsoleV3.commands.facility.SetCanEditForBookingCommand;
+import com.facilio.bmsconsoleV3.commands.facility.ValidateCancelBookingCommandV3;
 import com.facilio.bmsconsoleV3.commands.facility.ValidateFacilityBookingCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.UpdatePeoplePrimaryContactCommandV3;
