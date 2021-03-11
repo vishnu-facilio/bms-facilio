@@ -576,10 +576,12 @@ public class FacilioChainFactory {
 	public static FacilioChain getUpdateCampusChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new ValidateCampusFieldsCommand());
+		c.addCommand(updateLocationChain());
 		c.addCommand(new FacilioCommand() {
 			@Override
 			public boolean executeCommand(Context context) throws Exception {
 				String moduleName = (String) context.get(FacilioConstants.ContextNames.SPACE_TYPE);
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 				BaseSpaceContext baseSpace = (BaseSpaceContext) context.get(FacilioConstants.ContextNames.BASE_SPACE);
 				baseSpace = (BaseSpaceContext) RecordAPI.getRecord(moduleName, baseSpace.getId());
 				CommonCommandUtil.addToRecordMap((FacilioContext) context, moduleName, baseSpace);
@@ -588,11 +590,10 @@ public class FacilioChainFactory {
 		});
 		c.addCommand(new ChangeApprovalStatusForModuleDataCommand());
 		c.addCommand(new VerifyApprovalCommand());
-		c.addCommand(updateLocationChain());
 		c.addCommand(new UpdateBaseSpaceCommand());
-		c.addCommand(new SetBaseSpaceRecordForRollUpFieldCommand());
 		c.addCommand(new UpdateEventListForStateFlowCommand());
 		c.addCommand(new UpdateStateForModuleDataCommand());
+		c.addCommand(new SetBaseSpaceRecordForRollUpFieldCommand());
 		c.addCommand(new ExecuteRollUpFieldCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
