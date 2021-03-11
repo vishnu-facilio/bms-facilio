@@ -78,8 +78,10 @@ public class PMTriggerContext implements Serializable {
 		return null;
 	}
 	public void setScheduleJson(String jsonString) throws JsonParseException, JsonMappingException, IOException, ParseException {
-		JSONParser parser = new JSONParser();
-		this.schedule = FieldUtil.getAsBeanFromJson((JSONObject)parser.parse(jsonString), ScheduleInfo.class);
+		if(jsonString != null) {
+			JSONParser parser = new JSONParser();
+			this.schedule = FieldUtil.getAsBeanFromJson((JSONObject)parser.parse(jsonString), ScheduleInfo.class);
+		}
 	}
 	
 	public String getScheduleMsg() {
