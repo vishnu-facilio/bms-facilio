@@ -2821,6 +2821,9 @@ public class FormFactory {
 		fields.add(new FormField("maxAttendeeCountPerBooking", FieldDisplayType.NUMBER, "Maximum attendee Count Per Booking", Required.OPTIONAL,8, 3));
 		fields.add(new FormField("isAttendeeListNeeded", FieldDisplayType.DECISION_BOX, "Attendee List Needed", Required.REQUIRED,9, 2));
 		fields.add(new FormField("isMultiBookingPerSlotAllowed", FieldDisplayType.DECISION_BOX, "Is Multi Booking Allowed Per slot", Required.REQUIRED,9, 3));
+		FormField slotGeneratedUptoField = new FormField("slotGeneratedUpto", FieldDisplayType.DATETIME, "Slot Generated Upto", Required.OPTIONAL,9, 1);
+		slotGeneratedUptoField.setHideField(true);
+		fields.add(slotGeneratedUptoField);
 		fields.add(new FormField("allowCancellationBefore", FieldDisplayType.NUMBER, "Allow Cancellation Before (Days)", Required.REQUIRED,10, 1));
 		fields.add(new FormField("isChargeable", FieldDisplayType.DECISION_BOX, "Is Chargeable", Required.OPTIONAL,11, 1));
 		fields.add(new FormField("pricePerSlot", FieldDisplayType.NUMBER, "Price Per slot", Required.OPTIONAL,12, 2));
