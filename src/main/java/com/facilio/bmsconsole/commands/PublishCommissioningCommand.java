@@ -44,6 +44,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
+import com.facilio.unitconversion.Unit;
 
 public class PublishCommissioningCommand extends FacilioCommand implements PostTransactionCommand {
 	
@@ -97,10 +98,17 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 			Long categoryId = (Long) point.get(AgentConstants.ASSET_CATEGORY_ID);
 			Long resourceId = (Long) point.get(AgentConstants.RESOURCE_ID);
 			Long fieldId = (Long) point.get(AgentConstants.FIELD_ID);
-			Long unit = (Long) point.get(AgentConstants.UNIT);
+			Long unitId = (Long) point.get(AgentConstants.UNIT);
+			Unit unit = null;
+			
 			boolean resourceAvailable = resourceId != null && resourceId > 0;
 			boolean fieldAvailable = fieldId != null && fieldId > 0;
-			boolean unitAvailable = unit != null && unit > 0;
+			boolean unitAvailable = false;
+			if (unitId != null && unitId > 0) {
+				unitAvailable = true;
+				unit = Unit.valueOf(unitId.intValue());
+				point.put(AgentConstants.UNIT, unit);
+			}
 			boolean unitChanged = unitAvailable;
 			
 			if ((categoryId != null && categoryId > 0 ) || resourceAvailable || fieldAvailable || unitAvailable) {
@@ -108,17 +116,20 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 				boolean  mappingChanged = true;
 				if (fieldAvailable && resourceAvailable) {
 					if (dbPoint != null && dbResourceId != null && dbResourceId > 0 && dbFieldId != null && dbFieldId > 0) {
-						Integer dbUnit = (Integer) dbPoint.get(AgentConstants.UNIT);
 						if (!dbResourceId.equals(resourceId) || !dbFieldId.equals(fieldId)) {
 							point.put(ContextNames.PREV_FIELD_ID, dbFieldId);
 							point.put(ContextNames.PREV_PARENT_ID, dbResourceId);
-							point.put("oldUnit", dbUnit)	;
 						}
 						else {
 							mappingChanged = false;
 						}
-						if (dbUnit != null && dbUnit > 0 && unitAvailable && Long.valueOf(dbUnit).equals(unit)) {
-							unitChanged = false;
+						Integer dbUnitInt = (Integer) dbPoint.get(AgentConstants.UNIT);
+						if (unitAvailable && dbUnitInt != null && dbUnitInt > 0) {
+							Unit dbUnit = Unit.valueOf(dbUnitInt);
+							point.put("prevUnit", dbUnit);
+							if (dbUnit == unit) {
+								unitChanged = false;
+							}
 						}
 					}
 					
@@ -137,7 +148,7 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 						meta.setResourceId(resourceId);
 						meta.setFieldId(fieldId);
 						if (unitAvailable) {
-							meta.setUnit(unit.intValue());
+							meta.setUnit(unit.getUnitId());
 						}
 						meta.setInputType(ReadingInputType.CONTROLLER_MAPPED);
 						if (writable) {
@@ -145,8 +156,8 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 						}
 						rdmList.add(meta);
 						
+						migrationPoints.add(point);
 						if (mappingChanged) {
-							migrationPoints.add(point);
 							connectedAssetIds.add(resourceId);
 						}
 					}
@@ -223,9 +234,9 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 		if (resourceId != null && resourceId > 0) {
 			batchValue.addUpdateValue(AgentConstants.RESOURCE_ID, resourceId);
 		}
-		Long unit = (Long) point.get(AgentConstants.UNIT);
-		if (unit != null && unit > 0) {
-			batchValue.addUpdateValue(AgentConstants.UNIT, unit);
+		Unit unit = (Unit) point.get(AgentConstants.UNIT);
+		if (unit != null) {
+			batchValue.addUpdateValue(AgentConstants.UNIT, unit.getUnitId());
 		}
 		batchValue.addUpdateValue(AgentConstants.ASSET_CATEGORY_ID, point.get(AgentConstants.ASSET_CATEGORY_ID));
 		batchValue.addUpdateValue(AgentConstants.MAPPED_TIME, publishTime);
@@ -310,12 +321,13 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 				if (oldFieldId != null) {
 					context.put(ContextNames.PREV_FIELD_ID, oldFieldId);
 					context.put(ContextNames.PREV_PARENT_ID, point.get(ContextNames.PREV_PARENT_ID));
-					context.put("prevUnit", point.get("prevUnit"));
 				}
+				context.put("prevUnit", point.get("prevUnit"));
 				
 				context.put("id", point.get("id"));
 				context.put(ContextNames.FIELD_ID, point.get(AgentConstants.FIELD_ID));
 				context.put(ContextNames.PARENT_ID, point.get(AgentConstants.RESOURCE_ID));
+				context.put(ContextNames.UNIT, point.get(AgentConstants.UNIT));
 				if(AccountUtil.getCurrentOrg().getId() != 78l) {
 					FacilioTimer.scheduleInstantJob("datamigration","MigrateReadingData", context);
 				}

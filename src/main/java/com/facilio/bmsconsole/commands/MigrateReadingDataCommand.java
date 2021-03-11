@@ -15,9 +15,12 @@ import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder.GenericBatchResult;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder.BatchUpdateByIdContext;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -28,28 +31,47 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.SelectRecordsBuilder.BatchResult;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.unitconversion.Unit;
+import com.facilio.unitconversion.UnitsUtil;
 
 public class MigrateReadingDataCommand extends FacilioCommand {
 	
 	long fieldId = -1;
 	long parentId = -1;
+	Unit unit = null;
+	Unit siUnit = null;
+	Unit prevUnit = null;
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		
-		fieldId = (long) context.get(FacilioConstants.ContextNames.FIELD_ID);
-		parentId = (long) context.get(FacilioConstants.ContextNames.PARENT_ID);
+		fieldId = (long) context.get(ContextNames.FIELD_ID);
+		parentId = (long) context.get(ContextNames.PARENT_ID);
+		unit = (Unit) context.get(ContextNames.UNIT);
 		
 		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioField newField = bean.getField(fieldId);
 		
-		long oldFieldId = (long) context.getOrDefault(FacilioConstants.ContextNames.PREV_FIELD_ID, -1l);
-		if (oldFieldId == -1) {
-			migrateUnmodeledData(context, newField);
-			return false;
+		long oldFieldId = (long) context.getOrDefault(ContextNames.PREV_FIELD_ID, -1l);
+		long oldAssetId = (long) context.getOrDefault(ContextNames.PREV_PARENT_ID, -1l);
+		prevUnit = (Unit) context.get("prevUnit");
+		if (prevUnit != null) {
+			siUnit = Unit.valueOf(prevUnit.getMetric().getSiUnitId());
 		}
 		
-		long oldAssetId = (long) context.getOrDefault(FacilioConstants.ContextNames.PREV_PARENT_ID, -1l);
+		boolean unitOnlyChanged = false;
+		if (oldFieldId == -1) {
+			if (unit != null) {	// Only unit is being changed in commissioning
+				oldFieldId= fieldId;
+				oldAssetId = parentId;
+				unitOnlyChanged = true;
+			}
+			else {	// New field commissioning
+				migrateUnmodeledData(context, newField);
+				return false;
+			}
+		}
+		
 		
 		
 		FacilioField oldField = bean.getField(oldFieldId);
@@ -71,8 +93,13 @@ public class MigrateReadingDataCommand extends FacilioCommand {
 		while (bs.hasNext()) {
 			List<ReadingContext> readingsList = bs.get();
 			if (readingsList != null && !readingsList.isEmpty()) {
-				addReading(oldField.getName(), newField, readingsList);
-				ReadingsAPI.deleteReadings(oldAssetId, Collections.singletonList(oldField), readingsList);
+				if (unitOnlyChanged) {
+					migrateUnit(readingsList, oldField);
+				}
+				else {
+					addReading(oldField.getName(), newField, readingsList);
+					ReadingsAPI.deleteReadings(oldAssetId, Collections.singletonList(oldField), readingsList);
+				}
 			}
 		}
 		
@@ -130,8 +157,10 @@ public class MigrateReadingDataCommand extends FacilioCommand {
 		readingsList.forEach(reading -> {
 			ReadingContext newReading = new ReadingContext();
 			newReading.setParentId(parentId);
-			
 			Object value = reading.getReading(oldFieldName);
+			if (prevUnit != null) {
+				value = UnitsUtil.convert(value, siUnit, prevUnit);
+			}
 			newReading.addReading(newField.getName(), value);
 			
 			newReading.setTtime(reading.getTtime());
@@ -150,6 +179,37 @@ public class MigrateReadingDataCommand extends FacilioCommand {
 		context.put(FacilioConstants.ContextNames.HISTORY_READINGS, true);
 		context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS,false);
 		chain.execute();
+	}
+	
+	public void migrateUnit(List<ReadingContext> readings, FacilioField field) throws Exception {
+		List<BatchUpdateByIdContext> batchUpdateList = new ArrayList<>();
+		List<FacilioField> updateFields = new ArrayList<>();
+		
+		for (ReadingContext readingData : readings) {
+			BatchUpdateByIdContext batchValue = new BatchUpdateByIdContext();
+			batchValue.setWhereId(readingData.getId());
+			
+			Object value = readingData.getReading(field.getName());
+			if (unit != null) {
+				if (prevUnit != null) {
+					value = UnitsUtil.convert(value, siUnit, prevUnit);
+				}
+				value = UnitsUtil.convertToSiUnit(value, unit);
+			}
+			
+			batchValue.addUpdateValue(field.getName(), value);
+			updateFields.add(field);
+			
+			batchUpdateList.add(batchValue);
+		}
+		
+		FacilioModule module = field.getModule();
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(module.getTableName())
+				.fields(updateFields)
+				;
+		
+		updateBuilder.batchUpdateById(batchUpdateList);
 	}
 
 }

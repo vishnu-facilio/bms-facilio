@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
@@ -17,7 +18,6 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import com.facilio.modules.fields.FileField;
 import com.facilio.modules.fields.LookupField;
-import org.apache.commons.collections4.CollectionUtils;
 
 public class AddSystemFieldsCommand extends FacilioCommand {
 
@@ -47,7 +47,7 @@ public class AddSystemFieldsCommand extends FacilioCommand {
 			
 			FacilioField siteField = FieldFactory.getSiteIdField(module);
 			siteField.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
-			siteField.setMainField(true);
+			siteField.setMainField(false);
 			siteField.setDisplayName("Site");
 			siteField.setRequired(true);
 			siteField.setDefault(true);
