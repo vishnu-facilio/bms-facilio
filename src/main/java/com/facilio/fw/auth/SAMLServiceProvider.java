@@ -368,27 +368,27 @@ public class SAMLServiceProvider {
 	}
 	
 	private boolean validateConditions(Element assertion) throws Exception {
-		Date now = new Date();
-		
-		NodeList conditions = assertion.getElementsByTagNameNS("*", "Conditions");
-		if (conditions != null && conditions.getLength() > 0) {
-			Element condition = (Element) conditions.item(0);
-			
-			String notBefore = condition.getAttribute("NotBefore");
-			if (notBefore != null && !notBefore.trim().isEmpty()) {
-				Date notBeforeDate = SAMLUtil.parseDate(notBefore);
-				if (now.before(notBeforeDate)) {
-					throw new Exception("The assertion cannot be used before " + notBefore.toString());
-				}
-			}
-			String notOnOrAfter = condition.getAttribute("NotOnOrAfter");
-			if (notOnOrAfter != null && !notOnOrAfter.trim().isEmpty()) {
-				Date notOnOrAfterDate = SAMLUtil.parseDate(notOnOrAfter);
-				if (now.after(notOnOrAfterDate)) {
-					throw new Exception("The assertion cannot be used after " + notOnOrAfterDate.toString());
-				}
-			}
-		}
+//		Date now = new Date();
+//		
+//		NodeList conditions = assertion.getElementsByTagNameNS("*", "Conditions");
+//		if (conditions != null && conditions.getLength() > 0) {
+//			Element condition = (Element) conditions.item(0);
+//			
+//			String notBefore = condition.getAttribute("NotBefore");
+//			if (notBefore != null && !notBefore.trim().isEmpty()) {
+//				Date notBeforeDate = SAMLUtil.parseDate(notBefore);
+//				if (now.before(notBeforeDate)) {
+//					throw new Exception("The assertion cannot be used before " + notBefore.toString());
+//				}
+//			}
+//			String notOnOrAfter = condition.getAttribute("NotOnOrAfter");
+//			if (notOnOrAfter != null && !notOnOrAfter.trim().isEmpty()) {
+//				Date notOnOrAfterDate = SAMLUtil.parseDate(notOnOrAfter);
+//				if (now.after(notOnOrAfterDate)) {
+//					throw new Exception("The assertion cannot be used after " + notOnOrAfterDate.toString());
+//				}
+//			}
+//		}
 		return true;
 	}
 	
