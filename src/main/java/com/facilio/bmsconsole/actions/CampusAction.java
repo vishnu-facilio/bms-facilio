@@ -31,6 +31,14 @@ public class CampusAction extends FacilioAction {
 		this.stateTransitionId = stateTransitionId;
 	}
 
+	private Long approvalTransitionId;
+	public Long getApprovalTransitionId() {
+		return approvalTransitionId;
+	}
+	public void setApprovalTransitionId(Long approvalTransitionId) {
+		this.approvalTransitionId = approvalTransitionId;
+	}
+
 	@SuppressWarnings("unchecked")
 	public String campusList() throws Exception 
 	{
@@ -117,6 +125,7 @@ public class CampusAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.SPACE_TYPE, "site");
 		CommonCommandUtil.addEventType(EventType.EDIT, context);
 		context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
+		context.put(FacilioConstants.ContextNames.APPROVAL_TRANSITION_ID, approvalTransitionId);
 		FacilioChain updateCampus = FacilioChainFactory.getUpdateCampusChain();
 		updateCampus.execute(context);
 		setSite(site);

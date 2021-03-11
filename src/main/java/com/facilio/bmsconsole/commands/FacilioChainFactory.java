@@ -2,14 +2,20 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.bmsconsole.commands.form.HandleFormFieldsCommand;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.elasticsearch.command.DeleteDataFromESCommand;
 import com.facilio.leed.commands.AddConsumptionForLeed;
 import com.facilio.leed.commands.AddEnergyMeterCommand;
 import com.facilio.leed.commands.FetchArcAssetsCommand;
 import com.facilio.leed.commands.LeedBuildingDetailsCommand;
 import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -563,12 +569,25 @@ public class FacilioChainFactory {
 		c.addCommand(new SetSiteRecordForRollUpFieldCommand());
 		c.addCommand(new ExecuteRollUpFieldCommand());
 		c.addCommand(new ExecuteStateFlowCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
 		return c;
 	}
 	
 	public static FacilioChain getUpdateCampusChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new ValidateCampusFieldsCommand());
+		c.addCommand(new FacilioCommand() {
+			@Override
+			public boolean executeCommand(Context context) throws Exception {
+				String moduleName = (String) context.get(FacilioConstants.ContextNames.SPACE_TYPE);
+				BaseSpaceContext baseSpace = (BaseSpaceContext) context.get(FacilioConstants.ContextNames.BASE_SPACE);
+				baseSpace = (BaseSpaceContext) RecordAPI.getRecord(moduleName, baseSpace.getId());
+				CommonCommandUtil.addToRecordMap((FacilioContext) context, moduleName, baseSpace);
+				return false;
+			}
+		});
+		c.addCommand(new ChangeApprovalStatusForModuleDataCommand());
+		c.addCommand(new VerifyApprovalCommand());
 		c.addCommand(updateLocationChain());
 		c.addCommand(new UpdateBaseSpaceCommand());
 		c.addCommand(new SetBaseSpaceRecordForRollUpFieldCommand());
@@ -577,6 +596,7 @@ public class FacilioChainFactory {
 		c.addCommand(new ExecuteRollUpFieldCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
 		c.addCommand(new ForkChainToInstantJobCommand()
 				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
 		return c;
@@ -663,6 +683,7 @@ public class FacilioChainFactory {
 		c.addCommand(new SetBuildingRecordForRollUpFieldCommand());
 		c.addCommand(new ExecuteRollUpFieldCommand());
 		c.addCommand(new ExecuteStateFlowCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
 		return c;
 	}
 	
@@ -740,6 +761,7 @@ public class FacilioChainFactory {
 		c.addCommand(new SetFloorRecordForRollUpFieldCommand());
 		c.addCommand(new ExecuteRollUpFieldCommand());
 		c.addCommand(new ExecuteStateFlowCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
 		return c;
 	}
 	
@@ -797,6 +819,7 @@ public class FacilioChainFactory {
 		c.addCommand(new SetSpaceRecordForRollUpFieldCommand());
 		c.addCommand(new ExecuteRollUpFieldCommand());
 		c.addCommand(new ExecuteStateFlowCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
 		return c;
 	}
 	
