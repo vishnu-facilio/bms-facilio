@@ -18,8 +18,10 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.json.simple.JSONArray;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.workflows.context.WorkflowExpression.WorkflowExpressionType;
@@ -42,6 +44,8 @@ public class WorkflowContext implements Serializable {
 	private static org.apache.log4j.Logger log = org.apache.log4j.LogManager.getLogger(WorkflowUtil.class.getName());
 
 	private static final Logger LOGGER = Logger.getLogger(WorkflowContext.class.getName());
+	
+	boolean runAsAdmin;
 	
 	public WorkflowContext() {
 		this.setErrorListener(new ErrorListener());
@@ -445,6 +449,18 @@ public class WorkflowContext implements Serializable {
 	
 	public Object executeWorkflow() throws Exception {
 		
+		if(isRunAsAdmin()) {
+			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", true,AccountUtil.getCurrentOrg().getId());
+			return bean.executeWorkflow(this);
+		}
+		else {
+			return executeWorkflowScoped();
+		}
+	}
+	
+	
+	public Object executeWorkflowScoped() throws Exception {
+		
 		long currentMillis = System.currentTimeMillis();
 		int selectCount = AccountUtil.getCurrentSelectQuery(), pSelectCount = AccountUtil.getCurrentPublicSelectQuery();
 		
@@ -666,6 +682,16 @@ public class WorkflowContext implements Serializable {
 			}
 			return null;
 		}
+	}
+
+	public boolean isRunAsAdmin() {
+		return runAsAdmin;
+	}
+	public boolean getRunAsAdmin() {
+		return runAsAdmin;
+	}
+	public void setRunAsAdmin(boolean runAsAdmin) {
+		this.runAsAdmin = runAsAdmin;
 	}
 
 }

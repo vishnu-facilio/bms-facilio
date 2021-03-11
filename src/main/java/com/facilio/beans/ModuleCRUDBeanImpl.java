@@ -76,6 +76,7 @@ import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.services.procon.message.FacilioRecord;
 import com.facilio.timeseries.TimeSeriesAPI;
+import com.facilio.workflows.context.WorkflowContext;
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 
 import javax.activation.DataSource;
@@ -1533,6 +1534,11 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			LOGGER.info("Added Workorder from Email Parser : " + requestId );
 		}
 		return requestId;
+	}
+
+	@Override
+	public Object executeWorkflow(WorkflowContext workflowContext) throws Exception {
+		return workflowContext.executeWorkflowScoped();
 	}
 }
 
