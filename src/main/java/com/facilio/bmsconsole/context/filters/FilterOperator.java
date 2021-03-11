@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.context.filters;
 
 import com.facilio.db.criteria.operators.Operator;
+import lombok.Getter;
 import org.apache.commons.lang.StringUtils;
 
 public class FilterOperator {
@@ -18,6 +19,10 @@ public class FilterOperator {
         this(operator, displayName, null, null, null);
     }
 
+    public FilterOperator(Operator operator, String displayName, FilterFieldContext.FilterFieldLookupModule lookupModule) {
+        this(operator, displayName, null, null, null, null, lookupModule);
+    }
+
     public FilterOperator(Operator operator, String displayName, Boolean defaultSelection) {
         this (operator, displayName, null, null, null, defaultSelection);
     }
@@ -27,12 +32,17 @@ public class FilterOperator {
     }
 
     public FilterOperator(Operator operator, String displayName, String tagDisplayName, Boolean valueNeeded, String defaultValue, Boolean defaultSelection) {
+        this (operator, displayName, tagDisplayName, valueNeeded, defaultValue, defaultSelection, null);
+    }
+
+    public FilterOperator(Operator operator, String displayName, String tagDisplayName, Boolean valueNeeded, String defaultValue, Boolean defaultSelection, FilterFieldContext.FilterFieldLookupModule lookupModule) {
         this.operator = operator;
         this.displayName = displayName;
         this.tagDisplayName = tagDisplayName;
         this.valueNeeded = valueNeeded;
         this.defaultValue = defaultValue;
         this.defaultSelection = defaultSelection;
+        this.lookupModule = lookupModule;
     }
 
     private String displayName;
@@ -65,4 +75,7 @@ public class FilterOperator {
     public boolean getDefaultSelection() {
         return defaultSelection != null ? defaultSelection : operator == null ? false : operator.isDefaultSelection();
     }
+
+    @Getter
+    private FilterFieldContext.FilterFieldLookupModule lookupModule;
 }

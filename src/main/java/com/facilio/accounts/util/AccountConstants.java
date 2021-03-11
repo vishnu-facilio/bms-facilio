@@ -667,6 +667,7 @@ public class AccountConstants {
 		roleModule.setName("role");
 		roleModule.setDisplayName("Roles");
 		roleModule.setTableName("Role");
+		roleModule.setType(FacilioModule.ModuleType.PICK_LIST);
 
 		return roleModule;
 	}

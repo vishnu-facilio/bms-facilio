@@ -114,7 +114,7 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
         return filterField;
     }
 
-    private void handleSpecialOperators (FilterFieldContext field) {
+    private void handleSpecialOperators (FilterFieldContext field) throws Exception {
         if (field.getLookupModule() != null && StringUtils.isNotEmpty(field.getLookupModule().getName()) ) {
             switch (field.getLookupModule().getName()) {
                 case FacilioConstants.ContextNames.RESOURCE:
@@ -122,7 +122,13 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
                     field.setOperators(Collections.singletonList(new FilterOperator(BuildingOperator.BUILDING_IS, "within", true)));
                     break;
                 case FacilioConstants.ContextNames.USERS:
-                    field.setOperators(Collections.singletonList(new FilterOperator(UserOperators.ROLE_IS, "with role")));
+                    ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                    field.setOperators(Collections.singletonList(
+                                        new FilterOperator(
+                                                UserOperators.ROLE_IS,
+                                                "with role",
+                                                new FilterFieldContext.FilterFieldLookupModule(modBean.getModule(ContextNames.ROLE))
+                                        )));
                     break;
             }
         }

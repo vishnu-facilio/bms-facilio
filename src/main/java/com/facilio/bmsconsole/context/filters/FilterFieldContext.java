@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.context.filters;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.json.annotations.JSON;
@@ -131,47 +133,31 @@ public class FilterFieldContext {
         return null;
     }
 
+    @Getter
     private FilterFieldLookupModule lookupModule;
-    public FilterFieldLookupModule getLookupModule() {
-        return lookupModule;
-    }
 
+    @Getter @Setter
     private List<FilterOperator> operators;
-    public List<FilterOperator> getOperators() {
-        return operators;
-    }
-    public void setOperators(List<FilterOperator> operators) {
-        this.operators = operators;
-    }
 
+    @Getter
     private List<FieldOption> options;
-    public List<FieldOption> getOptions() {
-        return options;
-    }
 
+    @Getter
     public static class FilterFieldLookupModule {
-        String name, displayName;
-        boolean showPopup;
-        JSONObject filters;
+        private String name, displayName;
+        private Boolean showPopup;
+        private JSONObject filters;
 
-        private FilterFieldLookupModule (String name, String displayName, boolean showPopup, JSONObject filters) {
+        public FilterFieldLookupModule (String name, String displayName, boolean showPopup, JSONObject filters) {
             this.name = name;
             this.displayName = displayName;
             this.showPopup = showPopup;
             this.filters = filters;
         }
 
-        public String getName() {
-            return name;
-        }
-        public  String getDisplayName() {
-            return displayName;
-        }
-        public boolean isShowPopup() {
-            return showPopup;
-        }
-        public JSONObject getFilters() {
-            return filters;
+        public FilterFieldLookupModule (FacilioModule module) {
+            this.name = module.getName();
+            this.displayName = module.getDisplayName();
         }
     }
 
