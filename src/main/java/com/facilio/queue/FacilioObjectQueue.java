@@ -74,7 +74,7 @@ public class FacilioObjectQueue {
 
 	public void delete(long ttime)throws Exception{
 		try {
-			queueInstance.deleteQueue(ttime);
+			FacilioService.runAsService(FacilioConstants.Services.INSTANT_JOB_SERVICE,() ->queueInstance.deleteQueue(ttime));
 		}catch(Exception e) {
 			throw e;
 		}
