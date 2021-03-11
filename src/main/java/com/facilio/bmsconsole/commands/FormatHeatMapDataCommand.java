@@ -55,7 +55,7 @@ public class FormatHeatMapDataCommand extends FacilioCommand{
 		}
 		
 		
-		if((reportContext.getAnalyticsType() == 3 && reportContext.getType() == 1)|| ("heatmap".equalsIgnoreCase(chartType))) {
+		if((reportContext.getAnalyticsType() == 3 && (reportContext.getType() == 1 || reportContext.getType() == 4))|| ("heatmap".equalsIgnoreCase(chartType))) {
 			Collection<Map<String, Object>> data = (Collection<Map<String, Object>>) reportData.get(FacilioConstants.ContextNames.DATA_KEY);
 			
 			DateRange range = reportContext.getDateRange();
@@ -64,7 +64,7 @@ public class FormatHeatMapDataCommand extends FacilioCommand{
 			Long startTime=range.getStartTime();
 			Long endTime=range.getEndTime();
 			List<Map<String, Object>>  violatedReadings = new ArrayList<>();
-			if(reportContext.getAnalyticsType() == 3 && reportContext.getType() == 1) {
+			if(reportContext.getAnalyticsType() == 3 && (reportContext.getType() == 1 || reportContext.getType() == 4)) {
 			violatedReadings = getViolatedReadings(reportContext,startTime,endTime);
 			}
 			List<Map<String, Object>> heatMapData = new ArrayList<>();
@@ -85,7 +85,7 @@ public class FormatHeatMapDataCommand extends FacilioCommand{
 				}
 			
 			HashMap markedDataMap= new HashMap();
-			if(reportContext.getAnalyticsType() == 3 && reportContext.getType() == 1) {
+			if(reportContext.getAnalyticsType() == 3 && (reportContext.getType() == 1 || reportContext.getType() == 4)) {
 			for(Map<String, Object> record : violatedReadings) {
 				Date recordDate = new java.util.Date(((long) record.get("ttime")));
 				record.put("X", record.get("ttime"));
@@ -101,7 +101,7 @@ public class FormatHeatMapDataCommand extends FacilioCommand{
 				mapData.put("X", startTime);
 				mapData.put("Y",startTime);
 				Date date = new java.util.Date(startTime);
-				if(reportContext.getAnalyticsType() == 3 && reportContext.getType() == 1) {
+				if(reportContext.getAnalyticsType() == 3 && (reportContext.getType() == 1 || reportContext.getType() == 4)) {
 				if(reportDataMap.containsKey(sdf.format(date)) && !markedDataMap.containsKey(sdf.format(date))) {
 					mapData=(HashMap) reportDataMap.get(sdf.format(date));
 				}
