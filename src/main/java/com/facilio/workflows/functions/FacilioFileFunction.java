@@ -37,9 +37,10 @@ public enum FacilioFileFunction implements FacilioWorkflowFunctionInterface  {
 			
 			String stringContent = objects[5].toString();
 			
-			InputStream is = new ByteArrayInputStream(stringContent.getBytes());
-			
-			FTPUtil.putFile(objects[0].toString(), objects[1].toString(), objects[2].toString(), objects[3].toString(), is, objects[4].toString());
+			try(InputStream is = new ByteArrayInputStream(stringContent.getBytes())) {
+				
+				FTPUtil.putFile(objects[0].toString(), objects[1].toString(), objects[2].toString(), objects[3].toString(), is, objects[4].toString());
+			}
 			
 			return null;
 		};
