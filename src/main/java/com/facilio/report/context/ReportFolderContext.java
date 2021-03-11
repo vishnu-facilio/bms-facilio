@@ -95,4 +95,43 @@ public class ReportFolderContext extends ModuleBaseWithCustomFields {
 	public void setModifiedTime(long modifiedTime) {
 		this.modifiedTime = modifiedTime;
 	}
+	
+	public static enum FolderType {
+		MODULE,
+		READING,
+		PIVOT
+		;
+		
+		public int getValue() {
+			return ordinal() + 1;
+		}
+		
+		public static FolderType valueOf (int value) {
+			if (value > 0 && value <= values().length) {
+				return values() [value - 1];
+			}
+			return null;
+		}
+	}
+	
+	private FolderType folderType;
+
+	public int getFolderType() {
+		if (folderType != null) {
+			return folderType.getValue();
+		}
+		return -1;
+	}
+
+	public FolderType getFolderTypeEnum() {
+		return folderType;
+	}
+
+	public void setFolderType(int type) {
+		this.folderType = FolderType.valueOf(type);
+	}
+
+	public void setFolderType(FolderType folderType) {
+		this.folderType = folderType;
+	}
 }

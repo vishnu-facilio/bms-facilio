@@ -196,18 +196,6 @@ public class ConstructTabularReportData extends FacilioCommand {
 				if(data.getAggrEnum() != null) {
 					yAggr = data.getAggrEnum();
 				}
-				Criteria criteria = data.getCriteria();
-				if (criteria != null) {
-					dataPointContext.setCriteria(criteria);
-				}
-				if(data.getDateFieldId() != -1 && data.getDateFieldId() != -99 && data.getDatePeriod() != -1) {
-					FacilioField dateField = modBean.getField(data.getDateFieldId(), yAxisModule.getName());
-					Operator dateOperator = Operator.getOperator(data.getDatePeriod());
-					Criteria otherCrit = new Criteria();
-					Condition newCond = CriteriaAPI.getCondition(dateField, dateOperator);
-					otherCrit.addAndCondition(newCond);
-					dataPointContext.setOtherCriteria(otherCrit);
-				}
 				if(data.getReadingField() != null) {
 					if(data.getReadingField().getId()>0) {
 					yField =  modBean.getField(data.getReadingField().getId());
@@ -235,6 +223,18 @@ public class ConstructTabularReportData extends FacilioCommand {
 						dataPointContext.setLimit(((Number)sortBy.get("limit")).intValue());
 						dataPointContext.setDefaultSortPoint(true);
 					}
+				}
+				Criteria criteria = data.getCriteria();
+				if (criteria != null) {
+					dataPointContext.setCriteria(criteria);
+				}
+				if(data.getDateFieldId() != -1 && data.getDateFieldId() != -99 && data.getDatePeriod() != -1) {
+					FacilioField dateField = modBean.getField(data.getDateFieldId(), yAxisModule.getName());
+					Operator dateOperator = Operator.getOperator(data.getDatePeriod());
+					Criteria otherCrit = new Criteria();
+					Condition newCond = CriteriaAPI.getCondition(dateField, dateOperator);
+					otherCrit.addAndCondition(newCond);
+					dataPointContext.setOtherCriteria(otherCrit);
 				}
 				yAxis.setField(yAxisModule, yField);
 				yAxis.setAggr(yAggr);

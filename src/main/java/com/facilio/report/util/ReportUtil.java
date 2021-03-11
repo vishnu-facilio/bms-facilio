@@ -58,6 +58,7 @@ import com.facilio.modules.fields.NumberField;
 import com.facilio.report.context.ReportFactory.ModuleType;
 import com.facilio.report.context.ReportFactory.ReportFacilioField;
 import com.facilio.report.context.ReportFactory.WorkOrder;
+import com.facilio.report.context.ReportFolderContext.FolderType;
 import com.facilio.report.context.ReadingAnalysisContext.AnalyticsType;
 import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
 import com.facilio.time.DateRange;
@@ -248,7 +249,7 @@ public class ReportUtil {
 		return aggr == null || aggr == CommonAggregateOperator.ACTUAL ? field.getName() : field.getName()+"_"+aggr.getStringValue();
 	}
 	
-	public static List<ReportFolderContext> getAllReportFolder(String moduleName,boolean isWithReports, String searchText) throws Exception {
+	public static List<ReportFolderContext> getAllReportFolder(String moduleName,boolean isWithReports, String searchText, Boolean isPivot) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
 		
@@ -261,7 +262,14 @@ public class ReportUtil {
 													.table(reportFoldermodule.getTableName())
 //													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(reportFoldermodule))
 													.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
-													;
+		
+		if(isPivot) {
+			select.andCondition(CriteriaAPI.getCondition(fieldMap.get("folderType"),
+					String.valueOf(FolderType.PIVOT.getValue()), PickListOperators.IS));
+		} else {
+			select.andCondition(CriteriaAPI.getCondition(fieldMap.get("folderType"),
+					String.valueOf(FolderType.PIVOT.getValue()), PickListOperators.ISN_T));
+		}
 		
 		if (searchText != null) {
 			select.andCondition(CriteriaAPI.getCondition(fieldMap.get("name"), searchText, StringOperators.CONTAINS));
@@ -823,7 +831,9 @@ public class ReportUtil {
 															.select(Collections.singletonList(moduleFieldMap.get("moduleId")))
 															.table(modulesmodule.getTableName())
 															.andCondition(CriteriaAPI.getCondition(moduleFieldMap.get("type"),String.valueOf(FacilioModule.ModuleType.BASE_ENTITY.getValue()), NumberOperators.EQUALS))
-															.andCondition(CriteriaAPI.getCondition(moduleFieldMap.get("custom"),String.valueOf(true), BooleanOperators.IS));
+															.andCondition(CriteriaAPI.getCondition(moduleFieldMap.get("custom"),String.valueOf(true), BooleanOperators.IS))
+															.andCondition(CriteriaAPI.getCondition(fieldMap.get("folderType"),
+																	String.valueOf(FolderType.PIVOT.getValue()), PickListOperators.ISN_T));
 		
 		List<Map<String, Object>> moduleprops = selectModules.get();
 		

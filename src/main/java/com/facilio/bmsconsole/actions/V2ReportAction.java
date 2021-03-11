@@ -177,7 +177,7 @@ public class V2ReportAction extends FacilioAction {
 	
 	public String fetchReportFolders() throws Exception {
 		
-		List<ReportFolderContext> reportFolders = ReportUtil.getAllReportFolder(moduleName, getIsWithReport(), null);
+		List<ReportFolderContext> reportFolders = ReportUtil.getAllReportFolder(moduleName, getIsWithReport(), null, isPivot);
 		setResult("reportFolders", reportFolders);
 		setResult("moduleName", moduleName);
 		return SUCCESS;
@@ -207,6 +207,14 @@ public class V2ReportAction extends FacilioAction {
 		this.filters = filters;
 	}
 
+	private Boolean isPivot = false;
+	public Boolean getIsPivot() {
+		return isPivot;
+	}
+	public void setIsPivot(Boolean isPivot) {
+		this.isPivot = isPivot;
+	}
+	
 	private Boolean isWithReport;
 	public Boolean getIsWithReport() {
 		if (isWithReport == null) {
@@ -2389,7 +2397,7 @@ public class V2ReportAction extends FacilioAction {
 	
 	public String searchReportAndFolders() throws Exception {
 		
-		List<ReportFolderContext> reportFolders = ReportUtil.getAllReportFolder(moduleName, false, getSearch());
+		List<ReportFolderContext> reportFolders = ReportUtil.getAllReportFolder(moduleName, false, getSearch(),isPivot);
 		List<ReportContext> reports = ReportUtil.getReports(moduleName, getSearch());
 		setResult("reportFolders", reportFolders);
 		setResult("reports", reports);
