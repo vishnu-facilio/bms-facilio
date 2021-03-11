@@ -13,7 +13,6 @@ import org.apache.commons.lang3.StringUtils;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.forms.FacilioForm;
-import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.forms.FormFactory;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormField.Required;
@@ -21,6 +20,7 @@ import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -37,11 +37,11 @@ public class GetFormMetaCommand extends FacilioCommand {
 		String formModuleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);	// TODO...needs to be mandatory
 		FacilioModule formModule = null;
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		String appLinkName = AccountUtil.getCurrentApp() != null ? AccountUtil.getCurrentApp().getLinkName() : ApplicationLinkNames.FACILIO_MAIN_APP;
 		if (formModuleName != null) {
 			formModule = modBean.getModule(formModuleName);
 			if (formId == -1 && formName == null) {
-				FormType formType = (FormType) context.get(FacilioConstants.ContextNames.FORM_TYPE);
-				formName = FormFactory.getDefaultFormName(formModuleName,formType != null ? formType : FormType.WEB);
+				formName = FormFactory.getDefaultFormName(formModuleName,appLinkName);
 			}
 		}
 		
@@ -55,7 +55,7 @@ public class GetFormMetaCommand extends FacilioCommand {
 					form = FormFactory.getForm(formModuleName, formName);
 					if (form == null) {
 						childModule = formModule;
-						form = getChildForm(childModule);
+						form = getChildForm(childModule, appLinkName);
 					}
 				}
 				else {
@@ -64,7 +64,7 @@ public class GetFormMetaCommand extends FacilioCommand {
 						if (formName.startsWith("default_")) {
 							String modname = formName.replaceAll("default_", "");
 							childModule = modBean.getModule(modname);
-							form = getChildForm(childModule);
+							form = getChildForm(childModule, appLinkName);
 						}
 					}
 					else {
@@ -128,10 +128,13 @@ public class GetFormMetaCommand extends FacilioCommand {
 		return false;
 	}
 	
-	private FacilioForm getChildForm(FacilioModule childModule) throws Exception {
+	private FacilioForm getChildForm(FacilioModule childModule, String appLinkName) throws Exception {
 		FacilioForm form = null;
 		if (childModule != null && childModule.getExtendModule() != null) {
-			form = FormsAPI.getDefaultFormFromDBOrFactory(childModule.getExtendModule(), FormType.WEB);
+			if (appLinkName == null) {
+				appLinkName = ApplicationLinkNames.FACILIO_MAIN_APP;
+			}
+			form = FormsAPI.getDefaultFormFromDBOrFactory(childModule.getExtendModule(), appLinkName);
 			form.setDisplayName(childModule.getDisplayName());
 		}
 		return form;
@@ -139,9 +142,12 @@ public class GetFormMetaCommand extends FacilioCommand {
 	
 	private void setFields(FacilioForm form, ModuleBean modBean, List<FormField> fields, String moduleName, FacilioModule childModule, int count) throws Exception {
 		FormsAPI.setFieldDetails(modBean, fields, moduleName);
-		if (form.getFormTypeEnum()  == FormType.PORTAL) {
+		if (form.getAppLinkName() != null && form.getAppLinkName() != ApplicationLinkNames.FACILIO_MAIN_APP) {
 			return;
 		}
+//		if (form.getFormTypeEnum()  == FormType.PORTAL) {
+//			return;
+//		}
 
 		if (count == -1) {
 			count = Collections.max(fields, Comparator.comparing(s -> s.getSequenceNumber())).getSequenceNumber();
@@ -170,7 +176,7 @@ public class GetFormMetaCommand extends FacilioCommand {
 			List<FacilioField> customFields = modBean.getAllCustomFields(moduleName);
 			boolean isMultiSiteForm = form.getName().equalsIgnoreCase("multi_web_pm");
 			if (form.getName().equalsIgnoreCase("web_pm") || isMultiSiteForm) { // Temp...showing custom fields in standard form...will be removed once action in pm
-				FacilioForm defaultWoForm = form = FormsAPI.getDefaultFormFromDBOrFactory(modBean.getModule(moduleName), FormType.WEB, true);
+				FacilioForm defaultWoForm = form = FormsAPI.getDefaultFormFromDBOrFactory(modBean.getModule(moduleName), ApplicationLinkNames.FACILIO_MAIN_APP, true);
 				long sitesCount = SpaceAPI.getSitesCount();
 				customFields = defaultWoForm.getFields().stream().filter(field -> 
 					field.getField() != null && !field.getField().isDefault() && 

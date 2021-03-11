@@ -7,7 +7,6 @@ import java.util.Map;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.forms.FacilioForm;
-import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.forms.FacilioForm.LabelPosition;
 import com.facilio.bmsconsole.forms.FormFactory;
 import com.facilio.bmsconsole.forms.FormField;
@@ -15,6 +14,7 @@ import com.facilio.bmsconsole.forms.FormField.Required;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
@@ -27,10 +27,10 @@ public class AddDefaultFormForCustomModuleCommand extends FacilioCommand {
 		
 		// creating Standard form for the new module
 		FacilioForm form = new FacilioForm();
-		String defaultFormName = FormFactory.getDefaultFormName(module.getName(), FormType.WEB);
+		String defaultFormName = FormFactory.getDefaultFormName(module.getName(), ApplicationLinkNames.FACILIO_MAIN_APP);
 		form.setName(defaultFormName);
 		form.setDisplayName("Standard");
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		form.setLabelPosition(LabelPosition.LEFT);
 		
 		List<FormField> formFields = new ArrayList<>();

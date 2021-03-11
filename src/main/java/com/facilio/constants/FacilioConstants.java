@@ -1278,6 +1278,7 @@ public class FacilioConstants {
 		public static final String FORM_FIELDS = "formFields";
 		public static final String FORM_OBJECT = "formObject";
 		public static final String FORM_TYPE = "formType";
+		public static final String APP_LINKNAME = "appLinkName";
 		public static final String FORM_SECTION = "formSection";
 		
 		

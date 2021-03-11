@@ -109,17 +109,4 @@ public class AddOrUpdateServiceCatalogCommand extends FacilioCommand {
         builder.insert(map);
         serviceCatalog.setId((long) map.get("id"));
     }
-
-    private void validateForm(FacilioForm form) {
-        if (form == null) {
-            throw new IllegalArgumentException("Invalid form");
-        }
-        form.setFormType(FacilioForm.FormType.SERVICE_CATALOG);
-        form.setName("servicecatalog");
-        form.setHideInList(true);
-        List<FormSection> sections = form.getSections();
-        if (sections == null || sections.size() != 2) {
-            throw new IllegalArgumentException("Sections should be always 2");
-        }
-    }
 }

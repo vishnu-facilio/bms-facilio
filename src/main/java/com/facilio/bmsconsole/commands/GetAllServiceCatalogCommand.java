@@ -104,7 +104,7 @@ public class GetAllServiceCatalogCommand extends FacilioCommand {
 
             Criteria criteria = new Criteria();
             criteria.addAndCondition(CriteriaAPI.getIdCondition(ids, ModuleFactory.getFormModule()));
-            List<FacilioForm> forms = FormsAPI.getDBFormList(null, (FacilioForm.FormType) null, criteria, null, fetchFullForm);
+            List<FacilioForm> forms = FormsAPI.getDBFormList(null, criteria, null, fetchFullForm);
 //            GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 //                    .table(ModuleFactory.getFormModule().getTableName())
 //                    .select(FieldFactory.getFormFields())

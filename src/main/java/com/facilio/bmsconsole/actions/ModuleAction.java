@@ -19,12 +19,12 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.RollUpField;
-import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.BeanFactory;
@@ -453,8 +453,6 @@ public class ModuleAction extends FacilioAction {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
-		List<Integer> formTypes = Collections.singletonList(FormType.WEB.getIntVal());
-		context.put(FacilioConstants.ContextNames.FORM_TYPE, formTypes);
 		context.put("handleStateField", true);
 		
 		FacilioChain getFieldsChain = FacilioChainFactory.getGetFieldsChain();

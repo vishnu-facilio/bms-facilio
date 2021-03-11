@@ -46,7 +46,7 @@ public class ChangeNameLocalIdCommand extends FacilioCommand {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule module = modBean.getModule(moduleName);
 
-            List<FacilioForm> formList = FormsAPI.getDBFormList(module.getName(), (List<Integer>) null, null, null, true, false, true);
+            List<FacilioForm> formList = FormsAPI.getDBFormList(module.getName(), null, null, true, false, true, -1l);
             FacilioForm defaultForm = null;
 
             validateFieldChange(module, formList);

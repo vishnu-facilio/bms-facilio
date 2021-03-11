@@ -56,7 +56,7 @@ public class AddFormCommand extends FacilioCommand {
 				defaultForm = FormFactory.getForm(moduleName, defaultFormName);	// if form already present in factory
 			}
 			if (defaultForm == null) {
-				defaultForm = FormsAPI.getDefaultForm(moduleName, form.getFormTypeEnum());
+				defaultForm = FormsAPI.getDefaultForm(moduleName, form.getAppLinkName());
 			}
 			else {
 				form = defaultForm;

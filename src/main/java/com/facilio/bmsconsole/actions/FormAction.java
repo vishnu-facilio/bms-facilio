@@ -8,15 +8,16 @@ import java.util.Map;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.forms.FacilioForm;
-import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.forms.FormFactory;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -113,9 +114,27 @@ public class FormAction extends FacilioAction {
 	}
 
 	private long formId = -1;
-    private long formFieldId;
+	private long appId = -1;
+	private String appLinkName;
+    public String getAppLinkName() {
+		return appLinkName;
+	}
+
+	public void setAppLinkName(String appLinkName) {
+		this.appLinkName = appLinkName;
+	}
+
+	private long formFieldId;
     
 	
+	public long getAppId() {
+		return appId;
+	}
+
+	public void setAppId(long appId) {
+		this.appId = appId;
+	}
+
 	public long getFormFieldId() {
 		return formFieldId;
 	}
@@ -224,13 +243,6 @@ public class FormAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	public String getServicePortalForms() throws Exception{
-		
-		setModuleName(ContextNames.WORK_ORDER);
-		setFormTypeEnum(FormType.PORTAL);
-		
-		return formList();
-	}
 	
 	public String formList() throws Exception {
 		Context context=new FacilioContext();
@@ -245,10 +257,9 @@ public class FormAction extends FacilioAction {
 		if (fetchDisabledForms != null && fetchDisabledForms) {
 			context.put(FacilioConstants.ContextNames.FETCH_DISABLED_FORMS, true);
 		}
-		if (formType != null && CollectionUtils.isEmpty(formTypes)) {
-			formTypes = Collections.singletonList(formType.getIntVal());
-		}
-		context.put(FacilioConstants.ContextNames.FORM_TYPE, formTypes);
+		
+		context.put(FacilioConstants.ContextNames.APP_ID, appId);
+
 		
 		ReadOnlyChainFactory.getFormList().execute(context);
 		setResult("forms",context.get(ContextNames.FORMS));
@@ -265,7 +276,7 @@ public class FormAction extends FacilioAction {
 	}
 	
 	public String formFieldList() throws Exception {
-		List<FormField> fields = FormsAPI.getAllFormFields(moduleName, formType);
+		List<FormField> fields = FormsAPI.getAllFormFields(moduleName, appLinkName);
 		setResult("fields", fields);
 		
 		return SUCCESS;
@@ -282,16 +293,6 @@ public class FormAction extends FacilioAction {
 		return SUCCESS;
 	}
 
-	public String addSubForm() throws Exception {
-		if (form == null) {
-			throw new IllegalArgumentException("Form cannot be empty");
-		}
-
-		form.setHideInList(true);
-		form.setFormType(FormType.WEB);
-		addForm();
-		return SUCCESS;
-	}
 	
 	public String addForm() throws Exception {
 		Context context=new FacilioContext();
@@ -306,24 +307,8 @@ public class FormAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	private FormType formType;
-	public FormType getFormTypeEnum() {
-		return formType;
-	}
-	public void setFormType(int type) {
-		this.formType = FormType.getFormType(type);
-	}
-	public void setFormTypeEnum(FormType type) {
-		this.formType = type;
-	}
 	
-	private List<Integer> formTypes;
-	public List<Integer> getFormTypes() {
-		return formTypes;
-	}
-	public void setFormTypes(List<Integer> formTypes) {
-		this.formTypes = formTypes;
-	}
+
 
 	public long getFormId() {
 		return formId;
@@ -347,7 +332,6 @@ public class FormAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.FORM_NAME, formName);
 		context.put(FacilioConstants.ContextNames.FORM_ID, formId);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-		context.put(FacilioConstants.ContextNames.FORM_TYPE, formType);
 		context.put(FacilioConstants.ContextNames.FETCH_FORM_RULE_FIELDS, fetchFormRuleFields);
 		context.put("fromBuilder", isFromBuilder());
 		

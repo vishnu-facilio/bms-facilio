@@ -16,11 +16,11 @@ import org.apache.commons.collections4.MapUtils;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.bmsconsole.context.WorkOrderContext.WOUrgency;
-import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.forms.FacilioForm.LabelPosition;
 import com.facilio.bmsconsole.forms.FormField.Required;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
@@ -35,7 +35,7 @@ import com.google.common.collect.Multimaps;
 public class FormFactory {
 	
 	private static final Map<String, FacilioForm> FORM_MAP = Collections.unmodifiableMap(initMap());
-	private static final Map<FormType, Multimap<String, FacilioForm>> ALL_FORMS = Collections.unmodifiableMap(initAllForms());
+	private static final Map<String, Multimap<String, FacilioForm>> ALL_FORMS = Collections.unmodifiableMap(initAllForms());
 	private static final Map<String, Map<String, FacilioForm>> FORMS_LIST = Collections.unmodifiableMap(initFormsList());
 
 	// TODO remove...use FORMS_LIST to get details
@@ -116,18 +116,14 @@ public class FormFactory {
 	}
     
 	@SuppressWarnings("unchecked") // https://stackoverflow.com/a/11205178
-	public static Map<String, Set<FacilioForm>> getAllForms(FormType formtype) {
-		return (Map<String, Set<FacilioForm>>) (Map<?, ?>) Multimaps.asMap(ALL_FORMS.get(formtype));
+	public static Map<String, Set<FacilioForm>> getAllForms(String appLinkName) {
+		return (Map<String, Set<FacilioForm>>) (Map<?, ?>) Multimaps.asMap(ALL_FORMS.get(appLinkName));
 	}
 	
 	// TODO remove...use FORMS_LIST to get details
-	private static Map<FormType, Multimap<String, FacilioForm>> initAllForms() {
-		return ImmutableMap.<FormType, Multimap<String, FacilioForm>>builder()
-				.put(FormType.MOBILE, ImmutableMultimap.<String, FacilioForm>builder()
-						.put(FacilioConstants.ContextNames.WORK_ORDER, getMobileWorkOrderForm())
-						.put(FacilioConstants.ContextNames.APPROVAL, getMobileApprovalForm())
-						.put(FacilioConstants.ContextNames.ASSET, getMobileAssetForm()).build())
-				.put(FormType.WEB, ImmutableMultimap.<String, FacilioForm>builder()
+	private static Map<String, Multimap<String, FacilioForm>> initAllForms() {
+		return ImmutableMap.<String, Multimap<String, FacilioForm>>builder()
+				.put(ApplicationLinkNames.FACILIO_MAIN_APP, ImmutableMultimap.<String, FacilioForm>builder()
 						.put(FacilioConstants.ContextNames.WORK_ORDER, getWebWorkOrderForm())
 						.put(FacilioConstants.ContextNames.ASSET, getAssetForm())
 						.put(FacilioConstants.ContextNames.ENERGY_METER, getEnergyMeterForm())
@@ -163,15 +159,15 @@ public class FormFactory {
 				.build();
 	}
 	
-	public static Map<String, FacilioForm> getForms(String moduleName, List<Integer> formtype) {
+	public static Map<String, FacilioForm> getForms(String moduleName, List<String> appLinkNames) {
 		Map<String, FacilioForm> forms = getForms(moduleName);
 		if (MapUtils.isEmpty(forms)) {
 			return new HashMap<>();
 		}
-		if (formtype == null) {
+		if (appLinkNames == null) {
 			return forms;
 		}
-		return forms.entrySet().stream().filter(f -> formtype.contains(f.getValue().getFormType()))
+		return forms.entrySet().stream().filter(f -> appLinkNames.contains(f.getValue().getAppLinkName()))
 	            .collect(Collectors.toMap(f -> f.getKey(), f -> f.getValue()));
 	}
 	
@@ -180,15 +176,15 @@ public class FormFactory {
 	}
 	
 	public static FacilioForm getDefaultForm(String moduleName, FacilioForm form, Boolean...onlyFields) {
-		return getDefaultForm(moduleName, form.getFormTypeEnum(), onlyFields);
+		return getDefaultForm(moduleName, form.getAppLinkName(), onlyFields);
 	}
 	
-	public static FacilioForm getDefaultForm(String moduleName, FormType formType, Boolean...onlyFields) {
-		return getForm(moduleName, getDefaultFormName(moduleName, formType) , onlyFields);
+	public static FacilioForm getDefaultForm(String moduleName, String appLinkName, Boolean...onlyFields) {
+		return getForm(moduleName, getDefaultFormName(moduleName, appLinkName) , onlyFields);
 	}
 	
-	public static String getDefaultFormName(String moduleName, FormType formType) {
-		return "default_"+moduleName+"_"+ (formType == FormType.PORTAL ? FormType.PORTAL.getStringVal() : "web") ;
+	public static String getDefaultFormName(String moduleName, String appLinkName) {	
+		return "default_"+moduleName+"_"+ (appLinkName.equals(ApplicationLinkNames.OCCUPANT_PORTAL_APP) ? "portal" : "web") ;
 	}
 	
 	public static FacilioForm getForm(String moduleName, String formName, Boolean...onlyFields) {
@@ -208,7 +204,7 @@ public class FormFactory {
 				List<FormField> taskFields = new ArrayList<>();
 				
 				FormSection defaultSection = new FormSection("WORKORDER", i++, defaultFields, true);
-				if (form.getFormTypeEnum() == FormType.PORTAL) {
+				if (form.getAppLinkName() == ApplicationLinkNames.OCCUPANT_PORTAL_APP) {
 					defaultSection.setShowLabel(false);
 				}
 				sections.add(defaultSection);
@@ -222,7 +218,7 @@ public class FormFactory {
 				 });
 				
 //				List<FormField> task = form.getFields().stream().filter(field -> field.getDisplayTypeEnum() == FieldDisplayType.TASKS).collect(Collectors.toList());
-				if (form.getFormTypeEnum() != FormType.PORTAL && !taskFields.isEmpty()) {
+				if (form.getAppLinkName() != ApplicationLinkNames.OCCUPANT_PORTAL_APP && !taskFields.isEmpty()) {
 					FormSection taskSection = new FormSection("TASKS", i++, taskFields, true);
 					sections.add(taskSection);
 				}
@@ -423,7 +419,7 @@ public class FormFactory {
 	
 	private static Map<String, Map<String, FacilioForm>>  initFormsList() {
 		List<FacilioForm> woForms = Arrays.asList(getWebWorkOrderForm(), getServiceWorkOrderForm(), getAlarmWorkOrderForm(), getMultiPMForm());
-		List<FacilioForm> assetForms = Arrays.asList(getAssetForm(), getMobileAssetForm());
+		List<FacilioForm> assetForms = Arrays.asList(getAssetForm());
 		List<FacilioForm> energyMeterForm = Arrays.asList(getEnergyMeterForm());
 		List<FacilioForm> tenantForm = Arrays.asList(getTenantForm());
 		List<FacilioForm> poForm = Arrays.asList(getPurchaseOrderForm());
@@ -557,7 +553,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getServiceWorkOrderFormFields());
-		form.setFormType(FormType.PORTAL);
+		form.setAppLinkName(ApplicationLinkNames.OCCUPANT_PORTAL_APP);
 		return form;
 	}
 	
@@ -568,43 +564,10 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER));
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getWebApprovalFormFields());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 	
-	public static FacilioForm getMobileApprovalForm() {
-		FacilioForm form = new FacilioForm();
-		form.setDisplayName("Approval");
-		form.setName("mobile_approval");
-		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER));
-		form.setLabelPosition(LabelPosition.LEFT);
-		form.setFields(getMobileApprovalFormFields());
-		form.setFormType(FormType.MOBILE);
-		return form;
-	}
-	
-	public static FacilioForm getMobileWorkOrderForm() {
-		FacilioForm form = new FacilioForm();
-		form.setDisplayName("SUBMIT WORKORDER");
-		form.setName("mobile_default");
-		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER));
-		form.setLabelPosition(LabelPosition.LEFT);
-		form.setFields(getMobileWorkOrderFormFields());
-		form.setFormType(FormType.MOBILE);
-		return form;
-	}
-	
-	public static FacilioForm getMobileAssetForm() {
-		FacilioForm form = new FacilioForm();
-		form.setDisplayName("Asset");
-		form.setName("default_asset_mobile");
-		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.ASSET));
-		form.setLabelPosition(LabelPosition.LEFT);
-		form.setFields(getMobileAssetFormFields());
-		form.setFormType(FormType.MOBILE);
-		form.setShowInMobile(true);
-		return form;
-	}
 	
 	private static List<FormField> getMobileApprovalFormFields() {
 		List<FormField> fields = new ArrayList<>();
@@ -672,7 +635,7 @@ public class FormFactory {
 		defaultForm.setName("default_floor_web");
 		defaultForm.setModule(floorModule);
 		defaultForm.setDisplayName("Standard");
-		defaultForm.setFormType(FacilioForm.FormType.WEB);
+		defaultForm.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
 		defaultForm.setShowInWeb(true);
 
@@ -696,7 +659,7 @@ public class FormFactory {
 		defaultForm.setName("default_space_web_site");
 		defaultForm.setModule(spaceModule);
 		defaultForm.setDisplayName("Standard");
-		defaultForm.setFormType(FacilioForm.FormType.WEB);
+		defaultForm.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
 		defaultForm.setShowInWeb(true);
 
@@ -729,7 +692,7 @@ public class FormFactory {
 		defaultForm.setName("default_space_web_building");
 		defaultForm.setModule(spaceModule);
 		defaultForm.setDisplayName("Standard");
-		defaultForm.setFormType(FacilioForm.FormType.WEB);
+		defaultForm.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
 		defaultForm.setShowInWeb(true);
 
@@ -761,7 +724,7 @@ public class FormFactory {
 		defaultForm.setName("default_space_web_floor");
 		defaultForm.setModule(spaceModule);
 		defaultForm.setDisplayName("Standard");
-		defaultForm.setFormType(FacilioForm.FormType.WEB);
+		defaultForm.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
 		defaultForm.setShowInWeb(true);
 		
@@ -793,7 +756,7 @@ public class FormFactory {
 		defaultForm.setName("default_space_web_space");
 		defaultForm.setModule(spaceModule);
 		defaultForm.setDisplayName("Standard");
-		defaultForm.setFormType(FacilioForm.FormType.WEB);
+		defaultForm.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
 		defaultForm.setShowInWeb(true);
 		
@@ -825,7 +788,7 @@ public class FormFactory {
 		defaultForm.setName("default_building_web");
 		defaultForm.setModule(buildingModule);
 		defaultForm.setDisplayName("Standard");
-		defaultForm.setFormType(FacilioForm.FormType.WEB);
+		defaultForm.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
 		defaultForm.setShowInWeb(true);
 
@@ -851,7 +814,7 @@ public class FormFactory {
 		defaultForm.setName("default_site_web");
 		defaultForm.setModule(siteModule);
 		defaultForm.setDisplayName("Standard");
-		defaultForm.setFormType(FacilioForm.FormType.WEB);
+		defaultForm.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
 		defaultForm.setShowInWeb(true);
 
@@ -882,7 +845,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER));
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getWebWorkOrderFormFields());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 	
@@ -893,7 +856,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER));
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getAlarmWorkOrderFormFields());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		form.setHideInList(true);
 		form.setIgnoreCustomFields(true);
 		return form;
@@ -905,7 +868,7 @@ public class FormFactory {
 		form.setName("default_asset_web");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.ASSET));
 		form.setLabelPosition(LabelPosition.TOP);
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		form.setFields(getWebAssetFormFields());
 		return form;
 	}
@@ -916,7 +879,7 @@ public class FormFactory {
 		form.setName("default_energymeter_web");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.ENERGY_METER));
 		form.setLabelPosition(LabelPosition.TOP);
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		form.setFields(getWebEnergyMeterFormFields());
 		return form;
 	}
@@ -927,7 +890,7 @@ public class FormFactory {
 		form.setName("default_tenant_web");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.TENANT));
 		form.setLabelPosition(LabelPosition.TOP);
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		form.setFields(getTenantsFormField());
 		return form;
 	}
@@ -938,7 +901,7 @@ public class FormFactory {
 		form.setName("web_pm");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER));
 		form.setLabelPosition(LabelPosition.LEFT);
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		form.setFields(getWebPMFormFields());
 		return form;
 	}
@@ -949,7 +912,7 @@ public class FormFactory {
 		form.setName("multi_web_pm");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER));
 		form.setLabelPosition(LabelPosition.LEFT);
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		form.setFields(getMultiSiteWebPMFormFields());
 		form.setHideInList(true);
 		return form;
@@ -962,7 +925,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.STORE_ROOM));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getStoreRoomFormField());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 	
@@ -973,7 +936,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.ITEM_TYPES));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getItemTypesFormField());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 	
@@ -984,7 +947,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.INVENTORY_CATEGORY));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getInventoryCategoryFormField());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 
@@ -996,7 +959,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.LOCATION));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getLocationFormField());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 
@@ -1007,7 +970,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.TOOL_TYPES));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getToolTypesFormField());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 	
@@ -1018,7 +981,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.VENDORS));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getVendorsFormField());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 	
@@ -1029,7 +992,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.VENDORS));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getVendorContactFormField());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 	
@@ -1040,7 +1003,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.VENDORS));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getPortalVendorFormField());
-		form.setFormType(FormType.PORTAL);
+		form.setAppLinkName(ApplicationLinkNames.OCCUPANT_PORTAL_APP);
 		return form;
 	}
 
@@ -1052,7 +1015,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.TENANT));
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getTenantsFormField());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 
@@ -1063,7 +1026,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.ITEM));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getItemFormField());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 
@@ -1074,7 +1037,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.ITEM));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getItemWithIndTrackFormField());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 	
@@ -1085,7 +1048,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.TOOL));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getToolFormField());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 
@@ -1096,7 +1059,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.TOOL));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getToolTrackWithIndFormField());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 	
@@ -1107,7 +1070,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.CLIENT));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getClientFormField());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 
@@ -1118,7 +1081,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.TENANT_UNIT_SPACE));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getTenantUnitFormFields());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 
@@ -1129,7 +1092,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.TENANT_CONTACT));
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getTenantContactsFormField());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 
@@ -1140,7 +1103,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.TENANT_CONTACT));
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getTenantContactsPortalFormField());
-		form.setFormType(FormType.PORTAL);
+		form.setAppLinkName(ApplicationLinkNames.OCCUPANT_PORTAL_APP);
 		return form;
 	}
 
@@ -1151,7 +1114,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.VENDOR_CONTACT));
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getVendorContactsFormField());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 
@@ -1162,7 +1125,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.CLIENT_CONTACT));
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getClientContactsFormField());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 
@@ -1173,7 +1136,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.EMPLOYEE));
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getEmployeeContactsFormField());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 
@@ -1620,7 +1583,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.LABOUR));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getLabourFormFields());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 	
@@ -1631,7 +1594,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.PURCHASE_REQUEST));
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getPurchaseRequestFormFields());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 	
@@ -1643,7 +1606,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER));
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getPurchaseOrderFormFields());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 	
@@ -1654,7 +1617,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.PURCHASE_CONTRACTS));
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getPurchaseContractFormFields());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 	public static FacilioForm getLabourContractForm() {
@@ -1664,7 +1627,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.LABOUR_CONTRACTS));
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getLabourContractFormFields());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 	public static FacilioForm getPoRequesterForm() {
@@ -1674,7 +1637,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.REQUESTER));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getPoRequesterFormFields());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 	
@@ -1685,7 +1648,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.CONNECTED_APPS));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getConnectedAppFormFields());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 	
@@ -1795,7 +1758,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.INVENTORY_REQUEST));
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getInventoryRequestFormFields());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 	
@@ -1820,7 +1783,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.INVENTORY_REQUEST));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getInventoryRequestWorkOrderFormFields());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 	
@@ -1846,7 +1809,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.SERVICE));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getServiceFormFields());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 	
@@ -1871,7 +1834,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS));
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getRentalLeaseFormFields());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 	
@@ -1896,7 +1859,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS));
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getWarrantyContractFormFields());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 	
@@ -1921,7 +1884,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getTermsAndConditionFormFields());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 	
@@ -1943,7 +1906,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.Reservation.RESERVATION));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getReservationFormFields());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 	
@@ -1975,7 +1938,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ModuleNames.DEVICES));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getDevicesFormFields());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 	private static List<FormField> getDevicesFormFields() {
@@ -1995,7 +1958,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ModuleNames.PRINTERS));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getPrinterFormFields());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 	
@@ -2006,7 +1969,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getVendorDocumentsModule());
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getVendorDocumentsFormFields());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 	
@@ -2017,7 +1980,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getVendorDocumentsModule());
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getVendorDocumentsFormFields());
-		form.setFormType(FormType.PORTAL);
+		form.setAppLinkName(ApplicationLinkNames.OCCUPANT_PORTAL_APP);
 		return form;
 	}
 	
@@ -2048,7 +2011,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.VISITOR));
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getVisitorKioskFormFields());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 	
@@ -2070,7 +2033,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.VISITOR));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getVisitorFormFields());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 	
@@ -2081,7 +2044,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.VISITOR));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getVisitorFormFields());
-		form.setFormType(FormType.PORTAL);
+		form.setAppLinkName(ApplicationLinkNames.OCCUPANT_PORTAL_APP);
 		return form;
 	}
 
@@ -2102,7 +2065,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.VISITOR_INVITE));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getVisitorPreRegisterFormFields());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 
@@ -2127,7 +2090,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getPotalVisitorPreRegisterFormFields());
-		form.setFormType(FormType.PORTAL);
+		form.setAppLinkName(ApplicationLinkNames.OCCUPANT_PORTAL_APP);
 		return form;
 	}
 
@@ -2152,7 +2115,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getGuestFormFields());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 	
@@ -2176,7 +2139,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getVendorFormFields());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 	private static List<FormField> getVendorFormFields()
@@ -2198,7 +2161,7 @@ public class FormFactory {
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getEmployeeFormFields());
 		
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 	private static List<FormField> getEmployeeFormFields()
@@ -2217,7 +2180,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getVisitorLogFormFields());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 
@@ -2236,7 +2199,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WATCHLIST));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getWatchListFormFields());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 
@@ -2262,7 +2225,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WorkPermit.WORKPERMIT));
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getWorkPermitFormFields());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 	
@@ -2273,7 +2236,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WorkPermit.WORKPERMIT));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getPortalWorkPermitFormFields());
-		form.setFormType(FormType.PORTAL);
+		form.setAppLinkName(ApplicationLinkNames.OCCUPANT_PORTAL_APP);
 		return form;
 	}
 	
@@ -2313,7 +2276,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.INSURANCE));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getInsuranceFormFields());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 	
@@ -2324,7 +2287,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.INSURANCE));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getPortalInsuranceFormFields());
-		form.setFormType(FormType.PORTAL);
+		form.setAppLinkName(ApplicationLinkNames.OCCUPANT_PORTAL_APP);
 		return form;
 	}
 	
@@ -2356,7 +2319,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.CONTACT));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getContactFormFields());
-		form.setFormType(FormType.PORTAL);
+		form.setAppLinkName(ApplicationLinkNames.OCCUPANT_PORTAL_APP);
 		return form;
 	}
 
@@ -2367,7 +2330,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.CONTACT));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getContactFormFields());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 
@@ -2393,7 +2356,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.OCCUPANT));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getOccupantFormFields());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 
@@ -2417,7 +2380,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.SERVICE_REQUEST));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getServiceRequestFormFields());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 
@@ -2463,7 +2426,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.SAFETY_PLAN));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getSafetyPlanFormFields());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 	public static FacilioForm getHazardForm() {
@@ -2473,7 +2436,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.HAZARD));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getHazardFormFields());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 	public static FacilioForm getPrecautionForm() {
@@ -2483,7 +2446,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.PRECAUTION));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getPrecautionFormFields());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 	
@@ -2529,7 +2492,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.QUOTE));
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getQuotationFormFields());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 
@@ -2541,7 +2504,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENT));
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getAnnouncementFormFields());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 	private static List<FormField> getQuotationFormFields() {
@@ -2575,7 +2538,7 @@ public class FormFactory {
 		form.setName("default_workpermittype_web");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_TYPE));
 		form.setLabelPosition(LabelPosition.TOP);
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("type", FieldDisplayType.TEXTBOX, "Type", Required.REQUIRED, 1, 1));
@@ -2589,7 +2552,7 @@ public class FormFactory {
 		form.setName("default_workpermittypechecklistcategory_web");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_TYPE_CHECKLIST_CATEGORY));
 		form.setLabelPosition(LabelPosition.TOP);
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
@@ -2604,7 +2567,7 @@ public class FormFactory {
 		form.setName("default_workpermittypechecklist_web");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_TYPE_CHECKLIST_CATEGORY));
 		form.setLabelPosition(LabelPosition.TOP);
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("item", FieldDisplayType.TEXTBOX, "Item", Required.REQUIRED, 1, 1));
@@ -2641,7 +2604,7 @@ public class FormFactory {
 		form.setName("default_"+ FacilioConstants.ContextNames.Tenant.NEWS_AND_INFORMATION +"_web");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.Tenant.NEWS_AND_INFORMATION));
 		form.setLabelPosition(LabelPosition.LEFT);
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("title", FieldDisplayType.TEXTBOX, "Title", Required.REQUIRED, 1, 1));
@@ -2668,7 +2631,7 @@ public class FormFactory {
 		form.setName("default_"+ FacilioConstants.ContextNames.Tenant.NEIGHBOURHOOD +"_web");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.Tenant.NEIGHBOURHOOD));
 		form.setLabelPosition(LabelPosition.LEFT);
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("title", FieldDisplayType.TEXTBOX, "Title", Required.REQUIRED, 1, 1));
@@ -2699,7 +2662,7 @@ public class FormFactory {
 		form.setName("default_"+ FacilioConstants.ContextNames.Tenant.NEIGHBOURHOOD +"_portal");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.Tenant.NEIGHBOURHOOD));
 		form.setLabelPosition(LabelPosition.LEFT);
-		form.setFormType(FormType.PORTAL);
+		form.setAppLinkName(ApplicationLinkNames.OCCUPANT_PORTAL_APP);
 
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("title", FieldDisplayType.TEXTBOX, "Title", Required.REQUIRED, 1, 1));
@@ -2729,7 +2692,7 @@ public class FormFactory {
 		form.setName("default_"+ FacilioConstants.ContextNames.Tenant.DEALS_AND_OFFERS +"_web");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.Tenant.DEALS_AND_OFFERS));
 		form.setLabelPosition(LabelPosition.LEFT);
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("title", FieldDisplayType.TEXTBOX, "Title", Required.REQUIRED, 1, 1));
@@ -2757,7 +2720,7 @@ public class FormFactory {
 		form.setName("default_"+ FacilioConstants.ContextNames.Tenant.DEALS_AND_OFFERS +"_portal");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.Tenant.DEALS_AND_OFFERS));
 		form.setLabelPosition(LabelPosition.LEFT);
-		form.setFormType(FormType.PORTAL);
+		form.setAppLinkName(ApplicationLinkNames.OCCUPANT_PORTAL_APP);
 
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("title", FieldDisplayType.TEXTBOX, "Title", Required.REQUIRED, 1, 1));
@@ -2786,7 +2749,7 @@ public class FormFactory {
 		form.setName("default_"+ FacilioConstants.ContextNames.Tenant.CONTACT_DIRECTORY +"_web");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.Tenant.CONTACT_DIRECTORY));
 		form.setLabelPosition(LabelPosition.LEFT);
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("contactName", FieldDisplayType.TEXTBOX, "Contact Name", Required.REQUIRED, 2, 1));
@@ -2808,7 +2771,7 @@ public class FormFactory {
 		form.setName("default_"+ FacilioConstants.ContextNames.Tenant.ADMIN_DOCUMENTS +"_web");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.Tenant.ADMIN_DOCUMENTS));
 		form.setLabelPosition(LabelPosition.LEFT);
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("title", FieldDisplayType.TEXTBOX, "Title", Required.REQUIRED, 1, 1));
@@ -2828,7 +2791,7 @@ public class FormFactory {
 		form.setName("default_"+ FacilioConstants.ContextNames.Budget.BUDGET +"_web");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.Budget.BUDGET));
 		form.setLabelPosition(LabelPosition.LEFT);
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
@@ -2849,7 +2812,7 @@ public class FormFactory {
 		form.setName("default_"+ ContextNames.Budget.CHART_OF_ACCOUNT +"_web");
 		form.setModule(ModuleFactory.getModule(ContextNames.Budget.CHART_OF_ACCOUNT));
 		form.setLabelPosition(LabelPosition.TOP);
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
@@ -2869,7 +2832,7 @@ public class FormFactory {
 		form.setName("default_"+ ContextNames.Budget.ACCOUNT_TYPE +"_web");
 		form.setModule(ModuleFactory.getModule(ContextNames.Budget.ACCOUNT_TYPE));
 		form.setLabelPosition(LabelPosition.TOP);
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
@@ -2885,7 +2848,7 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(ContextNames.PEOPLE));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getPeopleFormFields());
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
 
@@ -2906,7 +2869,7 @@ public class FormFactory {
 		form.setName("default_"+ ContextNames.FacilityBooking.FACILITY +"_web");
 		form.setModule(ModuleFactory.getModule(ContextNames.FacilityBooking.FACILITY));
 		form.setLabelPosition(LabelPosition.TOP);
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
@@ -2945,7 +2908,7 @@ public class FormFactory {
 		form.setName("default_"+ ContextNames.FacilityBooking.FACILITY_BOOKING +"_web");
 		form.setModule(ModuleFactory.getModule(ContextNames.FacilityBooking.FACILITY_BOOKING));
 		form.setLabelPosition(LabelPosition.TOP);
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("facility", FieldDisplayType.LOOKUP_SIMPLE, "Facility", Required.REQUIRED, "facility",1, 1));
@@ -2964,7 +2927,7 @@ public class FormFactory {
 		form.setName("default_"+ ContextNames.FacilityBooking.FACILITY_BOOKING +"_portal");
 		form.setModule(ModuleFactory.getModule(ContextNames.FacilityBooking.FACILITY_BOOKING));
 		form.setLabelPosition(LabelPosition.TOP);
-		form.setFormType(FormType.PORTAL);
+		form.setAppLinkName(ApplicationLinkNames.OCCUPANT_PORTAL_APP);
 
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("facility", FieldDisplayType.LOOKUP_SIMPLE, "Facility", Required.REQUIRED, "facility",1, 1));
@@ -2984,7 +2947,7 @@ public class FormFactory {
 		form.setName("default_"+ ContextNames.FacilityBooking.AMENITY +"_web");
 		form.setModule(ModuleFactory.getModule(ContextNames.FacilityBooking.AMENITY));
 		form.setLabelPosition(LabelPosition.TOP);
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED,1, 1));
@@ -3001,7 +2964,7 @@ public class FormFactory {
 		form.setName("default_"+ ContextNames.FacilityBooking.FACILITY_BOOKING_EXTERNAL_ATTENDEE +"_web");
 		form.setModule(ModuleFactory.getModule(ContextNames.FacilityBooking.FACILITY_BOOKING_EXTERNAL_ATTENDEE));
 		form.setLabelPosition(LabelPosition.TOP);
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED,1, 1));
@@ -3018,7 +2981,7 @@ public class FormFactory {
 		form.setName("default_"+ ContextNames.FacilityBooking.FACILITY_SPECIAL_AVAILABILITY +"_web");
 		form.setModule(ModuleFactory.getModule(ContextNames.FacilityBooking.FACILITY_SPECIAL_AVAILABILITY));
 		form.setLabelPosition(LabelPosition.TOP);
-		form.setFormType(FormType.WEB);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("remarks", FieldDisplayType.TEXTBOX, "Remarks", Required.REQUIRED,1, 1));

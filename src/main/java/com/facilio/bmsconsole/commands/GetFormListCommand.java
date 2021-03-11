@@ -11,12 +11,15 @@ import org.apache.commons.collections.CollectionUtils;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormFactory;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -25,13 +28,21 @@ public class GetFormListCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		List<Integer> formTypes = (List<Integer>) context.get(FacilioConstants.ContextNames.FORM_TYPE);
+        Long appId = (Long) context.getOrDefault(FacilioConstants.ContextNames.APP_ID, -1l);
+        
+        ApplicationContext app = appId <= 0 ? AccountUtil.getCurrentApp() : ApplicationApi.getApplicationForId(appId);
+        if (app == null) {
+			app = ApplicationApi.getApplicationForLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+		}
+        appId = app.getId();
+        List<String> appLinkNames = new ArrayList<>(); 
+        appLinkNames.add(app.getLinkName());  
 		Boolean fetchExtendedModuleForms = (Boolean) context.get(ContextNames.FETCH_EXTENDED_MODULE_FORMS);
 		
 		Boolean fetchDisabledForms = (Boolean) context.get(ContextNames.FETCH_DISABLED_FORMS);
 		
-		Map<String, FacilioForm> forms = new LinkedHashMap<>(FormFactory.getForms((String)context.get(FacilioConstants.ContextNames.MODULE_NAME), formTypes));
-		Map<String, FacilioForm> dbForms=FormsAPI.getFormsAsMap((String)context.get(FacilioConstants.ContextNames.MODULE_NAME), formTypes, fetchExtendedModuleForms, fetchDisabledForms);
+		Map<String, FacilioForm> forms = new LinkedHashMap<>(FormFactory.getForms((String)context.get(FacilioConstants.ContextNames.MODULE_NAME), appLinkNames));
+		Map<String, FacilioForm> dbForms=FormsAPI.getFormsAsMap((String)context.get(FacilioConstants.ContextNames.MODULE_NAME), fetchExtendedModuleForms, fetchDisabledForms, appId);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule((String)context.get(FacilioConstants.ContextNames.MODULE_NAME));
 		if (forms != null) {
@@ -41,7 +52,7 @@ public class GetFormListCommand extends FacilioCommand {
 			}
 		}
 		if (module.getExtendModule() != null && fetchExtendedModuleForms != null && fetchExtendedModuleForms) {
-			Map<String, FacilioForm> extendedModuleForms = new LinkedHashMap<>(FormFactory.getForms(module.getExtendModule().getName(), formTypes));
+			Map<String, FacilioForm> extendedModuleForms = new LinkedHashMap<>(FormFactory.getForms(module.getExtendModule().getName(), appLinkNames));
 			if (extendedModuleForms != null) {
 				for(Map.Entry<String, FacilioForm> entry :extendedModuleForms.entrySet()) {
 					entry.getValue().setModule(module.getExtendModule());

@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class FacilioForm implements Serializable {
 	public FacilioForm () {}
 
-	public FacilioForm(long id, long orgId, String name, String displayName, long moduleId, List<FormField> fields, List<Long> ruleFieldIds, FacilioModule module, FormType formType, LabelPosition labelPosition) {
+	public FacilioForm(long id, long orgId, String name, String displayName, long moduleId, List<FormField> fields, List<Long> ruleFieldIds, FacilioModule module, LabelPosition labelPosition, long appId, String appLinkName) {
 		this.id = id;
 		this.orgId = orgId;
 		this.name = name;
@@ -26,14 +26,15 @@ public class FacilioForm implements Serializable {
 		this.fields = fields;
 		this.ruleFieldIds = ruleFieldIds;
 		this.module = module;
-		this.formType = formType;
 		this.labelPosition = labelPosition;
 		this.showInMobile = true;
+		this.appLinkName = appLinkName;
 		this.showInWeb = true;
+		this.appId = appId;	
 	}
 
 	public FacilioForm(FacilioForm form) {
-		this(form.id, form.orgId, form.name, form.displayName, form.moduleId, new ArrayList<>(form.fields), form.ruleFieldIds, form.module, form.formType, form.labelPosition);
+		this(form.id, form.orgId, form.name, form.displayName, form.moduleId, new ArrayList<>(form.fields), form.ruleFieldIds, form.module, form.labelPosition, form.appId, form.appLinkName);
 		this.showInMobile = form.showInMobile;
 		this.showInWeb = form.showInWeb;
 		this.hideInList = form.hideInList;
@@ -147,33 +148,10 @@ public class FacilioForm implements Serializable {
 		return this.module;
 	}
 	
-	private FormType formType;
 	
-	public void setFormType(FormType formType) {
-		this.formType = formType;
-	}
 	
-	public int getFormType() {
-		if (this.formType != null) {
-			return this.formType.getIntVal();
-		}
-		return -1;
-	}
 	
-	public void setFormType(int val) {
-		this.formType = FormType.getFormType(val);
-	}
 	
-	public String getFormTypeVal() {
-		if (this.formType != null) {
-			return this.formType.stringVal;
-		}
-		return null;
-	}
-	
-	public FormType getFormTypeEnum() {
-		return this.formType;
-	}
 	
 	public int getLabelPosition() {
 		if (labelPosition != null) {
@@ -264,45 +242,7 @@ public class FacilioForm implements Serializable {
 		this.ignoreCustomFields = ignoreCustomFields;
 	}
 
-	public enum FormType {
-		WEB(1, "web"),
-		MOBILE(2, "mobile"), // Will be removed
-		PORTAL(3, "portal"),
-		SERVICE_CATALOG(4, "serviceCatalog"),
-		SUB_FORM(5, "subForm"),
-		;
-		
-		private int intVal;
-		private String stringVal;
-		
-		public int getIntVal() {
-			return this.intVal;
-		}
-		
-		public String getStringVal() {
-			return this.stringVal;
-		}
-		
-		private FormType(int intVal, String stringVal) {
-			this.intVal = intVal;
-			this.stringVal = stringVal;
-		}
-		
-		public static FormType getFormType(int intVal) {
-			return typeMap.get(intVal);
-		}
-		
-		private static final Map<Integer, FormType> typeMap = Collections.unmodifiableMap(initTypeMap());
-		private static Map<Integer, FormType> initTypeMap() {
-			Map<Integer, FormType> typeMap = new HashMap<>();
-			
-			for(FormType type: values()) {
-				typeMap.put(type.intVal, type);
-			}
-			
-			return typeMap;
-		}
-	}
+
 	
 	private LabelPosition labelPosition;
 	
@@ -348,4 +288,22 @@ public class FacilioForm implements Serializable {
 			this.stringVal = stringVal;
 		}
 	} 
+	
+	private String appLinkName;
+	private long appId = -1;
+	public String getAppLinkName() {
+		return appLinkName;
+	}
+
+	public void setAppLinkName(String appLinkName) {
+		this.appLinkName = appLinkName;
+	}
+
+	public long getAppId() {
+		return appId;
+	}
+
+	public void setAppId(long appId) {
+		this.appId = appId;
+	}
 }

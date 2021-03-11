@@ -125,6 +125,18 @@ public class ApplicationApi {
         }
         return -1;
     }
+    
+    public static List<ApplicationContext> getApplicationForLinkNames(List<String> appLinkNames) throws Exception {
+    	List<ApplicationContext> applications = new ArrayList<ApplicationContext>();
+        if (appLinkNames != null && !appLinkNames.isEmpty()) {
+            GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                    .table(ModuleFactory.getApplicationModule().getTableName()).select(FieldFactory.getApplicationFields())
+                    .andCondition(CriteriaAPI.getCondition("LINK_NAME", "linkName", StringUtils.join(appLinkNames, ","), StringOperators.IS));
+            applications = FieldUtil.getAsBeanListFromMapList(builder.get(),
+                    ApplicationContext.class);
+        }
+        return applications;
+    }
 
     public static List<WebTabGroupContext> getWebTabgroups() throws Exception {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()

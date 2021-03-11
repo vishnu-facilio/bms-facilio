@@ -16,12 +16,12 @@ import com.facilio.bmsconsole.context.VisitorTypeContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormFactory;
 import com.facilio.bmsconsole.forms.FormField;
-import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.fw.BeanFactory;
@@ -55,12 +55,12 @@ public class AddVisitorTypeCommand extends FacilioCommand {
 		visitorLogFormTemplate.setId(-1);
 		visitorLogFormTemplate.setName(newVisitorType.getName()+"_"+newVisitorType.getId()+"visitor_log_checkin_form");
 		visitorLogFormTemplate.setDisplayName(newVisitorType.getName()+"_"+newVisitorType.getId()+"_visitor_log_checkin_form");
-		visitorLogFormTemplate.setFormType(FormType.WEB);
+		visitorLogFormTemplate.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 
 		visitorInviteFormTemplate.setId(-1);
 		visitorInviteFormTemplate.setName(newVisitorType.getName()+"_"+newVisitorType.getId()+"invite_visitor_form");
 		visitorInviteFormTemplate.setDisplayName(newVisitorType.getName()+"_"+newVisitorType.getId()+"_invite_visitor_form");
-		visitorInviteFormTemplate.setFormType(FormType.WEB);
+		visitorInviteFormTemplate.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		
 		FormField visitorLogModuleHostField=visitorLogFormTemplate.getFieldsMap().get("host");
 		FormField inviteModuleHostField=visitorInviteFormTemplate.getFieldsMap().get("host");

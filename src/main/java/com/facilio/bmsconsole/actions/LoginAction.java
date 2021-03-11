@@ -72,9 +72,9 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.DeviceContext.DeviceType;
 import com.facilio.bmsconsole.forms.FacilioForm;
-import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
 import com.facilio.fw.auth.SAMLAttribute;
 import com.facilio.fw.auth.SAMLUtil;
 import com.facilio.iam.accounts.util.IAMAppUtil;
@@ -480,13 +480,14 @@ public class LoginAction extends FacilioAction {
 		
 		
 		if (AccountUtil.getCurrentAccount().isFromMobile()) {
-			Map<String, Collection<FacilioForm>> forms = FormsAPI.getAllForms(FormType.MOBILE);
-			data.put("forms", forms);
-			data.put("ticketStatus", getTicketStatus());
-			data.put("ticket_status", TicketAPI.getAllStatus(true));
+//			Map<String, Collection<FacilioForm>> forms = FormsAPI.getAllForms(FormType.MOBILE);
+//			data.put("forms", forms);
+//			data.put("ticketStatus", getTicketStatus());
+//			data.put("ticket_status", TicketAPI.getAllStatus(true));
 		}
 		else {
-			Map<String, Collection<FacilioForm>> forms = FormsAPI.getAllForms(FormType.WEB);
+			String appLinkName = AccountUtil.getCurrentApp() != null ? AccountUtil.getCurrentApp().getLinkName() : ApplicationLinkNames.FACILIO_MAIN_APP;
+			Map<String, Collection<FacilioForm>> forms = FormsAPI.getAllForms(appLinkName);
 			data.put("forms", forms);
 			data.put("ticketStatus", TicketAPI.getAllStatus(true));
 		}
