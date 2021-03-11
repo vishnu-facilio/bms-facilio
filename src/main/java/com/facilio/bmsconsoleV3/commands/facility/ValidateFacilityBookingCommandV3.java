@@ -76,6 +76,9 @@ public class ValidateFacilityBookingCommandV3 extends FacilioCommand {
                             if (slot.getBookingCount() != null && slot.getBookingCount() > 0 && !facility.isMultiBookingPerSlotAllowed()) {
                                 throw new RESTException(ErrorCode.VALIDATION_ERROR, "Parallel booking is not allowed for this facility as a booking is already made in the slot " +  DateTimeUtil.getFormattedTime(slot.getSlotStartTime(), "HH:mm")+" - "+ DateTimeUtil.getFormattedTime(slot.getSlotEndTime(), "HH:mm"));
                             }
+                            if(slot.getSlotStartTime() <= System.currentTimeMillis()) {
+                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Booking is not permitted for the past slot " +  DateTimeUtil.getFormattedTime(slot.getSlotStartTime(), "HH:mm")+" - "+ DateTimeUtil.getFormattedTime(slot.getSlotEndTime(), "HH:mm") + ". Please select the slots accordingly.");
+                            }
 
                             //setting booking count in slot
                             if (slot.getBookingCount() != null) {
