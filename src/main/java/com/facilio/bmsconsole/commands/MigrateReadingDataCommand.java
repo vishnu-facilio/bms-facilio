@@ -183,7 +183,7 @@ public class MigrateReadingDataCommand extends FacilioCommand {
 	
 	public void migrateUnit(List<ReadingContext> readings, FacilioField field) throws Exception {
 		List<BatchUpdateByIdContext> batchUpdateList = new ArrayList<>();
-		List<FacilioField> updateFields = new ArrayList<>();
+		List<FacilioField> updateFields = Collections.singletonList(field);
 		
 		for (ReadingContext readingData : readings) {
 			BatchUpdateByIdContext batchValue = new BatchUpdateByIdContext();
@@ -198,7 +198,6 @@ public class MigrateReadingDataCommand extends FacilioCommand {
 			}
 			
 			batchValue.addUpdateValue(field.getName(), value);
-			updateFields.add(field);
 			
 			batchUpdateList.add(batchValue);
 		}
