@@ -22,7 +22,6 @@ import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -118,12 +117,15 @@ public enum FormActionType {
 				JSONObject metaJson =  (JSONObject) new JSONParser().parse(meta);
 				
 				Object value = metaJson.get("setValue");
-				if(value != null && value instanceof String && FormRuleAPI.containsPlaceHolders((String)value)) {
-					value = FormRuleAPI.replacePlaceHoldersAndGetResult(placeHolders, (String)value);
+				if(value != null && value instanceof String) {
+					String val = (String)value;
+					if (FormRuleAPI.containsPlaceHolders(val)) {
+						value = FormsAPI.resolveDefaultValPlaceholder(val);
+						if (value == null) {
+							value = FormRuleAPI.replacePlaceHoldersAndGetResult(placeHolders, val);
+						}
+					}
 				}
-				
-				// Date Field behaviour... TODO check if field is date type and then do the following
-				value = getDateFieldSetValue(metaJson, resultJson, formData, value, form);
 				
 				JSONObject json = FormRuleAPI.getActionJson(actionField.getFormFieldId(), FormActionType.SET_FIELD_VALUE, value);
 				
@@ -299,49 +301,5 @@ public enum FormActionType {
 	
 	public static FormActionType getActionType(int actionTypeVal) {
 		return TYPE_MAP.get(actionTypeVal);
-	}
-	
-	private static Object getDateFieldSetValue(JSONObject metaJson, JSONArray resultJson, Map<String,Object> formData, Object value,FacilioForm form ) throws Exception {
-		Boolean setToday = (Boolean) metaJson.get("setToday");
-		if (setToday != null && setToday) {
-			value = DateTimeUtil.getDayStartTime();
-		}
-		else if (metaJson.containsKey("dayCount")) {
-			Integer dayCount = Integer.parseInt(metaJson.get("dayCount").toString()); // Number of days to be added or subtract
-			long time = -1;
-			if (metaJson.containsKey("timeFieldId")) {	// Based on the date of this form field, the days will be calculated
-				long fieldId = Long.parseLong(metaJson.get("timeFieldId").toString());
-				@SuppressWarnings("unchecked")
-				JSONObject resultObj =  (JSONObject)resultJson.stream().filter(result -> {
-					return (long)((JSONObject)result).get("fieldId") == fieldId;
-				}).findFirst().orElse(null);
-				if (resultObj != null) {	 // The dependent date is set in the previous action 
-					Object timeValue = ((JSONObject)resultObj.get("action")).get("value");
-					if (timeValue != null) {
-						time = Long.parseLong(timeValue.toString());
-					}
-				}
-				else if(formData != null && form != null) { // The dependent date is got from form data
-					FormField field = form.getFields().stream()
-							.filter(formField -> formField.getId() == fieldId).findFirst().orElse(null);
-					if (formData.get(field.getName()) != null) {
-						time = (long) formData.get(field.getName());
-					}
-				}
-			}
-			else {
-				time = DateTimeUtil.getDayStartTime();
-			}
-			if (time != -1) {
-				Boolean minus = (Boolean) metaJson.get("isMinus");
-				if (minus != null && minus) {
-					value = DateTimeUtil.minusDays(time, dayCount);
-				}
-				else {
-					value = DateTimeUtil.addDays(time, dayCount);
-				}
-			}
-		}
-		return value;
 	}
 }

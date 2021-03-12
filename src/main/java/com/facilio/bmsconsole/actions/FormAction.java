@@ -349,6 +349,7 @@ public class FormAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.FORM_TYPE, formType);
 		context.put(FacilioConstants.ContextNames.FETCH_FORM_RULE_FIELDS, fetchFormRuleFields);
+		context.put("fromBuilder", isFromBuilder());
 		
 		FacilioChain c = FacilioChainFactory.getFormMetaChain();
 		c.execute(context);
@@ -357,6 +358,20 @@ public class FormAction extends FacilioAction {
 		setResult(ContextNames.FORM, form);
 		
 		return SUCCESS;
+	}
+	
+	private Boolean fromBuilder;
+	public Boolean getFromBuilder() {
+		return fromBuilder;
+	}
+	public void setFromBuilder(Boolean fromBuilder) {
+		this.fromBuilder = fromBuilder;
+	}
+	private boolean isFromBuilder() {
+		if (fromBuilder == null) {
+			return false;
+		}
+		return fromBuilder;
 	}
 	
 	private FormSection formSection;

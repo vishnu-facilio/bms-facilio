@@ -7,6 +7,7 @@ import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
+import com.facilio.constants.FacilioConstants.Criteria;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import com.facilio.util.FacilioUtil;
@@ -292,10 +293,7 @@ public class FormField implements Serializable {
 	
 	// For date field
 	public void showTodayDate() {
-		addToConfig("setToday", true);
-	}
-	public void addDays(int dayCount) {
-		addToConfig("dayCount", dayCount);
+		setValue(Criteria.CURRENT_DATE);
 	}
 	
 	private JSONObject filters;

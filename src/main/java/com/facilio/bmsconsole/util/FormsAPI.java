@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -23,12 +25,15 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FormSiteRelationContext;
+import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.forms.FormFactory;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormField.Required;
 import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.Builder;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -50,6 +55,8 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.BaseLookupField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
+import com.facilio.time.DateTimeUtil;
+import com.facilio.util.FacilioUtil;
 
 public class FormsAPI {
 	
@@ -1014,4 +1021,94 @@ public class FormsAPI {
 		}
 		return form;
 	}
+	
+	
+	/*** Default  Val Placeholder handling ****/
+	
+	public static final String CURRENT_DATE_REGEX = "\\$\\{(CURRENT_DATE)([\\+-]?)([0-9]*)\\}";
+	public static final String CURRENT_TIME_REGEX = "\\$\\{(CURRENT_TIME)([\\+-]?)([0-9]*)\\}";
+	
+	private static boolean isDatePlaceHolder(String placeholder) {
+		Pattern pattern = Pattern.compile(CURRENT_DATE_REGEX);
+		Matcher matcher = pattern.matcher(placeholder);
+		return matcher.find();
+	}
+	
+	private static boolean isTimePlaceHolder(String placeholder) {
+		Pattern pattern = Pattern.compile(CURRENT_TIME_REGEX);
+		Matcher matcher = pattern.matcher(placeholder);
+		return matcher.find();
+	}
+	
+	private static long getResolvedDate(String placeholder) {
+		long time =  DateTimeUtil.getDayStartTime();
+		return getCalculatedTime(CURRENT_DATE_REGEX, placeholder, time);
+	}
+	
+	private static long getResolvedTime(String placeholder) {
+		long time =  DateTimeUtil.getCurrenTime();
+		return getCalculatedTime(CURRENT_TIME_REGEX, placeholder, time);
+	}
+	
+	private static long getCalculatedTime(String regex, String placeholder, long time) {
+		Pattern pattern = Pattern.compile(regex);
+		Matcher matcher = pattern.matcher(placeholder);
+		while(matcher.find()) {
+			if (matcher.group(2) != null) {
+				String operator = matcher.group(2);
+				Integer dayCount = FacilioUtil.parseInt(matcher.group(3));
+				if (operator.equals("-")) {
+					time = DateTimeUtil.minusDays(time, dayCount);
+				}
+				else {
+					time = DateTimeUtil.addDays(time, dayCount);
+				}
+			}
+		}
+		return time;
+	}
+	
+	public static Object resolveDefaultValPlaceholder(String placeholder) throws Exception {
+		
+		long ouid = AccountUtil.getCurrentUser().getOuid();
+		switch(placeholder) {
+			case FacilioConstants.Criteria.LOGGED_IN_USER:
+				return ouid;
+				
+			case FacilioConstants.Criteria.LOGGED_IN_USER_TENANT:
+				TenantContext tenant = PeopleAPI.getTenantForUser(ouid);
+				if (tenant != null) {
+					return tenant.getId();
+				}
+				
+			case FacilioConstants.Criteria.LOGGED_IN_USER_VENDOR:
+				VendorContext vendor = PeopleAPI.getVendorForUser(ouid);
+				if (vendor != null) {
+					return vendor.getId();
+				}
+				
+			case FacilioConstants.Criteria.CURRENT_TIME:
+				return DateTimeUtil.getCurrenTime();
+				
+			case FacilioConstants.Criteria.CURRENT_DATE:
+				return DateTimeUtil.getDayStartTime();
+				
+			default:
+				return replacePlaceholders(placeholder);
+				
+		}
+	}
+	
+	private static Object replacePlaceholders(String placeholder) {
+		if (isDatePlaceHolder(placeholder)) {
+			return getResolvedDate(placeholder);
+		}
+		else if (isTimePlaceHolder(placeholder)) {
+			return getResolvedTime(placeholder);
+		}
+		return null;
+	}
+	
+	/******* Default Val End ********/
+	
 }

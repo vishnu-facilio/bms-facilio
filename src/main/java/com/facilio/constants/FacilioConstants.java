@@ -2333,6 +2333,8 @@ public class FacilioConstants {
 		public static final String LOGGED_IN_USER_SITES = "${LOGGED_USER_SITES}";
 		public static final String LOGGED_IN_USER_TENANT_SITES = "${LOGGED_USER_TENANT_SITES}";
 		public static final String CURRENT_SITE = "${CURRENT_SITE}";
+		public static final String CURRENT_DATE = "${CURRENT_DATE}";
+		public static final String CURRENT_TIME = "${CURRENT_TIME}";
 			
 	}
 	

@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.commands.form;
 
 import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -10,17 +9,16 @@ import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.util.AssetsAPI;
-import com.facilio.bmsconsole.util.ResourceAPI;
+import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.fields.LookupField;
-import com.facilio.time.DateTimeUtil;
 
 public class HandleFormFieldsCommand extends FacilioCommand {
+	
+	boolean isAssetModule = false;
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -34,8 +32,12 @@ public class HandleFormFieldsCommand extends FacilioCommand {
 		
 		FacilioForm form = (FacilioForm) context.get(FacilioConstants.ContextNames.FORM);
 		if (form != null) {
+			boolean isFromBuilder = (Boolean) context.getOrDefault("fromBuilder", false);
+			isAssetModule = AssetsAPI.isAssetsModule(module);
 			for(FormField field: form.getFields()) {
-				handleDefaultValue(field);
+				if (!isFromBuilder) {
+					handleDefaultValue(field);
+				}
 				addFilters(module, field);
 			}
 		}
@@ -44,29 +46,15 @@ public class HandleFormFieldsCommand extends FacilioCommand {
 	}
 	
 	private void handleDefaultValue(FormField formField) throws Exception {
-		if (formField.getField() != null) {
-			Object value = null;
+		Object value = formField.getValue();
+		if (formField.getField() != null && value != null) {
 			switch(formField.getField().getDataTypeEnum()) {
 				case DATE:
 				case DATE_TIME:
-					if (formField.getConfig() != null) {
-						Boolean setToday = (Boolean) formField.getConfig().get("setToday");
-						if (setToday != null && setToday) {
-							value = DateTimeUtil.getDayStartTime();
-						}
-						else if (formField.getConfig().containsKey("dayCount")) {
-							Integer dayCount = Integer.parseInt(formField.getConfig().get("dayCount").toString());
-							value = DateTimeUtil.addDays(DateTimeUtil.getDayStartTime(), dayCount);
-						}
-					}
-					break;
-					
 				case LOOKUP:
-					if (formField.getValue() != null && ((LookupField)formField.getField()).getLookupModule().getName().equals(ContextNames.RESOURCE)) {
-						String val = formField.getValue().toString();
-						if (StringUtils.isNumeric(val)) {
-							value = ResourceAPI.getResource(Long.parseLong(val.toString()));
-						}
+					String val = value.toString();
+					if (val.startsWith("${")) {
+						value = FormsAPI.resolveDefaultValPlaceholder(val);
 					}
 					break;
 			}
@@ -79,7 +67,7 @@ public class HandleFormFieldsCommand extends FacilioCommand {
 	}
 	
 	private void addFilters(FacilioModule module, FormField formField) {
-		if (AssetsAPI.isAssetsModule(module)) {
+		if (isAssetModule) {
 			switch(formField.getName()) {
 				case "rotatingItem":
 					setRotatingFilter("itemType", formField);
@@ -102,5 +90,5 @@ public class HandleFormFieldsCommand extends FacilioCommand {
 
         formField.addToFilters(type, operator);
     }
-
+	
 }
