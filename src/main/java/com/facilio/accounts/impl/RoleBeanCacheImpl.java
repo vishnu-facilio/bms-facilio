@@ -27,9 +27,9 @@ public class RoleBeanCacheImpl extends RoleBeanImpl implements RoleBean {
             role = super.getRole(roleId,fetchMembers);
             roleIdCache.put(key,role);
         }
-        else {
-            LOGGER.info("RoleBean roleId cache is hit");
-        }
+//        else {
+//            LOGGER.info("RoleBean roleId cache is hit");
+//        }
         return role;
     }
 
@@ -43,9 +43,9 @@ public class RoleBeanCacheImpl extends RoleBeanImpl implements RoleBean {
             role = super.getRole(orgId,roleName,fetchMembers);
             roleNameCache.put(key,role);
         }
-        else {
-           LOGGER.info("RoleBean roleName cache is hit");
-        }
+//        else {
+//           LOGGER.info("RoleBean roleName cache is hit");
+//        }
         return role;
     }
 
