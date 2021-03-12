@@ -166,10 +166,10 @@ public class ImportFieldFactory {
 		
 		List<FacilioField> fields = new ArrayList<FacilioField>();
 		
+		fields.add(FieldFactory.getField("resourceName","Resource Name",null, ModuleFactory.getWorkOrderTemplateModule(), FieldType.STRING));
 		fields.addAll(FieldFactory.getPreventiveMaintenanceFields());
 		fields.addAll(FieldFactory.getWorkOrderTemplateFields());
 		fields.addAll(FieldFactory.getPMTriggerFields());
-		fields.add(FieldFactory.getField("resourceName","Resource Name",null, ModuleFactory.getPreventiveMaintenanceModule(), FieldType.STRING));
 		fields.add(FieldFactory.getField("triggerName","Trigger Name",null, ModuleFactory.getPMTriggersModule(), FieldType.STRING));
 		fields.add(FieldFactory.getField("triggerFrequency","Trigger Frequency",null, ModuleFactory.getPMTriggersModule(), FieldType.STRING));
 		fields.add(FieldFactory.getField("times","Times",null, ModuleFactory.getPMTriggersModule(), FieldType.STRING));

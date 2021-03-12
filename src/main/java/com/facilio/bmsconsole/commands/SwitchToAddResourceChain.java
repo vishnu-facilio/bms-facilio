@@ -255,8 +255,10 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 					woTemplate.setTenantId(tenantId);
 					woTemplate.setVendorId(vendorId);
 					woTemplate.setSafetyPlanId(safetyPlanId);
-					woTemplate.setResource(resource);
-					
+					if(resource != null) {
+						woTemplate.setResource(resource);
+						woTemplate.setResourceId(resource.getId());
+					}
 					pm.setName(woTemplate.getSubject());
 					pm.setTitle(woTemplate.getSubject());
 					
