@@ -10,15 +10,15 @@ services:
 
   - serviceName: jobs
     instanceName: default
-    dbName: bms_jobs
+    dbName: default
 
   - serviceName: instantJob
     instanceName: default
-    dbName: bms_instantjob
+    dbName: default
 
   - serviceName: agent
     instanceName: default
-    dbName: bms_agent
+    dbName: default
 
   - serviceName: app
     handlerClass: com.facilio.accounts.util.AppDataSourceImpl
