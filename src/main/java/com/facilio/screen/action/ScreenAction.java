@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.screen.context.ScreenContext;
 import com.facilio.screen.util.ScreenUtil;
@@ -91,7 +92,7 @@ public class ScreenAction extends ActionSupport {
 	
 	public String getRemoteScreen() throws Exception {
 		
-		remoteScreenContext = FacilioService.runAsServiceWihReturn(() ->  ScreenUtil.getRemoteScreen(remoteScreenId));
+		remoteScreenContext = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() ->  ScreenUtil.getRemoteScreen(remoteScreenId));
 		
 		return SUCCESS;
 	}
@@ -131,7 +132,7 @@ public class ScreenAction extends ActionSupport {
 	public String addRemoteScreen() throws Exception {
 		
 		if(remoteScreenContext != null) {
-			FacilioService.runAsService(() ->  ScreenUtil.addRemoteScreen(remoteScreenContext));
+			FacilioService.runAsService(FacilioConstants.Services.IAM_SERVICE,() ->  ScreenUtil.addRemoteScreen(remoteScreenContext));
 		}
 		return SUCCESS;
 	}
@@ -149,7 +150,7 @@ public class ScreenAction extends ActionSupport {
 	public String connectRemoteScreen() throws Exception {
 		
 		if (code != null) {
-			if (FacilioService.runAsServiceWihReturn(() ->  ScreenUtil.validateTVPasscode(code))) {
+			if (FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() ->  ScreenUtil.validateTVPasscode(code))) {
 				if (remoteScreenContext == null) {
 					remoteScreenContext = new RemoteScreenContext();
 					remoteScreenContext.setName("Remote Screen 1");
@@ -157,15 +158,15 @@ public class ScreenAction extends ActionSupport {
 				remoteScreenContext.setOrgId(AccountUtil.getCurrentOrg().getId());
 				remoteScreenContext.setSessionStartTime(System.currentTimeMillis());
 				
-				Map<String, Object> codeInfo =  FacilioService.runAsServiceWihReturn(() ->  ScreenUtil.getTVPasscode(code));
+				Map<String, Object> codeInfo =  FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() ->  ScreenUtil.getTVPasscode(code));
 				if (codeInfo != null && codeInfo.get("info") != null) {
 					remoteScreenContext.setSessionInfo((String) codeInfo.get("info"));
 				}
-				FacilioService.runAsService(() ->  ScreenUtil.addRemoteScreen(remoteScreenContext));
+				FacilioService.runAsService(FacilioConstants.Services.IAM_SERVICE,() ->  ScreenUtil.addRemoteScreen(remoteScreenContext));
 				
 				long remoteScreenId = remoteScreenContext.getId();
 				
-				FacilioService.runAsService(() ->  ScreenUtil.updateConnectedScreen(code, remoteScreenId));
+				FacilioService.runAsService(FacilioConstants.Services.IAM_SERVICE,() ->  ScreenUtil.updateConnectedScreen(code, remoteScreenId));
 				
 				return SUCCESS;
 			}
@@ -184,7 +185,7 @@ public class ScreenAction extends ActionSupport {
 	public String updateRemoteScreen() throws Exception {
 		
 		if(remoteScreenContext != null) {
-			if(FacilioService.runAsServiceWihReturn(() ->  ScreenUtil.updateRemoteScreen(remoteScreenContext)) > 0) {
+			if(FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() ->  ScreenUtil.updateRemoteScreen(remoteScreenContext)) > 0) {
 				WmsApi.sendEventToRemoteScreen(remoteScreenContext.getId(), new WmsEvent().setEventType(WmsEventType.RemoteScreen.REFRESH));
 			}
 		}
@@ -194,7 +195,7 @@ public class ScreenAction extends ActionSupport {
 	public String deleteRemoteScreen() throws Exception {
 		
 		if(remoteScreenContext != null) {
-			if(FacilioService.runAsServiceWihReturn(() ->  ScreenUtil.deleteRemoteScreen(remoteScreenContext)) > 0) {
+			if(FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() ->  ScreenUtil.deleteRemoteScreen(remoteScreenContext)) > 0) {
 				WmsApi.sendEventToRemoteScreen(remoteScreenContext.getId(), new WmsEvent().setEventType(WmsEventType.RemoteScreen.REFRESH));
 			}
 		}
