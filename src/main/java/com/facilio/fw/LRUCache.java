@@ -61,6 +61,8 @@ public class LRUCache<K, V> implements FacilioCache<K, V> {
 	private static FacilioCache<String, Object> responseCachePS = new PubSubLRUCache<>("responseCache", 5000);
 	private static FacilioCache<String, Long> featureLicenseCachePS = new PubSubLRUCache<>("featureLicense", 1000);
 	private static FacilioCache<String, Object> orgUnitCachePs = new PubSubLRUCache<>("orgUnit",1000);
+	private static FacilioCache<String, Object> roleIdCachePs = new PubSubLRUCache<>("roleId",1000);
+	private static FacilioCache<String, Object> roleNameCachePs = new PubSubLRUCache<>("roleName",1000);
 
 	private static final List<FacilioCache> CACHE_LIST = initCacheList();
 
@@ -76,7 +78,8 @@ public class LRUCache<K, V> implements FacilioCache<K, V> {
 		cacheList.add(responseCachePS);
 		cacheList.add(featureLicenseCachePS);
 		cacheList.add(orgUnitCachePs);
-
+		cacheList.add(roleIdCachePs);
+		cacheList.add(roleNameCachePs);
 		return Collections.unmodifiableList(cacheList);
 	}
 
@@ -147,6 +150,14 @@ public class LRUCache<K, V> implements FacilioCache<K, V> {
 
 	public static FacilioCache<String, Object> getOrgUnitCachePs(){
 		return orgUnitCachePs;
+	}
+
+	public static FacilioCache<String,Object> getRoleIdCachePs(){
+		return roleIdCachePs;
+	}
+
+	public static FacilioCache<String,Object> getRoleNameCachePs(){
+		return roleNameCachePs;
 	}
 
 	public String toString() {

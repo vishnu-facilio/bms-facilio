@@ -73,6 +73,12 @@ function init() {
 <br>Org Display Unit Cache = <textarea style="width: 600px;height:150px;overflow-y:auto; margin-bottom:20px"><%
     out.println(com.facilio.fw.LRUCache.getOrgUnitCachePs());
 %></textarea>
+<br>RoleId Cache = <textarea style="width: 600px;height:150px;overflow-y:auto; margin-bottom:20px"><%
+        out.println(com.facilio.fw.LRUCache.getRoleIdCachePs());
+%></textarea>
+<br>RoleName Cache = <textarea style="width: 600px;height:150px;overflow-y:auto; margin-bottom:20px"><%
+        out.println(com.facilio.fw.LRUCache.getRoleNameCachePs());
+%></textarea>
 </div>
 
 <div style="margin-top:30px;">

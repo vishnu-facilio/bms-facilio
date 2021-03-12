@@ -1,13 +1,11 @@
 package com.facilio.cache;
 
-import java.io.Serializable;
-import java.security.Key;
-import java.util.StringJoiner;
-
-import org.apache.log4j.LogManager;
-
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
+import org.apache.log4j.LogManager;
+
+import java.io.Serializable;
+import java.util.StringJoiner;
 
 public class CacheUtil {
 
@@ -32,6 +30,18 @@ public class CacheUtil {
 	public static final String USER = "user";
 
 	public static final String METRIC = "metric";
+
+	public static final String ROLE_ID = "roleId";
+
+	public static final String ROLE_NAME = "roleName";
+
+	public static final String ROLE_ID_KEY ( long orgId,long roleId ) {
+		return ORG_KEY(orgId) + KEY_SEPARATOR + ROLE_ID + KEY_SEPARATOR + roleId;
+	}
+
+	public static final String ROLE_NAME_KEY ( long orgId,String roleName ) {
+		return ORG_KEY(orgId) + KEY_SEPARATOR + ROLE_NAME + KEY_SEPARATOR + roleName;
+	}
 
 	public static final String METRIC_KEY(long orgId , int metricId){
 		return ORG_KEY(orgId) + KEY_SEPARATOR + METRIC + KEY_SEPARATOR + metricId;
