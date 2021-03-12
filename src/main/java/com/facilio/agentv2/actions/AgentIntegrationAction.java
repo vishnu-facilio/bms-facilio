@@ -2,7 +2,6 @@ package com.facilio.agentv2.actions;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agentv2.AgentConstants;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -49,7 +48,7 @@ public class AgentIntegrationAction extends AgentActionV2 {
 
     public String getAltairIntegrations() {
         try {
-            setResult(AgentConstants.DATA,FacilioService.runAsServiceWihReturn(FacilioConstants.Services.AGENT_SERVICE,this::getIntegrationList));
+            setResult(AgentConstants.DATA,FacilioService.runAsServiceWihReturn(this::getIntegrationList));
         } catch (Exception e) {
             LOGGER.info("Exception while getting altair integrations", e);
             setResult(AgentConstants.EXCEPTION, e.getMessage());
@@ -83,7 +82,7 @@ public class AgentIntegrationAction extends AgentActionV2 {
             GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder().table(ModuleFactory.getAgentMessageIntegrationModule().getTableName())
                     .fields(FieldFactory.getAgentMessageIntegrationFields()).addRecord(values);
             insertRecordBuilder.save();
-            setResult(AgentConstants.DATA,FacilioService.runAsServiceWihReturn(FacilioConstants.Services.AGENT_SERVICE,this::getIntegrationList));
+            setResult(AgentConstants.DATA,FacilioService.runAsServiceWihReturn(this::getIntegrationList));
         } catch (Exception e) {
             LOGGER.info("Exception while adding altair integrations", e);
             setResult(AgentConstants.EXCEPTION, e.getMessage());

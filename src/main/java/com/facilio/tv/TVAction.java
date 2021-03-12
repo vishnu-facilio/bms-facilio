@@ -6,7 +6,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.facilio.constants.FacilioConstants;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
@@ -46,7 +45,7 @@ public class TVAction extends FacilioAction {
 			info.put("userAgent", userAgent);
 			info.put("ipAddress", ipAddress);
 			
-			setResult("code", FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() ->  ScreenUtil.generateTVPasscode(info)));
+			setResult("code", FacilioService.runAsServiceWihReturn(() ->  ScreenUtil.generateTVPasscode(info)));
 		} catch (Exception e) {
 			throw new IllegalArgumentException("passcode_generation_failed");
 		}
@@ -57,7 +56,7 @@ public class TVAction extends FacilioAction {
 	public String validateCode() {
 		
 		try {
-			Map<String, Object> codeObj = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() ->  ScreenUtil.getTVPasscode(getCode()));
+			Map<String, Object> codeObj = FacilioService.runAsServiceWihReturn(() ->  ScreenUtil.getTVPasscode(getCode()));
 			if (codeObj == null) {
 				setResponseCode(1);
 				setResult("status", "passcode_invalid");
@@ -82,7 +81,7 @@ public class TVAction extends FacilioAction {
 	                response.addCookie(cookie);
 	                
 
-	                FacilioService.runAsService(FacilioConstants.Services.IAM_SERVICE,() ->  ScreenUtil.deleteTVPasscode(getCode()));
+	                FacilioService.runAsService(() ->  ScreenUtil.deleteTVPasscode(getCode()));
 	               
 					return SUCCESS;
 				}
@@ -90,7 +89,7 @@ public class TVAction extends FacilioAction {
 					long currentTime = System.currentTimeMillis();
 					long expiryTime = (Long) codeObj.get("expiryTime");
 					if (currentTime >= expiryTime) {
-						  FacilioService.runAsService(FacilioConstants.Services.IAM_SERVICE,() ->  ScreenUtil.deleteTVPasscode(getCode()));
+						  FacilioService.runAsService(() ->  ScreenUtil.deleteTVPasscode(getCode()));
 						  setResponseCode(1);
 						  setResult("status", "passcode_expired");
 						  return SUCCESS;

@@ -30,7 +30,7 @@ public class AddSupportEmailCommand extends FacilioCommand {
 		if(supportEmail != null) {
 			supportEmail.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 			CommonCommandUtil.setFwdMail(supportEmail);
-			FacilioService.runAsService(FacilioConstants.Services.DEFAULT_SERVICE,() -> SupportEmailAPI.addSupportEmailSetting(supportEmail));
+			FacilioService.runAsService(() -> SupportEmailAPI.addSupportEmailSetting(supportEmail));
 		}
 		return false;
 	}

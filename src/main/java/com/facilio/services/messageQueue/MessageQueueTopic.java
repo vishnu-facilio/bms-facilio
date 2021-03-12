@@ -50,7 +50,7 @@ public class MessageQueueTopic {
 	}
 	
 	public static List<Map<String, Object>> getTopics(List<Long> orgId) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.AGENT_SERVICE,()->getAllMessageTopics(orgId));
+		return FacilioService.runAsServiceWihReturn(()->getAllMessageTopics(orgId));
 	}
 	
 	private static List<Map<String, Object>> getAllMessageTopics(List<Long> orgId) throws Exception {

@@ -10,7 +10,6 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.sso.AccountSSO;
 import com.facilio.accounts.sso.DomainSSO;
 import com.facilio.accounts.sso.SSOUtil;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.service.FacilioService;
 import org.json.simple.JSONObject;
 
@@ -19,15 +18,15 @@ public class IAMAppUtil {
 
 
 	public static int deleteAppDomain(long id) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().deleteAppDomain(id));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().deleteAppDomain(id));
 	}
 	
 	public static List<AppDomain> getAppDomain(AppDomainType type, long orgId) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getAppDomain(type, orgId));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getAppDomain(type, orgId));
 	}
 	
 	public static AppDomain getAppDomain(String appDomain) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getAppDomain(appDomain));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getAppDomain(appDomain));
 	}
 
 	public static boolean isSSoEnabled(String serverName, long orgId) throws Exception {
@@ -82,27 +81,27 @@ public class IAMAppUtil {
 	}
 	
 	public static AppDomain getAppDomain(long appDomainId) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getAppDomain(appDomainId));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getAppDomain(appDomainId));
 	}
 
 	public static List<AppDomain> getAppDomainForType(int domainType, long orgId) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getAppDomainForType(domainType, orgId));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getAppDomainForType(domainType, orgId));
 	}
 
 	public static List<AppDomain> getPortalAppDomains() throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getPortalAppDomains());
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getPortalAppDomains());
 	}
 	
 	public static void addAppDomains(List<AppDomain> appDomains) throws Exception {
-		FacilioService.runAsService(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().addAppDomains(appDomains));
+		FacilioService.runAsService(() -> IAMUtil.getUserBean().addAppDomains(appDomains));
 	}
 	
 	public static List<AppDomain> getAppDomainsForOrg(long orgId) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getAppDomainsForOrg(orgId));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getAppDomainsForOrg(orgId));
 	}
 	
 	public static int deleteAppDomains(List<Long> appDomainIds) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().deleteAppDomains(appDomainIds));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().deleteAppDomains(appDomainIds));
 	}
 	
 }

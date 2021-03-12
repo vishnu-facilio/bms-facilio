@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.facilio.constants.FacilioConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
@@ -39,20 +38,20 @@ public class IAMUserUtil {
 	
 	public static long addUser(IAMUser user, long orgId, String identifier) throws Exception {
 		if ((user != null) && orgId > 0) {
-			return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getTransactionalUserBean().addUserv3(orgId, user, identifier));
+			return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getTransactionalUserBean().addUserv3(orgId, user, identifier));
 		} else {
 			throw new IllegalArgumentException("User Object cannot be null");
 		}
 	}
 
 	public static IAMUser resetPassword(String invitetoken, String password) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().resetPasswordv2(invitetoken, password));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().resetPasswordv2(invitetoken, password));
 
 	}
 
 	public static boolean changePassword(String password, String newPassword, long uId, long orgId, String userType) throws Exception {
 		
-		Boolean verifyOldPassword = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getTransactionalUserBean().verifyPassword(orgId, uId, password));
+		Boolean verifyOldPassword = FacilioService.runAsServiceWihReturn(() -> IAMUtil.getTransactionalUserBean().verifyPassword(orgId, uId, password));
 
 		if (verifyOldPassword != null && verifyOldPassword) {
 			IAMUser userToBeUpdated = new IAMUser();
@@ -61,7 +60,7 @@ public class IAMUserUtil {
 			List<FacilioField> fieldsToBeUpdated = new ArrayList<FacilioField>();
 			fieldsToBeUpdated.add(IAMAccountConstants.getUserPasswordField());
 			
-			FacilioService.runAsService(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().updateUserv2(userToBeUpdated, fieldsToBeUpdated));
+			FacilioService.runAsService(() -> IAMUtil.getUserBean().updateUserv2(userToBeUpdated, fieldsToBeUpdated));
 			return true;
 		} else {
 			return false;
@@ -69,7 +68,7 @@ public class IAMUserUtil {
 	}
 
 	public static IAMUser acceptInvite(String inviteToken, String password) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getTransactionalUserBean().acceptInvitev2(inviteToken, password));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getTransactionalUserBean().acceptInvitev2(inviteToken, password));
 	}
 
 	public static String verifyLoginPasswordv3(String userName, String password, String appDomainName, String userAgent, String userType,
@@ -80,15 +79,15 @@ public class IAMUserUtil {
 	public static String verifyLoginWithoutPassword(String emailaddress, String userAgent, String userType,
 													String ipAddress, String appDomain, IAMAccountConstants.SocialLogin socialLogin) throws Exception {
 	
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().generateTokenForWithoutPassword(emailaddress, userAgent, userType, ipAddress, true, appDomain, socialLogin));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().generateTokenForWithoutPassword(emailaddress, userAgent, userType, ipAddress, true, appDomain, socialLogin));
 	}
 
 	public static IAMUser verifyEmail(String invitetoken) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().verifyEmailv2(invitetoken));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().verifyEmailv2(invitetoken));
 	}
 
 	public static void updateUserMfaSettingsStatus(long userId,boolean value) throws Exception{
-		FacilioService.runAsService(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().updateUserMfaSettingsStatus(userId,value));
+		FacilioService.runAsService(() -> IAMUtil.getUserBean().updateUserMfaSettingsStatus(userId,value));
 	}
 
 	public static boolean updateUser(IAMUser user, long orgId) throws Exception {
@@ -96,47 +95,47 @@ public class IAMUserUtil {
 		fieldsToBeUpdated.addAll(IAMAccountConstants.getAccountsUserFields());
 		fieldsToBeUpdated.add(IAMAccountConstants.getUserPasswordField());
 		
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().updateUserv2(user, fieldsToBeUpdated));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().updateUserv2(user, fieldsToBeUpdated));
 	}
 
 	public static boolean deleteUser(long userId, long orgId) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().deleteUserv2(userId, orgId));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().deleteUserv2(userId, orgId));
 	}
 
 	public static boolean verifyUser(long userId) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().verifyUser(userId));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().verifyUser(userId));
 	}
 	
 	public static IAMUser validateUserInviteToken(String token) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().validateUserInvitev2(token));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().validateUserInvitev2(token));
 	}
 	
 	public static boolean acceptUser(IAMUser user) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().acceptUserv2(user));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().acceptUserv2(user));
 	}
 	
 	public static String updateUserPhoto(long uid, User user) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().updateUserPhoto(uid, user));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().updateUserPhoto(uid, user));
 	}
 
 	public static boolean deleteUserPhoto(long uid, long photoId) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().deleteUserPhoto(uid, photoId));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().deleteUserPhoto(uid, photoId));
 	}
 	
 	public static String generatePermalinkForUrl(String url, long uId, long orgId) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().generatePermalinkForURL(url, uId, orgId));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().generatePermalinkForURL(url, uId, orgId));
 	}
 
 	public static String generatePermalink(long uId, long orgId, JSONObject sessionInfo) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().generatePermalinkForURL(uId, orgId, sessionInfo));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().generatePermalinkForURL(uId, orgId, sessionInfo));
 	}
 	
 	public static boolean verifyPermalinkForUrl(String token, List<String> urls) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().verifyPermalinkForURL(token, urls));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().verifyPermalinkForURL(token, urls));
 	}
 	
 	public static IAMAccount getPermalinkAccount(String token, List<String> urls) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getPermalinkAccount(token, urls));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getPermalinkAccount(token, urls));
 	}
 	
 	public static String generateAuthToken(String username, String password, String appDomain) throws Exception {
@@ -147,7 +146,7 @@ public class IAMUserUtil {
 		// end user session
 		try {
 			if (facilioToken != null) {
-				return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().endUserSessionv2(uId, facilioToken));
+				return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().endUserSessionv2(uId, facilioToken));
 			}
 		} catch (Exception e) {
 			throw e;
@@ -156,111 +155,111 @@ public class IAMUserUtil {
 	}
 
 	public static String getEncodedToken(IAMUser user) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getEncodedTokenv2(user));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getEncodedTokenv2(user));
 	}
 
 	public static long startUserSession(long uid, String token, String ipAddress, String userAgent, String userType) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().startUserSessionv2(uid, token, ipAddress, userAgent, userType));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().startUserSessionv2(uid, token, ipAddress, userAgent, userType));
 	}
 
 	public static List<Map<String, Object>> getUserSessions(long uId, Boolean isActive) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getUserSessionsv2(uId, isActive));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserSessionsv2(uId, isActive));
 	}
 	
 	public static Organization getDefaultOrg(long uId) throws Exception {
 	//	return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getDefaultOrgv2(uId));
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getDefaultOrgv3(uId));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getDefaultOrgv3(uId));
 	}
 	
 	public static void clearUserSessions(long uid) throws Exception {
-		FacilioService.runAsService(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().clearAllUserSessionsv2(uid));
+		FacilioService.runAsService(() -> IAMUtil.getUserBean().clearAllUserSessionsv2(uid));
 	}
 	
 	public static boolean setDefaultOrg(long uid, long orgId) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().setDefaultOrgv2(uid, orgId));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().setDefaultOrgv2(uid, orgId));
 	}
 	
 	public static boolean rollbackUserAdded(long userId, long orgId) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().deleteUserv2(userId, orgId));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().deleteUserv2(userId, orgId));
 	}
 	
 	public static boolean addUserMobileSettings(UserMobileSetting userMobileSetting) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().addUserMobileSetting(userMobileSetting));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().addUserMobileSetting(userMobileSetting));
 	}
 	
 	public static boolean removeUserMobileSettings(String mobileInstanceId, boolean isFromPortal) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().removeUserMobileSetting(mobileInstanceId, isFromPortal));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().removeUserMobileSetting(mobileInstanceId, isFromPortal));
 	}
 	
 	public static List<Map<String, Object>> getUserMobileSettingInstanceIds(List<Long> uIds) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getMobileInstanceIds(uIds));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getMobileInstanceIds(uIds));
 	}
 	
 	public static Organization getOrg(String currentOrgDomain, long uId) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getOrgv2(currentOrgDomain, uId));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getOrgv2(currentOrgDomain, uId));
 	}
 	
 	public static List<Organization> getOrgsForUser(long uId) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getOrgsv2(uId));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getOrgsv2(uId));
 	}
 	
 	public static Object getPermalinkDetails(String token) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getPermalinkDetails(token));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getPermalinkDetails(token));
 	}
 	
 	public static String validateLoginv3(String username, String password, String appDomainName, String userAgent, String userType,
 			String ipAddress, boolean startUserSession) throws Exception {
-       return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().validateAndGenerateTokenV3(username, password, appDomainName, userAgent, userType, ipAddress, startUserSession));
+       return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().validateAndGenerateTokenV3(username, password, appDomainName, userAgent, userType, ipAddress, startUserSession));
 		
 	}
 
 	public static String getEmailFromDigest(String digest) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getEmailFromDigest(digest));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getEmailFromDigest(digest));
 	}
 
 	public static String validateDigestAndDomain(String domain, String digest, AppDomain.GroupType groupType) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().validateDigestAndDomain(domain, digest, groupType));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().validateDigestAndDomain(domain, digest, groupType));
 	}
 	
 	public static IAMAccount verifiyFacilioTokenv3(String idToken, boolean overrideSessionCheck, String userType)
 			throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().verifyFacilioTokenv3(idToken, overrideSessionCheck, userType));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().verifyFacilioTokenv3(idToken, overrideSessionCheck, userType));
 	}
 
 	public static List<IAMUser> getUserDatav3(String uids, long orgId, boolean shouldFetchDeleted) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getUserDataForUidsv3(uids, orgId, shouldFetchDeleted));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserDataForUidsv3(uids, orgId, shouldFetchDeleted));
 	}
 	
 	public static Map<String, Object> getUserForPhone(String phone, String identifier, long orgId) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getUserForPhone(phone, orgId, identifier));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserForPhone(phone, orgId, identifier));
 	}
 	
 	public static Map<String, Object> getUserForEmail(String email, String identifier, long orgId) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getUserForEmail(email, orgId, identifier));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserForEmail(email, orgId, identifier));
 	}
 	
 	public static Map<String, Object> getUserForUsername(String username, long orgId, String identifier) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getUserForUsername(username, orgId, identifier));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserForUsername(username, orgId, identifier));
 	}
 
 	public static Map<String, Object> getLoginModes(String userName, String domain, AppDomain appDomain) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getLoginModes(userName, domain, appDomain));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getLoginModes(userName, domain, appDomain));
 	}
 
 	public static Map<String, Object> getLoginModes(String userName, AppDomain.GroupType groupType) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getLoginModes(userName, groupType));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getLoginModes(userName, groupType));
 	}
 	
 	public static boolean disableUser(long userId, long orgId) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().disableUser(orgId, userId));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().disableUser(orgId, userId));
 	}
 	
 	public static boolean enableUser(long userId, long orgId) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().enableUser(orgId, userId));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().enableUser(orgId, userId));
 	}
 	
 	public static IAMUser getFacilioUser(long orgId, long uId) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getFacilioUser(orgId, uId, true));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getFacilioUser(orgId, uId, true));
 	}
 	
 	public static String createJWT(String id, String issuer, String subject, long ttlMillis) {
@@ -315,19 +314,19 @@ public class IAMUserUtil {
 	
 
 	public static Map<String,Object> getUserMfaSettings(long userId) throws Exception{
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getUserMfaSettings(userId));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserMfaSettings(userId));
 	}
 
 	public static boolean updateUserMfaSettingsSecretKey(long userId,String value) throws Exception{
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().updateUserMfaSettingsSecretKey(userId, value) );
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().updateUserMfaSettingsSecretKey(userId, value) );
 	}
 
 	public static boolean clearUserMfaSettings(long userId) throws Exception{
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().clearUserMfaSettings(userId));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().clearUserMfaSettings(userId));
 	}
 
 	public static  List<Map<String, Object>> getUserData(String username, AppDomain.GroupType groupType) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getUserData(username, groupType));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserData(username, groupType));
 	}
 	
 }

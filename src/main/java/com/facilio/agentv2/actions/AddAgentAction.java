@@ -7,7 +7,6 @@ import com.facilio.agentv2.FacilioAgent;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
@@ -68,7 +67,7 @@ public class AddAgentAction extends AgentActionV2
             switch (AgentType.valueOf(agentType)){
                 case REST:
                     long orgId = AccountUtil.getCurrentOrg().getOrgId();
-                    long inboundId = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.AGENT_SERVICE,()->insertApiKey(getAgentName(),orgId));
+                    long inboundId = FacilioService.runAsServiceWihReturn(()->insertApiKey(getAgentName(),orgId));
                     agent.setInboundConnectionId(inboundId);
                 case CLOUD:
                 case CUSTOM:

@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import com.facilio.constants.FacilioConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
@@ -32,7 +31,7 @@ public class InternalApi {
 	}
 	
 	public static JSONObject fetchMobileDetailsAsService() throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.DEFAULT_SERVICE,() -> fetchMobileDetails());
+		return FacilioService.runAsServiceWihReturn(() -> fetchMobileDetails());
 	}
 	
 	private static JSONObject fetchMobileDetails() throws Exception {

@@ -16,7 +16,7 @@ public class DeleteSupportEmailCommand extends FacilioCommand {
 		long supportEmailId = (long) context.get(FacilioConstants.ContextNames.ID);
 		if(supportEmailId != -1) {
 			
-			FacilioService.runAsService(FacilioConstants.Services.DEFAULT_SERVICE,() -> SupportEmailAPI.deleteSupportEmail(supportEmailId));
+			FacilioService.runAsService(() -> SupportEmailAPI.deleteSupportEmail(supportEmailId));
 		}
 		
 		return false;

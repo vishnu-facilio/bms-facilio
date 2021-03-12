@@ -5,7 +5,6 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.upgrade.AgentVersionApi;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
@@ -110,12 +109,12 @@ public class AgentDownloadAction extends ActionSupport {
             String path = null;
             
     		if(StringUtils.isNotEmpty(getToken())) {
-    			path = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.AGENT_SERVICE,()->getExeUrl(getToken()));
+    			path = FacilioService.runAsServiceWihReturn(()->getExeUrl(getToken()));
     		}
     		else {
     			FacilioContext context = new FacilioContext();
     			context.put(AgentConstants.IS_LATEST_VERSION, true);
-    			List<Map<String,Object>> prop = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.AGENT_SERVICE,() -> AgentVersionApi.listAgentVersions(context));
+    			List<Map<String,Object>> prop = FacilioService.runAsServiceWihReturn(() -> AgentVersionApi.listAgentVersions(context));
     			path = prop.get(0).get(AgentConstants.URL).toString();
     			version = prop.get(0).get(AgentConstants.VERSION).toString();
     		}
@@ -130,7 +129,7 @@ public class AgentDownloadAction extends ActionSupport {
     		}
     		fileInputStream = new FileInputStream(file);
     		if(StringUtils.isNotEmpty(getToken())) {
-    			FacilioService.runAsService(FacilioConstants.Services.AGENT_SERVICE,() -> AgentVersionApi.markVersionLogUpdated(getToken()));
+    			FacilioService.runAsService(() -> AgentVersionApi.markVersionLogUpdated(getToken()));
     		}else {
     			String fileName = "agent-"+version+".exe";
     			setFilename(fileName);
@@ -176,7 +175,7 @@ public class AgentDownloadAction extends ActionSupport {
     }
 
     private String getExeUrl(String token) throws Exception {
-        long versionId = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.AGENT_SERVICE,()->getVersionIdFromToken(token));
+        long versionId = FacilioService.runAsServiceWihReturn(()->getVersionIdFromToken(token));
         this.version = ""+versionId;
         LOGGER.info("versionId"+versionId);
         if (versionId!=-1) {

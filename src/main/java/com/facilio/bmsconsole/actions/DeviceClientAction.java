@@ -6,7 +6,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.facilio.constants.FacilioConstants;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
@@ -40,7 +39,7 @@ public class DeviceClientAction extends FacilioAction{
 			info.put("ipAddress", ipAddress);
 			
 			//TO DO , DO NOT SET THREADLOCAL IN DEVICE URL , even if logged in ,once done remove runasservice wrap			
-			setResult("code", FacilioService.runAsServiceWihReturn(FacilioConstants.Services.DEFAULT_SERVICE,() ->  DevicesUtil.generateDevicePasscode((info))));
+			setResult("code", FacilioService.runAsServiceWihReturn(() ->  DevicesUtil.generateDevicePasscode((info))));
 		} catch (Exception e) {
 			System.out.print(e);
 			throw new IllegalArgumentException("passcode_generation_failed");
@@ -51,7 +50,7 @@ public class DeviceClientAction extends FacilioAction{
 public String validateCode() {
 		
 		try {
-			Map<String, Object> codeObj = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.DEFAULT_SERVICE,() ->  DevicesUtil.getDevicePasscodeRow(getCode()));
+			Map<String, Object> codeObj = FacilioService.runAsServiceWihReturn(() ->  DevicesUtil.getDevicePasscodeRow(getCode()));
 			if (codeObj == null) {
 				throw new IllegalArgumentException("passcode_invalid");
 			}
@@ -71,7 +70,7 @@ public String validateCode() {
 	                cookie.setHttpOnly(true);
 	             //   cookie.setSecure(true);
 	                response.addCookie(cookie);
-	                FacilioService.runAsService(FacilioConstants.Services.DEFAULT_SERVICE,() ->  DevicesUtil.deleteDevicePasscode(getCode()));
+	                FacilioService.runAsService(() ->  DevicesUtil.deleteDevicePasscode(getCode()));
 	                
 	                setResponseCode(0);
 					setResult("status", "connected");
@@ -83,7 +82,7 @@ public String validateCode() {
 					long currentTime = System.currentTimeMillis();
 					long expiryTime = (Long) codeObj.get("expiryTime");
 					if (currentTime >= expiryTime) {
-						  FacilioService.runAsService(FacilioConstants.Services.DEFAULT_SERVICE,() ->  DevicesUtil.deleteDevicePasscode(getCode()));
+						  FacilioService.runAsService(() ->  DevicesUtil.deleteDevicePasscode(getCode()));
 			              throw new IllegalArgumentException("passcode_expired");
 					}
 					else {

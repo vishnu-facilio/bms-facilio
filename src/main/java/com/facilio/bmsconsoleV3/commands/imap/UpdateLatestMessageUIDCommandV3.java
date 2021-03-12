@@ -25,7 +25,7 @@ public class UpdateLatestMessageUIDCommandV3 extends FacilioCommand implements P
     public boolean postExecute() throws Exception {
         SupportEmailContext updateSupportEmail = (SupportEmailContext) context.getOrDefault(FacilioConstants.ContextNames.SUPPORT_EMAIL, null);
         if (updateSupportEmail != null) {
-            FacilioService.runAsService(FacilioConstants.Services.DEFAULT_SERVICE,() -> CustomMailMessageApi.updateLatestMailUID(updateSupportEmail, updateSupportEmail.getId()));
+            FacilioService.runAsService(() -> CustomMailMessageApi.updateLatestMailUID(updateSupportEmail, updateSupportEmail.getId()));
         }
         return false;
     }

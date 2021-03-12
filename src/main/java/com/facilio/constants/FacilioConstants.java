@@ -2315,16 +2315,7 @@ public class FacilioConstants {
 		public static final String IS_OLD_AGENT = "isOldAgent";
 		public static final String DATA_PROCESSING_LOGGER_LEVEL = "dataProcessingLoggerLevel";		
 	}
-
-	public static class Services{
-		public static final String APP_SERVICE = "app";
-		public static final String IAM_SERVICE = "iam";
-		public static final String JOB_SERVICE = "jobs";
-		public static final String AGENT_SERVICE = "agent";
-		public static final String DEFAULT_SERVICE = "default";
-		public static final String INSTANT_JOB_SERVICE = "instantJob";
-		public static final String WMS_SERVICE = "wms";
-	}
+	
 	public static class Alarm {
 		public static final String CLEAR_SEVERITY = "Clear";
 		public static final String INFO_SEVERITY = "Info";

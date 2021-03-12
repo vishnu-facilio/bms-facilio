@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -14,7 +13,7 @@ public class SendEventToDeviceCommand extends FacilioCommand {
 		
 		try {
 			long orgId = AccountUtil.getCurrentOrg().getId();
-			FacilioService.runAsService(FacilioConstants.Services.DEFAULT_SERVICE,() ->  DevicesUtil.reloadConf(orgId));
+			FacilioService.runAsService(() ->  DevicesUtil.reloadConf(orgId));
 		}
 		catch (Exception e) {
 			e.printStackTrace();

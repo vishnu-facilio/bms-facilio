@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.jobs;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.util.CustomMailMessageApi;
 import com.facilio.bmsconsole.util.SupportEmailAPI;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.db.transaction.FTransactionManager;
 import com.facilio.db.transaction.FacilioTransactionManager;
 import com.facilio.service.FacilioService;
@@ -17,7 +16,7 @@ import java.util.List;
 public class ImapJob extends FacilioJob {
     @Override
     public void execute(JobContext jc) throws Exception {
-        List<SupportEmailContext> imapEmails = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.DEFAULT_SERVICE,() -> SupportEmailAPI.getImapsEmailsOfOrg(jc.getOrgId()));
+        List<SupportEmailContext> imapEmails = FacilioService.runAsServiceWihReturn(() -> SupportEmailAPI.getImapsEmailsOfOrg(jc.getOrgId()));
         if (CollectionUtils.isNotEmpty(imapEmails)) {
             for (SupportEmailContext imapMail : imapEmails) {
                 long latestUID = imapMail.getLatestMessageUID();

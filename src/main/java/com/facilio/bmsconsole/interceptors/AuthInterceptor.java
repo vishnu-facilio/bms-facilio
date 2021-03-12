@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.facilio.accounts.dto.Organization;
-import com.facilio.constants.FacilioConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.log4j.Level;
@@ -175,7 +174,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 			if (deviceToken != null && !"".equals(deviceToken)) {
 				
 				long connectedScreenId = Long.parseLong(IAMUserBeanImpl.validateJWT(deviceToken, "auth0").getSubject().split(IAMUserBeanImpl.JWT_DELIMITER)[0]);
-				RemoteScreenContext remoteScreen = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() ->  ScreenUtil.getRemoteScreen(connectedScreenId));
+				RemoteScreenContext remoteScreen = FacilioService.runAsServiceWihReturn(() ->  ScreenUtil.getRemoteScreen(connectedScreenId));
 				if (remoteScreen != null) {
 					request.setAttribute("remoteScreen", remoteScreen);
 					return true;
@@ -198,7 +197,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 			if (deviceTokenNew != null && !"".equals(deviceTokenNew)) {
 				
 				long connectedDeviceId = Long.parseLong(IAMUserBeanImpl.validateJWT(deviceTokenNew, "auth0").getSubject().split(IAMUserBeanImpl.JWT_DELIMITER)[0]);
-				ConnectedDeviceContext deviceContext = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.DEFAULT_SERVICE,() ->  DevicesUtil.getConnectedDevice(connectedDeviceId));
+				ConnectedDeviceContext deviceContext = FacilioService.runAsServiceWihReturn(() ->  DevicesUtil.getConnectedDevice(connectedDeviceId));
 				if (deviceContext != null) {
 					request.setAttribute("device", deviceContext);
 					return true;

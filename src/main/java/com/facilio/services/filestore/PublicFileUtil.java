@@ -6,7 +6,6 @@ import java.util.Map;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.PublicFileContext;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -40,7 +39,7 @@ public class PublicFileUtil {
 	
 	public static String createPublicFile(String content,String fileName,String fileType,String contentType, long expiresOn) throws Exception {
 		long orgId = AccountUtil.getCurrentOrg().getId();
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> insertPublicFile(orgId, content, fileName, fileType, contentType, expiresOn));
+		return FacilioService.runAsServiceWihReturn(() -> insertPublicFile(orgId, content, fileName, fileType, contentType, expiresOn));
 	}
 	
 	public static String createPublicFile(String content,String fileName,String fileType,String contentType) throws Exception {
@@ -53,7 +52,7 @@ public class PublicFileUtil {
 	
 	public static String createPublicFile(File file,String fileName, String fileType,String contentType, long expiresOn) throws Exception {
 		long orgId = AccountUtil.getCurrentOrg().getId();
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> insertPublicFile(orgId, file, fileName, fileType, contentType, expiresOn));
+		return FacilioService.runAsServiceWihReturn(() -> insertPublicFile(orgId, file, fileName, fileType, contentType, expiresOn));
 	}
 	
 	private static String insertPublicFile(long orgId, File file, String fileName, String fileType, String contentType, long expiresOn) throws Exception {

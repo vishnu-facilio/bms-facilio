@@ -16,7 +16,7 @@ public class LoadSupportEmailsCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
-		List<SupportEmailContext> emails = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.DEFAULT_SERVICE,() -> SupportEmailAPI.getSupportEmailsOfOrg(orgId));
+		List<SupportEmailContext> emails = FacilioService.runAsServiceWihReturn(() -> SupportEmailAPI.getSupportEmailsOfOrg(orgId));
 		context.put(FacilioConstants.ContextNames.SUPPORT_EMAIL_LIST, emails);
 		return false;
 	}

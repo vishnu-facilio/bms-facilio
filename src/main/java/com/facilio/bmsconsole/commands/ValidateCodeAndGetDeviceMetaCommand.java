@@ -22,7 +22,7 @@ public class ValidateCodeAndGetDeviceMetaCommand extends FacilioCommand {
 			
 			String code=(String)context.get(FacilioConstants.ContextNames.DEVICE_CODE);
 			Map<String, Object> deviceCodeRow = FacilioService
-					.runAsServiceWihReturn(FacilioConstants.Services.DEFAULT_SERVICE,() -> DevicesUtil.getValidDeviceCodeRow(code));
+					.runAsServiceWihReturn(() -> DevicesUtil.getValidDeviceCodeRow(code));
 
 			if (deviceCodeRow == null) {
 				return true;// code invalid

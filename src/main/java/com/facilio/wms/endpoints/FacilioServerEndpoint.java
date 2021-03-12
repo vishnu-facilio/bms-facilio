@@ -26,7 +26,6 @@ import com.facilio.accounts.dto.User;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.accounts.util.AccountConstants.UserType;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.iam.accounts.impl.IAMUserBeanImpl;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.screen.context.RemoteScreenContext;
@@ -185,7 +184,7 @@ public class FacilioServerEndpoint
     	}
     	if (ls.getLiveSessionType() == LiveSessionType.REMOTE_SCREEN) {
     		try {
-				RemoteScreenContext remoteScreen = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() ->  ScreenUtil.getRemoteScreen(id));
+				RemoteScreenContext remoteScreen = FacilioService.runAsServiceWihReturn(() ->  ScreenUtil.getRemoteScreen(id));
 				message.setOrgId(remoteScreen.getOrgId());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block

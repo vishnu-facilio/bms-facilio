@@ -677,7 +677,7 @@ public String importData() throws Exception {
 
 	// exposes api for testing
 	public String fetchMailImap() throws Exception {
-		List<SupportEmailContext> imapEmails = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.DEFAULT_SERVICE,() -> SupportEmailAPI.getImapsEmailsOfOrg(AccountUtil.getCurrentOrg().getOrgId()));
+		List<SupportEmailContext> imapEmails = FacilioService.runAsServiceWihReturn(() -> SupportEmailAPI.getImapsEmailsOfOrg(AccountUtil.getCurrentOrg().getOrgId()));
 		if (CollectionUtils.isNotEmpty(imapEmails)) {
 			for (SupportEmailContext imapMail : imapEmails) {
 				long latestUID = imapMail.getLatestMessageUID();

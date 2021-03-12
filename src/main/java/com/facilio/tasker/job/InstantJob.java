@@ -11,9 +11,6 @@ import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.jobs.JobLogger;
 import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.service.FacilioService;
-import com.facilio.service.FacilioServiceUtil;
 import com.facilio.tasker.config.InstantJobConf;
 
 public abstract class InstantJob {
@@ -41,7 +38,7 @@ public abstract class InstantJob {
     	String jobName = (String) context.remove(InstantJobConf.getJobNameKey());
     	int status = 0;
     	long startTime = System.currentTimeMillis();
-    	try {
+        try {
             Account account = (Account) context.remove(InstantJobConf.getAccountKey());
 
             if (account != null) {
@@ -55,7 +52,8 @@ public abstract class InstantJob {
                 }
             }
             context.put(JobConstants.INSTANT_JOB, this);
-            FacilioService.runAsService(FacilioConstants.Services.INSTANT_JOB_SERVICE, ()->JobConstants.ChainFactory.instantJobExecutionChain(transactionTimeout).execute(context));
+            
+            JobConstants.ChainFactory.instantJobExecutionChain(transactionTimeout).execute(context);
 //            if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 88 && jobName.equals("ControllerActivityWatcher")) {
 //            	LOGGER.info("Executing Job "+jobName+" with props : "+context);
 //            }

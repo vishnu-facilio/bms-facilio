@@ -2,7 +2,6 @@ package com.facilio.services.kafka;
 
 import java.util.List;
 
-import com.facilio.constants.FacilioConstants;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.producer.RecordMetadata;
@@ -53,7 +52,7 @@ public class KafkaProcessor extends FacilioProcessor {
     @Override
 	public void processRecords(List<FacilioRecord> records) {
 		try {
-			if (!FacilioService.runAsServiceWihReturn(FacilioConstants.Services.AGENT_SERVICE,()->isTopicEnabled())) {
+			if (!FacilioService.runAsServiceWihReturn(()->isTopicEnabled())) {
 				LOGGER.info("Org Topic is disabled : "+getTopic());
 				return;
 			}

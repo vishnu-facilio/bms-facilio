@@ -14,7 +14,7 @@ public class DisconnectDeviceCommand extends FacilioCommand {
 		
 		DeviceContext deviceContext=(DeviceContext)context.get(FacilioConstants.ContextNames.RECORD);
 		long orgId=AccountUtil.getCurrentOrg().getId();
-		FacilioService.runAsServiceWihReturn(FacilioConstants.Services.DEFAULT_SERVICE,() ->  DevicesUtil.disconnectDevice(deviceContext.getId(),orgId));
+		FacilioService.runAsServiceWihReturn(() ->  DevicesUtil.disconnectDevice(deviceContext.getId(),orgId));		
 		deviceContext.setIsDeviceConnected(false);
 		return false;
 	}
