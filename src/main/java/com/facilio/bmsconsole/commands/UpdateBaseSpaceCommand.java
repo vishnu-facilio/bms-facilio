@@ -1,7 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.modules.UpdateChangeSet;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -40,7 +44,8 @@ public class UpdateBaseSpaceCommand extends FacilioCommand {
 
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
-			RecordAPI.updateRecord(baseSpace, module, modBean.getAllFields(moduleName));
+			Map<Long, List<UpdateChangeSet>> changeSet = RecordAPI.updateRecord(baseSpace, module, modBean.getAllFields(moduleName), true);
+			CommonCommandUtil.appendChangeSetMapToContext(context, changeSet, moduleName);
 
 			baseSpace = (BaseSpaceContext) RecordAPI.getRecord(moduleName, baseSpace.getId());
 			context.put(FacilioConstants.ContextNames.BASE_SPACE, baseSpace);
