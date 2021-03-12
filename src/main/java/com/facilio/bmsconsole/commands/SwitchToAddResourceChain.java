@@ -3,18 +3,23 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.context.BimImportProcessMappingContext;
+import com.facilio.bmsconsole.context.PMTriggerContext;
+import com.facilio.bmsconsole.context.PMTriggerContext.TriggerExectionSource;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
 import com.facilio.bmsconsole.context.PurchasedItemContext;
 import com.facilio.bmsconsole.context.PurchasedToolContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.TaskTemplate;
 import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.BimAPI;
+import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -25,9 +30,14 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.tasker.ScheduleInfo;
 import com.facilio.util.FacilioUtil;
+import com.mysql.jdbc.StringUtils;
+
+import freemarker.template.utility.StringUtil;
 
 import org.apache.commons.chain.Context;
+import org.apache.struts2.views.util.ResourceUtil;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -37,6 +47,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -160,6 +171,8 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 			for(ReadingContext reading :readingsContext) {
 				Map<String, Object> props = FieldUtil.getAsProperties(reading);
 				
+				props = removeNullNodes.apply(props);
+				
 				if(reading.getId() <= 0) {
 					
 					Long statusId = -1l;
@@ -171,7 +184,8 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 					Long tenantId = -1l;
 					Long vendorId = -1l;
 					Long safetyPlanId = -1l;
-					Long resourceId = -1l;
+					Integer triggerFrequency = -1;
+					ResourceContext resource = null;
 					
 					if(props.get("statusId") != null) {
 						statusId = (Long) ((Map<String,Object>)props.remove("statusId")).get("id");
@@ -200,12 +214,35 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 					if(props.get("safetyPlanId") != null) {
 						safetyPlanId = (Long) ((Map<String,Object>)props.remove("safetyPlanId")).get("id");
 					}
-					if(props.get("resourceId") != null) {
-						resourceId = (Long) ((Map<String,Object>)props.remove("resourceId")).get("id");
+					if(props.get("resourceName") != null) {
+						resource = ProcessImportCommand.getResource((String)props.remove("resourceName"));
+					}
+					if(props.get("triggerFrequency") != null) {
+						triggerFrequency = Integer.parseInt((String)props.get("triggerFrequency"));
 					}
 					
 					WorkorderTemplate woTemplate = FieldUtil.getAsBeanFromMap(props, WorkorderTemplate.class);
 					PreventiveMaintenance pm = FieldUtil.getAsBeanFromMap(props, PreventiveMaintenance.class);
+					if(props.get("triggerName") != null) {
+						PMTriggerContext trigger = FieldUtil.getAsBeanFromMap(props, PMTriggerContext.class);
+						trigger.setName((String) props.get("triggerName"));
+						
+						String times = (String) props.get("times");
+						
+						ScheduleInfo schedule = new ScheduleInfo();
+						Function<String, List<String>> func1 = (name) -> StringUtils.split(name, ",", true);
+						
+						schedule.setTimes(func1.apply(times));
+						
+						trigger.setFrequency(FacilioFrequency.valueOf(triggerFrequency));
+						
+						schedule.setFrequencyType(trigger.getFrequencyEnum().getValue());
+						
+						trigger.setSchedule(schedule);
+						trigger.setTriggerExecutionSource(TriggerExectionSource.SCHEDULE);
+						
+						pm.addTriggers(trigger);
+					}
 					
 					pm.setModifiedById(-1);
 					
@@ -218,7 +255,7 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 					woTemplate.setTenantId(tenantId);
 					woTemplate.setVendorId(vendorId);
 					woTemplate.setSafetyPlanId(safetyPlanId);
-					woTemplate.setResourceId(resourceId);
+					woTemplate.setResource(resource);
 					
 					pm.setName(woTemplate.getSubject());
 					pm.setTitle(woTemplate.getSubject());
@@ -332,5 +369,15 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 		
 		return false;
 	}
+	
+	Function<Map<String, Object>,Map<String, Object>> removeNullNodes = (prop) -> {
+		Map<String, Object> prop1 = new HashMap<String, Object>();
+		for(String key : prop.keySet()) {
+			if(prop.get(key) != null) {
+				prop1.put(key, prop.get(key));
+			}
+		}
+		return prop1;
+	};
 	
 	}
