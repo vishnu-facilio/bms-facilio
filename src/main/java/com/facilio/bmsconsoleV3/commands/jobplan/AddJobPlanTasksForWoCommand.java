@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.jobplan;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -18,19 +19,20 @@ import java.util.Map;
 public class AddJobPlanTasksForWoCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
-        if(workOrder.getPm() != null && workOrder.getResource() != null) {
-            Map<String, List<TaskContext>> taskMap = (Map<String, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
-            JobPlanContext jobPlan = getJobPlanForWorkOrder(workOrder);
-            if(jobPlan != null) {
-                List<JobPlanTaskSectionContext> taskSections = jobPlan.getTaskSectionList();
-                if (CollectionUtils.isNotEmpty(taskSections)) {
-                    Map<String, List<TaskContext>> jobPlanTasks = JobPlanAPI.getTaskMapFromJobPlan(taskSections, workOrder.getResource().getId());
-                    taskMap.putAll(jobPlanTasks);
+        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.JOB_PLAN)) {
+            WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
+            if (workOrder.getPm() != null && workOrder.getResource() != null) {
+                Map<String, List<TaskContext>> taskMap = (Map<String, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
+                JobPlanContext jobPlan = getJobPlanForWorkOrder(workOrder);
+                if (jobPlan != null) {
+                    List<JobPlanTaskSectionContext> taskSections = jobPlan.getTaskSectionList();
+                    if (CollectionUtils.isNotEmpty(taskSections)) {
+                        Map<String, List<TaskContext>> jobPlanTasks = JobPlanAPI.getTaskMapFromJobPlan(taskSections, workOrder.getResource().getId());
+                        taskMap.putAll(jobPlanTasks);
+                    }
                 }
             }
         }
-
         return false;
     }
 

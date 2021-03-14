@@ -409,7 +409,8 @@ public class AccountUtil {
 		MULTIVARIATE_ANOMALY_ALARM(562949953421312L), //2^49
 		CUSTOM_BUTTON(1125899906842624l),
 		MULTISITEPM(2251799813685248l), // 2 ^ 51
-		FACILITY_BOOKING(4503599627370496l, new String[] {ContextNames.FacilityBooking.FACILITY, ContextNames.FacilityBooking.FACILITY_BOOKING, ContextNames.FacilityBooking.AMENITY})
+		FACILITY_BOOKING(4503599627370496l, new String[] {ContextNames.FacilityBooking.FACILITY, ContextNames.FacilityBooking.FACILITY_BOOKING, ContextNames.FacilityBooking.AMENITY}),
+		JOB_PLAN (9007199254740992l)
 
 		;
     		// Add Module name if license is added for specific module
