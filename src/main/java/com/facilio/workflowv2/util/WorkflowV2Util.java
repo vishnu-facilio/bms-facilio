@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -29,14 +30,11 @@ import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.util.FacilioUtil;
-import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflowv2.Visitor.WorkflowFunctionVisitor;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.ExprContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.Recursive_expressionContext;
 import com.facilio.workflowv2.contexts.DBParamContext;
 import com.facilio.workflowv2.contexts.Value;
-import com.facilio.workflowv2.contexts.WorkflowDataParent;
 
 public class WorkflowV2Util {
 
@@ -84,6 +82,15 @@ public class WorkflowV2Util {
 	public static final String NEW_NAMESPACE_INITIALIZATION = "NameSpace";
 	public static final String NEW_CONNECTION_INITIALIZATION = "Connection";
 	
+	
+	public static Function<List<Long>, List<Integer>> longListToIntList = (longList) -> {
+		
+		List<Integer> returnList = new ArrayList<Integer>();
+		
+		longList.forEach((longValue) -> returnList.add(Integer.parseInt(longValue.toString())));
+		
+		return returnList;
+	};
 
 	static {
 		try {

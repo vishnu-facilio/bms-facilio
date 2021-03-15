@@ -14,6 +14,7 @@ import com.facilio.modules.fields.MultiEnumField;
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.exceptions.FunctionParamException;
 import com.facilio.workflows.util.WorkflowUtil;
+import com.facilio.workflowv2.util.WorkflowV2Util;
 
 public enum FacilioModuleFunctions implements FacilioWorkflowFunctionInterface {
 
@@ -110,7 +111,8 @@ public enum FacilioModuleFunctions implements FacilioWorkflowFunctionInterface {
 			}
 			else if (field instanceof MultiEnumField) {
 				MultiEnumField enumField = (MultiEnumField) field;
-				return enumField.getValue((List<Integer>) objects[2]);
+				List<Integer> intList = WorkflowV2Util.longListToIntList.apply((List<Long>) objects[2]);
+				return enumField.getValue(intList);
 			}
 
 			return null;
