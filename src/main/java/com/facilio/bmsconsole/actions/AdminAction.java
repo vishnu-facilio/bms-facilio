@@ -554,7 +554,7 @@ public class AdminAction extends ActionSupport {
 	
 	public static List<Map<String, Object>> getAgentOrgs() throws Exception {
 
-		return FacilioService.runAsServiceWihReturn(() -> getOrgsList());
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> getOrgsList());
 	}
 
 	public String addAgentVersion() throws Exception {
@@ -563,7 +563,7 @@ public class AdminAction extends ActionSupport {
 		String user = request.getParameter("user");
 		String description = request.getParameter("desc");
 		String url = request.getParameter("url");
-		FacilioService.runAsService(()->addAgent(version, user, description, url));
+		FacilioService.runAsService(FacilioConstants.Services.AGENT_SERVICE,()->addAgent(version, user, description, url));
 		return SUCCESS;
 	}
 
@@ -580,7 +580,7 @@ public class AdminAction extends ActionSupport {
 		HttpServletRequest request = ServletActionContext.getRequest();
 		long versionId = Long.parseLong(request.getParameter("version"));
 		long agentId = Long.parseLong(request.getParameter("agentId"));
-		FacilioService.runAsService(()->upgradeAgent(versionId, agentId));
+		FacilioService.runAsService(FacilioConstants.Services.AGENT_SERVICE,()->upgradeAgent(versionId, agentId));
 		return SUCCESS;
 	}
 
@@ -595,7 +595,7 @@ public class AdminAction extends ActionSupport {
 		Boolean isLatestVersion=false;
 		FacilioContext context = new FacilioContext();
     	context.put(AgentConstants.IS_LATEST_VERSION, isLatestVersion);
-		return FacilioService.runAsServiceWihReturn(() -> AgentVersionApi.listAgentVersions(context));
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.AGENT_SERVICE,() -> AgentVersionApi.listAgentVersions(context));
 	}
 	
 	public static List<Map<String, Object>> getAgentList(String orgId) throws Exception{
@@ -610,7 +610,7 @@ public class AdminAction extends ActionSupport {
 		String agentName = request.getParameter("agent");
 		boolean action = Boolean.parseBoolean(request.getParameter("action"));
 		if(level.equals("topic")) {
-			FacilioService.runAsService(()->MessageQueueTopic.disableOrEnableMessageTopic(action, orgId));
+			FacilioService.runAsService(FacilioConstants.Services.AGENT_SERVICE,()->MessageQueueTopic.disableOrEnableMessageTopic(action, orgId));
 		}else if(level.equals("agent")) {
 			AgentControl obj = new AgentControl();
 			obj.setAgentName(agentName);
@@ -770,7 +770,7 @@ public class AdminAction extends ActionSupport {
 	}
 
 	public String getSecretFiles() throws Exception {
-		List<FileInfo> list =FacilioService.runAsServiceWihReturn(()->FacilioFactory.getFileStore().listSecretFiles());
+		List<FileInfo> list =FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,()->FacilioFactory.getFileStore().listSecretFiles());
 		org.json.simple.JSONArray jsonArray = new org.json.simple.JSONArray();
 		for (FileInfo fileInfo: list){
 			JSONObject jsonObject = new JSONObject();
@@ -801,7 +801,7 @@ public class AdminAction extends ActionSupport {
 			FileStore fs = FacilioFactory.getFileStore() ;
 			if(!fs.isSecretFileExists(getFileName())){
 				LOGGER.info("adding secretFile");
-				FacilioService.runAsService(() ->FacilioFactory.getFileStore().addSecretFile(getFileName(),getFile(),getContentType()));
+				FacilioService.runAsService(FacilioConstants.Services.IAM_SERVICE,() ->FacilioFactory.getFileStore().addSecretFile(getFileName(),getFile(),getContentType()));
 			}
 			getSecretFiles();
 			return SUCCESS;
@@ -811,7 +811,7 @@ public class AdminAction extends ActionSupport {
 	public String deleteSecretFile() throws Exception {
 		LOGGER.info("delete secret file called");
 		if(getFileName()!=null){
-			FacilioService.runAsService(() ->FacilioFactory.getFileStore().removeSecretFile(getFileName()));
+			FacilioService.runAsService(FacilioConstants.Services.IAM_SERVICE,() ->FacilioFactory.getFileStore().removeSecretFile(getFileName()));
 		}
 		getSecretFiles();
 		return SUCCESS;

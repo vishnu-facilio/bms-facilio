@@ -25,8 +25,8 @@ public class ConnectDeviceCommand extends FacilioCommand {
 		//before marking as connected copy the code 
 		System.out.println("connecting device"+deviceCode+"with"+device.getId());
 		long orgId=AccountUtil.getCurrentOrg().getOrgId();
-		long connectedDeviceId=FacilioService.runAsServiceWihReturn(() ->  DevicesUtil.addConnectedDevice(device.getId(),orgId));
-		FacilioService.runAsServiceWihReturn(() ->  DevicesUtil.markCodeAsConnected(deviceCode,connectedDeviceId));
+		long connectedDeviceId=FacilioService.runAsServiceWihReturn(FacilioConstants.Services.DEFAULT_SERVICE,() ->  DevicesUtil.addConnectedDevice(device.getId(),orgId));
+		FacilioService.runAsServiceWihReturn(FacilioConstants.Services.DEFAULT_SERVICE,() ->  DevicesUtil.markCodeAsConnected(deviceCode,connectedDeviceId));
 		
 		device.setIsDeviceConnected(true);
 		device.setConnectedTime(System.currentTimeMillis());

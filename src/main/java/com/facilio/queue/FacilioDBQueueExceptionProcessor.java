@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.TimerTask;
 
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.constants.FacilioConstants;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -26,14 +27,14 @@ public class FacilioDBQueueExceptionProcessor extends TimerTask {
 		
         List<QueueMessage> messageList = new ArrayList<>();
         try {				
-            messageList = FacilioService.runAsServiceWihReturn(() -> FacilioQueueException.pull(20));
+            messageList = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.INSTANT_JOB_SERVICE,() -> FacilioQueueException.pull(20));
         } catch (Exception e1) {
             LOGGER.info("Exception Occurred in  FacilioQueue  : ",e1);
         }
         while(messageList.size() > 0 && EXCEPTION_MESSAGES.size() < 20) {
             processMessages(messageList);
             try {
-				messageList =  FacilioService.runAsServiceWihReturn(() -> FacilioQueueException.pull(20));
+				messageList =  FacilioService.runAsServiceWihReturn(FacilioConstants.Services.INSTANT_JOB_SERVICE,() -> FacilioQueueException.pull(20));
 			} catch (Exception e) {
 				 LOGGER.info("Exception Occurred in  FacilioQueue  : ",e);
 			}
@@ -59,7 +60,7 @@ public class FacilioDBQueueExceptionProcessor extends TimerTask {
                     FacilioFactory.getEmailClient().sendEmail(json);
                     LOGGER.info("calling delete msg with "+ RECEIPT_HANDLE_LIST.size());
                     for(String deleteMsgId : RECEIPT_HANDLE_LIST) {
-                    	 FacilioService.runAsService(() -> FacilioQueueException.deleteQueue(deleteMsgId));
+                    	 FacilioService.runAsService(FacilioConstants.Services.INSTANT_JOB_SERVICE,() -> FacilioQueueException.deleteQueue(deleteMsgId));
                     }
                 } catch (Exception e) {
                     LOGGER.info("Exception while sending email ", e);

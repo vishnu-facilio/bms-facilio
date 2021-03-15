@@ -11,6 +11,10 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.service.FacilioService;
+import com.facilio.service.FacilioServiceUtil;
+import lombok.SneakyThrows;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -68,8 +72,9 @@ public class Executor implements Runnable {
 			
 			LOGGER.debug(name+"::"+startTime+"::"+endTime);
 			
-			List<JobContext> jobs = JobStore.getJobs(name, startTime, endTime, getMaxRetry(), includedOrgs, excludedOrgs);
-			jobs.addAll(JobStore.getIncompletedJobs(name, startTime, endTime, getMaxRetry(), includedOrgs, excludedOrgs));
+			List<JobContext> jobs = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,()->JobStore.getJobs(name, startTime, endTime, getMaxRetry(), includedOrgs, excludedOrgs));
+			jobs.addAll(FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,()->JobStore.getIncompletedJobs(name, startTime, endTime, getMaxRetry(), includedOrgs, excludedOrgs)));
+
 			for(JobContext jc : jobs) {
 				try {
 					scheduleJob(jc);

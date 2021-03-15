@@ -21,6 +21,7 @@ import java.util.Set;
 
 import javax.imageio.ImageIO;
 
+import lombok.Getter;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -53,15 +54,19 @@ public abstract class FileStore {
 
 	public static class NamespaceConfig {
 		private static final int DEFAULT_DATA_RETENTION_PERIOD = 5; //In days
-		private NamespaceConfig (String name, String tableName, String resizedTableName, Integer dataRetention, Boolean dailyDirectoryNeeded) {
+		private NamespaceConfig (String name,String tableName,String resizedTableName, String service,Integer dataRetention,Boolean dailyDirectoryNeeded ) {
 			Objects.requireNonNull(name, "Name cannot be null in namespace");
 			Objects.requireNonNull(tableName, "File Table Name cannot be null in namespace");
 			Objects.requireNonNull(resizedTableName, " Resized File Table Name cannot be null in namespace");
+			if(service == null || service.trim().isEmpty()) {
+				throw new IllegalArgumentException("service cannot be null or empty in namespace");
+			}
 			this.name = name;
 			this.tableName = tableName;
 			this.resizedTableName = resizedTableName;
 			this.dataRetention = dataRetention == null || dataRetention <= 0 ? DEFAULT_DATA_RETENTION_PERIOD : dataRetention;
 			this.dailyDirectoryNeeded = Boolean.TRUE.equals(dailyDirectoryNeeded);
+			this.service = service;
 		}
 
 		public String getName() {
@@ -88,6 +93,8 @@ public abstract class FileStore {
 			return dailyDirectoryNeeded;
 		}
 		private boolean dailyDirectoryNeeded = false;
+		@Getter
+		private String service;
 	}
 
 	private static Map<String, NamespaceConfig> initNamespaces() {
@@ -96,7 +103,7 @@ public abstract class FileStore {
 			List<Map<String, Object>> namespaceConfList = (List<Map<String, Object>>) namespaceConf.get("namespaces");
 			Map<String, NamespaceConfig> namespaces = new HashMap<>();
 			for (Map<String, Object> conf : namespaceConfList) {
-				NamespaceConfig namespace = new NamespaceConfig( (String) conf.get("name"), (String) conf.get("tableName"), (String) conf.get("resizedTableName"), (Integer) conf.get("dataRetention"), (Boolean) conf.get("dailyDirectoryNeeded"));
+				NamespaceConfig namespace = new NamespaceConfig( (String) conf.get("name"), (String) conf.get("tableName"), (String) conf.get("resizedTableName"), (String)conf.get("service"),(Integer) conf.get("dataRetention"), (Boolean) conf.get("dailyDirectoryNeeded"));
 				namespaces.put(namespace.getName(), namespace);
 			}
 			return namespaces;

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.facilio.constants.FacilioConstants;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.log4j.Logger;
 
@@ -32,16 +33,16 @@ public class FacilioObjectQueue {
 		String serializedString = Base64.encodeAsString(SerializationUtils.serialize(serializable));
 		if (AccountUtil.getCurrentOrg() != null) {
 			long orgId = AccountUtil.getCurrentOrg().getOrgId();
-			return FacilioService.runAsServiceWihReturn(() -> queueInstance.push(serializedString, orgId));
+			return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.INSTANT_JOB_SERVICE,() -> queueInstance.push(serializedString, orgId));
 		}
 		else {
-			return FacilioService.runAsServiceWihReturn(() -> queueInstance.push(serializedString,-1l));
+			return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.INSTANT_JOB_SERVICE,() -> queueInstance.push(serializedString,-1l));
 		}
 	}
 
 	public List<ObjectMessage> getObjects( int limit) throws Exception {
 		List<QueueMessage> receivedMessages = FacilioService
-				.runAsServiceWihReturn(() -> queueInstance.pull(limit));
+				.runAsServiceWihReturn(FacilioConstants.Services.INSTANT_JOB_SERVICE,() -> queueInstance.pull(limit));
 		List<ObjectMessage> serializableList = new ArrayList<>();
 		for (QueueMessage message : receivedMessages) {
 			String serialized = message.getMessage();
@@ -62,18 +63,18 @@ public class FacilioObjectQueue {
 	}
 
 	public void deleteObject( String receiptHandle) throws Exception {
-		FacilioService.runAsService(() -> queueInstance.delete(receiptHandle));
+		FacilioService.runAsService(FacilioConstants.Services.INSTANT_JOB_SERVICE,() -> queueInstance.delete(receiptHandle));
 	}
 
 	public boolean changeVisibilityTimeout( String receiptHandle, int visibilityTimeout)
 			throws Exception {
-		return FacilioService.runAsServiceWihReturn(
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.INSTANT_JOB_SERVICE,
 				() -> queueInstance.changeVisibilityTimeout( receiptHandle, visibilityTimeout));
 	}
 
 	public void delete(long ttime)throws Exception{
 		try {
-			queueInstance.deleteQueue(ttime);
+			FacilioService.runAsService(FacilioConstants.Services.INSTANT_JOB_SERVICE,() ->queueInstance.deleteQueue(ttime));
 		}catch(Exception e) {
 			throw e;
 		}

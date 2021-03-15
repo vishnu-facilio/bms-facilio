@@ -5,6 +5,9 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.jobs.JobLogger;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.service.FacilioService;
+import com.facilio.service.FacilioServiceUtil;
 import com.facilio.tasker.executor.Executor;
 import com.facilio.util.SentryUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -32,7 +35,7 @@ public abstract class FacilioJob implements Runnable {
 	@Override
 	public void run() {
 		try {
-			if (JobStore.updateStartExecution(jc.getOrgId(), jc.getJobId(), jc.getJobName(), jc.getJobStartTime(), jc.getJobExecutionCount()) < 1) {
+			if (FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE, () -> JobStore.updateStartExecution(jc.getOrgId(), jc.getJobId(), jc.getJobName(), jc.getJobStartTime(), jc.getJobExecutionCount())) < 1) {
 				executor.jobEnd(jc.getJobKey());
 				return;
 			}
@@ -84,7 +87,7 @@ public abstract class FacilioJob implements Runnable {
 				JobLogger.log(jc, timeTaken, status);
 				AccountUtil.cleanCurrentAccount();
 				if (status == 1) {
-					updateNextExecutionTime();
+					FacilioService.runAsService(FacilioConstants.Services.JOB_SERVICE, ()->updateNextExecutionTime());
 				}
 				LOGGER.debug("Job completed " + jc.getJobId() + "-" + jc.getJobName() + " time taken : " + timeTaken);
 				currentThread.setName(threadName);

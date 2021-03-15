@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import com.facilio.constants.FacilioConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
@@ -36,7 +37,7 @@ public class ScreenUtil {
 	public static void addScreen(ScreenContext screen) throws Exception {
 		
 		screen.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-		FacilioService.runAsService(() ->  addScreenAsService(screen));
+		FacilioService.runAsService(FacilioConstants.Services.IAM_SERVICE,() ->  addScreenAsService(screen));
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getScreenDashboardRelModule().getTableName())
 				.fields(FieldFactory.getScreenDashboardRelModuleFields());
@@ -77,7 +78,7 @@ public class ScreenUtil {
 	public static void updateScreen(ScreenContext screen) throws Exception {
 		
 		Map<String, Object> props = FieldUtil.getAsProperties(screen);
-		FacilioService.runAsService(() -> updateScreenAsService(screen));
+		FacilioService.runAsService(FacilioConstants.Services.IAM_SERVICE,() -> updateScreenAsService(screen));
 		
 				
 		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
@@ -121,7 +122,7 @@ public class ScreenUtil {
 		.andCustomWhere("SCREEN_ID = ?", screen.getId());
 		deleteRecordBuilder.delete();
 		
-		FacilioService.runAsService(() -> deleteScreenAsService(screen));
+		FacilioService.runAsService(FacilioConstants.Services.IAM_SERVICE,() -> deleteScreenAsService(screen));
 		
 	}
 	
@@ -136,7 +137,7 @@ public class ScreenUtil {
 	public static List<ScreenContext> getAllScreen() throws Exception {
 		
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
-		List<Map<String, Object>> mapList = FacilioService.runAsServiceWihReturn(() ->  getAllScreenAsService(orgId));
+		List<Map<String, Object>> mapList = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() ->  getAllScreenAsService(orgId));
 		List<ScreenContext> screens = new ArrayList<>();
 		for(Map<String, Object> prop :mapList) {
 			
@@ -162,7 +163,7 @@ public class ScreenUtil {
 	}
 	
 	public static ScreenContext getScreen(Long screenId) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() ->  getScreenAsService(screenId));
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() ->  getScreenAsService(screenId));
 	}
 	
 	private static ScreenContext getScreenAsService(long screenId) throws Exception {
@@ -215,7 +216,7 @@ public class ScreenUtil {
 	
 	
 	public static List<RemoteScreenContext> getAllRemoteScreen(long screenId) throws Exception {
-		List<RemoteScreenContext> remosteScreens = FacilioService.runAsServiceWihReturn(() ->  getAllRemoteScreenAsService(screenId));
+		List<RemoteScreenContext> remosteScreens = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() ->  getAllRemoteScreenAsService(screenId));
 		if(CollectionUtils.isNotEmpty(remosteScreens)) {
 			for(RemoteScreenContext remoteScreen : remosteScreens) {
 				if(remoteScreen.getScreenContext() != null && remoteScreen.getScreenContext().getId() > 0) {
@@ -254,7 +255,7 @@ public class ScreenUtil {
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		
 		List<RemoteScreenContext> remoteScreens = new ArrayList<RemoteScreenContext>();
-		List<Map<String, Object>> props = FacilioService.runAsServiceWihReturn(() ->  getRemoteScreensForOrgAsService(orgId));
+		List<Map<String, Object>> props = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() ->  getRemoteScreensForOrgAsService(orgId));
 		for(Map<String, Object> prop :props) {
 			
 			RemoteScreenContext remoteSreenContext = FieldUtil.getAsBeanFromMap(prop, RemoteScreenContext.class);

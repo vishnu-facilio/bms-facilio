@@ -412,7 +412,7 @@ public class DataProcessorUtil {
 				 if(agentV2 != null) {
 					 object.updateAgent(recordId);
 				 }
-				FacilioService.runAsService(()-> object.insertAgentDisable(recordId));
+				FacilioService.runAsService(FacilioConstants.Services.AGENT_SERVICE,()-> object.insertAgentDisable(recordId));
 		 }else{
 			 object.setAction(disable);
 			 object.setAgentId(agentV2.getId());
@@ -424,7 +424,7 @@ public class DataProcessorUtil {
 				 object.setAgentName(agentName);
 			 }
 			 object.updateAgent(recordId);
-			 FacilioService.runAsService(()-> object.updateAgentDisable(recordId));
+			 FacilioService.runAsService(FacilioConstants.Services.AGENT_SERVICE,()-> object.updateAgentDisable(recordId));
 		 }
 	}
 
