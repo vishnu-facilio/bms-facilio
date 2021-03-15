@@ -17,9 +17,11 @@ import com.facilio.accounts.dto.*;
 import com.facilio.accounts.sso.AccountSSO;
 import com.facilio.accounts.sso.SSOUtil;
 import com.facilio.db.criteria.operators.*;
+import com.facilio.db.util.DBConf;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.*;
 import com.facilio.util.FacilioUtil;
+import dev.samstevens.totp.recovery.RecoveryCodeGenerator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -628,6 +630,28 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		insertTokenIntoSession(uid, null, jwt, IAMAccountConstants.SessionType.DIGEST_SESSION);
 
 		return result;
+	}
+
+	@Override
+	public String generateTotpSessionToken(String userName) throws Exception {
+		String jwt = createJWT("id", "auth0", userName, System.currentTimeMillis());
+		final List<Map<String, Object>> userForUsername = getUserData(userName, -1, null);
+
+		Map<String, Object> user = userForUsername.get(0);
+		insertTokenIntoSession((long) user.get("uid"), null, jwt, IAMAccountConstants.SessionType.TOTP_SESSION);
+
+		return jwt;
+	}
+
+	@Override
+	public String generateMFAConfigSessionToken(String userName) throws Exception {
+		String jwt = createJWT("id", "auth0", userName, System.currentTimeMillis());
+		final List<Map<String, Object>> userForUserName = getUserData(userName, -1, null);
+
+		Map<String, Object> user = userForUserName.get(0);
+		insertTokenIntoSession((long) user.get("uid"), null, jwt, IAMAccountConstants.SessionType.MFA_CONFIG_SESSION);
+
+		return jwt;
 	}
 
 	@Override
@@ -1311,6 +1335,32 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
+	public Map<String, Object> getUserMfaSettings(String email) throws Exception {
+		List<Map<String, Object>> userData = getUserData(email, -1, null);
+		if (CollectionUtils.isEmpty(userData)) {
+			return null;
+		}
+
+		long uid = (long) userData.get(0).get("uid");
+		Map<String, Object> userMfaSettings = getUserMfaSettings(uid);
+
+		for (Map<String, Object> user: userData) {
+			long orgId = (Long) user.get("orgId");
+			Map<String, Boolean> mfaSettings = IAMOrgUtil.getMfaSettings(orgId);
+			if (!MapUtils.isEmpty(mfaSettings)) {
+				Boolean totpEnabled = mfaSettings.get("totpEnabled");
+				if (totpEnabled != null && totpEnabled) {
+					userMfaSettings.putAll(mfaSettings);
+					break;
+				}
+			}
+		}
+
+		return userMfaSettings;
+	}
+
+
+	@Override
 	public String validateAndGenerateTokenV3(String username, String password, String appDomainName,
 			String userAgent, String userType, String ipAddress, boolean startUserSession) throws Exception {
 		long validUid = verifyPasswordv3(username, password, appDomainName, userType);
@@ -1341,12 +1391,17 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 	@Override
 	public String getEmailFromDigest(String digest) throws Exception {
+		return getEmailFromDigest(digest, IAMAccountConstants.SessionType.DIGEST_SESSION);
+	}
+
+	@Override
+	public String getEmailFromDigest(String digest, IAMAccountConstants.SessionType sessionType) throws Exception {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(IAMAccountConstants.getUserSessionFields())
 				.table("UserSessions");
 		selectBuilder.andCondition(CriteriaAPI.getCondition("UserSessions.TOKEN", "token", digest, StringOperators.IS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("IS_ACTIVE", "email", "1", NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("SESSION_TYPE", "sessionType", IAMAccountConstants.SessionType.DIGEST_SESSION.getValue()+"", NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("SESSION_TYPE", "sessionType", sessionType.getValue()+"", NumberOperators.EQUALS));
 
 		List<Map<String, Object>> props = selectBuilder.get();
 
@@ -1368,6 +1423,20 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		}
 
 		return email;
+	}
+
+	public Map<String, Object> generateRecoveryCode(long uid) throws Exception {
+		IAMAccount userV3 = getAccountv3(uid);
+		String name = userV3.getUser().getName();
+		String fileName = name + " recovery-codes.txt";
+		Map<String, Object> recoveryCode = new HashMap<>();
+		RecoveryCodeGenerator recoveryCodes = new RecoveryCodeGenerator();
+		String[] codes = recoveryCodes.generateCodes(16);
+		String content = StringUtils.join(codes, '\n');
+		long l = DBConf.getInstance().addFile(content, fileName, "text/plain");
+		recoveryCode.put("codes", codes);
+
+		return recoveryCode;
 	}
 
 
@@ -1399,15 +1468,10 @@ public class IAMUserBeanImpl implements IAMUserBean {
 				if(appDomainObj.getDomainTypeEnum() == AppDomain.DomainType.CUSTOM && appDomainObj.getOrgId() > 0){
 					//this check can be removed later..adding it for sutherland demo(894 is the custom domain id for org 343 in production)
 					if(!FacilioProperties.isProduction() || appDomainObj.getId() != 894l) {
-						selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ORGID", "orgId", String.valueOf(appDomainObj.getOrgId()), StringOperators.IS));
+						selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ORGID", "orgId", String.valueOf(appDomainObj.getOrgId	()), StringOperators.IS));
 					}
 				}
 			}
-
-
-			
-			LOGGER.info("Email Address  " + username);
-			LOGGER.info("PAssword  " + password);
 			
 			List<Map<String, Object>> props = selectBuilder.get();
 
@@ -1784,7 +1848,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	private List<Map<String, Object>> getUserData(String username, long orgId, String identifier) throws Exception {
-		List<FacilioField> fields = new ArrayList<FacilioField>();
+		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(IAMAccountConstants.getAccountsUserFields());
 		fields.addAll(IAMAccountConstants.getAccountsOrgUserFields());
 
@@ -2077,7 +2141,6 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		        .andCondition(CriteriaAPI.getCondition("UserMfaSettings.USERID", "userId",userId + "", NumberOperators.EQUALS));
 		List<Map<String, Object>> props = selectBuilder.get();
 		if(props != null && !props.isEmpty()) {
-			
 			Map<String,Object> x = props.get(0);
 			Map<String,Object> result = new HashMap<>();
 			result.put("userId", x.get("userId"));
