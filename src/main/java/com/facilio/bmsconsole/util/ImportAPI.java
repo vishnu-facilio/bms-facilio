@@ -584,17 +584,15 @@ public class ImportAPI {
 				fields.addAll(ImportFieldFactory.getImportFieldNames(facilioModule.getName()));
 			} else {
 				for (FacilioField field : fieldsList) {
-					if (!ImportAPI.isRemovableFieldOnImport(field.getName())) {
-						if (field.getDisplayType() == FacilioField.FieldDisplayType.ADDRESS) {
-							fields.addAll(Arrays.asList(field.getName() + "_name", field.getName() + "_street", field.getName() + "_city", field.getName() + "_state", field.getName() + "_country", field.getName() + "_zip", field.getName() + "_lat", field.getName() + "_lng"));
-						} else {
-							fields.add(field.getName());
-						}
+					if (field.getDisplayType() == FacilioField.FieldDisplayType.ADDRESS) {
+						fields.addAll(Arrays.asList(field.getName() + "_name", field.getName() + "_street", field.getName() + "_city", field.getName() + "_state", field.getName() + "_country", field.getName() + "_zip", field.getName() + "_lat", field.getName() + "_lng"));
+					} else {
+						fields.add(field.getName());
 					}
 				}
 
 				if (importSetting != null && (importSetting != ImportProcessContext.ImportSetting.INSERT.getValue() && importSetting != ImportProcessContext.ImportSetting.INSERT_SKIP.getValue())) {
-					if (!fieldsMap.containsKey("localId")) {
+					if (!fieldsMap.containsKey("localId") && !fieldsMap.containsKey("serialNumber")) {
 						fields.add("id");
 					}
 				}
@@ -697,23 +695,7 @@ public class ImportAPI {
 		return importProcessContext;
 		
 	}
-	
-	public static boolean isRemovableFieldOnImport(String name) {
 
-		switch (name){ 
-
-		case "parentId":
-		case "date":
-		case "month":
-		case "week":
-		case "day":
-		case "hour": {
-			return false;
-		}
-		}
-		return false;
-	}
-	
 	public static HashMap<String,String> getFieldMap(String jsonString) throws Exception
 	{
 		HashMap <String,String> fieldMap = new LinkedHashMap<String,String>();

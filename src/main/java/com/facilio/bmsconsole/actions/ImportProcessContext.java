@@ -336,7 +336,7 @@ public class ImportProcessContext implements Serializable,Cloneable
 				}
 				for(FacilioField field : fieldsList)
 				{
-					if(!ImportAPI.isRemovableFieldOnImport(field.getName()) && !removeFields.contains(field.getName()))
+					if(!removeFields.contains(field.getName()))
 					{
 						if (field.getDisplayType() == FacilioField.FieldDisplayType.ADDRESS) {
 							facilioFieldMapping.putAll(ImportAPI.getLocationFields((LookupField) field));
