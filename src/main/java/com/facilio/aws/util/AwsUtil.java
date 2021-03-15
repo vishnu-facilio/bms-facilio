@@ -107,7 +107,7 @@ public class AwsUtil
 	private static final Object LOCK = new Object();
 
 	public static Map<String, Object> getClientInfoAsService() throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> getClientInfo());
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.DEFAULT_SERVICE,() -> getClientInfo());
 	}
 
 	public static Map<String, Object> getClientInfo() {
