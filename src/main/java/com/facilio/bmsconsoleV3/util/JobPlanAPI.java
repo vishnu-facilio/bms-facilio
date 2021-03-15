@@ -244,7 +244,10 @@ public class JobPlanAPI {
             if(pmJobPlan != null){
                 Long jobPlanId = pmJobPlan.getJobPlanId();
                 JobPlanContext jobPlan = (JobPlanContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.JOB_PLAN, jobPlanId, JobPlanContext.class);
-                return jobPlan;
+                if(jobPlan != null) {
+                    JobPlanContext fetchedJp = getJobPlan(jobPlan.getId());
+                    return fetchedJp;
+                }
             }
         }
         return null;
@@ -286,4 +289,28 @@ public class JobPlanAPI {
         return null;
     }
 
+    public static JobPlanContext getJobPlanForWorkOrder(WorkOrderContext wo) throws Exception {
+        if(wo.getPm() != null && wo.getTrigger() != null) {
+            return JobPlanAPI.getJobPlanForPMTrigger(wo.getTrigger().getId());
+        }
+        else if (wo.getJobPlan() != null) {
+            return wo.getJobPlan();
+        }
+        return null;
+    }
+
+    public static Map<String, List<TaskContext>> getJobPlanTasksForWo(WorkOrderContext workOrder) throws Exception {
+
+        JobPlanContext jobPlan = getJobPlanForWorkOrder(workOrder);
+        Map<String, List<TaskContext>> taskMap = new HashMap<>();
+        if (jobPlan != null) {
+            List<JobPlanTaskSectionContext> taskSections = jobPlan.getTaskSectionList();
+            if (CollectionUtils.isNotEmpty(taskSections)) {
+                Map<String, List<TaskContext>> jobPlanTasks = JobPlanAPI.getTaskMapFromJobPlan(taskSections, workOrder.getResource().getId());
+                taskMap.putAll(jobPlanTasks);
+                return taskMap;
+            }
+        }
+        return null;
+    }
 }

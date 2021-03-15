@@ -673,7 +673,7 @@ public class PreventiveMaintenanceAPI {
 		for (long nextExecutionTime: nextExecutionTimes) {
 			WorkorderTemplate clonedWoTemplate = FieldUtil.cloneBean(workorderTemplate, WorkorderTemplate.class);
 
-			PreventiveMaintenanceAPI.addJobPlanSectionsToWorkorderTemplate(pm, workorderTemplate);
+			//PreventiveMaintenanceAPI.addJobPlanSectionsToWorkorderTemplate(pm, workorderTemplate);
 
 			if(CollectionUtils.isNotEmpty(workorderTemplate.getJobPlanTaskSections())) {
 				List<TaskSectionTemplate> sectionTemplates = new ArrayList<>();

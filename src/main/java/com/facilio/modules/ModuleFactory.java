@@ -4455,7 +4455,7 @@ public class ModuleFactory {
 		FacilioModule pmJobPlanTriggers = new FacilioModule();
 		pmJobPlanTriggers.setName("pmJobPlanTriggers");
 		pmJobPlanTriggers.setDisplayName("PM Job Plan Triggers");
-		pmJobPlanTriggers.setTableName("PM_Job_Plan_Triggers");
+		pmJobPlanTriggers.setTableName("PM_Job_Plans_Triggers");
 		return pmJobPlanTriggers;
 	}
 
