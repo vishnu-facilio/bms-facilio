@@ -3,9 +3,9 @@ package com.facilio.modules;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
-import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.FieldPermissionContext.CheckType;
 import com.facilio.bmsconsole.context.FieldPermissionContext.PermissionType;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
@@ -13,7 +13,6 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.SLAWorkflowEscalationContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -351,6 +350,7 @@ public class FieldUtil {
                     "building",
                     "floor",
                     "space",
+					FacilioConstants.ContextNames.BASE_SPACE,
                     "zone",
                     "alarm",
                     "ticket",
