@@ -3876,6 +3876,23 @@ public class ModuleFactory {
 		module.setTableName("Floorplan_Objects");
 		return module;
 	}
+	
+	
+	public static FacilioModule getIndoorFloorPlanModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(FacilioConstants.ContextNames.INDOOR_FLOOR_PLAN);
+		module.setDisplayName("Indoor Floor Plan");
+		module.setTableName("Indoor_Floor_Plan");
+		return module;
+	}
+	
+	public static FacilioModule getIndoorFloorPlanObjectModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(FacilioConstants.ContextNames.INDOOR_FLOOR_PLAN_OBJECTS);
+		module.setDisplayName("Indoor Floor Plan Object");
+		module.setTableName("Indoor_Floorplan_Objects");
+		return module;
+	}
 
 	public static FacilioModule getSiteModule() {
 		FacilioModule workOrdersModule = new FacilioModule();

@@ -6167,6 +6167,21 @@
 		<action name="viewFloorPlanMode"
 			class="com.facilio.bmsconsole.actions.FloorPlanAction" method="viewFloorPlanMode" />
 	</package>
+
+	<package name="indoorfloorPlan" namespace="/api/v2/indoorfloorplan"
+		extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.IndoorFloorPlanAction" method="addFloorPlan" />
+		<action name="get"
+			class="com.facilio.bmsconsole.actions.IndoorFloorPlanAction" method="getFloorPlanById" />
+		<action name="getall"
+			class="com.facilio.bmsconsole.actions.IndoorFloorPlanAction" method="getAllFloorPlan" />
+			<action name="update"
+			class="com.facilio.bmsconsole.actions.IndoorFloorPlanAction" method="updateFloorPlan" />
+						<action name="delete"
+			class="com.facilio.bmsconsole.actions.IndoorFloorPlanAction" method="deleteFloorPlan" />
+	
+	</package>
 	
 	<package name="clientViews" namespace="/api/v2/clients/view"
 		extends="v2Api">

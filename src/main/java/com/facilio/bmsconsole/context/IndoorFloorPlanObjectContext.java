@@ -11,12 +11,6 @@ public class IndoorFloorPlanObjectContext extends ModuleBaseWithCustomFields{
 	public void setObjectId(long objectId) {
 		this.objectId = objectId;
 	}
-	public long getLocalId() {
-		return localId;
-	}
-	public void setLocalId(long localId) {
-		this.localId = localId;
-	}
 	public long getFloorplanId() {
 		return floorplanId;
 	}
@@ -59,7 +53,22 @@ public class IndoorFloorPlanObjectContext extends ModuleBaseWithCustomFields{
 	public void setUserId(long userId) {
 		this.userId = userId;
 	}
-	private long localId; //geo json id
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
+	
+	private long id;
+	private long indoorFloorPlanId;
+	public long getIndoorFloorPlanId() {
+		return indoorFloorPlanId;
+	}
+	public void setIndoorFloorPlanId(long indoorFloorPlanId) {
+		this.indoorFloorPlanId = indoorFloorPlanId;
+	}
+
 	private long floorplanId;
 	private String type;
 	private String geometry;
@@ -67,5 +76,6 @@ public class IndoorFloorPlanObjectContext extends ModuleBaseWithCustomFields{
 	private long spaceId;
 	private long assetId;
 	private long userId;
+	
 	
 }

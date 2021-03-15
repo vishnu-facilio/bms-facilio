@@ -5955,6 +5955,43 @@ public class TransactionChainFactory {
 		chain.addCommand(new AddScoreSubModuleCommand());
 		return chain;
 	}
+	
+	public static FacilioChain addIndoorFloorPlanChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new AddIndoorFloorPlanCommand());
+		c.addCommand(new AddIndoorFloorPlanObjectsCommand());
+
+		return c;
+	}
+	
+	public static FacilioChain getIndoorFloorPlanChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new getIndoorFloorPlanCommand());
+		return c;
+	}
+	
+	public static FacilioChain getAllIndoorFloorPlanChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new getAllIndoorFloorPlan());
+		return c;
+	}
+	public static FacilioChain updateIndoorFloorPlanChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new DeleteIndoorFloorPlanObjectsCommand());
+		c.addCommand(new updateIndoorFloorPlanCommand());
+		c.addCommand(new AddIndoorFloorPlanObjectsCommand());
+		return c;
+	}
+	
+	public static FacilioChain deleteIndoorFloorPlanChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new DeleteIndoorFloorPlanObjectsCommand());
+		c.addCommand(new deleteIndoorFloorPlanCommand());
+		return c;
+	}
+	
+	
+	
 }
 
 

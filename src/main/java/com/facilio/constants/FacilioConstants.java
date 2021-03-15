@@ -1778,6 +1778,10 @@ public class FacilioConstants {
 		public static final String RULE_ASSET_COUNT = "ruleassetcount";
 
 
+		
+		public static final String INDOOR_FLOOR_PLAN = "indoorFloorPlan";
+		public static final String INDOOR_FLOOR_PLANS = "indoorFloorPlans";
+		public static final String INDOOR_FLOOR_PLAN_OBJECTS = "indoorFloorPlanObjects";
 
 		public static final String EMPLOYEE = "employee";
 		public static final String EMPLOYEES = "employees";

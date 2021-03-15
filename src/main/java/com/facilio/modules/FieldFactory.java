@@ -9084,6 +9084,35 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	
+	public static List<FacilioField> getIndoorFloorPlanFields() {
+		FacilioModule module = ModuleFactory.getIndoorFloorPlanModule();
+		List<FacilioField> fields = getSystemPointFields(module);
+		fields.add(getIdField(module));
+		fields.add(getField("id", "ID", module, FieldType.ID));
+		fields.add(getField("name", "NAME", module, FieldType.STRING));
+		fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
+		fields.add(getField("fileId","FILE_ID",module,FieldType.NUMBER));
+		fields.add(getField("siteId", "SITE_ID", module, FieldType.NUMBER));
+		fields.add(getField("floorId", "FLOOR_ID", module, FieldType.NUMBER));
+		return fields;
+	}
+	
+	public static List<FacilioField> getIndoorFloorPlanObjectFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getIndoorFloorPlanObjectModule();
+		fields.add(getIdField(module));
+		fields.add(getField("id", "ID", module, FieldType.ID));	
+		fields.add(getField("floorplanId", "FLOORPLAN_ID", module, FieldType.NUMBER));	
+		fields.add(getField("type", "OBJECT_TYPE", module, FieldType.STRING));	
+		fields.add(getField("geometry", "GEOMETRY", module, FieldType.STRING));	
+		fields.add(getField("properties", "PROPERTIES", module, FieldType.STRING));	
+		fields.add(getField("spaceId", "SPACEID", module, FieldType.NUMBER));	
+		fields.add(getField("assetId", "ASSETID", module, FieldType.NUMBER));	
+		fields.add(getField("orgUserId", "ORG_USER_ID", module, FieldType.NUMBER));		
+		return fields;
+	}
+	
     public static List<FacilioField> getSmartControlKioskFields() {
         FacilioModule module = ModuleFactory.getSmartControlKioskModule();
         List<FacilioField> fields = new ArrayList<>();
