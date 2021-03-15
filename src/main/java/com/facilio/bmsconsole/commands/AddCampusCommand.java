@@ -31,8 +31,6 @@ public class AddCampusCommand extends FacilioCommand {
 		if(site != null) 
 		{
 			site.setSpaceType(SpaceType.SITE);
-			//Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
-			//Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);

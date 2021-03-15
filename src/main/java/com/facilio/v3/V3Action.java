@@ -14,7 +14,16 @@ import java.io.File;
 import java.util.List;
 
 public class V3Action extends ActionSupport {
-	
+
+	protected enum api {
+		v3,
+		v4
+	}
+
+	protected api currentApi() {
+		return api.v3;
+	}
+
 	public static final String FAILURE = "failure";
     private JSONObject data;
 	private JSONObject meta;

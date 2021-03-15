@@ -51,6 +51,23 @@ public class V3VendorContactContext extends V3PeopleContext {
         this.vendor = vendor;
     }
 
+    private Long getVendorId() {
+        if (this.vendor != null) {
+            return this.vendor.getId();
+        }
+        return null;
+    }
+
+    private void setVendorId(Long vendorId) {
+        if (vendorId != null) {
+            if (vendor == null) {
+                this.vendor = new V3VendorContext();
+            }
+            this.vendor.setId(vendorId);
+        }
+    }
+
+
     private Boolean isPrimaryContact;
 
     public Boolean getIsPrimaryContact() {

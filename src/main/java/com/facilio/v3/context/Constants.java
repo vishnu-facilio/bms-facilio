@@ -2,10 +2,12 @@ package com.facilio.v3.context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.LookupField;
@@ -260,14 +262,25 @@ public class Constants {
     public static void setCountMap(Context context, Map<String, Integer> countMap) {
         context.put(COUNT_MAP, countMap);
     }
-    
-    public static Map<Long, List<UpdateChangeSet>> getModuleChangeSets(Context context) {
-        String moduleName = Constants.getModuleName(context);
-        Map<String, Map<Long,List<UpdateChangeSet>>> allChangeSet = CommonCommandUtil.getChangeSetMap((FacilioContext)context);
-        if(MapUtils.isNotEmpty(allChangeSet) && allChangeSet.containsKey(moduleName)) {
-           return allChangeSet.get(moduleName);
-        }
-        return new HashMap<>();
+
+    private static final String CHANGE_SET = FacilioConstants.ContextNames.CHANGE_SET;
+
+    public static Map<Long, List<UpdateChangeSet>> getChangeSet(Context context) {
+        return (Map<Long, List<UpdateChangeSet>>) context.get(CHANGE_SET);
+    }
+
+    public static void setChangeSet(Context context, Map<Long, List<UpdateChangeSet>> changeSet) {
+        context.put(CHANGE_SET, changeSet);
+    }
+
+    private static final String EVENT_TYPE = FacilioConstants.ContextNames.EVENT_TYPE;
+
+    public static EventType getEventType(Context context) {
+        return (EventType) context.get(EVENT_TYPE);
+    }
+
+    public static void setEventType(Context context, EventType eventType) {
+        context.put(EVENT_TYPE, eventType);
     }
 
     public static List<UpdateChangeSet> getRecordChangeSets(Context context, Long recordId) {
@@ -276,6 +289,25 @@ public class Constants {
             return moduleChangeSet.get(recordId);
         }
         return new ArrayList<>();
+    }
+
+    private static final String MODULE_MAP = FacilioConstants.ContextNames.MODULE_MAP;
+
+    public static void setModuleMap(Context context, Map<Long, List<FacilioModule>> moduleMap) {
+        context.put(MODULE_MAP, moduleMap);
+    }
+
+    public static Map<Long, List<FacilioModule>> getModuleMap(Context context) {
+        return (Map<Long, List<FacilioModule>>) context.get(MODULE_MAP);
+    }
+
+    public static Map<Long, List<UpdateChangeSet>> getModuleChangeSets(Context context) {
+        String moduleName = Constants.getModuleName(context);
+        Map<String, Map<Long,List<UpdateChangeSet>>> allChangeSet = CommonCommandUtil.getChangeSetMap((FacilioContext)context);
+        if(MapUtils.isNotEmpty(allChangeSet) && allChangeSet.containsKey(moduleName)) {
+            return allChangeSet.get(moduleName);
+        }
+        return new HashMap<>();
     }
 
     private static final String DELETE_RECORD_ID_MAP = "deleteRecordIdMap";
@@ -373,5 +405,24 @@ public class Constants {
 
     public static void setTamperingContext(Context context, Map<String, Boolean> tamperingContext) {
         context.put(__TAMPERING, tamperingContext);
+    }
+
+    private static  final String HAS_MORE_RECORDS = "hasMoreRecords";
+    public static boolean hasMoreRecords(Context context) {
+        Boolean hasMoreRecords = (Boolean) context.get(HAS_MORE_RECORDS);
+        return hasMoreRecords != null && hasMoreRecords;
+    }
+
+    public static void setHasMoreRecords(Context context, boolean hasMoreRecords) {
+        context.put(HAS_MORE_RECORDS, hasMoreRecords);
+    }
+
+    private static final String RECORD = FacilioConstants.ContextNames.RECORD;
+    public static ModuleBaseWithCustomFields getRecord(Context context) {
+        return (ModuleBaseWithCustomFields) context.get(RECORD);
+    }
+
+    public static void setRecord(Context context, ModuleBaseWithCustomFields record) {
+        context.put(RECORD, record);
     }
 }

@@ -47,4 +47,19 @@ public class V3TenantContactContext extends V3PeopleContext {
         }
         return false;
     }
+
+    public Long getTenantId() {
+        if (tenant == null) {
+            return null;
+        }
+        return tenant.getId();
+    }
+
+    public void setTenantId(Long tenantId) {
+        if (tenant == null) {
+            tenant = new V3TenantContext();
+        }
+        tenant.setId(tenantId);
+    }
+
 }

@@ -217,3 +217,5 @@ enums:
   - name: EmailFromAddressCreationType
     enumClassName: com.facilio.bmsconsoleV3.context.EmailFromAddress$CreationType
 
+  - name: SiteType
+    enumClassName: com.facilio.bmsconsoleV3.context.V3SiteContext$SiteType

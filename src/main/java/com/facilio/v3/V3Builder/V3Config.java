@@ -1,6 +1,7 @@
 package com.facilio.v3.V3Builder;
 
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldsCount;
+import com.facilio.chain.FacilioChain;
 import org.apache.commons.chain.Command;
 
 import java.util.ArrayList;
@@ -141,26 +142,26 @@ public class V3Config implements V3Builder {
         }
 
         @Override
-        public CreateHandler init(Command initCommand) {
-            this.initCommand = initCommand;
+        public CreateHandler init(Command... initCommand) {
+            this.initCommand = buildTransactionChain(initCommand);
             return this;
         }
 
         @Override
-        public CreateHandler beforeSave(Command beforeSaveCommand) {
-            this.beforeSaveCommand = beforeSaveCommand;
+        public CreateHandler beforeSave(Command... beforeSaveCommand) {
+            this.beforeSaveCommand = buildTransactionChain(beforeSaveCommand);
             return this;
         }
 
         @Override
-        public CreateHandler afterSave(Command afterSaveCommand) {
-            this.afterSaveCommand = afterSaveCommand;
+        public CreateHandler afterSave(Command... afterSaveCommand) {
+            this.afterSaveCommand = buildTransactionChain(afterSaveCommand);
             return this;
         }
 
         @Override
-        public CreateBuilder afterTransaction(Command afterTransactionCommand) {
-            this.afterTransactionCommand = afterTransactionCommand;
+        public CreateBuilder afterTransaction(Command... afterTransactionCommand) {
+            this.afterTransactionCommand = buildTransactionChain(afterTransactionCommand);
             return this;
         }
 
@@ -235,26 +236,26 @@ public class V3Config implements V3Builder {
         }
 
         @Override
-        public UpdateHandler init(Command initCommand) {
-            this.initCommand = initCommand;
+        public UpdateHandler init(Command... initCommand) {
+            this.initCommand = buildTransactionChain(initCommand);
             return this;
         }
 
         @Override
-        public UpdateHandler beforeSave(Command beforeSaveCommand) {
-            this.beforeSaveCommand = beforeSaveCommand;
+        public UpdateHandler beforeSave(Command... beforeSaveCommand) {
+            this.beforeSaveCommand = buildTransactionChain(beforeSaveCommand);
             return this;
         }
 
         @Override
-        public UpdateHandler afterSave(Command afterSaveCommand) {
-            this.afterSaveCommand = afterSaveCommand;
+        public UpdateHandler afterSave(Command... afterSaveCommand) {
+            this.afterSaveCommand = buildTransactionChain(afterSaveCommand);
             return this;
         }
 
         @Override
-        public UpdateBuilder afterTransaction(Command afterTransactionCommand) {
-            this.afterTransactionCommand = afterTransactionCommand;
+        public UpdateBuilder afterTransaction(Command... afterTransactionCommand) {
+            this.afterTransactionCommand = buildTransactionChain(afterTransactionCommand);
             return this;
         }
 
@@ -330,26 +331,26 @@ public class V3Config implements V3Builder {
         }
 
         @Override
-        public DeleteHandler init(Command initCommand) {
-            this.initCommand = initCommand;
+        public DeleteHandler init(Command... initCommand) {
+            this.initCommand = buildTransactionChain(initCommand);
             return this;
         }
 
         @Override
-        public DeleteHandler beforeDelete(Command beforeDeleteCommand) {
-            this.beforeDeleteCommand = beforeDeleteCommand;
+        public DeleteHandler beforeDelete(Command... beforeDeleteCommand) {
+            this.beforeDeleteCommand = buildTransactionChain(beforeDeleteCommand);
             return this;
         }
 
         @Override
-        public DeleteHandler afterDelete(Command afterDeleteCommand) {
-            this.afterDeleteCommand = afterDeleteCommand;
+        public DeleteHandler afterDelete(Command... afterDeleteCommand) {
+            this.afterDeleteCommand = buildTransactionChain(afterDeleteCommand);
             return this;
         }
 
         @Override
-        public DeleteBuilder afterTransaction(Command afterTransactionCommand) {
-            this.afterTransactionCommand = afterTransactionCommand;
+        public DeleteBuilder afterTransaction(Command... afterTransactionCommand) {
+            this.afterTransactionCommand = buildTransactionChain(afterTransactionCommand);
             return this;
         }
 
@@ -569,6 +570,22 @@ public class V3Config implements V3Builder {
         public Command getAfterFetchCommand() {
             return afterFetchCommand;
         }
+    }
+
+    private static FacilioChain buildTransactionChain(Command[] facilioCommands) {
+        FacilioChain c = FacilioChain.getTransactionChain();
+        for (Command facilioCommand: facilioCommands) {
+            c.addCommand(facilioCommand);
+        }
+        return c;
+    }
+
+    private static FacilioChain buildReadChain(Command[] facilioCommands) {
+        FacilioChain c = FacilioChain.getNonTransactionChain();
+        for (Command facilioCommand: facilioCommands) {
+            c.addCommand(facilioCommand);
+        }
+        return c;
     }
 
 }

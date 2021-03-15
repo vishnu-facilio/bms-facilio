@@ -31,6 +31,13 @@ public class SupplementsCommand extends FacilioCommand {
                 = (Map<String, List<? extends ModuleBaseWithCustomFields>>) context.get(Constants.RECORD_MAP);
 
         String moduleName = Constants.getModuleName(context);
+
+        boolean isV4 = Constants.isV4(context);
+        if (isV4) {
+            JSONObject recordJSON = FieldUtil.getAsJSON(recordMap);
+            Constants.setJsonRecordMap(context, recordJSON);
+            return false;
+        }
         JSONObject recordJSON = FieldUtil.getAsJSON(recordMap);
         ArrayList recordProps = (ArrayList) recordJSON.get(moduleName);
 

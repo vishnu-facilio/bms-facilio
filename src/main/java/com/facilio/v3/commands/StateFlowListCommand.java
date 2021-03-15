@@ -24,6 +24,10 @@ public class StateFlowListCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         // TODO Auto-generated method stub
+        boolean isV4 = Constants.isV4(context);
+        if (isV4) {
+            return false;
+        }
         String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<? extends ModuleBaseWithCustomFields> records = recordMap.get(moduleName);

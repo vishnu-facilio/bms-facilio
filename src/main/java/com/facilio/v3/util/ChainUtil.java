@@ -61,7 +61,7 @@ public class ChainUtil {
             nonTransactionChain.addCommand(afterFetchCommand);
             nonTransactionChain.addCommand(new CheckContextTampering("getFetchRecordChain", "afterFetchCommand", moduleName));
         }
-
+        nonTransactionChain.addCommand(new TransformResponseForV4());
         //handling primary value for lookup fields
         nonTransactionChain.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
         nonTransactionChain.addCommand(new CheckContextTampering("getFetchRecordChain", "LookUpPrimaryFieldHandlingCommandV3", moduleName));
@@ -137,6 +137,7 @@ public class ChainUtil {
         // this should be last command always
         nonTransactionChain.addCommand(new SupplementsCommand());
         nonTransactionChain.addCommand(new FetchRelationsCommand());
+        nonTransactionChain.addCommand(new TransformResponseForV4());
 
         return nonTransactionChain;
     }

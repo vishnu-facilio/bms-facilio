@@ -139,9 +139,9 @@ public class V3ResourceContext extends V3Context {
 		this.controllerId = controllerId;
 	}
 
-	private long siteId;
+	private Long siteId;
 
-	public void setSiteId(long siteId) {
+	public void setSiteId(Long siteId) {
 		this.siteId = siteId;
 	}
 

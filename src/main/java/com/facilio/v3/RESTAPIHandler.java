@@ -17,13 +17,13 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FileField;
-import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.commands.*;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import com.facilio.v3.util.ChainUtil;
+import lombok.var;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -35,6 +35,9 @@ import org.json.simple.parser.JSONParser;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -44,10 +47,46 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
     private static final Logger LOGGER = Logger.getLogger(RESTAPIHandler.class.getName());
 
     protected void handleSummaryRequest(String moduleName, long id) throws Exception {
-        Object record = getRecord(moduleName, id);
+        api currentApi = currentApi();
+        Object record;
+        if (currentApi == api.v3) {
+            record = getRecord(moduleName, id);
+        } else {
+            record = getV4TransformedRecord(moduleName, id);
+        }
         JSONObject result = new JSONObject();
         result.put(moduleName, FieldUtil.getAsJSON(record));
         this.setData(result);
+    }
+
+    private Object getV4TransformedRecord(String moduleName, long id) throws Exception {
+        FacilioChain fetchRecordChain = ChainUtil.getFetchRecordChain(moduleName);
+        FacilioContext context = fetchRecordChain.getContext();
+
+        api currentApi = currentApi();
+        Constants.setIsV4(context, true);
+
+        FacilioModule module = ChainUtil.getModule(moduleName);
+        V3Config config = ChainUtil.getV3Config(moduleName);
+
+        Constants.setRecordIds(context, Collections.singletonList(id));
+        context.put(Constants.QUERY_PARAMS, getQueryParameters());
+        context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_ONLY);
+        Class beanClass = ChainUtil.getBeanClass(config, module);
+        context.put(Constants.BEAN_CLASS, beanClass);
+        Constants.setModuleName(context, moduleName);
+        Constants.setV3config(context, config);
+
+        fetchRecordChain.execute();
+
+        List list;
+        JSONObject jsonRecordMap = Constants.getJsonRecordMap(context);
+        list = (List) jsonRecordMap.get(moduleName);
+
+        if (CollectionUtils.isEmpty(list)) {
+            throw new RESTException(ErrorCode.RESOURCE_NOT_FOUND, module.getDisplayName() + " with id: " + id + " does not exist.");
+        }
+        return list.get(0);
     }
 
 
@@ -69,7 +108,6 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         fetchRecordChain.execute();
 
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
-
         List list = recordMap.get(moduleName);
 
         if (CollectionUtils.isEmpty(list)) {
@@ -136,38 +174,90 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         FacilioChain listChain = ChainUtil.getListChain(moduleName);
         FacilioContext context = listChain.getContext();
 
+        api currentApi = currentApi();
+        if (currentApi == api.v4) {
+            Constants.setIsV4(context, true);
+        }
+
         context.put(FacilioConstants.ContextNames.CV_NAME, this.getViewName());
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
         context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_ONLY);
 
-        String filters = this.getFilters();
-        if (filters != null && !filters.isEmpty()) {
-            JSONParser parser = new JSONParser();
-            JSONObject json = (JSONObject) parser.parse(filters);
-            context.put(Constants.FILTERS, json);
+        if (currentApi == api.v3) {
+            String filters = this.getFilters();
+            if (filters != null && !filters.isEmpty()) {
+                JSONParser parser = new JSONParser();
+                JSONObject json = (JSONObject) parser.parse(filters);
+                context.put(Constants.FILTERS, json);
 
-            boolean excludeParentFilter = this.getExcludeParentFilter();
-            context.put(Constants.EXCLUDE_PARENT_CRITERIA, excludeParentFilter);
-        }
+                boolean excludeParentFilter = this.getExcludeParentFilter();
+                context.put(Constants.EXCLUDE_PARENT_CRITERIA, excludeParentFilter);
+            }
+            Object orderBy = this.getOrderBy();
+            Object orderByType = this.getOrderType();
 
-        Object orderBy = this.getOrderBy();
-        Object orderByType = this.getOrderType();
+            if (orderBy != null) {
+                JSONObject sorting = new JSONObject();
+                sorting.put("orderBy", orderBy);
+                sorting.put("orderType", orderByType);
+                context.put(FacilioConstants.ContextNames.SORTING, sorting);
+                context.put(FacilioConstants.ContextNames.OVERRIDE_SORTING, true);
+            }
 
-        if (orderBy != null) {
+            JSONObject pagination = new JSONObject();
+            pagination.put("page", this.getPage());
+            pagination.put("perPage", this.getPerPage());
+
+            context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+            context.put(Constants.WITH_COUNT, getWithCount());
+            context.put(Constants.QUERY_PARAMS, getQueryParameters());
+        } else if (currentApi == api.v4) {
+            Map<String, List<Object>> queryParameters = getQueryParameters();
+            context.put(Constants.QUERY_PARAMS, getQueryParameters());
+
+            List<Object> sort_by = queryParameters.get("sort_by");
             JSONObject sorting = new JSONObject();
-            sorting.put("orderBy", orderBy);
-            sorting.put("orderType", orderByType);
-            context.put(FacilioConstants.ContextNames.SORTING, sorting);
+            if (CollectionUtils.isNotEmpty(sort_by)) {
+                this.setOrderBy((String) sort_by.get(0));
+                sorting.put("orderBy", sort_by.get(0));
+            }
+
+            List<Object> sort_type = queryParameters.get("sort_type");
+            if (CollectionUtils.isNotEmpty(sort_type)) {
+                this.setOrderType((String) sort_type.get(0));
+                sorting.put("orderType", sort_type.get(0));
+            }
+
+            List<Object> page = queryParameters.get("page");
+            JSONObject pagination = new JSONObject();
+            if (CollectionUtils.isNotEmpty(page)) {
+                try {
+                    this.setPage(Integer.valueOf((String) pagination.get(0)));
+                    pagination.put("page", this.getPage());
+                } catch (Exception ex) {
+                    this.setPage(1);
+                    pagination.put("page", 1);
+                }
+            }
+
+            List<Object> limit = queryParameters.get("limit");
+            if (CollectionUtils.isNotEmpty(limit)) {
+                try {
+                    this.setPerPage(Integer.valueOf((String) limit.get(0)));
+                    pagination.put("perPage", this.getPerPage());
+                } catch (Exception ex) {
+                    this.setPerPage(50);
+                    pagination.put("perPage", 50);
+                }
+            }
+
+            if (MapUtils.isNotEmpty(sorting)) {
+                context.put(FacilioConstants.ContextNames.SORTING, sorting);
+            }
+
             context.put(FacilioConstants.ContextNames.OVERRIDE_SORTING, true);
         }
 
-        JSONObject pagination = new JSONObject();
-        pagination.put("page", this.getPage());
-        pagination.put("perPage", this.getPerPage());
-
-        context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
-        context.put(Constants.WITH_COUNT, getWithCount());
-        context.put(Constants.QUERY_PARAMS, getQueryParameters());
 
         FacilioModule module = ChainUtil.getModule(moduleName);
         V3Config v3Config = ChainUtil.getV3Config(moduleName);
@@ -188,29 +278,41 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         context.put(Constants.BEAN_CLASS, beanClass);
         listChain.execute();
         Map<String, Object> meta = new HashMap<>();
-        if (getWithCount()) {
+
+        if (currentApi == api.v3) {
+            if (getWithCount()) {
+                Map<String, Object> paging = new HashMap<>();
+                paging.put("totalCount", context.get(Constants.COUNT));
+                meta.put("pagination", paging);
+            }
+
+            Map<String, List<WorkflowRuleContext>> stateFlows = (Map<String, List<WorkflowRuleContext>>) context.get(Constants.STATE_FLOWS);
+            if (MapUtils.isNotEmpty(stateFlows)) {
+                meta.put("stateflows", stateFlows);
+            }
+
+            Collection<WorkflowRuleContext> customButtons = (Collection<WorkflowRuleContext>) context.get(Constants.CUSTOM_BUTTONS);
+            if (CollectionUtils.isNotEmpty(customButtons)) {
+                meta.put(Constants.CUSTOM_BUTTONS, customButtons);
+            }
+
+            Object supplMap = Constants.getSupplementMap(context);
+            if (supplMap != null) {
+                meta.put("supplements", supplMap);
+            }
+
+            Map<String, Map<String, Object>> listRelationRecords = Constants.getListRelationRecords(context);
+            if (listRelationRecords != null) {
+                meta.put("submoduleRelations", listRelationRecords);
+            }
+        } else if (currentApi == api.v4) {
             Map<String, Object> paging = new HashMap<>();
-            paging.put("totalCount", context.get(Constants.COUNT));
             meta.put("pagination", paging);
-        }
-
-        Map<String, List<WorkflowRuleContext>> stateFlows = (Map<String, List<WorkflowRuleContext>>) context.get(Constants.STATE_FLOWS);
-        if (MapUtils.isNotEmpty(stateFlows)) {
-            meta.put("stateflows", stateFlows);
-        }
-        Collection<WorkflowRuleContext> customButtons = (Collection<WorkflowRuleContext>) context.get(Constants.CUSTOM_BUTTONS);
-        if (CollectionUtils.isNotEmpty(customButtons)) {
-            meta.put(Constants.CUSTOM_BUTTONS, customButtons);
-        }
-
-        Object supplMap = Constants.getSupplementMap(context);
-        if (supplMap != null) {
-            meta.put("supplements", supplMap);
-        }
-
-        Map<String, Map<String, Object>> listRelationRecords = Constants.getListRelationRecords(context);
-        if (listRelationRecords != null) {
-            meta.put("submoduleRelations", listRelationRecords);
+            paging.put("page", this.getPage());
+            paging.put("per_page", this.getPerPage());
+            paging.put("sort_type", this.getOrderType());
+            paging.put("sort_by", this.getOrderBy());
+            paging.put("has_more_page", Constants.hasMoreRecords(context));
         }
 
         JSONObject recordJSON = Constants.getJsonRecordMap(context);
@@ -355,6 +457,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         Constants.setV3config(context, v3Config);
         
         if(record != null) {
+
         	id = ((ModuleBaseWithCustomFields)record).getId();
         }
         context.put(Constants.RECORD_ID, id);
@@ -653,7 +756,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         return SUCCESS;
     }
 
-    public Map<String, List<Object>> getQueryParameters() {
+    public Map<String, List<Object>> getQueryParameters() throws UnsupportedEncodingException {
         Map<String, List<Object>> queryParameters = new HashMap<>();
         String queryString = this.httpServletRequest.getQueryString();
 
@@ -669,7 +772,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
             if (values == null) {
                 values = new ArrayList<>();
             }
-            values.add(keyValuePair.length == 1 ? "" : keyValuePair[1]);
+            values.add(keyValuePair.length == 1 ? "" : URLDecoder.decode(keyValuePair[1], StandardCharsets.UTF_8.toString()));
             queryParameters.put(keyValuePair[0], values);
         }
         return queryParameters;

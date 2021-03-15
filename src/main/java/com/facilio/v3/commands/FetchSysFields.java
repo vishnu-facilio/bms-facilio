@@ -8,6 +8,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SupplementRecord;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 
 import java.util.ArrayList;
@@ -16,6 +17,10 @@ import java.util.List;
 public class FetchSysFields extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
+        boolean isV4 = Constants.isV4(context);
+        if (isV4) {
+            return false;
+        }
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 

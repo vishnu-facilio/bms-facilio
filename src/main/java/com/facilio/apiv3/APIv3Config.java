@@ -7,6 +7,9 @@ import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.*;
 import com.facilio.bmsconsoleV3.commands.budget.*;
+import com.facilio.bmsconsoleV3.commands.building.AddOrUpdateBuildingLocation;
+import com.facilio.bmsconsoleV3.commands.building.CreateBuildingAfterSave;
+import com.facilio.bmsconsoleV3.commands.building.SetBuildingRelatedContextCommand;
 import com.facilio.bmsconsoleV3.commands.client.AddAddressForClientLocationCommandV3;
 import com.facilio.bmsconsoleV3.commands.client.LoadClientLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.client.UpdateAddressForClientLocationCommandV3;
@@ -30,7 +33,8 @@ import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.Fi
 import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.LoadNewsAndInformationLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.employee.UpdateEmployeePeopleAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.facility.*;
-import com.facilio.bmsconsoleV3.commands.floorplan.AddOrUpdateObjectCommand;
+import com.facilio.bmsconsoleV3.commands.floor.CreateFloorAfterSave;
+import com.facilio.bmsconsoleV3.commands.floor.SetFloorRelatedContextCommand;
 import com.facilio.bmsconsoleV3.commands.floorplan.CreateFacilityForDesksCommandV3;
 import com.facilio.bmsconsoleV3.commands.floorplan.FetchFloorPlanMarkerCommand;
 import com.facilio.bmsconsoleV3.commands.imap.UpdateLatestMessageUIDCommandV3;
@@ -52,6 +56,12 @@ import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPurchaseRequestSumm
 import com.facilio.bmsconsoleV3.commands.quotation.*;
 import com.facilio.bmsconsoleV3.commands.servicerequest.AddRequesterForServiceRequestCommandV3;
 import com.facilio.bmsconsoleV3.commands.servicerequest.LoadServiceRequestLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.site.AddOrUpdateSiteLocationCommand;
+import com.facilio.bmsconsoleV3.commands.site.CreateSiteAfterSave;
+import com.facilio.bmsconsoleV3.commands.site.SetSiteRelatedContextCommand;
+import com.facilio.bmsconsoleV3.commands.space.AddOrUpdateSpaceLocation;
+import com.facilio.bmsconsoleV3.commands.space.CreateSpaceAfterSave;
+import com.facilio.bmsconsoleV3.commands.space.SetSpaceRelatedContextCommand;
 import com.facilio.bmsconsoleV3.commands.storeroom.LoadStoreRoomLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.storeroom.UpdateServingSitesinStoreRoomCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenant.FillTenantsLookupCommand;
@@ -108,8 +118,11 @@ import com.facilio.controlaction.context.ControlActionCommandContext;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
+import com.facilio.v3.commands.ConstructAddCustomActivityCommandV3;
 
 import java.util.function.Supplier;
+
+import static com.facilio.bmsconsole.commands.FacilioChainFactory.getSpaceReadingsChain;
 
 @Config
 public class APIv3Config {
@@ -1245,6 +1258,65 @@ public class APIv3Config {
                 .beforeFetch(new LoadParkingStallLookupCommand())
                 .build();
     }
-    
+
+    @Module("site")
+    public static Supplier<V3Config> getSite() {
+        return () -> new V3Config(V3SiteContext.class, new ModuleCustomFieldCount30())
+                .create()
+                    .beforeSave(new AddOrUpdateSiteLocationCommand(), new SetSiteRelatedContextCommand())
+                    .afterSave(new CreateSiteAfterSave(), getSpaceReadingsChain(), new InsertReadingDataMetaForNewResourceCommand(), new ConstructAddCustomActivityCommandV3(), new AddActivitiesCommand(FacilioConstants.ContextNames.SITE_ACTIVITY))
+                .update()
+                    .beforeSave(new AddOrUpdateSiteLocationCommand())
+                    .afterSave(new ConstructAddCustomActivityCommand(), new AddActivitiesCommand(FacilioConstants.ContextNames.SITE_ACTIVITY))
+                .delete()
+                .summary()
+                .list()
+                .build();
+    }
+
+    @Module("building")
+    public static Supplier<V3Config> getBuilding() {
+        return () -> new V3Config(V3BuildingContext.class, new ModuleCustomFieldCount30())
+                .create()
+                    .beforeSave(new AddOrUpdateBuildingLocation(), new SetBuildingRelatedContextCommand())
+                    .afterSave(new CreateBuildingAfterSave(), getSpaceReadingsChain(), new InsertReadingDataMetaForNewResourceCommand(), new ConstructAddCustomActivityCommandV3(), new AddActivitiesCommand(FacilioConstants.ContextNames.BUILDING_ACTIVITY))
+                .update()
+                    .beforeSave(new AddOrUpdateBuildingLocation(), new SetBuildingRelatedContextCommand())
+                    .afterSave(new ConstructAddCustomActivityCommand(), new AddActivitiesCommand(FacilioConstants.ContextNames.BUILDING_ACTIVITY))
+                .delete()
+                .summary()
+                .list()
+                .build();
+    }
+
+    @Module("floor")
+    public static Supplier<V3Config> getFloor() {
+        return () -> new V3Config(V3FloorContext.class, new ModuleCustomFieldCount30())
+                .create()
+                    .beforeSave(new SetFloorRelatedContextCommand())
+                    .afterSave(new CreateFloorAfterSave(), getSpaceReadingsChain(), new InsertReadingDataMetaForNewResourceCommand(), new ConstructAddCustomActivityCommandV3(), new AddActivitiesCommand(FacilioConstants.ContextNames.FLOOR_ACTIVITY))
+                .update()
+                    .beforeSave(new SetFloorRelatedContextCommand())
+                    .afterSave(new ConstructAddCustomActivityCommand(), new AddActivitiesCommand(FacilioConstants.ContextNames.FLOOR_ACTIVITY))
+                .delete()
+                .summary()
+                .list()
+                .build();
+    }
+
+    @Module("space")
+    public static Supplier<V3Config> getSpace() {
+        return () -> new V3Config(V3SpaceContext.class, new ModuleCustomFieldCount30())
+                .create()
+                    .beforeSave(new AddOrUpdateSpaceLocation(), new SetSpaceRelatedContextCommand())
+                    .afterSave(new CreateSpaceAfterSave(), getSpaceReadingsChain(), new InsertReadingDataMetaForNewResourceCommand(), new ConstructAddCustomActivityCommandV3(), new AddActivitiesCommand(FacilioConstants.ContextNames.SPACE_ACTIVITY))
+                .update()
+                    .beforeSave(new AddOrUpdateSpaceLocation(), new SetSpaceRelatedContextCommand())
+                    .afterSave(new ConstructAddCustomActivityCommand(), new AddActivitiesCommand(FacilioConstants.ContextNames.SPACE_ACTIVITY))
+                .delete()
+                .summary()
+                .list()
+                .build();
+    }
 }
 

@@ -3,6 +3,8 @@ package com.facilio.bmsconsoleV3.commands.floorplan;
 import java.util.HashMap;
 import java.util.List;
 
+import com.facilio.bmsconsoleV3.context.V3FloorContext;
+import com.facilio.bmsconsoleV3.context.V3SpaceContext;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
@@ -39,13 +41,13 @@ public class V3ValidateSpaceCommand extends FacilioCommand {
 		}
 		if(space.getFloor() != null && space.getFloor().getId() > 0) {
 			long floorId = space.getFloor().getId();
-			FloorContext floor = SpaceAPI.getFloorSpace(floorId);
+			V3FloorContext floor = SpaceAPI.getV3FloorSpace(floorId);
 			space.setSiteId(floor.getSiteId());
 			space.setBuilding(floor.getBuilding());
 		}
 		if (space.getParentSpace() != null && space.getParentSpace().getId() > 0) {
 			long spaceId = space.getParentSpace().getId();
-			SpaceContext spaces = SpaceAPI.getSpace(spaceId);
+			V3SpaceContext spaces = SpaceAPI.getV3Space(spaceId);
 			space.setSiteId(spaces.getSiteId());
 			space.setBuilding(spaces.getBuilding());
 			space.setFloorId(spaces.getFloorId());

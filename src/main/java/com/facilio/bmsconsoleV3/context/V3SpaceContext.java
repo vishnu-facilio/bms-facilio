@@ -17,21 +17,25 @@ public class V3SpaceContext extends V3BaseSpaceContext{
 	public void setParentSpace(V3SpaceContext parentSpace) {
 		this.parentSpace = parentSpace;
 	}
-	//	private SpaceContext space1;
-//	public SpaceContext getSpace() {
-//		if ((space1 == null || space1.getId() == -1) && super.getSpaceId() != -1) {
-//			SpaceContext space = new SpaceContext();
-//			space.setId(super.getSpaceId());
-//			return space;
-//		}
-//		return space1;
-//	}
-//	public void setSpace(SpaceContext space) {
-//		this.space1 = space;
-//		if(space != null) {
-//			super.setSpaceId(space.getId());
-//		}
-//	}
+
+	private Long spaceCategoryId;
+	public Long getSpaceCategoryId() {
+		if (spaceCategoryId == null) {
+			if (spaceCategory != null) {
+				return spaceCategory.getId();
+			}
+			return null;
+		}
+		return this.spaceCategoryId;
+	}
+
+	public void setSpaceCategoryId(Long spaceCategoryId) {
+		this.spaceCategoryId = spaceCategoryId;
+		if (spaceCategory == null) {
+			this.spaceCategory = new SpaceCategoryContext();
+		}
+		this.spaceCategory.setId(spaceCategoryId);
+	}
 
 	private SpaceCategoryContext spaceCategory;
 	public SpaceCategoryContext getSpaceCategory() {
@@ -58,19 +62,19 @@ public class V3SpaceContext extends V3BaseSpaceContext{
 		return false;
 	}
 
-	private float unitReservationCost = -1;
-	public float getUnitReservationCost() {
+	private Float unitReservationCost;
+	public Float getUnitReservationCost() {
 		return unitReservationCost;
 	}
-	public void setUnitReservationCost(float unitReservationCost) {
+	public void setUnitReservationCost(Float unitReservationCost) {
 		this.unitReservationCost = unitReservationCost;
 	}
 	
-	private long noOfSubSpaces = -1;
-	public long getNoOfSubSpaces() {
+	private Long noOfSubSpaces;
+	public Long getNoOfSubSpaces() {
 		return noOfSubSpaces;
 	}
-	public void setNoOfSubSpaces(long noOfSubSpaces) {
+	public void setNoOfSubSpaces(Long noOfSubSpaces) {
 		this.noOfSubSpaces = noOfSubSpaces;
 	}
 	
@@ -82,5 +86,4 @@ public class V3SpaceContext extends V3BaseSpaceContext{
     public void setLocation(LocationContext location) {
         this.location = location;
     }
-
 }

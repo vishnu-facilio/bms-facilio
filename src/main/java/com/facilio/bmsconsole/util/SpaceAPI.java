@@ -7,6 +7,9 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.bmsconsole.view.ViewFactory;
+import com.facilio.bmsconsoleV3.context.V3BaseSpaceContext;
+import com.facilio.bmsconsoleV3.context.V3FloorContext;
+import com.facilio.bmsconsoleV3.context.V3SpaceContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -110,6 +113,42 @@ public class SpaceAPI {
 			return readings.stream().filter(module -> !WEATHER_NON_CURRENT_MODULES.contains(module.getName())).collect(Collectors.toList());
 		}
 		return readings;
+	}
+
+	public static void updateHelperFields(V3BaseSpaceContext space) throws Exception {
+		BaseSpaceContext updateSpace = new BaseSpaceContext();
+		switch(space.getSpaceTypeEnum()) {
+			case SITE:
+				updateSpace.setSiteId(space.getId());
+				space.setSiteId(space.getId());
+				break;
+			case BUILDING:
+				updateSpace.setBuildingId(space.getId());
+				space.setBuildingId(space.getId());
+				break;
+			case FLOOR:
+				updateSpace.setFloorId(space.getId());
+				space.setFloorId(space.getId());
+				break;
+			case SPACE:
+				updateSpace.setSpaceId(space.getId());
+				space.setSpaceId(space.getId());
+				break;
+			default:
+				break;
+		}
+		updateSpace.setSpaceId(space.getId());
+		space.setSpaceId(space.getId());
+
+		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = bean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
+		UpdateRecordBuilder<BaseSpaceContext> updateBuilder = new UpdateRecordBuilder<BaseSpaceContext>()
+				.fields(bean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE))
+				.module(module)
+				.andCondition(CriteriaAPI.getIdCondition(space.getId(), module))
+				;
+
+		updateBuilder.update(updateSpace);
 	}
 	
 	public static void updateHelperFields(BaseSpaceContext space) throws Exception {
@@ -347,6 +386,26 @@ public class SpaceAPI {
 		}
 		return null;
 	}
+
+	public static V3FloorContext getV3FloorSpace(long id) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.FLOOR);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.FLOOR);
+
+		SelectRecordsBuilder<V3FloorContext> selectBuilder = new SelectRecordsBuilder<V3FloorContext>()
+				.select(fields)
+				.table(module.getTableName())
+				.moduleName(module.getName())
+				.maxLevel(0)
+				.beanClass(V3FloorContext.class)
+				.andCustomWhere(module.getTableName()+".ID = ?", id);
+		List<V3FloorContext> spaces = selectBuilder.get();
+
+		if(spaces != null && !spaces.isEmpty()) {
+			return spaces.get(0);
+		}
+		return null;
+	}
 	
 	public static FloorContext getFloorSpace(long id) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -363,6 +422,26 @@ public class SpaceAPI {
 																	.andCustomWhere(module.getTableName()+".ID = ?", id);
 		List<FloorContext> spaces = selectBuilder.get();
 		
+		if(spaces != null && !spaces.isEmpty()) {
+			return spaces.get(0);
+		}
+		return null;
+	}
+
+	public static V3SpaceContext getV3Space(long id) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SPACE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SPACE);
+
+		SelectRecordsBuilder<V3SpaceContext> selectBuilder = new SelectRecordsBuilder<V3SpaceContext>()
+				.select(fields)
+				.table(module.getTableName())
+				.moduleName(module.getName())
+				.beanClass(V3SpaceContext.class)
+//																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCustomWhere(module.getTableName()+".ID = ?", id);
+		List<V3SpaceContext> spaces = selectBuilder.get();
+
 		if(spaces != null && !spaces.isEmpty()) {
 			return spaces.get(0);
 		}
@@ -1912,6 +1991,45 @@ public static List<Map<String,Object>> getBuildingArea(String buildingList) thro
 		}
 		if(space.getSpaceId4() > 0){
 			parentIds.add(space.getSpaceId4());
+		}
+	}
+
+	public static void v3UpdateSiteAndBuildingId(V3SpaceContext space) throws Exception {
+		if(space.getBuilding() != null && space.getBuilding().getId() > 0) {
+			long buildingId = space.getBuilding().getId();
+			BuildingContext building = SpaceAPI.getBuildingSpace(buildingId);
+			space.setSiteId(building.getSiteId());
+		}
+		if(space.getFloor().getId() > 0) {
+			long floorId = space.getFloor().getId();
+			V3FloorContext floor = SpaceAPI.getV3FloorSpace(floorId);
+			space.setSiteId(floor.getSiteId());
+			space.setBuilding(floor.getBuilding());
+		}
+		if (space.getParentSpace() != null && space.getParentSpace().getId() > 0) {
+			long spaceId = space.getParentSpace().getId();
+			V3SpaceContext spaces = SpaceAPI.getV3Space(spaceId);
+			space.setSiteId(spaces.getSiteId());
+			space.setBuilding(spaces.getBuilding());
+			space.setFloorId(spaces.getFloorId());
+			if (spaces.getSpaceId3() > 0) {
+				space.setSpaceId4(spaceId);
+				space.setSpaceId3(spaces.getSpaceId3());
+				space.setSpaceId2(spaces.getSpaceId2());
+				space.setSpaceId1(spaces.getSpaceId1());
+			}
+			else if (spaces.getSpaceId2() > 0) {
+				space.setSpaceId3(spaceId);
+				space.setSpaceId2(spaces.getSpaceId2());
+				space.setSpaceId1(spaces.getSpaceId1());
+			}
+			else if (spaces.getSpaceId1() > 0) {
+				space.setSpaceId2(spaceId);
+				space.setSpaceId1(spaces.getSpaceId1());
+			}
+			else {
+				space.setSpaceId1(spaceId);
+			}
 		}
 	}
 	

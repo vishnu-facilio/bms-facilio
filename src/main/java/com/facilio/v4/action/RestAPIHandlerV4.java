@@ -20,7 +20,12 @@ public class RestAPIHandlerV4 extends RESTAPIHandler {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
+
+	protected V3Action.api currentApi() {
+		return api.v4;
+	}
+
 	private String throwValidationException(String message) {
 		 
 		this.setMessage(message);
@@ -50,7 +55,7 @@ public class RestAPIHandlerV4 extends RESTAPIHandler {
 				}
 			case POST:
 					if(getData() != null) {
-						changeDataForV3();
+						changeDataForV3(null);
 						return create();
 					}
 					else {
@@ -59,7 +64,7 @@ public class RestAPIHandlerV4 extends RESTAPIHandler {
 			case PUT:
 				if(getId() > 0) {
 					if(getData() != null) {
-						changeDataForV3();
+						changeDataForV3(getId());
 						return patch();
 					}
 					else {
@@ -89,11 +94,15 @@ public class RestAPIHandlerV4 extends RESTAPIHandler {
 		setData(currentData);
 	}
 
-	private void changeDataForV3() {
+	private void changeDataForV3(Long id) {
 		
 		JSONObject currentData = getData();
 		
 		Map<String, Object> moduleData = (Map)currentData.get(getModuleName());
+
+		if (id != null) {
+			moduleData.put("id", id);
+		}
 		
 		currentData.remove(getModuleName());
 		

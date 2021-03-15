@@ -3,13 +3,13 @@ package com.facilio.v3.V3Builder;
 import org.apache.commons.chain.Command;
 
 public interface CreateBuilder {
-    CreateBuilder init(Command initCommand);
+    CreateBuilder init(Command... initCommand);
 
-    CreateBuilder beforeSave(Command beforeSaveCommand);
+    CreateBuilder beforeSave(Command... beforeSaveCommand);
 
-    CreateBuilder afterSave(Command afterSaveCommand);
+    CreateBuilder afterSave(Command... afterSaveCommand);
 
-    CreateBuilder afterTransaction(Command afterTransactionCommand);
+    CreateBuilder afterTransaction(Command... afterTransactionCommand);
 
     UpdateBuilder update();
 

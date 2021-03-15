@@ -17,8 +17,8 @@ public class V3BaseSpaceContext extends V3ResourceContext {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private double area = -1;
-	public double getArea() {
+	private Double area;
+	public Double getArea() {
 		return area;
 	}
 	public void setArea(double area) {
@@ -111,15 +111,15 @@ public class V3BaseSpaceContext extends V3ResourceContext {
 		super.setLocalId(localId);
 	}
 
-	private long siteId ;
+	private long siteId;
 	public long getSiteId() {
 		return siteId;
 	}
-	public void setSiteId(long siteId) {
+	public void setSiteId(Long siteId) {
 		this.siteId = siteId;
 		if (siteId > -1) {
 			if (site == null) {
-				site = new SiteContext();
+				site = new V3SiteContext();
 			}
 			site.setId(siteId);
 		}
@@ -128,11 +128,11 @@ public class V3BaseSpaceContext extends V3ResourceContext {
 		}
 	}
 	
-	private SiteContext site;
-	public SiteContext getSite() {
+	private V3SiteContext site;
+	public V3SiteContext getSite() {
 		return site;
 	}
-	public void setSite(SiteContext site) {
+	public void setSite(V3SiteContext site) {
 		this.site = site;
 		this.siteId = site != null ? site.getId() : -1;
 	}
@@ -145,7 +145,7 @@ public class V3BaseSpaceContext extends V3ResourceContext {
 		this.buildingId = buildingId;
 		if (buildingId != null && buildingId > -1) {
 			if (building == null) {
-				building = new BuildingContext();
+				building = new V3BuildingContext();
 			}
 			building.setId(buildingId);
 		}
@@ -154,12 +154,12 @@ public class V3BaseSpaceContext extends V3ResourceContext {
 		}
 	}
 	
-	private BuildingContext building;
-	public BuildingContext getBuilding() {
+	private V3BuildingContext building;
+	public V3BuildingContext getBuilding() {
 		return building;
 	}
-	public void setBuilding(BuildingContext building) {
-		this.building = building != null ? (building.getId() > 0 ? building : null) : null;
+	public void setBuilding(V3BuildingContext building) {
+		this.building = (building != null && building.getId() > 0) ? building : null;
 		this.buildingId = building != null ? (building.getId() > 0 ? building.getId() : null) : null;
 	}
 	
@@ -169,9 +169,9 @@ public class V3BaseSpaceContext extends V3ResourceContext {
 	}
 	public void setFloorId(Long floorId) {
 		this.floorId = floorId;
-		if (floorId > -1) {
+		if (floorId != null && floorId > -1) {
 			if (floor == null) {
-				floor = new FloorContext();
+				floor = new V3FloorContext();
 			}
 			floor.setId(floorId);
 		}
@@ -179,12 +179,12 @@ public class V3BaseSpaceContext extends V3ResourceContext {
 			floor = null;
 		}
 	}
-	private FloorContext floor;
-	public FloorContext getFloor() {
+	private V3FloorContext floor;
+	public V3FloorContext getFloor() {
 		return floor;
 	}
-	public void setFloor(FloorContext floor) {
-		this.floor = floor.getId() > 0 ? floor : null;
+	public void setFloor(V3FloorContext floor) {
+		this.floor = (floor != null && floor.getId() > 0) ? floor : null;
 		this.floorId = floor != null ? (floor.getId()>0 ? floor.getId() : null) : null;
 	}
 

@@ -6,6 +6,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -25,6 +26,10 @@ public class GenerateSearchConditionCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
+		boolean isV4 = Constants.isV4(context);
+		if (isV4) {
+			return false;
+		}
 		long startTime = System.currentTimeMillis();
 		Object search = context.get(FacilioConstants.ContextNames.SEARCH);
 		if (search instanceof JSONObject) {

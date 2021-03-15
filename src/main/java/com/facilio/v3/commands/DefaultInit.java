@@ -9,7 +9,10 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
@@ -30,8 +33,39 @@ public class DefaultInit extends FacilioCommand {
         Class beanClass = (Class) context.get(Constants.BEAN_CLASS);
         Long id = (Long) context.get(Constants.RECORD_ID);
 
+        boolean isV4 = Constants.isV4(context);
         String moduleName = Constants.getModuleName(context);
         System.out.println(((JSONObject) data).toJSONString());
+        if (isV4) {
+            Set<String> keySet = data.keySet();
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            List<FacilioField> allFields = modBean.getAllFields(moduleName);
+            Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
+
+            for (String key: keySet) {
+                FacilioField field = fieldMap.get(key);
+                if (field == null) {
+                    continue;
+                }
+
+                FieldType dataTypeEnum = field.getDataTypeEnum();
+                Object currentVal = data.get(key);
+                Object newVal;
+                switch (dataTypeEnum) {
+                    default:
+                        newVal = currentVal;
+                        break;
+                    case LOOKUP:
+                        newVal = transformLookup(currentVal, field);
+                        break;
+                    case DATE:
+                        newVal = transformDate(currentVal, field);
+                        break;
+                }
+                data.put(key, newVal);
+            }
+        }
+
         ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromMap(data, beanClass);;
         setFormData(context, data, moduleName, moduleRecord);
 
@@ -44,6 +78,47 @@ public class DefaultInit extends FacilioCommand {
 
         context.put(Constants.RECORD_MAP, recordMap);
         return false;
+    }
+
+    private Object transformDate(Object currentVal, FacilioField field) throws Exception {
+        return DateTimeUtil.getDayStartTime((String) currentVal, "yyyy-MM-dd");
+    }
+
+    private Object transformLookup(Object currentVal, FacilioField field) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(field.getModuleId());
+
+        if (module.getTypeEnum() == FacilioModule.ModuleType.PICK_LIST) {
+            List<FacilioField> allFields = modBean.getAllFields(module.getName());
+            Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
+            FacilioField idField = fieldMap.get("id");
+
+            FacilioField mainField = null;
+            for (FacilioField f: allFields) {
+                if (f.isMainField()) {
+                    mainField = f;
+                    break;
+                }
+            }
+
+            SelectRecordsBuilder selectRecordsBuilder = new SelectRecordsBuilder();
+            selectRecordsBuilder
+                    .module(module)
+                    .select(Arrays.asList(idField))
+                    .andCondition(CriteriaAPI.getCondition(mainField, currentVal+"", NumberOperators.EQUALS));
+
+            List<Map<String, Object>> asProps = selectRecordsBuilder.getAsProps();
+            if (CollectionUtils.isEmpty(asProps)) {
+                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid value for " + field.getName());
+            }
+
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("id", asProps.get(0).get("id"));
+            return jsonObject;
+        }
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("id", currentVal);
+        return jsonObject;
     }
 
     private ModuleBaseWithCustomFields getRecord(Long id, JSONObject data, Class beanClass, FacilioModule module) throws Exception {

@@ -39,6 +39,11 @@ import java.util.stream.Collectors;
 public class FetchRelationsCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
+        boolean isV4 = Constants.isV4(context);
+        if (isV4) {
+            return false;
+        }
+
         Map<String, List<String>> listRelationCriteria = Constants.getListRelationCriteria(context);
         if (MapUtils.isEmpty(listRelationCriteria)) {
             return false;

@@ -2,9 +2,13 @@ package com.facilio.bmsconsoleV3.context;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.LocationContext;
-import com.facilio.v3.context.V3Context;
+import com.facilio.modules.FacilioEnum;
 
-public class V3SiteContext extends V3Context {
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+public class V3SiteContext extends V3BaseSpaceContext {
 	
 	private static final long serialVersionUID = 1L;
 	private LocationContext location;
@@ -62,6 +66,62 @@ public class V3SiteContext extends V3Context {
 		this.timeZone = timeZone;
 	}
 
+	public enum SiteType implements FacilioEnum<Integer> {
+		COMMON(1, "Common"), 
+		HOSPITAL(2, "Hospital"), 
+		RESIDENTIAL(3, "Residential"), 
+		OFFICE(4, "Office"),
+		COMMERCIAL(5, "Commercial"), 
+		COMPOUND(6, "Compound"), 
+		UNIVERSITY(7, "University"), 
+		RETAIL(8, "Retail"),
+		RESIDENTIALNCOMMERICAL(9, "Residential & Commercial");
+
+		private int intVal;
+		private String strVal;
+
+		@Override
+		public Integer getIndex() {
+			return this.intVal;
+		}
+
+		@Override
+		public String getValue() {
+			return this.strVal;
+		}
+
+		SiteType(int intVal, String strVal) {
+			this.intVal = intVal;
+			this.strVal = strVal;
+		}
+
+		public int getIntVal() {
+			return intVal;
+		}
+
+		public String getStringVal() {
+			return strVal;
+		}
+
+		public static SiteType getType(int val) {
+			return typeMap.get(val);
+		}
+
+		private static final Map<Integer, SiteType> typeMap = Collections.unmodifiableMap(initTypeMap());
+
+		private static Map<Integer, SiteType> initTypeMap() {
+			Map<Integer, SiteType> typeMap = new HashMap<>();
+
+			for (SiteType type : values()) {
+				typeMap.put(type.getIntVal(), type);
+			}
+			return typeMap;
+		}
+
+		public Map<Integer, SiteType> getAllTypes() {
+			return typeMap;
+		}
+	}
 		
 	public V3ClientContext getClient() {
 		return client;
