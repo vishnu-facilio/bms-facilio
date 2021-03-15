@@ -24,7 +24,9 @@ public class IAMAccountConstants {
 		public static enum SessionType {
 			USER_LOGIN_SESSION(1),
 			PERMALINK_SESSION(2),
-			DIGEST_SESSION(3)
+			DIGEST_SESSION(3),
+			TOTP_SESSION(4),
+			MFA_CONFIG_SESSION(5)
 			;
 
 		    private int sessionType;

@@ -83,7 +83,9 @@ public interface IAMUserBean {
 
     String getEmailFromDigest(String digest) throws Exception;
 
-    public long verifyPasswordv3(String username, String password, String appDomainName, String userType) throws Exception;
+    String getEmailFromDigest(String digest, IAMAccountConstants.SessionType sessionType) throws Exception;
+    
+	public long verifyPasswordv3(String username, String password, String appDomainName, String userType) throws Exception;
     
     public IAMAccount verifyFacilioTokenv3(String idToken, boolean overrideSessionCheck, String userType) throws Exception;
 	
@@ -139,11 +141,16 @@ public interface IAMUserBean {
 	public Map<String, Object> getLoginModes(String userName, String domain, AppDomain appDomain) throws Exception;
 
 	public Map<String, Object> getLoginModes(String userName, AppDomain.GroupType groupType) throws Exception;
-	
+
+	public String generateTotpSessionToken(String userName) throws Exception;
+
+	String generateMFAConfigSessionToken(String userName) throws Exception;
 
 	public boolean updateUserMfaSettingsSecretKey(long userId,String value) throws Exception;
 
-	public Map<String,Object> getUserMfaSettings(long userId) throws Exception;
+	public Map<String, Object> getUserMfaSettings(long userId) throws Exception;
+
+	public Map<String, Object> getUserMfaSettings(String email) throws Exception;
 
 	public void updateUserMfaSettingsStatus(long userId, boolean value) throws Exception;
 
