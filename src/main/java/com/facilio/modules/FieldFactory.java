@@ -297,7 +297,8 @@ public class FieldFactory {
                 "sysCreatedBy",
                 "sysModifiedTime",
                 "sysModifiedBy",
-                "moduleState"
+                "moduleState",
+                "siteId"
         }));
 
         public static final List<String> QUOTE_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[] {
