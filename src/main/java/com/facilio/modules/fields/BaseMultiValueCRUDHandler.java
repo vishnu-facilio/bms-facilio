@@ -8,6 +8,7 @@ import com.facilio.modules.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public abstract class BaseMultiValueCRUDHandler<E> implements InsertSupplementHandler, UpdateSupplementHandler, DeleteSupplementHandler, FetchSupplementHandler {
@@ -22,7 +23,7 @@ public abstract class BaseMultiValueCRUDHandler<E> implements InsertSupplementHa
 
     protected abstract E parseValueField(Object value, String action) throws Exception;
 
-    protected abstract void fetchSupplements(boolean isMap, SelectRecordsBuilder relBuilder, FacilioField parentField, FacilioField valueField) throws Exception;
+    protected abstract void fetchSupplements(boolean isMap, SelectRecordsBuilder relBuilder, FacilioField valueField) throws Exception;
 
     @Override
     public void insertSupplements(List<Map<String, Object>> records) throws Exception {
@@ -79,7 +80,7 @@ public abstract class BaseMultiValueCRUDHandler<E> implements InsertSupplementHa
 
     private void insertData(List<Map<String, Object>> rels, List<FacilioField> fields) throws Exception {
         if (CollectionUtils.isNotEmpty(rels)) {
-            new InsertRecordBuilder<RelRecord>()
+            new InsertRecordBuilder()
                     .fields(fields)
                     .module(getRelModule())
                     .addRecordProps(rels)
@@ -93,7 +94,7 @@ public abstract class BaseMultiValueCRUDHandler<E> implements InsertSupplementHa
         }
     }
 
-    private Map<String, Object> createRelRecord (long parentId, E value) {
+    protected Map<String, Object> createRelRecord(long parentId, E value) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException, Exception {
         Map<String, Object> relRecord = new HashMap<>();
         relRecord.put(getParentFieldName(), parentId);
         relRecord.put(getValueFieldName(), value);
@@ -121,7 +122,7 @@ public abstract class BaseMultiValueCRUDHandler<E> implements InsertSupplementHa
                 .andCondition(CriteriaAPI.getCondition(parentField, ids, PickListOperators.IS))
                 ;
 
-        fetchSupplements(isMap, relBuilder, parentField, valueField);
+        fetchSupplements(isMap, relBuilder, valueField);
     }
 
     protected void addToRecordMap (long recordId, E value) {

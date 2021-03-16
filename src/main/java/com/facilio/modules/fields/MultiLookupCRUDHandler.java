@@ -80,7 +80,7 @@ public class MultiLookupCRUDHandler extends BaseMultiValueCRUDHandler<Object> {
     }
 
     @Override
-    protected void fetchSupplements(boolean isMap, SelectRecordsBuilder relBuilder, FacilioField parentField, FacilioField valueField) throws Exception {
+    protected void fetchSupplements(boolean isMap, SelectRecordsBuilder relBuilder, FacilioField valueField) throws Exception {
         // Handling child multi lookups
         if (field instanceof MultiLookupMeta) {
             MultiLookupMeta mlm = (MultiLookupMeta) field;
@@ -95,7 +95,7 @@ public class MultiLookupCRUDHandler extends BaseMultiValueCRUDHandler<Object> {
             List<Map<String, Object>> props = relBuilder.getAsProps();
             if (CollectionUtils.isNotEmpty(props)) {
                 for (Map<String, Object> record : props) {
-                    Long recordId = (Long) ((Map<String, Object>)record.get(parentField.getName())).get("id");
+                    Long recordId = (Long) ((Map<String, Object>)record.get(getParentFieldName())).get("id");
                     Object value = record.get(valueField.getName());
                     addToRecordMap(recordId, value);
                 }

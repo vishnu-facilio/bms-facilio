@@ -17,6 +17,7 @@ import com.facilio.modules.*;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.*;
 import com.facilio.util.FacilioUtil;
+import com.facilio.wms.message.Message;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -601,6 +602,17 @@ public class ModuleBeanImpl implements ModuleBean {
 								enumField.setValues(FacilioEnum.getEnumValues(enumField.getEnumName()));
 								field = enumField;
 								break;
+						case LINE_ITEM:
+							prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
+							LineItemField lineItemField = FieldUtil.getAsBeanFromMap(prop, LineItemField.class);
+							FacilioModule childModule = getMod(lineItemField.getChildModuleId());
+							Objects.requireNonNull(childModule == null, "Invalid module in Line item field. This is not supposed to happen");
+							lineItemField.setChildModule(childModule);
+							LookupField childLookupField = (LookupField) getField(lineItemField.getChildLookupFieldId());
+							Objects.requireNonNull(childLookupField == null, "Invalid lookup field in in Line item field. This is not supposed to happen");
+							lineItemField.setChildLookupField(childLookupField);
+							field = lineItemField;
+							break;
 //						case SCORE:
 //							prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
 //							field = FieldUtil.getAsBeanFromMap(prop, ScoreField.class);
@@ -677,6 +689,9 @@ public class ModuleBeanImpl implements ModuleBean {
 					break;
 				case SCORE:
 					extendedProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getScoreFieldModule(), FieldFactory.getScoreFieldFields(), entry.getValue()));
+					break;
+				case LINE_ITEM:
+					extendedProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getLineItemFieldsModule(), FieldFactory.getLineItemFieldFields(), entry.getValue()));
 					break;
 				default:
 					break;
@@ -994,6 +1009,14 @@ public class ModuleBeanImpl implements ModuleBean {
 				case SCORE:
 					addExtendedProps(ModuleFactory.getScoreFieldModule(), FieldFactory.getScoreFieldFields(), fieldProps);
 					break;
+				case LINE_ITEM:
+					if (field instanceof LineItemField) {
+						validateLineItemField((LineItemField) field, fieldProps);
+						addExtendedProps(ModuleFactory.getLineItemFieldsModule(), FieldFactory.getLineItemFieldFields(), fieldProps);
+					}
+					else {
+						throw new IllegalArgumentException("Invalid Field instance for the LINE_ITEM data type");
+					}
 				default:
 					break;
 			}
@@ -1003,6 +1026,26 @@ public class ModuleBeanImpl implements ModuleBean {
 		else {
 			throw new IllegalArgumentException("Invalid field object for addition");
 		}
+	}
+
+	private void validateLineItemField (LineItemField field, Map<String, Object> fieldProps) throws Exception {
+		long childModuleId = field.getChildModuleId() > 0 ? field.getChildModuleId()
+								: field.getChildModule() != null ? field.getChildModule().getModuleId()
+								: -1;
+		FacilioUtil.throwIllegalArgumentException(childModuleId <= 0, MessageFormat.format("Invalid child module for line item field : {0}", field.getName()));
+		FacilioModule childModule = getMod(childModuleId);
+		FacilioUtil.throwIllegalArgumentException(childModule == null, MessageFormat.format("Invalid child module for line item field : {0}", field.getName()));
+		fieldProps.put("childModuleId", childModuleId);
+
+		long fieldId = field.getChildLookupFieldId() > 0 ? field.getChildLookupFieldId()
+								: field.getChildLookupField() != null ? field.getChildLookupField().getFieldId()
+								: -1;
+		FacilioUtil.throwIllegalArgumentException(fieldId <= 0, MessageFormat.format("Invalid child lookup field for line item field : {0}", field.getName()));
+		LookupField lookupField = (LookupField) getField(fieldId);
+		FacilioUtil.throwIllegalArgumentException(lookupField == null, MessageFormat.format("Invalid child lookup field for line item field : {0}", field.getName()));
+		FacilioUtil.throwIllegalArgumentException(!childModule.equals(lookupField.getModule()), MessageFormat.format("Child module ({0}) and child lookup field ({1}) doesn''t belong to same module for line item field : {2}", childModule.getName(), lookupField.getName(), field.getName()));
+		FacilioUtil.throwIllegalArgumentException(!lookupField.getLookupModule().equals(field.getModule()), MessageFormat.format("Child lookup field ({0}) is having a different module ({1}) as lookup instead of {2} for line item field : {3}", lookupField.getName(), lookupField.getLookupModule().getName(), field.getModule().getName(), field.getName()));
+		fieldProps.put("childLookupFieldId", fieldId);
 	}
 
 	private static final String CUSTOM_MULTI_ENUM_TABLENAME = "Custom_Multi_Enum_Values";
@@ -1286,7 +1329,7 @@ public class ModuleBeanImpl implements ModuleBean {
 //			else if (field instanceof ScoreField) {
 //				extendendPropsCount = updateExtendedProps(ModuleFactory.getScoreFieldModule(), FieldFactory.getScoreFieldFields(), field);
 //			}
-
+			// Will not allow change of extended props of lookup, multi-lookup and line-item fields
 			return Math.max(count, extendendPropsCount);
 		}
 		else {

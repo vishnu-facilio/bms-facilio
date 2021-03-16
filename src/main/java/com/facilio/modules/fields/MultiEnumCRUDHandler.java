@@ -41,11 +41,11 @@ public class MultiEnumCRUDHandler extends BaseMultiValueCRUDHandler<Integer> {
     }
 
     @Override
-    protected void fetchSupplements(boolean isMap, SelectRecordsBuilder relBuilder, FacilioField parentField, FacilioField valueField) throws Exception {
+    protected void fetchSupplements(boolean isMap, SelectRecordsBuilder relBuilder, FacilioField valueField) throws Exception {
         List<Map<String, Object>> props = relBuilder.getAsProps();
         if (CollectionUtils.isNotEmpty(props)) {
             for (Map<String, Object> record : props) {
-                Long recordId = (Long) ((Map<String, Object>)record.get(parentField.getName())).get("id");
+                Long recordId = (Long) ((Map<String, Object>)record.get(getParentFieldName())).get("id");
                 Integer value = (Integer) record.get(valueField.getName());
                 addToRecordMap(recordId, value);
             }

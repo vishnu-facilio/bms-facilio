@@ -1043,6 +1043,18 @@ public class FieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getLineItemFieldFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getLineItemFieldsModule();
+
+        fields.add(getField("fieldId", "FIELDID", module, FieldType.ID));
+        /*fields.add(getOrgIdField(module));*/
+        fields.add(getField("childModuleId", "CHILD_MODULE_ID", module, FieldType.NUMBER));
+        fields.add(getField("childLookupFieldId", "CHILD_LOOKUP_FIELD_ID", module, FieldType.NUMBER));
+
+        return fields;
+    }
+
     public static List<FacilioField> getRollUpFieldFields() {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getRollUpFieldsModule();
@@ -8038,6 +8050,9 @@ public class FieldFactory {
                 break;
             case FILE:
                 columnFld = new FileField();
+                break;
+            case LINE_ITEM:
+                columnFld = new LineItemField();
                 break;
             default:
                 columnFld = new FacilioField();
