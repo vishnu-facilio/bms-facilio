@@ -851,7 +851,6 @@ public class TransactionChainFactoryV3 {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new AddJobPlanTasksCommand());
         chain.addCommand(new AddJobPlanPMsInContextCommand());
-        chain.addCommand(new ScheduleNewPMCommand(true));
         return chain;
     }
 }
