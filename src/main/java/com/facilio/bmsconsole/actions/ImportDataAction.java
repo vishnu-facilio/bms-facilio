@@ -1,26 +1,10 @@
 package com.facilio.bmsconsole.actions;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-
-import org.apache.log4j.LogManager;
-import org.json.simple.JSONObject;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ImportProcessLogContext;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.EnergyMeterContext;
-import com.facilio.bmsconsole.context.SiteContext;
-import com.facilio.bmsconsole.util.AssetsAPI;
-import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.ImportAPI;
-import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -28,15 +12,25 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.services.filestore.FileStore;
-import com.facilio.services.factory.FacilioFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
 import com.facilio.tasker.FacilioTimer;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.LogManager;
+import org.json.simple.JSONObject;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
 
 ;
 
@@ -81,7 +75,11 @@ public class ImportDataAction extends FacilioAction {
 		if(module != null) {
 			moduleInfo.put("moduleExists", true);
 			moduleInfo.put("moduleMeta", module);
-	        importProcessContext.setModuleId(module.getModuleId());
+			if (module.getModuleId() > 0) {
+				importProcessContext.setModuleId(module.getModuleId());
+			} else if (StringUtils.isNotEmpty(module.getName())) {
+				importProcessContext.setModuleName(module.getName());
+			}
 		}
 		else {
 			moduleInfo.put("moduleExists", false);
@@ -109,26 +107,6 @@ public class ImportDataAction extends FacilioAction {
 		return SUCCESS;
 		
 	}
-	public String getAssets() throws Exception
-	{
-		if(moduleName != null) {
-		switch(moduleName)
-		{
-		  
-		case "Energy" : 
-			this.energyMeters=DeviceAPI.getAllEnergyMeters();
-		
-		}
-		try {
-			this.chillerAssets = AssetsAPI.getAssetListOfCategory(AssetsAPI.getCategory("Chiller").getId());
-		}
-		catch (Exception e) {
-			log.info("Exception occurred ", e);
-		}
-		}
-		return SUCCESS;
-	}
-	
 	String pastedRawString;
 	String rawStringType;
 	
@@ -366,24 +344,6 @@ public class ImportDataAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	
-	
-	public void getSites() throws Exception
-	{
-		List<SiteContext> sites = SpaceAPI.getAllSites();
-		JSONObject result = new JSONObject();
-		for(SiteContext site:sites) {
-			long siteId=site.getId();
-			String name=site.getName();
-			result.put(siteId,name);
-		}
-		LOGGER.severe("The list of Sites available is "+result);
-	}
-	public String showformupload()
-	{
-		LOGGER.severe("Displaying formupload");
-		return SUCCESS;
-	}
 
 	private File fileUpload;
 	public File getFileUpload() {
@@ -489,11 +449,7 @@ public class ImportDataAction extends FacilioAction {
 	{
 		return this.moduleName;
 	}
-	
-	private List<EnergyMeterContext> energyMeters;
-	public List<EnergyMeterContext> getEnergyMeters() {
-		return energyMeters;
-	}
+
 	public void setAssetId(long id) {
 		this.assetId = id;
 	}
@@ -541,10 +497,6 @@ public class ImportDataAction extends FacilioAction {
 		this.fileId = fileId;
 	}
 
-	private List<AssetContext> chillerAssets;
-	public List<AssetContext> getChillerAssets() {
-		return chillerAssets;
-	}
 	private int count;
 	public int getCount() {
 		return count;
