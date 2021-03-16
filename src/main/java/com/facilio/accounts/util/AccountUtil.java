@@ -43,7 +43,9 @@ public class AccountUtil {
 	public static void setCurrentAccount(Account account) throws Exception {
 		currentAccount.set(account);
 		setScopingMap(account);
-		FacilioServiceUtil.setCurrentService(FacilioConstants.Services.APP_SERVICE);
+		if(account != null && account.getOrg() !=null){
+			FacilioServiceUtil.setCurrentService(FacilioConstants.Services.APP_SERVICE);
+		}
 	}
 	
 	public static void setCurrentAccount(long orgId) throws Exception {
