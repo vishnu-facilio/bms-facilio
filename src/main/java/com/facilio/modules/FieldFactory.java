@@ -9094,6 +9094,9 @@ public class FieldFactory {
 		fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
 		fields.add(getField("fileId","FILE_ID",module,FieldType.NUMBER));
 		fields.add(getField("siteId", "SITE_ID", module, FieldType.NUMBER));
+        fields.add(getField("width","WIDTH",module,FieldType.NUMBER));
+		fields.add(getField("height", "HEIGHT", module, FieldType.NUMBER));
+        fields.add(getField("fileSource", "FILE_SOURCE", module, FieldType.NUMBER));
 		fields.add(getField("floorId", "FLOOR_ID", module, FieldType.NUMBER));
 		return fields;
 	}
