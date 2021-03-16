@@ -38,7 +38,7 @@
             isDynamicClient = true;
         }
         else {
-        	 FacilioIndexJsp.LOGGER.info("@@@@@@@@@@@Current service  : "+FacilioServiceUtil.getCurrentService());
+        	FacilioIndexJsp.LOGGER.info("@@@@@@@@@@@Current service  : "+FacilioServiceUtil.getCurrentService().getServiceName());
         	clientVersion =(String) com.facilio.aws.util.AwsUtil.getClientInfoAsService().get("version");
         }
 
