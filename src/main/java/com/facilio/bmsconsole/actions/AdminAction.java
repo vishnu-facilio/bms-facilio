@@ -542,6 +542,10 @@ public class AdminAction extends ActionSupport {
 
 	public static List<Map<String, Object>> getOrgsList() throws Exception {
 
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() ->getOrgs());
+	}
+
+	private static List<Map<String, Object>>  getOrgs() throws Exception {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(FieldFactory.getField("orgId", "Organizations.ORGID", FieldType.ID));
 		fields.add(FieldFactory.getField("domain", "Organizations.FACILIODOMAINNAME", FieldType.STRING));
@@ -549,9 +553,9 @@ public class AdminAction extends ActionSupport {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().select(fields)
 				.table(IAMAccountConstants.getOrgModule().getTableName())
 				.andCondition(CriteriaAPI.getCondition(IAMAccountConstants.getOrgDeletedTimeField(), String.valueOf(-1), NumberOperators.EQUALS));
-				return builder.get();
+		return builder.get();
 	}
-	
+
 	public static List<Map<String, Object>> getAgentOrgs() throws Exception {
 
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> getOrgsList());
