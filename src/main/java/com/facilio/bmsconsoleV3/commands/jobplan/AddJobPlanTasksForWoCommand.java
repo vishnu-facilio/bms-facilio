@@ -20,7 +20,7 @@ import java.util.Map;
 public class AddJobPlanTasksForWoCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.JOB_PLAN)) {
+        if(AccountUtil.getCurrentOrg().getOrgId() == 173l) {
             WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
             if (workOrder.getPm() != null && workOrder.getResource() != null) {
                 Map<String, List<TaskContext>> taskMap = (Map<String, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP);

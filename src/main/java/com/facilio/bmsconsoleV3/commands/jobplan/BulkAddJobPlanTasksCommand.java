@@ -16,7 +16,7 @@ import java.util.Map;
 public class BulkAddJobPlanTasksCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.JOB_PLAN)) {
+        if(AccountUtil.getCurrentOrg().getOrgId() == 173l) {
             BulkWorkOrderContext bulkWorkOrderContext = (BulkWorkOrderContext) context.get(FacilioConstants.ContextNames.BULK_WORK_ORDER_CONTEXT);
 
             if (bulkWorkOrderContext.getTaskMaps() == null || bulkWorkOrderContext.getTaskMaps().isEmpty()) {
