@@ -12,12 +12,15 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.service.FacilioService;
+import com.facilio.service.FacilioServiceUtil;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
@@ -28,21 +31,21 @@ public class DeleteFileRecordsJob extends FacilioJob {
 	private static final Logger LOGGER = LogManager.getLogger(DeleteFileRecordsJob.class.getName());
 	@Override
 	public void execute(JobContext jc) throws Exception {
+
 		try {
 			long jobStart = System.currentTimeMillis();
-			long deletedTime;
 			long orgId = jc.getOrgId();
-			Set<String> namespaces = FileStore.getAllNamespaces();
-			for (String namespace : namespaces) {
-				FileStore.NamespaceConfig namespaceConfig = FileStore.getNamespace(namespace);
-				deletedTime = DateTimeUtil.addDays(System.currentTimeMillis(), -namespaceConfig.getDataRetention());
-				if (deletedTime <= 0) {
-					throw new IllegalArgumentException("Deleted Time must not empty..." + deletedTime);
+				Set<String> namespaces = FileStore.getAllNamespaces();
+				for (String namespace : namespaces) {
+					FileStore.NamespaceConfig namespaceConfig = FileStore.getNamespace(namespace);
+					long deletedTime = DateTimeUtil.addDays(System.currentTimeMillis(), -namespaceConfig.getDataRetention());
+					if (deletedTime <= 0) {
+						throw new IllegalArgumentException("Deleted Time must not empty..." + deletedTime);
+					}
+				FacilioService.runAsService(namespaceConfig.getService(), ()-> deleteFiles(deletedTime, orgId, namespaceConfig));
 				}
-				deleteFiles(deletedTime, orgId, namespaceConfig);
-			}
-			LOGGER.info("FacilioFile deletion Job -- time taken to complete is  :"+(System.currentTimeMillis()-jobStart));
-		} catch (Exception e) {
+				LOGGER.info("FacilioFile deletion Job -- time taken to complete is  :"+(System.currentTimeMillis()-jobStart));
+			} catch (Exception e) {
 			LOGGER.error("Exception occurred in DeleteFileRecordsJob  :  ", e);
 			CommonCommandUtil.emailException("DeleteFileRecordsJob","DeleteFileRecordsJob Failed - jobid -- " + jc.getJobId(), e);
 			throw e;

@@ -1,3 +1,4 @@
+<%@page import="com.facilio.service.FacilioServiceUtil"%>
 <%@page import="com.facilio.auth.cookie.FacilioCookie"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
 <%@page import="java.util.ArrayList"%>
@@ -18,7 +19,8 @@
 <%@page import="com.facilio.util.FacilioIndexJsp" %>
 <%@page import="com.facilio.util.RequestUtil" %>
 <%@ page import="com.facilio.accounts.dto.AppDomain" %>
-
+<%@page import="com.facilio.service.FacilioService" %>
+<%@page import="com.facilio.constants.FacilioConstants" %>
 <%@page contentType="text/html; charset=UTF-8" %>
 
 <%! static Map<String, String> indexHtmls = new ConcurrentHashMap<>(); %> <%-- Maybe change this to LRU Cache later --%>
@@ -36,7 +38,8 @@
             isDynamicClient = true;
         }
         else {
-            clientVersion = (String) com.facilio.aws.util.AwsUtil.getClientInfo().get("version");
+        	FacilioIndexJsp.LOGGER.info("@@@@@@@@@@@Current service  : "+FacilioServiceUtil.getCurrentService().getServiceName());
+        	clientVersion =(String) com.facilio.aws.util.AwsUtil.getClientInfoAsService().get("version");
         }
 
         if (clientVersion != null && !clientVersion.startsWith("/")) {
@@ -44,7 +47,8 @@
         } else {
             clientVersion = "";
         }
-
+       
+        FacilioIndexJsp.LOGGER.info("Fetching current client version : "+ clientVersion);
         String staticUrlPropName = isDynamicClient ? "stage.static.url" : "static.url";
         String staticUrl = com.facilio.aws.util.FacilioProperties.getConfig(staticUrlPropName) + clientVersion;
         boolean servicePortalDomain = false;//used in client rendering to identify if the current req server is portal domain or not

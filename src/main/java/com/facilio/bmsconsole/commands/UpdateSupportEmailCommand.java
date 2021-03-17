@@ -26,7 +26,7 @@ public class UpdateSupportEmailCommand extends FacilioCommand {
 					CommonCommandUtil.setFwdMail(supportEmail);
 				}
 //				SupportEmailAPI.updateSupportEmailSetting(supportEmail);
-				FacilioService.runAsService(() -> SupportEmailAPI.updateSupportEmailSetting(supportEmail));
+				FacilioService.runAsService(FacilioConstants.Services.DEFAULT_SERVICE,() -> SupportEmailAPI.updateSupportEmailSetting(supportEmail));
 //			supportEmail.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 //			//CommonCommandUtil.setFwdMail(supportEmail);
 //			Map<String, Object> emailProps = FieldUtil.getAsProperties(supportEmail);

@@ -2,6 +2,7 @@ package com.facilio.agentv2.actions;
 
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.upgrade.AgentVersionApi;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.service.FacilioService;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -58,7 +59,7 @@ public class AgentVersionAction extends AgentActionV2 {
 
     public String addAgentVersion() {
         try {
-            FacilioService.runAsService(() -> AgentVersionApi.addAgentVersion(version, description, createdBy, fileName));
+            FacilioService.runAsService(FacilioConstants.Services.AGENT_SERVICE,() -> AgentVersionApi.addAgentVersion(version, description, createdBy, fileName));
             setResult(AgentConstants.RESULT, SUCCESS);
             ok();
         } catch (Exception e) {
