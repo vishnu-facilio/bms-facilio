@@ -38,7 +38,6 @@
             isDynamicClient = true;
         }
         else {
-        	FacilioIndexJsp.LOGGER.info("@@@@@@@@@@@Current service  : "+FacilioServiceUtil.getCurrentService().getServiceName());
         	clientVersion =(String) com.facilio.aws.util.AwsUtil.getClientInfoAsService().get("version");
         }
 
@@ -48,7 +47,6 @@
             clientVersion = "";
         }
        
-        FacilioIndexJsp.LOGGER.info("Fetching current client version : "+ clientVersion);
         String staticUrlPropName = isDynamicClient ? "stage.static.url" : "static.url";
         String staticUrl = com.facilio.aws.util.FacilioProperties.getConfig(staticUrlPropName) + clientVersion;
         boolean servicePortalDomain = false;//used in client rendering to identify if the current req server is portal domain or not
