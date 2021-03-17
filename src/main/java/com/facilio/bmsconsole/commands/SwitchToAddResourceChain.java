@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.context.BimImportProcessMappingContext;
+import com.facilio.bmsconsole.context.PMIncludeExcludeResourceContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PMTriggerContext.TriggerExectionSource;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
@@ -381,7 +382,48 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 				updatePM.execute();
 			}
 		}
-		
+		else if(facilioModule.getName().equals(ModuleFactory.getPMIncludeExcludeResourceModule().getName())) {
+			
+			Map<Long,List<PMIncludeExcludeResourceContext>> pmMap = new HashMap<Long, List<PMIncludeExcludeResourceContext>>();
+			
+			for(ReadingContext reading :readingsContext) {
+				Map<String, Object> props = FieldUtil.getAsProperties(reading);
+				
+				props = removeNullNodes.apply(props);
+				
+				long resourceId = (Long) ((Map<String,Object>)props.remove("resourceId")).get("id");
+				
+				PMIncludeExcludeResourceContext inclExcl = FieldUtil.getAsBeanFromMap(props, PMIncludeExcludeResourceContext.class);
+				
+				inclExcl.setResourceId(resourceId);
+
+				List<PMIncludeExcludeResourceContext> inclExclList = pmMap.getOrDefault(inclExcl.getPmId(), new ArrayList<PMIncludeExcludeResourceContext>());
+				inclExclList.add(inclExcl);
+				
+				pmMap.put(inclExcl.getPmId(), inclExclList);
+					
+			}
+			
+			for(Long pmId : pmMap.keySet()) {
+				
+				PreventiveMaintenance pm = PreventiveMaintenanceAPI.getPM(pmId, true);
+				
+				List<PMIncludeExcludeResourceContext> inclExcls = pmMap.get(pmId);
+				
+				pm.setPmIncludeExcludeResourceContexts(inclExcls);
+				
+				FacilioChain updatePM = FacilioChainFactory.getUpdateNewPreventiveMaintenanceChain();
+				
+				FacilioContext newContext = updatePM.getContext();
+				
+				newContext.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(pmId));
+				newContext.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, PreventiveMaintenanceAPI.getPM(pmId, true));
+				newContext.put(FacilioConstants.ContextNames.WORK_ORDER, ((WorkorderTemplate)TemplateAPI.getTemplate(pm.getTemplateId())).getWorkorder());
+				newContext.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
+				
+				updatePM.execute();
+			}
+		}
 		else {
 			FacilioChain c = TransactionChainFactory.getGenericImportChain();
 			c.execute(context);

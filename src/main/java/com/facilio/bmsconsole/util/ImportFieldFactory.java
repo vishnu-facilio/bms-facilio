@@ -1,5 +1,14 @@
 package com.facilio.bmsconsole.util;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.actions.ImportProcessContext.ImportSetting;
@@ -11,14 +20,6 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 public class ImportFieldFactory {
 
@@ -145,10 +146,18 @@ public class ImportFieldFactory {
 				fields = getPMTaskImportFields();
 				break;
 			}
+			case "PMIncludeExcludeResource" :{
+				fields = getPMInclExclFields();
+				break;
+			}
 		}
 		return fields;
 	}
 	
+	private static List<FacilioField> getPMInclExclFields() {
+		return FieldFactory.getPMIncludeExcludeResourceFields();
+	}
+
 	public static List<FacilioField> getPMTaskImportFields() {
 		
 		List<FacilioField> fields = new ArrayList<FacilioField>();
@@ -174,6 +183,13 @@ public class ImportFieldFactory {
 		fields.add(FieldFactory.getField("triggerFrequency","Trigger Frequency",null, ModuleFactory.getPMTriggersModule(), FieldType.STRING));
 		fields.add(FieldFactory.getField("times","Times",null, ModuleFactory.getPMTriggersModule(), FieldType.STRING));
 		return fields;
+	}
+	
+	public static boolean isFieldsFromFieldFactoryModule(String moduleName) throws Exception {
+		if(getImportFieldsAsList(moduleName) != null && !getImportFieldsAsList(moduleName).isEmpty()) {
+			return true;
+		}
+		return false;
 	}
 
 	public static HashMap<String, FacilioField> getFacilioFieldMapping(String moduleName) throws Exception{

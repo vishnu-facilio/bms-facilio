@@ -6294,12 +6294,17 @@ public class FieldFactory {
         List<FacilioField> fields = new ArrayList<>();
 
         fields.add(getIdField(module));
-        fields.add(getField("pmId", "PM_ID", module, FieldType.LOOKUP));
+        fields.add(getField("pmId", "PM_ID", module, FieldType.NUMBER));
         fields.add(getField("parentType", "PARENT_TYPE", module, FieldType.NUMBER));
 
         fields.add(getField("taskSectionTemplateId", "TASK_SECTION_TEMPLATE_ID", module, FieldType.LOOKUP));
         fields.add(getField("taskTemplateId", "TASK_TEMPLATE_ID", module, FieldType.LOOKUP));
-        fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.LOOKUP));
+        
+        LookupField resourceId = (LookupField) getField("resourceId", "RESOURCE_ID", module, FieldType.LOOKUP);
+        resourceId.setLookupModule(ModuleFactory.getResourceModule());
+        resourceId.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
+        fields.add(resourceId);
+        
         fields.add(getField("isInclude", "IS_INCLUDE", module, FieldType.BOOLEAN));
         return fields;
     }

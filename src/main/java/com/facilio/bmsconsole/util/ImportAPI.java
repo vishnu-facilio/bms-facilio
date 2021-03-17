@@ -580,8 +580,7 @@ public class ImportAPI {
 					|| facilioModule.getName().equals(FacilioConstants.ContextNames.PURCHASED_ITEM)
 					|| facilioModule.getName().equals(FacilioConstants.ContextNames.ITEM)
 					|| facilioModule.getName().equals(FacilioConstants.ContextNames.ITEM_TYPES)		
-					|| facilioModule.getName().equals(ModuleFactory.getPreventiveMaintenanceModule().getName())
-					|| facilioModule.getName().equals(ModuleFactory.getTaskTemplateModule().getName())
+					|| ImportFieldFactory.isFieldsFromFieldFactoryModule(facilioModule.getName())
 					) {
 				fields.addAll(ImportFieldFactory.getImportFieldNames(facilioModule.getName()));
 			} else {

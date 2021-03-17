@@ -127,7 +127,7 @@ public class UploadImportFileCommand extends FacilioCommand {
         
         ImportAPI.addImportProcess(importProcessContext);
 		
-        if(moduleName.equals("purchasedTool") || moduleName.equals("purchasedItem") || moduleName.equals("preventivemaintenance") || moduleName.equals(ModuleFactory.getTaskTemplateModule().getName())) {
+        if(moduleName.equals("purchasedTool") || moduleName.equals("purchasedItem") || ImportFieldFactory.isFieldsFromFieldFactoryModule(moduleName)) {
         	importProcessContext.setFacilioFieldMapping(ImportFieldFactory.getFacilioFieldMapping(moduleName));
         	importProcessContext.setFieldMapping(ImportFieldFactory.getFieldMapping(moduleName));
 
