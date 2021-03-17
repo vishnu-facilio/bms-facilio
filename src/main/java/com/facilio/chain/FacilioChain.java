@@ -26,6 +26,13 @@ import java.util.Objects;
 public class FacilioChain extends ChainBase {
 	private static final ThreadLocal<FacilioChain> rootChain = new ThreadLocal<>();
 
+	public static FacilioChain getRootchain () {
+		return rootChain.get();
+	}
+	public static void setRootChain(FacilioChain chain) {
+		rootChain.set(chain);
+	}
+
 	private List<PostTransactionCommand> postTransactionChains;
 	private boolean enableTransaction = true;
 	private int timeout = -1;

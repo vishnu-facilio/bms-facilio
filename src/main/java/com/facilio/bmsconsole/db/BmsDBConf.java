@@ -5,16 +5,9 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.text.MessageFormat;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+import com.facilio.chain.FacilioChain;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -577,6 +570,17 @@ public class BmsDBConf extends DBConf {
     @Override
     public List<String> getResponseSizeThresholdWhiteListedUrls() {
         return FacilioProperties.getResponseSizeThresholdWhiteListedUrls();
+    }
+
+    private static final String TRANSACTION_ROOT_CHAIN = "transactionRootChain";
+    @Override
+    public Map<String, Object> getOtherTransactionThreadLocalProps() {
+        return Collections.singletonMap(TRANSACTION_ROOT_CHAIN, FacilioChain.getRootchain());
+    }
+
+    @Override
+    public void setOtherTransactionThreadLocalProps(Map<String, Object> props) {
+        FacilioChain.setRootChain((FacilioChain) props.get(TRANSACTION_ROOT_CHAIN));
     }
 
 }
