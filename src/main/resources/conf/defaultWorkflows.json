@@ -346,7 +346,7 @@
 					ruleDurationCriteria = {
 						criteria: [rule == ruleId],
 						field: \"duration\",
-						aggregation: \"sum, duration\"
+						aggregation: \"sum\"
 					};
 					durationrecord = readingAlarmOccurrence.fetch(ruleDurationCriteria);
 					if (durationrecord != null) {
