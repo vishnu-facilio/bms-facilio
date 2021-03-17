@@ -55,7 +55,7 @@ public abstract class InstantJob {
                 }
             }
             context.put(JobConstants.INSTANT_JOB, this);
-            FacilioService.runAsService(FacilioConstants.Services.INSTANT_JOB_SERVICE, ()->JobConstants.ChainFactory.instantJobExecutionChain(transactionTimeout).execute(context));
+            JobConstants.ChainFactory.instantJobExecutionChain(transactionTimeout).execute(context);
 //            if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 88 && jobName.equals("ControllerActivityWatcher")) {
 //            	LOGGER.info("Executing Job "+jobName+" with props : "+context);
 //            }
@@ -70,6 +70,11 @@ public abstract class InstantJob {
             job.setIsPeriodic(false);
             JobLogger.log(job, (System.currentTimeMillis() - startTime), status);
             currentThread.setName(threadName);
+            try{
+                AccountUtil.cleanCurrentAccount();
+            }catch (Exception e){
+                LOGGER.log(Level.INFO, "Exception while setting current account ", e);
+            }
 //            if(FacilioProperties.isProduction() && StringUtils.isNotBlank(getReceiptHandle())) {
 //            	InstantJobExecutor.INSTANCE.jobEnd(getReceiptHandle());
 //            }
