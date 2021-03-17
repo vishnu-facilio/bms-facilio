@@ -168,6 +168,10 @@ public class ImportFieldFactory {
 		fields.add(FieldFactory.getField("defaultValue","Default Value",null, ModuleFactory.getTaskTemplateModule(), FieldType.STRING));
 		fields.add(FieldFactory.getField("options","Option List",null, ModuleFactory.getTaskTemplateModule(), FieldType.STRING));
 		fields.add(FieldFactory.getField("sectionName","Section Name",null, ModuleFactory.getTaskTemplateModule(), FieldType.STRING));
+		
+		fields.add(FieldFactory.getField("isPreRequest","Is Pre-Request",null, ModuleFactory.getTaskTemplateModule(), FieldType.BOOLEAN));
+		fields.add(FieldFactory.getField("trueVal","True Value",null, ModuleFactory.getTaskTemplateModule(), FieldType.STRING));
+		fields.add(FieldFactory.getField("falseVal","False Value",null, ModuleFactory.getTaskTemplateModule(), FieldType.STRING));
 		return fields;
 	}
 

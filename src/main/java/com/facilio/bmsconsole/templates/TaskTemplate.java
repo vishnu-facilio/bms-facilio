@@ -49,6 +49,9 @@ public class TaskTemplate extends Template {
 	public void setPreRequest(boolean isPreRequest) {
 		this.isPreRequest = isPreRequest;
 	}
+	public void setIsPreRequest(boolean isPreRequest) {
+		this.isPreRequest = isPreRequest;
+	}
 	private TaskStatus status;
 	public TaskStatus getStatusEnum() {
 		return status;

@@ -303,6 +303,7 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 					
 					String options = null;
 					String defaultValue = null;
+					String trueVal = null,falseVal = null;
 					Long pmId = null;
 					JSONArray optionsList = new JSONArray();
 					String sectionName = null;
@@ -312,6 +313,12 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 					}
 					if(props.get("defaultValue") != null) {
 						defaultValue = props.remove("defaultValue").toString();
+					}
+					if(props.get("trueVal") != null) {
+						trueVal = props.remove("trueVal").toString();
+					}
+					if(props.get("falseVal") != null) {
+						falseVal = props.remove("falseVal").toString();
 					}
 					if(props.get("options") != null) {
 						options = props.remove("options").toString();
@@ -334,7 +341,12 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 					if(optionsList != null && !optionsList.isEmpty()) {
 						taskTemplate.addAdditionInfo("options", optionsList);
 					}
-					
+					if(trueVal != null) {
+						taskTemplate.addAdditionInfo("truevalue", trueVal);
+					}
+					if(falseVal != null) {
+						taskTemplate.addAdditionInfo("falsevalue", falseVal);
+					}
 					List<TaskTemplate> tasks = pmMap.getOrDefault(pmId, new ArrayList<TaskTemplate>());
 					tasks.add(taskTemplate);
 					
@@ -363,6 +375,10 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 					taskTemplate.setType(Type.PM_TASK);
 					taskTemplate.setSequence(seq++);
 					sectionTemplate.addTaskTemplates(taskTemplate);
+					
+					if(taskTemplate.isPreRequest()) {
+						sectionTemplate.setPreRequestSection(true);
+					}
 					
 					sectionMap.put(sectionName, sectionTemplate);
 				}
