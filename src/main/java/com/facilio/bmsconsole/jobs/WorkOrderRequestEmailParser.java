@@ -27,6 +27,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.service.FacilioService;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.mail.util.MimeMessageParser;
@@ -133,8 +134,8 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 	}
 	
 	private SupportEmailContext getSupportEmail(List<Address> toAddresses) throws Exception {
-		if(toAddresses != null) {
-			LOGGER.info("Support email addresses : "+toAddresses);
+		LOGGER.info("Support email addresses : "+toAddresses);
+		if(CollectionUtils.isNotEmpty(toAddresses)) {
 			StringJoiner emails = new StringJoiner(",");
 			for(Address address : toAddresses) {
 				String email = ((InternetAddress) address).getAddress();
