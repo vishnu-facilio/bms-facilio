@@ -476,14 +476,14 @@ public class ImportProcessContext implements Serializable,Cloneable
 		}
 	}
 	public enum ImportStatus {
-		UPLOAD_COMPLETE,
-		PARSING_IN_PROGRESS,
+		UPLOAD_COMPLETE,		
+		PARSING_IN_PROGRESS,	//2
 		PARSING_FAILED,
-		BEGIN_VALIDATION,
+		BEGIN_VALIDATION,		//4
 		RESOLVE_VALIDATION,
-		VALIDATION_COMPLETE,
-		IN_PROGRESS,
-		IMPORTED,
+		VALIDATION_COMPLETE,	//6
+		IN_PROGRESS,			
+		IMPORTED,				//8
 		FAILED;
 		
 		public int getValue() {
