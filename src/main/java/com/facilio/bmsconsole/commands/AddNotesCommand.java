@@ -5,6 +5,7 @@ import com.facilio.activity.AlarmActivityType;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.activity.CommonActivityType;
+import com.facilio.bmsconsole.activity.CustomModuleActivityType;
 import com.facilio.bmsconsole.activity.ItemActivityType;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -99,6 +100,12 @@ public class AddNotesCommand extends FacilioCommand implements PostTransactionCo
 					CommonCommandUtil.addAlarmActivityToContext(note.getParentId(), -1, AlarmActivityType.ADD_COMMENT, info, (FacilioContext) context, occurrenceId);
 				} else if(Arrays.asList(FacilioConstants.ContextNames.QUOTE_NOTES,FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_NOTES).contains(moduleName)) {
 					CommonCommandUtil.addActivityToContext(note.getParentId(), -1, CommonActivityType.ADD_NOTES, info, (FacilioContext) context);
+				}
+				else  {
+					FacilioModule parentModule = modBean.getModule(parentModuleName);
+					if (parentModule.isCustom()) {
+					CommonCommandUtil.addActivityToContext(note.getParentId(), -1, CommonActivityType.ADD_NOTES, info, (FacilioContext) context);
+					}
 				}
 				
 				noteBuilder.addRecord(note);

@@ -660,6 +660,7 @@ public class ModuleAction extends FacilioAction {
 		FacilioContext context = addModuleDataChain.getContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
+		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.CUSTOM_ACTIVITY);
 
 		setModuleData();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
@@ -789,6 +790,7 @@ public class ModuleAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 		context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
 		context.put(FacilioConstants.ContextNames.APPROVAL_TRANSITION_ID, approvalTransitionId);
+		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.CUSTOM_ACTIVITY);
 
 		setModuleData();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);

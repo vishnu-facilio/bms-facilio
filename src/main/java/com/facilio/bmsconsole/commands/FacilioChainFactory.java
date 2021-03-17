@@ -1959,16 +1959,17 @@ public class FacilioChainFactory {
 		c.addCommand(new SetLocalIDCommand());
 		c.addCommand(new GenericAddModuleDataCommand());
 		c.addCommand(new GenericAddSubModuleDataCommand());
-
 		c.addCommand(new ExecuteStateFlowCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+		c.addCommand(new ConstructAddCustomActivityCommand());
 		c.addCommand(new ForkChainToInstantJobCommand(false)
 				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
 //		c.addCommand(new ExecuteAllWorkflowsCommand());
 
 		c.addCommand(new ExecuteRollUpFieldCommand());
+		c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.CUSTOM_ACTIVITY));
 		return c;
 	}
 	
@@ -1987,7 +1988,8 @@ public class FacilioChainFactory {
 		c.addCommand(new ForkChainToInstantJobCommand(false)
 				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
 //		c.addCommand(new ExecuteAllWorkflowsCommand());
-
+		c.addCommand(new ConstructUpdateCustomActivityCommand());
+		c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.CUSTOM_ACTIVITY));
 		c.addCommand(new ExecuteRollUpFieldCommand());
 		return c;
 	}

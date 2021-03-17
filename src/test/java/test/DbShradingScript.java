@@ -250,6 +250,7 @@ public class DbShradingScript {
 				"Controller_Readings",
 				"Predicted_Readings",
 				"CustomModuleData",
+				"Custom_Activity",
 				"Custom_Rel_Records",
 				"Custom_Multi_Enum_Values",
 				"CMD_Notes",

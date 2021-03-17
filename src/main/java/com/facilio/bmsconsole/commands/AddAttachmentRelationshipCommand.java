@@ -32,6 +32,7 @@ public class AddAttachmentRelationshipCommand extends FacilioCommand implements 
 	private static Logger LOGGER = Logger.getLogger(AddAttachmentRelationshipCommand.class.getName());
 	private List<Long> idsToUpdateChain;
 	private String moduleName;
+	private String parentModuleName;
 	
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -41,6 +42,8 @@ public class AddAttachmentRelationshipCommand extends FacilioCommand implements 
 		if(moduleName == null ) {
 			moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		}
+		
+		this.parentModuleName =  (String) context.get(FacilioConstants.ContextNames.PARENT_MODULE_NAME);
 		
 		Long recordId = null;
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
@@ -127,6 +130,14 @@ public class AddAttachmentRelationshipCommand extends FacilioCommand implements 
 			else if(Arrays.asList(FacilioConstants.ContextNames.QUOTE_ATTACHMENTS,FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_ATTACHMENTS).contains(moduleName)) {
 				setAttachmentsActivityContext(attachments, attachmentNames, attach, attachmentActivity);
 				CommonCommandUtil.addActivityToContext(recordId, -1, CommonActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
+			}
+			else  {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule parentModule = modBean.getModule(parentModuleName);
+				if (parentModule.isCustom()) {
+					setAttachmentsActivityContext(attachments, attachmentNames, attach, attachmentActivity);
+					CommonCommandUtil.addActivityToContext(recordId, -1, CommonActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
+				}
 			}
 
 		}
