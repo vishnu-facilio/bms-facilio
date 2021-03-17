@@ -185,6 +185,8 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 					Long vendorId = -1l;
 					Long safetyPlanId = -1l;
 					Integer triggerFrequency = -1;
+					Long baseSpaceId = -1l;
+					Long assetCategoryId = null,spaceCategoryId = null;
 					ResourceContext resource = null;
 					
 					if(props.get("statusId") != null) {
@@ -220,6 +222,15 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 					if(props.get("triggerFrequency") != null) {
 						triggerFrequency = Integer.parseInt((String)props.get("triggerFrequency"));
 					}
+					if(props.get("baseSpaceId") != null) {
+						baseSpaceId = (Long) ((Map<String,Object>)props.remove("baseSpaceId")).get("id");
+					}
+					if(props.get("assetCategoryId") != null) {
+						assetCategoryId = (Long) ((Map<String,Object>)props.remove("assetCategoryId")).get("id");
+					}
+					if(props.get("spaceCategoryId") != null) {
+						spaceCategoryId = (Long) ((Map<String,Object>)props.remove("spaceCategoryId")).get("id");
+					}
 					
 					WorkorderTemplate woTemplate = FieldUtil.getAsBeanFromMap(props, WorkorderTemplate.class);
 					PreventiveMaintenance pm = FieldUtil.getAsBeanFromMap(props, PreventiveMaintenance.class);
@@ -245,6 +256,11 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 					}
 					
 					pm.setModifiedById(-1);
+					
+					pm.setBaseSpaceId(baseSpaceId);
+					
+					pm.setAssetCategoryId(assetCategoryId);
+					pm.setSpaceCategoryId(spaceCategoryId);
 					
 					woTemplate.setStatusId(statusId);
 					woTemplate.setCategoryId(categoryId);

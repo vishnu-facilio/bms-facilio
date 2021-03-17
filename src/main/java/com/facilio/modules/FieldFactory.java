@@ -3394,12 +3394,12 @@ public class FieldFactory {
         
         LookupField spaceCategoryLookup = (LookupField) getField("spaceCategoryId", "SPACE_CATEGORY_ID", module, FieldType.LOOKUP);
         spaceCategoryLookup.setLookupModule(ModuleFactory.getSpaceCategoryModule());
-        baseSpaceLookup.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
+        spaceCategoryLookup.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
         fields.add(spaceCategoryLookup);
         
         LookupField assetCategoryLookup = (LookupField) getField("assetCategoryId", "ASSET_CATEGORY_ID", module, FieldType.LOOKUP);
         assetCategoryLookup.setLookupModule(ModuleFactory.getAssetCategoryModule());
-        baseSpaceLookup.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
+        assetCategoryLookup.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
         fields.add(assetCategoryLookup);
         
         

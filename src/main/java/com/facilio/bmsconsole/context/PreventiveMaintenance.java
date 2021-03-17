@@ -576,13 +576,13 @@ public class PreventiveMaintenance extends ResourceContext {
 
 	public static enum PMAssignmentType {
 		
-		ALL_FLOORS,
+		ALL_FLOORS,			//1
 		ALL_SPACES,
-		SPACE_CATEGORY,
+		SPACE_CATEGORY,		//3
 		ASSET_CATEGORY,
-		CURRENT_ASSET,
+		CURRENT_ASSET,		//5
 		SPECIFIC_ASSET,
-		ALL_BUILDINGS,
+		ALL_BUILDINGS,		//7
 		ALL_SITES
 		;
 		public int getVal() {
