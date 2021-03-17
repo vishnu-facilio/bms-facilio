@@ -6321,7 +6321,7 @@ public class FieldFactory {
         fields.add(getField("parentTemplateId", "PARENT_WO_TEMPLATE_ID", module, FieldType.LOOKUP));
         fields.add(getField("jobPlanId", "JOB_PLAN_ID", module, FieldType.LOOKUP));
         fields.add(getField("inputType", "INPUT_TYPE", module, FieldType.NUMBER));
-        fields.add(getField("readingFieldId", "READING_ID", module, FieldType.LOOKUP));
+        fields.add(getField("readingFieldId", "READING_ID", module, FieldType.NUMBER));
         fields.add(getField("sectionId", "SECTION_ID", module, FieldType.LOOKUP));
         fields.add(getField("sequence", "SEQUENCE", module, FieldType.LOOKUP));
         fields.add(getField("attachmentRequiredInt", "ATTACHMENT_REQUIRED", module, FieldType.NUMBER));

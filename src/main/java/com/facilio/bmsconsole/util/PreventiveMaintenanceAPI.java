@@ -679,12 +679,13 @@ public class PreventiveMaintenanceAPI {
 				}
 				clonedWoTemplate.setSectionTemplates(sectionTemplates);
 			}
-
-			for (TaskTemplate taskTemplate: workorderTemplate.getTaskTemplates()) {
-				List<TaskTemplate> taskTemplates = new ArrayList<>();
-				TaskTemplate template = FieldUtil.cloneBean(taskTemplate, TaskTemplate.class);
-				taskTemplates.add(template);
-				clonedWoTemplate.setTaskTemplates(taskTemplates);
+			if(workorderTemplate.getTaskTemplates() != null) {
+				for (TaskTemplate taskTemplate: workorderTemplate.getTaskTemplates()) {
+					List<TaskTemplate> taskTemplates = new ArrayList<>();
+					TaskTemplate template = FieldUtil.cloneBean(taskTemplate, TaskTemplate.class);
+					taskTemplates.add(template);
+					clonedWoTemplate.setTaskTemplates(taskTemplates);
+				}
 			}
 			
 			if (workorderTemplate.getPreRequestSectionTemplates() != null) {
@@ -695,12 +696,14 @@ public class PreventiveMaintenanceAPI {
 				}
 				clonedWoTemplate.setPreRequestSectionTemplates(sectionTemplates);
 			}
-
-			for (TaskTemplate taskTemplate: workorderTemplate.getPreRequestTemplates()) {
-				List<TaskTemplate> taskTemplates = new ArrayList<>();
-				TaskTemplate template = FieldUtil.cloneBean(taskTemplate, TaskTemplate.class);
-				taskTemplates.add(template);
-				clonedWoTemplate.setPreRequestTemplates(taskTemplates);
+			
+			if(workorderTemplate.getPreRequestTemplates() != null) {
+				for (TaskTemplate taskTemplate: workorderTemplate.getPreRequestTemplates()) {
+					List<TaskTemplate> taskTemplates = new ArrayList<>();
+					TaskTemplate template = FieldUtil.cloneBean(taskTemplate, TaskTemplate.class);
+					taskTemplates.add(template);
+					clonedWoTemplate.setPreRequestTemplates(taskTemplates);
+				}
 			}
 
 			WorkOrderContext wo = clonedWoTemplate.getWorkorder();

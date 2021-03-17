@@ -296,6 +296,8 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 			for(ReadingContext reading :readingsContext) {
 				Map<String, Object> props = FieldUtil.getAsProperties(reading);
 				
+				props = removeNullNodes.apply(props);
+				
 				if(reading.getId() <= 0) {
 					
 					String options = null;
