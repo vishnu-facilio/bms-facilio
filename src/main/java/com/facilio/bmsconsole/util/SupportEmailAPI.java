@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.StringOperators;
@@ -33,13 +34,17 @@ public class SupportEmailAPI {
 	public static SupportEmailContext getSupportEmailFromFwdEmail(String email) throws Exception {
 		try {
 			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(SUPPORT_EMAIL_FIELDS);
-			FacilioField actualEmail = fieldMap.get("actualEmail"), fwdEmail = fieldMap.get("fwdEmail");
+			FacilioField actualEmail = fieldMap.get("actualEmail"), fwdEmail = fieldMap.get("fwdEmail"), isCustomEmail = fieldMap.get("isCustomMail");
+
+			Criteria emailCriteria = new Criteria();
+			emailCriteria.addOrCondition(CriteriaAPI.getCondition(actualEmail, email, StringOperators.IS));
+			emailCriteria.addOrCondition(CriteriaAPI.getCondition(fwdEmail, email, StringOperators.IS));
 
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 					.table(SUPPORT_EMAIL_MODULE.getTableName())
 					.select(SUPPORT_EMAIL_FIELDS)
-					.orCondition(CriteriaAPI.getCondition(actualEmail, email, StringOperators.IS))
-					.orCondition(CriteriaAPI.getCondition(fwdEmail, email, StringOperators.IS))
+					.andCondition(CriteriaAPI.getCondition(isCustomEmail, "false", BooleanOperators.IS))
+					.andCriteria(emailCriteria)
 					;
 			
 			List<Map<String, Object>> emailList = builder.get();
