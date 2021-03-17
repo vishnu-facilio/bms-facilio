@@ -55,7 +55,9 @@ public class AddPMRelFieldsCommand extends FacilioCommand {
 				TemplateAPI.addIncludeExcludePropsForPM(pm);
 				prepareAndAddResourcePlanner(context, pm);
 			}
-			addPmJobPlans(pm);
+			if(AccountUtil.getCurrentOrg().getOrgId() == 173l) {
+				addPmJobPlans(pm);
+			}
 		}
 		return false;
 	}
