@@ -9,6 +9,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import com.facilio.bmsconsole.context.ApplicationContext;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.struts2.ServletActionContext;
@@ -74,6 +76,9 @@ public class Account implements AccountsInterface<User>, Serializable{
 	private Deque<Boolean> publicAccess = new ArrayDeque<>();
 	private Map<Long, Map<String, Object>> scopingMap;
 	private Boolean shouldApplySwitchScope;
+
+	@Getter @Setter
+	private String prevService;
 
 
 	private RemoteScreenContext remoteScreen;

@@ -44,7 +44,9 @@ public class AccountUtil {
 		currentAccount.set(account);
 		setScopingMap(account);
 		if(account != null && account.getOrg() !=null){
+			String prevService = FacilioServiceUtil.getCurrentService() != null ? FacilioServiceUtil.getCurrentService().getServiceName() : null;
 			FacilioServiceUtil.setCurrentService(FacilioConstants.Services.APP_SERVICE);
+			account.setPrevService(prevService);
 		}
 	}
 	
@@ -108,8 +110,12 @@ public class AccountUtil {
 		return null;
 	}
 	
-	public static void cleanCurrentAccount() {
+	public static void cleanCurrentAccount() throws Exception {
+		Account account = currentAccount.get();
 		currentAccount.remove();
+		if (account != null && StringUtils.isNotEmpty(account.getPrevService())) {
+			FacilioServiceUtil.setCurrentService(account.getPrevService());
+		}
 	}
 	
 	public static int getCurrentSelectQuery() {
