@@ -136,6 +136,7 @@ public class FacilioChain extends ChainBase {
 
 		FacilioChain facilioChain = rootChain.get();
 		if (facilioChain == null) {
+			LOGGER.debug(MessageFormat.format("Setting this as root chain : {0}", this));
 			rootChain.set(this);
 		}
 
@@ -170,6 +171,7 @@ public class FacilioChain extends ChainBase {
 			if (CollectionUtils.isNotEmpty(postTransactionChains)) {
 				FacilioChain root = rootChain.get();
 				if (this.equals(root)) {
+					LOGGER.debug(MessageFormat.format("Executing post transactions for this chain : {0}", this));
 					boolean onSuccess = true;
 					if (enableTransaction) {
 						onSuccess = transactionStatus != Status.STATUS_MARKED_ROLLBACK;
@@ -228,11 +230,13 @@ public class FacilioChain extends ChainBase {
 					PostTransactionCommand postTransactionCommand = iterator.next();
 					long time = System.currentTimeMillis();
 					int selectCount = AccountUtil.getCurrentSelectQuery(), pSelectCount = AccountUtil.getCurrentPublicSelectQuery();
+
 					if (onSuccess) {
 						postTransactionCommand.postExecute();
 					} else {
 						postTransactionCommand.onError();
 					}
+
 					long executionTime = System.currentTimeMillis() - time;
 					int totalSelect = AccountUtil.getCurrentSelectQuery() - selectCount;
 					int totalPublicSelect = AccountUtil.getCurrentPublicSelectQuery() - pSelectCount;

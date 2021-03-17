@@ -15,6 +15,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.time.Instant;
 
 public abstract class FacilioJob implements Runnable {
@@ -65,6 +66,7 @@ public abstract class FacilioJob implements Runnable {
 
 				if (orgId <= 0 || AccountUtil.getCurrentAccount() != null) { //To prevent execution of job with invalid org
 					FacilioChain executionChain = JobConstants.ChainFactory.jobExecutionChain(jc.getTransactionTimeout());
+					LOGGER.debug(MessageFormat.format("Job execution chain : {0}", executionChain));
 					FacilioContext context = executionChain.getContext();
 					context.put(JobConstants.JOB_CONTEXT, jc);
 					context.put(JobConstants.FACILIO_JOB, this);

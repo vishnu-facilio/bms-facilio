@@ -575,12 +575,16 @@ public class BmsDBConf extends DBConf {
     private static final String TRANSACTION_ROOT_CHAIN = "transactionRootChain";
     @Override
     public Map<String, Object> getOtherTransactionThreadLocalProps() {
+        FacilioChain rootChain = FacilioChain.getRootchain();
+        LOGGER.debug(MessageFormat.format("Prev Root chain before new transaction : {0}", rootChain));
         return Collections.singletonMap(TRANSACTION_ROOT_CHAIN, FacilioChain.getRootchain());
     }
 
     @Override
     public void setOtherTransactionThreadLocalProps(Map<String, Object> props) {
-        FacilioChain.setRootChain((FacilioChain) props.get(TRANSACTION_ROOT_CHAIN));
+        FacilioChain rootChain = (FacilioChain) props.get(TRANSACTION_ROOT_CHAIN);
+        LOGGER.debug(MessageFormat.format("Setting the same prev root chain as current one : {0}", rootChain));
+        FacilioChain.setRootChain(rootChain);
     }
 
 }
