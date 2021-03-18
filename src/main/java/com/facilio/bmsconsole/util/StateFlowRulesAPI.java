@@ -230,6 +230,9 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			} else if (Arrays.asList(FacilioConstants.ContextNames.QUOTE,FacilioConstants.ContextNames.WorkPermit.WORKPERMIT).contains(module.getName())) {
 				activityType = CommonActivityType.UPDATE_STATUS;
 			}
+			else if (module.isCustom()) {
+				activityType = CommonActivityType.UPDATE_STATUS;
+			}
 			if (activityType != null) {
 				CommonCommandUtil.addActivityToContext(record.getId(), record.getCurrentTime(), activityType, info, (FacilioContext) context);
 			}
