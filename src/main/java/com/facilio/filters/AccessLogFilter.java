@@ -44,6 +44,8 @@ public class AccessLogFilter implements Filter {
 
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
 
+        Thread thread = Thread.currentThread();
+        String threadName = thread.getName();
         try {
             HttpServletRequest request = (HttpServletRequest) servletRequest;
             HttpServletResponse response = (HttpServletResponse) servletResponse;
@@ -54,12 +56,7 @@ public class AccessLogFilter implements Filter {
             }
 
             long startTime = System.currentTimeMillis();
-
-            Thread thread = Thread.currentThread();
-            String threadName = thread.getName();
-
             thread.setName(String.valueOf(THREAD_ID.getAndIncrement()));
-
             filterChain.doFilter(servletRequest, response);
 
             StringBuilder message = new StringBuilder();
@@ -171,10 +168,16 @@ public class AccessLogFilter implements Filter {
                 event.setProperty("email", email);
                 ETISALAT.callAppenders(event);
             }
-            thread.setName(threadName);
-            AccountUtil.cleanCurrentAccount();
         } catch (Exception e) {
             LOGGER.info("Exception in access log: ", e);
+        }
+        finally {
+            thread.setName(threadName);
+            try{
+                AccountUtil.cleanCurrentAccount();
+            }catch (Exception e){
+                LOGGER.error("Exception while cleaning current account ", e);
+            }
         }
     }
 
