@@ -26,6 +26,7 @@ import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -40,9 +41,11 @@ public class GetViewListCommand extends FacilioCommand {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule moduleObj = modBean.getModule(moduleName);
-		ApplicationContext app = null;
 		ApplicationContext currentApp = AccountUtil.getCurrentApp();
-
+		if (currentApp == null) {
+			currentApp = ApplicationApi.getApplicationForLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+		}
+		ApplicationContext app = null;
 
 		if (appId > 0) {
 			 app = ApplicationApi.getApplicationForId(appId);
