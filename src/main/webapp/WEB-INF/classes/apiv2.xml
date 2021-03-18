@@ -549,6 +549,8 @@
 				class="com.facilio.bmsconsole.actions.ScoringRuleAction" method="list" />
 		<action name="addOrUpdate"
 				class="com.facilio.bmsconsole.actions.ScoringRuleAction" method="addOrUpdateScoringRule" />
+		<action name="view"
+				class="com.facilio.bmsconsole.actions.ScoringRuleAction" method="viewScoringRule" />
 		<action name="delete"
 				class="com.facilio.bmsconsole.actions.ScoringRuleAction" method="deleteScoringRule" />
 

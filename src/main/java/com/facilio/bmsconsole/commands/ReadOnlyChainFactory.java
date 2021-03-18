@@ -2676,6 +2676,12 @@ public class ReadOnlyChainFactory {
 		return chain;
 	}
 
+	public static FacilioChain getScoringRuleDetailsChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetScoringRuleCommand());
+		return chain;
+	}
+
 	public static FacilioChain getFilterableFields() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(FacilioChainFactory.getFieldsByAccessType());
