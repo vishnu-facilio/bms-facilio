@@ -157,7 +157,6 @@ public class SpaceAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, categoryId);
 
 		CommonCommandUtil.addEventType(EventType.CREATE, context);
-		CommonCommandUtil.handleFormDataAndSupplement(fields, space.getData(), Collections.EMPTY_LIST);
 
 		FacilioChain addSpace = FacilioChainFactory.getAddSpaceChain();
 		addSpace.execute(context);
@@ -186,8 +185,6 @@ public class SpaceAction extends FacilioAction {
 		CommonCommandUtil.addEventType(EventType.EDIT, context);
 		context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
 		context.put(FacilioConstants.ContextNames.APPROVAL_TRANSITION_ID, approvalTransitionId);
-		CommonCommandUtil.handleFormDataAndSupplement(fields, space.getData(), Collections.EMPTY_LIST);
-
 
 		FacilioChain updateCampus = FacilioChainFactory.getUpdateCampusChain();
 		updateCampus.execute(context);

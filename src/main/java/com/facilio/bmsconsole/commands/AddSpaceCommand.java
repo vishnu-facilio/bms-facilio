@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.Collections;
 import java.util.List;
 
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
@@ -37,7 +38,7 @@ public class AddSpaceCommand extends FacilioCommand {
 		if(space != null) 
 		{
 			space.setSpaceType(SpaceType.SPACE);
-			
+			CommonCommandUtil.handleFormDataAndSupplement(fields, space.getData(), Collections.EMPTY_LIST);
 			SpaceAPI.updateSiteAndBuildingId(space);
 			RecordAPI.addRecord(false, Collections.singletonList(space), module, fields);												
 			SpaceAPI.updateHelperFields(space);
