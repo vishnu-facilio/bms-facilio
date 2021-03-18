@@ -52,7 +52,7 @@ public class GetViewListCommand extends FacilioCommand {
 
 		// ViewFactory views
 		if ((app != null && app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) || 
-				(app == null && currentApp.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)))  {
+				(app == null  && currentApp != null && currentApp.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)))  {
 			 viewMap = ViewFactory.getModuleViews(moduleName, moduleObj);
 		}
 		
