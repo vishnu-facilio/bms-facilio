@@ -3640,6 +3640,7 @@ public class FieldFactory {
         List<FacilioField> fields = new ArrayList<>();
 
         fields.add(getIdField(module));
+        fields.add(getField("name", "NAME", module, FieldType.STRING));
         fields.add(getField("namedCriteriaId", "NAMED_CRITERIA_ID", module, FieldType.NUMBER));
         fields.add(getField("sequence", "SEQUENCE", module, FieldType.NUMBER));
         fields.add(getField("type", "TYPE", module, FieldType.NUMBER));

@@ -7,6 +7,7 @@ import com.facilio.modules.FacilioEnum;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
 
@@ -17,6 +18,14 @@ public class NamedCondition {
     }
     public void setId(long id) {
         this.id = id;
+    }
+
+    private String name;
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
     }
 
     private long namedCriteriaId = -1l;
@@ -122,6 +131,10 @@ public class NamedCondition {
     }
 
     public void validateAndAddChildren() throws Exception {
+        if (StringUtils.isEmpty(name)) {
+            throw new IllegalArgumentException("Name cannot be empty for named condition");
+        }
+
         if (type == null) {
             throw new IllegalArgumentException("Type in named criteria cannot be empty");
         }
