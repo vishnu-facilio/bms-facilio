@@ -3,6 +3,7 @@ package com.facilio.v3.commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.AllArgsConstructor;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -14,7 +15,10 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.SupplementRecord;
 
+@AllArgsConstructor
 public class AddCustomLookupInSupplementCommand extends FacilioCommand {
+
+    private boolean isSummary;
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -24,7 +28,13 @@ public class AddCustomLookupInSupplementCommand extends FacilioCommand {
         List<FacilioField> allFields = modBean.getAllFields(moduleName);
         List<SupplementRecord> customLookupFields = new ArrayList<>();
         for (FacilioField f : allFields) {
-            if (!f.isDefault() && (f.getDataTypeEnum() == FieldType.LOOKUP || f.getDataTypeEnum() == FieldType.MULTI_LOOKUP || f.getDataTypeEnum() == FieldType.MULTI_ENUM)) {
+            if (
+                    // We are adding all custom lookup/ multi enum custom fields for list/ summary. This needs to be changed later to get from Column factory or somethnig
+                    (!f.isDefault() &&
+                        (f.getDataTypeEnum() == FieldType.LOOKUP || f.getDataTypeEnum() == FieldType.MULTI_LOOKUP || f.getDataTypeEnum() == FieldType.MULTI_ENUM)
+                    )
+                    || (isSummary && f.getDataTypeEnum().isMultiRecord()) // Adding multi record fields for summary alone. Custom or otherwise
+                ) {
                 customLookupFields.add((SupplementRecord) f);
             }
         }

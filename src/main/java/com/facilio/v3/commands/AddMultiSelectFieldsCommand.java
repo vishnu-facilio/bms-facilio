@@ -3,6 +3,7 @@ package com.facilio.v3.commands;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -31,28 +32,14 @@ public class AddMultiSelectFieldsCommand extends FacilioCommand {
         List<FacilioField> fields = modBean.getAllFields(moduleName);
         List<ModuleBaseWithCustomFields> records = recordMap.get(module.getName());
 
-        if(CollectionUtils.isNotEmpty(fields) && CollectionUtils.isNotEmpty(records)){
-            List<SupplementRecord> supplements = new ArrayList<SupplementRecord>();
-            
-            List<Map<String, Object>> props = FieldUtil.getAsMapList(records, ModuleBaseWithCustomFields.class);
-            for(FacilioField field : fields){
-                  if(field.getDataTypeEnum() == FieldType.MULTI_LOOKUP || field.getDataTypeEnum() == FieldType.MULTI_ENUM) {
-                      for(Map<String, Object> recMap : props) {
-                          if(MapUtils.isNotEmpty(recMap)) {
-                              if(recMap.containsKey(field.getName())){
-                                  supplements.add((SupplementRecord) field);
-                                  break;
-                              }
-                          }
-                      }
-                  }
-              }
-            if(CollectionUtils.isNotEmpty(supplements)){
-                context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS,supplements);
+        if(CollectionUtils.isNotEmpty(fields) && CollectionUtils.isNotEmpty(records)) {
+            List<SupplementRecord> supplements = fields.stream().filter(f -> f.getDataTypeEnum().isMultiRecord())
+                                                                .map(f -> (SupplementRecord) f)
+                                                                .collect(Collectors.toList());
+            if(CollectionUtils.isNotEmpty(supplements)) {
+                context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, supplements);
             }
-
         }
-
         return false;
     }
 }

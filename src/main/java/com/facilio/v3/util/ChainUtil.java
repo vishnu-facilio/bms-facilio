@@ -53,7 +53,7 @@ public class ChainUtil {
         if (beforeFetchCommand != null) {
             nonTransactionChain.addCommand(beforeFetchCommand);
         }
-        nonTransactionChain.addCommand(new AddCustomLookupInSupplementCommand());
+        nonTransactionChain.addCommand(new AddCustomLookupInSupplementCommand(true));
         nonTransactionChain.addCommand(new FetchSysFields());
         nonTransactionChain.addCommand(new SummaryCommand(module));
         if (afterFetchCommand != null) {
@@ -115,7 +115,7 @@ public class ChainUtil {
         nonTransactionChain.addCommand(new GenerateCriteriaForV4Command());
         nonTransactionChain.addCommand(new GenerateCriteriaFromFilterCommand());
         nonTransactionChain.addCommand(new GenerateSearchConditionCommand());
-        nonTransactionChain.addCommand(new AddCustomLookupInSupplementCommand());
+        nonTransactionChain.addCommand(new AddCustomLookupInSupplementCommand(false));
         nonTransactionChain.addCommand(new FetchSysFields());
         nonTransactionChain.addCommand(new ListCommand(module));
 
@@ -199,8 +199,8 @@ public class ChainUtil {
         addIfNotNull(transactionChain, initCommand);
         addIfNotNull(transactionChain, beforeSaveCommand);
 
+        transactionChain.addCommand(new AddMultiSelectFieldsCommand());
         transactionChain.addCommand(new UpdateCommand(module));
-
         transactionChain.addCommand(new ChangeApprovalStatusForModuleDataCommand());
         transactionChain.addCommand(new VerifyApprovalCommand());
         transactionChain.addCommand(new UpdateStateForModuleDataCommand());
