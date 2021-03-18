@@ -456,25 +456,33 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 		
 		schedule.setTimes(splitByCommas.apply(times));
 		
-		schedule.setFrequencyType(frequencyEnum.getValue());
-		
 		switch(frequencyEnum) {
+		case DAILY : {
+			schedule.setFrequencyType(ScheduleInfo.FrequencyType.DAILY);
+		}
+		break;
 		case MONTHLY : {
 			if(dates != null) {
 				List<Integer> dateList = splitByCommasAndGetAsIntList.apply(dates);
 				schedule.setValues(dateList);
+				schedule.setFrequencyType(ScheduleInfo.FrequencyType.MONTHLY_DAY);
 			}
 			else {
 				List<Integer> dayList = splitByCommasAndGetAsIntList.apply(days);
 				schedule.setValues(dayList);
 				
 				schedule.setWeekFrequency(stringToInt.apply(weeks));
+				
+				schedule.setFrequencyType(ScheduleInfo.FrequencyType.MONTHLY_WEEK);
 			}
 		}
+		break;
 		case QUARTERTLY : {
 			if(dates != null) {
 				List<Integer> dateList = splitByCommasAndGetAsIntList.apply(dates);
 				schedule.setValues(dateList);
+				
+				schedule.setFrequencyType(ScheduleInfo.FrequencyType.QUARTERLY_DAY);
 			}
 			else {
 				
@@ -482,13 +490,18 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 				schedule.setValues(dayList);
 				
 				schedule.setWeekFrequency(stringToInt.apply(weeks));
+				
+				schedule.setFrequencyType(ScheduleInfo.FrequencyType.QUARTERLY_WEEK);
 			}
 			schedule.setMonthValue(stringToInt.apply(months));
 		}
+		break;
 		case HALF_YEARLY : {
 			if(dates != null) {
 				List<Integer> dateList = splitByCommasAndGetAsIntList.apply(dates);
 				schedule.setValues(dateList);
+				
+				schedule.setFrequencyType(ScheduleInfo.FrequencyType.HALF_YEARLY_DAY);
 			}
 			else {
 				
@@ -496,14 +509,20 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 				schedule.setValues(dayList);
 				
 				schedule.setWeekFrequency(stringToInt.apply(weeks));
+				
+				schedule.setFrequencyType(ScheduleInfo.FrequencyType.HALF_YEARLY_WEEK);
 			}
 			schedule.setMonthValue(stringToInt.apply(months));
 		}
+		break;
 		case ANNUALLY : {
 			List<Integer> monthList = splitByCommasAndGetAsIntList.apply(months);
 			schedule.setValues(monthList);
 			schedule.setYearlyDayValue(stringToInt.apply(dates));
+			
+			schedule.setFrequencyType(ScheduleInfo.FrequencyType.YEARLY);
 		}
+		break;
 		default:
 			break;
 		
