@@ -5,29 +5,42 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.bundle.context.ModuleBundleComponent;
+import com.facilio.bundle.interfaces.BundleComponentInterface;
+
 import lombok.Getter;
 
 @Getter
 public enum BundleComponentsEnum {
 
-	MODULE(1,"Module"),
-	FIELD(2,"Field",BundleComponentsEnum.MODULE),
-	FUNCTION(3,"Function"),
+	MODULE(1,"Module",ModuleBundleComponent.class),
+	FIELD(2,"Field",ModuleBundleComponent.class,BundleComponentsEnum.MODULE),
+	FUNCTION(3,"Function",ModuleBundleComponent.class),
 	;
 	
 	int value;
 	String name;
 	BundleComponentsEnum parent;
+	Class<? extends BundleComponentInterface> componentClass;
 	
-	BundleComponentsEnum(int value, String name,BundleComponentsEnum parent) {
+	BundleComponentsEnum(int value, String name,Class<? extends BundleComponentInterface> componentClass,BundleComponentsEnum parent) {
 		this.value = value;
 		this.name = name;
 		this.parent = parent;
+		this.componentClass = componentClass;
 	}
 	
-	BundleComponentsEnum(int value, String name) {
+	BundleComponentsEnum(int value, String name,Class<? extends BundleComponentInterface> componentClass) {
 		this.value = value;
 		this.name = name;
+		this.componentClass = componentClass;
+	}
+	
+	public BundleComponentInterface getBundleComponentClassInstance() throws Exception {
+		
+		BundleComponentInterface bundleComponentObject = componentClass.getDeclaredConstructor().newInstance();
+		
+		return bundleComponentObject;
 	}
 	
 	private static final Map<Integer, BundleComponentsEnum> ALL_BUNDLE_COMPONENTS = Collections.unmodifiableMap(initAllBundleMap());
@@ -67,5 +80,17 @@ public enum BundleComponentsEnum {
 		}
 		
 		return returnMap;
+	}
+
+	public static ArrayList<BundleComponentsEnum> getParentComponentList() {
+		return PARENT_COMPONENT_LIST;
+	}
+
+	public static Map<BundleComponentsEnum, ArrayList<BundleComponentsEnum>> getParentChildMap() {
+		return PARENT_CHILD_MAP;
+	}
+
+	public static Map<Integer, BundleComponentsEnum> getAllBundleComponents() {
+		return ALL_BUNDLE_COMPONENTS;
 	}
 }
