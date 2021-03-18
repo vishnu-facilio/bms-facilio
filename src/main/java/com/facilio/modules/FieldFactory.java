@@ -6,14 +6,11 @@ import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.agent.AgentKeys;
 import com.facilio.agent.integration.AgentIntegrationKeys;
 import com.facilio.agentv2.AgentConstants;
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.tasker.tasks.EventUtil;
-import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.*;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
-
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
@@ -271,7 +268,8 @@ public class FieldFactory {
 //                "preRequestStatus",
                 "responseDueDate",
                 "siteId",
-                "serialNumber"
+                "serialNumber",
+                "isQuotationNeeded"
         }));
 
         public static final List<String> ASSET_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[] {
