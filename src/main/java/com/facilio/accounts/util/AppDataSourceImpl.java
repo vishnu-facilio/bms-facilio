@@ -3,19 +3,20 @@ package com.facilio.accounts.util;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.db.util.DBConf;
 import com.facilio.service.DataSourceInterfaceHandler;
+import com.facilio.util.FacilioUtil;
 import lombok.extern.log4j.Log4j;
 
 import java.util.Objects;
 
 @Log4j
 public class AppDataSourceImpl implements DataSourceInterfaceHandler {
-
+    private static final int MAX_LINES_TO_BE_PRINTED = 30;
     @Override
     public String getDataSource () {
         Organization org = AccountUtil.getCurrentOrg();
 //        Objects.requireNonNull(org,"current org is null while fetching data source");
         if (org == null) { //Temp fix
-            LOGGER.error("current org is null while fetching data source. This is not supposed to happen.");
+            FacilioUtil.printTrace(LOGGER, "current org is null while fetching data source. This is not supposed to happen.", MAX_LINES_TO_BE_PRINTED);
             return DBConf.getInstance().getDefaultDataSource();
         }
         else {
@@ -29,7 +30,7 @@ public class AppDataSourceImpl implements DataSourceInterfaceHandler {
         Organization org = AccountUtil.getCurrentOrg();
 //        Objects.requireNonNull(org,"current org is null while fetching db");
         if (org == null) { //Temp Fix
-            LOGGER.error("current org is null while fetching db. This is not supposed to happen.");
+            FacilioUtil.printTrace(LOGGER, "current org is null while fetching db. This is not supposed to happen.", MAX_LINES_TO_BE_PRINTED);
             return DBConf.getInstance().getDefaultDB();
         }
         else {
