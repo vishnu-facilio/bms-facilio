@@ -237,20 +237,15 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 					PreventiveMaintenance pm = FieldUtil.getAsBeanFromMap(props, PreventiveMaintenance.class);
 					if(props.get("triggerName") != null) {
 						PMTriggerContext trigger = FieldUtil.getAsBeanFromMap(props, PMTriggerContext.class);
+						
 						trigger.setName((String) props.get("triggerName"));
-						
-						String times = (String) props.get("times");
-						
-						ScheduleInfo schedule = new ScheduleInfo();
-						Function<String, List<String>> func1 = (name) -> StringUtils.split(name, ",", true);
-						
-						schedule.setTimes(func1.apply(times));
 						
 						trigger.setFrequency(FacilioFrequency.valueOf(triggerFrequency));
 						
-						schedule.setFrequencyType(trigger.getFrequencyEnum().getValue());
+						ScheduleInfo schedule = fillAndGetScheduleInfo(props,trigger.getFrequencyEnum());
 						
 						trigger.setSchedule(schedule);
+						
 						trigger.setTriggerExecutionSource(TriggerExectionSource.SCHEDULE);
 						
 						pm.addTriggers(trigger);
@@ -447,6 +442,90 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 		
 		return false;
 	}
+	
+	private ScheduleInfo fillAndGetScheduleInfo(Map<String, Object> props, FacilioFrequency frequencyEnum) {
+		
+		ScheduleInfo schedule = new ScheduleInfo();
+		
+		String times = (String) props.get("triggerTimes");
+		
+		String dates = (String) props.get("triggerDates");
+		String months = (String) props.get("triggerMonths");
+		String days = (String) props.get("triggerDays");
+		String weeks = (String) props.get("triggerWeeks");
+		
+		schedule.setTimes(splitByCommas.apply(times));
+		
+		schedule.setFrequencyType(frequencyEnum.getValue());
+		
+		switch(frequencyEnum) {
+		case MONTHLY : {
+			if(dates != null) {
+				List<Integer> dateList = splitByCommasAndGetAsIntList.apply(dates);
+				schedule.setValues(dateList);
+			}
+			else {
+				List<Integer> dayList = splitByCommasAndGetAsIntList.apply(days);
+				schedule.setValues(dayList);
+				
+				schedule.setWeekFrequency(stringToInt.apply(weeks));
+			}
+		}
+		case QUARTERTLY : {
+			if(dates != null) {
+				List<Integer> dateList = splitByCommasAndGetAsIntList.apply(dates);
+				schedule.setValues(dateList);
+			}
+			else {
+				
+				List<Integer> dayList = splitByCommasAndGetAsIntList.apply(days);
+				schedule.setValues(dayList);
+				
+				schedule.setWeekFrequency(stringToInt.apply(weeks));
+			}
+			schedule.setMonthValue(stringToInt.apply(months));
+		}
+		case HALF_YEARLY : {
+			if(dates != null) {
+				List<Integer> dateList = splitByCommasAndGetAsIntList.apply(dates);
+				schedule.setValues(dateList);
+			}
+			else {
+				
+				List<Integer> dayList = splitByCommasAndGetAsIntList.apply(days);
+				schedule.setValues(dayList);
+				
+				schedule.setWeekFrequency(stringToInt.apply(weeks));
+			}
+			schedule.setMonthValue(stringToInt.apply(months));
+		}
+		case ANNUALLY : {
+			List<Integer> monthList = splitByCommasAndGetAsIntList.apply(months);
+			schedule.setValues(monthList);
+			schedule.setYearlyDayValue(stringToInt.apply(dates));
+		}
+		default:
+			break;
+		
+		}
+		
+		return schedule;
+	}
+
+	Function<String, List<String>> splitByCommas = (name) -> StringUtils.split(name, ",", true);
+
+	Function<String,Integer> stringToInt = (StringInt) -> Integer.parseInt(StringInt);
+	
+	Function<String, List<Integer>> splitByCommasAndGetAsIntList = (name) -> {
+		
+		List<Integer> returnList = new ArrayList<Integer>();
+		List<String> stringList = StringUtils.split(name, ",", true);
+		
+		for(String s : stringList) {
+			returnList.add(stringToInt.apply(s));
+		}
+		return returnList;
+	};
 	
 	Function<Map<String, Object>,Map<String, Object>> removeNullNodes = (prop) -> {
 		Map<String, Object> prop1 = new HashMap<String, Object>();

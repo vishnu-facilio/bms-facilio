@@ -185,7 +185,11 @@ public class ImportFieldFactory {
 		fields.addAll(FieldFactory.getPMTriggerFields());
 		fields.add(FieldFactory.getField("triggerName","Trigger Name",null, ModuleFactory.getPMTriggersModule(), FieldType.STRING));
 		fields.add(FieldFactory.getField("triggerFrequency","Trigger Frequency",null, ModuleFactory.getPMTriggersModule(), FieldType.STRING));
-		fields.add(FieldFactory.getField("times","Times",null, ModuleFactory.getPMTriggersModule(), FieldType.STRING));
+		fields.add(FieldFactory.getField("triggerTimes","Trigger Times",null, ModuleFactory.getPMTriggersModule(), FieldType.STRING));
+		fields.add(FieldFactory.getField("triggerDates","Trigger Dates",null, ModuleFactory.getPMTriggersModule(), FieldType.STRING));
+		fields.add(FieldFactory.getField("triggerMonths","Trigger Months",null, ModuleFactory.getPMTriggersModule(), FieldType.STRING));
+		fields.add(FieldFactory.getField("TriggerDays","Trigger Days",null, ModuleFactory.getPMTriggersModule(), FieldType.STRING));
+		fields.add(FieldFactory.getField("triggerWeeks","Trigger Weeks",null, ModuleFactory.getPMTriggersModule(), FieldType.STRING));
 		return fields;
 	}
 	
