@@ -148,7 +148,7 @@ public class GetViewListCommand extends FacilioCommand {
 			// groupViews from ViewFactory
 			List<Map<String, Object>> groupViews = new ArrayList<>();
 			if ((app != null && app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) || 
-					(app == null && currentApp.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP))) {
+					(app == null && currentApp != null && currentApp.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP))) {
 				 groupViews = new ArrayList<>(ViewFactory.getGroupVsViews(moduleName));
 			
 			if (!groupViews.isEmpty()) {
