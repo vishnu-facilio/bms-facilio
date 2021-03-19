@@ -18,6 +18,7 @@ import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.DateAggregateOperator;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.report.context.ReportContext;
@@ -29,9 +30,7 @@ import com.facilio.time.DateTimeUtil;
 
 public class GetExportModuleReportFileCommand extends FacilioCommand {
 
-private static final String ALIAS = "alias";
-	
-	private ReportContext report;
+private ReportContext report;
 //	private ReportMode mode;
 //	private Map<String, Object> dataMap = new HashMap<>();
 
@@ -116,8 +115,10 @@ private static final String ALIAS = "alias";
 		ReportDataPointContext dataPoint = report.getDataPoints().get(0);
 		ReportFieldContext xAxisReportField = dataPoint.getxAxis();
 		List<ReportGroupByField> groupByFields = dataPoint.getGroupByFields();
-		
+		ReportYAxisContext getyAxis = dataPoint.getyAxis();
+		String yAlias = dataPoint.getAliases().get(FacilioConstants.Reports.ACTUAL_DATA);
 		columns.add(handleXAxisLabel(module, xAxisReportField));
+		double total = 0;
 
 		if (CollectionUtils.isNotEmpty(data)) {
 			for (Map<String, Object> row : data) {
@@ -142,15 +143,20 @@ private static final String ALIAS = "alias";
 								continue;
 							}
 							addColumn(columns, String.valueOf(groupByValue));
-							
-							ReportYAxisContext getyAxis = dataPoint.getyAxis();
-							String yAlias = dataPoint.getAliases().get(FacilioConstants.Reports.ACTUAL_DATA);
 							newRow.put(String.valueOf(groupByValue), handleData(getyAxis, map.get(yAlias), format));
+							if(getyAxis.getDataTypeEnum() == FieldType.NUMBER 
+								|| getyAxis.getDataTypeEnum() == FieldType.DECIMAL 
+								|| getyAxis.getDataTypeEnum() == FieldType.ID
+								&& !getyAxis.getFieldName().equals("siteId")) {
+								total += getDoubleVal(map.get(yAlias));
+							}
+						}
+						if(total > 0) {
+							addColumn(columns, "Total");
+							newRow.put("Total", total);
 						}
 					}
 				} else {
-					ReportYAxisContext getyAxis = dataPoint.getyAxis();
-					String yAlias = dataPoint.getAliases().get(FacilioConstants.Reports.ACTUAL_DATA);
 					String yAxisLable = handleYAxisLabel(module, getyAxis);
 					addColumn(columns, yAxisLable);
 					newRow.put(yAxisLable, handleData(getyAxis, row.get(yAlias), format));
@@ -228,6 +234,20 @@ private static final String ALIAS = "alias";
 			break;
 		}
 		return value;
+	}
+	
+	private Double getDoubleVal (Object val) {
+		if (val != null) {
+			if (val instanceof Number) {
+				return ((Number) val).doubleValue();
+			}
+			try {
+				return new Double(val.toString());
+			} catch (NumberFormatException ex) {
+				return null;
+			}
+		}
+		return null;
 	}
 
 }
