@@ -357,11 +357,19 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 				List<TaskTemplate> taskTemplates = pmMap.get(pmId);
 				
 				Map<String,TaskSectionTemplate> sectionMap = new HashMap<String, TaskSectionTemplate>();
+				Map<String,TaskSectionTemplate> preRequisiteSectionMap = new HashMap<String, TaskSectionTemplate>();
 				int seq = 1;
 				for(TaskTemplate taskTemplate : taskTemplates) {
 					String sectionName = (String) taskTemplate.getAdditionInfo().get("sectionName");
 					
-					TaskSectionTemplate sectionTemplate = sectionMap.getOrDefault(sectionName, new TaskSectionTemplate());
+					TaskSectionTemplate sectionTemplate = null;
+					if(taskTemplate.isPreRequest()) {
+						sectionTemplate = preRequisiteSectionMap.getOrDefault(sectionName, new TaskSectionTemplate());
+					}
+					else {
+						sectionTemplate = sectionMap.getOrDefault(sectionName, new TaskSectionTemplate());
+					}
+					
 					sectionTemplate.setName(sectionName);
 					sectionTemplate.setType(Type.PM_TASK_SECTION);
 					sectionTemplate.setAssignmentType(PMAssignmentType.CURRENT_ASSET.getVal());
@@ -373,9 +381,11 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 					
 					if(taskTemplate.isPreRequest()) {
 						sectionTemplate.setPreRequestSection(true);
+						preRequisiteSectionMap.put(sectionName, sectionTemplate);
 					}
-					
-					sectionMap.put(sectionName, sectionTemplate);
+					else {
+						sectionMap.put(sectionName, sectionTemplate);
+					}
 				}
 				
 				FacilioChain updatePM = FacilioChainFactory.getUpdateNewPreventiveMaintenanceChain();
@@ -383,6 +393,8 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 				FacilioContext newContext = updatePM.getContext();
 				
 				List<TaskSectionTemplate> sectionList = sectionMap.values().stream().collect(Collectors.toList());
+				
+				sectionList.addAll(preRequisiteSectionMap.values().stream().collect(Collectors.toList()));
 				
 				newContext.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(pmId));
 				newContext.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, PreventiveMaintenanceAPI.getPM(pmId, true));
