@@ -59,9 +59,7 @@ public class HandleFormFieldsCommand extends FacilioCommand {
 					break;
 			}
 			
-			if (value != null) {
-				formField.setValueObject(value);
-			}
+			formField.setValueObject(value);
 		}
 		
 	}

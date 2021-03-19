@@ -1080,13 +1080,13 @@ public class FormsAPI {
 				if (tenant != null) {
 					return tenant.getId();
 				}
-				
+				break;
 			case FacilioConstants.Criteria.LOGGED_IN_USER_VENDOR:
 				VendorContext vendor = PeopleAPI.getVendorForUser(ouid);
 				if (vendor != null) {
 					return vendor.getId();
 				}
-				
+				break;
 			case FacilioConstants.Criteria.CURRENT_TIME:
 				return DateTimeUtil.getCurrenTime();
 				
@@ -1097,6 +1097,7 @@ public class FormsAPI {
 				return replacePlaceholders(placeholder);
 				
 		}
+		return null;
 	}
 	
 	private static Object replacePlaceholders(String placeholder) {

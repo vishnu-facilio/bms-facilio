@@ -2353,9 +2353,9 @@ public class FacilioConstants {
 	
 	public static class Criteria {
 		public static final String LOGGED_IN_USER = "${LOGGED_USER}";
-		public static final String LOGGED_IN_USER_TENANT = "${LOGGED_USER_TENANT}";
-		public static final String LOGGED_IN_USER_VENDOR = "${LOGGED_USER_VENDOR}";
-		public static final String LOGGED_IN_USER_CLIENT = "${LOGGED_USER_CLIENT}";
+		public static final String LOGGED_IN_USER_TENANT = "${LOGGED_TENANT}";
+		public static final String LOGGED_IN_USER_VENDOR = "${LOGGED_VENDOR}";
+		public static final String LOGGED_IN_USER_CLIENT = "${LOGGED_CLIENT}";
 		public static final String LOGGED_IN_USER_GROUP = "${LOGGED_USER_GROUP}";
 		public static final String LOGGED_IN_USER_SITES = "${LOGGED_USER_SITES}";
 		public static final String LOGGED_IN_USER_TENANT_SITES = "${LOGGED_USER_TENANT_SITES}";
