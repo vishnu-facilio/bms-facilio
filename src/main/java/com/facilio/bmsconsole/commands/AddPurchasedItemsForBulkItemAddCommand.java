@@ -1,18 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.ParseException;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
-import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.PurchasedItemContext;
 import com.facilio.bmsconsole.util.ImportAPI;
@@ -20,12 +9,13 @@ import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.InsertRecordBuilder;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.UpdateRecordBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
+
+import java.util.*;
 
 public class AddPurchasedItemsForBulkItemAddCommand extends FacilioCommand {
 
@@ -38,15 +28,8 @@ public class AddPurchasedItemsForBulkItemAddCommand extends FacilioCommand {
 		if (purchasedItem != null && !purchasedItem.isEmpty()) {
 
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-
-			FacilioModule itemModule = modBean.getModule(FacilioConstants.ContextNames.ITEM);
-			List<FacilioField> itemFields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);
-			Map<String, FacilioField> itemFieldMap = FieldFactory.getAsMap(itemFields);
-
 			FacilioModule purchasedItemModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_ITEM);
 			List<FacilioField> purchasedItemFields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_ITEM);
-			// Map<String, FacilioField> workorderCostsFieldMap =
-			// FieldFactory.getAsMap(inventoryCostFields);
 			long itemTypesId = -1;
 			List<Long> itemTypesIds = new ArrayList<>();
 			List<Long> itemIds = new ArrayList<>();
@@ -55,9 +38,7 @@ public class AddPurchasedItemsForBulkItemAddCommand extends FacilioCommand {
 
 			FacilioModule itemTypesModule = modBean.getModule(FacilioConstants.ContextNames.ITEM_TYPES);
 			List<FacilioField> itemTypesFields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM_TYPES);
-			Map<String, FacilioField> itemTypesFieldMap = FieldFactory.getAsMap(itemTypesFields);
 
-			List<ItemContext> items = (List<ItemContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 			List<PurchasedItemContext> pcToBeAdded = new ArrayList<>();
 			List<PurchasedItemContext> purchaseItemsList = new ArrayList<>();
 			if (purchasedItem != null && !purchasedItem.isEmpty()) {
@@ -88,7 +69,9 @@ public class AddPurchasedItemsForBulkItemAddCommand extends FacilioCommand {
 						double quantity = pi.getQuantity();
 						pi.setCurrentQuantity(quantity);
 					}
-					pi.setCostDate(System.currentTimeMillis());
+					if (pi.getCostDate() < 0) {
+						pi.setCostDate(System.currentTimeMillis());
+					}
 					if (pi.getId() <= 0) {
 						// Insert
 						purchaseItemsList.add(pi);
