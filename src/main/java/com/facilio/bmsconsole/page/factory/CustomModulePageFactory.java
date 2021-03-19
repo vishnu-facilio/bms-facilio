@@ -28,8 +28,14 @@ public class CustomModulePageFactory extends PageFactory {
 		if (record == null) {
 			return page;
 		}
+
 		if(AccountUtil.getCurrentOrg().getOrgId() != 407l || AccountUtil.getCurrentApp().getAppCategoryEnum() != ApplicationContext.AppCategory.PORTALS) {
-		  	addRelatedListWidgets(tab1Sec1, record.getModuleId());
+			Tab tab2 = page.new Tab("related list");
+			page.addTab(tab2);
+
+			Section tab2Sec1 = page.new Section();
+			tab2.addSection(tab2Sec1);
+			addRelatedListWidgets(tab2Sec1, record.getModuleId());
 		}
 		addCommonSubModuleWidget(tab1Sec1, module, record);
 		

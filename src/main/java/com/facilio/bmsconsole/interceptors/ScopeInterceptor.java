@@ -219,13 +219,14 @@ public class ScopeInterceptor extends AbstractInterceptor {
                                             throw new IllegalArgumentException("Invalid Site.");
                                         }
                                     }
-                                    AccountUtil.setCurrentSiteId(currentSiteId);
+
 //									if (currentSiteId != -1 && accessibleSpace == null) {
 //										accessibleSpace = new ArrayList<>();
 //										accessibleSpace.add(currentSiteId);
 //										currentAccount.getUser().setAccessibleSpace(accessibleSpace);
 //									}
                                 }
+                                AccountUtil.setCurrentSiteId(currentSiteId);
                             }
                         }
                         request.setAttribute("ORGID", currentAccount.getOrg().getOrgId());
