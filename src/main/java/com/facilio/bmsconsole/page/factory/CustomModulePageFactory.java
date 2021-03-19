@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.page.Page.Tab;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.PageWidget.WidgetType;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
@@ -32,14 +33,18 @@ public class CustomModulePageFactory extends PageFactory {
 		}
 		addCommonSubModuleWidget(tab1Sec1, module, record);
 		
-		 Page.Tab tab2 = page.new Tab("Activity");
-	        page.addTab(tab2);
-	        Page.Section tab4Sec1 = page.new Section();
-	        tab2.addSection(tab4Sec1);
-	        PageWidget activityWidget = new PageWidget(PageWidget.WidgetType.ACTIVITY);
-	        activityWidget.addToLayoutParams(tab4Sec1, 24, 3);
-	        activityWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.CUSTOM_ACTIVITY);
-	        tab4Sec1.addWidget(activityWidget);
+		ApplicationContext app = AccountUtil.getCurrentApp();
+		if (app != null && app.getLinkName().equals(ApplicationLinkNames.FACILIO_MAIN_APP)) {
+			 Page.Tab tab2 = page.new Tab("Activity");
+		        page.addTab(tab2);
+		        Page.Section tab4Sec1 = page.new Section();
+		        tab2.addSection(tab4Sec1);
+		        PageWidget activityWidget = new PageWidget(PageWidget.WidgetType.ACTIVITY);
+		        activityWidget.addToLayoutParams(tab4Sec1, 24, 3);
+		        activityWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.CUSTOM_ACTIVITY);
+		        tab4Sec1.addWidget(activityWidget);
+		}
+		
 		return page;
 	}
 
