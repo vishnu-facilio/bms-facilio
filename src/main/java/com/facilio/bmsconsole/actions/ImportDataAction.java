@@ -303,9 +303,11 @@ public class ImportDataAction extends FacilioAction {
 		
 		if(status == 8 && (mail == null || mail < 0)) {
 			if(setting == ImportProcessContext.ImportSetting.INSERT.getValue()) {
-				String inserted = meta.get("Inserted").toString();
-				im.setnewEntries(Integer.parseInt(inserted));
-				if(importProcessContext.getImportMode() == 2) {
+				if(meta.get("Inserted") != null) {
+					String inserted = meta.get("Inserted").toString();
+					im.setnewEntries(Integer.parseInt(inserted));
+				}
+				if(importProcessContext.getImportMode() == 2 && meta.get("Skipped") != null) {
 					String Skipped = meta.get("Skipped").toString();
 					im.setSkipEntries(Integer.parseInt(Skipped));
 				}
