@@ -41,10 +41,10 @@ public class CustomModulePageFactory extends PageFactory {
 		
 		ApplicationContext app = AccountUtil.getCurrentApp();
 		if (app != null && app.getLinkName().equals(ApplicationLinkNames.FACILIO_MAIN_APP)) {
-			 Page.Tab tab2 = page.new Tab("Activity");
-		        page.addTab(tab2);
+			 Page.Tab tab3 = page.new Tab("Activity");
+		        page.addTab(tab3);
 		        Page.Section tab4Sec1 = page.new Section();
-		        tab2.addSection(tab4Sec1);
+		        tab3.addSection(tab4Sec1);
 		        PageWidget activityWidget = new PageWidget(PageWidget.WidgetType.ACTIVITY);
 		        activityWidget.addToLayoutParams(tab4Sec1, 24, 3);
 		        activityWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.CUSTOM_ACTIVITY);
