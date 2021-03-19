@@ -11,6 +11,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import org.apache.commons.collections4.CollectionUtils;
 
 public class CustomModulePageFactory extends PageFactory {
 	
@@ -31,11 +32,13 @@ public class CustomModulePageFactory extends PageFactory {
 
 		if(AccountUtil.getCurrentOrg().getOrgId() != 407l || AccountUtil.getCurrentApp().getAppCategoryEnum() != ApplicationContext.AppCategory.PORTALS) {
 			Tab tab2 = page.new Tab("related list");
-			page.addTab(tab2);
 
 			Section tab2Sec1 = page.new Section();
 			tab2.addSection(tab2Sec1);
 			addRelatedListWidgets(tab2Sec1, record.getModuleId());
+			if(CollectionUtils.isNotEmpty(tab2Sec1.getWidgets())) {
+				page.addTab(tab2);
+			}
 		}
 		addCommonSubModuleWidget(tab1Sec1, module, record);
 		
