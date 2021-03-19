@@ -34,7 +34,7 @@ public class PMSettingsCommand extends FacilioCommand {
 			Map<String, List<TaskContext>> taskMap = (Map<String, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
 			if (taskMap == null || taskMap.isEmpty()) {
 				LOGGER.log(Level.SEVERE, "No Task Generated In this workorder", "PM ID " + wo.getPm().getId());
-				CommonCommandUtil.emailAlert("No Task Generated In this workorder", "PM ID " + wo.getPm().getId());
+//				CommonCommandUtil.emailAlert("No Task Generated In this workorder", "PM ID " + wo.getPm().getId());
 			}
 		}
 		
