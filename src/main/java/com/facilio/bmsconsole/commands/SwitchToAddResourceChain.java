@@ -422,9 +422,9 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 				
 				inclExcl.setResourceId(resourceId);
 
+				inclExcl.setParentType(PMIncludeExcludeResourceContext.ParentType.PM.getVal());
 				List<PMIncludeExcludeResourceContext> inclExclList = pmMap.getOrDefault(inclExcl.getPmId(), new ArrayList<PMIncludeExcludeResourceContext>());
 				
-				inclExclList.forEach((inclExcl1) -> {inclExcl1.setParentType(PMIncludeExcludeResourceContext.ParentType.PM.getVal());});
 				inclExclList.add(inclExcl);
 				
 				pmMap.put(inclExcl.getPmId(), inclExclList);
