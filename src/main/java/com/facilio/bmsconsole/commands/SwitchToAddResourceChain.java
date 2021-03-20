@@ -549,7 +549,8 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 			else {
 				
 				List<Integer> dayList = splitByCommasAndGetAsIntList.apply(days);
-				schedule.setValues(dayList);
+
+				schedule.setYearlyDayOfWeekValues(dayList);
 				
 				schedule.setWeekFrequency(stringToInt.apply(weeks));
 				
