@@ -281,7 +281,7 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 					contextNew.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 					contextNew.put(FacilioConstants.ContextNames.WORK_ORDER, woTemplate.getWorkorder());
 					contextNew.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
-					newContext.put(FacilioConstants.ContextNames.SKIP_WO_CREATION,true);
+					contextNew.put(FacilioConstants.ContextNames.SKIP_WO_CREATION,true);
 			 		
 					addPM.execute();
 				}
