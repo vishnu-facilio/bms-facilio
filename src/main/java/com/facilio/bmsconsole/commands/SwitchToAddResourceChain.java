@@ -423,6 +423,8 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 				inclExcl.setResourceId(resourceId);
 
 				List<PMIncludeExcludeResourceContext> inclExclList = pmMap.getOrDefault(inclExcl.getPmId(), new ArrayList<PMIncludeExcludeResourceContext>());
+				
+				inclExclList.forEach((inclExcl1) -> {inclExcl1.setParentType(PMIncludeExcludeResourceContext.ParentType.PM.getVal());});
 				inclExclList.add(inclExcl);
 				
 				pmMap.put(inclExcl.getPmId(), inclExclList);
@@ -441,9 +443,12 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 				
 				FacilioContext newContext = updatePM.getContext();
 				
+				WorkorderTemplate template = (WorkorderTemplate)TemplateAPI.getTemplate(pm.getTemplateId());
+				
 				newContext.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(pmId));
 				newContext.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
-				newContext.put(FacilioConstants.ContextNames.WORK_ORDER, ((WorkorderTemplate)TemplateAPI.getTemplate(pm.getTemplateId())).getWorkorder());
+				newContext.put(FacilioConstants.ContextNames.WORK_ORDER, template.getWorkorder());
+				newContext.put(FacilioConstants.ContextNames.TASK_SECTION_TEMPLATES, template.getSectionTemplates());
 				newContext.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
 				newContext.put(FacilioConstants.ContextNames.SKIP_WO_CREATION,true);
 				
