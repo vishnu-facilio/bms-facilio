@@ -536,11 +536,25 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 		}
 		break;
 		case ANNUALLY : {
-			List<Integer> monthList = splitByCommasAndGetAsIntList.apply(months);
-			schedule.setValues(monthList);
-			schedule.setYearlyDayValue(stringToInt.apply(dates));
+			if(months != null) {
+				List<Integer> monthList = splitByCommasAndGetAsIntList.apply(months);
+				schedule.setValues(monthList);
+			}
 			
-			schedule.setFrequencyType(ScheduleInfo.FrequencyType.YEARLY);
+			if(dates != null) {
+				schedule.setYearlyDayValue(stringToInt.apply(dates));
+				
+				schedule.setFrequencyType(ScheduleInfo.FrequencyType.YEARLY);
+			}
+			else {
+				
+				List<Integer> dayList = splitByCommasAndGetAsIntList.apply(days);
+				schedule.setValues(dayList);
+				
+				schedule.setWeekFrequency(stringToInt.apply(weeks));
+				
+				schedule.setFrequencyType(ScheduleInfo.FrequencyType.YEARLY_WEEK);
+			}
 		}
 		break;
 		default:
