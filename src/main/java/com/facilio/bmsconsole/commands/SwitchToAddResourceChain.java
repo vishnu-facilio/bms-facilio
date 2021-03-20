@@ -440,7 +440,7 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 				FacilioContext newContext = updatePM.getContext();
 				
 				newContext.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(pmId));
-				newContext.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, PreventiveMaintenanceAPI.getPM(pmId, true));
+				newContext.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 				newContext.put(FacilioConstants.ContextNames.WORK_ORDER, ((WorkorderTemplate)TemplateAPI.getTemplate(pm.getTemplateId())).getWorkorder());
 				newContext.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
 				
