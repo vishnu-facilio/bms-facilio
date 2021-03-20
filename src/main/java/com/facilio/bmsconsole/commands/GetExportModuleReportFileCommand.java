@@ -133,6 +133,7 @@ private ReportContext report;
 				newRow.put(handleXAxisLabel(module, xAxisReportField), handleData(xAxisReportField, value, format));
 				
 				if (CollectionUtils.isNotEmpty(groupByFields)) {
+					total = 0;
 					for (ReportGroupByField groupByField : groupByFields) {
 						String groupByAlias = groupByField.getAlias();
 						List<Map<String, Object>> list = (List<Map<String, Object>>) row.get(groupByAlias);
@@ -151,10 +152,10 @@ private ReportContext report;
 								total += getDoubleVal(map.get(yAlias));
 							}
 						}
-						if(total > 0) {
-							addColumn(columns, "Total");
-							newRow.put("Total", total);
-						}
+					}
+					if(total > 0) {
+						addColumn(columns, "Total");
+						newRow.put("Total", total);
 					}
 				} else {
 					String yAxisLable = handleYAxisLabel(module, getyAxis);
@@ -164,6 +165,10 @@ private ReportContext report;
 			}
 			
 			if (CollectionUtils.isNotEmpty(groupByFields)) {
+				if(columns.contains("Total")) {
+					columns.remove("Total");
+					columns.add("Total");
+				}
 				for (Map<String, Object> r : records) {
 					Collection<String> disjunction = CollectionUtils.disjunction(columns, r.keySet());
 					for (String s : disjunction) {
