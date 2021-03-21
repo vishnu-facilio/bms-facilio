@@ -481,6 +481,11 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 			schedule.setFrequencyType(ScheduleInfo.FrequencyType.DAILY);
 		}
 		break;
+		case WEEKLY : {
+			schedule.setFrequencyType(ScheduleInfo.FrequencyType.WEEKLY);
+			List<Integer> daysList = splitByCommasAndGetAsIntList.apply(days);
+			schedule.setValues(daysList);
+		}
 		case MONTHLY : {
 			if(dates != null) {
 				List<Integer> dateList = splitByCommasAndGetAsIntList.apply(dates);
