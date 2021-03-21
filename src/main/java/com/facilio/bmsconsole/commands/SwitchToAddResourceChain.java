@@ -486,6 +486,7 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 			List<Integer> daysList = splitByCommasAndGetAsIntList.apply(days);
 			schedule.setValues(daysList);
 		}
+		break;
 		case MONTHLY : {
 			if(dates != null) {
 				List<Integer> dateList = splitByCommasAndGetAsIntList.apply(dates);
