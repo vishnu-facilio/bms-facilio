@@ -134,7 +134,15 @@ public class ProcessImportCommand extends FacilioCommand {
 
 				if(!(importProcessContext.getImportSetting() == ImportSetting.UPDATE.getValue() || importProcessContext.getImportSetting() == ImportSetting.UPDATE_NOT_NULL.getValue())) {
 					if(!isBim){
-						props.put("siteId", siteId);
+						if(siteId != null && siteId > 0) {
+							props.put("siteId", siteId);
+						}
+						else if (fieldMapping.get(importProcessContext.getModule().getName() + "__site") != null && colVal.get(fieldMapping.get(importProcessContext.getModule().getName() + "__site")) != null) {
+							String siteName = (String) colVal.get(fieldMapping.get(importProcessContext.getModule().getName() + "__site"));
+							SiteContext site = SpaceAPI.getSite(siteName);
+							props.put("siteId", site.getId());
+						}
+						
 					}else{
 						props.put("siteId", Long.parseLong(props.get("site").toString()));
 						props.remove("site");

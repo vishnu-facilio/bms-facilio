@@ -635,8 +635,7 @@ public class ImportAPI {
 					fields.remove("space");
 				}
 		}
-			if (!AssetsAPI.isAssetsModule(facilioModule)
-					&& !fields.contains("site") && FieldUtil.isSiteIdFieldPresent(facilioModule)
+			if (!fields.contains("site") && FieldUtil.isSiteIdFieldPresent(facilioModule)
 					&& AccountUtil.getCurrentSiteId() == -1) {
 				fields.add("site");
 			}
