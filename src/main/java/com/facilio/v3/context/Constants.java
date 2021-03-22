@@ -1,9 +1,11 @@
 package com.facilio.v3.context;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.LookupField;
@@ -254,6 +256,10 @@ public class Constants {
 
     public static Criteria getFilterCriteria(Context context) {
         return (Criteria) context.get(FILTER_CRITERIA);
+    }
+
+    public static ModuleBean getModBean() throws Exception {
+        return (ModuleBean) BeanFactory.lookup("ModuleBean");
     }
 
     private static final String IS_V4 = "isV4";
