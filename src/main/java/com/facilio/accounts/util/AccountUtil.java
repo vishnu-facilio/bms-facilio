@@ -27,6 +27,7 @@ import com.facilio.service.FacilioService;
 import com.facilio.service.FacilioServiceUtil;
 import com.facilio.util.RequestUtil;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -34,17 +35,20 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.*;
-
+@Log4j
 public class AccountUtil {
 
 	private static ThreadLocal<Account> currentAccount = new ThreadLocal<Account>();
 	public static final String JWT_DELIMITER = "#";
-	
+
 	public static void setCurrentAccount(Account account) throws Exception {
 		currentAccount.set(account);
 		setScopingMap(account);
 		if(account != null && account.getOrg() !=null){
 			String prevService = FacilioServiceUtil.getCurrentService() != null ? FacilioServiceUtil.getCurrentService().getServiceName() : null;
+			if(prevService.equals(FacilioConstants.Services.APP_SERVICE)){
+				LOGGER.info("######### Previous service in setCurrentAccount : "+prevService);
+			}
 			FacilioServiceUtil.setCurrentService(FacilioConstants.Services.APP_SERVICE);
 			account.setPrevService(prevService);
 		}
@@ -114,6 +118,9 @@ public class AccountUtil {
 		Account account = currentAccount.get();
 		currentAccount.remove();
 		if (account != null && StringUtils.isNotEmpty(account.getPrevService())) {
+			if(account.getPrevService().equals(FacilioConstants.Services.APP_SERVICE)){
+				LOGGER.info("######### Previous service in cleanCurrentAccount : "+account.getPrevService());
+			}
 			FacilioServiceUtil.setCurrentService(account.getPrevService());
 		}
 	}
