@@ -2492,7 +2492,7 @@ public class WorkOrderAction extends FacilioAction {
 							woActivities.add(checkIsNotify);
 						}
 					}
-					if(checkIsNotify.getInfo().get("addedBy")!=null) {
+					else if(checkIsNotify.getInfo().get("addedBy")!=null) {
 						if((long) checkIsNotify.getInfo().get("addedBy") == AccountUtil.getCurrentUser().getOuid()) {
 							woActivities.add(checkIsNotify);
 						}
