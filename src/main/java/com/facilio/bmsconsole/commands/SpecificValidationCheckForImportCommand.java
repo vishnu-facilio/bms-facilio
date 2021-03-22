@@ -65,17 +65,20 @@ public class SpecificValidationCheckForImportCommand extends FacilioCommand {
 			fields.add(FieldFactory.getIdField(module));
 			fields.add(modBean.getField("name", "resource"));
 			Long siteId = importProcessContext.getSiteId();
-			SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
-					.beanClass(ReadingContext.class).moduleName(module.getName()).select(fields)
-					.table(module.getTableName()).andCondition(
-							CriteriaAPI.getCondition("Resources.NAME", "name", nameQueryString, StringOperators.IS))
-					.andCondition(CriteriaAPI.getCondition("Resources.SITE_ID", "siteId", siteId.toString(), StringOperators.IS));
-			List<ReadingContext> readingContext = selectBuilder.get();
-			if (readingContext != null && readingContext.size() > 0) {
-				for (ReadingContext rContext : readingContext) {
-					String assetName = (String) rContext.getData().get("name");
-					groupedContext.get(assetName).get(0)
-							.setError_resolved(ImportProcessContext.ImportLogErrorStatus.FOUND_IN_DB.getValue());
+			if(siteId != null) {
+				
+				SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
+						.beanClass(ReadingContext.class).moduleName(module.getName()).select(fields)
+						.table(module.getTableName()).andCondition(
+								CriteriaAPI.getCondition("Resources.NAME", "name", nameQueryString, StringOperators.IS))
+						.andCondition(CriteriaAPI.getCondition("Resources.SITE_ID", "siteId", siteId.toString(), StringOperators.IS));
+				List<ReadingContext> readingContext = selectBuilder.get();
+				if (readingContext != null && readingContext.size() > 0) {
+					for (ReadingContext rContext : readingContext) {
+						String assetName = (String) rContext.getData().get("name");
+						groupedContext.get(assetName).get(0)
+								.setError_resolved(ImportProcessContext.ImportLogErrorStatus.FOUND_IN_DB.getValue());
+					}
 				}
 			}
 		}
