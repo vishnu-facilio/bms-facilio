@@ -1423,7 +1423,7 @@ public class PreventiveMaintenanceAPI {
 				if (pm.getWoTemplate().getResourceIdVal() != -1) {
 					resourceIds.add(pm.getWoTemplate().getResourceIdVal());
 				}
-				pm.setPmIncludeExcludeResourceContexts(TemplateAPI.getPMIncludeExcludeList(pm.getId(), null, null));
+				
 				if (pmTriggers != null) {
 					pm.setTriggers(pmTriggers.get(pm.getId()));
 					if (pm.getTriggers() == null) {
@@ -1462,6 +1462,9 @@ public class PreventiveMaintenanceAPI {
 				Map<Long, List<PMReminder>> reminders = PreventiveMaintenanceAPI.getPMRemindersAsMap(ids);
 				if (reminders != null) {
 					for (PreventiveMaintenance pm : pms) {
+						
+						pm.setPmIncludeExcludeResourceContexts(TemplateAPI.getPMIncludeExcludeList(pm.getId(), null, null));
+						
 						long pmId = pm.getId();
 						if (reminders.containsKey(pmId)) {
 							List<PMReminder> rms = reminders.get(pmId);
