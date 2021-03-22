@@ -7,11 +7,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.facilio.constants.FacilioConstants;
-import dev.samstevens.totp.code.CodeGenerator;
-import dev.samstevens.totp.code.DefaultCodeGenerator;
-import dev.samstevens.totp.code.DefaultCodeVerifier;
-import dev.samstevens.totp.time.SystemTimeProvider;
-import dev.samstevens.totp.time.TimeProvider;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
@@ -223,10 +218,6 @@ public class IAMUserUtil {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getEmailFromDigest(digest));
 	}
 
-	public static String getEmailFromDigest(String digest, IAMAccountConstants.SessionType sessionType) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getEmailFromDigest(digest, sessionType));
-	}
-
 	public static String validateDigestAndDomain(String domain, String digest, AppDomain.GroupType groupType) throws Exception {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().validateDigestAndDomain(domain, digest, groupType));
 	}
@@ -258,14 +249,6 @@ public class IAMUserUtil {
 
 	public static Map<String, Object> getLoginModes(String userName, AppDomain.GroupType groupType) throws Exception {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getLoginModes(userName, groupType));
-	}
-
-	public static String generateTotpSessionToken(String userName) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().generateTotpSessionToken(userName));
-	}
-
-	public static String generateMFAConfigSessionToken(String userName) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().generateMFAConfigSessionToken(userName));
 	}
 	
 	public static boolean disableUser(long userId, long orgId) throws Exception {
@@ -329,10 +312,7 @@ public class IAMUserUtil {
 	public static Map<String, Object> getUserFromPhone(String phone, String identifier, long orgId) throws Exception {
 		return getUserForPhone(phone, identifier, orgId);
 	}
-
-	public static Map<String, Object> getUserMfaSettings(String username) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().getUserMfaSettings(username));
-	}
+	
 
 	public static Map<String,Object> getUserMfaSettings(long userId) throws Exception{
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getUserMfaSettings(userId));
@@ -349,15 +329,5 @@ public class IAMUserUtil {
 	public static  List<Map<String, Object>> getUserData(String username, AppDomain.GroupType groupType) throws Exception {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getUserData(username, groupType));
 	}
-
-	public static boolean totpChecking(String code, long uid) throws Exception{
-		Map<String, Object> values = getUserMfaSettings(uid);
-		String totpKey = (String) values.get("totpSecret");
-
-		TimeProvider timeProvider = new SystemTimeProvider();
-		CodeGenerator codeGenerator = new DefaultCodeGenerator();
-		DefaultCodeVerifier verifier = new DefaultCodeVerifier(codeGenerator, timeProvider);
-
-		return verifier.isValidCode(totpKey,code);
-	}
+	
 }

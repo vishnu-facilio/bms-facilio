@@ -20,7 +20,6 @@ import javax.servlet.http.HttpSession;
 
 import com.facilio.accounts.sso.DomainSSO;
 import com.facilio.bmsconsole.actions.PeopleAction;
-import com.facilio.bmsconsole.actions.SettingsMfa;
 import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.util.AESEncryption;
 import com.facilio.bmsconsole.util.PeopleAPI;
@@ -772,73 +771,6 @@ public class FacilioAuthAction extends FacilioAction {
 		return SUCCESS;
 	}
 
-	private String totp;
-
-	public String verifyTotp() throws Exception {
-		String digest = getDigest();
-		String emailFromDigest = null;
-		try {
-			emailFromDigest = IAMUserUtil.getEmailFromDigest(digest, IAMAccountConstants.SessionType.TOTP_SESSION);
-		} catch (Exception e) {
-			LOGGER.log(Level.INFO, "Exception while validating totp digest, ", e);
-			Exception ex = e;
-			while (ex != null) {
-				if (ex instanceof AccountException) {
-					setJsonresponse("message", ex.getMessage());
-					break;
-				}
-				ex = (Exception) ex.getCause();
-			}
-			setJsonresponse("errorcode", "2");
-			return ERROR;
-		}
-
-		Map<String, Object> userMfaSettings = IAMUserUtil.getUserMfaSettings(emailFromDigest);
-		boolean isVerified = IAMUserUtil.totpChecking(this.totp, (long) userMfaSettings.get("userId"));
-
-		if (!isVerified) {
-			setJsonresponse("errorcode", 1);
-			setJsonresponse("message", "Invalid verification code");
-			return SUCCESS;
-		} else {
-			HttpServletRequest request = ServletActionContext.getRequest();
-			HttpServletResponse response = ServletActionContext.getResponse();
-			String userAgent = request.getHeader("User-Agent");
-
-			String userType = "web";
-			String deviceType = request.getHeader("X-Device-Type");
-			if (!StringUtils.isEmpty(deviceType)
-					&& ("android".equalsIgnoreCase(deviceType) || "ios".equalsIgnoreCase(deviceType) || "webview".equalsIgnoreCase(deviceType))) {
-				userType = "mobile";
-			}
-
-			String ipAddress = request.getHeader("X-Forwarded-For");
-
-			String authtoken = IAMUserUtil.verifyLoginWithoutPassword(emailFromDigest, userAgent, userType, ipAddress, request.getServerName(), null);
-			setJsonresponse("token", authtoken);
-			setJsonresponse("username", emailFromDigest);
-
-			//deleting .facilio.com cookie(temp handling)
-			FacilioCookie.eraseUserCookie(request, response,"fc.idToken.facilio","facilio.com");
-			FacilioCookie.eraseUserCookie(request, response,"fc.idToken.facilio","facilio.in");
-
-			String appDomain = request.getServerName();
-			AppDomain appdomainObj = IAMAppUtil.getAppDomain(appDomain);
-			boolean portalUser = false;
-			if(appdomainObj != null && appdomainObj.getAppDomainTypeEnum() != AppDomainType.FACILIO) {
-				portalUser = true;
-			}
-
-			addAuthCookies(authtoken, portalUser, false, request, "mobile".equals(userType));
-
-			String isWebView = FacilioCookie.getUserCookie(request, "fc.isWebView");
-			if ("true".equalsIgnoreCase(isWebView)) {
-				setWebViewCookies();
-			}
-		}
-		return SUCCESS;
-	}
-
 	public String validateLoginv3() {
 
 		boolean portalUser = false;
@@ -868,39 +800,18 @@ public class FacilioAuthAction extends FacilioAction {
 					userType = "mobile";
 				}
 
-				Map<String, Object> userMfaSettings = IAMUserUtil.getUserMfaSettings(getUsername());
-				boolean hasMfaSettings = false;
-				if (MapUtils.isNotEmpty(userMfaSettings)) {
-					Boolean totpEnabled = (Boolean) userMfaSettings.get("totpEnabled");
-					hasMfaSettings = totpEnabled != null && totpEnabled;
-				}
-
-				if (!hasMfaSettings) {
-					authtoken = IAMUserUtil.verifyLoginPasswordv3(getUsername(), getPassword(), request.getServerName(), userAgent, userType,
+				LOGGER.info("validateLogin() : appdomainName : " + appDomainName);
+				
+				authtoken = IAMUserUtil.verifyLoginPasswordv3(getUsername(), getPassword(), request.getServerName(), userAgent, userType,
 							ipAddress);
-					setJsonresponse("token", authtoken);
-					setJsonresponse("username", getUsername());
+				setJsonresponse("token", authtoken);
+				setJsonresponse("username", getUsername());
 
-					//deleting .facilio.com cookie(temp handling)
-					FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.facilio","facilio.com");
-					FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.facilio","facilio.in");
+				//deleting .facilio.com cookie(temp handling)
+				FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.facilio","facilio.com");
+				FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.facilio","facilio.in");
 
-					addAuthCookies(authtoken, portalUser, false, request, "mobile".equals(userType));
-				} else {
-					Boolean totpStatus = (Boolean) userMfaSettings.get("totpStatus");
-					boolean isTotpEnabled = totpStatus != null && totpStatus;
-					if (!isTotpEnabled) {
-						setJsonresponse("isOrgTotpEnabled", true);
-						setJsonresponse("isMFASetupRequired", true);
-						setJsonresponse("mfaConfigToken", IAMUserUtil.generateMFAConfigSessionToken(getUsername()));
-						setJsonresponse("username", getUsername());
-					} else {
-						String jwt = IAMUserUtil.generateTotpSessionToken(getUsername());
-						setJsonresponse("isOrgTotpEnabled", true);
-						setJsonresponse("isMFASetupRequired", false);
-						setJsonresponse("totpToken", jwt);
-					}
-				}
+				addAuthCookies(authtoken, portalUser, false, request, "mobile".equals(userType));
 			} 
 			catch (Exception e) {
 				LOGGER.log(Level.INFO, "Exception while validating password, ", e);
@@ -919,98 +830,6 @@ public class FacilioAuthAction extends FacilioAction {
 		}
 		setJsonresponse("message", "Invalid username or password");
 		return ERROR;
-	}
-
-	public String getMfaSettingsUsingDigest() throws Exception {
-		String emailFromDigest = null;
-		try {
-			emailFromDigest = IAMUserUtil.getEmailFromDigest(getMfaConfigToken(), IAMAccountConstants.SessionType.MFA_CONFIG_SESSION);
-		} catch (Exception e) {
-			LOGGER.log(Level.INFO, "Exception while validating totp digest, ", e);
-			Exception ex = e;
-			while (ex != null) {
-				if (ex instanceof AccountException) {
-					setJsonresponse("message", ex.getMessage());
-					break;
-				}
-				ex = (Exception) ex.getCause();
-			}
-			setJsonresponse("errorcode", "2");
-			return ERROR;
-		}
-
-		Map<String, Object> userMfaSettings = IAMUserUtil.getUserMfaSettings(emailFromDigest);
-		SettingsMfa settingsMfa = new SettingsMfa();
-		settingsMfa.generateMfaData((Long) userMfaSettings.get("userId"));
-
-		setJsonresponse("totpSecret", settingsMfa.getTotpSecret());
-		setJsonresponse("qrCode", settingsMfa.getQrCode());
-
-		return SUCCESS;
-	}
-
-	private String mfaConfigToken;
-	public String configureMFAUsingDigest() throws Exception {
-		String emailFromDigest = null;
-		try {
-			emailFromDigest = IAMUserUtil.getEmailFromDigest(getMfaConfigToken(), IAMAccountConstants.SessionType.MFA_CONFIG_SESSION);
-		} catch (Exception e) {
-			LOGGER.log(Level.INFO, "Exception while validating totp digest, ", e);
-			Exception ex = e;
-			while (ex != null) {
-				if (ex instanceof AccountException) {
-					setJsonresponse("message", ex.getMessage());
-					break;
-				}
-				ex = (Exception) ex.getCause();
-			}
-			setJsonresponse("errorcode", "2");
-			return ERROR;
-		}
-
-		Map<String, Object> userMfaSettings = IAMUserUtil.getUserMfaSettings(emailFromDigest);
-		if(IAMUserUtil.totpChecking(totp, (long) userMfaSettings.get("userId"))){
-			IAMUserUtil.updateUserMfaSettingsStatus((long) userMfaSettings.get("userId"),true);
-
-			HttpServletRequest request = ServletActionContext.getRequest();
-			HttpServletResponse response = ServletActionContext.getResponse();
-			String userAgent = request.getHeader("User-Agent");
-
-			String userType = "web";
-			String deviceType = request.getHeader("X-Device-Type");
-			if (!StringUtils.isEmpty(deviceType)
-					&& ("android".equalsIgnoreCase(deviceType) || "ios".equalsIgnoreCase(deviceType) || "webview".equalsIgnoreCase(deviceType))) {
-				userType = "mobile";
-			}
-
-			String ipAddress = request.getHeader("X-Forwarded-For");
-
-			String authtoken = IAMUserUtil.verifyLoginWithoutPassword(emailFromDigest, userAgent, userType, ipAddress, request.getServerName(), null);
-			setJsonresponse("token", authtoken);
-			setJsonresponse("username", emailFromDigest);
-
-			//deleting .facilio.com cookie(temp handling)
-			FacilioCookie.eraseUserCookie(request, response,"fc.idToken.facilio","facilio.com");
-			FacilioCookie.eraseUserCookie(request, response,"fc.idToken.facilio","facilio.in");
-
-			String appDomain = request.getServerName();
-			AppDomain appdomainObj = IAMAppUtil.getAppDomain(appDomain);
-			boolean portalUser = false;
-			if(appdomainObj != null && appdomainObj.getAppDomainTypeEnum() != AppDomainType.FACILIO) {
-				portalUser = true;
-			}
-
-			addAuthCookies(authtoken, portalUser, false, request, "mobile".equals(userType));
-
-			String isWebView = FacilioCookie.getUserCookie(request, "fc.isWebView");
-			if ("true".equalsIgnoreCase(isWebView)) {
-				setWebViewCookies();
-			}
-		} else{
-			throw new IllegalArgumentException("invalid verification code");
-		}
-
-		return SUCCESS;
 	}
 	
 	private String idToken;
@@ -2043,21 +1862,5 @@ public class FacilioAuthAction extends FacilioAction {
 
 	public void setService(String service) {
 		this.service = service;
-	}
-
-	public String getTotp() {
-		return totp;
-	}
-
-	public void setTotp(String totp) {
-		this.totp = totp;
-	}
-
-	public String getMfaConfigToken() {
-		return mfaConfigToken;
-	}
-
-	public void setMfaConfigToken(String mfaConfigToken) {
-		this.mfaConfigToken = mfaConfigToken;
 	}
 }
