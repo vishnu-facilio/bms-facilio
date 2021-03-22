@@ -224,7 +224,7 @@ public class IAMUserUtil {
 	}
 
 	public static String getEmailFromDigest(String digest, IAMAccountConstants.SessionType sessionType) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getEmailFromDigest(digest, sessionType));
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().getEmailFromDigest(digest, sessionType));
 	}
 
 	public static String validateDigestAndDomain(String domain, String digest, AppDomain.GroupType groupType) throws Exception {
@@ -265,7 +265,7 @@ public class IAMUserUtil {
 	}
 
 	public static String generateMFAConfigSessionToken(String userName) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().generateMFAConfigSessionToken(userName));
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().generateMFAConfigSessionToken(userName));
 	}
 	
 	public static boolean disableUser(long userId, long orgId) throws Exception {
