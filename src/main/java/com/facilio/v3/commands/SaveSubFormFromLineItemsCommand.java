@@ -61,6 +61,23 @@ public class SaveSubFormFromLineItemsCommand extends FacilioCommand {
         return false;
     }
 
+    private List<LookupField> getLookupFieldListFromModuleName (Map<String, List<LookupField>> allLookupFields, String moduleName) throws Exception {
+        List<LookupField> lookupFieldList = allLookupFields.get(moduleName);
+        if (lookupFieldList == null) {
+            ModuleBean modBean = Constants.getModBean();
+            FacilioModule module = modBean.getModule(moduleName);
+            FacilioModule currentModule = module.hideFromParents() ? null : module.getExtendModule(); // If a module is hidden from parent it's not considered as the same module. Just the structure is used. Because this won't work when fetching lookup
+            while (currentModule != null) {
+                lookupFieldList = allLookupFields.get(currentModule.getName());
+                if (lookupFieldList != null) {
+                    return lookupFieldList;
+                }
+                currentModule = module.hideFromParents() ? null : module.getExtendModule();
+            }
+        }
+        return lookupFieldList;
+    }
+
     private List<ModuleBaseWithCustomFields> insert(Context context, String mainModuleName, String moduleName, List<SubFormContext> subFormContextList, long recordId) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(moduleName);
@@ -91,7 +108,7 @@ public class SaveSubFormFromLineItemsCommand extends FacilioCommand {
         Class contextClass = ChainUtil.getBeanClass(null, module);
 
         Map<String, List<LookupField>> allLookupFields = getAllLookupFields(modBean, module);
-        List<LookupField> lookupFieldList = allLookupFields.get(mainModuleName);
+        List<LookupField> lookupFieldList = getLookupFieldListFromModuleName(allLookupFields, mainModuleName);
 
         Map<Long, FacilioField> fieldMap = new HashMap<>();
         for (LookupField lookupField: lookupFieldList) {

@@ -1,6 +1,7 @@
 package com.facilio.v3.context;
 
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.Map;
 public class V3Context extends ModuleBaseWithCustomFields {
     private Map<String, List<SubFormContext>> relations;
 
+    @JsonIgnore //Because this will lead to stackoverflow error.
     public Map<String, List<SubFormContext>> getRelations() {
         return relations;
     }
