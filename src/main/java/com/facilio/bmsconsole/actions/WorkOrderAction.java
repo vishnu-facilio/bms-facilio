@@ -1250,7 +1250,7 @@ public class WorkOrderAction extends FacilioAction {
 		if (AccountUtil.getCurrentAccount().isFromMobile() && AccountUtil.getCurrentOrg().getOrgId() == 263L) {
 			context.put(FacilioConstants.ContextNames.IS_USER_TRIGGER, true);
 		}
-
+		context.put(FacilioConstants.ContextNames.IS_FROM_VIEW, Boolean.TRUE);
 		FacilioChain getPmchain = FacilioChainFactory.getGetPreventiveMaintenanceListChain();
 		getPmchain.execute(context);
 		if (getCount() != null) {
