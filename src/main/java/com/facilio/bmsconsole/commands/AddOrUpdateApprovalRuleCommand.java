@@ -72,6 +72,7 @@ public class AddOrUpdateApprovalRuleCommand extends FacilioCommand {
             approvalStateFlow.setDefaultStateId(requested.getId());
             approvalStateFlow.setId(approvalMeta.getId());
             approvalStateFlow.setConfigJson(approvalMeta.getConfigJson());
+            approvalStateFlow.setActions(approvalMeta.getApprovalEntryActions());
 
             List<FieldChangeFieldContext> changeFields = new ArrayList<>();
 

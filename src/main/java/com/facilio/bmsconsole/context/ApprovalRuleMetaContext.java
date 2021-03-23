@@ -127,6 +127,14 @@ public class ApprovalRuleMetaContext implements Serializable {
         this.approvalOrder = ApprovalRuleContext.ApprovalOrder.valueOf(approvalOrder);
     }
 
+    private List<ActionContext> approvalEntryActions;
+    public List<ActionContext> getApprovalEntryActions() {
+        return approvalEntryActions;
+    }
+    public void setApprovalEntryActions(List<ActionContext> approvalEntryActions) {
+        this.approvalEntryActions = approvalEntryActions;
+    }
+
     private List<ActionContext> approveActions;
     public List<ActionContext> getApproveActions() {
         return approveActions;
