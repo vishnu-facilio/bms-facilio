@@ -310,6 +310,9 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 				for(String updateField : updateFields) {
 					String modulePlusFields[] = updateField.split("__");
 					FacilioField facilioField = bean.getField(modulePlusFields[modulePlusFields.length - 1], moduleName);
+					if(facilioField == null && modulePlusFields[modulePlusFields.length - 1].equals("site")) {
+						facilioField = siteField;
+					}
 					updateBuilder = appendUpdateBuilderConditions(readingsList, j, updateBuilder, facilioField, module);
 				}
 				updateBuilder.update(readingsList.get(j));
@@ -333,11 +336,17 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 			String enumString = (String) readingsList.get(j).getData().get(facilioField.getName());
 			EnumField enumField = (EnumField) facilioField;
 			updateBuilder.andCondition(CriteriaAPI.getCondition(facilioField,String.valueOf(enumField.getIndex(enumString)), NumberOperators.EQUALS));
-		} else if (StringUtils.equals(facilioField.getName(), "id")) {
+		} 
+		else if (StringUtils.equals(facilioField.getName(), "id")) {
 			updateBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(module), String.valueOf(readingsList.get(j).getId()), NumberOperators.EQUALS));
-		} else if (StringUtils.equals(facilioField.getName(), "localId")) {
+		} 
+		else if (StringUtils.equals(facilioField.getName(), "localId")) {
 			updateBuilder.andCondition(CriteriaAPI.getCondition(facilioField, String.valueOf(readingsList.get(j).getLocalId()), NumberOperators.EQUALS));
-		} else if (facilioField.getDataType() == FieldType.NUMBER.getTypeAsInt()) {
+		} 
+		else if (StringUtils.equals(facilioField.getName(), "siteId")) {
+			updateBuilder.andCondition(CriteriaAPI.getCondition(facilioField, String.valueOf(readingsList.get(j).getSiteId()), NumberOperators.EQUALS));
+		} 
+		else if (facilioField.getDataType() == FieldType.NUMBER.getTypeAsInt()) {
 			updateBuilder.andCondition(CriteriaAPI.getCondition(facilioField, String.valueOf(readingsList.get(j).getData().get(facilioField.getName())), NumberOperators.EQUALS));
 		}
 		else {
