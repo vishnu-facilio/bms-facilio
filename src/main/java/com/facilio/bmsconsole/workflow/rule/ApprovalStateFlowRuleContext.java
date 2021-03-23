@@ -73,5 +73,7 @@ public class ApprovalStateFlowRuleContext extends AbstractStateFlowRuleContext {
                 }
             }
         }
+
+        super.executeTrueActions(record, context, placeHolders);
     }
 }
