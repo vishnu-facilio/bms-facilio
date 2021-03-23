@@ -59,9 +59,6 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 				fields = getFieldsForAtre(modBean);
 			}
 		}
-		else if (AccountUtil.getCurrentOrg().getOrgId() == 1) {
-			fields = getFieldsForAtre(modBean);
-		}
 		
 		if (fields == null) {
 			
@@ -142,12 +139,14 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 		Map<String, List<String>> fieldMap = new HashMap<>();
 		fieldMap.put("tenantunit", tenantUnit);
 		fieldMap.put("tenantcontact", tenantContact);
+		fieldMap.put("custom_contracts", customContracts);
+		fieldMap.put("custom_contractunits", customContractunits);
+		fieldMap.put("custom_payment", customPayment);
+		fieldMap.put("custom_receipts", customReceipts);
 		return fieldMap;
 	}
 	
 	private static final List<String> tenantUnit = Collections.unmodifiableList(Arrays.asList(new String[] {
-            "id",
-            "name",
             "description",
             "area",
             "maxOccupancy",
@@ -158,16 +157,12 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
     }));
 	
 	private static final List<String> tenantContact = Collections.unmodifiableList(Arrays.asList(new String[] {
-			"id",
-			"name",
 			"email",
 			"phone",
 			"isPrimaryContact"
     }));
 	
 	private static final List<String> customContracts = Collections.unmodifiableList(Arrays.asList(new String[] {
-			"id",
-			"name",
 			"number",
 			"date_1",
 			"multiline",
@@ -179,30 +174,51 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 			"picklist_2",
 			"singleline_3",
 			"number_2",
-			"sysModifiedBy",
-			"sysCreatedBy",
 			"sysCreatedTime",
-			"sysModifiedTime"
+			"sysCreatedBy",
+			"sysModifiedTime",
+			"sysModifiedBy"
     }));
 
 	private static final List<String> customContractunits = Collections.unmodifiableList(Arrays.asList(new String[] {
-			"id",
-			"name",
+			"contractid",
+			"siteId",
+			"sysCreatedTime",
+			"sysCreatedBy",
+			"sysModifiedTime",
+			"sysModifiedBy"
+    }));
+	
+	private static final List<String> customPayment = Collections.unmodifiableList(Arrays.asList(new String[] {
 			"number",
 			"date_1",
-			"multiline",
-			"multiline_1",
-			"number_1",
+			"date",
+			"date_2",
 			"singleline_2",
 			"number_3",
-			"picklist",
-			"picklist_2",
-			"singleline_3",
-			"number_2",
+			"singleline_1",
+			"date_3",
 			"sysModifiedBy",
-			"sysCreatedBy",
 			"sysCreatedTime",
-			"sysModifiedTime"
+			"sysModifiedTime",
+			"sysCreatedBy",
+			"number_2",
+			"number_1"
+    }));
+	
+	private static final List<String> customReceipts = Collections.unmodifiableList(Arrays.asList(new String[] {
+			"singleline_2",
+			"singleline_1",
+			"date",
+			"singleline_3",
+			"singleline_4",
+			"paymentmilestone",
+			"number",
+			"date_1",
+			"sysModifiedBy",
+			"sysCreatedTime",
+			"sysModifiedTime",
+			"sysCreatedBy"
     }));
 
 }
