@@ -1,5 +1,9 @@
 package com.facilio.bmsconsole.commands.form;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -15,6 +19,10 @@ import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioModule.ModuleType;
+import com.facilio.modules.fields.BaseLookupField;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 
 public class HandleFormFieldsCommand extends FacilioCommand {
 	
@@ -38,6 +46,7 @@ public class HandleFormFieldsCommand extends FacilioCommand {
 				if (!isFromBuilder) {
 					handleDefaultValue(field);
 				}
+				setLookupName(field, moduleName, isFromBuilder);
 				addFilters(module, field);
 			}
 		}
@@ -75,6 +84,49 @@ public class HandleFormFieldsCommand extends FacilioCommand {
 					break;
 			}
 		}
+	}
+	
+	private void setLookupName(FormField formField, String moduleName, boolean isFromBuilder) throws Exception {
+		if (formField.getDisplayTypeEnum() == FieldDisplayType.ATTACHMENT) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			List<FacilioModule> subModules = modBean.getSubModules(moduleName, ModuleType.ATTACHMENTS);
+			formField.setLookupModuleName(subModules.get(0).getName());
+		}
+		else  {
+			FacilioField field = formField.getField();
+			if (field != null && field instanceof BaseLookupField) {
+				if (!isFromBuilder && formField.getConfig() != null) {
+					JSONObject config = formField.getConfig();
+					boolean filterEnabled = (boolean) config.getOrDefault("isFiltersEnabled", false);
+					if (filterEnabled) {
+						String lookupName = (String) config.get("lookupModuleName");
+						if (lookupName == null) { // Temp..needs to remove
+							int filterValue = Integer.parseInt(formField.getConfig().get("filterValue").toString());
+							lookupName = getModuleName(filterValue);
+						}
+						formField.setLookupModuleName(lookupName);
+						return;
+					}
+				}
+				
+				FacilioModule lookupMod = ((BaseLookupField) field).getLookupModule();
+				if (lookupMod != null) {
+					formField.setLookupModuleName(lookupMod.getName());
+				}
+			}
+		}
+	}
+	
+	// Temp..needs to remove
+	private String getModuleName(int val) {
+		Map<Integer, String> names= new HashMap<>();
+		names.put(1, "building");
+		names.put(2, "asset");
+		names.put(3, "tenantcontact");
+		names.put(4, "clientcontact");
+		names.put(5, "vendorcontact");
+		names.put(6, "employee");
+		return names.get(val);
 	}
 	
 	private void setRotatingFilter(String type, FormField formField) {

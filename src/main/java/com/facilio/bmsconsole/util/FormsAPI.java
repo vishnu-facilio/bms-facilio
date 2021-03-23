@@ -48,7 +48,6 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
@@ -176,6 +175,7 @@ public class FormsAPI {
 			FacilioField field = null;
 			if (f.getFieldId() != -1) {
 				field =  modBean.getField(f.getFieldId());
+				f.setField(field);
 				if (f.getName() == null) {
 					f.setName(field.getName());
 				}
@@ -220,30 +220,12 @@ public class FormsAPI {
 				f.setName("utilityMeters");
 			}
 			
-			handleFormField(f, module.getName(), field);
 			fields.add(f);
 			if (f.getSectionId() != -1) {
 				sectionMap.get(f.getSectionId()).addField(f);
 			}
 		}
 		form.setFields(fields);
-	}
-	
-	private static void handleFormField(FormField formField, String moduleName, FacilioField field ) throws Exception {
-		if (formField.getDisplayTypeEnum() == FieldDisplayType.ATTACHMENT) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			List<FacilioModule> subModules = modBean.getSubModules(moduleName, ModuleType.ATTACHMENTS);
-			formField.setLookupModuleName(subModules.get(0).getName());
-		}
-		else if (field != null) {
-			formField.setField(field);
-			if (field instanceof BaseLookupField) {
-				FacilioModule lookupMod = ((BaseLookupField) field).getLookupModule();
-				if (lookupMod != null) {
-					formField.setLookupModuleName(lookupMod.getName());
-				}
-			}
-		}
 	}
 	
 	private static void setFormSections(FacilioForm form) throws Exception {
@@ -985,8 +967,8 @@ public class FormsAPI {
 			FacilioField field = modBean.getField(mutatedField.getName(), moduleName);
 			if (field != null) {
 				mutatedField.setFieldId(field.getFieldId());
+				mutatedField.setField(field);
 			}
-			handleFormField(mutatedField, moduleName, field);
 			fields.set(i, mutatedField);
 		}
 	}

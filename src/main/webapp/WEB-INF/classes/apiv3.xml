@@ -211,5 +211,18 @@
             <param name="moduleName">{1}</param>
         </action>
     </package>
+    
+    <package name="summaryApiv3" namespace="/api/v3/summary/fields" extends="v3Api">
+        <action name="*" class="com.facilio.bmsconsoleV3.actions.V3PageAction" method="fetchSummaryFields">
+            <param name="moduleName">{1}</param>
+            <result name="success" type="json">
+                <param name="excludeNullProperties">true</param>
+                <param name="ignoreHierarchy">false</param>
+                <param name="includeProperties">^code.*,^data.*,^meta.*,message</param>
+                <param name="excludeProperties">data.fields.*\.field.(columnName|completeColumnName|tableName|inputName|module|accessType)</param>
+                
+            </result>
+        </action>
+    </package>
 
 </struts>

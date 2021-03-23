@@ -221,6 +221,14 @@ public class FormField implements Serializable {
 	public void setHideField(Boolean hideField) {
 		this.hideField = hideField;
 	}
+	@JSON(serialize = false)
+	@JsonIgnore
+	public boolean isHideField() {
+		if (hideField == null) {
+			return false;
+		}
+		return hideField;
+	}
 	
 	private Boolean isDisabled;
 
