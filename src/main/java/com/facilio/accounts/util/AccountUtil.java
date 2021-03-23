@@ -117,11 +117,11 @@ public class AccountUtil {
 	public static void cleanCurrentAccount() throws Exception {
 		Account account = currentAccount.get();
 		currentAccount.remove();
-		if (account != null && StringUtils.isNotEmpty(account.getPrevService())) {
+		if (account != null && account.getOrg() != null && StringUtils.isNotEmpty(account.getPrevService())) {
 			if(account.getPrevService().equals(FacilioConstants.Services.APP_SERVICE)){
 				LOGGER.info("######### Previous service in cleanCurrentAccount : "+account.getPrevService());
 			}
-			FacilioServiceUtil.setCurrentService(account.getPrevService());
+			FacilioServiceUtil.setCurrentService(FacilioConstants.Services.DEFAULT_SERVICE);
 		}
 	}
 	
