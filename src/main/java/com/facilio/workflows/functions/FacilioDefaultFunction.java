@@ -588,6 +588,8 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 				return null;
 			}
 			
+			LOGGER.log(Level.SEVERE, "recordId -- "+(long)objects[1]);
+			
 			User user = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
 			JSONObject jObj = new JSONObject();
 			jObj.put("recordId", (long)objects[1]);
@@ -604,13 +606,18 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			ModuleBaseWithCustomFields record = RecordAPI.getRecord(moduleName, (long)objects[1]);
 			
 			if(record.getStateFlowId() > 0 && record.getModuleState() != null) {
-						
+				
+				LOGGER.log(Level.SEVERE, "record.getStateFlowId() -- "+record.getStateFlowId());
+				
 				List<WorkflowRuleContext> nextStateRule = StateFlowRulesAPI.getAvailableState(record.getStateFlowId(), record.getModuleState().getId(), moduleName, record, new FacilioContext());
 				jObj.put("moduleId", record.getModuleId());
 				jObj.put("moduleName", moduleName);
 				ArrayList<String> permalinks = new ArrayList<String>();
 				
 				if(CollectionUtils.isNotEmpty(nextStateRule)){
+					
+					LOGGER.log(Level.SEVERE, "nextStateRule -- "+nextStateRule);
+					
 					for(WorkflowRuleContext rule : nextStateRule) {
 						long transitionId = rule.getId();
 						jObj.put("transitionId", transitionId);
