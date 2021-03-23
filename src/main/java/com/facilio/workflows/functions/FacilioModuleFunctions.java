@@ -111,7 +111,7 @@ public enum FacilioModuleFunctions implements FacilioWorkflowFunctionInterface {
 			}
 			else if (field instanceof MultiEnumField) {
 				MultiEnumField enumField = (MultiEnumField) field;
-				List<Integer> intList = WorkflowV2Util.longListToIntList.apply((List<Long>) objects[2]);
+				List<Integer> intList = WorkflowV2Util.objectListToIntList.apply((List<Object>) objects[2]);
 				return enumField.getValue(intList);
 			}
 

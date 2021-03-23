@@ -91,6 +91,15 @@ public class WorkflowV2Util {
 		
 		return returnList;
 	};
+	
+	public static Function<List<Object>, List<Integer>> objectListToIntList = (objList) -> {
+		
+		List<Integer> returnList = new ArrayList<Integer>();
+		
+		objList.forEach((objValue) -> returnList.add(Integer.parseInt(objValue.toString())));
+		
+		return returnList;
+	};
 
 	static {
 		try {
