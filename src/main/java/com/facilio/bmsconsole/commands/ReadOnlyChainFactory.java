@@ -803,6 +803,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new ConstructCriteriaAndSetModuleNameForActivity());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
+		c.addCommand(new CheckActivitiesForPortalCommand());
 		return c;
 	}
 

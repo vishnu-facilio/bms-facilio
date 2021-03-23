@@ -2478,35 +2478,10 @@ public class WorkOrderAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PARENT_ID, workOrderId);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
-		
 		FacilioChain workOrderActivity = ReadOnlyChainFactory.getActivitiesChain();
 		workOrderActivity.execute(context);
-		List<ActivityContext> activity =  (List<ActivityContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
-		List<ActivityContext> woActivities = new ArrayList<>();
-		for(ActivityContext prop : activity) {	
-		ActivityContext checkIsNotify = prop;
-		if (AccountUtil.getCurrentUser().isPortalUser()) {
-				if (checkIsNotify.getType() == WorkOrderActivityType.ADD_COMMENT.getValue()) {
-					if (checkIsNotify.getInfo().get("notifyRequester") != null) {
-						if ((boolean) checkIsNotify.getInfo().get("notifyRequester")) {
-							woActivities.add(checkIsNotify);
-						}
-					}
-					else if(checkIsNotify.getInfo().get("addedBy")!=null) {
-						if((long) checkIsNotify.getInfo().get("addedBy") == AccountUtil.getCurrentUser().getOuid()) {
-							woActivities.add(checkIsNotify);
-						}
-					}
-				}
-				else {
-					woActivities.add(checkIsNotify);
-				}
-		}
-		else {
-			woActivities.add(checkIsNotify);
-		}
-	  }
-		setResult("activity", woActivities);
+		List<ActivityContext> activity =  (List<ActivityContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);		
+		setResult("activity", activity);
 		return SUCCESS;
 	}
 
