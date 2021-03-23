@@ -83,16 +83,7 @@ public class WorkflowV2Util {
 	public static final String NEW_CONNECTION_INITIALIZATION = "Connection";
 	
 	
-	public static Function<List<Long>, List<Integer>> longListToIntList = (longList) -> {
-		
-		List<Integer> returnList = new ArrayList<Integer>();
-		
-		longList.forEach((longValue) -> returnList.add(Integer.parseInt(longValue.toString())));
-		
-		return returnList;
-	};
-	
-	public static Function<List<Object>, List<Integer>> objectListToIntList = (objList) -> {
+	public static Function<List<?>, List<Integer>> anyListToIntList = (objList) -> {
 		
 		List<Integer> returnList = new ArrayList<Integer>();
 		
