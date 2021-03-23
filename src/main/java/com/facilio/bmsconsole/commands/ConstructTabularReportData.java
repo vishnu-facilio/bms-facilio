@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +33,7 @@ import com.facilio.report.context.ReportYAxisContext;
 import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.context.ReportDataPointContext.DataPointType;
 import com.facilio.report.context.ReportDataPointContext.OrderByFunction;
+import com.facilio.report.util.ReportUtil;
 import com.facilio.report.context.ReportPivotTableDataContext;
 
 
@@ -39,6 +41,7 @@ import com.facilio.report.context.ReportPivotTableDataContext;
 
 public class ConstructTabularReportData extends FacilioCommand {
 	private FacilioModule module;
+	private LinkedHashMap<String, String> tableAlias = new LinkedHashMap<String, String>();
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		
@@ -67,7 +70,6 @@ public class ConstructTabularReportData extends FacilioCommand {
 		}
 		
 		context.put(FacilioConstants.ContextNames.MODULE, module);
-		
 		reportContext.setModuleId(module.getModuleId());
 		
 		if(basecriteria != null) {
@@ -136,6 +138,7 @@ public class ConstructTabularReportData extends FacilioCommand {
 		context.put(FacilioConstants.ContextNames.ROW_ALIAS, rowAlias);
 		context.put(FacilioConstants.ContextNames.DATA_ALIAS, dataAlias);
 		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
+		context.put(FacilioConstants.ContextNames.TABLE_ALIAS, tableAlias);
 		return false;
 	}
 	
@@ -168,8 +171,9 @@ public class ConstructTabularReportData extends FacilioCommand {
 		if (xField == null) {
 			throw new Exception("atleast one row mandatory");
 		}
+		xField.setTableAlias(getAndSetModuleAlias(xField.getModule().getName(), firstRow.getAlias()));
 		xAxis.setField(xAxisModule, xField);
-		if(firstRow.getModuleName() != null) {
+		if(firstRow.getModuleName() != null && !firstRow.getModuleName().equalsIgnoreCase(module.getName())) {
 			xAxis.setModule(modBean.getModule(firstRow.getModuleName()));
 		}
 		if(firstRow.getAlias() != null) {
@@ -267,6 +271,7 @@ public class ConstructTabularReportData extends FacilioCommand {
 				}
 				if(groupByRow.getAlias() != null) {
 					groupByField.setAlias(groupByRow.getAlias());
+					gField.setTableAlias(getAndSetModuleAlias(gField.getModule().getName(), groupByRow.getAlias()));
 					if(groupByField.getAlias().equals(sortBy.get("alias"))) {
 						dataPointContext.setOrderByFunc(OrderByFunction.valueOf(((Number)sortBy.get("order")).intValue()));
 						List<String> orderBy = new ArrayList<>();
@@ -277,7 +282,7 @@ public class ConstructTabularReportData extends FacilioCommand {
 				}
 				groupByField.setField(groupByModule, gField);
 				groupByField.setAlias(groupByRow.getAlias());	
-				if(groupByRow.getModuleName() != null) {
+				if(groupByRow.getModuleName() != null && !groupByRow.getModuleName().equalsIgnoreCase(module.getName())) {
 					groupByField.setModule(modBean.getModule(groupByRow.getModuleName()));
 				}
 				groupByFields.add(groupByField);
@@ -294,5 +299,22 @@ public class ConstructTabularReportData extends FacilioCommand {
 	
 	private static String getAggrCompleteColumnName (String name, AggregateOperator aggr) {
 		return aggr == null || aggr == CommonAggregateOperator.ACTUAL ? name : aggr.getStringValue()+"("+name+")";
+	}
+	
+	private String getAndSetModuleAlias(String moduleName, String fieldAlias){
+		String alias = "";
+		String moduleAlias = moduleName+"_"+fieldAlias;
+		if(tableAlias.containsKey(moduleAlias)) {
+			alias = tableAlias.get(moduleAlias);
+		}else {
+			if(tableAlias.values().size() > 0) {
+				alias = ReportUtil.getAlias((String) tableAlias.values().toArray()[tableAlias.values().size()-1]);
+			}
+			else {
+				alias =  ReportUtil.getAlias("");
+			}
+			tableAlias.put(moduleAlias, alias);
+		}
+		return alias; 
 	}
 }

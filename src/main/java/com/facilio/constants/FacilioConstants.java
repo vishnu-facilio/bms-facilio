@@ -651,7 +651,7 @@ public class FacilioConstants {
 		public static final String REPORT_DATA = "reportData";
 		public static final String PIVOT_TABLE_DATA = "pivotTableData";
 		public static final String PIVOT_TEMPLATE_JSON = "pivotTemplateJSON";
-		
+		public static final String TABLE_ALIAS = "tableAlias";
 		public static final String ROW_HEADERS="rowHeaders";
 		public static final String DATA_HEADERS="dataHeaders";
 		public static final String ROW_ALIAS="rowAlias";
