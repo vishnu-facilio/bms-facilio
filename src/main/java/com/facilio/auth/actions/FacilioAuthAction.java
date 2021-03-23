@@ -793,7 +793,18 @@ public class FacilioAuthAction extends FacilioAction {
 			return ERROR;
 		}
 
-		Map<String, Object> userMfaSettings = IAMUserUtil.getUserMfaSettings(emailFromDigest);
+		AppDomain.GroupType groupType = AppDomain.GroupType.FACILIO;
+		if (StringUtils.isNotEmpty(getLookUpType())) {
+			if (getLookUpType().equalsIgnoreCase("service") || getLookUpType().equalsIgnoreCase("tenant")) {
+				groupType = AppDomain.GroupType.TENANT_OCCUPANT_PORTAL;
+			} else if (getLookUpType().equalsIgnoreCase("vendor")) {
+				groupType = AppDomain.GroupType.VENDOR_PORTAL;
+			} else {
+				groupType = AppDomain.GroupType.FACILIO;
+			}
+		}
+
+		Map<String, Object> userMfaSettings = IAMUserUtil.getUserMfaSettings(emailFromDigest, groupType);
 		boolean isVerified = IAMUserUtil.totpChecking(this.totp, (long) userMfaSettings.get("userId"));
 
 		if (!isVerified) {
@@ -868,7 +879,11 @@ public class FacilioAuthAction extends FacilioAction {
 					userType = "mobile";
 				}
 
-				Map<String, Object> userMfaSettings = IAMUserUtil.getUserMfaSettings(getUsername());
+				Map<String, Object> userMfaSettings = null;
+				if (!portalUser) {
+					userMfaSettings = IAMUserUtil.getUserMfaSettings(getUsername(), AppDomain.GroupType.FACILIO);
+				}
+
 				boolean hasMfaSettings = false;
 				if (MapUtils.isNotEmpty(userMfaSettings)) {
 					Boolean totpEnabled = (Boolean) userMfaSettings.get("totpEnabled");
@@ -939,7 +954,18 @@ public class FacilioAuthAction extends FacilioAction {
 			return ERROR;
 		}
 
-		Map<String, Object> userMfaSettings = IAMUserUtil.getUserMfaSettings(emailFromDigest);
+		AppDomain.GroupType groupType = AppDomain.GroupType.FACILIO;
+		if (StringUtils.isNotEmpty(getLookUpType())) {
+			if (getLookUpType().equalsIgnoreCase("service") || getLookUpType().equalsIgnoreCase("tenant")) {
+				groupType = AppDomain.GroupType.TENANT_OCCUPANT_PORTAL;
+			} else if (getLookUpType().equalsIgnoreCase("vendor")) {
+				groupType = AppDomain.GroupType.VENDOR_PORTAL;
+			} else {
+				groupType = AppDomain.GroupType.FACILIO;
+			}
+		}
+
+		Map<String, Object> userMfaSettings = IAMUserUtil.getUserMfaSettings(emailFromDigest, groupType);
 		SettingsMfa settingsMfa = new SettingsMfa();
 		settingsMfa.generateMfaData((Long) userMfaSettings.get("userId"));
 
@@ -968,7 +994,18 @@ public class FacilioAuthAction extends FacilioAction {
 			return ERROR;
 		}
 
-		Map<String, Object> userMfaSettings = IAMUserUtil.getUserMfaSettings(emailFromDigest);
+		AppDomain.GroupType groupType = AppDomain.GroupType.FACILIO;
+		if (StringUtils.isNotEmpty(getLookUpType())) {
+			if (getLookUpType().equalsIgnoreCase("service") || getLookUpType().equalsIgnoreCase("tenant")) {
+				groupType = AppDomain.GroupType.TENANT_OCCUPANT_PORTAL;
+			} else if (getLookUpType().equalsIgnoreCase("vendor")) {
+				groupType = AppDomain.GroupType.VENDOR_PORTAL;
+			} else {
+				groupType = AppDomain.GroupType.FACILIO;
+			}
+		}
+
+		Map<String, Object> userMfaSettings = IAMUserUtil.getUserMfaSettings(emailFromDigest, groupType);
 		if(IAMUserUtil.totpChecking(totp, (long) userMfaSettings.get("userId"))){
 			IAMUserUtil.updateUserMfaSettingsStatus((long) userMfaSettings.get("userId"),true);
 

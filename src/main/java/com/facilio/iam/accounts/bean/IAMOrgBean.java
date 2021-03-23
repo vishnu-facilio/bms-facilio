@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.sso.DomainSSO;
 import org.json.simple.JSONObject;
 
@@ -55,11 +56,11 @@ public interface IAMOrgBean {
 
 	public boolean deleteAccountSSO(long orgId) throws Exception;
 	
-	public Map<String,Boolean> getMfaSettings(long orgId) throws Exception;
+	public Map<String,Boolean> getMfaSettings(long orgId, AppDomain.GroupType groupType) throws Exception;
 	
-	public void enableTotp(long orgId) throws Exception ;
+	public void enableTotp(long orgId, AppDomain.GroupType groupType) throws Exception;
 	
-	public void disableTotp(long orgId) throws Exception;
+	public void disableTotp(long orgId, AppDomain.GroupType groupType) throws Exception;
 
 	public boolean updateDomainSSOStatus(String domain, boolean status) throws Exception;
 }

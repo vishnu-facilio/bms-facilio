@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.sso.AccountSSO;
@@ -52,9 +53,9 @@ public class IAMOrgUtil {
 		FacilioService.runAsService(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getOrgBean().updateLoggerLevel(level, orgId));
 	}
 	
-	public static Map<String,Boolean> getMfaSettings(long orgId) throws Exception{
+	public static Map<String,Boolean> getMfaSettings(long orgId, AppDomain.GroupType groupType) throws Exception{
 		
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getOrgBean().getMfaSettings(orgId)) ;
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getOrgBean().getMfaSettings(orgId, groupType)) ;
 		
 	}
 
@@ -109,13 +110,13 @@ public class IAMOrgUtil {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getOrgBean().deleteAccountSSO(orgId));
 	}
 
-	public static void enableTotp(long orgId) throws Exception{
-		FacilioService.runAsService(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getOrgBean().enableTotp(orgId));
+	public static void enableTotp(long orgId, AppDomain.GroupType groupType) throws Exception{
+		FacilioService.runAsService(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getOrgBean().enableTotp(orgId, groupType));
 		
 	}
 
-	public static void disableTotp(long orgId) throws Exception{
-		FacilioService.runAsService(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getOrgBean().disableTotp(orgId));
+	public static void disableTotp(long orgId, AppDomain.GroupType groupType) throws Exception{
+		FacilioService.runAsService(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getOrgBean().disableTotp(orgId, groupType));
 		
 	}
 }

@@ -229,6 +229,7 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		props.put("orgId", orgId);
 		props.put("totpEnabled",false);
 		props.put("motpEnabled",false);
+		props.put("groupType", 1);
 		insertBuilder.addRecord(props);
 		insertBuilder.save();
 		
@@ -613,11 +614,12 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 	}
 
 	@Override
-	public Map<String, Boolean> getMfaSettings(long orgId) throws Exception {
+	public Map<String, Boolean> getMfaSettings(long orgId, AppDomain.GroupType groupType) throws Exception {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(IAMAccountConstants.getOrgMfaFields())
 				.table(IAMAccountConstants.getMfaSettings().getTableName())
-		        .andCondition(CriteriaAPI.getCondition("OrgMFASettings.ORGID", "orgId",orgId + "", NumberOperators.EQUALS));
+		        .andCondition(CriteriaAPI.getCondition("OrgMFASettings.ORGID", "orgId",orgId + "", NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("OrgMFASettings.APP_GROUP_TYPE", "groupType",groupType.getIndex()+"", NumberOperators.EQUALS));
 		List<Map<String, Object>> props = selectBuilder.get();
 		if(props != null && !props.isEmpty()) {
 			
@@ -630,12 +632,13 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		}
 		return null;
 	}
-    private boolean changeMfaSettings(long orgId,boolean value,String type) throws Exception {
+    private boolean changeMfaSettings(long orgId, boolean value, String type, AppDomain.GroupType groupType) throws Exception {
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(IAMAccountConstants.getMfaSettings().getTableName())
 				.fields(IAMAccountConstants.getOrgMfaFields())
-				.andCondition(CriteriaAPI.getCondition("OrgMFASettings.ORGID", "orgId",orgId + "", NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition("OrgMFASettings.ORGID", "orgId",orgId + "", NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("OrgMFASettings.APP_GROUP_TYPE", "groupType",groupType.getIndex()+"", NumberOperators.EQUALS));
 		
 		Map<String, Object> props = new HashMap<>(); 
         props.put(type,value); 
@@ -643,13 +646,13 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		
 		return true;
 	}
-    public void enableTotp(long orgId) throws Exception {
+    public void enableTotp(long orgId, AppDomain.GroupType groupType) throws Exception {
     	
-    	changeMfaSettings(orgId,true,"totpEnabled");
+    	changeMfaSettings(orgId,true,"totpEnabled", groupType);
    
     }
-    public void disableTotp(long orgId) throws Exception{
+    public void disableTotp(long orgId, AppDomain.GroupType groupType) throws Exception{
     	
-    	changeMfaSettings(orgId,false,"totpEnabled");
+    	changeMfaSettings(orgId,false,"totpEnabled", groupType);
     }
 }

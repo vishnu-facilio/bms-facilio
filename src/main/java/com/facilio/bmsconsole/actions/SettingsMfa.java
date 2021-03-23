@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.*;
 
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.IAMUser;
 import org.apache.log4j.Logger;
 
@@ -35,20 +36,20 @@ public class SettingsMfa extends FacilioAction {
 
 	public String getMfa() throws Exception{
 	
-		Map<String,Boolean> orgMfaSettings = IAMOrgUtil.getMfaSettings(AccountUtil.getCurrentOrg().getOrgId());
+		Map<String,Boolean> orgMfaSettings = IAMOrgUtil.getMfaSettings(AccountUtil.getCurrentOrg().getOrgId(), AppDomain.GroupType.FACILIO);
 		setResult("mfaSettings",orgMfaSettings);
 		return "success" ;	
 	}
 	
 	public String totpEnabled() throws Exception{
 		
-		IAMOrgUtil.enableTotp(AccountUtil.getCurrentOrg().getOrgId());
+		IAMOrgUtil.enableTotp(AccountUtil.getCurrentOrg().getOrgId(), AppDomain.GroupType.FACILIO);
 		return "success";
 	}
     
 	public String totpDisabled() throws Exception{
 	
-		IAMOrgUtil.disableTotp(AccountUtil.getCurrentOrg().getOrgId());
+		IAMOrgUtil.disableTotp(AccountUtil.getCurrentOrg().getOrgId(), AppDomain.GroupType.FACILIO);
 		return "success";
 	}
 

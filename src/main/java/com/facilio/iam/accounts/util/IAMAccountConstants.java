@@ -682,6 +682,13 @@ public class IAMAccountConstants {
 			motpEnabled.setColumnName("IS_MOTP_ENABLED");
 			motpEnabled.setModule(module);
 			fields.add(motpEnabled);
+
+			FacilioField groupType = new FacilioField();
+			groupType.setName("groupType");
+			groupType.setDataType(FieldType.NUMBER);
+			groupType.setColumnName("APP_GROUP_TYPE");
+			groupType.setModule(module);
+			fields.add(groupType);
 			
 			return fields;
 			

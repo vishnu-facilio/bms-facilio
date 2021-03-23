@@ -330,8 +330,8 @@ public class IAMUserUtil {
 		return getUserForPhone(phone, identifier, orgId);
 	}
 
-	public static Map<String, Object> getUserMfaSettings(String username) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().getUserMfaSettings(username));
+	public static Map<String, Object> getUserMfaSettings(String username, AppDomain.GroupType groupType) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().getUserMfaSettings(username, groupType));
 	}
 
 	public static Map<String,Object> getUserMfaSettings(long userId) throws Exception{

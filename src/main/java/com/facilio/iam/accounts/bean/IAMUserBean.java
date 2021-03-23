@@ -150,7 +150,7 @@ public interface IAMUserBean {
 
 	public Map<String, Object> getUserMfaSettings(long userId) throws Exception;
 
-	public Map<String, Object> getUserMfaSettings(String email) throws Exception;
+	public Map<String, Object> getUserMfaSettings(String email, AppDomain.GroupType groupType) throws Exception;
 
 	public void updateUserMfaSettingsStatus(long userId, boolean value) throws Exception;
 

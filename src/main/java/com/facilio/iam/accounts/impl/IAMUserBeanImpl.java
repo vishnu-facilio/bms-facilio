@@ -1335,7 +1335,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
-	public Map<String, Object> getUserMfaSettings(String email) throws Exception {
+	public Map<String, Object> getUserMfaSettings(String email, AppDomain.GroupType groupType) throws Exception {
 		List<Map<String, Object>> userData = getUserData(email, -1, null);
 		if (CollectionUtils.isEmpty(userData)) {
 			return null;
@@ -1346,7 +1346,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 		for (Map<String, Object> user: userData) {
 			long orgId = (Long) user.get("orgId");
-			Map<String, Boolean> mfaSettings = IAMOrgUtil.getMfaSettings(orgId);
+			Map<String, Boolean> mfaSettings = IAMOrgUtil.getMfaSettings(orgId, groupType);
 			if (!MapUtils.isEmpty(mfaSettings)) {
 				Boolean totpEnabled = mfaSettings.get("totpEnabled");
 				if (totpEnabled != null && totpEnabled) {
