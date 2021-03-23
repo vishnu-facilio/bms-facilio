@@ -105,7 +105,10 @@ public class FormFactory {
 
 		forms.put("site", getSiteForm());
 		forms.put("building", getBuildingForm());
-		forms.put("space", getSpaceForm());
+		forms.put("spaceFromSite", getSpaceFormFromSite());
+		forms.put("spaceFromBuilding", getSpaceFormFromBuilding());
+		forms.put("spaceFromFloor", getSpaceFormFromFloor());
+		forms.put("spaceFromSpace", getSpaceFormFromSpace());
 		forms.put("floor", getFloorForm());
 
 		return forms;
@@ -473,7 +476,7 @@ public class FormFactory {
 		List<FacilioForm> externalAttendeeFormList = Arrays.asList(getExternalAttendeeForm());
 		List<FacilioForm> siteFormList = Arrays.asList(getSiteForm());
 		List<FacilioForm> buildingFormList = Arrays.asList(getBuildingForm());
-		List<FacilioForm> spaceFormList = Arrays.asList(getSpaceForm());
+		List<FacilioForm> spaceFormList = Arrays.asList(getSpaceFormFromSite(),getSpaceFormFromBuilding(),getSpaceFormFromFloor(),getSpaceFormFromSpace());
 		List<FacilioForm> floorFormList = Arrays.asList(getFloorForm());
 
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
@@ -672,7 +675,6 @@ public class FormFactory {
 		defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
 		defaultForm.setShowInWeb(true);
 
-//		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(floorModule.getName()));
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
 		fields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
@@ -686,30 +688,131 @@ public class FormFactory {
 		return defaultForm;
 	}
 
-	public static FacilioForm getSpaceForm() {
+	public static FacilioForm getSpaceFormFromSite() {
 		FacilioModule spaceModule = ModuleFactory.getModule(ContextNames.SPACE);
 
 		FacilioForm defaultForm = new FacilioForm();
-		defaultForm.setName("default_space_web");
+		defaultForm.setName("default_space_web_site");
 		defaultForm.setModule(spaceModule);
 		defaultForm.setDisplayName("Standard");
 		defaultForm.setFormType(FacilioForm.FormType.WEB);
 		defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
 		defaultForm.setShowInWeb(true);
 
-//		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(spaceModule.getName()));
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
 		fields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
-		fields.add(new FormField("area", FacilioField.FieldDisplayType.DECIMAL, "Area", FormField.Required.OPTIONAL, 3, 1));
-		fields.add(new FormField("maxOccupancy", FacilioField.FieldDisplayType.NUMBER, "Max Occupancy", FormField.Required.OPTIONAL, 3, 1));
-		fields.add(new FormField("siteId", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED, 4, 1));
+		fields.add(new FormField("spaceCategory", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Category", FormField.Required.OPTIONAL,"spacecategory", 3, 1));
+		fields.add(new FormField("area", FacilioField.FieldDisplayType.DECIMAL, "Area", FormField.Required.OPTIONAL, 4, 1));
+		fields.add(new FormField("site", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site Associated", FormField.Required.REQUIRED,"site", 5, 1));
+		fields.add(new FormField("maxOccupancy", FacilioField.FieldDisplayType.NUMBER, "Maximum Occupancy Count", FormField.Required.OPTIONAL, 6, 1));
+		fields.add(new FormField("location", FieldDisplayType.GEO_LOCATION, "Location", Required.OPTIONAL, 7, 1));
+		
+		try {
+			if(AccountUtil.isModuleLicenseEnabled("ResourceBooking")) {
+				fields.add(new FormField("reservable", FacilioField.FieldDisplayType.DECISION_BOX, "Is Reservable", FormField.Required.OPTIONAL, 8, 1));
+				fields.add(new FormField("unitReservationCost", FieldDisplayType.TEXTBOX, "Unit Reservation Cost", Required.OPTIONAL, 9, 1));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		defaultForm.setFields(fields);
+		return defaultForm;
+	}
+	
+	public static FacilioForm getSpaceFormFromBuilding() {
+		FacilioModule spaceModule = ModuleFactory.getModule(ContextNames.SPACE);
 
-		fields.add(new FormField("building", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Building", FormField.Required.OPTIONAL, 5, 1));
-		fields.add(new FormField("floor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Floor", FormField.Required.OPTIONAL, 6, 1));
+		FacilioForm defaultForm = new FacilioForm();
+		defaultForm.setName("default_space_web_building");
+		defaultForm.setModule(spaceModule);
+		defaultForm.setDisplayName("Standard");
+		defaultForm.setFormType(FacilioForm.FormType.WEB);
+		defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+		defaultForm.setShowInWeb(true);
 
-		fields.add(new FormField("spaceCategory", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Space Category", FormField.Required.OPTIONAL, 7, 1));
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("spaceCategory", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Category", FormField.Required.OPTIONAL,"spacecategory", 3, 1));
+		fields.add(new FormField("area", FacilioField.FieldDisplayType.DECIMAL, "Area", FormField.Required.OPTIONAL, 4, 1));
+		fields.add(new FormField("building", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Building Associated", FormField.Required.REQUIRED,"building", 5, 1));
+		fields.add(new FormField("maxOccupancy", FacilioField.FieldDisplayType.NUMBER, "Maximum Occupancy Count", FormField.Required.OPTIONAL, 6, 1));
+		fields.add(new FormField("location", FieldDisplayType.GEO_LOCATION, "Location", Required.OPTIONAL, 7, 1));
 
+		try {
+			if(AccountUtil.isModuleLicenseEnabled("ResourceBooking")) {
+				fields.add(new FormField("reservable", FacilioField.FieldDisplayType.DECISION_BOX, "Is Reservable", FormField.Required.OPTIONAL, 8, 1));
+				fields.add(new FormField("unitReservationCost", FieldDisplayType.TEXTBOX, "Unit Reservation Cost", Required.OPTIONAL, 9, 1));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		defaultForm.setFields(fields);
+		return defaultForm;
+	}
+	
+	public static FacilioForm getSpaceFormFromFloor() {
+		FacilioModule spaceModule = ModuleFactory.getModule(ContextNames.SPACE);
+
+		FacilioForm defaultForm = new FacilioForm();
+		defaultForm.setName("default_space_web_floor");
+		defaultForm.setModule(spaceModule);
+		defaultForm.setDisplayName("Standard");
+		defaultForm.setFormType(FacilioForm.FormType.WEB);
+		defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+		defaultForm.setShowInWeb(true);
+		
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("spaceCategory", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Category", FormField.Required.OPTIONAL,"spacecategory", 3, 1));
+		fields.add(new FormField("area", FacilioField.FieldDisplayType.DECIMAL, "Area", FormField.Required.OPTIONAL, 4, 1));
+		fields.add(new FormField("floor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Floor Associated", FormField.Required.REQUIRED,"floor", 5, 1));
+		fields.add(new FormField("maxOccupancy", FacilioField.FieldDisplayType.NUMBER, "Maximum Occupancy Count", FormField.Required.OPTIONAL, 6, 1));
+		fields.add(new FormField("location", FieldDisplayType.GEO_LOCATION, "Location", Required.OPTIONAL, 7, 1));
+		
+		try {
+			if(AccountUtil.isModuleLicenseEnabled("ResourceBooking")) {
+				fields.add(new FormField("reservable", FacilioField.FieldDisplayType.DECISION_BOX, "Is Reservable", FormField.Required.OPTIONAL, 8, 1));
+				fields.add(new FormField("unitReservationCost", FieldDisplayType.TEXTBOX, "Unit Reservation Cost", Required.OPTIONAL, 9, 1));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		defaultForm.setFields(fields);
+		return defaultForm;
+	}
+	
+	public static FacilioForm getSpaceFormFromSpace() {
+		FacilioModule spaceModule = ModuleFactory.getModule(ContextNames.SPACE);
+
+		FacilioForm defaultForm = new FacilioForm();
+		defaultForm.setName("default_space_web_space");
+		defaultForm.setModule(spaceModule);
+		defaultForm.setDisplayName("Standard");
+		defaultForm.setFormType(FacilioForm.FormType.WEB);
+		defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+		defaultForm.setShowInWeb(true);
+		
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("spaceCategory", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Category", FormField.Required.OPTIONAL,"spacecategory", 3, 1));
+		fields.add(new FormField("area", FacilioField.FieldDisplayType.DECIMAL, "Area", FormField.Required.OPTIONAL, 4, 1));
+		fields.add(new FormField("parentSpace", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Space Associated", FormField.Required.REQUIRED,"space", 5, 1));
+		fields.add(new FormField("maxOccupancy", FacilioField.FieldDisplayType.NUMBER, "Maximum Occupancy Count", FormField.Required.OPTIONAL, 6, 1));
+		fields.add(new FormField("location", FieldDisplayType.GEO_LOCATION, "Location", Required.OPTIONAL, 7, 1));
+		
+		try {
+			if(AccountUtil.isModuleLicenseEnabled("ResourceBooking")) {
+				fields.add(new FormField("reservable", FacilioField.FieldDisplayType.DECISION_BOX, "Is Reservable", FormField.Required.OPTIONAL, 8, 1));
+				fields.add(new FormField("unitReservationCost", FieldDisplayType.TEXTBOX, "Unit Reservation Cost", Required.OPTIONAL, 9, 1));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		defaultForm.setFields(fields);
 		return defaultForm;
 	}

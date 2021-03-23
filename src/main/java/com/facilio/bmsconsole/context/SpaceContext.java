@@ -71,5 +71,13 @@ public class SpaceContext extends BaseSpaceContext {
 	public void setNoOfSubSpaces(long noOfSubSpaces) {
 		this.noOfSubSpaces = noOfSubSpaces;
 	}
+	
+	private LocationContext location;
+	public LocationContext getLocation() {
+        return location;
+    }
 
+    public void setLocation(LocationContext location) {
+        this.location = location;
+    }
 }

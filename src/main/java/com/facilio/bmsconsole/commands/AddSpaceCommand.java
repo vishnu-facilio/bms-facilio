@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -40,6 +41,10 @@ public class AddSpaceCommand extends FacilioCommand {
 			space.setSpaceType(SpaceType.SPACE);
 			CommonCommandUtil.handleFormDataAndSupplement(fields, space.getData(), Collections.EMPTY_LIST);
 			SpaceAPI.updateSiteAndBuildingId(space);
+			if (space.getLocation() != null) {
+	             TenantsAPI.addAddress(space.getName() + "_location" , space.getLocation());
+	         }
+			
 			RecordAPI.addRecord(false, Collections.singletonList(space), module, fields);												
 			SpaceAPI.updateHelperFields(space);
 			context.put(FacilioConstants.ContextNames.RECORD_ID, space.getId());
