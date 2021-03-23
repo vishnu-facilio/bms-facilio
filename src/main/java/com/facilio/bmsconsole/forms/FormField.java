@@ -129,6 +129,11 @@ public class FormField implements Serializable {
 		this.setLookupModuleName(lookupModuleName);
 	}
 	
+	public FormField(String name, FieldDisplayType displayType, String displayName, Required required, String lookupModuleName, int sequenceNumber, int span,Boolean isDisabled) {
+		this(name, displayType, displayName, required, lookupModuleName, sequenceNumber, span);
+		this.isDisabled = isDisabled;
+	}
+	
 	public FormField(String name, FieldDisplayType displayType, String displayName, Required required, int sequenceNumber, int span) {
 		this.name = name;
 		this.displayType = displayType;
