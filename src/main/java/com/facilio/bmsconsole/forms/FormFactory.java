@@ -14,6 +14,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.bmsconsole.context.WorkOrderContext.WOUrgency;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.forms.FacilioForm.LabelPosition;
@@ -709,7 +710,7 @@ public class FormFactory {
 		fields.add(new FormField("location", FieldDisplayType.GEO_LOCATION, "Location", Required.OPTIONAL, 7, 1));
 		
 		try {
-			if(AccountUtil.isModuleLicenseEnabled("ResourceBooking")) {
+			if(AccountUtil.isFeatureEnabled(FeatureLicense.RESOURCE_BOOKING)) {
 				fields.add(new FormField("reservable", FacilioField.FieldDisplayType.DECISION_BOX, "Is Reservable", FormField.Required.OPTIONAL, 8, 1));
 				fields.add(new FormField("unitReservationCost", FieldDisplayType.TEXTBOX, "Unit Reservation Cost", Required.OPTIONAL, 9, 1));
 			}
@@ -742,7 +743,7 @@ public class FormFactory {
 		fields.add(new FormField("location", FieldDisplayType.GEO_LOCATION, "Location", Required.OPTIONAL, 7, 1));
 
 		try {
-			if(AccountUtil.isModuleLicenseEnabled("ResourceBooking")) {
+			if(AccountUtil.isFeatureEnabled(FeatureLicense.RESOURCE_BOOKING)) {
 				fields.add(new FormField("reservable", FacilioField.FieldDisplayType.DECISION_BOX, "Is Reservable", FormField.Required.OPTIONAL, 8, 1));
 				fields.add(new FormField("unitReservationCost", FieldDisplayType.TEXTBOX, "Unit Reservation Cost", Required.OPTIONAL, 9, 1));
 			}
@@ -774,7 +775,7 @@ public class FormFactory {
 		fields.add(new FormField("location", FieldDisplayType.GEO_LOCATION, "Location", Required.OPTIONAL, 7, 1));
 		
 		try {
-			if(AccountUtil.isModuleLicenseEnabled("ResourceBooking")) {
+			if(AccountUtil.isFeatureEnabled(FeatureLicense.RESOURCE_BOOKING)) {
 				fields.add(new FormField("reservable", FacilioField.FieldDisplayType.DECISION_BOX, "Is Reservable", FormField.Required.OPTIONAL, 8, 1));
 				fields.add(new FormField("unitReservationCost", FieldDisplayType.TEXTBOX, "Unit Reservation Cost", Required.OPTIONAL, 9, 1));
 			}
@@ -806,7 +807,7 @@ public class FormFactory {
 		fields.add(new FormField("location", FieldDisplayType.GEO_LOCATION, "Location", Required.OPTIONAL, 7, 1));
 		
 		try {
-			if(AccountUtil.isModuleLicenseEnabled("ResourceBooking")) {
+			if(AccountUtil.isFeatureEnabled(FeatureLicense.RESOURCE_BOOKING)) {
 				fields.add(new FormField("reservable", FacilioField.FieldDisplayType.DECISION_BOX, "Is Reservable", FormField.Required.OPTIONAL, 8, 1));
 				fields.add(new FormField("unitReservationCost", FieldDisplayType.TEXTBOX, "Unit Reservation Cost", Required.OPTIONAL, 9, 1));
 			}
