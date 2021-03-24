@@ -856,7 +856,10 @@ public class WorkflowRuleAPI {
 				}
 
 				if (fetchChildren && MapUtils.isNotEmpty(ruleTriggerMap)) {
-					rule.setTriggers(new ArrayList<>(ruleTriggerMap.get(rule.getId())));
+					Set<BaseTriggerContext> triggerContexts = ruleTriggerMap.get(rule.getId());
+					if (CollectionUtils.isNotEmpty(triggerContexts)) {
+						rule.setTriggers(new ArrayList<>(triggerContexts));
+					}
 				}
 
 				if (EventType.FIELD_CHANGE.isPresent(rule.getActivityType())) {
