@@ -963,6 +963,12 @@ public class FormsAPI {
 			if (field != null) {
 				mutatedField.setFieldId(field.getFieldId());
 				mutatedField.setField(field);
+				if (field instanceof BaseLookupField) {
+					FacilioModule lookupMod = ((BaseLookupField) field).getLookupModule();
+					if (lookupMod != null) {
+						mutatedField.setLookupModuleName(lookupMod.getName());
+					}
+				}
 			}
 			fields.set(i, mutatedField);
 		}
