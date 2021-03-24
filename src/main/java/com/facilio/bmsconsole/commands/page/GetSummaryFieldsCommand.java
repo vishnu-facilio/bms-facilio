@@ -63,7 +63,8 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 		if (fields == null) {
 			
 			FacilioForm form = fetchForm(formId);
-			fields = form.getFields().stream().filter(formField -> formField.getField() != null && !formField.getField().isMainField() && !formField.isHideField())
+			fields = form.getFields().stream().filter(formField -> formField.getField() != null && !formField.getField().isMainField() &&
+					(formField.getHideField() == null || !formField.getHideField()))
 					.collect(Collectors.toList());
 			
 			if (AccountUtil.getCurrentOrg().getOrgId() != 406) {	// Sort based on form
