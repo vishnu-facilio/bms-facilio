@@ -643,6 +643,70 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 		}
 		
 	},
+	GET_APPORVAL_PERMALINK_URL(27, "getApprovalPermaLink") {
+
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			if (objects == null || objects.length < 1) {
+				return null;
+			}
+			
+			LOGGER.log(Level.SEVERE, "approval recordId -- "+(long)objects[1]);
+			
+			User user = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
+			JSONObject jObj = new JSONObject();
+			jObj.put("recordId", (long)objects[1]);
+			jObj.put("allowUrls",(String)objects[2]);
+			
+			String moduleName = (String)objects[3];
+			boolean getTransitionDetails = false;
+			if (objects.length > 4) {
+				getTransitionDetails =  (boolean)objects[4];
+			}
+			
+			List<Map<String, Object>> details = new ArrayList<>();
+			
+			ModuleBaseWithCustomFields record = RecordAPI.getRecord(moduleName, (long)objects[1]);
+			
+			if(record.getStateFlowId() > 0 && record.getModuleState() != null) {
+				
+				LOGGER.log(Level.SEVERE, "approval record.getStateFlowId() -- "+record.getStateFlowId());
+				
+				List<WorkflowRuleContext> nextStateRule = StateFlowRulesAPI.getAvailableState(record.getApprovalFlowId(), record.getApprovalStatus().getId(), moduleName, record, new FacilioContext());
+				jObj.put("moduleId", record.getModuleId());
+				jObj.put("moduleName", moduleName);
+				ArrayList<String> permalinks = new ArrayList<String>();
+				
+				if(CollectionUtils.isNotEmpty(nextStateRule)){
+					
+					LOGGER.log(Level.SEVERE, "approval nextStateRule -- "+nextStateRule);
+					
+					for(WorkflowRuleContext rule : nextStateRule) {
+						long transitionId = rule.getId();
+						jObj.put("transitionId", transitionId);
+						String token = AccountUtil.getUserBean().generatePermalink(user, jObj);
+						String permalLinkURL = objects[0].toString()+objects[2].toString()+"?token=" + token;
+						
+						if (getTransitionDetails) {
+							Map<String, Object> detail = new HashMap<>();
+							detail.put("permalink", permalLinkURL);
+							detail.put("transitionId", transitionId);
+							detail.put("name", rule.getName());
+							details.add(detail);
+						}
+						
+						permalinks.add(permalLinkURL);
+					}
+					return getTransitionDetails ? details : permalinks;
+				}
+			}
+			return null;
+			
+				
+		}
+		
+	},
 	GET_TIME_INTERVALS(20, "getTimeIntervals") {
 
 		@Override
