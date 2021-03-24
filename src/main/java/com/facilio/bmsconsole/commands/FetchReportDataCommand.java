@@ -1220,9 +1220,9 @@ public class FetchReportDataCommand extends FacilioCommand {
 			.on(getAndSetModuleAlias(reportModule.getExtendModule().getName(),alias)+".ID="+reportModule.getExtendModule().getTableName()+".ID");
 		selectBuilder.addJoinModules(Collections.singletonList(reportModule.getExtendModule()));
 				
-		selectBuilder.innerJoin(reportModule.getTableName()+" "+getAndSetModuleAlias(reportModule.getName(),alias))
-			.on(getAndSetModuleAlias(reportModule.getName(),alias)+".ID="+reportModule.getTableName()+".ID");
-		selectBuilder.addJoinModules(Collections.singletonList(reportModule));
+//		selectBuilder.innerJoin(reportModule.getTableName()+" "+getAndSetModuleAlias(reportModule.getName(),alias))
+//			.on(getAndSetModuleAlias(reportModule.getName(),alias)+".ID="+reportModule.getTableName()+".ID");
+//		selectBuilder.addJoinModules(Collections.singletonList(reportModule));
 	}
 }
 
