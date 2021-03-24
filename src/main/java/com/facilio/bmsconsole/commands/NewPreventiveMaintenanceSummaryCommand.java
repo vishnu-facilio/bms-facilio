@@ -77,14 +77,15 @@ public class NewPreventiveMaintenanceSummaryCommand extends FacilioCommand {
 		if (pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTI_SITE) {
 			pm.setSiteIds(PreventiveMaintenanceAPI.getPMSites(pm.getId()));
 		}
-		
+		Boolean hidePmPlanner = (Boolean) context.get(FacilioConstants.ContextNames.HIDE_PM_RESOURCE_PLANNER);
+		hidePmPlanner = hidePmPlanner != null && hidePmPlanner;
 		if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE
 				|| pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTI_SITE) {
 			List<PMIncludeExcludeResourceContext> pmIncludeExcludeList = TemplateAPI.getPMIncludeExcludeList(pm.getId(), null, null);
-			pm.setPmIncludeExcludeResourceContexts(pmIncludeExcludeList);
-			Boolean hidePmPlanner = (Boolean) context.get(FacilioConstants.ContextNames.HIDE_PM_RESOURCE_PLANNER);
-			if (hidePmPlanner == null || !hidePmPlanner) {
+
+			if (!hidePmPlanner) {
 				PreventiveMaintenanceAPI.populateResourcePlanner(pm);
+				pm.setPmIncludeExcludeResourceContexts(pmIncludeExcludeList);
 			}
 
 			if (CollectionUtils.isNotEmpty(pmIncludeExcludeList)) {
@@ -189,9 +190,15 @@ public class NewPreventiveMaintenanceSummaryCommand extends FacilioCommand {
 		if (sectionTemplate != null) {
 			for (int i = 0; i < sectionTemplate.size(); i++) {
 				TaskSectionTemplate section = sectionTemplate.get(i);
+				if (hidePmPlanner) {
+					section.setPmIncludeExcludeResourceContexts(null);
+				}
 				if (section.getTaskTemplates() != null) {
 					for (int j = 0; j < section.getTaskTemplates().size(); j++) {
 						TaskTemplate task = section.getTaskTemplates().get(j);
+						if (hidePmPlanner) {
+							task.setPmIncludeExcludeResourceContexts(null);
+						}
 						task.setReadingRules(fieldVsRules.get(task.getReadingFieldId()));
 					}
 				}
