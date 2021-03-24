@@ -989,6 +989,16 @@
 
 	<package name="workOrderApiV2" namespace="/api/v2/workorders"
 		extends="v2Api">
+
+		<action name="pmResourcePlanner" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="pmResourcePlanner">
+			<param name="moduleName">planned</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<result name="success" type="json">
+				<param name="excludeNullProperties">true</param>
+				<param name="includeProperties">^resourcePlanners.*</param>
+			</result>
+		</action>
 		
 		<action name="pmDetail" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="fetchPreventiveMaintenanceDetails">

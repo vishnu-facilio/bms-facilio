@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.templates;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -37,6 +39,10 @@ public class TaskSectionTemplate extends Template {
 	public void setPmIncludeExcludeResourceContexts(List<PMIncludeExcludeResourceContext> pmIncludeExcludeResourceContexts) {
 		this.pmIncludeExcludeResourceContexts = pmIncludeExcludeResourceContexts;
 	}
+
+	@Getter
+	@Setter
+	private int pmIncludeExcludeCount;
 	
 	private List<PMTaskSectionTemplateTriggers> pmTaskSectionTemplateTriggers;
 	

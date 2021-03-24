@@ -16,6 +16,10 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.context.*;
+import com.facilio.v3.context.Constants;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -30,34 +34,14 @@ import org.json.simple.parser.ParseException;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.ActivityContext;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.ActionForm;
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.AttachmentContext.AttachmentType;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.FormLayout;
-import com.facilio.bmsconsole.context.PMIncludeExcludeResourceContext;
-import com.facilio.bmsconsole.context.PMJobsContext;
-import com.facilio.bmsconsole.context.PMReminder;
-import com.facilio.bmsconsole.context.PMReminderAction;
-import com.facilio.bmsconsole.context.PMTriggerContext;
-import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
-import com.facilio.bmsconsole.context.RecordSummaryLayout;
-import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.context.SpaceContext;
-import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
-import com.facilio.bmsconsole.context.TaskSectionContext;
-import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
-import com.facilio.bmsconsole.context.ViewLayout;
-import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderContext.AllowNegativePreRequisite;
 import com.facilio.bmsconsole.templates.DefaultTemplate;
 import com.facilio.bmsconsole.templates.EMailTemplate;
@@ -332,7 +316,6 @@ public class WorkOrderAction extends FacilioAction {
 		}
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, preventivemaintenance);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
-//		context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
 		context.put(FacilioConstants.ContextNames.PREREQUISITE_APPROVER_TEMPLATES, prerequisiteApproverTemplates);
 		context.put(FacilioConstants.ContextNames.TASK_SECTION_TEMPLATES, sectionTemplates);
 		context.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
@@ -1019,11 +1002,38 @@ public class WorkOrderAction extends FacilioAction {
 		setReminders((List<PMReminder>) context.get(FacilioConstants.ContextNames.PM_REMINDERS));
 		return SUCCESS;
 	}
-	
+
+	@Getter
+	@Setter
+	private Collection<PMResourcePlannerContext> resourcePlanners;
+
+	public String pmResourcePlanner() throws Exception {
+		FacilioContext context = new FacilioContext();
+		Constants.setRecordId(context, id.get(0));
+
+		FacilioChain resourcePlannerChain = FacilioChainFactory.getResourcePlannerChain();
+		resourcePlannerChain.execute(context);
+
+		Collection<PMResourcePlannerContext> result = (Collection<PMResourcePlannerContext>) Constants.getResult(context);
+		this.setResourcePlanners(result);
+		return SUCCESS;
+	}
+
+	private boolean hidePMResourcePlanner;
+
+	public void setHidePMResourcePlanner(boolean hidePMResourcePlanner) {
+		this.hidePMResourcePlanner = hidePMResourcePlanner;
+	}
+
+	public boolean getHidePMResourcePlanner() {
+		return this.hidePMResourcePlanner;
+	}
+
 	@SuppressWarnings("unchecked")
 	public String fetchPreventiveMaintenanceDetails() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, id.get(0));
+		context.put(ContextNames.HIDE_PM_RESOURCE_PLANNER, getHidePMResourcePlanner());
 
 		FacilioChain pmSummary = FacilioChainFactory.fetchPreventiveMaintenanceDetailsChain();
 		pmSummary.execute(context);

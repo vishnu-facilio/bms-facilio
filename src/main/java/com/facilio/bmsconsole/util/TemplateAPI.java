@@ -1041,7 +1041,13 @@ public class TemplateAPI {
 			List<Long> sectionIDs = new ArrayList<>();
 			for (Map<String, Object> prop : sectionProps) {
 				TaskSectionTemplate sectionTemplate = FieldUtil.getAsBeanFromMap(prop, TaskSectionTemplate.class);
-				sectionTemplate.setPmIncludeExcludeResourceContexts(TemplateAPI.getPMIncludeExcludeList(null, sectionTemplate.getId(), null));
+				List<PMIncludeExcludeResourceContext> pmIncludeExcludeList = TemplateAPI.getPMIncludeExcludeList(null, sectionTemplate.getId(), null);
+				sectionTemplate.setPmIncludeExcludeResourceContexts(pmIncludeExcludeList);
+				if (CollectionUtils.isNotEmpty(pmIncludeExcludeList)) {
+					sectionTemplate.setPmIncludeExcludeCount(pmIncludeExcludeList.size());
+				} else {
+					sectionTemplate.setPmIncludeExcludeCount(0);
+				}
 				sections.put(sectionTemplate.getId(), sectionTemplate);
 				sectionIDs.add(sectionTemplate.getId());
 				if (sectionTemplate.getType() == Type.PM_PRE_REQUEST_SECTION.getIntVal()) {
@@ -1161,7 +1167,13 @@ public class TemplateAPI {
 				TaskTemplate template = FieldUtil.getAsBeanFromMap(prop, TaskTemplate.class);
 				if(template.getType()!=Type.PM_PRE_REQUEST.getIntVal()){
 					taskTemplates.add(template);
-					template.setPmIncludeExcludeResourceContexts(getPMIncludeExcludeList(null, null, template.getId()));
+					List<PMIncludeExcludeResourceContext> pmIncludeExcludeList = getPMIncludeExcludeList(null, null, template.getId());
+					template.setPmIncludeExcludeResourceContexts(pmIncludeExcludeList);
+					if (CollectionUtils.isNotEmpty(pmIncludeExcludeList)) {
+						template.setPmIncludeExcludeCount(pmIncludeExcludeList.size());
+					} else {
+						template.setPmIncludeExcludeCount(0);
+					}
 					TaskContext task = template.getTask();
 				
 					String sectionName = null;
@@ -1252,7 +1264,13 @@ public class TemplateAPI {
 	
 	private static TaskSectionTemplate getTaskGroupTemplateFromMap(Map<String, Object> templateMap) throws Exception {
 		TaskSectionTemplate template = FieldUtil.getAsBeanFromMap(templateMap, TaskSectionTemplate.class);
-		template.setPmIncludeExcludeResourceContexts(getPMIncludeExcludeList(null,template.getId(),null));
+		List<PMIncludeExcludeResourceContext> pmIncludeExcludeList = getPMIncludeExcludeList(null, template.getId(), null);
+		template.setPmIncludeExcludeResourceContexts(pmIncludeExcludeList);
+		if (CollectionUtils.isNotEmpty(pmIncludeExcludeList)) {
+			template.setPmIncludeExcludeCount(pmIncludeExcludeList.size());
+		} else {
+			template.setPmIncludeExcludeCount(0);
+		}
 		template.setTasks(getTasksFromSection(template));
 		return template;
 	}
@@ -1268,7 +1286,14 @@ public class TemplateAPI {
 			List<TaskTemplate> taskTemplates = new ArrayList<>();
 			for (Map<String, Object> prop : taskProps) {
 				TaskTemplate template = FieldUtil.getAsBeanFromMap(prop, TaskTemplate.class);
-				template.setPmIncludeExcludeResourceContexts(getPMIncludeExcludeList(null,null,template.getId()));
+				List<PMIncludeExcludeResourceContext> pmIncludeExcludeList = getPMIncludeExcludeList(null, null, template.getId());
+				template.setPmIncludeExcludeResourceContexts(pmIncludeExcludeList);
+				if (CollectionUtils.isNotEmpty(pmIncludeExcludeList)) {
+					template.setPmIncludeExcludeCount(pmIncludeExcludeList.size());
+				} else {
+					template.setPmIncludeExcludeCount(0);
+				}
+
 				TaskContext task = template.getTask();
 				tasks.add(task);
 				taskTemplates.add(template);

@@ -13,9 +13,7 @@ import java.util.stream.Collectors;
 import com.facilio.accounts.dto.User;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.templates.DefaultTemplate;
 import com.facilio.bmsconsole.util.*;
-import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Context;
 
@@ -80,9 +78,20 @@ public class NewPreventiveMaintenanceSummaryCommand extends FacilioCommand {
 			pm.setSiteIds(PreventiveMaintenanceAPI.getPMSites(pm.getId()));
 		}
 		
-		if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE || pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTI_SITE) {
-			pm.setPmIncludeExcludeResourceContexts(TemplateAPI.getPMIncludeExcludeList(pm.getId(), null, null));
-			PreventiveMaintenanceAPI.populateResourcePlanner(pm);
+		if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE
+				|| pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTI_SITE) {
+			List<PMIncludeExcludeResourceContext> pmIncludeExcludeList = TemplateAPI.getPMIncludeExcludeList(pm.getId(), null, null);
+			pm.setPmIncludeExcludeResourceContexts(pmIncludeExcludeList);
+			Boolean hidePmPlanner = (Boolean) context.get(FacilioConstants.ContextNames.HIDE_PM_RESOURCE_PLANNER);
+			if (hidePmPlanner == null || !hidePmPlanner) {
+				PreventiveMaintenanceAPI.populateResourcePlanner(pm);
+			}
+
+			if (CollectionUtils.isNotEmpty(pmIncludeExcludeList)) {
+				pm.setPmIncludeExcludeCount(pmIncludeExcludeList.size());
+			} else {
+				pm.setPmIncludeExcludeCount(0);
+			}
 		}
 		
 		WorkorderTemplate template = (WorkorderTemplate) TemplateAPI.getTemplate(pm.getTemplateId());

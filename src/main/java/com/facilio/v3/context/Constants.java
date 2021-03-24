@@ -271,4 +271,13 @@ public class Constants {
         Boolean isV4 = (Boolean) context.get(IS_V4);
         return isV4 != null && isV4;
     }
+
+    private static final String RESULT = "result";
+    public static void setResult(Context context, Object result) {
+        context.put(RESULT, result);
+    }
+
+    public static Object getResult(Context context) {
+        return context.get(RESULT);
+    }
 }

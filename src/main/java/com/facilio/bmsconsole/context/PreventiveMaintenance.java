@@ -11,6 +11,8 @@ import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.bmsconsole.util.PMStatus;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 import com.facilio.bmsconsoleV3.context.jobplan.PMJobPlanContextV3;
+import lombok.Getter;
+import lombok.Setter;
 
 public class PreventiveMaintenance extends ResourceContext {
 	
@@ -523,6 +525,10 @@ public class PreventiveMaintenance extends ResourceContext {
 	public void setPmIncludeExcludeResourceContexts(List<PMIncludeExcludeResourceContext> pmIncludeExcludeResourceContexts) {
 		this.pmIncludeExcludeResourceContexts = pmIncludeExcludeResourceContexts;
 	}
+
+	@Getter
+	@Setter
+	private int pmIncludeExcludeCount;
 	
 	private Boolean preventOnNoTask;
 	

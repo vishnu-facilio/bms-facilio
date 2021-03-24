@@ -1278,6 +1278,12 @@ public class FacilioChainFactory {
 		c.addCommand(new GetPMWorkOrders());
 		return c;
 	}
+
+	public static FacilioChain getResourcePlannerChain() {
+		FacilioChain c = FacilioChain.getNonTransactionChain();
+		c.addCommand(new GetPMResourcePlanners());
+		return c;
+	}
 	
 	public static FacilioChain fetchPreventiveMaintenanceDetailsChain() {
 		FacilioChain c = FacilioChain.getNonTransactionChain();

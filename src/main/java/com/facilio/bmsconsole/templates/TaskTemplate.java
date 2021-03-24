@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -33,6 +35,11 @@ public class TaskTemplate extends Template {
 	public void setPmIncludeExcludeResourceContexts(List<PMIncludeExcludeResourceContext> pmIncludeExcludeResourceContexts) {
 		this.pmIncludeExcludeResourceContexts = pmIncludeExcludeResourceContexts;
 	}
+
+	@Getter
+	@Setter
+	private int pmIncludeExcludeCount;
+
 	public String getDescription() {
 		return description;
 	}
