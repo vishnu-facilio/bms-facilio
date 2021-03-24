@@ -60,60 +60,37 @@ import com.facilio.util.FacilioUtil;
 
 public class FormsAPI {
 	
-	public static Map<String, Collection<FacilioForm>> getAllForms(String appLinkName) throws Exception {
-		Map<String, Collection<FacilioForm>> forms = new HashMap<> (FormFactory.getAllForms(appLinkName));
-		if (forms != null && AccountUtil.getCurrentAccount().isFromIos()) {
+	public static Map<String, Collection<FacilioForm>> getMobileForms() throws Exception {
+		Map<String, Collection<FacilioForm>> forms = new HashMap<> ();
+		List<FacilioForm> formList = new ArrayList<>();
+		formList.add(FormFactory.getMobileWorkOrderForm());
+		formList.add(FormFactory.getMobileAssetForm());
+		
+		for(Map.Entry<String, Collection<FacilioForm>> entry :forms.entrySet()) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			for(Map.Entry<String, Collection<FacilioForm>> entry :forms.entrySet()) {
-				Iterator<FacilioForm> iterator = entry.getValue().iterator();
-				List<FacilioForm> formsList = new ArrayList<>();
-				while (iterator.hasNext()) {
-					FacilioForm form = iterator.next();
-					FacilioForm mutatedForm = new FacilioForm(form);
-					formsList.add(mutatedForm);
-					
-					String moduleName = form.getModule().getName();
-					int count = form.getFields().size();
-					List<FacilioField> customFields = modBean.getAllCustomFields(moduleName);
-					if (customFields != null && !customFields.isEmpty()) {
-						List<FormField> fields = new ArrayList<>(form.getFields());
-						mutatedForm.setFields(fields);
-						for (FacilioField f: customFields) {
-							count = count + 1;
-							fields.add(FormsAPI.getFormFieldFromFacilioField(f, count));
-						}
+			Iterator<FacilioForm> iterator = entry.getValue().iterator();
+			List<FacilioForm> formsList = new ArrayList<>();
+			while (iterator.hasNext()) {
+				FacilioForm form = iterator.next();
+				FacilioForm mutatedForm = new FacilioForm(form);
+				formsList.add(mutatedForm);
+				
+				String moduleName = form.getModule().getName();
+				int count = form.getFields().size();
+				List<FacilioField> customFields = modBean.getAllCustomFields(moduleName);
+				if (customFields != null && !customFields.isEmpty()) {
+					List<FormField> fields = new ArrayList<>(form.getFields());
+					mutatedForm.setFields(fields);
+					for (FacilioField f: customFields) {
+						count = count + 1;
+						fields.add(FormsAPI.getFormFieldFromFacilioField(f, count));
 					}
 				}
-				entry.setValue(formsList);
 			}
+			entry.setValue(formsList);
 		}
-		Map<String, Set<FacilioForm>> dbForms = getAllFormsFromDB(appLinkName);
-		if (!dbForms.isEmpty()) {
-			forms.putAll(dbForms);
-		}
+		
 		return forms;
-	}
-	
-	private static Map<String, Set<FacilioForm>> getAllFormsFromDB(String appLinkName) throws Exception {
-		Criteria formTypeCriteria = getFormTypeCriteria(appLinkName);
-		List<FacilioForm> forms = getFormFromDB(formTypeCriteria);
-		
-		if (forms == null || forms.isEmpty()) {
-			return Collections.emptyMap();
-		}
-		
-		Map<String, Set<FacilioForm>> moduleForms = new HashMap<>();
-		
-		for (FacilioForm form: forms) {
-			String moduleName = form.getModule().getName();
-			Set<FacilioForm> set = moduleForms.get(form.getModule().getName());
-			if (set == null) {
-				set = new HashSet<>();
-				moduleForms.put(moduleName, set);
-			}
-			set.add(form);
-		}
-		return moduleForms;
 	}
 
 	private static Criteria getFormTypeCriteria(String appLinkName) throws Exception {

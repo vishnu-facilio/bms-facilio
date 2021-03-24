@@ -6,10 +6,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.facilio.modules.FacilioModule;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
@@ -22,20 +20,17 @@ import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 
 public class FormFactory {
 	
 	private static final Map<String, FacilioForm> FORM_MAP = Collections.unmodifiableMap(initMap());
-	private static final Map<String, Multimap<String, FacilioForm>> ALL_FORMS = Collections.unmodifiableMap(initAllForms());
 	private static final Map<String, Map<String, FacilioForm>> FORMS_LIST = Collections.unmodifiableMap(initFormsList());
 
 	// TODO remove...use FORMS_LIST to get details
@@ -113,50 +108,6 @@ public class FormFactory {
 		forms.put("floor", getFloorForm());
 
 		return forms;
-	}
-    
-	@SuppressWarnings("unchecked") // https://stackoverflow.com/a/11205178
-	public static Map<String, Set<FacilioForm>> getAllForms(String appLinkName) {
-		return (Map<String, Set<FacilioForm>>) (Map<?, ?>) Multimaps.asMap(ALL_FORMS.get(appLinkName));
-	}
-	
-	// TODO remove...use FORMS_LIST to get details
-	private static Map<String, Multimap<String, FacilioForm>> initAllForms() {
-		return ImmutableMap.<String, Multimap<String, FacilioForm>>builder()
-				.put(ApplicationLinkNames.FACILIO_MAIN_APP, ImmutableMultimap.<String, FacilioForm>builder()
-						.put(FacilioConstants.ContextNames.WORK_ORDER, getWebWorkOrderForm())
-						.put(FacilioConstants.ContextNames.ASSET, getAssetForm())
-						.put(FacilioConstants.ContextNames.ENERGY_METER, getEnergyMeterForm())
-						.put(FacilioConstants.ContextNames.TENANT, getTenantForm())
-						.put(FacilioConstants.ContextNames.PURCHASE_REQUEST, getPurchaseRequestForm())
-						.put(FacilioConstants.ContextNames.PURCHASE_ORDER, getPurchaseOrderForm())
-						.put(FacilioConstants.ContextNames.LABOUR, getLabourForm())
-						.put(FacilioConstants.ContextNames.PURCHASE_CONTRACTS, getPurchaseContractForm())
-						.put(FacilioConstants.ContextNames.LABOUR_CONTRACTS, getLabourContractForm())
-						.put(FacilioConstants.ContextNames.INVENTORY_REQUEST, getInventoryRequestForm())
-						.put(FacilioConstants.ContextNames.INSURANCE, getInsuranceForm())
-						.put(FacilioConstants.ContextNames.OCCUPANT, getOccupantForm())
-						.put(FacilioConstants.ContextNames.SERVICE_REQUEST, getServiceRequestForm())
-						.put(FacilioConstants.ContextNames.VENDOR_DOCUMENTS, getVendorDocumentForm())
-						.put(FacilioConstants.ContextNames.CONTACT, getContactForm())
-						.put(FacilioConstants.ContextNames.SAFETY_PLAN, getSafetyPlanForm())
-						.put(FacilioConstants.ContextNames.PRECAUTION, getPrecautionForm())
-						.put(FacilioConstants.ContextNames.HAZARD, getHazardForm())
-						.put(FacilioConstants.ContextNames.CLIENT, getClientForm())
-						.put(FacilioConstants.ContextNames.TENANT_CONTACT, getTenantContactForm())
-						.put(FacilioConstants.ContextNames.VENDOR_CONTACT, getNewVendorContactForm())
-						.put(FacilioConstants.ContextNames.CLIENT_CONTACT, getClientContactForm())
-						.put(FacilioConstants.ContextNames.TENANT_UNIT_SPACE, geTenantUnitSpaceForm())
-						.put(FacilioConstants.ContextNames.EMPLOYEE, geEmployeeContactForm())
-						.put(ContextNames.PEOPLE, getPeopleForm())
-						.put(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS, getRentalLeaseContractForm())
-						.put(FacilioConstants.ContextNames.Reservation.RESERVATION, getReservationForm())
-						.put(FacilioConstants.ContextNames.ITEM_TYPES, getItemTypesForm())
-						.put(FacilioConstants.ContextNames.TOOL_TYPES, getTooltypesForm())
-						.put(FacilioConstants.ContextNames.SERVICE, getServiceForm())
-						.build())
-        			
-				.build();
 	}
 	
 	public static Map<String, FacilioForm> getForms(String moduleName, List<String> appLinkNames) {
@@ -568,18 +519,27 @@ public class FormFactory {
 		return form;
 	}
 	
+	public static FacilioForm getMobileWorkOrderForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("SUBMIT WORKORDER");
+		form.setName("mobile_default");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getMobileWorkOrderFormFields());
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+		return form;
+	}
 	
-	private static List<FormField> getMobileApprovalFormFields() {
-		List<FormField> fields = new ArrayList<>();
-		fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.REQUIRED, 1, 1));
-		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.REQUIRED, 2, 1));
-		fields.add(new FormField("site", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 3, 1));
-		fields.add(new FormField("resource", FieldDisplayType.WOASSETSPACECHOOSER, "Space/Asset", Required.REQUIRED, 4, 1));
-		fields.add(new FormField("assignment", FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", Required.REQUIRED, 5, 1));
-		fields.add(new FormField("priority", FieldDisplayType.LOOKUP_SIMPLE, "Priority", Required.OPTIONAL, "ticketpriority", 6, 1));
-		fields.add(new FormField("urgency", FieldDisplayType.URGENCY, "Urgency", Required.OPTIONAL, "urgency" , 7, 1));
-		fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachment", Required.OPTIONAL, 8, 1));
-		return Collections.unmodifiableList(fields);
+	public static FacilioForm getMobileAssetForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("Asset");
+		form.setName("default_asset_mobile");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.ASSET));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getMobileAssetFormFields());
+		form.setShowInMobile(true);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+		return form;
 	}
 	
 	private static List<FormField> getMobileAssetFormFields() {
