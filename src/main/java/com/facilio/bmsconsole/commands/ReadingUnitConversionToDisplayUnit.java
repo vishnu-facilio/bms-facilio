@@ -66,7 +66,7 @@ public class ReadingUnitConversionToDisplayUnit extends FacilioCommand {
 											ReadingDataMeta currentReadingDataMeta = currentReadingMap.get(ReadingsAPI.getRDMKey(reading.getParentId(), field));
 											if(currentReadingDataMeta!= null && currentReadingDataMeta.getValue() != null && currentReadingDataMeta.getField() != null && currentReadingDataMeta.getField() instanceof NumberField && !currentReadingDataMeta.getValue().equals("-1.0")) {
 												NumberField numberField = (NumberField) currentReadingDataMeta.getField();
-												Object value = UnitsUtil.convertToDisplayUnit(currentReadingDataMeta.getValue(), numberField);	
+												Object value = UnitsUtil.convertToDisplayUnit(readingData.get(fieldName), numberField);	
 												if(value != null) {
 													currentReadingDataMeta.setValue(value);
 												}				
