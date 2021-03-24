@@ -3,6 +3,7 @@ package com.facilio.v3.commands;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
@@ -19,6 +20,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class UpdateCommand extends FacilioCommand {
 
@@ -31,10 +33,24 @@ public class UpdateCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         Map<String, List<V3Context>> recordMap = (Map<String, List<V3Context>>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
-        //copied from GenericUpdateModuleDataCommand
+        int totalCount = 0;
+        Set<String> extendedModules = Constants.getExtendedModules(context); //For adding extended module which has module entry only for base module. Like Assets
+        if (CollectionUtils.isEmpty(extendedModules)) {
+            totalCount += updateData((FacilioContext) context, module.getName(), recordMap.get(module.getName()));
+        }
+        else {
+            for (String extendedModule : extendedModules) {
+                totalCount += updateData((FacilioContext) context, extendedModule, recordMap.get(extendedModule));
+            }
+        }
+        context.put(Constants.ROWS_UPDATED, totalCount);
 
-        String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        return false;
+    }
+
+    private int updateData (FacilioContext context, String moduleName, List<V3Context> records) throws Exception {
+        //copied from GenericUpdateModuleDataCommand
+        ModuleBean modBean = Constants.getModBean();
         FacilioModule module = modBean.getModule(moduleName);
 
         Class beanClass = (Class) context.get(Constants.BEAN_CLASS);
@@ -45,7 +61,7 @@ public class UpdateCommand extends FacilioCommand {
 
         int totalCount = 0;
 
-        for (ModuleBaseWithCustomFields record: recordMap.get(module.getName())) {
+        for (ModuleBaseWithCustomFields record: records) {
             if(record == null || record.getId() < 0) {
                 continue;
             }
@@ -73,8 +89,6 @@ public class UpdateCommand extends FacilioCommand {
             CommonCommandUtil.appendChangeSetMapToContext(context,changeSet,module.getName());
         }
 
-        context.put(Constants.ROWS_UPDATED, totalCount);
-
-        return false;
+        return totalCount;
     }
 }

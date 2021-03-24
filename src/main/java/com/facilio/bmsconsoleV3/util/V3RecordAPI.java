@@ -16,6 +16,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -104,10 +105,6 @@ public class V3RecordAPI {
         FacilioModule module = modBean.getModule(modName);
         List<FacilioField> fields = modBean.getAllFields(modName);
 
-        Class beanClassName = FacilioConstants.ContextNames.getClassFromModule(module);
-        if (beanClassName == null) {
-            beanClassName = V3Context.class;
-        }
         SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
                 .module(module)
                 .beanClass(beanClass)
@@ -124,29 +121,46 @@ public class V3RecordAPI {
         }
     }
 
-    public static List<? extends ModuleBaseWithCustomFields> getRecordsList (String modName, List<Long> recordIds) throws Exception{
+    private static <T extends ModuleBaseWithCustomFields> SelectRecordsBuilder<T> constructBuilder(String modName, Collection<Long> recordIds, Class<T> beanClass) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(modName);
         List<FacilioField> fields = modBean.getAllFields(modName);
 
-        Class beanClassName = FacilioConstants.ContextNames.getClassFromModule(module);
+        Class beanClassName = beanClass == null ? FacilioConstants.ContextNames.getClassFromModule(module) : beanClass;
         if (beanClassName == null) {
             beanClassName = V3Context.class;
         }
-        SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
+        SelectRecordsBuilder<T> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
                 .module(module)
                 .beanClass(beanClassName)
                 .select(fields)
-                .andCondition(CriteriaAPI.getIdCondition(StringUtils.join(recordIds, ","), module))
+                .andCondition(CriteriaAPI.getIdCondition(recordIds, module))
                 ;
 
-        List<? extends ModuleBaseWithCustomFields> records = builder.get();
+        return builder;
+    }
+
+    public static <T extends ModuleBaseWithCustomFields> List<T> getRecordsList (String modName, Collection<Long> recordIds) throws Exception{
+        return getRecordsList(modName, recordIds, null);
+    }
+
+    public static <T extends ModuleBaseWithCustomFields> List<T> getRecordsList (String modName, Collection<Long> recordIds, Class<T> beanClass) throws Exception{
+        List<T> records = constructBuilder(modName, recordIds, beanClass).get();
         if(CollectionUtils.isNotEmpty(records)) {
             return records;
         }
         else {
             return null;
         }
+    }
+
+    public static <T extends ModuleBaseWithCustomFields> Map<Long, T> getRecordsMap (String modName, Collection<Long> recordIds) throws Exception{
+        return getRecordsMap(modName, recordIds, null);
+    }
+
+    public static <T extends ModuleBaseWithCustomFields> Map<Long, T> getRecordsMap (String modName, Collection<Long> recordIds, Class<T> beanClass) throws Exception{
+        Map<Long, T> recordMap = constructBuilder(modName, recordIds, beanClass).getAsMap();
+        return recordMap;
     }
 
     public static List<? extends V3Context> getTransactionRecordsList (String modName, String sourceModName, Long sourceId) throws Exception{

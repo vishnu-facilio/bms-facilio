@@ -3,11 +3,18 @@ package com.facilio.v3.context;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.Map;
 
+@NoArgsConstructor
 public class V3Context extends ModuleBaseWithCustomFields {
+
+    public V3Context (Long id) {
+        this._setId(id);
+    }
+
     private Map<String, List<SubFormContext>> relations;
 
     @JsonIgnore //Because this will lead to stackoverflow error.

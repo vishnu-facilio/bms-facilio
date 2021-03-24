@@ -3,6 +3,7 @@ package com.facilio.v3.commands;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -11,11 +12,13 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.SupplementRecord;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class SaveCommand extends FacilioCommand {
     private FacilioModule module;
@@ -26,11 +29,23 @@ public class SaveCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        //Copied from genericaddmoduledatacommand
         Map<String, List<ModuleBaseWithCustomFields>> recordMap = (Map<String, List<ModuleBaseWithCustomFields>>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
 
-        String moduleName = module.getName();
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        Set<String> extendedModules = Constants.getExtendedModules(context); //For adding extended module which has module entry only for base module. Like Assets
+        if (CollectionUtils.isEmpty(extendedModules)) {
+            insertData((FacilioContext) context, module.getName(), recordMap.get(module.getName()));
+        }
+        else {
+            for (String extendedModule : extendedModules) {
+                insertData((FacilioContext) context, extendedModule, recordMap.get(extendedModule));
+            }
+        }
+        return false;
+    }
+
+    private void insertData(FacilioContext context, String moduleName, List<ModuleBaseWithCustomFields> records) throws Exception {
+        //Copied from genericaddmoduledatacommand
+        ModuleBean modBean = Constants.getModBean();
         FacilioModule module = modBean.getModule(moduleName);
 
         List<FacilioField> fields = modBean.getAllFields(moduleName);
@@ -47,8 +62,6 @@ public class SaveCommand extends FacilioCommand {
 
         insertRecordBuilder.withChangeSet();
         insertRecordBuilder.ignoreSplNullHandling();
-
-        List<ModuleBaseWithCustomFields> records = recordMap.get(module.getName());
 
         if (module.isCustom()) {
             for (ModuleBaseWithCustomFields record: records) {
@@ -70,14 +83,8 @@ public class SaveCommand extends FacilioCommand {
 
         insertRecordBuilder.save();
 
-
-
-
-
         Map<Long, List<UpdateChangeSet>> changeSet = insertRecordBuilder.getChangeSet();
 
         CommonCommandUtil.appendChangeSetMapToContext(context,changeSet,moduleName);
-
-        return false;
     }
 }

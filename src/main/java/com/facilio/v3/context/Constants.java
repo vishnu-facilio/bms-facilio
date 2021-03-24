@@ -77,6 +77,22 @@ public class Constants {
         context.put(BODY_PARAMS, jsonObject);
     }
 
+    private static final String CHANGED_PROPS = "changedProps";
+    public static Set<String> getChangedProps(Context context, String moduleName, Long recordId) {
+        Map<String, Map<Long, Set<String>>> changedPropsMap = (Map<String, Map<Long, Set<String>>>) context.get(CHANGED_PROPS);
+        if (changedPropsMap == null) {
+            return null;
+        }
+        Map<Long, Set<String>> moduleChangedProps = changedPropsMap.get(moduleName);
+        return moduleChangedProps == null ? null : moduleChangedProps.get(recordId);
+    }
+
+    public static void addChangedProps(Context context, String moduleName, Long recordId, Set<String> changedProps) {
+        Map<String, Map<Long, Set<String>>> changedPropsMap = (Map<String, Map<Long, Set<String>>>) context.computeIfAbsent(CHANGED_PROPS, k -> new HashMap<>());
+        Map<Long, Set<String>> moduleChangedProps = changedPropsMap.computeIfAbsent(moduleName, k -> new HashMap<>());
+        moduleChangedProps.put(recordId, changedProps);
+    }
+
     private static final String SUPPLEMENT_MAP = "supplementMap";
     public static void setSupplementMap(Context context, Map<String, Map<String, Object>> supplementMap) {
         context.put(SUPPLEMENT_MAP, supplementMap);
@@ -129,12 +145,30 @@ public class Constants {
     }
 
 
-    public static Map<String, List<ModuleBaseWithCustomFields>> getRecordMap(Context context) {
-        return (Map<String, List<ModuleBaseWithCustomFields>>) context.get(RECORD_MAP);
+    public static <E extends ModuleBaseWithCustomFields> Map<String, List<E>> getRecordMap(Context context) {
+        return (Map<String, List<E>>) context.get(RECORD_MAP);
     }
 
     public static void setRecordMap(Context context, Map<String, List<ModuleBaseWithCustomFields>> recordMap) {
         context.put(RECORD_MAP, recordMap);
+    }
+
+    public static <E extends ModuleBaseWithCustomFields> List<E> getRecordList (Map<String, List<ModuleBaseWithCustomFields>> recordMap, String moduleName) {
+        return (List<E>) recordMap.get(moduleName);
+    }
+
+    public static <E extends ModuleBaseWithCustomFields> List<E> getRecordList (FacilioContext context) {
+        String moduleName = Constants.getModuleName(context);
+        Map<String, List<ModuleBaseWithCustomFields>> recordMap = Constants.getRecordMap(context);
+        return getRecordList(recordMap, moduleName);
+    }
+
+    private static final String EXTENDED_MODULES = "extendedModules";
+    public static Set<String> getExtendedModules (Context context) {
+        return (Set<String>) context.get(EXTENDED_MODULES);
+    }
+    public static void setExtendedModules (Context context, Set<String> extendedModules) {
+        context.put(EXTENDED_MODULES, extendedModules);
     }
 
     public static Map getQueryParams(Context context) {

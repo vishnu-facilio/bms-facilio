@@ -55,8 +55,19 @@ public class V3Config implements V3Builder {
     }
 
     public V3Config(Class bean, ModuleCustomFieldsCount customFieldsCount) {
+        this (bean, customFieldsCount, null);
+    }
+
+    public V3Config(Class bean, ModuleCustomFieldsCount customFieldsCount, V3Config config) {
         this.beanClass = bean;
         this.customFieldsCount = customFieldsCount;
+        if (config != null) {
+            this.createHandler = config.createHandler;
+            this.updateHandler = config.updateHandler;
+            this.deleteHandler = config.deleteHandler;
+            this.listHandler = config.listHandler;
+            this.summaryHandler = config.summaryHandler;
+        }
     }
 
     public UpdateHandler update() {

@@ -45,9 +45,9 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
 
     private  void handleSummaryRequest(String moduleName, long id) throws Exception {
         Object record = getRecord(moduleName, id);
-        Map<String, Object> result = new HashMap<>();
-        result.put(moduleName, record);
-        this.setData(FieldUtil.getAsJSON(result));
+        JSONObject result = new JSONObject();
+        result.put(moduleName, FieldUtil.getAsJSON(record));
+        this.setData(result);
     }
 
 
@@ -248,6 +248,8 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         createRecordChain.execute();
 
         Map<String, List<ModuleBaseWithCustomFields>> recordMap = (Map<String, List<ModuleBaseWithCustomFields>>) context.get(Constants.RECORD_MAP);
+        Set<String> extendedModules = Constants.getExtendedModules(context);
+        moduleName = CollectionUtils.isEmpty(extendedModules) ? moduleName : extendedModules.stream().findFirst().get();
         long id = recordMap.get(moduleName).get(0).getId();
         this.setId(id);
         handleSummaryRequest(moduleName, id);
@@ -332,12 +334,15 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         Map<String, FacilioField> fileFields = getFileFields(moduleName);
 
         Set<String> keys = patchObj.keySet();
+        Set<String> changedProps = new HashSet<>();
         for (String key: keys) {
             FacilioField fileField = fileFields.get(key);
             if (fileField != null && !fileField.isDefault() && patchObj.get(key) == null) {
                 summaryRecord.put(fileField.getName(), patchObj.get(key));
+                changedProps.add(fileField.getName());
             }
             summaryRecord.put(key, patchObj.get(key));
+            changedProps.add(key);
         }
 
         FacilioChain patchChain = ChainUtil.getPatchChain(moduleName);
@@ -352,6 +357,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         Constants.setModuleName(context, moduleName);
         Constants.setRawInput(context, summaryRecord);
         Constants.setBodyParams(context, bodyParams);
+        Constants.addChangedProps(context, moduleName, id, changedProps);
         context.put(Constants.BEAN_CLASS, beanClass);
         context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
         context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);

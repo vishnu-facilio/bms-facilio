@@ -23,16 +23,12 @@ import com.facilio.modules.fields.SupplementRecord;
 public class AddMultiSelectFieldsCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        Map<String, List<ModuleBaseWithCustomFields>> recordMap = (Map<String, List<ModuleBaseWithCustomFields>>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
-
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(moduleName);
-
         List<FacilioField> fields = modBean.getAllFields(moduleName);
-        List<ModuleBaseWithCustomFields> records = recordMap.get(module.getName());
 
-        if(CollectionUtils.isNotEmpty(fields) && CollectionUtils.isNotEmpty(records)) {
+        if(CollectionUtils.isNotEmpty(fields)) {
             List<SupplementRecord> supplements = fields.stream().filter(f -> f.getDataTypeEnum().isMultiRecord())
                                                                 .map(f -> (SupplementRecord) f)
                                                                 .collect(Collectors.toList());
