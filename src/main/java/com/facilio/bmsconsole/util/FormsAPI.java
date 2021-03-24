@@ -49,6 +49,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
@@ -159,7 +160,6 @@ public class FormsAPI {
 			FacilioField field = null;
 			if (f.getFieldId() != -1) {
 				field =  modBean.getField(f.getFieldId());
-				f.setField(field);
 				if (f.getName() == null) {
 					f.setName(field.getName());
 				}
@@ -203,13 +203,27 @@ public class FormsAPI {
 			else if (f.getDisplayTypeEnum() == FieldDisplayType.ASSETMULTICHOOSER) {
 				f.setName("utilityMeters");
 			}
-			
+			handleFormField(f, module.getName(), field);
 			fields.add(f);
 			if (f.getSectionId() != -1) {
 				sectionMap.get(f.getSectionId()).addField(f);
 			}
 		}
 		form.setFields(fields);
+	}
+	
+	private static void handleFormField(FormField formField, String moduleName, FacilioField field ) throws Exception {
+		if (formField.getDisplayTypeEnum() == FieldDisplayType.ATTACHMENT) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			List<FacilioModule> subModules = modBean.getSubModules(moduleName, ModuleType.ATTACHMENTS);
+			formField.setLookupModuleName(subModules.get(0).getName());
+		}
+		else if (field != null) {
+			formField.setField(field);
+			if (field instanceof BaseLookupField) {
+				formField.setLookupModuleName(((BaseLookupField)field).getLookupModule().getName());
+			}
+		}
 	}
 	
 	private static void setFormSections(FacilioForm form) throws Exception {
@@ -787,11 +801,12 @@ public class FormsAPI {
 	}
 
 	private static void addUnusedSystemFields(FacilioForm form, List<FormField> defaultFields) throws Exception {
-		if (form.getAppLinkName() == ApplicationLinkNames.FACILIO_MAIN_APP) {
-			addUnusedWebSystemFields(form, defaultFields);
-		}
-		else if (form.getAppLinkName() == ApplicationLinkNames.OCCUPANT_PORTAL_APP) {
+		String appLinkName = form.getAppLinkName();
+		if (isPortalApp(appLinkName)) {
 			addUnusedPortalSystemFields(form, defaultFields);
+		}
+		else {
+			addUnusedWebSystemFields(form, defaultFields);
 		}
 	}
 	
@@ -962,14 +977,8 @@ public class FormsAPI {
 			FacilioField field = modBean.getField(mutatedField.getName(), moduleName);
 			if (field != null) {
 				mutatedField.setFieldId(field.getFieldId());
-				mutatedField.setField(field);
-				if (field instanceof BaseLookupField) {
-					FacilioModule lookupMod = ((BaseLookupField) field).getLookupModule();
-					if (lookupMod != null) {
-						mutatedField.setLookupModuleName(lookupMod.getName());
-					}
-				}
 			}
+			handleFormField(mutatedField, moduleName, field);
 			fields.set(i, mutatedField);
 		}
 	}
@@ -977,8 +986,10 @@ public class FormsAPI {
 	// From factory first. If not (for custom module), then will check in db
 	public static FacilioForm getDefaultForm(String moduleName, String appLinkName, Boolean...onlyFields) throws Exception {
 		FacilioForm defaultForm = FormFactory.getDefaultForm(moduleName, appLinkName, onlyFields);
-		if (defaultForm == null && appLinkName != ApplicationLinkNames.OCCUPANT_PORTAL_APP) {
-			defaultForm = FormFactory.getDefaultForm(moduleName, ApplicationLinkNames.FACILIO_MAIN_APP, onlyFields);
+		if (defaultForm == null ) {
+			String linkName = isPortalApp(appLinkName) ? ApplicationLinkNames.OCCUPANT_PORTAL_APP : ApplicationLinkNames.FACILIO_MAIN_APP;
+			defaultForm = FormFactory.getDefaultForm(moduleName, linkName, onlyFields);
+			defaultForm.setAppLinkName(appLinkName);
 		}
 		if (defaultForm == null) {
 			Map<String, Object> params = new HashMap<>();
@@ -991,6 +1002,11 @@ public class FormsAPI {
 		}
 		return defaultForm;
 
+	}
+	
+	public static boolean isPortalApp(String appLinkName) {
+		return appLinkName != null && (appLinkName.equals(ApplicationLinkNames.OCCUPANT_PORTAL_APP) 
+				|| appLinkName.equals(ApplicationLinkNames.TENANT_PORTAL_APP ) || appLinkName.equals(ApplicationLinkNames.VENDOR_PORTAL_APP));
 	}
 
 	// From DB first. If not, will check in factory

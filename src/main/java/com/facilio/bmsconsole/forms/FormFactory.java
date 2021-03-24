@@ -135,7 +135,7 @@ public class FormFactory {
 	}
 	
 	public static String getDefaultFormName(String moduleName, String appLinkName) {	
-		return "default_"+moduleName+"_"+ (appLinkName.equals(ApplicationLinkNames.OCCUPANT_PORTAL_APP) ? "portal" : "web") ;
+		return "default_"+moduleName+"_"+ (FormsAPI.isPortalApp(appLinkName) ? "portal" : "web") ;
 	}
 	
 	public static FacilioForm getForm(String moduleName, String formName, Boolean...onlyFields) {

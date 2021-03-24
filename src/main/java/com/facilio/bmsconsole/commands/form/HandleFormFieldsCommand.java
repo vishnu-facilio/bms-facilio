@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.commands.form;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
@@ -19,10 +18,8 @@ import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.BaseLookupField;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 
 public class HandleFormFieldsCommand extends FacilioCommand {
 	
@@ -87,31 +84,19 @@ public class HandleFormFieldsCommand extends FacilioCommand {
 	}
 	
 	private void setLookupName(FormField formField, String moduleName, boolean isFromBuilder) throws Exception {
-		if (formField.getDisplayTypeEnum() == FieldDisplayType.ATTACHMENT) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			List<FacilioModule> subModules = modBean.getSubModules(moduleName, ModuleType.ATTACHMENTS);
-			formField.setLookupModuleName(subModules.get(0).getName());
-		}
-		else  {
-			FacilioField field = formField.getField();
-			if (field != null && field instanceof BaseLookupField) {
-				if (!isFromBuilder && formField.getConfig() != null) {
-					JSONObject config = formField.getConfig();
-					boolean filterEnabled = (boolean) config.getOrDefault("isFiltersEnabled", false);
-					if (filterEnabled) {
-						String lookupName = (String) config.get("lookupModuleName");
-						if (lookupName == null) { // Temp..needs to remove
-							int filterValue = Integer.parseInt(formField.getConfig().get("filterValue").toString());
-							lookupName = getModuleName(filterValue);
-						}
-						formField.setLookupModuleName(lookupName);
-						return;
+		FacilioField field = formField.getField();
+		if (field != null && field instanceof BaseLookupField) {
+			if (!isFromBuilder && formField.getConfig() != null) {
+				JSONObject config = formField.getConfig();
+				boolean filterEnabled = (boolean) config.getOrDefault("isFiltersEnabled", false);
+				if (filterEnabled) {
+					String lookupName = (String) config.get("lookupModuleName");
+					if (lookupName == null) { // Temp..needs to remove
+						int filterValue = Integer.parseInt(formField.getConfig().get("filterValue").toString());
+						lookupName = getModuleName(filterValue);
 					}
-				}
-				
-				FacilioModule lookupMod = ((BaseLookupField) field).getLookupModule();
-				if (lookupMod != null) {
-					formField.setLookupModuleName(lookupMod.getName());
+					formField.setLookupModuleName(lookupName);
+					return;
 				}
 			}
 		}
