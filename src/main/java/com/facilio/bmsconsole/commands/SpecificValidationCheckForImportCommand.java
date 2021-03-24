@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import com.facilio.bmsconsole.util.AssetsAPI;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONObject;
@@ -66,9 +67,9 @@ public class SpecificValidationCheckForImportCommand extends FacilioCommand {
 		}else{
 			module = modBean.getModule(importProcessContext.getModule().getName());
 		}
-		
-		
-		if (ImportAPI.isAssetBaseModule(importProcessContext.getModule()) && !(importProcessContext.getImportSetting().intValue() == ImportProcessContext.ImportSetting.UPDATE.getValue() || importProcessContext.getImportSetting().intValue() == ImportProcessContext.ImportSetting.UPDATE_NOT_NULL.getValue())) {
+
+
+		if (AssetsAPI.isAssetsModule(importProcessContext.getModule()) && !(importProcessContext.getImportSetting().intValue() == ImportProcessContext.ImportSetting.UPDATE.getValue() || importProcessContext.getImportSetting().intValue() == ImportProcessContext.ImportSetting.UPDATE_NOT_NULL.getValue())) {
 			List<FacilioField> fields = new ArrayList<>();
 			fields.add(FieldFactory.getIdField(module));
 			fields.add(modBean.getField("name", "resource"));

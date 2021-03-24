@@ -584,11 +584,14 @@ public class ImportAPI {
 					) {
 				fields.addAll(ImportFieldFactory.getImportFieldNames(facilioModule.getName()));
 			} else {
+				List<String> removeFields = ImportFieldFactory.getFieldsTobeRemoved(facilioModule.getName());
 				for (FacilioField field : fieldsList) {
-					if (field.getDisplayType() == FacilioField.FieldDisplayType.ADDRESS) {
-						fields.addAll(Arrays.asList(field.getName() + "_name", field.getName() + "_street", field.getName() + "_city", field.getName() + "_state", field.getName() + "_country", field.getName() + "_zip", field.getName() + "_lat", field.getName() + "_lng"));
-					} else {
-						fields.add(field.getName());
+					if(!removeFields.contains(field.getName())) {
+						if (field.getDisplayType() == FacilioField.FieldDisplayType.ADDRESS) {
+							fields.addAll(Arrays.asList(field.getName() + "_name", field.getName() + "_street", field.getName() + "_city", field.getName() + "_state", field.getName() + "_country", field.getName() + "_zip", field.getName() + "_lat", field.getName() + "_lng"));
+						} else {
+							fields.add(field.getName());
+						}
 					}
 				}
 
@@ -598,8 +601,7 @@ public class ImportAPI {
 					}
 				}
 
-				if(facilioModule.getName().equals(FacilioConstants.ContextNames.ASSET) ||
-						(facilioModule.getExtendModule() != null && facilioModule.getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
+				if (AssetsAPI.isAssetsModule(facilioModule)) {
 
 					fields.remove("space");
 					fields.remove("resourceType");
@@ -608,18 +610,18 @@ public class ImportAPI {
 						fields.add("id");
 					}
 
-					if(importMode == null || importMode == 1) {
-					if(module.equals(FacilioConstants.ContextNames.ENERGY_METER)) {
-						fields.remove("purposeSpace");
-					}
-					fields.add("building");
-					fields.add("floor");
-					fields.add("spaceName");
-					fields.add("space1");
-					fields.add("space2");
-					fields.add("space3");
+					if (importMode == null || importMode == 1) {
+						if (module.equals(FacilioConstants.ContextNames.ENERGY_METER)) {
+							fields.remove("purposeSpace");
+						}
+						fields.add("building");
+						fields.add("floor");
+						fields.add("spaceName");
+						fields.add("space1");
+						fields.add("space2");
+						fields.add("space3");
 
-				}
+					}
 				} else if (facilioModule.getName().equals(FacilioConstants.ContextNames.WORK_ORDER)) {
 
 					fields.remove("resource");
@@ -631,11 +633,9 @@ public class ImportAPI {
 					fields.add("space2");
 					fields.add("space3");
 					fields.add("asset");
-				} else if (isBaseSpaceExtendedModule(facilioModule)) {
-					fields.remove("space");
 				}
 		}
-			if (!fields.contains("site") && FieldUtil.isSiteIdFieldPresent(facilioModule)
+			if (!fields.contains("site") && !facilioModule.instanceOf(FacilioConstants.ContextNames.SITE) && FieldUtil.isSiteIdFieldPresent(facilioModule)
 					&& AccountUtil.getCurrentSiteId() == -1) {
 				fields.add("site");
 			}
@@ -714,7 +714,7 @@ public class ImportAPI {
 	public static boolean canUpdateAssetBaseSpace(ImportProcessContext importProcessContext) throws Exception {
 		JSONObject fieldMapping = importProcessContext.getFieldMappingJSON();
 		if (fieldMapping != null) {
-			if (isAssetBaseModule(importProcessContext.getModule()) && importProcessContext.getImportSetting().intValue() == ImportProcessContext.ImportSetting.UPDATE.getValue()) {
+			if (AssetsAPI.isAssetsModule(importProcessContext.getModule()) && importProcessContext.getImportSetting().intValue() == ImportProcessContext.ImportSetting.UPDATE.getValue()) {
 				if (!(fieldMapping.containsKey("asset__floor") || fieldMapping.containsKey("asset__building") || fieldMapping.containsKey("asset__spaceName") || fieldMapping.containsKey("asset__space") || fieldMapping.containsKey("asset__space1") || fieldMapping.containsKey("asset__space2") || fieldMapping.containsKey("asset__space3"))) {
 					return false;
 				}
@@ -737,15 +737,6 @@ public class ImportAPI {
 	public static  boolean isInsertImport(ImportProcessContext importProcessContext) {
 		if (importProcessContext.getImportSetting().intValue() == ImportProcessContext.ImportSetting.INSERT.getValue() || importProcessContext.getImportSetting().intValue() == ImportProcessContext.ImportSetting.INSERT_SKIP.getValue()) {
 			return true;
-		}
-		return false;
-	}
-
-	public static boolean isAssetBaseModule(FacilioModule module) {
-		if (module.getName().equals(FacilioConstants.ContextNames.ASSET)) {
-			return true;
-		} else if (module.getExtendModule() != null) {
-			return isAssetBaseModule(module.getExtendModule());
 		}
 		return false;
 	}
