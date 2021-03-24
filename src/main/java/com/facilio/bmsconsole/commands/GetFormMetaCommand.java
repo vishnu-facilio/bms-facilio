@@ -12,11 +12,13 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormFactory;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormField.Required;
 import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
@@ -34,20 +36,32 @@ public class GetFormMetaCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		String formName = (String) context.get(FacilioConstants.ContextNames.FORM_NAME);
 		Long formId = (Long) context.getOrDefault(FacilioConstants.ContextNames.FORM_ID, -1l);
+		Long appId = (Long) context.getOrDefault(FacilioConstants.ContextNames.APP_ID, -1l);
 		String formModuleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);	// TODO...needs to be mandatory
 		FacilioModule formModule = null;
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		String appLinkName = AccountUtil.getCurrentApp() != null ? AccountUtil.getCurrentApp().getLinkName() : ApplicationLinkNames.FACILIO_MAIN_APP;
-		if (formModuleName != null) {
-			formModule = modBean.getModule(formModuleName);
-			if (formId == -1 && formName == null) {
-				formName = FormFactory.getDefaultFormName(formModuleName,appLinkName);
-			}
-		}
+		
 		
 		FacilioForm form = null;
-		if (formName != null) {
-
+		if(formId != null && formId > 0) {
+			form= FormsAPI.getFormFromDB(formId);
+			context.put(FacilioConstants.ContextNames.FORM, form);
+			if (form != null) {
+				context.put(ContextNames.MODULE_NAME, form.getModule().getName());
+			}
+		}
+		else if (formName != null) {
+			ApplicationContext app = appId <= 0 ? AccountUtil.getCurrentApp() : ApplicationApi.getApplicationForId(appId);
+			if (app == null) {
+				app = ApplicationApi.getApplicationForLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+			}	
+			String appLinkName = app.getLinkName();
+			if (formModuleName != null) {
+				formModule = modBean.getModule(formModuleName);
+				if (formId == -1 && formName == null) {
+					formName = FormFactory.getDefaultFormName(formModuleName,appLinkName);
+				}
+			}
 			form = FormsAPI.getFormFromDB(formName, formModule);
 			if (form == null) {
 				FacilioModule childModule = null;
@@ -108,13 +122,6 @@ public class GetFormMetaCommand extends FacilioCommand {
 				}
 			}
 			context.put(FacilioConstants.ContextNames.FORM, form);
-		}
-		else if(formId != null && formId > 0) {
-			form= FormsAPI.getFormFromDB(formId);
-			context.put(FacilioConstants.ContextNames.FORM, form);
-			if (form != null) {
-				context.put(ContextNames.MODULE_NAME, form.getModule().getName());
-			}
 		}
 		if (form != null) {
 			if (AccountUtil.getCurrentUser() == null) {

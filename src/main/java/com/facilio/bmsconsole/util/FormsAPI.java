@@ -711,14 +711,12 @@ public class FormsAPI {
 		if (criteria != null) {
 			formListBuilder.andCriteria(criteria);
 		}
-		List<Long> appIds = new ArrayList<>();
-		ApplicationContext app = appId <= 0 ? AccountUtil.getCurrentApp() : ApplicationApi.getApplicationForId(appId);
-			if (app == null) {
-				app = ApplicationApi.getApplicationForLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
-			}
-			appIds = Collections.singletonList(app.getId());
-		if (!appIds.isEmpty() && appIds != null) {
+		
+		if (appId > 0) {
+			ApplicationContext app = appId <= 0 ? AccountUtil.getCurrentApp() : ApplicationApi.getApplicationForId(appId);
+			List<Long> appIds = Collections.singletonList(app.getId());
 			formListBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("appId"), StringUtils.join(appIds, ","), NumberOperators.EQUALS));	
+			
 		}
 	
 		if (MapUtils.isNotEmpty(selectParams)) {
