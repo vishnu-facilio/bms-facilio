@@ -478,19 +478,11 @@ public class LoginAction extends FacilioAction {
 		data.put(FacilioConstants.ContextNames.SHIFTS, ShiftAPI.getAllShifts());
 		
 		
+		Map<String, Collection<FacilioForm>> forms = FormsAPI.getMobileForms();
+		data.put("forms", forms);
+		data.put("ticketStatus", getTicketStatus());
+		data.put("ticket_status", TicketAPI.getAllStatus(true));
 		
-		if (AccountUtil.getCurrentAccount().isFromMobile()) {
-//			Map<String, Collection<FacilioForm>> forms = FormsAPI.getAllForms(FormType.MOBILE);
-//			data.put("forms", forms);
-//			data.put("ticketStatus", getTicketStatus());
-//			data.put("ticket_status", TicketAPI.getAllStatus(true));
-		}
-		else {
-			String appLinkName = AccountUtil.getCurrentApp() != null ? AccountUtil.getCurrentApp().getLinkName() : ApplicationLinkNames.FACILIO_MAIN_APP;
-			Map<String, Collection<FacilioForm>> forms = FormsAPI.getAllForms(appLinkName);
-			data.put("forms", forms);
-			data.put("ticketStatus", TicketAPI.getAllStatus(true));
-		}
 		data.put("mysites", CommonCommandUtil.getMySites());
 		data.put("buildings", SpaceAPI.getAllBuildings());
 		data.put("sites", SpaceAPI.getAllSites());
