@@ -65,7 +65,10 @@ public class ProcessDataCommandV2 extends AgentV2Command {
 
                     if( ! pointNames.isEmpty()){
                         List<Map<String, Object>> pointsFromDb = getPointsFromDb(pointNames,controller);
-                        if (pointsFromDb.size() < pointNames.size() && controller != null && (controller.getAgent().getAgentType() == AgentType.CLOUD.getKey() || controller.getAgent().getAgentType() == AgentType.REST.getKey())) {
+                        if (pointsFromDb.size() < pointNames.size() && controller != null &&
+                                (controller.getAgent().getAgentType() == AgentType.CLOUD.getKey()
+                                        || controller.getAgent().getAgentType() == AgentType.REST.getKey()
+                                        || controller.getAgent().getAgentType() == AgentType.FACILIO.getKey())) {
                                 Set<String> pointsFromDbSet = new HashSet<>();
                                 pointsFromDb.forEach(row -> pointsFromDbSet.add(row.get("name").toString()));
                                 Set<String> pointNamesSet = new HashSet<>(pointNames);
@@ -79,7 +82,7 @@ public class ProcessDataCommandV2 extends AgentV2Command {
                                     point.setControllerId(controller.getId());
                                     point.setPath(name);
                                     if (!PointsAPI.addPoint(point)) {
-                                        throw new Exception("Exception while adding misc point for REST agent ");
+                                        throw new Exception("Exception while adding misc point ");
                                     }
                                     pointsFromDb.add(point.getPointJSON());
                                 }
