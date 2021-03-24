@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
@@ -189,6 +190,10 @@ public class GetFormMetaCommand extends FacilioCommand {
 					field.getField() != null && !field.getField().isDefault() && 
 					(!isMultiSiteForm || field.getField().getDataTypeEnum() != FieldType.LOOKUP || sitesCount == 1)
 				).map(field -> field.getField()).collect(Collectors.toList());
+			}
+			if("space".equalsIgnoreCase(moduleName)) {
+				Set<Long> formFieldFieldIds = form.getFields().stream().map(FormField::getFieldId).collect(Collectors.toSet());
+				customFields = customFields.stream().filter(field->formFieldFieldIds.contains(field.getFieldId())).collect(Collectors.toList());
 			}
 			if (customFields != null && !customFields.isEmpty() && !form.isIgnoreCustomFields()) {
 				for (FacilioField f: customFields) {
