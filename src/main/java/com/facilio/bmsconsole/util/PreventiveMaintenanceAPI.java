@@ -1462,9 +1462,6 @@ public class PreventiveMaintenanceAPI {
 				Map<Long, List<PMReminder>> reminders = PreventiveMaintenanceAPI.getPMRemindersAsMap(ids);
 				if (reminders != null) {
 					for (PreventiveMaintenance pm : pms) {
-						
-						pm.setPmIncludeExcludeResourceContexts(TemplateAPI.getPMIncludeExcludeList(pm.getId(), null, null));
-						
 						long pmId = pm.getId();
 						if (reminders.containsKey(pmId)) {
 							List<PMReminder> rms = reminders.get(pmId);
@@ -1477,6 +1474,10 @@ public class PreventiveMaintenanceAPI {
 							}
 						}
 					}
+				}
+				
+				for(PreventiveMaintenance pm : pms) {
+					pm.setPmIncludeExcludeResourceContexts(TemplateAPI.getPMIncludeExcludeList(pm.getId(), null, null));
 				}
 				
 				Map<Long, List<PMResourcePlannerContext>> resourcePlanners = getPMResourcesPlanners(ids);

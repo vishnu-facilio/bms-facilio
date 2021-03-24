@@ -150,10 +150,37 @@ public class ImportFieldFactory {
 				fields = getPMInclExclFields();
 				break;
 			}
+			case "pmTrigger" :{
+				fields = getPMTriggerFields();
+				break;
+			}
+			case "PMResourcePlanner" :{
+				fields = getPMResourcePlannerFields();
+				break;
+			}
 		}
 		return fields;
 	}
 	
+	public static List<FacilioField> getPMResourcePlannerFields() {
+		// TODO Auto-generated method stub
+		
+		List<FacilioField> fields = new ArrayList<FacilioField>();
+		fields.addAll(FieldFactory.getPMResourcePlannerFields());
+		fields.add(FieldFactory.getField("triggerNames","Trigger Names",null, ModuleFactory.getPMResourcePlannerModule(), FieldType.STRING));
+		return fields;
+	}
+
+	public static List<FacilioField> getPMTriggerFields() {
+		// TODO Auto-generated method stub
+		
+		List<FacilioField> fields = new ArrayList<FacilioField>();
+		fields.addAll(FieldFactory.getPMTriggerFields());
+		fields.addAll(getPMTriggerExtraFields());
+		
+		return fields;
+	}
+
 	private static List<FacilioField> getPMInclExclFields() {
 		return FieldFactory.getPMIncludeExcludeResourceFields();
 	}
@@ -174,6 +201,21 @@ public class ImportFieldFactory {
 		fields.add(FieldFactory.getField("falseVal","False Value",null, ModuleFactory.getTaskTemplateModule(), FieldType.STRING));
 		return fields;
 	}
+	
+	private static List<FacilioField> getPMTriggerExtraFields() {
+		
+		List<FacilioField> fields = new ArrayList<FacilioField>();
+		fields.add(FieldFactory.getField("triggerName","Trigger Name",null, ModuleFactory.getPMTriggersModule(), FieldType.STRING));
+		fields.add(FieldFactory.getField("triggerFrequency","Trigger Frequency",null, ModuleFactory.getPMTriggersModule(), FieldType.STRING));
+		fields.add(FieldFactory.getField("triggerTimes","Trigger Times",null, ModuleFactory.getPMTriggersModule(), FieldType.STRING));
+		fields.add(FieldFactory.getField("triggerDates","Trigger Dates",null, ModuleFactory.getPMTriggersModule(), FieldType.STRING));
+		fields.add(FieldFactory.getField("triggerMonths","Trigger Months",null, ModuleFactory.getPMTriggersModule(), FieldType.STRING));
+		fields.add(FieldFactory.getField("triggerDays","Trigger Days",null, ModuleFactory.getPMTriggersModule(), FieldType.STRING));
+		fields.add(FieldFactory.getField("triggerWeeks","Trigger Weeks",null, ModuleFactory.getPMTriggersModule(), FieldType.STRING));
+		
+		return fields;
+
+	}
 
 	public static List<FacilioField> getPMImportFields() {
 		
@@ -183,13 +225,7 @@ public class ImportFieldFactory {
 		fields.addAll(FieldFactory.getPreventiveMaintenanceFields());
 		fields.addAll(FieldFactory.getWorkOrderTemplateFields());
 		fields.addAll(FieldFactory.getPMTriggerFields());
-		fields.add(FieldFactory.getField("triggerName","Trigger Name",null, ModuleFactory.getPMTriggersModule(), FieldType.STRING));
-		fields.add(FieldFactory.getField("triggerFrequency","Trigger Frequency",null, ModuleFactory.getPMTriggersModule(), FieldType.STRING));
-		fields.add(FieldFactory.getField("triggerTimes","Trigger Times",null, ModuleFactory.getPMTriggersModule(), FieldType.STRING));
-		fields.add(FieldFactory.getField("triggerDates","Trigger Dates",null, ModuleFactory.getPMTriggersModule(), FieldType.STRING));
-		fields.add(FieldFactory.getField("triggerMonths","Trigger Months",null, ModuleFactory.getPMTriggersModule(), FieldType.STRING));
-		fields.add(FieldFactory.getField("triggerDays","Trigger Days",null, ModuleFactory.getPMTriggersModule(), FieldType.STRING));
-		fields.add(FieldFactory.getField("triggerWeeks","Trigger Weeks",null, ModuleFactory.getPMTriggersModule(), FieldType.STRING));
+		fields.addAll(getPMTriggerExtraFields());
 		return fields;
 	}
 	

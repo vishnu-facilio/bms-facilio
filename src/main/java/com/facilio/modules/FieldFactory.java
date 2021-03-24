@@ -5968,10 +5968,19 @@ public class FieldFactory {
         List<FacilioField> fields = new ArrayList<>();
 
         fields.add(getIdField(module));
-        fields.add(getField("pmId", "PM_ID", module, FieldType.LOOKUP));
-        fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.LOOKUP));
-        fields.add(getField("assignedToId", "ASSIGNED_TO", module, FieldType.LOOKUP));
-
+        fields.add(getField("pmId", "PM_ID", module, FieldType.NUMBER));
+        
+        LookupField resourceField = (LookupField) getField("resourceId", "RESOURCE_ID", module, FieldType.LOOKUP);
+        resourceField.setLookupModule(ModuleFactory.getResourceModule());
+        resourceField.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
+        fields.add(resourceField);
+        
+        
+        LookupField userField = (LookupField) getField("assignedToId", "ASSIGNED_TO", module, FieldType.LOOKUP);
+        userField.setSpecialType(FacilioConstants.ContextNames.USERS);
+        userField.setDisplayType(FieldDisplayType.LOOKUP_POPUP);
+        fields.add(userField);
+        
         return fields;
     }
 

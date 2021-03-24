@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.context.BimImportProcessMappingContext;
 import com.facilio.bmsconsole.context.PMIncludeExcludeResourceContext;
+import com.facilio.bmsconsole.context.PMResourcePlannerContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PMTriggerContext.TriggerExectionSource;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
@@ -25,6 +26,10 @@ import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -353,7 +358,7 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 			
 			for(Long pmId : pmMap.keySet()) {
 				
-				PreventiveMaintenance pm = PreventiveMaintenanceAPI.getPM(pmId, true);
+				PreventiveMaintenance pm = PreventiveMaintenanceAPI.getPMsDetails(Collections.singleton(pmId)).get(0);
 				
 				List<TaskTemplate> taskTemplates = pmMap.get(pmId);
 				
@@ -398,7 +403,7 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 				sectionList.addAll(preRequisiteSectionMap.values().stream().collect(Collectors.toList()));
 				
 				newContext.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(pmId));
-				newContext.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, PreventiveMaintenanceAPI.getPM(pmId, true));
+				newContext.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 				newContext.put(FacilioConstants.ContextNames.WORK_ORDER, ((WorkorderTemplate)TemplateAPI.getTemplate(pm.getTemplateId())).getWorkorder());
 				newContext.put(FacilioConstants.ContextNames.TASK_SECTION_TEMPLATES, sectionList);
 				newContext.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
@@ -433,11 +438,144 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 			
 			for(Long pmId : pmMap.keySet()) {
 				
-				PreventiveMaintenance pm = PreventiveMaintenanceAPI.getPM(pmId, true);
+				PreventiveMaintenance pm = PreventiveMaintenanceAPI.getPMsDetails(Collections.singleton(pmId)).get(0);
 				
 				List<PMIncludeExcludeResourceContext> inclExcls = pmMap.get(pmId);
 				
 				pm.setPmIncludeExcludeResourceContexts(inclExcls);
+				
+				pm.setResourcePlanners(null);   			// resetting resource planner on incl and excl
+				
+				FacilioChain updatePM = FacilioChainFactory.getUpdateNewPreventiveMaintenanceChain();
+				
+				FacilioContext newContext = updatePM.getContext();
+				
+				WorkorderTemplate template = (WorkorderTemplate)TemplateAPI.getTemplate(pm.getTemplateId());
+				
+				newContext.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(pmId));
+				newContext.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
+				newContext.put(FacilioConstants.ContextNames.WORK_ORDER, template.getWorkorder());
+				newContext.put(FacilioConstants.ContextNames.TASK_SECTION_TEMPLATES, template.getSectionTemplates());
+				newContext.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
+				newContext.put(FacilioConstants.ContextNames.SKIP_WO_CREATION,true);
+				
+				updatePM.execute();
+			}
+		}
+		else if(facilioModule.getName().equals(ModuleFactory.getPMTriggersModule().getName())) {
+			
+			Map<Long,List<PMTriggerContext>> pmMap = new HashMap<Long, List<PMTriggerContext>>();
+			
+			for(ReadingContext reading :readingsContext) {
+				Map<String, Object> props = FieldUtil.getAsProperties(reading);
+				
+				props = removeNullNodes.apply(props);
+				
+				PMTriggerContext trigger = FieldUtil.getAsBeanFromMap(props, PMTriggerContext.class);
+				
+				trigger.setName((String) props.get("triggerName"));
+				
+				Integer triggerFrequency = Integer.parseInt((String)props.get("triggerFrequency"));
+				
+				trigger.setFrequency(FacilioFrequency.valueOf(triggerFrequency));
+				
+				ScheduleInfo schedule = fillAndGetScheduleInfo(props,trigger.getFrequencyEnum());
+				
+				trigger.setSchedule(schedule);
+				
+				trigger.setTriggerExecutionSource(TriggerExectionSource.SCHEDULE);
+				
+				List<PMTriggerContext> triggerList = pmMap.getOrDefault(trigger.getPmId(), new ArrayList<PMTriggerContext>());
+				
+				triggerList.add(trigger);
+				
+				pmMap.put(trigger.getPmId(), triggerList);
+					
+			}
+			
+			for(Long pmId : pmMap.keySet()) {
+				
+				PreventiveMaintenance pm = PreventiveMaintenanceAPI.getPMsDetails(Collections.singleton(pmId)).get(0);
+				
+				List<PMTriggerContext> triggers = pmMap.get(pmId);
+				
+				pm.setTriggers(triggers);
+				
+				pm.setResourcePlanners(null);
+				
+				FacilioChain updatePM = FacilioChainFactory.getUpdateNewPreventiveMaintenanceChain();
+				
+				FacilioContext newContext = updatePM.getContext();
+				
+				WorkorderTemplate template = (WorkorderTemplate)TemplateAPI.getTemplate(pm.getTemplateId());
+				
+				newContext.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(pmId));
+				newContext.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
+				newContext.put(FacilioConstants.ContextNames.WORK_ORDER, template.getWorkorder());
+				newContext.put(FacilioConstants.ContextNames.TASK_SECTION_TEMPLATES, template.getSectionTemplates());
+				newContext.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
+				newContext.put(FacilioConstants.ContextNames.SKIP_WO_CREATION,true);
+				
+				updatePM.execute();
+			}
+		}
+		else if(facilioModule.getName().equals(ModuleFactory.getPMResourcePlannerModule().getName())) {
+			
+			Map<Long,List<PMResourcePlannerContext>> pmMap = new HashMap<Long, List<PMResourcePlannerContext>>();
+			
+			for(ReadingContext reading :readingsContext) {
+				Map<String, Object> props = FieldUtil.getAsProperties(reading);
+				
+				props = removeNullNodes.apply(props);
+				
+				Long assignedToId = null;
+				Long resourceId = null;
+				if(props.get("assignedToId") != null) {
+					assignedToId = (Long) ((Map<String,Object>)props.remove("assignedToId")).get("ouid");
+				}				
+				if(props.get("resourceId") != null) {
+					resourceId = (Long) ((Map<String,Object>)props.remove("resourceId")).get("id");
+				}
+				PMResourcePlannerContext resourcePlanner = FieldUtil.getAsBeanFromMap(props, PMResourcePlannerContext.class);
+				
+				resourcePlanner.setAssignedToId(assignedToId);
+				resourcePlanner.setResourceId(resourceId);
+				
+				String triggerNameString = (String) props.get("triggerNames");
+				
+				if(triggerNameString != null) {
+					
+					Criteria criteria = new Criteria();
+					
+					Map<String, FacilioField> triggerMap = FieldFactory.getAsMap(FieldFactory.getPMTriggerFields());
+					
+					criteria.addAndCondition(CriteriaAPI.getCondition(triggerMap.get("pmId"), resourcePlanner.getPmId()+"", NumberOperators.EQUALS));
+					criteria.addAndCondition(CriteriaAPI.getCondition(triggerMap.get("name"), triggerNameString, StringOperators.IS));
+					
+					List<Map<String, Object>> triggerProps = PreventiveMaintenanceAPI.getPMTriggers(criteria);
+					
+					if(triggerProps != null && !triggerProps.isEmpty()) {
+						List<PMTriggerContext> triggers = FieldUtil.getAsBeanListFromMapList(triggerProps,PMTriggerContext.class);
+						resourcePlanner.setTriggerContexts(triggers);
+					}
+				}
+				
+				
+				List<PMResourcePlannerContext> resourcePlanners = pmMap.getOrDefault(resourcePlanner.getPmId(), new ArrayList<PMResourcePlannerContext>());
+				
+				resourcePlanners.add(resourcePlanner);
+				
+				pmMap.put(resourcePlanner.getPmId(), resourcePlanners);
+					
+			}
+			
+			for(Long pmId : pmMap.keySet()) {
+				
+				PreventiveMaintenance pm = PreventiveMaintenanceAPI.getPMsDetails(Collections.singleton(pmId)).get(0);
+				
+				List<PMResourcePlannerContext> resourcePlanners = pmMap.get(pmId);
+				
+				pm.setResourcePlanners(resourcePlanners);
 				
 				FacilioChain updatePM = FacilioChainFactory.getUpdateNewPreventiveMaintenanceChain();
 				
