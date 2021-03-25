@@ -1,23 +1,19 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.BmsAggregateOperators;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class GetAllFieldsCommand extends FacilioCommand {
 
@@ -161,8 +157,7 @@ public class GetAllFieldsCommand extends FacilioCommand {
 			}
 			fields.removeAll(fieldsToRemove);
 			fields.addAll(FieldFactory.getSystemPointFields(mod));
-		}
-		else if(mod.getName().equals("safetyPlan") || mod.getName().equals("hazard") || mod.getName().equals("precaution")) {
+		} else if (Arrays.asList(ContextNames.PURCHASE_ORDER, ContextNames.PURCHASE_REQUEST, ContextNames.SAFETY_PLAN, ContextNames.HAZARD, ContextNames.PRECAUTION).contains(mod.getName())) {
 			fields.addAll(FieldFactory.getSystemPointFields(mod));
 		}
 		
