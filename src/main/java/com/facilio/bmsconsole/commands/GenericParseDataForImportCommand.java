@@ -236,7 +236,7 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 					}
 					else if(requiredFields.size() != 0) {
 						for(String field : requiredFields) {
-							if(colVal.get(fieldMapping.get(moduleName + "__" + field)) == null) {
+							if(ImportAPI.isInsertImport(importProcessContext) && colVal.get(fieldMapping.get(moduleName + "__" + field)) == null) {
 								throw new ImportFieldValueMissingException(row_no, fieldMapping.get(moduleName + "__" + field), new Exception());
 							}
 							else {
@@ -252,7 +252,6 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 						}
 					}
 					else {
-						
 						if(requiredFields.size() == 0) {
 							uniqueString = getUniqueString(groupedContext, uniqueString);
 						}
@@ -326,7 +325,6 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 		FacilioField primaryField = modBean.getPrimaryField(moduleName);
 		fields.add(primaryField.getName());
 		switch (moduleName) {
-		
 			// fill pm required fields here 
 		}
 		return fields;
