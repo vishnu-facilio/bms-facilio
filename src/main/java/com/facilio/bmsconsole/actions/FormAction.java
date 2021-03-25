@@ -22,6 +22,7 @@ import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
@@ -386,6 +387,24 @@ public class FormAction extends FacilioAction {
 		TransactionChainFactory.getDeleteFormChain().execute(context);
 		setResult(ContextNames.ROWS_UPDATED, context.get(ContextNames.ROWS_UPDATED));
 		
+		return SUCCESS;
+	}
+	
+public String getServicePortalForms() throws Exception{
+		
+		setModuleName(ContextNames.WORK_ORDER);
+		
+		return formList();
+	}
+	
+	public String addSubForm() throws Exception {
+		if (form == null) {
+			throw new IllegalArgumentException("Form cannot be empty");
+		}
+
+		form.setHideInList(true);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+		addForm();
 		return SUCCESS;
 	}
 }
