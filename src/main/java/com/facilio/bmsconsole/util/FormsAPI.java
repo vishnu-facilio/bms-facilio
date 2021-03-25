@@ -65,7 +65,15 @@ public class FormsAPI {
 		Map<String, Collection<FacilioForm>> forms = new HashMap<> ();
 		List<FacilioForm> formList = new ArrayList<>();
 		formList.add(FormFactory.getMobileWorkOrderForm());
+		forms.put(ContextNames.WORK_ORDER, formList);
+		
+		formList = new ArrayList<>();
 		formList.add(FormFactory.getMobileAssetForm());
+		forms.put(ContextNames.ASSET, formList);
+		
+		formList = new ArrayList<>();
+		formList.add(FormFactory.getMobileAssetForm());
+		forms.put(ContextNames.APPROVAL, formList);
 		
 		for(Map.Entry<String, Collection<FacilioForm>> entry :forms.entrySet()) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

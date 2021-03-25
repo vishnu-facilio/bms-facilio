@@ -519,6 +519,17 @@ public class FormFactory {
 		return form;
 	}
 	
+	public static FacilioForm getMobileApprovalForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("Approval");
+		form.setName("mobile_approval");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getMobileApprovalFormFields());
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+		return form;
+	}
+	
 	public static FacilioForm getMobileWorkOrderForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("SUBMIT WORKORDER");
@@ -540,6 +551,19 @@ public class FormFactory {
 		form.setShowInMobile(true);
 		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
+	}
+	
+	private static List<FormField> getMobileApprovalFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.REQUIRED, 2, 1));
+		fields.add(new FormField("site", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 3, 1));
+		fields.add(new FormField("resource", FieldDisplayType.WOASSETSPACECHOOSER, "Space/Asset", Required.REQUIRED, 4, 1));
+		fields.add(new FormField("assignment", FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", Required.REQUIRED, 5, 1));
+		fields.add(new FormField("priority", FieldDisplayType.LOOKUP_SIMPLE, "Priority", Required.OPTIONAL, "ticketpriority", 6, 1));
+		fields.add(new FormField("urgency", FieldDisplayType.URGENCY, "Urgency", Required.OPTIONAL, "urgency" , 7, 1));
+		fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachment", Required.OPTIONAL, 8, 1));
+		return Collections.unmodifiableList(fields);
 	}
 	
 	private static List<FormField> getMobileAssetFormFields() {

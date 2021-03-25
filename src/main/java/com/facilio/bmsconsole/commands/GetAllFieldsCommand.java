@@ -106,12 +106,7 @@ public class GetAllFieldsCommand extends FacilioCommand {
 					}
 				} 
 				else if (moduleName.equals("workorder")) {
-					if(!fieldObject.isDefault()) {
-						if(fieldObject.getDataTypeEnum() != FieldType.MULTI_ENUM && fieldObject.getDataTypeEnum() != FieldType.MULTI_LOOKUP) {
-							fields.add(fieldObject);
-						}
-					}
-					else if(FieldFactory.Fields.WORK_ORDER_FIELDS_INCLUDE.contains(fieldObject.getName())) {
+					if(FieldFactory.Fields.WORK_ORDER_FIELDS_INCLUDE.contains(fieldObject.getName())) {
 						fields.add(fieldObject);
 					}
 					else if(fieldObject.getName().equals("tenant") && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) {
@@ -132,32 +127,17 @@ public class GetAllFieldsCommand extends FacilioCommand {
 					
 				}
 				else if (moduleName.equals("asset")) {
-					if(!fieldObject.isDefault()) {
-						if(fieldObject.getDataTypeEnum() != FieldType.MULTI_ENUM && fieldObject.getDataTypeEnum() != FieldType.MULTI_LOOKUP) {
-							fields.add(fieldObject);
-						}
-					}
-					else if(FieldFactory.Fields.ASSET_FIELDS_INCLUDE.contains(fieldObject.getName())) {
+					 if(FieldFactory.Fields.ASSET_FIELDS_INCLUDE.contains(fieldObject.getName())) {
 						fields.add(fieldObject);
 					}
 				}
 				else if (moduleName.equals("newreadingalarm") || moduleName.equals("bmsalarm") || moduleName.equals("mlAnomalyAlarm")) {
-					if(!fieldObject.isDefault()) {
-						if(fieldObject.getDataTypeEnum() != FieldType.MULTI_ENUM && fieldObject.getDataTypeEnum() != FieldType.MULTI_LOOKUP) {
-							fields.add(fieldObject);
-						}
-					}
-					else if(FieldFactory.Fields.NEW_ALARMS_FIELDS_INCLUDE.contains(fieldObject.getName())) {
+					if(FieldFactory.Fields.NEW_ALARMS_FIELDS_INCLUDE.contains(fieldObject.getName())) {
 						fields.add(fieldObject);
 					}
 				}
 				else if (moduleName.equals(ContextNames.OPERATION_ALARM)) {
-					if(!fieldObject.isDefault()) {
-						if(fieldObject.getDataTypeEnum() != FieldType.MULTI_ENUM && fieldObject.getDataTypeEnum() != FieldType.MULTI_LOOKUP) {
-							fields.add(fieldObject);
-						}
-					}
-					else if(FieldFactory.Fields.NEW_OP_ALARMS_FIELDS_INCLUDE.contains(fieldObject.getName())) {
+					if(FieldFactory.Fields.NEW_OP_ALARMS_FIELDS_INCLUDE.contains(fieldObject.getName())) {
 						fields.add(fieldObject);
 					}
 				}
@@ -176,9 +156,6 @@ public class GetAllFieldsCommand extends FacilioCommand {
 					fieldsToRemove.add(field);
 				}
 				else if (field.getName().equals("moduleState") && mod.getStateFlowEnabled() != null && !mod.getStateFlowEnabled()) {
-					fieldsToRemove.add(field);
-				}
-				else if(field.getDataTypeEnum() == FieldType.MULTI_ENUM || field.getDataTypeEnum() == FieldType.MULTI_LOOKUP) {
 					fieldsToRemove.add(field);
 				}
 			}
