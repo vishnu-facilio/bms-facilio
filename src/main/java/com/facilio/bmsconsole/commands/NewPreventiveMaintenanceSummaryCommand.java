@@ -84,8 +84,8 @@ public class NewPreventiveMaintenanceSummaryCommand extends FacilioCommand {
 			List<PMIncludeExcludeResourceContext> pmIncludeExcludeList = TemplateAPI.getPMIncludeExcludeList(pm.getId(), null, null);
 
 			if (!hidePmPlanner) {
-				PreventiveMaintenanceAPI.populateResourcePlanner(pm);
 				pm.setPmIncludeExcludeResourceContexts(pmIncludeExcludeList);
+				PreventiveMaintenanceAPI.populateResourcePlanner(pm);
 			}
 
 			if (CollectionUtils.isNotEmpty(pmIncludeExcludeList)) {
