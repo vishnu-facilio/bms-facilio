@@ -3,7 +3,9 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,19 +46,27 @@ public class GetFormMetaCommand extends FacilioCommand {
 		
 		
 		FacilioForm form = null;
+		ApplicationContext app = appId <= 0 ? AccountUtil.getCurrentApp() : ApplicationApi.getApplicationForId(appId);
+		if (app == null) {
+			app = ApplicationApi.getApplicationForLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+		}	
+		String appLinkName = app.getLinkName();
+		
+		if(formId < 0 && formName == null) {
+			Map<String, FacilioForm> forms = new LinkedHashMap<>(FormFactory.getForms(formModuleName, Collections.singletonList(appLinkName)));
+			if (forms != null && !forms.isEmpty()) {
+				List<FacilioForm> formsList = new ArrayList<>(forms.values());	
+				formName = formsList.get(0).getName();
+			}
+		}
+		
 		if(formId != null && formId > 0) {
 			form= FormsAPI.getFormFromDB(formId);
-			context.put(FacilioConstants.ContextNames.FORM, form);
 			if (form != null) {
 				context.put(ContextNames.MODULE_NAME, form.getModule().getName());
 			}
 		}
 		else if (formName != null) {
-			ApplicationContext app = appId <= 0 ? AccountUtil.getCurrentApp() : ApplicationApi.getApplicationForId(appId);
-			if (app == null) {
-				app = ApplicationApi.getApplicationForLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
-			}	
-			String appLinkName = app.getLinkName();
 			if (formModuleName != null) {
 				formModule = modBean.getModule(formModuleName);
 				if (formId == -1 && formName == null) {
@@ -122,8 +132,8 @@ public class GetFormMetaCommand extends FacilioCommand {
 					}
 				}
 			}
-			context.put(FacilioConstants.ContextNames.FORM, form);
 		}
+		context.put(FacilioConstants.ContextNames.FORM, form);
 		if (form != null) {
 			if (AccountUtil.getCurrentUser() == null) {
 				form.getFields().addAll(0, FormFactory.getRequesterFormFields(false, true));
