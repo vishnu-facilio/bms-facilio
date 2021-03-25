@@ -50,6 +50,9 @@ public class ValidateFacilityBookingCommandV3 extends FacilioCommand {
                     }
                     FacilityContext facility = (FacilityContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.FacilityBooking.FACILITY, booking.getFacility().getId(), FacilityContext.class);
                     List<BookingSlotsContext> slotList = FieldUtil.getAsBeanListFromMapList(subformMap.get(FacilioConstants.ContextNames.FacilityBooking.BOOKING_SLOTS), BookingSlotsContext.class);
+                    if(CollectionUtils.isEmpty(slotList)){
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Slot is mandatory for a booking");
+                    }
                     if (facility.getMaxSlotBookingAllowed() != null && slotList.size() > facility.getMaxSlotBookingAllowed()) {
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Max slots booking allowed is " + facility.getMaxSlotBookingAllowed());
                     }

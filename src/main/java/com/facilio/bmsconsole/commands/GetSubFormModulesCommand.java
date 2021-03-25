@@ -58,7 +58,7 @@ public class GetSubFormModulesCommand extends FacilioCommand {
 //                return Arrays.asList(modBean.getModule());
         
         case FacilioConstants.ContextNames.VENDORS:
-          return Arrays.asList(modBean.getModule("vendorsNotes"), modBean.getModule(FacilioConstants.ContextNames.INSURANCE));
+          return Arrays.asList(modBean.getModule("vendorsNotes"), modBean.getModule(FacilioConstants.ContextNames.INSURANCE),modBean.getModule("vendorDocuments"));
           
         case FacilioConstants.ContextNames.WORK_ORDER:
             return Arrays.asList(modBean.getModule("ticketnotes"), modBean.getModule(FacilioConstants.ContextNames.WorkPermit.WORKPERMIT));
