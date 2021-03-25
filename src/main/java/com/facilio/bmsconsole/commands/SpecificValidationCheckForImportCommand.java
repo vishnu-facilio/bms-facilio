@@ -1,19 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-
-import com.facilio.bmsconsole.util.AssetsAPI;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang.StringUtils;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.context.BimImportProcessMappingContext;
@@ -22,6 +8,7 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportLookupModuleValueNotFoundException;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportMandatoryFieldsException;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.BimAPI;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
@@ -33,6 +20,13 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang.StringUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.util.*;
+import java.util.logging.Logger;
 
 public class SpecificValidationCheckForImportCommand extends FacilioCommand {
 	
@@ -142,7 +136,9 @@ public class SpecificValidationCheckForImportCommand extends FacilioCommand {
 		String siteField = fieldMapping.get("asset__site");
 		
 		if(siteField == null) {
-			throw new ImportMandatoryFieldsException(null, (ArrayList<String>) Collections.singletonList("Site"), new Exception());
+			ArrayList missingFields = new ArrayList();
+			missingFields.add("Site");
+			throw new ImportMandatoryFieldsException(null, missingFields , new Exception());
 		}
 		
 		for(List<ImportRowContext> importRowList : importRows) {
