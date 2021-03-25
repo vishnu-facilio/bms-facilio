@@ -16,8 +16,10 @@ import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.db.criteria.operators.FieldOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
@@ -88,10 +90,10 @@ public class ReportFactory {
 		try {
 			// workorder fields
 			List<FacilioField> reportFields = new ArrayList<>();
-			ReportFacilioField openVsCloseField = (ReportFacilioField) getField(WorkOrder.OPENVSCLOSE_COL, "Status Type", ModuleFactory.getWorkOrdersModule(), " CASE WHEN Tickets.MODULE_STATE in (?) THEN 'Closed' ELSE CASE WHEN Tickets.MODULE_STATE in ($) THEN 'Skipped' ELSE CASE WHEN Tickets.MODULE_STATE in (*) THEN 'Open' END END END", FieldType.STRING, WorkOrder.OPENVSCLOSE);
-			openVsCloseField.addGenericCondition("Open", CriteriaAPI.getCondition("MODULE_STATE", "moduleState", "*", NumberOperators.EQUALS));
-			openVsCloseField.addGenericCondition("Closed", CriteriaAPI.getCondition("MODULE_STATE", "moduleState", "?", NumberOperators.EQUALS));
-			openVsCloseField.addGenericCondition("Skipped", CriteriaAPI.getCondition("MODULE_STATE", "moduleState", "$", NumberOperators.EQUALS));
+			ReportFacilioField openVsCloseField = (ReportFacilioField) getField(WorkOrder.OPENVSCLOSE_COL, "Status Type", ModuleFactory.getWorkOrdersModule(), " CASE WHEN Tickets.MODULE_STATE in (?) THEN 'Closed' ELSE CASE WHEN Tickets.MODULE_STATE in (@) THEN 'Skipped' ELSE CASE WHEN Tickets.MODULE_STATE in (*) THEN 'Open' END END END", FieldType.STRING, WorkOrder.OPENVSCLOSE);
+			openVsCloseField.addGenericCondition("Open", CriteriaAPI.getCondition("MODULE_STATE", "moduleState", "*", PickListOperators.IS));
+			openVsCloseField.addGenericCondition("Closed", CriteriaAPI.getCondition("MODULE_STATE", "moduleState", "?", PickListOperators.IS));
+			openVsCloseField.addGenericCondition("Skipped", CriteriaAPI.getCondition("MODULE_STATE", "moduleState", "@", PickListOperators.IS));
 			reportFields.add(openVsCloseField);
 			
 			ReportFacilioField overdueOpenField = (ReportFacilioField) getField(WorkOrder.OVERDUE_OPEN_COL, "Open Due Status", ModuleFactory.getWorkOrdersModule(), " CASE WHEN Tickets.DUE_DATE IS NOT NULL THEN CASE WHEN Tickets.DUE_DATE < ? THEN 'Overdue' ELSE 'On Schedule' END END ", FieldType.STRING, WorkOrder.OVERDUE_OPEN);
@@ -110,8 +112,8 @@ public class ReportFactory {
 			reportFields.add(responseSlaField);
 			
 			ReportFacilioField plannedVsUnplannedField = (ReportFacilioField) getField(WorkOrder.PLANNED_VS_UNPLANNED_COL, "Planned Type", ModuleFactory.getWorkOrdersModule(), " CASE WHEN Tickets.SOURCE_TYPE = 5 THEN 'Planned' ELSE 'Unplanned' END ", FieldType.STRING, WorkOrder.PLANNED_VS_UNPLANNED);
-			plannedVsUnplannedField.addGenericCondition("Planned", CriteriaAPI.getCondition("SOURCE_TYPE", "sourceType", "5", NumberOperators.EQUALS));
-			plannedVsUnplannedField.addGenericCondition("Unplanned", CriteriaAPI.getCondition("SOURCE_TYPE", "sourceType", "5", NumberOperators.NOT_EQUALS));
+			plannedVsUnplannedField.addGenericCondition("Planned", CriteriaAPI.getCondition("SOURCE_TYPE", "sourceType", "5", EnumOperators.IS));
+			plannedVsUnplannedField.addGenericCondition("Unplanned", CriteriaAPI.getCondition("SOURCE_TYPE", "sourceType", "5", EnumOperators.ISN_T));
 			reportFields.add(plannedVsUnplannedField);
 			
 			ReportFacilioField estimatedDurationField = (ReportFacilioField) getField(WorkOrder.ESTIMATED_DURATION_COL, "Estimated Duration", ModuleFactory.getWorkOrdersModule(), " CASE WHEN Tickets.DUE_DATE IS NOT NULL THEN Tickets.DUE_DATE - WorkOrders.CREATED_TIME ELSE 0 END",FieldType.NUMBER, WorkOrder.ESTIMATED_DURATION);
@@ -313,7 +315,7 @@ public class ReportFactory {
 						String value = c.getValue();
 						value = value.replace("?", closedarguments);
 						value = value.replace("*", openarguments);
-						value = value.replaceAll("$", skippedarguments);
+						value = value.replaceAll("@", skippedarguments);
 						c.setValue(value);
 						conditions.put(key, c);
 					}
@@ -321,7 +323,7 @@ public class ReportFactory {
 					String columnName = getGenericColumnName();
 					columnName = columnName.replace("?", closedarguments);
 					columnName = columnName.replace("*", openarguments);
-					columnName = columnName.replace("$", skippedarguments);
+					columnName = columnName.replace("@", skippedarguments);
 					setColumnName(columnName);
 					closeddata.clear();
 					opendata.clear();

@@ -159,8 +159,10 @@ public class ConstructTabularReportData extends FacilioCommand {
 			}
 			if(rowField.getId()!=-1) {
 				xField = modBean.getField(rowField.getId(), rowField.getModuleId());
+			} else if(xAxisModule != null) {
+				xField = modBean.getField(rowField.getName(), xAxisModule.getName());
 			} else {
-				xField = modBean.getField(rowField.getName(), rowField.getName());
+				xField = modBean.getField(rowField.getName(), module.getName());
 			}
 		}
 		
@@ -212,7 +214,7 @@ public class ConstructTabularReportData extends FacilioCommand {
 					}
 					if(data.getField().getId() > 0) {
 						yField = modBean.getField(data.getField().getId(), data.getField().getModuleId());
-					} else {
+					} else if(yAxisModule != null) {
 						yField = modBean.getField(data.getField().getName(), yAxisModule.getName());
 					}
 				}
@@ -261,8 +263,10 @@ public class ConstructTabularReportData extends FacilioCommand {
 					}
 					if(groupByRowField.getId()> 0) {
 						gField = modBean.getField(groupByRowField.getId(), groupByRowField.getModuleId());
-					} else {
+					} else if(groupByModule != null){
 						gField = modBean.getField(groupByRowField.getName(), groupByModule.getName());
+					} else {
+						gField = modBean.getField(groupByRowField.getName(), module.getName());
 					}
 				}
 				
