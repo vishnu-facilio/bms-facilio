@@ -104,4 +104,9 @@ public class ApprovalStateTransitionRuleContext extends AbstractStateTransitionR
                 .andCondition(CriteriaAPI.getIdCondition(moduleRecord.getId(), module));
         updateBuilder.update(baseModuleRecord);
     }
+
+    @Override
+    public Boolean isShouldExecuteFromPermalink() {
+        return true;
+    }
 }
