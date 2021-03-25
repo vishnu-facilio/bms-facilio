@@ -1,14 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.actions.ImportProcessContext.ImportSetting;
@@ -20,11 +11,16 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ImportFieldFactory {
 
-	private static Logger LOGGER = Logger.getLogger(ImportFieldFactory.class.getName());
-	
 	String moduleName;
 	
 	public String getModuleName() {
@@ -58,7 +54,6 @@ public class ImportFieldFactory {
 				else {
 					selectedFields.add(field);
 				}
-				
 			}
 		}
 		if(customFields != null && customFields.size() != 0) {
@@ -316,15 +311,20 @@ public class ImportFieldFactory {
 			removedFields.add("lastIssuedDate");
 			removedFields.add("isApprovalNeeded");
 		}
-		case "site":
-		case "building":
-		case "floor":
-		case "space": {
-			removedFields.add("cdd");
-			removedFields.add("hdd");
-			removedFields.add("wdd");
+		case "site": {
 			removedFields.add("space");
-
+			removedFields.add("site");
+		}
+		case "building": {
+			removedFields.add("space");
+			removedFields.add("building");
+		}
+		case "floor": {
+			removedFields.add("space");
+			removedFields.add("floor");
+		}
+		case "space": {
+			removedFields.add("space");
 		}
 		}
 		return removedFields;

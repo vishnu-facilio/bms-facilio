@@ -6,7 +6,6 @@ import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
@@ -51,10 +50,6 @@ public class GetImportHistoryListCommand extends FacilioCommand {
 			selectRecordBuilder.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", moduleId.toString(), NumberOperators.EQUALS));
 		} else if (module != null && StringUtils.isNotEmpty(module.getName())) {
 			selectRecordBuilder.andCondition(CriteriaAPI.getCondition("MODULE_NAME", "moduleName", module.getName(), StringOperators.IS));
-		}
-		if (module != null && (module.getName().equals(FacilioConstants.ContextNames.ASSET) || (module.getExtendModule() != null && module.getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))))
-		{
-			selectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(), CommonOperators.IS_NOT_EMPTY ));
 		}
 		List<Map<String, Object>> props = selectRecordBuilder.get();
 		

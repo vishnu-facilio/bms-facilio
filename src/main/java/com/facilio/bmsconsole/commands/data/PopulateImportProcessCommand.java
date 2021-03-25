@@ -5,12 +5,8 @@ import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
-import com.facilio.bmsconsole.context.AssetCategoryContext;
-import com.facilio.bmsconsole.context.BimImportProcessMappingContext;
-import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.enums.SourceType;
-import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.util.BimAPI;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.bmsconsole.util.ModuleLocalIdUtil;
@@ -26,6 +22,7 @@ import com.facilio.modules.*;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.SupplementRecord;
 import com.google.common.collect.ArrayListMultimap;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -38,6 +35,7 @@ import org.json.simple.parser.JSONParser;
 
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 ;
 
@@ -503,12 +501,19 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 					}
 				}
 				String tableName = module.getTableName();
-
+				List<FacilioField> fields =  bean.getAllFields(moduleName);
 				InsertRecordBuilder<ReadingContext> readingBuilder = new InsertRecordBuilder<ReadingContext>();
 				readingBuilder.moduleName(moduleName)
 						.table(tableName)
-						.fields(bean.getAllFields(moduleName))
+						.fields(fields)
 						.addRecords(readingsList);
+
+				List<SupplementRecord> supplements = fields.stream().filter(f -> f.getDataTypeEnum().isMultiRecord())
+						.map(f -> (SupplementRecord) f)
+						.collect(Collectors.toList());
+				if(CollectionUtils.isNotEmpty(supplements)) {
+					readingBuilder.insertSupplements(supplements);
+				}
 
 				if(ModuleLocalIdUtil.isModuleWithLocalId(module)) {
 					readingBuilder.withLocalId();

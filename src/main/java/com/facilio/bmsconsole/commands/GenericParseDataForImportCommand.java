@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.context.ImportRowContext;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportFieldValueMissingException;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportMandatoryFieldsException;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.BimAPI;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.constants.FacilioConstants;
@@ -56,26 +57,24 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 			moduleName = ((JSONObject)json.get("moduleInfo")).get("module").toString();
 		}
 		
-		ArrayList<String> requiredFields = getRequiredFields(moduleName);
 		FileStore fs = FacilioFactory.getFileStore();
-		
 		InputStream is = fs.readFile(importProcessContext.getFileId());
-		
 		HashMap<Integer, String> headerIndex = new HashMap<Integer, String>();
 		Workbook workbook = WorkbookFactory.create(is);
 
 		int row_no = 0;
 		ArrayList<String> missingColumns = new ArrayList<String>();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
+		ArrayList<String> requiredFields = getRequiredFields(moduleName);
+
 		FacilioModule module = modBean.getModule(moduleName);
 		if (ImportAPI.isInsertImport(importProcessContext)) {
-			if (module!=null && module.isStateFlowEnabled() && !ImportAPI.isAssetBaseModule(importProcessContext.getModule()) && !moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER)) {
+			if (module!=null && module.isStateFlowEnabled() && !AssetsAPI.isAssetsModule(importProcessContext.getModule()) && !moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER)) {
 				if (!fieldMapping.containsKey(moduleName + "__moduleState")) {
 					missingColumns.add("Module State");
 				}
 			}
-			if (module!=null && ImportAPI.isAssetBaseModule(importProcessContext.getModule())) {
+			if (module!=null && AssetsAPI.isAssetsModule(importProcessContext.getModule())) {
 				if (!fieldMapping.containsKey("resource__name")) {
 					missingColumns.add("Asset Name");
 				}
@@ -116,7 +115,6 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 			Sheet datatypeSheet = workbook.getSheetAt(i);
 			
 			if(sheetName == null || datatypeSheet.getSheetName().equalsIgnoreCase(sheetName)){
-				Set<String> zoneNames = new HashSet<>();
 				Iterator<Row> rowItr = datatypeSheet.iterator();
 				boolean heading = true;
 				
@@ -182,12 +180,9 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 					rowContext.setRowNumber(row_no);
 					rowContext.setColVal(colVal);
 					rowContext.setSheetNumber(i);
+
 					
-					
-					
-					
-					if(ImportAPI.isInsertImport(importProcessContext) && moduleName.equals(FacilioConstants.ContextNames.ASSET) ||
-							(importProcessContext.getModule() !=null && importProcessContext.getModule().getExtendModule() != null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
+					if(ImportAPI.isInsertImport(importProcessContext) && AssetsAPI.isAssetsModule(importProcessContext.getModule())) {
 						String name = fieldMapping.get("resource__name");
 						String category = fieldMapping.get("asset__category");
 						ArrayList<String> columns = new ArrayList<>();
@@ -241,7 +236,7 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 					}
 					else if(requiredFields.size() != 0) {
 						for(String field : requiredFields) {
-							if(colVal.get(fieldMapping.get(moduleName + "__" + field)) == null) {
+							if(ImportAPI.isInsertImport(importProcessContext) && colVal.get(fieldMapping.get(moduleName + "__" + field)) == null) {
 								throw new ImportFieldValueMissingException(row_no, fieldMapping.get(moduleName + "__" + field), new Exception());
 							}
 							else {
@@ -257,7 +252,6 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 						}
 					}
 					else {
-						
 						if(requiredFields.size() == 0) {
 							uniqueString = getUniqueString(groupedContext, uniqueString);
 						}
@@ -283,35 +277,12 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 					}
 
 					LOGGER.info("UNIQUE STRING -- " + uniqueString.toString());
-					if(!groupedContext.containsKey(uniqueString.toString())) {
-						if(moduleName.equals("zone")){
-							String zoneName = rowContext.getColVal().get(fieldMapping.get("resource"+"__"+"name")).toString();
-							if(!zoneNames.contains(zoneName)){
-								zoneNames.add(zoneName);
-								List<ImportRowContext> rowContexts = new ArrayList<ImportRowContext>();
-								rowContexts.add(rowContext);
-								groupedContext.put(uniqueString.toString(), rowContexts);
-							}else{
-								row_no--;
-							}
-						}else{
-							List<ImportRowContext> rowContexts = new ArrayList<ImportRowContext>();
-							rowContexts.add(rowContext);
-							groupedContext.put(uniqueString.toString(), rowContexts);
-						}
-					}
-					else {
-						if(moduleName.equals("zone")){
-							String zoneName = rowContext.getColVal().get(fieldMapping.get("resource"+"__"+"name")).toString();
-							if(!zoneNames.contains(zoneName)){
-								zoneNames.add(zoneName);
-								groupedContext.get(uniqueString.toString()).add(rowContext);
-							}else{
-								row_no--;
-							}
-						}else{
-							groupedContext.get(uniqueString.toString()).add(rowContext);
-						}
+					if (!groupedContext.containsKey(uniqueString.toString())) {
+						List<ImportRowContext> rowContexts = new ArrayList<ImportRowContext>();
+						rowContexts.add(rowContext);
+						groupedContext.put(uniqueString.toString(), rowContexts);
+					} else {
+						groupedContext.get(uniqueString.toString()).add(rowContext);
 					}
 				}
 			}
@@ -320,7 +291,6 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 		context.put(ImportAPI.ImportProcessConstants.GROUPED_ROW_CONTEXT, groupedContext);
 		context.put(ImportAPI.ImportProcessConstants.ROW_COUNT, row_no);
 		workbook.close();
-		LOGGER.info(groupedContext.toString());
 		LOGGER.info("Data Parsing for Import " + importProcessContext.getId() + " is complete");
 		
 		return false;
@@ -349,10 +319,12 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 		}
 	}
 	
-	private ArrayList<String> getRequiredFields(String moduleName){
+	private ArrayList<String> getRequiredFields(String moduleName) throws Exception{
 		ArrayList<String> fields = new ArrayList<String>();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioField primaryField = modBean.getPrimaryField(moduleName);
+		fields.add(primaryField.getName());
 		switch (moduleName) {
-		
 			// fill pm required fields here 
 		}
 		return fields;
