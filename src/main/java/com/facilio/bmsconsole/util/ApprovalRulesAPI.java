@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.db.criteria.operators.CommonOperators;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -210,7 +211,9 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 
 		updateApproverRule(oldRule, rule);
 
-		StateFlowRulesAPI.addOrUpdateFormDetails(rule);
+		if (StringUtils.isEmpty(rule.getFormModuleName())) {
+			StateFlowRulesAPI.addOrUpdateFormDetails(rule);
+		}
 		updateExtendedRule(rule, ModuleFactory.getCustomButtonRuleModule(), FieldFactory.getCustomButtonRuleFields());
 
 		return rule;
