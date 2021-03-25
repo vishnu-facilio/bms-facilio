@@ -989,7 +989,9 @@ public class FormsAPI {
 		if (defaultForm == null ) {
 			String linkName = isPortalApp(appLinkName) ? ApplicationLinkNames.OCCUPANT_PORTAL_APP : ApplicationLinkNames.FACILIO_MAIN_APP;
 			defaultForm = FormFactory.getDefaultForm(moduleName, linkName, onlyFields);
-			defaultForm.setAppLinkName(appLinkName);
+			if (defaultForm != null) {
+				defaultForm.setAppLinkName(appLinkName);
+			}
 		}
 		if (defaultForm == null) {
 			Map<String, Object> params = new HashMap<>();
