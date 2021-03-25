@@ -1,5 +1,8 @@
 package com.facilio.bmsconsole.context;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -10,6 +13,9 @@ public class PMResourcePlannerContext implements Serializable {
 	Long id;
 	Long pmId;
 	Long resourceId;
+	@Getter
+	@Setter
+	String resourceName;
 	ResourceContext resource;
 
 	public List<PMTriggerContext> getTriggerContexts() {

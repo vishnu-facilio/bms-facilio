@@ -13,7 +13,8 @@ public class GetPMResourcePlanners extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         long recordId = Constants.getRecordId(context);
-        Map<Long, PMResourcePlannerContext> pmResourcesPlanner = PreventiveMaintenanceAPI.getPMResourcesPlanner(recordId);
+        Map<Long, PMResourcePlannerContext> pmResourcesPlanner
+                = PreventiveMaintenanceAPI.getPMResourcesPlanner(recordId, true);
         if (MapUtils.isNotEmpty(pmResourcesPlanner)) {
             Constants.setResult(context, pmResourcesPlanner.values());
         } else {

@@ -1603,8 +1603,12 @@ public class PreventiveMaintenanceAPI {
 				.collect(Collectors.joining(", "));
 		return getPMTriggers(pmIds);
 	}
-	
+
 	public static Map<Long, List<PMResourcePlannerContext>> getPMResourcesPlanners(Collection<Long> pmIds) throws Exception {
+		return getPMResourcesPlanners(pmIds, false);
+	}
+	
+	public static Map<Long, List<PMResourcePlannerContext>> getPMResourcesPlanners(Collection<Long> pmIds, boolean onlyName) throws Exception {
 		if (pmIds == null || pmIds.isEmpty()) {
 			return Collections.emptyMap();
 		}
@@ -1622,31 +1626,39 @@ public class PreventiveMaintenanceAPI {
 		Map<Long, List<PMResourcePlannerContext>> result = new HashMap<>();
 		Map<Long, PMResourcePlannerContext> resourcePlannerContextMap = new HashMap<>();
 
-		List<PMReminder> pmReminders = PreventiveMaintenanceAPI.getPMReminders(pmIds);
-
-		Map<Long, PMReminder> reminderMap = new HashMap<>();
-
-		if (pmReminders != null && !pmReminders.isEmpty()) {
-			for (PMReminder rem: pmReminders) {
-				reminderMap.put(rem.getId(), rem);
-			}
-		}
-
 		List<Long> resourcePlannerIds = new ArrayList<>();
 		if (props != null && !props.isEmpty()) {
 			for (Map<String, Object> prop: props) {
 				PMResourcePlannerContext pmResourcePlannerContext = FieldUtil.getAsBeanFromMap(prop, PMResourcePlannerContext.class);
 				if(pmResourcePlannerContext.getResourceId() != null && pmResourcePlannerContext.getResourceId() > 0) {
-					pmResourcePlannerContext.setResource(ResourceAPI.getResource(pmResourcePlannerContext.getResourceId()));
-				}
-				List<PMResourcePlannerReminderContext> resourcePlannerReminderContexts = PreventiveMaintenanceAPI.getPmResourcePlannerReminderContext(pmResourcePlannerContext.getId());
-				if (resourcePlannerReminderContexts != null) {
-					for (int i = 0; i < resourcePlannerReminderContexts.size(); i++) {
-						PMReminder remContext = reminderMap.get(resourcePlannerReminderContexts.get(i).getReminderId());
-						resourcePlannerReminderContexts.get(i).setReminderName(remContext.getName());
+					ResourceContext resource = ResourceAPI.getResource(pmResourcePlannerContext.getResourceId());
+					if (onlyName) {
+						pmResourcePlannerContext.setResourceName(resource.getName());
+					} else {
+						pmResourcePlannerContext.setResource(resource);
 					}
-					pmResourcePlannerContext.setPmResourcePlannerReminderContexts(resourcePlannerReminderContexts);
 				}
+
+				if (!onlyName) {
+					List<PMReminder> pmReminders = PreventiveMaintenanceAPI.getPMReminders(pmIds);
+
+					Map<Long, PMReminder> reminderMap = new HashMap<>();
+
+					if (pmReminders != null && !pmReminders.isEmpty()) {
+						for (PMReminder rem: pmReminders) {
+							reminderMap.put(rem.getId(), rem);
+						}
+					}
+					List<PMResourcePlannerReminderContext> resourcePlannerReminderContexts = PreventiveMaintenanceAPI.getPmResourcePlannerReminderContext(pmResourcePlannerContext.getId());
+					if (resourcePlannerReminderContexts != null) {
+						for (int i = 0; i < resourcePlannerReminderContexts.size(); i++) {
+							PMReminder remContext = reminderMap.get(resourcePlannerReminderContexts.get(i).getReminderId());
+							resourcePlannerReminderContexts.get(i).setReminderName(remContext.getName());
+						}
+						pmResourcePlannerContext.setPmResourcePlannerReminderContexts(resourcePlannerReminderContexts);
+					}
+				}
+
 				long pmId = (long) prop.get("pmId");
 				if (!result.containsKey(pmId)) {
 					result.put(pmId, new ArrayList<>());
@@ -1657,7 +1669,7 @@ public class PreventiveMaintenanceAPI {
 			}
 		}
 
-		if (!resourcePlannerIds.isEmpty()) {
+		if (!resourcePlannerIds.isEmpty() && !onlyName) {
 			FacilioField field = FieldFactory.getField("resourcePlannerId", "PM_RESOURCE_PLANNER_ID", ModuleFactory.getPMResourcePlannerTriggersModule(), FieldType.LOOKUP);
 			List<FacilioField> fields = new ArrayList<>(FieldFactory.getPMResourcePlannerTriggersFields());
 			fields.addAll(FieldFactory.getPMTriggerFields());
@@ -1683,10 +1695,13 @@ public class PreventiveMaintenanceAPI {
 
 		return result;
 	}
+
+	public static Map<Long, PMResourcePlannerContext> getPMResourcesPlanner(Long pmId) throws Exception {
+		return getPMResourcesPlanner(pmId, false);
+	}
 	
-	
-	public static Map<Long,PMResourcePlannerContext> getPMResourcesPlanner(Long pmId) throws Exception {
-		Map<Long, List<PMResourcePlannerContext>> pmMap = getPMResourcesPlanners(Arrays.asList(pmId));
+	public static Map<Long,PMResourcePlannerContext> getPMResourcesPlanner(Long pmId, boolean onlyName) throws Exception {
+		Map<Long, List<PMResourcePlannerContext>> pmMap = getPMResourcesPlanners(Arrays.asList(pmId), onlyName);
 		List<PMResourcePlannerContext> resourcePlannerContexts = null;
 		if (pmMap != null) {
 			resourcePlannerContexts = pmMap.get(pmId);
