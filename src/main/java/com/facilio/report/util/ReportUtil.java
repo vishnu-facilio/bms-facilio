@@ -1,6 +1,7 @@
 package com.facilio.report.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -457,6 +458,39 @@ public class ReportUtil {
 			return reports.get(0);
 		}
 		return null;
+	}
+	
+	public static int getReportType(long reportId) throws Exception
+	{
+		
+		FacilioModule module = ModuleFactory.getReportModule();
+		
+		FacilioField reportTypeField=FieldFactory.getField("type", "REPORT_TYPE", module, FieldType.NUMBER);
+		List<FacilioField> selectFields= Collections.singletonList(reportTypeField);
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+													.select(selectFields)
+													.table(module.getTableName())
+//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+													.andCondition(CriteriaAPI.getIdCondition(reportId, module))
+													;
+		
+		
+		int reportTypeInt=-1;
+		List<Map<String, Object>>props =selectBuilder.get();
+		if(props!=null&&!props.isEmpty())
+		{
+			List<ReportContext> report=FieldUtil.getAsBeanListFromMapList(props, ReportContext.class);
+			if(report!=null&&!report.isEmpty())
+			{
+				reportTypeInt=report.get(0).getType();
+			}
+			
+			
+		}
+		
+
+		return reportTypeInt;
 	}
 	
 	public static List<ReportContext> fetchAllReportsByType(Integer reportType) throws Exception{
