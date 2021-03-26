@@ -9,7 +9,7 @@ public enum SensorRuleType implements FacilioEnum{
 	NEGATIVE_VALUE("Meter reads negative value",new ValidateNegativeValueInSensorRule(), true, true, true),
 	DECREMENTAL_VALUE("Meter has decremental readings",new ValidateDecrementalValueInSensorRule(), true, true),
 	SAME_VALUE_WITH_ZERO_DELTA("Same meter reading for {timeInterval} hours",new ValidateSameValueWithZeroDeltaInSensorRule(), true, true),
-	MEAN_VARIATION("Energy consumption is greater than {averageBoundPercentage}% compared to past {timeInterval} days",new ValidateMeanVariationInSensorRule(), true, true),
+	MEAN_VARIATION("Consumption is greater than {averageBoundPercentage}% compared to past {timeInterval} days",new ValidateMeanVariationInSensorRule(), true, true),
 	;
 	
 	public int getIndex() {
