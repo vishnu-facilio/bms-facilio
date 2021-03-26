@@ -214,7 +214,7 @@ public class GetFormMetaCommand extends FacilioCommand {
 					(!isMultiSiteForm || field.getField().getDataTypeEnum() != FieldType.LOOKUP || sitesCount == 1)
 				).map(field -> field.getField()).collect(Collectors.toList());
 			}
-			if("space".equalsIgnoreCase(moduleName)) {
+			if(customFields != null && !customFields.isEmpty() && "space".equalsIgnoreCase(moduleName) ) {
 				Set<Long> formFieldFieldIds = form.getFields().stream().map(FormField::getFieldId).collect(Collectors.toSet());
 				customFields = customFields.stream().filter(field->formFieldFieldIds.contains(field.getFieldId())).collect(Collectors.toList());
 			}
