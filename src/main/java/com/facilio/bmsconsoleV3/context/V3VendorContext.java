@@ -2,8 +2,10 @@ package com.facilio.bmsconsoleV3.context;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.ContactsContext;
+import com.facilio.bmsconsole.context.InsuranceContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.VendorContext;
+import com.facilio.bmsconsoleV3.context.facilitybooking.V3ExternalAttendeeContext;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.v3.context.V3Context;
@@ -191,5 +193,15 @@ public class V3VendorContext extends V3Context {
 
     public void setTenant(V3TenantContext tenant) {
         this.tenant = tenant;
+    }
+
+    private List<InsuranceContext> insurance;
+
+    public List<InsuranceContext> getInsurance() {
+        return insurance;
+    }
+
+    public void setInsurance(List<InsuranceContext> insurance) {
+        this.insurance = insurance;
     }
 }
