@@ -13,7 +13,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
 
-public class LocationActions extends ActionSupport {
+public class LocationActions extends FacilioAction { 
 	
 	/**
 	 * 
@@ -87,6 +87,16 @@ public class LocationActions extends ActionSupport {
 //		setSetup(SetupLayout.getLocationsListLayout());
 //		setLocations(LocationAPI.getAllLocations(AccountUtil.getCurrentOrg().getOrgId()));
 		
+		return SUCCESS;
+	}
+	
+	public String v2locationDetails() throws Exception  {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ID, locationId);
+		Command getLocations = FacilioChainFactory.getLocationChain();
+		getLocations.execute(context);
+		setResult(FacilioConstants.ContextNames.LOCATION, context.get(FacilioConstants.ContextNames.LOCATION));
 		return SUCCESS;
 	}
 	

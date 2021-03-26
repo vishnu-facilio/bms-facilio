@@ -3,8 +3,10 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.FloorContext;
+import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.context.SpaceContext;
+import com.facilio.bmsconsole.util.LocationAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -18,7 +20,9 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class GetSpaceCommand extends FacilioCommand {
@@ -95,6 +99,13 @@ public class GetSpaceCommand extends FacilioCommand {
 				{
 					SpaceContext childSpaces1 = SpaceAPI.getSpace(tempSpace4.getId());
 					space.setSpace4(childSpaces1);
+				}
+				LocationContext location = space.getLocation();
+				if(location != null) {
+					 Map<Long, LocationContext> locationMap = LocationAPI.getLocationMap(Collections.singletonList(location.getId()));
+					if(locationMap != null && !locationMap.isEmpty()) {
+						space.setLocation(locationMap.get(location.getId()));
+					}
 				}
 				context.put(FacilioConstants.ContextNames.SPACE, space);
 			}

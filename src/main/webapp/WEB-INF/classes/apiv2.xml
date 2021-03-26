@@ -6202,6 +6202,9 @@
 			<param name="viewName">{1}</param>
 		</action>
 	</package>
+	<package name="locationApiv2" namespace="/api/v2/location" extends="v2Api">
+		<action name="details" class="com.facilio.bmsconsole.actions.LocationActions" method="v2locationDetails" />
+	</package>
 	<package name="spaceApiv2" namespace="/api/v2/space" extends="v2Api">
 		<action name="delete" class="com.facilio.bmsconsole.actions.CampusAction" method="v2DeleteCampus" />
 		<action name="details" class="com.facilio.bmsconsole.actions.SpaceAction" method="v2SpaceDetails" />

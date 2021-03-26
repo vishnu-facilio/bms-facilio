@@ -185,7 +185,12 @@ public class SpaceAction extends FacilioAction {
 		CommonCommandUtil.addEventType(EventType.EDIT, context);
 		context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
 		context.put(FacilioConstants.ContextNames.APPROVAL_TRANSITION_ID, approvalTransitionId);
-
+		
+		if(space.getLocation()!=null) {
+			context.put(FacilioConstants.ContextNames.RECORD, space.getLocation());
+			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST,Collections.singletonList(space.getLocation().getId()));
+		}
+		
 		FacilioChain updateCampus = FacilioChainFactory.getUpdateCampusChain();
 		updateCampus.execute(context);
 		setSpace(space);
