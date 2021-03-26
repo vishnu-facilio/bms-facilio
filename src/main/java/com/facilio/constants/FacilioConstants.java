@@ -2370,6 +2370,7 @@ public class FacilioConstants {
 		public static final String DEFAULT_SERVICE = "default";
 		public static final String INSTANT_JOB_SERVICE = "instantJob";
 		public static final String WMS_SERVICE = "wms";
+		public static final String TEMP_JOBS = "tempjobs";
 	}
 	public static class Alarm {
 		public static final String CLEAR_SEVERITY = "Clear";

@@ -86,6 +86,7 @@ public class FacilioTimer {
 			jc.setTimezone(AccountUtil.getCurrentAccount().getTimeZone());
 		}
 		FacilioService.runAsService(FacilioConstants.Services.JOB_SERVICE,() -> JobStore.addJob(jc));
+		FacilioService.runAsService(FacilioConstants.Services.TEMP_JOBS,() -> JobStore.addJob(jc));
 	}
 
 	private static final String DEFAULT_INSTANT_JOB_EXECUTOR = "default";
@@ -119,16 +120,19 @@ public class FacilioTimer {
 			jc.setTimezone(AccountUtil.getCurrentAccount().getTimeZone());
 		}
 		FacilioService.runAsService(FacilioConstants.Services.JOB_SERVICE,() -> JobStore.addJob(jc));
+		FacilioService.runAsService(FacilioConstants.Services.TEMP_JOBS,() -> JobStore.addJob(jc));
 	}
 	
 	public static void deleteJob(long jobId, String jobName) throws Exception {
 		long orgId = getCurrentOrgId();
 		FacilioService.runAsService(FacilioConstants.Services.JOB_SERVICE,() -> JobStore.deleteJob(orgId, jobId, jobName));
+		FacilioService.runAsService(FacilioConstants.Services.TEMP_JOBS,() -> JobStore.deleteJob(orgId, jobId, jobName));
 	}
 	
 	public static void deleteJobs(List<Long> jobIds, String jobName) throws Exception {
 		long orgId = getCurrentOrgId();
 		FacilioService.runAsService(FacilioConstants.Services.JOB_SERVICE,() -> JobStore.deleteJobs(orgId, jobIds, jobName));
+		FacilioService.runAsService(FacilioConstants.Services.TEMP_JOBS,() -> JobStore.deleteJobs(orgId, jobIds, jobName));
 	}
 	
 	public static JobContext getJob(long jobId, String jobName) throws Exception {
@@ -143,11 +147,13 @@ public class FacilioTimer {
 
 	public static int activateJob(long jobId, String jobName) throws Exception {
 		long orgId = getCurrentOrgId();
+		FacilioService.runAsServiceWihReturn(FacilioConstants.Services.TEMP_JOBS,() -> JobStore.setStatusForJob(orgId, jobId, jobName, true));
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,() -> JobStore.setStatusForJob(orgId, jobId, jobName, true));
 	}
 
 	public static int inActivateJob(long jobId, String jobName) throws Exception {
 		long orgId = getCurrentOrgId();
+		FacilioService.runAsServiceWihReturn(FacilioConstants.Services.TEMP_JOBS,() -> JobStore.setStatusForJob(orgId, jobId, jobName, false));
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,() -> JobStore.setStatusForJob(orgId, jobId, jobName, false));
 	}
 	
