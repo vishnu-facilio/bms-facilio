@@ -323,7 +323,9 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 		ArrayList<String> fields = new ArrayList<String>();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioField primaryField = modBean.getPrimaryField(moduleName);
-		fields.add(primaryField.getName());
+		if(primaryField != null) {
+			fields.add(primaryField.getName());
+		}
 		switch (moduleName) {
 			// fill pm required fields here 
 		}
