@@ -1,16 +1,15 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.List;
-
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ReceivableContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.util.List;
 
 public class ReceivableAction extends FacilioAction {
 	private static final long serialVersionUID = 1L;
@@ -93,13 +92,17 @@ public class ReceivableAction extends FacilioAction {
  			searchObj.put("query", getSearch());
 	 		context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
  		}
- 		JSONObject pagination = new JSONObject();
- 	 	pagination.put("page", getPage());
- 	 	pagination.put("perPage", getPerPage());
- 	 	if (getPerPage() < 0) {
- 	 		pagination.put("perPage", 5000);
- 	 	}
- 	 	
+		if (getFetchCount()) {
+			context.put(FacilioConstants.ContextNames.FETCH_COUNT, true);
+		} else {
+			JSONObject pagination = new JSONObject();
+			pagination.put("page", getPage());
+			pagination.put("perPage", getPerPage());
+			if (getPerPage() < 0) {
+				pagination.put("perPage", 5000);
+			}
+			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+		}
 		FacilioChain chain = ReadOnlyChainFactory.getAllReceivablesChain();
 		chain.execute(context);
 		if (getFetchCount()) {
