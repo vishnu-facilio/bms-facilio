@@ -29,6 +29,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -37,7 +38,7 @@ public class ChainUtil {
 
     public static FacilioChain getFetchRecordChain(String moduleName) throws Exception {
         FacilioModule module = getModule(moduleName);
-        V3Config v3Config = getV3Config(moduleName);
+        V3Config v3Config = getV3Config(module);
 
         Command afterFetchCommand = null;
         Command beforeFetchCommand = null;
@@ -75,7 +76,7 @@ public class ChainUtil {
         FacilioChain nonTransactionChain = FacilioChain.getNonTransactionChain();
         nonTransactionChain.addCommand(new LoadViewCommand());
 
-        V3Config v3Config = ChainUtil.getV3Config(moduleName);
+        V3Config v3Config = ChainUtil.getV3Config(module);
         Command beforeCountCommand = null;
         V3Config.ListHandler listHandler = null;
         if (v3Config != null) {
@@ -94,7 +95,7 @@ public class ChainUtil {
 
     public static FacilioChain getListChain(String moduleName) throws Exception {
         FacilioModule module = ChainUtil.getModule(moduleName);
-        V3Config v3Config = ChainUtil.getV3Config(moduleName);
+        V3Config v3Config = ChainUtil.getV3Config(module);
 
         Command beforeFetchCommand = null;
         Command afterFetchCommand = null;
@@ -138,7 +139,7 @@ public class ChainUtil {
 
     public static FacilioChain getCreateRecordChain(String moduleName) throws Exception {
         FacilioModule module = ChainUtil.getModule(moduleName);
-        V3Config v3Config = ChainUtil.getV3Config(moduleName);
+        V3Config v3Config = ChainUtil.getV3Config(module);
 
         Command initCommand = new DefaultInit();
         Command beforeSaveCommand = null;
@@ -176,7 +177,7 @@ public class ChainUtil {
 
     public static FacilioChain getUpdateChain(String moduleName) throws Exception {
         FacilioModule module = ChainUtil.getModule(moduleName);
-        V3Config v3Config = ChainUtil.getV3Config(moduleName);
+        V3Config v3Config = ChainUtil.getV3Config(module);
         Command initCommand = new DefaultInit();
         Command beforeSaveCommand = null;
         Command afterSaveCommand = null;
@@ -264,8 +265,8 @@ public class ChainUtil {
     }
 
     private static FacilioChain getPatchChain(String moduleName, boolean isBulkOp) throws Exception {
-        V3Config v3Config = ChainUtil.getV3Config(moduleName);
         FacilioModule module = ChainUtil.getModule(moduleName);
+        V3Config v3Config = ChainUtil.getV3Config(module);
 
         Command initCommand = isBulkOp? getBulkPatchInitChain() : getPatchInitChain();
         Command beforeSaveCommand = null;
@@ -321,8 +322,20 @@ public class ChainUtil {
         return module;
     }
 
-    public static V3Config getV3Config(String moduleName) {
-        Supplier<V3Config> v3Config = MODULE_HANDLER_MAP.get(moduleName);
+    public static V3Config getV3Config(String moduleName) throws Exception {
+        FacilioModule module = getModule(moduleName);
+        Objects.requireNonNull(module, "Invalid module for v3 config fetch");
+        return getV3Config(module);
+    }
+
+    public static V3Config getV3Config (FacilioModule module) {
+        Objects.requireNonNull(module, "Invalid module for v3 config fetch");
+        FacilioModule currentModule = module;
+        Supplier<V3Config> v3Config = null;
+        while (currentModule != null && v3Config == null) {
+            v3Config = MODULE_HANDLER_MAP.get(currentModule.getName());
+            currentModule = currentModule.getExtendModule();
+        }
         if (v3Config == null) {
             return null;
         }
