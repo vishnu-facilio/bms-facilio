@@ -63,9 +63,14 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 		if (fields == null) {
 			
 			FacilioForm form = fetchForm(formId);
-			fields = form.getFields().stream().filter(formField -> formField.getField() != null && !formField.getField().isMainField() &&
-					(formField.getHideField() == null || !formField.getHideField()))
-					.collect(Collectors.toList());
+			if (form == null) {
+				fields = getAllFields(modBean);
+			}
+			else {
+				fields = form.getFields().stream().filter(formField -> formField.getField() != null && !formField.getField().isMainField() &&
+						(formField.getHideField() == null || !formField.getHideField()))
+						.collect(Collectors.toList());
+			}
 			
 			if (AccountUtil.getCurrentOrg().getOrgId() != 406) {	// Sort based on form
 				addSystemFields(fields);
@@ -87,6 +92,18 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 		chain.execute();
 		
 		return (FacilioForm) formContext.get(FacilioConstants.ContextNames.FORM);
+	}
+	
+	private List<FormField> getAllFields(ModuleBean modBean) throws Exception {
+		List<FormField> fields = new ArrayList<>();
+		List<FacilioField> allFields = modBean.getAllFields(moduleName);
+		int count = 0;
+		for(FacilioField field: allFields) {
+			if (!field.isMainField()) {
+				fields.add(FormsAPI.getFormFieldFromFacilioField(field, ++count));
+			}
+		}
+		return fields;
 	}
 	
 	private void sort(List<FormField> fields) {

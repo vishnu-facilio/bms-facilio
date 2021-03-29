@@ -3,9 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -47,32 +45,8 @@ public class GetFormMetaCommand extends FacilioCommand {
 		
 		FacilioForm form = null;
 		ApplicationContext app = appId <= 0 ? AccountUtil.getCurrentApp() : ApplicationApi.getApplicationForId(appId);
-		if (app == null) {
-			app = ApplicationApi.getApplicationForLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
-		}	
 		String appLinkName = app.getLinkName();
 		appId = app.getId();
-		if(formId < 0 && formName == null) {
-			Map<String, FacilioForm> forms = new LinkedHashMap<>(FormFactory.getForms(formModuleName, Collections.singletonList(appLinkName)));
-			if (forms != null && !forms.isEmpty()) {
-				List<FacilioForm> formsList = new ArrayList<>(forms.values());	
-				formName = formsList.get(0).getName();
-			}
-			else if (forms == null || forms.isEmpty()) {
-				boolean fetchExtendedModuleForms = false;
-				formModule = modBean.getModule(formModuleName);
-				FacilioModule extendedModule = formModule.getExtendModule();
-				if (extendedModule != null && extendedModule.getName() != null && "asset".equalsIgnoreCase(extendedModule.getName())) {
-					fetchExtendedModuleForms = true;
-				}
-				Map<String, FacilioForm> dbForms=FormsAPI.getFormsAsMap((String)context.get(FacilioConstants.ContextNames.MODULE_NAME), fetchExtendedModuleForms, false, appId);
-				if (dbForms != null && !dbForms.isEmpty()) {
-					List<FacilioForm> formsList = new ArrayList<>(dbForms.values());	
-					formName = formsList.get(0).getName();
-				}
-			}
-		}
-		
 		if(formId != null && formId > 0) {
 			form= FormsAPI.getFormFromDB(formId);
 			if (form != null) {
