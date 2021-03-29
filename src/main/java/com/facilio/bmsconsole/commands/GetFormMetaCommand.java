@@ -53,12 +53,15 @@ public class GetFormMetaCommand extends FacilioCommand {
 				context.put(ContextNames.MODULE_NAME, form.getModule().getName());
 			}
 		}
-		else if (formName != null) {
+		else {
 			if (formModuleName != null) {
 				formModule = modBean.getModule(formModuleName);
-				if (formId == -1 && formName == null) {
+				if (formName == null) {
 					formName = FormFactory.getDefaultFormName(formModuleName,appLinkName);
 				}
+			}
+			else if (formName == null) {
+				return false;
 			}
 			form = FormsAPI.getFormFromDB(formName, formModule);
 			if (form == null) {
