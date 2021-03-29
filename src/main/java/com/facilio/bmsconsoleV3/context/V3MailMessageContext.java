@@ -1,32 +1,47 @@
 package com.facilio.bmsconsoleV3.context;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.fs.FileInfo;
-import com.facilio.modules.FacilioEnum;
-import com.facilio.pdf.PdfUtil;
-import com.facilio.v3.context.V3Context;
-import com.sun.xml.bind.v2.TODO;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+
+import javax.mail.Address;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.Part;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.mail.util.MimeMessageParser;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import javax.mail.*;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.fs.FileInfo;
+import com.facilio.modules.FacilioEnum;
+import com.facilio.pdf.PdfUtil;
+import com.facilio.v3.context.V3Context;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter @Setter
 public class V3MailMessageContext extends V3Context {
 
     private static final Logger LOGGER = LogManager.getLogger(V3MailMessageContext.class.getName());
     private static final long serialVersionUID = 1L;
     private String from;
+    private String messageId;
+    private String referenceMessageId;
+    private String inReplyToMessageId;
+    
     public String getFrom() {
         return from;
     }
@@ -264,6 +279,22 @@ public class V3MailMessageContext extends V3Context {
                 mailContext.bcc = message.getRecipients(Message.RecipientType.BCC).toString();
             }
             mailContext.content = parseMessageContent(message, mailContext);
+            
+            String[] messageIDList = message.getHeader("Message-ID");
+            String[] referenceHeader = message.getHeader("References");
+            String[] inReplyTo = message.getHeader("In-Reply-To");
+            
+            if(messageIDList != null && messageIDList[0] != null) {
+            	
+            	mailContext.setMessageId(getFirstMessageId.apply(messageIDList[0]));
+            }
+            if(referenceHeader != null && referenceHeader[0] != null) {
+            	mailContext.setReferenceMessageId(getFirstMessageId.apply(referenceHeader[0]));
+            }
+            if(inReplyTo != null && inReplyTo[0] != null) {
+            	mailContext.setInReplyToMessageId(getFirstMessageId.apply(inReplyTo[0]));
+            }
+            
         } catch (MessagingException | IOException ex) {
             ex.printStackTrace();
         }
@@ -357,6 +388,9 @@ public class V3MailMessageContext extends V3Context {
         }
         return result;
     }
+    
+    private static Function<String,String> getFirstMessageId = (messageIDs) -> messageIDs.substring(messageIDs.indexOf('<')+1, messageIDs.indexOf('>'));
+    
     private static void saveContentAsPdf (String s, V3MailMessageContext mailContext) throws IOException {
         Map<String, Object> attachmentObject = new HashMap<>();
         File tmpFile = File.createTempFile("Email_Content_", ".pdf");
