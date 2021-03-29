@@ -102,7 +102,10 @@ public class GetAllFieldsCommand extends FacilioCommand {
 					}
 				} 
 				else if (moduleName.equals("workorder")) {
-					if(FieldFactory.Fields.WORK_ORDER_FIELDS_INCLUDE.contains(fieldObject.getName())) {
+					if(!fieldObject.isDefault()) {
+						fields.add(fieldObject);
+					}
+					else if(FieldFactory.Fields.WORK_ORDER_FIELDS_INCLUDE.contains(fieldObject.getName())) {
 						fields.add(fieldObject);
 					}
 					else if(fieldObject.getName().equals("tenant") && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) {
@@ -123,22 +126,28 @@ public class GetAllFieldsCommand extends FacilioCommand {
 					
 				}
 				else if (moduleName.equals("asset")) {
-					 if(FieldFactory.Fields.ASSET_FIELDS_INCLUDE.contains(fieldObject.getName())) {
+					if(!fieldObject.isDefault()) {
+						fields.add(fieldObject);
+					} else if(FieldFactory.Fields.ASSET_FIELDS_INCLUDE.contains(fieldObject.getName())) {
 						fields.add(fieldObject);
 					}
 				}
 				else if (moduleName.equals("newreadingalarm") || moduleName.equals("bmsalarm") || moduleName.equals("mlAnomalyAlarm")) {
-					if(FieldFactory.Fields.NEW_ALARMS_FIELDS_INCLUDE.contains(fieldObject.getName())) {
+					if(!fieldObject.isDefault()) {
+						fields.add(fieldObject);
+					}else if(FieldFactory.Fields.NEW_ALARMS_FIELDS_INCLUDE.contains(fieldObject.getName())) {
 						fields.add(fieldObject);
 					}
 				}
 				else if (moduleName.equals(ContextNames.OPERATION_ALARM)) {
-					if(FieldFactory.Fields.NEW_OP_ALARMS_FIELDS_INCLUDE.contains(fieldObject.getName())) {
+					if(!fieldObject.isDefault()) {
+						fields.add(fieldObject);
+					} else if(FieldFactory.Fields.NEW_OP_ALARMS_FIELDS_INCLUDE.contains(fieldObject.getName())) {
 						fields.add(fieldObject);
 					}
 				}
 				else {
-					fields = allFields;
+					fields.add(fieldObject);
 				}
 			}
 		} else {
