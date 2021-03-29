@@ -411,7 +411,13 @@ public class ApplicationApi {
         if (servicePortal.getId() > 0) {
             ApplicationLayoutContext spLayout = new ApplicationLayoutContext(servicePortal.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.WEB, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
             addApplicationLayout(spLayout);
+
+            //mobile layout for occupant portal
+            ApplicationLayoutContext opLayoutMobile = new ApplicationLayoutContext(servicePortal.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.MOBILE, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
+            addApplicationLayout(opLayoutMobile);
+
             addOccupantPortalWebTabs(spLayout);
+            addOccupantPortalWebGroupsForMobileLayout(spLayout);
          }
 
         ApplicationContext mainApp = getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
@@ -815,6 +821,63 @@ public class ApplicationApi {
 
     }
 
+    public static void addOccupantPortalWebGroupsForMobileLayout(ApplicationLayoutContext layout) {
+        try {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            int groupOrder = 1;
+
+            long appId = layout.getApplicationId();
+
+            List<WebTabGroupContext> webTabGroups = new ArrayList<>();
+            Map<String, List<WebTabContext>> groupNameVsWebTabsMap = new HashMap<>();
+            List<WebTabContext> webTabs = new ArrayList<>();
+            JSONObject configJSON;
+
+            webTabGroups.add(new WebTabGroupContext("Home", "home", layout.getId(), 200, groupOrder++));
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Dashboard", "dashboard", WebTabContext.Type.DASHBOARD, null, appId, null));
+            groupNameVsWebTabsMap.put("home", webTabs);
+
+            webTabGroups.add(new WebTabGroupContext("My Requests", "workorder", layout.getId(), 201, groupOrder++));
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Requests", "workorders", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("workorder").getModuleId()), appId, null));
+            groupNameVsWebTabsMap.put("workorder", webTabs);
+
+
+            for (WebTabGroupContext webTabGroupContext : webTabGroups) {
+                System.out.println("we: " + webTabGroupContext.getRoute());
+                FacilioChain chain = TransactionChainFactory.getAddOrUpdateTabGroup();
+                FacilioContext chainContext = chain.getContext();
+                chainContext.put(FacilioConstants.ContextNames.WEB_TAB_GROUP, webTabGroupContext);
+                chain.execute();
+                long webGroupId = (long) chainContext.get(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID);
+                webTabGroupContext.setId(webGroupId);
+                List<WebTabContext> tabs = groupNameVsWebTabsMap.get(webTabGroupContext.getRoute());
+                for (WebTabContext webTabContext : tabs) {
+                    chain = TransactionChainFactory.getAddOrUpdateTabChain();
+                    chainContext = chain.getContext();
+                    chainContext.put(FacilioConstants.ContextNames.WEB_TAB, webTabContext);
+                    chain.execute();
+                    long tabId = (long) chainContext.get(FacilioConstants.ContextNames.WEB_TAB_ID);
+                    webTabContext.setId(tabId);
+                }
+                if(CollectionUtils.isNotEmpty(tabs)){
+                    chain = TransactionChainFactory.getCreateAndAssociateTabGroupChain();
+                    chainContext = chain.getContext();
+                    chainContext.put(FacilioConstants.ContextNames.WEB_TABS, tabs);
+                    chainContext.put(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID, webGroupId);
+                    chain.execute();
+                }
+            }
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
 
     public static void addWebTab(WebTabContext webtab) throws Exception {
 
