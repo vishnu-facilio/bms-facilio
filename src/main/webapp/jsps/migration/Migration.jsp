@@ -15,7 +15,6 @@
 <%@ page import="com.facilio.modules.fields.NumberField" %>
 <%@ page import="com.facilio.modules.fields.FacilioField" %>
 <%@ page import="com.facilio.modules.FieldType" %>
-<%@ page import="com.facilio.bmsconsoleV3.signup.moduleconfig.WorkOrderModule" %>
 
 
 <%--
@@ -39,8 +38,6 @@
 
             // Have migration commands for each org
             // Transaction is only org level. If failed, have to continue from the last failed org and not from first
-            WorkOrderModule workOrderModule = new WorkOrderModule();
-            workOrderModule.migration();
 
             LOGGER.info("Completed For -- "+AccountUtil.getCurrentOrg().getId());
             response.getWriter().println("Completed For -- "+AccountUtil.getCurrentOrg().getId());
