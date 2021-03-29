@@ -7,8 +7,7 @@ import com.facilio.fw.BeanFactory;
 public class WorkOrderModule extends BaseModuleConfig {
 
     public WorkOrderModule() throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+        setModuleName(FacilioConstants.ContextNames.WORK_ORDER);
     }
 
     @Override
