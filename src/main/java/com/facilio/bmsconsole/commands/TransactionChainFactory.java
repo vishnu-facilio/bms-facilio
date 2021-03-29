@@ -422,7 +422,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteSLACommitmentWorkflowsCommand());
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new ExecuteSpecificWorkflowsCommand(RuleType.CUSTOM_BUTTON));
-			c.addCommand(new ExecuteScoringRulesCommand());
+			c.addCommand(new ExecuteAllTriggersCommand(TriggerType.MODULE_TRIGGER));
 			c.addCommand(new ForkChainToInstantJobCommand()
 				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.MODULE_RULE_NOTIFICATION))
 				.addCommand(new ClearAlarmOnWOCloseCommand())

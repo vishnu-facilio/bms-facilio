@@ -87,7 +87,7 @@ public class TriggerUtil {
 		return FieldUtil.getAsBeanListFromMapList(select.get(), BaseTriggerContext.class);
 	}
 	
-	public static List<BaseTriggerContext> getTriggers(FacilioModule module, List<EventType> activityTypes, Criteria criteria, boolean onlyActive, TriggerType... triggerTypes) throws Exception {
+	public static List<BaseTriggerContext> getTriggers(FacilioModule module, List<EventType> activityTypes, Criteria criteria, boolean onlyActive, boolean excludeInternal, TriggerType... triggerTypes) throws Exception {
 		FacilioModule triggerModule = ModuleFactory.getTriggerModule();
 		List<FacilioField> fields = FieldFactory.getTriggerFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -103,6 +103,9 @@ public class TriggerUtil {
 
 		if (onlyActive) {
 			select.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), Boolean.TRUE.toString(), BooleanOperators.IS));
+		}
+		if (excludeInternal) {
+			select.andCondition(CriteriaAPI.getCondition(fieldMap.get("internal"), Boolean.FALSE.toString(), BooleanOperators.IS));
 		}
 		
 		if(triggerTypes != null && triggerTypes.length > 0) {

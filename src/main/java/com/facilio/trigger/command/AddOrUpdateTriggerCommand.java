@@ -52,7 +52,7 @@ public class AddOrUpdateTriggerCommand extends FacilioCommand {
 			throw new IllegalArgumentException("Event type cannot be empty");
 		}
 
-		if (trigger.getId() <= 0) {
+		if (trigger.getId() <= 0 && trigger.getStatus() == null) {
 			// set the trigger active when creating
 			trigger.setStatus(true);
 		}

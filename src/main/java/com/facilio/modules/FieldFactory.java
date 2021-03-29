@@ -9498,6 +9498,7 @@ public class FieldFactory {
         fields.add(getNameField(module));
         fields.add(getField("type", "TYPE", module, FieldType.NUMBER));
         fields.add(getField("moduleId", "MODULE_ID", module, FieldType.NUMBER));
+        fields.add(getField("isDefault", "IS_DEFAULT", module, FieldType.BOOLEAN));
         fields.add(getField("internal", "IS_INTERNAL", module, FieldType.BOOLEAN));
         fields.add(getField("eventType", "EVENT_TYPE", module, FieldType.NUMBER));
         fields.add(getField("status", "STATUS", module, FieldType.BOOLEAN));

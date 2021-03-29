@@ -50,6 +50,20 @@ public class BaseTriggerContext {
 		this.moduleId = moduleId;
 	}
 
+	private Boolean isDefault;
+	public Boolean getDefault() {
+		return isDefault;
+	}
+	public void setDefault(Boolean isDefault) {
+		this.isDefault = isDefault;
+	}
+	public Boolean isDefault() {
+		if (isDefault == null) {
+			return false;
+		}
+		return isDefault;
+	}
+
 	private Boolean internal;
 	@JsonInclude
 	public Boolean getInternal() {

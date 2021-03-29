@@ -33,8 +33,6 @@ public class ExecuteAllTriggersCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		// TODO Auto-generated method stub
-		
 		Map<String, List> recordMap = CommonCommandUtil.getRecordMap((FacilioContext) context);
 		
 		Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = CommonCommandUtil.getChangeSetMap((FacilioContext) context);
@@ -55,7 +53,7 @@ public class ExecuteAllTriggersCommand extends FacilioCommand {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioModule module = modBean.getModule(moduleName);
 				
-				List<BaseTriggerContext> triggers = TriggerUtil.getTriggers(module, activities, null, true, triggerType);
+				List<BaseTriggerContext> triggers = TriggerUtil.getTriggers(module, activities, null, true, false, triggerType);
 
 				List records = new LinkedList<>(entry.getValue());
 				Iterator it = records.iterator();

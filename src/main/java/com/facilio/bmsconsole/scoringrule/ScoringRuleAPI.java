@@ -151,7 +151,7 @@ public class ScoringRuleAPI extends WorkflowRuleAPI {
     public static void updateScoringRule(ScoringRuleContext rule) throws Exception {
         ScoringRuleContext oldRule = (ScoringRuleContext) getWorkflowRule(rule.getId());
         List<BaseTriggerContext> triggers = TriggerUtil.getTriggers(oldRule.getModule(), Collections.singletonList(EventType.INVOKE_TRIGGER),
-                null, false, TriggerType.SCORING_RULE_TRIGGER);
+                null, false, false, TriggerType.SCORING_RULE_TRIGGER);
         if (CollectionUtils.isNotEmpty(triggers)) {
             TriggerUtil.deleteTriggers(triggers.stream().map(BaseTriggerContext::getId).collect(Collectors.toList()));
         }
