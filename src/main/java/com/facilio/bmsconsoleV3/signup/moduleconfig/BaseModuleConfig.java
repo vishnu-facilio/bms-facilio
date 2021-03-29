@@ -54,7 +54,7 @@ public abstract class BaseModuleConfig extends SignUpData {
     private BaseTriggerContext addTrigger(String name, EventType eventType) throws Exception {
         BaseTriggerContext trigger = new BaseTriggerContext();
         trigger.setName(name);
-        trigger.setDefault(true);
+        trigger.setIsDefault(true);
         trigger.setStatus(true);
         trigger.setEventType(eventType);
         trigger.setType(TriggerType.MODULE_TRIGGER);

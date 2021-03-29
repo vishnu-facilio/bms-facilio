@@ -51,10 +51,10 @@ public class BaseTriggerContext {
 	}
 
 	private Boolean isDefault;
-	public Boolean getDefault() {
+	public Boolean getIsDefault() {
 		return isDefault;
 	}
-	public void setDefault(Boolean isDefault) {
+	public void setIsDefault(Boolean isDefault) {
 		this.isDefault = isDefault;
 	}
 	public Boolean isDefault() {
