@@ -1842,7 +1842,7 @@ public class FormFactory {
 	public static FacilioForm getWarrantyContractForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("WARRANTY CONTRACT");
-		form.setName("web_default");
+		form.setName("warrantyContractForm");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS));
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getWarrantyContractFormFields());
