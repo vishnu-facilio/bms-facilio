@@ -52,7 +52,7 @@ public class FacilioTimer {
 		long nextExecutionTime = (System.currentTimeMillis()/1000)+delay;
 		scheduleJob(jobId, jobName, nextExecutionTime, period, null, executorName, -1, endTime);
 	}
-	
+
 	private static void scheduleJob(long jobId, String jobName, long nextExecutionTime, int period, ScheduleInfo schedule, String executorName, int maxExecution, long endTime) throws Exception {
 		JobContext jc = new JobContext();
 		jc.setJobId(jobId);
@@ -61,7 +61,7 @@ public class FacilioTimer {
 		jc.setActive(true);
 		jc.setExecutionTime(nextExecutionTime);
 		jc.setExecutorName(executorName);
-		
+		jc.setAddedTime(System.currentTimeMillis());
 		if(period != -1) {
 			jc.setPeriod(period);
 			jc.setIsPeriodic(true);
@@ -114,6 +114,7 @@ public class FacilioTimer {
 		jc.setActive(true);
 		jc.setExecutionTime(nextExecutionTime);
 		jc.setExecutorName(executorName);
+		jc.setAddedTime(System.currentTimeMillis());
 		if (AccountUtil.getCurrentAccount() != null) {
 			jc.setTimezone(AccountUtil.getCurrentAccount().getTimeZone());
 		}

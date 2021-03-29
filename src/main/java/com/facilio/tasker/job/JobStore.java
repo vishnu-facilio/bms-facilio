@@ -47,7 +47,7 @@ public class JobStore {
 			
 			try {
 				conn = FacilioConnectionPool.INSTANCE.getConnection();
-				pstmt = conn.prepareStatement("INSERT INTO Jobs (JOBID, ORGID, JOBNAME, TIMEZONE, IS_ACTIVE, TRANSACTION_TIMEOUT, IS_PERIODIC, PERIOD, SCHEDULE_INFO, NEXT_EXECUTION_TIME, EXECUTOR_NAME, END_EXECUTION_TIME, MAX_EXECUTION, STATUS, JOB_SERVER_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+				pstmt = conn.prepareStatement("INSERT INTO Jobs (JOBID, ORGID, JOBNAME, TIMEZONE, IS_ACTIVE, TRANSACTION_TIMEOUT, IS_PERIODIC, PERIOD, SCHEDULE_INFO, NEXT_EXECUTION_TIME, EXECUTOR_NAME, END_EXECUTION_TIME, MAX_EXECUTION, STATUS, JOB_SERVER_ID, ADDED_TIME) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 				
 				pstmt.setLong(1, job.getJobId());
 				
@@ -113,6 +113,11 @@ public class JobStore {
 				pstmt.setInt(14, JobConstants.JOB_COMPLETED);
 				pstmt.setLong(15, job.getJobServerId());
 
+				if(job.getAddedTime() != -1L){
+					pstmt.setLong(16,job.getAddedTime());
+				}else {
+					pstmt.setNull(16,Types.BIGINT);
+				}
 				
 				if(pstmt.executeUpdate() < 1) {
 					throw new Exception("Unable to schedule");

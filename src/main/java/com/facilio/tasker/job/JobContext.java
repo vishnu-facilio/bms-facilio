@@ -3,6 +3,8 @@ package com.facilio.tasker.job;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -202,6 +204,10 @@ public class JobContext {
 	public void setLoggerLevel(int loggerLevel) {
 		this.loggerLevel = loggerLevel;
 	}
+
+	@Getter
+	@Setter
+	private long addedTime=-1L;
 
 	public String getJobKey() {
 		return new StringBuilder()

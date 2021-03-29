@@ -3490,6 +3490,7 @@ public class FieldFactory {
         currentExecutionCount.setModule(module);
         fields.add(currentExecutionCount);
 
+        fields.add(getNumberField("addedTime","ADDED_TIME",module));
         return fields;
     }
 
