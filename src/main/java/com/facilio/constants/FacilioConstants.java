@@ -1837,7 +1837,7 @@ public class FacilioConstants {
 		public static final String MODULE_STATE = "moduleState";
 		public static final String TERMS_NAME = "termsName";
 
-		public static final String CUSTOM_MAIL_MESSAGE = "customMailMessages";
+		public static final String BASE_MAIL_MESSAGE = "customMailMessages";
 		public static final String LATEST_MESSAGE_UID = "latestMessageUID";
 		public static final String MESSAGES = "messages";
 		public static final String MAIL_ATTACHMENT = "mailAttachments";
@@ -2231,7 +2231,7 @@ public class FacilioConstants {
 			classMap.put(WorkPermit.WORK_PERMIT_TYPE, WorkPermitTypeContext.class);
 			classMap.put(WorkPermit.WORK_PERMIT_ACTIVITY, ActivityContext.class);
 
-			classMap.put(ContextNames.CUSTOM_MAIL_MESSAGE, V3MailMessageContext.class);
+			classMap.put(ContextNames.BASE_MAIL_MESSAGE, BaseMailMessageContext.class);
 			classMap.put(ContextNames.MAIL_ATTACHMENT, AttachmentV3Context.class);
 			classMap.put(ContextNames.TICKET_ATTACHMENTS, AttachmentV3Context.class);
 

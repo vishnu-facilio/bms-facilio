@@ -23,14 +23,14 @@ public class SaveMailMessageCommandV3 extends FacilioCommand {
         List<ModuleBaseWithCustomFields> messages = (List<ModuleBaseWithCustomFields>) context.get(FacilioConstants.ContextNames.MESSAGES);
         if(CollectionUtils.isNotEmpty(messages)) {
             Map<String, List<ModuleBaseWithCustomFields>> recordMap = new HashMap<>();
-            FacilioChain createRecordChain = ChainUtil.getCreateRecordChain(FacilioConstants.ContextNames.CUSTOM_MAIL_MESSAGE);
+            FacilioChain createRecordChain = ChainUtil.getCreateRecordChain(FacilioConstants.ContextNames.BASE_MAIL_MESSAGE);
             FacilioContext createContext = createRecordChain.getContext();
-            recordMap.put(FacilioConstants.ContextNames.CUSTOM_MAIL_MESSAGE, messages);
+            recordMap.put(FacilioConstants.ContextNames.BASE_MAIL_MESSAGE, messages);
             Constants.setRecordMap(createContext, recordMap);
             createContext.put(FacilioConstants.ContextNames.SUPPORT_EMAIL, context.get(FacilioConstants.ContextNames.SUPPORT_EMAIL));
             createContext.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.CREATE);
-            Constants.setModuleName(createContext, FacilioConstants.ContextNames.CUSTOM_MAIL_MESSAGE);
-            FacilioModule module = ChainUtil.getModule(FacilioConstants.ContextNames.CUSTOM_MAIL_MESSAGE);
+            Constants.setModuleName(createContext, FacilioConstants.ContextNames.BASE_MAIL_MESSAGE);
+            FacilioModule module = ChainUtil.getModule(FacilioConstants.ContextNames.BASE_MAIL_MESSAGE);
             Class beanClass = FacilioConstants.ContextNames.getClassFromModule(module);
             createContext.put(Constants.BEAN_CLASS, beanClass);
             createRecordChain.execute();

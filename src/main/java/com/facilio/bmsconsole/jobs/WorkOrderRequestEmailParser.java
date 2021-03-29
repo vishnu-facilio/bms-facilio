@@ -11,7 +11,7 @@ import com.facilio.bmsconsole.context.ServiceRequestContext;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.util.CustomMailMessageApi;
+import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.SupportEmailAPI;
 import com.facilio.constants.FacilioConstants;

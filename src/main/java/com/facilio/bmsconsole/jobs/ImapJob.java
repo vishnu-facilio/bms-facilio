@@ -1,7 +1,7 @@
 package com.facilio.bmsconsole.jobs;
 
 import com.facilio.bmsconsole.context.SupportEmailContext;
-import com.facilio.bmsconsole.util.CustomMailMessageApi;
+import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.bmsconsole.util.SupportEmailAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.transaction.FTransactionManager;

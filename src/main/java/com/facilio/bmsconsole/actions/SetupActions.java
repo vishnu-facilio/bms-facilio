@@ -458,7 +458,7 @@ public String importData() throws Exception {
 	
 	public String showEmailSettings() throws Exception {
 		FacilioContext context  = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.CUSTOM_MAIL_MESSAGE);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.BASE_MAIL_MESSAGE);
 		context.put(FacilioConstants.ContextNames.RULE_TYPE, WorkflowRuleContext.RuleType.MODULE_RULE.getIntVal());
 		FacilioChain emailSetting = FacilioChainFactory.getEmailSettingChain();
 		emailSetting.execute(context);

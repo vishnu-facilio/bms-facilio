@@ -15,7 +15,7 @@ import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.context.UserNotificationContext;
 import com.facilio.bmsconsoleV3.context.V3CustomModuleData;
-import com.facilio.bmsconsoleV3.context.V3MailMessageContext;
+import com.facilio.bmsconsoleV3.context.BaseMailMessageContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.util.V3AttachmentAPI;
 import com.facilio.db.criteria.Criteria;
@@ -1552,7 +1552,7 @@ public enum ActionType {
 			LOGGER.info("MAIL_TO_CREATEWO === >"+ currentRecord);
 
 			SupportEmailContext supportEmailContext = (SupportEmailContext) context.get(FacilioConstants.ContextNames.SUPPORT_EMAIL);
-			V3MailMessageContext mailContext = (V3MailMessageContext) currentRecord;
+			BaseMailMessageContext mailContext = (BaseMailMessageContext) currentRecord;
 //
 //			V3WorkOrderContext workorderContext = new V3WorkOrderContext();
 //			workorderContext = FieldUtil.getAsBeanFromJson(obj, V3WorkOrderContext.class);
@@ -1961,8 +1961,8 @@ public enum ActionType {
 
 	private static void handleFileAttachmentField(Object currentRecord, ModuleBaseWithCustomFields record, FacilioModule module , JSONObject obj) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		if (currentRecord instanceof V3MailMessageContext) {
-			V3MailMessageContext mailContext = (V3MailMessageContext) currentRecord;
+		if (currentRecord instanceof BaseMailMessageContext) {
+			BaseMailMessageContext mailContext = (BaseMailMessageContext) currentRecord;
 			List<AttachmentV3Context> attachments = V3AttachmentAPI.getAttachments(mailContext.getId(), FacilioConstants.ContextNames.MAIL_ATTACHMENT);
 			List<FacilioField> fields = modBean.getAllFields(module.getName());
 			if (mailContext.getAttachmentsList() != null && mailContext.getAttachmentsList().size() > 0) {

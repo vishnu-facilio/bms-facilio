@@ -2,7 +2,7 @@ package com.facilio.services.email;
 
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.SupportEmailContext;
-import com.facilio.bmsconsoleV3.context.V3MailMessageContext;
+import com.facilio.bmsconsoleV3.context.BaseMailMessageContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -85,7 +85,7 @@ public class ImapsClient implements AutoCloseable {
             log.info("Mail fetched ===> Message Size" + messages.length);
             if (messages.length > 0) {
                 for (Message message : messages) {
-                    V3MailMessageContext mailMessage = V3MailMessageContext.instance(message);
+                    BaseMailMessageContext mailMessage = BaseMailMessageContext.instance(message);
                     lastUID = inbox.getUID(message);
                     mailMessage.setMessageUID(lastUID);
                     mailMessage.setParentId(mailDeta.getId());

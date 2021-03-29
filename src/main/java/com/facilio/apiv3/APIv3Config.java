@@ -778,9 +778,9 @@ public class APIv3Config {
 
                 .build();
     }
-    @Module("customMailMessages")
+    @Module(FacilioConstants.ContextNames.BASE_MAIL_MESSAGE)
     public static Supplier<V3Config> getCustomMailMessages() {
-        return () -> new V3Config(V3MailMessageContext.class, null)
+        return () -> new V3Config(BaseMailMessageContext.class, null)
                 .create()
                 .afterTransaction(new UpdateLatestMessageUIDCommandV3())
                 .update()

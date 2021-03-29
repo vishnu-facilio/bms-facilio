@@ -3,7 +3,7 @@ package com.facilio.bmsconsoleV3.commands.imap;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.PostTransactionCommand;
 import com.facilio.bmsconsole.context.SupportEmailContext;
-import com.facilio.bmsconsole.util.CustomMailMessageApi;
+import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.service.FacilioService;
@@ -25,7 +25,7 @@ public class UpdateLatestMessageUIDCommandV3 extends FacilioCommand implements P
     public boolean postExecute() throws Exception {
         SupportEmailContext updateSupportEmail = (SupportEmailContext) context.getOrDefault(FacilioConstants.ContextNames.SUPPORT_EMAIL, null);
         if (updateSupportEmail != null) {
-            FacilioService.runAsService(FacilioConstants.Services.DEFAULT_SERVICE,() -> CustomMailMessageApi.updateLatestMailUID(updateSupportEmail, updateSupportEmail.getId()));
+            FacilioService.runAsService(FacilioConstants.Services.DEFAULT_SERVICE,() -> MailMessageUtil.updateLatestMailUID(updateSupportEmail, updateSupportEmail.getId()));
         }
         return false;
     }

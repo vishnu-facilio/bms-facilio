@@ -826,14 +826,6 @@ public class ModuleFactory {
 		return supportEmailsModule;
 	}
 
-//	public static FacilioModule getCustomMailMessageModule() {
-//		FacilioModule customMailMessageModule = new FacilioModule();
-//		customMailMessageModule.setName("customMailMessages");
-//		customMailMessageModule.setDisplayName("Custom Mail Message");
-//		customMailMessageModule.setTableName("CustomMailMessage");
-//		return customMailMessageModule;
-//	}
-
 	public static FacilioModule getOrgUserModule() {
 		FacilioModule orgUserModule = new FacilioModule();
 		orgUserModule.setName("orgusers");

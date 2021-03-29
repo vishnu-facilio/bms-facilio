@@ -1443,7 +1443,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		long requestId = -1;
 		OrgBean orgBean = AccountUtil.getOrgBean();
 		if (orgBean.isFeatureEnabled(FeatureLicense.CUSTOM_MAIL)) {
-			requestId = CustomMailMessageApi.createRecordToMailModule(supportEmail, emailMsg);
+			requestId = MailMessageUtil.createRecordToMailModule(supportEmail, emailMsg);
 			LOGGER.info("Added Email from Email Parser : " + requestId );
 		}
 		else if (orgBean.isFeatureEnabled(FeatureLicense.SERVICE_REQUEST)) {

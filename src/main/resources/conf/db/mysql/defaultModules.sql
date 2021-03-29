@@ -11280,7 +11280,7 @@ INSERT INTO Fields (ORGID, MODULEID, NAME, DISPLAY_NAME, DISPLAY_TYPE, COLUMN_NA
 -- Quotation End ***
 
 -- Custom Mail Message Start--
-INSERT INTO Modules (ORGID, NAME, DISPLAY_NAME, TABLE_NAME, MODULE_TYPE) VALUES (${orgId}, 'customMailMessages', 'Custom Mail Message', 'CustomMailMessage', @BASE_ENTITY_MODULE_TYPE);
+INSERT INTO Modules (ORGID, NAME, DISPLAY_NAME, TABLE_NAME, MODULE_TYPE) VALUES (${orgId}, 'customMailMessages', 'Base Mail Message', 'BaseMailMessage', @BASE_ENTITY_MODULE_TYPE);
 
 SET @CUSTOM_MAIL_MESSAGE_MODULE := (SELECT LAST_INSERT_ID());
 
