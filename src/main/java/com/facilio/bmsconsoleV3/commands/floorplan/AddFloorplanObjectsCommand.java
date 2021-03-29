@@ -11,6 +11,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 
 import com.facilio.bmsconsoleV3.context.floorplan.V3IndoorFloorPlanObjectContext;
+import com.facilio.bmsconsoleV3.context.floorplan.V3MarkerContext;
 import com.facilio.bmsconsoleV3.context.floorplan.V3IndoorFloorPlanContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -37,7 +38,7 @@ public class AddFloorplanObjectsCommand extends FacilioCommand {
 
 			for (V3IndoorFloorPlanContext floorplan : floorplans) {
 
-				List<V3IndoorFloorPlanObjectContext> floorplanObjects = floorplan.getIndoorfloorplanobjects();
+				List<V3MarkerContext> floorplanObjects = floorplan.getMarkers();
 
 				if (CollectionUtils.isNotEmpty(floorplanObjects)) {
 
