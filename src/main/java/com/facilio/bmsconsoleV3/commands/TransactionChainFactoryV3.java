@@ -712,7 +712,7 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getUpdateBookingAfterEditChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new CancelBookingCommand());
-        c.addCommand(new CreatePaymentRecordForBookingCommand());
+        c.addCommand(new CreatePaymentRecordForBookingCommandOnEditV3());
         return c;
     }
     
