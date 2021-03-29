@@ -180,7 +180,7 @@ public enum FieldOperator implements Operator<Object> {
 
 	@Override
 	public boolean isValueNeeded() {
-		return false;
+		return true;
 	}
 
 	@Override
