@@ -1188,6 +1188,7 @@ public class UserBeanImpl implements UserBean {
 		Criteria criteria = new Criteria();
 		
 		criteria.addAndCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf((long)props.get("uid")), NumberOperators.EQUALS));
+		criteria.addAndCondition(CriteriaAPI.getCondition("IAM_ORG_USERID", "iamOrgUserId", String.valueOf((long)props.get("iamOrgUserId")), NumberOperators.EQUALS));
 
 		GenericSelectRecordBuilder selectRecordBuilder = fetchUserSelectBuilder(appId, criteria, (long)props.get("orgId"), null);
 		List<Map<String , Object>> mapList = selectRecordBuilder.get();
