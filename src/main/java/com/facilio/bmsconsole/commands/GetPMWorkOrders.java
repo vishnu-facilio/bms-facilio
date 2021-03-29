@@ -11,6 +11,7 @@ import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import org.json.simple.JSONObject;
 
 public class GetPMWorkOrders extends FacilioCommand {
 
@@ -28,6 +29,28 @@ public class GetPMWorkOrders extends FacilioCommand {
 																		.andCondition(CriteriaAPI.getCondition(pmField, String.valueOf(pm.getId()), PickListOperators.IS))
 																		.orderBy("WorkOrders.CREATED_TIME DESC")
 																		;
+
+			JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
+			int perPage;
+			int page;
+			if (pagination != null) {
+				page = (int) pagination.get("page");
+				perPage = (int) pagination.get("perPage");
+			} else {
+				page = 1;
+				perPage = 50;
+			}
+
+			int offset = ((page-1) * perPage);
+			if (offset < 0) {
+				offset = 0;
+			}
+
+			selectBuilder.offset(offset);
+
+			selectBuilder.limit(perPage);
+
+
 			pm.setWorkorders(selectBuilder.get());
 		}
 		return false;
