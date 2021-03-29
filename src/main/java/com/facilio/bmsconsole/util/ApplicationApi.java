@@ -831,16 +831,15 @@ public class ApplicationApi {
             List<WebTabGroupContext> webTabGroups = new ArrayList<>();
             Map<String, List<WebTabContext>> groupNameVsWebTabsMap = new HashMap<>();
             List<WebTabContext> webTabs = new ArrayList<>();
-            JSONObject configJSON;
 
             webTabGroups.add(new WebTabGroupContext("Home", "home", layout.getId(), 200, groupOrder++));
             webTabs = new ArrayList<>();
-            webTabs.add(new WebTabContext("Dashboard", "dashboard", WebTabContext.Type.DASHBOARD, null, appId, null));
+            webTabs.add(getWebTabForApplication(appId, "dashboard"));
             groupNameVsWebTabsMap.put("home", webTabs);
 
             webTabGroups.add(new WebTabGroupContext("My Requests", "workorder", layout.getId(), 201, groupOrder++));
             webTabs = new ArrayList<>();
-            webTabs.add(new WebTabContext("Requests", "workorders", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("workorder").getModuleId()), appId, null));
+            webTabs.add(getWebTabForApplication(appId, "workorders"));
             groupNameVsWebTabsMap.put("workorder", webTabs);
 
 
