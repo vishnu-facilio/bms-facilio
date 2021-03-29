@@ -30,6 +30,12 @@ import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.Announcem
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementSharingInfoContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnnouncementContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.*;
+import com.facilio.bmsconsoleV3.context.floorplan.V3DeskContext;
+import com.facilio.bmsconsoleV3.context.floorplan.V3FloorplanMarkersContext;
+import com.facilio.bmsconsoleV3.context.floorplan.V3IndoorFloorPlanContext;
+import com.facilio.bmsconsoleV3.context.floorplan.V3IndoorFloorPlanObjectContext;
+import com.facilio.bmsconsoleV3.context.floorplan.V3MarkerContext;
+import com.facilio.bmsconsoleV3.context.floorplan.V3MarkerdZonesContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTaskSectionContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTasksContext;
@@ -1783,9 +1789,11 @@ public class FacilioConstants {
 
 
 		
-		public static final String INDOOR_FLOOR_PLAN = "indoorFloorPlan";
+		public static final String INDOOR_FLOOR_PLAN = "indoorfloorplan";
 		public static final String INDOOR_FLOOR_PLANS = "indoorFloorPlans";
-		public static final String INDOOR_FLOOR_PLAN_OBJECTS = "indoorFloorPlanObjects";
+		public static final String INDOOR_FLOOR_PLAN_OBJECTS = "indoorfloorplanobjects";
+		public static final String INDOOR_FLOOR_PLAN_MARKER = "markertype";
+		
 
 		public static final String EMPLOYEE = "employee";
 		public static final String EMPLOYEES = "employees";
@@ -1942,6 +1950,15 @@ public class FacilioConstants {
 			public static final String AUDIENCE = "audience";
 			public static final String AUDIENCE_SHARING = "audienceSharing";
 
+		}
+
+		public static class Floorplan {
+			public static final String INDOOR_FLOORPLAN = "indoorfloorplan";
+			public static final String INDOOR_FLOORPLAN_OBJECTS = "indoorfloorplanobjects";
+			public static final String MARKER_TYPE = "markertype";
+			public static final String MARKER = "floorplanmarker";
+			public static final String MARKED_ZONES = "floorplanmarkedzone";
+			public static final String DESKS = "desks";
 		}
 		
 		// etisalat changes
@@ -2283,7 +2300,15 @@ public class FacilioConstants {
 			classMap.put(JOB_PLAN_SECTION, JobPlanTaskSectionContext.class);
 			classMap.put(JOB_PLAN_TASK, JobPlanTasksContext.class);
 
+			classMap.put(Floorplan.INDOOR_FLOORPLAN, V3IndoorFloorPlanContext.class);
+			classMap.put(Floorplan.INDOOR_FLOORPLAN_OBJECTS, V3IndoorFloorPlanObjectContext.class);
+			classMap.put(Floorplan.MARKER_TYPE, V3FloorplanMarkersContext.class);
+			classMap.put(Floorplan.MARKER, V3MarkerContext.class);
+			classMap.put(Floorplan.MARKED_ZONES, V3MarkerdZonesContext.class);
+			classMap.put(Floorplan.DESKS, V3DeskContext.class);
+			
 			return classMap;
+
 		}
 		
 		@Deprecated

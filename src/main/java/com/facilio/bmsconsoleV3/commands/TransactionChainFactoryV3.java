@@ -24,6 +24,13 @@ import com.facilio.bmsconsoleV3.commands.facility.CreatePaymentRecordForBookingC
 import com.facilio.bmsconsoleV3.commands.facility.SetCanEditForBookingCommand;
 import com.facilio.bmsconsoleV3.commands.facility.ValidateCancelBookingCommandV3;
 import com.facilio.bmsconsoleV3.commands.facility.ValidateFacilityBookingCommandV3;
+import com.facilio.bmsconsoleV3.commands.floorplan.AddDeskCommand;
+import com.facilio.bmsconsoleV3.commands.floorplan.AddFloorplanObjectsCommand;
+import com.facilio.bmsconsoleV3.commands.floorplan.AddMarkedZonesCommand;
+import com.facilio.bmsconsoleV3.commands.floorplan.AddMarkerCommand;
+import com.facilio.bmsconsoleV3.commands.floorplan.SerializeCommand;
+import com.facilio.bmsconsoleV3.commands.floorplan.UpdateDeskCommand;
+import com.facilio.bmsconsoleV3.commands.floorplan.UpdateMarkerCommand;
 import com.facilio.bmsconsoleV3.commands.facility.*;
 import com.facilio.bmsconsoleV3.commands.jobplan.AddJobPlanPMsInContextCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.AddJobPlanTasksCommand;
@@ -853,4 +860,33 @@ public class TransactionChainFactoryV3 {
         chain.addCommand(new AddJobPlanPMsInContextCommand());
         return chain;
     }
+
+    public static FacilioChain addfloorplanObjectsChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new AddDeskCommand());
+        chain.addCommand(new AddMarkerCommand());
+        chain.addCommand(new AddMarkedZonesCommand());
+        return chain;
+    }
+
+     public static FacilioChain addMarkersAndModulesCommand() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new AddDeskCommand());
+        chain.addCommand(new AddMarkerCommand());
+        return chain;
+    }
+
+     public static FacilioChain updateMarkersAndModulesCommand() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new UpdateDeskCommand());
+        chain.addCommand(new UpdateMarkerCommand());
+        return chain;
+    }
+
+      public static FacilioChain getFloorPlanObjectsChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new SerializeCommand());
+        return chain;
+    }
+
 }

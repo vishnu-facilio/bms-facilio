@@ -29,6 +29,8 @@ import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.Fi
 import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.LoadNewsAndInformationLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.employee.UpdateEmployeePeopleAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.facility.*;
+import com.facilio.bmsconsoleV3.commands.floorplan.AddOrUpdateObjectCommand;
+import com.facilio.bmsconsoleV3.commands.floorplan.FetchFloorPlanMarkerCommand;
 import com.facilio.bmsconsoleV3.commands.imap.UpdateLatestMessageUIDCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
@@ -53,6 +55,7 @@ import com.facilio.bmsconsoleV3.commands.tenant.FillTenantsLookupCommand;
 import com.facilio.bmsconsoleV3.commands.tenant.ValidateTenantSpaceCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantcontact.LoadTenantcontactLookupsCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantunit.AddSpaceCommandV3;
+import com.facilio.bmsconsoleV3.commands.floorplan.V3ValidateSpaceCommand;
 import com.facilio.bmsconsoleV3.commands.tooltypes.LoadToolTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.tooltypes.SetToolTypesUnitCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendor.AddOrUpdateLocationForVendorCommandV3;
@@ -80,6 +83,10 @@ import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.AmenitiesContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.FacilityContext;
+import com.facilio.bmsconsoleV3.context.floorplan.V3DeskContext;
+import com.facilio.bmsconsoleV3.context.floorplan.V3FloorplanMarkersContext;
+import com.facilio.bmsconsoleV3.context.floorplan.V3IndoorFloorPlanContext;
+import com.facilio.bmsconsoleV3.context.floorplan.V3MarkerContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.*;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
@@ -1071,5 +1078,46 @@ public class APIv3Config {
 
                 .build();
     }
+    
+    @Module("indoorfloorplan")
+    public static Supplier<V3Config> getIndoorFloorPlan() {
+        return () -> new V3Config(V3IndoorFloorPlanContext.class, new ModuleCustomFieldCount30())
+                .create().afterSave(TransactionChainFactoryV3.addfloorplanObjectsChain())
+                .update().afterSave(new AddOrUpdateObjectCommand())
+                .list().afterFetch(TransactionChainFactoryV3.getFloorPlanObjectsChain())
+                .summary().afterFetch(TransactionChainFactoryV3.getFloorPlanObjectsChain())
+                .build();
+    }
+
+    @Module("markertype")
+    public static Supplier<V3Config> getMarkerType() {
+        return () -> new V3Config(V3FloorplanMarkersContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .update()
+                .list().afterFetch(new FetchFloorPlanMarkerCommand())
+                .summary().afterFetch(new FetchFloorPlanMarkerCommand())
+                .build();
+    }
+
+    @Module("floorplanmarker")
+    public static Supplier<V3Config> getMarker() {
+        return () -> new V3Config(V3MarkerContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .update()
+                .list()
+                .summary()
+                .build();
+    }
+    
+    @Module("desks")
+    public static Supplier<V3Config> getDesk() {
+        return () -> new V3Config(V3DeskContext.class, new ModuleCustomFieldCount30())
+                .create().beforeSave(new V3ValidateSpaceCommand())
+                .update()
+                .list()
+                .summary()
+                .build();
+    }
+    
 }
 
