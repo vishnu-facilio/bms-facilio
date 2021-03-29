@@ -56,5 +56,6 @@ classes:
   - com.facilio.bmsconsoleV3.signup.moduleconfig.FloorModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.BuildingModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.SpaceModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.WorkOrderModule
 
   - com.facilio.bmsconsoleV3.signup.moduleconfig.MFASettings
