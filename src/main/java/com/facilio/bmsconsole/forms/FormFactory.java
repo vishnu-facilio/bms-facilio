@@ -426,6 +426,8 @@ public class FormFactory {
 		List<FacilioForm> buildingFormList = Arrays.asList(getBuildingForm());
 		List<FacilioForm> spaceFormList = Arrays.asList(getSpaceFormFromSite(),getSpaceFormFromBuilding(),getSpaceFormFromFloor(),getSpaceFormFromSpace());
 		List<FacilioForm> floorFormList = Arrays.asList(getFloorForm());
+		
+		List<FacilioForm> warrantyContractFormsList = Arrays.asList(getWarrantyContractForm());
 
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
@@ -482,6 +484,7 @@ public class FormFactory {
 				.put(ContextNames.BUILDING, getFormMap(buildingFormList))
 				.put(ContextNames.SPACE, getFormMap(spaceFormList))
 				.put(ContextNames.FLOOR, getFormMap(floorFormList))
+				.put(ContextNames.WARRANTY_CONTRACTS, getFormMap(warrantyContractFormsList))
 				.build();
 	}
 	
