@@ -297,8 +297,9 @@ public class WorkflowRuleAPI {
 			}
 		}
 
-		TriggerUtil.deleteTriggersForWorkflowRule(rule);
-		TriggerUtil.addTriggersForWorkflowRule(rule);
+//		TriggerUtil.deleteTriggersForWorkflowRule(rule);
+//		TriggerUtil.addTriggersForWorkflowRule(rule);
+		TriggerUtil.updateTriggersForWorkflowRule(rule);
 		
 		if (rule.getName() == null) {
 			rule.setName(oldRule.getName());

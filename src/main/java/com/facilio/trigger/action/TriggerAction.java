@@ -48,6 +48,11 @@ public class TriggerAction extends V3Action {
     	return SUCCESS;
 	}
 
+	public String reArrangeTriggerAction() throws Exception {
+		TransactionChainFactoryV3.rearrangeTriggerActionChain();
+		return SUCCESS;
+	}
+
 	private long recordId = -1;
 	public long getRecordId() {
 		return recordId;

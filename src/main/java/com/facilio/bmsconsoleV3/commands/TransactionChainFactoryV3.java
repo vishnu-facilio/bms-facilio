@@ -672,6 +672,12 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new DeleteTriggerCommand());
         return c;
     }
+
+    public static FacilioChain rearrangeTriggerActionChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new RearrangeTriggerActionCommand());
+        return c;
+    }
     
     public static FacilioChain getTriggerExecuteChain() {
         FacilioChain c = getDefaultChain();

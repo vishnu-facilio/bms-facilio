@@ -154,6 +154,10 @@
                 class="com.facilio.trigger.action.TriggerAction"
                 method="deleteTrigger">
         </action>
+        <action name="rearrange"
+                class="com.facilio.trigger.action.TriggerAction"
+                method="reArrangeTriggerAction" />
+
         <action name="changeStatus"
                 class="com.facilio.trigger.action.TriggerAction"
                 method="changeStatus" />
