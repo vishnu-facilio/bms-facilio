@@ -61,6 +61,7 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 		}
 		
 		if (fields == null) {
+			boolean isAtg = AccountUtil.getCurrentOrg().getOrgId() == 406;
 			
 			FacilioForm form = fetchForm(formId);
 			if (form == null) {
@@ -70,10 +71,14 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 				fields = form.getFields().stream().filter(formField -> formField.getField() != null && !formField.getField().isMainField() &&
 						(formField.getHideField() == null || !formField.getHideField()))
 						.collect(Collectors.toList());
+				if (!isAtg) {
+					
+				}
 			}
 			
-			if (AccountUtil.getCurrentOrg().getOrgId() != 406) {	// Sort based on form
-				addSystemFields(fields);
+			if (!isAtg) {	// Sort based on form
+				int count = Collections.max(fields, Comparator.comparing(s -> s.getSequenceNumber())).getSequenceNumber();
+				addModuleAndSystemFields(modBean, fields, count);
 				sort(fields);
 			}
 		}
@@ -119,15 +124,34 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 		});
 	}
 	
-	private void addSystemFields(List<FormField> fields) {
+	private void addModuleAndSystemFields(ModuleBean modBean, List<FormField> fields, int count) throws Exception {
+		List<String> additionalFields = null;
+		switch(moduleName) {
+			case ContextNames.TENANT_UNIT_SPACE:
+				additionalFields = tenantUnit;
+				break;
+		}
+		
+		if (additionalFields != null) {
+			List<String> fieldNames = fields.stream().map(FormField::getName).collect(Collectors.toList());
+			
+			List<FacilioField> allFields = modBean.getAllFields(moduleName);
+			for(FacilioField field: allFields) {
+				String name = field.getName();
+				if (additionalFields.contains(name) && !fieldNames.contains(name)) {
+					fields.add(FormsAPI.getFormFieldFromFacilioField(field, ++count));
+				}
+			}
+		}
+		
 		if (FieldUtil.isSystemFieldsPresent(module)) {
-			int count = Collections.max(fields, Comparator.comparing(s -> s.getSequenceNumber())).getSequenceNumber();
 			for(String name: FieldFactory.getSystemFieldNames()) {
 				FacilioField systemField = FieldFactory.getSystemField(name, module);
 				fields.add(FormsAPI.getFormFieldFromFacilioField(systemField, ++count));
 			}
 		}
 	}
+	
 	
 	// To be removed once page db support is there
 	private List<FormField> getFieldsForAtre (ModuleBean modBean) throws Exception {
@@ -155,7 +179,7 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 	
 	private static Map<String, List<String>> getAtreFieldMap() {
 		Map<String, List<String>> fieldMap = new HashMap<>();
-		fieldMap.put("tenantunit", tenantUnit);
+		fieldMap.put("tenantunit", tenantUnitAtre);
 		fieldMap.put("tenantcontact", tenantContact);
 		fieldMap.put("custom_contracts", customContracts);
 		fieldMap.put("custom_contractunits", customContractunits);
@@ -164,7 +188,23 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 		return fieldMap;
 	}
 	
+	
+	/******* Module Based Fields **********/
+	
 	private static final List<String> tenantUnit = Collections.unmodifiableList(Arrays.asList(new String[] {
+            "siteId",
+            "building",
+            "floor"
+    }));
+	
+	/************** Module Based End *********/
+	
+	
+	
+	
+	
+	/******* ATRE Fields.. TODO Remove *****************/
+	private static final List<String> tenantUnitAtre = Collections.unmodifiableList(Arrays.asList(new String[] {
             "description",
             "area",
             "maxOccupancy",
@@ -239,4 +279,5 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 			"sysCreatedBy"
     }));
 
+	/******* ATRE End ******************/
 }

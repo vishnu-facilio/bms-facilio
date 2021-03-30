@@ -1030,8 +1030,10 @@ public class FormsAPI {
 		
 		if (form == null) {
 			FacilioForm defaultForm = FormFactory.getDefaultForm(module.getName(), appLinkName, onlyFields);
-			form = new FacilioForm(defaultForm);
-			form.setSections(defaultForm.getSections());
+			if (defaultForm != null) {
+				form = new FacilioForm(defaultForm);
+				form.setSections(defaultForm.getSections());
+			}
 		}
 		return form;
 	}
@@ -1056,26 +1058,26 @@ public class FormsAPI {
 	
 	private static long getResolvedDate(String placeholder) {
 		long time =  DateTimeUtil.getDayStartTime();
-		return getCalculatedTime(CURRENT_DATE_REGEX, placeholder, time);
+		return getCalculatedTime(CURRENT_DATE_REGEX, placeholder, time, true);
 	}
 	
 	private static long getResolvedTime(String placeholder) {
 		long time =  DateTimeUtil.getCurrenTime();
-		return getCalculatedTime(CURRENT_TIME_REGEX, placeholder, time);
+		return getCalculatedTime(CURRENT_TIME_REGEX, placeholder, time, false);
 	}
 	
-	private static long getCalculatedTime(String regex, String placeholder, long time) {
+	private static long getCalculatedTime(String regex, String placeholder, long time, boolean isDay) {
 		Pattern pattern = Pattern.compile(regex);
 		Matcher matcher = pattern.matcher(placeholder);
 		while(matcher.find()) {
 			if (matcher.group(2) != null) {
 				String operator = matcher.group(2);
-				Integer dayCount = FacilioUtil.parseInt(matcher.group(3));
-				if (operator.equals("-")) {
-					time = DateTimeUtil.minusDays(time, dayCount);
+				Integer offset = FacilioUtil.parseInt(matcher.group(3));
+				if (isDay) {
+					time = operator.equals("-") ? DateTimeUtil.minusDays(time, offset) : DateTimeUtil.addDays(time, offset);
 				}
 				else {
-					time = DateTimeUtil.addDays(time, dayCount);
+					time = operator.equals("-") ? DateTimeUtil.minusSeconds(time, offset) : DateTimeUtil.addSeconds(time, offset);
 				}
 			}
 		}

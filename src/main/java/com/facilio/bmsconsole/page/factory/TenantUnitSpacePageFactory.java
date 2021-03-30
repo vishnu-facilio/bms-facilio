@@ -1,5 +1,11 @@
 package com.facilio.bmsconsole.page.factory;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.TenantUnitSpaceContext;
@@ -10,11 +16,6 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import org.apache.commons.collections.CollectionUtils;
-import org.json.simple.JSONObject;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class TenantUnitSpacePageFactory extends PageFactory {
     public static Page getTenantUnitSpacePage(TenantUnitSpaceContext tenantUnitSpaceContext, FacilioModule module) throws Exception {
@@ -29,7 +30,6 @@ public class TenantUnitSpacePageFactory extends PageFactory {
         Page.Section tab1Sec1 = page.new Section();
         tab1.addSection(tab1Sec1);
         addSecondaryDetailsWidget(tab1Sec1);
-        addSpaceDetailWidget(tab1Sec1);
         addCommonSubModuleWidget(tab1Sec1, module, tenantUnitSpaceContext);
 
         Page.Tab tab2 = page.new Tab("related records");

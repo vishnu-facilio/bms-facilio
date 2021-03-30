@@ -87,7 +87,7 @@ public class GetFormMetaCommand extends FacilioCommand {
 					}
 				}
 				if (form == null) {
-					throw new IllegalArgumentException("Invalid Form " + formName);
+					return false;
 				}
 				form.setModule(modBean.getModule(form.getModule().getName()));
 				
@@ -143,7 +143,9 @@ public class GetFormMetaCommand extends FacilioCommand {
 				appLinkName = ApplicationLinkNames.FACILIO_MAIN_APP;
 			}
 			form = FormsAPI.getDefaultFormFromDBOrFactory(childModule.getExtendModule(), appLinkName);
-			form.setDisplayName(childModule.getDisplayName());
+			if (form != null) {
+				form.setDisplayName(childModule.getDisplayName());
+			}
 		}
 		return form;
 	}
