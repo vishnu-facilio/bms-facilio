@@ -3491,6 +3491,7 @@ public class FieldFactory {
         fields.add(currentExecutionCount);
 
         fields.add(getNumberField("addedTime","ADDED_TIME",module));
+        fields.add(getNumberField("status","STATUS",module));
         return fields;
     }
 
