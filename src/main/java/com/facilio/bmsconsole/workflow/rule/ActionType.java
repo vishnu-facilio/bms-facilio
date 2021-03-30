@@ -1706,24 +1706,32 @@ public enum ActionType {
 				
 				FacilioModule module = form.getModule();
 				
-				boolean isThreadFound = false; 
+				Long recordId = null; 
 				if(mailContext.getReferenceMessageId() != null) {
-					
 					EmailToModuleDataContext emailToModuleData = MailMessageUtil.getEmailToModuleData(mailContext.getReferenceMessageId(), module);
-					
 					if(emailToModuleData != null) {
-						isThreadFound = true;
-						FacilioChain chain = TransactionChainFactoryV3.getAddEmailConversationThreadingFromEmailToModuleDataChain();
-						FacilioContext newcontext = chain.getContext();
-						newcontext.put(MailMessageUtil.EMAIL_TO_MODULE_DATA_MODULE_NAME, emailToModuleData);
-						newcontext.put(FacilioConstants.ContextNames.MODULE, module);
-						newcontext.put(MailMessageUtil.BASE_MAIL_CONTEXT, mailContext);
-						
-						chain.execute();
+						recordId = emailToModuleData.getRecordId();
+					}
+				}
+				else {
+					Long localId = MailMessageUtil.getLocalIdFromSubject(mailContext.getSubject());
+					if(localId != null) {
+						Map<String, Object> record = MailMessageUtil.fetchRecordWithLocalIdOrId(module, localId);
+						recordId = (Long) record.get("id");
 					}
 				}
 				
-				if(!isThreadFound) {
+				if(recordId != null) {
+					FacilioChain chain = TransactionChainFactoryV3.getAddEmailConversationThreadingFromEmailToModuleDataChain();
+					FacilioContext newcontext = chain.getContext();
+					newcontext.put(FacilioConstants.ContextNames.RECORD_ID, recordId);
+					newcontext.put(FacilioConstants.ContextNames.MODULE, module);
+					newcontext.put(MailMessageUtil.BASE_MAIL_CONTEXT, mailContext);
+					
+					chain.execute();
+				}
+				
+				if(recordId == null) {
 					V3Config v3Config = ChainUtil.getV3Config(module.getName());
 			        FacilioChain createRecordChain = ChainUtil.getCreateRecordChain(module.getName());
 			        FacilioContext contextNew = createRecordChain.getContext();

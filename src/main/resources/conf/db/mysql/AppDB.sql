@@ -29747,7 +29747,7 @@ CREATE TABLE IF NOT EXISTS Facility_Booking_Payments (
   ON UPDATE NO ACTION,
   CONSTRAINT Control_Schedule_Exceptions_FK_FORM_ID FOREIGN KEY (FORM_ID) REFERENCES Forms(ID) ON DELETE SET NULL);
 
-  CREATE TABLE `bmslocal`.`Control_Schedule_vs_Exception` (
+  CREATE TABLE `Control_Schedule_vs_Exception` (
   `ID` BIGINT NOT NULL AUTO_INCREMENT,
   `ORGID` BIGINT NOT NULL,
   `SCHEDULE_ID` BIGINT NOT NULL,
@@ -29757,12 +29757,12 @@ CREATE TABLE IF NOT EXISTS Facility_Booking_Payments (
   INDEX `Control_Schedule_vs_Exception_exception_id_idx` (`EXCEPTION_ID` ASC) VISIBLE,
   CONSTRAINT `Control_Schedule_vs_Exception_schedule_id`
     FOREIGN KEY (`SCHEDULE_ID`)
-    REFERENCES `bmslocal`.`Control_Schedule` (`ID`)
+    REFERENCES `Control_Schedule` (`ID`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
   CONSTRAINT `Control_Schedule_vs_Exception_exception_id`
     FOREIGN KEY (`EXCEPTION_ID`)
-    REFERENCES `bmslocal`.`Control_Schedule_Exceptions` (`ID`)
+    REFERENCES `Control_Schedule_Exceptions` (`ID`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION);
 

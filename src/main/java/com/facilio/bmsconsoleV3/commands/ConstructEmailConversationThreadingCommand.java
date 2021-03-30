@@ -17,7 +17,7 @@ public class ConstructEmailConversationThreadingCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		EmailToModuleDataContext emailToModuleData = (EmailToModuleDataContext) context.get(MailMessageUtil.EMAIL_TO_MODULE_DATA_MODULE_NAME);
+		Long recordId = (Long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 		FacilioModule module = (FacilioModule)context.get(FacilioConstants.ContextNames.MODULE);
 		BaseMailMessageContext mailContext = (BaseMailMessageContext)context.get(MailMessageUtil.BASE_MAIL_CONTEXT);
 		
@@ -25,7 +25,7 @@ public class ConstructEmailConversationThreadingCommand extends FacilioCommand {
 		
 		emailConversationContext.setParentBaseMail(mailContext);
 		emailConversationContext.setDataModuleId(module.getModuleId());
-		emailConversationContext.setRecordId(emailToModuleData.getRecordId());
+		emailConversationContext.setRecordId(recordId);
 		
 		emailConversationContext.setFromType(EmailConversationThreadingContext.From_Type.CLIENT.getValue());
 		emailConversationContext.setMessageType(EmailConversationThreadingContext.Message_Type.REPLY.getValue());

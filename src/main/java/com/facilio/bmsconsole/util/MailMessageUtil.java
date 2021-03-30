@@ -93,6 +93,49 @@ public class MailMessageUtil {
     	return null;
     }
     
+    public static Map<String, Object> fetchRecordWithLocalIdOrId(FacilioModule module,Long localId) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		FacilioField localIdField = modBean.getField("localId", module.getName());
+		if(localIdField != null) {
+			
+		}
+		SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
+				.module(modBean.getModule(module.getName()))
+				.select(modBean.getAllFields(module.getName()))
+				.beanClass(ModuleBaseWithCustomFields.class)
+				;
+		
+		if(localIdField != null) {
+			builder.andCondition(CriteriaAPI.getCondition(localIdField, localId+"", NumberOperators.EQUALS));
+		}
+		else {
+			builder.andCondition(CriteriaAPI.getIdCondition(localId, module));
+		}
+		List<Map<String, Object>> props = builder.getAsProps();
+		
+		if(props != null && !props.isEmpty()) {
+			return props.get(0);
+		}
+		return null;
+	}
+    
+    public static Long getLocalIdFromSubject(String subject) {
+    	try {
+    		if(subject.contains("#")) {
+    			subject = subject + " ";
+        		int indexOfHash = subject.indexOf("#");
+        		String localId = subject.substring(indexOfHash+1, subject.indexOf(' ', indexOfHash+1));
+        		return Long.parseLong(localId.trim());
+        	}
+    	}
+    	catch(Exception e) {
+    		
+    	}
+    	return null;
+    }
+    
     public static void addEmailToModuleDataContext(BaseMailMessageContext mailContext,long recordId,long moduleId) throws Exception {
     	
     	EmailToModuleDataContext emailToModuleData = FieldUtil.getAsBeanFromJson(FieldUtil.getAsJSON(mailContext), EmailToModuleDataContext.class);
