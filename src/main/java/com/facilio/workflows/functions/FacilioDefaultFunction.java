@@ -24,6 +24,7 @@ import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
@@ -39,6 +40,8 @@ import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.exceptions.FunctionParamException;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
+
+import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
@@ -863,6 +866,23 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			String url = (String) objects[0];
 			long fileId = PdfUtil.exportUrlAsFileId(url.toString(), null, FileFormat.PDF);
 			return fileId;
+		}
+		
+	},
+	UPDATE_STATUS(24, "updateStatus") {
+
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			
+			Map<String,Object> record = (Map<String,Object>) objects[0];
+			String moduleName = (String) objects[1];
+			String statusName = (String) objects[2];
+			FacilioStatus status = TicketAPI.getStatus(modBean.getModule(moduleName), statusName);
+			
+			StateFlowRulesAPI.updateState(FieldUtil.getAsBeanFromMap(record, ModuleBaseWithCustomFields.class), modBean.getModule(moduleName), status, false, new FacilioContext());
+			return null;
 		}
 		
 	}
