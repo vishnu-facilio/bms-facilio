@@ -221,7 +221,12 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 						safetyPlanId = (Long) ((Map<String,Object>)props.remove("safetyPlanId")).get("id");
 					}
 					if(props.get("resourceName") != null) {
-						resource = ProcessImportCommand.getResource((String)props.remove("resourceName"));
+						if(props.get("siteId") != null) {
+							resource = ProcessImportCommand.getResource((String)props.remove("resourceName"),(Long)props.get("siteId"));
+						}
+						else {
+							resource = ProcessImportCommand.getResource((String)props.remove("resourceName"));
+						}
 					}
 					if(props.get("triggerFrequency") != null) {
 						triggerFrequency = Integer.parseInt((String)props.get("triggerFrequency"));

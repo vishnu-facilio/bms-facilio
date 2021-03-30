@@ -1111,6 +1111,10 @@ public class ProcessImportCommand extends FacilioCommand {
 	}
 
 	public static ResourceContext getResource(String name) throws Exception {
+		
+		return getResource(name, null);
+	}
+	public static ResourceContext getResource(String name,Long siteId) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
 		SelectRecordsBuilder<ResourceContext> resourceBuilder = new SelectRecordsBuilder<ResourceContext>()
@@ -1119,7 +1123,9 @@ public class ProcessImportCommand extends FacilioCommand {
 																		.beanClass(ResourceContext.class)
 																		.andCustomWhere("NAME = ?", name.replace(",", StringOperators.DELIMITED_COMMA))
 																		;
-
+		if(siteId != null && siteId > 0) {
+			resourceBuilder.andCustomWhere("SITE_ID = ?", siteId);
+		}
 		List<ResourceContext> resources = resourceBuilder.get();
 		if(resources != null && !resources.isEmpty()) {
 			return resources.get(0);
