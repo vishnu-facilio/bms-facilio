@@ -869,23 +869,36 @@ public class TransactionChainFactoryV3 {
         return chain;
     }
 
-     public static FacilioChain addMarkersAndModulesCommand() {
+    public static FacilioChain addMarkersAndModulesCommand() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new AddDeskCommand());
         chain.addCommand(new AddMarkerCommand());
         return chain;
     }
 
-     public static FacilioChain updateMarkersAndModulesCommand() {
+    public static FacilioChain updateMarkersAndModulesCommand() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new UpdateDeskCommand());
         chain.addCommand(new UpdateMarkerCommand());
         return chain;
     }
 
-      public static FacilioChain getFloorPlanObjectsChain() {
+    public static FacilioChain getFloorPlanObjectsChain() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new SerializeCommand());
+        return chain;
+    }
+    
+    public static FacilioChain getAddEmailConversationThreadingFromEmailToModuleDataChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new ConstructEmailConversationThreadingCommand());
+        chain.addCommand(new AddEmailConversationThreadingCommand());
+        return chain;
+    }
+    
+    public static FacilioChain getAddEmailConversationThreadingAfterSaveChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new SendEmailForEmailConversationThreadingCommand());
         return chain;
     }
 

@@ -1,17 +1,26 @@
 package com.facilio.bmsconsole.util;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsoleV3.context.BaseMailMessageContext;
+import com.facilio.bmsconsoleV3.context.EmailToModuleDataContext;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fs.FileInfo;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.pdf.PdfUtil;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.mail.util.MimeMessageParser;
@@ -27,12 +36,19 @@ import javax.mail.internet.MimeMultipart;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.function.Function;
 
 public class MailMessageUtil {
 
     private static final Logger LOGGER = LogManager.getLogger(MailMessageUtil.class.getName());
+    
+    public static final String EMAIL_TO_MODULE_DATA_MODULE_NAME = "emailToModuleData";
+    
+    public static final String BASE_MAIL_CONTEXT = "baseMailContext";
+    
+    public static final String EMAIL_CONVERSATION_THREADING_MODULE_NAME = "emailConversationThreading";
 
     public static void updateLatestMailUID(SupportEmailContext supportEmail, long id) throws Exception {
         GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
@@ -41,6 +57,58 @@ public class MailMessageUtil {
                         CriteriaAPI.getIdCondition(id, ModuleFactory.getSupportEmailsModule()));
         int rowupdate = builder.update(FieldUtil.getAsProperties(supportEmail));
         LOGGER.info("Updated" + rowupdate);
+    }
+    
+    public static EmailToModuleDataContext getEmailToModuleData(String referenceMessageId,FacilioModule module) throws Exception {
+    	
+    	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+    	
+    	List<FacilioField> selectFields = new ArrayList<FacilioField>();
+    	
+    	selectFields.addAll(modBean.getAllFields(MailMessageUtil.EMAIL_TO_MODULE_DATA_MODULE_NAME));
+    	
+    	Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(selectFields);
+    	
+    	SelectRecordsBuilder<EmailToModuleDataContext> select = new SelectRecordsBuilder<EmailToModuleDataContext>()
+    			.select(selectFields)
+    			.beanClass(EmailToModuleDataContext.class)
+    			.moduleName(MailMessageUtil.EMAIL_TO_MODULE_DATA_MODULE_NAME)
+    			.andCondition(CriteriaAPI.getCondition(fieldMap.get("messageId"), referenceMessageId, StringOperators.IS))
+    			.andCondition(CriteriaAPI.getCondition(fieldMap.get("dataModuleId"), ""+module.getModuleId(), NumberOperators.EQUALS))
+    			;
+    	
+    	List<EmailToModuleDataContext> emailToModuleDatas = select.get();
+    	
+    	if(emailToModuleDatas != null && !emailToModuleDatas.isEmpty()) {
+    		EmailToModuleDataContext emailToModuleData = emailToModuleDatas.get(0);
+    		if(emailToModuleData.getDataModuleId() > 0 && emailToModuleData.getRecordId() > 0) {
+    			
+    			List<ModuleBaseWithCustomFields> records = V3RecordAPI.getRecordsList(modBean.getModule(emailToModuleData.getDataModuleId()).getName(), Collections.singletonList(emailToModuleData.getRecordId()));
+    			
+    			if(records != null && !records.isEmpty()) {
+    				return emailToModuleData;
+    			}
+    		}
+    	}
+    	return null;
+    }
+    
+    public static void addEmailToModuleDataContext(BaseMailMessageContext mailContext,long recordId,long moduleId) throws Exception {
+    	
+    	EmailToModuleDataContext emailToModuleData = FieldUtil.getAsBeanFromJson(FieldUtil.getAsJSON(mailContext), EmailToModuleDataContext.class);
+		
+		emailToModuleData.setParentBaseMail(mailContext);
+		emailToModuleData.setRecordId(recordId);
+		emailToModuleData.setDataModuleId(moduleId);
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		InsertRecordBuilder<EmailToModuleDataContext> insert = new InsertRecordBuilder<EmailToModuleDataContext>()
+				.moduleName(MailMessageUtil.EMAIL_TO_MODULE_DATA_MODULE_NAME)
+				.fields(modBean.getAllFields(MailMessageUtil.EMAIL_TO_MODULE_DATA_MODULE_NAME))
+				.addRecord(emailToModuleData);
+		
+		insert.save();
     }
 
     public static long createRecordToMailModule(SupportEmailContext supportMail, Message rawEmail) throws Exception {

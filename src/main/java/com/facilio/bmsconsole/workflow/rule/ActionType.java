@@ -16,6 +16,7 @@ import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.context.UserNotificationContext;
 import com.facilio.bmsconsoleV3.context.V3CustomModuleData;
 import com.facilio.bmsconsoleV3.context.BaseMailMessageContext;
+import com.facilio.bmsconsoleV3.context.EmailToModuleDataContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.util.V3AttachmentAPI;
 import com.facilio.db.criteria.Criteria;
@@ -23,6 +24,8 @@ import com.facilio.fs.FileInfo;
 import com.facilio.modules.fields.FileField;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.trigger.util.TriggerUtil;
+import com.facilio.v3.RESTAPIHandler;
+import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.AttachmentV3Context;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.ChainUtil;
@@ -77,6 +80,7 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
@@ -1597,7 +1601,11 @@ public enum ActionType {
 				}
 			}
 			bean.addWorkOrderFromEmail(workorderContext, attachedFiles, attachedFilesFileName, attachedFilesContentType);
+			
+			MailMessageUtil.addEmailToModuleDataContext(mailContext, workorderContext.getId(), ChainUtil.getModule(FacilioConstants.ContextNames.WORK_ORDER).getModuleId());
 			LOGGER.info("Added Workorder from Action Type MAIL_TO_CREATEWO : "  );
+			
+			
 		}
 		@Override
 		public boolean isTemplateNeeded()
@@ -1626,6 +1634,10 @@ public enum ActionType {
 				Class beanClass = FacilioConstants.ContextNames.getClassFromModule(module);
 				createContext.put(Constants.BEAN_CLASS, beanClass);
 				createRecordChain.execute();
+				
+				BaseMailMessageContext mailContext = (BaseMailMessageContext) currentRecord;
+				
+				MailMessageUtil.addEmailToModuleDataContext(mailContext, record.getId(), module.getModuleId());
 			}
 		}
 	},
@@ -1680,7 +1692,71 @@ public enum ActionType {
 				triggerExecuteChain.execute();
 			}
 		}
-	}
+	},
+	
+	EMAIL_CONVERSATION(35) {
+		@Override
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
+			
+			BaseMailMessageContext mailContext = (BaseMailMessageContext) currentRecord;
+			
+			long formId = (long) obj.get("formId");
+			if (formId > -1) {
+				FacilioForm form = FormsAPI.getFormFromDB(formId);
+				
+				FacilioModule module = form.getModule();
+				
+				boolean isThreadFound = false; 
+				if(mailContext.getReferenceMessageId() != null) {
+					
+					EmailToModuleDataContext emailToModuleData = MailMessageUtil.getEmailToModuleData(mailContext.getReferenceMessageId(), module);
+					
+					if(emailToModuleData != null) {
+						isThreadFound = true;
+						FacilioChain chain = TransactionChainFactoryV3.getAddEmailConversationThreadingFromEmailToModuleDataChain();
+						FacilioContext newcontext = chain.getContext();
+						newcontext.put(MailMessageUtil.EMAIL_TO_MODULE_DATA_MODULE_NAME, emailToModuleData);
+						newcontext.put(FacilioConstants.ContextNames.MODULE, module);
+						newcontext.put(MailMessageUtil.BASE_MAIL_CONTEXT, mailContext);
+						
+						chain.execute();
+					}
+				}
+				
+				if(!isThreadFound) {
+					V3Config v3Config = ChainUtil.getV3Config(module.getName());
+			        FacilioChain createRecordChain = ChainUtil.getCreateRecordChain(module.getName());
+			        FacilioContext contextNew = createRecordChain.getContext();
+
+			        if (module.isCustom()) {
+			            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			            FacilioField localIdField = modBean.getField("localId", module.getName());
+			            if (localIdField != null) {
+			            	contextNew.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
+			            }
+			        }
+
+			        Constants.setV3config(contextNew, v3Config);
+			        contextNew.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.CREATE);
+			        Constants.setModuleName(contextNew, module.getName());
+			        contextNew.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
+
+			        obj.put("siteId", mailContext.getSiteId());
+			        Constants.setRawInput(contextNew, obj);
+			        
+			        Class beanClass = ChainUtil.getBeanClass(v3Config, module);
+			        contextNew.put(Constants.BEAN_CLASS, beanClass);
+
+			        createRecordChain.execute();
+			        
+			        Map<String, List<ModuleBaseWithCustomFields>> recordMap = (Map<String, List<ModuleBaseWithCustomFields>>) contextNew.get(Constants.RECORD_MAP);
+			        
+			        MailMessageUtil.addEmailToModuleDataContext(mailContext, recordMap.get(module.getName()).get(0).getId(), module.getModuleId());
+				}
+			}
+			
+		}
+	},
 	
 	;
 	

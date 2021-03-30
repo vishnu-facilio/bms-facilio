@@ -3,6 +3,7 @@ package com.facilio.apiv3;
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.context.AssetDepreciationContext;
+import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.*;
 import com.facilio.bmsconsoleV3.commands.budget.*;
@@ -172,6 +173,14 @@ public class APIv3Config {
                 .build();
     }
     
+    @Module(MailMessageUtil.EMAIL_CONVERSATION_THREADING_MODULE_NAME)
+    public static Supplier<V3Config> getEmailConversationThreadingCRUD() {
+        return () -> new V3Config(EmailConversationThreadingContext.class, null)
+                .create()
+                .afterSave(TransactionChainFactoryV3.getAddEmailConversationThreadingAfterSaveChain())
+                .build();
+    }
+    
     @Module(ControlScheduleUtil.CONTROL_SCHEDULE_MODULE_NAME)
     public static Supplier<V3Config> getScheduleCRUD() {
         return () -> new V3Config(ControlScheduleContext.class, null)
@@ -329,7 +338,8 @@ public class APIv3Config {
                     .beforeFetch(new LoadServiceRequestLookupCommandV3())
                     .showStateFlowList()
                 .summary()
-                    .beforeFetch(new LoadServiceRequestLookupCommandV3()) 
+                    .beforeFetch(new LoadServiceRequestLookupCommandV3())
+//                    .afterFetch(new FetchEmailConversationThreadingCommand())
                 .build();
     }
     
