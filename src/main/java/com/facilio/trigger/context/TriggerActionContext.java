@@ -6,7 +6,7 @@ import com.facilio.modules.UpdateChangeSet;
 
 import java.util.List;
 
-public class TriggerAction {
+public class TriggerActionContext {
 
 	private long id = -1;
 	public long getId() {

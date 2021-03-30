@@ -1,6 +1,5 @@
 package com.facilio.trigger.util;
 
-import java.sql.SQLException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -38,7 +37,7 @@ public class TriggerUtil {
 		for(BaseTriggerContext trigger :triggers) {
 			if (trigger.shouldInvoke()) {
 				if (trigger.getTriggerActions() != null) {
-					for (TriggerAction action : trigger.getTriggerActions()) {
+					for (TriggerActionContext action : trigger.getTriggerActions()) {
 						action.execute(context, trigger, moduleName, record, changeSets);
 						TriggerLog log = new TriggerLog();
 						log.setTriggerId(trigger.getId());
@@ -158,7 +157,7 @@ public class TriggerUtil {
 		
 		for(Map<String, Object> prop :props) {
 			Long triggerid = (Long)prop.get("triggerId");
-			TriggerAction triggerAction = FieldUtil.getAsBeanFromMap(prop, TriggerAction.class);
+			TriggerActionContext triggerAction = FieldUtil.getAsBeanFromMap(prop, TriggerActionContext.class);
 			
 			triggerIDmap.get(triggerid).addTriggerAction(triggerAction);
 		}
@@ -168,10 +167,10 @@ public class TriggerUtil {
 
 	}
 
-	public static void addActionToTrigger(BaseTriggerContext trigger, List<TriggerAction> actions) throws Exception {
+	public static void addActionToTrigger(BaseTriggerContext trigger, List<TriggerActionContext> actions) throws Exception {
 		trigger.setTriggerActions(actions);
 
-		for(TriggerAction action : trigger.getTriggerActions()) {
+		for(TriggerActionContext action : trigger.getTriggerActions()) {
 			if(action.getId() < 0) {
 
 				Map<String, Object> props = FieldUtil.getAsProperties(action);
@@ -218,12 +217,12 @@ public class TriggerUtil {
 				.select(FieldFactory.getTriggerActionFields())
 				.andCondition(CriteriaAPI.getCondition("TYPE", "actionType", String.valueOf(TriggerActionType.RULE_EXECUTION.getVal()), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition("TYPE_PRIMARY_ID", "typeRefPrimaryId", StringUtils.join(ruleIds, ","), NumberOperators.EQUALS));
-		List<TriggerAction> actionList = FieldUtil.getAsBeanListFromMapList(builder.get(), TriggerAction.class);
+		List<TriggerActionContext> actionList = FieldUtil.getAsBeanListFromMapList(builder.get(), TriggerActionContext.class);
 		Map<Long, Set<BaseTriggerContext>> ruleVsTriggerMap = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(actionList)) {
-			List<Long> triggerList = actionList.stream().map(TriggerAction::getTriggerId).collect(Collectors.toList());
+			List<Long> triggerList = actionList.stream().map(TriggerActionContext::getTriggerId).collect(Collectors.toList());
 			Map<Long, BaseTriggerContext> triggerContextMap = getTriggers(triggerList).stream().collect(Collectors.toMap(BaseTriggerContext::getId, Function.identity()));
-			for (TriggerAction action : actionList) {
+			for (TriggerActionContext action : actionList) {
 				Set<BaseTriggerContext> list = ruleVsTriggerMap.get(action.getTypeRefPrimaryId());
 				if (list == null) {
 					list = new HashSet<>();
@@ -251,7 +250,7 @@ public class TriggerUtil {
 		Map<Long, BaseTriggerContext> triggerMap = triggers.stream().collect(Collectors.toMap(BaseTriggerContext::getId, Function.identity()));
 		Map<Long, Integer> triggerMaxOrder = getTriggerMaxOrder(triggerMap.keySet());
 		for (BaseTriggerContext trigger : triggerMap.values()) {
-			TriggerAction action = new TriggerAction();
+			TriggerActionContext action = new TriggerActionContext();
 			action.setActionType(TriggerActionType.RULE_EXECUTION.getVal());
 			action.setTypeRefPrimaryId(rule.getId());
 			action.setTriggerId(trigger.getId());

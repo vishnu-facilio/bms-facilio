@@ -12,15 +12,12 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.trigger.context.ScoringRuleTrigger;
-import com.facilio.trigger.context.TriggerAction;
-import com.facilio.trigger.context.TriggerActionType;
 import com.facilio.trigger.context.TriggerType;
 import com.facilio.trigger.util.TriggerUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;

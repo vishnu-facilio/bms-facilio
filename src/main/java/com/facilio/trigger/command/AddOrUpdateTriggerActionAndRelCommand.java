@@ -8,7 +8,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.trigger.context.BaseTriggerContext;
-import com.facilio.trigger.context.TriggerAction;
+import com.facilio.trigger.context.TriggerActionContext;
 import com.facilio.trigger.util.TriggerUtil;
 import org.apache.commons.chain.Context;
 
@@ -20,7 +20,7 @@ public class AddOrUpdateTriggerActionAndRelCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		BaseTriggerContext trigger = (BaseTriggerContext)context.get(TriggerUtil.TRIGGER_CONTEXT);
 		if(trigger.getTriggerActions() != null) {
-			for(TriggerAction action : trigger.getTriggerActions()) {
+			for(TriggerActionContext action : trigger.getTriggerActions()) {
 				if(action.getId() < 0) {
 					action.setTriggerId(trigger.getId());
 					Map<String, Object> props = FieldUtil.getAsProperties(action);

@@ -111,16 +111,16 @@ public class BaseTriggerContext {
 		return status;
 	}
 
-	List<TriggerAction> triggerActions;
-	public List<TriggerAction> getTriggerActions() {
+	List<TriggerActionContext> triggerActions;
+	public List<TriggerActionContext> getTriggerActions() {
 		return triggerActions;
 	}
-	public void setTriggerActions(List<TriggerAction> triggerActions) {
+	public void setTriggerActions(List<TriggerActionContext> triggerActions) {
 		this.triggerActions = triggerActions;
 	}
 	
-	public void addTriggerAction(TriggerAction action) {
-		if(triggerActions == null) { triggerActions = new ArrayList<TriggerAction>();}
+	public void addTriggerAction(TriggerActionContext action) {
+		if(triggerActions == null) { triggerActions = new ArrayList<TriggerActionContext>();}
 		
 		triggerActions.add(action);
 	}

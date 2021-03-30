@@ -5,8 +5,11 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.trigger.context.BaseTriggerContext;
+import com.facilio.trigger.context.TriggerActionContext;
 import com.facilio.trigger.util.TriggerUtil;
 import com.facilio.v3.V3Action;
+
+import java.util.List;
 
 public class TriggerAction extends V3Action {
 	private static final long serialVersionUID = 1L;
@@ -48,8 +51,23 @@ public class TriggerAction extends V3Action {
     	return SUCCESS;
 	}
 
+	private List<TriggerActionContext> actionList;
+	public List<TriggerActionContext> getActionList() {
+		return actionList;
+	}
+	public void setActionList(List<TriggerActionContext> actionList) {
+		this.actionList = actionList;
+	}
+
 	public String reArrangeTriggerAction() throws Exception {
-		TransactionChainFactoryV3.rearrangeTriggerActionChain();
+		FacilioChain chain = TransactionChainFactoryV3.rearrangeTriggerActionChain();
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.ID, getId());
+		context.put(FacilioConstants.ContextNames.ACTIONS_LIST, actionList);
+		chain.execute();
+
+		setMessage("Trigger Actions re-arranged successfully");
+
 		return SUCCESS;
 	}
 
