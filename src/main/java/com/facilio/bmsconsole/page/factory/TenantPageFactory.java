@@ -37,15 +37,22 @@ public class TenantPageFactory extends PageFactory{
 		
 		addSecondaryDetailsWidget(tab1Sec1);
 		addTenantSpecialWidget(tab1Sec1);
+		addCommonSubModuleWidget(tab1Sec1, module, record);
+
 		if (record == null) {
 			return page;
 		}
+
+		Tab tab2 = page.new Tab("related records");
+		page.addTab(tab2);
+
+		Section tab2Sec1 = page.new Section();
+		tab2.addSection(tab2Sec1);
+
 		if(AccountUtil.getCurrentOrg().getOrgId() == 321l) {
-			addSpecialRelatedListWidgetForDemoOrg(tab1Sec1, record.getModuleId());
+			addSpecialRelatedListWidgetForDemoOrg(tab2Sec1, record.getModuleId());
 		}
-		addRelatedList(tab1Sec1, record.getModuleId());
-		addCommonSubModuleWidget(tab1Sec1, module, record);
-		
+		addRelatedList(tab2Sec1, record.getModuleId());
 
 		return page;
 	}
@@ -121,7 +128,7 @@ public class TenantPageFactory extends PageFactory{
 	}
 	private static void addSecondaryDetailsWidget(Section section) {
 		PageWidget detailsWidget = new PageWidget(WidgetType.SECONDARY_DETAILS_WIDGET);
-		detailsWidget.addToLayoutParams(section, 24, 4);
+		detailsWidget.addToLayoutParams(section, 24, 7);
 		section.addWidget(detailsWidget);
 	}
 

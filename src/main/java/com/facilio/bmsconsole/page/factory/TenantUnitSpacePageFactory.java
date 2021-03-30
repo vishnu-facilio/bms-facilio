@@ -30,20 +30,28 @@ public class TenantUnitSpacePageFactory extends PageFactory {
         tab1.addSection(tab1Sec1);
         addSecondaryDetailsWidget(tab1Sec1);
         addSpaceDetailWidget(tab1Sec1);
-        if (AccountUtil.getCurrentOrg().getOrgId() == 320l) {
-            addRelatedListWidget(tab1Sec1, FacilioConstants.ContextNames.WORK_ORDER, module.getModuleId(), "Work Orders");
-        } else {
-            addRelatedListWidget(tab1Sec1, FacilioConstants.ContextNames.WORK_ORDER, resourceModule.getModuleId(), "Work Orders");
-        }
-        addRelatedListWidget(tab1Sec1, FacilioConstants.ContextNames.TENANT_SPACES, baseSpaceModule.getModuleId(), "Tenant Spaces");
-        addRelatedListWidget(tab1Sec1, FacilioConstants.ContextNames.ASSET, baseSpaceModule.getModuleId(), "Assets");
         addCommonSubModuleWidget(tab1Sec1, module, tenantUnitSpaceContext);
+
+        Page.Tab tab2 = page.new Tab("related records");
+        page.addTab(tab2);
+
+        Page.Section tab2Sec1 = page.new Section();
+        tab2.addSection(tab2Sec1);
+
+        addRelatedListWidget(tab2Sec1, FacilioConstants.ContextNames.TENANT_SPACES, baseSpaceModule.getModuleId(), "Tenant History");
+        if (AccountUtil.getCurrentOrg().getOrgId() == 320l) {
+            addRelatedListWidget(tab2Sec1, FacilioConstants.ContextNames.WORK_ORDER, module.getModuleId(), "Work Orders");
+        } else {
+            addRelatedListWidget(tab2Sec1, FacilioConstants.ContextNames.WORK_ORDER, resourceModule.getModuleId(), "Work Orders");
+        }
+        addRelatedListWidget(tab2Sec1, FacilioConstants.ContextNames.ASSET, baseSpaceModule.getModuleId(), "Assets");
+
         return page;
     }
 
     private static void addSecondaryDetailsWidget(Page.Section section) {
         PageWidget detailsWidget = new PageWidget(PageWidget.WidgetType.SECONDARY_DETAILS_WIDGET);
-        detailsWidget.addToLayoutParams(section, 24, 4);
+        detailsWidget.addToLayoutParams(section, 24, 7);
         section.addWidget(detailsWidget);
     }
 
