@@ -77,21 +77,21 @@ public class Constants {
         context.put(BODY_PARAMS, jsonObject);
     }
 
-    private static final String CHANGED_PROPS = "changedProps";
-    public static Set<String> getChangedProps(Context context, String moduleName, Long recordId) {
-        Map<String, Map<Long, Set<String>>> changedPropsMap = (Map<String, Map<Long, Set<String>>>) context.get(CHANGED_PROPS);
-        if (changedPropsMap == null) {
-            return null;
-        }
-        Map<Long, Set<String>> moduleChangedProps = changedPropsMap.get(moduleName);
-        return moduleChangedProps == null ? null : moduleChangedProps.get(recordId);
+    private static final String OLD_RECORD_MAP = "oldRecordMap";
+    public static <T extends ModuleBaseWithCustomFields> void addToOldRecordMap (Context context, String moduleName, T record) {
+        Map<String, Map<Long, ? extends ModuleBaseWithCustomFields>> oldRecordsMap = (Map<String, Map<Long, ? extends ModuleBaseWithCustomFields>>) context.computeIfAbsent(OLD_RECORD_MAP, k -> new HashMap<>());
+        Map<Long, T> oldRecords = (Map<Long, T>) oldRecordsMap.computeIfAbsent(moduleName, k -> new HashMap<>());
+        oldRecords.put(record.getId(), record);
+    }
+    public static <T extends ModuleBaseWithCustomFields> Map<Long, T> getOldRecordMap (Context context, String moduleName) {
+        Map<String, Map<Long, ? extends ModuleBaseWithCustomFields>> oldRecordsMap = (Map<String, Map<Long, ? extends ModuleBaseWithCustomFields>>) context.get(OLD_RECORD_MAP);
+        return oldRecordsMap == null ? null : (Map<Long, T>) oldRecordsMap.get(moduleName);
+    }
+    public static <T extends ModuleBaseWithCustomFields> T getOldRecord (Context context, String moduleName, long id) {
+        Map<Long, T> oldRecords = getOldRecordMap(context, moduleName);
+        return oldRecords == null ? null : oldRecords.get(id);
     }
 
-    public static void addChangedProps(Context context, String moduleName, Long recordId, Set<String> changedProps) {
-        Map<String, Map<Long, Set<String>>> changedPropsMap = (Map<String, Map<Long, Set<String>>>) context.computeIfAbsent(CHANGED_PROPS, k -> new HashMap<>());
-        Map<Long, Set<String>> moduleChangedProps = changedPropsMap.computeIfAbsent(moduleName, k -> new HashMap<>());
-        moduleChangedProps.put(recordId, changedProps);
-    }
 
     private static final String SUPPLEMENT_MAP = "supplementMap";
     public static void setSupplementMap(Context context, Map<String, Map<String, Object>> supplementMap) {
@@ -145,12 +145,16 @@ public class Constants {
     }
 
 
-    public static <E extends ModuleBaseWithCustomFields> Map<String, List<E>> getRecordMap(Context context) {
-        return (Map<String, List<E>>) context.get(RECORD_MAP);
+    public static Map<String, List<ModuleBaseWithCustomFields>> getRecordMap(Context context) {
+        return (Map<String, List<ModuleBaseWithCustomFields>>) context.get(RECORD_MAP);
     }
 
     public static void setRecordMap(Context context, Map<String, List<ModuleBaseWithCustomFields>> recordMap) {
         context.put(RECORD_MAP, recordMap);
+    }
+
+    public static <T extends ModuleBaseWithCustomFields> void addRecordList (Map<String, List<ModuleBaseWithCustomFields>> recordMap, String moduleName, List<T> recordList) {
+        recordMap.put(moduleName, (List<ModuleBaseWithCustomFields>) recordList);
     }
 
     public static <E extends ModuleBaseWithCustomFields> List<E> getRecordList (Map<String, List<ModuleBaseWithCustomFields>> recordMap, String moduleName) {

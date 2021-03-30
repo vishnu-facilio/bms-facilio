@@ -334,15 +334,12 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         Map<String, FacilioField> fileFields = getFileFields(moduleName);
 
         Set<String> keys = patchObj.keySet();
-        Set<String> changedProps = new HashSet<>();
         for (String key: keys) {
             FacilioField fileField = fileFields.get(key);
             if (fileField != null && !fileField.isDefault() && patchObj.get(key) == null) {
                 summaryRecord.put(fileField.getName(), patchObj.get(key));
-                changedProps.add(fileField.getName());
             }
             summaryRecord.put(key, patchObj.get(key));
-            changedProps.add(key);
         }
 
         FacilioChain patchChain = ChainUtil.getPatchChain(moduleName);
@@ -357,7 +354,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         Constants.setModuleName(context, moduleName);
         Constants.setRawInput(context, summaryRecord);
         Constants.setBodyParams(context, bodyParams);
-        Constants.addChangedProps(context, moduleName, id, changedProps);
+        Constants.addToOldRecordMap(context, moduleName, (ModuleBaseWithCustomFields) record);
         context.put(Constants.BEAN_CLASS, beanClass);
         context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
         context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
