@@ -62,8 +62,9 @@ public class AddDeskCommand extends FacilioCommand {
 
 					}
 
-					System.out.println("desksprop" + desksprop);
+				if (CollectionUtils.isNotEmpty(desksprop)) {
 					V3RecordAPI.addRecord(false, desksprop, deskModule, fields);
+				}
 				}
 
 				}
