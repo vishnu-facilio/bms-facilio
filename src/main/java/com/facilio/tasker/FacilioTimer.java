@@ -85,9 +85,10 @@ public class FacilioTimer {
 		if (AccountUtil.getCurrentAccount() != null) {
 			jc.setTimezone(AccountUtil.getCurrentAccount().getTimeZone());
 		}
-		FacilioService.runAsService(FacilioConstants.Services.JOB_SERVICE,() -> JobStore.addJob(jc));
 		if(!FacilioProperties.isProduction()){
 			FacilioService.runAsService(FacilioConstants.Services.TEMP_JOBS,() -> JobStore.addJob(jc));
+		}else {
+			FacilioService.runAsService(FacilioConstants.Services.JOB_SERVICE,() -> JobStore.addJob(jc));
 		}
 	}
 
@@ -121,52 +122,65 @@ public class FacilioTimer {
 		if (AccountUtil.getCurrentAccount() != null) {
 			jc.setTimezone(AccountUtil.getCurrentAccount().getTimeZone());
 		}
-		FacilioService.runAsService(FacilioConstants.Services.JOB_SERVICE,() -> JobStore.addJob(jc));
 		if(!FacilioProperties.isProduction()){
 			FacilioService.runAsService(FacilioConstants.Services.TEMP_JOBS,() -> JobStore.addJob(jc));
+		}else {
+			FacilioService.runAsService(FacilioConstants.Services.JOB_SERVICE,() -> JobStore.addJob(jc));
 		}
 	}
 	
 	public static void deleteJob(long jobId, String jobName) throws Exception {
 		long orgId = getCurrentOrgId();
-		FacilioService.runAsService(FacilioConstants.Services.JOB_SERVICE,() -> JobStore.deleteJob(orgId, jobId, jobName));
 		if(!FacilioProperties.isProduction() ){
 			FacilioService.runAsService(FacilioConstants.Services.TEMP_JOBS,() -> JobStore.deleteJob(orgId, jobId, jobName));
+		}else {
+			FacilioService.runAsService(FacilioConstants.Services.JOB_SERVICE,() -> JobStore.deleteJob(orgId, jobId, jobName));
 		}
 	}
 
 	public static void deleteJobs ( List<Long> jobIds,String jobName ) throws Exception {
 		long orgId = getCurrentOrgId();
-		FacilioService.runAsService(FacilioConstants.Services.JOB_SERVICE,() -> JobStore.deleteJobs(orgId,jobIds,jobName));
 		if(!FacilioProperties.isProduction() ) {
 			FacilioService.runAsService(FacilioConstants.Services.TEMP_JOBS,() -> JobStore.deleteJobs(orgId,jobIds,jobName));
+		}else {
+			FacilioService.runAsService(FacilioConstants.Services.JOB_SERVICE,() -> JobStore.deleteJobs(orgId,jobIds,jobName));
 		}
 	}
 	
 	public static JobContext getJob(long jobId, String jobName) throws Exception {
 		long orgId = getCurrentOrgId();
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,() -> JobStore.getJob(orgId, jobId, jobName));
+		if(!FacilioProperties.isProduction()){
+			return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.TEMP_JOBS,() -> JobStore.getJob(orgId, jobId, jobName));
+		}else {
+			return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,() -> JobStore.getJob(orgId, jobId, jobName));
+		}
 	}
 	
 	public static List<JobContext> getJobs(List<Long> jobIds, String jobName) throws Exception {
 		long orgId = getCurrentOrgId();
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,() -> JobStore.getJobs(orgId, jobIds, jobName));
+		if(!FacilioProperties.isProduction()){
+			return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.TEMP_JOBS,() -> JobStore.getJobs(orgId, jobIds, jobName));
+		}else {
+			return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,() -> JobStore.getJobs(orgId, jobIds, jobName));
+		}
 	}
 
 	public static int activateJob ( long jobId,String jobName ) throws Exception {
 		long orgId = getCurrentOrgId();
 		if(!FacilioProperties.isProduction()) {
-			FacilioService.runAsServiceWihReturn(FacilioConstants.Services.TEMP_JOBS,() -> JobStore.setStatusForJob(orgId,jobId,jobName,true));
+			return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.TEMP_JOBS,() -> JobStore.setStatusForJob(orgId,jobId,jobName,true));
+		}else {
+			return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,() -> JobStore.setStatusForJob(orgId,jobId,jobName,true));
 		}
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,() -> JobStore.setStatusForJob(orgId,jobId,jobName,true));
 	}
 
 	public static int inActivateJob ( long jobId,String jobName ) throws Exception {
 		long orgId = getCurrentOrgId();
 		if(!FacilioProperties.isProduction()) {
-			FacilioService.runAsServiceWihReturn(FacilioConstants.Services.TEMP_JOBS,() -> JobStore.setStatusForJob(orgId,jobId,jobName,false));
+			return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.TEMP_JOBS,() -> JobStore.setStatusForJob(orgId,jobId,jobName,false));
+		}else {
+			return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,() -> JobStore.setStatusForJob(orgId,jobId,jobName,false));
 		}
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,() -> JobStore.setStatusForJob(orgId,jobId,jobName,false));
 	}
 
 	private static long getCurrentOrgId() {

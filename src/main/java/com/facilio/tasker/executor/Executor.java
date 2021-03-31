@@ -1,5 +1,6 @@
 package com.facilio.tasker.executor;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.service.FacilioService;
@@ -71,9 +73,14 @@ public class Executor implements Runnable {
 			long endTime = startTime+bufferPeriod;
 			
 			LOGGER.debug(name+"::"+startTime+"::"+endTime);
-			
-			List<JobContext> jobs = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,()->JobStore.getJobs(name, startTime, endTime, getMaxRetry(), includedOrgs, excludedOrgs));
-			jobs.addAll(FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,()->JobStore.getIncompletedJobs(name, startTime, endTime, getMaxRetry(), includedOrgs, excludedOrgs)));
+			List<JobContext> jobs;
+			if(!FacilioProperties.isProduction()) {
+				jobs = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.TEMP_JOBS,()->JobStore.getJobs(name, startTime, endTime, getMaxRetry(), includedOrgs, excludedOrgs));
+				jobs.addAll(FacilioService.runAsServiceWihReturn(FacilioConstants.Services.TEMP_JOBS,()->JobStore.getIncompletedJobs(name, startTime, endTime, getMaxRetry(), includedOrgs, excludedOrgs)));
+			} else {
+				jobs = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,()->JobStore.getJobs(name, startTime, endTime, getMaxRetry(), includedOrgs, excludedOrgs));
+				jobs.addAll(FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,()->JobStore.getIncompletedJobs(name, startTime, endTime, getMaxRetry(), includedOrgs, excludedOrgs)));
+			}
 
 			for(JobContext jc : jobs) {
 				try {
