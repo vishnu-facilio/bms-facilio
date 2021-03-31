@@ -7,7 +7,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -125,7 +127,7 @@ public class ScopeHandlerImpl extends ScopeHandler {
 			}
 			else {
 				//special handling for altayer - tenants module inorder to temporarily support multi site scoping. can be removed once multi select lookup is handled
-				if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 407l && StringUtils.isNotEmpty(module.getName()) && module.getName().equals(FacilioConstants.ContextNames.TENANT)) {
+				if(AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getOrgId() == 407l || AccountUtil.getCurrentOrg().getOrgId() == 418l) && StringUtils.isNotEmpty(module.getName()) && module.getName().equals(FacilioConstants.ContextNames.TENANT)) {
 					return null;
 				}
 
@@ -139,15 +141,21 @@ public class ScopeHandlerImpl extends ScopeHandler {
         return null;
     }
     
-    private ScopeFieldsAndCriteria constructSiteFieldsAndCriteria (FacilioModule module, boolean isUpdate) {
+    private ScopeFieldsAndCriteria constructSiteFieldsAndCriteria (FacilioModule module, boolean isUpdate) throws Exception{
         FacilioField siteIdField = FieldFactory.getSiteIdField(module);
         long currentSiteId = AccountUtil.getCurrentSiteId();
-        Criteria criteria = null;
+        Criteria criteria = new Criteria();
         if (currentSiteId > 0) {// Currently we are handling site id criteria only for the module and not for all parent modules
-            criteria = new Criteria();
             Condition siteCondition = CriteriaAPI.getCondition(siteIdField, String.valueOf(currentSiteId), NumberOperators.EQUALS);
             criteria.addAndCondition(siteCondition);
         }
+        else {
+			List<Long> mySitIds = CommonCommandUtil.getMySiteIds();
+			if(CollectionUtils.isNotEmpty(mySitIds)) {
+				Condition siteCondition = CriteriaAPI.getCondition(siteIdField, StringUtils.join(mySitIds, ","), NumberOperators.EQUALS);
+				criteria.addAndCondition(siteCondition);
+			}
+		}
         List<FacilioField> fields = null;
         if (isUpdate) { //Will allow site id to be updated only if current site is -1. Also site fields of all parent modules needs to be added in fields because those have to be updated too
             if (currentSiteId == -1) {

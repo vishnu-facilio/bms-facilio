@@ -30,7 +30,7 @@ public class CustomModulePageFactory extends PageFactory {
 			return page;
 		}
 
-		if(AccountUtil.getCurrentOrg().getOrgId() != 407l || AccountUtil.getCurrentApp().getAppCategoryEnum() != ApplicationContext.AppCategory.PORTALS) {
+		if((AccountUtil.getCurrentOrg().getOrgId() != 407l && AccountUtil.getCurrentOrg().getOrgId() != 418l) || AccountUtil.getCurrentApp().getAppCategoryEnum() != ApplicationContext.AppCategory.PORTALS) {
 			Tab tab2 = page.new Tab("related list");
 
 			Section tab2Sec1 = page.new Section();
