@@ -12,6 +12,10 @@ services:
     instanceName: default
     dbName: default
 
+  - serviceName: tempjobs
+    instanceName: default
+    dbName: bms_jobs
+
   - serviceName: instantJob
     instanceName: default
     dbName: default

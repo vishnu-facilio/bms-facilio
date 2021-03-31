@@ -493,7 +493,30 @@ public class JobStore {
 		LOGGER.debug("Updated Job " + jobName + " " + rowsUpdated );
 		return rowsUpdated;
 	}
-	
+
+	// temp job service update. we will remove soon
+	static int updateStartExecution_temp(long orgId, long jobId, String jobName, long jobStartTime, int jobExecutionCount) {
+		int rowsUpdated = 0;
+		String query = "update Jobs set STATUS = 2, JOB_SERVER_ID = ?, CURRENT_EXECUTION_TIME = ?, EXECUTION_ERROR_COUNT = ? where ORGID = ? AND JOBID = ? and JOBNAME= ? ";
+		try(Connection connection = FacilioConnectionPool.getInstance().getDirectConnection();
+			PreparedStatement statement = connection.prepareStatement(query)){
+			statement.setLong(1, ServerInfo.getServerId());
+			statement.setLong(2, System.currentTimeMillis());
+			statement.setInt(3, jobExecutionCount+1);
+			statement.setLong(4, orgId);
+			statement.setLong(5, jobId);
+			statement.setString(6, jobName);
+//			statement.setLong(7, jobStartTime);
+//			statement.setInt(8, jobExecutionCount);
+			rowsUpdated = statement.executeUpdate();
+			LOGGER.debug("query : " + statement.toString());
+		} catch (SQLException e) {
+			LOGGER.error("Exception while updating Job " + jobName + "_" + jobId, e);
+		}
+		LOGGER.debug("Updated Job " + jobName + " " + rowsUpdated );
+		return rowsUpdated;
+	}
+
 	public static JobContext getJob(long orgId, long jobId, String jobName) throws SQLException, JsonParseException, JsonMappingException, IOException, ParseException {
 		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = getPStmt(conn, orgId, jobId, jobName); ResultSet rs = pstmt.executeQuery()) {
 			if(rs.next()) {

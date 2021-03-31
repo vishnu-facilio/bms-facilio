@@ -36,10 +36,11 @@ public abstract class FacilioJob implements Runnable {
 	@Override
 	public void run() {
 		try {
-			if (FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE, () -> JobStore.updateStartExecution(jc.getOrgId(), jc.getJobId(), jc.getJobName(), jc.getJobStartTime(), jc.getJobExecutionCount())) < 1) {
+			if((FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,() -> JobStore.updateStartExecution(jc.getOrgId(),jc.getJobId(),jc.getJobName(),jc.getJobStartTime(),jc.getJobExecutionCount())) < 1)) {
 				executor.jobEnd(jc.getJobKey());
 				return;
 			}
+			FacilioService.runAsServiceWihReturn(FacilioConstants.Services.TEMP_JOBS,() -> JobStore.updateStartExecution_temp(jc.getOrgId(),jc.getJobId(),jc.getJobName(),jc.getJobStartTime(),jc.getJobExecutionCount()));
 			AccountUtil.cleanCurrentAccount();
 			long startTime = 0L;
 			Thread currentThread = Thread.currentThread();
@@ -87,11 +88,12 @@ public abstract class FacilioJob implements Runnable {
 					timeTaken = 1;
 				}
 				JobLogger.log(jc, timeTaken, status);
-				AccountUtil.cleanCurrentAccount();
 				if (status == 1) {
 					FacilioService.runAsService(FacilioConstants.Services.JOB_SERVICE, ()->updateNextExecutionTime());
+					FacilioService.runAsService(FacilioConstants.Services.TEMP_JOBS, ()->updateNextExecutionTime());
 				}
 				LOGGER.debug("Job completed " + jc.getJobId() + "-" + jc.getJobName() + " time taken : " + timeTaken);
+				AccountUtil.cleanCurrentAccount();
 				currentThread.setName(threadName);
 			}
 		}
