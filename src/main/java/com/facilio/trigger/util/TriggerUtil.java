@@ -251,6 +251,9 @@ public class TriggerUtil {
 		Map<Long, Integer> triggerMaxOrder = getTriggerMaxOrder(triggerMap.keySet());
 		for (BaseTriggerContext trigger : triggerMap.values()) {
 			TriggerActionContext action = new TriggerActionContext();
+			if (StringUtils.isEmpty(action.getName())) {
+				action.setName(rule.getName());
+			}
 			action.setActionType(TriggerActionType.RULE_EXECUTION.getVal());
 			action.setTypeRefPrimaryId(rule.getId());
 			action.setTriggerId(trigger.getId());
