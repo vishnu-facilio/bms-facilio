@@ -78,6 +78,7 @@ public class ScheduledV2ReportListCommand extends FacilioCommand {
 		List<FacilioField> jobsField = FieldFactory.getJobFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(jobsField);
 		
+		if(reportInfoIds != null && !reportInfoIds.isEmpty()) {
 		selectBuilder = new GenericSelectRecordBuilder()
 				.select(jobsField)
 				.table(jobsModule.getTableName())
@@ -113,7 +114,7 @@ public class ScheduledV2ReportListCommand extends FacilioCommand {
 				// TODO delete removed job entries from info table
 			}
 		}
-		
+		}
 		List<ReportInfo> reports = reportsMap.values().stream().collect(Collectors.toList());
 		context.put(FacilioConstants.ContextNames.REPORT_LIST, reports);
 				
