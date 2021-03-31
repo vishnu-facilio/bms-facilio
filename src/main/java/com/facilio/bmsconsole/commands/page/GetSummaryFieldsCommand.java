@@ -185,6 +185,8 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 		fieldMap.put("custom_contractunits", customContractunits);
 		fieldMap.put("custom_payment", customPayment);
 		fieldMap.put("custom_receipts", customReceipts);
+		fieldMap.put("peopleannouncement", peopleAnnouncement);
+
 		return fieldMap;
 	}
 	
@@ -278,6 +280,14 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 			"sysModifiedTime",
 			"sysCreatedBy"
     }));
+
+
+	private static final List<String> peopleAnnouncement = Collections.unmodifiableList(Arrays.asList(new String[] {
+			"category",
+			"expiryDate",
+			"sysCreatedTime",
+			"sysCreatedBy"
+	}));
 
 	/******* ATRE End ******************/
 }
