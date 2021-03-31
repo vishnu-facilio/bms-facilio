@@ -41,7 +41,7 @@ public abstract class FacilioJob implements Runnable {
 				executor.jobEnd(jc.getJobKey());
 				return;
 			}
-			if(!FacilioProperties.isProduction() && !FacilioProperties.isOnpremise()){
+			if(!FacilioProperties.isProduction()){
 				FacilioService.runAsServiceWihReturn(FacilioConstants.Services.TEMP_JOBS,() -> JobStore.updateStartExecution_temp(jc.getOrgId(),jc.getJobId(),jc.getJobName(),jc.getJobStartTime(),jc.getJobExecutionCount()));
 			}
 			AccountUtil.cleanCurrentAccount();
@@ -93,7 +93,7 @@ public abstract class FacilioJob implements Runnable {
 				JobLogger.log(jc, timeTaken, status);
 				if (status == 1) {
 					FacilioService.runAsService(FacilioConstants.Services.JOB_SERVICE, ()->updateNextExecutionTime());
-					if(!FacilioProperties.isProduction() && !FacilioProperties.isOnpremise()){
+					if(!FacilioProperties.isProduction()){
 						FacilioService.runAsService(FacilioConstants.Services.TEMP_JOBS, ()->updateNextExecutionTime());
 					}
 				}
