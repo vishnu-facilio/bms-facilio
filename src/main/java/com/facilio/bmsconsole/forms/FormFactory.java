@@ -106,6 +106,7 @@ public class FormFactory {
 		forms.put("spaceFromFloor", getSpaceFormFromFloor());
 		forms.put("spaceFromSpace", getSpaceFormFromSpace());
 		forms.put("floor", getFloorForm());
+		/**** Do not add any forms here... Add in initFormsList() only ******/
 
 		return forms;
 	}

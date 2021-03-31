@@ -138,6 +138,11 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 			List<FacilioField> allFields = modBean.getAllFields(moduleName);
 			for(FacilioField field: allFields) {
 				String name = field.getName();
+				if (name.equals("site")) { // Temp...needs to have common name for site field in fields and forms
+					name = "siteId";
+					field = field.clone();
+					field.setName(name);
+				}
 				if (additionalFields.contains(name) && !fieldNames.contains(name)) {
 					fields.add(FormsAPI.getFormFieldFromFacilioField(field, ++count));
 				}
