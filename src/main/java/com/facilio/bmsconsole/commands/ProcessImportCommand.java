@@ -681,18 +681,18 @@ public class ProcessImportCommand extends FacilioCommand {
 				HashMap<String, String> fieldMapping = importProcessContext.getFieldMapping();
 				Map<String, Object> lookupFieldMap = new HashMap<String, Object>();
 				for(FacilioField field : lookupModuleFields) {
-					if(fieldMapping.containsKey(key)) {
+					if(fieldMapping.containsKey(field.getModule().getName() + "__" + field.getName())) {
 						if(field.getDataType() == FieldType.LOOKUP.getTypeAsInt()) {
 							// special handling for tool and items. Their types have a second lookup
 							if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.PURCHASED_ITEM)
 									|| importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.PURCHASED_TOOL)) {
 								Map<String, Object> secondLookup = new HashMap<String, Object>();
-								secondLookup.put("name", colVal.get(key));
+								secondLookup.put("name", colVal.get(field.getModule().getName() + "__" + field.getName()));
 								lookupFieldMap.put(field.getName(), secondLookup);
 							}
 						}
 						else {
-							lookupFieldMap.put(field.getName(), colVal.get(fieldMapping.get(key)));
+							lookupFieldMap.put(field.getName(), colVal.get(fieldMapping.get(field.getModule().getName() + "__" + field.getName())));
 						}
 
 					}
