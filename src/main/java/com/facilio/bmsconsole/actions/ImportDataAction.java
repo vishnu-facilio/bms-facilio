@@ -17,7 +17,6 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.fields.FacilioField;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.tasker.FacilioTimer;
@@ -243,7 +242,6 @@ public class ImportDataAction extends FacilioAction {
 	}
 	
 	public String fetchDataForValidation() throws Exception{
-		List<FacilioField> fields = FieldFactory.getImportProcessLogFields();
 		String errorConditions = ImportProcessContext.ImportLogErrorStatus.UNRESOLVED.getStringValue() + "," + ImportProcessContext.ImportLogErrorStatus.FOUND_IN_DB.getStringValue();
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getImportProcessLogFields())
@@ -252,13 +250,12 @@ public class ImportDataAction extends FacilioAction {
 				.andCondition(CriteriaAPI.getCondition("ERROR_RESOLVED", "error_resolved", errorConditions, NumberOperators.EQUALS));
 		
 		records = selectRecordBuilder.get();
-		if(importProcessContext.importMode == ImportProcessContext.ImportMode.NORMAL.getValue()) {
-			if(importProcessContext.getModule().getParentModule().getName().equals("resource") 
-				|| importProcessContext.getModule().getParentModule().getName().equals("asset") 
-					) {
+		if (importProcessContext.importMode == ImportProcessContext.ImportMode.NORMAL.getValue()) {
+			if (importProcessContext.getModule().getParentModule() != null && (importProcessContext.getModule().getParentModule().getName().equals("resource")
+					|| importProcessContext.getModule().getParentModule().getName().equals("asset"))
+			) {
 				unvalidatedRecords = ImportAPI.setAssetName(importProcessContext, importProcessContext.getModule().getParentModule(), FieldUtil.getAsBeanListFromMapList(records, ImportProcessLogContext.class));
-			}
-			else {
+			} else {
 				unvalidatedRecords = ImportAPI.setAssetName(importProcessContext, importProcessContext.getModule(), FieldUtil.getAsBeanListFromMapList(records, ImportProcessLogContext.class));
 			}
 		}

@@ -664,11 +664,8 @@ public class ColumnFactory {
 	
 	private static List<ViewField> getDefaultPurchaseRequestColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
-		
-//		columns.add(new ViewField("localId", "Purchase Request Id"));
-		columns.add(new ViewField("name", "Purchase Request Name"));
-	//	columns.add(new ViewField("description", "Description"));
-//		columns.add(new ViewField("vendor", "Vendor"));
+
+		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("requestedTime", "Requested Date"));
 		columns.add(new ViewField("requiredTime", "Required Date"));
 		columns.add(new ViewField("moduleState", "Status"));
@@ -679,10 +676,8 @@ public class ColumnFactory {
 	
 	private static List<ViewField> getDefaultPurchaseOrderColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
-		
-		columns.add(new ViewField("localId", "Purchase Order Id"));
-//		columns.add(new ViewField("name", "Purchase Order Name"));
-//		columns.add(new ViewField("description", "Description"));
+
+		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("vendor", "Vendor"));
 		columns.add(new ViewField("storeRoom", "Storeroom"));
 		columns.add(new ViewField("orderedTime", "Ordered Date"));
