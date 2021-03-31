@@ -55,20 +55,18 @@ public class ReadingUnitConversionToDisplayUnit extends FacilioCommand {
 										if(readingDataMeta==null) {
 											//LOGGER.info("Reading data meta is null for parent: "+reading.getParentId()+" for field: "+field);
 										}
-										
+										Object convertedValue = null;
 										if(field instanceof NumberField) {
 											NumberField numberField = (NumberField) field;
-											Object value = UnitsUtil.convertToDisplayUnit(readingData.get(fieldName), numberField);
-											readingData.put(fieldName, value);
+											convertedValue = UnitsUtil.convertToDisplayUnit(readingData.get(fieldName), numberField);
+											readingData.put(fieldName, convertedValue);
 										}
 										
 										if(currentReadingMap != null && MapUtils.isNotEmpty(currentReadingMap)) {
 											ReadingDataMeta currentReadingDataMeta = currentReadingMap.get(ReadingsAPI.getRDMKey(reading.getParentId(), field));
 											if(currentReadingDataMeta!= null && currentReadingDataMeta.getValue() != null && currentReadingDataMeta.getField() != null && currentReadingDataMeta.getField() instanceof NumberField && !currentReadingDataMeta.getValue().equals("-1.0")) {
-												NumberField numberField = (NumberField) currentReadingDataMeta.getField();
-												Object value = UnitsUtil.convertToDisplayUnit(readingData.get(fieldName), numberField);	
-												if(value != null) {
-													currentReadingDataMeta.setValue(value);
+												if(convertedValue != null) {
+													currentReadingDataMeta.setValue(convertedValue);
 												}				
 											}
 										}
