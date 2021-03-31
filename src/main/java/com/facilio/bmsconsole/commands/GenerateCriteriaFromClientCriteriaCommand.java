@@ -57,6 +57,7 @@ public class GenerateCriteriaFromClientCriteriaCommand extends FacilioCommand {
 					clientFilterCriteria = new Criteria();
 				}
 				clientFilterCriteria.andCriteria(nonRevisedCriteria);
+				context.put(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA, clientFilterCriteria);
 		}
 		
 		return false;
