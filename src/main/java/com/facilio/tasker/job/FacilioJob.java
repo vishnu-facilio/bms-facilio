@@ -1,6 +1,7 @@
 package com.facilio.tasker.job;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.jobs.JobLogger;
 import com.facilio.chain.FacilioChain;
@@ -40,7 +41,9 @@ public abstract class FacilioJob implements Runnable {
 				executor.jobEnd(jc.getJobKey());
 				return;
 			}
-			FacilioService.runAsServiceWihReturn(FacilioConstants.Services.TEMP_JOBS,() -> JobStore.updateStartExecution_temp(jc.getOrgId(),jc.getJobId(),jc.getJobName(),jc.getJobStartTime(),jc.getJobExecutionCount()));
+			if(!FacilioProperties.isProduction() && !FacilioProperties.isOnpremise()){
+				FacilioService.runAsServiceWihReturn(FacilioConstants.Services.TEMP_JOBS,() -> JobStore.updateStartExecution_temp(jc.getOrgId(),jc.getJobId(),jc.getJobName(),jc.getJobStartTime(),jc.getJobExecutionCount()));
+			}
 			AccountUtil.cleanCurrentAccount();
 			long startTime = 0L;
 			Thread currentThread = Thread.currentThread();
@@ -90,7 +93,9 @@ public abstract class FacilioJob implements Runnable {
 				JobLogger.log(jc, timeTaken, status);
 				if (status == 1) {
 					FacilioService.runAsService(FacilioConstants.Services.JOB_SERVICE, ()->updateNextExecutionTime());
-					FacilioService.runAsService(FacilioConstants.Services.TEMP_JOBS, ()->updateNextExecutionTime());
+					if(!FacilioProperties.isProduction() && !FacilioProperties.isOnpremise()){
+						FacilioService.runAsService(FacilioConstants.Services.TEMP_JOBS, ()->updateNextExecutionTime());
+					}
 				}
 				LOGGER.debug("Job completed " + jc.getJobId() + "-" + jc.getJobName() + " time taken : " + timeTaken);
 				AccountUtil.cleanCurrentAccount();
