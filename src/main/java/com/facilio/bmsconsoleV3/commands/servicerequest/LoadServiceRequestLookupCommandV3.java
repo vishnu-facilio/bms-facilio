@@ -38,6 +38,9 @@ public class LoadServiceRequestLookupCommandV3 extends FacilioCommand {
 		additionaLookups.add((LookupField) fieldsAsMap.get("assignmentGroup"));
 		additionaLookups.add((LookupField) fieldsAsMap.get("assignedTo"));
 		additionaLookups.add(moduleStateField);
+		LookupField sysCreatedBy = (LookupField) FieldFactory.getSystemField("sysCreatedBy", modBean.getModule(FacilioConstants.ContextNames.SERVICE_REQUEST));
+		additionaLookups.add(sysCreatedBy);
+
 		context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, additionaLookups);
 		return false;
 	}
