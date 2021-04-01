@@ -109,7 +109,6 @@ public class DeleteCommand extends FacilioCommand {
                 if (CollectionUtils.isNotEmpty(relatedLookupFields)) {
                 List<FacilioField> fields = new ArrayList<>();
                 fields.add(FieldFactory.getIdField(childModule));
-                fields.add(modBean.getPrimaryField(childModule.getName()));
                 for (FacilioField f : relatedLookupFields) {
                     SelectRecordsBuilder builder = new SelectRecordsBuilder()
                             .module(childModule)
