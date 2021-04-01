@@ -11,11 +11,13 @@ import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -47,24 +49,26 @@ public class ExecuteNoteWorkflowCommand extends FacilioCommand implements Serial
 		long parentId = note.getParentId();
 		if(parentId != -1 && eventType != null && (eventType == EventType.ADD_TICKET_NOTE || eventType == EventType.ADD_NOTE_REQUESTER)) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-//			long moduleId = modBean.getModule(FacilioConstants.ContextNames.TICKET).getModuleId();
 			FacilioModule module = modBean.getModule(ticketModule);
 			List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(module, Collections.singletonList(eventType), null);
-			if(workflowRules != null && workflowRules.size() > 0) {
-				WorkflowRuleContext workflowRule = workflowRules.get(0);
-				TicketContext ticket = TicketAPI.getParentTicket(note.getParentId(), ticketModule);
-				if(ticket != null) {
-					long workflowRuleId = workflowRule.getId();
-					List<ActionContext> actions = ActionAPI.getActiveActionsFromWorkflowRule(workflowRuleId);
-					if(actions != null) {
-						Map<String, Object> placeHolders = new HashMap<>();
-						CommonCommandUtil.appendModuleNameInKey(ticketModule, FacilioConstants.ContextNames.WORK_ORDER, FieldUtil.getAsProperties(ticket), placeHolders);
-						CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeHolders);
-						CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeHolders);
-						CommonCommandUtil.appendModuleNameInKey(null, "comment", FieldUtil.getAsProperties(note), placeHolders);
-						for(ActionContext action : actions)
-						{
-							action.executeAction(placeHolders, context, workflowRule, ticket);
+			if (CollectionUtils.isNotEmpty(workflowRules)) {
+				for (WorkflowRuleContext workflowRule : workflowRules) {
+					TicketContext ticket = TicketAPI.getParentTicket(note.getParentId(), ticketModule);
+					if (ticket != null) {
+						long workflowRuleId = workflowRule.getId();
+						List<ActionContext> actions = ActionAPI.getActiveActionsFromWorkflowRule(workflowRuleId);
+						if (actions != null) {
+							Map<String, Object> placeHolders = new HashMap<>();
+							CommonCommandUtil.appendModuleNameInKey(ticketModule, FacilioConstants.ContextNames.WORK_ORDER, FieldUtil.getAsProperties(ticket), placeHolders);
+							CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeHolders);
+							CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeHolders);
+							CommonCommandUtil.appendModuleNameInKey(null, "comment", FieldUtil.getAsProperties(note), placeHolders);
+							boolean evaluateWorkflow = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(workflowRule, ticketModule, ticket, null, placeHolders, (FacilioContext) context, false);
+							if (evaluateWorkflow) {
+								for (ActionContext action : actions) {
+									action.executeAction(placeHolders, context, workflowRule, ticket);
+								}
+							}
 						}
 					}
 				}
