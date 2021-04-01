@@ -49,7 +49,7 @@ public class ExecuteReadingRuleCommand extends ExecuteAllWorkflowsCommand {
     		return;
     	}
     	
-    	if(FacilioProperties.isProduction() || true) { 
+    	if(FacilioProperties.isProduction()) { 
     		Map<String, String> orgInfoMap = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.EXECUTE_READING_RULE_THROUGH_AUTOMATED_HISTORY);
         	if (orgInfoMap != null && MapUtils.isNotEmpty(orgInfoMap)) {
         		String executeReadingRuleThroughAutomatedHistoryProp = orgInfoMap.get(FacilioConstants.OrgInfoKeys.EXECUTE_READING_RULE_THROUGH_AUTOMATED_HISTORY);
