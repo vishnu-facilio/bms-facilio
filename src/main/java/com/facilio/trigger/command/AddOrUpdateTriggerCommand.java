@@ -61,6 +61,10 @@ public class AddOrUpdateTriggerCommand extends FacilioCommand {
 			trigger.setInternal(false);
 		}
 
+		if (trigger.getIsDefault() == null) {
+			trigger.setIsDefault(false);
+		}
+
 		FacilioModule triggerModule = getTriggerModule(trigger.getTypeEnum());
 		List<FacilioModule> moduleOrder = new ArrayList<>();
 		while (triggerModule != null) {

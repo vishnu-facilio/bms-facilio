@@ -374,8 +374,8 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new GetRecordIdsFromRecordMapCommandV3());
         c.addCommand(new FetchOldWorkordersCommandV3());
-        c.addCommand(new ChangeApprovalStatusForModuleDataCommand());
-        c.addCommand(new VerifyApprovalCommandV3());
+//        c.addCommand(new ChangeApprovalStatusForModuleDataCommand());
+//        c.addCommand(new VerifyApprovalCommandV3());
         c.addCommand(new UpdateEventListForStateFlowCommandV3());
         c.addCommand(new UpdateWorkorderFieldsForUpdateCommandV3());
         c.addCommand(new BackwardCompatibleStateFlowUpdateCommandV3());
