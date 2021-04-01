@@ -74,7 +74,7 @@ public class Executor implements Runnable {
 			
 			LOGGER.debug(name+"::"+startTime+"::"+endTime);
 			List<JobContext> jobs;
-			if(!FacilioProperties.isProduction()) {
+			if(!FacilioProperties.isProduction() && !FacilioProperties.isDevelopment()) {
 				jobs = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.TEMP_JOBS,()->JobStore.getJobs(name, startTime, endTime, getMaxRetry(), includedOrgs, excludedOrgs));
 				jobs.addAll(FacilioService.runAsServiceWihReturn(FacilioConstants.Services.TEMP_JOBS,()->JobStore.getIncompletedJobs(name, startTime, endTime, getMaxRetry(), includedOrgs, excludedOrgs)));
 			} else {
