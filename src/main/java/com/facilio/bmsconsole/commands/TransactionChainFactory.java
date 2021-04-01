@@ -3474,7 +3474,7 @@ public class TransactionChainFactory {
 				c.addCommand(new ForkChainToInstantJobCommand()
 						.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ALARM_NOTIFICATION_RULE, RuleType.MODULE_RULE_NOTIFICATION))
 				);		
-			} else if (isHistorical && AccountUtil.getCurrentOrg().getId() == 339l) {
+			} else if (isHistorical && (AccountUtil.getCurrentOrg().getId() == 339l || AccountUtil.getCurrentOrg().getOrgId() == 405)) {
 				c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.MODULE_RULE));
 			}
 			c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.ALARM_ACTIVITY));

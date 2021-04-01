@@ -2355,6 +2355,7 @@ public class FacilioConstants {
 		public static final String IS_PARALLEL_RULE_EXECUTION= "isParallelRuleExecution";
 		public static final String IS_READING_RULE_WORKFLOW_EXECUTION= "isReadingRuleWorkflowExecution";
 		public static final String EXECUTE_READING_RULE_COMMAND= "executeReadingRuleCommand";
+		public static final String EXECUTE_READING_RULE_THROUGH_AUTOMATED_HISTORY= "executeReadingRuleThroughAutomatedHistory";
 		public static final String FORK_READING_POST_PROCESSING = "forkReadingPostProcessing";
 		public static final String IS_PARALLEL_FORMULA_EXECUTION= "isParallelFormulaExecution";
 		public static final String CALCULATE_VM_THROUGH_FORMULA = "calculateVmThroughFormula";

@@ -75,7 +75,7 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 				postRules = new HashMap<>();
 				this.context = context;
 				fetchAndExecuteRules((FacilioContext) context, false);
-				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339 && recordMap.values() != null) {
+				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 405 && recordMap.values() != null) {
 					LOGGER.info("Time taken to Execute complete workflows for modules: " + recordMap.keySet().size() + " with moduleRecords : " + recordMap.values().size() + " is " + (System.currentTimeMillis() - startTime) + " : " + getPrintDebug());
 				}
 			}

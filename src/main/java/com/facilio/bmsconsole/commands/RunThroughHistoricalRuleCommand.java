@@ -50,7 +50,7 @@ public class RunThroughHistoricalRuleCommand extends FacilioCommand  implements 
 	public boolean executeCommand(Context context) throws Exception {
 		
 		long maximumDailyEventRuleJobsPerOrg = 10000l; 
-		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339) {
+		if (AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getOrgId() == 339 || AccountUtil.getCurrentOrg().getOrgId() == 405)) {
 			maximumDailyEventRuleJobsPerOrg = 40000l;
 		}
 
@@ -106,7 +106,7 @@ public class RunThroughHistoricalRuleCommand extends FacilioCommand  implements 
 		DateRange firstInterval = intervals.get(0);
 		DateRange lastInterval = intervals.get(intervals.size()-1);
 		
-		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() != 339) {
+		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() != 339 && AccountUtil.getCurrentOrg().getOrgId() != 405) {
 			long activeCurrentRuleResourceLogs = WorkflowRuleResourceLoggerAPI.getActiveWorkflowRuleResourceLogsByRuleAndResourceId(primaryId, secondaryIds, ruleJobType);
 			if(activeCurrentRuleResourceLogs > 0)
 			{

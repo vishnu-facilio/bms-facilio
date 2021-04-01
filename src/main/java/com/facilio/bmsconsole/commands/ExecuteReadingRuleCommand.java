@@ -48,6 +48,17 @@ public class ExecuteReadingRuleCommand extends ExecuteAllWorkflowsCommand {
     	if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339) {
     		return;
     	}
+    	
+    	if(FacilioProperties.isProduction() || true) { 
+    		Map<String, String> orgInfoMap = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.EXECUTE_READING_RULE_THROUGH_AUTOMATED_HISTORY);
+        	if (orgInfoMap != null && MapUtils.isNotEmpty(orgInfoMap)) {
+        		String executeReadingRuleThroughAutomatedHistoryProp = orgInfoMap.get(FacilioConstants.OrgInfoKeys.EXECUTE_READING_RULE_THROUGH_AUTOMATED_HISTORY);
+				if (executeReadingRuleThroughAutomatedHistoryProp != null && !executeReadingRuleThroughAutomatedHistoryProp.isEmpty() && StringUtils.isNotEmpty(executeReadingRuleThroughAutomatedHistoryProp) && Boolean.valueOf(executeReadingRuleThroughAutomatedHistoryProp)) {
+	        		return;
+				}
+        	}
+    	}  	
+    	
 		ParallelRuleExecutionProp isParallelRuleExecutionEnum = null; 
 		Boolean parallelRuleExecutionProp = (Boolean) context.get(FacilioConstants.ContextNames.IS_PARALLEL_RULE_EXECUTION);
 		parallelRuleExecutionProp = parallelRuleExecutionProp != null ? parallelRuleExecutionProp : Boolean.TRUE;
