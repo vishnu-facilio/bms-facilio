@@ -1075,7 +1075,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		parentField.setDataType(FieldType.LOOKUP);
 		parentField.setName(MultiEnumField.PARENT_FIELD_NAME);
 		parentField.setDisplayName(field.getModule().getDisplayName());
-		parentField.setColumnName(StringUtils.upperCase(MultiEnumField.PARENT_FIELD_NAME)+"_ID");
+		parentField.setColumnName(field.parentColumnName());
 		parentField.setModule(module);
 		parentField.setLookupModule(field.getModule());
 		addField(parentField);
@@ -1084,7 +1084,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		valueField.setDataType(FieldType.ENUM);
 		valueField.setName(MultiEnumField.VALUE_FIELD_NAME);
 		valueField.setDisplayName(field.getDisplayName());
-		valueField.setColumnName(StringUtils.upperCase(MultiEnumField.VALUE_FIELD_NAME+"_ID"));
+		valueField.setColumnName(field.valueColumnName());
 		valueField.setModule(module);
 		valueField.setEnumProps(field);
 		addField(valueField);
@@ -1122,7 +1122,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		parentField.setDataType(FieldType.LOOKUP);
 		parentField.setName(field.parentFieldName());
 		parentField.setDisplayName(field.getModule().getDisplayName());
-		parentField.setColumnName(StringUtils.upperCase(field.parentFieldName())+"_ID");
+		parentField.setColumnName(field.parentColumnName());
 		parentField.setModule(module);
 		parentField.setLookupModule(field.getModule());
 		addField(parentField);
@@ -1131,7 +1131,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		childField.setDataType(FieldType.LOOKUP);
 		childField.setName(field.childFieldName());
 		childField.setDisplayName(field.getLookupModule().getDisplayName());
-		childField.setColumnName(StringUtils.upperCase(field.childFieldName())+"_ID");
+		childField.setColumnName(field.childColumnName());
 		childField.setModule(module);
 		childField.setLookupProps(field);
 		addField(childField);

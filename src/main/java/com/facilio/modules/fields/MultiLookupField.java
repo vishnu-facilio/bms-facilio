@@ -1,11 +1,13 @@
 package com.facilio.modules.fields;
 
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
-
-import java.util.Map;
 
 public class MultiLookupField extends BaseLookupField implements SupplementRecord {
     private long relModuleId = -1;
@@ -64,6 +66,10 @@ public class MultiLookupField extends BaseLookupField implements SupplementRecor
         }
         return null;
     }
+    
+    public String parentColumnName() {
+		return StringUtils.upperCase(parentFieldName())+"_ID";
+    }
 
     public String childFieldName() {
         if (parentFieldPosition != null) {
@@ -75,6 +81,10 @@ public class MultiLookupField extends BaseLookupField implements SupplementRecor
             }
         }
         return null;
+    }
+    
+    public String childColumnName() {
+    		return StringUtils.upperCase(childFieldName())+"_ID";
     }
 
 

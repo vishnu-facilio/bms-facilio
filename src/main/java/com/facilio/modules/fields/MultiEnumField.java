@@ -3,6 +3,7 @@ package com.facilio.modules.fields;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.modules.FacilioModule;
 
@@ -86,5 +87,13 @@ public class MultiEnumField extends BaseEnumField implements SupplementRecord {
 				return builder.toString();
     		}
     		return null;
+    }
+    
+    public String parentColumnName() {
+    		return StringUtils.upperCase(PARENT_FIELD_NAME)+"_ID";
+    }
+    
+    public String valueColumnName() {
+		return StringUtils.upperCase(MultiEnumField.VALUE_FIELD_NAME+"_ID");
     }
 }

@@ -78,14 +78,12 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
     }
 
     private FilterFieldContext createFilterField(FacilioModule module, FacilioField field) throws Exception { // We can do special handling here also maybe
-        if (field.getDataTypeEnum().isMultiRecord()) {
-            return null;
-        }
 
         switch (field.getDataTypeEnum()) {
             case FILE:
             case ID:
             case MISC:
+            case LINE_ITEM:
                 return null;
         }
 

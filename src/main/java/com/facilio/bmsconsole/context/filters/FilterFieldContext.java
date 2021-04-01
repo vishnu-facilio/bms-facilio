@@ -37,8 +37,8 @@ public class FilterFieldContext {
         this.field = field;
         this.lookupFilters = lookupFilters;
 
-        if (field instanceof EnumField) {
-            List<EnumFieldValue> values = ((EnumField) field).getValues();
+        if (field instanceof BaseEnumField) {
+            List<EnumFieldValue> values = ((BaseEnumField) field).getValues();
             if (CollectionUtils.isNotEmpty(values)) {
                 options = new ArrayList<>();
                 for (EnumFieldValue value : values) {
@@ -61,12 +61,12 @@ public class FilterFieldContext {
             }
             options.add(new FieldOption<>("false", falseVal));
         }
-        else if (field instanceof LookupField) {
-            FacilioModule lookup = ((LookupField) field).getLookupModule();
+        else if (field instanceof BaseLookupField) {
+            FacilioModule lookup = ((BaseLookupField) field).getLookupModule();
             lookupModule = new FilterFieldLookupModule(
                     lookup.getName(),
                     lookup.getDisplayName(),
-                    showLookupPopup != null ? showLookupPopup : lookup.getTypeEnum() != FacilioModule.ModuleType.PICK_LIST && StringUtils.isEmpty(((LookupField) field).getSpecialType()),
+                    showLookupPopup != null ? showLookupPopup : lookup.getTypeEnum() != FacilioModule.ModuleType.PICK_LIST && StringUtils.isEmpty(((BaseLookupField) field).getSpecialType()),
                     lookupFilters);
         }
     }
