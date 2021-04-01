@@ -1,5 +1,6 @@
 version: 1.0
 services:
+# Stage service config.
   - serviceName: iam
     instanceName: default
     dbName: default
@@ -12,9 +13,9 @@ services:
     instanceName: default
     dbName: default
 
-#  - serviceName: tempjobs
-#    instanceName: default
-#    dbName: bms_jobs
+  - serviceName: tempjobs
+    instanceName: default
+    dbName: bms_jobs
 
   - serviceName: instantJob
     instanceName: default
