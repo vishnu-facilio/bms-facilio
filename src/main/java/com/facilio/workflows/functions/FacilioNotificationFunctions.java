@@ -62,7 +62,7 @@ public enum FacilioNotificationFunctions implements FacilioWorkflowFunctionInter
 			context.put(FacilioConstants.ContextNames.NOTIFICATION_TYPE, ActionType.SMS_NOTIFICATION);
 			context.put(FacilioConstants.ContextNames.NOTIFICATION_OBJECT, WorkflowV2Util.getAsJSONObject(sendMailMap));
 			
-			FacilioTimer.scheduleInstantJob("facilio","SendNotificationJob", context);
+			FacilioTimer.scheduleInstantJob("default","SendNotificationJob", context);
 			return null;
 		};
 		
@@ -89,7 +89,7 @@ public enum FacilioNotificationFunctions implements FacilioWorkflowFunctionInter
 			context.put(FacilioConstants.ContextNames.NOTIFICATION_TYPE, ActionType.PUSH_NOTIFICATION);
 			context.put(FacilioConstants.ContextNames.NOTIFICATION_OBJECT, WorkflowV2Util.getAsJSONObject(sendMailMap));
 			
-			FacilioTimer.scheduleInstantJob("facilio","SendNotificationJob", context);
+			FacilioTimer.scheduleInstantJob("default","SendNotificationJob", context);
 			
 			return null;
 		};
@@ -117,7 +117,7 @@ public enum FacilioNotificationFunctions implements FacilioWorkflowFunctionInter
 			context.put(FacilioConstants.ContextNames.NOTIFICATION_TYPE, ActionType.MAKE_CALL);
 			context.put(FacilioConstants.ContextNames.NOTIFICATION_OBJECT, WorkflowV2Util.getAsJSONObject(callMap));
 			
-			FacilioTimer.scheduleInstantJob("facilio","SendNotificationJob", context);
+			FacilioTimer.scheduleInstantJob("default","SendNotificationJob", context);
 			
 			return null;
 		};
