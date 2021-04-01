@@ -133,7 +133,7 @@ public class ImportAPI {
 	public static List<ImportProcessLogContext> setAssetName(ImportProcessContext importProcessContext, FacilioModule module, List<ImportProcessLogContext> logContexts) throws Exception{
 		String nameField = importProcessContext.getFieldMapping().get(module.getName()+ "__name");
 		for(ImportProcessLogContext logContext: logContexts) {
-			String name= (String) logContext.getRowContexts().get(0).getColVal().get(nameField);
+			String name= logContext.getRowContexts().get(0).getColVal().get(nameField).toString();
 			logContext.setAssetName(name);
 		}
 		return logContexts;

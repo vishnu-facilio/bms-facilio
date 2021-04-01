@@ -25,7 +25,10 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Logger;
 
 public class GenericParseDataForImportCommand extends FacilioCommand {
@@ -65,6 +68,7 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 		int row_no = 0;
 		ArrayList<String> missingColumns = new ArrayList<String>();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		// For Asset, Workorder and Inventory Modules we are not checking based on this requiredFields.
 		ArrayList<String> requiredFields = getRequiredFields(moduleName);
 
 		FacilioModule module = modBean.getModule(moduleName);
@@ -122,7 +126,6 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 					StringBuilder uniqueString = new StringBuilder();
 					ImportRowContext rowContext = new ImportRowContext();
 					row_no++;
-					LOGGER.info("row_no -- " + row_no);
 					Row row = rowItr.next();
 
 					if (row.getPhysicalNumberOfCells() <= 0) {
@@ -196,6 +199,7 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 							throw new ImportMandatoryFieldsException(row_no, columns, new Exception());
 						}
 						else {
+							// For Asset Name is unique
 							uniqueString.append(colVal.get(name));
 						}
 					}
@@ -207,8 +211,7 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 						}
 						if (CollectionUtils.isNotEmpty(columns)) {
 							throw new ImportMandatoryFieldsException(row_no, columns, new Exception());
-						}
-						else {
+						}  else {
 							uniqueString = getUniqueString(groupedContext, uniqueString);
 						}
 					} else if (ImportAPI.isInsertImport(importProcessContext) && moduleName.equals(FacilioConstants.ContextNames.PURCHASED_ITEM)) {
@@ -233,30 +236,10 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 						} else {
 							uniqueString = getUniqueString(groupedContext, uniqueString);
 						}
+					} else {
+						uniqueString = getUniqueString(groupedContext, uniqueString);
 					}
-					else if(requiredFields.size() != 0) {
-						for(String field : requiredFields) {
-							if(ImportAPI.isInsertImport(importProcessContext) && colVal.get(fieldMapping.get(moduleName + "__" + field)) == null) {
-								throw new ImportFieldValueMissingException(row_no, fieldMapping.get(moduleName + "__" + field), new Exception());
-							}
-							else {
-								if(requiredFields.indexOf(field) != requiredFields.size() - 1) {
-									uniqueString.append(colVal.get(fieldMapping.get(moduleName + "__" + field)));
-									uniqueString.append("__");
-								}
-								else {
-									uniqueString.append(colVal.get(fieldMapping.get(moduleName + "__" + field)));
-								}
-								
-							}
-						}
-					}
-					else {
-						if(requiredFields.size() == 0) {
-							uniqueString = getUniqueString(groupedContext, uniqueString);
-						}
-					}
-						
+
 					if(importProcessContext.getImportSetting() != ImportProcessContext.ImportSetting.INSERT.getValue()) {
 						String settingArrayName = getSettingString(importProcessContext);
 						ArrayList<String> fieldList = new ArrayList<String>();
