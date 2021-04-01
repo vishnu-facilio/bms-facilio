@@ -17,7 +17,6 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "pre_production" ]; then
     cp $FACILIO_HOME/setenv.sh $APP_HOME/bin/setenv.sh
     cp $FACILIO_HOME/deployment-files/awsprops-stage.properties $CONF_DIR/awsprops.properties
     cp $FACILIO_HOME/deployment-files/log4j-stage.properties $CLASSES_DIR/log4j.properties
-    cp $FACILIO_HOME/deployment-files/service-stage.yml $CONF_DIR/service.yml
     echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
 fi
 
@@ -29,7 +28,6 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "production_deployment" ]; then
     cp $FACILIO_HOME/deployment-files/executors-production.xml $CONF_DIR/executors.xml
     cp $FACILIO_HOME/deployment-files/instantjobexecutors-production.yml $CONF_DIR/instantjobexecutors.yml
     cp $FACILIO-HOME/deployment-files/agentIntegration-production.properties $CONF_DIR/agentIntegration.properties
-    cp $FACILIO_HOME/deployment-files/service-prod.yml $CONF_DIR/service.yml
     echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
 fi
 
@@ -39,7 +37,6 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "production-scheduler" ]; then
     cp $FACILIO_HOME/deployment-files/awsprops-scheduler.properties $CONF_DIR/awsprops.properties
     cp $FACILIO_HOME/deployment-files/executors-production.xml $CONF_DIR/executors.xml
     cp $FACILIO_HOME/deployment-files/instantjobexecutors-production.yml $CONF_DIR/instantjobexecutors.yml
-    cp $FACILIO_HOME/deployment-files/service-prod.yml $CONF_DIR/service.yml
     cp $FACILIO_HOME/setenv.sh $APP_HOME/bin/setenv.sh
     echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
 fi
@@ -50,7 +47,6 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "production-scheduler-app" ]; then
     cp $FACILIO_HOME/deployment-files/awsprops-scheduler-app.properties $CONF_DIR/awsprops.properties
     cp $FACILIO_HOME/deployment-files/executors-org.xml $CONF_DIR/executors.xml
     cp $FACILIO_HOME/deployment-files/instantjobexecutors-org.yml $CONF_DIR/instantjobexecutors.yml
-    cp $FACILIO_HOME/deployment-files/service-prod.yml $CONF_DIR/service.yml
     cp $FACILIO_HOME/setenv.sh $APP_HOME/bin/setenv.sh
     echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
 fi
@@ -76,7 +72,6 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "production-kinesis" ]; then
     echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
     cp $FACILIO_HOME/deployment-files/log4j-kinesis.properties $CLASSES_DIR/log4j.properties
     cp $FACILIO_HOME/deployment-files/awsprops-kinesis.properties $CONF_DIR/awsprops.properties
-    cp $FACILIO_HOME/deployment-files/service-prod.yml $CONF_DIR/service.yml
     cp $FACILIO_HOME/setenv.sh $APP_HOME/bin/setenv.sh
     echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
 fi
@@ -86,7 +81,6 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "demo-user" ]; then
     cp $FACILIO_HOME/deployment-files/log4j-user.properties $CLASSES_DIR/log4j.properties
     cp $FACILIO_HOME/setenv.sh $APP_HOME/bin/setenv.sh
     cp $FACILIO_HOME/deployment-files/awsprops-demo.properties $CONF_DIR/awsprops.properties
-    cp $FACILIO_HOME/deployment-files/service-prod.yml $CONF_DIR/service.yml
     cp $FACILIO-HOME/deployment-files/agentIntegration-production.properties $CONF_DIR/agentIntegration.properties
     echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
 fi
