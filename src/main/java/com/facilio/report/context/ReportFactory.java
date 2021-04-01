@@ -107,7 +107,7 @@ public class ReportFactory {
 			reportFields.add(overdueClosedField);
 			
 			ReportFacilioField responseSlaField = (ReportFacilioField) getField(WorkOrder.RESPONSE_SLA_COL, "Response SLA", ModuleFactory.getWorkOrdersModule(), " CASE WHEN Tickets.SCHEDULED_START IS NOT NULL AND Tickets.ACTUAL_WORK_START IS NOT NULL THEN CASE WHEN Tickets.ACTUAL_WORK_START > Tickets.SCHEDULED_START THEN 'Delayed' ELSE 'Ontime' END END ", FieldType.STRING, WorkOrder.RESPONSE_SLA);
-			responseSlaField.addGenericCondition("Overdue", CriteriaAPI.getCondition("ACTUAL_WORK_START", "actualWorkStart", "scheduledStart", FieldOperator.GREATER_THAN));
+			responseSlaField.addGenericCondition("Delayed", CriteriaAPI.getCondition("ACTUAL_WORK_START", "actualWorkStart", "scheduledStart", FieldOperator.GREATER_THAN));
 			responseSlaField.addGenericCondition("Ontime", CriteriaAPI.getCondition("ACTUAL_WORK_START", "actualWorkStart", "scheduledStart", FieldOperator.LESS_THAN_EQUAL));
 			reportFields.add(responseSlaField);
 			
