@@ -43,7 +43,7 @@ public class CustomModulePageFactory extends PageFactory {
 		addCommonSubModuleWidget(tab1Sec1, module, record);
 		
 		ApplicationContext app = AccountUtil.getCurrentApp();
-		if (app != null && app.getLinkName().equals(ApplicationLinkNames.FACILIO_MAIN_APP)) {
+		if (app != null && app.getLinkName().equals(ApplicationLinkNames.FACILIO_MAIN_APP) && module != null && "serviceRequest".equalsIgnoreCase(module.getName())) {
 			 Page.Tab tab3 = page.new Tab("Activity");
 		        page.addTab(tab3);
 		        Page.Section tab4Sec1 = page.new Section();
