@@ -865,9 +865,7 @@ public class ReportUtil {
 															.select(Collections.singletonList(moduleFieldMap.get("moduleId")))
 															.table(modulesmodule.getTableName())
 															.andCondition(CriteriaAPI.getCondition(moduleFieldMap.get("type"),String.valueOf(FacilioModule.ModuleType.BASE_ENTITY.getValue()), NumberOperators.EQUALS))
-															.andCondition(CriteriaAPI.getCondition(moduleFieldMap.get("custom"),String.valueOf(true), BooleanOperators.IS))
-															.andCondition(CriteriaAPI.getCondition(fieldMap.get("folderType"),
-																	String.valueOf(FolderType.PIVOT.getValue()), PickListOperators.ISN_T));
+															.andCondition(CriteriaAPI.getCondition(moduleFieldMap.get("custom"),String.valueOf(true), BooleanOperators.IS));
 		
 		List<Map<String, Object>> moduleprops = selectModules.get();
 		
@@ -885,8 +883,9 @@ public class ReportUtil {
 													.select(fields)
 													.table(reportFoldermodule.getTableName())
 //													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(reportFoldermodule))
-													.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), moduleIds,NumberOperators.EQUALS));
-													;
+													.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), moduleIds,NumberOperators.EQUALS))
+													.andCondition(CriteriaAPI.getCondition(fieldMap.get("folderType"),
+															String.valueOf(FolderType.PIVOT.getValue()), PickListOperators.ISN_T));
 		
 		if (searchText != null) {
 			select.andCondition(CriteriaAPI.getCondition(fieldMap.get("name"), searchText, StringOperators.CONTAINS));
