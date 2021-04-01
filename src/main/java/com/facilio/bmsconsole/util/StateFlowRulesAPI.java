@@ -386,6 +386,9 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioField field = modBean.getField("moduleState", moduleName);
+		if(field == null) {
+			return null;
+		}
 
 		List<UpdateChangeSet> changeSet = new ArrayList<>();
 		UpdateChangeSet updateChangeSet = new UpdateChangeSet();
