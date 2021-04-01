@@ -24,25 +24,26 @@ import java.util.Map;
 public abstract class EmailClient {
 
     private static final Logger LOGGER = LogManager.getLogger(EmailClient.class.getName());
-    protected static final String SENDER="sender";
-    protected static final String MESSAGE="message";
-    protected static final String SUBJECT="subject";
-    protected static final String CC="cc";
-    protected static final String BCC="bcc";
-    protected static final String MAIL_TYPE="mailType";
-    protected static final String CONTENT_TYPE_TEXT_HTML="text/html; charset=UTF-8";
-    private static final String CONTENT_TYPE_TEXT_PLAIN="text/plain; charset=UTF-8";
-    private static final String MIME_MULTIPART_SUBTYPE_ALTERNATIVE="alternative";
-    private static final String MIME_MULTIPART_SUBTYPE_MIXED="mixed";
-    private static final String CONTENT_TRANSFER_ENCODING="Content-Transfer-Encoding";
-    private static final String BASE_64 = "base64";
-    protected static final String HTML="html";
-    private static final String HOST = "host";
-    protected static final String TO = "to";
-    private static final String ERROR_MAIL_FROM="mlerror@facilio.com";
-    private static final String ERROR_MAIL_TO="ai@facilio.com";
-    private static final String ERROR_AT_FACILIO="error@facilio.com";
-    private static final String ERROR_AND_ALERT_AT_FACILIO="error+alert@facilio.com";
+    public static final String SENDER="sender";
+    public static final String MESSAGE="message";
+    public static final String SUBJECT="subject";
+    public static final String CC="cc";
+    public static final String BCC="bcc";
+    public static final String MAIL_TYPE="mailType";
+    public static final String CONTENT_TYPE_TEXT_HTML="text/html; charset=UTF-8";
+    public static final String CONTENT_TYPE_TEXT_PLAIN="text/plain; charset=UTF-8";
+    public static final String MIME_MULTIPART_SUBTYPE_ALTERNATIVE="alternative";
+    public static final String MIME_MULTIPART_SUBTYPE_MIXED="mixed";
+    public static final String HEADER="HEADER";
+    public static final String CONTENT_TRANSFER_ENCODING="Content-Transfer-Encoding";
+    public static final String BASE_64 = "base64";
+    public static final String HTML="html";
+    public static final String HOST = "host";
+    public static final String TO = "to";
+    public static final String ERROR_MAIL_FROM="mlerror@facilio.com";
+    public static final String ERROR_MAIL_TO="ai@facilio.com";
+    public static final String ERROR_AT_FACILIO="error@facilio.com";
+    public static final String ERROR_AND_ALERT_AT_FACILIO="error+alert@facilio.com";
 
     protected abstract Session getSession();
     public abstract void sendEmail(JSONObject mailJson) throws Exception;
@@ -107,22 +108,35 @@ public abstract class EmailClient {
         MimeMultipart messageContent = new MimeMultipart(MIME_MULTIPART_SUBTYPE_MIXED);
         messageContent.addBodyPart(wrap);
 
-        for (Map.Entry<String, String> file : files.entrySet()) {
-            String fileUrl = file.getValue();
-            if(fileUrl == null) {	// Temporary check for local filestore.
-                continue;
+        if(files != null) {
+        	for (Map.Entry<String, String> file : files.entrySet()) {
+                String fileUrl = file.getValue();
+                if(fileUrl == null) {	// Temporary check for local filestore.
+                    continue;
+                }
+                MimeBodyPart attachment = new MimeBodyPart();
+                DataSource fileDataSource = null;
+                if (FacilioProperties.isDevelopment()) {
+                    fileDataSource = new FileDataSource(fileUrl);
+                } else {
+                    URL url = new URL(fileUrl);
+                    fileDataSource = new URLDataSource(url);
+                }
+                attachment.setDataHandler(new DataHandler(fileDataSource));
+                attachment.setFileName(file.getKey());
+                messageContent.addBodyPart(attachment);
             }
-            MimeBodyPart attachment = new MimeBodyPart();
-            DataSource fileDataSource = null;
-            if (FacilioProperties.isDevelopment()) {
-                fileDataSource = new FileDataSource(fileUrl);
-            } else {
-                URL url = new URL(fileUrl);
-                fileDataSource = new URLDataSource(url);
-            }
-            attachment.setDataHandler(new DataHandler(fileDataSource));
-            attachment.setFileName(file.getKey());
-            messageContent.addBodyPart(attachment);
+        }
+        
+        if(mailJson.get(HEADER) != null) {
+        	JSONObject headerJSON = (JSONObject)mailJson.get(HEADER);
+        	
+        	for(Object headerNameObject : headerJSON.keySet()) {
+        		String headerName = (String) headerNameObject;
+        		String headerValue = (String) headerJSON.get(headerNameObject);
+        		
+        		message.setHeader(headerName, headerValue);
+        	}
         }
 
         message.setContent(messageContent);

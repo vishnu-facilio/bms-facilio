@@ -5,6 +5,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsoleV3.context.BaseMailMessageContext;
+import com.facilio.bmsconsoleV3.context.EmailConversationThreadingContext;
 import com.facilio.bmsconsoleV3.context.EmailToModuleDataContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioChain;
@@ -89,6 +90,60 @@ public class MailMessageUtil {
     				return emailToModuleData;
     			}
     		}
+    	}
+    	return null;
+    }
+    
+    public static EmailToModuleDataContext getEmailToModuleContext(Long recordId,Long moduleId) throws Exception {
+    	
+    	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+    	
+    	List<FacilioField> selectFields = new ArrayList<FacilioField>();
+    	
+    	selectFields.addAll(modBean.getAllFields(MailMessageUtil.EMAIL_TO_MODULE_DATA_MODULE_NAME));
+    	
+    	Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(selectFields);
+    	
+    	SelectRecordsBuilder<EmailToModuleDataContext> select = new SelectRecordsBuilder<EmailToModuleDataContext>()
+    			.select(selectFields)
+    			.beanClass(EmailToModuleDataContext.class)
+    			.moduleName(MailMessageUtil.EMAIL_TO_MODULE_DATA_MODULE_NAME)
+    			.andCondition(CriteriaAPI.getCondition(fieldMap.get("recordId"), ""+recordId, NumberOperators.EQUALS))
+    			.andCondition(CriteriaAPI.getCondition(fieldMap.get("dataModuleId"), ""+moduleId, NumberOperators.EQUALS))
+    			;
+    	
+    	List<EmailToModuleDataContext> emailToModuleDatas = select.get();
+    	
+    	if(emailToModuleDatas != null && !emailToModuleDatas.isEmpty()) {
+    		return emailToModuleDatas.get(0);
+    	}
+    	return null;
+    }
+    
+    public static EmailConversationThreadingContext getEmailConversationThreadingContext(Long recordId,Long moduleId) throws Exception {
+    	
+    	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+    	
+    	List<FacilioField> selectFields = new ArrayList<FacilioField>();
+    	
+    	selectFields.addAll(modBean.getAllFields(MailMessageUtil.EMAIL_CONVERSATION_THREADING_MODULE_NAME));
+    	
+    	Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(selectFields);
+    	
+    	SelectRecordsBuilder<EmailConversationThreadingContext> select = new SelectRecordsBuilder<EmailConversationThreadingContext>()
+    			.select(selectFields)
+    			.beanClass(EmailConversationThreadingContext.class)
+    			.moduleName(MailMessageUtil.EMAIL_CONVERSATION_THREADING_MODULE_NAME)
+    			.andCondition(CriteriaAPI.getCondition(fieldMap.get("recordId"), ""+recordId, NumberOperators.EQUALS))
+    			.andCondition(CriteriaAPI.getCondition(fieldMap.get("dataModuleId"), ""+moduleId, NumberOperators.EQUALS))
+    			.orderBy("ID Asc")
+    			.limit(1)
+    			;
+    	
+    	List<EmailConversationThreadingContext> emailConversationContexts = select.get();
+    	
+    	if(emailConversationContexts != null && !emailConversationContexts.isEmpty()) {
+    		return emailConversationContexts.get(0);
     	}
     	return null;
     }
