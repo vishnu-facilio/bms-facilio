@@ -59,6 +59,10 @@ files:
     destination: /home/facilio/deployment-files/
   - source: /instantjobexecutors-production.yml
     destination: /home/facilio/deployment-files/
+  - source: /service-stage.yml
+    destination: /home/facilio/deployment-files/
+  - source: /service-production.yml
+    destination: /home/facilio/deployment-files/
 
 permissions:
   - object: /home/facilio
