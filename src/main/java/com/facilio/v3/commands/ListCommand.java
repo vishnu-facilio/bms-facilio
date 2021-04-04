@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
@@ -135,6 +136,18 @@ public class ListCommand extends FacilioCommand {
         Criteria searchCriteria = (Criteria) context.get(FacilioConstants.ContextNames.SEARCH_CRITERIA);
         if (searchCriteria != null) {
             selectRecordsBuilder.andCriteria(searchCriteria);
+        }
+
+        Object serverCriteria = context.get(FacilioConstants.ContextNames.FILTER_SERVER_CRITERIA);
+        if (serverCriteria != null) {
+            if (serverCriteria instanceof Criteria) {
+                if (!((Criteria) serverCriteria).isEmpty()) {
+                    selectRecordsBuilder.andCriteria((Criteria) serverCriteria);
+                }
+            }
+            else {
+                selectRecordsBuilder.andCondition((Condition) serverCriteria);
+            }
         }
 
         String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
