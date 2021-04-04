@@ -34,7 +34,7 @@ public abstract class EmailClient {
     public static final String CONTENT_TYPE_TEXT_PLAIN="text/plain; charset=UTF-8";
     public static final String MIME_MULTIPART_SUBTYPE_ALTERNATIVE="alternative";
     public static final String MIME_MULTIPART_SUBTYPE_MIXED="mixed";
-    public static final String HEADER="HEADER";
+    public static final String HEADER="header";
     public static final String CONTENT_TRANSFER_ENCODING="Content-Transfer-Encoding";
     public static final String BASE_64 = "base64";
     public static final String HTML="html";
