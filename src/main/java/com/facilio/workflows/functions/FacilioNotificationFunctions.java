@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.workflow.rule.ActionType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -128,6 +129,30 @@ public enum FacilioNotificationFunctions implements FacilioWorkflowFunctionInter
 			}
 		}
 	},
+	
+	SEND_MAIL_TEMP(5,"sendDirectMailTemp") {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			if(objects[0] == null) {
+				return null;
+			}
+			Map<String,Object> mailMap =  (Map<String, Object>) objects[0];
+			
+			AwsUtil.sendEmailViaMimeMessage(WorkflowV2Util.getAsJSONObject(mailMap), null);
+			
+			return null;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
+	
 	;
 	private Integer value;
 	private String functionName;
