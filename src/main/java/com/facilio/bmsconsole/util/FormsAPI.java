@@ -841,6 +841,9 @@ public class FormsAPI {
 			case ContextNames.INVITE_VISITOR:
 				fields.add(new FormField("isVip", FieldDisplayType.DECISION_BOX, "VIP", Required.OPTIONAL, 1, 1));
 				break;
+			case ContextNames.VISITOR_LOG:
+				fields.add(new FormField("isVip", FieldDisplayType.DECISION_BOX, "VIP", Required.OPTIONAL, 1, 1));
+				break;
 			// Add fields here if it has to be shown in unused list and not there in the default form
 		}
 		}
