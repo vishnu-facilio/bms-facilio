@@ -257,7 +257,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 						context.put(FacilioConstants.ContextNames.CURRRENT_READING_DATA_META, rdmCache);
 						
 						boolean shouldSkipCurrentReading = false;
-						if (AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getOrgId() == 339 || AccountUtil.getCurrentOrg().getOrgId() == 1)) {
+						if (AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getOrgId() == 339 || AccountUtil.getCurrentOrg().getOrgId() == 405)) {
 							long currentReadingTime = reading.getTtime();
 							for(WorkflowFieldContext workflowField:fields) {
 								long resourceId = reading.getParentId();
@@ -275,27 +275,29 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 								}
 							}
 							
-							boolean canSuppressAlarm = checkForSensorAlarmSuppression(assetTimeVsEventsMap, reading);
-							if(canSuppressAlarm && !shouldSkipCurrentReading && alarmRule != null && reading.getParentId() == currentResourceContext.getId()) 
-							{
-								shouldSkipCurrentReading = true;
-								context.put(EventConstants.EventContextNames.PREVIOUS_EVENT_META, previousEventMeta);
-								if(alarmRule.getAlarmTriggerRule().getOverPeriod() > 0 || alarmRule.getAlarmTriggerRule().getOccurences() > 0 || alarmRule.getAlarmTriggerRule().isConsecutive() || alarmRule.getAlarmTriggerRule().getThresholdTypeEnum() == ReadingRuleContext.ThresholdType.FLAPPING) {						
-									PreEventContext preEvent = readingRule.constructPreClearEvent(reading, currentResourceContext);
-									preEvent.setComment("System auto cleared alarm due to the presence of associated sensor alarm");
-									preEvent.constructAndAddPreClearEvent(context);		
+							if(AccountUtil.getCurrentOrg().getOrgId() == 339) {
+								boolean canSuppressAlarm = checkForSensorAlarmSuppression(assetTimeVsEventsMap, reading);
+								if(canSuppressAlarm && !shouldSkipCurrentReading && alarmRule != null && reading.getParentId() == currentResourceContext.getId()) 
+								{
+									shouldSkipCurrentReading = true;
+									context.put(EventConstants.EventContextNames.PREVIOUS_EVENT_META, previousEventMeta);
+									if(alarmRule.getAlarmTriggerRule().getOverPeriod() > 0 || alarmRule.getAlarmTriggerRule().getOccurences() > 0 || alarmRule.getAlarmTriggerRule().isConsecutive() || alarmRule.getAlarmTriggerRule().getThresholdTypeEnum() == ReadingRuleContext.ThresholdType.FLAPPING) {						
+										PreEventContext preEvent = readingRule.constructPreClearEvent(reading, currentResourceContext);
+										preEvent.setComment("System auto cleared alarm due to the presence of associated sensor alarm");
+										preEvent.constructAndAddPreClearEvent(context);		
+									}
+									else  {
+										LOGGER.info("ReadingAlarm was suppressed due to SensorEvent for ReadingRule: "+readingRule.getId()+" and reading " +reading+ ". WorkflowFields: "+fields);				
+										readingRule.constructAndAddClearEvent(context, currentResourceContext, reading.getTtime(), "System auto cleared alarm due to the presence of associated sensor alarm");
+									}	
+									List<BaseEventContext> currentEvent = (List<BaseEventContext>) context.remove(EventConstants.EventContextNames.EVENT_LIST);
+									if (CollectionUtils.isNotEmpty(currentEvent)) {
+										prevRDM = currentRDM;
+										previousEventMeta = currentEvent.get(0);
+										baseEvents.addAll(currentEvent);
+									}
 								}
-								else  {
-									LOGGER.info("ReadingAlarm was suppressed due to SensorEvent for ReadingRule: "+readingRule.getId()+" and reading " +reading+ ". WorkflowFields: "+fields);				
-									readingRule.constructAndAddClearEvent(context, currentResourceContext, reading.getTtime(), "System auto cleared alarm due to the presence of associated sensor alarm");
-								}	
-								List<BaseEventContext> currentEvent = (List<BaseEventContext>) context.remove(EventConstants.EventContextNames.EVENT_LIST);
-								if (CollectionUtils.isNotEmpty(currentEvent)) {
-									prevRDM = currentRDM;
-									previousEventMeta = currentEvent.get(0);
-									baseEvents.addAll(currentEvent);
-								}
-							}	
+							}		
 						}
 						if(shouldSkipCurrentReading) {
 							LOGGER.info("Skipping Scheduled Historical for ReadingRule: "+readingRule.getId()+" and reading " +reading+ ". WorkflowFields: "+fields);				
