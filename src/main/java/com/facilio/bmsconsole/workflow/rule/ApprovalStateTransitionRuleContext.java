@@ -43,6 +43,11 @@ public class ApprovalStateTransitionRuleContext extends AbstractStateTransitionR
                 }
             }
         }
+
+        if (CollectionUtils.isEmpty(getApprovers())) {
+            return false;
+        }
+
         return evaluateStateFlow(moduleRecord.getApprovalFlowId(), moduleRecord.getApprovalStatus(),
                 moduleName, record, placeHolders, context);
     }
