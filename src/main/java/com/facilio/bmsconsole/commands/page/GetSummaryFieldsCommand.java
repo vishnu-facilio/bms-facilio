@@ -69,11 +69,8 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 			}
 			else {
 				fields = form.getFields().stream().filter(formField -> formField.getField() != null && !formField.getField().isMainField() &&
-						(formField.getHideField() == null || !formField.getHideField()))
+						(formField.getHideField() == null || !isAtg || !formField.getHideField()))
 						.collect(Collectors.toList());
-				if (!isAtg) {
-					
-				}
 			}
 			
 			if (!isAtg) {	// Sort based on form
