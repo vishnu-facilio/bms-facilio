@@ -183,5 +183,7 @@
 	<job name='ControlScheduleSlotCreationJob' classname= 'com.facilio.bmsconsole.jobs.ControlScheduleSlotCreationJob' transactionTimeout='600000'/>
 	<job name='controlCommandExecutionCreateScheduleJob' classname= 'com.facilio.bmsconsole.jobs.ControlCommandExecutionCreateScheduleJob' transactionTimeout='600000'/>
 	<job name='controlCommandExecutionJob' classname= 'com.facilio.bmsconsole.jobs.ControlCommandExecutionJob' transactionTimeout='600000'/>
-	
+
+	<!--Delete Job Records	-->
+	<job name="DeleteJobRecords" classname="com.facilio.bmsconsole.jobs.DeleteJobRecords" transactionTimeout="600000"/>
 </scheduler>

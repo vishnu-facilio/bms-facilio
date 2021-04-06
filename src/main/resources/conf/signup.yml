@@ -2,6 +2,7 @@ version: 1.0
 
 # The following classes should implement SignUpData interface and shouldn't have any state variables as only one instance will be created
 classes:
+  - com.facilio.bmsconsoleV3.signup.scoping.DeleteJobConfig
   - com.facilio.bmsconsoleV3.signup.scoping.DealsAndOffersScopingConfig
   - com.facilio.bmsconsoleV3.signup.scoping.ReservationScopingConfig
   - com.facilio.bmsconsoleV3.signup.scoping.WorkPermitScopingConfig
@@ -59,3 +60,7 @@ classes:
   - com.facilio.bmsconsoleV3.signup.moduleconfig.WorkOrderModule
 
   - com.facilio.bmsconsoleV3.signup.moduleconfig.MFASettings
+
+    #Add DeleteJobRecords entry
+  - com.facilio.bmsconsoleV3.signup.scoping.DeleteJobConfig
+
