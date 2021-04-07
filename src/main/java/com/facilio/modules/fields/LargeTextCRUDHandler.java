@@ -2,6 +2,7 @@ package com.facilio.modules.fields;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,9 +11,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.StringUtils;
 
+import com.amazonaws.util.IOUtils;
 import com.facilio.beans.ModuleBean;
+import com.facilio.fs.FileInfo;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.SelectRecordsBuilder;
@@ -62,10 +66,48 @@ public class LargeTextCRUDHandler extends BaseMultiValueCRUDHandler<String> {
 	@Override
 	protected void fetchSupplements(boolean isMap, SelectRecordsBuilder relBuilder, FacilioField valueField)
 			throws Exception {
-		// TODO Auto-generated method stub
+		List<Map<String, Object>> props = relBuilder.getAsProps();
+        if (CollectionUtils.isNotEmpty(props)) {
+        	Map<String, Object> record = props.get(0);
+            Long recordId = (Long) ((Map<String, Object>)record.get(getParentFieldName())).get("id");
+            Long fileId = (Long) record.get(valueField.getName());
+            
+            FileStore fs = FacilioFactory.getFileStore();
+            
+            String value = null;
+            try (InputStream is = fs.readFile(fileId)) {
+            	value = IOUtils.toString(is);
+	        }
+            
+            addToRecordMap(recordId, value);
+        }
 		
 	}
 	
+	private Map<Long, String> recordMap = null;
+    private Map<Long, String> recordMap() {
+        if (recordMap == null) {
+            recordMap = new HashMap<>();
+        }
+        return recordMap;
+    }
+	
+	protected void addToRecordMap (long recordId, String value) {
+        Map<Long, String> recordMap = recordMap();
+        if(!recordMap.containsKey(recordId)) {
+        	recordMap.put(recordId, value);
+        }
+    }
+	
+	@Override
+    public void updateRecordWithSupplement(Map<String, Object> record) {
+        if (MapUtils.isNotEmpty(recordMap)) {
+            Long recordId = (Long) record.get("id");
+            String textValue = recordMap.get(recordId);
+            record.put(getFieldName(), textValue);
+        }
+    }
+	 
 	@Override
     public void insertSupplements(List<Map<String, Object>> records) throws Exception {
         if (CollectionUtils.isNotEmpty(records)) {
