@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.tenant.TenantSpaceContext;
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -2876,10 +2877,10 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
    public static void handleSiteRelations(WorkOrderContext workOrder) throws Exception {
 		if (workOrder.getTenant() != null && workOrder.getTenant().getId() != -1) {
 			if (workOrder.getResource() == null || workOrder.getResource().getId() == -1) {
-				List<BaseSpaceContext> tenantSpaces = TenantsAPI.fetchTenantSpaces(workOrder.getTenant().getId());
+				List<TenantSpaceContext> tenantSpaces = TenantsAPI.fetchTenantSpaces(workOrder.getTenant().getId());
 				if (CollectionUtils.isNotEmpty(tenantSpaces) && tenantSpaces.size() == 1) {
 					ResourceContext resource = new ResourceContext();
-					resource.setId(tenantSpaces.get(0).getId());
+					resource.setId(tenantSpaces.get(0).getSpace().getId());
 					workOrder.setResource(resource);
 				}
 				TenantContext tenant = TenantsAPI.getTenant(workOrder.getTenant().getId());

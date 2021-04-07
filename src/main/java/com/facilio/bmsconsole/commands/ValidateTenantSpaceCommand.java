@@ -43,8 +43,9 @@ public class ValidateTenantSpaceCommand extends FacilioCommand {
 			
 			List<EventType> eventTypes = CommonCommandUtil.getEventTypes(context);
 			if (eventTypes != null && eventTypes.contains(EventType.EDIT)) {
-				List<BaseSpaceContext> tenantSpaces = TenantsAPI.fetchTenantSpaces(tenant.getId(), false);
-				if (CollectionUtils.isNotEmpty(tenantSpaces)) {
+				List<TenantSpaceContext> spaces = TenantsAPI.fetchTenantSpaces(tenant.getId(), false);
+				if (CollectionUtils.isNotEmpty(spaces)) {
+					List<BaseSpaceContext> tenantSpaces = spaces.stream().map(TenantSpaceContext::getSpace).collect(Collectors.toList());
 					List<Long> existingSpaceIds = tenantSpaces.stream().map(BaseSpaceContext::getId).collect(Collectors.toList());
 					List<BaseSpaceContext> filteredSpaces = tenant.getSpaces().stream().filter(space -> !existingSpaceIds.contains(space.getId())).collect(Collectors.toList());
 					tenant.setSpaces(filteredSpaces);

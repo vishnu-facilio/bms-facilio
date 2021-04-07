@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.tenant.TenantSpaceContext;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -24,6 +25,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.collections4.CollectionUtils;
 
 public class GetFloorPlanSpacesCommand extends FacilioCommand {
 	
@@ -61,8 +63,9 @@ public class GetFloorPlanSpacesCommand extends FacilioCommand {
 				if (kiosk != null) {
 					long tenantId = kiosk.getTenantId();
 					if (tenantId > 0) {
-						List<BaseSpaceContext> spaces = TenantsAPI.fetchTenantSpaces(tenantId);
-						if (spaces != null) {
+						List<TenantSpaceContext> tenantSpaces = TenantsAPI.fetchTenantSpaces(tenantId);
+						if (CollectionUtils.isNotEmpty(tenantSpaces)) {
+							List<BaseSpaceContext> spaces = tenantSpaces.stream().map(TenantSpaceContext::getSpace).collect(Collectors.toList());
 							List<Long> spaceIds = spaces.stream().map(BaseSpaceContext::getId).collect(Collectors.toList());
 							
 							builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(moduleObj), spaceIds, BuildingOperator.BUILDING_IS));

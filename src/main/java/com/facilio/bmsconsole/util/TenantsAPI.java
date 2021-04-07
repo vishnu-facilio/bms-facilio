@@ -1172,11 +1172,11 @@ public class TenantsAPI {
 
 }
 	
-	public static List<BaseSpaceContext> fetchTenantSpaces(long tenantId) throws Exception {
+	public static List<TenantSpaceContext> fetchTenantSpaces(long tenantId) throws Exception {
 		return fetchTenantSpaces(tenantId, true);
 	}
 	
-	public static List<BaseSpaceContext> fetchTenantSpaces(long tenantId, boolean fetchSpaceDetails) throws Exception {
+	public static List<TenantSpaceContext> fetchTenantSpaces(long tenantId, boolean fetchSpaceDetails) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(ContextNames.TENANT_SPACES);
 		Map<String, FacilioField> tenantSpaceFieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
@@ -1193,7 +1193,7 @@ public class TenantsAPI {
 		
 		List<TenantSpaceContext> tenantSpaces = builder.get();
 		if (tenantSpaces != null && !tenantSpaces.isEmpty()) {
-			return tenantSpaces.stream().map(TenantSpaceContext::getSpace).collect(Collectors.toList());
+			return tenantSpaces;
 		}
 		return null;
 	}

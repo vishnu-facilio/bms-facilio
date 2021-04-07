@@ -2,8 +2,10 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.tenant.TenantSpaceContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -24,11 +26,12 @@ public class SetTenantSpaceAndContactsCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		
 		TenantContext tenant= (TenantContext) context.get(FacilioConstants.ContextNames.TENANT);
-		List<BaseSpaceContext> spaces = TenantsAPI.fetchTenantSpaces(tenant.getId());
+		List<TenantSpaceContext> spaces = TenantsAPI.fetchTenantSpaces(tenant.getId());
 		BaseSpaceContext site = SpaceAPI.getBaseSpace(tenant.getSiteId());
 		tenant.setSite(site);
 		if (CollectionUtils.isNotEmpty(spaces)) {
-			tenant.setSpaces(spaces);
+			tenant.setTenantSpaces(spaces);
+			tenant.setSpaces(spaces.stream().map(TenantSpaceContext::getSpace).collect(Collectors.toList()));
 		}
 		if(AccountUtil.isFeatureEnabled(FeatureLicense.PEOPLE_CONTACTS)) {
 		  List<TenantContactContext> tenantContacts = PeopleAPI.getTenantContacts(tenant.getId(), false);

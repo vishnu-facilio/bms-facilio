@@ -301,6 +301,16 @@ public class TenantContext extends ModuleBaseWithCustomFields {
 		this.spaces = spaces;
 	}
 
+	private List<TenantSpaceContext> tenantSpaces;
+
+	public List<TenantSpaceContext> getTenantSpaces() {
+		return tenantSpaces;
+	}
+
+	public void setTenantSpaces(List<TenantSpaceContext> tenantSpaces) {
+		this.tenantSpaces = tenantSpaces;
+	}
+
 	private List<OccupantsContext> occupantList;
 
 	public List<OccupantsContext> getOccupantList() {
