@@ -1183,7 +1183,7 @@ public class TenantsAPI {
 		SelectRecordsBuilder<TenantSpaceContext> builder = new SelectRecordsBuilder<TenantSpaceContext>()
 				  .module(module)
 				  .beanClass(TenantSpaceContext.class)
-				  .select(Collections.singletonList(tenantSpaceFieldMap.get("space")))
+				  .select(modBean.getAllFields(module.getName()))
 				  .andCondition(CriteriaAPI.getCondition(tenantSpaceFieldMap.get("tenant"), String.valueOf(tenantId), NumberOperators.EQUALS))
 				  ;
 		
