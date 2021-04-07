@@ -33,6 +33,7 @@ public class WidgetGraphicsContext extends DashboardWidgetContext {
 		resultJson.put("id", getId());
 		resultJson.put("type", getWidgetType().getName());
 		resultJson.put("widgetSettings",getWidgetSettings());
+		resultJson.put("helpText",getHelpText());
 		JSONObject layoutJson = new JSONObject();
 		layoutJson.put("height", getLayoutHeight());
 		layoutJson.put("width", getLayoutWidth());

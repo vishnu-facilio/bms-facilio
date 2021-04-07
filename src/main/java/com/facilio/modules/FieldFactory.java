@@ -4800,6 +4800,8 @@ public class FieldFactory {
         /*fields.add(getOrgIdField(module));*/
         fields.add(getModuleIdField(module));
         fields.add(getField("widgetSettingsJsonString", "WIDGET_SETTINGS_JSON", module, FieldType.STRING));
+        fields.add(getField("helpText", "HELP_TEXT", module, FieldType.STRING));
+
         fields.add(getField("metaJSONString", "META_JSON", module, FieldType.STRING));
 
         fields.add(getField("dashboardId", "DASHBOARD_ID", module, FieldType.NUMBER));

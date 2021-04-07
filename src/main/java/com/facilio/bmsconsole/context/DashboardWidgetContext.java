@@ -44,6 +44,8 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 	private String widgetUrl;
 	private String headerText;
 	private String headerSubText;
+	private String helpText;
+	
 	private boolean headerIsExport;
 	
 	
@@ -106,6 +108,7 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 	  
 	  JSONObject defaultWidgetSettings=new JSONObject();
 	  defaultWidgetSettings.put("excludeDbFilters", false);
+	  defaultWidgetSettings.put("showHelpText", false);
 	return defaultWidgetSettings;
   }
 
@@ -334,6 +337,13 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 		this.widgetName = widgetName;
 	}
 	
+	public String getHelpText() {
+		return helpText;
+	}
+	public void setHelpText(String helpText) {
+		this.helpText = helpText;
+	}
+
 	public enum WidgetType {
 		STATIC(0,"static",WidgetStaticContext.class),
 		CHART(1,"chart",WidgetChartContext.class),
