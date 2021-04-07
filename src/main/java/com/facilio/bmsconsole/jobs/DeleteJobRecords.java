@@ -24,11 +24,11 @@ public class DeleteJobRecords extends FacilioJob {
             long currentTime = System.currentTimeMillis();
             long orgId = jc.getOrgId();
             long deletedTime = DateTimeUtil.addDays(currentTime, -30);
-            if(!FacilioProperties.isProduction() && !FacilioProperties.isDevelopment()){
-                FacilioService.runAsService(FacilioConstants.Services.TEMP_JOBS, ()-> deleteFiles(deletedTime, orgId));
-            }else {
+//            if(!FacilioProperties.isProduction() && !FacilioProperties.isDevelopment()){
+//                FacilioService.runAsService(FacilioConstants.Services.TEMP_JOBS, ()-> deleteFiles(deletedTime, orgId));
+//            }else {
                 FacilioService.runAsService(FacilioConstants.Services.JOB_SERVICE, ()-> deleteFiles(deletedTime, orgId));
-            }
+//            }
             LOGGER.info("Job Deletion completed for org : "+orgId + ".  Time taken to delete : "+(System.currentTimeMillis()- currentTime)+" ms.");
         }catch (Exception e){
             LOGGER.error("Exception occurred in DeleteJobRecords  :  ", e);

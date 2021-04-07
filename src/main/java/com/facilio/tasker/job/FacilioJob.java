@@ -38,17 +38,17 @@ public abstract class FacilioJob implements Runnable {
 	public void run() {
 		try {
 
-			if(!FacilioProperties.isProduction() && !FacilioProperties.isDevelopment()) {
-				if((FacilioService.runAsServiceWihReturn(FacilioConstants.Services.TEMP_JOBS,() -> JobStore.updateStartExecution(jc.getOrgId(),jc.getJobId(),jc.getJobName(),jc.getJobStartTime(),jc.getJobExecutionCount())) < 1)) {
-					executor.jobEnd(jc.getJobKey());
-					return;
-				}
-			} else {
+//			if(!FacilioProperties.isProduction() && !FacilioProperties.isDevelopment()) {
+//				if((FacilioService.runAsServiceWihReturn(FacilioConstants.Services.TEMP_JOBS,() -> JobStore.updateStartExecution(jc.getOrgId(),jc.getJobId(),jc.getJobName(),jc.getJobStartTime(),jc.getJobExecutionCount())) < 1)) {
+//					executor.jobEnd(jc.getJobKey());
+//					return;
+//				}
+//			} else {
 				if((FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,() -> JobStore.updateStartExecution(jc.getOrgId(),jc.getJobId(),jc.getJobName(),jc.getJobStartTime(),jc.getJobExecutionCount())) < 1)) {
 					executor.jobEnd(jc.getJobKey());
 					return;
 				}
-			}
+//			}
 			AccountUtil.cleanCurrentAccount();
 			long startTime = 0L;
 			Thread currentThread = Thread.currentThread();
@@ -97,11 +97,11 @@ public abstract class FacilioJob implements Runnable {
 				}
 				JobLogger.log(jc, timeTaken, status);
 				if (status == 1) {
-					if(!FacilioProperties.isProduction() && !FacilioProperties.isDevelopment()){
-						FacilioService.runAsService(FacilioConstants.Services.TEMP_JOBS, ()->updateNextExecutionTime());
-					}else {
+//					if(!FacilioProperties.isProduction() && !FacilioProperties.isDevelopment()){
+//						FacilioService.runAsService(FacilioConstants.Services.TEMP_JOBS, ()->updateNextExecutionTime());
+//					}else {
 						FacilioService.runAsService(FacilioConstants.Services.JOB_SERVICE, ()->updateNextExecutionTime());
-					}
+//					}
 				}
 				LOGGER.debug("Job completed " + jc.getJobId() + "-" + jc.getJobName() + " time taken : " + timeTaken);
 				AccountUtil.cleanCurrentAccount();
