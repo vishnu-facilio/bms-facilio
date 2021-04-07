@@ -70,7 +70,7 @@ public abstract class BaseMultiValueCRUDHandler<E> implements InsertSupplementHa
         }
     }
 
-    private void deleteOldData(Collection<Long> ids, List<FacilioField> fields) throws Exception {
+    protected void deleteOldData(Collection<Long> ids, List<FacilioField> fields) throws Exception {
         LookupField parentField = (LookupField) FieldFactory.getAsMap(fields).get(getParentFieldName());
         int rows = new DeleteRecordBuilder<RelRecord>()
                 .module(getRelModule())

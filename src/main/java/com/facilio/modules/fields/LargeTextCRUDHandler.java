@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -110,7 +111,7 @@ public class LargeTextCRUDHandler extends BaseMultiValueCRUDHandler<String> {
 	 
 	@Override
     public void insertSupplements(List<Map<String, Object>> records) throws Exception {
-        if (CollectionUtils.isNotEmpty(records)) {
+		if (CollectionUtils.isNotEmpty(records)) {
             List<Map<String, Object>> rels = new ArrayList<>();
             
             for (Map<String, Object> record : records) {
@@ -119,60 +120,57 @@ public class LargeTextCRUDHandler extends BaseMultiValueCRUDHandler<String> {
                 	
                     long parentId = (long) record.get("id");
                     
-                    File newFile = File.createTempFile("largeTextFile.txt",null);
-                	
-        			try(FileOutputStream fileOut = new FileOutputStream(newFile);) {
-        				fileOut.write(largeTextValue.getBytes());
-        			}
-        			
-        			FileStore fs = FacilioFactory.getFileStore();
-        			
-        			long fileID = fs.addFile("largeTextFile.txt", newFile, "text");
-                    
-                    Map<String, Object> relRecord = createRelRecord(parentId, fileID);
+                    Map<String, Object> relRecord = createRelRecord(parentId,largeTextValue);
                     
                     rels.add(relRecord);
                 }
             }
-
-            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            List<FacilioField> fields = modBean.getAllFields(getRelModule().getName());
-            insertData(rels, fields);
+            addData(rels);
         }
     }
 	
-	protected Map<String, Object> createRelRecord(long parentId, long value) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException, Exception {
+	private void addData(List<Map<String, Object>> rels) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> fields = modBean.getAllFields(getRelModule().getName());
+        insertData(rels, fields);
+	}
+	
+	protected Map<String, Object> createRelRecord(long parentId, String fileContent) throws Exception {
         Map<String, Object> relRecord = new HashMap<>();
+        
+        File newFile = File.createTempFile("largeTextFile.txt",null);
+    	
+		try(FileOutputStream fileOut = new FileOutputStream(newFile);) {
+			fileOut.write(fileContent.getBytes());
+		}
+		
+		FileStore fs = FacilioFactory.getFileStore();
+		
+		long fileID = fs.addFile("largeTextFile.txt", newFile, "text");
+        
         relRecord.put(getParentFieldName(), parentId);
-        relRecord.put(getValueFieldName(), value);
+        relRecord.put(getValueFieldName(), fileID);
         return relRecord;
     }
 
-//    @Override
-//    public void updateSupplements(Map<String, Object> record, Collection<Long> ids) throws Exception {
-//        if (CollectionUtils.isNotEmpty(ids)) {
-//            List values = (List) record.get(getFieldName());
-//            if (values != null) {//During update if null value is returned from map, no change will be made
-//                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-//                List<FacilioField> fields = modBean.getAllFields(getRelModule().getName());
-//
-//                deleteOldData(ids, fields);
-//                List<Map<String, Object>> rels = new ArrayList<>();
-//                for (Long id : ids) {
-//                    processValueList(values, id, rels, "update");
-//                }
-//                insertData(rels, fields);
-//            }
-//        }
-//    }
-//
-//    @Override
-//    public void deleteSupplements(Collection<Long> ids) throws Exception {
-//        if (CollectionUtils.isNotEmpty(ids)) {
-//            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-//            List<FacilioField> fields = modBean.getAllFields(getRelModule().getName());
-//            deleteOldData(ids, fields);
-//        }
-//    }
+    @Override
+    public void updateSupplements(Map<String, Object> record, Collection<Long> ids) throws Exception {
+        if (CollectionUtils.isNotEmpty(ids)) {
+            String values = (String) record.get(getFieldName());
+            if (values != null) {//During update if null value is returned from map, no change will be made
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                List<FacilioField> fields = modBean.getAllFields(getRelModule().getName());
+
+                deleteOldData(ids, fields);
+                
+                List<Map<String, Object>> rels = new ArrayList<>();
+                for(Long id : ids) {
+                	Map<String, Object> relRecord = createRelRecord(id, values);
+                	rels.add(relRecord);
+                }
+                addData(rels);
+            }
+        }
+    }
 
 }
