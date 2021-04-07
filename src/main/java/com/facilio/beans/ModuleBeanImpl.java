@@ -596,6 +596,10 @@ public class ModuleBeanImpl implements ModuleBean {
 								prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
 								field = constructMultiEnumField(prop);
 							break;
+						case LARGE_TEXT:
+								prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
+								field = constructLargeTextField(prop);
+							break;
 						case SYSTEM_ENUM:
 								prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
 								SystemEnumField enumField = FieldUtil.getAsBeanFromMap(prop, SystemEnumField.class);
@@ -642,6 +646,14 @@ public class ModuleBeanImpl implements ModuleBean {
 		Map<String, FacilioField> relFields = FieldFactory.getAsMap(getAllFields(relModule.getName()));
 		EnumField childEnumField = (EnumField) relFields.get(MultiEnumField.VALUE_FIELD_NAME);
 		field.setEnumProps(childEnumField);
+
+		return field;
+	}
+	
+	private LargeTextField constructLargeTextField(Map<String, Object> props) throws Exception {
+		LargeTextField field = FieldUtil.getAsBeanFromMap(props, LargeTextField.class);
+		FacilioModule relModule = getModule(field.getRelModuleId());
+		field.setRelModule(relModule);
 
 		return field;
 	}
@@ -692,6 +704,9 @@ public class ModuleBeanImpl implements ModuleBean {
 					break;
 				case LINE_ITEM:
 					extendedProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getLineItemFieldsModule(), FieldFactory.getLineItemFieldFields(), entry.getValue()));
+					break;
+				case LARGE_TEXT:
+					extendedProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getLargeTextFieldsModule(), FieldFactory.getLargeTextFieldFields(), entry.getValue()));
 					break;
 				default:
 					break;

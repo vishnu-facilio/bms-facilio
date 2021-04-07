@@ -46,7 +46,6 @@ public class BaseMailMessageContext extends V3Context {
     private String bcc;
     private String cc;
     private String subject;
-    private String message;
     private Boolean html;
     private Long messageUID;
     private Long supportMailId;
@@ -55,6 +54,8 @@ public class BaseMailMessageContext extends V3Context {
     private Long receivedDate;
     private Long sentDate;
     private String content;
+    private String htmlContent;
+    private String textContent;
 
     public static BaseMailMessageContext instance(Message message) throws Exception {
         BaseMailMessageContext mailContext = new BaseMailMessageContext();
@@ -63,7 +64,7 @@ public class BaseMailMessageContext extends V3Context {
             Address[] froms = message.getFrom();
             String from = froms == null ? null : ((InternetAddress) froms[0]).getAddress();
             mailContext.from = from;
-            mailContext.message = message.getSubject();
+            mailContext.subject = message.getSubject();
             mailContext.replyTo = InternetAddress.toString(message
                     .getReplyTo());
             mailContext.to = InternetAddress.toString(message

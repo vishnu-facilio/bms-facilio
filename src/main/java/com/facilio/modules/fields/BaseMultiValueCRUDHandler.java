@@ -78,7 +78,7 @@ public abstract class BaseMultiValueCRUDHandler<E> implements InsertSupplementHa
                 .delete();
     }
 
-    private void insertData(List<Map<String, Object>> rels, List<FacilioField> fields) throws Exception {
+    protected void insertData(List<Map<String, Object>> rels, List<FacilioField> fields) throws Exception {
         if (CollectionUtils.isNotEmpty(rels)) {
             new InsertRecordBuilder()
                     .fields(fields)

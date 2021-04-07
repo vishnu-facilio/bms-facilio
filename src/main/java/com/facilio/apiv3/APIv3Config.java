@@ -177,6 +177,7 @@ public class APIv3Config {
     public static Supplier<V3Config> getEmailConversationThreadingCRUD() {
         return () -> new V3Config(EmailConversationThreadingContext.class, null)
                 .create()
+                .beforeSave(TransactionChainFactoryV3.getAddEmailConversationThreadingBeforeSaveChain())
                 .afterSave(TransactionChainFactoryV3.getAddEmailConversationThreadingAfterSaveChain())
                 .build();
     }

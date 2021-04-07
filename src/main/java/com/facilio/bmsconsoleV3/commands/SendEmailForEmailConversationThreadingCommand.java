@@ -62,7 +62,7 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 		mailJson.put(EmailClient.CC, emailConversation.getCc());
 		mailJson.put(EmailClient.BCC, emailConversation.getBcc());
 		mailJson.put(EmailClient.SUBJECT, "Re: "+emailConversation.getSubject());
-		mailJson.put(EmailClient.MESSAGE, emailConversation.getMessage());
+		mailJson.put(EmailClient.MESSAGE, emailConversation.getContent());
 		mailJson.put(EmailClient.MAIL_TYPE,EmailClient.HTML);
 		
 		if(messageId != null) {
