@@ -28,6 +28,7 @@ import org.apache.commons.mail.util.MimeMessageParser;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.Multipart;
 import javax.mail.Part;
@@ -48,6 +49,10 @@ public class MailMessageUtil {
     public static final String EMAIL_TO_MODULE_DATA_MODULE_NAME = "emailToModuleData";
     
     public static final String BASE_MAIL_CONTEXT = "baseMailContext";
+    
+    public static final String TEXT_CONTENT_TYPE = "text/plain";
+
+    public static final String HTML_CONTENT_TYPE = "text/html";
     
     public static final String EMAIL_CONVERSATION_THREADING_MODULE_NAME = "emailConversationThreading";
 
@@ -230,91 +235,66 @@ public class MailMessageUtil {
     }
     
     
-    
-    public static String parseMessageContent(Part part, BaseMailMessageContext mailContext) throws Exception {
-        if (part.isMimeType("text/*")) {
-            String s = (String) part.getContent();
-            mailContext.setContent(s);
+    public static String getContentFromMessage(Message message,String contentToExtract) throws Exception {
+        String result = "";
+        if (message.isMimeType(contentToExtract)) {
+            result = message.getContent().toString();
+        } 
+        else if (message.isMimeType("multipart/*")) {
+            MimeMultipart mimeMultipart = (MimeMultipart) message.getContent();
+            result = getContentFromMimeMultipart(mimeMultipart,contentToExtract);
         }
-        if (part.isMimeType("multipart/alternative")) {
-            Multipart mp = (Multipart)part.getContent();
-            String text = null;
-            for (int i = 0; i < mp.getCount(); i++) {
-                Part bp = mp.getBodyPart(i);
-                if (bp.isMimeType("text/plain")) {
-                    if (text == null)
-                        text =  (String) bp.getContent();
-                    continue;
-                } else if (bp.isMimeType("text/html")) {
-                    String s = (String) bp.getContent();
-                    if (s != null) {
-                        if (s.length() > 2000) {
-                            // TODO
-                            // Saving large content to pdf
-                            // Should be handle when big text field is supported
-                            // service to parse mail content
-//                            saveContentAsPdf(s, mailContext);
-                            return "Content too big. Please check attachment";
-                        }
-                        else {
-                            return s;
-                        }
-                    }
-                } else {
-                    return getMimeMultipartFromMessage(((MimeMultipart)part.getContent()), mailContext);
-                }
-            }
-            mailContext.setContent(text);
-        } else if (part.isMimeType("multipart/*")) {
-            return getMimeMultipartFromMessage(((MimeMultipart)part.getContent()), mailContext);
-        }
-
-        return null;
+        return result;
     }
 
-    private static String getMimeMultipartFromMessage(MimeMultipart mimeMultipart, BaseMailMessageContext mailContext) throws Exception {
+    private static String getContentFromMimeMultipart(MimeMultipart mimeMultipart,String contentToExtract)  throws Exception{
         String result = "";
-        int partCount = mimeMultipart.getCount();
-        for (int i = 0; i < partCount; i++) {
-            MimeBodyPart bodyPart = (MimeBodyPart) mimeMultipart.getBodyPart(i);
-            if (bodyPart.isMimeType("text/plain")) {
-                result = result + "\n" + bodyPart.getContent();
-                break;
-            } else if (bodyPart.isMimeType("text/html")) {
-                String html = (String) bodyPart.getContent();
-                result = html;
-            } else if (bodyPart.getContent() instanceof MimeMultipart) {
-                result = result + getMimeMultipartFromMessage((MimeMultipart) bodyPart.getContent(), mailContext);
-            } else  if (Part.ATTACHMENT.equalsIgnoreCase(bodyPart.getDisposition())) {
-                String fileName = bodyPart.getFileName();
-                MimeMessage attachmentMessage = new MimeMessage(null, bodyPart.getInputStream());
-                MimeMessageParser parser = new MimeMessageParser(attachmentMessage);
-                parser.parse();
-                Map<String, Object> attachmentObject = new HashMap<>();
-                attachmentObject.put("fileFileName", bodyPart.getFileName());
-                attachmentObject.put("fileContentType", bodyPart.getContentType());
-                File file = File.createTempFile(fileName, "");
-                FileUtils.copyInputStreamToFile(bodyPart.getInputStream(), file);
-                attachmentObject.put("file", file);
-                mailContext.addAttachmentList(attachmentObject);
+        int count = mimeMultipart.getCount();
+        for (int i = 0; i < count; i++) {
+        	
+            BodyPart bodyPart = mimeMultipart.getBodyPart(i);
+            
+            if (bodyPart.isMimeType(contentToExtract)) {
+                result = result + bodyPart.getContent();
+                break; 
+            }
+            else if (bodyPart.getContent() instanceof MimeMultipart){
+                result = result + getContentFromMimeMultipart((MimeMultipart)bodyPart.getContent(),contentToExtract);
             }
         }
         return result;
     }
     
+    public static List<Map<String, Object>> getAttachments(Message message) throws Exception {
+        List<Map<String, Object>> attachmentsList = new ArrayList<>();
+        if (message.isMimeType("multipart/*")) {
+            MimeMultipart mimeMultipart = (MimeMultipart) message.getContent();
+            
+            int partCount = mimeMultipart.getCount();
+            for (int i = 0; i < partCount; i++) {
+                MimeBodyPart bodyPart = (MimeBodyPart) mimeMultipart.getBodyPart(i);
+                if (Part.ATTACHMENT.equalsIgnoreCase(bodyPart.getDisposition())) {
+                    String fileName = bodyPart.getFileName();
+                    MimeMessage attachmentMessage = new MimeMessage(null, bodyPart.getInputStream());
+                    MimeMessageParser parser = new MimeMessageParser(attachmentMessage);
+                    parser.parse();
+                    Map<String, Object> attachmentObject = new HashMap<>();
+                    attachmentObject.put("fileFileName", bodyPart.getFileName());
+                    attachmentObject.put("fileContentType", bodyPart.getContentType());
+                    File file = File.createTempFile(fileName, "");
+                    FileUtils.copyInputStreamToFile(bodyPart.getInputStream(), file);
+                    attachmentObject.put("file", file);
+                    
+                    attachmentsList.add(attachmentObject);
+                }
+            }
+            
+        }
+        return attachmentsList;
+    }
+    
+
+    
     public static Function<String,String> getFirstMessageId = (messageIDs) -> messageIDs.substring(messageIDs.indexOf('<')+1, messageIDs.indexOf('>'));
     
-    private static void saveContentAsPdf (String s, BaseMailMessageContext mailContext) throws IOException {
-        Map<String, Object> attachmentObject = new HashMap<>();
-        File tmpFile = File.createTempFile("Email_Content_", ".pdf");
-        if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 155) {
-            LOGGER.info("PDF Content => \n"+s);
-        }
-        String pdfFileLocation = PdfUtil.convertUrlToPdf(tmpFile.getPath(), s, null , FileInfo.FileFormat.PDF);
-        File pdfFile = new File(pdfFileLocation);
-        attachmentObject.put("file", pdfFile);
-        attachmentObject.put("fileFileName", tmpFile.getName());
-        attachmentObject.put("fileContentType", "application/pdf");
-        mailContext.addAttachmentList(attachmentObject);
-    }
 }

@@ -22,11 +22,14 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.mail.util.MimeMessageParser;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.tiles.request.collection.CollectionUtil;
 
+import com.amazonaws.util.CollectionUtils;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.fs.FileInfo;
 import com.facilio.pdf.PdfUtil;
+import com.facilio.util.EmailMessageParser;
 import com.facilio.v3.context.V3Context;
 
 import lombok.Getter;
@@ -83,7 +86,27 @@ public class BaseMailMessageContext extends V3Context {
             if (message.getRecipients(Message.RecipientType.BCC) != null) {
                 mailContext.bcc = message.getRecipients(Message.RecipientType.BCC).toString();
             }
-            mailContext.content = MailMessageUtil.parseMessageContent(message, mailContext);
+            
+            String htmlContentString = MailMessageUtil.getContentFromMessage(message, MailMessageUtil.HTML_CONTENT_TYPE);
+            
+            if(htmlContentString != null) {
+            	mailContext.setHtmlContent(htmlContentString);
+            }
+            
+            String  textContentString = MailMessageUtil.getContentFromMessage(message, MailMessageUtil.TEXT_CONTENT_TYPE);
+            
+            if(textContentString != null) {
+            	String actualReply = EmailMessageParser.read(textContentString).getReply();
+            	mailContext.setTextContent(textContentString);
+            	mailContext.setContent(actualReply);
+            }
+            
+            List<Map<String, Object>> attachments = MailMessageUtil.getAttachments(message);
+            
+            if(!CollectionUtils.isNullOrEmpty(attachments)) {
+            	mailContext.setAttachmentsList(attachments);
+            }
+            
             
             String[] messageIDList = message.getHeader("Message-ID");
             String[] referenceHeader = message.getHeader("References");
