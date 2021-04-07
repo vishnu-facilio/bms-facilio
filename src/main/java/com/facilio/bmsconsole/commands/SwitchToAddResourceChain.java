@@ -291,7 +291,7 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 					contextNew.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 					contextNew.put(FacilioConstants.ContextNames.WORK_ORDER, woTemplate.getWorkorder());
 					contextNew.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
-					contextNew.put(FacilioConstants.ContextNames.SKIP_WO_CREATION,true);
+//					contextNew.put(FacilioConstants.ContextNames.SKIP_WO_CREATION,true);
 			 		
 					addPM.execute();
 				}
@@ -412,7 +412,7 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 				newContext.put(FacilioConstants.ContextNames.WORK_ORDER, ((WorkorderTemplate)TemplateAPI.getTemplate(pm.getTemplateId())).getWorkorder());
 				newContext.put(FacilioConstants.ContextNames.TASK_SECTION_TEMPLATES, sectionList);
 				newContext.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
-				newContext.put(FacilioConstants.ContextNames.SKIP_WO_CREATION,true);
+//				newContext.put(FacilioConstants.ContextNames.SKIP_WO_CREATION,true);
 				
 				updatePM.execute();
 			}
@@ -462,7 +462,7 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 				newContext.put(FacilioConstants.ContextNames.WORK_ORDER, template.getWorkorder());
 				newContext.put(FacilioConstants.ContextNames.TASK_SECTION_TEMPLATES, template.getSectionTemplates());
 				newContext.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
-				newContext.put(FacilioConstants.ContextNames.SKIP_WO_CREATION,true);
+//				newContext.put(FacilioConstants.ContextNames.SKIP_WO_CREATION,true);
 				
 				updatePM.execute();
 			}
@@ -519,7 +519,7 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 				newContext.put(FacilioConstants.ContextNames.WORK_ORDER, template.getWorkorder());
 				newContext.put(FacilioConstants.ContextNames.TASK_SECTION_TEMPLATES, template.getSectionTemplates());
 				newContext.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
-				newContext.put(FacilioConstants.ContextNames.SKIP_WO_CREATION,true);
+//				newContext.put(FacilioConstants.ContextNames.SKIP_WO_CREATION,true);
 				
 				updatePM.execute();
 			}
@@ -593,7 +593,7 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 				newContext.put(FacilioConstants.ContextNames.WORK_ORDER, template.getWorkorder());
 				newContext.put(FacilioConstants.ContextNames.TASK_SECTION_TEMPLATES, template.getSectionTemplates());
 				newContext.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
-				newContext.put(FacilioConstants.ContextNames.SKIP_WO_CREATION,true);
+//				newContext.put(FacilioConstants.ContextNames.SKIP_WO_CREATION,true);
 				
 				updatePM.execute();
 			}
