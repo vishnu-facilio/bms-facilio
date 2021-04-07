@@ -89,6 +89,8 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 
 		Map<String, List<ReadingDataMeta>> supportFieldsRDM = null;
 		List<WorkflowFieldContext> fields = null;
+		List<WorkflowFieldContext> preRequisiteFields = new ArrayList<WorkflowFieldContext>();
+		
 		AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(Collections.singletonList(readingRule.getId()), false, true),null);
 		if(alarmRule != null) {		
 			fields = new ArrayList<>();
@@ -96,6 +98,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 				List<WorkflowFieldContext> workflowFields = WorkflowUtil.getWorkflowFields(alarmRule.getPreRequsite().getWorkflowId());
 				if(workflowFields != null) {
 					fields.addAll(workflowFields);
+					preRequisiteFields.addAll(workflowFields);
 				}
 			}
 			if(alarmRule.getAlarmTriggerRule().getWorkflowId() != -1) {
@@ -139,7 +142,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 			if(previousFetchStartReading != null)
 			{
 				Map<String, List<ReadingDataMeta>> beforeCurrentFields = prepareCurrentFieldsRDM(readingRule, previousFetchStartReading.getTtime(), startTime, resourceId, fields);
-				executeWorkflows(readingRule, alarmRule, Collections.singletonList(previousFetchStartReading), beforeCurrentFields, fields, beforeFetchFirstEvent, new BaseEventContext(), currentResourceContext, constructAssetTimeVsEventsMap(fields, resourceId, previousFetchStartReading.getTtime(), startTime));
+				executeWorkflows(readingRule, alarmRule, Collections.singletonList(previousFetchStartReading), beforeCurrentFields, fields, beforeFetchFirstEvent, new BaseEventContext(), currentResourceContext, constructAssetTimeVsEventsMap(fields, resourceId, previousFetchStartReading.getTtime(), startTime), preRequisiteFields);
 				if(beforeFetchFirstEvent != null && !beforeFetchFirstEvent.isEmpty() && !beforeFetchFirstEvent.get(0).getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY))
 				{
 					previousEventMeta = beforeFetchFirstEvent.get(0);
@@ -161,7 +164,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 			endTime = readings.get(readings.size() - 1).getTtime();
 
 			LinkedHashMap<Long,List<SensorEventContext>> assetTimeVsEventsMap = constructAssetTimeVsEventsMap(fields, resourceId, startTime, endTime);
-			FacilioContext context = executeWorkflows(readingRule, alarmRule, readings, currentFields, fields, events, previousEventMeta, currentResourceContext, assetTimeVsEventsMap);
+			FacilioContext context = executeWorkflows(readingRule, alarmRule, readings, currentFields, fields, events, previousEventMeta, currentResourceContext, assetTimeVsEventsMap, preRequisiteFields);
 			
 			if(context.containsKey(FacilioConstants.ContextNames.RULE_LOG_MODULE_DATA)) {
 				
@@ -201,7 +204,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 					{
 						Map<String, List<ReadingDataMeta>> extendedCurrentFields = prepareCurrentFieldsRDM(readingRule, endTime, nextSingleReading.getTtime(), resourceId, fields);
 						
-						executeWorkflows(readingRule, alarmRule, Collections.singletonList(nextSingleReading), extendedCurrentFields, fields, nextJobFirstEvent, previousEventMeta, currentResourceContext, constructAssetTimeVsEventsMap(fields, resourceId, endTime, nextSingleReading.getTtime()));
+						executeWorkflows(readingRule, alarmRule, Collections.singletonList(nextSingleReading), extendedCurrentFields, fields, nextJobFirstEvent, previousEventMeta, currentResourceContext, constructAssetTimeVsEventsMap(fields, resourceId, endTime, nextSingleReading.getTtime()), preRequisiteFields);
 						if(nextJobFirstEvent != null && !nextJobFirstEvent.isEmpty() && nextJobFirstEvent.get(0).getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY))
 						{
 							events.add(nextJobFirstEvent.get(0));
@@ -219,7 +222,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 		return events;
 	}
 	
-	private FacilioContext executeWorkflows(ReadingRuleContext readingRule, AlarmRuleContext alarmRule, List<ReadingContext> readings, Map<String, List<ReadingDataMeta>> supportFieldsRDM, List<WorkflowFieldContext> fields, List<BaseEventContext> baseEvents,BaseEventContext previousEventMeta, ResourceContext currentResourceContext, LinkedHashMap<Long,List<SensorEventContext>> assetTimeVsEventsMap) throws Exception
+	private FacilioContext executeWorkflows(ReadingRuleContext readingRule, AlarmRuleContext alarmRule, List<ReadingContext> readings, Map<String, List<ReadingDataMeta>> supportFieldsRDM, List<WorkflowFieldContext> fields, List<BaseEventContext> baseEvents,BaseEventContext previousEventMeta, ResourceContext currentResourceContext, LinkedHashMap<Long,List<SensorEventContext>> assetTimeVsEventsMap,List<WorkflowFieldContext> preRequisiteFields) throws Exception
 	{
 		int alarmCount = 0;
 		FacilioContext context = new FacilioContext();
@@ -256,25 +259,11 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 						getOtherRDMs(reading.getParentId(), reading.getTtime(), supportFieldsRDM, rdmCache, lastItr, fields);
 						context.put(FacilioConstants.ContextNames.CURRRENT_READING_DATA_META, rdmCache);
 						
-						boolean shouldSkipCurrentReading = false;
-						if (AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getOrgId() == 339 || AccountUtil.getCurrentOrg().getOrgId() == 405)) {
-							long currentReadingTime = reading.getTtime();
-							for(WorkflowFieldContext workflowField:fields) {
-								long resourceId = reading.getParentId();
-								if(workflowField.getResourceId() != -1) {
-									resourceId = workflowField.getResourceId();
-								}
-								ReadingDataMeta currentFieldRDM = rdmCache.get(ReadingsAPI.getRDMKey(resourceId, workflowField.getField()));
-								if(currentFieldRDM == null) {
-									shouldSkipCurrentReading = true;
-									break;
-								}
-								else if(currentFieldRDM != null && currentFieldRDM.getTtime() != currentReadingTime) {
-									shouldSkipCurrentReading = true;
-									break;
-								}
-							}
-							
+						boolean shouldSkipCurrentReading = false, isPreRequisiteReadingsMissing = false;
+						if (AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getOrgId() == 339 || AccountUtil.getCurrentOrg().getOrgId() == 405 || AccountUtil.getCurrentOrg().getOrgId() == 1)) {							
+							isPreRequisiteReadingsMissing = checkForNullReadingsInWorkflowFields(preRequisiteFields, rdmCache, reading);
+							shouldSkipCurrentReading = checkForNullReadingsInWorkflowFields(fields, rdmCache, reading);
+
 							if(AccountUtil.getCurrentOrg().getOrgId() == 339) {
 								boolean canSuppressAlarm = checkForSensorAlarmSuppression(assetTimeVsEventsMap, reading);
 								if(canSuppressAlarm && !shouldSkipCurrentReading && alarmRule != null && reading.getParentId() == currentResourceContext.getId()) 
@@ -299,7 +288,12 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 								}
 							}		
 						}
-						if(shouldSkipCurrentReading) {
+						
+						if(AccountUtil.getCurrentOrg().getOrgId() == 405 && !isPreRequisiteReadingsMissing && shouldSkipCurrentReading) {
+							LOGGER.info("Coearing Prerequisite Historical for ReadingRule: "+readingRule.getId()+" and reading " +reading+ ". WorkflowFields: "+fields);				
+							context.put(FacilioConstants.ContextNames.ONLY_PREQUISITE_READINGS_PRESENT, Boolean.TRUE);
+						}
+						else if(shouldSkipCurrentReading) {
 							LOGGER.info("Skipping Scheduled Historical for ReadingRule: "+readingRule.getId()+" and reading " +reading+ ". WorkflowFields: "+fields);				
 							continue;
 						}
@@ -659,6 +653,29 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 			}
 		}
 		return isActiveSensorEventPresent;
+	}
+
+	private boolean checkForNullReadingsInWorkflowFields(List<WorkflowFieldContext> fields, Map<String, ReadingDataMeta> rdmCache, ReadingContext reading) throws Exception {
+		
+		boolean shouldSkipCurrentReading = false;
+		long currentReadingTime = reading.getTtime();
+		
+		for(WorkflowFieldContext workflowField:fields) {
+			long resourceId = reading.getParentId();
+			if(workflowField.getResourceId() != -1) {
+				resourceId = workflowField.getResourceId();
+			}
+			ReadingDataMeta currentFieldRDM = rdmCache.get(ReadingsAPI.getRDMKey(resourceId, workflowField.getField()));
+			if(currentFieldRDM == null) {
+				shouldSkipCurrentReading = true;
+				break;
+			}
+			else if(currentFieldRDM != null && currentFieldRDM.getTtime() != currentReadingTime) {
+				shouldSkipCurrentReading = true;
+				break;
+			}
+		}
+		return shouldSkipCurrentReading;
 	}
 	
 	private LinkedHashMap<Long,List<SensorEventContext>> constructAssetTimeVsEventsMap(List<WorkflowFieldContext> fields, long resourceId, long startTime, long endTime) throws Exception {

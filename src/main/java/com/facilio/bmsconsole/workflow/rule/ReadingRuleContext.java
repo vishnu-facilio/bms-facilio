@@ -1046,13 +1046,22 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 					boolean isPreEvent = false;
 					if(this.getRuleTypeEnum() == RuleType.READING_RULE) {
 						AlarmRuleContext alarmRule = (AlarmRuleContext)context.get(FacilioConstants.ContextNames.ALARM_RULE_META);
-						if(alarmRule != null && alarmRule.getPreRequsite().getId() == this.getId()) {
+						if(alarmRule != null && alarmRule.getPreRequsite().getId() == this.getId()) {	
+							Boolean onlyPrequisiteReadingsPresent = (Boolean) context.get(FacilioConstants.ContextNames.ONLY_PREQUISITE_READINGS_PRESENT);
+							onlyPrequisiteReadingsPresent = onlyPrequisiteReadingsPresent == null ? Boolean.FALSE : onlyPrequisiteReadingsPresent;
+							
 							if(alarmRule.getAlarmTriggerRule().overPeriod > 0 || alarmRule.getAlarmTriggerRule().occurences > 0 || alarmRule.getAlarmTriggerRule().isConsecutive() || alarmRule.getAlarmTriggerRule().thresholdType == ReadingRuleContext.ThresholdType.FLAPPING) {
 								PreEventContext preEvent = constructPreClearEvent(reading, (ResourceContext) reading.getParent());
-								preEvent.constructAndAddPreClearEvent(context);isPreEvent = true;		
+								preEvent.constructAndAddPreClearEvent(context);isPreEvent = true;
+								if(onlyPrequisiteReadingsPresent) {
+									context.put(FacilioConstants.ContextNames.ONLY_PREQUISITE_READINGS_PRESENT, Boolean.FALSE);
+								}
 							}
 							else  {
 								constructAndAddClearEvent(context, (ResourceContext) reading.getParent(), reading.getTtime(), null);
+								if(onlyPrequisiteReadingsPresent) {
+									context.put(FacilioConstants.ContextNames.ONLY_PREQUISITE_READINGS_PRESENT, Boolean.FALSE);
+								}
 							}
 						}	
 					}
@@ -1083,7 +1092,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 
 		PreEventContext event = new PreEventContext();
 		
-		if(AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getOrgId() == 339 || AccountUtil.getCurrentOrg().getOrgId() == 405) && reading.getParent() == null) {
+		if(AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getOrgId() == 1 && AccountUtil.getCurrentOrg().getOrgId() == 339 || AccountUtil.getCurrentOrg().getOrgId() == 405) && reading.getParent() == null) {
 			event.setResource(resource);
 		}
 		else {

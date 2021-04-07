@@ -293,59 +293,66 @@ public enum ActionType {
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) {
 			try {
+				Boolean onlyPrequisiteReadingsPresent = (Boolean) context.get(FacilioConstants.ContextNames.ONLY_PREQUISITE_READINGS_PRESENT);
+				onlyPrequisiteReadingsPresent = onlyPrequisiteReadingsPresent == null ? Boolean.FALSE : onlyPrequisiteReadingsPresent;
+				
 				if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
-					long startTime = System.currentTimeMillis();
-					LOGGER.info("performAction for Rule:  "+currentRule.getId());
-					ReadingRuleContext readingrule = (ReadingRuleContext) currentRule;
-					Boolean addRule = false;
-					if (readingrule.getOverPeriod() > 0 || readingrule.getOccurences() > 0 || readingrule.isConsecutive() || readingrule.getThresholdType() == ReadingRuleContext.ThresholdType.FLAPPING.getValue()) {
-						BaseEventContext event =  ((ReadingRuleContext) currentRule).constructPreEvent(obj, (ReadingContext) currentRecord,context);
-        				addAlarm(event, obj, context, readingrule, currentRecord, BaseAlarmContext.Type.PRE_ALARM);
-        				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
-//        					LOGGER.info("Time taken to construct true PreEvent for currentRule  : "+currentRule.getId()+" is "+(System.currentTimeMillis() - startTime));			
-        				}
-					}
-					else {
-						long impactTime = System.currentTimeMillis();
-						BaseEventContext event = ((ReadingRuleContext) currentRule).constructEvent(obj, (ReadingContext) currentRecord,context);
-						if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
-//        					LOGGER.info("Time taken to construct true ReadingEvent for currentRule  : "+currentRule.getId()+" is "+(System.currentTimeMillis() - startTime));			
-        				}
-						///handle impacts
-						JSONObject impacts = (JSONObject) obj.get("impact");
-						if (impacts != null && !impacts.isEmpty()) {
-							Set<String> set = impacts.keySet();
-							for (String fieldName : set) {
-								JSONArray workFlowId = (JSONArray) impacts.get(fieldName);
-								for (int i = 0; i < workFlowId.size(); i++) {
-									long workFlowIds = (long) workFlowId.get(i);
-									FacilioChain c = FacilioChain.getTransactionChain();
-									FacilioContext impactContext = c.getContext();
-									impactContext.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
-									impactContext.put(FacilioConstants.ContextNames.RECORD, currentRecord);
-									String moduleName = currentRule.getModuleName();
-									impactContext.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-									c.addCommand(new ExecuteSpecificWorkflowsCommand(Collections.singletonList(workFlowIds), RuleType.IMPACT_RULE));
-									c.execute(impactContext);
-									if (impactContext.containsKey("impact_value")) {
-										if(impactContext.get("impact_value") != null) {
-											double impact_key = (double) impactContext.get("impact_value");
-											PropertyUtils.setProperty(event, fieldName , impact_key);
+					
+					if(!onlyPrequisiteReadingsPresent) {
+						long startTime = System.currentTimeMillis();
+						LOGGER.info("performAction for Rule:  "+currentRule.getId());
+						ReadingRuleContext readingrule = (ReadingRuleContext) currentRule;
+						Boolean addRule = false;
+						
+						if (readingrule.getOverPeriod() > 0 || readingrule.getOccurences() > 0 || readingrule.isConsecutive() || readingrule.getThresholdType() == ReadingRuleContext.ThresholdType.FLAPPING.getValue()) {
+							BaseEventContext event =  ((ReadingRuleContext) currentRule).constructPreEvent(obj, (ReadingContext) currentRecord,context);
+	        				addAlarm(event, obj, context, readingrule, currentRecord, BaseAlarmContext.Type.PRE_ALARM);
+	        				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
+//	        					LOGGER.info("Time taken to construct true PreEvent for currentRule  : "+currentRule.getId()+" is "+(System.currentTimeMillis() - startTime));			
+	        				}
+						}
+						else {
+							long impactTime = System.currentTimeMillis();
+							BaseEventContext event = ((ReadingRuleContext) currentRule).constructEvent(obj, (ReadingContext) currentRecord,context);
+							if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
+//	        					LOGGER.info("Time taken to construct true ReadingEvent for currentRule  : "+currentRule.getId()+" is "+(System.currentTimeMillis() - startTime));			
+	        				}
+							///handle impacts
+							JSONObject impacts = (JSONObject) obj.get("impact");
+							if (impacts != null && !impacts.isEmpty()) {
+								Set<String> set = impacts.keySet();
+								for (String fieldName : set) {
+									JSONArray workFlowId = (JSONArray) impacts.get(fieldName);
+									for (int i = 0; i < workFlowId.size(); i++) {
+										long workFlowIds = (long) workFlowId.get(i);
+										FacilioChain c = FacilioChain.getTransactionChain();
+										FacilioContext impactContext = c.getContext();
+										impactContext.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
+										impactContext.put(FacilioConstants.ContextNames.RECORD, currentRecord);
+										String moduleName = currentRule.getModuleName();
+										impactContext.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+										c.addCommand(new ExecuteSpecificWorkflowsCommand(Collections.singletonList(workFlowIds), RuleType.IMPACT_RULE));
+										c.execute(impactContext);
+										if (impactContext.containsKey("impact_value")) {
+											if(impactContext.get("impact_value") != null) {
+												double impact_key = (double) impactContext.get("impact_value");
+												PropertyUtils.setProperty(event, fieldName , impact_key);
+											}
+											else {
+												LOGGER.info("No impact value for workFlowIds: "+workFlowIds+" moduleName "+moduleName+" currentRecord : "+currentRecord);
+											}									
 										}
-										else {
-											LOGGER.info("No impact value for workFlowIds: "+workFlowIds+" moduleName "+moduleName+" currentRecord : "+currentRecord);
-										}									
 									}
 								}
 							}
+							if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
+//								LOGGER.info("Time taken to in addAlarm actionType for IMPACT currentRuleId  : "+currentRule.getId() +" is "+(System.currentTimeMillis() - impactTime));			
+							}
+							addAlarm(event, obj, context, currentRule, currentRecord, BaseAlarmContext.Type.READING_ALARM);
 						}
 						if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
-//							LOGGER.info("Time taken to in addAlarm actionType for IMPACT currentRuleId  : "+currentRule.getId() +" is "+(System.currentTimeMillis() - impactTime));			
+//							LOGGER.info("Time taken to in addAlarm actionType for currentRuleId  : "+currentRule.getId() +" is "+(System.currentTimeMillis() - startTime));			
 						}
-						addAlarm(event, obj, context, currentRule, currentRecord, BaseAlarmContext.Type.READING_ALARM);
-					}
-					if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
-//						LOGGER.info("Time taken to in addAlarm actionType for currentRuleId  : "+currentRule.getId() +" is "+(System.currentTimeMillis() - startTime));			
 					}
 
 				} else {
