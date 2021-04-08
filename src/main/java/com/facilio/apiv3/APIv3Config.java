@@ -182,6 +182,14 @@ public class APIv3Config {
                 .build();
     }
     
+    @Module(MailMessageUtil.EMAIL_TO_MODULE_DATA_MODULE_NAME)
+    public static Supplier<V3Config> getEmailToModuleDataCRUD() {
+        return () -> new V3Config(EmailToModuleDataContext.class, null)
+                .create()
+                .beforeSave(TransactionChainFactoryV3.getAddEmailToModuleDataBeforeSaveChain())
+                .build();
+    }
+    
     @Module(ControlScheduleUtil.CONTROL_SCHEDULE_MODULE_NAME)
     public static Supplier<V3Config> getScheduleCRUD() {
         return () -> new V3Config(ControlScheduleContext.class, null)

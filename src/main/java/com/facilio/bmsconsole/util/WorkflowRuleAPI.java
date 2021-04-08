@@ -553,9 +553,15 @@ public class WorkflowRuleAPI {
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 				.table(ruleModule.getTableName())
 				.select(fields)
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), module.getExtendedModuleIds(), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), Boolean.TRUE.toString(), BooleanOperators.IS))
 				.orderBy("EXECUTION_ORDER");
+		
+		if(module.hideFromParents()) {
+			ruleBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), module.getModuleId()+"", NumberOperators.EQUALS));
+		}
+		else {
+			ruleBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), module.getExtendedModuleIds(), NumberOperators.EQUALS));
+		}
 		
 		ruleBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), CommonOperators.IS_EMPTY));
 		

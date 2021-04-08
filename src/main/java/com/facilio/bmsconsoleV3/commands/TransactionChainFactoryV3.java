@@ -895,13 +895,6 @@ public class TransactionChainFactoryV3 {
         return chain;
     }
     
-    public static FacilioChain getAddEmailConversationThreadingFromEmailToModuleDataChain() {
-        FacilioChain chain = getDefaultChain();
-        chain.addCommand(new ConstructEmailConversationThreadingCommand());
-        chain.addCommand(new AddEmailConversationThreadingCommand());
-        return chain;
-    }
-    
     public static FacilioChain getAddEmailConversationThreadingAfterSaveChain() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new SendEmailForEmailConversationThreadingCommand());
@@ -909,6 +902,12 @@ public class TransactionChainFactoryV3 {
     }
     
     public static FacilioChain getAddEmailConversationThreadingBeforeSaveChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new AddSuplimentsForEmailBaseMessageCommand());
+        return chain;
+    }
+    
+    public static FacilioChain getAddEmailToModuleDataBeforeSaveChain() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new AddSuplimentsForEmailBaseMessageCommand());
         return chain;

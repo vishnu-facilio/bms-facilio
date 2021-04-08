@@ -16,9 +16,11 @@ import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.context.UserNotificationContext;
 import com.facilio.bmsconsoleV3.context.V3CustomModuleData;
 import com.facilio.bmsconsoleV3.context.BaseMailMessageContext;
+import com.facilio.bmsconsoleV3.context.EmailConversationThreadingContext;
 import com.facilio.bmsconsoleV3.context.EmailToModuleDataContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.util.V3AttachmentAPI;
+import com.facilio.bmsconsoleV3.util.V3Util;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.fs.FileInfo;
 import com.facilio.modules.fields.FileField;
@@ -1707,6 +1709,8 @@ public enum ActionType {
 			
 			BaseMailMessageContext mailContext = (BaseMailMessageContext) currentRecord;
 			
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			
 			long formId = (long) obj.get("formId");
 			if (formId > -1) {
 				FacilioForm form = FormsAPI.getFormFromDB(formId);
@@ -1729,44 +1733,35 @@ public enum ActionType {
 				}
 				
 				if(recordId != null) {
-					FacilioChain chain = TransactionChainFactoryV3.getAddEmailConversationThreadingFromEmailToModuleDataChain();
-					FacilioContext newcontext = chain.getContext();
-					newcontext.put(FacilioConstants.ContextNames.RECORD_ID, recordId);
-					newcontext.put(FacilioConstants.ContextNames.MODULE, module);
-					newcontext.put(MailMessageUtil.BASE_MAIL_CONTEXT, mailContext);
 					
-					chain.execute();
+					EmailConversationThreadingContext emailConversationContext = FieldUtil.getAsBeanFromJson(FieldUtil.getAsJSON(mailContext), EmailConversationThreadingContext.class);
+					
+					emailConversationContext.setParentBaseMail(mailContext);
+					emailConversationContext.setDataModuleId(module.getModuleId());
+					emailConversationContext.setRecordId(recordId);
+					
+					emailConversationContext.setFromType(EmailConversationThreadingContext.From_Type.CLIENT.getValue());
+					emailConversationContext.setMessageType(EmailConversationThreadingContext.Message_Type.REPLY.getValue());
+					
+					
+					FacilioContext contextNew = V3Util.createRecord(modBean.getModule(MailMessageUtil.EMAIL_CONVERSATION_THREADING_MODULE_NAME), FieldUtil.getAsJSON(emailConversationContext));
 				}
 				
 				if(recordId == null) {
-					V3Config v3Config = ChainUtil.getV3Config(module.getName());
-			        FacilioChain createRecordChain = ChainUtil.getCreateRecordChain(module.getName());
-			        FacilioContext contextNew = createRecordChain.getContext();
-
-			        if (module.isCustom()) {
-			            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			            FacilioField localIdField = modBean.getField("localId", module.getName());
-			            if (localIdField != null) {
-			            	contextNew.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
-			            }
-			        }
-
-			        Constants.setV3config(contextNew, v3Config);
-			        contextNew.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.CREATE);
-			        Constants.setModuleName(contextNew, module.getName());
-			        contextNew.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
-
-			        obj.put("siteId", mailContext.getSiteId());
-			        Constants.setRawInput(contextNew, obj);
-			        
-			        Class beanClass = ChainUtil.getBeanClass(v3Config, module);
-			        contextNew.put(Constants.BEAN_CLASS, beanClass);
-
-			        createRecordChain.execute();
+					
+					obj.put("siteId", mailContext.getSiteId());
+					 
+					FacilioContext contextNew = V3Util.createRecord(module, obj);
 			        
 			        Map<String, List<ModuleBaseWithCustomFields>> recordMap = (Map<String, List<ModuleBaseWithCustomFields>>) contextNew.get(Constants.RECORD_MAP);
 			        
-			        MailMessageUtil.addEmailToModuleDataContext(mailContext, recordMap.get(module.getName()).get(0).getId(), module.getModuleId());
+			        EmailToModuleDataContext emailToModuleData = FieldUtil.getAsBeanFromJson(FieldUtil.getAsJSON(mailContext), EmailToModuleDataContext.class);
+					
+					emailToModuleData.setParentBaseMail(mailContext);
+					emailToModuleData.setRecordId(recordMap.get(module.getName()).get(0).getId());
+					emailToModuleData.setDataModuleId(module.getModuleId());
+			        
+					V3Util.createRecord(modBean.getModule(MailMessageUtil.EMAIL_TO_MODULE_DATA_MODULE_NAME), FieldUtil.getAsJSON(emailToModuleData));
 				}
 			}
 			

@@ -19,6 +19,8 @@ import com.facilio.fs.FileInfo;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LargeTextField;
+import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.pdf.PdfUtil;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -55,6 +57,8 @@ public class MailMessageUtil {
     public static final String HTML_CONTENT_TYPE = "text/html";
     
     public static final String EMAIL_CONVERSATION_THREADING_MODULE_NAME = "emailConversationThreading";
+    
+    public static final String BASE_MAIL_MESSAGE_MODULE_NAME = "customMailMessages";
 
     public static void updateLatestMailUID(SupportEmailContext supportEmail, long id) throws Exception {
         GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
@@ -196,6 +200,20 @@ public class MailMessageUtil {
     	return null;
     }
     
+    public static List<SupplementRecord> getMailMessageSupliments() throws Exception {
+    	
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> fields = modBean.getAllFields(BASE_MAIL_MESSAGE_MODULE_NAME);
+        
+        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+        List<SupplementRecord> supplementList = new ArrayList<SupplementRecord>();
+        
+        supplementList.add((LargeTextField) fieldsAsMap.get("textContent"));
+        supplementList.add((LargeTextField) fieldsAsMap.get("htmlContent"));
+        
+        return supplementList;
+    }
+    
     public static void addEmailToModuleDataContext(BaseMailMessageContext mailContext,long recordId,long moduleId) throws Exception {
     	
     	EmailToModuleDataContext emailToModuleData = FieldUtil.getAsBeanFromJson(FieldUtil.getAsJSON(mailContext), EmailToModuleDataContext.class);
@@ -209,6 +227,7 @@ public class MailMessageUtil {
 		InsertRecordBuilder<EmailToModuleDataContext> insert = new InsertRecordBuilder<EmailToModuleDataContext>()
 				.moduleName(MailMessageUtil.EMAIL_TO_MODULE_DATA_MODULE_NAME)
 				.fields(modBean.getAllFields(MailMessageUtil.EMAIL_TO_MODULE_DATA_MODULE_NAME))
+				.insertSupplements(getMailMessageSupliments())
 				.addRecord(emailToModuleData);
 		
 		insert.save();
