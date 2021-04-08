@@ -3144,6 +3144,14 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getConfirmationDialogModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("confirmationDialog");
+		module.setDisplayName("Confirmation Dialog");
+		module.setTableName("Confirmation_Dialog");
+		return module;
+	}
+
 	public static FacilioModule getContractAssociatedAssetsModule() {
 		FacilioModule associatedAssetModule = new FacilioModule();
 		associatedAssetModule.setName("associatedassets");

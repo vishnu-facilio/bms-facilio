@@ -8289,6 +8289,18 @@ public class FieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getConfirmationDialogFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getConfirmationDialogModule();
+
+        fields.add(getField("id", "ID", module, FieldType.ID));
+        fields.add(getField("parentId", "PARENT_ID", module, FieldType.NUMBER));
+        fields.add(getField("name", "NAME", module, FieldType.STRING));
+        fields.add(getField("message", "MESSAGE", module, FieldType.STRING));
+        fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.NUMBER));
+        return fields;
+    }
+
     public static List<FacilioField> getGraphicsFields() {
         FacilioModule module = ModuleFactory.getGraphicsModule();
         List<FacilioField> fields = new ArrayList<>();

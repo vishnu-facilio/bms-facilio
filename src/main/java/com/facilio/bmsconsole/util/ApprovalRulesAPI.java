@@ -93,6 +93,8 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 	public static void addApproverRuleChildren(ApproverWorkflowRuleContext rule) throws Exception {
 		addApprover(rule.getId(), rule.getApprovers());
 		addValidations(rule.getId(), rule.getValidations());
+
+		ConfirmationDialogAPI.addConfirmationDialogs(rule.getConfirmationDialogs(), rule.getId());
 	}
 	
 	protected static void addApprover(long parentId, List<ApproverContext> sharing) throws Exception {
@@ -201,6 +203,9 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 		addApprover(rule.getId(), rule.getApprovers());
 		deleteValidations(oldRule.getValidations());
 		addValidations(rule.getId(), rule.getValidations());
+
+		ConfirmationDialogAPI.deleteConfirmationDialogs(rule.getId());
+		ConfirmationDialogAPI.addConfirmationDialogs(rule.getConfirmationDialogs(), rule.getId());
 
 		return rule;
 	}
@@ -436,6 +441,8 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 
 	public static void deleteApproverRuleChildren(ApproverWorkflowRuleContext rule) throws Exception {
 		deleteApprovers(rule.getApprovers());
-		deleteValidations(rule.getValidations());;
+		deleteValidations(rule.getValidations());
+
+		ConfirmationDialogAPI.deleteConfirmationDialogs(rule.getId());
 	}
 }

@@ -90,6 +90,14 @@ public class ApproverWorkflowRuleContext extends WorkflowRuleContext {
         this.validations = validations;
     }
 
+    private List<ConfirmationDialogContext> confirmationDialogs;
+    public List<ConfirmationDialogContext> getConfirmationDialogs() {
+        return confirmationDialogs;
+    }
+    public void setConfirmationDialogs(List<ConfirmationDialogContext> confirmationDialogs) {
+        this.confirmationDialogs = confirmationDialogs;
+    }
+
     @Override
     public boolean evaluateMisc(String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
         boolean result = true;
