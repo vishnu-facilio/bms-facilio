@@ -8,7 +8,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.services.factory.FacilioFactory;
@@ -340,23 +339,6 @@ public class ImportProcessContext implements Serializable,Cloneable
 					{
 						if (field.getDisplayType() == FacilioField.FieldDisplayType.ADDRESS) {
 							facilioFieldMapping.putAll(ImportAPI.getLocationFields((LookupField) field));
-						}
-						else if (field.getDataType() == FieldType.LOOKUP.getTypeAsInt() && getModule().getName().equals(FacilioConstants.ContextNames.ASSET) == false &&
-
-								(getModule().getExtendModule() != null && getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET) == false)
-								&& getModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE) == false
-								&& (getModule().getExtendModule() != null && getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE) == false
-								&& getModule().getName().equals(FacilioConstants.ContextNames.WORK_ORDER) == false)
-								&& getModule().getName().equals(FacilioConstants.ContextNames.SPACE) == false
-								&& (getModule().getExtendModule() != null && getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.SPACE) == false)
-						) {
-							LookupField lookupField = (LookupField) field;
-							if(lookupField.getLookupModule() != null) {
-								List<FacilioField> lookupFields = bean.getAllFields(lookupField.getLookupModule().getName());
-								for (FacilioField lookup : lookupFields) {
-									facilioFieldMapping.put(lookup.getName(), lookup);
-								}
-							}
 						}
 						else {
 							facilioFieldMapping.put(field.getName(), field);
