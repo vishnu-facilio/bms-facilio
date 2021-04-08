@@ -1,12 +1,14 @@
 package com.facilio.bmsconsole.page.factory;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 
+import com.facilio.modules.FieldFactory;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -202,31 +204,57 @@ public class VendorPageFactory extends PageFactory{
 			Section tab2Sec2 = page.new Section();
 			tab2.addSection(tab2Sec2);
 			addRelatedListWidget(tab2Sec2, "vendorDocuments", vendor.getModuleId());
-			
+
 			Section tab2Sec3 = page.new Section();
 			tab2.addSection(tab2Sec3);
 			addRelatedListWidget(tab2Sec3, "insurance", vendor.getModuleId());
-			
+
 			if(AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomainType.FACILIO) {
 
 				Section tab2Sec4 = page.new Section();
 				tab2.addSection(tab2Sec4);
 				addRelatedListWidget(tab2Sec4, "workorder", vendor.getModuleId());
-				
+
 				Section tab2Sec5 = page.new Section();
 				tab2.addSection(tab2Sec5);
 				addRelatedListWidget(tab2Sec5, "purchaseorder", vendor.getModuleId());
-				
+
 				Section tab2Sec6 = page.new Section();
 				tab2.addSection(tab2Sec6);
 				addRelatedListWidget(tab2Sec6, "contracts", vendor.getModuleId());
-				
+
+			}
+
+			if(AccountUtil.getCurrentOrg().getOrgId() == 321l) {
+				Section tab2Sec7 = page.new Section();
+				tab2.addSection(tab2Sec7);
+				addSpecialRelatedListWidgetForDemoOrg(tab2Sec7);
 			}
 		}
 		return page;
 
 		
 	}
+
+	private static void addSpecialRelatedListWidgetForDemoOrg(Section section) throws Exception {
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule custom_module_doc = modBean.getModule("custom_vendordocument");
+
+		List<FacilioField> allFields = modBean.getAllFields(custom_module_doc.getName());
+		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(allFields);
+
+		PageWidget relatedListWidget = new PageWidget(WidgetType.RELATED_LIST);
+		JSONObject relatedList = new JSONObject();
+		relatedList.put("module", custom_module_doc);
+		relatedList.put("field", fieldsAsMap.get("vendor"));
+		relatedListWidget.setRelatedList(relatedList);
+		relatedListWidget.addToLayoutParams(section, 24, 8);
+		section.addWidget(relatedListWidget);
+
+	}
+
+
 	private static boolean isNotLandLord(VendorContext vendor) {
 		boolean isNotLandLord = true;
 		if (vendor.getData() != null) {

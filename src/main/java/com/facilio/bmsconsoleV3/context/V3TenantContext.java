@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.context;
 
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsole.tenant.TenantSpaceContext;
 import com.facilio.bmsconsole.tenant.UtilityAsset;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -318,6 +319,16 @@ public class V3TenantContext extends V3Context {
     }
 
     private LocationContext address;
+
+    private List<TenantSpaceContext> tenantSpaces;
+
+    public List<TenantSpaceContext> getTenantSpaces() {
+        return tenantSpaces;
+    }
+
+    public void setTenantSpaces(List<TenantSpaceContext> tenantSpaces) {
+        this.tenantSpaces = tenantSpaces;
+    }
 
 
 }
