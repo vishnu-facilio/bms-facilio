@@ -81,12 +81,12 @@ public class EnergyMeterContext extends AssetContext {
 		this.childMeterIds = childMeterIds;
 	}
 	
-	private long multiplicationFactor = -1l;
-	
-	public long getMultiplicationFactor() {
+	private double multiplicationFactor = -1;	
+
+	public double getMultiplicationFactor() {
 		return multiplicationFactor;
 	}
-	public void setMultiplicationFactor(long multiplicationFactor) {
+	public void setMultiplicationFactor(double multiplicationFactor) {
 		this.multiplicationFactor = multiplicationFactor;
 	}
 

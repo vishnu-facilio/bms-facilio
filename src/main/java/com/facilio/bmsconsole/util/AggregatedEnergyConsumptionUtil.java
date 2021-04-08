@@ -176,14 +176,14 @@ public class AggregatedEnergyConsumptionUtil {
 	
 	public static List<ReadingContext> getFinalDeltaAggregatedReadings(LinkedHashMap<Long, DateRange> meterIdVsMaxDateRange) throws Exception {
 		List<ReadingContext> aggregatedDeltaReadings = AggregatedEnergyConsumptionUtil.aggregateEnergyConsumptionReadings(meterIdVsMaxDateRange);
-		HashMap<Long, Long> energyMeterMFMap = AggregatedEnergyConsumptionUtil.fetchEnergyMeterMultiplicationFactor(new ArrayList(meterIdVsMaxDateRange.keySet()));
+		HashMap<Long, Double> energyMeterMFMap = AggregatedEnergyConsumptionUtil.fetchEnergyMeterMultiplicationFactor(new ArrayList(meterIdVsMaxDateRange.keySet()));
 		AggregatedEnergyConsumptionUtil.calculateMFOnAggregatedConsumptionDelta(aggregatedDeltaReadings,energyMeterMFMap);
 		return aggregatedDeltaReadings;
 	}
 	
-	public static HashMap<Long, Long> fetchEnergyMeterMultiplicationFactor(List<Long> resourceIds) throws Exception {
+	public static HashMap<Long, Double> fetchEnergyMeterMultiplicationFactor(List<Long> resourceIds) throws Exception {
 		
-		HashMap<Long,Long> energyMeterMFMap = new HashMap<Long,Long>();
+		HashMap<Long,Double> energyMeterMFMap = new HashMap<Long,Double>();
 		if(resourceIds != null && !resourceIds.isEmpty()) 
 		{
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -287,7 +287,7 @@ public class AggregatedEnergyConsumptionUtil {
 		return aggregatedReadings;
 	}
 
-	public static void calculateMFOnAggregatedConsumptionDelta(List<ReadingContext> aggregatedDeltaReadings, HashMap<Long, Long> energyMeterMFMap) throws Exception {	
+	public static void calculateMFOnAggregatedConsumptionDelta(List<ReadingContext> aggregatedDeltaReadings, HashMap<Long, Double> energyMeterMFMap) throws Exception {	
 		if(aggregatedDeltaReadings != null && !aggregatedDeltaReadings.isEmpty() && energyMeterMFMap != null && MapUtils.isNotEmpty(energyMeterMFMap)) 
 		{
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -295,7 +295,7 @@ public class AggregatedEnergyConsumptionUtil {
 			FacilioField readingDeltaField =fieldMap.get("totalEnergyConsumptionDelta");
 			
 			for(ReadingContext readingContext: aggregatedDeltaReadings) {	
-				Long multiplicationFactor = energyMeterMFMap.get(readingContext.getParentId());
+				Double multiplicationFactor = energyMeterMFMap.get(readingContext.getParentId());
 				Object sumOfDelta = readingContext.getReading(readingDeltaField.getName());
 				if(multiplicationFactor != null && sumOfDelta != null) {
 					readingContext.addReading(readingDeltaField.getName(), Double.valueOf(sumOfDelta.toString()) * multiplicationFactor);
@@ -344,7 +344,7 @@ public class AggregatedEnergyConsumptionUtil {
 		}
 		
 		LinkedHashMap<Long,DateRange> meterIdVsMaxDateRange = new LinkedHashMap<Long,DateRange>();
-		HashMap<Long, Long> energyMeterMFMap = new HashMap<Long,Long>();
+		HashMap<Long, Double> energyMeterMFMap = new HashMap<Long,Double>();
 		
 		if(energyMeters != null && !energyMeters.isEmpty()) 
 		{
