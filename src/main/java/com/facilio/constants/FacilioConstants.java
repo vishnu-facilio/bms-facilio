@@ -13,6 +13,7 @@ import com.facilio.agentv2.modbustcp.ModbusTcpControllerContext;
 import com.facilio.agentv2.niagara.NiagaraControllerContext;
 import com.facilio.agentv2.opcua.OpcUaControllerContext;
 import com.facilio.agentv2.opcxmlda.OpcXmlDaControllerContext;
+import com.facilio.agentv2.rdm.RdmControllerContext;
 import com.facilio.agentv2.system.SystemControllerContext;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.reservation.ExternalAttendeeContext;
@@ -822,6 +823,7 @@ public class FacilioConstants {
         public static final String MISC_CONTROLLER_MODULE_NAME = "misccontroller";
         public static final String REST_CONTROLLER_MODULE_NAME = "restcontroller";
         public static final String CUSTOM_CONTROLLER_MODULE_NAME = "customcontroller";
+		public static final String RDM_CONTROLLER_MODULE_NAME = "rdmcontroller";
         public static final String CONTROLLER_MODULE_NAME = "controller";
         public static final String AGENT_METRICS_MODULE = "agentMetrics";
         public static final String CUSTOM_ACTIVITY = "customactivity";
@@ -2032,6 +2034,7 @@ public class FacilioConstants {
 			classMap.put(AGENT_METRICS_MODULE, AgentMetrics.class);
 			classMap.put(SYSTEM_CONTROLLER_MODULE_NAME, SystemControllerContext.class);
 			classMap.put(LON_WORKS_CONTROLLER_MODULE_NAME, LonWorksControllerContext.class);
+			classMap.put(RDM_CONTROLLER_MODULE_NAME, RdmControllerContext.class);
 			//classMap.put(REST_CONTROLLER_MODULE_NAME,MiscController.class);
 			//classMap.put(CUSTOM_CONTROLLER_MODULE_NAME, CustomController.class);
 

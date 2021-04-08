@@ -376,7 +376,7 @@ public abstract class Controller extends AssetContext {
     public abstract List<Condition> getControllerConditions() throws Exception;
     
     @JsonIgnore
-    public abstract String getIdentifier() throws IOException;
+    public abstract String getIdentifier() throws Exception;
     
     @Override
 	public ResourceType getResourceTypeEnum() {

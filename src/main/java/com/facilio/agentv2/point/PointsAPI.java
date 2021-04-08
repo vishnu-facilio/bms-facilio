@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import com.facilio.agentv2.rdm.RdmPointContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
@@ -70,7 +71,6 @@ public class PointsAPI {
                 return ModuleFactory.getOPCXmlDAPointModule();
             case MODBUS_RTU:
                 return ModuleFactory.getModbusRtuPointModule();
-
             case MODBUS_IP:
                 return ModuleFactory.getModbusTcpPointModule();
             case BACNET_IP:
@@ -85,6 +85,8 @@ public class PointsAPI {
                 return ModuleFactory.getSystemPointModule();
             case LON_WORKS:
             	return AgentModuleFactory.getLonWorksPointModule();
+            case RDM:
+                return AgentModuleFactory.getRdmPointModule();
             case REST:
             case CUSTOM:
             case BACNET_MSTP:
@@ -115,6 +117,8 @@ public class PointsAPI {
                 return FieldFactory.getSystemPointFields();
             case LON_WORKS:
             	return AgentFieldFactory.getLonWorksPointFields();
+            case RDM:
+                return AgentFieldFactory.getRdmPointFields();
             case REST:
             case CUSTOM:
             case BACNET_MSTP:
@@ -154,6 +158,8 @@ public class PointsAPI {
                     return SystemPointContext.getPointFromMap(payload);
                 case LON_WORKS:
                 	return LonWorksPointContext.getPointFromMap(payload);
+                case RDM:
+                    return RdmPointContext.getPointFromMap(payload);
                 default:
                     throw new Exception("no implementation for " + controllerType.asString());
             }
@@ -350,6 +356,11 @@ public class PointsAPI {
                 context.put(FacilioConstants.ContextNames.INNER_JOIN, ModuleFactory.getNiagaraPointModule().getTableName());
                 context.put(FacilioConstants.ContextNames.ON_CONDITION, AgentConstants.POINTS_TABLE + ".ID=" + ModuleFactory.getNiagaraPointModule().getTableName() + ".ID");
                 context.put(FacilioConstants.ContextNames.FIELDS, FieldFactory.getNiagaraPointFields());
+                break;
+            case RDM:
+                context.put(FacilioConstants.ContextNames.INNER_JOIN, AgentModuleFactory.getRdmPointModule().getTableName());
+                context.put(FacilioConstants.ContextNames.ON_CONDITION, AgentConstants.POINTS_TABLE + ".ID=" + AgentModuleFactory.getRdmPointModule().getTableName() + ".ID");
+                context.put(FacilioConstants.ContextNames.FIELDS, AgentFieldFactory.getRdmPointFields());
                 break;
             case LON_WORKS:
                 // throw  new Exception("Implementation for LON_WORKS, not found ");

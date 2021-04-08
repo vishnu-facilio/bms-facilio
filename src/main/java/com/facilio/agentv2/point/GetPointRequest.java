@@ -291,6 +291,11 @@ public class GetPointRequest {
             	builder.select(fields).innerJoin(AgentModuleFactory.getLonWorksPointModule().getTableName())
             	.on(AgentConstants.POINTS_TABLE+".ID="+AgentModuleFactory.getLonWorksPointModule().getTableName()+".ID");
             	return builder;
+            case RDM:
+                fields.addAll(AgentFieldFactory.getRdmPointFields());
+                builder.select(fields).innerJoin(AgentModuleFactory.getRdmPointModule().getTableName())
+                        .on(AgentConstants.POINTS_TABLE + ".ID=" + AgentModuleFactory.getRdmPointModule().getTableName() + ".ID");
+                return builder;
             default:
                 throw new Exception("FacilioControler type didnt match with cases " + controllerType.toString());
         }

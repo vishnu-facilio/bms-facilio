@@ -8,6 +8,7 @@ import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.iotmessage.ControllerMessenger;
 import com.facilio.agentv2.modbusrtu.ModbusRtuControllerContext;
 import com.facilio.agentv2.modbusrtu.RtuNetworkContext;
+
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -15,7 +16,6 @@ import com.facilio.custom.CustomController;
 import com.facilio.modules.FieldUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.log4j.jmx.Agent;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 

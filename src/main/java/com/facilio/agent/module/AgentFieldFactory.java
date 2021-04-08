@@ -7,7 +7,6 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 
 public class AgentFieldFactory {
@@ -50,4 +49,16 @@ public class AgentFieldFactory {
 	        fields.add(FieldFactory.getFieldDeviceId(module));
 	        return fields;
 	    }
+
+	public static List<FacilioField> getRdmPointFields() {
+		FacilioModule module = AgentModuleFactory.getRdmPointModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(FieldFactory.getIdNotPrimaryField(module));
+		fields.add(FieldFactory.getControllerIdField(module));
+		fields.add(FieldFactory.getField(AgentConstants.PATH, "PATH", FieldType.STRING));
+		fields.add(FieldFactory.getField(AgentConstants.DETAILS, "DETAILS", FieldType.STRING));
+		fields.add(FieldFactory.getField(AgentConstants.RDM_POINT_CLASS, "CLASS", FieldType.STRING));
+		fields.add(FieldFactory.getFieldDeviceId(module));
+		return fields;
+	}
 }

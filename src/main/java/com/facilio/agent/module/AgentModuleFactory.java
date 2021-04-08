@@ -22,10 +22,18 @@ public class AgentModuleFactory {
 	}
 	
 	public static FacilioModule getLonWorksPointModule() {
-		FacilioModule bacnetIpPointModule = new FacilioModule();
-		bacnetIpPointModule.setName("lonworksPoint");
-		bacnetIpPointModule.setDisplayName("LonWorks Point");
-		bacnetIpPointModule.setTableName("LonWorks_Point");
-		return bacnetIpPointModule;
+        FacilioModule lonworksModule = new FacilioModule();
+        lonworksModule.setName("lonworksPoint");
+        lonworksModule.setDisplayName("LonWorks Point");
+        lonworksModule.setTableName("LonWorks_Point");
+        return lonworksModule;
+    }
+
+    public static FacilioModule getRdmPointModule() {
+        FacilioModule lonworksModule = new FacilioModule();
+        lonworksModule.setName("rdmPoint");
+        lonworksModule.setDisplayName("RDM Point");
+        lonworksModule.setTableName("RDM_Point");
+        return lonworksModule;
 	}
 }

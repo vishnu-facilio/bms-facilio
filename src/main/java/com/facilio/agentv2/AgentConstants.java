@@ -63,6 +63,7 @@ public class AgentConstants
 
     //opc-xmlda
     public static final String USER_NAME = "userName";
+    public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
     public static final String PATH = "path";
 
@@ -256,4 +257,7 @@ public class AgentConstants
     public static final String SOURCE = "source";
     public static final String AGENT_CONNECTION_LOST_WORKFLOW_ID = "connectionLostWorkflowId";
     public static final String AGENT_CONNECTION_REGAIN_WORKFLOW_ID = "connectionRegainWorkflowId";
+
+    public static final String RDM_POINT_CLASS = "rdmPointClass";
+    public static final String DETAILS = "details";
 }

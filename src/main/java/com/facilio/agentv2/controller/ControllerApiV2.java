@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.facilio.agentv2.rdm.RdmControllerContext;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -107,6 +108,10 @@ public class ControllerApiV2 {
                     RtuNetworkContext rtuNetworkContext = ((ModbusRtuControllerContext) controller).getNetwork();
                     rtuNetworkContext.setAgentId(agent.getId());
                     context.put(FacilioConstants.ContextNames.RTU_NETWORK, rtuNetworkContext);
+                }
+                if (controller.getControllerType() == FacilioControllerType.RDM.asInt()) {
+                    RdmControllerContext rdmControllerContext = (RdmControllerContext) controller;
+                    controller.setName(RdmControllerContext.getKey(rdmControllerContext));
                 }
                 String assetCategoryName = ControllerApiV2.getControllerModuleName(FacilioControllerType.valueOf(controller.getControllerType()));
                 AssetCategoryContext asset = AssetsAPI.getCategory(assetCategoryName);
@@ -227,6 +232,9 @@ public class ControllerApiV2 {
                 break;
             case BACNET_MSTP:
             case KNX:
+            case RDM:
+                controller = FieldUtil.getAsBeanFromMap(map, RdmControllerContext.class);
+                break;
             default:
                 throw new IllegalStateException("Unexpected value: " + controllerType);
         }
@@ -236,6 +244,7 @@ public class ControllerApiV2 {
             throw new Exception(" controller not made type" + controllerType + "  map" + map);
         }
     }
+
 
     public static String getControllerModuleName(FacilioControllerType controllerType) {
         switch (controllerType) {
@@ -261,6 +270,8 @@ public class ControllerApiV2 {
                 return FacilioConstants.ContextNames.SYSTEM_CONTROLLER_MODULE_NAME;
             case LON_WORKS:
             	return FacilioConstants.ContextNames.LON_WORKS_CONTROLLER_MODULE_NAME;
+            case RDM:
+                return FacilioConstants.ContextNames.RDM_CONTROLLER_MODULE_NAME;
             default:
                 return null;
         }

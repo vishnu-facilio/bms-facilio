@@ -12,6 +12,8 @@ import com.facilio.agentv2.modbusrtu.RtuNetworkContext;
 import com.facilio.agentv2.modbustcp.ModbusTcpControllerContext;
 import com.facilio.agentv2.opcua.OpcUaControllerContext;
 import com.facilio.agentv2.opcxmlda.OpcXmlDaControllerContext;
+import com.facilio.agentv2.rdm.RdmControllerContext;
+import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.modules.FieldUtil;
 import org.apache.log4j.LogManager;
@@ -280,5 +282,7 @@ public class AgentMessenger {
         return constructNewIotAgentMessage(agentId, FacilioCommand.UPGRADE, context, (FacilioControllerType) null);
     }
 
-
+    public static boolean sendRdmAddControllerCommand(RdmControllerContext rdmControllerContext) throws Exception {
+        return sendControllerConfig(rdmControllerContext);
+    }
 }
