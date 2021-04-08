@@ -27,7 +27,9 @@ public class ChangeApprovalStatusForModuleDataCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         Map<String, List> recordMap = CommonCommandUtil.getRecordMap((FacilioContext) context);
         Long approvalTransitionId = (Long) context.get(FacilioConstants.ContextNames.APPROVAL_TRANSITION_ID);
-        if (MapUtils.isNotEmpty(recordMap) && approvalTransitionId != null) {
+        String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+        List<ModuleBaseWithCustomFields> moduleRecord = recordMap.get(moduleName);
+        if (CollectionUtils.isNotEmpty(moduleRecord) && approvalTransitionId != null) {
             ApprovalStateTransitionRuleContext approvalTransition = (ApprovalStateTransitionRuleContext) WorkflowRuleAPI.getWorkflowRule(approvalTransitionId);
             if (approvalTransition == null) {
                 throw new IllegalArgumentException("Invalid approval transition");
@@ -35,23 +37,20 @@ public class ChangeApprovalStatusForModuleDataCommand extends FacilioCommand {
             // skip approval check for update, if approvalTransition is valid
             context.put(FacilioConstants.ContextNames.SKIP_APPROVAL_CHECK, true);
 
-            for (String moduleName : recordMap.keySet()) {
-                List<ModuleBaseWithCustomFields> list = recordMap.get(moduleName);
-                for (ModuleBaseWithCustomFields record : list) {
-                    Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, record, WorkflowRuleAPI.getOrgPlaceHolders());
-                    boolean shouldChangeState = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(approvalTransition,
-                            moduleName, record, StateFlowRulesAPI.getDefaultFieldChangeSet(moduleName, record.getId()),
-                            recordPlaceHolders, (FacilioContext) context, false);
-                    if (shouldChangeState) {
-                        FacilioStatus newState = StateFlowRulesAPI.getStateContext(approvalTransition.getToStateId());
-                        if (newState == null) {
-                            throw new Exception("Invalid state");
-                        }
-                        approvalTransition.executeTrueActions(record, context, recordPlaceHolders);
+            for (ModuleBaseWithCustomFields record : moduleRecord) {
+                Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, record, WorkflowRuleAPI.getOrgPlaceHolders());
+                boolean shouldChangeState = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(approvalTransition,
+                        moduleName, record, StateFlowRulesAPI.getDefaultFieldChangeSet(moduleName, record.getId()),
+                        recordPlaceHolders, (FacilioContext) context, false);
+                if (shouldChangeState) {
+                    FacilioStatus newState = StateFlowRulesAPI.getStateContext(approvalTransition.getToStateId());
+                    if (newState == null) {
+                        throw new Exception("Invalid state");
                     }
-                    else {
-                        throw new IllegalArgumentException("Invalid permission to approve");
-                    }
+                    approvalTransition.executeTrueActions(record, context, recordPlaceHolders);
+                }
+                else {
+                    throw new IllegalArgumentException("Invalid permission to approve");
                 }
             }
         }
