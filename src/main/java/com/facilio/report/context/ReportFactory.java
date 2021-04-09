@@ -46,6 +46,7 @@ public class ReportFactory {
 		String RESPONSE_SLA_COL = "response_sla";
 		String RESOLUTION_DUE_COL="resolutionduestatus";
 		String ACCEPTANCE_DUE_COL="acceptanceduestatus";
+		String RESPONSE_DUE_COL = "responseduestatus";
 		
 		
 		int OPENVSCLOSE = 1;
@@ -58,6 +59,7 @@ public class ReportFactory {
 		int RESPONSE_SLA = 14;
 		int RESOLUTION_DUE=15;
 		int ACCEPTANCE_DUE=16;
+		int RESPONSE_DUE = 17;
 	}
 	
 	public interface Alarm {
@@ -110,6 +112,11 @@ public class ReportFactory {
 			responseSlaField.addGenericCondition("Delayed", CriteriaAPI.getCondition("ACTUAL_WORK_START", "actualWorkStart", "scheduledStart", FieldOperator.GREATER_THAN));
 			responseSlaField.addGenericCondition("Ontime", CriteriaAPI.getCondition("ACTUAL_WORK_START", "actualWorkStart", "scheduledStart", FieldOperator.LESS_THAN_EQUAL));
 			reportFields.add(responseSlaField);
+			
+			ReportFacilioField responseDueField = (ReportFacilioField) getField(WorkOrder.RESPONSE_DUE_COL, "Response Due Status", ModuleFactory.getWorkOrdersModule(), " CASE WHEN WorkOrders.RESPONSE_DUE_DATE IS NOT NULL AND Tickets.ACTUAL_WORK_START IS NOT NULL THEN CASE WHEN Tickets.ACTUAL_WORK_START > WorkOrders.RESPONSE_DUE_DATE THEN 'Delayed' ELSE 'Ontime' END END ", FieldType.STRING, WorkOrder.RESPONSE_DUE);
+			responseDueField.addGenericCondition("Delayed", CriteriaAPI.getCondition("ACTUAL_WORK_START", "actualWorkStart", "responseDueDate", FieldOperator.GREATER_THAN));
+			responseDueField.addGenericCondition("Ontime", CriteriaAPI.getCondition("ACTUAL_WORK_START", "actualWorkStart", "responseDueDate", FieldOperator.LESS_THAN_EQUAL));
+			reportFields.add(responseDueField);
 			
 			ReportFacilioField plannedVsUnplannedField = (ReportFacilioField) getField(WorkOrder.PLANNED_VS_UNPLANNED_COL, "Planned Type", ModuleFactory.getWorkOrdersModule(), " CASE WHEN Tickets.SOURCE_TYPE = 5 THEN 'Planned' ELSE 'Unplanned' END ", FieldType.STRING, WorkOrder.PLANNED_VS_UNPLANNED);
 			plannedVsUnplannedField.addGenericCondition("Planned", CriteriaAPI.getCondition("SOURCE_TYPE", "sourceType", "5", EnumOperators.IS));
