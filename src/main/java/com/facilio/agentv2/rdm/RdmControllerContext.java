@@ -36,6 +36,10 @@ public class RdmControllerContext extends Controller {
     private String username;
     private String password;
 
+    public RdmControllerContext() {
+        setControllerType(FacilioControllerType.RDM.asInt());
+    }
+
     public static String getKey(RdmControllerContext rdmControllerContext) throws URISyntaxException {
         URI uri = new URI(rdmControllerContext.getUrl());
         return rdmControllerContext.getDevice() + ":" + uri.getHost();
@@ -93,8 +97,4 @@ public class RdmControllerContext extends Controller {
         return uri.getHost();
     }
 
-    @Override
-    public int getControllerType() {
-        return FacilioControllerType.RDM.asInt();
-    }
 }
