@@ -1014,7 +1014,7 @@ public class ReportFactoryFields {
 			dimensionFields.add(ReportFactory.getReportField(WorkOrder.OVERDUE_CLOSED_COL));
 			dimensionFields.add(ReportFactory.getReportField(WorkOrder.PLANNED_VS_UNPLANNED_COL));
 			dimensionFields.add(ReportFactory.getReportField(WorkOrder.RESPONSE_SLA_COL));
-			
+			dimensionFields.add(ReportFactory.getReportField(WorkOrder.RESPONSE_DUE_COL));
 			
 		}
 		else if(module.equals("alarm")) {
