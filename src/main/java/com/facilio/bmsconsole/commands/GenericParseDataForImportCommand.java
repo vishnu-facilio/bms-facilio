@@ -69,7 +69,7 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 		ArrayList<String> missingColumns = new ArrayList<String>();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		// For Asset, Workorder and Inventory Modules we are not checking based on this requiredFields.
-		ArrayList<String> requiredFields = getRequiredFields(moduleName);
+		ArrayList<FacilioField> requiredFields = getRequiredFields(moduleName);
 
 		FacilioModule module = modBean.getModule(moduleName);
 		if (ImportAPI.isInsertImport(importProcessContext)) {
@@ -102,9 +102,9 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 				}
 			} else if (requiredFields.size() != 0) {
 
-				for (String field : requiredFields) {
-					if (!fieldMapping.containsKey(moduleName + "__" + field)) {
-						missingColumns.add(field);
+				for (FacilioField field : requiredFields) {
+					if (!fieldMapping.containsKey(field.getModule().getName() + "__" + field.getName())) {
+						missingColumns.add(field.getDisplayName());
 					}
 				}
 			}
@@ -302,12 +302,12 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 		}
 	}
 	
-	private ArrayList<String> getRequiredFields(String moduleName) throws Exception{
-		ArrayList<String> fields = new ArrayList<String>();
+	private ArrayList<FacilioField> getRequiredFields(String moduleName) throws Exception{
+		ArrayList<FacilioField> fields = new ArrayList<FacilioField>();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioField primaryField = modBean.getPrimaryField(moduleName);
 		if(primaryField != null) {
-			fields.add(primaryField.getName());
+			fields.add(primaryField);
 		}
 		switch (moduleName) {
 			// fill pm required fields here 

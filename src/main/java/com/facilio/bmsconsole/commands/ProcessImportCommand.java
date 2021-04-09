@@ -367,8 +367,11 @@ public class ProcessImportCommand extends FacilioCommand {
 					moduleObj = ModuleFactory.getZoneRelModule();
 				}
 
-				if (moduleObj!=null && moduleObj.isStateFlowEnabled()) {
-					props.put(FacilioConstants.ContextNames.STATE_FLOW_ID, StateFlowRulesAPI.getDefaultStateFlow(moduleObj).getId());
+				if (moduleObj != null && moduleObj.isStateFlowEnabled()) {
+					StateFlowRuleContext defaultStateFlow = StateFlowRulesAPI.getDefaultStateFlow(moduleObj);
+					if (defaultStateFlow != null) {
+						props.put(FacilioConstants.ContextNames.STATE_FLOW_ID, defaultStateFlow.getId());
+					}
 				} 
 				else if (AssetsAPI.isAssetsModule(importProcessContext.getModule())) {
 					StateFlowRuleContext stateFlow = StateFlowRulesAPI.getDefaultStateFlow(modBean.getModule(FacilioConstants.ContextNames.ASSET));
