@@ -1,5 +1,7 @@
 package com.facilio.agentv2.rdm;
 
+import com.facilio.agent.controller.FacilioController;
+import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.opcxmlda.OpcXmlDaControllerContext;
@@ -89,5 +91,10 @@ public class RdmControllerContext extends Controller {
     private String getHost(String url) throws URISyntaxException {
         URI uri = new URI(url);
         return uri.getHost();
+    }
+
+    @Override
+    public int getControllerType() {
+        return FacilioControllerType.RDM.asInt();
     }
 }
