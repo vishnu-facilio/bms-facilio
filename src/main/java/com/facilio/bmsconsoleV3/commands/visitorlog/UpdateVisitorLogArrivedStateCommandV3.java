@@ -23,35 +23,35 @@ import com.facilio.v3.context.Constants;
 public class UpdateVisitorLogArrivedStateCommandV3 extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-//        String moduleName = Constants.getModuleName(context);
-//        Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
-//        List<VisitorLogContextV3> visitorLoggingRecords = recordMap.get(moduleName);
-//
-//        if(CollectionUtils.isNotEmpty(visitorLoggingRecords)) {
-//            Map<String, Map<Long, List<UpdateChangeSet>>> moduleChangeSetMap = new HashMap<String, Map<Long,List<UpdateChangeSet>>>();
-//            Map<Long, List<UpdateChangeSet>> changeSet = new HashMap<Long, List<UpdateChangeSet>>();
-//
-//            for(VisitorLogContextV3 vl : visitorLoggingRecords) {
-//                List<UpdateChangeSet> changes = new ArrayList<UpdateChangeSet>();
-//                UpdateChangeSet updateChangeState = new UpdateChangeSet();
-//
-//                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-//                FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOG);
-//                long fieldId = modBean.getField("moduleState", module.getName()).getFieldId();
-//
-//                VisitorLogContextV3 visitorLogging = V3VisitorManagementAPI.getVisitorLogTriggers(vl.getId(), null, false);
-//
-//                if(visitorLogging != null) {
-//                    updateChangeState.setFieldId(fieldId);
-//                    updateChangeState.setNewValue(visitorLogging.getModuleState().getId());
-//                    changes.add(updateChangeState);
-//                    changeSet.put(visitorLogging.getId(), changes);
-//
-//                }
-//            }
-//            moduleChangeSetMap.put(FacilioConstants.ContextNames.VISITOR_LOG, changeSet);
-//            CommonCommandUtil.appendChangeSetMapToContext(context, changeSet, moduleName);
-//        }
+        String moduleName = Constants.getModuleName(context);
+        Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
+        List<VisitorLogContextV3> visitorLoggingRecords = recordMap.get(moduleName);
+
+        if(CollectionUtils.isNotEmpty(visitorLoggingRecords)) {
+            Map<String, Map<Long, List<UpdateChangeSet>>> moduleChangeSetMap = new HashMap<String, Map<Long,List<UpdateChangeSet>>>();
+            Map<Long, List<UpdateChangeSet>> changeSet = new HashMap<Long, List<UpdateChangeSet>>();
+
+            for(VisitorLogContextV3 vl : visitorLoggingRecords) {
+                List<UpdateChangeSet> changes = new ArrayList<UpdateChangeSet>();
+                UpdateChangeSet updateChangeState = new UpdateChangeSet();
+
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOG);
+                long fieldId = modBean.getField("moduleState", module.getName()).getFieldId();
+
+                VisitorLogContextV3 visitorLogging = V3VisitorManagementAPI.getVisitorLogTriggers(vl.getId(), null, false);
+
+                if(visitorLogging != null) {
+                    updateChangeState.setFieldId(fieldId);
+                    updateChangeState.setNewValue(visitorLogging.getModuleState().getId());
+                    changes.add(updateChangeState);
+                    changeSet.put(visitorLogging.getId(), changes);
+
+                }
+            }
+            moduleChangeSetMap.put(FacilioConstants.ContextNames.VISITOR_LOG, changeSet);
+            CommonCommandUtil.appendChangeSetMapToContext(context, changeSet, moduleName);
+        }
         return false;
     }
 }
