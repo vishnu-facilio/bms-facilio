@@ -38,6 +38,8 @@ public class GetFormMetaCommand extends FacilioCommand {
 		String formName = (String) context.get(FacilioConstants.ContextNames.FORM_NAME);
 		Long formId = (Long) context.getOrDefault(FacilioConstants.ContextNames.FORM_ID, -1l);
 		Long appId = (Long) context.getOrDefault(FacilioConstants.ContextNames.APP_ID, -1l);
+		String appLinkName = (String) context.getOrDefault(ContextNames.APP_LINKNAME, null);
+
 		String formModuleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);	// TODO...needs to be mandatory
 		FacilioModule formModule = null;
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -45,8 +47,9 @@ public class GetFormMetaCommand extends FacilioCommand {
 		
 		FacilioForm form = null;
 		ApplicationContext app = appId <= 0 ? AccountUtil.getCurrentApp() : ApplicationApi.getApplicationForId(appId);
-		String appLinkName = app.getLinkName();
-		appId = app.getId();
+		if(StringUtils.isEmpty(appLinkName) && app != null) {
+			appLinkName =app.getLinkName();
+		}
 		if(formId != null && formId > 0) {
 			form= FormsAPI.getFormFromDB(formId);
 			if (form != null) {

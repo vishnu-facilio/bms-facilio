@@ -59,6 +59,8 @@ public class FormAction extends FacilioAction {
 		
 		context.put(FacilioConstants.ContextNames.FORM_NAME, this.getFormNames());
 		context.put(FacilioConstants.ContextNames.FORM_ID, this.getFormId());
+		context.put(ContextNames.APP_LINKNAME, this.getAppLinkName());
+
 		FacilioChain c = FacilioChainFactory.getFormMetaChain();
 		c.execute(context);
 		
