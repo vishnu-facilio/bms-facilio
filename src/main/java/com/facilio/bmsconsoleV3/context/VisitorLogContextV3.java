@@ -6,7 +6,7 @@ import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.v3.context.V3Context;
 
 public class VisitorLogContextV3 extends BaseVisitContextV3 {
-	
+
 	private static final long serialVersionUID = 1L;
 
 	private Long checkInTime;
@@ -185,5 +185,16 @@ public class VisitorLogContextV3 extends BaseVisitContextV3 {
 
 	public void setInvite(InviteVisitorContextV3 invite) {
 		this.invite = invite;
+	}
+	
+	@Override
+	public String toString() {
+		return "VisitorLogContextV3 [checkInTime=" + checkInTime + ", isApprovalNeeded=" + isApprovalNeeded
+				+ ", invite=" + invite + ", getVisitorType()=" + getVisitorType() + ", getHost()=" + getHost()
+				+ ", getVisitor()=" + getVisitor() + ", getVisitedSpace()=" + getVisitedSpace() + ", getPassCode()="
+				+ getPassCode() + ", getVisitorName()=" + getVisitorName() + ", getVisitorEmail()=" + getVisitorEmail()
+				+ ", getVisitorPhone()=" + getVisitorPhone() + ", getChildVisitTypeEnum()=" + getChildVisitTypeEnum()
+				+ ", getFormId()=" + getFormId() + ", getModuleState()=" + getModuleState() + ", getStateFlowId()="
+				+ getStateFlowId() + "]";
 	}
 }
