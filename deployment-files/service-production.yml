@@ -9,8 +9,8 @@ services:
     dbName: default
 
   - serviceName: jobs
-    instanceName: default
-    dbName: default
+    instanceName: jobs-1
+    dbName: bms
 
   - serviceName: tempjobs
     instanceName: jobs-1
