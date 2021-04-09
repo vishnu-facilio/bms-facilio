@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.context.floorplan;
 
+import com.facilio.bmsconsoleV3.context.V3EmployeeContext;
 import com.facilio.bmsconsoleV3.context.V3SpaceContext;
 import com.facilio.v3.context.V3Context;
 import java.util.Collections;
@@ -7,9 +8,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 public class V3DeskContext  extends V3SpaceContext {
+	
+	private V3EmployeeContext employee;
 
-	private Long employeeId;
-    private String deskCode;
+    public V3EmployeeContext getEmployee() {
+		return employee;
+	}
+	public void setEmployee(V3EmployeeContext employee) {
+		this.employee = employee;
+	}
+
+
+	private String deskCode;
 	private Long departmentId;
 
 
@@ -25,12 +35,7 @@ public class V3DeskContext  extends V3SpaceContext {
 	public void setDeskCode(String deskCode) {
 		this.deskCode = deskCode;
 	}
-    public Long getEmployeeId() {
-		return employeeId;
-	}
-	public void setEmployeeId(Long employeeId) {
-		this.employeeId = employeeId;
-	}
+
 
     private DeskType deskType;
 
