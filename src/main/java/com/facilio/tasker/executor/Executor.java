@@ -77,7 +77,8 @@ public class Executor implements Runnable {
 //			if(!FacilioProperties.isProduction() && !FacilioProperties.isDevelopment()) {
 //				jobs = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.TEMP_JOBS,()->JobStore.getJobs(name, startTime, endTime, getMaxRetry(), includedOrgs, excludedOrgs));
 //				jobs.addAll(FacilioService.runAsServiceWihReturn(FacilioConstants.Services.TEMP_JOBS,()->JobStore.getIncompletedJobs(name, startTime, endTime, getMaxRetry(), includedOrgs, excludedOrgs)));
-//			} else {
+//			}
+//			else {
 				jobs = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,()->JobStore.getJobs(name, startTime, endTime, getMaxRetry(), includedOrgs, excludedOrgs));
 				jobs.addAll(FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,()->JobStore.getIncompletedJobs(name, startTime, endTime, getMaxRetry(), includedOrgs, excludedOrgs)));
 //			}
