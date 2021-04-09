@@ -1,9 +1,5 @@
 package com.facilio.bmsconsole.context;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.facilio.accounts.dto.User;
 
 public class SiteContext extends BaseSpaceContext {
@@ -62,28 +58,14 @@ public class SiteContext extends BaseSpaceContext {
 		this.grossFloorArea = grossFloorArea;
 	}
 
-	private SiteType siteType;
-
-	public int getSiteType() {
-		if (siteType != null) {
-			return siteType.getIntVal();
-		}
-		return -1;
-	}
+	private int siteType = -1;
 
 	public void setSiteType(int siteType) {
-		this.siteType = SiteType.typeMap.get(siteType);
-	}
-
-	public void setSiteType(SiteType siteType) {
 		this.siteType = siteType;
 	}
 
-	public String getSiteTypeVal() {
-		if (siteType != null) {
-			return siteType.getStringVal();
-		}
-		return null;
+	public int getSiteType() {
+		return siteType;
 	}
 
 	private Long weatherStation;
@@ -144,58 +126,6 @@ public class SiteContext extends BaseSpaceContext {
 		this.boundaryRadius = boundaryRadius;
 	}
 
-	public enum SiteType {
-		COMMON(1, "Common"), 
-		HOSPITAL(2, "Hospital"), 
-		RESIDENTIAL(3, "Residential"), 
-		OFFICE(4, "Office"),
-		COMMERCIAL(5, "Commercial"), 
-		COMPOUND(6, "Compound"), 
-		UNIVERSITY(7, "University"), 
-		RETAIL(8, "Retail"),
-		RESIDENTIALNCOMMERICAL(9, "Residential & Commercial"),
-		MUNICIPALITY(10, "Municipality"),
-		MALL(11, "Mall"),
-		ACCOMMODATION(12, "Accommodation"),
-		LAND(13, "Land")
-		;
-
-		private int intVal;
-		private String strVal;
-
-		private SiteType(int intVal, String strVal) {
-			this.intVal = intVal;
-			this.strVal = strVal;
-		}
-
-		public int getIntVal() {
-			return intVal;
-		}
-
-		public String getStringVal() {
-			return strVal;
-		}
-
-		public static SiteType getType(int val) {
-			return typeMap.get(val);
-		}
-
-		private static final Map<Integer, SiteType> typeMap = Collections.unmodifiableMap(initTypeMap());
-
-		private static Map<Integer, SiteType> initTypeMap() {
-			Map<Integer, SiteType> typeMap = new HashMap<>();
-
-			for (SiteType type : values()) {
-				typeMap.put(type.getIntVal(), type);
-			}
-			return typeMap;
-		}
-
-		public Map<Integer, SiteType> getAllTypes() {
-			return typeMap;
-		}
-	}
-	
 	private ClientContext client;
 	public ClientContext getClient() {
 		return client;

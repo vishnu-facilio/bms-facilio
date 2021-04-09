@@ -77,8 +77,7 @@ public class CampusAction extends FacilioAction {
 	public String addCampus() throws Exception 
 	{
 		FacilioContext context = new FacilioContext();
-		System.out.println("The campus is "+site);
-		
+
 		LocationContext location = site.getLocation();
 		if(location != null && location.getLat() != -1 && location.getLng() != -1)
 		{
