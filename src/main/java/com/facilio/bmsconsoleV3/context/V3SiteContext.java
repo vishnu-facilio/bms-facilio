@@ -1,13 +1,7 @@
 package com.facilio.bmsconsoleV3.context;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.facilio.accounts.dto.User;
-import com.facilio.bmsconsole.context.ClientContext;
 import com.facilio.bmsconsole.context.LocationContext;
-import com.facilio.bmsconsole.context.SiteContext.SiteType;
 import com.facilio.v3.context.V3Context;
 
 public class V3SiteContext extends V3Context {
@@ -18,7 +12,7 @@ public class V3SiteContext extends V3Context {
 	private Integer noOfBuildings;
 	private Long noOfIndependentSpaces;
 	private Double grossFloorArea;
-	private SiteType siteType;
+	private Integer siteType;
 	private Long weatherStation;
 	private Double cddBaseTemperature;
 	private Double hddBaseTemperature;
@@ -42,26 +36,12 @@ public class V3SiteContext extends V3Context {
 		this.managedBy = managedBy;
 	}
 
-	public int getSiteType() {
-		if (siteType != null) {
-			return siteType.getIntVal();
-		}
-		return -1;
+	public Integer getSiteType() {
+		return siteType;
 	}
 
-	public void setSiteType(int siteType) {
-		this.siteType = SiteType.typeMap.get(siteType);
-	}
-
-	public void setSiteType(SiteType siteType) {
+	public void setSiteType(Integer siteType) {
 		this.siteType = siteType;
-	}
-
-	public String getSiteTypeVal() {
-		if (siteType != null) {
-			return siteType.getStringVal();
-		}
-		return null;
 	}
 
 	public Long getWeatherStation() {
@@ -82,52 +62,6 @@ public class V3SiteContext extends V3Context {
 		this.timeZone = timeZone;
 	}
 
-	public enum SiteType {
-		COMMON(1, "Common"), 
-		HOSPITAL(2, "Hospital"), 
-		RESIDENTIAL(3, "Residential"), 
-		OFFICE(4, "Office"),
-		COMMERCIAL(5, "Commercial"), 
-		COMPOUND(6, "Compound"), 
-		UNIVERSITY(7, "University"), 
-		RETAIL(8, "Retail"),
-		RESIDENTIALNCOMMERICAL(9, "Residential & Commercial");
-
-		private int intVal;
-		private String strVal;
-
-		private SiteType(int intVal, String strVal) {
-			this.intVal = intVal;
-			this.strVal = strVal;
-		}
-
-		public int getIntVal() {
-			return intVal;
-		}
-
-		public String getStringVal() {
-			return strVal;
-		}
-
-		public static SiteType getType(int val) {
-			return typeMap.get(val);
-		}
-
-		private static final Map<Integer, SiteType> typeMap = Collections.unmodifiableMap(initTypeMap());
-
-		private static Map<Integer, SiteType> initTypeMap() {
-			Map<Integer, SiteType> typeMap = new HashMap<>();
-
-			for (SiteType type : values()) {
-				typeMap.put(type.getIntVal(), type);
-			}
-			return typeMap;
-		}
-
-		public Map<Integer, SiteType> getAllTypes() {
-			return typeMap;
-		}
-	}
 		
 	public V3ClientContext getClient() {
 		return client;
