@@ -8,6 +8,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,6 +26,8 @@ import com.facilio.bmsconsole.actions.SettingsMfa;
 import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.util.AESEncryption;
 import com.facilio.bmsconsole.util.PeopleAPI;
+import com.facilio.iam.accounts.context.SecurityPolicy;
+import com.facilio.iam.accounts.exceptions.SecurityPolicyException;
 import com.facilio.iam.accounts.util.*;
 import com.google.common.base.Throwables;
 import lombok.Getter;
@@ -132,6 +136,10 @@ public class FacilioAuthAction extends FacilioAction {
 	public void setUsername(String username) {
 		this.username = username;
 	}
+
+	@Getter
+	@Setter
+	private String rawPassword;
 
 	public String getPassword() {
 		return password;
@@ -804,47 +812,57 @@ public class FacilioAuthAction extends FacilioAction {
 			}
 		}
 
-		Map<String, Object> userMfaSettings = IAMUserUtil.getUserMfaSettings(emailFromDigest, groupType);
-		boolean isVerified = IAMUserUtil.totpChecking(this.totp, (long) userMfaSettings.get("userId"));
+		List<Map<String, Object>> userData = IAMUserUtil.getUserData(emailFromDigest, groupType);
+		var userInfo = userData.get(0);
 
+		boolean isVerified = IAMUserUtil.totpChecking(this.totp, (long) userInfo.get("uid"));
 		if (!isVerified) {
 			setJsonresponse("errorcode", 1);
 			setJsonresponse("message", "Invalid verification code");
 			return SUCCESS;
 		} else {
-			HttpServletRequest request = ServletActionContext.getRequest();
-			HttpServletResponse response = ServletActionContext.getResponse();
-			String userAgent = request.getHeader("User-Agent");
-
-			String userType = "web";
-			String deviceType = request.getHeader("X-Device-Type");
-			if (!StringUtils.isEmpty(deviceType)
-					&& ("android".equalsIgnoreCase(deviceType) || "ios".equalsIgnoreCase(deviceType) || "webview".equalsIgnoreCase(deviceType))) {
-				userType = "mobile";
+			Organization defaultOrg = IAMUserUtil.getDefaultOrg((long) userInfo.get("uid"));
+			var securityPolicy = IAMUserUtil.getUserSecurityPolicy(emailFromDigest, AppDomain.GroupType.FACILIO, defaultOrg.getOrgId());
+			var resetRequired = false;
+			if (securityPolicy != null && securityPolicy.getIsPwdPolicyEnabled() && securityPolicy.getPwdMinAge() != null) {
+				resetRequired = handlePasswordPolicy(securityPolicy, emailFromDigest);
 			}
 
-			String ipAddress = request.getHeader("X-Forwarded-For");
+			if (!resetRequired) {
+				HttpServletRequest request = ServletActionContext.getRequest();
+				HttpServletResponse response = ServletActionContext.getResponse();
+				String userAgent = request.getHeader("User-Agent");
 
-			String authtoken = IAMUserUtil.verifyLoginWithoutPassword(emailFromDigest, userAgent, userType, ipAddress, request.getServerName(), null);
-			setJsonresponse("token", authtoken);
-			setJsonresponse("username", emailFromDigest);
+				String userType = "web";
+				String deviceType = request.getHeader("X-Device-Type");
+				if (!StringUtils.isEmpty(deviceType)
+						&& ("android".equalsIgnoreCase(deviceType) || "ios".equalsIgnoreCase(deviceType) || "webview".equalsIgnoreCase(deviceType))) {
+					userType = "mobile";
+				}
 
-			//deleting .facilio.com cookie(temp handling)
-			FacilioCookie.eraseUserCookie(request, response,"fc.idToken.facilio","facilio.com");
-			FacilioCookie.eraseUserCookie(request, response,"fc.idToken.facilio","facilio.in");
+				String ipAddress = request.getHeader("X-Forwarded-For");
 
-			String appDomain = request.getServerName();
-			AppDomain appdomainObj = IAMAppUtil.getAppDomain(appDomain);
-			boolean portalUser = false;
-			if(appdomainObj != null && appdomainObj.getAppDomainTypeEnum() != AppDomainType.FACILIO) {
-				portalUser = true;
-			}
+				String authtoken = IAMUserUtil.verifyLoginWithoutPassword(emailFromDigest, userAgent, userType, ipAddress, request.getServerName(), null);
+				setJsonresponse("token", authtoken);
+				setJsonresponse("username", emailFromDigest);
 
-			addAuthCookies(authtoken, portalUser, false, request, "mobile".equals(userType));
+				//deleting .facilio.com cookie(temp handling)
+				FacilioCookie.eraseUserCookie(request, response,"fc.idToken.facilio","facilio.com");
+				FacilioCookie.eraseUserCookie(request, response,"fc.idToken.facilio","facilio.in");
 
-			String isWebView = FacilioCookie.getUserCookie(request, "fc.isWebView");
-			if ("true".equalsIgnoreCase(isWebView)) {
-				setWebViewCookies();
+				String appDomain = request.getServerName();
+				AppDomain appdomainObj = IAMAppUtil.getAppDomain(appDomain);
+				boolean portalUser = false;
+				if(appdomainObj != null && appdomainObj.getAppDomainTypeEnum() != AppDomainType.FACILIO) {
+					portalUser = true;
+				}
+
+				addAuthCookies(authtoken, portalUser, false, request, "mobile".equals(userType));
+
+				String isWebView = FacilioCookie.getUserCookie(request, "fc.isWebView");
+				if ("true".equalsIgnoreCase(isWebView)) {
+					setWebViewCookies();
+				}
 			}
 		}
 		return SUCCESS;
@@ -879,29 +897,39 @@ public class FacilioAuthAction extends FacilioAction {
 					userType = "mobile";
 				}
 
-				Map<String, Object> userMfaSettings = null;
+				SecurityPolicy securityPolicy = null;
 				if (!portalUser) {
-					userMfaSettings = IAMUserUtil.getUserMfaSettings(getUsername(), AppDomain.GroupType.FACILIO);
+					List<Map<String, Object>> userData = IAMUserUtil.getUserData(getUsername(), AppDomain.GroupType.FACILIO);
+					Map<String, Object> userMap = userData.get(0);
+					Organization defaultOrg = IAMUserUtil.getDefaultOrg((long) userMap.get("uid"));
+					securityPolicy = IAMUserUtil.getUserSecurityPolicy(getUsername(), AppDomain.GroupType.FACILIO, defaultOrg.getOrgId());
 				}
 
-				boolean hasMfaSettings = false;
-				if (MapUtils.isNotEmpty(userMfaSettings)) {
-					Boolean totpEnabled = (Boolean) userMfaSettings.get("totpEnabled");
-					hasMfaSettings = totpEnabled != null && totpEnabled;
-				}
+				boolean hasMfaSettings;
+				Boolean totpEnabled = securityPolicy == null ? null : securityPolicy.getIsTOTPEnabled();
+				hasMfaSettings = totpEnabled != null && totpEnabled;
 
 				if (!hasMfaSettings) {
 					authtoken = IAMUserUtil.verifyLoginPasswordv3(getUsername(), getPassword(), request.getServerName(), userAgent, userType,
 							ipAddress);
-					setJsonresponse("token", authtoken);
-					setJsonresponse("username", getUsername());
 
-					//deleting .facilio.com cookie(temp handling)
-					FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.facilio","facilio.com");
-					FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.facilio","facilio.in");
+					var resetRequired = false;
+					if (securityPolicy != null && securityPolicy.getIsPwdPolicyEnabled() && securityPolicy.getPwdMinAge() != null) {
+						resetRequired = handlePasswordPolicy(securityPolicy, getUsername());
+					}
 
-					addAuthCookies(authtoken, portalUser, false, request, "mobile".equals(userType));
+					if (!resetRequired && StringUtils.isNotEmpty(authtoken)) {
+						setJsonresponse("token", authtoken);
+						setJsonresponse("username", getUsername());
+
+						//deleting .facilio.com cookie(temp handling)
+						FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.facilio","facilio.com");
+						FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.facilio","facilio.in");
+
+						addAuthCookies(authtoken, portalUser, false, request, "mobile".equals(userType));
+					}
 				} else {
+					Map<String, Object> userMfaSettings = IAMUserUtil.getUserMfaSettings(getUsername(), AppDomain.GroupType.FACILIO);
 					Boolean totpStatus = (Boolean) userMfaSettings.get("totpStatus");
 					boolean isTotpEnabled = totpStatus != null && totpStatus;
 					if (!isTotpEnabled) {
@@ -934,6 +962,24 @@ public class FacilioAuthAction extends FacilioAction {
 		}
 		setJsonresponse("message", "Invalid username or password");
 		return ERROR;
+	}
+
+	private boolean handlePasswordPolicy(SecurityPolicy securityPolicy, String emailaddress) throws Exception {
+		Integer pwdMinAge = securityPolicy.getPwdMinAge();
+		List<Map<String, Object>> userData = IAMUserUtil.getUserData(emailaddress, AppDomain.GroupType.FACILIO);
+		Long pwdLastUpdatedTime = (Long) userData.get(0).get("pwdLastUpdatedTime");
+		if (pwdLastUpdatedTime != null) {
+			Instant pwdLastUpdatedInstant = Instant.ofEpochMilli(pwdLastUpdatedTime);
+			Instant currentTimeInstant = Instant.ofEpochMilli(System.currentTimeMillis());
+			Duration elapsedDuration = Duration.between(pwdLastUpdatedInstant, currentTimeInstant);
+			var allowedDuration = Duration.ofDays(pwdMinAge);
+			if (elapsedDuration.compareTo(allowedDuration) >= 0) {
+				String resetToken = IAMUserUtil.generatePWDPolicyPWDResetToken(emailaddress, AppDomain.GroupType.FACILIO);
+				setJsonresponse("pwdPolicyResetToken", resetToken);
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public String getMfaSettingsUsingDigest() throws Exception {
@@ -1008,40 +1054,48 @@ public class FacilioAuthAction extends FacilioAction {
 		Map<String, Object> userMfaSettings = IAMUserUtil.getUserMfaSettings(emailFromDigest, groupType);
 		if(IAMUserUtil.totpChecking(totp, (long) userMfaSettings.get("userId"))){
 			IAMUserUtil.updateUserMfaSettingsStatus((long) userMfaSettings.get("userId"),true);
-
-			HttpServletRequest request = ServletActionContext.getRequest();
-			HttpServletResponse response = ServletActionContext.getResponse();
-			String userAgent = request.getHeader("User-Agent");
-
-			String userType = "web";
-			String deviceType = request.getHeader("X-Device-Type");
-			if (!StringUtils.isEmpty(deviceType)
-					&& ("android".equalsIgnoreCase(deviceType) || "ios".equalsIgnoreCase(deviceType) || "webview".equalsIgnoreCase(deviceType))) {
-				userType = "mobile";
+			Organization org = IAMUserUtil.getDefaultOrg((long) userMfaSettings.get("userId"));
+			var securityPolicy = IAMUserUtil.getUserSecurityPolicy(emailFromDigest, AppDomain.GroupType.FACILIO, org.getOrgId());
+			var resetRequired = false;
+			if (securityPolicy != null && securityPolicy.getIsPwdPolicyEnabled() && securityPolicy.getPwdMinAge() != null) {
+				resetRequired = handlePasswordPolicy(securityPolicy, emailFromDigest);
 			}
 
-			String ipAddress = request.getHeader("X-Forwarded-For");
+			if (!resetRequired) {
+				HttpServletRequest request = ServletActionContext.getRequest();
+				HttpServletResponse response = ServletActionContext.getResponse();
+				String userAgent = request.getHeader("User-Agent");
 
-			String authtoken = IAMUserUtil.verifyLoginWithoutPassword(emailFromDigest, userAgent, userType, ipAddress, request.getServerName(), null);
-			setJsonresponse("token", authtoken);
-			setJsonresponse("username", emailFromDigest);
+				String userType = "web";
+				String deviceType = request.getHeader("X-Device-Type");
+				if (!StringUtils.isEmpty(deviceType)
+						&& ("android".equalsIgnoreCase(deviceType) || "ios".equalsIgnoreCase(deviceType) || "webview".equalsIgnoreCase(deviceType))) {
+					userType = "mobile";
+				}
 
-			//deleting .facilio.com cookie(temp handling)
-			FacilioCookie.eraseUserCookie(request, response,"fc.idToken.facilio","facilio.com");
-			FacilioCookie.eraseUserCookie(request, response,"fc.idToken.facilio","facilio.in");
+				String ipAddress = request.getHeader("X-Forwarded-For");
 
-			String appDomain = request.getServerName();
-			AppDomain appdomainObj = IAMAppUtil.getAppDomain(appDomain);
-			boolean portalUser = false;
-			if(appdomainObj != null && appdomainObj.getAppDomainTypeEnum() != AppDomainType.FACILIO) {
-				portalUser = true;
-			}
+				String authtoken = IAMUserUtil.verifyLoginWithoutPassword(emailFromDigest, userAgent, userType, ipAddress, request.getServerName(), null);
+				setJsonresponse("token", authtoken);
+				setJsonresponse("username", emailFromDigest);
 
-			addAuthCookies(authtoken, portalUser, false, request, "mobile".equals(userType));
+				//deleting .facilio.com cookie(temp handling)
+				FacilioCookie.eraseUserCookie(request, response,"fc.idToken.facilio","facilio.com");
+				FacilioCookie.eraseUserCookie(request, response,"fc.idToken.facilio","facilio.in");
 
-			String isWebView = FacilioCookie.getUserCookie(request, "fc.isWebView");
-			if ("true".equalsIgnoreCase(isWebView)) {
-				setWebViewCookies();
+				String appDomain = request.getServerName();
+				AppDomain appdomainObj = IAMAppUtil.getAppDomain(appDomain);
+				boolean portalUser = false;
+				if(appdomainObj != null && appdomainObj.getAppDomainTypeEnum() != AppDomainType.FACILIO) {
+					portalUser = true;
+				}
+
+				addAuthCookies(authtoken, portalUser, false, request, "mobile".equals(userType));
+
+				String isWebView = FacilioCookie.getUserCookie(request, "fc.isWebView");
+				if ("true".equalsIgnoreCase(isWebView)) {
+					setWebViewCookies();
+				}
 			}
 		} else{
 			throw new IllegalArgumentException("invalid verification code");
@@ -1792,12 +1846,78 @@ public class FacilioAuthAction extends FacilioAction {
 		return SUCCESS;
 	}
 
+	public String resetExpiredPassword() throws Exception {
+		IAMUser user = null;
+		try {
+			user = IAMUserUtil.resetExpiredPassword(getDigest(), getRawPassword());
+		} catch (SecurityPolicyException secEx) {
+			setJsonresponse("status", "failure");
+			setJsonresponse("message", secEx.getMessage());
+			return ERROR;
+		} catch (Exception ex) {
+			Throwable cause = ex.getCause();
+			if (cause instanceof SecurityPolicyException) {
+				setJsonresponse("status", "failure");
+				setJsonresponse("message", cause.getMessage());
+			}
+			return ERROR;
+		}
+
+		AppDomain.GroupType groupType = AppDomain.GroupType.FACILIO;
+		if (StringUtils.isNotEmpty(getLookUpType())) {
+			if (getLookUpType().equalsIgnoreCase("service") || getLookUpType().equalsIgnoreCase("tenant")) {
+				groupType = AppDomain.GroupType.TENANT_OCCUPANT_PORTAL;
+			} else if (getLookUpType().equalsIgnoreCase("vendor")) {
+				groupType = AppDomain.GroupType.VENDOR_PORTAL;
+			} else {
+				groupType = AppDomain.GroupType.FACILIO;
+			}
+		}
+
+		HttpServletRequest request = ServletActionContext.getRequest();
+		HttpServletResponse response = ServletActionContext.getResponse();
+		String userAgent = request.getHeader("User-Agent");
+
+		String userType = "web";
+		String deviceType = request.getHeader("X-Device-Type");
+		if (!StringUtils.isEmpty(deviceType)
+				&& ("android".equalsIgnoreCase(deviceType) || "ios".equalsIgnoreCase(deviceType) || "webview".equalsIgnoreCase(deviceType))) {
+			userType = "mobile";
+		}
+
+		String ipAddress = request.getHeader("X-Forwarded-For");
+
+		String authtoken = IAMUserUtil.verifyLoginWithoutPassword(user.getEmail(), userAgent, userType, ipAddress, request.getServerName(), null);
+		setJsonresponse("token", authtoken);
+		setJsonresponse("username", user.getEmail());
+
+		//deleting .facilio.com cookie(temp handling)
+		FacilioCookie.eraseUserCookie(request, response,"fc.idToken.facilio","facilio.com");
+		FacilioCookie.eraseUserCookie(request, response,"fc.idToken.facilio","facilio.in");
+
+		String appDomain = request.getServerName();
+		AppDomain appdomainObj = IAMAppUtil.getAppDomain(appDomain);
+		boolean portalUser = false;
+		if(appdomainObj != null && appdomainObj.getAppDomainTypeEnum() != AppDomainType.FACILIO) {
+			portalUser = true;
+		}
+
+		addAuthCookies(authtoken, portalUser, false, request, "mobile".equals(userType));
+
+		String isWebView = FacilioCookie.getUserCookie(request, "fc.isWebView");
+		if ("true".equalsIgnoreCase(isWebView)) {
+			setWebViewCookies();
+		}
+
+		return SUCCESS;
+	}
+
 	public String resetPassword() throws Exception {
 		JSONObject invitation = new JSONObject();
 		HttpServletRequest request = ServletActionContext.getRequest();
 
 		if (getInviteToken() != null) {
-			IAMUser iamUser = IAMUserUtil.resetPassword(getInviteToken(), getPassword());
+			IAMUser iamUser = IAMUserUtil.resetPassword(getInviteToken(), getRawPassword());
 			User user = new User(iamUser);
 			if (user.getUid() > 0) {
 				invitation.put("status", "success");
@@ -1837,7 +1957,7 @@ public class FacilioAuthAction extends FacilioAction {
 				userType = "mobile";
 			}
 			
-			Boolean changePassword = IAMUserUtil.changePassword(getPassword(), getNewPassword(), user.getUid(), AccountUtil.getCurrentOrg().getOrgId(), userType);
+			Boolean changePassword = IAMUserUtil.changePassword(getPassword(), getRawPassword(), user.getUid(), AccountUtil.getCurrentOrg().getOrgId(), userType);
 			if (changePassword != null && changePassword) {
 				setJsonresponse("message", "Password changed successfully");
 				setJsonresponse("status", "success");
@@ -1847,10 +1967,20 @@ public class FacilioAuthAction extends FacilioAction {
 			setJsonresponse("status", "failure");
 			return ERROR;
 		}
-		catch(Exception e) {
+		catch(SecurityPolicyException secEx) {
 			setJsonresponse("status", "failure");
+			setJsonresponse("messages", secEx.getMessage());
 			return ERROR;
-			
+		}
+		catch(Exception e) {
+			Throwable cause = e.getCause();
+			if (cause instanceof SecurityPolicyException) {
+				setJsonresponse("status", "failure");
+				setJsonresponse("messages", cause.getMessage());
+			} else {
+				setJsonresponse("status", "failure");
+			}
+			return ERROR;
 		}
 	}
 

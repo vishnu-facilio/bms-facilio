@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.facilio.accounts.dto.Organization;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.iam.accounts.context.SecurityPolicy;
+import com.facilio.iam.accounts.exceptions.SecurityPolicyException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.log4j.Level;
@@ -80,7 +82,24 @@ public class AuthInterceptor extends AbstractInterceptor {
 			else if (!isRemoteScreenMode(request)) {
 				String authRequired = ActionContext.getContext().getParameters().get("auth").getValue();
 				if(authRequired == null || "".equalsIgnoreCase(authRequired.trim()) || "true".equalsIgnoreCase(authRequired)) {
-					IAMAccount iamAccount = AuthenticationUtil.validateToken(request, false);
+					IAMAccount iamAccount = null;
+					try {
+						 iamAccount = AuthenticationUtil.validateToken(request, false);
+					} catch (SecurityPolicyException secEx) {
+						SecurityPolicyException.ErrorCode errorCode = secEx.getErrorCode();
+						if (errorCode == SecurityPolicyException.ErrorCode.WEB_SESSION_EXPIRY) {
+							return "sessionexpired";
+						}
+					} catch (Exception ex) {
+						Throwable cause = ex.getCause();
+						if (cause instanceof SecurityPolicyException) {
+							SecurityPolicyException.ErrorCode errorCode = ((SecurityPolicyException) cause).getErrorCode();
+							if (errorCode == SecurityPolicyException.ErrorCode.WEB_SESSION_EXPIRY) {
+								return "sessionexpired";
+							}
+						}
+						throw ex;
+					}
 
 					if (iamAccount != null) {
 						request.setAttribute("iamAccount", iamAccount);

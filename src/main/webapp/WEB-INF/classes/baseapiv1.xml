@@ -18,6 +18,9 @@
 			<result name="unauthorized" type="httpheader">
 				<param name="status">403</param>
 			</result>
+			<result name="sessionexpired" type="httpheader">
+				<param name="status">440</param>
+			</result>
 			<result name="invalid" type="httpheader">
 				<param name="status">400</param>
 			</result>

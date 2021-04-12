@@ -3,6 +3,7 @@
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.iam.accounts.context.SecurityPolicy;
 import com.facilio.iam.accounts.util.IAMAccountConstants;
 import org.json.simple.JSONObject;
 
@@ -23,6 +24,8 @@ public interface IAMUserBean {
 //	public long inviteAdminConsoleUserv2(long orgId, User user) throws Exception;
 	
 	IAMUser verifyEmailv2(String token) throws Exception;
+
+	IAMUser resetExpiredPassword(String digest, String password) throws Exception;
 
 	IAMUser resetPasswordv2(String token, String password) throws Exception;
 	
@@ -90,6 +93,8 @@ public interface IAMUserBean {
     public IAMAccount verifyFacilioTokenv3(String idToken, boolean overrideSessionCheck, String userType) throws Exception;
 	
     public IAMAccount verifyUserSessionv3(String uId, String token, String userType) throws Exception;
+
+	public boolean isSessionExpired(long uid, long orgId, long sessionId) throws Exception;
     
     public IAMAccount getAccountv3(long userId) throws Exception;
     
@@ -140,6 +145,10 @@ public interface IAMUserBean {
 
 	public boolean deleteUserPhoto(long uid, long photoId) throws Exception;
 
+	long getUIDFromPWDResetToken(String digest) throws Exception;
+
+	String generatePWDPolicyPWDResetToken(String userName, AppDomain.GroupType groupType) throws Exception;
+
 	public Map<String, Object> getLoginModes(String userName, String domain, AppDomain appDomain) throws Exception;
 
 	public Map<String, Object> getLoginModes(String userName, AppDomain.GroupType groupType) throws Exception;
@@ -152,6 +161,8 @@ public interface IAMUserBean {
 
 	public Map<String, Object> getUserMfaSettings(long userId) throws Exception;
 
+	SecurityPolicy getUserSecurityPolicy(String email, AppDomain.GroupType groupType, long orgId) throws Exception;
+
 	public Map<String, Object> getUserMfaSettings(String email, AppDomain.GroupType groupType) throws Exception;
 
 	public void updateUserMfaSettingsStatus(long userId, boolean value) throws Exception;
@@ -161,4 +172,12 @@ public interface IAMUserBean {
 	String validateDigestAndDomain(String domain, String digest, AppDomain.GroupType groupType) throws Exception;
 
 	List<Map<String, Object>> getUserData(String username, AppDomain.GroupType groupType) throws Exception;
+
+	SecurityPolicy getUserSecurityPolicy(long uid, long orgId) throws Exception;
+
+	void validatePasswordWithSecurityPolicy(long uid, String password, long orgId) throws Exception;
+
+	String cryptWithMD5(String pass);
+
+	void savePreviousPassword(long uid, String encryptedPassword) throws Exception;
 }

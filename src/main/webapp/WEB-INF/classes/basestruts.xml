@@ -27,6 +27,9 @@
             <result name="error" type="httpheader">
                 <param name="error">404</param>
             </result>
+            <result name="sessionexpired" type="httpheader">
+                <param name="status">440</param>
+            </result>
         </global-results>
     </package>
 </struts>

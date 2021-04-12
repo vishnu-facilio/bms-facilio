@@ -33,13 +33,6 @@ public class SettingsMfa extends FacilioAction {
 	public void setVerificationCode(String verificationCode) {
 		this.verificationCode = verificationCode;
 	}
-
-	public String getMfa() throws Exception{
-	
-		Map<String,Boolean> orgMfaSettings = IAMOrgUtil.getMfaSettings(AccountUtil.getCurrentOrg().getOrgId(), AppDomain.GroupType.FACILIO);
-		setResult("mfaSettings",orgMfaSettings);
-		return "success" ;	
-	}
 	
 	public String totpEnabled() throws Exception{
 		

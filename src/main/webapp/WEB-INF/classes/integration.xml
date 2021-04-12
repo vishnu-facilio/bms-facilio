@@ -45,7 +45,9 @@
 			<result name="usernotinapp" type="httpheader">
 				<param name="status">409</param>
 			</result>
-		
+			<result name="sessionexpired" type="httpheader">
+				<param name="status">440</param>
+			</result>
 			</global-results>
 
 	<action name="lookup" class="com.facilio.auth.actions.FacilioAuthAction" method="lookup">

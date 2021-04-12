@@ -26,7 +26,8 @@ public class IAMAccountConstants {
 			PERMALINK_SESSION(2),
 			DIGEST_SESSION(3),
 			TOTP_SESSION(4),
-			MFA_CONFIG_SESSION(5)
+			MFA_CONFIG_SESSION(5),
+			PWD_POLICY_PWD_RESET(6)
 			;
 
 		    private int sessionType;
@@ -60,6 +61,23 @@ public class IAMAccountConstants {
 		public static class DefaultSuperAdmin {
 			public static final String SUPER_ADMIN 	= "Super Administrator";
 			public static final String ADMINISTRATOR 	= "Administrator";
+		}
+
+		public static FacilioModule getSecurityPolicyModule() {
+			FacilioModule securityPolicyModule = new FacilioModule();
+			securityPolicyModule.setName("securitypolicy");
+			securityPolicyModule.setDisplayName("Security Policy");
+			securityPolicyModule.setTableName("SecurityPolicies");
+
+			return securityPolicyModule;
+		}
+
+		public static FacilioModule getUserPrevPwdsModule() {
+			FacilioModule userPrevPwds = new FacilioModule();
+			userPrevPwds.setName("userPrevPwds");
+			userPrevPwds.setDisplayName("User Prev Pwds");
+			userPrevPwds.setTableName("UserPrevPwds");
+			return userPrevPwds;
 		}
 		
 		public static FacilioModule getAccountsUserModule() {
@@ -296,6 +314,146 @@ public class IAMAccountConstants {
 			password.setModule(getAccountsUserModule());
 			return password;
 		}
+
+		public static List<FacilioField> getUserPrevPwdsFields() {
+			FacilioModule module = getUserPrevPwdsModule();
+			List<FacilioField> fields = new ArrayList<>();
+
+			FacilioField userId = new FacilioField();
+			userId.setName("userId");
+			userId.setDataType(FieldType.NUMBER);
+			userId.setColumnName("USERID");
+			userId.setModule(module);
+			fields.add(userId);
+
+			FacilioField password = new FacilioField();
+			password.setName("password");
+			password.setDataType(FieldType.STRING);
+			password.setColumnName("PASSWORD");
+			password.setModule(module);
+			fields.add(password);
+
+			FacilioField changedTime = new FacilioField();
+			changedTime.setName("changedTime");
+			changedTime.setDataType(FieldType.NUMBER);
+			changedTime.setColumnName("CHANGED_TIME");
+			changedTime.setModule(module);
+			fields.add(changedTime);
+
+			return fields;
+		}
+
+		public static List<FacilioField> getSecurityPolicyFields() {
+			FacilioModule module = getSecurityPolicyModule();
+			List<FacilioField> fields = new ArrayList<>();
+
+			FacilioField id = new FacilioField();
+			id.setName("id");
+			id.setDataType(FieldType.ID);
+			id.setColumnName("SECURITY_POLICY_ID");
+			id.setModule(module);
+			fields.add(id);
+
+			FacilioField name = new FacilioField();
+			name.setName("name");
+			name.setDataType(FieldType.STRING);
+			name.setColumnName("NAME");
+			name.setModule(module);
+			fields.add(name);
+
+			FacilioField isDefault = new FacilioField();
+			isDefault.setName("isDefault");
+			isDefault.setDataType(FieldType.BOOLEAN);
+			isDefault.setColumnName("IS_DEFAULT");
+			isDefault.setModule(module);
+			fields.add(isDefault);
+
+			FacilioField isTotpEnabled = new FacilioField();
+			isTotpEnabled.setName("isTOTPEnabled");
+			isTotpEnabled.setDataType(FieldType.BOOLEAN);
+			isTotpEnabled.setColumnName("IS_TOTP_ENABLED");
+			isTotpEnabled.setModule(module);
+			fields.add(isTotpEnabled);
+
+			FacilioField isMotpEnabled = new FacilioField();
+			isMotpEnabled.setName("isMOTPEnabled");
+			isMotpEnabled.setDataType(FieldType.BOOLEAN);
+			isMotpEnabled.setColumnName("IS_MOTP_ENABLED");
+			isMotpEnabled.setModule(module);
+			fields.add(isMotpEnabled);
+
+			FacilioField isPwdPolicyEnabled = new FacilioField();
+			isPwdPolicyEnabled.setName("isPwdPolicyEnabled");
+			isPwdPolicyEnabled.setDataType(FieldType.BOOLEAN);
+			isPwdPolicyEnabled.setColumnName("IS_PWD_POLICY_ENABLED");
+			isPwdPolicyEnabled.setModule(module);
+			fields.add(isPwdPolicyEnabled);
+
+			FacilioField pwdMinLength = new FacilioField();
+			pwdMinLength.setName("pwdMinLength");
+			pwdMinLength.setDataType(FieldType.NUMBER);
+			pwdMinLength.setColumnName("PWD_MIN_LENGTH");
+			pwdMinLength.setModule(module);
+			fields.add(pwdMinLength);
+
+			FacilioField pwdIsMixed = new FacilioField();
+			pwdIsMixed.setName("pwdIsMixed");
+			pwdIsMixed.setDataType(FieldType.BOOLEAN);
+			pwdIsMixed.setColumnName("PWD_IS_MIXED");
+			pwdIsMixed.setModule(module);
+			fields.add(pwdIsMixed);
+
+			FacilioField pwdMinSplChars = new FacilioField();
+			pwdMinSplChars.setName("pwdMinSplChars");
+			pwdMinSplChars.setDataType(FieldType.NUMBER);
+			pwdMinSplChars.setColumnName("PWD_MIN_SPL_CHARS");
+			pwdMinSplChars.setModule(module);
+			fields.add(pwdMinSplChars);
+
+			FacilioField pwdMinNumDigits = new FacilioField();
+			pwdMinNumDigits.setName("pwdMinNumDigits");
+			pwdMinNumDigits.setDataType(FieldType.NUMBER);
+			pwdMinNumDigits.setColumnName("PWD_MIN_NUM_DIGITS");
+			pwdMinNumDigits.setModule(module);
+			fields.add(pwdMinNumDigits);
+
+			FacilioField pwdMinAge = new FacilioField();
+			pwdMinAge.setName("pwdMinAge");
+			pwdMinAge.setDataType(FieldType.NUMBER);
+			pwdMinAge.setColumnName("PWD_MIN_AGE");
+			pwdMinAge.setModule(module);
+			fields.add(pwdMinAge);
+
+			FacilioField pwdPrevPassRefusal = new FacilioField();
+			pwdPrevPassRefusal.setName("pwdPrevPassRefusal");
+			pwdPrevPassRefusal.setDataType(FieldType.NUMBER);
+			pwdPrevPassRefusal.setColumnName("PWD_PREV_USE_REFUSAL");
+			pwdPrevPassRefusal.setModule(module);
+			fields.add(pwdPrevPassRefusal);
+
+			FacilioField isWebSessManagementEnabled = new FacilioField();
+			isWebSessManagementEnabled.setName("isWebSessManagementEnabled");
+			isWebSessManagementEnabled.setDataType(FieldType.BOOLEAN);
+			isWebSessManagementEnabled.setColumnName("IS_WEB_SESS_MANAGEMENT_ENABLED");
+			isWebSessManagementEnabled.setModule(module);
+			fields.add(isWebSessManagementEnabled);
+
+			FacilioField webSessLifeTime = new FacilioField();
+			webSessLifeTime.setName("webSessLifeTime");
+			webSessLifeTime.setDataType(FieldType.NUMBER);
+			webSessLifeTime.setColumnName("WEB_SESSION_LIFE_TIME");
+			webSessLifeTime.setModule(module);
+			fields.add(webSessLifeTime);
+
+			FacilioField idleSessionTimeOut = new FacilioField();
+			idleSessionTimeOut.setName("idleSessionTimeOut");
+			idleSessionTimeOut.setDataType(FieldType.NUMBER);
+			idleSessionTimeOut.setColumnName("IDLE_SESSION_TIME_OUT");
+			idleSessionTimeOut.setModule(module);
+			fields.add(idleSessionTimeOut);
+
+			return fields;
+		}
 		
 		
 
@@ -414,6 +572,20 @@ public class IAMAccountConstants {
 			identifier.setColumnName("IDENTIFIER");
 			identifier.setModule(module);
 			fields.add(identifier);
+
+			FacilioField securityPolicyId = new FacilioField();
+			securityPolicyId.setName("securityPolicyId");
+			securityPolicyId.setDataType(FieldType.NUMBER);
+			securityPolicyId.setColumnName("SECURITY_POLICY_ID");
+			securityPolicyId.setModule(module);
+			fields.add(securityPolicyId);
+
+			FacilioField pwdLastUpdatedTime = new FacilioField();
+			pwdLastUpdatedTime.setName("pwdLastUpdatedTime");
+			pwdLastUpdatedTime.setDataType(FieldType.NUMBER);
+			pwdLastUpdatedTime.setColumnName("PWD_LAST_UPDATED_TIME");
+			pwdLastUpdatedTime.setModule(module);
+			fields.add(pwdLastUpdatedTime);
 
 			return fields;
 		}

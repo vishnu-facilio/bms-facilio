@@ -217,6 +217,8 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		//initialiseOrgMfaSettings(orgId);
 		return org;
 	}
+
+
 	
 	public static void initialiseOrgMfaSettings(long orgId) throws Exception{
 		if(orgId <= 0) {
@@ -616,25 +618,6 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		return true;
 	}
 
-	@Override
-	public Map<String, Boolean> getMfaSettings(long orgId, AppDomain.GroupType groupType) throws Exception {
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(IAMAccountConstants.getOrgMfaFields())
-				.table(IAMAccountConstants.getMfaSettings().getTableName())
-		        .andCondition(CriteriaAPI.getCondition("OrgMFASettings.ORGID", "orgId",orgId + "", NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("OrgMFASettings.APP_GROUP_TYPE", "groupType",groupType.getIndex()+"", NumberOperators.EQUALS));
-		List<Map<String, Object>> props = selectBuilder.get();
-		if(props != null && !props.isEmpty()) {
-			
-			Map<String,Object> x = props.get(0);
-			Map<String,Boolean> result = new HashMap<>();
-			result.put("totpEnabled",(Boolean) x.get("totpEnabled"));
-			result.put("motpEnabled",(Boolean) x.get("motpEnabled"));
-			return result;
-			
-		}
-		return null;
-	}
     private boolean changeMfaSettings(long orgId, boolean value, String type, AppDomain.GroupType groupType) throws Exception {
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()

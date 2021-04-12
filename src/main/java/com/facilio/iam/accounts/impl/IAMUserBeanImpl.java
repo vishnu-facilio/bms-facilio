@@ -1,7 +1,11 @@
 package com.facilio.iam.accounts.impl;
 
 import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -18,10 +22,13 @@ import com.facilio.accounts.sso.AccountSSO;
 import com.facilio.accounts.sso.SSOUtil;
 import com.facilio.db.criteria.operators.*;
 import com.facilio.db.util.DBConf;
+import com.facilio.iam.accounts.context.SecurityPolicy;
+import com.facilio.iam.accounts.exceptions.SecurityPolicyException;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.*;
 import com.facilio.util.FacilioUtil;
 import dev.samstevens.totp.recovery.RecoveryCodeGenerator;
+import lombok.var;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -61,6 +68,8 @@ import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
+
+import static com.facilio.iam.accounts.exceptions.SecurityPolicyException.ErrorCode.WEB_SESSION_EXPIRY;
 
 
 public class IAMUserBeanImpl implements IAMUserBean {
@@ -153,20 +162,152 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
+	public void validatePasswordWithSecurityPolicy(long uid, String password, long orgId) throws Exception {
+		SecurityPolicy userSecurityPolicy = getUserSecurityPolicy(uid, orgId);
+		if (userSecurityPolicy == null) {
+			return;
+		}
+		validatePassword(uid, userSecurityPolicy, password);
+	}
+
+	public String cryptWithMD5(String pass) {
+		try {
+			MessageDigest md = MessageDigest.getInstance("MD5");
+			byte[] passBytes = pass.getBytes();
+			md.reset();
+			byte[] digested = md.digest(passBytes);
+			StringBuilder sb = new StringBuilder();
+			for (byte aDigested : digested) {
+				sb.append(Integer.toHexString(0xff & aDigested));
+			}
+			return sb.toString();
+		} catch (NoSuchAlgorithmException ex) {
+			LOGGER.info("Exception ", ex);
+		}
+		return null;
+	}
+
+	private boolean isOneOfPreviousPasswords(long uid, int allowedPrevPassword, String password) throws Exception {
+		List<String> userPrevPassword = getUserPrevPassword(uid, allowedPrevPassword);
+		if (CollectionUtils.isEmpty(userPrevPassword)) {
+			return false;
+		}
+
+		String hashedPassord = cryptWithMD5(password);
+
+		for (String pass: userPrevPassword) {
+			if (hashedPassord.equals(pass)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+
+	private void validatePassword(long uid, SecurityPolicy userSecurityPolicy, String password) throws Exception {
+		Boolean isPwdPolicyEnabled = userSecurityPolicy.getIsPwdPolicyEnabled();
+		if (isPwdPolicyEnabled == null || !isPwdPolicyEnabled) {
+			return;
+		}
+
+		Integer pwdMinLength = userSecurityPolicy.getPwdMinLength();
+		if (pwdMinLength != null) {
+			if (password.length() < pwdMinLength) {
+				throw new SecurityPolicyException(SecurityPolicyException.ErrorCode.MIN_LENGTH_VIOLATION, "Password should be atleast " + pwdMinLength + " characters in length.");
+			}
+		}
+
+		if (userSecurityPolicy.getPwdIsMixed()) {
+			Integer pwdMinNumDigits = userSecurityPolicy.getPwdMinNumDigits();
+			Integer pwdMinSplChars = userSecurityPolicy.getPwdMinSplChars();
+			int numChars = 0;
+			int splChars = 0;
+			int upperCase = 0;
+			for (int i = 0; i < password.length(); i++) {
+				if (StringUtils.isNumeric(password.charAt(i) + "")) {
+					numChars++;
+				}
+
+				if (!StringUtils.isAlphanumeric(password.charAt(i) + "")) {
+					splChars++;
+				}
+
+				if (StringUtils.isAllUpperCase(password.charAt(i) + "")) {
+					upperCase++;
+				}
+			}
+
+			if (numChars < pwdMinNumDigits) {
+				throw new SecurityPolicyException(SecurityPolicyException.ErrorCode.MIN_NUM_DIGIT_VIOLATION, "Password should have atleast " + pwdMinNumDigits + " numeric digits.");
+			}
+
+			if (splChars < pwdMinSplChars) {
+				throw new SecurityPolicyException(SecurityPolicyException.ErrorCode.MIN_SPL_CHARS_VIOLATION, "Password should have atleast " + pwdMinSplChars + " special characters.");
+			}
+
+			if (upperCase < 1) {
+				throw new SecurityPolicyException(SecurityPolicyException.ErrorCode.MIN_UPPER_CASE_VIOLATION, "Password should have atleast 1 upper case character.");
+			}
+		}
+
+		if (isOneOfPreviousPasswords(uid, userSecurityPolicy.getPwdPrevPassRefusal(), password)) {
+			throw new SecurityPolicyException(SecurityPolicyException.ErrorCode.PREV_PWD_VIOLATION, "Should not be one of previous passwords.");
+		}
+
+	}
+
+	@Override
+	public void savePreviousPassword(long uid, String encryptedPassword) throws Exception {
+		Map<String, Object> prop = new HashMap<>();
+		prop.put("userId", uid);
+		prop.put("password", encryptedPassword);
+		prop.put("changedTime", System.currentTimeMillis());
+
+		List<FacilioField> userPrevPwdsFields = IAMAccountConstants.getUserPrevPwdsFields();
+		GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder();
+		insertRecordBuilder.fields(userPrevPwdsFields)
+				.table("UserPrevPwds")
+				.addRecord(prop)
+				.save();
+	}
+
+	@Override
+	public IAMUser resetExpiredPassword(String digest, String password) throws Exception {
+		long uid = getUIDFromPWDResetToken(digest);
+		IAMUser user = getFacilioUser(-1, uid, true);
+
+		return resetUserPassword(password, user);
+	}
+
+	@Override
 	public IAMUser resetPasswordv2(String token, String password) throws Exception{
 		IAMUser user = getUserFromToken(token);
 
+		return resetUserPassword(password, user);
+	}
+
+	private IAMUser resetUserPassword(String password, IAMUser user) throws Exception {
 		if(user != null) {
-			long orgId=user.getOrgId();
+			long orgId= user.getOrgId();
+			if (orgId <= 0) {
+				Organization defaultOrg = IAMUserUtil.getDefaultOrg(user.getUid());
+				orgId = defaultOrg.getOrgId();
+			}
+			validatePasswordWithSecurityPolicy(user.getUid(), password, orgId);
+			password = cryptWithMD5(password);
+			savePreviousPassword(user.getUid(), password);
 //			if ((System.currentTimeMillis() - user.getInvitedTime()) < INVITE_LINK_EXPIRE_TIME) {
 				try {
 					user.setPassword(password);
 					user.setUserVerified(true);
+					user.setPwdLastUpdatedTime(System.currentTimeMillis());
 					Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(IAMAccountConstants.getAccountsUserFields());
 					List<FacilioField> fields = new ArrayList<FacilioField>();
 					fields.add(fieldMap.get("userVerified"));
 					fields.add(IAMAccountConstants.getUserPasswordField());
-					
+					fields.add(fieldMap.get("pwdLastUpdatedTime"));
+
 					IAMUtil.getTransactionalUserBean().updateUserv2(user, fields);
 				} catch (Exception e) {
 					LOGGER.info("Exception occurred ", e);
@@ -655,6 +796,21 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
+	public long getUIDFromPWDResetToken(String digest) throws Exception {
+		String emailFromDigest = getEmailFromDigest(digest, IAMAccountConstants.SessionType.PWD_POLICY_PWD_RESET);
+		return Long.valueOf(emailFromDigest);
+	}
+
+	@Override
+	public String generatePWDPolicyPWDResetToken(String userName, AppDomain.GroupType groupType) throws Exception {
+		final List<Map<String, Object>> userForUserName = getUserData(userName, groupType);
+		var uid = (long) userForUserName.get(0).get("uid");
+		String jwt = createJWT("id", "auth0", uid+"", System.currentTimeMillis());
+		insertTokenIntoSession(uid, null, jwt, IAMAccountConstants.SessionType.PWD_POLICY_PWD_RESET);
+		return jwt;
+	}
+
+	@Override
 	public Map<String, Object> getLoginModes(String userName, String domain, AppDomain appDomain) throws Exception {
 		if (StringUtils.isEmpty(userName)) {
 			throw new IllegalArgumentException("user name is missing");
@@ -802,6 +958,42 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			LOGGER.info("exception while adding ending user session ", e);
 		}
 		return status;
+	}
+
+	@Override
+	public boolean isSessionExpired(long uid, long orgId, long sessionId) throws Exception {
+		Map<String, Object> prop = null;
+		List<Map<String, Object>> sessions = (List<Map<String, Object>>) LRUCache.getUserSessionCache().get(uid+"");
+
+		for (Map<String, Object> session: sessions) {
+			long s = (long) session.get("id");
+			if (s == sessionId) {
+				prop = session;
+				break;
+			}
+		}
+
+		if (prop == null) {
+			return true;
+		}
+
+		SecurityPolicy userSecurityPolicy = getUserSecurityPolicy(uid, orgId);
+
+		if (userSecurityPolicy != null && userSecurityPolicy.getIsWebSessManagementEnabled() && userSecurityPolicy.getWebSessLifeTime() != null) {
+			Integer webSessLifeTime = userSecurityPolicy.getWebSessLifeTime();
+			Long startTime = (Long) prop.get("startTime");
+			if (startTime != null) {
+				Instant startInstant = Instant.ofEpochMilli(startTime);
+				Instant currentInstant = Instant.ofEpochMilli(System.currentTimeMillis());
+				Duration durationBetween = Duration.between(startInstant, currentInstant);
+				Duration duration = Duration.ofDays(webSessLifeTime);
+				if (durationBetween.compareTo(duration) >= 0) {
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 
 	@Override
@@ -1335,28 +1527,27 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
-	public Map<String, Object> getUserMfaSettings(String email, AppDomain.GroupType groupType) throws Exception {
-		List<Map<String, Object>> userData = getUserData(email, -1, null);
+	public SecurityPolicy getUserSecurityPolicy(String email, AppDomain.GroupType groupType, long orgId) throws Exception {
+		List<Map<String, Object>> userData = getUserData(email, groupType);
 		if (CollectionUtils.isEmpty(userData)) {
 			return null;
 		}
 
-		long uid = (long) userData.get(0).get("uid");
-		Map<String, Object> userMfaSettings = getUserMfaSettings(uid);
+		var uid = (long) userData.get(0).get("uid");
+		return getUserSecurityPolicy(uid, orgId);
+	}
 
-		for (Map<String, Object> user: userData) {
-			long orgId = (Long) user.get("orgId");
-			Map<String, Boolean> mfaSettings = IAMOrgUtil.getMfaSettings(orgId, groupType);
-			if (!MapUtils.isEmpty(mfaSettings)) {
-				Boolean totpEnabled = mfaSettings.get("totpEnabled");
-				if (totpEnabled != null && totpEnabled) {
-					userMfaSettings.putAll(mfaSettings);
-					break;
-				}
-			}
+	@Override
+	public Map<String, Object> getUserMfaSettings(String email, AppDomain.GroupType groupType) throws Exception {
+		List<Map<String, Object>> userData = getUserData(email, groupType);
+		if (CollectionUtils.isEmpty(userData)) {
+			return null;
 		}
 
-		return userMfaSettings;
+		var user = userData.get(0);
+		long uid = (long) user.get("uid");
+
+		return getUserMfaSettings(uid);
 	}
 
 
@@ -1400,7 +1591,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 				.select(IAMAccountConstants.getUserSessionFields())
 				.table("UserSessions");
 		selectBuilder.andCondition(CriteriaAPI.getCondition("UserSessions.TOKEN", "token", digest, StringOperators.IS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("IS_ACTIVE", "email", "1", NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("IS_ACTIVE", "isActive", "1", NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("SESSION_TYPE", "sessionType", sessionType.getValue()+"", NumberOperators.EQUALS));
 
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -1525,6 +1716,10 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			throw e;
 		}
 		catch (Exception e) {
+			var cause = e.getCause();
+			if (cause instanceof SecurityPolicyException) {
+				throw (SecurityPolicyException) cause;
+			}
 			LOGGER.info("Exception occurred "+e.toString());
 			return null;
 		}
@@ -1712,6 +1907,54 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return false;
 	}
 
+
+	private List<String> getUserPrevPassword(long uid, int numberOfPass) throws Exception {
+		List<FacilioField> userPrevPwdsFields = IAMAccountConstants.getUserPrevPwdsFields();
+		Map<String, FacilioField> userPwdFieldMap = FieldFactory.getAsMap(userPrevPwdsFields);
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(userPrevPwdsFields)
+				.table("UserPrevPwds")
+				.andCondition(CriteriaAPI.getCondition(userPwdFieldMap.get("userId"), uid+"", NumberOperators.EQUALS))
+				.limit(numberOfPass)
+				.orderBy("CHANGED_TIME DESC");
+		List<Map<String, Object>> maps = selectBuilder.get();
+		if (CollectionUtils.isEmpty(maps)) {
+			return null;
+		}
+
+		List<String> prevPwds = new ArrayList<>();
+		for (Map<String, Object> map: maps) {
+			prevPwds.add((String) map.get("password"));
+		}
+		return prevPwds;
+	}
+
+	@Override
+	public SecurityPolicy getUserSecurityPolicy(long uid, long orgId) throws Exception {
+		var prop = (Map<String, Object>) LRUCache.getUserSecurityPolicyCache().get(uid+"");
+		if (MapUtils.isNotEmpty(prop)) {
+			return FieldUtil.getAsBeanFromMap(prop, SecurityPolicy.class);
+		}
+		List<FacilioField> securityPolicyFields = IAMAccountConstants.getSecurityPolicyFields();
+		Map<String, FacilioField> accountUserFieldMap = FieldFactory.getAsMap(IAMAccountConstants.getAccountsUserFields());
+
+		List<FacilioField> fields = new ArrayList<>();
+		fields.addAll(securityPolicyFields);
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("Account_Users")
+				.innerJoin("SecurityPolicies")
+				.on("SecurityPolicies.SECURITY_POLICY_ID = Account_Users.SECURITY_POLICY_ID")
+				.andCondition(CriteriaAPI.getCondition(accountUserFieldMap.get("uid"), uid+"", NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("SecurityPolicies.ORGID", "orgId", orgId+"", NumberOperators.EQUALS));
+
+		Map<String, Object> map = selectBuilder.fetchFirst();
+		LRUCache.getUserSecurityPolicyCache().put(uid+"", map);
+		return FieldUtil.getAsBeanFromMap(map, SecurityPolicy.class);
+	}
+	
+
 	@Override
 	public Map<String, Object> getUserForEmail(String email, long orgId, String identifier) throws Exception {
 		return getUserForEmail(email, orgId, identifier, false);
@@ -1851,7 +2094,10 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USER_STATUS", "userStatus", "1", NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.USERNAME", "username", username, StringOperators.IS));
 
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.IDENTIFIER", "identifier", ""+groupType.getIndex()+"_", StringOperators.CONTAINS));
+		Criteria cr = new Criteria();
+		cr.addAndCondition(CriteriaAPI.getCondition("Account_Users.IDENTIFIER", "identifier", ""+groupType.getIndex()+"_", StringOperators.CONTAINS));
+		cr.addOrCondition(CriteriaAPI.getCondition("Account_Users.IDENTIFIER", "identifier", groupType.getIndex()+"", StringOperators.IS));
+		selectBuilder.andCriteria(cr);
 		return selectBuilder.get();
 	}
 

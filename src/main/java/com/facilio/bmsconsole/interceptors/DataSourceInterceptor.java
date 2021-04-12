@@ -87,6 +87,14 @@ public class DataSourceInterceptor extends AbstractInterceptor {
               	}
 			}
 		}
+
+		if (iamAccount != null && iamAccount.getOrg() != null && iamAccount.getUser() != null) {
+			boolean sessionExpired = IAMUserUtil.isSessionExpired(iamAccount.getUser().getUid(), iamAccount.getOrg().getOrgId(), iamAccount.getUserSessionId());
+			if (sessionExpired) {
+				return "sessionexpired";
+			}
+		}
+
 		long timeTaken = System.currentTimeMillis() - time;
 		AuthInterceptor.logTimeTaken(this.getClass().getSimpleName(), timeTaken, request);
 		return invocation.invoke();

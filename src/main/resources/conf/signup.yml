@@ -57,7 +57,8 @@ classes:
   - com.facilio.bmsconsoleV3.signup.moduleconfig.SpaceModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.WorkOrderModule
 
-  - com.facilio.bmsconsoleV3.signup.moduleconfig.MFASettings
+  # security policy
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.SecurityPolicy
 
     #Add DeleteJobRecords entry
   - com.facilio.bmsconsoleV3.signup.scoping.DeleteJobConfig

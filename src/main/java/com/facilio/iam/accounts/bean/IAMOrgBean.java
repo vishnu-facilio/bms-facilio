@@ -55,9 +55,7 @@ public interface IAMOrgBean {
 	public boolean deleteDomainSSO(String domain) throws Exception;
 
 	public boolean deleteAccountSSO(long orgId) throws Exception;
-	
-	public Map<String,Boolean> getMfaSettings(long orgId, AppDomain.GroupType groupType) throws Exception;
-	
+
 	public void enableTotp(long orgId, AppDomain.GroupType groupType) throws Exception;
 	
 	public void disableTotp(long orgId, AppDomain.GroupType groupType) throws Exception;

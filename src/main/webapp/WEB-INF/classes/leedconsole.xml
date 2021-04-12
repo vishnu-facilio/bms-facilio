@@ -32,6 +32,9 @@
 				<param name="location">/jsps/unauthorized.jsp</param>
 				<param name="parse">false</param>
 			</result>
+			<result name="sessionexpired" type="httpheader">
+				<param name="status">440</param>
+			</result>
 		</global-results>
 		
 		<action name="arcloginaction" class="com.facilio.leed.actions.LeedAction" method="arcLoginAction">

@@ -52,12 +52,6 @@ public class IAMOrgUtil {
 	public static void updateLoggerLevel(int level, long orgId) throws Exception {
 		FacilioService.runAsService(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getOrgBean().updateLoggerLevel(level, orgId));
 	}
-	
-	public static Map<String,Boolean> getMfaSettings(long orgId, AppDomain.GroupType groupType) throws Exception{
-		
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getOrgBean().getMfaSettings(orgId, groupType)) ;
-		
-	}
 
 	private static final int DEFAULT_URL_TIMEOUT = 3600000;
 	public static Organization createOrgFromProps(Map<String, Object> prop) throws Exception {

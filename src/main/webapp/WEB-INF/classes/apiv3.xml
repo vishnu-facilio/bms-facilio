@@ -47,6 +47,9 @@
                 <param name="ignoreHierarchy">false</param>
                 <param name="includeProperties">^message.*,^code.*,^stackTrace.*</param>
             </result>
+            <result name="sessionexpired" type="httpheader">
+                <param name="status">440</param>
+            </result>
         </global-results>
 
         <global-exception-mappings>
