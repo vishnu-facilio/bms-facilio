@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.util;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.workflow.rule.ConfirmationDialogContext;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -23,20 +24,22 @@ public class ConfirmationDialogAPI {
             return;
         }
 
-        for (ConfirmationDialogContext confirmationDialog : confirmationDialogs) {
-            confirmationDialog.setParentId(parentId);
-        }
-
         GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
                 .table(ModuleFactory.getConfirmationDialogModule().getTableName())
                 .fields(FieldFactory.getConfirmationDialogFields());
-        List<Map<String, Object>> mapList =
-                FieldUtil.getAsMapList(confirmationDialogs, ConfirmationDialogContext.class);
-        builder.addRecords(mapList);
+        for (ConfirmationDialogContext confirmationDialogContext : confirmationDialogs) {
+            confirmationDialogContext.setParentId(parentId);
+            if (confirmationDialogContext.getCriteria() != null) {
+                long criteriaId = CriteriaAPI.addCriteria(confirmationDialogContext.getCriteria(), AccountUtil.getCurrentOrg().getId());
+                confirmationDialogContext.setCriteriaId(criteriaId);
+            }
+            builder.addRecord(FieldUtil.getAsProperties(confirmationDialogContext));
+        }
         builder.save();
 
-        for (int i = 0; i < confirmationDialogs.size(); i++) {
-            confirmationDialogs.get(i).setId((long) mapList.get(i).get("id"));
+        List<Map<String, Object>> records = builder.getRecords();
+        for (int i = 0; i < records.size(); i++) {
+            confirmationDialogs.get(i).setId((long) records.get(i).get("id"));
         }
     }
 
@@ -44,16 +47,18 @@ public class ConfirmationDialogAPI {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getConfirmationDialogModule().getTableName())
                 .select(FieldFactory.getConfirmationDialogFields())
-                .andCondition(CriteriaAPI.getCondition("parentId", "PARENT_ID", String.valueOf(parentId), NumberOperators.EQUALS));
+                .andCondition(CriteriaAPI.getCondition("PARENT_ID", "parentId", String.valueOf(parentId), NumberOperators.EQUALS));
         List<ConfirmationDialogContext> confirmationDialogs = FieldUtil.getAsBeanListFromMapList(builder.get(), ConfirmationDialogContext.class);
         if (fetchChildren && CollectionUtils.isNotEmpty(confirmationDialogs)) {
             List<Long> criteriaIds = confirmationDialogs.stream().filter(confirmationDialog -> confirmationDialog.getCriteriaId() > 0)
                     .map(ConfirmationDialogContext::getCriteriaId).collect(Collectors.toList());
-            Map<Long, Criteria> criteriaMap = CriteriaAPI.getCriteriaAsMap(criteriaIds);
+            if (CollectionUtils.isNotEmpty(criteriaIds)) {
+                Map<Long, Criteria> criteriaMap = CriteriaAPI.getCriteriaAsMap(criteriaIds);
 
-            for (ConfirmationDialogContext dialogContext: confirmationDialogs) {
-                if (dialogContext.getCriteriaId() > 0) {
-                    dialogContext.setCriteria(criteriaMap.get(dialogContext.getCriteriaId()));
+                for (ConfirmationDialogContext dialogContext : confirmationDialogs) {
+                    if (dialogContext.getCriteriaId() > 0) {
+                        dialogContext.setCriteria(criteriaMap.get(dialogContext.getCriteriaId()));
+                    }
                 }
             }
         }

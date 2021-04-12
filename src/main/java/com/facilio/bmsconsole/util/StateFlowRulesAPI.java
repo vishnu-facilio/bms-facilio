@@ -81,10 +81,13 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 					}
 				}
 
-				if (workflowRuleContext instanceof StateflowTransitionContext) {
-					StateflowTransitionContext stateFlowRule = (StateflowTransitionContext) workflowRuleContext;
-					List<ValidationContext> validations = ApprovalRulesAPI.getValidations(stateFlowRule.getId());
-					stateFlowRule.setValidations(validations);
+				if (workflowRuleContext instanceof ApproverWorkflowRuleContext) {
+					ApproverWorkflowRuleContext approverRule = (ApproverWorkflowRuleContext) workflowRuleContext;
+					List<ValidationContext> validations = ApprovalRulesAPI.getValidations(approverRule.getId());
+					approverRule.setValidations(validations);
+
+					List<ConfirmationDialogContext> confirmationDialogs = ConfirmationDialogAPI.getConfirmationDialogs(approverRule.getId(), true);
+					approverRule.setConfirmationDialogs(confirmationDialogs);
 				}
 			}
 

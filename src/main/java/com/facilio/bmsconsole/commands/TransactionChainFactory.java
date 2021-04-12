@@ -30,7 +30,6 @@ import com.facilio.bmsconsole.workflow.rule.impact.AddOrUpdateAlarmImpactCommand
 import com.facilio.bmsconsole.workflow.rule.impact.util.AlarmImpactAPI;
 import com.facilio.bmsconsoleV3.commands.AddSignupDataCommandV3;
 import com.facilio.bmsconsoleV3.commands.imap.SaveMailMessageCommandV3;
-import com.facilio.bmsconsoleV3.commands.jobplan.AddJobPlanTasksCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.AddJobPlanTasksForWoCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.BulkAddJobPlanTasksCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.AssociateQuotationTermsCommand;
@@ -2871,6 +2870,14 @@ public class TransactionChainFactory {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new GenericGetModuleDataDetailCommand());
 			c.addCommand(new GetAvailableStateCommand());
+			return c;
+		}
+
+		public static FacilioChain getConfirmationDialogChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new GenericGetModuleDataDetailCommand());
+			c.addCommand(new GetConfirmationDialogFromApproverWorkflowRuleCommand());
+			c.addCommand(new GetMatchedConfirmationDialogCommand());
 			return c;
 		}
 

@@ -339,4 +339,18 @@ public class StateFlowAction extends FacilioAction {
 		chain.execute();
 		return SUCCESS;
 	}
+
+	public String getConfirmationDialogs() throws Exception {
+		FacilioChain chain = TransactionChainFactory.getConfirmationDialogChain();
+		FacilioContext context = chain.getContext();
+
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.ID, id);
+		context.put(FacilioConstants.ContextNames.RULE_ID, transitionId);
+
+		chain.execute();
+		setResult(FacilioConstants.ContextNames.VALID_CONFIRMATION_DIALOGS, context.get(FacilioConstants.ContextNames.VALID_CONFIRMATION_DIALOGS));
+
+		return SUCCESS;
+	}
 }

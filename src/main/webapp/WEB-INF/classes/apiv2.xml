@@ -467,6 +467,9 @@
 		<action name="getAvailableState"
 			class="com.facilio.bmsconsole.actions.StateFlowAction"
 			method="getAvailableState" />
+		<action name="confirmationDialogs"
+				class="com.facilio.bmsconsole.actions.StateFlowAction"
+				method="getConfirmationDialogs" />
 		<action name="addOrUpdate"
 			class="com.facilio.bmsconsole.actions.StateFlowAction"
 			method="addOrUpdateStateTransition" />
