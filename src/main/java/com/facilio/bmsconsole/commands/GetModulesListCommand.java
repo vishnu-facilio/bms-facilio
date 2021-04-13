@@ -1,22 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class GetModulesListCommand extends FacilioCommand {
 
@@ -41,6 +35,10 @@ public class GetModulesListCommand extends FacilioCommand {
 			ContextNames.WorkPermit.WORKPERMIT,
 			ContextNames.FacilityBooking.FACILITY,
 			ContextNames.FacilityBooking.FACILITY_BOOKING,
+			ContextNames.SITE,
+			ContextNames.BUILDING,
+			ContextNames.FLOOR,
+			ContextNames.SPACE,
 	});
 	
 	@Override
