@@ -17,6 +17,8 @@ files:
     destination: /home/facilio
   - source: /setenv-sp.sh
     destination: /home/facilio
+  - source: /setenv-syd.sh
+    destination: /home/facilio
   - source: /threaddump.sh
     destination: /home/facilio
   - source: /move_hprof.sh
@@ -50,6 +52,10 @@ files:
   - source: /awsprops-sp-scheduler.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-sp-user.properties
+    destination: /home/facilio/deployment-files/
+  - source: /awsprops-syd-scheduler.properties
+    destination: /home/facilio/deployment-files/
+  - source: /awsprops-syd-user.properties
     destination: /home/facilio/deployment-files/
   - source: /executors-org.xml
     destination: /home/facilio/deployment-files/

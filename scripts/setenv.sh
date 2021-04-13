@@ -1,4 +1,4 @@
-FACILIO_OPTS="-XX:-OmitStackTraceInFastThrow"
+FACILIO_OPTS="-Djava.io.tmpdir=/tmp -XX:-OmitStackTraceInFastThrow"
 JMX_OPTS="-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=3000 -Dcom.sun.management.jmxremote.rmi.port=3000 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
 JMX_EXPORTER_OPTS="-javaagent:/home/facilio/facmon/prometheus/jmx_prometheus_javaagent-0.13.0.jar=9200:/home/facilio/facmon/prometheus/jmx-tomcat.yml"
 JVM_OPTS="-Xms512M -Xmx2G -XX:+UseG1GC -server -XX:+UseStringDeduplication -XX:ParallelGCThreads=2 -XX:MaxGCPauseMillis=30"
