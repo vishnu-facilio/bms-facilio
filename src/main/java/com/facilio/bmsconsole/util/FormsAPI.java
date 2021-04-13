@@ -17,6 +17,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.context.PeopleContext;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -1114,7 +1115,12 @@ public class FormsAPI {
 				
 			case FacilioConstants.Criteria.CURRENT_DATE:
 				return DateTimeUtil.getDayStartTime();
-				
+			case FacilioConstants.Criteria.LOGGED_IN_PEOPLE:
+				long peopleId = PeopleAPI.getPeopleIdForUser(ouid);
+				if (peopleId > 0) {
+					return peopleId;
+				}
+				break;
 			default:
 				return replacePlaceholders(placeholder);
 				

@@ -2399,7 +2399,8 @@ public class FacilioConstants {
 		public static final String CURRENT_SITE = "${CURRENT_SITE}";
 		public static final String CURRENT_DATE = "${CURRENT_DATE}";
 		public static final String CURRENT_TIME = "${CURRENT_TIME}";
-			
+		public static final String LOGGED_IN_PEOPLE = "${LOGGED_PEOPLE}";
+
 	}
 	
 	public static class Builder {
