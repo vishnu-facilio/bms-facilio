@@ -640,7 +640,7 @@ public class FormFactory {
 		FacilioForm defaultForm = new FacilioForm();
 		defaultForm.setName("default_space_web_site");
 		defaultForm.setModule(spaceModule);
-		defaultForm.setDisplayName("Standard");
+		defaultForm.setDisplayName("Standard Form From Site");
 		defaultForm.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
 		defaultForm.setShowInWeb(true);
@@ -673,7 +673,7 @@ public class FormFactory {
 		FacilioForm defaultForm = new FacilioForm();
 		defaultForm.setName("default_space_web_building");
 		defaultForm.setModule(spaceModule);
-		defaultForm.setDisplayName("Standard");
+		defaultForm.setDisplayName("Standard Form From Building");
 		defaultForm.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
 		defaultForm.setShowInWeb(true);
@@ -705,7 +705,7 @@ public class FormFactory {
 		FacilioForm defaultForm = new FacilioForm();
 		defaultForm.setName("default_space_web_floor");
 		defaultForm.setModule(spaceModule);
-		defaultForm.setDisplayName("Standard");
+		defaultForm.setDisplayName("Standard Form From Floor");
 		defaultForm.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
 		defaultForm.setShowInWeb(true);
@@ -737,7 +737,7 @@ public class FormFactory {
 		FacilioForm defaultForm = new FacilioForm();
 		defaultForm.setName("default_space_web_space");
 		defaultForm.setModule(spaceModule);
-		defaultForm.setDisplayName("Standard");
+		defaultForm.setDisplayName("Standard Form From Space");
 		defaultForm.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
 		defaultForm.setShowInWeb(true);
