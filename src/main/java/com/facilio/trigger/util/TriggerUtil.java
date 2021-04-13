@@ -92,7 +92,9 @@ public class TriggerUtil {
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
 		Criteria cri = new Criteria();
-		cri.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), module.getExtendedModuleIds(), NumberOperators.EQUALS));
+		if (module != null) {
+			cri.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), module.getExtendedModuleIds(), NumberOperators.EQUALS));
+		}
 
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
 				.table(triggerModule.getTableName())

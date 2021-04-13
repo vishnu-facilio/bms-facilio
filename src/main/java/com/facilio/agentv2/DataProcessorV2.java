@@ -18,7 +18,10 @@ import com.facilio.agentv2.metrics.MetricsApi;
 import com.facilio.agentv2.misc.MiscController;
 import com.facilio.agentv2.point.PointsUtil;
 import com.facilio.beans.ModuleCRUDBean;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -216,11 +219,29 @@ public class DataProcessorV2
                 if (eventType == AgentEvent.CONTROLLERS_MISSING) {
                     return processControllerMissingEvent(payload, agent);
                 }
+                if (eventType == AgentEvent.TIMESERIES_DATA_COLLECTION_END) {
+                    return executeTriggers(agent);
+                }
             }
         }catch (Exception e){
             LOGGER.info("Exception occurred while processing event ",e);
         }
         return false;
+    }
+
+    private boolean executeTriggers(FacilioAgent agent) throws Exception {
+        List<ResourceContext> resourceContexts = getResourceToBeTriggered();
+        FacilioContext context = new FacilioContext();
+        context.put(FacilioConstants.ContextNames.RESOURCE, resourceContexts);
+        context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.TIMESERIES_COMPLETE);
+        FacilioChain facilioChain = ReadOnlyChainFactory.executeNonModuleTriggersChain();
+        facilioChain.setContext(context);
+        return !facilioChain.execute();
+    }
+
+    private List<ResourceContext> getResourceToBeTriggered() {
+        //TODO get list of assets for which the post timeseries strategies would run
+        return new ArrayList<>();
     }
 
     private boolean processControllerMissingEvent(JSONObject payload, FacilioAgent agent) throws Exception {

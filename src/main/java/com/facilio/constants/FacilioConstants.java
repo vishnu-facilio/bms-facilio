@@ -247,6 +247,8 @@ public class FacilioConstants {
 		public static final String POSITION_TYPE = "positionType";
 		public static final String CUSTOM_BUTTONS = "customButtons";
 
+        public static final String TRIGGER_TYPE = "triggerType";
+
         public static class Reservation {
 			public static final String RESERVATION = "reservation";
 			public static final String RESERVATION_LIST = "reservations";

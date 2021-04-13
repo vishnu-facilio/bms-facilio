@@ -26,7 +26,7 @@ public enum TriggerType implements TriggerTypeInterface {
 			return null;
 		}
 	},
-	MODULE_LESS_TRIGGER {
+    TIMESERIES_COMPLETED_TRIGGER {
 		@Override
 		public Map<String, Object> getParamsMap(FacilioContext context) {
 			return null;
