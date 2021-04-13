@@ -2732,6 +2732,12 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new ExecuteAllTriggersCommand(TriggerType.MODULE_TRIGGER));
 		return c;	
 	}
+
+	public static FacilioChain executeNonModuleTriggersChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new ExecuteNonModuleTriggerCommand());
+		return c;
+	}
 	public static FacilioChain getReplacePlaceHoldersChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new ReplacePlaceHoldersCommand());

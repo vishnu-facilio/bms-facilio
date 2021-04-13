@@ -266,6 +266,12 @@ public enum EventType {
 		public String getMessage(JSONObject json) {
 			return null;
 		}
+	},
+	TIMESERIES_COMPLETE(1 << 31) {
+		@Override
+		public String getMessage(JSONObject json) {
+			return null;
+		}
 	}
 	;
 

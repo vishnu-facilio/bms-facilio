@@ -25,6 +25,12 @@ public enum TriggerType implements TriggerTypeInterface {
 		public Map<String, Object> getParamsMap(FacilioContext context) {
 			return null;
 		}
+	},
+	MODULE_LESS_TRIGGER {
+		@Override
+		public Map<String, Object> getParamsMap(FacilioContext context) {
+			return null;
+		}
 	}
 	;
 	
