@@ -85,6 +85,7 @@ import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.AmenitiesContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.FacilityContext;
 import com.facilio.bmsconsoleV3.context.floorplan.V3DeskContext;
+import com.facilio.bmsconsoleV3.context.floorplan.V3FloorPlanMarkerTypeContext;
 import com.facilio.bmsconsoleV3.context.floorplan.V3FloorplanMarkersContext;
 import com.facilio.bmsconsoleV3.context.floorplan.V3IndoorFloorPlanContext;
 import com.facilio.bmsconsoleV3.context.floorplan.V3MarkerContext;
@@ -1132,6 +1133,15 @@ public class APIv3Config {
     public static Supplier<V3Config> getDesk() {
         return () -> new V3Config(V3DeskContext.class, new ModuleCustomFieldCount30())
                 .create().beforeSave(new V3ValidateSpaceCommand())
+                .update()
+                .list()
+                .summary()
+                .build();
+    }
+    @Module("floorplanmarkertypes")
+    public static Supplier<V3Config> getFloorPlanMarkerTypes() {
+        return () -> new V3Config(V3FloorPlanMarkerTypeContext.class, new ModuleCustomFieldCount30())
+                .create()
                 .update()
                 .list()
                 .summary()
