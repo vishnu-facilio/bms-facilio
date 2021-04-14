@@ -63,3 +63,6 @@ classes:
     #Add DeleteJobRecords entry
   - com.facilio.bmsconsoleV3.signup.scoping.DeleteJobConfig
 
+    #adding default marker types for floorplan
+  - com.facilio.bmsconsoleV3.signup.scoping.FloorPlanScopingConfig
+
