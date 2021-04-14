@@ -91,6 +91,21 @@ public class V3PeopleAPI {
 
     }
 
+    public static List<V3PeopleContext> getAllPeople() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
+        List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.PEOPLE);
+
+        SelectRecordsBuilder<V3PeopleContext> builder = new SelectRecordsBuilder<V3PeopleContext>()
+                .module(module)
+                .beanClass(V3PeopleContext.class)
+                .select(fields)
+        ;
+        List<V3PeopleContext> records = builder.get();
+        return records;
+
+    }
+
     public static void addParentPrimaryContactAsPeople(V3PeopleContext tc, FacilioModule module, List<FacilioField> fields, long parentId, V3PeopleContext primaryContactForParent) throws Exception {
 
         if(primaryContactForParent != null) {
@@ -553,6 +568,20 @@ public class V3PeopleAPI {
 
     }
 
+    public static List<Long> getTenantContactsIdsForLoggedInTenantUser(long ouid) throws Exception {
+        V3TenantContext tenant = V3PeopleAPI.getTenantForUser(ouid);
+        if(tenant != null) {
+            List<V3TenantContactContext> tenantContacts = V3PeopleAPI.getTenantContacts(tenant.getId(), false, false);
+            if(org.apache.commons.collections4.CollectionUtils.isNotEmpty(tenantContacts)) {
+                List<Long> idList = new ArrayList<>();
+                for(V3PeopleContext people : tenantContacts) {
+                    idList.add(people.getId());
+                }
+                return idList;
+            }
+        }
+        return Collections.emptyList();
+    }
 
 
 }
