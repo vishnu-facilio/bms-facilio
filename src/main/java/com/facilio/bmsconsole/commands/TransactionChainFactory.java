@@ -1261,6 +1261,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ValidatePrerequisiteStatusForTaskUpdateCommnad());
 			c.addCommand(new VerifyApprovalCommand());
 			c.addCommand(new ValidateAndCreateValuesForInputTaskCommand());
+			c.addCommand(new HandleReadingMeterResetValidations());
 			c.addCommand(new InValidateAndClearTaskReading());
 			c.addCommand(new ValidateReadingInputForTask());
 			c.addCommand(new ReadingUnitConversionToRdmOrSiUnit());

@@ -10,6 +10,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.json.annotations.JSON;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
@@ -548,6 +550,36 @@ public class TaskContext extends ModuleBaseWithCustomFields {
 		if (StringUtils.isNotEmpty(attachmentOptionValuesString)) {
 			this.attachmentOptionValues = new ArrayList<String>(Arrays.asList(attachmentOptionValuesString.split(",")));
 		}
+	}
+	
+	private JSONObject additionalInfo;
+	
+	public JSONObject getAdditionalInfo() {
+		return additionalInfo;
+	}
+
+	public void setAdditionalInfo(JSONObject additionalInfo) {
+		this.additionalInfo = additionalInfo;
+	}
+	
+	public void addAdditionalInfo(String key, Object value) {
+		if(this.additionalInfo == null) {
+			this.additionalInfo =  new JSONObject();
+		}
+		this.additionalInfo.put(key,value);
+	}
+	
+	private String additionalInfoJsonStr;
+	public String getAdditionalInfoJsonStr() {
+		if(additionalInfo != null) {
+			return additionalInfo.toJSONString();
+		}
+		return additionalInfoJsonStr;
+	}
+	public void setAdditionalInfoJsonStr(String additionalInfoJsonStr) throws org.json.simple.parser.ParseException{
+		this.additionalInfoJsonStr = additionalInfoJsonStr;
+		JSONParser parser = new JSONParser();
+		this.additionalInfo = (JSONObject) parser.parse(additionalInfoJsonStr);
 	}
 
 	@JsonIgnore

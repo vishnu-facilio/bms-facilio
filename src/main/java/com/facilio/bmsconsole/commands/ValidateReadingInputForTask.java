@@ -409,12 +409,10 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 			return Unit.valueOf(currentTask.getReadingFieldUnit());
 		}
 		else if(rdm.getUnit() > 0) {
-			LOGGER.log(Level.INFO,"Unit missing from client, fetching from rdm, Currenttask ID: "+ currentTask.getId() + " Current Input Time: " + currentTask.getInputTime() + " Current Input Value: " + currentTask.getInputValue() + "  Unit "+ Unit.valueOf(rdm.getUnit()));
 			return Unit.valueOf(rdm.getUnit());
 		}
 		else if (numberField.getMetric() > 0)
 		{
-			LOGGER.log(Level.INFO,"Unit missing from client, fetching from orgLevelUnit, Currenttask ID: "+ currentTask.getId() + " Current Input Time: " + currentTask.getInputTime() + " Current Input Value: " + currentTask.getInputValue() + " Unit "+AccountUtil.getOrgBean().getOrgDisplayUnit(numberField.getMetric()));
 			return AccountUtil.getOrgBean().getOrgDisplayUnit(numberField.getMetric());
 		}
 		else {

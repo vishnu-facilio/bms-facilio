@@ -1195,6 +1195,7 @@ public class FacilioConstants {
 		public static final String UPDATE_LAST_READINGS = "updateLastReadings";
 		public static final String SKIP_LAST_READING_CHECK = "skipLastReadingCheck";
 		public static final String SKIP_VALIDATION = "skipValidation";
+		public static final String DELTA_RESETTED = "deltaResetted";
 		public static final String PREVIOUS_READING_DATA_META = "previousReadingDataMeta";
 		public static final String CURRRENT_READING_DATA_META = "currentReadingDataMeta";
 		public static final String READING_DATA_META_ID = "readingDataMetaId";
@@ -2368,6 +2369,7 @@ public class FacilioConstants {
 		public static final String CALCULATE_VM_THROUGH_FORMULA = "calculateVmThroughFormula";
 		public static final String IS_OLD_AGENT = "isOldAgent";
 		public static final String DATA_PROCESSING_LOGGER_LEVEL = "dataProcessingLoggerLevel";		
+		public static final String HANDLE_TASK_METER_RESET = "handleTaskMeterReset";		
 	}
 
 	public static class Services{

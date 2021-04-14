@@ -91,13 +91,16 @@ public class EnergyDataDeltaCalculationCommand extends FacilioCommand {
 					}
 				}
 				
+				Boolean isDeltaReset = (Boolean) context.get(FacilioConstants.ContextNames.DELTA_RESETTED);
+				isDeltaReset = isDeltaReset == null ? Boolean.FALSE : isDeltaReset;  
+
 				for (ReadingContext reading : readings) {
 					if (reading.getId() != -1) {
 						ReadingContext readingBeforeUpdate= ReadingsAPI.getReading(module, allFields, reading.getId());
 						if (readingBeforeUpdate.getTtime() != reading.getTtime()){//If reading date changed
-							ReadingsAPI.updateDeltaForCurrentAndNextRecords(module,allFields,readingBeforeUpdate,false,reading.getTtime(),true,metaMap, ignoreSplNullHandling);
+							ReadingsAPI.updateDeltaForCurrentAndNextRecords(module,allFields,readingBeforeUpdate,false,reading.getTtime(),true,metaMap, ignoreSplNullHandling, isDeltaReset);
 						}
-						ReadingsAPI.updateDeltaForCurrentAndNextRecords(module, allFields, reading, true,reading.getTtime(),true,metaMap, ignoreSplNullHandling);
+						ReadingsAPI.updateDeltaForCurrentAndNextRecords(module, allFields, reading, true,reading.getTtime(),true,metaMap, ignoreSplNullHandling, isDeltaReset);
 					}
 				}
 			}
