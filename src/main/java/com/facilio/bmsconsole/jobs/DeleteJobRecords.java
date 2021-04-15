@@ -25,12 +25,12 @@ public class DeleteJobRecords extends FacilioJob {
         try {
             long currentTime = System.currentTimeMillis();
             long orgId = jc.getOrgId();
-            int daysCount =-30;
+            int daysCount = 30;
             if(orgId == 339L || orgId == 405L){
                 JSONObject props = BmsJobUtil.getJobProps(jc.getJobId(),jc.getJobName());
                 daysCount = Integer.parseInt(props.get("executionTime").toString());;
             }
-            long deletedTime = DateTimeUtil.addDays(currentTime, daysCount);
+            long deletedTime = DateTimeUtil.addDays(currentTime, -daysCount);
             FacilioService.runAsService(FacilioConstants.Services.JOB_SERVICE, ()-> deleteFiles(deletedTime, orgId));
             LOGGER.info("Job Deletion completed for org : "+orgId + ".  Time taken to delete : "+(System.currentTimeMillis()- currentTime)+" ms.");
         }catch (Exception e){
