@@ -123,6 +123,7 @@ public class ChainUtil {
         if (listHandler != null && listHandler.isShowStateFlowList()) {
             nonTransactionChain.addCommand(new StateFlowListCommand());
         }
+        nonTransactionChain.addCommand(new CustomButtonForDataListCommand());
 
         addIfNotNull(nonTransactionChain, afterFetchCommand);
         //handling primary value for lookup fields

@@ -31,6 +31,7 @@ public class Constants {
     public static final String PATCH_FIELDS = "patchFields";
     public static final String QUERY_PARAMS = "queryParams";
     public static final String STATE_FLOWS = "stateFlows";
+    public static final String CUSTOM_BUTTONS = "customButtons";
 
     private static final String MODULE_NAME = "moduleName";
     public static String getModuleName(Context context) {

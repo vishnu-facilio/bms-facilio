@@ -198,6 +198,10 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         if (MapUtils.isNotEmpty(stateFlows)) {
             meta.put("stateflows", stateFlows);
         }
+        Collection<WorkflowRuleContext> customButtons = (Collection<WorkflowRuleContext>) context.get(Constants.CUSTOM_BUTTONS);
+        if (CollectionUtils.isNotEmpty(customButtons)) {
+            meta.put(Constants.CUSTOM_BUTTONS, customButtons);
+        }
 
         Object supplMap = Constants.getSupplementMap(context);
         if (supplMap != null) {
