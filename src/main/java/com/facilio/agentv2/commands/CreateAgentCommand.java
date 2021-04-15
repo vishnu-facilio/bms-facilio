@@ -53,6 +53,7 @@ public class CreateAgentCommand extends AgentV2Command {
                     return true;
                 case CLOUD:
                     createMessageTopic(currentOrg);
+                    createPolicy(agent,currentOrg);
                     AgentApiV2.scheduleRestJob(agent);
                     return true;
             }

@@ -28,7 +28,7 @@ public class DeleteJobRecords extends FacilioJob {
             int daysCount =-30;
             if(orgId == 339L || orgId == 405L){
                 JSONObject props = BmsJobUtil.getJobProps(jc.getJobId(),jc.getJobName());
-                daysCount = (int)props.get("executionTime");
+                daysCount = Integer.parseInt(props.get("executionTime").toString());;
             }
             long deletedTime = DateTimeUtil.addDays(currentTime, daysCount);
             FacilioService.runAsService(FacilioConstants.Services.JOB_SERVICE, ()-> deleteFiles(deletedTime, orgId));
