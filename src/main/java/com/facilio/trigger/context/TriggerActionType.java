@@ -2,11 +2,13 @@ package com.facilio.trigger.context;
 
 import java.util.*;
 
+import com.facilio.accounts.bean.OrgBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.workflows.context.WorkflowContext;
@@ -52,12 +54,13 @@ public enum TriggerActionType {
 
 			FacilioContext newContext = chain.getContext();
 			newContext.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflowContext);
-			newContext.put(WorkflowV2Util.WORKFLOW_PARAMS, context);
-
+            List<Object> params = (List<Object>) context.get(FacilioConstants.ContextNames.WORK_FLOW_PARAMS);
+            newContext.put(WorkflowV2Util.WORKFLOW_PARAMS, params);
 			chain.execute();
+
 			workflowContext.executeWorkflow();
 		}
-	},
+    }
 	;
 	
 	private int val;
