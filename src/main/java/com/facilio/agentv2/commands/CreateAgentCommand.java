@@ -7,6 +7,7 @@ import com.facilio.agentv2.AgentAction;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.service.FacilioService;
+import com.facilio.services.messageQueue.MessageQueueFactory;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 
@@ -52,8 +53,13 @@ public class CreateAgentCommand extends AgentV2Command {
                     createPolicy(agent,currentOrg);
                     return true;
                 case CLOUD:
+                    //creating kinesis stream
+                    AwsUtil.createKinesisStream(AwsUtil.getKinesisClient(), currentOrg.getDomain());
+                    //creating kafka topic
+                    MessageQueueFactory.getMessageQueue().createQueue(currentOrg.getDomain());
+                    //adding topic to db
                     createMessageTopic(currentOrg);
-                    createPolicy(agent,currentOrg);
+                    //createPolicy(agent,currentOrg);
                     AgentApiV2.scheduleRestJob(agent);
                     return true;
             }

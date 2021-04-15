@@ -740,7 +740,7 @@ public class AwsUtil
 		return kinesis;
 	}
 
-	private static void createKinesisStream(AmazonKinesis kinesisClient, String streamName) {
+	public static void createKinesisStream(AmazonKinesis kinesisClient, String streamName) {
 		LOGGER.info(" creating kenisis stream " + streamName);
 		Objects.requireNonNull(kinesisClient, " kinesis client can't be null");
 		Objects.requireNonNull(streamName, "stream name can't be null");
