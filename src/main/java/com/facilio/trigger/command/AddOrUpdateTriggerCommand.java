@@ -36,12 +36,12 @@ public class AddOrUpdateTriggerCommand extends FacilioCommand {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
-		if (module == null) {
+        if (module == null && trigger.getType() != TriggerType.TIMESERIES_COMPLETED_TRIGGER.getValue()) {
 			throw new IllegalArgumentException("Invalid module name");
 		}
-
-		trigger.setModuleId(module.getModuleId());
-
+        if (module != null) {
+            trigger.setModuleId(module.getModuleId());
+        }
 		if (StringUtils.isEmpty(trigger.getName())) {
 			throw new IllegalArgumentException("Trigger name cannot be empty");
 		}
@@ -111,6 +111,7 @@ public class AddOrUpdateTriggerCommand extends FacilioCommand {
 			case MODULE_TRIGGER:
 			case SLA_DUE_DATE_TRIGGER:
 			case SCORING_RULE_TRIGGER:
+            case TIMESERIES_COMPLETED_TRIGGER:
 				return ModuleFactory.getTriggerModule();
 
 			default:
@@ -123,6 +124,7 @@ public class AddOrUpdateTriggerCommand extends FacilioCommand {
 			case MODULE_TRIGGER:
 			case SLA_DUE_DATE_TRIGGER:
 			case SCORING_RULE_TRIGGER:
+            case TIMESERIES_COMPLETED_TRIGGER:
 				return FieldFactory.getTriggerFields();
 
 			default:

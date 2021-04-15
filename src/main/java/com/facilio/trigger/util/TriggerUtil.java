@@ -99,8 +99,10 @@ public class TriggerUtil {
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
 				.table(triggerModule.getTableName())
 				.select(fields)
-				.andCriteria(cri)
 				;
+		if (!cri.isEmpty()) {
+			select.andCriteria(cri);
+		}
 
 		if (onlyActive) {
 			select.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), Boolean.TRUE.toString(), BooleanOperators.IS));

@@ -35,6 +35,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.trigger.context.TriggerType;
 import com.facilio.util.AckUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -232,8 +233,9 @@ public class DataProcessorV2
     private boolean executeTriggers(FacilioAgent agent) throws Exception {
         List<ResourceContext> resourceContexts = getResourceToBeTriggered();
         FacilioContext context = new FacilioContext();
-        context.put(FacilioConstants.ContextNames.RESOURCE, resourceContexts);
+        context.put(FacilioConstants.ContextNames.WORK_FLOW_PARAMS, resourceContexts);
         context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.TIMESERIES_COMPLETE);
+        context.put(FacilioConstants.ContextNames.TRIGGER_TYPE, TriggerType.TIMESERIES_COMPLETED_TRIGGER);
         FacilioChain facilioChain = ReadOnlyChainFactory.executeNonModuleTriggersChain();
         facilioChain.setContext(context);
         return !facilioChain.execute();
@@ -241,7 +243,11 @@ public class DataProcessorV2
 
     private List<ResourceContext> getResourceToBeTriggered() {
         //TODO get list of assets for which the post timeseries strategies would run
-        return new ArrayList<>();
+        List<ResourceContext> resources = new ArrayList<>();
+        ResourceContext r1 = new ResourceContext();
+        r1.setName("MyResource_1");
+        resources.add(r1);
+        return resources;
     }
 
     private boolean processControllerMissingEvent(JSONObject payload, FacilioAgent agent) throws Exception {

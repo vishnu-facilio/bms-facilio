@@ -5,6 +5,7 @@ import java.util.*;
 import com.facilio.accounts.bean.OrgBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
@@ -54,7 +55,9 @@ public enum TriggerActionType {
 
 			FacilioContext newContext = chain.getContext();
 			newContext.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflowContext);
-            List<Object> params = (List<Object>) context.get(FacilioConstants.ContextNames.WORK_FLOW_PARAMS);
+			List<ResourceContext> resources = (List<ResourceContext>) context.get(FacilioConstants.ContextNames.WORK_FLOW_PARAMS);
+			List<Object> params = new ArrayList<>();
+			params.add(resources);
             newContext.put(WorkflowV2Util.WORKFLOW_PARAMS, params);
 			chain.execute();
 
