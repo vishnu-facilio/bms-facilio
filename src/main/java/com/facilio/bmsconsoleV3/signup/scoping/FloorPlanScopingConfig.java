@@ -32,6 +32,7 @@ public class FloorPlanScopingConfig extends SignUpData {
             markerType.setOrgId(orgId);
             markerType.setRecordModuleId(desk.getModuleId());
             markerType.setType(1);
+            markerType.setFileId((long) -1);
             markerType.setIsAutoCreate(true);
             markerType.setEnableNumbering(true);
 
