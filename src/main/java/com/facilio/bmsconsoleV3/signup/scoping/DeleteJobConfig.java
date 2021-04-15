@@ -1,12 +1,14 @@
 package com.facilio.bmsconsoleV3.signup.scoping;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.service.FacilioService;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.ScheduleInfo;
 import lombok.extern.log4j.Log4j;
+import org.json.simple.JSONObject;
 
 import java.time.LocalTime;
 
@@ -26,6 +28,8 @@ public class DeleteJobConfig extends SignUpData {
         schedule.addTime(LocalTime.of(01, 0));
         schedule.setFrequencyType(ScheduleInfo.FrequencyType.DAILY);
         schedule.setFrequency(1);
-        FacilioTimer.scheduleCalendarJob(orgId,"DeleteJobRecords",System.currentTimeMillis(),schedule,"facilio");
+        JSONObject props = new JSONObject();
+        props.put("executionTime",30);
+        BmsJobUtil.scheduleCalendarJobWithProps(orgId,"DeleteJobRecords",System.currentTimeMillis(),schedule,"facilio",props);
     }
 }
