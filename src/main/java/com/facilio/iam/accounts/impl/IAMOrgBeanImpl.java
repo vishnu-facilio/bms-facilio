@@ -304,7 +304,10 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 			org.setDbName(dbName);
 		}
 		else if (FacilioProperties.isProduction() && !FacilioProperties.isOnpremise()) {
-			org.setDbName("bms_3");
+			String defaultDbForNewOrg = FacilioProperties.getDefaultAppDBForNewOrg();
+			if (StringUtils.isNotEmpty(defaultDbForNewOrg)) {
+				org.setDbName(defaultDbForNewOrg);
+			}
 		}
 		
 		return IAMUtil.getOrgBean().createOrgv2(org);

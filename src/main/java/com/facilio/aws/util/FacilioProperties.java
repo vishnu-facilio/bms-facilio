@@ -62,6 +62,7 @@ public class FacilioProperties {
     private static String iotEndPoint;
     private static String defaultDB;
     private static String defaultAppDB;
+    private static String defaultAppDBForNewOrg;
     private static String defaultDataSource;
     private static String messageQueue;
     private static boolean isOnpremise = false;
@@ -185,6 +186,7 @@ public class FacilioProperties {
                 defaultDataSource = PROPERTIES.getProperty("db.default.ds");
                 defaultDB = PROPERTIES.getProperty("db.default.db");
                 defaultAppDB = PROPERTIES.getProperty("db.default.app.db");
+                defaultAppDBForNewOrg = PROPERTIES.getProperty("db.default.app.db.new.org");
                 messageQueue = PROPERTIES.getProperty("service.mQueue");
                 domain = PROPERTIES.getProperty("domain");
                 iotUser = PROPERTIES.getProperty("iot.accessKeyId");
@@ -446,6 +448,10 @@ public class FacilioProperties {
             return getDefaultDB();
         }
         return defaultAppDB;
+    }
+
+    public static String getDefaultAppDBForNewOrg() {
+        return defaultAppDBForNewOrg;
     }
 
     public static String getMessageQueue() {
