@@ -1,15 +1,17 @@
 package com.facilio.trigger.context;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.UpdateChangeSet;
+import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.util.WorkflowUtil;
+import com.facilio.workflowv2.util.WorkflowV2Util;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -44,7 +46,16 @@ public enum TriggerActionType {
 
 		@Override
 		public void performAction(FacilioContext context, BaseTriggerContext trigger, String moduleName, ModuleBaseWithCustomFields record, List<UpdateChangeSet> changeSets, Long recordId) throws Exception {
-//			return WorkflowUtil.getResult(recordId, null);
+			WorkflowContext workflowContext = WorkflowUtil.getWorkflowContext(recordId);
+
+			FacilioChain chain = TransactionChainFactory.getExecuteWorkflowChain();
+
+			FacilioContext newContext = chain.getContext();
+			newContext.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflowContext);
+			newContext.put(WorkflowV2Util.WORKFLOW_PARAMS, context);
+
+			chain.execute();
+			workflowContext.executeWorkflow();
 		}
 	},
 	;

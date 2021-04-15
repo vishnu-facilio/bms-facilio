@@ -27,11 +27,8 @@ public class ExecuteNonModuleTriggerCommand implements Command {
         TriggerType triggerType = (TriggerType) context.get(FacilioConstants.ContextNames.TRIGGER_TYPE);
         List<EventType> activities = CommonCommandUtil.getEventTypes(context);
         if (activities != null && activities.size() > 0) {
-
             List<BaseTriggerContext> triggers = TriggerUtil.getTriggers(null, activities, null, true, false, triggerType);
-            List<ResourceContext> resourceContexts = (List<ResourceContext>) context.get(FacilioConstants.ContextNames.RESOURCE);
-
-            //TriggerUtil.executeTriggerActions(triggers,context,resourceContexts);
+            TriggerUtil.executeTriggerActions(triggers, (FacilioContext) context, null, null, null);
         }
         return false;
     }
