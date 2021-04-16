@@ -1870,6 +1870,10 @@ public class FacilioConstants {
 		public static final String JOB_PLAN_TASK = "jobplantask";
 
 		public static final String AUDIENCE_SHARING = "audienceSharing";
+		
+		public static final String DEPARTMENT = "department";
+		public static final String MOVES = "moves";
+		public static final String DELIVERIES = "deliveries";
 
 
 		public static class WorkPermit {
@@ -2314,6 +2318,9 @@ public class FacilioConstants {
 			classMap.put(Floorplan.MARKER, V3MarkerContext.class);
 			classMap.put(Floorplan.MARKED_ZONES, V3MarkerdZonesContext.class);
 			classMap.put(Floorplan.DESKS, V3DeskContext.class);
+			classMap.put(DEPARTMENT, V3DepartmentContext.class);
+			classMap.put(MOVES, V3MovesContext.class);
+			classMap.put(DELIVERIES, V3DeliveriesContext.class);
 			
 			return classMap;
 

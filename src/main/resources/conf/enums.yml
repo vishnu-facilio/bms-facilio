@@ -165,3 +165,6 @@ enums:
 
   - name: JobPlanTaskCategory
     enumClassName: com.facilio.bmsconsoleV3.context.jobplan.JobPlanTasksContext$JobPlanTaskCategory
+    
+  - name: MoveType
+    enumClassName: com.facilio.bmsconsoleV3.context.V3MovesContext$MoveType

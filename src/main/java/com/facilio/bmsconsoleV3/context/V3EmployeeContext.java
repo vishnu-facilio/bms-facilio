@@ -54,5 +54,13 @@ public class V3EmployeeContext extends V3PeopleContext{
         }
         return false;
     }
-
+    
+    private V3DepartmentContext department;
+    
+    public V3DepartmentContext getDepartment() {
+		return department;
+	}
+	public void setDepartment(V3DepartmentContext department) {
+		this.department = department;
+	}
 }

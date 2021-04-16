@@ -957,6 +957,22 @@ public class ViewFactory {
 		views.put("all", getAllAmenityView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.FacilityBooking.AMENITY, views);
 		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllDepartmentView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.DEPARTMENT, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllMovesView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.MOVES, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllDeliveriesView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.DELIVERIES, views);
+		
+		
 		return viewsMap;
 	}
 
@@ -8800,6 +8816,57 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All Amenities");
 		allView.setModuleName(FacilioConstants.ContextNames.FacilityBooking.AMENITY);
+		allView.setSortFields(sortFields);
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		allView.setViewSharing(getSharingContext(appDomains));
+
+		return allView;
+	}
+	
+	private static FacilioView getAllDepartmentView() {
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Departments");
+		allView.setModuleName(FacilioConstants.ContextNames.DEPARTMENT);
+		allView.setSortFields(sortFields);
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		allView.setViewSharing(getSharingContext(appDomains));
+
+		return allView;
+	}
+	
+	private static FacilioView getAllMovesView() {
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Moves");
+		allView.setModuleName(FacilioConstants.ContextNames.MOVES);
+		allView.setSortFields(sortFields);
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		allView.setViewSharing(getSharingContext(appDomains));
+
+		return allView;
+	}
+	
+	private static FacilioView getAllDeliveriesView() {
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Departments");
+		allView.setModuleName(FacilioConstants.ContextNames.DELIVERIES);
 		allView.setSortFields(sortFields);
 
 		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();

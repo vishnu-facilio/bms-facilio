@@ -54,7 +54,11 @@ public class GetAllModulesCommand extends FacilioCommand {
             ContextNames.Tenant.ADMIN_DOCUMENTS,
             ContextNames.Tenant.CONTACT_DIRECTORY,
 			ContextNames.Budget.BUDGET,
-			ContextNames.Budget.CHART_OF_ACCOUNT
+			ContextNames.Budget.CHART_OF_ACCOUNT,
+			ContextNames.DEPARTMENT,
+			ContextNames.MOVES,
+			ContextNames.DELIVERIES,
+			ContextNames.EMPLOYEE,
 
     });
 

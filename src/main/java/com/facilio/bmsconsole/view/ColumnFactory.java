@@ -236,6 +236,9 @@ public class ColumnFactory {
 		columnMap.put(FacilioConstants.ContextNames.FacilityBooking.FACILITY + "-default", getDefaultFacilityColumns());
 		columnMap.put(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING + "-default", getDefaultFacilityBookingColumns());
 		columnMap.put(FacilioConstants.ContextNames.FacilityBooking.AMENITY + "-default", getDefaultAmenityColumns());
+		columnMap.put(FacilioConstants.ContextNames.DEPARTMENT + "-default", getDefaultDepartmentColumns());
+		columnMap.put(FacilioConstants.ContextNames.MOVES + "-default", getDefaultMovesColumns());
+		columnMap.put(FacilioConstants.ContextNames.DELIVERIES + "-default", getDefaultDeliveriesColumns());
 		
 		// Community Features
 		columnMap.put("announcement-default", getDefaultAnnouncementColumns());
@@ -1760,6 +1763,40 @@ public class ColumnFactory {
 		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("description", "Description"));
 		columns.add(new ViewField("category", "Category"));
+
+		return columns;
+
+	}
+	
+	private static List<ViewField> getDefaultDepartmentColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("color", "Color"));
+
+		return columns;
+
+	}
+	
+	private static List<ViewField> getDefaultMovesColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("employee", "Employee"));
+		columns.add(new ViewField("department", "Department"));
+		columns.add(new ViewField("from", "From"));
+		columns.add(new ViewField("to", "To"));
+		columns.add(new ViewField("timeOfMove", "Time of Move"));
+		columns.add(new ViewField("moveType", "Move Type"));
+		columns.add(new ViewField("site", "Site"));
+		return columns;
+
+	}
+	
+	private static List<ViewField> getDefaultDeliveriesColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("employee", "Employee"));
+		columns.add(new ViewField("department", "Department"));
+		columns.add(new ViewField("site", "Site"));
+		columns.add(new ViewField("receivedTime", "Received Time"));
+		columns.add(new ViewField("deliveredTime", "Delivered Time"));
 
 		return columns;
 

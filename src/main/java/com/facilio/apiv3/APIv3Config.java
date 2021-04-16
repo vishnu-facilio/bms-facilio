@@ -1148,5 +1148,35 @@ public class APIv3Config {
                 .build();
     }
     
+    @Module("department")
+    public static Supplier<V3Config> getDepartment() {
+        return () -> new V3Config(V3DepartmentContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .update()
+                .list()
+                .summary()
+                .build();
+    }
+    
+    @Module("moves")
+    public static Supplier<V3Config> getMoves() {
+        return () -> new V3Config(V3MovesContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .update()
+                .list()
+                .summary()
+                .build();
+    }
+    
+    @Module("deliveries")
+    public static Supplier<V3Config> getDeliveries() {
+        return () -> new V3Config(V3DeliveriesContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .update()
+                .list()
+                .summary()
+                .build();
+    }
+    
 }
 

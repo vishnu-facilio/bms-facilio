@@ -90,6 +90,9 @@ public class FormFactory {
 		forms.put("new_vendor_contact_form", getNewVendorContactForm());
 		forms.put("client_contact_form", getClientContactForm());
 		forms.put("employee_form", geEmployeeContactForm());
+		forms.put("department_form", getDepartmentForm());
+		forms.put("moves_form", getMovesForm());
+		forms.put("deliveries_form", getDeliveriesForm());
 		forms.put("people_form", getPeopleForm());
 		forms.put("tenantunit_form", geTenantUnitSpaceForm());
 
@@ -388,6 +391,9 @@ public class FormFactory {
 		List<FacilioForm> clientContactFormsList = Arrays.asList(getClientContactForm());
 		List<FacilioForm> tenantUnitFormsList = Arrays.asList(geTenantUnitSpaceForm());
 		List<FacilioForm> employeeFormsList = Arrays.asList(geEmployeeContactForm());
+		List<FacilioForm> departmentFormsList = Arrays.asList(getDepartmentForm());
+		List<FacilioForm> movesFormsList = Arrays.asList(getMovesForm());
+		List<FacilioForm> deliveriestFormsList = Arrays.asList(getDeliveriesForm());
 		List<FacilioForm> peopleFormsList = Arrays.asList(getPeopleForm());
 
 		List<FacilioForm> reservationFormsList = Arrays.asList(getReservationForm());
@@ -448,6 +454,7 @@ public class FormFactory {
 				.put(FacilioConstants.ContextNames.CLIENT_CONTACT, getFormMap(clientContactFormsList))
 				.put(FacilioConstants.ContextNames.TENANT_UNIT_SPACE, getFormMap(tenantUnitFormsList))
 				.put(FacilioConstants.ContextNames.EMPLOYEE, getFormMap(employeeFormsList))
+				.put(FacilioConstants.ContextNames.DEPARTMENT, getFormMap(departmentFormsList))
 				.put(FacilioConstants.ContextNames.Reservation.RESERVATION, getFormMap(reservationFormsList))
 				.put(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS, getFormMap(rentalLeaseFormsList))
 				.put(FacilioConstants.ContextNames.VISITOR_LOGGING, getFormMap(visitorLoggingForms))
@@ -1116,6 +1123,39 @@ public class FormFactory {
 		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
+	
+	public static FacilioForm getDepartmentForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("NEW DEPARTMENT");
+		form.setName("default_department_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.DEPARTMENT));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getDepartmentFormField());
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+		return form;
+	}
+	
+	public static FacilioForm getMovesForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("NEW MOVE");
+		form.setName("default_move_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.MOVES));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getMovesFormField());
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+		return form;
+	}
+	
+	public static FacilioForm getDeliveriesForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("NEW DELIVERY");
+		form.setName("default_deliveries_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.DELIVERIES));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getDeliveriesFormField());
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+		return form;
+	}
 
 	private static List<FormField> getWebWorkOrderFormFields() {
 		List<FormField> fields = new ArrayList<>();
@@ -1504,6 +1544,37 @@ public class FormFactory {
 		fields.add(new FormField("isLabour", FieldDisplayType.DECISION_BOX, "Is Labour", Required.OPTIONAL, 5, 3));
 
 
+		return fields;
+	}
+	
+	private static List<FormField> getDepartmentFormField() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("color", FieldDisplayType.TEXTBOX, "Color", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 4, 1));
+
+		return fields;
+	}
+	
+	private static List<FormField> getMovesFormField() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("moveType", FieldDisplayType.SELECTBOX, "Move Type", Required.REQUIRED, 5, 1));
+		fields.add(new FormField("timeOfMove", FieldDisplayType.DATETIME, "Time of Move", Required.REQUIRED, 10, 1));
+		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 4, 1));
+		fields.add(new FormField("employee", FieldDisplayType.LOOKUP_SIMPLE, "Employee", Required.REQUIRED, "employee", 1, 2));
+		fields.add(new FormField("department", FieldDisplayType.LOOKUP_SIMPLE, "Department", Required.REQUIRED, "department", 1, 2));
+		fields.add(new FormField("to", FieldDisplayType.LOOKUP_SIMPLE, "To", Required.REQUIRED, "desks", 1, 2));
+		fields.add(new FormField("from", FieldDisplayType.LOOKUP_SIMPLE, "From", Required.REQUIRED, "desks", 1, 2));
+
+		return fields;
+	}
+	
+	private static List<FormField> getDeliveriesFormField() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 4, 1));
+		fields.add(new FormField("employee", FieldDisplayType.LOOKUP_SIMPLE, "Employee", Required.REQUIRED, "employee", 1, 2));
+		fields.add(new FormField("department", FieldDisplayType.LOOKUP_SIMPLE, "Department", Required.REQUIRED, "department", 1, 2));
+		fields.add(new FormField("receivedTime", FieldDisplayType.DATETIME, "Received Time", Required.REQUIRED, 10, 1));
 		return fields;
 	}
 
