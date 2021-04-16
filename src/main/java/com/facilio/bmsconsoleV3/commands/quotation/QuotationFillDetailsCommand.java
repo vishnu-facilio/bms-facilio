@@ -13,15 +13,21 @@ import com.facilio.v3.util.CommandUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.util.List;
 import java.util.Map;
 
 public class QuotationFillDetailsCommand extends FacilioCommand {
+    private static final Logger LOGGER = LogManager.getLogger(QuotationFillDetailsCommand.class.getName());
     @Override
     public boolean executeCommand(Context context) throws Exception {
         long id = Constants.getRecordIds(context).get(0);
         QuotationContext quotation = (QuotationContext) CommandUtil.getModuleData(context, FacilioConstants.ContextNames.QUOTE, id);
+        if (quotation == null) {
+            LOGGER.error("Quotation is empty");
+        }
         QuotationAPI.setLineItems(quotation);
         QuotationAPI.setQuotationAssociatedTerms(quotation);
         QuotationAPI.setTaxSplitUp(quotation, quotation.getLineItems());

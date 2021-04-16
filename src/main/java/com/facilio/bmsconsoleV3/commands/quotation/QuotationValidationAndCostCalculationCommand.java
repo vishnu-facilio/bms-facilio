@@ -11,11 +11,14 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.util.List;
 import java.util.Map;
 
 public class QuotationValidationAndCostCalculationCommand extends FacilioCommand {
+    private static final Logger LOGGER = LogManager.getLogger(QuotationValidationAndCostCalculationCommand.class.getName());
     @Override
     public boolean executeCommand(Context context) throws Exception {
 
@@ -71,6 +74,8 @@ public class QuotationValidationAndCostCalculationCommand extends FacilioCommand
                 }
                 QuotationAPI.validateForWorkorder(quotation);
             }
+        } else {
+            LOGGER.error("Quotation List is empty");
         }
         
         context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
