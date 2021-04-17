@@ -230,17 +230,18 @@ public class ProcessImportCommand extends FacilioCommand {
 			}
 
 			else if (module.equals(FacilioConstants.ContextNames.BUILDING)) {
-				long siteId;
+				Long siteId;
 				if(!isBim){
 					siteId = getSpaceID(importProcessContext,colVal, fieldMapping, row_no, true);
 				}else{
 					siteId = Long.parseLong(props.get("site").toString());
 				}
-
-				lookupHolder = new HashMap<>();
-				lookupHolder.put("id", siteId);
-				props.put("siteId", siteId);
-				props.put(ImportAPI.ImportProcessConstants.SITE_ID_FIELD,lookupHolder);
+				if (siteId != null) {
+					lookupHolder = new HashMap<>();
+					lookupHolder.put("id", siteId);
+					props.put("siteId", siteId);
+					props.put(ImportAPI.ImportProcessConstants.SITE_ID_FIELD, lookupHolder);
+				}
 				props.put("resourceType", ResourceType.SPACE.getValue());
 				props.put("spaceType", BaseSpaceContext.SpaceType.BUILDING.getIntVal());
 
@@ -854,15 +855,7 @@ public class ProcessImportCommand extends FacilioCommand {
 				AppDomain appDomainObj = ApplicationApi.getAppDomainForApplication(appId);
 			    User user = AccountUtil.getUserBean().getUser(value.toString(), appDomainObj != null ? appDomainObj.getIdentifier() : null);
 				if(user == null) {
-					if (lookupField.getName().equals("assignedTo") || lookupField.getName().equals("createdBy")) {
-						throw new Exception("Value not found");
-					}
-					user = new User();
-					user.setEmail(value.toString());
-					user.setApplicationId(appId);
-					user.setAppDomain(appDomainObj);
-
-					AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, false, false,appDomainObj.getIdentifier(), true, false);
+					throw new Exception("Value not found");
 				}
 				return FieldUtil.getAsProperties(user);
 			}

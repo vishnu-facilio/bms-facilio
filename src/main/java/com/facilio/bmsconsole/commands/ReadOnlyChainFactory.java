@@ -24,6 +24,7 @@ import com.facilio.controlaction.commands.GetIncludedSpaceListCommand;
 import com.facilio.energystar.command.*;
 import com.facilio.mv.command.FetchMVWidgetResultCommand;
 import com.facilio.trigger.context.TriggerType;
+import com.facilio.v3.commands.AddCustomLookupInSupplementCommand;
 import com.facilio.workflows.command.GetAllNameSpaceWithFunctionCommand;
 import com.facilio.workflows.command.GetAllScheduledWorkflowCommand;
 import org.apache.commons.chain.Context;
@@ -2439,6 +2440,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
 		c.addCommand(new LoadSpaceManagementLookupFieldsCommand());
+		c.addCommand(new AddCustomLookupInSupplementCommand(false));
 		c.addCommand(new GenericGetModuleDataListCommand());
 		return c;
 	}
