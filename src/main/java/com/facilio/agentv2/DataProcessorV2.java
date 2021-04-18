@@ -234,6 +234,7 @@ public class DataProcessorV2
         List<ResourceContext> resourceContexts = getResourceToBeTriggered();
         FacilioContext context = new FacilioContext();
         context.put(FacilioConstants.ContextNames.WORK_FLOW_PARAMS, resourceContexts);
+        context.put(FacilioConstants.ContextNames.INSTANT_JOB_NAME, "PostTimeseriesWorkflowExecutionJob");
         context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.TIMESERIES_COMPLETE);
         context.put(FacilioConstants.ContextNames.TRIGGER_TYPE, TriggerType.TIMESERIES_COMPLETED_TRIGGER);
         FacilioChain facilioChain = ReadOnlyChainFactory.executeNonModuleTriggersChain();

@@ -3,6 +3,7 @@ package com.facilio.trigger.context;
 import java.util.*;
 
 import com.facilio.accounts.bean.OrgBean;
+import com.facilio.agent.controller.FacilioController;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ResourceContext;
@@ -12,6 +13,10 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.UpdateChangeSet;
+import com.facilio.tasker.FacilioInstantJobScheduler;
+import com.facilio.tasker.FacilioTimer;
+import com.facilio.tasker.job.InstantJob;
+import com.facilio.tasker.job.InstantJobExecutionCommand;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
@@ -50,9 +55,7 @@ public enum TriggerActionType {
 		@Override
 		public void performAction(FacilioContext context, BaseTriggerContext trigger, String moduleName, ModuleBaseWithCustomFields record, List<UpdateChangeSet> changeSets, Long recordId) throws Exception {
 			WorkflowContext workflowContext = WorkflowUtil.getWorkflowContext(recordId);
-
 			FacilioChain chain = TransactionChainFactory.getExecuteWorkflowChain();
-
 			FacilioContext newContext = chain.getContext();
 			newContext.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflowContext);
 			List<ResourceContext> resources = (List<ResourceContext>) context.get(FacilioConstants.ContextNames.WORK_FLOW_PARAMS);
@@ -60,10 +63,16 @@ public enum TriggerActionType {
 			params.add(resources);
             newContext.put(WorkflowV2Util.WORKFLOW_PARAMS, params);
 			chain.execute();
-
-			workflowContext.executeWorkflow();
 		}
-    }
+	},
+	INSTANT_JOB(4) {
+		@Override
+		public void performAction(FacilioContext context, BaseTriggerContext trigger, String moduleName, ModuleBaseWithCustomFields record, List<UpdateChangeSet> changeSets, Long recordId) throws Exception {
+			String jobName = (String) context.get(FacilioConstants.ContextNames.INSTANT_JOB_NAME);
+			context.put(FacilioConstants.ContextNames.RECORD_ID, recordId);
+			FacilioTimer.scheduleInstantJob(jobName, context);
+		}
+	}
 	;
 	
 	private int val;

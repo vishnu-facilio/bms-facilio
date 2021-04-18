@@ -22,4 +22,8 @@
     <job name="AddSLAEscalation" classname='com.facilio.bmsconsole.instant.jobs.AddSLAEscalationJob' transactionTimeout= '900' />
     <job name="CompressImageJob" classname='com.facilio.bmsconsole.instant.jobs.CompressImageJob' transactionTimeout= '900' />
     <job name='AddOneTimeBaseSchedulesJob' classname= 'com.facilio.bmsconsole.instant.jobs.AddOneTimeBaseSchedulesJob' transactionTimeout='900'/> -->
+    <job name='PostTimeseriesWorkflowExecutionJob'
+         classname='com.facilio.bmsconsole.instant.jobs.PostTimeseriesWorkflowExecutionJob' transactionTimeout='900'/>
+    -->
+
 </instantjob>
