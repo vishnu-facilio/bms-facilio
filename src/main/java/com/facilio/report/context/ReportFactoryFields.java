@@ -1007,7 +1007,9 @@ public class ReportFactoryFields {
 				ReportFacilioField ResolutionDueStatusField = (ReportFacilioField) ReportFactory.getReportField(WorkOrder.RESOLUTION_DUE_COL);
 				dimensionFields.add(ResolutionDueStatusField);	
 				ReportFacilioField AcceptanceDueStatusField = (ReportFacilioField) ReportFactory.getReportField(WorkOrder.ACCEPTANCE_DUE_COL);
-				dimensionFields.add(AcceptanceDueStatusField);	
+				dimensionFields.add(AcceptanceDueStatusField);
+				ReportFacilioField FirstResponseDueStatusField = (ReportFacilioField) ReportFactory.getReportField(WorkOrder.FIRST_RESPONSE_DUE_COL);
+				dimensionFields.add(FirstResponseDueStatusField);
 			}
 			dimensionFields.add(ReportFactory.getReportField(WorkOrder.OPENVSCLOSE_COL));
 			dimensionFields.add(ReportFactory.getReportField(WorkOrder.OVERDUE_OPEN_COL));

@@ -47,7 +47,7 @@ public class ReportFactory {
 		String RESOLUTION_DUE_COL="resolutionduestatus";
 		String ACCEPTANCE_DUE_COL="acceptanceduestatus";
 		String RESPONSE_DUE_COL = "responseduestatus";
-		
+		String FIRST_RESPONSE_DUE_COL = "firstresponseduestatus";
 		
 		int OPENVSCLOSE = 1;
 		int OVERDUE_OPEN = 2;
@@ -60,6 +60,7 @@ public class ReportFactory {
 		int RESOLUTION_DUE=15;
 		int ACCEPTANCE_DUE=16;
 		int RESPONSE_DUE = 17;
+		int FIRST_RESPONSE_DUE = 18;
 	}
 	
 	public interface Alarm {
@@ -191,6 +192,14 @@ public class ReportFactory {
 				AcceptanceDueStatusField.addGenericCondition("Overdue", CriteriaAPI.getCondition("DATETIME_CF6", "datetime_5", "WorkOrders.DATETIME_CF5", NumberOperators.LESS_THAN));
 				AcceptanceDueStatusField.addGenericCondition("Ontime", CriteriaAPI.getCondition("DATETIME_CF6", "datetime_5", "WorkOrders.DATETIME_CF5", NumberOperators.GREATER_THAN_EQUAL));
 				return AcceptanceDueStatusField;
+			}
+			break;
+		case "firstresponseduestatus":
+			if (FacilioProperties.isProduction() && AccountUtil.getCurrentOrg().getOrgId() == 274) {
+				ReportFacilioField firstresponseDueField = (ReportFacilioField) getField(WorkOrder.FIRST_RESPONSE_DUE_COL, "Response Due Status", ModuleFactory.getWorkOrdersModule(), " CASE WHEN WorkOrders.RESPONSE_DUE_DATE IS NOT NULL AND WorkOrders.DATETIME_CF9 IS NOT NULL THEN CASE WHEN WorkOrders.DATETIME_CF9 > WorkOrders.RESPONSE_DUE_DATE THEN 'Delayed' ELSE 'Ontime' END END ", FieldType.STRING, WorkOrder.FIRST_RESPONSE_DUE);
+				firstresponseDueField.addGenericCondition("Delayed", CriteriaAPI.getCondition("DATETIME_CF9", "datetime_8", "responseDueDate", FieldOperator.GREATER_THAN));
+				firstresponseDueField.addGenericCondition("Ontime", CriteriaAPI.getCondition("DATETIME_CF9", "datetime_8", "responseDueDate", FieldOperator.LESS_THAN_EQUAL));
+				reportFields.add(firstresponseDueField);
 			}
 			break;
 		}
