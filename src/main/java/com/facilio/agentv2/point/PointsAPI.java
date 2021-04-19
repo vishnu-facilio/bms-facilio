@@ -711,6 +711,8 @@ public class PointsAPI {
                 return OpcXmlDaPointContext.class;
             case SYSTEM:
                 return SystemPointContext.class;
+            case RDM:
+                return RdmPointContext.class;
             case BACNET_MSTP:
             default:
                 throw new Exception(" No implementation for " + type.asString() + " point");
