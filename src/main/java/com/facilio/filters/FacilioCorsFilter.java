@@ -107,7 +107,7 @@ public class FacilioCorsFilter implements Filter {
         response.setHeader(REFERRER_POLICY, "strict-origin-when-cross-origin");
 
         if (! (FacilioProperties.isDevelopment() || FacilioProperties.isProduction())) {
-        	response.setHeader(CONTENT_SECURITY_POLICY , "default-src data: 'unsafe-inline' 'unsafe-eval' https: self:; script-src 'self' 'unsafe-inline' 'unsafe-eval' 'https://static.facilio.in' 'https://apis.google.com' 'https://ssl.gstatic.com'; style-src 'self' data: 'unsafe-inline' https://static.facilio.in https://stage.facilio.in; connect-src wss: https:; object-src 'none'; form-action https:; upgrade-insecure-requests; base-uri https://*.facilio.in");
+        	response.setHeader(CONTENT_SECURITY_POLICY , "default-src data: 'unsafe-inline' 'unsafe-eval' https: self:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.facilio.in https://apis.google.com https://ssl.gstatic.com; style-src 'self' data: 'unsafe-inline' https://static.facilio.in https://stage.facilio.in; connect-src wss: https:; object-src 'none'; form-action https:; upgrade-insecure-requests; base-uri https://*.facilio.in");
         }
         response.setHeader(FEATURE_POLICY, "geolocation 'none'; autoplay 'none'");
 
