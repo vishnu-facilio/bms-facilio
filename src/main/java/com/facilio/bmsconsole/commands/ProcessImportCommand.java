@@ -165,7 +165,7 @@ public class ProcessImportCommand extends FacilioCommand {
 
 				if(!isBim){
 					ArrayList<String> spaceFields = new ArrayList<>();
-					spaceFields.add("basespace__site");
+					spaceFields.add(module + "__site");
 					spaceFields.add(module+"__building");
 					spaceFields.add(module+"__floor");
 					spaceFields.add(module + "__space1");
@@ -953,11 +953,7 @@ public class ProcessImportCommand extends FacilioCommand {
 
 		ArrayList<JSONObject> additionalSpaces = new ArrayList<>();
 		String moduleName = importProcessContext.getModule().getName();
-		if (moduleName.equals(FacilioConstants.ContextNames.TENANT_UNIT_SPACE) || moduleName.equals(FacilioConstants.ContextNames.SPACE) || moduleName.equals(FacilioConstants.ContextNames.BUILDING) || moduleName.equals(FacilioConstants.ContextNames.FLOOR)) {
-			siteName = (String) colVal.get(fieldMapping.get("basespace" + "__site"));
-		} else {
-			siteName = (String) colVal.get(fieldMapping.get(moduleName + "__site"));
-		}
+		siteName = (String) colVal.get(fieldMapping.get(moduleName + "__site"));
 		buildingName = (String) colVal.get(fieldMapping.get(moduleName + "__building"));
 		floorName = (String) colVal.get(fieldMapping.get(moduleName + "__floor"));
 		spaceName = (String) colVal.get(fieldMapping.get(moduleName + "__spaceName"));
