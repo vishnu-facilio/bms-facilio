@@ -106,8 +106,12 @@ public class FacilioCorsFilter implements Filter {
         response.setHeader(X_CONTENT_TYPE_OPTIONS , "nosniff");
         response.setHeader(REFERRER_POLICY, "strict-origin-when-cross-origin");
 
-        if (! (FacilioProperties.isDevelopment() || FacilioProperties.isProduction())) {
-        	response.setHeader(CONTENT_SECURITY_POLICY , "default-src data: 'unsafe-inline' 'unsafe-eval' https: self:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.facilio.in https://apis.google.com https://ssl.gstatic.com; style-src 'self' data: 'unsafe-inline' https://static.facilio.in https://stage.facilio.in; connect-src wss: https:; object-src 'none'; form-action https:; upgrade-insecure-requests; base-uri https://*.facilio.in");
+        if( ! (FacilioProperties.isOnpremise() || FacilioProperties.isDevelopment())) {
+            if (FacilioProperties.isProduction()) {
+                // response.setHeader(CONTENT_SECURITY_POLICY , "default-src 'self' data: 'unsafe-inline' 'unsafe-eval' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.facilio.com https://apis.google.com https://ssl.gstatic.com; style-src 'self' data: 'unsafe-inline' https://static.facilio.com https://*.facilio.com; connect-src wss: https:; object-src 'none'; form-action https:; upgrade-insecure-requests;");
+            } else {
+                response.setHeader(CONTENT_SECURITY_POLICY , "default-src 'self' data: 'unsafe-inline' 'unsafe-eval' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.facilio.in https://apis.google.com https://ssl.gstatic.com; style-src 'self' data: 'unsafe-inline' https://static.facilio.in https://stage.facilio.in; connect-src wss: https:; object-src 'none'; form-action https:; upgrade-insecure-requests;");
+            }
         }
         response.setHeader(FEATURE_POLICY, "geolocation 'none'; autoplay 'none'");
 
