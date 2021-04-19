@@ -105,10 +105,10 @@ public class FacilioCorsFilter implements Filter {
         response.setHeader(X_XSS_PROTECTION , "1; mode=block");
         response.setHeader(X_CONTENT_TYPE_OPTIONS , "nosniff");
         response.setHeader(REFERRER_POLICY, "strict-origin-when-cross-origin");
-        /*
-        if (! (FacilioProperties.isDevelopment() || FacilioProperties.isOnpremise())) {
-        	response.setHeader(CONTENT_SECURITY_POLICY , "default-src https: data: self: 'unsafe-inline'; form-action https:; connect-src wss: https:; upgrade-insecure-requests");
-        }*/
+
+        if (! (FacilioProperties.isDevelopment() || FacilioProperties.isProduction())) {
+        	response.setHeader(CONTENT_SECURITY_POLICY , "default-src https: data: self: 'unsafe-inline'; form-action https:; connect-src wss: https:; upgrade-insecure-requests;object-src 'none';");
+        }
         response.setHeader(FEATURE_POLICY, "geolocation 'none'; autoplay 'none'");
 
         String corsRequestType = getCorsRequestType(request);
