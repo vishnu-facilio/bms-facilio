@@ -67,10 +67,10 @@ public class FetchVisitorTypeSettingsCommand extends FacilioCommand {
 		VisitorTypeContext visitorTypeCtxFilled=(VisitorTypeContext)pickListContext.get(FacilioConstants.ContextNames.RECORD);
 		visitorSettingsContext.setVisitorType(visitorTypeCtxFilled);
 		
-	
-
+		visitorSettingsContext.setVisitorLogFormId(visitorTypeFormContext.getVisitorLogFormId());
 		FacilioForm visitorLogForm = FormsAPI.getFormFromDB(visitorTypeFormContext.getVisitorLogFormId());		
 		visitorSettingsContext.setVisitorLogForm(visitorLogForm);
+		visitorSettingsContext.setVisitorInviteFormId(visitorTypeFormContext.getVisitorInviteFormId());
 		FacilioForm visitorInviteForm = FormsAPI.getFormFromDB(visitorTypeFormContext.getVisitorInviteFormId());		
 		visitorSettingsContext.setVisitorInviteForm(visitorInviteForm);
 		
