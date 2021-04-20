@@ -21,6 +21,24 @@ public class V3DeskContext  extends V3SpaceContext {
 
 	private String deskCode;
 	private Long departmentId;
+	
+	private Boolean isActive;
+	public Boolean getIsActive() {
+		return isActive;
+	}
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
+	public Boolean getIsArchived() {
+		return isArchived;
+	}
+	public void setIsArchived(Boolean isArchived) {
+		this.isArchived = isArchived;
+	}
+
+
+	private Boolean isArchived;
+
 
 
 	public Long getDepartmentId() {

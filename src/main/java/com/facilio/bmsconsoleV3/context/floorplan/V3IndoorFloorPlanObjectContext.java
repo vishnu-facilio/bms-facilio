@@ -9,6 +9,15 @@ public class V3IndoorFloorPlanObjectContext  extends V3Context {
 	private String geometry;
 	private String properties;
 	private String geoId;
+	private String label;
+
+	
+	public String getLabel() {
+		return label;
+	}
+	public void setLabel(String label) {
+		this.label = label;
+	}
 
 	
 	public V3IndoorFloorPlanContext getIndoorfloorplan() {
