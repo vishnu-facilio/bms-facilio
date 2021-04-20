@@ -46,8 +46,8 @@ public class CustomModulePageFactory extends PageFactory {
 		HashMap<String, String> titleMap = null;
 		if(AccountUtil.getCurrentOrg().getOrgId() == 407l || AccountUtil.getCurrentOrg().getOrgId() == 418l) {
 			titleMap = new HashMap<>();
-			titleMap.put("notes", "Comments");
-			titleMap.put("documents", "Documents");
+			titleMap.put("notes", "Comment");
+			titleMap.put("documents", "Attachment");
 		}
 
 		//handling notify req for atre custom module - incident management -> temp solution
