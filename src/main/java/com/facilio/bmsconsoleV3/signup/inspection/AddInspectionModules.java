@@ -25,11 +25,18 @@ public class AddInspectionModules extends SignUpData {
         modules.add(inspection);
         modules.add(constructInspectionResponse(modBean, inspection));
         
-        modules.add(constructInspectionTriggers(modBean, inspection));
-
         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
         addModuleChain.execute();
+        
+        List<FacilioModule> modules1 = new ArrayList<>();
+        
+        modules1.add(constructInspectionTriggers(modBean, inspection));
+        
+        FacilioChain addModuleChain1 = TransactionChainFactory.addSystemModuleChain();
+        addModuleChain1.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules1);
+        addModuleChain1.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
+        addModuleChain1.execute();
     }
 
 
@@ -55,7 +62,8 @@ public class AddInspectionModules extends SignUpData {
 		FacilioModule module = new FacilioModule(FacilioConstants.Inspection.INSPECTION_TRIGGER,
                 "Inspection Triggers",
                 "Inspection_Triggers",
-                FacilioModule.ModuleType.SUB_ENTITY
+                FacilioModule.ModuleType.SUB_ENTITY,
+                true
         );
 
         List<FacilioField> fields = new ArrayList<>();
