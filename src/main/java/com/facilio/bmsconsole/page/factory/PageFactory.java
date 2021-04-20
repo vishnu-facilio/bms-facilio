@@ -158,6 +158,10 @@ public class PageFactory {
 		return null;
 	}
 
+	protected static PageWidget addCommonSubModuleWidget(Section section, FacilioModule module, ModuleBaseWithCustomFields record) throws Exception {
+		return addCommonSubModuleWidget(section, module, record,null, false);
+	}
+
 	protected static PageWidget addCommonSubModuleWidget(Section section, FacilioModule module, ModuleBaseWithCustomFields record, HashMap<String, String> titleMap) throws Exception {
 		return addCommonSubModuleWidget(section, module, record,titleMap, false);
 	}
