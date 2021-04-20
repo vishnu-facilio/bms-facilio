@@ -6,9 +6,11 @@ import java.util.Map;
 
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.VisitorContext;
 import com.facilio.bmsconsole.context.VisitorSettingsContext;
 import com.facilio.bmsconsole.context.VisitorTypeContext;
+import com.facilio.bmsconsole.context.VisitorTypeFormsContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.chain.FacilioChain;
@@ -43,6 +45,16 @@ public class FetchVisitorTypeSettingsCommand extends FacilioCommand {
 		VisitorSettingsContext visitorSettingsContext=FieldUtil.getAsBeanFromMap(visitorSetting, VisitorSettingsContext.class);
 		//get and fill visitortypeCtx in Visitor Setting context
 		
+		long appId = AccountUtil.getCurrentApp().getId();
+		selectBuilder=new GenericSelectRecordBuilder();
+		selectBuilder.table(ModuleFactory.getVisitorTypeFormsModule().getTableName()).
+		select(FieldFactory.getVisitorTypeFormsFields()).
+		andCondition(CriteriaAPI.getCondition("VISITOR_TYPE_ID", "visitorTypeId", visitorTypeId+"", NumberOperators.EQUALS))
+		.andCondition(CriteriaAPI.getCondition("APP_ID", "appId", appId+"", NumberOperators.EQUALS));
+		Map<String,Object> visitorTypeForm= selectBuilder.get().get(0);
+		
+		VisitorTypeFormsContext visitorTypeFormContext = FieldUtil.getAsBeanFromMap(visitorTypeForm, VisitorTypeFormsContext.class);
+		
 		FacilioChain pickListChain = ReadOnlyChainFactory.fetchVisitorTypePicklistData();
 		FacilioContext pickListContext =pickListChain.getContext();
 		pickListContext.put(FacilioConstants.ContextNames.RECORD, visitorTypeCtx);
@@ -57,9 +69,9 @@ public class FetchVisitorTypeSettingsCommand extends FacilioCommand {
 		
 	
 
-		FacilioForm visitorLogForm = FormsAPI.getFormFromDB(visitorSettingsContext.getVisitorLogFormId());		
+		FacilioForm visitorLogForm = FormsAPI.getFormFromDB(visitorTypeFormContext.getVisitorLogFormId());		
 		visitorSettingsContext.setVisitorLogForm(visitorLogForm);
-		FacilioForm visitorInviteForm = FormsAPI.getFormFromDB(visitorSettingsContext.getVisitorInviteFormId());		
+		FacilioForm visitorInviteForm = FormsAPI.getFormFromDB(visitorTypeFormContext.getVisitorInviteFormId());		
 		visitorSettingsContext.setVisitorInviteForm(visitorInviteForm);
 		
 		
