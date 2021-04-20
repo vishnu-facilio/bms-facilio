@@ -2997,15 +2997,19 @@
 
 		<action name="addScheduledWorkflow"
 			class="com.facilio.workflows.action.WorkflowAction"
-			method="addScheduledWorkflow">
+			method="addOrUpdateScheduledWorkflow">
 			<param name="moduleName">setup</param>
 			<param name="permission">SCHEDULER</param>
 			<param name="isNewPermission">true</param>
 		</action>
+		
+		<action name="addOrUpdateScheduledWorkflow"
+				class="com.facilio.workflows.action.WorkflowAction"
+				method="addOrUpdateScheduledWorkflow" />
 
 		<action name="updateScheduledWorkflow"
 			class="com.facilio.workflows.action.WorkflowAction"
-			method="updateScheduledWorkflow"></action>
+			method="addOrUpdateScheduledWorkflow"></action>
 
 		<action name="deleteScheduledWorkflow"
 			class="com.facilio.workflows.action.WorkflowAction"

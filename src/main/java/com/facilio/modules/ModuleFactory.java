@@ -778,6 +778,14 @@ public class ModuleFactory {
 
 		return scheduledRule;
 	}
+
+	public static FacilioModule getSchedulerActionRelModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("ScheduledWorkflowActionRel");
+		module.setDisplayName("ScheduledWorkflow Action Rel");
+		module.setTableName("Scheduled_Workflow_Action_Rel");
+		return module;
+	}
 	
 	public static FacilioModule getApprovalRulesModule() {
 		FacilioModule approvalRules = new FacilioModule();

@@ -19,7 +19,8 @@ public class DeleteScheduledWorkflowCommand extends FacilioCommand {
 		ScheduledWorkflowContext scheduledWorkflowContext = (ScheduledWorkflowContext)context.get(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT);
 		
 		FacilioTimer.deleteJob(scheduledWorkflowContext.getId(), WorkflowV2Util.SCHEDULED_WORKFLOW_JOB_NAME);
-		
+
+		SchedulerAPI.deleteAllActions(scheduledWorkflowContext.getId());
 		deleteScheduledWorkflows(scheduledWorkflowContext);
 		
 		return false;

@@ -2348,6 +2348,16 @@ public class FieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getScheduledActionRelFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getSchedulerActionRelModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("schedulerId", "SCHEDULER_ID", module, FieldType.NUMBER));
+        fields.add(getField("actionId", "ACTION_ID", module, FieldType.NUMBER));
+        return fields;
+    }
+
     public static List<FacilioField> getApprovalRuleFields() {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getApprovalRulesModule();

@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.templates.Template;
+import com.facilio.bmsconsole.templates.WorkflowTemplate;
+import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -27,7 +30,6 @@ public class GetAllScheduledWorkflowCommand extends FacilioCommand {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(FieldFactory.getScheduledWorkflowFields())
 				.table(ModuleFactory.getScheduledWorkflowModule().getTableName())
 				.andCondition(CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getId(), ModuleFactory.getScheduledWorkflowModule()));
-
 		List<Map<String, Object>> props = selectBuilder.get();
 		
 		List<ScheduledWorkflowContext> scheduledWorkflowContexts = new ArrayList<>();
@@ -43,11 +45,17 @@ public class GetAllScheduledWorkflowCommand extends FacilioCommand {
 		}
 		
 		Map<Long,WorkflowContext> workflowMap = WorkflowUtil.getWorkflowsAsMap(workflowIds);
+		SchedulerAPI.getSchedulerActions(scheduledWorkflowContexts);
 		
 		for(ScheduledWorkflowContext scheduledWorkflowContext :scheduledWorkflowContexts) {
-			
-			WorkflowContext workflow = workflowMap.get(scheduledWorkflowContext.getWorkflowId());
-			scheduledWorkflowContext.setWorkflowContext(workflow);
+			ActionContext scriptAction = scheduledWorkflowContext.getScriptAction();
+			if (scriptAction != null) {
+				Template template = scriptAction.getTemplate();
+				if (template instanceof WorkflowTemplate) {
+					WorkflowContext workflowContext = WorkflowUtil.getWorkflowContext(((WorkflowTemplate) template).getResultWorkflowId());
+					scheduledWorkflowContext.setWorkflowContext(workflowContext);
+				}
+			}
 		}
 		
 		context.put(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT_LIST, scheduledWorkflowContexts);

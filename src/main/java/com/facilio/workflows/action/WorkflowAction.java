@@ -332,35 +332,35 @@ public class WorkflowAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	public String addScheduledWorkflow() throws Exception {
+	public String addOrUpdateScheduledWorkflow() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
 		
 		context.put(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT, scheduledWorkflow);
-		context.put(WorkflowV2Util.WORKFLOW_CONTEXT, scheduledWorkflow.getWorkflowContext());
-		FacilioChain addWorkflowChain =  TransactionChainFactory.getAddScheduledWorkflowChain();
+//		context.put(WorkflowV2Util.WORKFLOW_CONTEXT, scheduledWorkflow.getWorkflowContext());
+		FacilioChain addWorkflowChain =  TransactionChainFactory.getAddOrUpdateScheduledWorkflowChain();
 		addWorkflowChain.execute(context);
 		setResult(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT, scheduledWorkflow);
-		setResult(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, context.get(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR));
+//		setResult(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, context.get(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR));
 		return SUCCESS;
 	}
 	
-	public String updateScheduledWorkflow() throws Exception {
-		FacilioContext context = new FacilioContext();
-		
-		context.put(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT, scheduledWorkflow);
-		context.put(WorkflowV2Util.WORKFLOW_CONTEXT, scheduledWorkflow.getWorkflowContext());
-		FacilioChain addWorkflowChain =  TransactionChainFactory.getUpdateScheduledWorkflowChain();
-		addWorkflowChain.execute(context);
-		setResult(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT, scheduledWorkflow);
-		setResult(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, context.get(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR));
-		return SUCCESS;
-	}
+//	public String updateScheduledWorkflow() throws Exception {
+//		FacilioContext context = new FacilioContext();
+//
+//		context.put(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT, scheduledWorkflow);
+//		context.put(WorkflowV2Util.WORKFLOW_CONTEXT, scheduledWorkflow.getWorkflowContext());
+//		FacilioChain addWorkflowChain =  TransactionChainFactory.getUpdateScheduledWorkflowChain();
+//		addWorkflowChain.execute(context);
+//		setResult(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT, scheduledWorkflow);
+//		setResult(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, context.get(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR));
+//		return SUCCESS;
+//	}
 	public String deleteScheduledWorkflow() throws Exception {
 		FacilioContext context = new FacilioContext();
 		
 		context.put(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT, scheduledWorkflow);
-		context.put(WorkflowV2Util.WORKFLOW_CONTEXT, scheduledWorkflow.getWorkflowContext());
+//		context.put(WorkflowV2Util.WORKFLOW_CONTEXT, scheduledWorkflow.getWorkflowContext());
 		FacilioChain addWorkflowChain =  TransactionChainFactory.getDeleteScheduledWorkflowChain();
 		addWorkflowChain.execute(context);
 		setResult(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT, scheduledWorkflow);

@@ -3408,21 +3408,21 @@ public class TransactionChainFactory {
 			return c;
 		}
 
-		public static FacilioChain getAddScheduledWorkflowChain() {
+		public static FacilioChain getAddOrUpdateScheduledWorkflowChain() {
 			FacilioChain c = getDefaultChain();
-			c.addCommand(getAddWorkflowChain());
-			c.addCommand(new AddScheduledWorkflowCommand());
+//			c.addCommand(getAddWorkflowChain());
+			c.addCommand(new AddOrUpdateScheduledWorkflowCommand());
 			return c;
 		}
-		public static FacilioChain getUpdateScheduledWorkflowChain() {
-			FacilioChain c = getDefaultChain();
-			c.addCommand(getUpdateWorkflowChain());
-			c.addCommand(new updateScheduledWorkflowCommand());
-			return c;
-		}
+//		public static FacilioChain getUpdateScheduledWorkflowChain() {
+//			FacilioChain c = getDefaultChain();
+//			c.addCommand(getUpdateWorkflowChain());
+//			c.addCommand(new updateScheduledWorkflowCommand());
+//			return c;
+//		}
 		public static FacilioChain getDeleteScheduledWorkflowChain() {
 			FacilioChain c = getDefaultChain();
-			c.addCommand(new DeleteWorkflowCommand());
+//			c.addCommand(new DeleteWorkflowCommand());
 			c.addCommand(new DeleteScheduledWorkflowCommand());
 			return c;
 		}

@@ -399,6 +399,7 @@ public class ActionAPI {
 								break;
 							case REPORT_DOWNTIME_ACTION:
 							case CHANGE_STATE:
+							case INVOKE_TRIGGER:
 								setDefaultTemplate(action, rule);
 								break;
 							case MAIL_TO_CUSTOM_MODULE_RECORD:
