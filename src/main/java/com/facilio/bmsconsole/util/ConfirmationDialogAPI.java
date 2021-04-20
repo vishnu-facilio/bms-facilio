@@ -69,17 +69,17 @@ public class ConfirmationDialogAPI {
         List<ConfirmationDialogContext> confirmationDialogs = getConfirmationDialogs(parentId, false);
 
         if (CollectionUtils.isNotEmpty(confirmationDialogs)) {
-            for (ConfirmationDialogContext confirmationDialog : confirmationDialogs) {
-                if (confirmationDialog.getCriteriaId() > 0) {
-                    CriteriaAPI.deleteCriteria(confirmationDialog.getCriteriaId());
-                }
-            }
-
             List<Long> dialogIds = confirmationDialogs.stream().map(ConfirmationDialogContext::getId).collect(Collectors.toList());
             GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
                     .table(ModuleFactory.getConfirmationDialogModule().getTableName())
                     .andCondition(CriteriaAPI.getIdCondition(dialogIds, ModuleFactory.getConfirmationDialogModule()));
             builder.delete();
+
+            for (ConfirmationDialogContext confirmationDialog : confirmationDialogs) {
+                if (confirmationDialog.getCriteriaId() > 0) {
+                    CriteriaAPI.deleteCriteria(confirmationDialog.getCriteriaId());
+                }
+            }
         }
     }
 }
