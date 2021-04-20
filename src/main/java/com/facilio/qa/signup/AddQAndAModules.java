@@ -13,6 +13,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LineItemField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SystemEnumField;
+import com.facilio.util.FacilioUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -395,6 +396,7 @@ public class AddQAndAModules extends SignUpData {
 
     private void addAnswerLineItemFields(ModuleBean modBean, FacilioModule answer, FacilioModule multiAnswer) throws Exception {
         LookupField parentField = (LookupField) modBean.getField("parent", multiAnswer.getName());
+        FacilioUtil.throwIllegalArgumentException(parentField == null, "Parent field shouldn't be null for Answer module. This shouldn't happen");
 
         LineItemField lineItemField = (LineItemField) FieldFactory.getDefaultField("multiFileAnswer", "Multi File Answer", null, FieldType.LINE_ITEM);
         lineItemField.setChildModule(multiAnswer);
