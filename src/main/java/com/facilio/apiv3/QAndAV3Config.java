@@ -1,14 +1,19 @@
 package com.facilio.apiv3;
 
+import java.util.function.Supplier;
+
+import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext;
+import com.facilio.bmsconsoleV3.context.inspection.InspectionTriggerContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.qa.command.QAndAReadOnlyChainFactory;
 import com.facilio.qa.command.QAndATransactionChainFactory;
-import com.facilio.qa.context.*;
+import com.facilio.qa.context.AnswerContext;
+import com.facilio.qa.context.MultiFileAnswerContext;
+import com.facilio.qa.context.PageContext;
+import com.facilio.qa.context.QuestionContext;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
-
-import java.util.function.Supplier;
 
 @Config
 public class QAndAV3Config {
@@ -46,6 +51,32 @@ public class QAndAV3Config {
     }
 
     // Do not add separate entry for extended questions. Please handle them with QuestionCRUDHandler
+    
+    
+    @Module(FacilioConstants.Inspection.INSPECTION_TEMPLATE)
+    public static Supplier<V3Config> getInspection() {
+        return () -> new V3Config(InspectionTemplateContext.class, null)
+                .create()
+//                    .beforeSave(QAndATransactionChainFactory.commonQAndABeforeSave())
+                	.afterSave(QAndATransactionChainFactory.inspectionAfterSaveChain())
+                .update()
+                	.afterSave(QAndATransactionChainFactory.inspectionAfterUpdateChain())
+//                .list()
+//                .delete()
+                .summary()
+                    .afterFetch(QAndAReadOnlyChainFactory.commonAfterQAndATemplateFetch())
+                .build();
+    }
+    
+    @Module(FacilioConstants.Inspection.INSPECTION_TRIGGER)
+    public static Supplier<V3Config> getInspectionTriggers() {
+        return () -> new V3Config(InspectionTriggerContext.class, null)
+        		.create()
+                	.beforeSave(QAndATransactionChainFactory.inspectionTriggerBeforeSaveChain())
+                .update()
+                	.beforeSave(QAndATransactionChainFactory.inspectionTriggerBeforeSaveChain())
+                .build();
+    }
 
     @Module(FacilioConstants.QAndA.ANSWER)
     public static Supplier<V3Config> getQAndAAnswer() {

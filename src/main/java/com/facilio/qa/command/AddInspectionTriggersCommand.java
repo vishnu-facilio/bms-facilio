@@ -25,62 +25,74 @@ import com.facilio.v3.context.Constants;
 
 public class AddInspectionTriggersCommand extends FacilioCommand {
 
+	List<InspectionTriggerContext> triggers = new ArrayList<InspectionTriggerContext>();
+	
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		List<InspectionTemplateContext> inspections = Constants.getRecordList((FacilioContext) context);
+		String moduleName = Constants.getModuleName(context);
 		
-		List<InspectionTriggerContext> triggers = new ArrayList<InspectionTriggerContext>();
+		if(moduleName.equals(FacilioConstants.Inspection.INSPECTION_TEMPLATE)) {
+			
+			List<InspectionTemplateContext> inspections = Constants.getRecordList((FacilioContext) context);
+			
+			inspections.stream()
+			.forEach(
+				(inspection) -> {
+					List<InspectionTriggerContext> inspectionTriggers = inspection.getTriggers();
+					
+					inspectionTriggers.forEach((trigger) -> trigger.setParent(inspection));
+					inspection.setTriggers(null);
+					if(inspectionTriggers != null) {
+						triggers.addAll(inspectionTriggers);
+					}
+				}
+				);
+			
+		}
+		else if (moduleName.equals(FacilioConstants.Inspection.INSPECTION_TRIGGER)) {
+			
+			triggers = Constants.getRecordList((FacilioContext) context);
+		}
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		inspections.stream()
-			.forEach(
-				(inspection) -> {
+		if(triggers != null) {
+			
+			triggers.stream().forEach((trigger) -> {
+				try {
+					BaseScheduleContext scheduleTrigger = trigger.getSchedule();
 					
-					List<InspectionTriggerContext> inspectionTriggers = inspection.getTriggers();
+					scheduleTrigger.setModuleId(modBean.getModule(FacilioConstants.Inspection.INSPECTION_TEMPLATE).getModuleId());
+					scheduleTrigger.setRecordId(trigger.getParent().getId());
+					scheduleTrigger.setScheduleType(ScheduleType.INSPECTION);
+					scheduleTrigger.setDataModuleId(modBean.getModule(FacilioConstants.Inspection.INSPECTION_RESPONSE).getModuleId());
 					
-					inspection.setTriggers(null);
+					GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+							.table(ModuleFactory.getBaseSchedulerModule().getTableName())
+			                .fields(FieldFactory.getBaseSchedulerFields());
 					
-					if(inspectionTriggers != null) {
-						
-						inspectionTriggers.stream().forEach((trigger) -> {
-							try {
-								trigger.setParent(inspection);
-								BaseScheduleContext scheduleTrigger = trigger.getSchedule();
-								
-								scheduleTrigger.setModuleId(modBean.getModule(FacilioConstants.Inspection.INSPECTION_TEMPLATE).getModuleId());
-								scheduleTrigger.setRecordId(inspection.getId());
-								scheduleTrigger.setScheduleType(ScheduleType.INSPECTION);
-								scheduleTrigger.setDataModuleId(modBean.getModule(FacilioConstants.Inspection.INSPECTION_RESPONSE).getModuleId());
-								
-								GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-										.table(ModuleFactory.getBaseSchedulerModule().getTableName())
-						                .fields(FieldFactory.getBaseSchedulerFields());
-								
-								Map<String, Object> props = FieldUtil.getAsProperties(scheduleTrigger);
-								insertBuilder.addRecord(props);
-								insertBuilder.save();
-								
-								scheduleTrigger.setId((Long) props.get("id"));
-								
-								trigger.setScheduleId(scheduleTrigger.getId());
-								
-								triggers.add(trigger);
-							}
-							catch(Exception e) {
-								throw new RuntimeException(e);
-							}
-						});
-					}
+					Map<String, Object> props = FieldUtil.getAsProperties(scheduleTrigger);
+					insertBuilder.addRecord(props);
+					insertBuilder.save();
+					
+					scheduleTrigger.setId((Long) props.get("id"));
+					
+					trigger.setScheduleId(scheduleTrigger.getId());
+					
 				}
-			)
-			;
-		
-		V3RecordAPI.addRecord(false, triggers, modBean.getModule(FacilioConstants.Inspection.INSPECTION_TRIGGER), modBean.getAllFields(FacilioConstants.Inspection.INSPECTION_TRIGGER));
+				catch(Exception e) {
+					throw new RuntimeException(e);
+				}
+			});
+		}
+		if(moduleName.equals(FacilioConstants.Inspection.INSPECTION_TEMPLATE)) {
+			V3RecordAPI.addRecord(false, triggers, modBean.getModule(FacilioConstants.Inspection.INSPECTION_TRIGGER), modBean.getAllFields(FacilioConstants.Inspection.INSPECTION_TRIGGER));
+		}
 		
 		return false;
 	}
 
 }
+

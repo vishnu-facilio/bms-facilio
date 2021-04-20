@@ -26,6 +26,12 @@ public class QAndATransactionChainFactory {
         c.addCommand(new AddInspectionTriggersCommand());
         return c;
     }
+    
+    public static FacilioChain inspectionTriggerBeforeSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddInspectionTriggersCommand());
+        return c;
+    }
 
     public static FacilioChain beforePageSave() {
         FacilioChain c = getDefaultChain();
