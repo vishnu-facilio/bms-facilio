@@ -4,7 +4,6 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
-import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount30;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount50;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -19,14 +18,18 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.util.ChainUtil;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Log4j
 public class AddFieldsCommand extends FacilioCommand {
 	
 	@Override
@@ -39,19 +42,12 @@ public class AddFieldsCommand extends FacilioCommand {
 			List<Long> fieldIds = new ArrayList<>();
 			List<List<ReadingRuleContext>> readingRules = new ArrayList<>();
 			List<List<List<ActionContext>>> actionsList = new ArrayList<>();
-			Boolean allowSameName = (Boolean) context.get(ContextNames.ALLOW_SAME_FIELD_DISPLAY_NAME);
-			if (allowSameName == null) {
-				allowSameName = false;
-			}
-			Boolean isNewModules = (Boolean) context.get(FacilioConstants.ContextNames.IS_NEW_MODULES);
-			if (isNewModules == null) {
-				isNewModules = false;
-			}
-			
+			boolean allowSameName = (Boolean) context.getOrDefault(ContextNames.ALLOW_SAME_FIELD_DISPLAY_NAME, false);
+			boolean isNewModules = (Boolean) context.getOrDefault(FacilioConstants.ContextNames.IS_NEW_MODULES, false);
 			
 			for (FacilioModule module : modules) {
 				FacilioModule cloneMod = new FacilioModule(module);
-				if(module != null && module.getFields() != null && !module.getFields().isEmpty()) {
+				if(module != null && CollectionUtils.isNotEmpty(module.getFields())) {
 					
 					List<FacilioField> existingFields = isNewModules ? null : modBean.getAllFields(module.getName());
 					Map<FieldType, List<String>> existingColumns = getColumnNamesGroupedByType(existingFields);
@@ -59,32 +55,37 @@ public class AddFieldsCommand extends FacilioCommand {
 					List<FacilioField> counterFields = new ArrayList<>();
 					
 					for(FacilioField field : module.getFields()) {
+						try {
+							field.setModule(cloneMod);
+							setColumnName(field, existingColumns);
+							constructFieldName(field, module, allowSameName);
+							long fieldId = modBean.addField(field);
+							field.setFieldId(fieldId);
+							fieldIds.add(fieldId);
+							if (field instanceof NumberField) {
+								NumberField numberField = (NumberField) field;
+								if (numberField.isCounterField()) {
+									NumberField deltaField = numberField.clone();
+									deltaField.setCounterField(null);
+									deltaField.setId(-1);
 
-						field.setModule(cloneMod);
-						setColumnName(field, existingColumns);
-						constructFieldName(field, module, allowSameName);
-						long fieldId = modBean.addField(field);
-						field.setFieldId(fieldId);
-						fieldIds.add(fieldId);
-						if (field instanceof NumberField) {
-							NumberField numberField = (NumberField) field;
-							if (numberField.isCounterField()) {
-								NumberField deltaField = FieldUtil.cloneBean(numberField, NumberField.class);
-								deltaField.setCounterField(null);
-								deltaField.setId(-1);
-								
-								deltaField.setColumnName(null);
-								setColumnName(deltaField, existingColumns);
-								
-								deltaField.setName(deltaField.getName()+"Delta");
-								deltaField.setDisplayName(deltaField.getDisplayName()+" Delta");
-								
-								long deletaFieldId = modBean.addField(deltaField);
-								deltaField.setFieldId(deletaFieldId);
-								fieldIds.add(deletaFieldId);
-								
-								counterFields.add(deltaField);
+									deltaField.setColumnName(null);
+									setColumnName(deltaField, existingColumns);
+
+									deltaField.setName(deltaField.getName() + "Delta");
+									deltaField.setDisplayName(deltaField.getDisplayName() + " Delta");
+
+									long deletaFieldId = modBean.addField(deltaField);
+									deltaField.setFieldId(deletaFieldId);
+									fieldIds.add(deletaFieldId);
+
+									counterFields.add(deltaField);
+								}
 							}
+						}
+						catch (Exception e) {
+							LOGGER.error(MessageFormat.format("Error occurred while adding field {0}", field), e);
+							throw e;
 						}
 					}
 					

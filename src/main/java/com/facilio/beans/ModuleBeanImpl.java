@@ -1157,7 +1157,14 @@ public class ModuleBeanImpl implements ModuleBean {
 	}
 
 	private void validateLookupField (BaseLookupField lookupField, Map<String, Object> fieldProps, boolean addSubModule) throws Exception {
-		if (lookupField.getLookupModuleId() > 0 || lookupField.getLookupModule() != null) {
+		if (StringUtils.isNotEmpty(lookupField.getSpecialType())) {
+			FacilioModule module = getMod(lookupField.getSpecialType());
+			if (module == null) {
+				throw new IllegalArgumentException("Invalid lookup Module");
+			}
+			lookupField.setLookupModule(module);
+		}
+		else if (lookupField.getLookupModuleId() > 0 || lookupField.getLookupModule() != null) {
 			FacilioModule module;
 			if (lookupField.getLookupModuleId() > 0) {
 				module = getMod(lookupField.getLookupModuleId());
@@ -1174,13 +1181,6 @@ public class ModuleBeanImpl implements ModuleBean {
 			if (addSubModule) {
 				addSubModule(module.getModuleId(), lookupField.getModuleId());
 			}
-		}
-		else if (StringUtils.isNotEmpty(lookupField.getSpecialType())) {
-			FacilioModule module = getMod(lookupField.getSpecialType());
-			if (module == null) {
-				throw new IllegalArgumentException("Invalid lookup Module");
-			}
-			lookupField.setLookupModule(module);
 		}
 		else {
 			throw new IllegalArgumentException("Lookup module is not specified");

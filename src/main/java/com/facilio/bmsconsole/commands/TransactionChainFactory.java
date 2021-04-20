@@ -1056,6 +1056,14 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static FacilioChain addSystemModuleChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new AddDefaultFieldsForSystemModulesCommand());
+			c.addCommand(commonAddModuleChain());
+			return c;
+		}
+
+		
 		public static FacilioChain getAddModuleChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new CreateCustomModuleCommand());

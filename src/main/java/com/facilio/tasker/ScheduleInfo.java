@@ -191,7 +191,10 @@ public class ScheduleInfo implements Serializable {
 		return Pair.of(nextExecutionTime(startTimeCyclesExecuted.getLeft()), cycleCount);
 	}
 
-	public long nextExecutionTime(long startTime) {							// in sec
+	/**
+     * @param   startTime as seconds
+     */
+	public long nextExecutionTime(long startTime) {
 		ZonedDateTime zdt = DateTimeUtil.getDateTime(startTime+1, true);
 //		zdt = zdt.truncatedTo(ChronoUnit.MINUTES);
 		if(times == null || times.isEmpty()) {
@@ -1218,6 +1221,10 @@ public class ScheduleInfo implements Serializable {
 		}
 	}
 
+	 /**
+     * @param   startTime as milliseconds
+     * @param   endTime as milliseconds
+     */
 	public List<DateRange> getTimeIntervals(long startTime, long endTime) {
 		List<DateRange> intervals = new ArrayList<>();
 		startTime = startTime/1000;

@@ -198,6 +198,10 @@ public class V3RecordAPI {
         return null;
     }
 
-
+    public static int deleteRecordsById (String moduleName, List<Long> ids) throws Exception {
+        return new DeleteRecordBuilder<ModuleBaseWithCustomFields>()
+                    .moduleName(moduleName)
+                    .batchDeleteById(ids);
+    }
 
 }

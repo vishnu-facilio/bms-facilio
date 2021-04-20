@@ -1472,12 +1472,16 @@ public class FieldFactory {
     }
 
     public static List<FacilioField> getSystemPointFields(FacilioModule module) { // Why is it point fields?
+        return getSystemPointFields(module, true);
+    }
+
+    public static List<FacilioField> getSystemPointFields(FacilioModule module, boolean includeModified) { // Why is it point fields?
         List<FacilioField> fields = new ArrayList<>();
 
         fields.add(getSystemField("sysCreatedTime", module));
         fields.add(getSystemField("sysCreatedBy", module));
 
-        if (module == null || (module.getTypeEnum() != FacilioModule.ModuleType.LOOKUP_REL_MODULE && module.getTypeEnum() != FacilioModule.ModuleType.ENUM_REL_MODULE)) {
+        if (includeModified && (module == null || (module.getTypeEnum() != FacilioModule.ModuleType.LOOKUP_REL_MODULE && module.getTypeEnum() != FacilioModule.ModuleType.ENUM_REL_MODULE))) {
             fields.add(getSystemField("sysModifiedTime", module));
             fields.add(getSystemField("sysModifiedBy", module));
         }
@@ -8059,6 +8063,61 @@ public class FieldFactory {
     		return field;
     }
 
+    public static FacilioField getDefaultField(String name, String displayName, String colName, FieldType type) {
+        return getDefaultField(name, displayName, colName, type, null, null);
+    }
+
+    public static FacilioField getDefaultField(String name, String displayName, String colName, FieldType type, FacilioField.FieldDisplayType displayType) {
+        return getDefaultField(name, displayName, colName, type, displayType, null);
+    }
+
+    public static FacilioField getDefaultField(String name, String displayName, String colName, FieldType type, Boolean isMain) {
+        return getDefaultField(name, displayName, colName, type, null, isMain);
+    }
+
+    public static FacilioField getDefaultField(String name, String displayName, String colName, FieldType type, FacilioField.FieldDisplayType displayType, Boolean isMain) {
+        FacilioField field = getField(name, displayName, colName, null, type);
+        if (displayType == null) {
+            field.setDisplayType(getDefaultDisplayTypeFromDataType(type));
+        }
+        else {
+            field.setDisplayType(displayType);
+        }
+        field.setDefault(true);
+        if (isMain != null) {
+            field.setMainField(isMain);
+        }
+
+        return field;
+    }
+
+    public static FacilioField.FieldDisplayType getDefaultDisplayTypeFromDataType (FieldType type) {
+        switch (type) {
+            case STRING:
+                return FacilioField.FieldDisplayType.TEXTBOX;
+            case NUMBER:
+            case DECIMAL:
+            case ID:
+            case COUNTER:
+            case SCORE:
+                return FacilioField.FieldDisplayType.NUMBER;
+            case BOOLEAN:
+                return FacilioField.FieldDisplayType.DECISION_BOX;
+            case LOOKUP:
+                return FacilioField.FieldDisplayType.LOOKUP_SIMPLE;
+            case ENUM:
+            case SYSTEM_ENUM:
+                return FacilioField.FieldDisplayType.SELECTBOX;
+            case DATE:
+            case DATE_TIME:
+                return FacilioField.FieldDisplayType.DATE;
+            case FILE:
+                return FacilioField.FieldDisplayType.FILE;
+            default:
+                return null;
+        }
+    }
+
     public static FacilioField getField(String name, String displayName, String colName, FacilioModule module,
                                         FieldType type) {
         FacilioField columnFld = null;
@@ -8107,6 +8166,16 @@ public class FieldFactory {
                 .collect(Collectors.toMap(FacilioField::getName, Function.identity(), (prevValue, curValue) -> {
                     return prevValue;
                 }));
+    }
+
+    public static FacilioField filterField (Collection<FacilioField> fields, String fieldName) {
+        Optional<FacilioField> field = fields.stream().filter(f -> f.getName().equals(fieldName)).findFirst();
+        if (field.isPresent()) {
+            return field.get();
+        }
+        else {
+            return null;
+        }
     }
 
     public static Map<Long, FacilioField> getAsIdMap(Collection<FacilioField> fields) {
@@ -8626,6 +8695,7 @@ public class FieldFactory {
         fields.add(getIdField(module));
         fields.add(getModuleIdField(module));
         fields.add(getField("recordId", "RECORD_ID", module, FieldType.NUMBER));
+        fields.add(getField("dataModuleId", "DATA_MODULE_ID", module, FieldType.NUMBER));
         fields.add(getField("scheduleInfoJson", "SCHEDULE_INFO", module, FieldType.STRING));
         fields.add(getField("startTime", "START_TIME", module, FieldType.NUMBER));
         fields.add(getField("endTime", "END_TIME", module, FieldType.NUMBER));

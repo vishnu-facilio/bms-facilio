@@ -3,7 +3,7 @@ package com.facilio.v3.context;
 import java.io.Serializable;
 import java.util.List;
 
-public class SubFormContext implements Serializable {
+public class SubFormContext<T extends V3Context> implements Serializable {
     private long fieldId;
     public long getFieldId() {
         return fieldId;
@@ -13,13 +13,13 @@ public class SubFormContext implements Serializable {
         this.fieldId = fieldId;
     }
 
-    private List<V3Context> data;
+    private List<T> data;
 
-    public List<V3Context> getData() {
+    public List<T> getData() {
         return data;
     }
 
-    public void setData(List<V3Context> data) {
+    public void setData(List<T> data) {
         this.data = data;
     }
 

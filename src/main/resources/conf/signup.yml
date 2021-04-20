@@ -50,7 +50,6 @@ classes:
   - com.facilio.bmsconsoleV3.signup.scoping.PeopleAnnouncementScopingConfig
   - com.facilio.bmsconsoleV3.signup.scoping.VisitorLoggingScopingConfig
   - com.facilio.bmsconsoleV3.signup.scoping.SafetyPlanScopingConfig
-
     # adding site module
   - com.facilio.bmsconsoleV3.signup.moduleconfig.SiteModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.FloorModule
@@ -66,3 +65,6 @@ classes:
     #adding default marker types for floorplan
   - com.facilio.bmsconsoleV3.signup.scoping.FloorPlanScopingConfig
 
+    # Adding Q And A
+  - com.facilio.qa.signup.AddQAndAModules
+  - com.facilio.bmsconsoleV3.signup.inspection.AddInspectionModules

@@ -53,7 +53,7 @@ public class AddOrUpdateScheduleInRecurringVisitorCommandV3 extends FacilioComma
         		RecurringInviteVisitorContextV3 recurringInviteContext = (RecurringInviteVisitorContextV3)inviteVisitor;
         		if(recurringInviteContext != null && recurringInviteContext.getScheduleTrigger() != null) {
         			if((recurringInviteContext.getScheduleTrigger().getId() != null && recurringInviteContext.getScheduleTrigger().getId() > 0) || (recurringInviteContext.getScheduleId() != null && recurringInviteContext.getScheduleId() > 0)) {
-        				V3VisitorManagementAPI.updateRecurringInviteScheduler(recurringInviteContext.getScheduleTrigger());
+        				V3VisitorManagementAPI.updateBaseScheduleContext(recurringInviteContext.getScheduleTrigger());
     					scheduleBaseSchedulerJob(recurringInviteContext, true);
     				}
     				else {

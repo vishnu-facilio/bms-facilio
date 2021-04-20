@@ -68,6 +68,8 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.mv.context.MVAdjustment;
 import com.facilio.mv.context.MVBaseline;
 import com.facilio.mv.context.MVProjectContext;
+import com.facilio.qa.context.*;
+import com.facilio.qa.context.questions.DecimalQuestionContext;
 import com.facilio.v3.context.AttachmentV3Context;
 import org.json.simple.JSONObject;
 
@@ -121,6 +123,11 @@ public class FacilioConstants {
 		public static final String OLD_TICKETS = "oldTickets";
 		public static final String MODIFIED_TIME = "modifiedTime";
 		public static final String MODIFIED_USER = "modifiedUser";
+	}
+
+	public static class Module {
+		public static final String SYS_FIELDS_NEEDED = "sysFieldsNeeded";
+		public static final String IGNORE_MODIFIED_SYS_FIELDS = "ignoreModifiedSysFields";
 	}
 	
 	public static class ModuleNames {
@@ -2322,6 +2329,16 @@ public class FacilioConstants {
 			classMap.put(MOVES, V3MovesContext.class);
 			classMap.put(DELIVERIES, V3DeliveriesContext.class);
 			
+			classMap.put(QAndA.Q_AND_A_TEMPLATE, QAndATemplateContext.class);
+			classMap.put(QAndA.PAGE, PageContext.class);
+			classMap.put(QAndA.QUESTION, QuestionContext.class);
+			classMap.put(QAndA.RESPONSE, ResponseContext.class);
+			classMap.put(QAndA.ANSWER, AnswerContext.class);
+
+			for (QuestionType type : QuestionType.values()) {
+				classMap.put(type.getSubModuleName(), type.getSubClass());
+			}
+
 			return classMap;
 
 		}
@@ -2358,6 +2375,37 @@ public class FacilioConstants {
 		
 		public static Collection<Class> getAllClasses() {
 			return classMap.values();
+		}
+	}
+
+	public static class Inspection {
+		public static final String INSPECTION_TEMPLATE = "inspectionTemplate";
+		public static final String INSPECTION_RESPONSE = "inspectionResponse";
+		public static final String INSPECTION_TRIGGER = "inspectionTrigger";
+	}
+
+	public static class QAndA {
+		public static final String Q_AND_A_TEMPLATE = "qandaTemplate";
+		public static final String PAGE = "qandaPage";
+		public static final String QUESTION = "qandaQuestion";
+		public static final String RESPONSE = "qandaResponse";
+		public static final String ANSWER = "qandaAnswer";
+		public static final String MULTI_FILE_ANSWER = "multiFileAnswer";
+
+		public static class Questions {
+			public static final String HEADING_QUESTION = "qandaHeadingQuestion";
+			public static final String NUMBER_QUESTION = "qandaNumberQuestion";
+			public static final String DECIMAL_QUESTION = "qandaDecimalQuestion";
+			public static final String SHORT_STRING_QUESTION = "qandaShortStringQuestion";
+			public static final String LONG_STRING_QUESTION = "qandaLongStringQuestion";
+			public static final String DATE_TIME_QUESTION = "qandaDateTimeQuestion";
+			public static final String MCQ_SINGLE = "qandaMcqSingle";
+			public static final String MCQ_SINGLE_OPTIONS = "qandaMcqSingleOptions";
+			public static final String MCQ_MULTI = "qandaMcqMulti";
+			public static final String MCQ_MULTI_OPTIONS = "qandaMcqMultiOptions";
+			public static final String FILE_UPLOAD_QUESTION = "qandaFileUploadQuestion";
+			public static final String MULTI_FILE_UPLOAD_QUESTION = "qandaMultiFileUploadQuestion";
+			public static final String BOOLEAN_QUESTION = "qandaBooleanQuestion";
 		}
 	}
 	

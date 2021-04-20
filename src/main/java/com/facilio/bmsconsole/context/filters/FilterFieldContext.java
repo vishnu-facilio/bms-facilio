@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.context.filters;
 
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.*;
 import lombok.Getter;
@@ -107,27 +108,9 @@ public class FilterFieldContext {
 
     private String defaultDisplayTypeForBackwardCompatibility (FieldType dataType) {
         if (dataType != null) {
-            switch (dataType) {
-                case STRING:
-                    return FacilioField.FieldDisplayType.TEXTBOX.name();
-                case NUMBER:
-                case DECIMAL:
-                case ID:
-                case COUNTER:
-                case SCORE:
-                    return FacilioField.FieldDisplayType.NUMBER.name();
-                case BOOLEAN:
-                    return FacilioField.FieldDisplayType.DECISION_BOX.name();
-                case LOOKUP:
-                    return FacilioField.FieldDisplayType.LOOKUP_SIMPLE.name();
-                case ENUM:
-                case SYSTEM_ENUM:
-                    return FacilioField.FieldDisplayType.SELECTBOX.name();
-                case DATE:
-                case DATE_TIME:
-                    return FacilioField.FieldDisplayType.DATE.name();
-                case FILE:
-                    return FacilioField.FieldDisplayType.FILE.name();
+            FacilioField.FieldDisplayType type = FieldFactory.getDefaultDisplayTypeFromDataType(dataType);
+            if (type != null) {
+                return type.name();
             }
         }
         return null;

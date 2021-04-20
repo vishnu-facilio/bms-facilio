@@ -13,7 +13,6 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.SLAWorkflowEscalationContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -408,7 +407,8 @@ public class FieldUtil {
 					FacilioConstants.ContextNames.Tenant.AUDIENCE,
 					FacilioConstants.ContextNames.FacilityBooking.FACILITY,
 					FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING
-
+//					FacilioConstants.Inspection.INSPECTION_TEMPLATE,
+//					FacilioConstants.Inspection.INSPECTION_RESPONSE
 					)));
 
 
@@ -427,7 +427,9 @@ public class FieldUtil {
 		if (returnFalseIfSite && FacilioConstants.ContextNames.SITE.equals(module.getName())) { //Temp fix. Have to check how to handle this
 			return false;
 		}
-		return SITE_ID_ALLOWED_MODULES.contains(module.getName()) || (module.getExtendModule() != null && (module.getExtendModule().getName().equals("asset") || module.getExtendModule().getName().equals("controller")));
+		return SITE_ID_ALLOWED_MODULES.contains(module.getName())
+				|| (module.getExtendModule() != null && (module.getExtendModule().getName().equals("asset")
+				|| module.getExtendModule().getName().equals("controller")));
 	}
 
 	private static final Set<String> SYSTEM_FIELDS_ALLOWED_MODULES = Collections.unmodifiableSet(

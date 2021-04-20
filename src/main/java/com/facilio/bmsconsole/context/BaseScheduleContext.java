@@ -19,6 +19,8 @@ import com.facilio.bmsconsole.context.WorkflowRuleResourceLoggerContext.Status;
 import com.facilio.bmsconsole.context.sensor.SensorRuleType;
 import com.facilio.bmsconsole.context.sensor.SensorRuleTypeValidationInterface;
 import com.facilio.bmsconsole.util.RecordAPI;
+import com.facilio.bmsconsoleV3.context.inspection.InspectionScheduler;
+import com.facilio.bmsconsoleV3.util.V3Util;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -44,6 +46,7 @@ public class BaseScheduleContext implements Serializable {
 	private Long startTime; 
 	private Long endTime; 
 	private Long moduleId;
+	private Long dataModuleId;
 	private Long recordId;
 	private ScheduleInfo scheduleInfo;
 	private Long generatedUptoTime;
@@ -67,29 +70,27 @@ public class BaseScheduleContext implements Serializable {
 	
 	public void saveRecords(List<? extends ModuleBaseWithCustomFields> childRecords) throws Exception{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(moduleId);	
+		FacilioModule module = modBean.getModule(getDataModuleId());	
 		RecordAPI.addRecord(true, childRecords, module.getExtendModule(), modBean.getAllFields(module.getExtendModule().getName()));
 	}
 	
-	public void saveAsV3Records(List<? extends ModuleBaseWithCustomFields> childRecords) throws Exception{
+	public void saveAsV3Records(List<? extends ModuleBaseWithCustomFields> childRecords) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(moduleId);
-		FacilioChain addChain = ChainUtil.getCreateRecordChain(module.getName());
-        FacilioContext context = addChain.getContext();
-        Constants.setModuleName(context, module.getName());
-        Constants.setRawInput(context, FieldUtil.getAsJSON(childRecords));
-        context.put(Constants.BEAN_CLASS, ModuleBaseWithCustomFields.class);
-        context.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.CREATE);
-        context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
-        addChain.execute();
+		FacilioModule module = modBean.getModule(getDataModuleId());
+		
+		for(ModuleBaseWithCustomFields childRecord :childRecords) {
+			
+			V3Util.createRecord(module, FieldUtil.getAsJSON(childRecord));
+		}
 	}
 	
 	public enum ScheduleType implements FacilioEnum{
 		
 		RECURRING_VISITOR_INVITE(new InviteVisitorScheduler()),
 		COMMUNITY_ENGAGEMENT_EVENT(),
-		PM()
+		PM(),
+		INSPECTION(new InspectionScheduler()),
 		;
 		
 		public int getIndex() {
@@ -220,6 +221,17 @@ public class BaseScheduleContext implements Serializable {
 	public String toString() {
 		return "BaseScheduleContext [startTime=" + startTime + ", endTime=" + endTime + ", moduleId=" + moduleId
 				+ ", recordId=" + recordId + ", generatedUptoTime=" + generatedUptoTime + ", id=" + id + "]";
+	}
+
+	public Long getDataModuleId() {
+		if(dataModuleId != null) {
+			return dataModuleId;
+		}
+		return getModuleId();
+	}
+
+	public void setDataModuleId(Long dataModuleId) {
+		this.dataModuleId = dataModuleId;
 	}
 	
 }

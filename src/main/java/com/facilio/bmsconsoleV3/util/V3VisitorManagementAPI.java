@@ -2380,10 +2380,10 @@ public class V3VisitorManagementAPI {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 //      V3RecordAPI.addRecord(true, childInvites, modBean.getModule(FacilioConstants.ContextNames.INVITE_VISITOR), modBean.getAllFields(FacilioConstants.ContextNames.INVITE_VISITOR));
         V3RecordAPI.updateRecord(parentVisitorInvite, modBean.getModule(FacilioConstants.ContextNames.RECURRING_INVITE_VISITOR), modBean.getAllFields(FacilioConstants.ContextNames.RECURRING_INVITE_VISITOR));
-        updateRecurringInviteScheduler(scheduleTrigger);
+        updateBaseScheduleContext(scheduleTrigger);
     }
 
-    public static void updateRecurringInviteScheduler(BaseScheduleContext baseScheduleContext) throws Exception {
+    public static void updateBaseScheduleContext(BaseScheduleContext baseScheduleContext) throws Exception {
   	   GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder()
   	            .table(ModuleFactory.getBaseSchedulerModule().getTableName())
   	            .fields(FieldFactory.getBaseSchedulerFields())

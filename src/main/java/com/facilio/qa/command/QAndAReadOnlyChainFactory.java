@@ -1,0 +1,28 @@
+package com.facilio.qa.command;
+
+import com.facilio.chain.FacilioChain;
+
+public class QAndAReadOnlyChainFactory {
+    private static FacilioChain getDefaultChain() {
+        return FacilioChain.getNonTransactionChain();
+    }
+
+    public static FacilioChain afterQuestionFetch() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchExtendedQuestionsCommand());
+        c.addCommand(new CallQuestionHandlersFromListCommand(CallQuestionHandlersFromListCommand.ListHandlerType.FETCH));
+        return c;
+    }
+
+    public static FacilioChain afterPagesFetch() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchQuestionsFromPagesCommand());
+        return c;
+    }
+
+    public static FacilioChain commonAfterQAndATemplateFetch() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchPagesFromTemplateCommand());
+        return c;
+    }
+}

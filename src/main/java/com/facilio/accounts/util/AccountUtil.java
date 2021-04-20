@@ -319,7 +319,7 @@ public class AccountUtil {
 	}
 
 	public static OrgBean getOrgBean(long orgId) throws Exception {
-		OrgBean orgBean = (OrgBean) BeanFactory.lookup("OrgBean",orgId);
+		OrgBean orgBean = (OrgBean) BeanFactory.lookup("OrgBean", orgId);
 		return orgBean;
 	}
 	

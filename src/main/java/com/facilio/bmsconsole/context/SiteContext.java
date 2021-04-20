@@ -7,6 +7,14 @@ public class SiteContext extends BaseSpaceContext {
 	/**
 	 * 
 	 */
+	public SiteContext() {
+
+	}
+
+	public SiteContext(long id) {
+		setId(id);
+	}
+
 	private static final long serialVersionUID = 1L;
 	private LocationContext location;
 
