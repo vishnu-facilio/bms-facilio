@@ -299,6 +299,11 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         context.put(FacilioConstants.ContextNames.APPROVAL_TRANSITION_ID, this.getApprovalTransitionId());
         context.put(Constants.QUERY_PARAMS, getQueryParameters());
 
+        if (getCustomButtonId() != null && getCustomButtonId() > 0) {
+            context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_ID_LIST, Collections.singletonList(getCustomButtonId()));
+            CommonCommandUtil.addEventType(EventType.CUSTOM_BUTTON, context);
+        }
+
         patchChain.execute();
 
         Integer count = (Integer) context.get(Constants.ROWS_UPDATED);
