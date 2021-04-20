@@ -885,7 +885,21 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			return null;
 		}
 		
-	}
+	},
+	UPDATE_ORG_INFO (22, "updateOrgInfo") {
+
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			
+			String name = (String) objects[0];
+			String value = String.valueOf(objects[1]);
+			CommonCommandUtil.updateOrgInfo(name, value);
+			
+			return null;
+			
+		}
+		
+	},
 	;
 	private Integer value;
 	private String functionName;

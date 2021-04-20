@@ -416,16 +416,24 @@ public class CommonCommandUtil {
 		}
 		else {
 			// update
-			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-					.table(AccountConstants.getOrgInfoModule().getTableName()).fields(AccountConstants.getOrgInfoFields())
-					.andCustomWhere("OrgID = ? AND NAME = ?", orgId, name );
-			Map<String, Object> props = new HashMap<>();
-			props.put("name", name);
-			props.put("value", value);
-			updateBuilder.update(props);
-
+			updateOrgInfo(name, value);
 		}
 	}
+	
+	public static void updateOrgInfo(String name, String value) throws Exception {
+		List<FacilioField> fields = AccountConstants.getOrgInfoFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(AccountConstants.getOrgInfoModule().getTableName())
+				.fields(fields)
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("name"), name, StringOperators.IS));
+		Map<String, Object> props = new HashMap<>();
+		props.put("name", name);
+		props.put("value", value);
+		updateBuilder.update(props);
+	}
+	
 	public static Map<String, Object> getOrgInfo(long orgId, String name) throws Exception {
 
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
