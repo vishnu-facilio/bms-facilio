@@ -43,19 +43,10 @@ public class HandleReadingMeterResetValidations extends FacilioCommand {
 				return false;
 			}
 			
-			boolean proceedBasedOnProp = false;
-			Map<String, String> orgInfoMap = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.HANDLE_TASK_METER_RESET);
-        	if (orgInfoMap != null && MapUtils.isNotEmpty(orgInfoMap)) {
-        		String handleTaskMeterResetProp = orgInfoMap.get(FacilioConstants.OrgInfoKeys.HANDLE_TASK_METER_RESET);
-				if (handleTaskMeterResetProp != null && !handleTaskMeterResetProp.isEmpty() && StringUtils.isNotEmpty(handleTaskMeterResetProp) && Boolean.valueOf(handleTaskMeterResetProp)) {
-					proceedBasedOnProp = true;
-				}
-        	}
-			
 			TaskContext currentTask = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
 			Boolean skipValidation = (Boolean) context.get(FacilioConstants.ContextNames.SKIP_VALIDATION);
 
-			if(proceedBasedOnProp && currentTask != null && currentTask.getInputValue() != null) {
+			if(currentTask != null && currentTask.getInputValue() != null) {
 				List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 				if(recordIds != null && !recordIds.isEmpty()) {
 					Map<Long, TaskContext> oldTasks = (Map<Long, TaskContext>) context.get(FacilioConstants.ContextNames.TASK_MAP);
