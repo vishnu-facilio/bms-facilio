@@ -130,11 +130,15 @@ public class CommonCommandUtil {
 		}
 	}
 
-	public static void appendModuleNameInKey(String moduleName, String prefix, Map<String, Object> beanMap, Map<String, Object> placeHolders) throws Exception {
-		Map<String, Object> props = PlaceHoldersUtil.constructPlaceholders(moduleName, prefix, beanMap, 0);
+	public static void appendModuleNameInKey(String moduleName, String prefix, Map<String, Object> beanMap, Map<String, Object> placeHolders, int level) throws Exception {
+		Map<String, Object> props = PlaceHoldersUtil.constructPlaceholders(moduleName, prefix, beanMap, level);
 		if (MapUtils.isNotEmpty(props)) {
 			placeHolders.putAll(props);
 		}
+	}
+
+	public static void appendModuleNameInKey(String moduleName, String prefix, Map<String, Object> beanMap, Map<String, Object> placeHolders) throws Exception {
+		appendModuleNameInKey(moduleName, prefix, beanMap, placeHolders, 0);
 	}
 
 	public static Map<Long,Object> getPickList(String moduleName) throws Exception

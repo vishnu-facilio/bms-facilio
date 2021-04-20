@@ -62,12 +62,16 @@ public class WorkflowRuleAPI {
 		
 		return placeHolders;
 	}
-	
-	public static Map<String, Object> getRecordPlaceHolders(String moduleName, Object record, Map<String, Object> currentPlaceholders) throws Exception {
+
+	public static Map<String, Object> getRecordPlaceHolders(String moduleName, Object record, Map<String, Object> currentPlaceholders, int level) throws Exception {
 		Map<String, Object> recordPlaceHolders = currentPlaceholders == null ? new HashMap<>() : new HashMap<>(currentPlaceholders);
-		CommonCommandUtil.appendModuleNameInKey(moduleName, moduleName, FieldUtil.getAsProperties(record), recordPlaceHolders);
+		CommonCommandUtil.appendModuleNameInKey(moduleName, moduleName, FieldUtil.getAsProperties(record), recordPlaceHolders, level);
 		recordPlaceHolders.put(moduleName, record);
 		return recordPlaceHolders;
+	}
+
+	public static Map<String, Object> getRecordPlaceHolders(String moduleName, Object record, Map<String, Object> currentPlaceholders) throws Exception {
+		return getRecordPlaceHolders(moduleName, record, currentPlaceholders, 0);
 	}
 	
 	public static long addWorkflowRule(WorkflowRuleContext rule) throws Exception {
