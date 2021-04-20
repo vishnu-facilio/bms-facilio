@@ -1,6 +1,8 @@
 
 package com.facilio.bmsconsole.page.factory;
 
+import com.facilio.accounts.dto.AppDomain;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.sensor.SensorRollUpAlarmContext;
@@ -155,12 +157,12 @@ public class PageFactory {
 		}
 		return null;
 	}
-	
-	protected static PageWidget addCommonSubModuleWidget(Section section, FacilioModule module, ModuleBaseWithCustomFields record) throws Exception {
-		return addCommonSubModuleWidget(section, module, record, null);
+
+	protected static PageWidget addCommonSubModuleWidget(Section section, FacilioModule module, ModuleBaseWithCustomFields record, HashMap<String, String> titleMap) throws Exception {
+		return addCommonSubModuleWidget(section, module, record,titleMap, false);
 	}
 	
-	protected static PageWidget addCommonSubModuleWidget(Section section, FacilioModule module, ModuleBaseWithCustomFields record, HashMap<String, String> titleMap,WidgetType... widgetTypes) throws Exception {
+	protected static PageWidget addCommonSubModuleWidget(Section section, FacilioModule module, ModuleBaseWithCustomFields record, HashMap<String, String> titleMap, Boolean notifyRequestorNeeded, WidgetType... widgetTypes) throws Exception {
 		
 		List<Long> moduleIds = module.getExtendedModuleIds();
 		
@@ -185,7 +187,11 @@ public class PageFactory {
 		
 		PageWidget notesWidget = new PageWidget();
 		notesWidget.setWidgetType(WidgetType.COMMENT);
-		
+
+		if(notifyRequestorNeeded != null && notifyRequestorNeeded){
+			notesWidget.addToWidgetParams("canShowNotifyRequestor", true);
+		}
+
 		PageWidget attachmentWidget = new PageWidget();
 		attachmentWidget.setWidgetType(WidgetType.ATTACHMENT);
 		

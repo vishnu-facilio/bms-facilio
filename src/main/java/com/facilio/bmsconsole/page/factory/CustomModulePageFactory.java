@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.page.factory;
 
+import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.page.Page;
@@ -12,6 +13,8 @@ import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import org.apache.commons.collections4.CollectionUtils;
+
+import java.util.HashMap;
 
 public class CustomModulePageFactory extends PageFactory {
 	
@@ -38,9 +41,23 @@ public class CustomModulePageFactory extends PageFactory {
 		if(CollectionUtils.isNotEmpty(tab2Sec1.getWidgets())) {
 			page.addTab(tab2);
 		}
-		
-		addCommonSubModuleWidget(tab1Sec1, module, record);
-		
+
+		//atre notes widgets renamed to Comments
+		HashMap<String, String> titleMap = null;
+		if(AccountUtil.getCurrentOrg().getOrgId() == 407l || AccountUtil.getCurrentOrg().getOrgId() == 418l) {
+			titleMap = new HashMap<>();
+			titleMap.put("notes", "Comments");
+			titleMap.put("documents", "Documents");
+		}
+
+		//handling notify req for atre custom module - incident management -> temp solution
+		if(module.getName().equals("custom_incidentmanagement_1")) {
+			addCommonSubModuleWidget(tab1Sec1, module, record, titleMap,true);
+		}
+		else {
+			addCommonSubModuleWidget(tab1Sec1, module, record, titleMap,false);
+		}
+
 		ApplicationContext app = AccountUtil.getCurrentApp();
 		if (app != null && app.getLinkName().equals(ApplicationLinkNames.FACILIO_MAIN_APP) && module != null && !"serviceRequest".equalsIgnoreCase(module.getName())) {
 			 Page.Tab tab3 = page.new Tab("Activity");

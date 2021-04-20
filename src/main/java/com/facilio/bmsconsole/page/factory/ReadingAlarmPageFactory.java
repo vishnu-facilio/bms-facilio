@@ -50,7 +50,7 @@ public class ReadingAlarmPageFactory extends PageFactory  {
         
         HashMap<String, String> titles = new HashMap<>();
         titles.put("notes", "Comment");
-        addCommonSubModuleWidget(tab1Sec1, module, alarms, titles, WidgetType.COMMENT);
+        addCommonSubModuleWidget(tab1Sec1, module, alarms, titles, false, WidgetType.COMMENT);
 
         Page.Tab tab4 = page.new Tab("alarmRca", "alarmRca");
         page.addTab(tab4);
