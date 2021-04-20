@@ -3597,6 +3597,17 @@ public class ModuleFactory {
 		return module;
     	
     }
+    
+    public static FacilioModule getVisitorTypeFormsModule()
+    {
+    	FacilioModule module=new FacilioModule();
+    	module.setTableName("VisitorTypeForms");
+    	module.setDisplayName("VisitorTypeForms");
+		module.setName("visitorTypeForms");
+		return module;
+    	
+    }
+    
 	public static FacilioModule getWatchListModule()
 	{
 		FacilioModule module=new FacilioModule();

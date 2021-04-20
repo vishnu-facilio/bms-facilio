@@ -13,9 +13,11 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FormulaContext;
 import com.facilio.bmsconsole.context.VisitorSettingsContext;
 import com.facilio.bmsconsole.context.VisitorTypeContext;
+import com.facilio.bmsconsole.context.VisitorTypeFormsContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormFactory;
 import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.chain.FacilioChain;
@@ -104,6 +106,23 @@ public class AddVisitorTypeCommand extends FacilioCommand {
 
 		insertVisitorSettingsBuilder.addRecord(props);
 		insertVisitorSettingsBuilder.save();
+		
+		FacilioModule visitorTypeFormsModule=ModuleFactory.getVisitorTypeFormsModule();
+		List<FacilioField> visitorTypeFormsFields=FieldFactory.getVisitorTypeFormsFields();
+		GenericInsertRecordBuilder insertVisitorTypeFormsBuilder=new GenericInsertRecordBuilder();
+		insertVisitorTypeFormsBuilder.table(visitorTypeFormsModule.getTableName()).fields(visitorTypeFormsFields);	
+		
+		VisitorTypeFormsContext visitorTypeForm = new VisitorTypeFormsContext();
+		visitorTypeForm.setVisitorTypeId(visitorTypeId);
+		visitorTypeForm.setVisitorLogFormId(visitorLogFormTemplate.getId());
+		visitorTypeForm.setVisitorInviteFormId(visitorInviteFormTemplate.getId());
+		long appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+		visitorTypeForm.setAppId(appId);
+		
+		props =FieldUtil.getAsProperties(visitorTypeForm);
+		insertVisitorTypeFormsBuilder.addRecord(props);
+		insertVisitorTypeFormsBuilder.save();
+		
 		return false;
 		
 	}

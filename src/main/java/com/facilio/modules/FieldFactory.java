@@ -8577,7 +8577,17 @@ public class FieldFactory {
 //		fields.add(getField("isSelfSignoutEnabled","IS_SELF_SIGNOUT_ENABLED",FieldType.BOOLEAN));
         return fields;
     }
+	
+    public static List<FacilioField> getVisitorTypeFormsFields() {
+	    FacilioModule module = ModuleFactory.getVisitorTypeFormsModule();
+	    List<FacilioField> fields = new ArrayList<>();
+	    fields.add(getField("appId", "APP_ID", module , FieldType.LOOKUP));
+	    fields.add(getField("visitorTypeId", "VISITOR_TYPE_ID", module , FieldType.LOOKUP));
+	    fields.add(getField("visitorLogFormId", "VISITOR_LOG_FORM_ID", module , FieldType.LOOKUP));
+	    fields.add(getField("visitorInviteFormId", "VISITOR_INVITE_FORM_ID", module , FieldType.LOOKUP));
 
+	    return fields;
+    }
 
     public static List<FacilioField> getRelatedWorkorderFields() {
         FacilioModule module = ModuleFactory.getRelatedWorkorderModule();
