@@ -15,7 +15,31 @@ public class LeadTracker extends ActionSupport {
 	@Override
 	public String execute() throws Exception {
 		
-		FreshsalesUtil.createLead("leads","lead",getData());
+		
+		if(getUserDetails() != null)
+		{
+			JSONObject microsoftLeadUserDetails = getUserDetails();
+			
+			
+			JSONObject lead = new JSONObject();
+			lead.put("first_name", microsoftLeadUserDetails.get("firstName"));
+			lead.put("last_name", microsoftLeadUserDetails.get("lastName"));
+			lead.put("email", microsoftLeadUserDetails.get("email"));
+			lead.put("lead_source_id", "2000597960");
+			JSONObject company = new JSONObject();
+			company.put("name",microsoftLeadUserDetails.get("company"));
+			lead.put("company", company);
+			lead.put("mobile_number", microsoftLeadUserDetails.get("phone"));
+			lead.put("country", microsoftLeadUserDetails.get("country"));
+			
+			
+			FreshsalesUtil.createLead("leads","lead",lead);
+
+		}
+		else
+		{
+			FreshsalesUtil.createLead("leads","lead",getData());
+		}
 		
 		return SUCCESS;
 	}
@@ -32,5 +56,13 @@ public class LeadTracker extends ActionSupport {
 		return this.data;
 	}
 	
+	private JSONObject userDetails;
 	
+	public void setUserDetails(JSONObject userDetails) {
+		this.userDetails = userDetails;
+	}
+	
+	public JSONObject getUserDetails() {
+		return this.userDetails;
+	}
 }
