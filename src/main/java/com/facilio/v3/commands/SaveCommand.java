@@ -1,5 +1,6 @@
 package com.facilio.v3.commands;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -53,6 +54,10 @@ public class SaveCommand extends FacilioCommand {
             FacilioModule module = modBean.getModule(moduleName);
 
             List<FacilioField> fields = modBean.getAllFields(moduleName);
+            if (AccountUtil.getCurrentOrg().getId() == 155 && FacilioConstants.Inspection.INSPECTION_TEMPLATE.equals(moduleName)) {
+                LOGGER.info(MessageFormat.format("Fields of inspection template module : {0}", fields));
+                LOGGER.info(MessageFormat.format("Records to be added : {0}", records));
+            }
 
             InsertRecordBuilder<ModuleBaseWithCustomFields> insertRecordBuilder = new InsertRecordBuilder<>()
                     .module(module)

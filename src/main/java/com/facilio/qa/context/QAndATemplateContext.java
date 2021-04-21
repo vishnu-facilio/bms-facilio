@@ -6,12 +6,14 @@ import com.facilio.v3.context.V3Context;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString
 public class QAndATemplateContext extends V3Context {
     private String name;
     private String description;

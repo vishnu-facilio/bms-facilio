@@ -17,12 +17,14 @@ import com.facilio.qa.context.QAndATemplateContext;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.extern.log4j.Log4j;
 
 @Getter
 @Setter
 @Log4j
 @NoArgsConstructor
+@ToString(callSuper=true, includeFieldNames=true)
 public class InspectionTemplateContext extends QAndATemplateContext {
     private SiteContext site;
 
