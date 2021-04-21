@@ -52,32 +52,6 @@ public class QAndAV3Config {
 
     // Do not add separate entry for extended questions. Please handle them with QuestionCRUDHandler
     
-    
-    @Module(FacilioConstants.Inspection.INSPECTION_TEMPLATE)
-    public static Supplier<V3Config> getInspection() {
-        return () -> new V3Config(InspectionTemplateContext.class, null)
-                .create()
-//                    .beforeSave(QAndATransactionChainFactory.commonQAndABeforeSave())
-                	.afterSave(QAndATransactionChainFactory.inspectionAfterSaveChain())
-                .update()
-                	.afterSave(QAndATransactionChainFactory.inspectionAfterUpdateChain())
-//                .list()
-//                .delete()
-                .summary()
-                    .afterFetch(QAndAReadOnlyChainFactory.commonAfterQAndATemplateFetch())
-                .build();
-    }
-    
-    @Module(FacilioConstants.Inspection.INSPECTION_TRIGGER)
-    public static Supplier<V3Config> getInspectionTriggers() {
-        return () -> new V3Config(InspectionTriggerContext.class, null)
-        		.create()
-                	.beforeSave(QAndATransactionChainFactory.inspectionTriggerBeforeSaveChain())
-                .update()
-                	.beforeSave(QAndATransactionChainFactory.inspectionTriggerBeforeSaveChain())
-                .build();
-    }
-
     @Module(FacilioConstants.QAndA.ANSWER)
     public static Supplier<V3Config> getQAndAAnswer() {
         return () -> new V3Config(AnswerContext.class, null)

@@ -2,6 +2,7 @@ package com.facilio.apiv3;
 
 import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext;
+import com.facilio.bmsconsoleV3.context.inspection.InspectionTriggerContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.qa.command.QAndAReadOnlyChainFactory;
 import com.facilio.qa.command.QAndATransactionChainFactory;
@@ -42,6 +43,16 @@ public class ExtendedQAndAV3Config {
                 .build();
     }
 
+    @Module(FacilioConstants.Inspection.INSPECTION_TRIGGER)
+    public static Supplier<V3Config> getInspectionTriggers() {
+        return () -> new V3Config(InspectionTriggerContext.class, null)
+        		.create()
+                	.beforeSave(QAndATransactionChainFactory.inspectionTriggerBeforeSaveChain())
+                .update()
+                	.beforeSave(QAndATransactionChainFactory.inspectionTriggerBeforeSaveChain())
+                .build();
+    }
+    
     @Module(FacilioConstants.Inspection.INSPECTION_RESPONSE)
     public static Supplier<V3Config> getInspectionResponse() {
         return () -> new V3Config(InspectionResponseContext.class, null)
