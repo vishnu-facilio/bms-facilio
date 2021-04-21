@@ -91,11 +91,11 @@ public class AddVisitorTypeCommand extends FacilioCommand {
 		visitorInviteFormTemplateForOccupant.setDisplayName(newVisitorType.getName()+"_"+newVisitorType.getId()+"_invite_visitor_form");
 		visitorInviteFormTemplateForOccupant.setAppLinkName(ApplicationLinkNames.OCCUPANT_PORTAL_APP);
 		
-		addVisitorInviteFormChain=TransactionChainFactory.getAddFormCommand();
-		visitorInviteFormContext=addVisitorInviteFormChain.getContext();
-		visitorInviteFormContext.put(ContextNames.MODULE_NAME, ContextNames.INVITE_VISITOR);			
-		visitorInviteFormContext.put(FacilioConstants.ContextNames.FORM, visitorInviteFormTemplateForOccupant);
-		addVisitorInviteFormChain.execute();
+		FacilioChain addVisitorInviteFormOccupantChain = TransactionChainFactory.getAddFormCommand();
+		FacilioContext visitorInviteFormOccupantContext = addVisitorInviteFormOccupantChain.getContext();
+		visitorInviteFormOccupantContext.put(ContextNames.MODULE_NAME, ContextNames.INVITE_VISITOR);			
+		visitorInviteFormOccupantContext.put(FacilioConstants.ContextNames.FORM, visitorInviteFormTemplateForOccupant);
+		addVisitorInviteFormOccupantChain.execute();
 		
 		FacilioForm visitorInviteFormTemplateForTenant = FormsAPI.getFormFromDB(FacilioConstants.ContextNames.DEFAULT_INVITE_VISITOR_FORM_NAME,modBean.getModule(FacilioConstants.ContextNames.INVITE_VISITOR));
 		visitorInviteFormTemplateForTenant.setId(-1);
@@ -103,11 +103,11 @@ public class AddVisitorTypeCommand extends FacilioCommand {
 		visitorInviteFormTemplateForTenant.setDisplayName(newVisitorType.getName()+"_"+newVisitorType.getId()+"_invite_visitor_form");
 		visitorInviteFormTemplateForTenant.setAppLinkName(ApplicationLinkNames.TENANT_PORTAL_APP);
 		
-		addVisitorInviteFormChain=TransactionChainFactory.getAddFormCommand();
-		visitorInviteFormContext=addVisitorInviteFormChain.getContext();
-		visitorInviteFormContext.put(ContextNames.MODULE_NAME, ContextNames.INVITE_VISITOR);			
-		visitorInviteFormContext.put(FacilioConstants.ContextNames.FORM, visitorInviteFormTemplateForTenant);
-		addVisitorInviteFormChain.execute();
+		FacilioChain addVisitorInviteFormTenantChain = TransactionChainFactory.getAddFormCommand();
+		FacilioContext visitorInviteFormTenantContext = addVisitorInviteFormTenantChain.getContext();
+		visitorInviteFormTenantContext.put(ContextNames.MODULE_NAME, ContextNames.INVITE_VISITOR);			
+		visitorInviteFormTenantContext.put(FacilioConstants.ContextNames.FORM, visitorInviteFormTemplateForTenant);
+		addVisitorInviteFormTenantChain.execute();
 		
 		FacilioModule visitorSettingsModule=ModuleFactory.getVisitorSettingsModule();
 		List<FacilioField> visitorSettingsFields=FieldFactory.getVisitorSettingsFields();
