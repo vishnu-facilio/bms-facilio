@@ -2383,6 +2383,9 @@ public class FacilioConstants {
 		public static final String INSPECTION_TEMPLATE = "inspectionTemplate";
 		public static final String INSPECTION_RESPONSE = "inspectionResponse";
 		public static final String INSPECTION_TRIGGER = "inspectionTrigger";
+		
+		public static final String INSPECTION_CATEGORY = "inspectionCategory";
+		public static final String INSPECTION_PRIORITY = "inspectionPriority";
 	}
 
 	public static class QAndA {
