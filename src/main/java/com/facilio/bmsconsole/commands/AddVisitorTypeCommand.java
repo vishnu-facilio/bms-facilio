@@ -85,9 +85,9 @@ public class AddVisitorTypeCommand extends FacilioCommand {
 		visitorInviteFormContext.put(FacilioConstants.ContextNames.FORM, visitorInviteFormTemplate);
 		addVisitorInviteFormChain.execute();
 		
-		FacilioForm visitorInviteFormTemplateForOccupant=FormsAPI.getFormFromDB("invite_visitor_form_occupant",modBean.getModule(FacilioConstants.ContextNames.INVITE_VISITOR));
+		FacilioForm visitorInviteFormTemplateForOccupant=FormsAPI.getFormFromDB(FacilioConstants.ContextNames.DEFAULT_INVITE_VISITOR_FORM_NAME,modBean.getModule(FacilioConstants.ContextNames.INVITE_VISITOR));
 		visitorInviteFormTemplateForOccupant.setId(-1);
-		visitorInviteFormTemplateForOccupant.setName(newVisitorType.getName()+"_"+newVisitorType.getId()+"invite_visitor_form");
+		visitorInviteFormTemplateForOccupant.setName(newVisitorType.getName()+"_"+newVisitorType.getId()+"invite_visitor_form_Occupant");
 		visitorInviteFormTemplateForOccupant.setDisplayName(newVisitorType.getName()+"_"+newVisitorType.getId()+"_invite_visitor_form");
 		visitorInviteFormTemplateForOccupant.setAppLinkName(ApplicationLinkNames.OCCUPANT_PORTAL_APP);
 		
@@ -97,9 +97,9 @@ public class AddVisitorTypeCommand extends FacilioCommand {
 		visitorInviteFormContext.put(FacilioConstants.ContextNames.FORM, visitorInviteFormTemplateForOccupant);
 		addVisitorInviteFormChain.execute();
 		
-		FacilioForm visitorInviteFormTemplateForTenant = FormsAPI.getFormFromDB("invite_visitor_form_tenant",modBean.getModule(FacilioConstants.ContextNames.INVITE_VISITOR));
+		FacilioForm visitorInviteFormTemplateForTenant = FormsAPI.getFormFromDB(FacilioConstants.ContextNames.DEFAULT_INVITE_VISITOR_FORM_NAME,modBean.getModule(FacilioConstants.ContextNames.INVITE_VISITOR));
 		visitorInviteFormTemplateForTenant.setId(-1);
-		visitorInviteFormTemplateForTenant.setName(newVisitorType.getName()+"_"+newVisitorType.getId()+"invite_visitor_form");
+		visitorInviteFormTemplateForTenant.setName(newVisitorType.getName()+"_"+newVisitorType.getId()+"invite_visitor_form_Tenant");
 		visitorInviteFormTemplateForTenant.setDisplayName(newVisitorType.getName()+"_"+newVisitorType.getId()+"_invite_visitor_form");
 		visitorInviteFormTemplateForTenant.setAppLinkName(ApplicationLinkNames.TENANT_PORTAL_APP);
 		
