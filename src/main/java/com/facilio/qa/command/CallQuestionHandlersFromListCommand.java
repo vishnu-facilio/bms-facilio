@@ -25,7 +25,7 @@ public class CallQuestionHandlersFromListCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         List<QuestionContext> questions = Constants.getRecordList((FacilioContext) context);
         if (CollectionUtils.isNotEmpty(questions)) {
-            Map<QuestionType, List<QuestionContext>> splitByType = ExtendedModuleUtil.splitRecordsByType(questions, q -> q.getTypeEnum());
+            Map<QuestionType, List<QuestionContext>> splitByType = ExtendedModuleUtil.splitRecordsByType(questions, q -> q.getQuestionType());
             for (Map.Entry<QuestionType, List<QuestionContext>> entry : splitByType.entrySet()) {
                 QuestionType type = entry.getKey();
                 if (type.getHandler() != null && CollectionUtils.isNotEmpty(entry.getValue())) {

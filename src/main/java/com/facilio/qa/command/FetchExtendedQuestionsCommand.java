@@ -16,7 +16,7 @@ public class FetchExtendedQuestionsCommand extends FacilioCommand {
         List<QuestionContext> questions = Constants.getRecordList((FacilioContext) context);
 
         if (CollectionUtils.isNotEmpty(questions)) {
-            ExtendedModuleUtil.replaceWithExtendedRecords(questions, q -> q.getTypeEnum().getSubModuleName());
+            ExtendedModuleUtil.replaceWithExtendedRecords(questions, q -> q.getQuestionType().getSubModuleName());
         }
 
         return false;

@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 
 public class QAndAUtil {
     public static void splitAndAddQuestionModules (FacilioContext context, List<QuestionContext> list) {
-        Map<String, List<QuestionContext>> questionsModuleMap = ExtendedModuleUtil.splitRecordsBySubModule(list, q -> q.getTypeEnum().getSubModuleName());
+        Map<String, List<QuestionContext>> questionsModuleMap = ExtendedModuleUtil.splitRecordsBySubModule(list, q -> q.getQuestionType().getSubModuleName());
         addExtendedQuestionsToRecordMap(context,  questionsModuleMap);
     }
 

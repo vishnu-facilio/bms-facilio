@@ -5,7 +5,6 @@ import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.V3Context;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
-import com.fasterxml.jackson.databind.annotation.JsonTypeResolver;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -31,14 +30,14 @@ public class QuestionContext extends V3Context {
     private Boolean photoRequired, showComments, mandatory;
     private String commentsLabel;
     private Integer answerFieldId;
-    private QuestionType typeEnum;
+    private QuestionType questionType;
     private Integer position;
 
     public Integer getType() {
-        return typeEnum == null ? null : typeEnum.getIndex();
+        return questionType == null ? null : questionType.getIndex();
     }
     public void setType(Integer type) {
-        typeEnum = type == null ? null : QuestionType.valueOf(type);
+        questionType = type == null ? null : QuestionType.valueOf(type);
     }
 
     public static class QuestionTypeIdResolver extends FacilioEnumClassTypeIdResolverBase<QuestionContext> {

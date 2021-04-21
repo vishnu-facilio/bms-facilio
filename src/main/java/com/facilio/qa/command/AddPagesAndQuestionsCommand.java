@@ -67,8 +67,8 @@ public class AddPagesAndQuestionsCommand extends FacilioCommand {
     }
 
     private void addToRelation (Map<String, List<SubFormContext>> questionRelations, QuestionContext question, FacilioField questionPageField) {
-        FacilioUtil.throwIllegalArgumentException(question.getTypeEnum() == null, "Question type cannot be null");
-        String moduleName = question.getTypeEnum().getSubModuleName();
+        FacilioUtil.throwIllegalArgumentException(question.getQuestionType() == null, "Question type cannot be null");
+        String moduleName = question.getQuestionType().getSubModuleName();
         List<SubFormContext> questions = questionRelations.get(moduleName);
         if (questions == null) {
             SubFormContext<QuestionContext> subFormContext = new SubFormContext<>();

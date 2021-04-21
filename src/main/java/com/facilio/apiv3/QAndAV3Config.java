@@ -2,8 +2,6 @@ package com.facilio.apiv3;
 
 import java.util.function.Supplier;
 
-import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext;
-import com.facilio.bmsconsoleV3.context.inspection.InspectionTriggerContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.qa.command.QAndAReadOnlyChainFactory;
 import com.facilio.qa.command.QAndATransactionChainFactory;
