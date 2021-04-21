@@ -9,6 +9,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.NumberField;
@@ -21,9 +22,14 @@ public class AddInspectionModules extends SignUpData {
     public void addData() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<FacilioModule> modules = new ArrayList<>();
+        
+        modules.add(constructInspectionCategory());
+        modules.add(constructInspectionPriority());
+        
         FacilioModule inspection = constructInspection(modBean);
         modules.add(inspection);
         modules.add(constructInspectionResponse(modBean, inspection));
+        
         
         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
@@ -40,6 +46,56 @@ public class AddInspectionModules extends SignUpData {
     }
 
 
+	public FacilioModule constructInspectionPriority() {
+		
+		FacilioModule module = new FacilioModule(FacilioConstants.Inspection.INSPECTION_PRIORITY,
+                "Inspection Priority",
+                "Inspection_Priority",
+                FacilioModule.ModuleType.BASE_ENTITY
+                );
+
+		List<FacilioField> fields = new ArrayList<>();
+		
+		FacilioField nameField = (FacilioField) FieldFactory.getDefaultField("priority", "Priority", "PRIORITY", FieldType.STRING, true);
+		fields.add(nameField);
+		
+		fields.add((FacilioField) FieldFactory.getDefaultField("displayName", "Display Name", "DISPLAY_NAME", FieldType.STRING, true));
+		
+		fields.add((FacilioField) FieldFactory.getDefaultField("description", "Description", "DESCRIPTION", FieldType.STRING, true));
+		
+		fields.add((FacilioField) FieldFactory.getDefaultField("colour", "Colour", "COLOUR", FieldType.STRING, true));
+		
+		fields.add((NumberField) FieldFactory.getDefaultField("sequenceNumber", "Sequence", "SEQUENCE_NUMBER", FieldType.NUMBER, true));
+		
+		fields.add((BooleanField) FieldFactory.getDefaultField("isDefault", "Is Default", "ISDEFAULT", FieldType.BOOLEAN, true));
+		
+		module.setFields(fields);
+		return module;
+	}
+
+
+	public FacilioModule constructInspectionCategory() throws Exception {
+		
+		FacilioModule module = new FacilioModule(FacilioConstants.Inspection.INSPECTION_CATEGORY,
+                "Inspection Category",
+                "Inspection_Category",
+                FacilioModule.ModuleType.BASE_ENTITY
+                );
+
+		List<FacilioField> fields = new ArrayList<>();
+		
+		FacilioField nameField = (FacilioField) FieldFactory.getDefaultField("name", "Name", "NAME", FieldType.STRING, true);
+		fields.add(nameField);
+		
+		fields.add((FacilioField) FieldFactory.getDefaultField("displayName", "Display Name", "DISPLAY_NAME", FieldType.STRING, true));
+		
+		fields.add((FacilioField) FieldFactory.getDefaultField("description", "Description", "DESCRIPTION", FieldType.STRING, true));
+		
+		module.setFields(fields);
+		return module;
+	}
+
+
 	private FacilioModule constructInspection(ModuleBean modBean) throws Exception {
         FacilioModule module = new FacilioModule(FacilioConstants.Inspection.INSPECTION_TEMPLATE,
                                                 "Inspection Templates",
@@ -49,10 +105,29 @@ public class AddInspectionModules extends SignUpData {
                                                 );
 
         List<FacilioField> fields = new ArrayList<>();
+        
         LookupField siteField = (LookupField) FieldFactory.getDefaultField("site", "Site", "SITE_ID", FieldType.LOOKUP, true);
         siteField.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.SITE));
         fields.add(siteField);
-
+        
+        fields.add((NumberField) FieldFactory.getDefaultField("creationType", "Creation Type", "CREARTION_TYPE", FieldType.NUMBER, true));
+        
+        fields.add((NumberField) FieldFactory.getDefaultField("assignmentType", "Assigment Type", "ASSIGNMENT_TYPE", FieldType.NUMBER, true));
+        
+        LookupField baseSpace = (LookupField) FieldFactory.getDefaultField("baseSpace", "Base Space", "BASE_SPACE", FieldType.LOOKUP, true);
+        baseSpace.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE));
+        fields.add(baseSpace);
+        
+        LookupField assetCategory = (LookupField) FieldFactory.getDefaultField("assetCategory", "Asset Category", "ASSET_CATEGORY", FieldType.LOOKUP, true);
+        assetCategory.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.ASSET_CATEGORY));
+        fields.add(assetCategory);
+        
+        LookupField spaceCategory = (LookupField) FieldFactory.getDefaultField("spaceCategory", "Space Category", "SPACE_CATEGORY", FieldType.LOOKUP, true);
+        spaceCategory.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.SPACE_CATEGORY));
+        fields.add(spaceCategory);
+        
+        fields.addAll(getInspectionCommonFieldList(modBean));
+        
         module.setFields(fields);
         return module;
     }
@@ -100,22 +175,53 @@ public class AddInspectionModules extends SignUpData {
         LookupField parentField = (LookupField) FieldFactory.getDefaultField("parent", "Parent", "PARENT_ID", FieldType.LOOKUP);
         parentField.setLookupModule(inspection);
         fields.add(parentField);
-        LookupField staff = (LookupField) FieldFactory.getDefaultField("staff", "Staff", "STAFF_ID", FieldType.LOOKUP);
-        staff.setSpecialType(FacilioConstants.ContextNames.USERS);
-        fields.add(staff);
-        LookupField team = (LookupField) FieldFactory.getDefaultField("team", "Team", "TEAM_ID", FieldType.LOOKUP);
-        team.setSpecialType(FacilioConstants.ContextNames.GROUPS);
-        fields.add(team);
         
         FacilioField createdTime = (FacilioField) FieldFactory.getDefaultField("createdTime", "Created Time", "CREATED_TIME", FieldType.DATE_TIME);
         fields.add(createdTime);
         
         NumberField status = (NumberField) FieldFactory.getDefaultField("status", "Status", "STATUS", FieldType.NUMBER);
         fields.add(status);
+        
+        fields.add((NumberField) FieldFactory.getDefaultField("sourceType", "Source", "SOURCE_TYPE", FieldType.NUMBER));
+        
+        fields.addAll(getInspectionCommonFieldList(modBean));
 
         module.setFields(fields);
         return module;
     }
 
-
+    public List<FacilioField> getInspectionCommonFieldList(ModuleBean modBean) throws Exception {
+		
+		List<FacilioField> fields = new ArrayList<>();
+		
+        LookupField resource = (LookupField) FieldFactory.getDefaultField("resource", "Resource", "RESOURCE", FieldType.LOOKUP, true);
+        resource.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.RESOURCE));
+        fields.add(resource);
+        
+        LookupField vendor = (LookupField) FieldFactory.getDefaultField("vendor", "Vendor", "VENDOR", FieldType.LOOKUP, true);
+        vendor.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.VENDORS));
+        fields.add(vendor);
+        
+        LookupField tenant = (LookupField) FieldFactory.getDefaultField("tenant", "Tenant", "TENANT", FieldType.LOOKUP, true);
+        tenant.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.TENANT));
+        fields.add(tenant);
+        
+        LookupField category = (LookupField) FieldFactory.getDefaultField("category", "Category", "CATEGORY", FieldType.LOOKUP, true);
+        category.setLookupModule(modBean.getModule(FacilioConstants.Inspection.INSPECTION_CATEGORY));
+        fields.add(category);
+        
+        LookupField priority = (LookupField) FieldFactory.getDefaultField("priority", "Priority", "PRIORITY", FieldType.LOOKUP, true);
+        priority.setLookupModule(modBean.getModule(FacilioConstants.Inspection.INSPECTION_PRIORITY));
+        fields.add(priority);
+        
+        LookupField assignedTo = (LookupField) FieldFactory.getDefaultField("assignedTo", "Assigned To", "ASSIGNED_TO", FieldType.LOOKUP, true);
+        assignedTo.setSpecialType("users");
+        fields.add(assignedTo);
+        
+        LookupField assignmentGroup = (LookupField) FieldFactory.getDefaultField("assignmentGroup", "Assignment Group", "ASSIGNMENT_GROUP", FieldType.LOOKUP, true);
+        assignmentGroup.setSpecialType("groups");
+        fields.add(assignmentGroup);
+        
+        return fields;
+	}
 }
