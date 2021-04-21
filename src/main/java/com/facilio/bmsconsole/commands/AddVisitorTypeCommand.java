@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,6 +85,30 @@ public class AddVisitorTypeCommand extends FacilioCommand {
 		visitorInviteFormContext.put(FacilioConstants.ContextNames.FORM, visitorInviteFormTemplate);
 		addVisitorInviteFormChain.execute();
 		
+		FacilioForm visitorInviteFormTemplateForOccupant=FormsAPI.getFormFromDB(FacilioConstants.ContextNames.DEFAULT_INVITE_VISITOR_FORM_NAME,modBean.getModule(FacilioConstants.ContextNames.INVITE_VISITOR));
+		visitorInviteFormTemplateForOccupant.setId(-1);
+		visitorInviteFormTemplateForOccupant.setName(newVisitorType.getName()+"_"+newVisitorType.getId()+"invite_visitor_form");
+		visitorInviteFormTemplateForOccupant.setDisplayName(newVisitorType.getName()+"_"+newVisitorType.getId()+"_invite_visitor_form");
+		visitorInviteFormTemplateForOccupant.setAppLinkName(ApplicationLinkNames.OCCUPANT_PORTAL_APP);
+		
+		addVisitorInviteFormChain=TransactionChainFactory.getAddFormCommand();
+		visitorInviteFormContext=addVisitorInviteFormChain.getContext();
+		visitorInviteFormContext.put(ContextNames.MODULE_NAME, ContextNames.INVITE_VISITOR);			
+		visitorInviteFormContext.put(FacilioConstants.ContextNames.FORM, visitorInviteFormTemplateForOccupant);
+		addVisitorInviteFormChain.execute();
+		
+		FacilioForm visitorInviteFormTemplateForTenant = FormsAPI.getFormFromDB(FacilioConstants.ContextNames.DEFAULT_INVITE_VISITOR_FORM_NAME,modBean.getModule(FacilioConstants.ContextNames.INVITE_VISITOR));
+		visitorInviteFormTemplateForTenant.setId(-1);
+		visitorInviteFormTemplateForTenant.setName(newVisitorType.getName()+"_"+newVisitorType.getId()+"invite_visitor_form");
+		visitorInviteFormTemplateForTenant.setDisplayName(newVisitorType.getName()+"_"+newVisitorType.getId()+"_invite_visitor_form");
+		visitorInviteFormTemplateForTenant.setAppLinkName(ApplicationLinkNames.TENANT_PORTAL_APP);
+		
+		addVisitorInviteFormChain=TransactionChainFactory.getAddFormCommand();
+		visitorInviteFormContext=addVisitorInviteFormChain.getContext();
+		visitorInviteFormContext.put(ContextNames.MODULE_NAME, ContextNames.INVITE_VISITOR);			
+		visitorInviteFormContext.put(FacilioConstants.ContextNames.FORM, visitorInviteFormTemplateForTenant);
+		addVisitorInviteFormChain.execute();
+		
 		FacilioModule visitorSettingsModule=ModuleFactory.getVisitorSettingsModule();
 		List<FacilioField> visitorSettingsFields=FieldFactory.getVisitorSettingsFields();
 		GenericInsertRecordBuilder insertVisitorSettingsBuilder=new GenericInsertRecordBuilder();
@@ -107,6 +132,8 @@ public class AddVisitorTypeCommand extends FacilioCommand {
 		insertVisitorSettingsBuilder.addRecord(props);
 		insertVisitorSettingsBuilder.save();
 		
+		List<Map<String, Object>> visitorTypeFormProps = new ArrayList<Map<String,Object>>();
+		
 		FacilioModule visitorTypeFormsModule=ModuleFactory.getVisitorTypeFormsModule();
 		List<FacilioField> visitorTypeFormsFields=FieldFactory.getVisitorTypeFormsFields();
 		GenericInsertRecordBuilder insertVisitorTypeFormsBuilder=new GenericInsertRecordBuilder();
@@ -118,9 +145,23 @@ public class AddVisitorTypeCommand extends FacilioCommand {
 		visitorTypeForm.setVisitorInviteFormId(visitorInviteFormTemplate.getId());
 		long appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
 		visitorTypeForm.setAppId(appId);
+		visitorTypeFormProps.add(FieldUtil.getAsProperties(visitorTypeForm));
 		
-		props =FieldUtil.getAsProperties(visitorTypeForm);
-		insertVisitorTypeFormsBuilder.addRecord(props);
+		visitorTypeForm = new VisitorTypeFormsContext();
+		visitorTypeForm.setVisitorTypeId(visitorTypeId);
+		visitorTypeForm.setVisitorInviteFormId(visitorInviteFormTemplateForOccupant.getId());
+		appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
+		visitorTypeForm.setAppId(appId);
+		visitorTypeFormProps.add(FieldUtil.getAsProperties(visitorTypeForm));
+		
+		visitorTypeForm = new VisitorTypeFormsContext();
+		visitorTypeForm.setVisitorTypeId(visitorTypeId);
+		visitorTypeForm.setVisitorInviteFormId(visitorInviteFormTemplateForTenant.getId());
+		appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
+		visitorTypeForm.setAppId(appId);
+		visitorTypeFormProps.add(FieldUtil.getAsProperties(visitorTypeForm));
+		
+		insertVisitorTypeFormsBuilder.addRecords(visitorTypeFormProps);
 		insertVisitorTypeFormsBuilder.save();
 		
 		return false;
