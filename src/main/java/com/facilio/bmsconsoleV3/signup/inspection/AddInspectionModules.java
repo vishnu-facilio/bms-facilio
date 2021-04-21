@@ -106,7 +106,7 @@ public class AddInspectionModules extends SignUpData {
 
         List<FacilioField> fields = new ArrayList<>();
         
-        LookupField siteField = (LookupField) FieldFactory.getDefaultField("site", "Site", "SITE_ID", FieldType.LOOKUP, true);
+        LookupField siteField = (LookupField) FieldFactory.getDefaultField("site", "Site", "SITE_ID", FieldType.LOOKUP);
         siteField.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.SITE));
         fields.add(siteField);
         
@@ -169,7 +169,7 @@ public class AddInspectionModules extends SignUpData {
         );
 
         List<FacilioField> fields = new ArrayList<>();
-        LookupField siteField = (LookupField) FieldFactory.getDefaultField("site", "Site", "SITE_ID", FieldType.LOOKUP, true);
+        LookupField siteField = (LookupField) FieldFactory.getDefaultField("site", "Site", "SITE_ID", FieldType.LOOKUP);
         siteField.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.SITE));
         fields.add(siteField);
         LookupField parentField = (LookupField) FieldFactory.getDefaultField("parent", "Parent", "PARENT_ID", FieldType.LOOKUP);
