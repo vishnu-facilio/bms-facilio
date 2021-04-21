@@ -1707,6 +1707,7 @@ public class FacilioConstants {
 		public static final String DIGITAL_LOG_BOOK = "digitalLogBook";
 		public static final Object SHOULD_VERIFY_QR = "shouldVerifyQr";
 		public static final String TREND_LINE = "trendLine";
+		public static final String FETCH_ALL="fetchAll";
 		public static final String VISITOR_TYPE_PICKLIST_OPTION="visitorTypePicklistOption";
 		public static final String VISITOR_SETTINGS="visitorSettings";
 		public static final String DEFAULT_VISITOR_LOG_FORM_NAME="default_visitor_log_form";

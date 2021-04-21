@@ -15,10 +15,9 @@ public class VisitorSettingsAction extends FacilioAction
 {
 	private static final long serialVersionUID = 1L;
 	
+	Boolean fetchAll;
 	VisitorTypeContext visitorType;
 	VisitorSettingsContext visitorSettings;
-
-
 
 	public VisitorSettingsContext getVisitorSettings() {
 		return visitorSettings;
@@ -35,9 +34,16 @@ public class VisitorSettingsAction extends FacilioAction
 	public void setVisitorType(VisitorTypeContext visitorType) {
 		this.visitorType = visitorType;
 	}
+	 
+	public Boolean getFetchAll() {
+		return fetchAll;
+	}
 
+	public void setFetchAll(Boolean fetchAll) {
+		this.fetchAll = fetchAll;
+	}
 	
-private List<FacilioForm> forms;
+	private List<FacilioForm> forms;
 	
 	public void setForms(List<FacilioForm> forms) {
 		this.forms = forms;
@@ -71,8 +77,10 @@ private List<FacilioForm> forms;
 		FacilioChain chain=ReadOnlyChainFactory.getFetchVisitorTypeSettingChain();
 		FacilioContext context=chain.getContext();
 		context.put(ContextNames.VISITOR_TYPE_PICKLIST_OPTION, getVisitorType());
+		context.put(ContextNames.FETCH_ALL, getFetchAll());
 		chain.execute();
 		setResult(ContextNames.VISITOR_SETTINGS, context.get(ContextNames.VISITOR_SETTINGS));
+		setResult(ContextNames.FORMS_LIST, context.get(ContextNames.FORMS_LIST));
 		return SUCCESS;
 	}
 	

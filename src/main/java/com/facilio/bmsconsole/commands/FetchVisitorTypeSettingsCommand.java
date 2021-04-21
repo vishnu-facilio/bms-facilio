@@ -1,10 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.VisitorContext;
@@ -31,6 +33,8 @@ public class FetchVisitorTypeSettingsCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// Add Picklist entry for visitor and insert that ID Into table
+		
+		Boolean fetchAll = (Boolean)context.get(ContextNames.FETCH_ALL);		
 		FacilioModule visitorSettingsModule=ModuleFactory.getVisitorSettingsModule();
 		List<FacilioField> visitorSettingsFields=FieldFactory.getVisitorSettingsFields();
 		VisitorTypeContext visitorTypeCtx=(VisitorTypeContext)context.get(ContextNames.VISITOR_TYPE_PICKLIST_OPTION);		
@@ -49,9 +53,15 @@ public class FetchVisitorTypeSettingsCommand extends FacilioCommand {
 		selectBuilder=new GenericSelectRecordBuilder();
 		selectBuilder.table(ModuleFactory.getVisitorTypeFormsModule().getTableName()).
 		select(FieldFactory.getVisitorTypeFormsFields()).
-		andCondition(CriteriaAPI.getCondition("VISITOR_TYPE_ID", "visitorTypeId", visitorTypeId+"", NumberOperators.EQUALS))
-		.andCondition(CriteriaAPI.getCondition("APP_ID", "appId", appId+"", NumberOperators.EQUALS));
-		Map<String,Object> visitorTypeForm= selectBuilder.get().get(0);
+		andCondition(CriteriaAPI.getCondition("VISITOR_TYPE_ID", "visitorTypeId", visitorTypeId+"", NumberOperators.EQUALS));
+		if(fetchAll == null || fetchAll.equals(Boolean.FALSE)) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("APP_ID", "appId", appId+"", NumberOperators.EQUALS));
+		}
+		List<Map<String,Object>> visitorTypeFormList = selectBuilder.get();
+		Map<String,Object> visitorTypeForm = null;
+		if(!CollectionUtils.isEmpty(visitorTypeFormList)) {
+			visitorTypeForm = visitorTypeFormList.get(0);
+		}
 		
 		VisitorTypeFormsContext visitorTypeFormContext = FieldUtil.getAsBeanFromMap(visitorTypeForm, VisitorTypeFormsContext.class);
 		
@@ -68,15 +78,36 @@ public class FetchVisitorTypeSettingsCommand extends FacilioCommand {
 		visitorSettingsContext.setVisitorType(visitorTypeCtxFilled);
 		
 		visitorSettingsContext.setVisitorLogFormId(visitorTypeFormContext.getVisitorLogFormId());
-		FacilioForm visitorLogForm = FormsAPI.getFormFromDB(visitorTypeFormContext.getVisitorLogFormId());		
-		visitorSettingsContext.setVisitorLogForm(visitorLogForm);
-		visitorSettingsContext.setVisitorInviteFormId(visitorTypeFormContext.getVisitorInviteFormId());
-		FacilioForm visitorInviteForm = FormsAPI.getFormFromDB(visitorTypeFormContext.getVisitorInviteFormId());		
-		visitorSettingsContext.setVisitorInviteForm(visitorInviteForm);
+		if(visitorTypeFormContext.getVisitorLogFormId() > 0) {
+			FacilioForm visitorLogForm = FormsAPI.getFormFromDB(visitorTypeFormContext.getVisitorLogFormId());		
+			visitorSettingsContext.setVisitorLogForm(visitorLogForm);
+		}
 		
+		visitorSettingsContext.setVisitorInviteFormId(visitorTypeFormContext.getVisitorInviteFormId());
+		if(visitorTypeFormContext.getVisitorInviteFormId() > 0) {
+			FacilioForm visitorInviteForm = FormsAPI.getFormFromDB(visitorTypeFormContext.getVisitorInviteFormId());		
+			visitorSettingsContext.setVisitorInviteForm(visitorInviteForm);
+		}
 		
 		context.put(ContextNames.VISITOR_SETTINGS,visitorSettingsContext);
 		
+		List<FacilioForm> allForms = new ArrayList<FacilioForm>();
+		if(fetchAll != null && fetchAll.equals(Boolean.TRUE)) {
+			for(Map<String,Object> visitorType:visitorTypeFormList) {
+				VisitorTypeFormsContext visitorTypeContext = FieldUtil.getAsBeanFromMap(visitorType, VisitorTypeFormsContext.class);
+				if(visitorTypeContext.getVisitorLogFormId() > 0) {
+					FacilioForm form = FormsAPI.getFormFromDB(visitorTypeContext.getVisitorLogFormId());		
+					allForms.add(form);
+				}
+				
+				if(visitorTypeContext.getVisitorInviteFormId() > 0) {
+					FacilioForm form = FormsAPI.getFormFromDB(visitorTypeContext.getVisitorInviteFormId());		
+					allForms.add(form);
+				}
+			}
+		}
+		
+		context.put(ContextNames.FORMS_LIST,allForms);
 		return false;
 		
 	}
