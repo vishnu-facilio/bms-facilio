@@ -26,6 +26,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.v3.context.Constants;
+import org.apache.commons.collections4.CollectionUtils;
 
 public class AddInspectionTriggersCommand extends FacilioCommand {
 	
@@ -47,11 +48,12 @@ public class AddInspectionTriggersCommand extends FacilioCommand {
 			.forEach(
 				(inspection) -> {
 					List<InspectionTriggerContext> inspectionTriggers = inspection.getTriggers();
-					
-					inspectionTriggers.forEach((trigger) -> trigger.setParent(inspection));
-					inspection.setTriggers(null);
-					if(inspectionTriggers != null) {
-						triggers.addAll(inspectionTriggers);
+					if (CollectionUtils.isNotEmpty(inspectionTriggers)) {
+						inspectionTriggers.forEach((trigger) -> trigger.setParent(inspection));
+						inspection.setTriggers(null);
+						if (inspectionTriggers != null) {
+							triggers.addAll(inspectionTriggers);
+						}
 					}
 				}
 				);

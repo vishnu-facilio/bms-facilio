@@ -14,5 +14,4 @@ public abstract class BaseMCQContext extends QuestionContext {
     private String displayFormat;
     private List<MCQOptionContext> options;
     private String otherOptionLabel;
-    private Boolean showOtherOption;
 }

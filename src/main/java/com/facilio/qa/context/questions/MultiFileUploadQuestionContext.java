@@ -14,6 +14,5 @@ import lombok.extern.log4j.Log4j;
 )
 public class MultiFileUploadQuestionContext extends QuestionContext {
     private String fileType;
-    private Boolean remarksForEachFile;
-    private String remarksLabel;
+    private String individualRemarksLabel;
 }

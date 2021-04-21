@@ -27,8 +27,8 @@ public class QuestionContext extends V3Context {
     private PageContext page;
     private String question;
     private String description;
-    private Boolean photoRequired, showComments, mandatory;
-    private String commentsLabel;
+    private Boolean mandatory;
+    private String commentsLabel, attachmentLabel;
     private Integer answerFieldId;
     private QuestionType questionType;
     private Integer position;

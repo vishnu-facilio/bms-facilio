@@ -105,9 +105,8 @@ public class AddQAndAModules extends SignUpData {
         typeField.setEnumName("QuestionType");
         fields.add(typeField);
         fields.add(FieldFactory.getDefaultField("answerFieldId", "Answer Field", "ANSWER_FIELD_ID", FieldType.NUMBER));
-        fields.add(FieldFactory.getDefaultField("photoRequired", "Is Photo Required?", "PHOTO_REQUIRED", FieldType.BOOLEAN));
-        fields.add(FieldFactory.getDefaultField("showComments", "Show comments box?", "SHOW_COMMENTS", FieldType.BOOLEAN));
         fields.add(FieldFactory.getDefaultField("commentsLabel", "Comments Label", "COMMENTS_LABEL", FieldType.STRING));
+        fields.add(FieldFactory.getDefaultField("attachmentLabel", "Attachments Label", "ATTACHMENTS_LABEL", FieldType.STRING));
         fields.add(FieldFactory.getDefaultField("mandatory", "Is Mandatory?", "MANDATORY", FieldType.BOOLEAN));
 
         module.setFields(fields);
@@ -264,7 +263,6 @@ public class AddQAndAModules extends SignUpData {
 
         List<FacilioField> fields = new ArrayList<>();
         fields.add(FieldFactory.getDefaultField("displayFormat", "Display Format", "DISPLAY_FORMAT", FieldType.STRING));
-        fields.add(FieldFactory.getDefaultField("showOtherOption", "Show Other Option", "SHOW_OTHER_OPTION", FieldType.BOOLEAN));
         fields.add(FieldFactory.getDefaultField("otherOptionLabel", "Other Option Label", "OTHER_OPTION_LABEL", FieldType.STRING));
 
         module.setFields(fields);
@@ -280,7 +278,6 @@ public class AddQAndAModules extends SignUpData {
 
         List<FacilioField> fields = new ArrayList<>();
         fields.add(FieldFactory.getDefaultField("displayFormat", "Display Format", "DISPLAY_FORMAT", FieldType.STRING));
-        fields.add(FieldFactory.getDefaultField("showOtherOption", "Show Other Option", "SHOW_OTHER_OPTION", FieldType.BOOLEAN));
         fields.add(FieldFactory.getDefaultField("otherOptionLabel", "Other Option Label", "OTHER_OPTION_LABEL", FieldType.STRING));
 
         module.setFields(fields);
@@ -339,8 +336,7 @@ public class AddQAndAModules extends SignUpData {
 
         List<FacilioField> fields = new ArrayList<>();
         fields.add(FieldFactory.getDefaultField("fileType", "File Type", "FILE_TYPE", FieldType.STRING));
-        fields.add(FieldFactory.getDefaultField("remarksForEachFile", "Remarks for each file", "REMARKS_FOR_EACH_FILE", FieldType.BOOLEAN));
-        fields.add(FieldFactory.getDefaultField("remarksLabel", "Remarks Label", "REMARKS_LABEL", FieldType.STRING));
+        fields.add(FieldFactory.getDefaultField("individualRemarksLabel", "Individual Remarks Label", "INDIVIDUAL_REMARKS_LABEL", FieldType.STRING));
 
         module.setFields(fields);
         return module;
