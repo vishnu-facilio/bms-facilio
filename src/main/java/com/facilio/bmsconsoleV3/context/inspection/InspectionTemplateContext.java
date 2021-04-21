@@ -33,17 +33,17 @@ public class InspectionTemplateContext extends QAndATemplateContext {
         super(id);
     }
     
-    PreventiveMaintenance.PMCreationType creationType;
-    PreventiveMaintenance.PMAssignmentType assignmentType;
-    BaseSpaceContext baseSpace;
-    AssetCategoryContext assetCategory;
-    SpaceCategoryContext spaceCategory;
+    private PreventiveMaintenance.PMCreationType creationType;
+    private PreventiveMaintenance.PMAssignmentType assignmentType;
+    private BaseSpaceContext baseSpace;
+    private AssetCategoryContext assetCategory;
+    private SpaceCategoryContext spaceCategory;
     
-    ResourceContext resource;
-    VendorContext vendor;
-    TenantContext tenant;
-    InspectionCategoryContext category;
-    InspectionPriorityContext priority;
-    Group assignmentGroup;
-    User assignedTo;
+    private ResourceContext resource;
+    private VendorContext vendor;
+    private TenantContext tenant;
+    private InspectionCategoryContext category;
+    private InspectionPriorityContext priority;
+    private Group assignmentGroup;
+    private User assignedTo;
 }
