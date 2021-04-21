@@ -21,17 +21,25 @@ public class AddInspectionModules extends SignUpData {
     @Override
     public void addData() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        
         List<FacilioModule> modules = new ArrayList<>();
         
         modules.add(constructInspectionCategory());
         modules.add(constructInspectionPriority());
+        
+        FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
+        addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
+        addModuleChain.execute();
+        
+        
+        modules = new ArrayList<>();
         
         FacilioModule inspection = constructInspection(modBean);
         modules.add(inspection);
         modules.add(constructInspectionResponse(modBean, inspection));
         
         
-        FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
+        addModuleChain = TransactionChainFactory.addSystemModuleChain();
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
         addModuleChain.execute();
         
