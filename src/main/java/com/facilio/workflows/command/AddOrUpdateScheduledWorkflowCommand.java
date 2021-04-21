@@ -62,7 +62,7 @@ public class AddOrUpdateScheduledWorkflowCommand extends FacilioCommand {
 			actions.add(executeAction);
 			scheduledWorkflowContext.setActions(actions);
 		}
-		SchedulerAPI.addActions(scheduledWorkflowContext);
+		SchedulerAPI.addActions(scheduledWorkflowContext, true);
 		
 		return false;
 	}

@@ -62,12 +62,18 @@ public class SchedulerAPI {
 
     }
 
-    public static void addActions(ScheduledWorkflowContext scheduledWorkflowContext) throws Exception {
+    public static void addActions(ScheduledWorkflowContext scheduledWorkflowContext, boolean throwError) throws Exception {
         if (CollectionUtils.isNotEmpty(scheduledWorkflowContext.getActions())) {
             WorkflowRuleContext workflowRuleContext = new WorkflowRuleContext();
             workflowRuleContext.setName(scheduledWorkflowContext.getName()); // we are doing this, since action is tightly integrated with rule
-            List<ActionContext> actions = ActionAPI.addActions(scheduledWorkflowContext.getActions(), workflowRuleContext);
-            addSchedulerActions(scheduledWorkflowContext, actions);
+            try {
+                List<ActionContext> actions = ActionAPI.addActions(scheduledWorkflowContext.getActions(), workflowRuleContext);
+                addSchedulerActions(scheduledWorkflowContext, actions);
+            } catch (Exception ex) {
+                if (throwError) {
+                    throw ex;
+                }
+            }
         }
     }
 

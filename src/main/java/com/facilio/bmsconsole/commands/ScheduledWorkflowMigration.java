@@ -46,7 +46,7 @@ public class ScheduledWorkflowMigration {
                 List<ActionContext> actions = new ArrayList<>();
                 actions.add(executeAction);
                 scheduledWorkflowContext.setActions(actions);
-                SchedulerAPI.addActions(scheduledWorkflowContext);
+                SchedulerAPI.addActions(scheduledWorkflowContext, false);
             }
         }
     }
