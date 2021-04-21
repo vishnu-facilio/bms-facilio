@@ -972,6 +972,26 @@ public class ViewFactory {
 		views.put("all", getAllDeliveriesView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.DELIVERIES, views);
 		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all",getAllInspectionTemplateViews().setOrder(order++));
+		viewsMap.put(FacilioConstants.Inspection.INSPECTION_TEMPLATE, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all",getAllInspectionResponseViews().setOrder(order++));
+		viewsMap.put(FacilioConstants.Inspection.INSPECTION_RESPONSE, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all",getAllInspectionCategoryViews().setOrder(order++));
+		viewsMap.put(FacilioConstants.Inspection.INSPECTION_CATEGORY, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all",getAllInspectionPriorityViews().setOrder(order++));
+		viewsMap.put(FacilioConstants.Inspection.INSPECTION_PRIORITY, views);
+		
 		
 		return viewsMap;
 	}
@@ -8876,5 +8896,67 @@ public class ViewFactory {
 		return allView;
 	}
 
+	private static FacilioView getAllInspectionTemplateViews() {
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
 
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Inspection Templates");
+		allView.setModuleName(FacilioConstants.Inspection.INSPECTION_TEMPLATE);
+		allView.setSortFields(sortFields);
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		allView.setViewSharing(getSharingContext(appDomains));
+
+		return allView;
+	}
+	
+	private static FacilioView getAllInspectionResponseViews() {
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Inspection Response");
+		allView.setModuleName(FacilioConstants.Inspection.INSPECTION_RESPONSE);
+		allView.setSortFields(sortFields);
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		allView.setViewSharing(getSharingContext(appDomains));
+
+		return allView;
+	}
+	
+	private static FacilioView getAllInspectionCategoryViews() {
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Inspection Category");
+		allView.setModuleName(FacilioConstants.Inspection.INSPECTION_CATEGORY);
+		allView.setSortFields(sortFields);
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		allView.setViewSharing(getSharingContext(appDomains));
+
+		return allView;
+	}
+	
+	private static FacilioView getAllInspectionPriorityViews() {
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Inspection Priority");
+		allView.setModuleName(FacilioConstants.Inspection.INSPECTION_PRIORITY);
+		allView.setSortFields(sortFields);
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		allView.setViewSharing(getSharingContext(appDomains));
+
+		return allView;
+	}
 }
