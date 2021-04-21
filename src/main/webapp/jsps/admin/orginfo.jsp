@@ -188,7 +188,8 @@ function myLicenseFunction() {
 <%if(users!=null){ %>
 <table style=" margin-top:40px;"  class="table table-bordered">
 	<tr>
-	<th class="org-th" style="text-align:center;max-width: 350px;width:350px;"> Id </th>
+	<th class="org-th" style="text-align:center;max-width: 350px;width:350px;"> OrgUserId </th>
+	<th class="org-th" style="text-align:center;max-width: 350px;width:350px;"> UserId </th>
 	<th class="org-th" style="text-align:center;max-width: 350px;width:350px;"> Name </th>
 	<th class="org-th" style="text-align:center;max-width: 350px;width:350px;"> Email  </th>
 	<th class="org-th" style="text-align:center;max-width: 350px;width:350px;"> UserVerified</th>
@@ -209,6 +210,7 @@ function myLicenseFunction() {
 	User b = (User) a.next();  %>
 	<tr id="id">
 	<td  style="max-width: 350px;width:350px;" align="center"><%=b.getId() %></td>
+	<td  style="max-width: 350px;width:350px;" align="center"><%=b.getUid() %></td>
 	<td  style="max-width: 350px;width:350px;" align="center"><%=b.getName() %></td>
 	<td  style="max-width: 350px;width:350px;"  align="center"><%=b.getEmail() %></td>
 	<td  style="max-width: 350px;width:350px;" align="center" id=<%=b.getId() %>><%=b.getUserVerified() %></td>
