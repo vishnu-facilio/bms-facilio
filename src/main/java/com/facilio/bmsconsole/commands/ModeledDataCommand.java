@@ -22,6 +22,7 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.timeseries.TimeSeriesAPI;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -261,9 +262,13 @@ public class ModeledDataCommand extends AgentV2Command {
 						reading = new ReadingContext();
 						iModuleVsReading.put(readingKey, reading);
 					}
-					reading.addReading(field.getName(), pointValue);
-					reading.setParentId(resourceId);
-					reading.setTtime(timeStamp);
+                    try {
+                        reading.addReading(field.getName(), FacilioUtil.castOrParseValueAsPerType(field, pointValue));
+                        reading.setParentId(resourceId);
+                        reading.setTtime(timeStamp);
+                    } catch (NumberFormatException ex) {
+                        LOGGER.info("Error while converting to reading ", ex);
+                    }
 					//removing here to avoid going into unmodeled instance..
 					// remove deviceData is important
 					pointsList.remove();
