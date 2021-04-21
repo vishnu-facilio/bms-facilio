@@ -916,6 +916,29 @@ public class ReportFactoryFields {
 		
 		return fieldsObject;
 	}
+	private static List<FacilioField> getPivotRowSupportedFields(List<FacilioField> fields) throws Exception{
+		List<FacilioField> pivotRowFields = new ArrayList<>();
+		for (FacilioField field : fields) {
+			if(field != null) {
+				if (     
+						field.getDataTypeEnum() == FieldType.ID 
+						||field.getDataTypeEnum() == FieldType.NUMBER
+						|| field.getDataTypeEnum() == FieldType.ENUM 
+						|| field.getDataTypeEnum() == FieldType.LOOKUP
+						|| field.getDataTypeEnum() == FieldType.SYSTEM_ENUM 
+						|| field.getDataTypeEnum() == FieldType.BOOLEAN
+						||field.getDataTypeEnum() == FieldType.STRING
+						|| field.getDataTypeEnum() == FieldType.DATE 
+						|| field.getDataTypeEnum() == FieldType.DATE_TIME					
+						|| field.isMainField()
+					) {
+					
+					pivotRowFields.add(field);
+				}
+			}
+		}
+		return pivotRowFields;
+	}
 	
 	private static List<FacilioField> getDimensionLookupFields(List<FacilioField> fields) throws Exception{
 		List<FacilioField> dimensionFields = new ArrayList();
@@ -1278,41 +1301,36 @@ public class ReportFactoryFields {
 		JSONObject dimensionFieldMap = new JSONObject();
 	
 
-		// FOR EACH lookup field in module , fill map -> lookupModuleName:lookupModule's
-		// fields
+		// FOR EACH lookup field in module , fill map -> lookupModuleName:lookupModule's fields
+		
 		for (FacilioModule lookupModule : lookUpModules) {
-			if (lookupModule.getName().equalsIgnoreCase("resource")) {
-				dimensionFieldMap.put(FacilioConstants.ContextNames.ASSET,
-						getDimensionLookupFields(bean.getAllFields(FacilioConstants.ContextNames.ASSET)));
+			if (lookupModule.getName().equalsIgnoreCase("resource")||lookupModule.getName().equalsIgnoreCase("basespace")) {
+				
 				dimensionFieldMap.put(FacilioConstants.ContextNames.SITE,
-						getDimensionLookupFields(bean.getAllFields(FacilioConstants.ContextNames.SITE)));
+						getPivotRowSupportedFields(bean.getAllFields(FacilioConstants.ContextNames.SITE)));
 				dimensionFieldMap.put(FacilioConstants.ContextNames.BUILDING,
-						getDimensionLookupFields(bean.getAllFields(FacilioConstants.ContextNames.BUILDING)));
+						getPivotRowSupportedFields(bean.getAllFields(FacilioConstants.ContextNames.BUILDING)));
 				dimensionFieldMap.put(FacilioConstants.ContextNames.FLOOR,
-						getDimensionLookupFields(bean.getAllFields(FacilioConstants.ContextNames.FLOOR)));
+						getPivotRowSupportedFields(bean.getAllFields(FacilioConstants.ContextNames.FLOOR)));
 				dimensionFieldMap.put(FacilioConstants.ContextNames.SPACE,
-						getDimensionLookupFields(bean.getAllFields(FacilioConstants.ContextNames.SPACE)));
+						getPivotRowSupportedFields(bean.getAllFields(FacilioConstants.ContextNames.SPACE)));
+				if (lookupModule.getName().equalsIgnoreCase("resource"))
+				{
+					dimensionFieldMap.put(FacilioConstants.ContextNames.ASSET,
+							getPivotRowSupportedFields(bean.getAllFields(FacilioConstants.ContextNames.ASSET)));
 
-			} else if (lookupModule.getName().equalsIgnoreCase("basespace")) {
+			} 
 
-				dimensionFieldMap.put(FacilioConstants.ContextNames.SITE,
-						getDimensionLookupFields(bean.getAllFields(FacilioConstants.ContextNames.SITE)));
-				dimensionFieldMap.put(FacilioConstants.ContextNames.BUILDING,
-						getDimensionLookupFields(bean.getAllFields(FacilioConstants.ContextNames.BUILDING)));
-				dimensionFieldMap.put(FacilioConstants.ContextNames.FLOOR,
-						getDimensionLookupFields(bean.getAllFields(FacilioConstants.ContextNames.FLOOR)));
-				dimensionFieldMap.put(FacilioConstants.ContextNames.SPACE,
-						getDimensionLookupFields(bean.getAllFields(FacilioConstants.ContextNames.SPACE)));
+				
 
 			} else {
 				dimensionFieldMap.put(lookupModule.getName(),
-						getDimensionLookupFields(bean.getAllFields(lookupModule.getName())));
+						getPivotRowSupportedFields(bean.getAllFields(lookupModule.getName())));
 			}
 		}
-		dimensionFieldMap.put(moduleName, getDimensionLookupFields(selectedFields));
+		dimensionFieldMap.put(moduleName, getPivotRowSupportedFields(selectedFields));
 
-		//
-
+		
 		return dimensionFieldMap;
 	}
 }
