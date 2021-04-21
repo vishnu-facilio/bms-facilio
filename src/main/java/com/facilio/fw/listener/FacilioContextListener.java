@@ -124,7 +124,11 @@ public class FacilioContextListener implements ServletContextListener {
 			BeanFactory.initBeans();
 			FacilioScheduler.initScheduler();
 			FacilioInstantJobScheduler.init();
-			ChainUtil.initRESTAPIHandler("com.facilio.apiv3");
+			try {
+				ChainUtil.initRESTAPIHandler("com.facilio.apiv3");
+			} catch(Exception e) {
+				LOGGER.info("Exception while initializing RestAPI Handler ", e);
+			}
 
 			if(RedisManager.getInstance() != null) {
 				RedisManager.getInstance().connect(); // creating redis connection pool
