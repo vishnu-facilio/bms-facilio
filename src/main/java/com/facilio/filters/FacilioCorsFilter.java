@@ -110,7 +110,7 @@ public class FacilioCorsFilter implements Filter {
             if (FacilioProperties.isProduction()) {
                 response.setHeader(CONTENT_SECURITY_POLICY , "default-src 'self' data: 'unsafe-inline' 'unsafe-eval' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.facilio.com https://apis.google.com https://ssl.gstatic.com; style-src 'self' data: 'unsafe-inline' https://*.facilio.com; connect-src wss: https:; object-src 'none'; form-action https:; upgrade-insecure-requests;");
            } else {
-            //    response.setHeader(CONTENT_SECURITY_POLICY , "default-src 'self' data: 'unsafe-inline' 'unsafe-eval' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://stage.facilio.in https://static.facilio.in https://apis.google.com https://ssl.gstatic.com; child-src 'self' blob:https://app.facilio.com blob:https://stage.facilio.in; worker-src 'self' blob:https://app.facilio.com blob:https://stage.facilio.in; style-src 'self' data: 'unsafe-inline' https://static.facilio.in https://stage.facilio.in; connect-src wss: https:; object-src 'none'; form-action https:; upgrade-insecure-requests;");
+               response.setHeader(CONTENT_SECURITY_POLICY , "default-src 'self' data: 'unsafe-inline' 'unsafe-eval' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://stage.facilio.in https://static.facilio.in https://apis.google.com https://ssl.gstatic.com; child-src 'self' blob; worker-src 'self' blob; style-src 'self' data: 'unsafe-inline' https://static.facilio.in https://stage.facilio.in; connect-src wss: https:; object-src 'none'; form-action https:; upgrade-insecure-requests;");
             }
         }
         response.setHeader(FEATURE_POLICY, "geolocation 'none'; autoplay 'none'");
