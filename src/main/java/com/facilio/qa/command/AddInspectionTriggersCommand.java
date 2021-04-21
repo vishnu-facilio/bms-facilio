@@ -3,13 +3,17 @@ package com.facilio.qa.command;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.BaseScheduleContext;
 import com.facilio.bmsconsole.context.BaseScheduleContext.ScheduleType;
+import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTriggerContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
@@ -20,10 +24,12 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
-import com.facilio.qa.context.QuestionContext;
+import com.facilio.tasker.FacilioTimer;
 import com.facilio.v3.context.Constants;
 
 public class AddInspectionTriggersCommand extends FacilioCommand {
+	
+	private static final Logger LOGGER = Logger.getLogger(AddInspectionTriggersCommand.class.getName());
 
 	List<InspectionTriggerContext> triggers = new ArrayList<InspectionTriggerContext>();
 	
@@ -86,11 +92,30 @@ public class AddInspectionTriggersCommand extends FacilioCommand {
 					throw new RuntimeException(e);
 				}
 			});
+			
+			if(moduleName.equals(FacilioConstants.Inspection.INSPECTION_TEMPLATE)) {
+				V3RecordAPI.addRecord(false, triggers, modBean.getModule(FacilioConstants.Inspection.INSPECTION_TRIGGER), modBean.getAllFields(FacilioConstants.Inspection.INSPECTION_TRIGGER));
+			}
+			
+			JSONObject props = new JSONObject();
+			props.put("saveAsV3", true);
+			
+			triggers.stream().forEach((trigger) -> {
+				
+				BaseScheduleContext scheduleTrigger = trigger.getSchedule();
+				
+				try {
+					FacilioTimer.deleteJob(scheduleTrigger.getId(), "BaseSchedulerSingleInstanceJob");
+					FacilioTimer.scheduleOneTimeJobWithDelay(scheduleTrigger.getId(), "BaseSchedulerSingleInstanceJob", 10, "priority");
+					
+					BmsJobUtil.deleteJobWithProps(scheduleTrigger.getId(), "BaseSchedulerSingleInstanceJob");
+					BmsJobUtil.addJobProps(scheduleTrigger.getId(), "BaseSchedulerSingleInstanceJob", props);
+					
+				} catch (Exception e) {
+					LOGGER.log(Level.SEVERE, e.getMessage(), e);
+				}
+			});
 		}
-		if(moduleName.equals(FacilioConstants.Inspection.INSPECTION_TEMPLATE)) {
-			V3RecordAPI.addRecord(false, triggers, modBean.getModule(FacilioConstants.Inspection.INSPECTION_TRIGGER), modBean.getAllFields(FacilioConstants.Inspection.INSPECTION_TRIGGER));
-		}
-		
 		return false;
 	}
 
