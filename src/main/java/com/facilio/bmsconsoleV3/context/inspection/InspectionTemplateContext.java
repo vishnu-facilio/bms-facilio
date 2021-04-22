@@ -51,7 +51,10 @@ public class InspectionTemplateContext extends QAndATemplateContext {
     private User assignedTo;
     
     public int getCreationType() {
-    	return creationType.getIndex();
+    	if(creationType != null) {
+    		return creationType.getIndex();
+    	}
+    	return -1;
     }
     
     public void setCreationType(int index) {
@@ -59,7 +62,10 @@ public class InspectionTemplateContext extends QAndATemplateContext {
     }
     
     public int getAssignmentType() {
-    	return assignmentType.getIndex();
+    	if(assignmentType != null) {
+    		return assignmentType.getIndex();
+    	}
+    	return -1;
     }
     
     public void setAssignmentType(int index) {

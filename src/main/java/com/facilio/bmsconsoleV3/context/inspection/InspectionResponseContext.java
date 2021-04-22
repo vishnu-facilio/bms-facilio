@@ -40,11 +40,17 @@ public class InspectionResponseContext extends ResponseContext {
     }
     
     public int getStatus() {
-    	return status.getIndex();
+    	if(status != null) {
+    		return status.getIndex();
+    	}
+    	return -1;
     }
     
     public int getSourceType() {
-    	return sourceType.getIndex();
+    	if(sourceType != null) {
+    		return sourceType.getIndex();
+    	}
+    	return -1;
 	}
 	public void setSourceType(int type) {
 		this.sourceType = SourceType.typeMap.get(type);
