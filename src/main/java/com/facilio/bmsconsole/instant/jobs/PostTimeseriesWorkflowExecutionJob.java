@@ -28,10 +28,7 @@ public class PostTimeseriesWorkflowExecutionJob extends InstantJob {
         FacilioChain chain = TransactionChainFactory.getExecuteWorkflowChain();
         FacilioContext newContext = chain.getContext();
         newContext.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflowContext);
-        List<ResourceContext> resources = (List<ResourceContext>) context.get(FacilioConstants.ContextNames.WORK_FLOW_PARAMS);
-        List<Object> params = new ArrayList<>();
-        params.add(resources);
-        newContext.put(WorkflowV2Util.WORKFLOW_PARAMS, params);
+        newContext.put(WorkflowV2Util.WORKFLOW_PARAMS, context.get(FacilioConstants.ContextNames.WORK_FLOW_PARAMS));
         chain.execute();
     }
 }
