@@ -313,6 +313,12 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 					}
 					updateBuilder = appendUpdateBuilderConditions(readingsList, j, updateBuilder, facilioField, module);
 				}
+				List<SupplementRecord> supplements = fields.stream().filter(f -> f.getDataTypeEnum().isMultiRecord())
+						.map(f -> (SupplementRecord) f)
+						.collect(Collectors.toList());
+				if(CollectionUtils.isNotEmpty(supplements)) {
+					updateBuilder.updateSupplements(supplements);
+				}
 				updateBuilder.update(readingsList.get(j));
 				Map<Long, List<UpdateChangeSet>> recordChanges = updateBuilder.getChangeSet();
 				if (MapUtils.isNotEmpty(recordChanges)) {
