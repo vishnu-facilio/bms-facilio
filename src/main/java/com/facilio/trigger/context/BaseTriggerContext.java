@@ -2,6 +2,7 @@ package com.facilio.trigger.context;
 
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -129,6 +130,11 @@ public class BaseTriggerContext {
 		return true;
 	}
 
+	private boolean validated = false;
+	public final boolean isValidated() {
+		return validated;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
@@ -140,5 +146,28 @@ public class BaseTriggerContext {
 	@Override
 	public int hashCode() {
 		return Objects.hash(id);
+	}
+
+	public void validateTrigger() {
+		if (StringUtils.isEmpty(getName())) {
+			throw new IllegalArgumentException("Trigger name cannot be empty");
+		}
+		if (getTypeEnum() == null) {
+			throw new IllegalArgumentException("Trigger type is not given");
+		}
+		if (getEventTypeEnum() == null) {
+			throw new IllegalArgumentException("Event type cannot be empty");
+		}
+
+		switch (getTypeEnum()) {
+			case MODULE_TRIGGER:
+			case SCORING_RULE_TRIGGER:
+			case SLA_DUE_DATE_TRIGGER:
+				if (getModuleId() < 0) {
+					throw new IllegalArgumentException("Module id is mandatory");
+				}
+		}
+
+		validated = true;
 	}
 }

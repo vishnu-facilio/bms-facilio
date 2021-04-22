@@ -22,7 +22,6 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.trigger.context.BaseTriggerContext;
 import com.facilio.trigger.util.TriggerUtil;
-import org.apache.commons.lang3.StringUtils;
 
 public class AddOrUpdateTriggerCommand extends FacilioCommand {
 
@@ -36,20 +35,9 @@ public class AddOrUpdateTriggerCommand extends FacilioCommand {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
-        if (module == null && trigger.getType() != TriggerType.TIMESERIES_COMPLETED_TRIGGER.getValue()) {
-			throw new IllegalArgumentException("Invalid module name");
-		}
-        if (module != null) {
-            trigger.setModuleId(module.getModuleId());
-        }
-		if (StringUtils.isEmpty(trigger.getName())) {
-			throw new IllegalArgumentException("Trigger name cannot be empty");
-		}
-		if (trigger.getTypeEnum() == null) {
-			throw new IllegalArgumentException("Trigger type is not given");
-		}
-		if (trigger.getEventTypeEnum() == null) {
-			throw new IllegalArgumentException("Event type cannot be empty");
+
+		if (module != null) {
+			trigger.setModuleId(module.getModuleId());
 		}
 
 		if (trigger.getId() <= 0 && trigger.getStatus() == null) {
@@ -63,6 +51,12 @@ public class AddOrUpdateTriggerCommand extends FacilioCommand {
 
 		if (trigger.getIsDefault() == null) {
 			trigger.setIsDefault(false);
+		}
+
+		trigger.validateTrigger();
+		if (!trigger.isValidated()) {
+			throw new IllegalArgumentException("Trigger should be validated. If you extended the BaseTriggerContext, make " +
+					"sure you call super.validateTrigger() method.");
 		}
 
 		FacilioModule triggerModule = getTriggerModule(trigger.getTypeEnum());
