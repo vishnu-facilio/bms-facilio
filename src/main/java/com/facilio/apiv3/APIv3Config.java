@@ -1163,6 +1163,7 @@ public class APIv3Config {
     public static Supplier<V3Config> getMoves() {
         return () -> new V3Config(V3MovesContext.class, new ModuleCustomFieldCount30())
                 .create()
+                .afterSave(new UpdateEmployeeInDesksCommandV3())
                 .update()
                 .afterSave(new UpdateEmployeeInDesksCommandV3())
                 .list()
