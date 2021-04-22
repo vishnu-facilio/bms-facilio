@@ -19,7 +19,7 @@ public class GetMatchedConfirmationDialogCommand extends FacilioCommand {
             List<ConfirmationDialogContext> dialogContexts = new ArrayList<>();
             for (ConfirmationDialogContext confirmationDialog : confirmationDialogs) {
                 if (confirmationDialog.getCriteria() == null) {
-                    continue;
+                    dialogContexts.add(confirmationDialog); // it will match for all records
                 }
                 if (confirmationDialog.getCriteria().computePredicate().evaluate(moduleData)) {
                     dialogContexts.add(confirmationDialog);
