@@ -9,15 +9,18 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.VisitorContext;
 import com.facilio.bmsconsole.context.VisitorSettingsContext;
 import com.facilio.bmsconsole.context.VisitorTypeContext;
 import com.facilio.bmsconsole.context.VisitorTypeFormsContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -49,7 +52,12 @@ public class FetchVisitorTypeSettingsCommand extends FacilioCommand {
 		VisitorSettingsContext visitorSettingsContext=FieldUtil.getAsBeanFromMap(visitorSetting, VisitorSettingsContext.class);
 		//get and fill visitortypeCtx in Visitor Setting context
 		
-		long appId = AccountUtil.getCurrentApp().getId();
+		ApplicationContext app = ApplicationApi.getApplicationForLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+		long appId = app.getId();
+		if(AccountUtil.getCurrentApp() != null && AccountUtil.getCurrentApp().getId() > 0) {
+			appId = AccountUtil.getCurrentApp().getId();
+		}
+		
 		selectBuilder=new GenericSelectRecordBuilder();
 		selectBuilder.table(ModuleFactory.getVisitorTypeFormsModule().getTableName()).
 		select(FieldFactory.getVisitorTypeFormsFields()).
