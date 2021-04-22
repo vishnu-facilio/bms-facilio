@@ -17,7 +17,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import com.facilio.bmsconsole.context.PeopleContext;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -830,6 +829,9 @@ public class FormsAPI {
 				fields.add(new FormField("responseDueDate", FieldDisplayType.DATETIME, "Response Due Date", Required.OPTIONAL, 1, 1));
 				if (AccountUtil.isFeatureEnabled(FeatureLicense.TENANTS)) {
 					fields.add(new FormField("tenant", FieldDisplayType.LOOKUP_SIMPLE, "Tenant", Required.OPTIONAL,"tenant", 1, 1));
+				}
+				if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLIENT)) {
+					fields.add(new FormField("client", FieldDisplayType.LOOKUP_SIMPLE, "Client", Required.OPTIONAL, "client", 1, 1));
 				}
 				break;
 			case ContextNames.WorkPermit.WORKPERMIT:
