@@ -190,6 +190,7 @@ function myLicenseFunction() {
 	<tr>
 	<th class="org-th" style="text-align:center;max-width: 350px;width:350px;"> OrgUserId </th>
 	<th class="org-th" style="text-align:center;max-width: 350px;width:350px;"> UserId </th>
+	<th class="org-th" style="text-align:center;max-width: 350px;width:350px;"> IAM_ORG_UserId </th>
 	<th class="org-th" style="text-align:center;max-width: 350px;width:350px;"> Name </th>
 	<th class="org-th" style="text-align:center;max-width: 350px;width:350px;"> Email  </th>
 	<th class="org-th" style="text-align:center;max-width: 350px;width:350px;"> UserVerified</th>
@@ -211,6 +212,7 @@ function myLicenseFunction() {
 	<tr id="id">
 	<td  style="max-width: 350px;width:350px;" align="center"><%=b.getId() %></td>
 	<td  style="max-width: 350px;width:350px;" align="center"><%=b.getUid() %></td>
+	<td  style="max-width: 350px;width:350px;" align="center"><%=b.getIamOrgUserId() %></td>
 	<td  style="max-width: 350px;width:350px;" align="center"><%=b.getName() %></td>
 	<td  style="max-width: 350px;width:350px;"  align="center"><%=b.getEmail() %></td>
 	<td  style="max-width: 350px;width:350px;" align="center" id=<%=b.getId() %>><%=b.getUserVerified() %></td>
