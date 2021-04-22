@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
@@ -16,6 +17,7 @@ import com.facilio.bmsconsole.context.BaseScheduleContext.ScheduleType;
 import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTriggerContext;
+import com.facilio.bmsconsoleV3.context.inspection.InspectionTriggerIncludeExcludeResourceContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -26,7 +28,6 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.v3.context.Constants;
-import org.apache.commons.collections4.CollectionUtils;
 
 public class AddInspectionTriggersCommand extends FacilioCommand {
 	
@@ -99,19 +100,39 @@ public class AddInspectionTriggersCommand extends FacilioCommand {
 				V3RecordAPI.addRecord(false, triggers, modBean.getModule(FacilioConstants.Inspection.INSPECTION_TRIGGER), modBean.getAllFields(FacilioConstants.Inspection.INSPECTION_TRIGGER));
 			}
 			
+			List<InspectionTriggerIncludeExcludeResourceContext> inclExclList = new ArrayList<InspectionTriggerIncludeExcludeResourceContext>();
+			
+			triggers.stream().forEach((trigger) -> {
+				
+				if(trigger.getResInclExclList()!= null) {
+					trigger.getResInclExclList().stream().forEach((inclExcl)->{
+						
+						inclExcl.setInspectionTrigger(trigger);
+						inclExcl.setInspectionTemplate(trigger.getParent());
+						
+						inclExclList.add(inclExcl);
+					});
+				}
+				
+				trigger.setResInclExclList(null);
+			});
+			
+			if(!inclExclList.isEmpty()) {
+				V3RecordAPI.addRecord(false, inclExclList, modBean.getModule(FacilioConstants.Inspection.INSPECTION_TRIGGER_INCL_EXCL), modBean.getAllFields(FacilioConstants.Inspection.INSPECTION_TRIGGER_INCL_EXCL));
+			}
+			
 			JSONObject props = new JSONObject();
 			props.put("saveAsV3", true);
 			
 			triggers.stream().forEach((trigger) -> {
 				
-				BaseScheduleContext scheduleTrigger = trigger.getSchedule();
+				BaseScheduleContext baseSchedule = trigger.getSchedule();
 				
 				try {
-					FacilioTimer.deleteJob(scheduleTrigger.getId(), "BaseSchedulerSingleInstanceJob");
-					FacilioTimer.scheduleOneTimeJobWithDelay(scheduleTrigger.getId(), "BaseSchedulerSingleInstanceJob", 10, "priority");
+					BmsJobUtil.deleteJobWithProps(baseSchedule.getId(), "BaseSchedulerSingleInstanceJob");
 					
-					BmsJobUtil.deleteJobWithProps(scheduleTrigger.getId(), "BaseSchedulerSingleInstanceJob");
-					BmsJobUtil.addJobProps(scheduleTrigger.getId(), "BaseSchedulerSingleInstanceJob", props);
+					FacilioTimer.scheduleOneTimeJobWithDelay(baseSchedule.getId(), "BaseSchedulerSingleInstanceJob", 10, "priority");
+					BmsJobUtil.addJobProps(baseSchedule.getId(), "BaseSchedulerSingleInstanceJob", props);
 					
 				} catch (Exception e) {
 					LOGGER.log(Level.SEVERE, e.getMessage(), e);

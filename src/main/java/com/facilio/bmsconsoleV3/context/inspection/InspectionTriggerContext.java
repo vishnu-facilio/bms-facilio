@@ -1,5 +1,7 @@
 package com.facilio.bmsconsoleV3.context.inspection;
 
+import java.util.List;
+
 import com.facilio.bmsconsole.context.BaseScheduleContext;
 import com.facilio.v3.context.V3Context;
 
@@ -19,6 +21,7 @@ public class InspectionTriggerContext extends V3Context {
 	TriggerType type;
 	BaseScheduleContext schedule;
 	Long scheduleId;
+	List<InspectionTriggerIncludeExcludeResourceContext> resInclExclList;
 	
 	
 	public void setType(int type) {

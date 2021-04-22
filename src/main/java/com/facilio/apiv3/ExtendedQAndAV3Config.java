@@ -1,8 +1,11 @@
 package com.facilio.apiv3;
 
+import com.facilio.bmsconsoleV3.context.inspection.InspectionCategoryContext;
+import com.facilio.bmsconsoleV3.context.inspection.InspectionPriorityContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTriggerContext;
+import com.facilio.bmsconsoleV3.context.inspection.InspectionTriggerIncludeExcludeResourceContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.qa.command.QAndAReadOnlyChainFactory;
 import com.facilio.qa.command.QAndATransactionChainFactory;
@@ -51,6 +54,27 @@ public class ExtendedQAndAV3Config {
                 .update()
                 	.beforeSave(QAndATransactionChainFactory.inspectionTriggerBeforeSaveChain())
                 .build();
+    }
+    
+    @Module(FacilioConstants.Inspection.INSPECTION_CATEGORY)
+    public static Supplier<V3Config> getInspectionCategory() {
+        return () -> new V3Config(InspectionCategoryContext.class, null)
+        		.create()
+        			.beforeSave(QAndATransactionChainFactory.inspectionCategoryBeforeSaveChain())
+        		.build();
+    }
+    
+    @Module(FacilioConstants.Inspection.INSPECTION_PRIORITY)
+    public static Supplier<V3Config> getInspectionPriority() {
+        return () -> new V3Config(InspectionPriorityContext.class, null)
+        		.create()
+    			.beforeSave(QAndATransactionChainFactory.inspectionPriorityBeforeSaveChain())
+    		.build();
+    }
+    
+    @Module(FacilioConstants.Inspection.INSPECTION_TRIGGER_INCL_EXCL)
+    public static Supplier<V3Config> getInspectionTriggerInclExcl() {
+        return () -> new V3Config(InspectionTriggerIncludeExcludeResourceContext.class, null);
     }
     
     @Module(FacilioConstants.Inspection.INSPECTION_RESPONSE)

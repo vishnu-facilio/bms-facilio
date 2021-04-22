@@ -1,5 +1,7 @@
 package com.facilio.qa.command;
 
+import org.apache.commons.chain.Command;
+
 import com.facilio.chain.FacilioChain;
 
 public class QAndATransactionChainFactory {
@@ -82,4 +84,16 @@ public class QAndATransactionChainFactory {
         c.addCommand(new CallQuestionHandlersFromModuleMapCommand(CallQuestionHandlersFromModuleMapCommand.ModuleMapHandlerType.UPDATE));
         return c;
     }
+
+	public static FacilioChain inspectionCategoryBeforeSaveChain() {
+		FacilioChain c = getDefaultChain();
+        c.addCommand(new InspectionCategoryBeforeSaveCommand());
+        return c;
+	}
+	
+	public static FacilioChain inspectionPriorityBeforeSaveChain() {
+		FacilioChain c = getDefaultChain();
+        c.addCommand(new InspectionPriorityBeforeSaveCommand());
+        return c;
+	}
 }

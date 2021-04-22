@@ -89,4 +89,17 @@ public class InspectionResponseContext extends ResponseContext {
 			return null;
 		}
 	}
+
+	public void setParentWithProps(InspectionTemplateContext template) {
+		
+		setParent(template);
+    	setSite(template.getSite());
+    	setSiteId(template.getSiteId());
+    	setVendor(template.getVendor());
+    	setTenant(template.getTenant());
+    	setCategory(template.getCategory());
+    	setPriority(template.getPriority());
+    	setAssignedTo(template.getAssignedTo());
+    	setAssignmentGroup(template.getAssignmentGroup());
+	}
 }

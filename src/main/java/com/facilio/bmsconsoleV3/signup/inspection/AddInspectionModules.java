@@ -52,7 +52,48 @@ public class AddInspectionModules extends SignUpData {
         addModuleChain1.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules1);
         addModuleChain1.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
         addModuleChain1.execute();
+        
+        modules1 = new ArrayList<>();
+        
+        modules1.add(constructInspectionTriggersInclExcl(modBean));
+        
+        addModuleChain1 = TransactionChainFactory.addSystemModuleChain();
+        addModuleChain1.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules1);
+        addModuleChain1.execute();
     }
+
+
+	public FacilioModule constructInspectionTriggersInclExcl(ModuleBean modBean) throws Exception {
+
+		
+		FacilioModule module = new FacilioModule(FacilioConstants.Inspection.INSPECTION_TRIGGER_INCL_EXCL,
+                "Inspection Triggers Incl Excl",
+                "Inspection_Trigger_Include_Exclude_Resource",
+                FacilioModule.ModuleType.SUB_ENTITY,
+                true
+        );
+
+        List<FacilioField> fields = new ArrayList<>();
+        
+        LookupField template = (LookupField) FieldFactory.getDefaultField("inspectionTemplate", "Inspection Template", "INSPECTION_ID", FieldType.LOOKUP);
+        template.setLookupModule(modBean.getModule(FacilioConstants.Inspection.INSPECTION_TEMPLATE));
+        fields.add(template);
+        
+        LookupField trigger = (LookupField) FieldFactory.getDefaultField("inspectionTrigger", "Inspection Trigger", "TRIGGER_ID", FieldType.LOOKUP);
+        trigger.setLookupModule(modBean.getModule(FacilioConstants.Inspection.INSPECTION_TRIGGER));
+        fields.add(trigger);
+        
+        LookupField resource = (LookupField) FieldFactory.getDefaultField("resource", "Resource", "RESOURCE_ID", FieldType.LOOKUP);
+        resource.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.RESOURCE));
+        fields.add(resource);
+        
+        BooleanField isIncl = (BooleanField) FieldFactory.getDefaultField("isInclude", "Is Include", "IS_INCLUDE", FieldType.BOOLEAN);
+        fields.add(isIncl);
+        
+        module.setFields(fields);
+        
+        return module;
+	}
 
 
 	public FacilioModule constructInspectionPriority() {

@@ -11,8 +11,6 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.context.VendorContext;
-import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
-import com.facilio.bmsconsole.context.PreventiveMaintenance.PMCreationType;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.qa.context.QAndATemplateContext;
@@ -66,6 +64,10 @@ public class InspectionTemplateContext extends QAndATemplateContext {
     		return assignmentType.getIndex();
     	}
     	return -1;
+    }
+    
+    public PreventiveMaintenance.PMAssignmentType getAssignmentTypeEnum() {
+    	return assignmentType;
     }
     
     public void setAssignmentType(int index) {
