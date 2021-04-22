@@ -56,6 +56,9 @@ public class EditFormCommand extends FacilioCommand {
 	}
 
 	private void removeExistingStateFlow(FacilioForm form) throws Exception {
+		if (form == null) {
+			return;
+		}
 		Long stateFlowId = form.getStateFlowId();
 		if (stateFlowId != null && stateFlowId > 0) {
 			boolean stateFlowUsedInAnyForm = FormsAPI.isStateFlowUsedInAnyForm(stateFlowId, form.getId());

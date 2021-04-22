@@ -68,6 +68,7 @@ public class AddOrUpdateStateTransitionCommand extends FacilioCommand {
 				ruleContext.setScheduleType(stateTransition.getScheduleTypeEnum());
 				ruleContext.setInterval(stateTransition.getInterval());
 				ruleContext.setDateFieldId(stateTransition.getDateFieldId());
+				ruleContext.setTime(stateTransition.getTimeObj());
 
 				ruleContext.setRuleType(WorkflowRuleContext.RuleType.STATE_TRANSACTION_FIELD_SCHEDULED);
 
