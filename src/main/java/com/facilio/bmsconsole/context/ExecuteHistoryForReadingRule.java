@@ -450,7 +450,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 					supportingValues.put(rdmKey, rdms);
 				}
 				else {	
-					if(canConstructErrorMessage && jobStatesMap != null && AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getOrgId() != 339)) {
+					if(canConstructErrorMessage && jobStatesMap != null && AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getOrgId() != 339 && AccountUtil.getCurrentOrg().getOrgId() != 405)) {
 						jobStatesMap.put("isManualFailed",true);
 						supportingValues.put(rdmKey, null);
 						ResourceContext currentResource = ResourceAPI.getResource(resourceId);
