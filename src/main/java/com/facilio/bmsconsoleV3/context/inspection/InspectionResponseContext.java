@@ -40,7 +40,7 @@ public class InspectionResponseContext extends ResponseContext {
     }
     
     public int getStatus() {
-    	return status.getVal();
+    	return status.getIndex();
     }
     
     public int getSourceType() {
@@ -52,30 +52,9 @@ public class InspectionResponseContext extends ResponseContext {
     
     public static enum SourceType implements FacilioEnum<SourceType>  {
 		
-		PLANNED(1, "Planned"),
-		MANNUAL(2, "Mannual"),
+		PLANNED,
+		MANNUAL,
 		;
-		
-		private int intVal;
-		private String strVal;
-		
-		private SourceType(int intVal, String strVal) {
-			this.intVal = intVal;
-			this.strVal = strVal;
-		}
-
-		@Override
-		public int getIndex() {
-			return intVal;
-		}
-
-		public String getValue() {
-			return strVal;
-		}
-		
-		public static SourceType getType(int val) {
-			return typeMap.get(val);
-		}
 		
 		private static final Map<Integer, SourceType> typeMap = Collections.unmodifiableMap(initTypeMap());
 		private static Map<Integer, SourceType> initTypeMap() {
@@ -91,14 +70,10 @@ public class InspectionResponseContext extends ResponseContext {
 		}
 	}
     
-    public enum Status {
+    public enum Status implements FacilioEnum<Status> {
 		PRE_OPEN,
 		OPEN,
 		;
-		
-		public int getVal() {
-			return ordinal() + 1;
-		}
 		
 		private static final Status[] TRIGGER_EXECUTION_SOURCE = Status.values();
 		public static Status valueOf(int type) {

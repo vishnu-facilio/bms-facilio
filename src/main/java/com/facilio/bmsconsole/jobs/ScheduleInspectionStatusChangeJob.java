@@ -40,7 +40,7 @@ public class ScheduleInspectionStatusChangeJob extends FacilioJob {
             selectRecordsBuilder.select(fields)
                     .module(module)
                     .beanClass(InspectionResponseContext.class)
-                    .andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), String.valueOf(InspectionResponseContext.Status.PRE_OPEN.getVal()), NumberOperators.EQUALS))
+                    .andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), String.valueOf(InspectionResponseContext.Status.PRE_OPEN.getIndex()), NumberOperators.EQUALS))
                     .andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), String.valueOf(maxTime), NumberOperators.LESS_THAN))
                     .skipModuleCriteria();
             

@@ -20,7 +20,7 @@ public class OpenScheduledInspection extends FacilioJob {
 		
 		InspectionResponseContext inspectionResponse = (InspectionResponseContext)V3RecordAPI.getRecord(FacilioConstants.Inspection.INSPECTION_RESPONSE, inspectionResponseId, InspectionResponseContext.class);
 		
-		inspectionResponse.setStatus(InspectionResponseContext.Status.OPEN.getVal());
+		inspectionResponse.setStatus(InspectionResponseContext.Status.OPEN.getIndex());
 		
 		V3RecordAPI.updateRecord(inspectionResponse, modBean.getModule(FacilioConstants.Inspection.INSPECTION_RESPONSE), modBean.getAllFields(FacilioConstants.Inspection.INSPECTION_RESPONSE));
 	}

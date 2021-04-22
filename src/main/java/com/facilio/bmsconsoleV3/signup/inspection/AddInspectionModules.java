@@ -13,6 +13,7 @@ import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.NumberField;
+import com.facilio.modules.fields.SystemEnumField;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -118,9 +119,15 @@ public class AddInspectionModules extends SignUpData {
         siteField.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.SITE));
         fields.add(siteField);
         
-        fields.add((NumberField) FieldFactory.getDefaultField("creationType", "Creation Type", "CREATION_TYPE", FieldType.NUMBER));
+        SystemEnumField creationType = (SystemEnumField) FieldFactory.getDefaultField("creationType", "Creation Type", "CREATION_TYPE", FieldType.SYSTEM_ENUM);
+        creationType.setEnumName("InspectionCreationType");
         
-        fields.add((NumberField) FieldFactory.getDefaultField("assignmentType", "Assigment Type", "ASSIGNMENT_TYPE", FieldType.NUMBER));
+        fields.add(creationType);
+        
+        SystemEnumField assignmentType = (SystemEnumField) FieldFactory.getDefaultField("assignmentType", "Assigment Type", "ASSIGNMENT_TYPE", FieldType.SYSTEM_ENUM);
+        assignmentType.setEnumName("MultiResourceAssignmentType");
+        
+        fields.add(assignmentType);
         
         LookupField baseSpace = (LookupField) FieldFactory.getDefaultField("baseSpace", "Base Space", "BASE_SPACE", FieldType.LOOKUP);
         baseSpace.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE));
@@ -187,10 +194,13 @@ public class AddInspectionModules extends SignUpData {
         FacilioField createdTime = (FacilioField) FieldFactory.getDefaultField("createdTime", "Created Time", "CREATED_TIME", FieldType.DATE_TIME);
         fields.add(createdTime);
         
-        NumberField status = (NumberField) FieldFactory.getDefaultField("status", "Status", "STATUS", FieldType.NUMBER);
+        SystemEnumField status = (SystemEnumField) FieldFactory.getDefaultField("status", "Status", "STATUS", FieldType.SYSTEM_ENUM);
+        status.setEnumName("InspectionResponseStatus");
         fields.add(status);
         
-        fields.add((NumberField) FieldFactory.getDefaultField("sourceType", "Source", "SOURCE_TYPE", FieldType.NUMBER));
+        SystemEnumField sourceType = (SystemEnumField) FieldFactory.getDefaultField("sourceType", "Source", "SOURCE_TYPE", FieldType.SYSTEM_ENUM);
+        sourceType.setEnumName("InspectionResponseSourceType");
+        fields.add(sourceType);
         
         fields.addAll(getInspectionCommonFieldList(modBean));
 

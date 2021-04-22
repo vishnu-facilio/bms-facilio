@@ -55,7 +55,7 @@ public class InspectionScheduler implements ScheduleTypeInterface {
 					response.setTotalQuestions((int) totalQuestions);
 					response.setSiteId(template.getSiteId());
 					response.setSite(template.getSite());
-					response.setStatus(InspectionResponseContext.Status.PRE_OPEN.getVal());
+					response.setStatus(InspectionResponseContext.Status.PRE_OPEN.getIndex());
 					
 					responses.add(response);
 				}

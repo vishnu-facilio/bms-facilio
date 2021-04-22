@@ -160,6 +160,18 @@ enums:
   - name: QuestionType
     enumClassName: com.facilio.qa.context.QuestionType
 
+  - name: InspectionCreationType
+    enumClassName: com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext$CreationType
+
+  - name: MultiResourceAssignmentType
+    enumClassName: com.facilio.bmsconsole.context.PreventiveMaintenance$PMAssignmentType
+
+  - name: InspectionResponseSourceType
+    enumClassName: com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext$SourceType
+
+  - name: InspectionResponseStatus
+    enumClassName: com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext$Status
+
 
   - name: TicketSourceType
     enumClassName: com.facilio.bmsconsole.context.TicketContext$SourceType

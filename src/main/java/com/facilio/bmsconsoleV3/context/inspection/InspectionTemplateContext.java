@@ -11,7 +11,10 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.context.VendorContext;
+import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
+import com.facilio.bmsconsole.context.PreventiveMaintenance.PMCreationType;
 import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.modules.FacilioEnum;
 import com.facilio.qa.context.QAndATemplateContext;
 
 import lombok.Getter;
@@ -33,7 +36,7 @@ public class InspectionTemplateContext extends QAndATemplateContext {
         super(id);
     }
     
-    private PreventiveMaintenance.PMCreationType creationType;
+    private CreationType creationType;
     private PreventiveMaintenance.PMAssignmentType assignmentType;
     private BaseSpaceContext baseSpace;
     private AssetCategoryContext assetCategory;
@@ -46,4 +49,38 @@ public class InspectionTemplateContext extends QAndATemplateContext {
     private InspectionPriorityContext priority;
     private Group assignmentGroup;
     private User assignedTo;
+    
+    public int getCreationType() {
+    	return creationType.getIndex();
+    }
+    
+    public void setCreationType(int index) {
+    	creationType = CreationType.valueOf(index);
+    }
+    
+    public int getAssignmentType() {
+    	return assignmentType.getIndex();
+    }
+    
+    public void setAssignmentType(int index) {
+    	assignmentType = PreventiveMaintenance.PMAssignmentType.valueOf(index);
+    }
+    
+    public static enum CreationType implements FacilioEnum<CreationType> {
+		
+		SINGLE, 
+		MULTIPLE,
+		;
+		public int getVal() {
+			return ordinal() + 1;
+		}
+		private static final CreationType[] CREATION_TYPES = CreationType.values();
+		public static CreationType valueOf(int type) {
+			if (type > 0 && type <= CREATION_TYPES.length) {
+				return CREATION_TYPES[type - 1];
+			}
+			return null;
+		}
+	}
+    
 }
