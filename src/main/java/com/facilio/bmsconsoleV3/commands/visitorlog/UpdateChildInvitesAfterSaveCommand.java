@@ -50,9 +50,14 @@ public class UpdateChildInvitesAfterSaveCommand extends FacilioCommand {
 		for(InviteVisitorContextV3 childInvite:childInvites) {
         	V3RecordAPI.updateRecord(childInvite, module, fields);
         }
-     
+		
         FacilioChain addInviteVisitorChain = TransactionChainFactoryV3.getInviteVisitorAfterSaveOnCreateChain();
         FacilioContext addInviteVisitorChainContext = addInviteVisitorChain.getContext();
+        
+        addInviteVisitorChainContext.put(FacilioConstants.ContextNames.OLD_INVITES, (List<InviteVisitorContextV3>) addInviteVisitorBeforeSaveChainContext.get(FacilioConstants.ContextNames.OLD_INVITES));
+        addInviteVisitorChainContext.put(Constants.QUERY_PARAMS, (Map<String, List<Object>>) addInviteVisitorBeforeSaveChainContext.get(Constants.QUERY_PARAMS));
+        addInviteVisitorChainContext.put(FacilioConstants.ContextNames.INVITE_VISITOR_RECORDS, (List<InviteVisitorContextV3>) addInviteVisitorBeforeSaveChainContext.get(FacilioConstants.ContextNames.INVITE_VISITOR_RECORDS));
+        
         Constants.setModuleName(addInviteVisitorChainContext, FacilioConstants.ContextNames.INVITE_VISITOR);
         Constants.setRawInput(addInviteVisitorChainContext, FieldUtil.getAsJSON(childInvitesMap));
         addInviteVisitorChainContext.put(Constants.RECORD_MAP, childInvitesMap);

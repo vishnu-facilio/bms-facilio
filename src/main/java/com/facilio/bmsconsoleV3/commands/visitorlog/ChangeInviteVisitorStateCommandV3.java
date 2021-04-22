@@ -46,7 +46,7 @@ public class ChangeInviteVisitorStateCommandV3 extends FacilioCommand {
 		List<InviteVisitorContextV3> oldRecords = (List<InviteVisitorContextV3>) context.get(FacilioConstants.ContextNames.INVITE_VISITOR_RECORDS);
 		
 		boolean isInviteEdit = false;
-		if(queryParams.containsKey("isInviteEdit") && queryParams.get("isInviteEdit") != null && !queryParams.get("isInviteEdit").isEmpty() && queryParams.get("isInviteEdit").get(0) != null && StringUtils.isNotEmpty((String)queryParams.get("isInviteEdit").get(0)) && ((Boolean)Boolean.valueOf((String)queryParams.get("isInviteEdit").get(0)))){
+		if(queryParams != null && queryParams.containsKey("isInviteEdit") && queryParams.get("isInviteEdit") != null && !queryParams.get("isInviteEdit").isEmpty() && queryParams.get("isInviteEdit").get(0) != null && StringUtils.isNotEmpty((String)queryParams.get("isInviteEdit").get(0)) && ((Boolean)Boolean.valueOf((String)queryParams.get("isInviteEdit").get(0)))){
 			isInviteEdit = true;
 		}
 		
