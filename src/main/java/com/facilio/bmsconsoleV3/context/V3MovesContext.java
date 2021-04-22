@@ -54,6 +54,15 @@ public class V3MovesContext extends V3Context{
 	public void setEmployee(V3EmployeeContext employee) {
 		this.employee = employee;
 	}
+	
+	private V3EmployeeContext movedBy;
+
+    public V3EmployeeContext getMovedBy() {
+		return movedBy;
+	}
+	public void setMovedBy(V3EmployeeContext movedBy) {
+		this.movedBy = movedBy;
+	}
     
 	private V3DepartmentContext department;
     
@@ -82,7 +91,17 @@ public class V3MovesContext extends V3Context{
 		this.to = to;
 	}
 	
-	private Long timeOfMove;
+	private Long scheduledTime;
+	
+	public Long getScheduledTime() {
+        return scheduledTime;
+    }
+
+    public void setScheduledTime(Long scheduledTime) {
+        this.scheduledTime = scheduledTime;
+    }
+    
+    private Long timeOfMove;
 	
 	public Long getTimeOfMove() {
         return timeOfMove;
