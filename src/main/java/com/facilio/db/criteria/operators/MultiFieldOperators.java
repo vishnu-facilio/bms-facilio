@@ -10,7 +10,10 @@ import org.apache.commons.collections.PredicateUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.Criteria;
 import com.facilio.db.criteria.FacilioModulePredicate;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -37,6 +40,10 @@ public enum MultiFieldOperators implements Operator<String> {
 		public FacilioModulePredicate getPredicate(String fieldName, String value) {
 			// TODO Auto-generated method stub
 			if(fieldName != null && !fieldName.isEmpty() && value != null && !value.isEmpty()) {
+				String[] module = fieldName.split("\\.");
+				if(module.length > 1) {
+					fieldName = module[1];
+				}
 				return new FacilioModulePredicate(fieldName, computePredicate(value));
 			}
 			return null;
@@ -52,6 +59,10 @@ public enum MultiFieldOperators implements Operator<String> {
 		public FacilioModulePredicate getPredicate(String fieldName, String value) {
 			// TODO Auto-generated method stub
 			if(fieldName != null && !fieldName.isEmpty() && value != null && !value.isEmpty()) {
+				String[] module = fieldName.split("\\.");
+				if(module.length > 1) {
+					fieldName = module[1];
+				}
 				return new FacilioModulePredicate(fieldName, PredicateUtils.notPredicate(computePredicate(value)));
 			}
 			return null;
@@ -95,7 +106,11 @@ public enum MultiFieldOperators implements Operator<String> {
 
 	@Override
 	public List<Object> computeValues(String value) {
-		// TODO Auto-generated method stub
+		if(value.contains(FacilioConstants.Criteria.LOGGED_IN_USER)) {
+			List<Object> objs = new ArrayList<>();
+			objs.add(AccountUtil.getCurrentUser().getId());
+			return objs;
+		}
 		return null;
 	}
 
@@ -146,11 +161,14 @@ public enum MultiFieldOperators implements Operator<String> {
 						;
 
 						if(value.contains(",")) {
-							builder.append(" IN (")
-							.append(value)
-							.append(")");
+							builder.append(" IN (");
+							replaceLoggedUserInMultpleValues(builder, value);
+							builder.append(")");
 						}
 						else {
+							if(value.trim().equals(FacilioConstants.Criteria.LOGGED_IN_USER)) {
+								value = "?";
+							}
 							builder.append(" = ")
 							.append(value);
 						}
@@ -189,6 +207,9 @@ public enum MultiFieldOperators implements Operator<String> {
 					List<Long> values;
 					if (((List) object).get(0) instanceof Map) {
 						values = ((List<Map>) object).stream().map(val ->(long) val.get("id")).collect(Collectors.toList());
+						if(value.equals(Criteria.LOGGED_IN_USER)) {
+							return values.contains(FacilioUtil.parseLong(AccountUtil.getCurrentUser().getId()));
+						}
 					}
 					else {
 						values = (List) object;
@@ -198,5 +219,24 @@ public enum MultiFieldOperators implements Operator<String> {
 				return false;
 			}
 		};
+	}
+	
+	private static void replaceLoggedUserInMultpleValues(StringBuilder builder, String value) {
+		if(value.contains(Criteria.LOGGED_IN_USER)) {
+			String[] values = value.trim().split("\\s*,\\s*");
+			for(int i=0; i<values.length; i++) {
+				String val = values[i];
+				if(val.equals(Criteria.LOGGED_IN_USER)) {
+					val = "?";
+				}
+				if(i != 0) {
+					builder.append(", ");
+				}
+				builder.append(val);
+			}
+		}
+		else {
+			builder.append(value);
+		}
 	}
 }

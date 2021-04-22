@@ -1,29 +1,21 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.SharingContext;
-import com.facilio.bmsconsole.context.SingleSharingContext;
-import com.facilio.bmsconsole.context.SingleSharingContext.SharingType;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
-import com.facilio.bmsconsole.util.SharingAPI;
 import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.FacilioView.ViewType;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.ModuleFactory;
-import org.apache.commons.collections4.CollectionUtils;
+import com.facilio.modules.fields.FacilioField;
 
 public class AddCVCommand extends FacilioCommand {
 
@@ -34,10 +26,16 @@ public class AddCVCommand extends FacilioCommand {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 //		String name = (String) context.get(FacilioConstants.ContextNames.VIEW_NAME);
 		if(view != null) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			long viewId = view.getId();
 			Criteria viewCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
 			if (view.getCriteria() != null) {
 				viewCriteria = view.getCriteria();
+				for (String key : viewCriteria.getConditions().keySet()) {
+					Condition condition = viewCriteria.getConditions().get(key);
+					FacilioField field = modBean.getField(condition.getFieldName(), moduleName);
+					condition.setField(field);
+				}
 			}
 			if(view.getIncludeParentCriteria()) {
 				FacilioView parentView = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
@@ -55,7 +53,7 @@ public class AddCVCommand extends FacilioCommand {
 					view.setType(ViewType.TABLE_LIST);
 				}
 				
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				
 				FacilioModule moduleObj = modBean.getModule(moduleName);
 				String extendedModName = null;
 				if (moduleObj != null && moduleObj.getExtendModule() != null) {

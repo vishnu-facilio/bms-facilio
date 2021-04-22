@@ -235,7 +235,16 @@ public class WorkflowRuleAPI {
 	
 	protected static final void updateWorkflowRuleChildIds(WorkflowRuleContext workflowRuleContext) throws Exception {
 		if(workflowRuleContext.getCriteria() != null) {
-			workflowRuleContext.getCriteria().validatePattern();
+			Criteria criteria = workflowRuleContext.getCriteria();
+			criteria.validatePattern();
+			if (workflowRuleContext.getModuleName() != null) {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				for (String key : criteria.getConditions().keySet()) {
+					Condition condition = criteria.getConditions().get(key);
+					FacilioField field = modBean.getField(condition.getFieldName(), workflowRuleContext.getModuleName());
+					condition.setField(field);
+				}
+			}
 			long criteriaId = CriteriaAPI.addCriteria(workflowRuleContext.getCriteria(),AccountUtil.getCurrentOrg().getId());
 			workflowRuleContext.setCriteriaId(criteriaId);
 		}
