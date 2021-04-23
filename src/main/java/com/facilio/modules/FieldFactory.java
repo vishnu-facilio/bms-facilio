@@ -8787,6 +8787,7 @@ public class FieldFactory {
         fields.add(getField("scopingId", "SCOPING_ID", module, FieldType.NUMBER));
         fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
         fields.add(getField("appCategory", "APP_CATEGORY", module, FieldType.NUMBER));
+        fields.add(getField("config", "CONFIG", module, FieldType.STRING));
 
         return fields;
     }

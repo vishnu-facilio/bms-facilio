@@ -2,6 +2,11 @@ package com.facilio.bmsconsole.context;
 
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.modules.FacilioEnum;
+import com.facilio.util.FacilioUtil;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.io.Serializable;
 import java.util.List;
@@ -242,5 +247,32 @@ public class ApplicationContext implements Serializable{
 
 	public void setAppDomain(AppDomain appDomain) {
 		this.appDomain = appDomain;
+	}
+
+	private JSONObject config;
+	public JSONObject getConfigJSON() {
+		return config;
+	}
+	public void setConfig(JSONObject config) {
+		this.config = config;
+	}
+	public String getConfig() {
+		if (config != null) {
+			return config.toJSONString();
+		}
+		return null;
+	}
+	public void setConfig(String configString) {
+		try {
+			JSONParser parser = new JSONParser();
+			this.config = (JSONObject) parser.parse(configString);
+		} catch (Exception e) {}
+	}
+
+	public void addToConfig(String key, Object value) {
+		if (this.config == null) {
+			this.config = new JSONObject();
+		}
+		this.config.put(key, value);
 	}
 }
