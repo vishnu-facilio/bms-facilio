@@ -54,6 +54,9 @@ public class LoadVisitorLoggingLookupCommandV3 extends FacilioCommand {
 		if (moduleName.equals(FacilioConstants.ContextNames.VISITOR_LOG)) {
 			additionaLookups.add((LookupField) fieldsAsMap.get("invite"));
 		}
+		if (moduleName.equals(FacilioConstants.ContextNames.INVITE_VISITOR)) {
+			additionaLookups.add((LookupField) fieldsAsMap.get("group"));
+		}
 		context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, additionaLookups);
 
 		return false;
