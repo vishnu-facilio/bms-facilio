@@ -21,8 +21,8 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 		EmailConversationThreadingContext emailConversation = (EmailConversationThreadingContext) ControlScheduleUtil.getObjectFromRecordMap(context, MailMessageUtil.EMAIL_CONVERSATION_THREADING_MODULE_NAME);
 		
 		
-		if(emailConversation.getFromType() == EmailConversationThreadingContext.From_Type.ADMIN.getValue()) {
-			if(emailConversation.getMessageType() == EmailConversationThreadingContext.Message_Type.REPLY.getValue()) {
+		if(emailConversation.getFromType() == EmailConversationThreadingContext.From_Type.ADMIN.getIndex()) {
+			if(emailConversation.getMessageType() == EmailConversationThreadingContext.Message_Type.REPLY.getIndex()) {
 
 				EmailToModuleDataContext emailToModuleContext = MailMessageUtil.getEmailToModuleContext(emailConversation.getRecordId(), emailConversation.getDataModuleId());
 				

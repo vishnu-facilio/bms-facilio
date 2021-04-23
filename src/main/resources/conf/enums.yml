@@ -187,3 +187,10 @@ enums:
     
   - name: MoveType
     enumClassName: com.facilio.bmsconsoleV3.context.V3MovesContext$MoveType
+
+  - name: EmailConversationFromType
+    enumClassName: com.facilio.bmsconsoleV3.context.EmailConversationThreadingContext$From_Type
+  
+  - name: EmailConversationMessageType
+    enumClassName: com.facilio.bmsconsoleV3.context.EmailConversationThreadingContext$Message_Type
+

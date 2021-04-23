@@ -1,5 +1,7 @@
 package com.facilio.bmsconsoleV3.context;
 
+import com.facilio.modules.FacilioEnum;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,14 +23,11 @@ public class EmailConversationThreadingContext extends BaseMailMessageContext {
 	From_Type fromType;
 	Message_Type messageType;
 	
-	public enum From_Type{
+	public enum From_Type implements FacilioEnum<From_Type>{
 		CLIENT,
 		ADMIN
 		;
 		
-		public int getValue() {
-			return ordinal() + 1;
-		}
 		public static From_Type valueOf (int value) {
 			if (value > 0 && value <= values().length) {
 				return values()[value - 1];
@@ -37,15 +36,12 @@ public class EmailConversationThreadingContext extends BaseMailMessageContext {
 		}
 	}
 	
-	public enum Message_Type{
+	public enum Message_Type implements FacilioEnum<Message_Type>{
 		REPLY,
 		PUBLIC_NOTE,
 		PRIVATE_NOTE
 		;
 		
-		public int getValue() {
-			return ordinal() + 1;
-		}
 		public static Message_Type valueOf (int value) {
 			if (value > 0 && value <= values().length) {
 				return values()[value - 1];
@@ -56,7 +52,7 @@ public class EmailConversationThreadingContext extends BaseMailMessageContext {
 
 	public int getFromType() {
 		if(fromType != null) {
-			return fromType.getValue();
+			return fromType.getIndex();
 		}
 		return -1;
 	}
@@ -67,7 +63,7 @@ public class EmailConversationThreadingContext extends BaseMailMessageContext {
 
 	public int getMessageType() {
 		if(messageType != null) {
-			return messageType.getValue();
+			return messageType.getIndex();
 		}
 		return -1;
 	}

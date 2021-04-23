@@ -34,6 +34,10 @@ public class InspectionResponseContext extends ResponseContext {
     private InspectionPriorityContext priority;
     private Group assignmentGroup;
     private User assignedTo;
+    private Long scheduledWorkStart;
+    private Long scheduledWorkEnd;
+    private Long actualWorkStart;
+    private Long actualWorkEnd;
     
     public void setStatus(int status) {
     	this.status = Status.valueOf(status);
