@@ -347,6 +347,7 @@ public class StateFlowAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.ID, id);
 		context.put(FacilioConstants.ContextNames.RULE_ID, transitionId);
+		context.put(FacilioConstants.ContextNames.DATA, data);
 
 		chain.execute();
 		setResult(FacilioConstants.ContextNames.VALID_CONFIRMATION_DIALOGS, context.get(FacilioConstants.ContextNames.VALID_CONFIRMATION_DIALOGS));
