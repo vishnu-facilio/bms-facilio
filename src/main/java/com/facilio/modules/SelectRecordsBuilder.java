@@ -275,7 +275,13 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		this.builder.skipUnitConversion();
 		return this;
 	}
-	
+
+	@Override
+	public SelectBuilderIfc<E> indexHint(String indexHint) {
+		this.builder.indexHint(indexHint);
+		return this;
+	}
+
 	public SelectRecordsBuilder<E> skipModuleCriteria() {
 		this.skipModuleCriteria = true;
 		return this;
@@ -644,6 +650,10 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 
 			builder.getJoinBuilder().append(joinBuilder.toString());
 			actualSelectFields = selectFields;
+
+			if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 405 && module.getTableName().equals("Readings_3")) {
+				builder.indexHint("USE INDEX (READINGS_3_PARENT_ID_TTIME_INDEX)");
+			}
 		}
 		else {
 			throw new IllegalArgumentException("Query already constructed");
