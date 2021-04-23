@@ -1740,8 +1740,8 @@ public enum ActionType {
 					emailConversationContext.setDataModuleId(module.getModuleId());
 					emailConversationContext.setRecordId(recordId);
 					
-					emailConversationContext.setFromType(EmailConversationThreadingContext.From_Type.CLIENT.getValue());
-					emailConversationContext.setMessageType(EmailConversationThreadingContext.Message_Type.REPLY.getValue());
+					emailConversationContext.setFromType(EmailConversationThreadingContext.From_Type.CLIENT.getIndex());
+					emailConversationContext.setMessageType(EmailConversationThreadingContext.Message_Type.REPLY.getIndex());
 					
 					
 					FacilioContext contextNew = V3Util.createRecord(modBean.getModule(MailMessageUtil.EMAIL_CONVERSATION_THREADING_MODULE_NAME), FieldUtil.getAsJSON(emailConversationContext));
