@@ -1,13 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Context;
-
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
@@ -19,6 +13,12 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.chain.Context;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class AddCampusCommand extends FacilioCommand {
 	
@@ -41,6 +41,9 @@ public class AddCampusCommand extends FacilioCommand {
 															.moduleName(moduleName)
 															.table(dataTableName)
 															.fields(fields);
+
+			CommonCommandUtil.handleLookupFormData(fields, site.getData());
+
 			long id = builder.insert(site);
 			site.setId(id);
 			
