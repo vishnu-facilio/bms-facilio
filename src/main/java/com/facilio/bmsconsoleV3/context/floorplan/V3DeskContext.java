@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.context.floorplan;
 
+import com.facilio.bmsconsoleV3.context.V3DepartmentContext;
 import com.facilio.bmsconsoleV3.context.V3EmployeeContext;
 import com.facilio.bmsconsoleV3.context.V3SpaceContext;
 import com.facilio.v3.context.V3Context;
@@ -10,6 +11,17 @@ import java.util.Map;
 public class V3DeskContext  extends V3SpaceContext {
 	
 	private V3EmployeeContext employee;
+	
+	public V3DepartmentContext getDepartment() {
+		return department;
+	}
+	public void setDepartment(V3DepartmentContext department) {
+		this.department = department;
+	}
+
+
+	private V3DepartmentContext department;
+	
 
     public V3EmployeeContext getEmployee() {
 		return employee;
@@ -20,7 +32,6 @@ public class V3DeskContext  extends V3SpaceContext {
 
 
 	private String deskCode;
-	private Long departmentId;
 	
 	private Boolean isActive;
 	public Boolean getIsActive() {
@@ -41,12 +52,6 @@ public class V3DeskContext  extends V3SpaceContext {
 
 
 
-	public Long getDepartmentId() {
-		return departmentId;
-	}
-	public void setDepartmentId(Long departmentId) {
-		this.departmentId = departmentId;
-	}
 	public String getDeskCode() {
 		return deskCode;
 	}
