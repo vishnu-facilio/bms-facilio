@@ -233,7 +233,9 @@ public class DataProcessorV2
     private boolean executeTriggers(FacilioAgent agent) throws Exception {
 
         FacilioContext context = new FacilioContext();
-        context.put(FacilioConstants.ContextNames.WORK_FLOW_PARAMS, agent.getSiteId());
+        List<Object> params = new ArrayList<>();
+        params.add(agent.getSiteId());
+        context.put(FacilioConstants.ContextNames.WORK_FLOW_PARAMS, params);
         context.put(FacilioConstants.ContextNames.INSTANT_JOB_NAME, "PostTimeseriesWorkflowExecutionJob");
         context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.TIMESERIES_COMPLETE);
         context.put(FacilioConstants.ContextNames.TRIGGER_TYPE, TriggerType.TIMESERIES_COMPLETED_TRIGGER);
