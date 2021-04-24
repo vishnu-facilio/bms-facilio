@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.json.simple.JSONObject;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
@@ -41,11 +43,14 @@ import com.facilio.unitconversion.UnitsUtil;
 
 public class WorkflowRuleHistoricalAlarmsAPI {
 	
-	public static DateRange deleteAllAlarmOccurrencesBasedonCriteria(Criteria deletionCriteria, Criteria eventsFetchCriteria, long startTime, long endTime, Type type) throws Exception 
+	public static DateRange deleteAllAlarmOccurrencesBasedonCriteria(Criteria deletionCriteria, Criteria eventsFetchCriteria, long startTime, long endTime, Type type, JSONObject loggerInfo) throws Exception 
 	{		
 		List<AlarmOccurrenceContext> alarmOccurrenceList = NewAlarmAPI.getAllAlarmOccurrences(deletionCriteria, startTime, endTime, type);
 		
-		deleteAllEventsInExactWindow(eventsFetchCriteria, startTime, endTime, type);
+		boolean isAutomatedSystemHistory = (loggerInfo != null && loggerInfo.get("skipLoggerUpdate") != null && (Boolean)loggerInfo.get("skipLoggerUpdate")) ? true : false;
+		if(!isAutomatedSystemHistory) {
+			deleteAllEventsInExactWindow(eventsFetchCriteria, startTime, endTime, type);
+		}
 	
 		if (alarmOccurrenceList != null && !alarmOccurrenceList.isEmpty())
 		{

@@ -73,7 +73,7 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 			if(type == Type.PRE_ALARM) {
 				Criteria readingOccurenceDeletionCriteria = historyExecutionType.getOccurrenceDeletionCriteria(loggerInfo, Type.READING_ALARM);
 				Criteria readingEventsDeletionCriteria = historyExecutionType.getEventsProcessingCriteria(loggerInfo, Type.READING_ALARM);
-				DateRange modifiedDateRange = WorkflowRuleHistoricalAlarmsAPI.deleteAllAlarmOccurrencesBasedonCriteria(readingOccurenceDeletionCriteria, readingEventsDeletionCriteria, lesserStartTime, greaterEndTime, Type.READING_ALARM);
+				DateRange modifiedDateRange = WorkflowRuleHistoricalAlarmsAPI.deleteAllAlarmOccurrencesBasedonCriteria(readingOccurenceDeletionCriteria, readingEventsDeletionCriteria, lesserStartTime, greaterEndTime, Type.READING_ALARM, loggerInfo);
 				totalAlarmOccurrenceCount = fetchAndProcessAllEventsBasedOnAlarmDeletionRange(primaryRuleId, eventsFetchCriteria, modifiedDateRange.getStartTime(), modifiedDateRange.getEndTime(), Type.PRE_ALARM, totalAlarmOccurrenceCount);
 			}
 			else {
