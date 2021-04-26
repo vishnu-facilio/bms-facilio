@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.workflow.rule.ConfirmationDialogContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -27,6 +28,10 @@ public class GetMatchedConfirmationDialogCommand extends FacilioCommand {
             Map<String, Object> data = (Map<String, Object>) context.get(FacilioConstants.ContextNames.DATA);
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+            FacilioModule module = modBean.getModule(moduleName);
+            Class classFromModule = FacilioConstants.ContextNames.getClassFromModule(module);
+            Object sourceObject = FieldUtil.getAsBeanFromMap(data, classFromModule);
+
             Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(moduleName));
             if (MapUtils.isNotEmpty(data)) {
                 for (String key : data.keySet()) {
@@ -36,7 +41,7 @@ public class GetMatchedConfirmationDialogCommand extends FacilioCommand {
                     }
                     if (facilioField.isDefault()) {
                         try {
-                            PropertyUtils.setProperty(moduleData, key, data.get(key));
+                            PropertyUtils.setProperty(moduleData, key, PropertyUtils.getProperty(sourceObject, key));
                         } catch (Exception e) {
                         }
                     } else {
