@@ -175,7 +175,7 @@ public class AccessLogFilter implements Filter {
                 event.setProperty("email",email);
                 ETISALAT.callAppenders(event);
             }
-            if(FacilioProperties.isAuditLogEnable()) {
+            if(FacilioProperties.isAccessLogEnable()) {
                 long orgId = Long.parseLong(event.getProperty(RequestUtil.ORGID_HEADER));
                 long userId = Long.parseLong(event.getProperty(RequestUtil.USERID_HEADER));
                 if((orgId > 0L) && (userId > 0)) {
