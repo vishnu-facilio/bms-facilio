@@ -37,6 +37,8 @@ import com.facilio.bmsconsoleV3.context.floorplan.V3IndoorFloorPlanContext;
 import com.facilio.bmsconsoleV3.context.floorplan.V3IndoorFloorPlanObjectContext;
 import com.facilio.bmsconsoleV3.context.floorplan.V3MarkerContext;
 import com.facilio.bmsconsoleV3.context.floorplan.V3MarkerdZonesContext;
+import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext;
+import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTaskSectionContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTasksContext;
@@ -2338,6 +2340,9 @@ public class FacilioConstants {
 			classMap.put(QAndA.QUESTION, QuestionContext.class);
 			classMap.put(QAndA.RESPONSE, ResponseContext.class);
 			classMap.put(QAndA.ANSWER, AnswerContext.class);
+			
+			classMap.put(Inspection.INSPECTION_TEMPLATE, InspectionTemplateContext.class);
+			classMap.put(Inspection.INSPECTION_RESPONSE, InspectionResponseContext.class);
 
 			for (QuestionType type : QuestionType.values()) {
 				classMap.put(type.getSubModuleName(), type.getSubClass());
