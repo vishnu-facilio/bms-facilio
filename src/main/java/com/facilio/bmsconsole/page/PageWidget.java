@@ -318,7 +318,15 @@ public class PageWidget {
 		BOOKING_INFO("bookingInfo"),
 		BOOKING_SLOT_INFORMATION("bookingSlotInformation"),
 		BOOKING_INTERNAL_ATTENDEES("bookingInternalAttendees"),
-		BOOKING_EXTERNAL_ATTENDEES("bookingExternalAttendees")
+		BOOKING_EXTERNAL_ATTENDEES("bookingExternalAttendees"),
+		
+		INSPECTION_TEMPLATE_secondaryDetailsWidget("secondaryDetailsWidget"),
+		INSPECTION_TEMPLATE_inspectionDetails("inspectionDetails"),
+		INSPECTION_TEMPLATE_inspectionPageDetails("inspectionPageDetails"),
+		INSPECTION_TEMPLATE_inspectionTriggers("inspectionTriggers"),
+		INSPECTION_TEMPLATE_inspectionInsights("inspectionInsights"),
+		INSPECTION_TEMPLATE_inspectionQuestions("inspectionQuestions"),
+		INSPECTION_TEMPLATE_history("history"),
 
 		;
 		

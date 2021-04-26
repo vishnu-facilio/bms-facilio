@@ -24,9 +24,11 @@ import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.Announcem
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnnouncementContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.FacilityContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.V3FacilityBookingContext;
+import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.DateOperators;
@@ -136,6 +138,9 @@ public class PageFactory {
 				return FacilityModulesPageFactory.getFacilityPage((FacilityContext) record, module);
 			case ContextNames.FacilityBooking.FACILITY_BOOKING:
 				return FacilityModulesPageFactory.getFacilityBookingPage((V3FacilityBookingContext) record, module);
+				
+			case FacilioConstants.Inspection.INSPECTION_TEMPLATE:
+				return InspectionPageFactory.getInspectionTemplatePage((InspectionTemplateContext) record, module);
 				
 		}
 		if (module.getExtendModule() == null) {	// temp
