@@ -42,7 +42,7 @@
 			</snapshots>
 			<id>bintray-stackmagic-maven</id>
 			<name>bintray</name>
-			<url>http://dl.bintray.com/stackmagic/maven</url>
+			<url>https://dl.bintray.com/stackmagic/maven</url>
 		</repository>
 		<repository>
 			<releases>
