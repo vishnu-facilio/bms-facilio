@@ -40,6 +40,8 @@ public class CommonReportUtil {
 				}
 			}
 			report.setBaseLines(reportBaseLines);
+		} else {
+			report.setBaseLines(null);
 		}
 	}
 }
