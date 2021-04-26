@@ -223,7 +223,7 @@ public class AccessLogFilter implements Filter {
                       }
                       long auditStartTime = System.currentTimeMillis();
                       FacilioService.runAsService(FacilioConstants.Services.AUDIT_SERVICE,()->inserAuditLog(props));
-                      LOGGER.info("Time taken to insert Audit Log : "+ (System.currentTimeMillis() - auditStartTime) + " millsec");
+                      LOGGER.debug("Time taken to insert Audit Log : "+ (System.currentTimeMillis() - auditStartTime) + " millsec");
                   }
             }
           
