@@ -11,19 +11,20 @@ public class InspectionPageFactory extends PageFactory {
 		
 		Page page = new Page();
 		
-		PageWidget secondaryDetailsWidget = new PageWidget(PageWidget.WidgetType.INSPECTION_TEMPLATE_secondaryDetailsWidget);
-        PageWidget inspectionDetails = new PageWidget(PageWidget.WidgetType.INSPECTION_TEMPLATE_inspectionDetails);
-        PageWidget inspectionPageDetails = new PageWidget(PageWidget.WidgetType.INSPECTION_TEMPLATE_inspectionPageDetails);
-        PageWidget inspectionTriggers = new PageWidget(PageWidget.WidgetType.INSPECTION_TEMPLATE_inspectionTriggers);
-        PageWidget inspectionInsights = new PageWidget(PageWidget.WidgetType.INSPECTION_TEMPLATE_inspectionInsights);
-        PageWidget inspectionQuestions = new PageWidget(PageWidget.WidgetType.INSPECTION_TEMPLATE_inspectionQuestions);
-        PageWidget history = new PageWidget(PageWidget.WidgetType.INSPECTION_TEMPLATE_history);
-
+		
         Page.Tab summaryTab = page.new Tab("summary");
         Page.Section SummarySec = page.new Section();
         
+        PageWidget secondaryDetailsWidget = new PageWidget(PageWidget.WidgetType.INSPECTION_TEMPLATE_secondaryDetailsWidget);
+        secondaryDetailsWidget.addToLayoutParams(SummarySec, 24, 6);
         SummarySec.addWidget(secondaryDetailsWidget);
+        
+        PageWidget inspectionDetails = new PageWidget(PageWidget.WidgetType.INSPECTION_TEMPLATE_inspectionDetails);
+        inspectionDetails.addToLayoutParams(SummarySec, 24, 6);
         SummarySec.addWidget(inspectionDetails);
+        
+        PageWidget inspectionPageDetails = new PageWidget(PageWidget.WidgetType.INSPECTION_TEMPLATE_inspectionPageDetails);
+        inspectionPageDetails.addToLayoutParams(SummarySec, 24, 12);
         SummarySec.addWidget(inspectionPageDetails);
         
         summaryTab.addSection(SummarySec);
@@ -33,6 +34,9 @@ public class InspectionPageFactory extends PageFactory {
         Page.Tab triggerTab = page.new Tab("trigger");
         Page.Section triggerTabSec = page.new Section();
         
+        PageWidget inspectionTriggers = new PageWidget(PageWidget.WidgetType.INSPECTION_TEMPLATE_inspectionTriggers);
+        inspectionTriggers.addToLayoutParams(triggerTabSec, 24, 24);
+        
         triggerTabSec.addWidget(inspectionTriggers);
         
         triggerTab.addSection(triggerTabSec);
@@ -41,7 +45,12 @@ public class InspectionPageFactory extends PageFactory {
         Page.Tab insightTab = page.new Tab("insight");
         Page.Section insightTabSec = page.new Section();
         
+        PageWidget inspectionInsights = new PageWidget(PageWidget.WidgetType.INSPECTION_TEMPLATE_inspectionInsights);
+        inspectionInsights.addToLayoutParams(insightTabSec, 24, 8);
         insightTabSec.addWidget(inspectionInsights);
+        
+        PageWidget inspectionQuestions = new PageWidget(PageWidget.WidgetType.INSPECTION_TEMPLATE_inspectionQuestions);
+        inspectionQuestions.addToLayoutParams(insightTabSec, 24, 6);
         insightTabSec.addWidget(inspectionQuestions);
         
         insightTab.addSection(insightTabSec);
@@ -49,6 +58,9 @@ public class InspectionPageFactory extends PageFactory {
 
         Page.Tab historyTab = page.new Tab("history");
         Page.Section historyTabSec = page.new Section();
+        
+        PageWidget history = new PageWidget(PageWidget.WidgetType.INSPECTION_TEMPLATE_history);
+        history.addToLayoutParams(historyTabSec, 24, 3);
         
         historyTabSec.addWidget(history);
         
