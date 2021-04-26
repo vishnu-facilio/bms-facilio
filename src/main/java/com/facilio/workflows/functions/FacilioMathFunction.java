@@ -148,21 +148,71 @@ public enum FacilioMathFunction implements FacilioWorkflowFunctionInterface  {
 	SET_PRECISION_WITH_CEILING(9, "setPrecisionWithCeiling") {
 		@Override
 		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
-			
+
 			checkParam(objects);
-			
+
 			double val = Double.parseDouble(objects[0].toString());
 			int precision = Integer.parseInt(objects[1].toString());
-			
+
 			Double truncatedDouble = BigDecimal.valueOf(val)
-				    .setScale(precision, RoundingMode.CEILING)
-				    .doubleValue();
-			
+					.setScale(precision, RoundingMode.CEILING)
+					.doubleValue();
+
 			return truncatedDouble;
 		}
-		
+
 		private void checkParam(Object... objects) throws Exception {
 			if(objects == null || objects.length < 2) {
+				throw new FunctionParamException("Required Object is null or empty");
+			}
+		}
+	},
+	EXPONENT(10, "exp") {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+
+			checkParam(objects);
+
+			double val = Double.parseDouble(objects[0].toString());
+
+			return Math.exp(val);
+		}
+
+		private void checkParam(Object... objects) throws Exception {
+			if (objects == null || objects.length < 1) {
+				throw new FunctionParamException("Required Object is null or empty");
+			}
+		}
+	},
+	NATURAL_LOG(11, "ln") {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+
+			checkParam(objects);
+
+			double val = Double.parseDouble(objects[0].toString());
+
+			return Math.log(val);
+		}
+
+		private void checkParam(Object... objects) throws Exception {
+			if (objects == null || objects.length < 1) {
+				throw new FunctionParamException("Required Object is null or empty");
+			}
+		}
+	},
+	LOG_BASE_10(12, "log") {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+
+			checkParam(objects);
+
+			double val = Double.parseDouble(objects[0].toString());
+			return Math.log10(val);
+		}
+
+		private void checkParam(Object... objects) throws Exception {
+			if (objects == null || objects.length < 1) {
 				throw new FunctionParamException("Required Object is null or empty");
 			}
 		}
