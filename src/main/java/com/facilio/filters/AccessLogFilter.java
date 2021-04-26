@@ -195,7 +195,7 @@ public class AccessLogFilter implements Filter {
                       props.put("requestSize",event.getProperty("requestSize"));
                       props.put("deviceType", event.getProperty(RequestUtil.DEVICE_TYPE));
                       props.put("timeInMilliSec",System.currentTimeMillis());
-                      props.put("timeStamp",new Timestamp(System.currentTimeMillis()));
+                      props.put("timeStamp", DateTimeUtil.getDateTime(System.currentTimeMillis()));
                       props.put("appVersion", event.getProperty("appVersion"));
                       props.put("executor", event.getProperty("executor"));
                       props.put("exception", event.getProperty("exception"));
