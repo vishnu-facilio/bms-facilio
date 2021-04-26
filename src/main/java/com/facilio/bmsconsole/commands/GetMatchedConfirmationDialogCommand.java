@@ -1,8 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.workflow.rule.ConfirmationDialogContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
@@ -20,11 +25,23 @@ public class GetMatchedConfirmationDialogCommand extends FacilioCommand {
 
         if (moduleData != null && CollectionUtils.isNotEmpty(confirmationDialogs)) {
             Map<String, Object> data = (Map<String, Object>) context.get(FacilioConstants.ContextNames.DATA);
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+            Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(moduleName));
             if (MapUtils.isNotEmpty(data)) {
                 for (String key : data.keySet()) {
-                    try {
-                        PropertyUtils.setProperty(moduleData, key, data.get(key));
-                    } catch (Exception e) {}
+                    FacilioField facilioField = fieldMap.get(key);
+                    if (facilioField == null) {
+                        continue;
+                    }
+                    if (facilioField.isDefault()) {
+                        try {
+                            PropertyUtils.setProperty(moduleData, key, data.get(key));
+                        } catch (Exception e) {
+                        }
+                    } else {
+                        moduleData.setDatum(key, data.get(key));
+                    }
                 }
             }
 
