@@ -42,7 +42,7 @@
 			</snapshots>
 			<id>bintray-stackmagic-maven</id>
 			<name>bintray</name>
-			<url>https://dl.bintray.com/stackmagic/maven</url>
+			<url>http://dl.bintray.com/stackmagic/maven</url>
 		</repository>
 		<repository>
 			<releases>
@@ -553,11 +553,11 @@
 			<version>4.5.10</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/net.swisstech/bitly-api-client -->
-		<dependency>
+		<!-- <dependency>
 		    <groupId>net.swisstech</groupId>
 		    <artifactId>bitly-api-client</artifactId>
 		    <version>0.8.0</version>
-		</dependency>
+		</dependency> -->
 
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
 		<dependency>

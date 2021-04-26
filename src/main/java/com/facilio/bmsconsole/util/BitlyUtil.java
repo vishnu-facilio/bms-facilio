@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.util;
 
-import net.swisstech.bitly.BitlyClient;
-import net.swisstech.bitly.model.Response;
-import net.swisstech.bitly.model.v3.ShortenResponse;
+//import net.swisstech.bitly.BitlyClient;
+//import net.swisstech.bitly.model.Response;
+//import net.swisstech.bitly.model.v3.ShortenResponse;
 
 public class BitlyUtil {
 
@@ -10,14 +10,14 @@ public class BitlyUtil {
 	
 	public static String getSmallUrl(String longUrl) throws Exception {
 		
-		BitlyClient client = new BitlyClient(AUTH_KEY);
-		Response<ShortenResponse> resp = client.shorten()
-		                          .setLongUrl(longUrl)
-		                          .call();
-		
-		if(resp != null &&  resp.data != null && resp.data.url != null) {
-			return resp.data.url;
-		}
+//		BitlyClient client = new BitlyClient(AUTH_KEY);
+//		Response<ShortenResponse> resp = client.shorten()
+//		                          .setLongUrl(longUrl)
+//		                          .call();
+//		
+//		if(resp != null &&  resp.data != null && resp.data.url != null) {
+//			return resp.data.url;
+//		}
 		return null;
 	}
 }
