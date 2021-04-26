@@ -121,7 +121,9 @@ public class AddQAndAModules extends SignUpData {
                 true);
 
         List<FacilioField> fields = new ArrayList<>();
-        fields.add(FieldFactory.getDefaultField("totalQuestions", "Total Questions", "TOTAL_QUESTIONS", FieldType.NUMBER));
+        SystemEnumField statusField = (SystemEnumField) FieldFactory.getDefaultField("responseStatus", "Response Status", "RESPONSE_STATUS", FieldType.SYSTEM_ENUM);
+        statusField.setEnumName("QAndAResponseStatus");
+        fields.add(statusField);
         fields.add(FieldFactory.getDefaultField("totalAnswered", "Total Answered", "TOTAL_ANSWERED", FieldType.NUMBER));
 
         module.setFields(fields);

@@ -160,6 +160,9 @@ enums:
   - name: QuestionType
     enumClassName: com.facilio.qa.context.QuestionType
 
+  - name: QAndAResponseStatus
+    enumClassName: com.facilio.qa.context.ResponseContext$ResponseStatus
+
   - name: InspectionCreationType
     enumClassName: com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext$CreationType
 
@@ -171,7 +174,6 @@ enums:
 
   - name: InspectionResponseStatus
     enumClassName: com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext$Status
-
 
   - name: TicketSourceType
     enumClassName: com.facilio.bmsconsole.context.TicketContext$SourceType
