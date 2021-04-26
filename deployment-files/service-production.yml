@@ -19,10 +19,10 @@ services:
   - serviceName: agent
     instanceName: default
     dbName: default
-	
+
   - serviceName: auditlogs
     instanceName: default
-    dbName: audit_logs	
+    dbName: audit_logs
 
   - serviceName: app
     handlerClass: com.facilio.accounts.util.AppDataSourceImpl
