@@ -69,7 +69,7 @@ public class InspectionScheduler implements ScheduleTypeInterface {
 				long createdtime = time.getEndTime()+1;
 				
 				for(Long resourceId : resources) {
-					InspectionResponseContext response = template.constructNewResponse();
+					InspectionResponseContext response = template.constructResponse();
 
 					response.setResStatus(ResponseContext.ResponseStatus.DISABLED); //This will be changed when the response is opened. Until then it can't be answered
 					response.setCreatedTime(createdtime);
