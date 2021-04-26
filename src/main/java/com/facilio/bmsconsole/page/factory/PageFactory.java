@@ -142,6 +142,8 @@ public class PageFactory {
 			case FacilioConstants.Inspection.INSPECTION_TEMPLATE:
 				return InspectionPageFactory.getInspectionTemplatePage((InspectionTemplateContext) record, module);
 				
+			case ContextNames.SERVICE_REQUEST:
+				return ServiceRequestPageFactory.getServiceRequestPage((ServiceRequestContext) record, module);
 		}
 		if (module.getExtendModule() == null) {	// temp
 			// etisalat changes will be changed to standard method

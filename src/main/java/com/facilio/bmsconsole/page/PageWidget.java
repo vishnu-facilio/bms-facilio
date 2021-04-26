@@ -328,6 +328,11 @@ public class PageWidget {
 		INSPECTION_TEMPLATE_inspectionQuestions("inspectionQuestions"),
 		INSPECTION_TEMPLATE_history("history"),
 
+		// Service Request Module Widgets
+		SR_EMAIL_THREAD("srEmailThread"),
+		SR_DETAILS_WIDGET("srDetailsWidget")
+
+
 		;
 		
 		private String name;
