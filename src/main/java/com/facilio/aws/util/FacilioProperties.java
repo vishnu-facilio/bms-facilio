@@ -121,7 +121,7 @@ public class FacilioProperties {
     private static String mandrillUrl;
     private static String mandrillApiKey;
 
-    private static boolean facilioAuditLog = false;
+    private static boolean accessLog = false;
 
     static {
         loadProperties();
@@ -220,7 +220,7 @@ public class FacilioProperties {
                 mandrillUrl = PROPERTIES.getProperty("mandrill.url");
                 mandrillApiKey = PROPERTIES.getProperty("mandrill.apikey");
 
-                facilioAuditLog = "true".equalsIgnoreCase(PROPERTIES.getProperty("facilio.audit.log", "false"));
+                accessLog = "true".equalsIgnoreCase(PROPERTIES.getProperty("facilio.access.log", "false"));
 
                 String cookieLifespanProp = PROPERTIES.getProperty("token.cookie.lifespan");
                 if (StringUtils.isNotEmpty(cookieLifespanProp)) {
@@ -703,7 +703,7 @@ public class FacilioProperties {
         return mandrillApiKey;
     }
 
-    public static boolean isAuditLogEnable(){
-        return facilioAuditLog;
+    public static boolean isAccessLogEnable(){
+        return accessLog;
     }
 }

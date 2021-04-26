@@ -23,7 +23,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -40,36 +39,36 @@ public class AccessLogFilter implements Filter {
     private static final boolean ENABLE_FHR = FacilioProperties.enableFacilioResponse();
 
     private static final AtomicInteger THREAD_ID = new AtomicInteger(1);
-    private static final long TIME_THRESHOLD = 5000 ;
+    private static final long TIME_THRESHOLD = 5000;
     private static final String GRAY_LOG_URL = "https://logs.facilio.in/streams/000000000000000000000001/search?saved=5d19a5329b569c766b3a1f2f&rangetype=relative&fields=logger%2Cmessage&width=1536&relative=86400&q=facility%3Aproduction-user%20AND%20thread%20%3A%20";
     private static Appender appender;
 
 
-    public void init(FilterConfig filterConfig) throws ServletException {
+    public void init ( FilterConfig filterConfig ) throws ServletException {
         appender = LOGGER.getAppender(APPENDER_NAME);
     }
 
 
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+    public void doFilter ( ServletRequest servletRequest,ServletResponse servletResponse,FilterChain filterChain ) throws IOException, ServletException {
 
         Thread thread = Thread.currentThread();
         String threadName = thread.getName();
         try {
-            HttpServletRequest request = (HttpServletRequest) servletRequest;
-            HttpServletResponse response = (HttpServletResponse) servletResponse;
+            HttpServletRequest request = (HttpServletRequest)servletRequest;
+            HttpServletResponse response = (HttpServletResponse)servletResponse;
 //        System.out.println("Access log filter called : "+request.getRequestURI()+"::"+request.getAttribute(IAMAppUtil.REQUEST_APP_NAME));
 
-            if (ENABLE_FHR) {
+            if(ENABLE_FHR) {
                 response = new FacilioHttpResponse(response);
             }
 
             long startTime = System.currentTimeMillis();
             thread.setName(String.valueOf(THREAD_ID.getAndIncrement()));
-            filterChain.doFilter(servletRequest, response);
+            filterChain.doFilter(servletRequest,response);
 
             StringBuilder message = new StringBuilder();
             int responseSize = 0;
-            if (AccountUtil.getCurrentAccount() != null) {
+            if(AccountUtil.getCurrentAccount() != null) {
                 Account account = AccountUtil.getCurrentAccount();
                 message.append("select : ").append(account.getSelectQueries()).append(" time : ").append(account.getSelectQueriesTime())
                         .append(", update : ").append(account.getUpdateQueries()).append(" time : ").append(account.getUpdateQueriesTime())
@@ -86,156 +85,152 @@ public class AccessLogFilter implements Filter {
                         .append(", pRput : ").append(account.getPublicRedisPutCount()).append(" time : ").append(account.getPublicRedisPutTime())
                         .append(", pRdel : ").append(account.getPublicRedisDeleteCount()).append(" time : ").append(account.getPublicRedisDeleteTime())
                         .append(", jsonConversionTime : ").append(account.getJsonConversionTime())
-                        ;
-            }
-            else {
+                ;
+            } else {
                 message.append(DUMMY_MSG);
             }
 
-            if (ENABLE_FHR) {
-                responseSize = ((FacilioHttpResponse) response).getLengthInBytes();
+            if(ENABLE_FHR) {
+                responseSize = ((FacilioHttpResponse)response).getLengthInBytes();
                 message.append(", data : ").append(responseSize);
             }
 //            System.out.println("Response size in Access => "+responseSize);
 //            System.out.println(message.toString());
-            LoggingEvent event = new LoggingEvent(LOGGER.getName(), LOGGER, Level.INFO, message.toString(), null);
+            LoggingEvent event = new LoggingEvent(LOGGER.getName(),LOGGER,Level.INFO,message.toString(),null);
 
-            Account account =null;
-            if (AccountUtil.getCurrentAccount() != null) {
+            Account account = null;
+            if(AccountUtil.getCurrentAccount() != null) {
                 account = AccountUtil.getCurrentAccount();
-                event.setProperty("fselect", String.valueOf(account.getSelectQueries()));
-                event.setProperty("finsert", String.valueOf(account.getInsertQueries()));
-                event.setProperty("fdelete", String.valueOf(account.getDeleteQueries()));
-                event.setProperty("fupdate", String.valueOf(account.getUpdateQueries()));
-                event.setProperty("fstime", String.valueOf(account.getSelectQueriesTime()));
-                event.setProperty("fitime", String.valueOf(account.getInsertQueriesTime()));
-                event.setProperty("fdtime", String.valueOf(account.getDeleteQueriesTime()));
-                event.setProperty("futime", String.valueOf(account.getUpdateQueriesTime()));
-                event.setProperty("frget", String.valueOf(account.getRedisGetCount()));
-                event.setProperty("frput", String.valueOf(account.getRedisPutCount()));
-                event.setProperty("frdel", String.valueOf(account.getRedisDeleteCount()));
-                event.setProperty("frgtime", String.valueOf(account.getRedisGetTime()));
-                event.setProperty("frptime", String.valueOf(account.getRedisPutTime()));
-                event.setProperty("frdtime", String.valueOf(account.getRedisDeleteTime()));
-                event.setProperty("ijob", String.valueOf(account.getInstantJobCount()));
-                event.setProperty("ijobfiletime", String.valueOf(account.getInstantJobFileAddTime()));
-                event.setProperty("ftqueries", String.valueOf(account.getTotalQueries()));
-                event.setProperty("ftqtime", String.valueOf(account.getTotalQueryTime()));
-                event.setProperty("fdatasize", String.valueOf(responseSize));
-                event.setProperty("fjsonconvtime", String.valueOf(account.getJsonConversionTime()));
+                event.setProperty("fselect",String.valueOf(account.getSelectQueries()));
+                event.setProperty("finsert",String.valueOf(account.getInsertQueries()));
+                event.setProperty("fdelete",String.valueOf(account.getDeleteQueries()));
+                event.setProperty("fupdate",String.valueOf(account.getUpdateQueries()));
+                event.setProperty("fstime",String.valueOf(account.getSelectQueriesTime()));
+                event.setProperty("fitime",String.valueOf(account.getInsertQueriesTime()));
+                event.setProperty("fdtime",String.valueOf(account.getDeleteQueriesTime()));
+                event.setProperty("futime",String.valueOf(account.getUpdateQueriesTime()));
+                event.setProperty("frget",String.valueOf(account.getRedisGetCount()));
+                event.setProperty("frput",String.valueOf(account.getRedisPutCount()));
+                event.setProperty("frdel",String.valueOf(account.getRedisDeleteCount()));
+                event.setProperty("frgtime",String.valueOf(account.getRedisGetTime()));
+                event.setProperty("frptime",String.valueOf(account.getRedisPutTime()));
+                event.setProperty("frdtime",String.valueOf(account.getRedisDeleteTime()));
+                event.setProperty("ijob",String.valueOf(account.getInstantJobCount()));
+                event.setProperty("ijobfiletime",String.valueOf(account.getInstantJobFileAddTime()));
+                event.setProperty("ftqueries",String.valueOf(account.getTotalQueries()));
+                event.setProperty("ftqtime",String.valueOf(account.getTotalQueryTime()));
+                event.setProperty("fdatasize",String.valueOf(responseSize));
+                event.setProperty("fjsonconvtime",String.valueOf(account.getJsonConversionTime()));
             }
 
-            RequestUtil.addRequestLogEvents(request, event);
-            if (ENABLE_FHR) {
-                event.setProperty(RequestUtil.RESPONSE_SIZE, String.valueOf(responseSize));
+            RequestUtil.addRequestLogEvents(request,event);
+            if(ENABLE_FHR) {
+                event.setProperty(RequestUtil.RESPONSE_SIZE,String.valueOf(responseSize));
             }
             long timeTaken = System.currentTimeMillis() - startTime;
             String responseCode = String.valueOf(response.getStatus());
-            event.setProperty(RESPONSE_CODE, String.valueOf(response.getStatus()));
-            event.setProperty(TIME_TAKEN, String.valueOf(timeTaken / 1000));
-            event.setProperty(TIME_TAKEN_IN_MILLIS, String.valueOf(timeTaken));
+            event.setProperty(RESPONSE_CODE,String.valueOf(response.getStatus()));
+            event.setProperty(TIME_TAKEN,String.valueOf(timeTaken / 1000));
+            event.setProperty(TIME_TAKEN_IN_MILLIS,String.valueOf(timeTaken));
 
             String searchQuery = thread.getName() + "%20";
-            if (ServerInfo.getHostname() != null) {
+            if(ServerInfo.getHostname() != null) {
                 String sourceIp = ServerInfo.getHostname();
                 searchQuery = searchQuery + "AND%20source%3A%20" + sourceIp;
             }
             String grayLogSearchUrl = GRAY_LOG_URL + searchQuery;
-            event.setProperty("follow", grayLogSearchUrl);
+            event.setProperty("follow",grayLogSearchUrl);
 
-            if (FacilioProperties.isSentryEnabled() && (response.getStatus() == HttpServletResponse.SC_INTERNAL_SERVER_ERROR || timeTaken > TIME_THRESHOLD)) {
+            if(FacilioProperties.isSentryEnabled() && (response.getStatus() == HttpServletResponse.SC_INTERNAL_SERVER_ERROR || timeTaken > TIME_THRESHOLD)) {
 
                 Map<String, String> contextMap = new HashMap<>();
 
-                contextMap.put("orgId", event.getProperty(RequestUtil.ORGID_HEADER));
-                contextMap.put("url", event.getProperty(RequestUtil.REQUEST_URL));
-                contextMap.put("remoteIp", event.getProperty(RequestUtil.REMOTE_IP));
-                contextMap.put("referer", event.getProperty(RequestUtil.REFERER));
-                contextMap.put("query", event.getProperty(RequestUtil.QUERY));
-                contextMap.put("userId", event.getProperty(RequestUtil.USERID_HEADER));
-                contextMap.put("responseCode", responseCode);
-                contextMap.put("timeTaken", String.valueOf(timeTaken));
-                contextMap.put("thread", thread.getName());
-                contextMap.put("graylogurl", grayLogSearchUrl);
+                contextMap.put("orgId",event.getProperty(RequestUtil.ORGID_HEADER));
+                contextMap.put("url",event.getProperty(RequestUtil.REQUEST_URL));
+                contextMap.put("remoteIp",event.getProperty(RequestUtil.REMOTE_IP));
+                contextMap.put("referer",event.getProperty(RequestUtil.REFERER));
+                contextMap.put("query",event.getProperty(RequestUtil.QUERY));
+                contextMap.put("userId",event.getProperty(RequestUtil.USERID_HEADER));
+                contextMap.put("responseCode",responseCode);
+                contextMap.put("timeTaken",String.valueOf(timeTaken));
+                contextMap.put("thread",thread.getName());
+                contextMap.put("graylogurl",grayLogSearchUrl);
 
-                if (timeTaken > TIME_THRESHOLD) {
+                if(timeTaken > TIME_THRESHOLD) {
                     SentryUtil.sendSlowresponseToSentry(contextMap);
                 } else {
                     SentryUtil.sendToSentry(contextMap);
                 }
             }
-            if (appender != null) {
+            if(appender != null) {
                 appender.doAppend(event);
             } else {
                 LOGGER.callAppenders(event);
             }
             if(FacilioProperties.logUserAccessLog()) {
                 String email = "guest";
-                if(AccountUtil.getCurrentUser() != null ) {
+                if(AccountUtil.getCurrentUser() != null) {
                     email = AccountUtil.getCurrentUser().getEmail();
                 }
-                event.setProperty("email", email);
+                event.setProperty("email",email);
                 ETISALAT.callAppenders(event);
             }
             if(FacilioProperties.isAuditLogEnable()) {
-            	  long orgId = Long.parseLong(event.getProperty(RequestUtil.ORGID_HEADER));
-                  long userId = Long.parseLong(event.getProperty(RequestUtil.USERID_HEADER));
-                  if((orgId > 0L) && (userId > 0)) {
-                      Map<String,Object> props = new HashMap<>();
-                      props.put("orgId",orgId);
-                      props.put("userId",userId);
-                      props.put("app",event.getProperty("app"));
-                      props.put("reqUri", event.getProperty(RequestUtil.REQUEST_URL));
-                      props.put("sourceIp", ServerInfo.getHostname());
-                      props.put("remoteIp", event.getProperty(RequestUtil.REMOTE_IP));
-                      props.put("referer", event.getProperty(RequestUtil.REFERER));
-                      props.put("responseCode", responseCode);
-                      props.put("timeTaken", event.getProperty("timetaken"));
-                      props.put("responseSize",responseSize);
-                      props.put("requestSize",event.getProperty("requestSize"));
-                      props.put("deviceType", event.getProperty(RequestUtil.DEVICE_TYPE));
-                      props.put("timeInMilliSec",System.currentTimeMillis());
-                      props.put("timeStamp", DateTimeUtil.getDateTime(System.currentTimeMillis()));
-                      props.put("appVersion", event.getProperty("appVersion"));
-                      props.put("executor", event.getProperty("executor"));
-                      props.put("exception", event.getProperty("exception"));
-                      props.put("job",  event.getProperty("job"));
-                      if(account != null){
-                          props.put("fselect", String.valueOf(account.getSelectQueries()));
-                          props.put("finsert", String.valueOf(account.getInsertQueries()));
-                          props.put("fdelete", String.valueOf(account.getDeleteQueries()));
-                          props.put("fupdate", String.valueOf(account.getUpdateQueries()));
-                          props.put("fstime", String.valueOf(account.getSelectQueriesTime()));
-                          props.put("fitime", String.valueOf(account.getInsertQueriesTime()));
-                          props.put("fdtime", String.valueOf(account.getDeleteQueriesTime()));
-                          props.put("futime", String.valueOf(account.getUpdateQueriesTime()));
-                          props.put("frget", String.valueOf(account.getRedisGetCount()));
-                          props.put("frput", String.valueOf(account.getRedisPutCount()));
-                          props.put("frdel", String.valueOf(account.getRedisDeleteCount()));
-                          props.put("frgtime", String.valueOf(account.getRedisGetTime()));
-                          props.put("frptime", String.valueOf(account.getRedisPutTime()));
-                          props.put("frdtime", String.valueOf(account.getRedisDeleteTime()));
-                          props.put("ijob", String.valueOf(account.getInstantJobCount()));
-                          props.put("ijobfiletime", String.valueOf(account.getInstantJobFileAddTime()));
-                          props.put("ftqueries", String.valueOf(account.getTotalQueries()));
-                          props.put("ftqtime", String.valueOf(account.getTotalQueryTime()));
-                          props.put("fjsonconvtime", String.valueOf(account.getJsonConversionTime()));
-                      }
-                      long auditStartTime = System.currentTimeMillis();
-                      FacilioService.runAsService(FacilioConstants.Services.AUDIT_SERVICE,()->inserAuditLog(props));
-                      LOGGER.debug("Time taken to insert Audit Log : "+ (System.currentTimeMillis() - auditStartTime) + " millsec");
-                  }
+                long orgId = Long.parseLong(event.getProperty(RequestUtil.ORGID_HEADER));
+                long userId = Long.parseLong(event.getProperty(RequestUtil.USERID_HEADER));
+                if((orgId > 0L) && (userId > 0)) {
+                    Map<String, Object> props = new HashMap<>();
+                    props.put("orgId",orgId);
+                    props.put("userId",userId);
+                    props.put("app",event.getProperty("app"));
+                    props.put("reqUri",event.getProperty(RequestUtil.REQUEST_URL));
+                    props.put("sourceIp",ServerInfo.getHostname());
+                    props.put("remoteIp",event.getProperty(RequestUtil.REMOTE_IP));
+                    props.put("referer",event.getProperty(RequestUtil.REFERER));
+                    props.put("responseCode",responseCode);
+                    props.put("timeTaken",event.getProperty("timetaken"));
+                    props.put("responseSize",responseSize);
+                    props.put("requestSize",event.getProperty("requestSize"));
+                    props.put("deviceType",event.getProperty(RequestUtil.DEVICE_TYPE));
+                    props.put("timeInMilliSec",System.currentTimeMillis());
+                    props.put("appVersion",event.getProperty("appVersion"));
+                    props.put("executor",event.getProperty("executor"));
+                    props.put("exception",event.getProperty("exception"));
+                    props.put("job",event.getProperty("job"));
+                    props.put("fselect",String.valueOf(account.getSelectQueries()));
+                    props.put("finsert",String.valueOf(account.getInsertQueries()));
+                    props.put("fdelete",String.valueOf(account.getDeleteQueries()));
+                    props.put("fupdate",String.valueOf(account.getUpdateQueries()));
+                    props.put("fstime",String.valueOf(account.getSelectQueriesTime()));
+                    props.put("fitime",String.valueOf(account.getInsertQueriesTime()));
+                    props.put("fdtime",String.valueOf(account.getDeleteQueriesTime()));
+                    props.put("futime",String.valueOf(account.getUpdateQueriesTime()));
+                    props.put("frget",String.valueOf(account.getRedisGetCount()));
+                    props.put("frput",String.valueOf(account.getRedisPutCount()));
+                    props.put("frdel",String.valueOf(account.getRedisDeleteCount()));
+                    props.put("frgtime",String.valueOf(account.getRedisGetTime()));
+                    props.put("frptime",String.valueOf(account.getRedisPutTime()));
+                    props.put("frdtime",String.valueOf(account.getRedisDeleteTime()));
+                    props.put("ijob",String.valueOf(account.getInstantJobCount()));
+                    props.put("ijobfiletime",String.valueOf(account.getInstantJobFileAddTime()));
+                    props.put("ftqueries",String.valueOf(account.getTotalQueries()));
+                    props.put("ftqtime",String.valueOf(account.getTotalQueryTime()));
+                    props.put("fjsonconvtime",String.valueOf(account.getJsonConversionTime()));
+
+                    long auditStartTime = System.currentTimeMillis();
+                    FacilioService.runAsService(FacilioConstants.Services.AUDIT_SERVICE,() -> inserAuditLog(props));
+                    LOGGER.debug("Time taken to insert Audit Log : " + (System.currentTimeMillis() - auditStartTime) + " millsec");
+                }
             }
-          
+
         } catch (Exception e) {
-            LOGGER.info("Exception in access log: ", e);
-        }
-        finally {
+            LOGGER.info("Exception in access log: ",e);
+        } finally {
             thread.setName(threadName);
-            try{
+            try {
                 AccountUtil.cleanCurrentAccount();
-            }catch (Exception e){
-                LOGGER.error("Exception while cleaning current account ", e);
+            } catch (Exception e) {
+                LOGGER.error("Exception while cleaning current account ",e);
             }
         }
     }
@@ -248,7 +243,7 @@ public class AccessLogFilter implements Filter {
         builder.save();
     }
 
-    public void destroy() {
+    public void destroy () {
 
     }
 }

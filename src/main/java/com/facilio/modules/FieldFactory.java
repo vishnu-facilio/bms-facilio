@@ -9731,7 +9731,6 @@ public class FieldFactory {
         fields.add(getStringField("sourceIp","SOURCE_IP",module));
         fields.add(getStringField("remoteIp","REMOTE_IP",module));
         fields.add(getStringField("timeInMilliSec","TIME_IN_MILLISEC",module));
-        fields.add(getStringField("timeStamp","TIMESTAMP",module));
         fields.add(getNumberField("timeTaken","TIMETAKEN",module));
         fields.add(getNumberField("fselect","SELECT_QUERY_COUNT",module));
         fields.add(getNumberField("fstime","SELECT_QUERY_TIME",module));

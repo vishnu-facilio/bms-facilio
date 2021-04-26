@@ -21,8 +21,8 @@ services:
     dbName: default
 
   - serviceName: auditlogs
-    instanceName: default
-    dbName: audit_logs
+    instanceName: accesslog
+    dbName: accesslog
 
   - serviceName: app
     handlerClass: com.facilio.accounts.util.AppDataSourceImpl

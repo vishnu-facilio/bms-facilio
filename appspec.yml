@@ -69,6 +69,10 @@ files:
     destination: /home/facilio/deployment-files/
   - source: /service-production.yml
     destination: /home/facilio/deployment-files/
+  - source: /service-sp.yml
+    destination: /home/facilio/deployment-files/
+  - source: /service-syd.yml
+    destination: /home/facilio/deployment-files/
 
 permissions:
   - object: /home/facilio
