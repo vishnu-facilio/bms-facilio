@@ -212,7 +212,7 @@ public class ImportFieldFactory {
 
 	}
 
-	public static List<FacilioField> getPMImportFields() {
+	public static List<FacilioField> getPMImportFields() throws Exception {
 		
 		List<FacilioField> fields = new ArrayList<FacilioField>();
 		
@@ -221,6 +221,13 @@ public class ImportFieldFactory {
 		fields.addAll(FieldFactory.getWorkOrderTemplateFields());
 		fields.addAll(FieldFactory.getPMTriggerFields());
 		fields.addAll(getPMTriggerExtraFields());
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		List<FacilioField> customFields = modBean.getAllCustomFields(FacilioConstants.ContextNames.WORK_ORDER);
+		if(customFields != null && !customFields.isEmpty()) {
+			fields.addAll(customFields);
+		}
+		
 		return fields;
 	}
 	
