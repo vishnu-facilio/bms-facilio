@@ -67,6 +67,11 @@ public class GetAllModulesCommand extends FacilioCommand {
 			ContextNames.GATE_PASS,
 			ContextNames.SHIPMENT,
 			ContextNames.INVENTORY_REQUEST,
+			ContextNames.PREVENTIVE_MAINTENANCE,
+			ContextNames.Budget.ACCOUNT_TYPE,
+			ContextNames.INSURANCE,
+			ContextNames.ITEM_TRANSACTIONS,
+			ContextNames.TOOL_TRANSACTIONS
 
     });
 
