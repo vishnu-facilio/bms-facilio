@@ -23,6 +23,16 @@ import lombok.extern.log4j.Log4j;
 )
 @JsonTypeIdResolver(QuestionContext.QuestionTypeIdResolver.class)
 public class QuestionContext extends V3Context {
+
+    /**
+     *
+     * Copy the following to all classes extending this class
+     * @JsonTypeInfo(
+     *         use = JsonTypeInfo.Id.NONE
+     * )
+     *
+     */
+
     private QAndATemplateContext parent;
     private PageContext page;
     private String question;

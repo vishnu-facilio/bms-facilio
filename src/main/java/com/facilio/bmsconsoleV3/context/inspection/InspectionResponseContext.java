@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.modules.FacilioEnum;
+import com.facilio.qa.context.QAndATemplateContext;
 import com.facilio.qa.context.ResponseContext;
 
 import lombok.Getter;
@@ -20,7 +21,7 @@ import lombok.extern.log4j.Log4j;
 @Getter
 @Setter
 @Log4j
-public class InspectionResponseContext extends ResponseContext {
+public class InspectionResponseContext extends ResponseContext <InspectionTemplateContext> {
 	
     private SiteContext site;
     private InspectionTemplateContext parent;
@@ -92,18 +93,5 @@ public class InspectionResponseContext extends ResponseContext {
 			}
 			return null;
 		}
-	}
-
-	public void setParentWithProps(InspectionTemplateContext template) {
-		
-		setParent(template);
-    	setSite(template.getSite());
-    	setSiteId(template.getSiteId());
-    	setVendor(template.getVendor());
-    	setTenant(template.getTenant());
-    	setCategory(template.getCategory());
-    	setPriority(template.getPriority());
-    	setAssignedTo(template.getAssignedTo());
-    	setAssignmentGroup(template.getAssignmentGroup());
 	}
 }

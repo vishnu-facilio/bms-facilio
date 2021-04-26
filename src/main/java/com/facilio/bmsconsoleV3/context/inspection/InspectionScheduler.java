@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.qa.context.PageContext;
+import com.facilio.qa.context.ResponseContext;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 
@@ -68,18 +69,13 @@ public class InspectionScheduler implements ScheduleTypeInterface {
 				long createdtime = time.getEndTime()+1;
 				
 				for(Long resourceId : resources) {
-					InspectionResponseContext response = new InspectionResponseContext();
-					
+					InspectionResponseContext response = template.constructNewResponse();
+
+					response.setResStatus(ResponseContext.ResponseStatus.DISABLED); //This will be changed when the response is opened. Until then it can't be answered
 					response.setCreatedTime(createdtime);
-					
-					response.setParentWithProps(template);
-					response.setTotalQuestions((int) totalQuestions);
-					
 					response.setStatus(InspectionResponseContext.Status.PRE_OPEN.getIndex());
 					response.setSourceType(InspectionResponseContext.SourceType.PLANNED.getIndex());
-					
 					response.setResource(getResource.apply(resourceId));
-					
 					responses.add(response);
 				}
 			}

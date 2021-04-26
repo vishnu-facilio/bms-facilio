@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.qa.context.QAndATemplateContext;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -26,11 +27,14 @@ import lombok.extern.log4j.Log4j;
 @Log4j
 @NoArgsConstructor
 @ToString(callSuper=true, includeFieldNames=true)
-public class InspectionTemplateContext extends QAndATemplateContext {
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NONE
+)
+public class InspectionTemplateContext extends QAndATemplateContext <InspectionResponseContext> {
     private SiteContext site;
 
     List<InspectionTriggerContext> triggers;
-    public InspectionTemplateContext(long id) {
+    public InspectionTemplateContext(Long id) {
         super(id);
     }
     
@@ -48,32 +52,49 @@ public class InspectionTemplateContext extends QAndATemplateContext {
     private Group assignmentGroup;
     private User assignedTo;
     
-    public int getCreationType() {
+    public Integer getCreationType() { // Everything is wrapper in V3 for null handling
     	if(creationType != null) {
     		return creationType.getIndex();
     	}
-    	return -1;
+    	return null;
     }
     
-    public void setCreationType(int index) {
-    	creationType = CreationType.valueOf(index);
+    public void setCreationType(Integer index) {
+        creationType = index == null ? null : CreationType.valueOf(index);
     }
     
-    public int getAssignmentType() {
+    public Integer getAssignmentType() { // Everything is wrapper in V3 for null handling
     	if(assignmentType != null) {
     		return assignmentType.getIndex();
     	}
-    	return -1;
+    	return null;
     }
     
     public PreventiveMaintenance.PMAssignmentType getAssignmentTypeEnum() {
     	return assignmentType;
     }
     
-    public void setAssignmentType(int index) {
-    	assignmentType = PreventiveMaintenance.PMAssignmentType.valueOf(index);
+    public void setAssignmentType(Integer index) {
+        assignmentType = index == null ? null : PreventiveMaintenance.PMAssignmentType.valueOf(index);
     }
-    
+
+    @Override
+    protected InspectionResponseContext constructNewResponse() {
+        return new InspectionResponseContext();
+    }
+
+    @Override
+    protected void addDefaultProps(InspectionResponseContext response) {
+        response.setSite(this.getSite());
+        response.setSiteId(this.getSiteId());
+        response.setVendor(this.getVendor());
+        response.setTenant(this.getTenant());
+        response.setCategory(this.getCategory());
+        response.setPriority(this.getPriority());
+        response.setAssignedTo(this.getAssignedTo());
+        response.setAssignmentGroup(this.getAssignmentGroup());
+    }
+
     public static enum CreationType implements FacilioEnum<CreationType> {
 		
 		SINGLE, 

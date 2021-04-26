@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public abstract class ResponseContext extends V3Context {
+public abstract class ResponseContext <T extends QAndATemplateContext> extends V3Context {
     private Integer totalAnswered;
     private ResponseStatus resStatus;
 
@@ -21,7 +21,8 @@ public abstract class ResponseContext extends V3Context {
         this.resStatus = ResponseStatus.valueOf(responseStatus);
     }
 
-    public abstract QAndATemplateContext getParent();
+    public abstract T getParent();
+    public abstract void setParent(T template);
 
     public enum ResponseStatus implements FacilioEnum<ResponseStatus> {
         DISABLED,
