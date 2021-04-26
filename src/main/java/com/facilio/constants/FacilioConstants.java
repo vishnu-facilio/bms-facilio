@@ -130,6 +130,7 @@ public class FacilioConstants {
 	public static class Module {
 		public static final String SYS_FIELDS_NEEDED = "sysFieldsNeeded";
 		public static final String IGNORE_MODIFIED_SYS_FIELDS = "ignoreModifiedSysFields";
+		public static final String SKIP_EXISTING_MODULE_WITH_SAME_NAME_CHECK = "skipExistingModuleWithSameNameCheck";
 	}
 	
 	public static class ModuleNames {

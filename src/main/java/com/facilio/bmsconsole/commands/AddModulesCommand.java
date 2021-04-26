@@ -23,9 +23,12 @@ public class AddModulesCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<FacilioModule> modules = CommonCommandUtil.getModules(context);
+		boolean skipModuleNameCheck = (boolean) context.getOrDefault(FacilioConstants.Module.SKIP_EXISTING_MODULE_WITH_SAME_NAME_CHECK, false);
 		if(modules != null && !modules.isEmpty()) {
 			for (FacilioModule module : modules) {
-				setModuleName(module);
+				if (!skipModuleNameCheck) {
+					setModuleName(module);
+				}
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				long moduleId = modBean.addModule(module);
 				module.setModuleId(moduleId);
