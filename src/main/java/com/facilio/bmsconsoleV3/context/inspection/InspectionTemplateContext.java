@@ -79,7 +79,7 @@ public class InspectionTemplateContext extends QAndATemplateContext <InspectionR
     }
 
     @Override
-    protected InspectionResponseContext constructNewResponse() {
+    protected InspectionResponseContext newResponseObject() {
         return new InspectionResponseContext();
     }
 

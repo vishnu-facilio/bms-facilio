@@ -52,11 +52,11 @@ public abstract class QAndATemplateContext <R extends ResponseContext> extends V
         typeEnum = type == null ? null : QAndAType.valueOf(type);
     }
 
-    protected abstract R constructNewResponse();
+    protected abstract R newResponseObject();
     protected abstract void addDefaultProps(R response); //Having as two methods so that props can be overridden
 
     public R constructResponse() {
-        R response = constructNewResponse();
+        R response = newResponseObject();
         response.setParent(this);
         response.setResStatus(ResponseContext.ResponseStatus.NOT_ANSWERED);
         addDefaultProps(response);

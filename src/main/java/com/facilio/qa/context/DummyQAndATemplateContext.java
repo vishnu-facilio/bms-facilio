@@ -10,7 +10,7 @@ public class DummyQAndATemplateContext extends QAndATemplateContext {
     }
 
     @Override
-    protected ResponseContext constructNewResponse() {
+    protected ResponseContext newResponseObject() {
         throw new UnsupportedOperationException("DummyQAndATemplateContext is used only for client POJO handling. Shouldn't be used in business logic");
     }
 
