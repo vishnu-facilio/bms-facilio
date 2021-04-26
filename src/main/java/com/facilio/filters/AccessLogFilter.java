@@ -3,7 +3,13 @@ package com.facilio.filters;
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.server.ServerInfo;
+import com.facilio.service.FacilioService;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.util.RequestUtil;
 import com.facilio.util.SentryUtil;
 import org.apache.log4j.Appender;
@@ -16,6 +22,8 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -92,8 +100,9 @@ public class AccessLogFilter implements Filter {
 //            System.out.println(message.toString());
             LoggingEvent event = new LoggingEvent(LOGGER.getName(), LOGGER, Level.INFO, message.toString(), null);
 
+            Account account =null;
             if (AccountUtil.getCurrentAccount() != null) {
-                Account account = AccountUtil.getCurrentAccount();
+                account = AccountUtil.getCurrentAccount();
                 event.setProperty("fselect", String.valueOf(account.getSelectQueries()));
                 event.setProperty("finsert", String.valueOf(account.getInsertQueries()));
                 event.setProperty("fdelete", String.valueOf(account.getDeleteQueries()));
@@ -168,6 +177,56 @@ public class AccessLogFilter implements Filter {
                 event.setProperty("email", email);
                 ETISALAT.callAppenders(event);
             }
+            if(FacilioProperties.isAuditLogEnable()) {
+            	  long orgId = Long.parseLong(event.getProperty(RequestUtil.ORGID_HEADER));
+                  long userId = Long.parseLong(event.getProperty(RequestUtil.USERID_HEADER));
+                  if((orgId > 0L) && (userId > 0)) {
+                      Map<String,Object> props = new HashMap<>();
+                      props.put("orgId",orgId);
+                      props.put("userId",userId);
+                      props.put("app",event.getProperty("app"));
+                      props.put("reqUri", event.getProperty(RequestUtil.REQUEST_URL));
+                      props.put("sourceIp", ServerInfo.getHostname());
+                      props.put("remoteIp", event.getProperty(RequestUtil.REMOTE_IP));
+                      props.put("referer", event.getProperty(RequestUtil.REFERER));
+                      props.put("responseCode", responseCode);
+                      props.put("timeTaken", event.getProperty("timetaken"));
+                      props.put("responseSize",responseSize);
+                      props.put("requestSize",event.getProperty("requestSize"));
+                      props.put("deviceType", event.getProperty(RequestUtil.DEVICE_TYPE));
+                      props.put("timeInMilliSec",System.currentTimeMillis());
+                      props.put("timeStamp",new Timestamp(System.currentTimeMillis()));
+                      props.put("appVersion", event.getProperty("appVersion"));
+                      props.put("executor", event.getProperty("executor"));
+                      props.put("exception", event.getProperty("exception"));
+                      props.put("job",  event.getProperty("job"));
+                      if(account != null){
+                          props.put("fselect", String.valueOf(account.getSelectQueries()));
+                          props.put("finsert", String.valueOf(account.getInsertQueries()));
+                          props.put("fdelete", String.valueOf(account.getDeleteQueries()));
+                          props.put("fupdate", String.valueOf(account.getUpdateQueries()));
+                          props.put("fstime", String.valueOf(account.getSelectQueriesTime()));
+                          props.put("fitime", String.valueOf(account.getInsertQueriesTime()));
+                          props.put("fdtime", String.valueOf(account.getDeleteQueriesTime()));
+                          props.put("futime", String.valueOf(account.getUpdateQueriesTime()));
+                          props.put("frget", String.valueOf(account.getRedisGetCount()));
+                          props.put("frput", String.valueOf(account.getRedisPutCount()));
+                          props.put("frdel", String.valueOf(account.getRedisDeleteCount()));
+                          props.put("frgtime", String.valueOf(account.getRedisGetTime()));
+                          props.put("frptime", String.valueOf(account.getRedisPutTime()));
+                          props.put("frdtime", String.valueOf(account.getRedisDeleteTime()));
+                          props.put("ijob", String.valueOf(account.getInstantJobCount()));
+                          props.put("ijobfiletime", String.valueOf(account.getInstantJobFileAddTime()));
+                          props.put("ftqueries", String.valueOf(account.getTotalQueries()));
+                          props.put("ftqtime", String.valueOf(account.getTotalQueryTime()));
+                          props.put("fjsonconvtime", String.valueOf(account.getJsonConversionTime()));
+                      }
+                      long auditStartTime = System.currentTimeMillis();
+                      FacilioService.runAsService(FacilioConstants.Services.AUDIT_SERVICE,()->inserAuditLog(props));
+                      LOGGER.info("Time taken to insert Audit Log : "+ (System.currentTimeMillis() - auditStartTime) + " millsec");
+                  }
+            }
+          
         } catch (Exception e) {
             LOGGER.info("Exception in access log: ", e);
         }
@@ -179,6 +238,14 @@ public class AccessLogFilter implements Filter {
                 LOGGER.error("Exception while cleaning current account ", e);
             }
         }
+    }
+
+    private void inserAuditLog ( Map<String, Object> props ) throws SQLException {
+        GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+                .fields(FieldFactory.getFacilioAuditFields())
+                .table(ModuleFactory.getFacilioAuditModule().getTableName())
+                .addRecord(props);
+        builder.save();
     }
 
     public void destroy() {

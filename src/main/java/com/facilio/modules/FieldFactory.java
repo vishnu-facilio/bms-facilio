@@ -9710,5 +9710,49 @@ public class FieldFactory {
 
         return fields;
     }
+
+    public static List<FacilioField> getFacilioAuditFields(){
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getFacilioAuditModule();
+        fields.add(getIdField(module));
+        fields.add(AccountConstants.getOrgIdField());
+        fields.add(getNumberField("userId","USER_ID",module));
+        fields.add(getStringField("app","APP",module));
+        fields.add(getStringField("appVersion","APP_VERSION",module));
+        fields.add(getStringField("deviceType","DEVICE_TYPE",module));
+        fields.add(getStringField("exception","EXCEPTION",module));
+        fields.add(getStringField("executor","EXECUTOR",module));
+        fields.add(getNumberField("responseSize","RESPONSE_SIZE",module));
+        fields.add(getNumberField("responseCode","RESOPNSE_CODE",module));
+        fields.add(getStringField("job","JOB",module));
+        fields.add(getStringField("reqUri","REQ_URI",module));
+        fields.add(getStringField("referer","REFERER",module));
+        fields.add(getStringField("sourceIp","SOURCE_IP",module));
+        fields.add(getStringField("remoteIp","REMOTE_IP",module));
+        fields.add(getStringField("timeInMilliSec","TIME_IN_MILLISEC",module));
+        fields.add(getStringField("timeStamp","TIMESTAMP",module));
+        fields.add(getNumberField("timeTaken","TIMETAKEN",module));
+        fields.add(getNumberField("fselect","SELECT_QUERY_COUNT",module));
+        fields.add(getNumberField("fstime","SELECT_QUERY_TIME",module));
+        fields.add(getNumberField("finsert","INSERT_QUERY_COUNT",module));
+        fields.add(getNumberField("fitime","INSERT_QUERY_TIME",module));
+        fields.add(getNumberField("fdelete","DELETE_QUERY_COUNT",module));
+        fields.add(getNumberField("fdtime","DELETE_QUERY_TIME",module));
+        fields.add(getNumberField("fupdate","UPDATE_QUERY_COUNT",module));
+        fields.add(getNumberField("futime","UPDATE_QUERY_TIME",module));
+        fields.add(getNumberField("frget","REDIS_GET_COUNT",module));
+        fields.add(getNumberField("frgtime","REDIS_GET_TIME",module));
+        fields.add(getNumberField("frput","REDIS_PUT_COUNT",module));
+        fields.add(getNumberField("frptime","REDIS_PUT_TIME",module));
+        fields.add(getNumberField("frdel","REDIS_DELETE_COUNT",module));
+        fields.add(getNumberField("frdtime","REDIS_DELETE_TIME",module));
+        fields.add(getNumberField("ijob","INSTANT_JOB_COUNT",module));
+        fields.add(getNumberField("ijobfiletime","INSTANT_JOB_FILE_ADDED_TIME",module));
+        fields.add(getNumberField("ftqueries","TOTAL_QUERIES",module));
+        fields.add(getNumberField("ftqtime","TOTAL_QUERY_TIME",module));
+        fields.add(getNumberField("fjsonconvtime","JSON_CONV_TIME",module));
+
+        return fields;
+    }
 }
 
