@@ -27,6 +27,9 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FileField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.MultiEnumField;
+import com.facilio.modules.fields.MultiLookupField;
+import com.facilio.modules.fields.SupplementRecord;
 
 public class GenericAddSubModuleDataCommand extends FacilioCommand {
 
@@ -158,9 +161,14 @@ public class GenericAddSubModuleDataCommand extends FacilioCommand {
 	                    }
 	
 	                    List<FacilioField> fileFields = new ArrayList<>();
+	        			    List<SupplementRecord> supplements = new ArrayList<>();
+
 	                    for (FacilioField f : fields) {
 	                        if (f instanceof FileField) {
 	                            fileFields.add(f);
+	                        }
+	                        else if (f instanceof MultiEnumField || f instanceof MultiLookupField) {
+	                        		supplements.add((SupplementRecord)f);
 	                        }
 	                    }
 	
@@ -203,6 +211,9 @@ public class GenericAddSubModuleDataCommand extends FacilioCommand {
 	                        CommonCommandUtil.handleLookupFormData(fields, moduleRecord.getData());
 	                        beanList.add(moduleRecord);
 	                    }
+	                    if(!supplements.isEmpty()) {
+	        					insertRecordBuilder.insertSupplements(supplements);
+	        				}
 	                    insertRecordBuilder.addRecords(beanList);
 	                    insertRecordBuilder.save();
 	

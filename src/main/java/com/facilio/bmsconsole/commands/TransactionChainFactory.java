@@ -102,8 +102,6 @@ public class TransactionChainFactory {
 			c.addCommand(new AddNotesCommand());
 			c.addCommand(new ForkChainToInstantJobCommand()
 					.addCommand(new ExecuteNoteWorkflowCommand()));
-			c.addCommand(new AddNoteTicketActivityCommand());
-//			c.setPostTransactionChain(getUpdateTicketNotesChain());
 			c.addCommand(new AddActivitiesCommand());
 			return c;
 		}

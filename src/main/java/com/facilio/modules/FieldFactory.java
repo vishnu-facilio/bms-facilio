@@ -251,6 +251,7 @@ public class FieldFactory {
                 "dueDate",
 //                "trigger",
                 "modifiedTime",
+                "noOfTasks",
                 "noOfClosedTasks",
                 "priority",
                 "requester",
@@ -269,7 +270,7 @@ public class FieldFactory {
                 "responseDueDate",
                 "siteId",
                 "serialNumber",
-                "isQuotationNeeded"
+                "isQuotationNeeded"	
         }));
 
         public static final List<String> ASSET_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[] {

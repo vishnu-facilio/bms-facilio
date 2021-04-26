@@ -1028,6 +1028,13 @@ public class CommonCommandUtil {
 					}
 					break;
 					case MULTI_LOOKUP:
+						if (!(data.get(field.getName()) instanceof List)) { 
+							String val = data.get(field.getName()).toString();
+							List<Map<String, Object>> valList = Arrays.asList(val.split(",")).stream().map(recId -> {
+								return FieldUtil.getEmptyLookedUpProp(Long.parseLong(recId));
+							}).collect(Collectors.toList());
+							data.put(field.getName(), valList);
+						}
 						supplements.add((MultiLookupField)field);
 						break;
 					case MULTI_ENUM: {
