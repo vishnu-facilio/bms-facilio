@@ -2055,6 +2055,7 @@ public class FacilioConstants {
 			classMap.put(BUILDING_ACTIVITY, ActivityContext.class);
 			classMap.put(FLOOR_ACTIVITY, ActivityContext.class);
 			classMap.put(FLOOR_ACTIVITY, ActivityContext.class);
+			classMap.put(SPACE_ACTIVITY, ActivityContext.class);
 			
 			classMap.put(MODBUS_TCP_CONTROLLER_MODULE_NAME, ModbusTcpControllerContext.class);
 			classMap.put(MODBUS_RTU_CONTROLLER_MODULE_NAME, ModbusRtuControllerContext.class);
