@@ -241,9 +241,26 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 						spaceCategoryId = (Long) ((Map<String,Object>)props.remove("spaceCategoryId")).get("id");
 					}
 					
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					
+					List<FacilioField> workorderCustomFields = modBean.getAllCustomFields(FacilioConstants.ContextNames.WORK_ORDER);
+					
+					JSONObject additionalInfoJSON = new JSONObject();
+					
+					if(workorderCustomFields != null && !workorderCustomFields.isEmpty()) {
+						
+						for(FacilioField workorderCustomField : workorderCustomFields) {
+							if(props.get(workorderCustomField.getName()) != null) {
+								additionalInfoJSON.put(workorderCustomField.getName(), props.remove(workorderCustomField.getName()));
+							}
+						}
+					}
+					
+					
 					LOGGER.debug("wo props -> "+props);
 					
 					WorkorderTemplate woTemplate = FieldUtil.getAsBeanFromMap(props, WorkorderTemplate.class);
+					
 					PreventiveMaintenance pm = FieldUtil.getAsBeanFromMap(props, PreventiveMaintenance.class);
 					if(props.get("triggerName") != null) {
 						PMTriggerContext trigger = FieldUtil.getAsBeanFromMap(props, PMTriggerContext.class);
@@ -277,6 +294,9 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 					woTemplate.setTenantId(tenantId);
 					woTemplate.setVendorId(vendorId);
 					woTemplate.setSafetyPlanId(safetyPlanId);
+					
+					woTemplate.setAdditionInfo(additionalInfoJSON);
+					
 					if(resource != null) {
 						woTemplate.setResource(resource);
 						woTemplate.setResourceId(resource.getId());
