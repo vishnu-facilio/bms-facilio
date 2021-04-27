@@ -45,11 +45,18 @@ public class GetAllWebTabCommand extends FacilioCommand {
 					}
 					tab.setModuleIds(moduleIds);
 					tab.setSpecialTypeModules(specialTypes);
+					List<FacilioModule> modules = new ArrayList<>();
 					if (CollectionUtils.isNotEmpty(tab.getModuleIds())) {
-						List<FacilioModule> modules = new ArrayList<>();
 						for (Long moduleId : tab.getModuleIds()) {
 							modules.add(modBean.getModule(moduleId));
 						}
+					}
+					if (CollectionUtils.isNotEmpty(tab.getSpecialTypeModules())) {
+						for (String specialType : tab.getSpecialTypeModules()) {
+							modules.add(modBean.getModule(specialType));
+						}
+					}
+					if (CollectionUtils.isNotEmpty(modules)) {
 						tab.setModules(modules);
 					}
 				}

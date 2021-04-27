@@ -148,19 +148,27 @@ public class AddOrUpdateTabCommand extends FacilioCommand {
 
     private void insertIntoTabIdAppIdMappingTable(WebTabContext webTab) throws Exception {
         List<Map<String, Object>> tabIdAppIdProps = new ArrayList<>();
+        List<FacilioModule> modules = new ArrayList<>();
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         if (webTab.getModuleIds() != null && !webTab.getModuleIds().isEmpty()) {
             for (Long moduleId : webTab.getModuleIds()) {
                 TabIdAppIdMappingContext tabIdAppIdMappingContext = new TabIdAppIdMappingContext(webTab.getId(),
                         moduleId, webTab.getApplicationId());
                 tabIdAppIdProps.add(FieldUtil.getAsProperties(tabIdAppIdMappingContext));
+                modules.add(modBean.getModule(moduleId));
             }
         }
         if (CollectionUtils.isNotEmpty(webTab.getSpecialTypeModules())) {
             for (String specialType : webTab.getSpecialTypeModules()) {
                 TabIdAppIdMappingContext tabIdAppIdMappingContext = new TabIdAppIdMappingContext(webTab.getId(), webTab.getApplicationId(), specialType);
                 tabIdAppIdProps.add(FieldUtil.getAsProperties(tabIdAppIdMappingContext));
+                modules.add(modBean.getModule(specialType));
             }
         }
+        if (CollectionUtils.isNotEmpty(modules)) {
+            webTab.setModules(modules);
+        }
+
         if (!tabIdAppIdProps.isEmpty()) {
             GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
                     .table(ModuleFactory.getTabIdAppIdMappingModule().getTableName())
