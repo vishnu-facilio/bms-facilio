@@ -5,9 +5,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.MapUtils;
@@ -47,7 +49,7 @@ public class ExecuteRollUpFieldCommand extends FacilioCommand implements PostTra
 	
 	private static final Logger LOGGER = Logger.getLogger(ExecuteRollUpFieldCommand.class.getName());
 	
-	private LinkedHashMap<RollUpField,List<Long>> triggeringChildFieldVsChildGroupedIds = new LinkedHashMap<RollUpField,List<Long>>();
+	private LinkedHashMap<RollUpField,LinkedHashSet<Long>> triggeringChildFieldVsChildGroupedIds = new LinkedHashMap<RollUpField,LinkedHashSet<Long>>();
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -77,7 +79,7 @@ public class ExecuteRollUpFieldCommand extends FacilioCommand implements PostTra
 					{	
 						for(RollUpField triggeringChildField:triggeringChildFields) 
 						{
-							List<Long> triggerChildGroupedIds = new ArrayList<Long>();
+							LinkedHashSet<Long> triggerChildGroupedIds = new LinkedHashSet<Long>();
 							for(Object record:records) 
 							{
 								Map<String, Object> recordData = FieldUtil.getAsProperties(record);
@@ -118,10 +120,11 @@ public class ExecuteRollUpFieldCommand extends FacilioCommand implements PostTra
 				List<ReadingDataMeta> rollUpFieldData = new ArrayList<ReadingDataMeta>();
 				for(RollUpField triggeringChildField :triggeringChildFieldVsChildGroupedIds.keySet()) 
 				{
-					List<Long> triggerChildGroupedIds = triggeringChildFieldVsChildGroupedIds.get(triggeringChildField);
+					LinkedHashSet<Long> triggerChildGroupedIds = triggeringChildFieldVsChildGroupedIds.get(triggeringChildField);
 					if(triggerChildGroupedIds != null && !triggerChildGroupedIds.isEmpty())
-					{						
-						RollUpFieldUtil.aggregateFieldAndAddRollUpFieldData(triggeringChildField, triggerChildGroupedIds, rollUpFieldData);	
+					{				
+						List<Long> triggerChildGroupedIdsList = new ArrayList<Long>(triggerChildGroupedIds);
+						RollUpFieldUtil.aggregateFieldAndAddRollUpFieldData(triggeringChildField, triggerChildGroupedIdsList, rollUpFieldData);	
 					}
 				}
 				if(rollUpFieldData != null && !rollUpFieldData.isEmpty()) 
