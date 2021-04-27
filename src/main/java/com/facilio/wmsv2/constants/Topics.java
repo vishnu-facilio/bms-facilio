@@ -11,6 +11,7 @@ public interface Topics {
         String ping = "__ping__";
         String livereading = "__livereading__";
         String agentpoints = "__agentpoints__";
+        String auditLogs = "__audit_logs__";
     }
 
     interface Push {
