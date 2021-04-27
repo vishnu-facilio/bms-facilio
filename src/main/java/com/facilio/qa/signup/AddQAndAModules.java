@@ -121,6 +121,9 @@ public class AddQAndAModules extends SignUpData {
                 true);
 
         List<FacilioField> fields = new ArrayList<>();
+        SystemEnumField typeField = (SystemEnumField) FieldFactory.getDefaultField("type", "Type", "Q_AND_A_TYPE", FieldType.SYSTEM_ENUM);
+        typeField.setEnumName("QAndAType");
+        fields.add(typeField);
         SystemEnumField statusField = (SystemEnumField) FieldFactory.getDefaultField("responseStatus", "Response Status", "RESPONSE_STATUS", FieldType.SYSTEM_ENUM);
         statusField.setEnumName("QAndAResponseStatus");
         fields.add(statusField);

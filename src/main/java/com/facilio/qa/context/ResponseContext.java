@@ -10,15 +10,20 @@ import lombok.Setter;
 public abstract class ResponseContext <T extends QAndATemplateContext> extends V3Context {
     private Integer totalAnswered;
     private ResponseStatus resStatus;
+    private QAndAType qAndAType;
+
+    public Integer getType() {
+        return qAndAType == null ? null : qAndAType.getIndex();
+    }
+    public void setType(Integer type) {
+        qAndAType = type == null ? null : QAndAType.valueOf(type);
+    }
 
     public Integer getResponseStatus() {
-        if (resStatus != null) {
-            resStatus.getIndex();
-        }
-        return null;
+        return resStatus == null ? null : resStatus.getIndex();
     }
     public void setResponseStatus(Integer responseStatus) {
-        this.resStatus = ResponseStatus.valueOf(responseStatus);
+        this.resStatus = responseStatus == null ? null : ResponseStatus.valueOf(responseStatus);
     }
 
     public abstract T getParent();

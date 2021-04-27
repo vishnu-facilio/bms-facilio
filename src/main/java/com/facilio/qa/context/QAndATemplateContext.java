@@ -36,7 +36,7 @@ public abstract class QAndATemplateContext <R extends ResponseContext> extends V
 
     private String name;
     private String description;
-    private QAndAType typeEnum;
+    private QAndAType qAndAType;
     private Long responseModuleId;
 
     private List<PageContext> pages;
@@ -46,10 +46,10 @@ public abstract class QAndATemplateContext <R extends ResponseContext> extends V
     }
 
     public Integer getType() {
-        return typeEnum == null ? null : typeEnum.getIndex();
+        return qAndAType == null ? null : qAndAType.getIndex();
     }
     public void setType(Integer type) {
-        typeEnum = type == null ? null : QAndAType.valueOf(type);
+        qAndAType = type == null ? null : QAndAType.valueOf(type);
     }
 
     protected abstract R newResponseObject();
@@ -57,6 +57,7 @@ public abstract class QAndATemplateContext <R extends ResponseContext> extends V
 
     public R constructResponse() {
         R response = newResponseObject();
+        response.setQAndAType(this.qAndAType);
         response.setParent(this);
         response.setResStatus(ResponseContext.ResponseStatus.NOT_ANSWERED);
         addDefaultProps(response);
@@ -67,7 +68,7 @@ public abstract class QAndATemplateContext <R extends ResponseContext> extends V
         @Override
         protected Class<? extends QAndATemplateContext> getSubClass(int index) {
             QAndAType typeEnum = QAndAType.valueOf(index);
-            return typeEnum == null ? DummyQAndATemplateContext.class : typeEnum.getSubClass();
+            return typeEnum == null ? DummyQAndATemplateContext.class : typeEnum.getTemplateClass();
         }
     }
 }

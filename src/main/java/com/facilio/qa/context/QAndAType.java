@@ -1,5 +1,6 @@
 package com.facilio.qa.context;
 
+import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioEnum;
@@ -13,11 +14,14 @@ import java.util.Map;
 @Getter
 @AllArgsConstructor
 public enum QAndAType implements FacilioEnum<QAndAType> {
-    INSPECTION (FacilioConstants.Inspection.INSPECTION_TEMPLATE, FacilioConstants.Inspection.INSPECTION_TEMPLATE, InspectionTemplateContext.class)
+    INSPECTION (FacilioConstants.Inspection.INSPECTION_TEMPLATE, InspectionTemplateContext.class, FacilioConstants.Inspection.INSPECTION_RESPONSE, InspectionResponseContext.class)
     ;
 
-    private String templateModule, responseModule;
-    private Class<? extends QAndATemplateContext> subClass;
+    private String templateModule;
+    private Class<? extends QAndATemplateContext> templateClass;
+
+    private String responseModule;
+    private Class<? extends ResponseContext> responseClass;
 
     private static final Map<String, QAndAType> TEMPLATE_WISE_TYPE = initTemplateWiseType();
     private static Map<String, QAndAType> initTemplateWiseType () {
