@@ -2,18 +2,32 @@ package com.facilio.bmsconsoleV3.signup.inspection;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.workflow.rule.AbstractStateTransitionRuleContext;
+import com.facilio.bmsconsole.workflow.rule.AbstractStateTransitionRuleContext.TransitionType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
+import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.modules.fields.SystemEnumField;
+import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +51,8 @@ public class AddInspectionModules extends SignUpData {
         
         FacilioModule inspection = constructInspection(modBean);
         modules.add(inspection);
-        modules.add(constructInspectionResponse(modBean, inspection));
+        FacilioModule inspectionResponseModule = constructInspectionResponse(modBean, inspection);
+        modules.add(inspectionResponseModule);
         
         
         addModuleChain = TransactionChainFactory.addSystemModuleChain();
@@ -60,6 +75,8 @@ public class AddInspectionModules extends SignUpData {
         addModuleChain1 = TransactionChainFactory.addSystemModuleChain();
         addModuleChain1.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules1);
         addModuleChain1.execute();
+        
+        addDefaultStateFlow(inspectionResponseModule);
     }
 
 
@@ -235,6 +252,48 @@ public class AddInspectionModules extends SignUpData {
         FacilioField createdTime = (FacilioField) FieldFactory.getDefaultField("createdTime", "Created Time", "CREATED_TIME", FieldType.DATE_TIME);
         fields.add(createdTime);
         
+        
+        
+        FacilioField scheduledWorkStart = (FacilioField) FieldFactory.getDefaultField("scheduledWorkStart", "Scheduled Work Start", "SCHEDULED_WORK_START", FieldType.DATE_TIME);
+        fields.add(scheduledWorkStart);
+        
+        FacilioField scheduledWorkEnd = (FacilioField) FieldFactory.getDefaultField("scheduledWorkEnd", "Scheduled Work End", "SCHDULED_WORK_END", FieldType.DATE_TIME);
+        fields.add(scheduledWorkEnd);
+        
+        FacilioField actualWorkStart = (FacilioField) FieldFactory.getDefaultField("actualWorkStart", "Actual Work Start", "ACTUAL_WORK_START", FieldType.DATE_TIME);
+        fields.add(actualWorkStart);
+        
+        FacilioField actualWorkEnd = (FacilioField) FieldFactory.getDefaultField("actualWorkEnd", "Actual Work End", "ACTUAL_WORK_END", FieldType.DATE_TIME);
+        fields.add(actualWorkEnd);
+        
+        FacilioField resumedWorkStart = (FacilioField) FieldFactory.getDefaultField("resumedWorkStart", "Resumed Work Start", "RESUMED_WORK_START", FieldType.DATE_TIME);
+        fields.add(resumedWorkStart);
+        
+        FacilioField  actualWorkDuration = (FacilioField) FieldFactory.getDefaultField("actualWorkDuration", "Actual Work Duration", "ACTUAL_WORK_DURATION", FieldType.NUMBER);
+        fields.add(actualWorkDuration);
+        
+        LookupField moduleStateField = (LookupField) FieldFactory.getField("moduleState", "Status", "MODULE_STATE", module, FieldType.LOOKUP);
+		moduleStateField.setDefault(true);
+		moduleStateField.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
+		moduleStateField.setLookupModule(modBean.getModule("ticketstatus"));
+		fields.add(moduleStateField);
+
+		FacilioField stateFlowIdField = FieldFactory.getField("stateFlowId", "State Flow Id", "STATE_FLOW_ID", module, FieldType.NUMBER);
+		stateFlowIdField.setDefault(true);
+		stateFlowIdField.setDisplayType(FieldDisplayType.NUMBER);
+		fields.add(stateFlowIdField);
+
+		LookupField approvalStateField = (LookupField) FieldFactory.getField("approvalStatus", "Approval Status", "APPROVAL_STATE", module, FieldType.LOOKUP);
+		approvalStateField.setDefault(true);
+		approvalStateField.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
+		approvalStateField.setLookupModule(modBean.getModule("ticketstatus"));
+		fields.add(approvalStateField);
+
+		FacilioField approvalFlowIdField = FieldFactory.getField("approvalFlowId", "Approval Flow Id", "APPROVAL_FLOW_ID", module, FieldType.NUMBER);
+		approvalFlowIdField.setDefault(true);
+		approvalFlowIdField.setDisplayType(FieldDisplayType.NUMBER);
+		fields.add(approvalFlowIdField);
+        
         SystemEnumField status = (SystemEnumField) FieldFactory.getDefaultField("status", "Status", "STATUS", FieldType.SYSTEM_ENUM);
         status.setEnumName("InspectionResponseStatus");
         fields.add(status);
@@ -283,4 +342,72 @@ public class AddInspectionModules extends SignUpData {
         
         return fields;
 	}
+    
+    public void addDefaultStateFlow(FacilioModule inspectionModule) throws Exception {
+    	
+    	FacilioStatus createdStatus = getFacilioStatus(inspectionModule, "created", "Created", StatusType.OPEN, Boolean.FALSE);
+    	FacilioStatus assignedStatus = getFacilioStatus(inspectionModule, "assigned", "Assigned", StatusType.OPEN, Boolean.FALSE);
+    	FacilioStatus wipStatus = getFacilioStatus(inspectionModule, "workInProgress", "Work in Progress", StatusType.OPEN, Boolean.TRUE);
+    	FacilioStatus onHoldStatus = getFacilioStatus(inspectionModule, "onHold", "On Hold", StatusType.OPEN, Boolean.FALSE);
+    	FacilioStatus resolvedStatus = getFacilioStatus(inspectionModule, "resolved", "Resolved", StatusType.OPEN, Boolean.FALSE);
+    	FacilioStatus closed = getFacilioStatus(inspectionModule, "closed", "Closed", StatusType.CLOSED, Boolean.FALSE);
+    	
+    	 StateFlowRuleContext stateFlowRuleContext = new StateFlowRuleContext();
+         stateFlowRuleContext.setName("Default Stateflow");
+         stateFlowRuleContext.setModuleId(inspectionModule.getModuleId());
+         stateFlowRuleContext.setModule(inspectionModule);
+         stateFlowRuleContext.setActivityType(EventType.CREATE);
+         stateFlowRuleContext.setExecutionOrder(1);
+         stateFlowRuleContext.setStatus(true);
+         stateFlowRuleContext.setDefaltStateFlow(true);
+         stateFlowRuleContext.setDefaultStateId(createdStatus.getId());
+         stateFlowRuleContext.setRuleType(WorkflowRuleContext.RuleType.STATE_FLOW);
+         WorkflowRuleAPI.addWorkflowRule(stateFlowRuleContext);
+         
+         Criteria assignmentCriteria = new Criteria();
+         assignmentCriteria.addAndCondition(CriteriaAPI.getCondition("ASSIGNED_TO", "assignedTo", null, CommonOperators.IS_NOT_EMPTY));
+         
+         addStateflowTransitionContext(inspectionModule, stateFlowRuleContext, "Assign", createdStatus, assignedStatus,TransitionType.CONDITIONED,assignmentCriteria);
+         addStateflowTransitionContext(inspectionModule, stateFlowRuleContext, "Start Work", assignedStatus, wipStatus,TransitionType.NORMAL,null);
+         addStateflowTransitionContext(inspectionModule, stateFlowRuleContext, "Pause", wipStatus, onHoldStatus,TransitionType.NORMAL,null);
+         addStateflowTransitionContext(inspectionModule, stateFlowRuleContext, "Resume", onHoldStatus, wipStatus,TransitionType.NORMAL,null);
+         addStateflowTransitionContext(inspectionModule, stateFlowRuleContext, "Resolve", wipStatus, resolvedStatus,TransitionType.NORMAL,null);
+         addStateflowTransitionContext(inspectionModule, stateFlowRuleContext, "Close", resolvedStatus, closed,TransitionType.NORMAL,null);
+         addStateflowTransitionContext(inspectionModule, stateFlowRuleContext, "Re-Open", closed, assignedStatus,TransitionType.NORMAL,null);
+         
+    }
+    
+    
+    private StateflowTransitionContext addStateflowTransitionContext(FacilioModule module,StateFlowRuleContext parentStateFlow,String name,FacilioStatus fromStatus,FacilioStatus toStatus,AbstractStateTransitionRuleContext.TransitionType transitionType,Criteria criteria) throws Exception {
+    	
+    	StateflowTransitionContext stateFlowTransitionContext = new StateflowTransitionContext();
+    	stateFlowTransitionContext.setName(name);
+    	stateFlowTransitionContext.setModule(module);
+    	stateFlowTransitionContext.setModuleId(module.getModuleId());
+    	stateFlowTransitionContext.setActivityType(EventType.STATE_TRANSITION);
+    	stateFlowTransitionContext.setExecutionOrder(1);
+    	stateFlowTransitionContext.setButtonType(1);
+    	stateFlowTransitionContext.setFromStateId(fromStatus.getId());
+    	stateFlowTransitionContext.setToStateId(toStatus.getId());
+        stateFlowTransitionContext.setRuleType(WorkflowRuleContext.RuleType.STATE_RULE);
+        stateFlowTransitionContext.setType(transitionType);
+        stateFlowTransitionContext.setStateFlowId(parentStateFlow.getId());
+        stateFlowTransitionContext.setCriteria(criteria);
+        WorkflowRuleAPI.addWorkflowRule(stateFlowTransitionContext);
+        
+        
+        return stateFlowTransitionContext;
+    }
+    
+    private FacilioStatus getFacilioStatus(FacilioModule module,String status,String displayName,StatusType status1,Boolean timerEnabled) throws Exception {
+    	
+    	FacilioStatus statusObj = new FacilioStatus();
+    	statusObj.setStatus(status);
+    	statusObj.setDisplayName(displayName);
+    	statusObj.setTypeCode(status1.getIntVal());
+    	statusObj.setTimerEnabled(timerEnabled);
+        TicketAPI.addStatus(statusObj, module);
+        
+        return statusObj;
+    }
 }
