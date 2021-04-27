@@ -88,6 +88,8 @@ public class CampusAction extends FacilioAction {
 			long locationId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 			location.setId(locationId);
 		}
+		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
+		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.SITE_ACTIVITY);
 		context.put(FacilioConstants.ContextNames.SITE, site);
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		FacilioChain addCampus = FacilioChainFactory.getAddCampusChain();
@@ -120,6 +122,8 @@ public class CampusAction extends FacilioAction {
 			site.setLocation(null);
 		}
 		
+		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
+		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.SITE_ACTIVITY);
 		context.put(FacilioConstants.ContextNames.BASE_SPACE, site);
 		context.put(FacilioConstants.ContextNames.SPACE_TYPE, "site");
 		CommonCommandUtil.addEventType(EventType.EDIT, context);

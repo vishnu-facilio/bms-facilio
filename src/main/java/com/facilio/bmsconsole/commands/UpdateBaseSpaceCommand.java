@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.TenantUnitSpaceContext;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -46,6 +48,12 @@ public class UpdateBaseSpaceCommand extends FacilioCommand {
 			FacilioModule module = modBean.getModule(moduleName);
 			CommonCommandUtil.handleFormDataAndSupplement(modBean.getAllFields(moduleName), baseSpace.getData(), Collections.EMPTY_LIST);
 			Map<Long, List<UpdateChangeSet>> changeSet = RecordAPI.updateRecord(baseSpace, module, modBean.getAllFields(moduleName), true);
+			
+			Map<Long, List<UpdateChangeSet>> changeSetMap = (Map<Long, List<UpdateChangeSet>>) context.get(ContextNames.CHANGE_SET);
+			
+			if (changeSetMap == null) {
+				context.put(FacilioConstants.ContextNames.CHANGE_SET, changeSet);
+			}
 
 			CommonCommandUtil.appendChangeSetMapToContext(context, changeSet, moduleName);
 
@@ -53,6 +61,9 @@ public class UpdateBaseSpaceCommand extends FacilioCommand {
 			context.put(FacilioConstants.ContextNames.BASE_SPACE, baseSpace);
 																		
 			context.put(FacilioConstants.ContextNames.RECORD_ID, baseSpace.getId());
+			List<Long> recordIds = new ArrayList<>();
+			recordIds.add(baseSpace.getId());
+			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
 		}
 		else 
 		{

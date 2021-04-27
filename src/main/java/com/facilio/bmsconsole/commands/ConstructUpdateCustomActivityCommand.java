@@ -31,26 +31,29 @@ public class ConstructUpdateCustomActivityCommand extends FacilioCommand {
 		if (changeSet == null) {
 			return false;
 		}
-		System.out.println("123"+ changeSet);
 		if(recordIds != null && !recordIds.isEmpty()) {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<UpdateChangeSet> changeSets = changeSet.get(recordIds.get(0));
 		
+		List<Long> fieldIds = new ArrayList<>();
+		
 		JSONObject info = new JSONObject();
 		List<Object> changeList = new ArrayList<Object>();
-		System.out.println("123changeSets"+ changeSets);
 		for (UpdateChangeSet changeset : changeSets) {
-		    long fieldid = changeset.getFieldId();
-			Object oldValue = changeset.getOldValue();
-			Object newValue = changeset.getNewValue();
-			FacilioField field = modBean.getField(fieldid, moduleName);
-			
-			JSONObject changeObj = new JSONObject();
-			changeObj.put("field", field.getName());
-			changeObj.put("displayName", field.getDisplayName());
-			changeObj.put("oldValue", oldValue);
-			changeObj.put("newValue", newValue);
-			changeList.add(changeObj);
+			long fieldid = changeset.getFieldId();
+			if (!fieldIds.contains(fieldid) || fieldIds.isEmpty()) {
+			    fieldIds.add(fieldid);
+				Object oldValue = changeset.getOldValue();
+				Object newValue = changeset.getNewValue();
+				FacilioField field = modBean.getField(fieldid, moduleName);
+				
+				JSONObject changeObj = new JSONObject();
+				changeObj.put("field", field.getName());
+				changeObj.put("displayName", field.getDisplayName());
+				changeObj.put("oldValue", oldValue);
+				changeObj.put("newValue", newValue);
+				changeList.add(changeObj);	
+			}
 		}	
 		info.put("changeSet", changeList);
 

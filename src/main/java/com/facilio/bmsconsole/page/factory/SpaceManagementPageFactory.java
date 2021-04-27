@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.page.Page.Tab;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.PageWidget.CardType;
 import com.facilio.bmsconsole.page.PageWidget.WidgetType;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -59,6 +60,15 @@ public class SpaceManagementPageFactory extends PageFactory {
 		        tab1.addSection(tab1Sec4);
 				addReadingWidget(tab1Sec4);
 				addCommonSubModuleWidget(tab1Sec4, module, site);
+				
+				Page.Tab tab2 = page.new Tab("Activity");
+			    page.addTab(tab2);
+			    Page.Section tab2Sec1 = page.new Section();
+			    tab2.addSection(tab2Sec1);
+			    PageWidget activityWidget = new PageWidget(PageWidget.WidgetType.ACTIVITY);
+			    activityWidget.addToLayoutParams(tab2Sec1, 24, 3);
+			    activityWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.SITE_ACTIVITY);
+			    tab2Sec1.addWidget(activityWidget);
 		}
 		else {
 		      Tab tab1 = page.new Tab("summary");
@@ -85,6 +95,15 @@ public class SpaceManagementPageFactory extends PageFactory {
 		        tab1.addSection(tab1Sec4);
 				addReadingWidget(tab1Sec4);
 				addCommonSubModuleWidget(tab1Sec4, module, site);
+				
+				Page.Tab tab2 = page.new Tab("Activity");
+			    page.addTab(tab2);
+			    Page.Section tab2Sec1 = page.new Section();
+			    tab2.addSection(tab2Sec1);
+			    PageWidget activityWidget = new PageWidget(PageWidget.WidgetType.ACTIVITY);
+			    activityWidget.addToLayoutParams(tab2Sec1, 24, 3);
+			    activityWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.SITE_ACTIVITY);
+			    tab2Sec1.addWidget(activityWidget);
 		}
 
         return page;
@@ -113,6 +132,16 @@ public class SpaceManagementPageFactory extends PageFactory {
 		addReadingWidget(tab1Sec3);
 		tab1.addSection(tab1Sec3);
 		addCommonSubModuleWidget(tab1Sec3,module, building);
+		
+		Page.Tab tab2 = page.new Tab("Activity");
+	    page.addTab(tab2);
+	    Page.Section tab2Sec1 = page.new Section();
+	    tab2.addSection(tab2Sec1);
+	    PageWidget activityWidget = new PageWidget(PageWidget.WidgetType.ACTIVITY);
+	    activityWidget.addToLayoutParams(tab2Sec1, 24, 3);
+	    activityWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.BUILDING_ACTIVITY);
+	    tab2Sec1.addWidget(activityWidget);
+	    
 		return page;
 	}
 
@@ -140,6 +169,15 @@ public class SpaceManagementPageFactory extends PageFactory {
 		addReadingWidget(tab1Sec3);
 		tab1.addSection(tab1Sec3);
 		addCommonSubModuleWidget(tab1Sec3, module, floor);
+		
+		Page.Tab tab3 = page.new Tab("Activity");
+	    page.addTab(tab3);
+	    Page.Section tab3Sec1 = page.new Section();
+	    tab3.addSection(tab3Sec1);
+	    PageWidget activityWidget = new PageWidget(PageWidget.WidgetType.ACTIVITY);
+	    activityWidget.addToLayoutParams(tab3Sec1, 24, 3);
+	    activityWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.FLOOR_ACTIVITY);
+	    tab3Sec1.addWidget(activityWidget);
 		return page;
 	}
 
@@ -192,7 +230,14 @@ public class SpaceManagementPageFactory extends PageFactory {
 		tab1Sec5.addWidget(unplannedWidget);
 		tab2.addSection(tab1Sec5);
 
-
+		Page.Tab tab3 = page.new Tab("Activity");
+	    page.addTab(tab3);
+	    Page.Section tab3Sec1 = page.new Section();
+	    tab3.addSection(tab3Sec1);
+	    PageWidget activityWidget = new PageWidget(PageWidget.WidgetType.ACTIVITY);
+	    activityWidget.addToLayoutParams(tab3Sec1, 24, 3);
+	    activityWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.SPACE_ACTIVITY);
+	    tab3Sec1.addWidget(activityWidget);
 
 		return page;
 	}

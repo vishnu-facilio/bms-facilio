@@ -43,6 +43,11 @@ public class AddCampusCommand extends FacilioCommand {
 															.fields(fields);
 
 			CommonCommandUtil.handleLookupFormData(fields, site.getData());
+			
+			Boolean withChangeSet = (Boolean) context.get(FacilioConstants.ContextNames.WITH_CHANGE_SET);
+			if (withChangeSet != null && withChangeSet) {
+				builder.withChangeSet();
+			}
 
 			long id = builder.insert(site);
 			site.setId(id);
@@ -50,6 +55,9 @@ public class AddCampusCommand extends FacilioCommand {
 			updateSiteId(id);
 			
 			SpaceAPI.updateHelperFields(site);
+			if (withChangeSet != null && withChangeSet) {
+				context.put(FacilioConstants.ContextNames.CHANGE_SET, builder.getChangeSet());
+			}
 			context.put(FacilioConstants.ContextNames.RECORD_ID, id);
 			context.put(FacilioConstants.ContextNames.PARENT_ID, id);
 		}

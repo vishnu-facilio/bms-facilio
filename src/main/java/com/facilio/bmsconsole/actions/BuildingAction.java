@@ -149,6 +149,9 @@ public class BuildingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.BUILDING, building);
 
 		CommonCommandUtil.addEventType(EventType.CREATE, context);
+		
+		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
+		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.BUILDING_ACTIVITY);
 
 		FacilioChain addBuilding = FacilioChainFactory.getAddBuildingChain();
 		addBuilding.execute(context);
@@ -189,6 +192,9 @@ public class BuildingAction extends FacilioAction {
 		CommonCommandUtil.addEventType(EventType.EDIT, context);
 		context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
 		context.put(FacilioConstants.ContextNames.APPROVAL_TRANSITION_ID, approvalTransitionId);
+		
+		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
+		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.BUILDING_ACTIVITY);
 
 		FacilioChain updateCampus = FacilioChainFactory.getUpdateCampusChain();
 		updateCampus.execute(context);

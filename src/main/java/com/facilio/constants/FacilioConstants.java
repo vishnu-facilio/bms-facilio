@@ -843,6 +843,10 @@ public class FacilioConstants {
         public static final String CONTROLLER_MODULE_NAME = "controller";
         public static final String AGENT_METRICS_MODULE = "agentMetrics";
         public static final String CUSTOM_ACTIVITY = "customactivity";
+        public static final String SITE_ACTIVITY = "siteactivity";
+        public static final String BUILDING_ACTIVITY = "buildingactivity";
+        public static final String FLOOR_ACTIVITY = "flooractivity";
+        public static final String SPACE_ACTIVITY = "spaceactivity";
 
 		public static final String ASSET_DOWNTIME_STATUS = "assetDowntimeStatus";
 		public static final String ASSET_DOWNTIME_ID = "assetDowntimeId";
@@ -2047,7 +2051,11 @@ public class FacilioConstants {
 			classMap.put(HEAT_PUMP, HeatPumpContext.class);
 			classMap.put(UTILITY_METER, UtilityMeterContext.class);
 			classMap.put(CUSTOM_ACTIVITY, ActivityContext.class);
-
+			classMap.put(SITE_ACTIVITY, ActivityContext.class);
+			classMap.put(BUILDING_ACTIVITY, ActivityContext.class);
+			classMap.put(FLOOR_ACTIVITY, ActivityContext.class);
+			classMap.put(FLOOR_ACTIVITY, ActivityContext.class);
+			
 			classMap.put(MODBUS_TCP_CONTROLLER_MODULE_NAME, ModbusTcpControllerContext.class);
 			classMap.put(MODBUS_RTU_CONTROLLER_MODULE_NAME, ModbusRtuControllerContext.class);
 			classMap.put(BACNET_IP_CONTROLLER_MODULE_NAME, BacnetIpControllerContext.class);

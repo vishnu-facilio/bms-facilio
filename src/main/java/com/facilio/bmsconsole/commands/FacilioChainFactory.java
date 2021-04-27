@@ -570,6 +570,8 @@ public class FacilioChainFactory {
 		c.addCommand(new ExecuteRollUpFieldCommand());
 		c.addCommand(new ExecuteStateFlowCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
+		c.addCommand(new ConstructAddCustomActivityCommand());
+		c.addCommand(new AddActivitiesCommand());
 		return c;
 	}
 	
@@ -600,6 +602,9 @@ public class FacilioChainFactory {
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
 		c.addCommand(new ForkChainToInstantJobCommand()
 				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
+		c.addCommand(new SetModuleNameForActivity());
+		c.addCommand(new ConstructUpdateCustomActivityCommand());
+		c.addCommand(new AddActivitiesCommand());
 		return c;
 	}
 	
@@ -685,6 +690,8 @@ public class FacilioChainFactory {
 		c.addCommand(new ExecuteRollUpFieldCommand());
 		c.addCommand(new ExecuteStateFlowCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
+		c.addCommand(new ConstructAddCustomActivityCommand());
+		c.addCommand(new AddActivitiesCommand());
 		return c;
 	}
 	
@@ -763,6 +770,8 @@ public class FacilioChainFactory {
 		c.addCommand(new ExecuteRollUpFieldCommand());
 		c.addCommand(new ExecuteStateFlowCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
+		c.addCommand(new ConstructAddCustomActivityCommand());
+		c.addCommand(new AddActivitiesCommand());
 		return c;
 	}
 	
@@ -814,6 +823,7 @@ public class FacilioChainFactory {
 		c.addCommand(new SetSpaceCategoryModuleDetailsCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddSpaceCommand());
+		c.addCommand(new ConstructAddCustomActivityCommand());
 		c.addCommand(getSpaceReadingsChain());
 		c.addCommand(new UpdateEventListForStateFlowCommand());
 		c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
@@ -821,6 +831,7 @@ public class FacilioChainFactory {
 		c.addCommand(new ExecuteRollUpFieldCommand());
 		c.addCommand(new ExecuteStateFlowCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
+		c.addCommand(new AddActivitiesCommand());
 		return c;
 	}
 	

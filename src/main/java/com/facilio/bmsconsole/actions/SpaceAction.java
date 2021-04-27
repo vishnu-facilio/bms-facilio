@@ -155,6 +155,9 @@ public class SpaceAction extends FacilioAction {
 			categoryId=spaceCategory.getId();
 		}
 		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, categoryId);
+		
+		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
+		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.SPACE_ACTIVITY);
 
 		CommonCommandUtil.addEventType(EventType.CREATE, context);
 
@@ -190,6 +193,9 @@ public class SpaceAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.RECORD, space.getLocation());
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST,Collections.singletonList(space.getLocation().getId()));
 		}
+		
+		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
+		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.SPACE_ACTIVITY);
 		
 		FacilioChain updateCampus = FacilioChainFactory.getUpdateCampusChain();
 		updateCampus.execute(context);

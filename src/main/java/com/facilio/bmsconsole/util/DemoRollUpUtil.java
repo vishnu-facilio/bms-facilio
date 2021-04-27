@@ -63,6 +63,10 @@ public class DemoRollUpUtil {
 		tablesContainsDateField.put("Task_Attachments" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("CustomModuleData" , Arrays.asList("DATETIME_CF1","DATETIME_CF2","DATETIME_CF3","DATETIME_CF4"));
 		tablesContainsDateField.put("Custom_Activity" , Arrays.asList("SYS_CREATED_TIME","SYS_MODIFIED_TIME","TTIME"));
+		tablesContainsDateField.put("Site_Activity" , Arrays.asList("SYS_CREATED_TIME","SYS_MODIFIED_TIME","TTIME"));
+		tablesContainsDateField.put("Building_Activity" , Arrays.asList("SYS_CREATED_TIME","SYS_MODIFIED_TIME","TTIME"));
+		tablesContainsDateField.put("Floor_Activity" , Arrays.asList("SYS_CREATED_TIME","SYS_MODIFIED_TIME","TTIME"));
+		tablesContainsDateField.put("Space_Activity" , Arrays.asList("SYS_CREATED_TIME","SYS_MODIFIED_TIME","TTIME"));
 		tablesContainsDateField.put("Attachments" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("Notes" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("Formula_Field_Resource_Jobs" , Arrays.asList("START_TIME","END_TIME"));

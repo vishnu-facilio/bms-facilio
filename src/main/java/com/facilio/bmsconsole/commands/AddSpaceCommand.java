@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import org.apache.commons.chain.Context;
@@ -20,6 +21,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.InsertRecordBuilder;
+import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
 
 public class AddSpaceCommand extends FacilioCommand {
@@ -45,7 +47,8 @@ public class AddSpaceCommand extends FacilioCommand {
 	             TenantsAPI.addAddress(space.getName() + "_location" , space.getLocation());
 	         }
 			
-			RecordAPI.addRecord(false, Collections.singletonList(space), module, fields);												
+			Map<Long, List<UpdateChangeSet>> changeSet = RecordAPI.addRecord(false, Collections.singletonList(space), module, fields, true);
+			context.put(FacilioConstants.ContextNames.CHANGE_SET, changeSet);
 			SpaceAPI.updateHelperFields(space);
 			context.put(FacilioConstants.ContextNames.RECORD_ID, space.getId());
 			context.put(FacilioConstants.ContextNames.PARENT_ID, space.getId());

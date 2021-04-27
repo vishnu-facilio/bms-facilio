@@ -86,6 +86,9 @@ public class FloorAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.FLOOR, floor);
 
 		CommonCommandUtil.addEventType(EventType.CREATE, context);
+		
+		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
+		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.FLOOR_ACTIVITY);
 
 		FacilioChain addFloor = FacilioChainFactory.getAddFloorChain();
 		addFloor.execute(context);
@@ -104,7 +107,10 @@ public class FloorAction extends FacilioAction {
 		CommonCommandUtil.addEventType(EventType.EDIT, context);
 		context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
 		context.put(FacilioConstants.ContextNames.APPROVAL_TRANSITION_ID, approvalTransitionId);
-
+		
+		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
+		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.FLOOR_ACTIVITY);
+		
 		FacilioChain updateCampus = FacilioChainFactory.getUpdateCampusChain();
 		updateCampus.execute(context);
 		setFloor(floor);

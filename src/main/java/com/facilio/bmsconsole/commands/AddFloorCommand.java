@@ -33,10 +33,19 @@ public class AddFloorCommand extends FacilioCommand {
 															.moduleName(moduleName)
 															.table(dataTableName)
 															.fields(fields);
+			
+			Boolean withChangeSet = (Boolean) context.get(FacilioConstants.ContextNames.WITH_CHANGE_SET);
+			if (withChangeSet != null && withChangeSet) {
+				builder.withChangeSet();
+			}
 															
 			long id = builder.insert(floor);
 			floor.setId(id);
 			SpaceAPI.updateHelperFields(floor);
+			
+			if (withChangeSet != null && withChangeSet) {
+				context.put(FacilioConstants.ContextNames.CHANGE_SET, builder.getChangeSet());
+			}
 			context.put(FacilioConstants.ContextNames.RECORD_ID, id);
 			context.put(FacilioConstants.ContextNames.PARENT_ID, id);
 
