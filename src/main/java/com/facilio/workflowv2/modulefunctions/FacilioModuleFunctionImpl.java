@@ -224,6 +224,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 					}
 				}
 				
+				int i=0;
 				for(ModuleBaseWithCustomFields moduleData :dataList) {
 					FacilioChain addModuleDataChain = FacilioChainFactory.addModuleDataChain();
 					FacilioContext context = addModuleDataChain.getContext();
@@ -237,6 +238,16 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 					context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, false);
 					
 					addModuleDataChain.execute();
+					
+					Map<String, Object> insertObjectMap = null;
+					if(insertObject instanceof Map) {
+						insertObjectMap = (Map<String, Object>) insertObject;
+					}
+					else if (insertObject instanceof Collection) {
+						List<Object> insertList = (List<Object>)insertObject;
+						insertObjectMap = (Map<String, Object>) insertList.get(i++);
+					}
+					insertObjectMap.put("id", moduleData.getId());
 				}
 			}
 		}
