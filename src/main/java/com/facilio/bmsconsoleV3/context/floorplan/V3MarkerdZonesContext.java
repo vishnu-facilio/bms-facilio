@@ -1,7 +1,6 @@
 package com.facilio.bmsconsoleV3.context.floorplan;
 
 import com.facilio.bmsconsole.context.SpaceContext;
-import com.facilio.v3.context.V3Context;
 public class V3MarkerdZonesContext  extends V3IndoorFloorPlanObjectContext {
 
     public SpaceContext getSpace() {
@@ -12,6 +11,23 @@ public class V3MarkerdZonesContext  extends V3IndoorFloorPlanObjectContext {
 		this.space = space;
 	}
 
+	private Boolean isReservable;
+
 	private SpaceContext space;
+
+
+    /**
+     * @return Boolean return the isReservable
+     */
+    public Boolean isIsReservable() {
+        return isReservable;
+    }
+
+    /**
+     * @param isReservable the isReservable to set
+     */
+    public void setIsReservable(Boolean isReservable) {
+        this.isReservable = isReservable;
+    }
 
 }
