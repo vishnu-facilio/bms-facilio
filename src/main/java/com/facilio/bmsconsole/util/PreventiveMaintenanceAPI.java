@@ -1534,9 +1534,9 @@ public class PreventiveMaintenanceAPI {
 								case SCHEDULE:
 									ScheduleInfo schedule = trigger.getSchedule();
 									if (schedule != null) {
-										var frequencyType = schedule.getFrequencyTypeEnum();
+										var frequencyType = trigger.getFrequencyEnum();
 										if (frequencyType != null) {
-											pm.setPmTriggerDescription(frequencyType.getDescription());
+											pm.setPmTriggerDescription(frequencyType.getName());
 										} else {
 											pm.setPmTriggerDescription("---");
 										}
