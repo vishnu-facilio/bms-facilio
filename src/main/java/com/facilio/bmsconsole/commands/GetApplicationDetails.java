@@ -91,11 +91,18 @@ public class GetApplicationDetails extends FacilioCommand {
 										webtab.setPermissionVal(ApplicationApi.getRolesPermissionValForTab(webtab.getId(),
 												AccountUtil.getCurrentUser().getRoleId()));
 									}
+									List<FacilioModule> modules = new ArrayList<>();
 									if (CollectionUtils.isNotEmpty(webtab.getModuleIds())) {
-										List<FacilioModule> modules = new ArrayList<>();
 										for (Long moduleId : webtab.getModuleIds()) {
 											modules.add(modBean.getModule(moduleId));
 										}
+									}
+									if (CollectionUtils.isNotEmpty(webtab.getSpecialTypeModules())) {
+										for (String specialType : webtab.getSpecialTypeModules()) {
+											modules.add(modBean.getModule(specialType));
+										}
+									}
+									if (CollectionUtils.isNotEmpty(modules)) {
 										webtab.setModules(modules);
 									}
 								}
