@@ -294,7 +294,7 @@ public class AddInspectionModules extends SignUpData {
 		approvalFlowIdField.setDisplayType(FieldDisplayType.NUMBER);
 		fields.add(approvalFlowIdField);
         
-        SystemEnumField status = (SystemEnumField) FieldFactory.getDefaultField("status", "Status", "STATUS", FieldType.SYSTEM_ENUM);
+        SystemEnumField status = (SystemEnumField) FieldFactory.getDefaultField("status", "Response Status", "STATUS", FieldType.SYSTEM_ENUM);
         status.setEnumName("InspectionResponseStatus");
         fields.add(status);
         
