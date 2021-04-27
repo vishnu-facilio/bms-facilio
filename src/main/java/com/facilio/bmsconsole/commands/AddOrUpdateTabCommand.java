@@ -21,6 +21,7 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -149,24 +150,16 @@ public class AddOrUpdateTabCommand extends FacilioCommand {
         List<Map<String, Object>> tabIdAppIdProps = new ArrayList<>();
         if (webTab.getModuleIds() != null && !webTab.getModuleIds().isEmpty()) {
             for (Long moduleId : webTab.getModuleIds()) {
-                /*if (webTab.getTypeEnum() == Type.MODULE) {
-                    if (isModuleIdForModuleTabForAppIdAlreadyAdded(webTab.getId(), moduleId, webTab.getAppId(), "", false)) {
-                        throw new IllegalStateException("Module of this tab type is already added.");
-                    }
-                }*/
                 TabIdAppIdMappingContext tabIdAppIdMappingContext = new TabIdAppIdMappingContext(webTab.getId(),
                         moduleId, webTab.getApplicationId());
                 tabIdAppIdProps.add(FieldUtil.getAsProperties(tabIdAppIdMappingContext));
             }
-        } else if (webTab.getConfigJSON() != null) {
-            String specialType = (String) webTab.getConfigJSON().get("type");
-           /* if (webTab.getTypeEnum() == Type.MODULE) {
-                if (isModuleIdForModuleTabForAppIdAlreadyAdded(webTab.getId(), -1, webTab.getAppId(), specialType, true)) {
-                    throw new IllegalStateException(specialType + "Module of this tab type is already added.");
-                }
-            }*/
-            TabIdAppIdMappingContext tabIdAppIdMappingContext = new TabIdAppIdMappingContext(webTab.getId(), webTab.getApplicationId(), specialType);
-            tabIdAppIdProps.add(FieldUtil.getAsProperties(tabIdAppIdMappingContext));
+        }
+        if (CollectionUtils.isNotEmpty(webTab.getSpecialTypeModules())) {
+            for (String specialType : webTab.getSpecialTypeModules()) {
+                TabIdAppIdMappingContext tabIdAppIdMappingContext = new TabIdAppIdMappingContext(webTab.getId(), webTab.getApplicationId(), specialType);
+                tabIdAppIdProps.add(FieldUtil.getAsProperties(tabIdAppIdMappingContext));
+            }
         }
         if (!tabIdAppIdProps.isEmpty()) {
             GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
