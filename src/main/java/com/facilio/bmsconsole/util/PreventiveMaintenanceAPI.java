@@ -1390,7 +1390,7 @@ public class PreventiveMaintenanceAPI {
 		if (fetchDependencies != null && fetchDependencies.length > 0) {
 			setTriggers = fetchDependencies[0];
 			fetchDependency = fetchDependencies.length > 1 && fetchDependencies[1];
-			setPmCategoryDescription = fetchDependencies.length >= 2 && fetchDependencies[2];
+			setPmCategoryDescription = fetchDependencies.length > 2 && fetchDependencies[2];
 		}
 		
 		if (!fetchDependency) {
