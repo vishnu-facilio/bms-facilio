@@ -586,6 +586,10 @@ public class PreventiveMaintenance extends ResourceContext {
 	@Setter
 	private String pmCategoryDescription;
 
+	@Getter
+	@Setter
+	private String pmTriggerDescription;
+
 	public static enum PMAssignmentType implements FacilioEnum<PMAssignmentType> {
 		
 		ALL_FLOORS,			//1

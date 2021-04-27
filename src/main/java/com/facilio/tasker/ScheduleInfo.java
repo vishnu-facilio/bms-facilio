@@ -11,6 +11,8 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.facilio.time.DateRange;
@@ -1056,20 +1058,28 @@ public class ScheduleInfo implements Serializable {
 		/**
 		 * Schedule Executes only once; The execution time is either on the day of `startTime` and at time the time specified in {@link ScheduleInfo#times} , or the day after if the `startTime` exceeds the execution time of the day.
 		 */
-		DO_NOT_REPEAT,
+		DO_NOT_REPEAT("Only Once"),
 		/**
 		 * Schedule Executes everyday
 		 */
-		DAILY,
-		WEEKLY,
-		MONTHLY_DAY,
-		MONTHLY_WEEK,
-		YEARLY,
-		YEARLY_WEEK,
-		QUARTERLY_DAY,
-		QUARTERLY_WEEK,
-		HALF_YEARLY_DAY,
-		HALF_YEARLY_WEEK;
+		DAILY("Daily"),
+		WEEKLY("Weekly"),
+		MONTHLY_DAY("Monthly"),
+		MONTHLY_WEEK("Monthly"),
+		YEARLY("Yearly"),
+		YEARLY_WEEK("Yearly"),
+		QUARTERLY_DAY("Quarterly"),
+		QUARTERLY_WEEK("Quarterly"),
+		HALF_YEARLY_DAY("Half Yearly"),
+		HALF_YEARLY_WEEK("Half Yearly");
+
+		@Getter
+		@Setter
+		private String description;
+
+		FrequencyType(String description) {
+			this.description = description;
+		}
 	}
 	
 	public String getDescription(long startTime) {

@@ -1516,12 +1516,53 @@ public class PreventiveMaintenanceAPI {
 				}
 				Map<Long, SpaceCategoryContext> allSpaceCateg = getAllSpaceCateg();
 				Map<Long, AssetCategoryContext> allAssetCateg = getAllAssetCateg();
+
+				var triggerMap = PreventiveMaintenanceAPI.getPMTriggers(pms);
+
 				for(PreventiveMaintenance pm : pms) {
 					PreventiveMaintenance.PMCreationType pmCreationTypeEnum = pm.getPmCreationTypeEnum();
 					var assignmentType = pm.getAssignmentTypeEnum();
 					Long baseSpaceId = pm.getBaseSpaceId();
 					BuildingContext buildingContext = buildingMap.get(baseSpaceId);
 					var buildingName = buildingContext != null ? buildingContext.getName(): null;
+
+					var triggers = triggerMap.get(pm.getId());
+					if (CollectionUtils.isNotEmpty(triggers)) {
+						if (triggers.size() == 1) {
+							var trigger = triggers.get(0);
+							switch (trigger.getTriggerExecutionSourceEnum()) {
+								case SCHEDULE:
+									ScheduleInfo schedule = trigger.getSchedule();
+									if (schedule != null) {
+										var frequencyType = schedule.getFrequencyTypeEnum();
+										if (frequencyType != null) {
+											pm.setPmTriggerDescription(frequencyType.getDescription());
+										} else {
+											pm.setPmTriggerDescription("---");
+										}
+									} else {
+										pm.setPmTriggerDescription("---");
+									}
+									break;
+								case CUSTOM:
+									pm.setPmTriggerDescription("Custom");
+									break;
+								case ALARMRULE:
+									pm.setPmTriggerDescription("Alarm Rule");
+									break;
+								case USER:
+									pm.setPmTriggerDescription("Manual");
+									break;
+								case READING:
+									pm.setPmTriggerDescription("Reading");
+									break;
+							}
+						} else {
+							pm.setPmTriggerDescription("Multiple Triggers");
+						}
+					} else {
+						pm.setPmTriggerDescription("---");
+					}
 
 					if (pmCreationTypeEnum == PreventiveMaintenance.PMCreationType.SINGLE) {
 						WorkorderTemplate woTemplate = pm.getWoTemplate();
