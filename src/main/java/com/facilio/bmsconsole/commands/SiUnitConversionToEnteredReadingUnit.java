@@ -44,7 +44,7 @@ public class SiUnitConversionToEnteredReadingUnit extends FacilioCommand {
 				if(numberField.getMetricEnum() != null && taskContext.getInputValue() != null)
 				{
 					int siUnit = numberField.getMetricEnum().getSiUnitId();
-					String convertedReadingString = WorkflowUtil.getStringValueFromDouble(UnitsUtil.convert(taskContext.getInputValue(), siUnit, task.getReadingFieldUnit()));
+					String convertedReadingString = WorkflowUtil.getStringValueFromDouble(UnitsUtil.convert(task.getInputValue(), siUnit, task.getReadingFieldUnit()));
 					if(convertedReadingString != null) {
 						task.setInputValue(String.valueOf(convertedReadingString));
 					}
