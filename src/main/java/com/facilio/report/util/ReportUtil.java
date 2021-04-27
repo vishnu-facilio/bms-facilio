@@ -705,7 +705,7 @@ public class ReportUtil {
 													.andCondition(CriteriaAPI.getIdCondition(reportContext.getId(), module))
 													;
 		
-		Map<String, Object> props = FieldUtil.getAsProperties(reportContext);
+		Map<String, Object> props = FieldUtil.getAsProperties(reportContext, true);
 		return updateBuilder.update(props) > 0 ? true :false ;
 	}
 	

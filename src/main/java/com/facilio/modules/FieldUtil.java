@@ -85,9 +85,12 @@ public class FieldUtil {
 		}
 	}
 
-
 	public static ObjectMapper getMapper(Class<?> beanClass) {
-		if (V3Context.class.isAssignableFrom(beanClass)) {
+		return getMapper(beanClass, false);
+	}
+
+	public static ObjectMapper getMapper(Class<?> beanClass, boolean includeDefaultValues) {
+		if (V3Context.class.isAssignableFrom(beanClass) || includeDefaultValues) {
 			return DEFAULT_MAPPER;
 		}
 		MutableConfigOverride config = NON_DEFAULT_MAPPER.configOverride(beanClass);
@@ -123,12 +126,16 @@ public class FieldUtil {
 		}
 		return null;
 	}
+
+	public static Map<String, Object> getAsProperties(Object bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		return getAsProperties(bean, false);
+	}
 	
 	@SuppressWarnings("unchecked")
-	public static Map<String, Object> getAsProperties(Object bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+	public static Map<String, Object> getAsProperties(Object bean, boolean includeDefaultValues) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		Map<String, Object> properties = null;
 		if(bean != null) {
-			ObjectMapper mapper = getMapper(bean.getClass());
+			ObjectMapper mapper = getMapper(bean.getClass(), includeDefaultValues);
 			properties = mapper.convertValue(bean, Map.class);
 		}
 //		LOGGER.debug("######" + properties + "#####");
@@ -146,30 +153,42 @@ public class FieldUtil {
 		return mapList;
 	}
 
-	public static JSONObject getAsJSON(Object bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException
+	public static JSONObject getAsJSON(Object bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		return getAsJSON(bean, false);
+	}
+
+	public static JSONObject getAsJSON(Object bean, boolean includeDefaultValues) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException
 	{
 		JSONObject properties = null;
 		if(bean != null) {
-			ObjectMapper mapper = getMapper(bean.getClass());
+			ObjectMapper mapper = getMapper(bean.getClass(), includeDefaultValues);
 			properties = mapper.convertValue(bean, JSONObject.class);
 
 		}
 		return properties;
 	}
-	
+
 	public static JSONArray getAsJSONArray(List<?> beans, Class<?> beanClass) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		return getAsJSONArray(beans, beanClass, false);
+	}
+	
+	public static JSONArray getAsJSONArray(List<?> beans, Class<?> beanClass, boolean includeDefaultValues) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		JSONArray array = null;
 		if(beans != null) {
-			ObjectMapper mapper = getMapper(beanClass);
+			ObjectMapper mapper = getMapper(beanClass, includeDefaultValues);
 			array = mapper.convertValue(beans, JSONArray.class);
 		}
 		return array;
 	}
-	
+
 	public static List<Map<String, Object>> getAsMapList(List<?> beans, Class<?> beanClass) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		return getAsMapList(beans, beanClass, false);
+	}
+	
+	public static List<Map<String, Object>> getAsMapList(List<?> beans, Class<?> beanClass, boolean includeDefaultValues) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		List<Map<String, Object>> array = null;
 		if(beans != null) {
-			ObjectMapper mapper = getMapper(beanClass);
+			ObjectMapper mapper = getMapper(beanClass, includeDefaultValues);
 //			array = mapper.convertValue(beans, List.class);
 			return mapper.convertValue(beans, mapper.getTypeFactory().constructCollectionType(List.class, Map.class));
 		}
