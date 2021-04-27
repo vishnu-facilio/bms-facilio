@@ -130,13 +130,11 @@ public class ReportContext {
 		this.transformWorkflow = transformWorkflow;
 	}
 
-	private long workflowId = -1;
-
-	public long getWorkflowId() {
+	private Long workflowId;
+	public Long getWorkflowId() {
 		return workflowId;
 	}
-
-	public void setWorkflowId(long workflowId) {
+	public void setWorkflowId(Long workflowId) {
 		this.workflowId = workflowId;
 	}
 

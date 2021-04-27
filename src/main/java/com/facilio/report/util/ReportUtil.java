@@ -536,7 +536,7 @@ public class ReportUtil {
 						filter.setField(getModule(filter.getModuleId(), filter.getModuleName(), modBean), getField(filter.getFieldId(), filter.getModuleName(), filter.getFieldName(), modBean));
 					}
 				}
-				if (report.getWorkflowId() != -1) {
+				if (report.getWorkflowId() != null && report.getWorkflowId() > 0) {
 					report.setTransformWorkflow(WorkflowUtil.getWorkflowContext(report.getWorkflowId(), true));
 				}
 				
@@ -703,6 +703,7 @@ public class ReportUtil {
 													.fields(FieldFactory.getReport1Fields())
 //													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCondition(CriteriaAPI.getIdCondition(reportContext.getId(), module))
+													.ignoreSplNullHandling()
 													;
 		
 		Map<String, Object> props = FieldUtil.getAsProperties(reportContext, true);

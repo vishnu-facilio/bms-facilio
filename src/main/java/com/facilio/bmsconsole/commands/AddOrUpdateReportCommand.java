@@ -32,7 +32,7 @@ public class AddOrUpdateReportCommand extends FacilioCommand {
 		}
 		else {
 			long oldWorkflowId = -1; 
-			if (report.getTransformWorkflow() != null || report.getWorkflowId() == -99) {
+			if (report.getTransformWorkflow() != null || ( report.getWorkflowId() != null && report.getWorkflowId() > 0 )) {
 				ReportContext oldReport = ReportUtil.getReport(report.getId(), true);
 				oldWorkflowId = oldReport.getWorkflowId();
 				addWorkflow(report);
