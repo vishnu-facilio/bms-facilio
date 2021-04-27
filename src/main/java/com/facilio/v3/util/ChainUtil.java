@@ -330,13 +330,22 @@ public class ChainUtil {
     }
 
     public static V3Config getV3Config (FacilioModule module) {
+        return getV3Config(module, true);
+    }
+
+    public static V3Config getV3Config (FacilioModule module, boolean checkParent) {
         Objects.requireNonNull(module, "Invalid module for v3 config fetch");
         FacilioModule currentModule = module;
-        Supplier<V3Config> v3Config = null;
-        while (currentModule != null && v3Config == null) {
-            v3Config = MODULE_HANDLER_MAP.get(currentModule.getName());
+        Supplier<V3Config> v3Config = MODULE_HANDLER_MAP.get(currentModule.getName());
+
+        if (v3Config == null && checkParent) {
             currentModule = currentModule.getExtendModule();
+            while (currentModule != null && v3Config == null) {
+                v3Config = MODULE_HANDLER_MAP.get(currentModule.getName());
+                currentModule = currentModule.getExtendModule();
+            }
         }
+
         if (v3Config == null) {
             return null;
         }

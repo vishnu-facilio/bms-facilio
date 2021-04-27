@@ -17,6 +17,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -100,19 +101,12 @@ public class V3RecordAPI {
         return modBean.getField(fieldName, modName);
     }
 
-    public static ModuleBaseWithCustomFields getRecord (String modName, Long recId, Class beanClass) throws Exception{
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(modName);
-        List<FacilioField> fields = modBean.getAllFields(modName);
+    public static <T extends ModuleBaseWithCustomFields> T getRecord (String modName, Long recId) throws Exception {
+        return getRecord(modName, recId, null);
+    }
 
-        SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
-                .module(module)
-                .beanClass(beanClass)
-                .select(fields)
-                .andCondition(CriteriaAPI.getIdCondition(Long.valueOf(recId), module))
-                ;
-
-        List<? extends ModuleBaseWithCustomFields> records = builder.get();
+    public static <T extends ModuleBaseWithCustomFields> T getRecord (String modName, long recId, Class<T> beanClass) throws Exception {
+        List<T> records = constructBuilder(modName, Collections.singletonList(recId), beanClass).get();
         if(CollectionUtils.isNotEmpty(records)) {
             return records.get(0);
         }

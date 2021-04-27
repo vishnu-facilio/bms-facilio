@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.List;
 
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.dto.User;
@@ -46,18 +47,12 @@ public class VerifyApprovalCommand extends FacilioCommand {
 					if (record.getApprovalFlowId() == -99 || (record.getApprovalFlowId() > 0 && record.getApprovalStatus() != null)) {
 						if (!skipChecking) {
 							FacilioStatus status = TicketAPI.getStatus(record.getApprovalStatus().getId());
-							if (status.isRequestedState()) {
-								throw new IllegalArgumentException("In Approval process, cannot edit meanwhile");
-							}
+							FacilioUtil.throwIllegalArgumentException(status.isRequestedState(), "In Approval process, cannot edit meanwhile");
 						}
 					}
  					else if ((stateContext.isRecordLocked())) {
-						if (cannotEdit) {
-							throw new IllegalArgumentException("Record with lock cannot be updated");
-						}
+ 						FacilioUtil.throwIllegalArgumentException(cannotEdit, "Record with lock cannot be updated");
 					}
-
-
 				}
 			}
 		}

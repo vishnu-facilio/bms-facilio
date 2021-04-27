@@ -1,6 +1,6 @@
 package com.facilio.qa.command;
 
-import org.apache.commons.chain.Command;
+import com.facilio.bmsconsole.commands.VerifyApprovalCommand;
 
 import com.facilio.chain.FacilioChain;
 
@@ -96,4 +96,21 @@ public class QAndATransactionChainFactory {
         c.addCommand(new InspectionPriorityBeforeSaveCommand());
         return c;
 	}
+
+	public static FacilioChain addOrUpdateAnswersChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ValidateResponseStatus());
+        c.addCommand(new VerifyApprovalCommand());
+        c.addCommand(new ConstructAnswerPOJOsCommand());
+        c.addCommand(new AddAnswersCommand());
+        c.addCommand(new UpdateAnswersCommand());
+        c.addCommand(new ConstructAnswerResponseCommand());
+        return c;
+    }
+
+    public static FacilioChain executeTemplateChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ExecuteQAndATemplateCommand());
+        return c;
+    }
 }

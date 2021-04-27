@@ -229,4 +229,18 @@
         </action>
     </package>
 
+    <package name="qandaTemplate" namespace="/api/v3/qanda/template" extends="v3Api">
+        <action name="execute"
+                class="com.facilio.qa.actions.QAndAAction"
+                method="executeTemplate">
+        </action>
+    </package>
+
+    <package name="qandaAnswers" namespace="/api/v3/qanda/answers" extends="v3Api">
+        <action name="save"
+                class="com.facilio.qa.actions.QAndAAction"
+                method="addOrUpdateAnswers">
+        </action>
+    </package>
+
 </struts>

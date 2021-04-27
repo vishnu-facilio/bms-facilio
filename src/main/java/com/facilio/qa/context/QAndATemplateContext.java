@@ -53,14 +53,14 @@ public abstract class QAndATemplateContext <R extends ResponseContext> extends V
     }
 
     protected abstract R newResponseObject();
-    protected abstract void addDefaultProps(R response); //Having as two methods so that props can be overridden
+    protected abstract void addDefaultPropsForResponse(R response); //Having as two methods so that props can be overridden
 
     public R constructResponse() {
         R response = newResponseObject();
         response.setQAndAType(this.qAndAType);
         response.setParent(this);
         response.setResStatus(ResponseContext.ResponseStatus.NOT_ANSWERED);
-        addDefaultProps(response);
+        addDefaultPropsForResponse(response);
         return response;
     }
 

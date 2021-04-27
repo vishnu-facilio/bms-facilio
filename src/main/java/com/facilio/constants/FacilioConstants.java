@@ -75,7 +75,9 @@ import com.facilio.mv.context.MVBaseline;
 import com.facilio.mv.context.MVProjectContext;
 import com.facilio.qa.context.*;
 import com.facilio.qa.context.questions.DecimalQuestionContext;
+import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.AttachmentV3Context;
+import com.facilio.v3.util.ChainUtil;
 import org.json.simple.JSONObject;
 
 import java.text.SimpleDateFormat;
@@ -2381,6 +2383,12 @@ public class FacilioConstants {
 			Class moduleClass = null;
 			if (module != null) {
 				moduleClass =  classMap.get(module.getName());
+
+				if (moduleClass == null) {
+					V3Config config = ChainUtil.getV3Config(module, checkParent);
+					moduleClass = config == null ? null : config.getBeanClass();
+				}
+
 				if (moduleClass == null && checkParent && module.getExtendModule() != null) {
 					return getClassFromModule(module.getExtendModule(), true);
 				}
@@ -2436,6 +2444,14 @@ public class FacilioConstants {
 			public static final String FILE_UPLOAD_QUESTION = "qandaFileUploadQuestion";
 			public static final String MULTI_FILE_UPLOAD_QUESTION = "qandaMultiFileUploadQuestion";
 			public static final String BOOLEAN_QUESTION = "qandaBooleanQuestion";
+		}
+
+		public static class Command {
+			public static final String ANSWER_DATA = "answerData";
+			public static final String ANSWER_LIST = "answerList";
+			public static final String QUESTION_VS_ANSWER = "questionVsAnswer";
+			public static final String ANSWERS_TO_BE_ADDED = "answersToBeAdded";
+			public static final String ANSWERS_TO_BE_UPDATED = "answersToBeUpdated";
 		}
 	}
 	

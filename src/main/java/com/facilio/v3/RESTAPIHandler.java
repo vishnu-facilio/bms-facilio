@@ -43,7 +43,7 @@ import java.util.logging.Logger;
 public class RESTAPIHandler extends V3Action implements ServletRequestAware, ServletResponseAware {
     private static final Logger LOGGER = Logger.getLogger(RESTAPIHandler.class.getName());
 
-    private  void handleSummaryRequest(String moduleName, long id) throws Exception {
+    protected void handleSummaryRequest(String moduleName, long id) throws Exception {
         Object record = getRecord(moduleName, id);
         JSONObject result = new JSONObject();
         result.put(moduleName, FieldUtil.getAsJSON(record));

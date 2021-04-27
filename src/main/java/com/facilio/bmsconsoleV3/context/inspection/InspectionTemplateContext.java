@@ -84,7 +84,7 @@ public class InspectionTemplateContext extends QAndATemplateContext <InspectionR
     }
 
     @Override
-    protected void addDefaultProps(InspectionResponseContext response) {
+    protected void addDefaultPropsForResponse(InspectionResponseContext response) {
         response.setSite(this.getSite());
         response.setSiteId(this.getSiteId());
         response.setVendor(this.getVendor());
@@ -93,6 +93,11 @@ public class InspectionTemplateContext extends QAndATemplateContext <InspectionR
         response.setPriority(this.getPriority());
         response.setAssignedTo(this.getAssignedTo());
         response.setAssignmentGroup(this.getAssignmentGroup());
+
+        // Default props which will be overridden if called from Inspection scheduler
+        response.setSourceType(InspectionResponseContext.SourceType.MANNUAL.getIndex());
+        response.setCreatedTime(System.currentTimeMillis());
+        response.setStatus(InspectionResponseContext.Status.OPEN.getIndex());
     }
 
     public static enum CreationType implements FacilioEnum<CreationType> {

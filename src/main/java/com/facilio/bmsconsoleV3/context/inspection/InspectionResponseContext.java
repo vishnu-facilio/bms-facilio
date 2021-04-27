@@ -11,17 +11,26 @@ import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.modules.FacilioEnum;
-import com.facilio.qa.context.QAndATemplateContext;
 import com.facilio.qa.context.ResponseContext;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 
 @Getter
 @Setter
 @Log4j
+@NoArgsConstructor
+@JsonTypeInfo(
+		use = JsonTypeInfo.Id.NONE
+)
 public class InspectionResponseContext extends ResponseContext <InspectionTemplateContext> {
+
+	public InspectionResponseContext (Long id) {
+		super(id);
+	}
 	
     private SiteContext site;
     private InspectionTemplateContext parent;
@@ -40,25 +49,19 @@ public class InspectionResponseContext extends ResponseContext <InspectionTempla
     private Long actualWorkStart;
     private Long actualWorkEnd;
     
-    public void setStatus(int status) {
-    	this.status = Status.valueOf(status);
+    public void setStatus(Integer status) { // Using wrapper object to avoid -1 being inserted
+    	this.status = status == null ? null : Status.valueOf(status);
     }
     
-    public int getStatus() {
-    	if(status != null) {
-    		return status.getIndex();
-    	}
-    	return -1;
+    public Integer getStatus() { // Using wrapper object to avoid -1 being inserted
+    	return status == null ? null : status.getIndex();
     }
     
-    public int getSourceType() {
-    	if(sourceType != null) {
-    		return sourceType.getIndex();
-    	}
-    	return -1;
+    public Integer getSourceType() { // Using wrapper object to avoid -1 being inserted
+    	return sourceType == null ? null : sourceType.getIndex();
 	}
-	public void setSourceType(int type) {
-		this.sourceType = SourceType.typeMap.get(type);
+	public void setSourceType(Integer type) { // Using wrapper object to avoid -1 being inserted
+		this.sourceType = type == null ? null : SourceType.typeMap.get(type);
 	}
     
     public static enum SourceType implements FacilioEnum<SourceType>  {

@@ -6,6 +6,7 @@ import com.facilio.v3.context.V3Context;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j;
@@ -14,6 +15,7 @@ import lombok.extern.log4j.Log4j;
 @Setter
 @Log4j
 @ToString
+@NoArgsConstructor
 @JsonTypeInfo(
         defaultImpl = QuestionContext.class,
         use = JsonTypeInfo.Id.CUSTOM,
@@ -32,6 +34,10 @@ public class QuestionContext extends V3Context {
      * )
      *
      */
+
+    public QuestionContext (Long id) {
+        super(id);
+    }
 
     private QAndATemplateContext parent;
     private PageContext page;

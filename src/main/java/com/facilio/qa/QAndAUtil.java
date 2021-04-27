@@ -1,25 +1,26 @@
 package com.facilio.qa;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.FieldPermissionContext;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.qa.context.QuestionContext;
+import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.ChainUtil;
 import com.facilio.v3.util.ExtendedModuleUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.ToLongFunction;
@@ -93,5 +94,36 @@ public class QAndAUtil {
 
             parentList.stream().forEach(p -> setChildrenList.accept(p, parentVsChildren.get(p.getId())));
         }
+    }
+
+    public static List<QuestionContext> fetchExtendedQuestions (Collection<Long> recordIds) throws Exception {
+        List<QuestionContext> questions = V3RecordAPI.getRecordsList(FacilioConstants.QAndA.QUESTION, recordIds);
+        ExtendedModuleUtil.replaceWithExtendedRecords(questions, q -> q.getQuestionType().getSubModuleName());
+        return questions;
+    }
+
+    public static Map<Long, QuestionContext> fetchExtendedQuestionMap (Collection<Long> recordIds) throws Exception {
+        Map<Long, QuestionContext> questions = V3RecordAPI.getRecordsMap(FacilioConstants.QAndA.QUESTION, recordIds);
+        ExtendedModuleUtil.replaceWithExtendedRecords(questions, q -> q.getQuestionType().getSubModuleName());
+        return questions;
+    }
+
+    public static <T extends ModuleBaseWithCustomFields> void addRecordViaChain(String moduleName, List<T> records) throws Exception {
+        FacilioModule module = ChainUtil.getModule(moduleName);
+        V3Config v3Config = ChainUtil.getV3Config(module);
+        FacilioChain createRecordChain = ChainUtil.getCreateRecordChain(module.getName());
+        FacilioContext addAnswerContext = createRecordChain.getContext();
+        Class beanClass = ChainUtil.getBeanClass(v3Config, module);
+
+        Constants.setV3config(addAnswerContext, v3Config);
+        Constants.setModuleName(addAnswerContext, module.getName());
+        addAnswerContext.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.CREATE);
+        addAnswerContext.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
+        addAnswerContext.put(Constants.BEAN_CLASS, beanClass);
+        Map<String, List> recordMap = new HashMap<>();
+        recordMap.put(module.getName(), records);
+        addAnswerContext.put(Constants.RECORD_MAP, recordMap);
+
+        createRecordChain.execute();
     }
 }

@@ -28,8 +28,8 @@ public class CallQuestionHandlersFromListCommand extends FacilioCommand {
             Map<QuestionType, List<QuestionContext>> splitByType = ExtendedModuleUtil.splitRecordsByType(questions, q -> q.getQuestionType());
             for (Map.Entry<QuestionType, List<QuestionContext>> entry : splitByType.entrySet()) {
                 QuestionType type = entry.getKey();
-                if (type.getHandler() != null && CollectionUtils.isNotEmpty(entry.getValue())) {
-                    callHandlerMethods(type.getHandler(), entry.getValue());
+                if (type.getQuestionHandler() != null && CollectionUtils.isNotEmpty(entry.getValue())) {
+                    callHandlerMethods(type.getQuestionHandler(), entry.getValue());
                 }
             }
         }

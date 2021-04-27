@@ -3,13 +3,14 @@ package com.facilio.v3.util;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class ExtendedModuleUtil {
+public class ExtendedModuleUtil<T> {
     public static <T, R extends ModuleBaseWithCustomFields> Map<T, List<R>> splitRecordsByType(List<R> list, Function<R, T> getTypeFromRecord) {
         return list.stream().collect(
                 Collectors.groupingBy(
@@ -24,7 +25,7 @@ public class ExtendedModuleUtil {
         return ExtendedModuleUtil.<String, R>splitRecordsByType(list, getSubModuleFromRecord);
     }
 
-    public static <T, R extends ModuleBaseWithCustomFields> Map<T, List<Long>> splitRecordIdsByType(List<R> list, Function<R, T> getTypeFromRecord) {
+    public static <T, R extends ModuleBaseWithCustomFields> Map<T, List<Long>> splitRecordIdsByType(Collection<R> list, Function<R, T> getTypeFromRecord) {
         return list.stream().collect(
                 Collectors.groupingBy(
                         r -> getTypeFromRecord.apply(r),
@@ -34,7 +35,7 @@ public class ExtendedModuleUtil {
         );
     }
 
-    public static <R extends ModuleBaseWithCustomFields> Map<String, List<Long>> splitRecordIdsBySubModule(List<R> list, Function<R, String> getSubModuleFromRecord) {
+    public static <R extends ModuleBaseWithCustomFields> Map<String, List<Long>> splitRecordIdsBySubModule(Collection<R> list, Function<R, String> getSubModuleFromRecord) {
         return ExtendedModuleUtil.<String, R>splitRecordIdsByType(list, getSubModuleFromRecord);
     }
 
@@ -48,15 +49,16 @@ public class ExtendedModuleUtil {
         list.replaceAll(r -> extendedRecords.get(r.getId()));
     }
 
-    public static <T extends ModuleBaseWithCustomFields> Map<String, List<? extends T>> fetchExtendedRecords(List<T> list, Function<T, String> getSubModuleFromRecord) throws Exception {
-        Map<String, List<Long>> moduleVsRecords = splitRecordIdsBySubModule(list, getSubModuleFromRecord);
-        Map<String, List<? extends T>> extendedRecords = new HashMap<>();
+    public static <T extends ModuleBaseWithCustomFields> void replaceWithExtendedRecords (Map<Long, T> map, Function<T, String> getSubModuleFromRecord) throws Exception {
+        Map<String, List<Long>> moduleVsRecords = splitRecordIdsBySubModule(map.values(), getSubModuleFromRecord);
         for (Map.Entry<String, List<Long>> entry : moduleVsRecords.entrySet()) {
-            List<? extends T> extendedRecordList = V3RecordAPI.getRecordsList(entry.getKey(), entry.getValue());
-            extendedRecords.put(entry.getKey(), extendedRecordList);
+            Map<Long, T> extendedRecordMap = V3RecordAPI.getRecordsMap(entry.getKey(), entry.getValue());
+            map.putAll(extendedRecordMap);
         }
-        return extendedRecords;
     }
 
-
+    public static <T extends ModuleBaseWithCustomFields> T fetchExtendedRecord (T record, Function<T, String> getSubModuleFromRecord) throws Exception {
+        T extendedRecord = V3RecordAPI.getRecord(getSubModuleFromRecord.apply(record), record.getId());
+        return extendedRecord;
+    }
 }

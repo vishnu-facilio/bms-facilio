@@ -44,8 +44,7 @@ public class LineItemCRUDHandler extends BaseMultiValueCRUDHandler<Object> {
     }
 
     private Class<ModuleBaseWithCustomFields> fetchClassObj () throws Exception {
-        V3Config config = ChainUtil.getV3Config(field.getChildModule().getName());
-        return config == null? FacilioConstants.ContextNames.getClassFromModule(field.getChildModule()) : config.getBeanClass();
+        return FacilioConstants.ContextNames.getClassFromModule(field.getChildModule());
     }
 
     @Override

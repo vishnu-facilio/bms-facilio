@@ -27,10 +27,10 @@ public class CallQuestionHandlersFromModuleMapCommand extends FacilioCommand {
         Set<String> extendedModules = Constants.getExtendedModules(context);
         for (String extendedModule : extendedModules) {
             QuestionType type = QuestionType.getTypeFromSubModule(extendedModule);
-            if (type.getHandler() != null) {
+            if (type.getQuestionHandler() != null) {
                 List<? extends QuestionContext> questions = Constants.getRecordList(recordMap, extendedModule);
                 if (CollectionUtils.isNotEmpty(questions)) {
-                    callHandlerMethods(type.getHandler(), questions);
+                    callHandlerMethods(type.getQuestionHandler(), questions);
                 }
             }
         }
