@@ -91,7 +91,7 @@ public class GetPreventiveMaintenanceCommand extends FacilioCommand {
 		if(isFromView != null && isFromView) {
 			fetchDependencies = false;
 		}
-		List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getPMs(idsToSelect, criteria, query, pagination, null,fetchDependencies);
+		List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getPMs(idsToSelect, criteria, query, pagination, null,fetchDependencies, false, true);
 		if (pms != null) {
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST, pms);
 		}

@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.facilio.activity.AddActivitiesCommand;
+import com.facilio.bmsconsole.actions.BuildingAction;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.jobs.FailedPMNewScheduler;
@@ -32,6 +33,7 @@ import com.facilio.bmsconsoleV3.util.JobPlanAPI;
 import com.facilio.db.builder.*;
 import com.facilio.modules.*;
 import com.facilio.tasker.job.JobContext;
+import lombok.var;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -83,6 +85,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import org.json.simple.parser.ParseException;
 
+import static com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType.ALL_FLOORS;
 import static com.facilio.bmsconsole.templates.Template.Type.PM_PRE_REQUEST_SECTION;
 
 public class PreventiveMaintenanceAPI {
@@ -1383,9 +1386,11 @@ public class PreventiveMaintenanceAPI {
 		
 		boolean fetchDependency = false;
 		boolean setTriggers = false;
+		boolean setPmCategoryDescription = false;
 		if (fetchDependencies != null && fetchDependencies.length > 0) {
 			setTriggers = fetchDependencies[0];
 			fetchDependency = fetchDependencies.length > 1 && fetchDependencies[1];
+			setPmCategoryDescription = fetchDependencies.length >= 2 && fetchDependencies[2];
 		}
 		
 		if (!fetchDependency) {
@@ -1501,6 +1506,101 @@ public class PreventiveMaintenanceAPI {
 					}
 				}
 			}
+
+			if (setPmCategoryDescription) {
+				List<BuildingContext> allBuildings = SpaceAPI.getAllBuildings();
+				Map<Long, BuildingContext> buildingMap = new HashMap<>();
+				for (BuildingContext buildingContext: allBuildings) {
+					long id = buildingContext.getId();
+					buildingMap.put(id, buildingContext);
+				}
+				Map<Long, SpaceCategoryContext> allSpaceCateg = getAllSpaceCateg();
+				Map<Long, AssetCategoryContext> allAssetCateg = getAllAssetCateg();
+				for(PreventiveMaintenance pm : pms) {
+					PreventiveMaintenance.PMCreationType pmCreationTypeEnum = pm.getPmCreationTypeEnum();
+					var assignmentType = pm.getAssignmentTypeEnum();
+					Long baseSpaceId = pm.getBaseSpaceId();
+					BuildingContext buildingContext = buildingMap.get(baseSpaceId);
+					var buildingName = buildingContext != null ? buildingContext.getName(): null;
+
+					if (pmCreationTypeEnum == PreventiveMaintenance.PMCreationType.SINGLE) {
+						WorkorderTemplate woTemplate = pm.getWoTemplate();
+						ResourceContext resource = woTemplate.getResource();
+						pm.setPmCategoryDescription(resource.getName());
+					} else {
+						switch(assignmentType) {
+							case ALL_FLOORS:
+								if (buildingName != null) {
+									pm.setPmCategoryDescription(buildingName + " - " + "Floors");
+								} else {
+									pm.setPmCategoryDescription("All Floors");
+								}
+								break;
+							case SPACE_CATEGORY:
+								SpaceCategoryContext spaceCategoryContext = allSpaceCateg.get(pm.getSpaceCategoryId());
+								if (buildingName != null) {
+									if (spaceCategoryContext != null) {
+										pm.setPmCategoryDescription(buildingName + " - " + spaceCategoryContext.getName());
+									} else {
+										pm.setPmCategoryDescription("---");
+									}
+								} else {
+									if (spaceCategoryContext != null) {
+										pm.setPmCategoryDescription(spaceCategoryContext.getName());
+									} else {
+										pm.setPmCategoryDescription("---");
+									}
+								}
+								break;
+							case ASSET_CATEGORY:
+								AssetCategoryContext assetCategoryContext = allAssetCateg.get(pm.getAssetCategoryId());
+								if (buildingName != null) {
+									if (assetCategoryContext != null) {
+										pm.setPmCategoryDescription(buildingName + " - " + assetCategoryContext.getName());
+									} else {
+										pm.setPmCategoryDescription("---");
+									}
+								} else {
+									if (assetCategoryContext != null) {
+										pm.setPmCategoryDescription(assetCategoryContext.getName());
+									} else {
+										pm.setPmCategoryDescription("---");
+									}
+								}
+								break;
+							case ALL_BUILDINGS:
+								List<PMIncludeExcludeResourceContext> pmIncludeExcludeList = TemplateAPI.getPMIncludeExcludeList(pm.getId(), null, null);
+								if (CollectionUtils.isNotEmpty(pmIncludeExcludeList)) {
+									if (pmIncludeExcludeList.size() == 1) {
+										var resourceId = pmIncludeExcludeList.get(0).getResourceId();
+										ResourceContext resource = ResourceAPI.getResource(resourceId);
+										pm.setPmCategoryDescription(resource.getName());
+									} else {
+										pm.setPmCategoryDescription(pmIncludeExcludeList.size() + " - Building(s)");
+									}
+								} else {
+									pm.setPmCategoryDescription("---");
+								}
+								break;
+							case ALL_SITES:
+								List<Long> siteIds = pm.getSiteIds();
+								int count = siteIds != null ? siteIds.size(): 0;
+								if (count > 0) {
+									if (count == 1) {
+										ResourceContext resource = ResourceAPI.getResource(siteIds.get(0));
+										pm.setPmCategoryDescription(resource.getName());
+									} else {
+										pm.setPmCategoryDescription(count + " - " + "Site(s)");
+									}
+								} else {
+									pm.setPmCategoryDescription("---");
+								}
+								break;
+						}
+					}
+				}
+			}
+
 			return pms;
 		}
 		return null;
@@ -4125,6 +4225,21 @@ public class PreventiveMaintenanceAPI {
 		return spaceCategories.stream().filter(i -> i.getId() == id).collect(Collectors.toList()).get(0);
 	}
 
+	private static Map<Long, SpaceCategoryContext> getAllSpaceCateg() throws Exception {
+		Context context = new FacilioContext();
+		GetSpaceCategoriesCommand getSpaceCategoriesCommand = new GetSpaceCategoriesCommand();
+		getSpaceCategoriesCommand.executeCommand(context);
+		List<SpaceCategoryContext> spaceCategories = (List<SpaceCategoryContext>) context.get(FacilioConstants.ContextNames.SPACECATEGORIESLIST);
+		if (CollectionUtils.isEmpty(spaceCategories)) {
+			return Collections.EMPTY_MAP;
+		}
+		Map<Long, SpaceCategoryContext> map = new HashMap<>();
+		for (SpaceCategoryContext spaceCategoryContext: spaceCategories) {
+			map.put(spaceCategoryContext.getId(), spaceCategoryContext);
+		}
+		return map;
+	}
+
 	private static AssetCategoryContext getAssetCateg(long id) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
@@ -4140,6 +4255,27 @@ public class PreventiveMaintenanceAPI {
 			return categories.get(0);
 		}
 		return null;
+	}
+
+	private static Map<Long, AssetCategoryContext> getAllAssetCateg() throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+		SelectRecordsBuilder<AssetCategoryContext> selectBuilder = new SelectRecordsBuilder<AssetCategoryContext>()
+				.select(modBean.getAllFields(FacilioConstants.ContextNames.ASSET_CATEGORY))
+				.moduleName(FacilioConstants.ContextNames.ASSET_CATEGORY)
+				.beanClass(AssetCategoryContext.class);
+
+		List<AssetCategoryContext> categories = selectBuilder.get();
+		if (CollectionUtils.isEmpty(categories)) {
+			return Collections.EMPTY_MAP;
+		}
+
+		Map<Long, AssetCategoryContext> map = new HashMap<>();
+		for (AssetCategoryContext assetCategoryContext: categories) {
+			map.put(assetCategoryContext.getId(), assetCategoryContext);
+		}
+
+		return map;
 	}
 
 	private static ResourceContext getNewResource(String name, long fromOrg, long toOrg) throws Exception {

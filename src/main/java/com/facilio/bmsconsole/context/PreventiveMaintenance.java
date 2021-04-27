@@ -582,6 +582,9 @@ public class PreventiveMaintenance extends ResourceContext {
 		return this.enableSkipTriggers;
 	}
 
+	@Getter
+	@Setter
+	private String pmCategoryDescription;
 
 	public static enum PMAssignmentType implements FacilioEnum<PMAssignmentType> {
 		
