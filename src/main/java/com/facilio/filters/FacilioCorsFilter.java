@@ -3,6 +3,8 @@ package com.facilio.filters;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -50,6 +52,15 @@ public class FacilioCorsFilter implements Filter {
     private static String allowedHeaderString = "";
     private static String exposedHeaderString = "";
     private static String ip = "";
+
+    private static final String IPV4_REGEX =
+            "^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." +
+                    "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." +
+                    "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." +
+                    "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
+
+    private static final Pattern IPv4_PATTERN = Pattern.compile(IPV4_REGEX);
+
 
     private static final Logger LOGGER = LogManager.getLogger(FacilioCorsFilter.class.getName());
 
@@ -274,6 +285,14 @@ public class FacilioCorsFilter implements Filter {
         return requestType;
     }
 
+    public boolean isValidInet4Address(String ip) {
+        if (ip == null || ip.isEmpty()) {
+            return false;
+        }
+        Matcher matcher = IPv4_PATTERN.matcher(ip);
+        return matcher.matches();
+    }
+
     private boolean isAllowedOrigin(String originHeader) {
         if(originHeader == null || originHeader.isEmpty()) {
             return false;
@@ -293,8 +312,16 @@ public class FacilioCorsFilter implements Filter {
         String[] domains = originHeader.split("\\.");
         String domain = originHeader;
         int domainLength = domains.length;
-        if(domainLength > 2) {
-            domain = protocol + "://"+domains[domainLength-2]+"."+ domains[domainLength-1];
+        if(isValidInet4Address(originHeader)) {
+            domain = protocol+"://"+originHeader;
+        } else {
+            domain = protocol+"://";
+            for(int i = 1; i < domainLength; i++) {
+                domain = domain + domains[i];
+                if(domainLength - i > 1) {
+                    domain = domain + ".";
+                }
+            }
         }
         return ifDomainExists(domain);
     }
