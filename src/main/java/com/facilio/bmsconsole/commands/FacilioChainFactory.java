@@ -598,8 +598,8 @@ public class FacilioChainFactory {
 		c.addCommand(new SetBaseSpaceRecordForRollUpFieldCommand());
 		c.addCommand(new ExecuteRollUpFieldCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
-		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
+		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 		c.addCommand(new ForkChainToInstantJobCommand()
 				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
 		c.addCommand(new SetModuleNameForActivity());

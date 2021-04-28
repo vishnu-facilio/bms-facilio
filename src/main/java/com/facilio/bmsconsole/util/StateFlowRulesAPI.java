@@ -222,6 +222,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			info.put("oldValue", oldState.getDisplayName());
 			info.put("newValue", facilioStatus.getDisplayName());
 			ActivityType activityType = null;
+			List<String> CommonActivityModules = Arrays.asList(new String[] {"site", "building", "floor", "space", "workpermit", "quote"});
 			if ((module.getName().contains("workorder"))) {
 				activityType = WorkOrderActivityType.UPDATE_STATUS;
 			}
@@ -230,10 +231,8 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			}
 			else if ((module.getName().contains("assetmovement"))) {
 				activityType = AssetActivityType.LOCATION;
-			} else if (Arrays.asList(FacilioConstants.ContextNames.QUOTE,FacilioConstants.ContextNames.WorkPermit.WORKPERMIT).contains(module.getName())) {
-				activityType = CommonActivityType.UPDATE_STATUS;
-			}
-			else if (module.isCustom()) {
+			} 
+			else if (module.isCustom() || CommonActivityModules.contains(module.getName())) {
 				activityType = CommonActivityType.UPDATE_STATUS;
 			}
 			if (activityType != null) {
