@@ -51,7 +51,7 @@ public class RunThroughHistoricalRuleCommand extends FacilioCommand  implements 
 		
 		long maximumDailyEventRuleJobsPerOrg = 10000l; 
 		if (AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getOrgId() == 339 || AccountUtil.getCurrentOrg().getOrgId() == 405)) {
-			maximumDailyEventRuleJobsPerOrg = 45000l;
+			maximumDailyEventRuleJobsPerOrg = 60000l;
 		}
 
 		DateRange range = (DateRange) context.get(FacilioConstants.ContextNames.DATE_RANGE);
