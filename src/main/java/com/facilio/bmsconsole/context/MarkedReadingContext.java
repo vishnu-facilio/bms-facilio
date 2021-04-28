@@ -116,7 +116,8 @@ public class MarkedReadingContext implements Serializable {
 		HIGH_VALUE_HOURLY_VIOLATION,
 		HIGH_VALUE_DAILY_VIOLATION,
 		HIGH_VALUE_WEEKLY_VIOLATION,
-		RESET_VALUE;
+		RESET_VALUE,
+		TASK_METER_RESET_VALUE;
 		
 		public int getValue() {
 			return ordinal()+1;

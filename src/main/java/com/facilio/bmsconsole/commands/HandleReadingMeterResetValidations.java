@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +17,10 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.MarkedReadingContext;
+import com.facilio.bmsconsole.context.MarkedReadingContext.MarkType;
 import com.facilio.bmsconsole.context.sensor.SensorRuleUtil;
+import com.facilio.bmsconsole.util.MarkingUtil;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -109,6 +113,12 @@ public class HandleReadingMeterResetValidations extends FacilioCommand {
 													if(reading.getParentId() == taskContext.getResource().getId()) {														
 														reading.addReading(numberField.getName(), currentValueInSiUnit);
 														reading.addReading(deltaFieldName, currentDeltaValueInSiUnit);
+														
+														MarkType type = MarkType.TASK_METER_RESET_VALUE;
+														MarkedReadingContext resettedReading = MarkingUtil.getMarkedReading(reading,numberField.getFieldId(),numberField.getModuleId(),type,currentValueInSiUnit,currentDeltaValueInSiUnit);
+														resettedReading.setTtime(currentInputTime);
+														resettedReading.setResourceId(reading.getParentId());
+														MarkingUtil.addMarkedreadings(Collections.singletonList(resettedReading));
 													}
 												}							
 											}

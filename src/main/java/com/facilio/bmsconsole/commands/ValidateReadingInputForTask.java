@@ -12,21 +12,25 @@ import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.MarkedReadingContext.MarkType;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskErrorContext;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.Operator;
+import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
@@ -187,7 +191,6 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 		}
 		else 
 		{
-			isNextReading = true;
 			ReadingContext previousValueReadingContext = getLatestInputReadingContext(numberField, rdm, currentTask, "TTIME DESC", currentTask.getInputTime(), NumberOperators.LESS_THAN);
 			LOGGER.debug("Past Case previousValueReadingContext -- " + previousValueReadingContext +" Input time -- "+currentTask.getInputTime()+ " Rdm time -- "+rdm.getTtime() + " TaskContext readingdataID -- " +taskContext.getReadingDataId()+ " Rdm readingdataID -- "+rdm.getReadingDataId());
 			
@@ -202,8 +205,12 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 				LOGGER.debug("Past Simple Case previousValueReadingContext -- " +previousValueReadingContext +" Input time -- "+currentTask.getInputTime()+ " previousValueReadingContext Prevtime -- "+previousValueReadingContext.getTtime() + " TaskContext readingdataID -- " +taskContext.getReadingDataId()+ " previousValueReadingContext dataId -- "+previousValueReadingContext.getId() +" Previous value -- "+previousValue);
 			}
 			
-			nextValue =	getLatestInputReading(numberField, rdm, currentTask, "TTIME ASC", (currentTask.getInputTime()+1000), NumberOperators.GREATER_THAN);
-			LOGGER.debug("Next value "+nextValue);
+			ReadingContext nextReadingContext = getLatestInputReadingContext(numberField, rdm, currentTask, "TTIME ASC", (currentTask.getInputTime()+1000), NumberOperators.GREATER_THAN);
+			if(nextReadingContext != null && !isNextResetReadingPresent(taskContext, numberField, nextReadingContext)) {
+				isNextReading = true;
+				nextValue = (double) nextReadingContext.getReading(numberField.getName());
+				LOGGER.debug("Next value "+nextValue);
+			}
 		}
 		
 		Unit currentInputUnit = getCurrentInputUnit(rdm, currentTask, numberField);	
@@ -533,6 +540,44 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 	    	d = Double.parseDouble(DECIMAL_FORMAT.format(d));
 	    }
 	    return d;
+	}
+	
+	private boolean isNextResetReadingPresent(TaskContext taskContext, NumberField numberField, ReadingContext nextReadingContext) {
+		
+		if(taskContext.getReadingDataId() != -1 && taskContext.getResource() != null && taskContext.getResource().getId() != - 1) {
+			long parentId = taskContext.getResource().getId();
+			long dataId = nextReadingContext.getId();
+			long readingFieldId = numberField.getFieldId();			
+			long readingModuleId = numberField.getModuleId();
+			int taskMeterResetType = MarkType.TASK_METER_RESET_VALUE.getValue();
+			
+			FacilioModule module= ModuleFactory.getMarkedReadingModule();
+			List<FacilioField> fields = FieldFactory.getMarkedReadingFields();
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+			
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+					.select(fields)
+					.table(module.getTableName())
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceId"), String.valueOf(parentId), PickListOperators.IS))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("fieldId"), String.valueOf(readingFieldId), PickListOperators.IS))
+//					.andCondition(CriteriaAPI.getCondition(fieldMap.get("ttime"), String.valueOf(ttime), NumberOperators.GREATER_THAN_EQUAL))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("markType"), String.valueOf(taskMeterResetType), NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), String.valueOf(readingModuleId), NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("dataId"), String.valueOf(dataId), NumberOperators.EQUALS))
+					;
+			
+			try {
+				List<Map<String, Object>> props = selectBuilder.get();
+				if(props != null && !props.isEmpty() && props.size() > 0) {
+					return true;
+				}	
+			}
+			catch(Exception e) {
+				LOGGER.error(e.getMessage(), e);
+			}	
+		}
+		
+		return false;
 	}
 		
 }
