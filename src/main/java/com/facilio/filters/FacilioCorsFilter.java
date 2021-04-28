@@ -315,11 +315,15 @@ public class FacilioCorsFilter implements Filter {
         if(isValidInet4Address(originHeader)) {
             domain = protocol+"://"+originHeader;
         } else {
-            domain = protocol+"://";
-            for(int i = 1; i < domainLength; i++) {
-                domain = domain + domains[i];
-                if(domainLength - i > 1) {
+            if(domainLength == 1 ) {
+                domain = protocol+"://"+originHeader;
+              } else {
+                domain = protocol + "://";
+                for (int i = 1; i < domainLength; i++) {
+                  domain = domain + domains[i];
+                  if (domainLength - i > 1) {
                     domain = domain + ".";
+                  }
                 }
             }
         }
