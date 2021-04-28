@@ -29,7 +29,14 @@ public class InspectionTriggerContext extends V3Context {
 	}
 	
 	public int getType() {
-		return this.type.getVal();
+		if(this.type != null) {
+			return this.type.getVal();
+		}
+		return -1;
+	}
+	
+	public long getParentId() {
+		return parent == null ? -1 : parent.getId();
 	}
 	
 	public enum TriggerType {

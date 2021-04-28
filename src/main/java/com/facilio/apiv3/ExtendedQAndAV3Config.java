@@ -42,7 +42,7 @@ public class ExtendedQAndAV3Config {
 //                .list()
 //                .delete()
                 .summary()
-                .afterFetch(QAndAReadOnlyChainFactory.commonAfterQAndATemplateFetch())
+                .afterFetch(QAndAReadOnlyChainFactory.commonAfterInspectionTemplateFetch())
                 .build();
     }
 

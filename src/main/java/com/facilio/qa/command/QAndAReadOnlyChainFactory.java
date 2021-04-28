@@ -25,4 +25,11 @@ public class QAndAReadOnlyChainFactory {
         c.addCommand(new FetchPagesFromTemplateCommand());
         return c;
     }
+    
+    public static FacilioChain commonAfterInspectionTemplateFetch() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(commonAfterQAndATemplateFetch());
+        c.addCommand(new FetchRelatedItemsForInspectionTemplateCommand());
+        return c;
+    }
 }

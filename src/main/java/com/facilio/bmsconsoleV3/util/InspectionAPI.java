@@ -5,21 +5,27 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.BaseScheduleContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTriggerContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTriggerIncludeExcludeResourceContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 
 public class InspectionAPI {
 
 	
-	public static List<InspectionTriggerContext> getInspectionTriggerByScheduer(Long schedulerId,boolean fetchInclExcl) throws Exception {
+	public static List<InspectionTriggerContext> getInspectionTriggerByScheduer(Long schedulerId,boolean fetchRelated) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -27,10 +33,10 @@ public class InspectionAPI {
 		
 		Condition condition = CriteriaAPI.getCondition(fieldMap.get("scheduleId"), ""+schedulerId,NumberOperators.EQUALS);
 		
-		return getInspectionTrigger(condition, fetchInclExcl);
+		return getInspectionTrigger(condition, fetchRelated);
 	}
 	
-	public static List<InspectionTriggerContext> getInspectionTrigger(Condition condition,boolean fetchInclExcl) throws Exception {
+	public static List<InspectionTriggerContext> getInspectionTrigger(Condition condition,boolean fetchRelated) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -43,11 +49,35 @@ public class InspectionAPI {
 		
 		List<InspectionTriggerContext> triggers = select.get();
 		
-		if(fetchInclExcl) {
-			fetchInclExcl(triggers);
+		if(triggers != null && !triggers.isEmpty()) {
+			if(fetchRelated) {
+				fetchInclExcl(triggers);
+				fetchScheduleDetails(triggers);
+			}
 		}
 		
 		return triggers;
+	}
+
+	private static void fetchScheduleDetails(List<InspectionTriggerContext> triggers) throws Exception {
+		// TODO Auto-generated method stub
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		List<Long> scheduleIds = triggers.stream().map(InspectionTriggerContext::getScheduleId).collect(Collectors.toList());
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getBaseSchedulerFields())
+				.table(ModuleFactory.getBaseSchedulerModule().getTableName())
+				.andCondition(CriteriaAPI.getIdCondition(scheduleIds, ModuleFactory.getBaseSchedulerModule()));
+			
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		List<BaseScheduleContext> baseSchedules = FieldUtil.getAsBeanListFromMapList(props, BaseScheduleContext.class);
+		
+		Map<Long, List<BaseScheduleContext>> baseScheduleIDMap = baseSchedules.stream().collect(Collectors.groupingBy(BaseScheduleContext::getId));
+		
+		triggers.forEach((trigger) -> {trigger.setSchedule(baseScheduleIDMap.get(trigger.getScheduleId()).get(0));});
 	}
 
 	private static void fetchInclExcl(List<InspectionTriggerContext> triggers) throws Exception {

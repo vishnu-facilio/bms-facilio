@@ -1566,25 +1566,7 @@ public enum ActionType {
 
 			SupportEmailContext supportEmailContext = (SupportEmailContext) context.get(FacilioConstants.ContextNames.SUPPORT_EMAIL);
 			BaseMailMessageContext mailContext = (BaseMailMessageContext) currentRecord;
-//
-//			V3WorkOrderContext workorderContext = new V3WorkOrderContext();
-//			workorderContext = FieldUtil.getAsBeanFromJson(obj, V3WorkOrderContext.class);
-//			workorderContext.setSendForApproval(true);
-//			User requester = new User();
-//			requester.setEmail(mailContext.getFrom());
-//			workorderContext.setSubject(mailContext.getSubject());
-//			workorderContext.setSourceType(TicketContext.SourceType.EMAIL_REQUEST.getIntVal());
-//			if (mailContext.getContent() != null) {
-//				workorderContext.setDescription(StringUtils.trim(mailContext.getContent()));
-//			}
-//			workorderContext.setSiteId(supportEmailContext.getSiteId());
-//			workorderContext.setRequester(requester);
-//			Map<String, List<Map<String, Object>>> attachments = new HashMap<>();
-//			if (mailContext.getAttachmentsList().size() > 0) {
-//				attachments.put("ticketAttachments", mailContext.getAttachmentsList());
-//				workorderContext.setSubForm(attachments);
-//			}
-//			addWorkOrder(workorderContext);
+
 			WorkOrderContext workorderContext = FieldUtil.getAsBeanFromJson(obj, WorkOrderContext.class);
 			workorderContext.setSourceType(SourceType.EMAIL_REQUEST);
 			workorderContext.setSiteId(supportEmailContext.getSiteId());
@@ -1751,7 +1733,7 @@ public enum ActionType {
 					
 					obj.put("siteId", mailContext.getSiteId());
 					 
-					FacilioContext contextNew = V3Util.createRecord(module, obj);
+					FacilioContext contextNew = V3Util.createRecord(module, obj);	//adding record to the corresponding module.
 			        
 			        Map<String, List<ModuleBaseWithCustomFields>> recordMap = (Map<String, List<ModuleBaseWithCustomFields>>) contextNew.get(Constants.RECORD_MAP);
 			        
