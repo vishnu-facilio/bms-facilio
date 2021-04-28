@@ -312,37 +312,37 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 
 	private TaskErrorContext checkUnitForValueError(TaskContext currentTask, NumberField numberField, ReadingDataMeta rdm,Double currentValueInSiUnit, TaskContext taskContext) throws Exception {
 
-		double previousValue = getLatestPreviousReading (numberField, rdm, currentTask, taskContext);
-		if(previousValue < 0)
-		{
-			return null;
-		}
-		
-		double diff = previousValue / currentValueInSiUnit;
-		
-		Unit currentInputUnit = getCurrentInputUnit(rdm, currentTask, numberField);
-		
-		if(currentInputUnit != null && currentInputUnit.getMultiplierTimes() != -1 && currentInputUnit.getMetric() != null) {
-			
-			Unit suggestedUnit = UnitsUtil.getUnitMultiplierResult(currentInputUnit, diff);
-			
-			TaskErrorContext error = new TaskErrorContext();		
-			error.setMode(TaskErrorContext.Mode.SUGGESTION.getValue());
-			error.setSuggestionType(TaskErrorContext.SuggestionType.UNIT_CHANGE.getValue());
-			error.setCurrentValue(setCurrentValueString(currentTask, currentInputUnit));
-			if(suggestedUnit != null) {
-				error.setSuggestedUnit(suggestedUnit);
-			}
-			error.setMessage("We suggest you to double check the unit you have chosen.");
-			String previousValueString = previousValue+"";
-			if(numberField.getMetric() > 0) {
-				previousValue = (double) UnitsUtil.convertToDisplayUnit(previousValue, numberField);
-				previousValueString  = previousValue + " " + UnitsUtil.getDisplayUnit(numberField).getSymbol();
-			} 
-			error.setPreviousValue(previousValueString);
-		
-			return error;
-		}
+//		double previousValue = getLatestPreviousReading (numberField, rdm, currentTask, taskContext);
+//		if(previousValue < 0)
+//		{
+//			return null;
+//		}
+//		
+//		double diff = previousValue / currentValueInSiUnit;
+//		
+//		Unit currentInputUnit = getCurrentInputUnit(rdm, currentTask, numberField);
+//		
+//		if(currentInputUnit != null && currentInputUnit.getMultiplierTimes() != -1 && currentInputUnit.getMetric() != null) {
+//			
+//			Unit suggestedUnit = UnitsUtil.getUnitMultiplierResult(currentInputUnit, diff);
+//			
+//			TaskErrorContext error = new TaskErrorContext();		
+//			error.setMode(TaskErrorContext.Mode.SUGGESTION.getValue());
+//			error.setSuggestionType(TaskErrorContext.SuggestionType.UNIT_CHANGE.getValue());
+//			error.setCurrentValue(setCurrentValueString(currentTask, currentInputUnit));
+//			if(suggestedUnit != null) {
+//				error.setSuggestedUnit(suggestedUnit);
+//			}
+//			error.setMessage("We suggest you to double check the unit you have chosen.");
+//			String previousValueString = previousValue+"";
+//			if(numberField.getMetric() > 0) {
+//				previousValue = (double) UnitsUtil.convertToDisplayUnit(previousValue, numberField);
+//				previousValueString  = previousValue + " " + UnitsUtil.getDisplayUnit(numberField).getSymbol();
+//			} 
+//			error.setPreviousValue(previousValueString);
+//		
+//			return error;
+//		}
 		return null;
 	}
 	
