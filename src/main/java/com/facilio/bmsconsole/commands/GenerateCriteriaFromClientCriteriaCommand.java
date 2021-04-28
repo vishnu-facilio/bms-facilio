@@ -1,9 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -13,7 +9,12 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.RelatedModuleOperator;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 
 public class GenerateCriteriaFromClientCriteriaCommand extends FacilioCommand {
@@ -35,8 +36,10 @@ public class GenerateCriteriaFromClientCriteriaCommand extends FacilioCommand {
 			
 			for (String key : clientFilterCriteria.getConditions().keySet()) {
 				Condition condition = clientFilterCriteria.getConditions().get(key);
-				FacilioField field = modBean.getField(condition.getFieldName(), moduleName);
-				condition.setField(field);
+				if (condition.getOperatorId() != RelatedModuleOperator.RELATED.getOperatorId()) {
+					FacilioField field = modBean.getField(condition.getFieldName(), moduleName);
+					condition.setField(field);
+				}
 			}
 		}
 		if(StringUtils.isNotEmpty(moduleName) && moduleName.equals(FacilioConstants.ContextNames.QUOTE)) {

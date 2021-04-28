@@ -74,7 +74,14 @@ public class AssetPageFactory extends PageFactory {
 		addWoCountWidget(tab1Sec1);
 		addAlarmCountWidget(tab1Sec1);
 		addFailureMetricWidget(tab1Sec1);
-		addSecondaryDetailsWidget(tab1Sec1);
+		
+		if (AccountUtil.getCurrentOrg().getOrgId() == 436) {
+			addCustomSecondaryDetailsWidget(tab1Sec1);
+		}
+		else {
+			addSecondaryDetailsWidget(tab1Sec1);
+		}
+		
 		addCommonSubModuleWidget(tab1Sec1, module, asset);
 		
 		
@@ -303,6 +310,14 @@ public class AssetPageFactory extends PageFactory {
 		// col1Sec2.setName("overview");
 		// col1Sec2.setDisplayName("common.page.overview");
 		PageWidget detailsWidget = new PageWidget(WidgetType.SECONDARY_DETAILS_WIDGET);
+		detailsWidget.addToLayoutParams(section, 24, 5);
+		section.addWidget(detailsWidget);
+	}
+	
+	private static void addCustomSecondaryDetailsWidget(Section section) {
+		// col1Sec2.setName("overview");
+		// col1Sec2.setDisplayName("common.page.overview");
+		PageWidget detailsWidget = new PageWidget(WidgetType.CUSTOM_SECONDARY_DETAILS_WIDGET);
 		detailsWidget.addToLayoutParams(section, 24, 5);
 		section.addWidget(detailsWidget);
 	}

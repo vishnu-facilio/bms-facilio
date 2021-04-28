@@ -1,15 +1,16 @@
 package com.facilio.bmsconsole.page;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.modules.FieldUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 public class PageWidget {
 	private static final long serialVersionUID = 1L;
@@ -197,6 +198,7 @@ public class PageWidget {
  		PRIMARY_DETAILS_WIDGET("primaryDetailsWidget"),
  		MV_DETAILS_WIDGET("mvSummaryWidget"),
  		SECONDARY_DETAILS_WIDGET("secondaryDetailsWidget"),
+ 		CUSTOM_SECONDARY_DETAILS_WIDGET("customSecondaryDetailsWidget"),
  		TENANT_SPECIAL_WIDGET("tenantSpecialWidget"),
  		CARD("card"),
  		CHART("chart"),

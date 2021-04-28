@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -16,15 +16,13 @@ import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.job.JobContext;
 
 public class GetWoScheduledViewList extends FacilioCommand {
@@ -61,32 +59,18 @@ public class GetWoScheduledViewList extends FacilioCommand {
 				woReportsMap.put(report.getId(), report);
 			}
 		}
+		List<ReportInfo> woReports = null;
 		if (!reportIds.isEmpty()) {
-			FacilioModule jobsModule = ModuleFactory.getJobsModule();
-			List<FacilioField> jobsField = FieldFactory.getJobFields();
-			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(jobsField);
-			 
-			selectBuilder = new GenericSelectRecordBuilder()
-					.select(jobsField)
-					.table(jobsModule.getTableName())
-//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(jobsModule))
-					.andCondition(CriteriaAPI.getCondition(fieldMap.get("jobId"), reportIds, NumberOperators.EQUALS))
-					.andCondition(CriteriaAPI.getCondition(fieldMap.get("jobName"), "ViewEmailScheduler", StringOperators.IS));
-			
-			List<Map<String, Object>> jobProps = selectBuilder.get();
-			if(jobProps != null && !jobProps.isEmpty()) {
-				for(Map<String, Object> prop : jobProps) {
-					JobContext job = FieldUtil.getAsBeanFromMap(prop, JobContext.class);
-					if (job.isActive()) {
-						woReportsMap.get(job.getJobId()).setJob(job);
-					}
-					else {
-						woReportsMap.remove(job.getJobId());
-					}
+			woReports = new ArrayList<>();
+			List<JobContext> jcs = FacilioTimer.getActiveJobs(reportIds, "ViewEmailScheduler");
+			if(CollectionUtils.isNotEmpty(jcs)) {
+				for(JobContext job : jcs) {
+					ReportInfo reportInfo = woReportsMap.get(job.getJobId());
+					reportInfo.setJob(job);
+					woReports.add(reportInfo);
 				}
 			}	
 		}
-		List<ReportInfo> woReports = woReportsMap.values().stream().collect(Collectors.toList());
 //		FacilioModule module1 = ModuleFactory.getViewsModule();
 //		List<FacilioField> fields1 = FieldFactory.getViewFields();
 //		GenericSelectRecordBuilder selectBuilder1 = new GenericSelectRecordBuilder()

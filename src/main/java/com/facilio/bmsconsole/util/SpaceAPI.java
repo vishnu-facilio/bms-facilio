@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -33,6 +34,7 @@ import com.facilio.bmsconsole.context.ZoneContext;
 import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -100,7 +102,14 @@ public class SpaceAPI {
 		return area;
 	}
 	
+	private static final List<String> WEATHER_NON_CURRENT_MODULES = Arrays.asList(ContextNames.WEATHER_HOURLY_FORECAST_READING, 
+			ContextNames.WEATHER_DAILY_FORECAST_READING, ContextNames.WEATHER_DAILY_READING);
+	
 	public static List<FacilioModule> getDefaultReadings(SpaceType type, boolean onlyReading) throws Exception {
+		return getDefaultReadings(type, onlyReading, false);
+	}
+	
+	public static List<FacilioModule> getDefaultReadings(SpaceType type, boolean onlyReading, boolean excludeForecasts) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		String moduleName = null;
 		switch(type) {
@@ -127,6 +136,9 @@ public class SpaceAPI {
 		}
 		else {
 			readings = modBean.getSubModules(moduleName, ModuleType.READING, ModuleType.LIVE_FORMULA, ModuleType.SCHEDULED_FORMULA, ModuleType.SYSTEM_SCHEDULED_FORMULA);
+		}
+		if (readings != null && excludeForecasts && type == SpaceType.SITE) {
+			return readings.stream().filter(module -> !WEATHER_NON_CURRENT_MODULES.contains(module.getName())).collect(Collectors.toList());
 		}
 		return readings;
 	}

@@ -1,7 +1,11 @@
 package com.facilio.tasker;
 
+import java.util.List;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -10,10 +14,6 @@ import com.facilio.service.FacilioService;
 import com.facilio.tasker.ScheduleInfo.FrequencyType;
 import com.facilio.tasker.job.JobContext;
 import com.facilio.tasker.job.JobStore;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import java.util.List;
 
 public class FacilioTimer {
 	
@@ -140,6 +140,11 @@ public class FacilioTimer {
 	public static List<JobContext> getJobs ( List<Long> jobIds,String jobName ) throws Exception {
 		long orgId = getCurrentOrgId();
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,() -> JobStore.getJobs(orgId,jobIds,jobName));
+	}
+	
+	public static List<JobContext> getActiveJobs ( List<Long> jobIds,String jobName ) throws Exception {
+		long orgId = getCurrentOrgId();
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,() -> JobStore.getJobs(orgId,jobIds,jobName, true));
 	}
 
 	public static int activateJob ( long jobId,String jobName ) throws Exception {

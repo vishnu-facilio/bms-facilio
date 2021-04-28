@@ -231,9 +231,9 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		if (FieldUtil.isSystemFieldsPresent(module)) {
 			moduleProps.keySet().removeAll(FieldFactory.getSystemFieldNames());
 		}
-		if (FieldUtil.isBaseEntityRootModule(module)) {
-			moduleProps.keySet().removeAll(FieldFactory.getBaseModuleSystemFieldNames());
-		}
+//		if (FieldUtil.isBaseEntityRootModule(module)) {
+//			moduleProps.keySet().removeAll(FieldFactory.getBaseModuleSystemFieldNames());
+//		}
 	}
 
 	public int updateViaMap(Map<String, Object> props) throws Exception {
@@ -406,7 +406,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		if (FieldUtil.isSystemFieldsPresent(module)) {
 			updateFields.addAll(FieldFactory.getSystemPointFields(module.getParentModule()));
 		}
-		if (FieldUtil.isBaseEntityRootModule(module)) {
+		if (FieldUtil.isBaseEntityRootModule(prevModule)) {
 			updateFields.addAll(FieldFactory.getBaseModuleSystemFields(module));
 		}
 

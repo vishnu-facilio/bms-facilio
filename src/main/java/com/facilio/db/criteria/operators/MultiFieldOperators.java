@@ -157,6 +157,7 @@ public enum MultiFieldOperators implements Operator<String> {
 						.append(parentName).append(" FROM ")
 						.append(relModule.getTableName())
 						.append(" WHERE ")
+						.append(" MODULEID = ").append(relModule.getModuleId()).append(" AND ")
 						.append(childName)
 						;
 

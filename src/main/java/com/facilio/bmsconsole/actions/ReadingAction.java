@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -35,8 +34,6 @@ import com.facilio.bmsconsole.context.ResetCounterMetaContext;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLoggerContext;
 import com.facilio.bmsconsole.enums.SourceType;
-import com.facilio.bmsconsole.jobs.DemoAlarmPropagationJob;
-import com.facilio.bmsconsole.jobs.LiveEventsToAlarmProcessingJob;
 import com.facilio.bmsconsole.util.AggregatedEnergyConsumptionUtil;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.EnergyMeterUtilAPI;
@@ -54,7 +51,6 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.transaction.FacilioTransactionManager;
-import com.facilio.db.transaction.NewTransactionService;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -62,8 +58,6 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
-import com.facilio.tasker.job.FacilioJob;
-import com.facilio.tasker.job.JobContext;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.timeseries.TimeSeriesAPI;
@@ -213,6 +207,7 @@ public class ReadingAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PARENT_ID, getParentId());
 		context.put(FacilioConstants.ContextNames.EXCLUDE_EMPTY_FIELDS, excludeEmptyFields != null ? excludeEmptyFields : true);
+		context.put(FacilioConstants.ContextNames.EXCLUDE_FORECAST, excludeForecastReadings != null ? excludeForecastReadings : true);
 		
 		FacilioChain getSpaceSpecifcReadingsChain = FacilioChainFactory.getSpaceReadingsChain();
 		getSpaceSpecifcReadingsChain.execute(context);
@@ -1820,6 +1815,14 @@ public class ReadingAction extends FacilioAction {
 
 	public void setFetchControllableFields(Boolean fetchControllableFields) {
 		this.fetchControllableFields = fetchControllableFields;
+	}
+	
+	private Boolean excludeForecastReadings;
+	public Boolean getExcludeForecastReadings() {
+		return excludeForecastReadings;
+	}
+	public void setExcludeForecastReadings(Boolean excludeForecastReadings) {
+		this.excludeForecastReadings = excludeForecastReadings;
 	}
 
 }

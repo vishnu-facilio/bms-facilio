@@ -31,7 +31,8 @@ public class GetSpaceSpecifcReadingsCommand extends FacilioCommand {
 			if (readings == null) {
 				readings = new ArrayList<FacilioModule>(); 
 			}
-			List<FacilioModule> moduleReadings = SpaceAPI.getDefaultReadings(type, onlyReading);
+			boolean excludeForecast = (boolean) context.getOrDefault(FacilioConstants.ContextNames.EXCLUDE_FORECAST, false);
+			List<FacilioModule> moduleReadings = SpaceAPI.getDefaultReadings(type, onlyReading, excludeForecast);
 			if (moduleReadings != null) {
 				readings.addAll(moduleReadings);
 			}

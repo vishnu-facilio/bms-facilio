@@ -446,7 +446,11 @@ public class JobStore {
 	}
 	
 	public static List<JobContext> getJobs(long orgId, List<Long> jobIds, String jobName) throws SQLException, JsonParseException, JsonMappingException, IOException, ParseException {
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = getPStmt(conn, orgId, jobIds, jobName); ResultSet rs = pstmt.executeQuery()) {
+		return getJobs(orgId, jobIds, jobName, null);
+	}
+	
+	public static List<JobContext> getJobs(long orgId, List<Long> jobIds, String jobName, Boolean fetchActive) throws SQLException, JsonParseException, JsonMappingException, IOException, ParseException {
+		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = getPStmt(conn, orgId, jobIds, jobName, fetchActive); ResultSet rs = pstmt.executeQuery()) {
 			List<JobContext> jcs = new ArrayList<>();
 			while (rs.next()) {
 				 jcs.add(getJobFromRS(rs));
@@ -459,8 +463,8 @@ public class JobStore {
 		}
 	}
 	
-	private static PreparedStatement getPStmt(Connection conn, long orgId, List<Long> ids, String jobName) throws SQLException {
-		String q = createQuery(ids.size());
+	private static PreparedStatement getPStmt(Connection conn, long orgId, List<Long> ids, String jobName, Boolean fetchActive) throws SQLException {
+		String q = createQuery(ids.size(), fetchActive);
 		PreparedStatement pstmt = conn.prepareStatement(q);
 		pstmt.setLong(1, orgId);
 		pstmt.setString(2, jobName);
@@ -468,6 +472,9 @@ public class JobStore {
 		for (Long id: ids) {
 			pstmt.setLong(i, id);
 			i++;
+		}
+		if (fetchActive != null) {
+			pstmt.setBoolean(i, fetchActive);
 		}
 		return pstmt;
 	}
@@ -519,7 +526,7 @@ public class JobStore {
 		return pstmt;
 	}
 	
-	private static String createQuery(int length) {
+	private static String createQuery(int length, Boolean fetchActive) {
 		String query = "SELECT * FROM Jobs WHERE ORGID = ? AND JOBNAME = ? AND JOBID in (";
 		StringBuilder queryBuilder = new StringBuilder(query);
 		for( int i = 0; i< length; i++){
@@ -527,6 +534,9 @@ public class JobStore {
 			if(i != length -1) queryBuilder.append(",");
 		}
 		queryBuilder.append(")");
+		if (fetchActive != null) {
+			queryBuilder.append(" AND IS_ACTIVE = ?");
+		}
 		return queryBuilder.toString();
 	}
 	

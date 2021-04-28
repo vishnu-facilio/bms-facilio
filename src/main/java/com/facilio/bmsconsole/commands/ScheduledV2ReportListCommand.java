@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
@@ -17,7 +18,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -25,6 +25,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.report.context.ReportContext;
+import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.job.JobContext;
 
 ;
@@ -33,31 +34,31 @@ public class ScheduledV2ReportListCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		
+
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule moduleToFetch = modBean.getModule(moduleName);
-		
+
 		FacilioModule module = ModuleFactory.getReportScheduleInfo();
 		FacilioModule reportModule = ModuleFactory.getReportModule();
 		List<FacilioField> fields = FieldFactory.getReportScheduleInfo1Fields();
 		Map<String, FacilioField> reportFieldsMap = FieldFactory.getAsMap(FieldFactory.getReport1Fields());
 		fields.add(reportFieldsMap.get("name"));
 		fields.add(reportFieldsMap.get("id"));
-		
+
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(module.getTableName())
 				.innerJoin(reportModule.getTableName())
 				.on(module.getTableName()+".REPORTID = "+reportModule.getTableName()+".ID")
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module),String.valueOf(moduleToFetch.getModuleId()), NumberOperators.EQUALS));
-		
+
 		List<Long> ids = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 		if (ids != null && !ids.isEmpty()) {
 			selectBuilder.andCondition(CriteriaAPI.getIdCondition(ids, module));
 		}
-		
+
 		List<Map<String, Object>> props = selectBuilder.get();
 		Map<Long, ReportInfo> reportsMap = new HashMap<>();
 
@@ -68,56 +69,36 @@ public class ScheduledV2ReportListCommand extends FacilioCommand {
 				ReportContext report = FieldUtil.getAsBeanFromMap(prop, ReportContext.class);
 				reportInfo.setName(report.getName());
 				reportInfo.setEmailTemplate((EMailTemplate) TemplateAPI.getTemplate(reportInfo.getTemplateId()));
-//				report.setEmailTemplate(FieldUtil.getAsBeanFromMap(prop, EMailTemplate.class));
+				//				report.setEmailTemplate(FieldUtil.getAsBeanFromMap(prop, EMailTemplate.class));
 				reportInfoIds.add(reportInfo.getId());
 				reportsMap.put(reportInfo.getId(), reportInfo);
 			}
 		}
-		
-		FacilioModule jobsModule = ModuleFactory.getJobsModule();
-		List<FacilioField> jobsField = FieldFactory.getJobFields();
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(jobsField);
-		
+
+
 		if(reportInfoIds != null && !reportInfoIds.isEmpty()) {
-		selectBuilder = new GenericSelectRecordBuilder()
-				.select(jobsField)
-				.table(jobsModule.getTableName())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(jobsModule))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("jobId"), reportInfoIds, NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("jobName"), "ReportEmailScheduler", StringOperators.IS));
-		
-		List<Map<String, Object>> jobProps = selectBuilder.get();
-		Map<Long, JobContext> jobMap = new HashMap<>();
-		if(jobProps != null && !jobProps.isEmpty()) {
-			for(Map<String, Object> prop : jobProps) {
-				JobContext job = FieldUtil.getAsBeanFromMap(prop, JobContext.class);
-				jobMap.put(job.getJobId(), job);
-			}
-		}
-		
-		Iterator<Map.Entry<Long, ReportInfo>> itr = reportsMap.entrySet().iterator();
-		
-		while (itr.hasNext()) {
-			Map.Entry<Long, ReportInfo> entry = itr.next();
-			ReportInfo info = entry.getValue();
-			if (jobMap.containsKey(info.getId())) {
-				JobContext job = jobMap.get(info.getId());
-				if (job.isActive()) {
+
+			List<JobContext> jcs = FacilioTimer.getActiveJobs(reportInfoIds, "ReportEmailScheduler");
+			Map<Long, JobContext> jobMap = jcs.stream().collect(Collectors.toMap(JobContext::getJobId, Function.identity()));
+
+			Iterator<Map.Entry<Long, ReportInfo>> itr = reportsMap.entrySet().iterator();
+
+			while (itr.hasNext()) {
+				Map.Entry<Long, ReportInfo> entry = itr.next();
+				ReportInfo info = entry.getValue();
+				if (jobMap.containsKey(info.getId())) {
+					JobContext job = jobMap.get(info.getId());
 					reportsMap.get(info.getId()).setJob(job);
 				}
 				else {
 					itr.remove();
+					// TODO delete removed job entries from info table
 				}
 			}
-			else {
-				itr.remove();
-				// TODO delete removed job entries from info table
-			}
-		}
 		}
 		List<ReportInfo> reports = reportsMap.values().stream().collect(Collectors.toList());
 		context.put(FacilioConstants.ContextNames.REPORT_LIST, reports);
-				
+
 		return false;
 	}
 
