@@ -25,6 +25,7 @@ import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.Page.Tab;
 import com.facilio.bmsconsole.page.PageWidget.WidgetType;
 import com.facilio.bmsconsole.page.WidgetGroup.WidgetGroupType;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
@@ -150,7 +151,14 @@ public class VendorPageFactory extends PageFactory{
 			tab3Sec1.addWidget(transaction);
 			
 			
-			
+			Page.Tab tab6 = page.new Tab("Activity");
+		    page.addTab(tab6);
+		    Page.Section tab6Sec1 = page.new Section();
+		    tab6.addSection(tab6Sec1);
+		    PageWidget activityWidget = new PageWidget(PageWidget.WidgetType.ACTIVITY);
+		    activityWidget.addToLayoutParams(tab6Sec1, 24, 3);
+		    activityWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.VENDOR_ACTIVITY);
+		    tab6Sec1.addWidget(activityWidget);
 
 			
 		}
@@ -230,6 +238,16 @@ public class VendorPageFactory extends PageFactory{
 				tab2.addSection(tab2Sec7);
 				addSpecialRelatedListWidgetForDemoOrg(tab2Sec7);
 			}
+			
+			Page.Tab tab3 = page.new Tab("Activity");
+		    page.addTab(tab3);
+		    Page.Section tab3Sec1 = page.new Section();
+		    tab3.addSection(tab3Sec1);
+		    PageWidget activityWidget = new PageWidget(PageWidget.WidgetType.ACTIVITY);
+		    activityWidget.addToLayoutParams(tab3Sec1, 24, 3);
+		    activityWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.VENDOR_ACTIVITY);
+		    tab3Sec1.addWidget(activityWidget);
+		    
 		}
 		return page;
 

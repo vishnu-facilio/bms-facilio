@@ -849,6 +849,7 @@ public class FacilioConstants {
         public static final String BUILDING_ACTIVITY = "buildingactivity";
         public static final String FLOOR_ACTIVITY = "flooractivity";
         public static final String SPACE_ACTIVITY = "spaceactivity";
+        public static final String VENDOR_ACTIVITY = "vendoractivity";
 
 		public static final String ASSET_DOWNTIME_STATUS = "assetDowntimeStatus";
 		public static final String ASSET_DOWNTIME_ID = "assetDowntimeId";
@@ -918,6 +919,7 @@ public class FacilioConstants {
 		public static final String TOOL_TYPES_ATTACHMENTS = "toolTypesattachments";
 		public static final String STORE_ROOM_ATTACHMENTS = "storeRoomAttachments";
 		public static final String VISITOR_LOGGING_ATTACHMENTS = "visitorloggingattachments";
+		public static final String VENDOR_ATTACHMENTS = "vendorsAttachments";
 
 		public static final String MV_PROJECT_MODULE = "mvproject";
 		public static final String MV_BASELINE_MODULE = "mvbaseline";
@@ -1375,6 +1377,7 @@ public class FacilioConstants {
 
 		public static final String VENDOR = "vendor";
 		public static final String VENDORS = "vendors";
+		public static final String VENDOR_NOTES = "vendorsNotes";
 		public static final String VENDOR_ID = "vendorsId";
 
 		public static final String ITEM = "item";
@@ -2058,6 +2061,7 @@ public class FacilioConstants {
 			classMap.put(FLOOR_ACTIVITY, ActivityContext.class);
 			classMap.put(FLOOR_ACTIVITY, ActivityContext.class);
 			classMap.put(SPACE_ACTIVITY, ActivityContext.class);
+			classMap.put(VENDOR_ACTIVITY, ActivityContext.class);
 			
 			classMap.put(MODBUS_TCP_CONTROLLER_MODULE_NAME, ModbusTcpControllerContext.class);
 			classMap.put(MODBUS_RTU_CONTROLLER_MODULE_NAME, ModbusRtuControllerContext.class);

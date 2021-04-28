@@ -124,6 +124,8 @@ public class NoteAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.QUOTE_ACTIVITY);
 		}  else if (moduleName.equals(FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_NOTES)) {
 			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_ACTIVITY);
+		} else if (moduleName.equals(FacilioConstants.ContextNames.VENDOR_NOTES)) {
+			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.VENDOR_ACTIVITY);
 		}  else if (moduleName.equals(FacilioConstants.ContextNames.BASE_SPACE_NOTES)) {
 			if (parentModuleName.equals(FacilioConstants.ContextNames.SITE)) {
 				context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.SITE_ACTIVITY);

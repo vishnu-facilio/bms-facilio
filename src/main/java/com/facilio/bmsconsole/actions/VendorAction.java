@@ -127,6 +127,8 @@ public class VendorAction extends FacilioAction{
 		context1.put(FacilioConstants.ContextNames.RECORD, vendor);
 		context1.put(FacilioConstants.ContextNames.CONTACTS, vendorContacts);
 		context1.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
+		context1.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
+		context1.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.VENDOR_ACTIVITY);
 		
 		
 		FacilioChain addVendorChain = TransactionChainFactory.getAddVendorChain();
@@ -186,6 +188,8 @@ public class VendorAction extends FacilioAction{
 		context1.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(vendor.getId()));
 		context1.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 		context1.put(FacilioConstants.ContextNames.CONTACTS, vendorContacts);
+		context1.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.VENDOR_ACTIVITY);
+
 		
 
 		FacilioChain updateVendorChain = TransactionChainFactory.getUpdateVendorChain();
