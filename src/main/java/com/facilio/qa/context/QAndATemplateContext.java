@@ -66,8 +66,8 @@ public abstract class QAndATemplateContext <R extends ResponseContext> extends V
 
     public static class QAndATypeIdResolver extends FacilioEnumClassTypeIdResolverBase<QAndATemplateContext> {
         @Override
-        protected Class<? extends QAndATemplateContext> getSubClass(int index) {
-            QAndAType typeEnum = QAndAType.valueOf(index);
+        protected Class<? extends QAndATemplateContext> getSubClass(String index) {
+            QAndAType typeEnum = QAndAType.valueOf(Integer.parseInt(index));
             return typeEnum == null ? DummyQAndATemplateContext.class : typeEnum.getTemplateClass();
         }
     }

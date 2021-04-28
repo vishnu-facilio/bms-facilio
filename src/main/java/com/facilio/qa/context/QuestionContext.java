@@ -20,7 +20,7 @@ import lombok.extern.log4j.Log4j;
         defaultImpl = QuestionContext.class,
         use = JsonTypeInfo.Id.CUSTOM,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "type",
+        property = "questionType",
         visible = true
 )
 @JsonTypeIdResolver(QuestionContext.QuestionTypeIdResolver.class)
@@ -58,8 +58,8 @@ public class QuestionContext extends V3Context {
 
     public static class QuestionTypeIdResolver extends FacilioEnumClassTypeIdResolverBase<QuestionContext> {
         @Override
-        protected Class<? extends QuestionContext> getSubClass(int index) {
-            QuestionType typeEnum = QuestionType.valueOf(index);
+        protected Class<? extends QuestionContext> getSubClass(String value) {
+            QuestionType typeEnum = QuestionType.valueOf(value);
             FacilioUtil.throwIllegalArgumentException(typeEnum == null, "Invalid type for question");
             return typeEnum.getSubClass();
         }
