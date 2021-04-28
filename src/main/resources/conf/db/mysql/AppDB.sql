@@ -31167,7 +31167,7 @@ CREATE TABLE IF NOT EXISTS Inspection_Triggers (
 	CONSTRAINT Inspection_Triggers_FK_SCHEDULE_ID FOREIGN KEY (SCHEDULE_ID) REFERENCES BaseScheduler (ID)
 );
 
-CREATE TABLE Inspection_Trigger_Include_Exclude_Resource (
+CREATE TABLE IF NOT EXISTS Inspection_Trigger_Include_Exclude_Resource (
   ID bigint(20) NOT NULL AUTO_INCREMENT,
   ORGID bigint(20) NOT NULL,
   MODULEID bigint(20) NOT NULL,

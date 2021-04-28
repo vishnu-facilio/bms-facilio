@@ -86,8 +86,7 @@ public class AddInspectionModules extends SignUpData {
 		FacilioModule module = new FacilioModule(FacilioConstants.Inspection.INSPECTION_TRIGGER_INCL_EXCL,
                 "Inspection Triggers Incl Excl",
                 "Inspection_Trigger_Include_Exclude_Resource",
-                FacilioModule.ModuleType.SUB_ENTITY,
-                true
+                FacilioModule.ModuleType.SUB_ENTITY
         );
 
         List<FacilioField> fields = new ArrayList<>();
