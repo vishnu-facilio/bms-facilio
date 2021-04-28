@@ -11,7 +11,7 @@ import org.apache.commons.collections4.CollectionUtils;
 public class ServiceRequestPageFactory extends PageFactory {
     public static Page getServiceRequestPage(ServiceRequestContext record, FacilioModule module) throws Exception {
 
-        if (FacilioProperties.isDevelopment() || (!FacilioProperties.isProduction() && (AccountUtil.getCurrentOrg().getId() == 204l || AccountUtil.getCurrentOrg().getId() == 343l))) {
+        if (FacilioProperties.isDevelopment() || (AccountUtil.getCurrentOrg().getId() == 204l || AccountUtil.getCurrentOrg().getId() == 75l)) {
             Page page = new Page();
 
             Page.Tab tab1 = page.new Tab("summary");
