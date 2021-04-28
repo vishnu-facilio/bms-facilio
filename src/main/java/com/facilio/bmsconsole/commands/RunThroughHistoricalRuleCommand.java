@@ -9,12 +9,15 @@ import java.util.Set;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang.StringUtils;
+
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ExecuteHistoricalRule;
 import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLoggerContext;
 import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLogsContext;
@@ -53,6 +56,15 @@ public class RunThroughHistoricalRuleCommand extends FacilioCommand  implements 
 		if (AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getOrgId() == 339 || AccountUtil.getCurrentOrg().getOrgId() == 405)) {
 			maximumDailyEventRuleJobsPerOrg = 60000l;
 		}
+		
+		Map<String, String> orgInfoMap = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.HISTORICAL_READING_RULE_JOBS_THRESHOLD);
+    	if (orgInfoMap != null && MapUtils.isNotEmpty(orgInfoMap)) {
+    		String historicalReadingRuleJobsThresholdProp = orgInfoMap.get(FacilioConstants.OrgInfoKeys.HISTORICAL_READING_RULE_JOBS_THRESHOLD);
+			if (historicalReadingRuleJobsThresholdProp != null && !historicalReadingRuleJobsThresholdProp.isEmpty() && StringUtils.isNotEmpty(historicalReadingRuleJobsThresholdProp)) {
+				maximumDailyEventRuleJobsPerOrg = Long.valueOf(String.valueOf(historicalReadingRuleJobsThresholdProp));
+			}
+    	}
+		
 
 		DateRange range = (DateRange) context.get(FacilioConstants.ContextNames.DATE_RANGE);
 		Integer ruleJobType = (Integer) context.get(FacilioConstants.ContextNames.RULE_JOB_TYPE);
