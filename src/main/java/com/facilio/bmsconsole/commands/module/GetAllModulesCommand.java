@@ -71,7 +71,8 @@ public class GetAllModulesCommand extends FacilioCommand {
 			ContextNames.Budget.ACCOUNT_TYPE,
 			ContextNames.INSURANCE,
 			ContextNames.ITEM_TRANSACTIONS,
-			ContextNames.TOOL_TRANSACTIONS
+			ContextNames.TOOL_TRANSACTIONS,
+			ContextNames.DELIVERY_AREA
 
     });
 

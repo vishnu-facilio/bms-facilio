@@ -1183,5 +1183,15 @@ public class APIv3Config {
                 .build();
     }
     
+    @Module("deliveryArea")
+    public static Supplier<V3Config> getDeliveryArea() {
+        return () -> new V3Config(V3DeliveryAreaContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .update()
+                .list()
+                .summary()
+                .build();
+    }
+    
 }
 
