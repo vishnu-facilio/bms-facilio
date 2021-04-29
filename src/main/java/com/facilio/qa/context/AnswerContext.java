@@ -26,7 +26,7 @@ public class AnswerContext extends V3Context {
     private String fileAnswerUrl, fileAnswerFileName, fileAnswerContentType;
     private File fileAnswer;
 
-    // Multi record answers
+    // Multi record answers and these field names should be added as fetchsupplement in AddAnswerSupplementsCommand
     private List<MCQOptionContext> multiEnumAnswer; // Multi lookup field
     private List<MultiFileAnswerContext> multiFileAnswer; // Line Item field
 }

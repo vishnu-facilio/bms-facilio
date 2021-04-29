@@ -9,6 +9,7 @@ import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.MultiFileAnswerContext;
 import com.facilio.qa.context.PageContext;
 import com.facilio.qa.context.QuestionContext;
+import com.facilio.qa.context.questions.MCQOptionContext;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
@@ -53,11 +54,11 @@ public class QAndAV3Config {
     @Module(FacilioConstants.QAndA.ANSWER)
     public static Supplier<V3Config> getQAndAAnswer() {
         return () -> new V3Config(AnswerContext.class, null)
-                .create()
-                .update()
-//                .list()
-                .delete()
+                .list()
+                    .beforeFetch(QAndAReadOnlyChainFactory.beforeAnswerFetchChain())
+                    .afterFetch(QAndAReadOnlyChainFactory.afterAnswerFetchChain())
                 .summary()
+                .afterFetch(QAndAReadOnlyChainFactory.afterAnswerFetchChain())
                 .build();
     }
 
@@ -65,5 +66,17 @@ public class QAndAV3Config {
     public static Supplier<V3Config> getMultiFileAnswer() {
         return () -> new V3Config(MultiFileAnswerContext.class, null)
                     .build();
+    }
+
+    @Module(FacilioConstants.QAndA.Questions.MCQ_SINGLE_OPTIONS)
+    public static Supplier<V3Config> getMcqSingleOptions() {
+        return () -> new V3Config(MCQOptionContext.class, null)
+                    .build();
+    }
+
+    @Module(FacilioConstants.QAndA.Questions.MCQ_MULTI_OPTIONS)
+    public static Supplier<V3Config> getMcqMultiOptions() {
+        return () -> new V3Config(MCQOptionContext.class, null)
+                .build();
     }
 }

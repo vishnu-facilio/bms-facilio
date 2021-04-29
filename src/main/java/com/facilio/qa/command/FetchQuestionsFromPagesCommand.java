@@ -20,12 +20,17 @@ public class FetchQuestionsFromPagesCommand extends FacilioCommand {
         QAndAUtil.fetchChildrenFromParent(pages,
                 FacilioConstants.QAndA.QUESTION,
                 "page",
-                QuestionContext.class,
-                p -> p.getPage().getId(),
+                "position",
+                q -> q.getPage().getId(),
                 QuestionContext::setPage,
                 PageContext::setQuestions,
-                q -> q.setParent(null));
+                this::removeDefaultQuestionProps);
 
         return false;
+    }
+
+    private void removeDefaultQuestionProps (QuestionContext question) {
+        QAndAUtil.setDefaultPropsAsNullToReduceRespSize(question);
+        question.setParent(null);
     }
 }

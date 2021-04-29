@@ -78,6 +78,10 @@ public class Constants {
         context.put(BODY_PARAMS, jsonObject);
     }
 
+    public static Map<String, List<Object>> getQueryParems(Context context) {
+        return (Map<String, List<Object>>) context.get(QUERY_PARAMS);
+    }
+
     private static final String OLD_RECORD_MAP = "oldRecordMap";
     public static <T extends ModuleBaseWithCustomFields> void addToOldRecordMap (Context context, String moduleName, T record) {
         Map<String, Map<Long, ? extends ModuleBaseWithCustomFields>> oldRecordsMap = (Map<String, Map<Long, ? extends ModuleBaseWithCustomFields>>) context.computeIfAbsent(OLD_RECORD_MAP, k -> new HashMap<>());
@@ -166,6 +170,16 @@ public class Constants {
         String moduleName = Constants.getModuleName(context);
         Map<String, List<ModuleBaseWithCustomFields>> recordMap = Constants.getRecordMap(context);
         return recordMap == null ? null : getRecordList(recordMap, moduleName);
+    }
+
+    public static <E extends ModuleBaseWithCustomFields> void setRecordList (FacilioContext context, List<E> records) {
+        String moduleName = Constants.getModuleName(context);
+        Map<String, List<ModuleBaseWithCustomFields>> recordMap = Constants.getRecordMap(context);
+        if (recordMap == null) {
+            recordMap = new HashMap<>();
+            setRecordMap(context, recordMap);
+        }
+        addRecordList(recordMap, moduleName, records);
     }
 
     private static final String EXTENDED_MODULES = "extendedModules";

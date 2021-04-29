@@ -17,6 +17,7 @@ public class QAndAReadOnlyChainFactory {
     public static FacilioChain afterPagesFetch() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new FetchQuestionsFromPagesCommand());
+        c.addCommand(new FetchAnswersForQuestionsCommand());
         return c;
     }
 
@@ -33,9 +34,21 @@ public class QAndAReadOnlyChainFactory {
         return c;
     }
 
-    public static FacilioChain callFetchHandlers() {
+    public static FacilioChain callQuestionFetchHandlers() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new CallQuestionHandlersFromListCommand(CallQuestionHandlersFromListCommand.ListHandlerType.FETCH));
+        return c;
+    }
+
+    public static FacilioChain beforeAnswerFetchChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddAnswerSupplementsCommand());
+        return c;
+    }
+
+    public static FacilioChain afterAnswerFetchChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SerializeAnswersCommand());
         return c;
     }
 }

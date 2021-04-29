@@ -2461,6 +2461,7 @@ public class FacilioConstants {
 			public static final String ANSWER_DATA = "answerData";
 			public static final String ANSWER_LIST = "answerList";
 			public static final String QUESTION_LIST = "questionList";
+			public static final String QUESTION_MAP = "questionMap";
 			public static final String QUESTION_VS_ANSWER = "questionVsAnswer";
 			public static final String ANSWERS_TO_BE_ADDED = "answersToBeAdded";
 			public static final String ANSWERS_TO_BE_UPDATED = "answersToBeUpdated";

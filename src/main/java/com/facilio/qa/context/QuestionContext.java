@@ -10,6 +10,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.collections4.CollectionUtils;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -48,12 +51,17 @@ public class QuestionContext extends V3Context {
     private Integer answerFieldId;
     private QuestionType questionType;
     private Integer position;
+    private ClientAnswerContext answer;
 
     public Integer getType() {
         return questionType == null ? null : questionType.getIndex();
     }
     public void setType(Integer type) {
         questionType = type == null ? null : QuestionType.valueOf(type);
+    }
+
+    public void setAnswer (List<ClientAnswerContext> answers) {
+        answer = CollectionUtils.isEmpty(answers) ? null : answers.get(0);
     }
 
     public static class QuestionTypeIdResolver extends FacilioEnumClassTypeIdResolverBase<QuestionContext> {

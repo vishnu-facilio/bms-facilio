@@ -57,6 +57,7 @@ public class MultiLookupCRUDHandler extends BaseMultiValueCRUDHandler<Object> {
             }
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioField primaryField = modBean.getPrimaryField(valueField.getLookupModule().getName());
+            primaryField = primaryField == null ? FieldFactory.getIdField(valueField.getLookupModule()) : primaryField;
             if (valueFieldMeta == null) {
                 valueFieldMeta = new LookupFieldMeta(valueField, Collections.singletonList(primaryField), null);
             }

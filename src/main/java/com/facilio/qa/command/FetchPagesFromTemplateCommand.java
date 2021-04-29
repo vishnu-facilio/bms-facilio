@@ -18,10 +18,11 @@ public class FetchPagesFromTemplateCommand extends FacilioCommand {
         QAndAUtil.fetchChildrenFromParent(templates,
                                         FacilioConstants.QAndA.PAGE,
                                         "parent",
-                                        PageContext.class,
+                                            "position",
                                         p -> p.getParent().getId(),
                                         PageContext::setParent,
-                                        QAndATemplateContext::setPages);
+                                        QAndATemplateContext::setPages,
+                                        QAndAUtil::setDefaultPropsAsNullToReduceRespSize);
 
         return false;
     }
