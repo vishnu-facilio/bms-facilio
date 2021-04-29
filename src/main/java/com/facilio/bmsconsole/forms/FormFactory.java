@@ -393,7 +393,7 @@ public class FormFactory {
 		List<FacilioForm> employeeFormsList = Arrays.asList(geEmployeeContactForm());
 		List<FacilioForm> departmentFormsList = Arrays.asList(getDepartmentForm());
 		List<FacilioForm> movesFormsList = Arrays.asList(getMovesForm());
-		List<FacilioForm> deliveriesFormsList = Arrays.asList(getDeliveriesForm());
+		List<FacilioForm> deliveriesFormsList = Arrays.asList(getDeliveriesForm(), getDeliveriesPortalForm());
 		List<FacilioForm> peopleFormsList = Arrays.asList(getPeopleForm());
 
 		List<FacilioForm> reservationFormsList = Arrays.asList(getReservationForm());
@@ -1158,6 +1158,17 @@ public class FormFactory {
 		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
+	
+	public static FacilioForm getDeliveriesPortalForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("NEW DELIVERY");
+		form.setName("default_deliveries_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.DELIVERIES));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getDeliveriesFormField());
+		form.setAppLinkName(ApplicationLinkNames.OCCUPANT_PORTAL_APP);
+		return form;
+	}
 
 	private static List<FormField> getWebWorkOrderFormFields() {
 		List<FormField> fields = new ArrayList<>();
@@ -1575,7 +1586,6 @@ public class FormFactory {
 		fields.add(new FormField("employee", FieldDisplayType.LOOKUP_SIMPLE, "Recipient", Required.REQUIRED, "employee", 1, 2));
 		fields.add(new FormField("receivedTime", FieldDisplayType.DATETIME, "Received Time", Required.REQUIRED, 10, 1));
 		fields.add(new FormField("avatar",FieldDisplayType.IMAGE,"Photo",Required.OPTIONAL,1,1));
-		fields.add(new FormField("deliveryArea", FieldDisplayType.LOOKUP_SIMPLE, "Delivery Area", Required.REQUIRED, "deliveryArea", 1, 2));
 		return fields;
 	}
 
