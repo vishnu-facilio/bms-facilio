@@ -76,9 +76,10 @@ public class Executor implements Runnable {
 			
 			LOGGER.debug(name+"::"+startTime+"::"+endTime);
 			int freeThreads = getNoOfFreeThreads();
+			LOGGER.info("Initial number of free threads  : "+freeThreads);
 			List<JobContext> scheduledJobs = updateScheduledStatus(FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,()->JobStore.getIncompletedJobs(name, startTime, endTime, getMaxRetry(), includedOrgs, excludedOrgs,freeThreads)));
 			scheduledJobs.addAll(updateScheduledStatus(FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,()->JobStore.getJobs(name, startTime, endTime, getMaxRetry(), includedOrgs, excludedOrgs,(freeThreads-scheduledJobs.size())))));
-
+			LOGGER.info("Final Jobs to ready to execute count is  : "+(scheduledJobs.size()));
 			for(JobContext jc : scheduledJobs) {
 				try {
 					scheduleJob(jc);
@@ -123,6 +124,7 @@ public class Executor implements Runnable {
 				LOGGER.debug("Updated Job " + job.getJobName() + " " + rowsUpdated );
 			}
 		}
+		LOGGER.info("Successfully scheduled updated Jobs "+scheduledJobs.size() +" out of "+ jobs.size());
 		return scheduledJobs;
 	}
 
