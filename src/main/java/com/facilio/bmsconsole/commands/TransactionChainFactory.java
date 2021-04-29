@@ -830,7 +830,13 @@ public class TransactionChainFactory {
 			c.addCommand(new GenericAddModuleDataCommand());
 			c.addCommand(new ConstructAddAssetActivityCommand());
 			c.addCommand(new AddRotatingItemToolCommand());
-			c.addCommand(new ExecuteAllWorkflowsCommand());
+			c.addCommand(new ExecuteStateFlowCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
+			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+			c.addCommand(new ForkChainToInstantJobCommand(false)
+					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
+	//		c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(FacilioChainFactory.getCategoryReadingsChain());
 			c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
 			c.addCommand(new AddActivitiesCommand());
@@ -846,9 +852,16 @@ public class TransactionChainFactory {
 			c.addCommand(new GenericUpdateModuleDataCommand());
 			c.addCommand(new UpdateEventListForStateFlowCommand());
 			c.addCommand(new GenericGetModuleDataListCommand());
+			c.addCommand(new ChangeApprovalStatusForModuleDataCommand());
 			c.addCommand(new UpdateStateForModuleDataCommand());
 			c.addCommand(new ConstructEditAssetActivityCommand());
-			c.addCommand(new ExecuteAllWorkflowsCommand());
+			c.addCommand(new ExecuteStateFlowCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
+			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+			c.addCommand(new ForkChainToInstantJobCommand(false)
+					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
+	//		c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(FacilioChainFactory.getCategoryReadingsChain());
 			c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
 			c.addCommand(new AddActivitiesCommand());

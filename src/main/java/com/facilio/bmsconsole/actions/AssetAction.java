@@ -104,6 +104,14 @@ public class AssetAction extends FacilioAction {
 		return this.assetQr;
 	}
 	
+	private Long approvalTransitionId = null;
+	public Long getApprovalTransitionId() {
+		return approvalTransitionId;
+	}
+	public void setApprovalTransitionId(Long approvalTransitionId) {
+		this.approvalTransitionId = approvalTransitionId;
+	}
+	
  	
 	public String generateQr() throws Exception {
 		FacilioContext context=new FacilioContext();
@@ -179,6 +187,7 @@ public class AssetAction extends FacilioAction {
 			asset.setModuleState(null);
 		}
 		context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
+		context.put(FacilioConstants.ContextNames.APPROVAL_TRANSITION_ID, approvalTransitionId);
 		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ASSET_ACTIVITY);
 		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 		FacilioChain updateAssetChain = TransactionChainFactory.getUpdateAssetChain();
