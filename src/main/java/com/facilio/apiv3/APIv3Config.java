@@ -31,6 +31,7 @@ import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.Lo
 import com.facilio.bmsconsoleV3.commands.employee.UpdateEmployeePeopleAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.facility.*;
 import com.facilio.bmsconsoleV3.commands.floorplan.AddOrUpdateObjectCommand;
+import com.facilio.bmsconsoleV3.commands.floorplan.CreateFacilityForDesksCommandV3;
 import com.facilio.bmsconsoleV3.commands.floorplan.FetchFloorPlanMarkerCommand;
 import com.facilio.bmsconsoleV3.commands.imap.UpdateLatestMessageUIDCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
@@ -1021,7 +1022,6 @@ public class APIv3Config {
         return () -> new V3Config(AmenitiesContext.class, new ModuleCustomFieldCount10())
                 .create()
                 .update()
-
                 .delete()
                 .list()
                 .summary()
@@ -1134,7 +1134,9 @@ public class APIv3Config {
     public static Supplier<V3Config> getDesk() {
         return () -> new V3Config(V3DeskContext.class, new ModuleCustomFieldCount30())
                 .create().beforeSave(new V3ValidateSpaceCommand())
+                .afterSave(new CreateFacilityForDesksCommandV3())
                 .update()
+                .afterSave(new CreateFacilityForDesksCommandV3())
                 .list()
                 .summary()
                 .build();

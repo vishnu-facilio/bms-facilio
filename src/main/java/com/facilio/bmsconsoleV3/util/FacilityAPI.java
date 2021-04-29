@@ -269,6 +269,23 @@ public class FacilityAPI {
         return  list;
     }
 
+    public static List<FacilityContext> getFacilityList(Long parentId, Long parentModuleId) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        String slots = FacilioConstants.ContextNames.FacilityBooking.FACILITY;
+        List<FacilioField> fields = modBean.getAllFields(slots);
+        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+
+        SelectRecordsBuilder<FacilityContext> builder = new SelectRecordsBuilder<FacilityContext>()
+                .moduleName(slots)
+                .select(fields)
+                .beanClass(FacilityContext.class)
+                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("parentId"), String.valueOf(parentId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("parentModuleId"), String.valueOf(parentModuleId), NumberOperators.EQUALS));
+
+        List<FacilityContext> list = builder.get();
+        return  list;
+    }
+    
     public static List<FacilityContext> getFacilityList() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         String slots = FacilioConstants.ContextNames.FacilityBooking.FACILITY;

@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.floorplan;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -11,10 +12,12 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.floorplan.V3DeskContext;
 import com.facilio.bmsconsoleV3.context.floorplan.V3MarkerContext;
+import com.facilio.bmsconsoleV3.util.DesksAPI;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 
@@ -26,6 +29,8 @@ public class UpdateDeskCommand extends FacilioCommand {
 		Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
 
 		List<V3MarkerContext> markers = recordMap.get(FacilioConstants.ContextNames.Floorplan.MARKER);
+		
+		Map<Long, List<UpdateChangeSet>> deskChangeSet = new HashMap<Long, List<UpdateChangeSet>>();
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule deskModule = modBean.getModule(FacilioConstants.ContextNames.Floorplan.DESKS);
@@ -38,7 +43,10 @@ public class UpdateDeskCommand extends FacilioCommand {
 						V3DeskContext desk = marker.getDesk();
 						if (desk != null) {
                             if (desk.getId() > 0) {
-                                V3RecordAPI.updateRecord(desk, deskModule, fields);
+                            	Map<Long, List<UpdateChangeSet>> changes = V3RecordAPI.updateRecord(desk, deskModule, fields, true);
+                            	if(changes != null && !changes.isEmpty()) {
+                            		deskChangeSet.putAll(changes);
+                            	}
                             }
                             if (desk.getId() < 0 || desk != null) {
                                 addDeskList.add(desk);
@@ -48,9 +56,18 @@ public class UpdateDeskCommand extends FacilioCommand {
 					}
 
                     if (CollectionUtils.sizeIsEmpty(addDeskList)) {
-                      V3RecordAPI.addRecord(false, addDeskList, deskModule, fields);
+                    	Map<Long, List<UpdateChangeSet>> changes = V3RecordAPI.addRecord(false, addDeskList, deskModule, fields, true);
+                    	if(changes != null && !changes.isEmpty()) {
+                    		deskChangeSet.putAll(changes);
+                    	}
                     }
-
+                    if(deskChangeSet != null && !deskChangeSet.isEmpty()) {
+                    for(Long deskId : deskChangeSet.keySet()) {
+						V3DeskContext desk = (V3DeskContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.Floorplan.DESKS, deskId, V3DeskContext.class);
+						
+						DesksAPI.AddorDeleteFacilityForDesks(desk);
+					}
+        }
 
 				}
 
