@@ -105,13 +105,12 @@ public class Executor implements Runnable {
 		if(CollectionUtils.isNotEmpty(jobs)) {
 			for (JobContext job : jobs){
 				int rowsUpdated = 0;
-				String query = "update Jobs set STATUS = 4 where ORGID = ? AND JOBID = ? and JOBNAME= ? and CURRENT_EXECUTION_TIME = ? and EXECUTION_ERROR_COUNT = ?";
+				String query = "update Jobs set STATUS = 4 where ORGID = ? AND JOBID = ? and JOBNAME= ? and EXECUTION_ERROR_COUNT = ?";
 				try(Connection connection = FacilioConnectionPool.getInstance().getDirectConnection();
 					PreparedStatement statement = connection.prepareStatement(query)){
 					statement.setLong(1, job.getOrgId());
 					statement.setLong(2, job.getJobId());
 					statement.setString(3,job.getJobName());
-					statement.setLong(4, job.getJobStartTime());
 					statement.setInt(5, job.getJobExecutionCount());
 					rowsUpdated = statement.executeUpdate();
 					if(rowsUpdated == 1){
