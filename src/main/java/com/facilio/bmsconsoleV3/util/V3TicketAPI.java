@@ -83,16 +83,16 @@ public class V3TicketAPI {
                     if (resourceSiteId != siteId) {
                         if (resource.getResourceTypeEnum() == ResourceContext.ResourceType.SPACE) {
                             if (isWorkOrder) {
-                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "The Space does not belong in the Workorder's Site.");
+                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "The Space - "+resource.getName()+" does not belong in the Workorder's Site.");
                             } else {
-                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "The Space does not belong in the Workorder request's Site.");
+                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "The Space - "+resource.getName()+" does not belong in the Workorder request's Site.");
                             }
 
                         } else {
                             if (isWorkOrder) {
-                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "The Asset does not belong in the Workorder's Site.");
+                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "The Asset - "+resource.getName()+" does not belong in the Workorder's Site.");
                             } else {
-                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "The Asset does not belong in the Workorder request's Site.");
+                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "The Asset - "+resource.getName()+" does not belong in the Workorder request's Site.");
                             }
                         }
                     }

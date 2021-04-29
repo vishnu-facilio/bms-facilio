@@ -1360,16 +1360,16 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 					if (resourceSiteId != siteId) {
 						if (resource.getResourceTypeEnum() == ResourceType.SPACE) {
 							if (isWorkOrder) {
-								throw new IllegalArgumentException("The Space does not belong in the Workorder's Site.");
+								throw new IllegalArgumentException("The Space - "+resource.getName()+" does not belong in the Workorder's Site.");
 							} else {
-								throw new IllegalArgumentException("The Space does not belong in the Workorder request's Site.");
+								throw new IllegalArgumentException("The Space - "+resource.getName()+" does not belong in the Workorder request's Site.");
 							}
 							
 						} else {
 							if (isWorkOrder) {
-								throw new IllegalArgumentException("The Asset does not belong in the Workorder's Site.");
+								throw new IllegalArgumentException("The Asset - "+resource.getName()+" does not belong in the Workorder's Site.");
 							} else {
-								throw new IllegalArgumentException("The Asset does not belong in the Workorder request's Site.");
+								throw new IllegalArgumentException("The Asset - "+resource.getName()+" does not belong in the Workorder request's Site.");
 							}
 						}
 					}
@@ -1477,16 +1477,16 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 				if (resourceSiteId != siteId) {
 					if (resource.getResourceTypeEnum() == ResourceType.SPACE) {
 						if (isWorkOrder) {
-							throw new IllegalArgumentException("The Space does not belong in the Workorder's Site.");
+							throw new IllegalArgumentException("The Space - "+resource.getName()+" does not belong in the Workorder's Site.");
 						} else {
-							throw new IllegalArgumentException("The Space does not belong in the Workorder request's Site.");
+							throw new IllegalArgumentException("The Space - "+resource.getName()+" does not belong in the Workorder request's Site.");
 						}
 						
 					} else {
 						if (isWorkOrder) {
-							throw new IllegalArgumentException("The Asset does not belong in the Workorder's Site.");
+							throw new IllegalArgumentException("The Asset - "+resource.getName()+" does not belong in the Workorder's Site.");
 						} else {
-							throw new IllegalArgumentException("The Asset does not belong in the Workorder request's Site.");
+							throw new IllegalArgumentException("The Asset - "+resource.getName()+" does not belong in the Workorder request's Site.");
 						}
 					}
 				}
