@@ -26,7 +26,7 @@ public class ConstructAnswerPOJOsCommand extends FacilioCommand {
         FacilioUtil.throwIllegalArgumentException(CollectionUtils.isEmpty(answers), "Answers cannot be empty while add or updating answers");
 
         List<Long> questionIds = answers.stream().map(this::fetchQuestionId).collect(Collectors.toList());
-        Map<Long, QuestionContext> questions = QAndAUtil.fetchExtendedQuestionMap(questionIds);
+        Map<Long, QuestionContext> questions = QAndAUtil.fetchExtendedQuestionMap(questionIds, true);
 
         List<ClientAnswerContext> answerContextList = new ArrayList<>();
         Map<Long, AnswerContext> questionVsAnswer = new HashMap<>();

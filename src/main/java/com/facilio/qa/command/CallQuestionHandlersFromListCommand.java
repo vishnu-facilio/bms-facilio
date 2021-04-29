@@ -2,6 +2,7 @@ package com.facilio.qa.command;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.QuestionHandler;
 import com.facilio.qa.context.QuestionType;
@@ -12,6 +13,7 @@ import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +25,10 @@ public class CallQuestionHandlersFromListCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        List<QuestionContext> questions = Constants.getRecordList((FacilioContext) context);
+        Collection<QuestionContext> questions = Constants.getRecordList((FacilioContext) context);
+        if (CollectionUtils.isEmpty(questions)) {
+            questions = (Collection<QuestionContext>) context.get(FacilioConstants.QAndA.Command.QUESTION_LIST);
+        }
         if (CollectionUtils.isNotEmpty(questions)) {
             Map<QuestionType, List<QuestionContext>> splitByType = ExtendedModuleUtil.splitRecordsByType(questions, q -> q.getQuestionType());
             for (Map.Entry<QuestionType, List<QuestionContext>> entry : splitByType.entrySet()) {

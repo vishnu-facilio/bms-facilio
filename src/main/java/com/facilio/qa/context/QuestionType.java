@@ -26,8 +26,8 @@ public enum QuestionType implements FacilioEnum<QuestionType> {
     LONG_ANSWER (FacilioConstants.QAndA.Questions.LONG_STRING_QUESTION, LongStringQuestionContext.class, new StringAnswerHandler(StringAnswerContext.class, true )),
     DATE_TIME (FacilioConstants.QAndA.Questions.DATE_TIME_QUESTION, DateTimeQuestionContext.class, new DateTimeAnswerHandler(DateTimeAnswerContext.class)),
 
-    MULTIPLE_CHOICE_ONE (FacilioConstants.QAndA.Questions.MCQ_SINGLE, MCQSingleContext.class, new MCQSingleHandler(MCQSingleAnswerContext.class), new MCQHandler<MCQSingleContext>(FacilioConstants.QAndA.Questions.MCQ_SINGLE_OPTIONS)),
-    MULTIPLE_CHOICE_MANY (FacilioConstants.QAndA.Questions.MCQ_MULTI, MCQMultiContext.class, new MCQMultiHandler(MCQMultiAnswerContext.class), new MCQHandler<MCQMultiContext>(FacilioConstants.QAndA.Questions.MCQ_MULTI_OPTIONS)),
+    MULTIPLE_CHOICE_ONE (FacilioConstants.QAndA.Questions.MCQ_SINGLE, MCQSingleContext.class, new MCQSingleAnswerHandler(MCQSingleAnswerContext.class), new MCQHandler<MCQSingleContext>(FacilioConstants.QAndA.Questions.MCQ_SINGLE_OPTIONS)),
+    MULTIPLE_CHOICE_MANY (FacilioConstants.QAndA.Questions.MCQ_MULTI, MCQMultiContext.class, new MCQMultiAnswerHandler(MCQMultiAnswerContext.class), new MCQHandler<MCQMultiContext>(FacilioConstants.QAndA.Questions.MCQ_MULTI_OPTIONS)),
     FILE_UPLOAD (FacilioConstants.QAndA.Questions.FILE_UPLOAD_QUESTION, FileUploadQuestionContext.class, new FileUploadAnswerHandler(FileUploadAnswerContext.class)),
 
     MULTI_FILE_UPLOAD (FacilioConstants.QAndA.Questions.MULTI_FILE_UPLOAD_QUESTION, MultiFileUploadQuestionContext.class, new MultiFileUploadHandler(MultiFileUploadAnswerContext.class)),

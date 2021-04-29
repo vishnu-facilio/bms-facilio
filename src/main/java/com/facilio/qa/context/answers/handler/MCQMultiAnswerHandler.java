@@ -10,11 +10,13 @@ import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.text.MessageFormat;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
-public class MCQMultiHandler extends AnswerHandler<MCQMultiAnswerContext> {
-    public MCQMultiHandler(Class<MCQMultiAnswerContext> answerClass) {
+public class MCQMultiAnswerHandler extends AnswerHandler<MCQMultiAnswerContext> {
+    public MCQMultiAnswerHandler(Class<MCQMultiAnswerContext> answerClass) {
         super(answerClass);
     }
 
@@ -38,14 +40,16 @@ public class MCQMultiHandler extends AnswerHandler<MCQMultiAnswerContext> {
 
     @Override
     public AnswerContext deSerialize(MCQMultiAnswerContext answer, QuestionContext question) {
-        boolean isOther = StringUtils.isNotEmpty(((MCQMultiContext) question).getOtherOptionLabel());
-        FacilioUtil.throwIllegalArgumentException(CollectionUtils.isEmpty(answer.getAnswer().getSelected())
+        MCQMultiContext mcqQuestion = (MCQMultiContext) question;
+        boolean isOther = StringUtils.isNotEmpty(mcqQuestion.getOtherOptionLabel());
+        List<Long> selected = answer.getAnswer().getSelected();
+        FacilioUtil.throwIllegalArgumentException(CollectionUtils.isEmpty(selected)
                                                     && (!isOther || StringUtils.isEmpty(answer.getAnswer().getOther()))
                                                     , "At least one option need to be selected for MCQ");
         AnswerContext answerContext = new AnswerContext();
-        if (CollectionUtils.isNotEmpty(answer.getAnswer().getSelected())) { // Check is for handling answers only with 'other' option
-            answerContext.setMultiEnumAnswer(answer.getAnswer().getSelected().stream()
-                    .map(MCQOptionContext::new)
+        if (CollectionUtils.isNotEmpty(selected)) { // Check is for handling answers only with 'other' option
+            answerContext.setMultiEnumAnswer(selected.stream()
+                    .map(id -> validateAndCreateMCQOption(id, mcqQuestion))
                     .collect(Collectors.toList()));
         }
         else {
@@ -58,5 +62,11 @@ public class MCQMultiHandler extends AnswerHandler<MCQMultiAnswerContext> {
             answer.getAnswer().setOther(null);
         }
         return answerContext;
+    }
+
+    private MCQOptionContext validateAndCreateMCQOption (Long selected, MCQMultiContext mcqQuestion) {
+        FacilioUtil.throwIllegalArgumentException(selected != null && !mcqQuestion.getOptions().stream().anyMatch(o -> o._getId() == selected)
+                , MessageFormat.format("Invalid select option ({0}) is specified while adding MCQ Answer", selected));
+        return new MCQOptionContext(selected);
     }
 }

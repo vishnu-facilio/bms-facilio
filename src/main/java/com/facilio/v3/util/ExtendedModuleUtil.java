@@ -3,15 +3,12 @@ package com.facilio.v3.util;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class ExtendedModuleUtil<T> {
-    public static <T, R extends ModuleBaseWithCustomFields> Map<T, List<R>> splitRecordsByType(List<R> list, Function<R, T> getTypeFromRecord) {
+    public static <T, R extends ModuleBaseWithCustomFields> Map<T, List<R>> splitRecordsByType(Collection<R> list, Function<R, T> getTypeFromRecord) {
         return list.stream().collect(
                 Collectors.groupingBy(
                         r -> getTypeFromRecord.apply(r),
@@ -21,7 +18,7 @@ public class ExtendedModuleUtil<T> {
         );
     }
 
-    public static <R extends ModuleBaseWithCustomFields> Map<String, List<R>> splitRecordsBySubModule(List<R> list, Function<R, String> getSubModuleFromRecord) {
+    public static <R extends ModuleBaseWithCustomFields> Map<String, List<R>> splitRecordsBySubModule(Collection<R> list, Function<R, String> getSubModuleFromRecord) {
         return ExtendedModuleUtil.<String, R>splitRecordsByType(list, getSubModuleFromRecord);
     }
 

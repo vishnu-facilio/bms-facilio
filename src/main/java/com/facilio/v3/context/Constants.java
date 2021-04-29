@@ -165,7 +165,7 @@ public class Constants {
     public static <E extends ModuleBaseWithCustomFields> List<E> getRecordList (FacilioContext context) {
         String moduleName = Constants.getModuleName(context);
         Map<String, List<ModuleBaseWithCustomFields>> recordMap = Constants.getRecordMap(context);
-        return getRecordList(recordMap, moduleName);
+        return recordMap == null ? null : getRecordList(recordMap, moduleName);
     }
 
     private static final String EXTENDED_MODULES = "extendedModules";

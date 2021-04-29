@@ -32,4 +32,10 @@ public class QAndAReadOnlyChainFactory {
         c.addCommand(new FetchRelatedItemsForInspectionTemplateCommand());
         return c;
     }
+
+    public static FacilioChain callFetchHandlers() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new CallQuestionHandlersFromListCommand(CallQuestionHandlersFromListCommand.ListHandlerType.FETCH));
+        return c;
+    }
 }

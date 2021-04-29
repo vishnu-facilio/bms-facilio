@@ -8,8 +8,10 @@ import com.facilio.qa.context.questions.MCQSingleContext;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.lang3.StringUtils;
 
-public class MCQSingleHandler extends AnswerHandler<MCQSingleAnswerContext> {
-    public MCQSingleHandler(Class<MCQSingleAnswerContext> answerClass) {
+import java.text.MessageFormat;
+
+public class MCQSingleAnswerHandler extends AnswerHandler<MCQSingleAnswerContext> {
+    public MCQSingleAnswerHandler(Class<MCQSingleAnswerContext> answerClass) {
         super(answerClass);
     }
 
@@ -27,12 +29,16 @@ public class MCQSingleHandler extends AnswerHandler<MCQSingleAnswerContext> {
 
     @Override
     public AnswerContext deSerialize(MCQSingleAnswerContext answer, QuestionContext question) {
-        boolean isOther = StringUtils.isNotEmpty(((MCQSingleContext) question).getOtherOptionLabel());
-        FacilioUtil.throwIllegalArgumentException(answer.getAnswer().getSelected() == null
+        MCQSingleContext mcqQuestion = (MCQSingleContext) question;
+        boolean isOther = StringUtils.isNotEmpty(mcqQuestion.getOtherOptionLabel());
+        Long selected = answer.getAnswer().getSelected();
+        FacilioUtil.throwIllegalArgumentException(selected == null
                                                     && (!isOther || StringUtils.isEmpty(answer.getAnswer().getOther()))
                                             , "At least one option need to be selected for MCQ");
+        FacilioUtil.throwIllegalArgumentException(selected != null && !mcqQuestion.getOptions().stream().anyMatch(o -> o._getId() == selected)
+                                            , MessageFormat.format("Invalid select option ({0}) is specified while adding MCQ Answer", selected));
         AnswerContext answerContext = new AnswerContext();
-        answerContext.setEnumAnswer(answer.getAnswer().getSelected());
+        answerContext.setEnumAnswer(selected);
         if ( isOther ) {
             answerContext.setEnumOtherAnswer(answer.getAnswer().getOther());
         }

@@ -12,6 +12,7 @@ import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.qa.command.QAndAReadOnlyChainFactory;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.Constants;
@@ -97,15 +98,35 @@ public class QAndAUtil {
     }
 
     public static List<QuestionContext> fetchExtendedQuestions (Collection<Long> recordIds) throws Exception {
+        return fetchExtendedQuestions(recordIds, false);
+    }
+
+    public static List<QuestionContext> fetchExtendedQuestions (Collection<Long> recordIds, boolean callFetchHandler) throws Exception {
         List<QuestionContext> questions = V3RecordAPI.getRecordsList(FacilioConstants.QAndA.QUESTION, recordIds);
         ExtendedModuleUtil.replaceWithExtendedRecords(questions, q -> q.getQuestionType().getSubModuleName());
+        if (callFetchHandler) {
+            callFetchHandler(questions);
+        }
         return questions;
     }
 
     public static Map<Long, QuestionContext> fetchExtendedQuestionMap (Collection<Long> recordIds) throws Exception {
+        return fetchExtendedQuestionMap(recordIds, false);
+    }
+
+    public static Map<Long, QuestionContext> fetchExtendedQuestionMap (Collection<Long> recordIds, boolean callFetchHandler) throws Exception {
         Map<Long, QuestionContext> questions = V3RecordAPI.getRecordsMap(FacilioConstants.QAndA.QUESTION, recordIds);
         ExtendedModuleUtil.replaceWithExtendedRecords(questions, q -> q.getQuestionType().getSubModuleName());
+        if (callFetchHandler) {
+            callFetchHandler(questions.values());
+        }
         return questions;
+    }
+
+    private static void callFetchHandler (Collection<QuestionContext> questions) throws Exception {
+        FacilioChain c = QAndAReadOnlyChainFactory.callFetchHandlers();
+        c.getContext().put(FacilioConstants.QAndA.Command.QUESTION_LIST, questions);
+        c.execute();
     }
 
     public static <T extends ModuleBaseWithCustomFields> void addRecordViaChain(String moduleName, List<T> records) throws Exception {
