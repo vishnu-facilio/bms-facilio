@@ -11,6 +11,7 @@ public class BaseHandler {
     private String[] topics;
     private int priority;
     private TopicHandler.DELIVER_TO deliverTo;
+    private boolean sendToAllWorkers;
 
     final void setTopics(String[] topics) {
         this.topics = topics;
@@ -34,6 +35,14 @@ public class BaseHandler {
 
     final void setDeliverTo(TopicHandler.DELIVER_TO deliverTo) {
         this.deliverTo = deliverTo;
+    }
+
+    public boolean isSendToAllWorkers() {
+        return sendToAllWorkers;
+    }
+
+    public void setSendToAllWorkers(boolean sendToAllWorkers) {
+        this.sendToAllWorkers = sendToAllWorkers;
     }
 
     public void processIncomingMessage(Message message) {

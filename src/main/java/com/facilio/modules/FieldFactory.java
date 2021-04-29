@@ -9734,6 +9734,22 @@ public class FieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getAuditLogFields(){
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getAuditLogModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("subject", "SUBJECT", module, FieldType.STRING));
+        fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
+        fields.add(getField("recordType", "RECORD_TYPE", module, FieldType.NUMBER));
+        fields.add(getField("typeName", "TYPE_NAME", module, FieldType.STRING));
+        fields.add(getField("recordId", "RECORD_ID", module, FieldType.STRING));
+        fields.add(getField("performedBy", "PERFORMED_BY", module, FieldType.LOOKUP));
+        fields.add(getField("time", "TIME", module, FieldType.STRING));
+
+        return fields;
+    }
+
     public static List<FacilioField> getFacilioAuditFields(){
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getFacilioAuditModule();

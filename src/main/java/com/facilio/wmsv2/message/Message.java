@@ -39,8 +39,9 @@ public class Message
 	public String getTopic() {
 		return topic;
 	}
-	public void setTopic(String topic) {
+	public Message setTopic(String topic) {
 		this.topic = topic;
+		return this;
 	}
 
 	public LiveSessionType getSessionType() {

@@ -36,16 +36,14 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
         return broadcaster;
     }
 
-    private static FacilioProducer producer;
-    private static String kinesisNotificationTopic;
-
-    private KafkaConsumer<String, String> consumer;
-    private TopicPartition topicPartition;
+    private KafkaProcessor allConsumerProcessor;
+    private KafkaProcessor signleConsumerProcessor;
 
     // executors
     private ScheduledExecutorService executor = null;
 
     private KafkaBroadcaster() { // Making it singleton
+        String kinesisNotificationTopic;
         if(FacilioProperties.isProduction()) {
             kinesisNotificationTopic = "production-notifications-new";
         } else {
@@ -54,41 +52,13 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
 
         LOGGER.debug("Notification topic: " + kinesisNotificationTopic);
 
-        producer = new FacilioKafkaProducer();
-
-
         // consumer initialization
         String environment = FacilioProperties.getConfig("environment");
         String applicationName = environment+"-"+ ServerInfo.getHostname();
 
-        consumer = new KafkaConsumer<>(getProperties(applicationName));
-        topicPartition = new TopicPartition(kinesisNotificationTopic, 0);
-        List<TopicPartition> topicPartitionList = new ArrayList<>();
-        topicPartitionList.add(topicPartition);
-        consumer.assign(topicPartitionList);
-
-        executor = Executors.newScheduledThreadPool(1);
-        executor.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                final JSONParser parser = new JSONParser();
-                ConsumerRecords<String, String> records = consumer.poll(1000);
-                for (ConsumerRecord<String, String> record : records) {
-                    String value = record.value();
-                    try {
-                        LOGGER.debug("Processing message: " + value);
-                        Message message = FieldUtil.getAsBeanFromJson((JSONObject) parser.parse(value), Message.class);
-                        LOGGER.debug("Processing message: " + message);
-                        incomingMessage(message);
-                    } catch (Exception ex) {
-                        LOGGER.error("Exception while parsing data to JSON ", ex);
-                    }
-                    finally {
-                        consumer.commitSync(Collections.singletonMap(topicPartition, new OffsetAndMetadata(record.offset() + 1)));
-                    }
-                }
-            }
-        }, 0, 3, TimeUnit.SECONDS);
+        allConsumerProcessor = new KafkaProcessor(kinesisNotificationTopic, applicationName);
+        String singleConsumerTopic = kinesisNotificationTopic + "-singleConsumer";
+        signleConsumerProcessor = new KafkaProcessor(singleConsumerTopic, singleConsumerTopic);
     }
 
     private Properties getProperties(String groupId) {
@@ -103,21 +73,67 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
     }
 
     @Override
-    protected void outgoingMessage(Message message) throws Exception {
-        JSONObject dataMap = new JSONObject();
-        JSONObject data = message.toJson();
-
-//        dataMap.put("timestamp", System.currentTimeMillis());
-//        dataMap.put("data", data);
-
-        String partitionKey = kinesisNotificationTopic;
-        LOGGER.debug("Outgoing message: " + message);
-        RecordMetadata future = (RecordMetadata) producer.putRecord(kinesisNotificationTopic, new FacilioRecord(partitionKey, data));
+    protected void outgoingMessage(Message message, boolean sendToAllWorkers) throws Exception {
+        if (sendToAllWorkers) {
+            allConsumerProcessor.sendMessage(message);
+        } else {
+            signleConsumerProcessor.sendMessage(message);
+        }
     }
 
     @Override
     protected void incomingMessage(Message message) {
         // read incoming message from kafka servers
         pushToLiveSession(message);
+    }
+
+    private class KafkaProcessor {
+        private FacilioProducer producer;
+        private String topic;
+        private KafkaConsumer<String, String> consumer;
+        private TopicPartition topicPartition;
+
+        private ScheduledExecutorService executor = null;
+
+        public KafkaProcessor(String topic, String groupId) {
+            this.topic = topic;
+
+            producer = new FacilioKafkaProducer();
+
+            consumer = new KafkaConsumer<>(getProperties(groupId));
+            topicPartition = new TopicPartition(topic, 0);
+            List<TopicPartition> topicPartitionList = new ArrayList<>();
+            topicPartitionList.add(topicPartition);
+            consumer.assign(topicPartitionList);
+
+            executor = Executors.newScheduledThreadPool(1);
+            executor.scheduleAtFixedRate(new Runnable() {
+                @Override
+                public void run() {
+                    final JSONParser parser = new JSONParser();
+                    ConsumerRecords<String, String> records = consumer.poll(1000);
+                    for (ConsumerRecord<String, String> record : records) {
+                        String value = record.value();
+                        try {
+                            Message message = FieldUtil.getAsBeanFromJson((JSONObject) parser.parse(value), Message.class);
+                            incomingMessage(message);
+                        } catch (Exception ex) {
+                            LOGGER.error("Exception while parsing data to JSON ", ex);
+                        }
+                        finally {
+                            consumer.commitSync(Collections.singletonMap(topicPartition, new OffsetAndMetadata(record.offset() + 1)));
+                        }
+                    }
+                }
+            }, 0, 3, TimeUnit.SECONDS);
+        }
+
+        public void sendMessage(Message message) throws Exception {
+            JSONObject data = message.toJson();
+
+            String partitionKey = this.topic;
+            LOGGER.debug("Outgoing message: " + message);
+            RecordMetadata future = (RecordMetadata) producer.putRecord(this.topic, new FacilioRecord(partitionKey, data));
+        }
     }
 }

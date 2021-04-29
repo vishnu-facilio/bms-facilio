@@ -37,6 +37,7 @@ public class Processor {
                         handler.setPriority(annotation.priority());
                         handler.setTopics(topics);
                         handler.setDeliverTo(annotation.deliverTo());
+                        handler.setSendToAllWorkers(annotation.sendToAllWorkers());
 
                         handlers.add(handler);
                     }

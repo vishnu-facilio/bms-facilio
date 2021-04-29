@@ -94,7 +94,12 @@ public class SessionManager {
 	
 	public void sendMessage(Message message) {
 		try {
-			broadcaster.broadcast(message);
+			BaseHandler handler = Processor.getInstance().getHandler(message.getTopic());
+			boolean sendToAllWorkers = true;
+			if (handler != null) {
+				sendToAllWorkers = handler.isSendToAllWorkers();
+			}
+			broadcaster.broadcast(message, sendToAllWorkers);
 		} catch (Exception ex) {
 			logger.log(Level.WARNING, "Send message failed: " + message.toString(), ex);
 		}

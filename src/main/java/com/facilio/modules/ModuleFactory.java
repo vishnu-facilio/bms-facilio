@@ -4487,6 +4487,14 @@ public class ModuleFactory {
 		return pmJobPlanTriggers;
 	}
 
+	public static FacilioModule getAuditLogModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("auditLogs");
+		module.setTableName("Audit_Logs");
+		module.setDisplayName("Audit Logs");
+		return module;
+	}
+
 	public static FacilioModule getFacilioAuditModule() {
 		FacilioModule facilioAuditModule = new FacilioModule();
 		facilioAuditModule.setName("facilioAudit");

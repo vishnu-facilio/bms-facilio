@@ -16,7 +16,6 @@ import java.util.List;
 public class DefaultBroadcaster {
 
     private static final DefaultBroadcaster broadcaster = new DefaultBroadcaster();
-    private final List<LiveSession> sessions = new ArrayList<>();
 
     static DefaultBroadcaster getDefaultBroadcaster() {
         String wmsBroadcaster = FacilioProperties.getWmsBroadcaster();
@@ -48,7 +47,7 @@ public class DefaultBroadcaster {
 
         switch (handler.getDeliverTo()) {
             case ALL: {
-                sendObject(sessions, message);
+                sendObject(SessionManager.getInstance().getLiveSessions(), message);
                 break;
             }
 
@@ -96,15 +95,8 @@ public class DefaultBroadcaster {
         }
     }
 
-    public final void addSession(LiveSession session) {
-        sessions.add(session);
-    }
-
-    public final void removeSession(LiveSession session) {
-        sessions.remove(session);
-    }
-
-    public void broadcast(Message data) throws Exception {
+    public void broadcast(Message data, boolean sendToAllWorkers) throws Exception {
+        // ignoring sendToAllWorkers in default
         pushToLiveSession(data);
     }
 }

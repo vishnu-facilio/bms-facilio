@@ -9,6 +9,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.facilio.fw.FacilioException;
 import com.facilio.util.FacilioUtil;
+import com.facilio.wmsv2.constants.Topics;
+import com.facilio.wmsv2.endpoint.SessionManager;
+import com.facilio.wmsv2.handler.AuditLogHandler;
+import com.facilio.wmsv2.message.Message;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.LogManager;
@@ -353,5 +357,17 @@ public class FacilioAction extends ActionSupport {
 		}
 	}
 	private int loggerLevel = -1;
+
+	public void sendAuditLogs(AuditLogHandler.AuditLog auditLog) {
+		if (auditLog == null) {
+			return;
+		}
+		SessionManager.getInstance().sendMessage(new Message()
+				.setTopic(Topics.System.auditLogs)
+				.setContent(auditLog
+						.toJSON()
+				)
+		);
+	}
 
 }
