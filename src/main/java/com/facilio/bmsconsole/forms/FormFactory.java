@@ -393,7 +393,7 @@ public class FormFactory {
 		List<FacilioForm> employeeFormsList = Arrays.asList(geEmployeeContactForm());
 		List<FacilioForm> departmentFormsList = Arrays.asList(getDepartmentForm());
 		List<FacilioForm> movesFormsList = Arrays.asList(getMovesForm());
-		List<FacilioForm> deliveriestFormsList = Arrays.asList(getDeliveriesForm());
+		List<FacilioForm> deliveriesFormsList = Arrays.asList(getDeliveriesForm());
 		List<FacilioForm> peopleFormsList = Arrays.asList(getPeopleForm());
 
 		List<FacilioForm> reservationFormsList = Arrays.asList(getReservationForm());
@@ -455,6 +455,8 @@ public class FormFactory {
 				.put(FacilioConstants.ContextNames.TENANT_UNIT_SPACE, getFormMap(tenantUnitFormsList))
 				.put(FacilioConstants.ContextNames.EMPLOYEE, getFormMap(employeeFormsList))
 				.put(FacilioConstants.ContextNames.DEPARTMENT, getFormMap(departmentFormsList))
+				.put(FacilioConstants.ContextNames.DELIVERIES, getFormMap(deliveriesFormsList))
+				.put(FacilioConstants.ContextNames.MOVES, getFormMap(movesFormsList))
 				.put(FacilioConstants.ContextNames.Reservation.RESERVATION, getFormMap(reservationFormsList))
 				.put(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS, getFormMap(rentalLeaseFormsList))
 				.put(FacilioConstants.ContextNames.VISITOR_LOGGING, getFormMap(visitorLoggingForms))
@@ -1551,7 +1553,6 @@ public class FormFactory {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("color", FieldDisplayType.TEXTBOX, "Color", Required.OPTIONAL, 2, 1));
-		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 4, 1));
 
 		return fields;
 	}
@@ -1560,7 +1561,6 @@ public class FormFactory {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("moveType", FieldDisplayType.SELECTBOX, "Move Type", Required.REQUIRED, 5, 1));
 		fields.add(new FormField("timeOfMove", FieldDisplayType.DATETIME, "Time of Move", Required.REQUIRED, 10, 1));
-		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 4, 1));
 		fields.add(new FormField("employee", FieldDisplayType.LOOKUP_SIMPLE, "Employee", Required.REQUIRED, "employee", 1, 2));
 		fields.add(new FormField("department", FieldDisplayType.LOOKUP_SIMPLE, "Department", Required.REQUIRED, "department", 1, 2));
 		fields.add(new FormField("to", FieldDisplayType.LOOKUP_SIMPLE, "To", Required.REQUIRED, "desks", 1, 2));
@@ -1571,10 +1571,11 @@ public class FormFactory {
 	
 	private static List<FormField> getDeliveriesFormField() {
 		List<FormField> fields = new ArrayList<>();
-		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 4, 1));
-		fields.add(new FormField("employee", FieldDisplayType.LOOKUP_SIMPLE, "Employee", Required.REQUIRED, "employee", 1, 2));
-		fields.add(new FormField("department", FieldDisplayType.LOOKUP_SIMPLE, "Department", Required.REQUIRED, "department", 1, 2));
+		fields.add(new FormField("serialNumber", FieldDisplayType.TEXTBOX, "Serial Number", Required.OPTIONAL, 7, 1));
+		fields.add(new FormField("employee", FieldDisplayType.LOOKUP_SIMPLE, "Recipient", Required.REQUIRED, "employee", 1, 2));
 		fields.add(new FormField("receivedTime", FieldDisplayType.DATETIME, "Received Time", Required.REQUIRED, 10, 1));
+		fields.add(new FormField("avatar",FieldDisplayType.IMAGE,"Photo",Required.OPTIONAL,1,1));
+		fields.add(new FormField("deliveryArea", FieldDisplayType.LOOKUP_SIMPLE, "Delivery Area", Required.REQUIRED, "deliveryArea", 1, 2));
 		return fields;
 	}
 

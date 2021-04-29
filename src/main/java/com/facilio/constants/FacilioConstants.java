@@ -1901,6 +1901,7 @@ public class FacilioConstants {
 		public static final String DEPARTMENT = "department";
 		public static final String MOVES = "moves";
 		public static final String DELIVERIES = "deliveries";
+		public static final String DELIVERY_AREA = "deliveryArea";
 
 
 		public static class WorkPermit {
@@ -2354,6 +2355,7 @@ public class FacilioConstants {
 			classMap.put(DEPARTMENT, V3DepartmentContext.class);
 			classMap.put(MOVES, V3MovesContext.class);
 			classMap.put(DELIVERIES, V3DeliveriesContext.class);
+			classMap.put(DELIVERY_AREA, V3DeliveryAreaContext.class);
 			
 			classMap.put(QAndA.Q_AND_A_TEMPLATE, QAndATemplateContext.class);
 			classMap.put(QAndA.PAGE, PageContext.class);
@@ -2613,6 +2615,8 @@ public class FacilioConstants {
 		public static final String VENDOR_PORTAL_APP = "vendor";
 		public static final String OCCUPANT_PORTAL_APP = "service";
 		public static final String OPERATIONAL_VISIBILITY_APP = "operations";
+		public static final String CAFM_APP = "cafm";
+		public static final String WORKPLACE_APP = "wokplace";
 	}
 	
 	public static class TableNames{
