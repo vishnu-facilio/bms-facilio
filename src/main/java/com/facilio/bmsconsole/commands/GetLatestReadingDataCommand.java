@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingType;
 import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
@@ -102,6 +103,12 @@ public class GetLatestReadingDataCommand extends FacilioCommand {
 			}
 			
 			List<ReadingDataMeta> rdmList = ReadingsAPI.getReadingDataMetaList(parentIds, fieldMap, excludeEmptyFields, unused, pagination, search, readingType, types);
+			boolean excludeForecast = (boolean) context.getOrDefault(FacilioConstants.ContextNames.EXCLUDE_FORECAST, false);
+			if (excludeForecast) {
+				rdmList = rdmList.stream().filter(rdm -> !SpaceAPI.WEATHER_NON_CURRENT_MODULES.contains(rdm.getField().getModule().getName()))
+						.collect(Collectors.toList());
+			}
+
 			
 			Boolean fetchInputValues = (Boolean) context.get(FacilioConstants.ContextNames.FETCH_READING_INPUT_VALUES);
 			if (rdmList != null && fetchInputValues != null && fetchInputValues) {
