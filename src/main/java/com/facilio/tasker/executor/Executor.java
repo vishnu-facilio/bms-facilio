@@ -111,7 +111,7 @@ public class Executor implements Runnable {
 					statement.setLong(1, job.getOrgId());
 					statement.setLong(2, job.getJobId());
 					statement.setString(3,job.getJobName());
-					statement.setInt(5, job.getJobExecutionCount());
+					statement.setInt(4, job.getJobExecutionCount());
 					rowsUpdated = statement.executeUpdate();
 					if(rowsUpdated == 1){
 						scheduledJobs.add(job);
