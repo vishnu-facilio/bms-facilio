@@ -257,7 +257,7 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 					}
 					
 					
-					LOGGER.debug("wo props -> "+props);
+					LOGGER.error("wo props -> "+props);
 					
 					WorkorderTemplate woTemplate = FieldUtil.getAsBeanFromMap(props, WorkorderTemplate.class);
 					
