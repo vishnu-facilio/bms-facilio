@@ -20,13 +20,13 @@ public enum RelatedModuleOperator implements Operator<Criteria> {
 	RELATED(88, "related") {
 		@Override
 		public String getWhereClause(String fieldName, Criteria value) {
-			return getWhereClause(fieldName, value, true);
+			return getCondition(fieldName, value, true);
 		}
 	},
 	NOT_RELATED(92, "not related") {
 		@Override
 		public String getWhereClause(String fieldName, Criteria value) {
-			return getWhereClause(fieldName, value, false);
+			return getCondition(fieldName, value, false);
 		}
 	};
 
@@ -50,7 +50,7 @@ public enum RelatedModuleOperator implements Operator<Criteria> {
 		return operator;
 	}
 	
-	private static String getWhereClause(String fieldName, Criteria value, boolean isRelated) {
+	private static String getCondition(String fieldName, Criteria value, boolean isRelated) {
 		try {
 			if(fieldName != null && !fieldName.isEmpty() && value != null) {
 				String[] module = fieldName.split("\\.");
@@ -106,12 +106,12 @@ public enum RelatedModuleOperator implements Operator<Criteria> {
 	@Override
 	public FacilioModulePredicate getPredicate(String fieldName, Criteria value) {
 		// TODO Auto-generated method stub
-		if(fieldName != null && !fieldName.isEmpty() && value != null) {
+		/*if(fieldName != null && !fieldName.isEmpty() && value != null) {
 			String[] module = fieldName.split("\\.");
 			if(module.length > 1) {
 				return new FacilioModulePredicate(module[1], value.computePredicate());
 			}
-		}
+		}*/
 		return null;
 	}
 
