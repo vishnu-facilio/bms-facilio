@@ -274,7 +274,7 @@ public class JobStore {
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 
-			StringBuilder sql = new StringBuilder("SELECT * FROM Jobs WHERE EXECUTOR_NAME = ? AND IS_ACTIVE = ? AND STATUS = ? AND NEXT_EXECUTION_TIME < ? AND EXECUTION_ERROR_COUNT < ?");
+			StringBuilder sql = new StringBuilder("SELECT * FROM Jobs WHERE EXECUTOR_NAME = ? AND IS_ACTIVE = ? AND STATUS = ? AND NEXT_EXECUTION_TIME < ? AND EXECUTION_ERROR_COUNT < ? LIMIT ?");
 			appendOrgId(sql, include, false);
 			appendOrgId(sql, exclude, true);
 
@@ -284,7 +284,7 @@ public class JobStore {
 			getPstmt.setInt(3, JobConstants.JOB_COMPLETED);
 			getPstmt.setLong(4, endTime);
 			getPstmt.setInt(5, maxRetry);
-
+			getPstmt.setInt(6,limit);
 			rs = getPstmt.executeQuery();
 			while(rs.next()) {
 				jcs.add(getJobFromRS(rs));
