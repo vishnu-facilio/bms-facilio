@@ -1,5 +1,6 @@
 package com.facilio.qa.context;
 
+import com.facilio.qa.context.questions.MCQOptionContext;
 import com.facilio.v3.context.V3Context;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,6 +15,7 @@ public class AnswerContext extends V3Context {
     private ResponseContext response;
     private QuestionContext question;
     private Long enumAnswer;
+    private String enumOtherAnswer;
     private Long numberAnswer;
     private Double decimalAnswer;
     private Boolean booleanAnswer;
@@ -25,6 +27,6 @@ public class AnswerContext extends V3Context {
     private File fileAnswer;
 
     // Multi record answers
-    private List<Long> multiEnumAnswer;
-    private List<MultiFileAnswerContext> multiFileAnswer;
+    private List<MCQOptionContext> multiEnumAnswer; // Multi lookup field
+    private List<MultiFileAnswerContext> multiFileAnswer; // Line Item field
 }

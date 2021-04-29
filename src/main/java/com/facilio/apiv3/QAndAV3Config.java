@@ -61,7 +61,7 @@ public class QAndAV3Config {
                 .build();
     }
 
-    @Module(FacilioConstants.QAndA.MULTI_FILE_ANSWER)
+    @Module(FacilioConstants.QAndA.Answers.MULTI_FILE_ANSWER)
     public static Supplier<V3Config> getMultiFileAnswer() {
         return () -> new V3Config(MultiFileAnswerContext.class, null)
                     .build();

@@ -8,10 +8,9 @@ import com.facilio.qa.context.*;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,8 +36,9 @@ public class ConstructAnswerPOJOsCommand extends FacilioCommand {
             FacilioUtil.throwIllegalArgumentException(question == null || question.getParent().getId() != response.getParent().getId(), "Invalid question specified during add/ update answers");
             AnswerHandler handler = question.getQuestionType().getAnswerHandler();
             ClientAnswerContext answer = FieldUtil.<ClientAnswerContext>getAsBeanFromMap(prop, handler.getAnswerClass());
+            FacilioUtil.throwIllegalArgumentException(answer.getAnswer() == null, MessageFormat.format("Answer cannot be for question : {0}", questionId));
 
-            AnswerContext answerContext = handler.deSerialize(answer);
+            AnswerContext answerContext = handler.deSerialize(answer, question);
             answerContext.setQuestion(question);
             answerContext.setParent(question.getParent());
             answerContext.setResponse(response);

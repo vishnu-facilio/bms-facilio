@@ -1111,23 +1111,29 @@ public class ModuleBeanImpl implements ModuleBean {
 
 	private static final String CUSTOM_LOOKUP_REL_RECORD_TABLENAME = "Custom_Rel_Records";
 	private long addRelModule(MultiLookupField field) throws Exception {
-		FacilioModule module = new FacilioModule();
+		FacilioModule module = field.getRelModule() == null ? new FacilioModule() : field.getRelModule();
 
-		String relModuleName = new StringBuilder(field.getModule().getName())
-											.append("-")
-											.append(field.getLookupModule().getName())
-											.append("-rel")
-											.toString();
-		module.setName(relModuleName);
+		if (StringUtils.isEmpty(module.getName())) {
+			String relModuleName = new StringBuilder(field.getModule().getName())
+					.append("-")
+					.append(field.getLookupModule().getName())
+					.append("-rel")
+					.toString();
+			module.setName(relModuleName);
+		}
 
-		String relDisplayName = new StringBuilder()
-									.append(field.getModule().getDisplayName())
-									.append(" ")
-									.append(field.getLookupModule().getDisplayName())
-									.append(" Rel")
-									.toString();
-		module.setDisplayName(relDisplayName);
-		module.setTableName(CUSTOM_LOOKUP_REL_RECORD_TABLENAME);
+		if (StringUtils.isEmpty(module.getDisplayName())) {
+			String relDisplayName = new StringBuilder()
+					.append(field.getModule().getDisplayName())
+					.append(" ")
+					.append(field.getLookupModule().getDisplayName())
+					.append(" Rel")
+					.toString();
+			module.setDisplayName(relDisplayName);
+		}
+		if (StringUtils.isEmpty(module.getTableName())) {
+			module.setTableName(CUSTOM_LOOKUP_REL_RECORD_TABLENAME);
+		}
 		module.setType(ModuleType.LOOKUP_REL_MODULE);
 
 		long moduleId = addModule(module);

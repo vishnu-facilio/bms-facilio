@@ -9,10 +9,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LineItemField;
-import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.SystemEnumField;
+import com.facilio.modules.fields.*;
 import com.facilio.util.FacilioUtil;
 
 import java.util.ArrayList;
@@ -151,11 +148,13 @@ public class AddQAndAModules extends SignUpData {
         responseField.setLookupModule(response);
         fields.add(responseField);
         fields.add(FieldFactory.getDefaultField("enumAnswer", "Enum Answer", "ENUM_ANSWER", FieldType.NUMBER));
+        fields.add(FieldFactory.getDefaultField("enumOtherAnswer", "Enum Other Answer", "ENUM_OTHER_ANSWER", FieldType.STRING));
         fields.add(FieldFactory.getDefaultField("numberAnswer", "Number Answer", "NUMBER_ANSWER", FieldType.NUMBER));
         fields.add(FieldFactory.getDefaultField("decimalAnswer", "Decimal Answer", "DECIMAL_ANSWER", FieldType.DECIMAL));
         fields.add(FieldFactory.getDefaultField("booleanAnswer", "Boolean Answer", "BOOLEAN_ANSWER", FieldType.BOOLEAN));
         fields.add(FieldFactory.getDefaultField("shortAnswer", "Short Answer", "SHORT_ANSWER", FieldType.STRING));
         fields.add(FieldFactory.getDefaultField("longAnswer", "Long Answer", "LONG_ANSWER", FieldType.STRING));
+        fields.add(FieldFactory.getDefaultField("dateTimeAnswer", "Date/Time Answer", "DATE_TIME_ANSWER", FieldType.DATE_TIME));
         fields.add(FieldFactory.getDefaultField("fileAnswer", "File Answer", "FILE_ANSWER", FieldType.FILE));
 
         module.setFields(fields);
@@ -374,11 +373,12 @@ public class AddQAndAModules extends SignUpData {
         addModuleChain.getContext().put(FacilioConstants.Module.IGNORE_MODIFIED_SYS_FIELDS, true);
         addModuleChain.execute();
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        addAnswerLineItemFields(modBean, answer, multiFileAnswer);
+        addMultiFileAnswerLineItemField(modBean, answer, multiFileAnswer);
+        addMultiEnumLookupField(modBean, answer);
     }
 
     private FacilioModule constructMultiFileAnswer (FacilioModule answer) {
-        FacilioModule module = new FacilioModule(FacilioConstants.QAndA.MULTI_FILE_ANSWER,
+        FacilioModule module = new FacilioModule(FacilioConstants.QAndA.Answers.MULTI_FILE_ANSWER,
                 "Q And A Multi File Answers",
                 "Q_And_A_Multi_File_Answers",
                 FacilioModule.ModuleType.SUB_ENTITY,
@@ -395,7 +395,7 @@ public class AddQAndAModules extends SignUpData {
         return module;
     }
 
-    private void addAnswerLineItemFields(ModuleBean modBean, FacilioModule answer, FacilioModule multiAnswer) throws Exception {
+    private void addMultiFileAnswerLineItemField(ModuleBean modBean, FacilioModule answer, FacilioModule multiAnswer) throws Exception {
         LookupField parentField = (LookupField) modBean.getField("parent", multiAnswer.getName());
         FacilioUtil.throwIllegalArgumentException(parentField == null, "Parent field shouldn't be null for Answer module. This shouldn't happen");
 
@@ -405,5 +405,20 @@ public class AddQAndAModules extends SignUpData {
         lineItemField.setModule(answer);
 
         modBean.addField(lineItemField);
+    }
+
+    private void addMultiEnumLookupField (ModuleBean modBean, FacilioModule answer) throws Exception {
+        FacilioModule mcqMultiOption = modBean.getModule(FacilioConstants.QAndA.Questions.MCQ_MULTI_OPTIONS);
+        FacilioUtil.throwIllegalArgumentException(mcqMultiOption == null, "Mcq multi field option shouldn't be null. This shouldn't happen");
+
+        MultiLookupField multiEnumAnswerField = (MultiLookupField) FieldFactory.getDefaultField("multiEnumAnswer", "Multi Enum Answer", null, FieldType.MULTI_LOOKUP);
+        multiEnumAnswerField.setModule(answer);
+        multiEnumAnswerField.setParentFieldPositionEnum(MultiLookupField.ParentFieldPosition.LEFT);
+        multiEnumAnswerField.setLookupModule(mcqMultiOption);
+
+        FacilioModule relModule = new FacilioModule(FacilioConstants.QAndA.Answers.MCQ_MULTI_ANSWER_REL, "MCQ Multi Answer Rel", "Q_And_A_MCQ_Multi_Answer_Rel", FacilioModule.ModuleType.LOOKUP_REL_MODULE);
+        multiEnumAnswerField.setRelModule(relModule);
+
+        modBean.addField(multiEnumAnswerField);
     }
 }

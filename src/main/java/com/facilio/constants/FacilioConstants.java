@@ -2433,7 +2433,6 @@ public class FacilioConstants {
 		public static final String QUESTION = "qandaQuestion";
 		public static final String RESPONSE = "qandaResponse";
 		public static final String ANSWER = "qandaAnswer";
-		public static final String MULTI_FILE_ANSWER = "multiFileAnswer";
 
 		public static class Questions {
 			public static final String HEADING_QUESTION = "qandaHeadingQuestion";
@@ -2449,6 +2448,11 @@ public class FacilioConstants {
 			public static final String FILE_UPLOAD_QUESTION = "qandaFileUploadQuestion";
 			public static final String MULTI_FILE_UPLOAD_QUESTION = "qandaMultiFileUploadQuestion";
 			public static final String BOOLEAN_QUESTION = "qandaBooleanQuestion";
+		}
+
+		public static class Answers {
+			public static final String MULTI_FILE_ANSWER = "qandaMultiFileAnswer";
+			public static final String MCQ_MULTI_ANSWER_REL = "qandaMcqMultiAnswerRel";
 		}
 
 		public static class Command {

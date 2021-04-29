@@ -2,6 +2,7 @@ package com.facilio.qa.context.answers.handler;
 
 import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.AnswerHandler;
+import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.answers.NumberAnswerContext;
 
 public class NumberAnswerHandler extends AnswerHandler<NumberAnswerContext> {
@@ -18,7 +19,7 @@ public class NumberAnswerHandler extends AnswerHandler<NumberAnswerContext> {
     }
 
     @Override
-    public AnswerContext deSerialize(NumberAnswerContext answer) {
+    public AnswerContext deSerialize(NumberAnswerContext answer, QuestionContext question) {
         AnswerContext answerContext = new AnswerContext();
         answerContext.setNumberAnswer(answer.getAnswer());
         return answerContext;

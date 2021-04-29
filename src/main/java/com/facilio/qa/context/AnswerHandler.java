@@ -16,5 +16,5 @@ public abstract class AnswerHandler<A extends ClientAnswerContext> implements Se
     private Class<A> answerClass;
 
     public abstract A serialize (AnswerContext answer);
-    public abstract AnswerContext deSerialize (A answer); // Validation can be done in this method itself
+    public abstract AnswerContext deSerialize(A answer, QuestionContext question); // Validation can be done in this method itself
 }

@@ -8155,6 +8155,12 @@ public class FieldFactory {
             case LINE_ITEM:
                 columnFld = new LineItemField();
                 break;
+            case MULTI_LOOKUP:
+                columnFld = new MultiLookupField();
+                break;
+            case MULTI_ENUM:
+                columnFld = new MultiEnumField();
+                break;
             default:
                 columnFld = new FacilioField();
                 break;
