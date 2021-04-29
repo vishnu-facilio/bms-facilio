@@ -153,7 +153,7 @@ public enum MultiFieldOperators implements Operator<String> {
 						if (!contains) {
 							builder.append("NOT ");
 						}
-						builder.append("ID IN (SELECT ")
+						builder.append(field.getTableName()).append(".ID IN (SELECT ")
 						.append(parentName).append(" FROM ")
 						.append(relModule.getTableName())
 						.append(" WHERE ")

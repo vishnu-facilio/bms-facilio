@@ -13,11 +13,22 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.FacilioModulePredicate;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 
 public enum RelatedModuleOperator implements Operator<Criteria> {
 
-	RELATED(88, "related");
+	RELATED(88, "related") {
+		@Override
+		public String getWhereClause(String fieldName, Criteria value) {
+			return getWhereClause(fieldName, value, true);
+		}
+	},
+	NOT_RELATED(92, "not related") {
+		@Override
+		public String getWhereClause(String fieldName, Criteria value) {
+			return getWhereClause(fieldName, value, false);
+		}
+	};
 
 	private static Logger log = LogManager.getLogger(RelatedModuleOperator.class.getName());
 
@@ -38,23 +49,26 @@ public enum RelatedModuleOperator implements Operator<Criteria> {
 		// TODO Auto-generated method stub
 		return operator;
 	}
-
-	@Override
-	public String getWhereClause(String fieldName, Criteria value) {
-		// TODO Auto-generated method stub
+	
+	private static String getWhereClause(String fieldName, Criteria value, boolean isRelated) {
 		try {
 			if(fieldName != null && !fieldName.isEmpty() && value != null) {
 				String[] module = fieldName.split("\\.");
 				if(module.length > 1) {
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-					FacilioField field = modBean.getField(module[1], module[0]);
+					LookupField field = (LookupField) modBean.getField(module[1], module[0]);
 					
 					if(module != null) {
 						StringBuilder builder = new StringBuilder();
-						builder.append("ID IN (SELECT ")
+						builder.append(field.getLookupModule().getTableName()).append(".ID ");
+						if (!isRelated) {
+							builder.append(" NOT ");
+						}
+						builder.append("IN (SELECT ")
 								.append(field.getColumnName()).append(" FROM ")
 								.append(field.getTableName())
-								.append(" WHERE ")
+								.append(" WHERE ").append(field.getTableName()).append(".MODULEID = ")
+								.append(field.getModuleId()).append(" AND ")
 								.append(value.computeWhereClause())
 								.append(")");
 						

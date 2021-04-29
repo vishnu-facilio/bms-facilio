@@ -2,20 +2,16 @@ package com.facilio.workflowv2.modulefunctions;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.struts2.ServletActionContext;
-
+import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountConstants.UserType;
-import com.facilio.auth.cookie.FacilioCookie;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.context.ContactsContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -23,6 +19,18 @@ import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.modules.FieldUtil;
 
 public class FacilioUserModuleFunctions extends FacilioModuleFunctionImpl {
+	
+	public List<Map<String, Object>> getMyTeams(Map<String,Object> globalParams,List<Object> objects) throws Exception{
+		long ouid = AccountUtil.getCurrentUser().getId();
+		if (objects.size() > 1) {
+			ouid = Long.valueOf(objects.get(1).toString());
+		}
+		List<Group> myGroups = AccountUtil.getGroupBean().getMyGroups(ouid);
+		if (myGroups != null) {
+			return FieldUtil.getAsMapList(myGroups, Group.class);
+		}
+		return Collections.EMPTY_LIST;
+	}
 
 	
 	@Override
