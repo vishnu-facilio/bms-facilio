@@ -1162,7 +1162,7 @@ public class FormFactory {
 	public static FacilioForm getDeliveriesPortalForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("NEW DELIVERY");
-		form.setName("default_deliveries_web");
+		form.setName("default_deliveries_portal");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.DELIVERIES));
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getDeliveriesFormField());
