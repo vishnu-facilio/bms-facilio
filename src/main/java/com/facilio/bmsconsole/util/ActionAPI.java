@@ -404,6 +404,7 @@ public class ActionAPI {
 								break;
 							case MAIL_TO_CUSTOM_MODULE_RECORD:
 							case MAIL_TO_CREATEWO:
+							case EMAIL_CONVERSATION:
 								setFormTemplate(action, SourceType.EMAIL_REQUEST);
 								break;
 							default:
