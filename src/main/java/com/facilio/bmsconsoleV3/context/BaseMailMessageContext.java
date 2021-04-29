@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.mail.Address;
 import javax.mail.Message;
@@ -31,6 +32,7 @@ import com.facilio.fs.FileInfo;
 import com.facilio.pdf.PdfUtil;
 import com.facilio.util.EmailMessageParser;
 import com.facilio.v3.context.V3Context;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -59,6 +61,20 @@ public class BaseMailMessageContext extends V3Context {
     private String content;
     private String htmlContent;
     private String textContent;
+    
+    @JsonIgnore
+    public void setCc(List<String> ccList) {
+    	
+    	if(ccList != null && !ccList.isEmpty()) {
+    		cc = ccList.stream().collect(Collectors.joining(","));
+    	}
+    }
+    @JsonIgnore
+    public void setBcc(List<String> bccList) {
+    	if(bccList != null && !bccList.isEmpty()) {
+    		bcc = bccList.stream().collect(Collectors.joining(","));
+    	}
+    }
 
     public static BaseMailMessageContext instance(Message message) throws Exception {
         BaseMailMessageContext mailContext = new BaseMailMessageContext();
