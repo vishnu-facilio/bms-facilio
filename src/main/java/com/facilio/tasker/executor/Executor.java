@@ -1,22 +1,17 @@
 package com.facilio.tasker.executor;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.concurrent.*;
 
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.transaction.FacilioConnectionPool;
+import com.facilio.server.ServerInfo;
 import com.facilio.service.FacilioService;
-import com.facilio.service.FacilioServiceUtil;
-import lombok.SneakyThrows;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -59,7 +54,14 @@ public class Executor implements Runnable {
 		executor = Executors.newScheduledThreadPool(noOfThreads+1);
 		executor.scheduleAtFixedRate(this, 0, bufferPeriod*1000, TimeUnit.MILLISECONDS);
 	}
-	
+	private int getNoOfFreeThreads(){
+		int freeThreads = 0;
+		if (executor instanceof ScheduledThreadPoolExecutor) {
+			ScheduledThreadPoolExecutor implementation = (ScheduledThreadPoolExecutor) executor;
+			freeThreads = implementation.getCorePoolSize() - implementation.getQueue().size();
+		}
+		return freeThreads;
+	}
 	@Override
 	public void run()
 	{
@@ -73,10 +75,11 @@ public class Executor implements Runnable {
 			long endTime = startTime+bufferPeriod;
 			
 			LOGGER.debug(name+"::"+startTime+"::"+endTime);
-			List<JobContext> jobs = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,()->JobStore.getJobs(name, startTime, endTime, getMaxRetry(), includedOrgs, excludedOrgs));
-			jobs.addAll(FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,()->JobStore.getIncompletedJobs(name, startTime, endTime, getMaxRetry(), includedOrgs, excludedOrgs)));
+			int freeThreads = getNoOfFreeThreads();
+			List<JobContext> scheduledJobs = updateScheduledStatus(FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,()->JobStore.getIncompletedJobs(name, startTime, endTime, getMaxRetry(), includedOrgs, excludedOrgs,freeThreads)));
+			scheduledJobs.addAll(updateScheduledStatus(FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,()->JobStore.getJobs(name, startTime, endTime, getMaxRetry(), includedOrgs, excludedOrgs,(freeThreads-scheduledJobs.size())))));
 
-			for(JobContext jc : jobs) {
+			for(JobContext jc : scheduledJobs) {
 				try {
 					scheduleJob(jc);
 				}
@@ -95,7 +98,34 @@ public class Executor implements Runnable {
 			currentThread.setName(threadName);
 		}
 	}
-	
+
+	private List<JobContext> updateScheduledStatus ( List<JobContext> jobs ) {
+		List<JobContext> scheduledJobs = new ArrayList<>();
+		if(CollectionUtils.isNotEmpty(jobs)) {
+			for (JobContext job : jobs){
+				int rowsUpdated = 0;
+				String query = "update Jobs set STATUS = 4 where ORGID = ? AND JOBID = ? and JOBNAME= ? and CURRENT_EXECUTION_TIME = ? and EXECUTION_ERROR_COUNT = ?";
+				try(Connection connection = FacilioConnectionPool.getInstance().getDirectConnection();
+					PreparedStatement statement = connection.prepareStatement(query)){
+					statement.setLong(1, job.getOrgId());
+					statement.setLong(2, job.getJobId());
+					statement.setString(3,job.getJobName());
+					statement.setLong(4, job.getJobStartTime());
+					statement.setInt(5, job.getJobExecutionCount());
+					rowsUpdated = statement.executeUpdate();
+					if(rowsUpdated == 1){
+						scheduledJobs.add(job);
+					}
+					LOGGER.debug("query : " + statement.toString());
+				} catch (SQLException e) {
+					LOGGER.error("Exception while updating Job " + job.getJobName() + "_" + job.getJobId(), e);
+				}
+				LOGGER.debug("Updated Job " + job.getJobName() + " " + rowsUpdated );
+			}
+		}
+		return scheduledJobs;
+	}
+
 	private void scheduleJob(JobContext jc) throws InstantiationException, IllegalAccessException  {
 		SchedulerJobConf.Job schedulerJobs = FacilioScheduler.getSchedulerJob(jc.getJobName());
 		if(schedulerJobs != null) {
