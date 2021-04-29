@@ -106,6 +106,26 @@ public class SupportEmailAPI {
 		return null;
 	}
 	
+	public static SupportEmailContext getSupportEmailsOfSite(long orgId,long siteId) throws Exception {
+		try {
+			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+					.table(SUPPORT_EMAIL_MODULE.getTableName())
+					.select(SUPPORT_EMAIL_FIELDS)
+					.andCustomWhere("ORGID = ?", orgId)
+					.andCustomWhere("SITE_ID = ?", siteId);
+			
+			List<Map<String, Object>> emailList = builder.get();
+			if(emailList != null && emailList.size() > 0) {
+				return getSupportEmailFromMap(emailList.get(0));
+			}
+		}
+		catch(Exception e) {
+			LOGGER.info("Exception occurred ", e);
+			throw e;
+		}
+		return null;
+	}
+	
 	private static SupportEmailContext getSupportEmailFromMap(Map<String, Object> props) throws Exception {
 		long groupId = -1;
 		if(props.get("autoAssignGroup") != null) {
