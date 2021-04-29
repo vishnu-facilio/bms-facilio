@@ -102,7 +102,7 @@ public class SpaceAPI {
 		return area;
 	}
 	
-	private static final List<String> WEATHER_NON_CURRENT_MODULES = Arrays.asList(ContextNames.WEATHER_HOURLY_FORECAST_READING, 
+	public static final List<String> WEATHER_NON_CURRENT_MODULES = Arrays.asList(ContextNames.WEATHER_HOURLY_FORECAST_READING, 
 			ContextNames.WEATHER_DAILY_FORECAST_READING, ContextNames.WEATHER_DAILY_READING);
 	
 	public static List<FacilioModule> getDefaultReadings(SpaceType type, boolean onlyReading) throws Exception {
