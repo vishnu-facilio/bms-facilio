@@ -486,7 +486,6 @@ public class FieldUtil {
 					FacilioConstants.ContextNames.PRECAUTION,
                     FacilioConstants.ContextNames.SERVICE_REQUEST,
                     FacilioConstants.ContextNames.QUOTE,
-					FacilioConstants.ContextNames.BASE_MAIL_MESSAGE,
 					FacilioConstants.ContextNames.USER_NOTIFICATION,
 					FacilioConstants.ContextNames.ANNOUNCEMENT,
 					FacilioConstants.ContextNames.Tenant.NEWS_AND_INFORMATION,

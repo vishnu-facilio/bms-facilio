@@ -25,7 +25,8 @@ public class AddDefaultFieldsForEmailThreadingCommand extends FacilioCommand {
 		
 		List<EmailConversationThreadingContext> emailConversations = Constants.getRecordList((FacilioContext) context);
 	    
-	    
+		Long orgID = AccountUtil.getCurrentOrg().getOrgId();
+		
 	    for(EmailConversationThreadingContext emailConversation : emailConversations) {
 	    	
 	    	EmailToModuleDataContext emailToModuleData = MailMessageUtil.getEmailToModuleContext(emailConversation.getRecordId(), emailConversation.getModuleId());
@@ -34,14 +35,14 @@ public class AddDefaultFieldsForEmailThreadingCommand extends FacilioCommand {
 	    		
 	    		Long supportEmailIds = emailToModuleData.getParentId();
 	    		
-	    		SupportEmailContext parentSupportMailContext = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.DEFAULT_SERVICE,() -> SupportEmailAPI.getSupportEmailFromId(AccountUtil.getCurrentOrg().getOrgId(), supportEmailIds));
+	    		SupportEmailContext parentSupportMailContext = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.DEFAULT_SERVICE,() -> SupportEmailAPI.getSupportEmailFromId(orgID, supportEmailIds));
 	    		
 	    		emailConversation.setFrom(parentSupportMailContext.getActualEmail());
 	    		
 	    	}
 	    	else {								// record created from Somewhere else
 	    		
-	    		SupportEmailContext parentSupportMailContext = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.DEFAULT_SERVICE,() -> SupportEmailAPI.getSupportEmailsOfSite(AccountUtil.getCurrentOrg().getOrgId(),emailConversation.getSiteId()));
+	    		SupportEmailContext parentSupportMailContext = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.DEFAULT_SERVICE,() -> SupportEmailAPI.getSupportEmailsOfSite(orgID,emailConversation.getSiteId()));
 	    		if(parentSupportMailContext != null) {
 	    			emailConversation.setFrom(parentSupportMailContext.getActualEmail());
 	    		}
