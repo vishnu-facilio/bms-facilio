@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
 import com.facilio.bmsconsole.context.FormulaFieldContext.ResourceType;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.reservation.ReservationContext;
+import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.control.util.ControlScheduleUtil;
@@ -993,7 +994,30 @@ public class ViewFactory {
 		viewsMap.put(FacilioConstants.Inspection.INSPECTION_PRIORITY, views);
 		
 		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all",getAllEmailConversationThreadingViews().setOrder(order++));
+		viewsMap.put(MailMessageUtil.EMAIL_CONVERSATION_THREADING_MODULE_NAME, views);
+		
+		
 		return viewsMap;
+	}
+
+	private static FacilioView getAllEmailConversationThreadingViews() {
+		
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Email Conversation");
+		allView.setModuleName(MailMessageUtil.EMAIL_CONVERSATION_THREADING_MODULE_NAME);
+		allView.setSortFields(sortFields);
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		allView.setViewSharing(getSharingContext(appDomains));
+
+		return allView;
 	}
 
 	private static Map<String, Map<String, List<String>>> initializeGroupViews() {
