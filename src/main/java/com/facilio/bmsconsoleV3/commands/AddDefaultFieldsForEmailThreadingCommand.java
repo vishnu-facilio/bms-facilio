@@ -29,29 +29,30 @@ public class AddDefaultFieldsForEmailThreadingCommand extends FacilioCommand {
 		
 	    for(EmailConversationThreadingContext emailConversation : emailConversations) {
 	    	
-	    	EmailToModuleDataContext emailToModuleData = MailMessageUtil.getEmailToModuleContext(emailConversation.getRecordId(), emailConversation.getModuleId());
-	    	
-	    	if(emailToModuleData != null) {		// record created from Email
+	    	if(emailConversation.getFromType() == EmailConversationThreadingContext.From_Type.ADMIN.getIndex() && emailConversation.getMessageType() == EmailConversationThreadingContext.Message_Type.REPLY.getIndex()) {
 	    		
-	    		Long supportEmailIds = emailToModuleData.getParentId();
-	    		
-	    		SupportEmailContext parentSupportMailContext = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.DEFAULT_SERVICE,() -> SupportEmailAPI.getSupportEmailFromId(orgID, supportEmailIds));
-	    		
-	    		emailConversation.setFrom(parentSupportMailContext.getActualEmail());
-	    		
+	    		EmailToModuleDataContext emailToModuleData = MailMessageUtil.getEmailToModuleContext(emailConversation.getRecordId(), emailConversation.getModuleId());
+		    	
+		    	if(emailToModuleData != null) {		// record created from Email
+		    		
+		    		Long supportEmailIds = emailToModuleData.getParentId();
+		    		
+		    		SupportEmailContext parentSupportMailContext = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.DEFAULT_SERVICE,() -> SupportEmailAPI.getSupportEmailFromId(orgID, supportEmailIds));
+		    		
+		    		emailConversation.setFrom(parentSupportMailContext.getActualEmail());
+		    		
+		    	}
+		    	else {								// record created from Somewhere else
+		    		
+		    		SupportEmailContext parentSupportMailContext = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.DEFAULT_SERVICE,() -> SupportEmailAPI.getSupportEmailsOfSite(orgID,emailConversation.getSiteId()));
+		    		if(parentSupportMailContext != null) {
+		    			emailConversation.setFrom(parentSupportMailContext.getActualEmail());
+		    		}
+		    		else {
+		    			emailConversation.setFrom("noreply@facilio.com");
+		    		}
+		    	}
 	    	}
-	    	else {								// record created from Somewhere else
-	    		
-	    		SupportEmailContext parentSupportMailContext = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.DEFAULT_SERVICE,() -> SupportEmailAPI.getSupportEmailsOfSite(orgID,emailConversation.getSiteId()));
-	    		if(parentSupportMailContext != null) {
-	    			emailConversation.setFrom(parentSupportMailContext.getActualEmail());
-	    		}
-	    		else {
-	    			emailConversation.setFrom("noreply@facilio.com");
-	    		}
-	    	}
-	    	
-	    	
 	    }
 	    
 		return false;
