@@ -24,7 +24,9 @@ public class AddDefaultFieldsForSystemModulesCommand extends FacilioCommand {
             if (CollectionUtils.isNotEmpty(modules)) {
                 for (FacilioModule module : modules) {
                     List<FacilioField> fields = module.getFields() == null ? new ArrayList<>() : new ArrayList<>(module.getFields());
-                    fields.addAll(FieldFactory.getSystemPointFields(module, !ignoreModifiedSysFields));
+                    List<FacilioField> sysFields = FieldFactory.getSystemPointFields(module, !ignoreModifiedSysFields);
+                    sysFields.forEach(f -> f.setDefault(true));
+                    fields.addAll(sysFields);
                     module.setFields(fields);
                 }
             }
