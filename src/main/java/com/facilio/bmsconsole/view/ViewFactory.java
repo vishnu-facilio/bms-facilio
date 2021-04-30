@@ -8885,7 +8885,7 @@ public class ViewFactory {
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
-		allView.setDisplayName("All Departments");
+		allView.setDisplayName("All Deliveries");
 		allView.setModuleName(FacilioConstants.ContextNames.DELIVERIES);
 		allView.setSortFields(sortFields);
 
