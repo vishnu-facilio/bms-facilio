@@ -1689,6 +1689,7 @@ public enum ActionType {
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
 			
+			LOGGER.error("obj --- "+obj);
 			BaseMailMessageContext mailContext = (BaseMailMessageContext) currentRecord;
 			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
