@@ -93,10 +93,12 @@ public class DownloadCertFile {
         }
         return url;
     }
-    public static long addCert(String policyName, String type) throws Exception {
-    	return addCertificate(policyName,type);
+
+    public static long addCert(String policyName, String type, com.facilio.agentv2.FacilioAgent agent) throws Exception {
+        return addCertificate(policyName, type, agent);
     }
-	private static long addCertificate(String policyName, String type) throws Exception {
+
+    private static long addCertificate(String policyName, String type, com.facilio.agentv2.FacilioAgent agent) throws Exception {
 		long fileId = -1;
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		CreateKeysAndCertificateResult certificateResult = AwsUtil.signUpIotToKinesis(policyName, policyName,
@@ -108,7 +110,7 @@ public class DownloadCertFile {
 		try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(file))) {
 			addToZip(out, directoryName + "facilio.crt", certificateResult.getCertificatePem());
 			addToZip(out, directoryName + "facilio-private.key", certificateResult.getKeyPair().getPrivateKey());
-			addToZip(out, directoryName + "facilio.config", getFacilioConfig(policyName, policyName));
+            addToZip(out, directoryName + "facilio.config", getFacilioConfig(policyName, agent.getName()));
 			out.finish();
 			out.flush();
 			FileStore fs = FacilioFactory.getFileStore();
@@ -210,6 +212,8 @@ public class DownloadCertFile {
         StringBuilder builder = new StringBuilder("clientId=").append(clientId).append(System.lineSeparator())
                 .append("privateKeyFile=facilio-private.key").append(System.lineSeparator())
                 .append("certificateFile=facilio.crt").append(System.lineSeparator())
+                .append("privateKeyName=facilio-private.key").append(System.lineSeparator())
+                .append("certName=facilio.crt").append(System.lineSeparator())
                 .append("endpoint=").append(FacilioProperties.getIotEndPoint()).append(System.lineSeparator())
                 .append("topic=").append(domainName);
         return builder.toString();

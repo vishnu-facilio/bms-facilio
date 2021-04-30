@@ -432,7 +432,7 @@ public class AgentAction extends AgentActionV2 {
 				url = fs.getPrivateUrl(fileId);
 			}
 			if(url== null) {
-	        	 fileId = DownloadCertFile.addCert(orgMessageTopic, "facilio");
+                fileId = DownloadCertFile.addCert(orgMessageTopic, "facilio", agent);
 	         }
 			if (fileId > 0) {
 				FileStore fs = FacilioFactory.getFileStore();
