@@ -7,9 +7,14 @@ import com.facilio.qa.QAndAUtil;
 import com.facilio.qa.context.PageContext;
 import com.facilio.qa.context.QAndATemplateContext;
 import com.facilio.v3.context.Constants;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+
+import java.text.MessageFormat;
 import java.util.List;
 
+@Log4j
 public class FetchPagesFromTemplateCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -23,6 +28,7 @@ public class FetchPagesFromTemplateCommand extends FacilioCommand {
                                         PageContext::setParent,
                                         QAndATemplateContext::setPages,
                                         QAndAUtil::setDefaultPropsAsNullToReduceRespSize);
+        LOGGER.debug(MessageFormat.format("Fetched pages from template : {0}", (CollectionUtils.isEmpty(templates) ? "null" : templates.get(0).getPages())));
 
         return false;
     }
