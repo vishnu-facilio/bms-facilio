@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.db.criteria.operators.*;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
@@ -12,11 +13,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.db.criteria.operators.BuildingOperator;
-import com.facilio.db.criteria.operators.DateOperators;
-import com.facilio.db.criteria.operators.Operator;
-import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.FacilioModule;
@@ -200,31 +196,30 @@ public class ReportDrilldownCommand extends FacilioCommand {
 		FieldType dataType = field.getDataTypeEnum();
 
 		switch (dataType) {
-		case ENUM:
-		case SYSTEM_ENUM:
-			operator = PickListOperators.IS;
-
-			break;
-		case BOOLEAN:
-			operator=BooleanOperators.IS;
-			break;
-		case LOOKUP:
-			LookupField lookupField = (LookupField) field;
-			String lookupModuleName = lookupField.getLookupModule().getName();
-			if (lookupModuleName.equals("basespace")
-					|| (lookupModuleName.equals("resource") && ReportUtil.isSpaceAggregation(xAggr))) {
-				operator = BuildingOperator.BUILDING_IS;
-			} else {
+			case ENUM:
+			case SYSTEM_ENUM:
 				operator = PickListOperators.IS;
-			}
-
-			break;
-		case DATE:
-		case DATE_TIME:
-			operator = DateOperators.BETWEEN;
-
-			break;
-
+				break;
+			case STRING_SYSTEM_ENUM:
+				operator = StringOperators.IS;
+				break;
+			case BOOLEAN:
+				operator=BooleanOperators.IS;
+				break;
+			case LOOKUP:
+				LookupField lookupField = (LookupField) field;
+				String lookupModuleName = lookupField.getLookupModule().getName();
+				if (lookupModuleName.equals("basespace")
+						|| (lookupModuleName.equals("resource") && ReportUtil.isSpaceAggregation(xAggr))) {
+					operator = BuildingOperator.BUILDING_IS;
+				} else {
+					operator = PickListOperators.IS;
+				}
+				break;
+			case DATE:
+			case DATE_TIME:
+				operator = DateOperators.BETWEEN;
+				break;
 		}
 		return operator;
 	}

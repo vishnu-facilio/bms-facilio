@@ -12,6 +12,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.facilio.modules.*;
+import com.facilio.modules.fields.StringSystemEnumField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
@@ -907,7 +908,11 @@ public class LookupSpecialTypeUtil {
 				if(field.getDataTypeEnum() == FieldType.SYSTEM_ENUM && field instanceof SystemEnumField) {
 					SystemEnumField enumField = (SystemEnumField) field;
 					enumField.setValues(FacilioEnum.getEnumValues(enumField.getEnumName()));
-				}				
+				}
+				else if(field.getDataTypeEnum() == FieldType.STRING_SYSTEM_ENUM && field instanceof StringSystemEnumField) {
+					StringSystemEnumField systemEnumField = (StringSystemEnumField) field;
+					systemEnumField.setValues(FacilioEnum.getEnumValues(systemEnumField.getEnumName()));
+				}
 			}
 			return fields;
 		}

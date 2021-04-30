@@ -92,8 +92,14 @@ public class MCQHandler<Q extends BaseMCQContext> implements QuestionHandler<Q> 
                                                 options,
                                                 MCQOptionContext::getParentId,
                                                 (o, p) -> o.setParentId(null), // Looks like an hack, but it's okay I guess
-                                                Q::setOptions
+                                                Q::setOptions,
+                                                this::removeDefaultProps
                                             );
+    }
+
+    private void removeDefaultProps(MCQOptionContext option) {
+        QAndAUtil.setDefaultPropsAsNullToReduceRespSize(option);
+        option.setPosition(null);
     }
 
     private List<MCQOptionContext> setDefaultPropsForOptions(BaseMCQContext question) {

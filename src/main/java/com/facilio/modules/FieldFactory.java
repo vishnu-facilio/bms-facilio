@@ -8161,6 +8161,9 @@ public class FieldFactory {
             case MULTI_ENUM:
                 columnFld = new MultiEnumField();
                 break;
+            case STRING_SYSTEM_ENUM:
+                columnFld = new StringSystemEnumField();
+                break;
             default:
                 columnFld = new FacilioField();
                 break;

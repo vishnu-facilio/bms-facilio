@@ -605,6 +605,12 @@ public class ModuleBeanImpl implements ModuleBean {
 								enumField.setValues(FacilioEnum.getEnumValues(enumField.getEnumName()));
 								field = enumField;
 								break;
+						case STRING_SYSTEM_ENUM:
+							prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
+							StringSystemEnumField systemEnumField = FieldUtil.getAsBeanFromMap(prop, StringSystemEnumField.class);
+							systemEnumField.setValues(FacilioEnum.getEnumValues(systemEnumField.getEnumName()));
+							field = systemEnumField;
+							break;
 						case LINE_ITEM:
 							prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
 							LineItemField lineItemField = FieldUtil.getAsBeanFromMap(prop, LineItemField.class);
@@ -696,6 +702,7 @@ public class ModuleBeanImpl implements ModuleBean {
 					extendedProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getMultiEnumFieldsModule(), FieldFactory.getMultiEnumFieldFields(), entry.getValue()));
 					break;
 				case SYSTEM_ENUM:
+				case STRING_SYSTEM_ENUM:
 					extendedProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getSystemEnumFieldModule(), FieldFactory.getSystemEnumFields(), entry.getValue()));
 					break;
 				case SCORE:
@@ -1018,6 +1025,7 @@ public class ModuleBeanImpl implements ModuleBean {
 					addExtendedProps(ModuleFactory.getMultiEnumFieldsModule(), FieldFactory.getMultiEnumFieldFields(), fieldProps);
 					break;
 				case SYSTEM_ENUM:
+				case STRING_SYSTEM_ENUM:
 					addExtendedProps(ModuleFactory.getSystemEnumFieldModule(), FieldFactory.getSystemEnumFields(), fieldProps);
 					break;
 				case SCORE:

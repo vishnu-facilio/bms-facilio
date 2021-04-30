@@ -98,7 +98,7 @@ public class AddQAndAModules extends SignUpData {
         LookupField groupField = (LookupField) FieldFactory.getDefaultField("page", "Page", "PAGE_ID", FieldType.LOOKUP);
         groupField.setLookupModule(page);
         fields.add(groupField);
-        SystemEnumField typeField = (SystemEnumField) FieldFactory.getDefaultField("type", "Type", "QUESTION_TYPE", FieldType.SYSTEM_ENUM);
+        StringSystemEnumField typeField = (StringSystemEnumField) FieldFactory.getDefaultField("questionType", "Type", "QUESTION_TYPE", FieldType.STRING_SYSTEM_ENUM);
         typeField.setEnumName("QuestionType");
         fields.add(typeField);
         fields.add(FieldFactory.getDefaultField("answerFieldId", "Answer Field", "ANSWER_FIELD_ID", FieldType.NUMBER));

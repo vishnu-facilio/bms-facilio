@@ -53,13 +53,6 @@ public class QuestionContext extends V3Context {
     private Integer position;
     private ClientAnswerContext answer;
 
-    public Integer getType() {
-        return questionType == null ? null : questionType.getIndex();
-    }
-    public void setType(Integer type) {
-        questionType = type == null ? null : QuestionType.valueOf(type);
-    }
-
     public void setAnswer (List<ClientAnswerContext> answers) {
         answer = CollectionUtils.isEmpty(answers) ? null : answers.get(0);
     }

@@ -491,6 +491,7 @@ public class BimAPI {
 	public static Object castOrParseValueAsPerType(FacilioField field, String value)  {
 		switch(field.getDataTypeEnum()) {
 			case STRING:
+			case STRING_SYSTEM_ENUM:
 				if(value != null && !((String)value).isEmpty()) {
 					if(!(value instanceof String)) {
 						value= value.toString();

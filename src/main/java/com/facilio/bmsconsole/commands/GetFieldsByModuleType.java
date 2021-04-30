@@ -23,101 +23,122 @@ public class GetFieldsByModuleType extends FacilioCommand {
         Map<String, Map<String, Object>> result = new HashMap<>();
 
         for (FacilioField field: allFields) {
-            FieldType dataTypeEnum = field.getDataTypeEnum();
-            if (dataTypeEnum == FieldType.LOOKUP) {
-                if ((field.getName().equals("status") || field.getName().equals("approvalStatus")) && moduleName.equals("workorder")) {
-                    continue;
-                }
-                LookupField lookupField = (LookupField) field;
-                long lookupModuleId = lookupField.getLookupModuleId();
-                FacilioModule lookupModule = modBean.getModule(lookupModuleId);
-                if (lookupModule == null || lookupModule.getTypeEnum() != FacilioModule.ModuleType.PICK_LIST) {
-                    continue;
-                }
-                List<FacilioField> lookupModuleFields = modBean.getAllFields(lookupModule.getName());
+            switch (field.getDataTypeEnum()) {
+                case LOOKUP: {
+                    if ((field.getName().equals("status") || field.getName().equals("approvalStatus")) && moduleName.equals("workorder")) {
+                        continue;
+                    }
+                    LookupField lookupField = (LookupField) field;
+                    long lookupModuleId = lookupField.getLookupModuleId();
+                    FacilioModule lookupModule = modBean.getModule(lookupModuleId);
+                    if (lookupModule == null || lookupModule.getTypeEnum() != FacilioModule.ModuleType.PICK_LIST) {
+                        continue;
+                    }
+                    List<FacilioField> lookupModuleFields = modBean.getAllFields(lookupModule.getName());
 
-                long moduleId = -1L;
-                if ("ticketstatus".equals(lookupModule.getName())) {
-                    moduleId = parentModule.getModuleId();
-                }
+                    long moduleId = -1L;
+                    if ("ticketstatus".equals(lookupModule.getName())) {
+                        moduleId = parentModule.getModuleId();
+                    }
 
-                Optional<FacilioField> mainField = lookupModuleFields.stream().filter(i -> i.getMainField() != null && i.getMainField()).findFirst();
-                if (!mainField.isPresent()) {
-                    continue;
+                    Optional<FacilioField> mainField = lookupModuleFields.stream().filter(i -> i.getMainField() != null && i.getMainField()).findFirst();
+                    if (!mainField.isPresent()) {
+                        continue;
+                    }
+                    Map<String, Object> modMap = new HashMap<>();
+                    List<Map<String, Object>> values = getValues(lookupModule, mainField.get(), moduleId);
+                    modMap.put("displayName", lookupModule.getDisplayName());
+                    modMap.put("options", values);
+                    result.put(field.getName(), modMap);
+                } break;
+                case ENUM: {
+                    EnumField enumField = (EnumField) field;
+                    List<EnumFieldValue<Integer>> enumValues = enumField.getValues();
+                    List<Map<String, Object>> values = FieldUtil.getAsMapList(enumValues, EnumFieldValue.class);
+                    List<Map<String, Object>> options = new ArrayList<>();
+                    for (Map<String, Object> value : values) {
+                        Map<String, Object> option = new HashMap<>();
+                        option.put("id", value.get("index"));
+                        option.put("value", value.get("value"));
+                        options.add(option);
+                    }
+                    Map<String, Object> modMap = new HashMap<>();
+                    modMap.put("displayName", enumField.getDisplayName());
+                    modMap.put("options", options);
+                    result.put(field.getName(), modMap);
+                } break;
+                case MULTI_ENUM: {
+                    MultiEnumField multiEnumField = (MultiEnumField) field;
+                    List<EnumFieldValue<Integer>> multiEnumFieldValues = multiEnumField.getValues();
+                    List<Map<String, Object>> values = FieldUtil.getAsMapList(multiEnumFieldValues, EnumFieldValue.class);
+                    List<Map<String, Object>> options = new ArrayList<>();
+                    for (Map<String, Object> value : values) {
+                        Map<String, Object> option = new HashMap<>();
+                        option.put("id", value.get("index"));
+                        option.put("value", value.get("value"));
+                        options.add(option);
+                    }
+                    Map<String, Object> modMap = new HashMap<>();
+                    modMap.put("displayName", multiEnumField.getDisplayName());
+                    modMap.put("options", options);
+                    result.put(field.getName(), modMap);
+                } break;
+                case SYSTEM_ENUM: {
+                    SystemEnumField systemEnumField = (SystemEnumField) field;
+                    List<EnumFieldValue<Integer>> systemEnumFieldValues = systemEnumField.getValues();
+                    List<Map<String, Object>> values = FieldUtil.getAsMapList(systemEnumFieldValues, EnumFieldValue.class);
+                    List<Map<String, Object>> options = new ArrayList<>();
+                    for (Map<String, Object> value : values) {
+                        Map<String, Object> option = new HashMap<>();
+                        option.put("id", value.get("index"));
+                        option.put("value", value.get("value"));
+                        options.add(option);
+                    }
+                    Map<String, Object> modMap = new HashMap<>();
+                    modMap.put("displayName", systemEnumField.getDisplayName());
+                    modMap.put("options", options);
+                    result.put(field.getName(), modMap);
+                } break;
+                case STRING_SYSTEM_ENUM: {
+                    StringSystemEnumField systemEnumField = (StringSystemEnumField) field;
+                    List<EnumFieldValue<String>> systemEnumFieldValues = systemEnumField.getValues();
+                    List<Map<String, Object>> values = FieldUtil.getAsMapList(systemEnumFieldValues, EnumFieldValue.class);
+                    List<Map<String, Object>> options = new ArrayList<>();
+                    for (Map<String, Object> value : values) {
+                        Map<String, Object> option = new HashMap<>();
+                        option.put("id", value.get("index"));
+                        option.put("value", value.get("value"));
+                        options.add(option);
+                    }
+                    Map<String, Object> modMap = new HashMap<>();
+                    modMap.put("displayName", systemEnumField.getDisplayName());
+                    modMap.put("options", options);
+                    result.put(field.getName(), modMap);
                 }
-                Map<String, Object> modMap = new HashMap<>();
-                List<Map<String, Object>> values = getValues(lookupModule, mainField.get(), moduleId);
-                modMap.put("displayName", lookupModule.getDisplayName());
-                modMap.put("options", values);
-                result.put(field.getName(), modMap);
-            } else if (dataTypeEnum == FieldType.ENUM) {
-                EnumField enumField = (EnumField) field;
-                List<EnumFieldValue<Integer>> enumValues = enumField.getValues();
-                List<Map<String, Object>> values = FieldUtil.getAsMapList(enumValues, EnumFieldValue.class);
-                List<Map<String, Object>> options = new ArrayList<>();
-                for (Map<String, Object> value : values) {
-                    Map<String, Object> option = new HashMap<>();
-                    option.put("id", value.get("index"));
-                    option.put("value", value.get("value"));
-                    options.add(option);
-                }
-                Map<String, Object> modMap = new HashMap<>();
-                modMap.put("displayName", enumField.getDisplayName());
-                modMap.put("options", options);
-                result.put(field.getName(), modMap);
-            } else if (dataTypeEnum == FieldType.MULTI_ENUM) {
-                MultiEnumField multiEnumField = (MultiEnumField) field;
-                List<EnumFieldValue<Integer>> multiEnumFieldValues = multiEnumField.getValues();
-                List<Map<String, Object>> values = FieldUtil.getAsMapList(multiEnumFieldValues, EnumFieldValue.class);
-                List<Map<String, Object>> options = new ArrayList<>();
-                for (Map<String, Object> value : values) {
-                    Map<String, Object> option = new HashMap<>();
-                    option.put("id", value.get("index"));
-                    option.put("value", value.get("value"));
-                    options.add(option);
-                }
-                Map<String, Object> modMap = new HashMap<>();
-                modMap.put("displayName", multiEnumField.getDisplayName());
-                modMap.put("options", options);
-                result.put(field.getName(), modMap);
-            } else if (dataTypeEnum == FieldType.MULTI_LOOKUP) {
-                MultiLookupField multiLookupField = (MultiLookupField) field;
-                long lookupModuleId = multiLookupField.getLookupModuleId();
-                FacilioModule lookupModule = modBean.getModule(lookupModuleId);
-                if (lookupModule == null || lookupModule.getTypeEnum() != FacilioModule.ModuleType.PICK_LIST) {
-                    continue;
-                }
-                List<FacilioField> lookupModuleFields = modBean.getAllFields(lookupModule.getName());
+                case MULTI_LOOKUP: {
+                    MultiLookupField multiLookupField = (MultiLookupField) field;
+                    long lookupModuleId = multiLookupField.getLookupModuleId();
+                    FacilioModule lookupModule = modBean.getModule(lookupModuleId);
+                    if (lookupModule == null || lookupModule.getTypeEnum() != FacilioModule.ModuleType.PICK_LIST) {
+                        continue;
+                    }
+                    List<FacilioField> lookupModuleFields = modBean.getAllFields(lookupModule.getName());
 
-                long moduleId = -1L;
-                if ("ticketstatus".equals(lookupModule.getName())) {
-                    moduleId = parentModule.getModuleId();
-                }
+                    long moduleId = -1L;
+                    if ("ticketstatus".equals(lookupModule.getName())) {
+                        moduleId = parentModule.getModuleId();
+                    }
 
-                Optional<FacilioField> mainField = lookupModuleFields.stream().filter(i -> i.getMainField() != null && i.getMainField()).findFirst();
-                if (!mainField.isPresent()) {
-                    continue;
-                }
-                Map<String, Object> modMap = new HashMap<>();
-                List<Map<String, Object>> values = getValues(lookupModule, mainField.get(), moduleId);
-                modMap.put("displayName", lookupModule.getDisplayName());
-                modMap.put("options", values);
-                result.put(field.getName(), modMap);
-            } else if (dataTypeEnum == FieldType.SYSTEM_ENUM) {
-                SystemEnumField systemEnumField = (SystemEnumField) field;
-                List<EnumFieldValue<Integer>> systemEnumFieldValues = systemEnumField.getValues();
-                List<Map<String, Object>> values = FieldUtil.getAsMapList(systemEnumFieldValues, EnumFieldValue.class);
-                List<Map<String, Object>> options = new ArrayList<>();
-                for (Map<String, Object> value : values) {
-                    Map<String, Object> option = new HashMap<>();
-                    option.put("id", value.get("index"));
-                    option.put("value", value.get("value"));
-                    options.add(option);
-                }
-                Map<String, Object> modMap = new HashMap<>();
-                modMap.put("displayName", systemEnumField.getDisplayName());
-                modMap.put("options", options);
-                result.put(field.getName(), modMap);
+                    Optional<FacilioField> mainField = lookupModuleFields.stream().filter(i -> i.getMainField() != null && i.getMainField()).findFirst();
+                    if (!mainField.isPresent()) {
+                        continue;
+                    }
+                    Map<String, Object> modMap = new HashMap<>();
+                    List<Map<String, Object>> values = getValues(lookupModule, mainField.get(), moduleId);
+                    modMap.put("displayName", lookupModule.getDisplayName());
+                    modMap.put("options", values);
+                    result.put(field.getName(), modMap);
+                } break;
             }
         }
 
