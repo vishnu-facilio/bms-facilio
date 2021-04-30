@@ -150,7 +150,7 @@ public class ReportFactoryFields {
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("category"));
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("type"));
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("department"));
-		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("state"));
+		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("moduleState"));
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("unitPrice"));
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("purchasedDate"));
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("retireDate"));
@@ -223,7 +223,7 @@ public class ReportFactoryFields {
 		selectedFields.add(fields.get("type"));
 		selectedFields.add(fields.get("category"));
 		selectedFields.add(fields.get("department"));
-		selectedFields.add(fields.get("state"));
+		selectedFields.add(fields.get("moduleState"));
 		selectedFields.add(fields.get("unitPrice"));
 		selectedFields.add(fields.get("purchasedDate"));
 		selectedFields.add(fields.get("retireDate"));
@@ -250,148 +250,6 @@ public class ReportFactoryFields {
 		rearrangedFields.put("dimensionListOrder", dimensionListOrder);
 		
 		rearrangedFields.put("displayName","assets");
-		
-		return rearrangedFields;
-		
-	}
-	
-	public static JSONObject getitemReportFields() throws Exception{
-		ModuleBean bean = (ModuleBean)BeanFactory.lookup("ModuleBean");
-		Map<String, FacilioField> fields = FieldFactory.getAsMap(bean.getAllFields("item"));
-		
-		
-		Map<String, FacilioField> customFields = new HashMap<String, FacilioField>();
-		if(bean.getAllCustomFields("item") != null) {
-			customFields = FieldFactory.getAsMap(bean.getAllCustomFields("item"));
-		}
-		
-		List<FacilioField> selectedFields = new ArrayList<FacilioField>();
-		selectedFields.add(fields.get("status"));
-		selectedFields.add(fields.get("costType"));
-		selectedFields.add(fields.get("quantity"));
-		selectedFields.add(fields.get("localId"));
-		selectedFields.add(fields.get("sysCreatedTime"));
-		selectedFields.add(fields.get("sysModifiedTime"));
-		selectedFields.add(fields.get("lastPurchasedDate"));
-		selectedFields.add(fields.get("lastPurchasedPrice"));
-		selectedFields.add(fields.get("minimumQuantity"));
-		
-		if(customFields.size() != 0) {
-			for(String customFieldName: customFields.keySet()) {
-				selectedFields.add(customFields.get(customFieldName));
-			}
-		}
-		
-		//loading additional module fields
-		JSONObject rearrangedFields = rearrangeFields(selectedFields, "item");
-		setAdditionalModulemap(rearrangedFields, "item", bean);
-		HashMap<String , Map<String, FacilioField>> additionalModuleFields = getAdditionalModuleFields("item", bean);
-				
-			
-		List<FacilioField> itemTypeFields = new ArrayList<FacilioField>();
-		itemTypeFields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.ITEM_TYPES).get("name"));
-		itemTypeFields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.ITEM_TYPES).get("description"));
-		itemTypeFields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.ITEM_TYPES).get("category"));
-		itemTypeFields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.ITEM_TYPES).get("status"));
-		itemTypeFields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.ITEM_TYPES).get("serialNumber"));
-		itemTypeFields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.ITEM_TYPES).get("unit"));
-		itemTypeFields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.ITEM_TYPES).get("currentQuantity"));
-		itemTypeFields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.ITEM_TYPES).get("minimumQuantity"));
-		
-		List<FacilioField> storeRoomFields = new ArrayList<FacilioField>();
-		storeRoomFields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.STORE_ROOM).get("name"));
-		storeRoomFields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.STORE_ROOM).get("description"));
-		storeRoomFields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.STORE_ROOM).get("location"));
-		storeRoomFields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.STORE_ROOM).get("owner"));
-		storeRoomFields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.STORE_ROOM).get("site"));
-		storeRoomFields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.STORE_ROOM).get("noOfItemTypes"));
-		storeRoomFields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.STORE_ROOM).get("noOfToolTypes"));
-		
-		Map<String, List<FacilioField>> dimensionFieldMap = (Map<String, List<FacilioField>>)rearrangedFields.get("dimension");
-
-		
-		dimensionFieldMap.put(FacilioConstants.ModuleNames.ITEM_TYPES, itemTypeFields);
-		dimensionFieldMap.put(FacilioConstants.ModuleNames.STORE_ROOM, storeRoomFields);
-		
-		ArrayList<String> dimensionListOrder = new ArrayList<String>();
-		dimensionListOrder.add("time");
-		dimensionListOrder.add("item");
-		dimensionListOrder.add("itemtypes");
-		dimensionListOrder.add("storeroom");
-		
-		rearrangedFields.put("dimensionListOrder", dimensionListOrder);
-		
-		rearrangedFields.put("displayName","items");
-		
-		return rearrangedFields;
-		
-	}
-	
-	public static JSONObject gettoolReportFields() throws Exception{
-		ModuleBean bean = (ModuleBean)BeanFactory.lookup("ModuleBean");
-		Map<String, FacilioField> fields = FieldFactory.getAsMap(bean.getAllFields("tool"));
-		
-		
-		Map<String, FacilioField> customFields = new HashMap<String, FacilioField>();
-		if(bean.getAllCustomFields("tool") != null) {
-			customFields = FieldFactory.getAsMap(bean.getAllCustomFields("tool"));
-		}
-		
-		List<FacilioField> selectedFields = new ArrayList<FacilioField>();
-		selectedFields.add(fields.get("status"));
-		selectedFields.add(fields.get("quantity"));
-		selectedFields.add(fields.get("currentQuantity"));
-		selectedFields.add(fields.get("rate"));
-		selectedFields.add(fields.get("localId"));
-		selectedFields.add(fields.get("sysCreatedTime"));
-		selectedFields.add(fields.get("sysModifiedTime"));
-		selectedFields.add(fields.get("lastPurchasedDate"));
-		
-		if(customFields.size() != 0) {
-			for(String customFieldName: customFields.keySet()) {
-				selectedFields.add(customFields.get(customFieldName));
-			}
-		}
-		
-		//loading additional module fields
-		JSONObject rearrangedFields = rearrangeFields(selectedFields, "tool");
-		setAdditionalModulemap(rearrangedFields, "tool", bean);
-		HashMap<String , Map<String, FacilioField>> additionalModuleFields = getAdditionalModuleFields("tool", bean);
-				
-			
-		List<FacilioField> toolTypeFields = new ArrayList<FacilioField>();
-		toolTypeFields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.TOOL_TYPES).get("name"));
-		toolTypeFields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.TOOL_TYPES).get("description"));
-		toolTypeFields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.TOOL_TYPES).get("category"));
-		toolTypeFields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.TOOL_TYPES).get("status"));
-		toolTypeFields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.TOOL_TYPES).get("serialNumber"));
-		toolTypeFields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.TOOL_TYPES).get("unit"));
-		toolTypeFields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.TOOL_TYPES).get("currentQuantity"));
-				
-		List<FacilioField> storeRoomFields = new ArrayList<FacilioField>();
-		storeRoomFields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.STORE_ROOM).get("name"));
-		storeRoomFields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.STORE_ROOM).get("description"));
-		storeRoomFields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.STORE_ROOM).get("location"));
-		storeRoomFields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.STORE_ROOM).get("owner"));
-		storeRoomFields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.STORE_ROOM).get("site"));
-		storeRoomFields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.STORE_ROOM).get("noOfItemTypes"));
-		storeRoomFields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.STORE_ROOM).get("noOfToolTypes"));
-		
-		Map<String, List<FacilioField>> dimensionFieldMap = (Map<String, List<FacilioField>>)rearrangedFields.get("dimension");
-
-		
-		dimensionFieldMap.put(FacilioConstants.ModuleNames.TOOL_TYPES, toolTypeFields);
-		dimensionFieldMap.put(FacilioConstants.ModuleNames.STORE_ROOM, storeRoomFields);
-		
-		ArrayList<String> dimensionListOrder = new ArrayList<String>();
-		dimensionListOrder.add("time");
-		dimensionListOrder.add("tool");
-		dimensionListOrder.add("tooltypes");
-		dimensionListOrder.add("storeroom");
-		
-		rearrangedFields.put("dimensionListOrder", dimensionListOrder);
-		
-		rearrangedFields.put("displayName","tools");
 		
 		return rearrangedFields;
 		
@@ -430,7 +288,7 @@ public class ReportFactoryFields {
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("category"));
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("type"));
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("department"));
-		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("state"));
+		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("moduleState"));
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("unitPrice"));
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("purchasedDate"));
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("retireDate"));
@@ -452,275 +310,6 @@ public class ReportFactoryFields {
 		rearrangedFields.put("dimensionListOrder", dimensionListOrder);
 		
 		rearrangedFields.put("displayName","breakdowns");
-		
-		return rearrangedFields;
-		
-	}
-	
-	public static JSONObject getitemTransactionsReportFields() throws Exception{
-		ModuleBean bean = (ModuleBean)BeanFactory.lookup("ModuleBean");
-		Map<String, FacilioField> fields = FieldFactory.getAsMap(bean.getAllFields(FacilioConstants.ModuleNames.ITEM_TRANSACTIONS));
-		
-		
-		Map<String, FacilioField> customFields = new HashMap<String, FacilioField>();
-		if(bean.getAllCustomFields(FacilioConstants.ModuleNames.ITEM_TRANSACTIONS) != null) {
-			customFields = FieldFactory.getAsMap(bean.getAllCustomFields(FacilioConstants.ModuleNames.ITEM_TRANSACTIONS));
-		}
-		
-		List<FacilioField> selectedFields = new ArrayList<FacilioField>();
-
-		selectedFields.add(fields.get("sysModifiedTime"));
-		selectedFields.add(fields.get("sysCreatedTime"));
-		selectedFields.add(fields.get("remainingQuantity"));
-		selectedFields.add(fields.get("shipment"));
-		selectedFields.add(fields.get("quantity"));
-		selectedFields.add(fields.get("approvedState"));
-		selectedFields.add(fields.get("transactionCost"));
-		selectedFields.add(fields.get("parentId"));
-		selectedFields.add(fields.get("parentTransactionId"));
-		selectedFields.add(fields.get("transactionType"));
-		selectedFields.add(fields.get("transactionState"));
-		selectedFields.add(fields.get("issuedTo"));
-		
-		if(customFields.size() != 0) {
-			for(String customFieldName: customFields.keySet()) {
-				selectedFields.add(customFields.get(customFieldName));
-			}
-		}
-		
-		//loading additional module fields
-		JSONObject rearrangedFields = rearrangeFields(selectedFields, FacilioConstants.ModuleNames.ITEM_TRANSACTIONS);
-		setAdditionalModulemap(rearrangedFields, FacilioConstants.ModuleNames.ITEM_TRANSACTIONS, bean);
-		HashMap<String , Map<String, FacilioField>> additionalModuleFields = getAdditionalModuleFields(FacilioConstants.ModuleNames.ITEM_TRANSACTIONS, bean);
-		
-		List<FacilioField> assetFields = new ArrayList<FacilioField>();
-		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("name"));
-		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("category"));
-		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("type"));
-		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("department"));
-		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("state"));
-		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("unitPrice"));
-		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("purchasedDate"));
-		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("retireDate"));
-		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("warrantyExpiryDate"));
-		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("serialNumber"));
-		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("rotatingTool"));
-		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("rotatingItem"));
-		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("lastIssuedToUser"));
-		
-		List <FacilioField> workorderfields = new ArrayList<FacilioField>();
-		
-		workorderfields.add(additionalModuleFields.get(FacilioConstants.ContextNames.WORK_ORDER).get("createdTime"));
-		workorderfields.add(additionalModuleFields.get(FacilioConstants.ContextNames.WORK_ORDER).get("dueDate"));
-		workorderfields.add(additionalModuleFields.get(FacilioConstants.ContextNames.WORK_ORDER).get("actualWorkStart"));
-		workorderfields.add(additionalModuleFields.get(FacilioConstants.ContextNames.WORK_ORDER).get("actualWorkEnd"));
-		workorderfields.add(additionalModuleFields.get(FacilioConstants.ContextNames.WORK_ORDER).get("actualWorkDuration"));
-		workorderfields.add(additionalModuleFields.get(FacilioConstants.ContextNames.WORK_ORDER).get("priority"));
-		workorderfields.add(additionalModuleFields.get(FacilioConstants.ContextNames.WORK_ORDER).get("category"));
-		workorderfields.add(additionalModuleFields.get(FacilioConstants.ContextNames.WORK_ORDER).get("assignedTo"));
-		workorderfields.add(additionalModuleFields.get(FacilioConstants.ContextNames.WORK_ORDER).get("assignmentGroup"));
-		workorderfields.add(additionalModuleFields.get(FacilioConstants.ContextNames.WORK_ORDER).get("type"));
-		workorderfields.add(additionalModuleFields.get(FacilioConstants.ContextNames.WORK_ORDER).get("sourceType"));
-		workorderfields.add(additionalModuleFields.get(FacilioConstants.ContextNames.WORK_ORDER).get("totalCost"));
-		workorderfields.add(additionalModuleFields.get(FacilioConstants.ContextNames.WORK_ORDER).get("status"));
-		
-//		List <FacilioField> gatepassfields = new ArrayList<FacilioField>();
-//		for(String fieldName: additionalModuleFields.get(FacilioConstants.ModuleNames.GATE_PASS).keySet()) {
-//			gatepassfields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.GATE_PASS).get(fieldName));
-//		}
-//		
-		
-		List <FacilioField> itemfields = new ArrayList<FacilioField>();
-		for(String fieldName: additionalModuleFields.get(FacilioConstants.ModuleNames.ITEM).keySet()) {
-			itemfields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.ITEM).get("status"));
-		}
-		itemfields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.ITEM).get("status"));
-		itemfields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.ITEM).get("costType"));
-		itemfields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.ITEM).get("quantity"));
-		itemfields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.ITEM).get("localId"));
-		itemfields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.ITEM).get("sysCreatedTime"));
-		itemfields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.ITEM).get("sysModifiedTime"));
-		itemfields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.ITEM).get("lastPurchasedDate"));
-		itemfields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.ITEM).get("lastPurchasedPrice"));
-		itemfields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.ITEM).get("minimumQuantity"));
-		
-		List <FacilioField> itemtypefields = new ArrayList<FacilioField>();
-
-		itemtypefields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.ITEM_TYPES).get("name"));
-		itemtypefields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.ITEM_TYPES).get("description"));
-		itemtypefields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.ITEM_TYPES).get("category"));
-		itemtypefields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.ITEM_TYPES).get("status"));
-		itemtypefields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.ITEM_TYPES).get("serialNumber"));
-		itemtypefields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.ITEM_TYPES).get("unit"));
-		itemtypefields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.ITEM_TYPES).get("currentQuantity"));
-		itemtypefields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.ITEM_TYPES).get("minimumQuantity"));
-		
-		List <FacilioField> purchaseditemfields = new ArrayList<FacilioField>();
-		for(String fieldName: additionalModuleFields.get(FacilioConstants.ModuleNames.PURCHASED_ITEM).keySet()) {
-			purchaseditemfields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.PURCHASED_ITEM).get(fieldName));
-		}
-		
-//		List <FacilioField> requestedlineitemfields = new ArrayList<FacilioField>();
-//		for(String fieldName: additionalModuleFields.get(FacilioConstants.ModuleNames.REQUEST_LINE_ITEM).keySet()) {
-//			requestedlineitemfields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.REQUEST_LINE_ITEM).get(fieldName));
-//		}
-				
-		
-		Map<String, List<FacilioField>> dimensionFieldMap = (Map<String, List<FacilioField>>)rearrangedFields.get("dimension");
-
-		dimensionFieldMap.put(FacilioConstants.ContextNames.ASSET, assetFields);
-		dimensionFieldMap.put(FacilioConstants.ContextNames.WORK_ORDER, workorderfields);
-//		dimensionFieldMap.put(FacilioConstants.ModuleNames.GATE_PASS, gatepassfields);
-		dimensionFieldMap.put(FacilioConstants.ModuleNames.ITEM, itemfields);
-		dimensionFieldMap.put(FacilioConstants.ModuleNames.ITEM_TYPES, itemtypefields);
-		dimensionFieldMap.put(FacilioConstants.ModuleNames.PURCHASED_ITEM, purchaseditemfields);
-//		dimensionFieldMap.put(FacilioConstants.ModuleNames.REQUEST_LINE_ITEM, requestedlineitemfields);
-		
-		ArrayList<String> dimensionListOrder = new ArrayList<String>();
-		dimensionListOrder.add("time");
-		dimensionListOrder.add(FacilioConstants.ModuleNames.ITEM_TRANSACTIONS);
-		dimensionListOrder.add(FacilioConstants.ContextNames.ASSET);
-		dimensionListOrder.add(FacilioConstants.ContextNames.WORK_ORDER);
-		dimensionListOrder.add(FacilioConstants.ModuleNames.GATE_PASS);
-		dimensionListOrder.add(FacilioConstants.ModuleNames.ITEM);
-		dimensionListOrder.add(FacilioConstants.ModuleNames.ITEM_TYPES);
-		dimensionListOrder.add(FacilioConstants.ModuleNames.PURCHASED_ITEM);
-		dimensionListOrder.add(FacilioConstants.ModuleNames.REQUEST_LINE_ITEM);
-		
-		
-		rearrangedFields.put("dimensionListOrder", dimensionListOrder);
-		
-		rearrangedFields.put("displayName","item transactions");
-		
-		return rearrangedFields;
-		
-	}
-	
-	public static JSONObject gettoolTransactionsReportFields() throws Exception{
-		ModuleBean bean = (ModuleBean)BeanFactory.lookup("ModuleBean");
-		Map<String, FacilioField> fields = FieldFactory.getAsMap(bean.getAllFields(FacilioConstants.ModuleNames.TOOL_TRANSACTIONS));
-		
-		
-		Map<String, FacilioField> customFields = new HashMap<String, FacilioField>();
-		if(bean.getAllCustomFields(FacilioConstants.ModuleNames.TOOL_TRANSACTIONS) != null) {
-			customFields = FieldFactory.getAsMap(bean.getAllCustomFields(FacilioConstants.ModuleNames.TOOL_TRANSACTIONS));
-		}
-		
-		List<FacilioField> selectedFields = new ArrayList<FacilioField>();
-
-		selectedFields.add(fields.get("sysModifiedTime"));
-		selectedFields.add(fields.get("sysCreatedTime"));
-		selectedFields.add(fields.get("remainingQuantity"));
-		selectedFields.add(fields.get("shipment"));
-		selectedFields.add(fields.get("quantity"));
-		selectedFields.add(fields.get("approvedState"));
-		selectedFields.add(fields.get("transactionCost"));
-		selectedFields.add(fields.get("parentId"));
-		selectedFields.add(fields.get("parentTransactionId"));
-		selectedFields.add(fields.get("transactionType"));
-		selectedFields.add(fields.get("transactionState"));
-		selectedFields.add(fields.get("issuedTo"));
-		
-		if(customFields.size() != 0) {
-			for(String customFieldName: customFields.keySet()) {
-				selectedFields.add(customFields.get(customFieldName));
-			}
-		}
-		
-		//loading additional module fields
-		JSONObject rearrangedFields = rearrangeFields(selectedFields, FacilioConstants.ModuleNames.TOOL_TRANSACTIONS);
-		setAdditionalModulemap(rearrangedFields, FacilioConstants.ModuleNames.TOOL_TRANSACTIONS, bean);
-		HashMap<String , Map<String, FacilioField>> additionalModuleFields = getAdditionalModuleFields(FacilioConstants.ModuleNames.TOOL_TRANSACTIONS, bean);
-		
-		List<FacilioField> assetFields = new ArrayList<FacilioField>();
-		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("name"));
-		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("category"));
-		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("type"));
-		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("department"));
-		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("state"));
-		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("unitPrice"));
-		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("purchasedDate"));
-		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("retireDate"));
-		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("warrantyExpiryDate"));
-		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("serialNumber"));
-		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("rotatingTool"));
-		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("rotatingItem"));
-		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("lastIssuedToUser"));
-		
-		List <FacilioField> workorderfields = new ArrayList<FacilioField>();
-		workorderfields.add(additionalModuleFields.get(FacilioConstants.ContextNames.WORK_ORDER).get("createdTime"));
-		workorderfields.add(additionalModuleFields.get(FacilioConstants.ContextNames.WORK_ORDER).get("dueDate"));
-		workorderfields.add(additionalModuleFields.get(FacilioConstants.ContextNames.WORK_ORDER).get("actualWorkStart"));
-		workorderfields.add(additionalModuleFields.get(FacilioConstants.ContextNames.WORK_ORDER).get("actualWorkEnd"));
-		workorderfields.add(additionalModuleFields.get(FacilioConstants.ContextNames.WORK_ORDER).get("actualWorkDuration"));
-		workorderfields.add(additionalModuleFields.get(FacilioConstants.ContextNames.WORK_ORDER).get("priority"));
-		workorderfields.add(additionalModuleFields.get(FacilioConstants.ContextNames.WORK_ORDER).get("category"));
-		workorderfields.add(additionalModuleFields.get(FacilioConstants.ContextNames.WORK_ORDER).get("assignedTo"));
-		workorderfields.add(additionalModuleFields.get(FacilioConstants.ContextNames.WORK_ORDER).get("assignmentGroup"));
-		workorderfields.add(additionalModuleFields.get(FacilioConstants.ContextNames.WORK_ORDER).get("type"));
-		workorderfields.add(additionalModuleFields.get(FacilioConstants.ContextNames.WORK_ORDER).get("sourceType"));
-		workorderfields.add(additionalModuleFields.get(FacilioConstants.ContextNames.WORK_ORDER).get("totalCost"));
-		workorderfields.add(additionalModuleFields.get(FacilioConstants.ContextNames.WORK_ORDER).get("status"));
-		
-//		List <FacilioField> gatepassfields = new ArrayList<FacilioField>();
-//		for(String fieldName: additionalModuleFields.get(FacilioConstants.ModuleNames.GATE_PASS).keySet()) {
-//			gatepassfields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.GATE_PASS).get(fieldName));
-//		}
-		
-		List <FacilioField> toolfields = new ArrayList<FacilioField>();
-		toolfields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.TOOL).get("status"));
-		toolfields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.TOOL).get("quantity"));
-		toolfields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.TOOL).get("currentQuantity"));
-		toolfields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.TOOL).get("rate"));
-		toolfields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.TOOL).get("localId"));
-		toolfields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.TOOL).get("sysCreatedTime"));
-		toolfields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.TOOL).get("sysModifiedTime"));
-		toolfields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.TOOL).get("lastPurchasedDate"));
-		
-		List <FacilioField> tooltypefields = new ArrayList<FacilioField>();
-		tooltypefields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.TOOL_TYPES).get("name"));
-		tooltypefields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.TOOL_TYPES).get("description"));
-		tooltypefields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.TOOL_TYPES).get("category"));
-		tooltypefields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.TOOL_TYPES).get("status"));
-		tooltypefields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.TOOL_TYPES).get("serialNumber"));
-		tooltypefields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.TOOL_TYPES).get("unit"));
-		tooltypefields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.TOOL_TYPES).get("currentQuantity"));
-		
-		List <FacilioField> purchasedtoolfields = new ArrayList<FacilioField>();
-		for(String fieldName: additionalModuleFields.get(FacilioConstants.ModuleNames.PURCHASED_TOOL).keySet()) {
-			purchasedtoolfields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.PURCHASED_TOOL).get(fieldName));
-		}
-		
-//		List <FacilioField> requestedlineitemfields = new ArrayList<FacilioField>();
-//		for(String fieldName: additionalModuleFields.get(FacilioConstants.ModuleNames.REQUEST_LINE_ITEM).keySet()) {
-//			requestedlineitemfields.add(additionalModuleFields.get(FacilioConstants.ModuleNames.REQUEST_LINE_ITEM).get(fieldName));
-//		}
-		
-		
-		Map<String, List<FacilioField>> dimensionFieldMap = (Map<String, List<FacilioField>>)rearrangedFields.get("dimension");
-
-		dimensionFieldMap.put(FacilioConstants.ContextNames.ASSET, assetFields);
-		dimensionFieldMap.put(FacilioConstants.ContextNames.WORK_ORDER, workorderfields);
-//		dimensionFieldMap.put(FacilioConstants.ModuleNames.GATE_PASS, gatepassfields);
-		dimensionFieldMap.put(FacilioConstants.ModuleNames.TOOL, toolfields);
-		dimensionFieldMap.put(FacilioConstants.ModuleNames.TOOL_TYPES, tooltypefields);
-		dimensionFieldMap.put(FacilioConstants.ModuleNames.PURCHASED_TOOL, purchasedtoolfields);
-//		dimensionFieldMap.put(FacilioConstants.ModuleNames.REQUEST_LINE_ITEM, requestedlineitemfields);
-		
-		ArrayList<String> dimensionListOrder = new ArrayList<String>();
-		dimensionListOrder.add("time");
-		dimensionListOrder.add(FacilioConstants.ModuleNames.TOOL_TRANSACTIONS);
-		dimensionListOrder.add(FacilioConstants.ContextNames.ASSET);
-		dimensionListOrder.add(FacilioConstants.ContextNames.WORK_ORDER);
-		dimensionListOrder.add(FacilioConstants.ModuleNames.GATE_PASS);
-		dimensionListOrder.add(FacilioConstants.ModuleNames.TOOL);
-		dimensionListOrder.add(FacilioConstants.ModuleNames.TOOL_TYPES);
-		dimensionListOrder.add(FacilioConstants.ModuleNames.PURCHASED_TOOL);
-		dimensionListOrder.add(FacilioConstants.ModuleNames.REQUEST_LINE_ITEM);
-		
-		rearrangedFields.put("dimensionListOrder", dimensionListOrder);
-		
-		rearrangedFields.put("displayName","tool transactions");
 		
 		return rearrangedFields;
 		
@@ -766,7 +355,7 @@ public class ReportFactoryFields {
 				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("category"));
 				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("type"));
 				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("department"));
-				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("state"));
+				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("moduleState"));
 				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("unitPrice"));
 				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("purchasedDate"));
 				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("retireDate"));
@@ -812,26 +401,10 @@ public class ReportFactoryFields {
 			fields = getAlarmReportFields();
 			break;
 		}
-//		case "item":{
-//			fields = getitemReportFields();
-//			break;
-//		}
-//		case "tool":{
-//			fields = gettoolReportFields();
-//			break;
-//		}
 		case "assetbreakdown":{
 			fields = getassetDownTimeReportFields();
 			break;
 		}
-//		case "itemtransactions":{
-//			fields = getitemTransactionsReportFields();
-//			break;
-//		}
-//		case "tooltransactions":{
-//			fields = gettoolTransactionsReportFields();
-//			break;
-//		}
 		default:{
 			fields = getDefaultReportFields(moduleName);
 			break;
