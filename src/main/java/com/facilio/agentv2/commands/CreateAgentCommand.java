@@ -77,7 +77,7 @@ public class CreateAgentCommand extends AgentV2Command {
             long orgId = Objects.requireNonNull(currentOrg.getOrgId());
             Map<String, Object> orgInfo = CommonCommandUtil.getOrgInfo(orgId, certFileId);
             if (orgInfo == null || orgInfo.isEmpty()) {
-                DownloadCertFile.addCert(orgMessageTopic, "facilio");
+                DownloadCertFile.addCert(orgMessageTopic, "facilio", agent);
             }
             AwsUtil.addClientToPolicy(agent.getName(), orgMessageTopic, "facilio");
         }catch (Exception e){
