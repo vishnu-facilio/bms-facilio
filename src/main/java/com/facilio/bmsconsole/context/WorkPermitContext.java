@@ -3,7 +3,7 @@ package com.facilio.bmsconsole.context;
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeContext;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class WorkPermitContext extends ModuleBaseWithCustomFields{
@@ -61,11 +61,11 @@ public class WorkPermitContext extends ModuleBaseWithCustomFields{
 		return workType;
 	}
 
-	public static enum WorkType implements FacilioEnum {
+	public static enum WorkType implements FacilioIntEnum {
 		HOT_WORK_PERMIT("Hot Work Permit"), COLD_WORK_PERMIT("Cold Work Permit"), EXCAVATION_WORK_PERMIT("Excavation Work Permit"), CONFINED_SPACE_WORK_PERMIT("Confined Space Work Permit"), EARTHMOVING_EQUIPMENT_VEHICULAR_WORK_PERMIT("EarthMoving Equipment/Vehicular Work Permit");
 
 		@Override
-		public int getIndex() {
+		public Integer getIndex() {
 			return ordinal() + 1;
 		}
 		
@@ -241,11 +241,11 @@ public class WorkPermitContext extends ModuleBaseWithCustomFields{
 		this.space = space;
 	}
 
-	public static enum PermitType implements FacilioEnum {
+	public static enum PermitType implements FacilioIntEnum {
 		VENDOR("Vendor"), USER("User");
 
 		@Override
-		public int getIndex() {
+		public Integer getIndex() {
 			return ordinal() + 1;
 		}
 		

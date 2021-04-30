@@ -1,6 +1,6 @@
 package com.facilio.bmsconsoleV3.context;
 
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -23,7 +23,7 @@ public class EmailConversationThreadingContext extends BaseMailMessageContext {
 	From_Type fromType;
 	Message_Type messageType;
 	
-	public enum From_Type implements FacilioEnum<From_Type>{
+	public enum From_Type implements FacilioIntEnum {
 		CLIENT,
 		ADMIN
 		;
@@ -36,7 +36,7 @@ public class EmailConversationThreadingContext extends BaseMailMessageContext {
 		}
 	}
 	
-	public enum Message_Type implements FacilioEnum<Message_Type>{
+	public enum Message_Type implements FacilioIntEnum {
 		REPLY,
 		PUBLIC_NOTE,
 		PRIVATE_NOTE

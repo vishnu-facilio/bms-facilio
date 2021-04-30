@@ -1,7 +1,7 @@
 package com.facilio.bmsconsoleV3.context.facilitybooking;
 
 import com.facilio.bmsconsoleV3.util.BudgetAPI;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
 
 import java.text.DecimalFormat;
@@ -34,7 +34,7 @@ public class FacilitySpecialAvailabilityContext extends V3Context {
         return null;
     }
 
-    public static enum SpecialType implements FacilioEnum {
+    public static enum SpecialType implements FacilioIntEnum {
         SPECIAL_COST("Special Cost"),
         SPECIAL_AVAILABILITY("Special Availability"),
         SPECIAL_UNAVAILABILITY("Special Unavailability");
@@ -53,7 +53,7 @@ public class FacilitySpecialAvailabilityContext extends V3Context {
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

@@ -4,10 +4,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.ContactsContext;
 import com.facilio.bmsconsole.context.InsuranceContext;
 import com.facilio.bmsconsole.context.LocationContext;
-import com.facilio.bmsconsole.context.VendorContext;
-import com.facilio.bmsconsoleV3.context.facilitybooking.V3ExternalAttendeeContext;
-import com.facilio.modules.FacilioEnum;
-import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
 
 import java.util.List;
@@ -124,11 +121,11 @@ public class V3VendorContext extends V3Context {
         return vendorSource;
     }
 
-    public static enum VendorSource implements FacilioEnum {
+    public static enum VendorSource implements FacilioIntEnum {
         TENANT, SELF;
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

@@ -5,7 +5,7 @@ import java.util.Collections;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FieldUtil;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.util.FacilioUtil;
@@ -30,12 +30,12 @@ public class ControlScheduleExceptionContext extends V3Context {
 	
 	ControlScheduleContext schedule;		// only for client use case dont use it in code
 	
-	public static enum Type implements FacilioEnum {
+	public static enum Type implements FacilioIntEnum {
         RECURING, 
         ONETIME;
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

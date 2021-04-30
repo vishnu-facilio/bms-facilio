@@ -2,11 +2,8 @@ package com.facilio.bmsconsoleV3.context.budget;
 
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsoleV3.util.BudgetAPI;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
-import com.google.gson.JsonObject;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -18,7 +15,7 @@ public class BudgetAmountContext extends V3Context {
     private ChartOfAccountContext account;
     private Double yearlyAmount;
 
-    public enum AmountType implements FacilioEnum {
+    public enum AmountType implements FacilioIntEnum {
         INCOME("Income"),
         EXPENSE("Expense")
         ;
@@ -36,7 +33,7 @@ public class BudgetAmountContext extends V3Context {
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

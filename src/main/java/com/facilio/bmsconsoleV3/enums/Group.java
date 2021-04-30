@@ -1,8 +1,8 @@
 package com.facilio.bmsconsoleV3.enums;
 
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 
-public enum Group implements FacilioEnum {
+public enum Group implements FacilioIntEnum {
     ASSET("Asset"),
     LIABILITY("Liability"),
     EQUITY("Equity"),
@@ -23,7 +23,7 @@ public enum Group implements FacilioEnum {
     }
 
     @Override
-    public int getIndex() {
+    public Integer getIndex() {
         return ordinal() + 1;
     }
 

@@ -1,6 +1,6 @@
 package com.facilio.bmsconsoleV3.context.facilitybooking;
 
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
 
 public class BookingPaymentContext extends V3Context {
@@ -12,11 +12,11 @@ public class BookingPaymentContext extends V3Context {
     private BookingPaymentContext.PaymentStatus paymentStatus;
 
 
-    public static enum PaymentMode implements FacilioEnum {
+    public static enum PaymentMode implements FacilioIntEnum {
         CASH, CARD, OTHERS;
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 
@@ -33,11 +33,11 @@ public class BookingPaymentContext extends V3Context {
         }
     }
 
-    public static enum PaymentStatus implements FacilioEnum {
+    public static enum PaymentStatus implements FacilioIntEnum {
         DUE, PAID, CANCELLED, OTHERS;
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

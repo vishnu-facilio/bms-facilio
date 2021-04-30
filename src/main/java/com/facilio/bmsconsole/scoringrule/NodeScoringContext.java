@@ -222,7 +222,7 @@ public class NodeScoringContext extends BaseScoringContext {
         return 0;
     }
 
-    public enum NodeType implements FacilioEnum {
+    public enum NodeType implements FacilioIntEnum {
 //        PARENT_MODULE("Parent Module"),
         SUB_MODULE("Sub Module"),
         CURRENT_MODULE("Current Module")
@@ -235,7 +235,7 @@ public class NodeScoringContext extends BaseScoringContext {
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

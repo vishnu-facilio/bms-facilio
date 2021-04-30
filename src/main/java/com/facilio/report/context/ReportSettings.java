@@ -2,7 +2,7 @@ package com.facilio.report.context;
 
 import org.apache.struts2.json.annotations.JSON;
 
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ReportSettings  {
@@ -70,7 +70,7 @@ public class ReportSettings  {
 
 	
 
-	public static enum ClickAction implements FacilioEnum {
+	public static enum ClickAction implements FacilioIntEnum {
 		NONE("None"), LIST("List"),DRILLDOWN("Drilldown");
 
 		public static ClickAction valueOf(int value) {
@@ -87,7 +87,7 @@ public class ReportSettings  {
 		}
 
 		@Override
-		public int getIndex() {
+		public Integer getIndex() {
 			return ordinal() + 1;
 		}
 

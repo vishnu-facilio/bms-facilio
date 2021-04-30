@@ -10,7 +10,7 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.qa.context.ResponseContext;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -64,7 +64,7 @@ public class InspectionResponseContext extends ResponseContext <InspectionTempla
 		this.sourceType = type == null ? null : SourceType.typeMap.get(type);
 	}
     
-    public static enum SourceType implements FacilioEnum<SourceType>  {
+    public static enum SourceType implements FacilioIntEnum {
 		
 		PLANNED,
 		MANNUAL,
@@ -84,7 +84,7 @@ public class InspectionResponseContext extends ResponseContext <InspectionTempla
 		}
 	}
     
-    public enum Status implements FacilioEnum<Status> {
+    public enum Status implements FacilioIntEnum {
 		PRE_OPEN,
 		OPEN,
 		;

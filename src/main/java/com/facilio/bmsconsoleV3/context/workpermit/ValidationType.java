@@ -1,8 +1,8 @@
 package com.facilio.bmsconsoleV3.context.workpermit;
 
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 
-public enum ValidationType implements FacilioEnum {
+public enum ValidationType implements FacilioIntEnum {
     PRE("Pre"),
     POST("Post");
     private String name;
@@ -19,7 +19,7 @@ public enum ValidationType implements FacilioEnum {
     }
 
     @Override
-    public int getIndex() {
+    public Integer getIndex() {
         return ordinal() + 1;
     }
 

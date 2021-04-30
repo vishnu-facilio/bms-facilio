@@ -6,7 +6,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.facilio.accounts.dto.User;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -306,7 +306,7 @@ public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 		return false;
 	}
 
-	public enum Type implements FacilioEnum {
+	public enum Type implements FacilioIntEnum {
 		NORMAL,
 		ANOMALY,
 		READING,
@@ -322,7 +322,7 @@ public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 		MULTIVARIATE_ANOMALY,
 		;
 
-		public int getIndex() {
+		public Integer getIndex() {
 			return ordinal() + 1;
 		}
 

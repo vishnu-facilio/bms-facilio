@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.scoringrule;
 
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -136,7 +136,7 @@ public class BaseScoringContext implements Serializable {
 
     public void afterSave(ScoringRuleContext rule) throws Exception {}
 
-    public enum Type implements FacilioEnum {
+    public enum Type implements FacilioIntEnum {
         CONDITIONED("Conditioned"),
         NODE("Node");
 
@@ -146,7 +146,7 @@ public class BaseScoringContext implements Serializable {
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

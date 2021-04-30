@@ -4,7 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
@@ -144,7 +144,7 @@ public class BaseRelationContext {
         throw new MethodNotSupportedException("Base class should override this method");
     }
 
-    public enum Type implements FacilioEnum {
+    public enum Type implements FacilioIntEnum {
         DELTA("Delta"),
         TIME_DELTA("Time Delta"),
         ;
@@ -156,7 +156,7 @@ public class BaseRelationContext {
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

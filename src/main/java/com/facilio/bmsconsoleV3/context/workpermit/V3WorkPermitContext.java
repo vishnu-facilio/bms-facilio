@@ -4,12 +4,11 @@ import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BusinessHoursContext;
 import com.facilio.bmsconsole.context.ContactsContext;
-import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.context.V3TenantContext;
 import com.facilio.bmsconsoleV3.context.V3TicketContext;
 import com.facilio.bmsconsoleV3.context.V3VendorContext;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
 
 import java.util.List;
@@ -267,12 +266,12 @@ public class V3WorkPermitContext extends V3Context {
         this.space = space;
     }
 
-    public static enum PermitType implements FacilioEnum {
+    public static enum PermitType implements FacilioIntEnum {
         VENDOR("Vendor"),
         USER("User");
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 
@@ -297,12 +296,12 @@ public class V3WorkPermitContext extends V3Context {
     }
 
     // TODO @Aashiq Remove Work Type
-    public static enum WorkType implements FacilioEnum {
+    public static enum WorkType implements FacilioIntEnum {
         HOT_WORK_PERMIT("Hot Work Permit"), COLD_WORK_PERMIT("Cold Work Permit"), EXCAVATION_WORK_PERMIT("Excavation Work Permit"), CONFINED_SPACE_WORK_PERMIT("Confined Space Work Permit"), EARTHMOVING_EQUIPMENT_VEHICULAR_WORK_PERMIT("EarthMoving Equipment/Vehicular Work Permit");
 
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

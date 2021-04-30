@@ -1,6 +1,6 @@
 package com.facilio.qa.context;
 
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.util.FacilioEnumClassTypeIdResolverBase;
 import com.facilio.v3.context.V3Context;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -56,7 +56,7 @@ public abstract class ResponseContext <T extends QAndATemplateContext> extends V
     public abstract T getParent();
     public abstract void setParent(T template);
 
-    public enum ResponseStatus implements FacilioEnum<ResponseStatus> {
+    public enum ResponseStatus implements FacilioIntEnum {
         DISABLED,
         NOT_ANSWERED,
         PARTIALLY_ANSWERED,
@@ -72,6 +72,12 @@ public abstract class ResponseContext <T extends QAndATemplateContext> extends V
     }
 
     public static class QAndATypeIdResolver extends FacilioEnumClassTypeIdResolverBase<ResponseContext> {
+
+        @Override
+        protected Class<? extends ResponseContext> getDefaultClassOnException() {
+            return DummyResponseContext.class;
+        }
+
         @Override
         protected Class<? extends ResponseContext> getSubClass(String index) {
             QAndAType typeEnum = QAndAType.valueOf(Integer.parseInt(index));

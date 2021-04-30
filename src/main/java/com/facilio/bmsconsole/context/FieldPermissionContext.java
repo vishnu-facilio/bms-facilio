@@ -2,7 +2,7 @@ package com.facilio.bmsconsole.context;
 
 import java.io.Serializable;
 
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 
 public class FieldPermissionContext implements Serializable{
 
@@ -21,11 +21,11 @@ public class FieldPermissionContext implements Serializable{
 	private CheckType checkType;
 	
 	
-	public static enum PermissionType implements FacilioEnum {
+	public static enum PermissionType implements FacilioIntEnum {
 		READ_WRITE, READ_ONLY, DO_NOT_SHOW;
 
 		@Override
-		public int getIndex() {
+		public Integer getIndex() {
 			return ordinal() + 1;
 		}
 
@@ -95,11 +95,11 @@ public class FieldPermissionContext implements Serializable{
 		this.subModuleId = subModuleId;
 	}
 	
-	public static enum CheckType implements FacilioEnum {
+	public static enum CheckType implements FacilioIntEnum {
 		FIELD, MODULE;
 
 		@Override
-		public int getIndex() {
+		public Integer getIndex() {
 			return ordinal() + 1;
 		}
 

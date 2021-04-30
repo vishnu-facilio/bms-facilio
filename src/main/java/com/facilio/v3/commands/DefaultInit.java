@@ -31,6 +31,7 @@ public class DefaultInit extends FacilioCommand {
         Long id = (Long) context.get(Constants.RECORD_ID);
 
         String moduleName = Constants.getModuleName(context);
+        System.out.println(((JSONObject) data).toJSONString());
         ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromMap(data, beanClass);;
         setFormData(context, data, moduleName, moduleRecord);
 

@@ -39,7 +39,7 @@ public class FilterFieldContext {
         this.lookupFilters = lookupFilters;
 
         if (field instanceof BaseEnumField) {
-            List<EnumFieldValue> values = ((BaseEnumField) field).getValues();
+            List<EnumFieldValue<Integer>> values = ((BaseEnumField) field).getValues();
             if (CollectionUtils.isNotEmpty(values)) {
                 options = new ArrayList<>();
                 for (EnumFieldValue value : values) {

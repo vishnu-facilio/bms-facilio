@@ -9,7 +9,7 @@ import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONObject;
 
 import com.facilio.db.criteria.Criteria;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -65,7 +65,7 @@ public Map<Long, FacilioField> getCascadingFilters() {
 //	public void setModuleId(long moduleId) {
 //		this.moduleId = moduleId;
 //	}
-	public static enum ComponentType implements FacilioEnum {
+	public static enum ComponentType implements FacilioIntEnum {
 		 SINGLE_SELECT("Select option"),MULTI_SELECT("Multiple options");
 
 		public static ComponentType valueOf(int value) {
@@ -83,7 +83,7 @@ public Map<Long, FacilioField> getCascadingFilters() {
 		}
 
 		@Override
-		public int getIndex() {
+		public Integer getIndex() {
 			return ordinal() + 1;
 		}
 
@@ -129,7 +129,7 @@ public Map<Long, FacilioField> getCascadingFilters() {
 		}
 
 	}
-	public static enum OptionType implements FacilioEnum {
+	public static enum OptionType implements FacilioIntEnum {
 		ALL("All"), SOME("Some");
 
 		public static OptionType valueOf(int value) {
@@ -146,7 +146,7 @@ public Map<Long, FacilioField> getCascadingFilters() {
 		}
 
 		@Override
-		public int getIndex() {
+		public Integer getIndex() {
 			return ordinal() + 1;
 		}
 

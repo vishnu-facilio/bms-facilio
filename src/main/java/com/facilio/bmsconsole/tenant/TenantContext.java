@@ -1,7 +1,7 @@
 package com.facilio.bmsconsole.tenant;
 
 import com.facilio.bmsconsole.context.*;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 import java.io.File;
@@ -241,11 +241,11 @@ public class TenantContext extends ModuleBaseWithCustomFields {
 //		this.tenantType = tenantType;
 //	}
 
-	public static enum TenantType implements FacilioEnum {
+	public static enum TenantType implements FacilioIntEnum {
 		COMMERCIAL, RESIDENTIAL;
 
 		@Override
-		public int getIndex() {
+		public Integer getIndex() {
 			return ordinal() + 1;
 		}
 

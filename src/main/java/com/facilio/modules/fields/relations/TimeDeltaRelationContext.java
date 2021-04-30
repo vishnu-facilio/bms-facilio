@@ -2,7 +2,7 @@ package com.facilio.modules.fields.relations;
 
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FieldType;
 
 public class TimeDeltaRelationContext extends BaseRelationContext {
@@ -44,7 +44,7 @@ public class TimeDeltaRelationContext extends BaseRelationContext {
         validateType(getDerivedField(), FieldType.DECIMAL, FieldType.NUMBER);
     }
 
-    public enum TimeDeltaUnit implements FacilioEnum {
+    public enum TimeDeltaUnit implements FacilioIntEnum {
         SECONDS("Seconds"),
         MILLI("Milli-seconds");
 
@@ -55,7 +55,7 @@ public class TimeDeltaRelationContext extends BaseRelationContext {
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

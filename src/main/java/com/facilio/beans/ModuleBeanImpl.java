@@ -17,7 +17,6 @@ import com.facilio.modules.*;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.*;
 import com.facilio.util.FacilioUtil;
-import com.facilio.wms.message.Message;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -1226,15 +1225,15 @@ public class ModuleBeanImpl implements ModuleBean {
 		return field.getValues().size();
 	}
 
-	private void addEnumValues(EnumField field, List<EnumFieldValue> values, int startingIndex) throws Exception {
+	private void addEnumValues(EnumField field, List<EnumFieldValue<Integer>> values, int startingIndex) throws Exception {
 		FacilioModule module = ModuleFactory.getEnumFieldValuesModule();
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(module.getTableName())
 				.fields(FieldFactory.getEnumFieldValuesFields());
 		int i = 1;
-		for (EnumFieldValue enumVal : values) {
+		for (EnumFieldValue<Integer> enumVal : values) {
 			enumVal.setFieldId(field.getFieldId());
-			if (enumVal.getIndex() == -1) {
+			if (enumVal.getIndex() == null) {
 				enumVal.setIndex(startingIndex++);
 			}
 			if (enumVal.getSequence() == -1) {
@@ -1279,11 +1278,11 @@ public class ModuleBeanImpl implements ModuleBean {
 		if (CollectionUtils.isEmpty(field.getValues())) {
 			return 0;
 		}
-		List<EnumFieldValue> enumsToBeAdded = new ArrayList<>();
-		List<EnumFieldValue> enumsToBeUpdated = new ArrayList<>();
+		List<EnumFieldValue<Integer>> enumsToBeAdded = new ArrayList<>();
+		List<EnumFieldValue<Integer>> enumsToBeUpdated = new ArrayList<>();
 		int i = 1;
 		int maxIndex = 1;
-		for (EnumFieldValue enumVal : field.getValues()) {
+		for (EnumFieldValue<Integer> enumVal : field.getValues()) {
 			if (enumVal.getIndex() != -1 && enumVal.getIndex() > maxIndex) {
 				maxIndex = enumVal.getIndex();
 			}
@@ -1296,8 +1295,8 @@ public class ModuleBeanImpl implements ModuleBean {
 			}
 		}
 		if (!enumsToBeUpdated.isEmpty()) {
-			enumsToBeUpdated.sort(Comparator.comparingInt(EnumFieldValue::getSequence).reversed());
-			for(EnumFieldValue enumVal: enumsToBeUpdated) {
+			enumsToBeUpdated.sort(Comparator.<EnumFieldValue<Integer>>comparingInt(EnumFieldValue::getSequence).reversed());
+			for(EnumFieldValue<Integer> enumVal: enumsToBeUpdated) {
 				updateEnumVal(enumVal);
 			}
 		}

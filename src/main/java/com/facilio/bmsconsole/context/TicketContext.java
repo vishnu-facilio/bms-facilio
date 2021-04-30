@@ -4,7 +4,7 @@ import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.time.DateTimeUtil;
@@ -435,7 +435,7 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		return this.attachments;
 	}
 	
-	public static enum SourceType implements FacilioEnum<SourceType>  {
+	public static enum SourceType implements FacilioIntEnum {
 		
 		WEB_ORDER(1, "Web Work Order"),
 		EMAIL_REQUEST(2, "E Mail Request"),
@@ -461,7 +461,7 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		}
 
 		@Override
-		public int getIndex() {
+		public Integer getIndex() {
 			return intVal;
 		}
 

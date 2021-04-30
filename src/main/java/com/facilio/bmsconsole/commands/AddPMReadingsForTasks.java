@@ -178,7 +178,7 @@ public class AddPMReadingsForTasks extends FacilioCommand {
 		boolean fieldNameChanged = false;
 		if (task.getInputTypeEnum() != null && task.getInputTypeEnum() == InputType.RADIO && task.getOptions() != null && field instanceof EnumField) {
 			EnumField enumField = (EnumField) field;
-			List<EnumFieldValue> enumValues = new ArrayList<>(); 
+			List<EnumFieldValue<Integer>> enumValues = new ArrayList<>();
 			int existingLength = enumField.getValues().size();
 			boolean valuesChanged = false;
 			for(int i = 0; i < task.getOptions().size(); i++) {

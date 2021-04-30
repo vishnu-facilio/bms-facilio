@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 
 import java.io.Serializable;
 import java.util.List;
@@ -37,7 +37,7 @@ public class ApplicationLayoutContext implements Serializable {
         this.applicationId = applicationId;
     }
 
-    public enum AppLayoutType implements FacilioEnum {
+    public enum AppLayoutType implements FacilioIntEnum {
         SINGLE("Single"),
         DUAL("Dual");
 
@@ -56,7 +56,7 @@ public class ApplicationLayoutContext implements Serializable {
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 
@@ -91,7 +91,7 @@ public class ApplicationLayoutContext implements Serializable {
 
 
 
-    public enum LayoutDeviceType implements FacilioEnum {
+    public enum LayoutDeviceType implements FacilioIntEnum {
         WEB("Web"),
         MOBILE("Mobile");
 
@@ -110,7 +110,7 @@ public class ApplicationLayoutContext implements Serializable {
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

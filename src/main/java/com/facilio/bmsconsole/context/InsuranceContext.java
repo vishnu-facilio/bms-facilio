@@ -3,7 +3,7 @@ package com.facilio.bmsconsole.context;
 import java.io.File;
 
 import com.facilio.accounts.dto.User;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class InsuranceContext extends ModuleBaseWithCustomFields{
@@ -56,11 +56,11 @@ public class InsuranceContext extends ModuleBaseWithCustomFields{
 		this.insuranceType = insuranceType;
 	}
 
-	public static enum InsuranceType implements FacilioEnum {
+	public static enum InsuranceType implements FacilioIntEnum {
 		TENANT, VENDOR;
 
 		@Override
-		public int getIndex() {
+		public Integer getIndex() {
 			return ordinal() + 1;
 		}
 

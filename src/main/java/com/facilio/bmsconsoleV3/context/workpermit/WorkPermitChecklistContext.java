@@ -1,6 +1,6 @@
 package com.facilio.bmsconsoleV3.context.workpermit;
 
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
 
 public class WorkPermitChecklistContext extends V3Context {
@@ -82,7 +82,7 @@ public class WorkPermitChecklistContext extends V3Context {
     }
 
 
-    public enum Required implements FacilioEnum {
+    public enum Required implements FacilioIntEnum {
         YES("Yes"),
         NO("No"),
         NA("N/A");
@@ -100,7 +100,7 @@ public class WorkPermitChecklistContext extends V3Context {
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

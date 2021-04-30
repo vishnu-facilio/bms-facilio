@@ -1,9 +1,7 @@
 package com.facilio.bmsconsoleV3.context;
 
 import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.PeopleContext;
-import com.facilio.modules.FacilioEnum;
-import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
 
 public class V3PeopleContext extends V3Context {
@@ -48,11 +46,11 @@ public class V3PeopleContext extends V3Context {
         return peopleType;
     }
 
-    public static enum PeopleType implements FacilioEnum {
+    public static enum PeopleType implements FacilioIntEnum {
         TENANT_CONTACT, VENDOR_CONTACT, EMPLOYEE, CLIENT_CONTACT, OCCUPANT, DEFAULT, OTHERS;
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

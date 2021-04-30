@@ -1,8 +1,7 @@
 package com.facilio.bmsconsoleV3.context;
 
 import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsoleV3.context.communityfeatures.AudienceContext;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
 
 public class CommunitySharingInfoContext extends V3Context {
@@ -10,7 +9,7 @@ public class CommunitySharingInfoContext extends V3Context {
     private SharingType sharingType;
 
 
-    public enum SharingType implements FacilioEnum {
+    public enum SharingType implements FacilioIntEnum {
         BUILDING("Building"),
         SITE("Site"),
         ALL_SITES("All Sites")
@@ -30,7 +29,7 @@ public class CommunitySharingInfoContext extends V3Context {
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

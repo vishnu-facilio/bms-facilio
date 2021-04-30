@@ -311,7 +311,7 @@ public abstract class AbstractStateTransitionRuleContext extends ApproverWorkflo
         return super.evaluateMisc(moduleName, record, placeHolders, context);
     }
 
-    public enum DialogType implements FacilioEnum {
+    public enum DialogType implements FacilioIntEnum {
         MODULE ("Module"),
         SUB_MODULE ("Sub Module")
         ;
@@ -323,7 +323,7 @@ public abstract class AbstractStateTransitionRuleContext extends ApproverWorkflo
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

@@ -1,7 +1,7 @@
 package com.facilio.bmsconsoleV3.context;
 
 import com.facilio.bmsconsoleV3.context.floorplan.V3DeskContext;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
 
 public class V3MovesContext extends V3Context{
@@ -25,11 +25,11 @@ public class V3MovesContext extends V3Context{
 		this.moveType = moveType;
 	}
 
-	public static enum MoveType implements FacilioEnum {
+	public static enum MoveType implements FacilioIntEnum {
 		INSTANT, SCHEDULED;
 
 		@Override
-		public int getIndex() {
+		public Integer getIndex() {
 			return ordinal() + 1;
 		}
 

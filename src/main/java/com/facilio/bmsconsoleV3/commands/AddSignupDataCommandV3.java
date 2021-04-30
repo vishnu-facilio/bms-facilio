@@ -2,7 +2,7 @@ package com.facilio.bmsconsoleV3.commands;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
@@ -21,7 +21,7 @@ public class AddSignupDataCommandV3 extends FacilioCommand {
     private static List<SignUpData> initSignUpChain() {
         Yaml yaml = new Yaml();
         Map<String, Object> json = null;
-        try(InputStream inputStream = FacilioEnum.class.getClassLoader().getResourceAsStream(DEFAULT_SIGNUP_CONF_PATH);) {
+        try(InputStream inputStream = FacilioIntEnum.class.getClassLoader().getResourceAsStream(DEFAULT_SIGNUP_CONF_PATH);) {
             json = yaml.load(inputStream);
         }
         catch (Exception e) {

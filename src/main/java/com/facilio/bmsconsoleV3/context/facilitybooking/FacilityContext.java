@@ -1,11 +1,9 @@
 package com.facilio.bmsconsoleV3.context.facilitybooking;
 
-import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.context.V3PhotosContext;
-import com.facilio.bmsconsoleV3.enums.Group;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
 
 import java.util.List;
@@ -36,7 +34,7 @@ public class FacilityContext extends V3Context {
         return facilityType;
     }
 
-    public static enum FacilityType implements FacilioEnum {
+    public static enum FacilityType implements FacilioIntEnum {
         ASSET("Asset"),
         SPACE("Space"),
         OTHERS("Others");
@@ -55,7 +53,7 @@ public class FacilityContext extends V3Context {
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

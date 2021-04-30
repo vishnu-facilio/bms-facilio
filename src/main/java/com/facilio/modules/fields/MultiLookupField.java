@@ -5,7 +5,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
@@ -119,13 +119,13 @@ public class MultiLookupField extends BaseLookupField implements SupplementRecor
         return new MultiLookupCRUDHandler(this);
     }
 
-    public static enum ParentFieldPosition implements FacilioEnum {
+    public static enum ParentFieldPosition implements FacilioIntEnum {
         LEFT,
         RIGHT
         ;
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal()+1;
         }
 

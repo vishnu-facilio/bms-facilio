@@ -3,9 +3,8 @@ package com.facilio.bmsconsole.context;
 import java.util.List;
 
 import com.facilio.accounts.dto.User;
-import com.facilio.bmsconsole.context.VisitorInviteContext.InviteSource;
 import com.facilio.bmsconsole.tenant.TenantContext;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class VendorContext extends ModuleBaseWithCustomFields {
@@ -121,11 +120,11 @@ public class VendorContext extends ModuleBaseWithCustomFields {
 		this.vendorSource = vendorSource;
 	}
 
-	public static enum VendorSource implements FacilioEnum {
+	public static enum VendorSource implements FacilioIntEnum {
 		TENANT, SELF;
 
 		@Override
-		public int getIndex() {
+		public Integer getIndex() {
 			return ordinal() + 1;
 		}
 

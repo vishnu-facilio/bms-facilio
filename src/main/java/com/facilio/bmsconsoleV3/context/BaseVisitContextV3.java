@@ -4,10 +4,9 @@ import java.io.File;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.context.VisitorTypeContext;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
 
 public class BaseVisitContextV3 extends V3Context {
@@ -195,11 +194,11 @@ public class BaseVisitContextV3 extends V3Context {
         return source;
     }
     
-    public static enum Source implements FacilioEnum {
+    public static enum Source implements FacilioIntEnum {
         WORKORDER, PURCHASE_ORDER, TENANT, MANUAL;
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 
@@ -339,12 +338,12 @@ public class BaseVisitContextV3 extends V3Context {
 		}
 	}
 	
-	public enum ChildVisitType implements FacilioEnum{	
+	public enum ChildVisitType implements FacilioIntEnum {
 		INVITE,
 		VISIT,	
 		;
 		
-		public int getIndex() {
+		public Integer getIndex() {
 			return ordinal()+1;
 		}
 		

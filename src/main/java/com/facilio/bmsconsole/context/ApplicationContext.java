@@ -1,12 +1,9 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.accounts.dto.AppDomain;
-import com.facilio.modules.FacilioEnum;
-import com.facilio.util.FacilioUtil;
-import org.apache.commons.lang3.StringUtils;
+import com.facilio.modules.FacilioIntEnum;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import java.io.Serializable;
 import java.util.List;
@@ -127,7 +124,7 @@ public class ApplicationContext implements Serializable{
             this.layoutType = type;
         }
     */
-	public enum AppLayoutType implements FacilioEnum{
+	public enum AppLayoutType implements FacilioIntEnum {
 		SINGLE("Single"),
 		DUAL("Dual");
 
@@ -146,7 +143,7 @@ public class ApplicationContext implements Serializable{
 		}
 
 		@Override
-		public int getIndex() {
+		public Integer getIndex() {
 			return ordinal() + 1;
 		}
 
@@ -202,7 +199,7 @@ public class ApplicationContext implements Serializable{
 		this.layouts = layouts;
 	}
 
-	public static enum AppCategory implements FacilioEnum {
+	public static enum AppCategory implements FacilioIntEnum {
 		PORTALS,
 		WORK_CENTERS,
 		FEATURE_GROUPING;
@@ -210,7 +207,7 @@ public class ApplicationContext implements Serializable{
 		private AppCategory() {
 		}
 
-		public int getIndex() {
+		public Integer getIndex() {
 			return this.ordinal() + 1;
 		}
 

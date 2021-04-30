@@ -7,7 +7,7 @@ import org.apache.struts2.json.annotations.JSON;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.events.commands.NewEventsToAlarmsConversionCommand;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.time.DateTimeUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -231,7 +231,7 @@ public class BaseAlarmContext extends ModuleBaseWithCustomFields {
 		return posList;
 	}
 
-	public static enum Type implements FacilioEnum {
+	public static enum Type implements FacilioIntEnum {
 		READING_ALARM,
 		ML_ANOMALY_ALARM,
 		RCA_ALARM,
@@ -248,7 +248,7 @@ public class BaseAlarmContext extends ModuleBaseWithCustomFields {
 		SENSOR_ROLLUP_ALARM,
 		MULTIVARIATE_ANOMALY_ALARM,
 		;
-		public int getIndex() {
+		public Integer getIndex() {
 			return ordinal() + 1;
 		}
 

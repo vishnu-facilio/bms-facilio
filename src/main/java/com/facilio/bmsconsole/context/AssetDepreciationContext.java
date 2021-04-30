@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.context.V3Context;
 
@@ -141,7 +141,7 @@ public class AssetDepreciationContext extends V3Context {
 
     }
 
-    public enum DepreciationType implements FacilioEnum {
+    public enum DepreciationType implements FacilioIntEnum {
         SINGLE {
             @Override
             public float nextDepreciatedUnitPrice(float totalDepreciationAmount, Integer frequency, float currentPrice) {
@@ -175,7 +175,7 @@ public class AssetDepreciationContext extends V3Context {
         public abstract float nextDepreciatedUnitPrice(float totalDepreciationAmount, Integer frequency, float currentPrice);
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 
@@ -185,7 +185,7 @@ public class AssetDepreciationContext extends V3Context {
         }
     }
 
-    public enum FrequencyType implements FacilioEnum {
+    public enum FrequencyType implements FacilioIntEnum {
         MONTHLY,
         QUARTERLY,
         HALF_YEARLY,
@@ -200,7 +200,7 @@ public class AssetDepreciationContext extends V3Context {
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

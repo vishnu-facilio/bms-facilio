@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.SpaceContext;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class ReservationContext extends ModuleBaseWithCustomFields {
@@ -136,7 +136,7 @@ public class ReservationContext extends ModuleBaseWithCustomFields {
         this.externalAttendees = externalAttendees;
     }
 
-    public static enum DurationType implements FacilioEnum {
+    public static enum DurationType implements FacilioIntEnum {
         HALF_AN_HOUR ("30 Minutes"),
         ONE_HOUR("1 Hour"),
         ONE_AND_HALF_HOUR("90 Minutes"),
@@ -151,7 +151,7 @@ public class ReservationContext extends ModuleBaseWithCustomFields {
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 
@@ -168,7 +168,7 @@ public class ReservationContext extends ModuleBaseWithCustomFields {
         }
     }
 
-    public static enum ReservationStatus implements FacilioEnum {
+    public static enum ReservationStatus implements FacilioIntEnum {
         SCHEDULED ("Scheduled"),
         ON_GOING ("On Going"),
         FINISHED ("Finished"),
@@ -181,7 +181,7 @@ public class ReservationContext extends ModuleBaseWithCustomFields {
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

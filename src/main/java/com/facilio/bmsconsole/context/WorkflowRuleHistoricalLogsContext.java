@@ -4,9 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.bmsconsole.enums.RuleJobType;
-import com.facilio.modules.FacilioEnum;
 
 
 public class WorkflowRuleHistoricalLogsContext {

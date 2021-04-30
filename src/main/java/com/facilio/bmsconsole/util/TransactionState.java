@@ -1,7 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import com.facilio.modules.FacilioEnum;
-
 public enum TransactionState{
 	ADDITION,
 	ISSUE,

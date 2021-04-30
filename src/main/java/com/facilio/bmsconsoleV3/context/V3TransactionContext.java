@@ -2,7 +2,7 @@ package com.facilio.bmsconsoleV3.context;
 
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsoleV3.context.budget.ChartOfAccountContext;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
 
 public class V3TransactionContext extends V3Context {
@@ -17,7 +17,7 @@ public class V3TransactionContext extends V3Context {
     private ChartOfAccountContext account;
     private TransactionTypes transactionType;
 
-    public enum TransactionTypes implements FacilioEnum {
+    public enum TransactionTypes implements FacilioIntEnum {
         CREDIT("Credit"),
         DEBIT("Debit")
         ;
@@ -35,7 +35,7 @@ public class V3TransactionContext extends V3Context {
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

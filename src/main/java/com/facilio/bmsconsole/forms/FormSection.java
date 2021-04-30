@@ -6,7 +6,7 @@ import java.util.List;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.util.FacilioUtil;
 
 public class FormSection {
@@ -163,7 +163,7 @@ public class FormSection {
 		this.numberOfSubFormRecords = numberOfSubFormRecords;
 	}
 
-	public enum SectionType implements FacilioEnum {
+	public enum SectionType implements FacilioIntEnum {
 		FIELDS("Fields"),
 		SUB_FORM("Sub Form"),
 		;
@@ -178,7 +178,7 @@ public class FormSection {
 		}
 
 		@Override
-		public int getIndex() {
+		public Integer getIndex() {
 			return ordinal() + 1;
 		}
 

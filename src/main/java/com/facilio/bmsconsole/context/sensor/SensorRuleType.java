@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.context.sensor;
 
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 
-public enum SensorRuleType implements FacilioEnum{
+public enum SensorRuleType implements FacilioIntEnum {
 	
 	CONTINUOUSLY_RECEIVING_SAME_VALUE("Same value received continuously for {timeInterval} hours",new ValidateContinuouslyReceivingSameValueInSensorRule(),false, false),
 	PERMISSIBLE_LIMIT_VIOLATION("Range is outside of {lowerLimit} and {upperLimit}",new ValidatePermissibleLimitViolationInSensorRule(), false, false, true),
@@ -12,7 +12,7 @@ public enum SensorRuleType implements FacilioEnum{
 	MEAN_VARIATION("Consumption is greater than {averageBoundPercentage}% compared to past {timeInterval} days",new ValidateMeanVariationInSensorRule(), true, true),
 	;
 	
-	public int getIndex() {
+	public Integer getIndex() {
 		return ordinal()+1;
 	}
 	

@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 
 public class DeviceContext extends AssetContext {
 	private static final long serialVersionUID = 1L;
@@ -123,7 +123,7 @@ public class DeviceContext extends AssetContext {
 	}
 
 	private long connectedTime;
-    public static enum DeviceType implements FacilioEnum {
+    public static enum DeviceType implements FacilioIntEnum {
         TV("Tv"),
         VISITOR_KIOSK("Visitor Kiosk"),
         DIGITAL_LOGBOOK("Digital Log Book"),
@@ -137,7 +137,7 @@ public class DeviceContext extends AssetContext {
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 
@@ -154,7 +154,7 @@ public class DeviceContext extends AssetContext {
         }
     }
     
-    public static enum KioskType implements FacilioEnum {
+    public static enum KioskType implements FacilioIntEnum {
         VISITOR("Visitor"),
         SERVICE_KIOSK("Service")
         ;
@@ -166,7 +166,7 @@ public class DeviceContext extends AssetContext {
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

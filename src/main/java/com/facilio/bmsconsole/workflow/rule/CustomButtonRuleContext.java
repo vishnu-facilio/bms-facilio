@@ -4,7 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.chain.FacilioContext;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
@@ -163,7 +163,7 @@ public class CustomButtonRuleContext extends ApproverWorkflowRuleContext impleme
         }
     }
 
-    public enum PositionType implements FacilioEnum {
+    public enum PositionType implements FacilioIntEnum {
         SUMMARY("Summary"),
         LIST_ITEM("List Item"),
         LIST_BAR("List Bar"),
@@ -184,7 +184,7 @@ public class CustomButtonRuleContext extends ApproverWorkflowRuleContext impleme
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 
@@ -194,7 +194,7 @@ public class CustomButtonRuleContext extends ApproverWorkflowRuleContext impleme
         }
     }
 
-    public enum ButtonType implements FacilioEnum {
+    public enum ButtonType implements FacilioIntEnum {
         ACTION("Action"),
         SHOW_WIDGET("Show Widget")
         ;
@@ -213,7 +213,7 @@ public class CustomButtonRuleContext extends ApproverWorkflowRuleContext impleme
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

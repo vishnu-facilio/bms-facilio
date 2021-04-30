@@ -3,7 +3,7 @@ package com.facilio.bmsconsole.context;
 import java.io.File;
 import java.io.Serializable;
 
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import org.apache.struts2.json.annotations.JSON;
 
 import com.facilio.bmsconsole.forms.FacilioForm;
@@ -168,7 +168,7 @@ public class ServiceCatalogContext implements Serializable, FormInterface {
         this.externalURL = externalURL;
     }
 
-    public enum Type implements FacilioEnum {
+    public enum Type implements FacilioIntEnum {
 	    MODULE_FORM("Module Form"),
         EXTERNAL_LINK("External Link");
 
@@ -179,7 +179,7 @@ public class ServiceCatalogContext implements Serializable, FormInterface {
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

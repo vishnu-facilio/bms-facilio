@@ -1,8 +1,6 @@
 package com.facilio.cb.util;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -11,14 +9,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.yaml.snakeyaml.Yaml;
 
-import com.facilio.bmsconsole.commands.PopulateDefaultConnectionsCommand;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.ConnectionContext;
-import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.modules.FacilioEnum;
-import com.facilio.modules.FieldUtil;
+import com.facilio.modules.FacilioIntEnum;
 
 public class ChatBotConstants {
 	
@@ -103,7 +94,7 @@ public class ChatBotConstants {
 	static {
 
 		Yaml yaml = new Yaml();
-        try(InputStream inputStream = FacilioEnum.class.getClassLoader().getResourceAsStream(DEFAULT_REPLIES);) {
+        try(InputStream inputStream = FacilioIntEnum.class.getClassLoader().getResourceAsStream(DEFAULT_REPLIES);) {
         	defaultIntentResponse = yaml.load(inputStream);
         	
         }

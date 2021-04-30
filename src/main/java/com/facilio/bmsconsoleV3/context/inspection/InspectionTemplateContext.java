@@ -12,7 +12,7 @@ import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.qa.context.QAndATemplateContext;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -100,7 +100,7 @@ public class InspectionTemplateContext extends QAndATemplateContext <InspectionR
         response.setStatus(InspectionResponseContext.Status.OPEN.getIndex());
     }
 
-    public static enum CreationType implements FacilioEnum<CreationType> {
+    public static enum CreationType implements FacilioIntEnum {
 		
 		SINGLE, 
 		MULTIPLE,

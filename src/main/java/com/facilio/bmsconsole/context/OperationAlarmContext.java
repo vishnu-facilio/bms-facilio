@@ -1,7 +1,7 @@
 package com.facilio.bmsconsole.context;
 import com.facilio.beans.ModuleBean;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -39,11 +39,11 @@ public class OperationAlarmContext extends  BaseAlarmContext {
 		this.coverageType = CoverageType.valueOf(coverageType);
 	}
 
-	public static enum CoverageType implements FacilioEnum {
+	public static enum CoverageType implements FacilioIntEnum {
 		EXCEEDED_SCHEDULE,
 		SHORT_OF_SCHEDULE
 		;
-		public int getIndex() {
+		public Integer getIndex() {
 			return ordinal() + 1;
 		}
 

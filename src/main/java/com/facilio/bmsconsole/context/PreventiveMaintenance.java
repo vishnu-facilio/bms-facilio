@@ -10,7 +10,7 @@ import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.bmsconsole.util.PMStatus;
 import com.facilio.bmsconsoleV3.context.jobplan.PMJobPlanContextV3;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -590,7 +590,7 @@ public class PreventiveMaintenance extends ResourceContext {
 	@Setter
 	private String pmTriggerDescription;
 
-	public static enum PMAssignmentType implements FacilioEnum<PMAssignmentType> {
+	public static enum PMAssignmentType implements FacilioIntEnum {
 		
 		ALL_FLOORS,			//1
 		ALL_SPACES,

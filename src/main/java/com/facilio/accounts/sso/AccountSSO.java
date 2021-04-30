@@ -5,7 +5,7 @@ import java.io.Serializable;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FieldUtil;
 
 public class AccountSSO implements Serializable {
@@ -133,11 +133,11 @@ public class AccountSSO implements Serializable {
 		this.modifiedBy = modifiedBy;
 	}
 
-	public static enum SSOType implements FacilioEnum {
+	public static enum SSOType implements FacilioIntEnum {
 		SAML;
 		
 		@Override
-		public int getIndex() {
+		public Integer getIndex() {
 			return ordinal() + 1;
 		}
 

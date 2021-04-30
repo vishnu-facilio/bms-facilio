@@ -3,40 +3,25 @@ package com.facilio.bmsconsole.context;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import javax.mail.MethodNotSupportedException;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.PMTriggerContext.TriggerExectionSource;
-import com.facilio.bmsconsole.context.WorkflowRuleResourceLoggerContext.Status;
-import com.facilio.bmsconsole.context.sensor.SensorRuleType;
-import com.facilio.bmsconsole.context.sensor.SensorRuleTypeValidationInterface;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionScheduler;
 import com.facilio.bmsconsoleV3.util.V3Util;
-import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.DateOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
-import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.tasker.ScheduleInfo;
-import com.facilio.v3.context.Constants;
-import com.facilio.v3.util.ChainUtil;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
@@ -85,7 +70,7 @@ public class BaseScheduleContext implements Serializable {
 		}
 	}
 	
-	public enum ScheduleType implements FacilioEnum{
+	public enum ScheduleType implements FacilioIntEnum {
 		
 		RECURRING_VISITOR_INVITE(new InviteVisitorScheduler()),
 		COMMUNITY_ENGAGEMENT_EVENT(),
@@ -93,7 +78,7 @@ public class BaseScheduleContext implements Serializable {
 		INSPECTION(new InspectionScheduler()),
 		;
 		
-		public int getIndex() {
+		public Integer getIndex() {
 			return ordinal()+1;
 		}
 		

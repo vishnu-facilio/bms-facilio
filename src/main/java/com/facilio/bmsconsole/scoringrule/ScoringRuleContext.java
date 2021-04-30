@@ -7,15 +7,11 @@ import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.trigger.context.BaseTriggerContext;
 import com.facilio.trigger.context.ScoringRuleTrigger;
 import com.facilio.trigger.util.TriggerUtil;
-import com.facilio.util.FacilioUtil;
-import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
@@ -178,7 +174,7 @@ public class ScoringRuleContext extends WorkflowRuleContext {
         }
     }
 
-    public enum ScoreType implements FacilioEnum {
+    public enum ScoreType implements FacilioIntEnum {
         PERCENTAGE("Percentage"),
         RANGE("Range"),
         ;
@@ -190,7 +186,7 @@ public class ScoringRuleContext extends WorkflowRuleContext {
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

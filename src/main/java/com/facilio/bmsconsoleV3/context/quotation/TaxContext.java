@@ -1,6 +1,6 @@
 package com.facilio.bmsconsoleV3.context.quotation;
 
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
 
 import java.util.List;
@@ -74,7 +74,7 @@ public class TaxContext extends V3Context {
         }
     }
 
-    public enum Type implements FacilioEnum {
+    public enum Type implements FacilioIntEnum {
         INDIVIDUAL("Individual"),
         GROUP("Group");
         private String name;
@@ -91,7 +91,7 @@ public class TaxContext extends V3Context {
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

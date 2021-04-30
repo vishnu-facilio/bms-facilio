@@ -1,6 +1,6 @@
 package com.facilio.control;
 
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.V3Context;
 
@@ -21,11 +21,11 @@ public class ControlGroupFieldContext extends V3Context {
 	String trueVal;
 	String falseVal;
 	
-	public static enum Type implements FacilioEnum {
+	public static enum Type implements FacilioIntEnum {
         CONTROL_GROUP, ROUTINE;
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

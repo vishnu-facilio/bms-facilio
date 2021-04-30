@@ -1,9 +1,8 @@
 package com.facilio.bmsconsole.enums;
 
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ThresholdType;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 
-public enum FaultType implements FacilioEnum{
+public enum FaultType implements FacilioIntEnum {
 	
 	CONTROL_FAULT("Control Fault"),
 	EQUIPMENT_FAULT("Equipment Fault"),
@@ -27,7 +26,7 @@ public enum FaultType implements FacilioEnum{
 	}
 	
     @Override
-	public int getIndex() {
+	public Integer getIndex() {
 		return ordinal() + 1;
 	}
 	

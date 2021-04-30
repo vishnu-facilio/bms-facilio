@@ -2,7 +2,7 @@ package com.facilio.bmsconsole.context;
 
 import java.util.List;
 
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.unitconversion.Unit;
 
@@ -56,11 +56,11 @@ public class ItemContext extends ModuleBaseWithCustomFields {
 		this.costType = costType;
 	}
 
-	public static enum CostType implements FacilioEnum {
+	public static enum CostType implements FacilioIntEnum {
 		FIFO, LIFO;
 
 		@Override
-		public int getIndex() {
+		public Integer getIndex() {
 			return ordinal() + 1;
 		}
 

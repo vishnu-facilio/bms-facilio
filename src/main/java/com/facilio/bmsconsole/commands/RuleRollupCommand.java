@@ -13,7 +13,7 @@ import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.SelectRecordsBuilder;
@@ -143,7 +143,7 @@ public class RuleRollupCommand extends FacilioCommand {
         return event;
     }
 
-    public enum RollupType implements FacilioEnum {
+    public enum RollupType implements FacilioIntEnum {
         ASSET, RULE;
 
         public static RollupType valueOf(int value) {
@@ -154,7 +154,7 @@ public class RuleRollupCommand extends FacilioCommand {
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

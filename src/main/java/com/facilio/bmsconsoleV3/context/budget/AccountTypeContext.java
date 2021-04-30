@@ -1,7 +1,6 @@
 package com.facilio.bmsconsoleV3.context.budget;
 
 import com.facilio.bmsconsoleV3.enums.Group;
-import com.facilio.modules.FacilioEnum;
 import com.facilio.v3.context.V3Context;
 
 public class AccountTypeContext extends V3Context {

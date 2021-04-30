@@ -10,11 +10,10 @@ import org.apache.log4j.Logger;
 import org.yaml.snakeyaml.Yaml;
 
 import com.facilio.bmsconsole.context.ConnectionContext;
-import com.facilio.bmsconsole.util.ConnectionUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FieldUtil;
 
 public class PopulateDefaultConnectionsCommand extends FacilioCommand{
@@ -28,7 +27,7 @@ public class PopulateDefaultConnectionsCommand extends FacilioCommand{
 		
 		Yaml yaml = new Yaml();
         List<Object> connections = null;
-        try(InputStream inputStream = FacilioEnum.class.getClassLoader().getResourceAsStream(DEFAULT_CONNECTIONS);) {
+        try(InputStream inputStream = PopulateDefaultConnectionsCommand.class.getClassLoader().getResourceAsStream(DEFAULT_CONNECTIONS);) {
         	
         	
         	connections = yaml.load(inputStream);

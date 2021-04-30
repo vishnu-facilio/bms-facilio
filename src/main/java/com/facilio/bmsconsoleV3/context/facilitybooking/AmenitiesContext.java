@@ -1,7 +1,6 @@
 package com.facilio.bmsconsoleV3.context.facilitybooking;
 
-import com.facilio.bmsconsole.context.VisitorTypeContext;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FieldUtil;
 import com.facilio.v3.context.V3Context;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -41,7 +40,7 @@ public class AmenitiesContext extends V3Context {
 
     private AmenitiesContext.AmenityLogo amenityLogo;
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
-    public static enum AmenityLogo implements FacilioEnum {
+    public static enum AmenityLogo implements FacilioIntEnum {
         NETWORK("network"),
         HOUSEKEEPING("housekeeping"),
         OTHERS("others")
@@ -53,7 +52,7 @@ public class AmenitiesContext extends V3Context {
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

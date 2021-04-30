@@ -1,7 +1,6 @@
 package com.facilio.bmsconsoleV3.context.jobplan;
 
-import com.facilio.bmsconsoleV3.context.budget.BudgetAmountContext;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
 
 import java.util.List;
@@ -11,7 +10,7 @@ public class JobPlanContext extends V3Context {
     private String name;
     private JobPlanCategory jobPlanCategory;
 
-    public enum JobPlanCategory implements FacilioEnum {
+    public enum JobPlanCategory implements FacilioIntEnum {
         ALL_FLOORS("All Floors"),
         ALL_SPACES("All Spaces"),
         SPACE_CATEGORY("Space Category"),
@@ -35,7 +34,7 @@ public class JobPlanContext extends V3Context {
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

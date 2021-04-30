@@ -2,7 +2,7 @@ package com.facilio.bmsconsole.context;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.tenant.TenantContext;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class ContactsContext extends ModuleBaseWithCustomFields{
@@ -58,11 +58,11 @@ public class ContactsContext extends ModuleBaseWithCustomFields{
 		this.contactType = contactType;
 	}
 
-	public static enum ContactType implements FacilioEnum {
+	public static enum ContactType implements FacilioIntEnum {
 		TENANT, VENDOR, EMPLOYEE, CLIENT;
 
 		@Override
-		public int getIndex() {
+		public Integer getIndex() {
 			return ordinal() + 1;
 		}
 

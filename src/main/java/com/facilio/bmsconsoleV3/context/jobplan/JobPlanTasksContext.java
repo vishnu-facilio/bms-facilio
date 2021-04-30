@@ -1,9 +1,7 @@
 package com.facilio.bmsconsoleV3.context.jobplan;
 
 import com.facilio.bmsconsole.context.TaskContext;
-import com.facilio.bmsconsoleV3.context.V3TaskContext;
-import com.facilio.modules.FacilioEnum;
-import com.facilio.v3.context.V3Context;
+import com.facilio.modules.FacilioIntEnum;
 
 public class JobPlanTasksContext extends TaskContext {
 
@@ -19,7 +17,7 @@ public class JobPlanTasksContext extends TaskContext {
 
     private JobPlanTaskCategory jobPlanTaskCategory;
 
-    public enum JobPlanTaskCategory implements FacilioEnum {
+    public enum JobPlanTaskCategory implements FacilioIntEnum {
         ALL_FLOORS("All Floors"),
         ALL_SPACES("All Spaces"),
         SPACE_CATEGORY("Space Category"),
@@ -43,7 +41,7 @@ public class JobPlanTasksContext extends TaskContext {
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

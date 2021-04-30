@@ -52,7 +52,7 @@ public class GetFieldsByModuleType extends FacilioCommand {
                 result.put(field.getName(), modMap);
             } else if (dataTypeEnum == FieldType.ENUM) {
                 EnumField enumField = (EnumField) field;
-                List<EnumFieldValue> enumValues = enumField.getValues();
+                List<EnumFieldValue<Integer>> enumValues = enumField.getValues();
                 List<Map<String, Object>> values = FieldUtil.getAsMapList(enumValues, EnumFieldValue.class);
                 List<Map<String, Object>> options = new ArrayList<>();
                 for (Map<String, Object> value : values) {
@@ -67,7 +67,7 @@ public class GetFieldsByModuleType extends FacilioCommand {
                 result.put(field.getName(), modMap);
             } else if (dataTypeEnum == FieldType.MULTI_ENUM) {
                 MultiEnumField multiEnumField = (MultiEnumField) field;
-                List<EnumFieldValue> multiEnumFieldValues = multiEnumField.getValues();
+                List<EnumFieldValue<Integer>> multiEnumFieldValues = multiEnumField.getValues();
                 List<Map<String, Object>> values = FieldUtil.getAsMapList(multiEnumFieldValues, EnumFieldValue.class);
                 List<Map<String, Object>> options = new ArrayList<>();
                 for (Map<String, Object> value : values) {
@@ -105,7 +105,7 @@ public class GetFieldsByModuleType extends FacilioCommand {
                 result.put(field.getName(), modMap);
             } else if (dataTypeEnum == FieldType.SYSTEM_ENUM) {
                 SystemEnumField systemEnumField = (SystemEnumField) field;
-                List<EnumFieldValue> systemEnumFieldValues = systemEnumField.getValues();
+                List<EnumFieldValue<Integer>> systemEnumFieldValues = systemEnumField.getValues();
                 List<Map<String, Object>> values = FieldUtil.getAsMapList(systemEnumFieldValues, EnumFieldValue.class);
                 List<Map<String, Object>> options = new ArrayList<>();
                 for (Map<String, Object> value : values) {

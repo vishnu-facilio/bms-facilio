@@ -1,10 +1,10 @@
 package com.facilio.agentv2.point;
 
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 
 public class PointEnum {
 
-    public static enum ConfigureStatus implements FacilioEnum {
+    public static enum ConfigureStatus implements FacilioIntEnum {
         UNCONFIGURED("Un Configured"),
         IN_PROGRESS("In Progress"),
         CONFIGURED("Configured");
@@ -16,7 +16,7 @@ public class PointEnum {
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 
@@ -37,7 +37,7 @@ public class PointEnum {
         }
     }
 
-    public static enum SubscribeStatus implements FacilioEnum {
+    public static enum SubscribeStatus implements FacilioIntEnum {
         UNSUBSCRIBED ("Un Subscribed"),
         IN_PROGRESS ("In Progress"),
         SUBSCRIBED ("Subscribed")
@@ -49,7 +49,7 @@ public class PointEnum {
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

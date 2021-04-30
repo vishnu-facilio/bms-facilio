@@ -3,7 +3,7 @@ package com.facilio.bmsconsoleV3.context;
 import com.facilio.accounts.dto.User;
 import com.facilio.beans.ModuleBean;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.V3Context;
 import org.json.simple.JSONObject;
@@ -134,14 +134,14 @@ public class UserNotificationContext extends V3Context {
         this.notificationStatus = NotificationStatus.valueOf(notificationStatus);
     }
 
-    public static enum NotificationStatus implements FacilioEnum {
+    public static enum NotificationStatus implements FacilioIntEnum {
         UNSEEN,
         UNREAD,
         SEEN
         ;
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 
@@ -200,12 +200,12 @@ public class UserNotificationContext extends V3Context {
     public void setActionType(int actionType) {
         this.actionType = ActionType.valueOf(actionType);
     }
-    public enum ActionType implements FacilioEnum {
+    public enum ActionType implements FacilioIntEnum {
         SUMMARY
         ;
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

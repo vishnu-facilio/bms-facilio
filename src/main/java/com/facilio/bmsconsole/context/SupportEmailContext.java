@@ -1,5 +1,5 @@
 package com.facilio.bmsconsole.context;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import org.apache.struts2.json.annotations.JSON;
 
 import java.io.Serializable;
@@ -169,10 +169,10 @@ public class SupportEmailContext implements  Serializable{
 		this.authentication = AuthenticationType.valueOf(type);
 	}
 
-	public static enum AuthenticationType implements FacilioEnum {
+	public static enum AuthenticationType implements FacilioIntEnum {
 		PLAIN
 		;
-		public int getIndex() {
+		public Integer getIndex() {
 			return ordinal() + 1;
 		}
 

@@ -3,7 +3,7 @@ package com.facilio.bmsconsole.workflow.rule.impact;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.apache.commons.lang3.StringUtils;
@@ -141,7 +141,7 @@ public class BaseAlarmImpactContext implements Serializable {
         throw new MethodNotSupportedException("Sub-class didn't implemented this method");
     }
 
-    public enum ImpactType implements FacilioEnum {
+    public enum ImpactType implements FacilioIntEnum {
         CONSTANT("Constant"),
         ;
 
@@ -152,7 +152,7 @@ public class BaseAlarmImpactContext implements Serializable {
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 
@@ -169,7 +169,7 @@ public class BaseAlarmImpactContext implements Serializable {
         }
     }
 
-    public enum Type implements FacilioEnum {
+    public enum Type implements FacilioIntEnum {
         ELECTRICAL_WASTAGE("Electrical Wastage"),
         ;
 
@@ -180,7 +180,7 @@ public class BaseAlarmImpactContext implements Serializable {
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

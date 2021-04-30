@@ -3,7 +3,7 @@ package com.facilio.agent.alarms;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 
 import java.util.List;
 
@@ -58,10 +58,10 @@ public class AgentAlarmContext extends BaseAlarmContext {
     public void setControllersList(List<Controller> controllersList) {
         this.controllersList = controllersList;
     }
-    public static enum AgentAlarmType implements FacilioEnum {
+    public static enum AgentAlarmType implements FacilioIntEnum {
         AGENT,CONTROLLER,POINT;
 
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

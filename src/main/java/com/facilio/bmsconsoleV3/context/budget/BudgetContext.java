@@ -2,10 +2,9 @@ package com.facilio.bmsconsoleV3.context.budget;
 
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsoleV3.util.BudgetAPI;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
 
-import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.List;
 
@@ -23,7 +22,7 @@ public class BudgetContext extends V3Context {
 
     private FocalPointType focalPointType;
 
-    public enum FocalPointType implements FacilioEnum {
+    public enum FocalPointType implements FacilioIntEnum {
         COMPANY("Company"),
         ASSET("Asset"),
         LOCATION("Location")
@@ -42,7 +41,7 @@ public class BudgetContext extends V3Context {
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 
@@ -155,7 +154,7 @@ public class BudgetContext extends V3Context {
     }
 
 
-    public enum FiscalYearStart implements FacilioEnum {
+    public enum FiscalYearStart implements FacilioIntEnum {
         FY2019("2019"),
         FY2020("2020"),
         FY2021("2021"),
@@ -183,7 +182,7 @@ public class BudgetContext extends V3Context {
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 
@@ -209,7 +208,7 @@ public class BudgetContext extends V3Context {
         return null;
     }
 
-    public enum FiscalYear implements FacilioEnum {
+    public enum FiscalYear implements FacilioIntEnum {
         JAN("January"),
         FEB("February"),
         MAR("March"),
@@ -238,7 +237,7 @@ public class BudgetContext extends V3Context {
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

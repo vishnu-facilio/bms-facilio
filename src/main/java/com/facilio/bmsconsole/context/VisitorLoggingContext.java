@@ -5,7 +5,7 @@ import java.io.File;
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -457,11 +457,11 @@ public class VisitorLoggingContext extends ModuleBaseWithCustomFields{
 		return false;
 	}
 	
-	public static enum Source implements FacilioEnum {
+	public static enum Source implements FacilioIntEnum {
 		WORKORDER, PURCHASE_ORDER, TENANT, MANUAL;
 
 		@Override
-		public int getIndex() {
+		public Integer getIndex() {
 			return ordinal() + 1;
 		}
 

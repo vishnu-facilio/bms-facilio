@@ -3,7 +3,7 @@ package com.facilio.bmsconsoleV3.context.communityfeatures;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsoleV3.context.CommunitySharingInfoContext;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
 
 import java.util.List;
@@ -32,7 +32,7 @@ public class NewsAndInformationContext extends V3Context {
         this.description = description;
     }
 
-    public enum Type implements FacilioEnum {
+    public enum Type implements FacilioIntEnum {
         CONVERSATION("Conversation")
         ;
 
@@ -50,7 +50,7 @@ public class NewsAndInformationContext extends V3Context {
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

@@ -2,7 +2,7 @@ package com.facilio.bmsconsole.context;
 
 import java.util.Map;
 
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -19,7 +19,7 @@ public class VisitorTypeContext extends ModuleBaseWithCustomFields {
 	  
 	  private VisitorLogo visitorLogo;
 	  @JsonFormat(shape = JsonFormat.Shape.OBJECT)
-	  public static enum VisitorLogo implements FacilioEnum {
+	  public static enum VisitorLogo implements FacilioIntEnum {
 	        GUEST("kiosk-guest"),
 	        VENDOR("kiosk-vendor"),
 	        EMPLOYEE("kiosk-employee"),
@@ -38,7 +38,7 @@ public class VisitorTypeContext extends ModuleBaseWithCustomFields {
 	        }
 
 	        @Override
-	        public int getIndex() {
+	        public Integer getIndex() {
 	            return ordinal() + 1;
 	        }
 

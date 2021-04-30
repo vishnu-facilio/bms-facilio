@@ -3,7 +3,7 @@ package com.facilio.qa.context;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -13,7 +13,7 @@ import java.util.Map;
 
 @Getter
 @AllArgsConstructor
-public enum QAndAType implements FacilioEnum<QAndAType> {
+public enum QAndAType implements FacilioIntEnum {
     INSPECTION (FacilioConstants.Inspection.INSPECTION_TEMPLATE, InspectionTemplateContext.class, FacilioConstants.Inspection.INSPECTION_RESPONSE, InspectionResponseContext.class)
     ;
 

@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.enums;
 
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 
-public enum SourceType implements FacilioEnum {
+public enum SourceType implements FacilioIntEnum {
     WEB_ACTION,
     IMPORT,
     FORMULA,
@@ -14,7 +14,7 @@ public enum SourceType implements FacilioEnum {
     SYSTEM;
 
     @Override
-    public int getIndex() {
+    public Integer getIndex() {
         return ordinal() + 1;
     }
 

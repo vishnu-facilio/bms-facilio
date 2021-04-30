@@ -26,7 +26,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
@@ -173,7 +173,7 @@ public class WorkflowV2Util {
         	   workflowTemplates = (JSONObject)jsonParser.parse(reader1);
            }
         }
-        try(InputStream inputStream = FacilioEnum.class.getClassLoader().getResourceAsStream(DEFAULT_WORKFLOW_YML_FILE_NAME);) {
+        try(InputStream inputStream = FacilioIntEnum.class.getClassLoader().getResourceAsStream(DEFAULT_WORKFLOW_YML_FILE_NAME);) {
         	
         	Yaml yaml = new Yaml();
         	Map<String, Object> defaultWorkflowFromYaml = (Map<String, Object>) yaml.load(inputStream);

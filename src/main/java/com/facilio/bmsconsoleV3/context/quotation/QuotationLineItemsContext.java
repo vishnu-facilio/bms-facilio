@@ -1,7 +1,7 @@
 package com.facilio.bmsconsoleV3.context.quotation;
 
 import com.facilio.bmsconsoleV3.context.BaseLineItemContext;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 
 public class QuotationLineItemsContext extends BaseLineItemContext {
 
@@ -37,7 +37,7 @@ public class QuotationLineItemsContext extends BaseLineItemContext {
         return null;
     }
 
-    private enum Type implements FacilioEnum {
+    private enum Type implements FacilioIntEnum {
         ITEM_TYPE("Item Type"),
         TOOL_TYPE("Tool Type"),
         SERVICE("Service"),
@@ -57,7 +57,7 @@ public class QuotationLineItemsContext extends BaseLineItemContext {
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

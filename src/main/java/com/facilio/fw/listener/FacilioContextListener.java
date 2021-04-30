@@ -23,10 +23,9 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import com.facilio.agent.integration.queue.AgentIntegrationQueueFactory;
 import com.facilio.bmsconsoleV3.commands.AddSignupDataCommandV3;
+import com.facilio.modules.FacilioEnum;
 import com.facilio.tasker.FacilioInstantJobScheduler;
-import com.facilio.v3.RESTAPIHandler;
 import com.facilio.v3.util.ChainUtil;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
@@ -57,7 +56,6 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.jmx.FacilioQueryCounter;
 import com.facilio.jmx.FacilioQueryCounterMBean;
 import com.facilio.logging.SysOutLogger;
-import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.FieldUtil;
 import com.facilio.queue.FacilioDBQueueExceptionProcessor;
 import com.facilio.server.ServerInfo;
@@ -65,7 +63,6 @@ import com.facilio.serviceportal.actions.PortalAuthInterceptor;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.kafka.notification.NotificationProcessor;
 import com.facilio.tasker.FacilioScheduler;
-import com.facilio.tasker.executor.FacilioInstantJobExecutor;
 
 public class FacilioContextListener implements ServletContextListener {
 

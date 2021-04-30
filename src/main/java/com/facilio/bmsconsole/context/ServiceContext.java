@@ -2,8 +2,7 @@ package com.facilio.bmsconsole.context;
 
 import java.util.List;
 
-import com.facilio.bmsconsoleV3.context.budget.BudgetContext;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class ServiceContext extends ModuleBaseWithCustomFields{
@@ -102,7 +101,7 @@ private ServiceStatus status;
 		this.paymentType = paymentType;
 	}
 
-	public static enum PaymentType implements FacilioEnum {
+	public static enum PaymentType implements FacilioIntEnum {
 		FIXED("Fixed"),
 		DURATION_BASED("Duration Based");
 
@@ -120,7 +119,7 @@ private ServiceStatus status;
 		}
 
 		@Override
-		public int getIndex() {
+		public Integer getIndex() {
 			return ordinal() + 1;
 		}
 

@@ -3,7 +3,7 @@ package com.facilio.db.criteria.manager;
 import com.facilio.chain.FacilioContext;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.chain.Context;
@@ -162,7 +162,7 @@ public class NamedCondition {
         }
     }
 
-    public enum Type implements FacilioEnum {
+    public enum Type implements FacilioIntEnum {
         CRITERIA("Criteria"),
         WORKFLOW("Workflow"),
         SYSTEM_FUNCTION("Sys Func");
@@ -174,7 +174,7 @@ public class NamedCondition {
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

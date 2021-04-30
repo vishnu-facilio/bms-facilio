@@ -6,9 +6,9 @@ import com.facilio.bmsconsole.context.ExecuteHistoryForRuleRollUp;
 import com.facilio.bmsconsole.context.ExecuteHistoryForSensorRule;
 import com.facilio.bmsconsole.context.ExecuteHistoryForAssetRollUp;
 
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 
-public enum RuleJobType implements FacilioEnum {
+public enum RuleJobType implements FacilioIntEnum {
 	
 	READING_ALARM (new ExecuteHistoryForReadingRule(), 3),
 	ML_ANOMALY_ALARM,
@@ -26,7 +26,7 @@ public enum RuleJobType implements FacilioEnum {
 	SENSOR_ROLLUP_ALARM (new ExecuteHistoryForSensorRule(), 3, RuleJobType.SENSOR_ALARM),
 	MULTIVARIATE_ANOMALY_ALARM,
 	;
-	public int getIndex() {
+	public Integer getIndex() {
 		return ordinal() + 1;
 	}
 

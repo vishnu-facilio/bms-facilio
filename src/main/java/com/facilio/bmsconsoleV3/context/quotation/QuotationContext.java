@@ -2,7 +2,7 @@ package com.facilio.bmsconsoleV3.context.quotation;
 
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsoleV3.context.*;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FieldUtil;
 
 import java.io.File;
@@ -241,7 +241,7 @@ public class QuotationContext extends BaseLineItemsParentModuleContext {
         this.miscellaneousCharges = miscellaneousCharges;
     }
 
-    public enum CustomerType implements FacilioEnum {
+    public enum CustomerType implements FacilioIntEnum {
         TENANT("Tenant"),
         CLIENT("Client"),
         OTHERS("Others");
@@ -259,7 +259,7 @@ public class QuotationContext extends BaseLineItemsParentModuleContext {
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

@@ -1,17 +1,17 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 
 public class MLAlarmOccurenceContext extends AlarmOccurrenceContext 
 {
 	private static final long serialVersionUID = 1L;
 	
-	public static enum MLAnomalyType implements FacilioEnum
+	public static enum MLAnomalyType implements FacilioIntEnum
 	{
 		Anomaly,
 		RCA;
 		
-		public int getIndex() {
+		public Integer getIndex() {
 			return ordinal() + 1;
 		}
 

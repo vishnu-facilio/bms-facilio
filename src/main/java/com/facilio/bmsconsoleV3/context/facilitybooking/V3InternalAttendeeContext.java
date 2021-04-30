@@ -1,8 +1,6 @@
 package com.facilio.bmsconsoleV3.context.facilitybooking;
 
-import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
-import com.facilio.modules.FacilioEnum;
 import com.facilio.v3.context.V3Context;
 
 public class V3InternalAttendeeContext extends V3Context {

@@ -1,7 +1,7 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.bmsconsole.workflow.rule.SLAWorkflowCommitmentRuleContext;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class SLAContext1 extends ModuleBaseWithCustomFields {
@@ -47,7 +47,7 @@ public class SLAContext1 extends ModuleBaseWithCustomFields {
         this.type = type;
     }
 
-    public enum Type implements FacilioEnum {
+    public enum Type implements FacilioIntEnum {
         OPEN("Open"),
         ;
 
@@ -61,7 +61,7 @@ public class SLAContext1 extends ModuleBaseWithCustomFields {
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

@@ -4,13 +4,12 @@ import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.ContractsContext;
 import com.facilio.bmsconsole.context.InventoryType;
 import com.facilio.bmsconsole.context.LocationContext;
-import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
 import com.facilio.bmsconsoleV3.context.BaseLineItemsParentModuleContext;
 import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
 import com.facilio.bmsconsoleV3.context.V3VendorContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestLineItemContext;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
@@ -294,7 +293,7 @@ public class V3PurchaseOrderContext extends BaseLineItemsParentModuleContext {
 
 	private ReceivableStatus receivableStatus;
 
-	public enum ReceivableStatus implements FacilioEnum {
+	public enum ReceivableStatus implements FacilioIntEnum {
 		YET_TO_RECEIVE("Yet To Receive"),
 		PARTIALLY_RECEIVED("Partially Received"),
 		RECEIVED("Received")
@@ -313,7 +312,7 @@ public class V3PurchaseOrderContext extends BaseLineItemsParentModuleContext {
 		}
 
 		@Override
-		public int getIndex() {
+		public Integer getIndex() {
 			return ordinal() + 1;
 		}
 

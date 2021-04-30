@@ -1,9 +1,7 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
-import com.facilio.bmsconsole.context.VisitorTypeContext.VisitorLogo;
 import com.facilio.bmsconsole.tenant.TenantContext;
-import com.facilio.modules.FacilioEnum;
 
 public class SmartControlKioskContext extends DeviceContext {
 

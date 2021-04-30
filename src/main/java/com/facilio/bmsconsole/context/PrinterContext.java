@@ -1,10 +1,10 @@
 package com.facilio.bmsconsole.context;
 import java.io.Serializable;
 
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 
 public class PrinterContext implements Serializable{
-	public static enum ConnectMode implements FacilioEnum {
+	public static enum ConnectMode implements FacilioIntEnum {
     	WIFI("Wifi"),
     	ETHERNET("Ethernet"),
     	
@@ -23,7 +23,7 @@ public class PrinterContext implements Serializable{
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 
@@ -33,7 +33,7 @@ public class PrinterContext implements Serializable{
         }
     }
 
-	public static enum PrinterModel implements FacilioEnum {
+	public static enum PrinterModel implements FacilioIntEnum {
     	BROTHER_QL_820NWB("BROTHER-QL-820NWB"),
     	BROTHER_QL_720NW("Brother QL-720NW"),
     	BROTHER_QL_710W("Brother QL-710W"),
@@ -52,7 +52,7 @@ public class PrinterContext implements Serializable{
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

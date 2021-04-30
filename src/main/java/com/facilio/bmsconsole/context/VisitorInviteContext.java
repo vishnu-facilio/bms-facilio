@@ -3,7 +3,7 @@ package com.facilio.bmsconsole.context;
 import java.util.List;
 
 import com.facilio.accounts.dto.User;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class VisitorInviteContext extends ModuleBaseWithCustomFields{
@@ -120,11 +120,11 @@ public class VisitorInviteContext extends ModuleBaseWithCustomFields{
 		this.inviteSource = inviteSource;
 	}
 
-	public static enum InviteSource implements FacilioEnum {
+	public static enum InviteSource implements FacilioIntEnum {
 		WORKORDER, PURCHASE_ORDER, TENANT, MANUAL;
 
 		@Override
-		public int getIndex() {
+		public Integer getIndex() {
 			return ordinal() + 1;
 		}
 

@@ -1,12 +1,10 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.accounts.dto.NewPermission;
-import com.facilio.agentv2.point.PointEnum;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FacilioModule;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import java.io.Serializable;
 import java.util.List;
@@ -96,7 +94,7 @@ public class WebTabContext implements Serializable {
         }
     }
 
-    public enum Type implements FacilioEnum {
+    public enum Type implements FacilioIntEnum {
         MODULE ("Module", false),
         APPROVAL ("Approval", false),
         CALENDAR ("Calendar", false),
@@ -124,7 +122,7 @@ public class WebTabContext implements Serializable {
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

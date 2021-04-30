@@ -2,7 +2,7 @@ package com.facilio.bmsconsole.context;
 
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.BmsAggregateOperators;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FacilioModule;
 import com.facilio.time.DateTimeUtil;
 import org.json.simple.JSONObject;
@@ -106,7 +106,7 @@ public class AggregationMetaContext implements Serializable {
         this.lastSync = lastSync;
     }
 
-    public enum FrequencyType implements FacilioEnum {
+    public enum FrequencyType implements FacilioIntEnum {
         HOURLY("Hourly", BmsAggregateOperators.DateAggregateOperator.HOURSOFDAYONLY.getValue()) {
             @Override
             public long getAggregatedTime(Long ttime) {
@@ -161,7 +161,7 @@ public class AggregationMetaContext implements Serializable {
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 

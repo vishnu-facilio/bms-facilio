@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class PeopleContext extends ModuleBaseWithCustomFields{
@@ -47,11 +47,11 @@ public class PeopleContext extends ModuleBaseWithCustomFields{
 		this.peopleType = occupantType;
 	}
 
-	public static enum PeopleType implements FacilioEnum {
+	public static enum PeopleType implements FacilioIntEnum {
 		TENANT_CONTACT, VENDOR_CONTACT, EMPLOYEE, CLIENT_CONTACT, OCCUPANT, DEFAULT, OTHERS;
 
 		@Override
-		public int getIndex() {
+		public Integer getIndex() {
 			return ordinal() + 1;
 		}
 

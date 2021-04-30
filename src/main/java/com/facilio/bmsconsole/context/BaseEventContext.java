@@ -4,17 +4,15 @@ import com.facilio.activity.AlarmActivityType;
 import com.facilio.agent.alarms.AgentEventContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
-import com.facilio.bmsconsole.context.WorkflowRuleResourceLoggerContext.Status;
 import com.facilio.bmsconsole.context.sensor.SensorEventContext;
 import com.facilio.bmsconsole.context.sensor.SensorRollUpEventContext;
-import com.facilio.bmsconsole.context.sensor.SensorRuleType;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.events.context.EventContext;
 import com.facilio.events.context.EventContext.EventInternalState;
 import com.facilio.events.context.EventContext.EventState;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.time.DateTimeUtil;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -466,7 +464,7 @@ public class BaseEventContext extends ModuleBaseWithCustomFields {
 		this.eventProcessingStatus = eventProcessingStatus;
 	}
 	
-    public enum EventProcessingStatus implements FacilioEnum{
+    public enum EventProcessingStatus implements FacilioIntEnum {
 		
 		UNPROCESSED(1),
 		ALARM_GENERATED(2),
@@ -478,7 +476,7 @@ public class BaseEventContext extends ModuleBaseWithCustomFields {
 		}
 		
 		@Override
-		public int getIndex() {
+		public Integer getIndex() {
 			return intVal;
 		}
 		

@@ -1,7 +1,7 @@
 package com.facilio.qa.context;
 
 import com.facilio.constants.FacilioConstants;
-import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.qa.context.answers.*;
 import com.facilio.qa.context.answers.handler.*;
 import com.facilio.qa.context.questions.*;
@@ -17,7 +17,7 @@ import java.util.Map;
 
 @Getter
 @Log4j
-public enum QuestionType implements FacilioEnum<QuestionType> {
+public enum QuestionType implements FacilioIntEnum {
     HEADING (FacilioConstants.QAndA.Questions.HEADING_QUESTION, HeadingQuestionContext.class, null),
     NUMBER ( FacilioConstants.QAndA.Questions.NUMBER_QUESTION, NumberQuestionContext.class, new NumberAnswerHandler(NumberAnswerContext.class)),
     DECIMAL (FacilioConstants.QAndA.Questions.DECIMAL_QUESTION, DecimalQuestionContext.class, new DecimalAnswerHandler(DecimalAnswerContext.class)),
