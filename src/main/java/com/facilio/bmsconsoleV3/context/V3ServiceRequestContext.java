@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
+import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.ServiceRequestPriorityContext;
 import com.facilio.bmsconsole.context.ServiceRequestContext.Classification;
@@ -47,11 +48,11 @@ public class V3ServiceRequestContext extends V3Context{
 		this.assignedTo = assignedTo;
 	}
 	
-	private User requester;
-	public User getRequester() {
+	private PeopleContext requester;
+	public PeopleContext getRequester() {
 		return requester;
 	}
-	public void setRequester(User requester) {
+	public void setRequester(PeopleContext requester) {
 		this.requester = requester;
 	}
 	
