@@ -98,7 +98,7 @@ public class FilterFieldContext {
     }
 
     public String getDisplayType() {
-        return field == null ? null : field.getDisplayType() == null ? defaultDisplayTypeForBackwardCompatibility(field.getDataTypeEnum()) : field.getDisplayType().name();
+        return field == null ? null : field.getDisplayType() == null || field.getDataTypeEnum() == FieldType.SYSTEM_ENUM ? defaultDisplayTypeForBackwardCompatibility(field.getDataTypeEnum()) : field.getDisplayType().name();
     }
     
     @JSON(serialize = false)
