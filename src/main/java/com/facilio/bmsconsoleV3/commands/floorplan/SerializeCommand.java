@@ -22,7 +22,6 @@ import com.facilio.v3.context.Constants;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.FieldFactory;
 
-
 import org.apache.commons.chain.Context;
 
 import java.util.ArrayList;
@@ -100,25 +99,26 @@ public class SerializeCommand extends FacilioCommand {
 				if (marker.getRecordId() != null) {
 
 					Long id = marker.getRecordId();
-					
+
 					if (id > 0) {
 						SelectRecordsBuilder deskbuilder = new SelectRecordsBuilder()
-						.module(deskModule).select(fields)
-						.beanClass(V3DeskContext.class)
-						.andCondition(CriteriaAPI.getCondition("Desks.ID", "id", String.valueOf(id), NumberOperators.EQUALS))
-						.fetchSupplements(Arrays.asList((LookupField) deskFieldMap.get("employee")))
-						.fetchSupplements(Arrays.asList((LookupField) deskFieldMap.get("department")));
+								.module(deskModule).select(fields)
+								.beanClass(V3DeskContext.class)
+								.andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(id), NumberOperators.EQUALS))
+								.fetchSupplements(Arrays.asList((LookupField) deskFieldMap.get("employee")))
+								.fetchSupplements(Arrays.asList((LookupField) deskFieldMap.get("department")));
 
 						List<V3DeskContext> desks = deskbuilder.get();
 						for (V3DeskContext desk : desks) {
 							marker.setDesk(desk);
 
 						}
-					}			
+					}
 
-//					desk = (V3DeskContext) V3RecordAPI.getRecord(deskModule.getName(), marker.getRecordId(),
-//							V3DeskContext.class);
-//					marker.setDesk(desk);
+					// desk = (V3DeskContext) V3RecordAPI.getRecord(deskModule.getName(),
+					// marker.getRecordId(),
+					// V3DeskContext.class);
+					// marker.setDesk(desk);
 
 				}
 
