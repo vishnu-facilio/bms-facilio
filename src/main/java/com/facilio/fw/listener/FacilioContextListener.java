@@ -28,6 +28,7 @@ import com.facilio.bmsconsoleV3.commands.AddSignupDataCommandV3;
 import com.facilio.tasker.FacilioInstantJobScheduler;
 import com.facilio.v3.RESTAPIHandler;
 import com.facilio.v3.util.ChainUtil;
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.LogManager;
@@ -82,6 +83,7 @@ public class FacilioContextListener implements ServletContextListener {
 		FacilioConnectionPool.INSTANCE.close();
 	}
 
+	@SneakyThrows
 	public void contextInitialized(ServletContextEvent event) {
 
 		try {
@@ -124,10 +126,9 @@ public class FacilioContextListener implements ServletContextListener {
 			BeanFactory.initBeans();
 			FacilioScheduler.initScheduler();
 			FacilioInstantJobScheduler.init();
-			try {
+
+			if (!FacilioProperties.isMessageProcessor()) {
 				ChainUtil.initRESTAPIHandler("com.facilio.apiv3");
-			} catch(Exception e) {
-				LOGGER.info("Exception while initializing RestAPI Handler ", e);
 			}
 
 			if(RedisManager.getInstance() != null) {
@@ -157,6 +158,7 @@ public class FacilioContextListener implements ServletContextListener {
 		} catch (Exception e) {
 			sendFailureEmail(e);
 			LOGGER.info("Shutting down, because of an exception ", e);
+			throw e;
 		}
 		finally {
 			HealthCheckFilter.setStatus(200);
