@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.exceptions.FunctionParamException;
 
@@ -330,6 +332,19 @@ public enum FacilioListFunction implements FacilioWorkflowFunctionInterface {
 			String string = (String) objects[0];
 			
 			return FacilioUtil.parseJsonArray(string);
+		}
+	},
+	JOIN(17, "join") {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			
+			List<Object> list = (List<Object>) objects[0];
+			String seperator = ",";
+			if(objects.length > 1) {
+				seperator = (String)objects[1];
+			}
+			
+			return StringUtils.join(list, seperator);
 		}
 	}
 	;
