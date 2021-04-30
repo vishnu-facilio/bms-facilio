@@ -19,6 +19,7 @@ public class FetchPagesFromTemplateCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
 
+        LOGGER.info("FetchPagesFromTemplateCommand is called");
         List<QAndATemplateContext> templates = Constants.getRecordList((FacilioContext) context);
         QAndAUtil.fetchChildrenFromParent(templates,
                                         FacilioConstants.QAndA.PAGE,
@@ -28,7 +29,7 @@ public class FetchPagesFromTemplateCommand extends FacilioCommand {
                                         PageContext::setParent,
                                         QAndATemplateContext::setPages,
                                         QAndAUtil::setDefaultPropsAsNullToReduceRespSize);
-        LOGGER.debug(MessageFormat.format("Fetched pages from template : {0}", (CollectionUtils.isEmpty(templates) ? "null" : templates.get(0).getPages())));
+        LOGGER.info(MessageFormat.format("Fetched pages from template : {0}", (CollectionUtils.isEmpty(templates) ? "null" : templates.get(0).getPages())));
 
         return false;
     }
