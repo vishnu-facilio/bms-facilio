@@ -394,6 +394,7 @@ public class FormFactory {
 		List<FacilioForm> departmentFormsList = Arrays.asList(getDepartmentForm());
 		List<FacilioForm> movesFormsList = Arrays.asList(getMovesForm());
 		List<FacilioForm> deliveriesFormsList = Arrays.asList(getDeliveriesForm(), getDeliveriesPortalForm());
+		List<FacilioForm> deliveryAreaFormsList = Arrays.asList(getDeliveryAreaForm(),getDeliveryAreaPortalForm());
 		List<FacilioForm> peopleFormsList = Arrays.asList(getPeopleForm());
 
 		List<FacilioForm> reservationFormsList = Arrays.asList(getReservationForm());
@@ -456,6 +457,7 @@ public class FormFactory {
 				.put(FacilioConstants.ContextNames.EMPLOYEE, getFormMap(employeeFormsList))
 				.put(FacilioConstants.ContextNames.DEPARTMENT, getFormMap(departmentFormsList))
 				.put(FacilioConstants.ContextNames.DELIVERIES, getFormMap(deliveriesFormsList))
+				.put(FacilioConstants.ContextNames.DELIVERY_AREA, getFormMap(deliveryAreaFormsList))
 				.put(FacilioConstants.ContextNames.MOVES, getFormMap(movesFormsList))
 				.put(FacilioConstants.ContextNames.Reservation.RESERVATION, getFormMap(reservationFormsList))
 				.put(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS, getFormMap(rentalLeaseFormsList))
@@ -1169,6 +1171,28 @@ public class FormFactory {
 		form.setAppLinkName(ApplicationLinkNames.OCCUPANT_PORTAL_APP);
 		return form;
 	}
+	
+	public static FacilioForm getDeliveryAreaForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("NEW DELIVERY AREA");
+		form.setName("default_deliveryArea_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.DELIVERIES));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getDeliveryAreaFormField());
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+		return form;
+	}
+	
+	public static FacilioForm getDeliveryAreaPortalForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("NEW DELIVERY AREA");
+		form.setName("default_deliveryArea_portal");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.DELIVERIES));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getDeliveryAreaFormField());
+		form.setAppLinkName(ApplicationLinkNames.OCCUPANT_PORTAL_APP);
+		return form;
+	}
 
 	private static List<FormField> getWebWorkOrderFormFields() {
 		List<FormField> fields = new ArrayList<>();
@@ -1553,7 +1577,7 @@ public class FormFactory {
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("email", FieldDisplayType.TEXTBOX, "Email", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("phone", FieldDisplayType.TEXTBOX, "Phone", Required.OPTIONAL, 3, 1));
-		fields.add(new FormField("isAssignable", FieldDisplayType.DECISION_BOX, "Is Assignable", Required.OPTIONAL, 5, 2));
+		fields.add(new FormField("isAssignable", FieldDisplayType.DECISION_BOX, "Is Assignable", Required.OPTIONAL, 4, 2));
 		fields.add(new FormField("isLabour", FieldDisplayType.DECISION_BOX, "Is Labour", Required.OPTIONAL, 5, 3));
 
 
@@ -1570,22 +1594,32 @@ public class FormFactory {
 	
 	private static List<FormField> getMovesFormField() {
 		List<FormField> fields = new ArrayList<>();
-		fields.add(new FormField("moveType", FieldDisplayType.SELECTBOX, "Move Type", Required.REQUIRED, 5, 1));
-		fields.add(new FormField("timeOfMove", FieldDisplayType.DATETIME, "Time of Move", Required.REQUIRED, 10, 1));
-		fields.add(new FormField("employee", FieldDisplayType.LOOKUP_SIMPLE, "Employee", Required.REQUIRED, "employee", 1, 2));
-		fields.add(new FormField("department", FieldDisplayType.LOOKUP_SIMPLE, "Department", Required.REQUIRED, "department", 1, 2));
-		fields.add(new FormField("to", FieldDisplayType.LOOKUP_SIMPLE, "To", Required.REQUIRED, "desks", 1, 2));
-		fields.add(new FormField("from", FieldDisplayType.LOOKUP_SIMPLE, "From", Required.REQUIRED, "desks", 1, 2));
+		fields.add(new FormField("moveType", FieldDisplayType.SELECTBOX, "Move Type", Required.REQUIRED, 1, 2));
+		fields.add(new FormField("timeOfMove", FieldDisplayType.DATETIME, "Time of Move", Required.REQUIRED, 2, 2));
+		fields.add(new FormField("employee", FieldDisplayType.LOOKUP_SIMPLE, "Employee", Required.REQUIRED, "employee", 3, 2));
+		fields.add(new FormField("department", FieldDisplayType.LOOKUP_SIMPLE, "Department", Required.REQUIRED, "department", 4, 2));
+		fields.add(new FormField("to", FieldDisplayType.LOOKUP_SIMPLE, "To", Required.REQUIRED, "desks", 5, 2));
+		fields.add(new FormField("from", FieldDisplayType.LOOKUP_SIMPLE, "From", Required.REQUIRED, "desks", 6, 2));
 
 		return fields;
 	}
 	
 	private static List<FormField> getDeliveriesFormField() {
 		List<FormField> fields = new ArrayList<>();
-		fields.add(new FormField("serialNumber", FieldDisplayType.TEXTBOX, "Serial Number", Required.OPTIONAL, 7, 1));
-		fields.add(new FormField("employee", FieldDisplayType.LOOKUP_SIMPLE, "Recipient", Required.REQUIRED, "employee", 1, 2));
-		fields.add(new FormField("receivedTime", FieldDisplayType.DATETIME, "Received Time", Required.REQUIRED, 10, 1));
-		fields.add(new FormField("avatar",FieldDisplayType.IMAGE,"Photo",Required.OPTIONAL,1,1));
+		fields.add(new FormField("serialNumber", FieldDisplayType.TEXTBOX, "Serial Number", Required.OPTIONAL, 1, 2));
+		fields.add(new FormField("employee", FieldDisplayType.LOOKUP_SIMPLE, "Recipient", Required.REQUIRED, "employee", 2, 2));
+		fields.add(new FormField("receivedTime", FieldDisplayType.DATETIME, "Received Time", Required.REQUIRED, 3, 2));
+		fields.add(new FormField("avatar",FieldDisplayType.IMAGE,"Photo",Required.OPTIONAL,4,2));
+		fields.add(new FormField("deliveryArea", FieldDisplayType.LOOKUP_SIMPLE, "Delivery Area", Required.OPTIONAL, "deliveryArea", 5, 2));
+		return fields;
+	}
+	
+	private static List<FormField> getDeliveryAreaFormField() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("location", FieldDisplayType.SPACECHOOSER, "Location", Required.OPTIONAL, "basespace", 2, 3));
+		fields.add(new FormField("isActive", FieldDisplayType.DECISION_BOX, "Is Active", Required.REQUIRED, 3, 2));
+
 		return fields;
 	}
 
