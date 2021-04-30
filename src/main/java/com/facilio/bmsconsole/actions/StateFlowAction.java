@@ -6,6 +6,7 @@ import java.util.Map;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.wmsv2.handler.AuditLogHandler;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
@@ -62,6 +63,9 @@ public class StateFlowAction extends FacilioAction {
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.TRANSITION, stateTransition);
+		sendAuditLogs(new AuditLogHandler.AuditLog("Add Or Update State Transition",
+				"State transition has been updated", AuditLogHandler.RecordType.SETTING,
+				"StateTransition", stateTransition.getId()));
 		return SUCCESS;
 	}
 	

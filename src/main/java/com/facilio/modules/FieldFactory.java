@@ -9743,9 +9743,9 @@ public class FieldFactory {
         fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
         fields.add(getField("recordType", "RECORD_TYPE", module, FieldType.NUMBER));
         fields.add(getField("typeName", "TYPE_NAME", module, FieldType.STRING));
-        fields.add(getField("recordId", "RECORD_ID", module, FieldType.STRING));
+        fields.add(getField("recordId", "RECORD_ID", module, FieldType.NUMBER));
         fields.add(getField("performedBy", "PERFORMED_BY", module, FieldType.LOOKUP));
-        fields.add(getField("time", "TIME", module, FieldType.STRING));
+        fields.add(getField("time", "TIME", module, FieldType.NUMBER));
 
         return fields;
     }

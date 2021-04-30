@@ -2,15 +2,15 @@ package com.facilio.wmsv2.handler;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.util.AuditLogUtil;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.FieldUtil;
 import com.facilio.wmsv2.constants.Topics;
 import com.facilio.wmsv2.message.Message;
 import com.facilio.wmsv2.message.TopicHandler;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
-
-import java.util.logging.Logger;
 
 @TopicHandler(
         topic = Topics.System.auditLogs,
@@ -20,16 +20,23 @@ import java.util.logging.Logger;
 )
 public class AuditLogHandler extends BaseHandler {
 
-    private static final Logger LOGGER = Logger.getLogger(AuditLogHandler.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(AuditLogHandler.class.getName());
 
     @Override
     public void processIncomingMessage(Message message) {
-        LOGGER.severe(message.toString());
+        LOGGER.error(message.toString());
     }
 
     @Override
     public Message processOutgoingMessage(Message message) {
-        LOGGER.severe(message.toString());
+        try {
+            LOGGER.error(message.toString());
+            JSONObject content = message.getContent();
+            AuditLog auditLog = FieldUtil.getAsBeanFromJson(content, AuditLog.class);
+            AuditLogUtil.insertAuditLog(auditLog);
+        } catch (Exception e) {
+            LOGGER.error("Error in inserting log", e);
+        }
         return null;
     }
 
@@ -67,6 +74,9 @@ public class AuditLogHandler extends BaseHandler {
                 return recordType.getIndex();
             }
             return -1;
+        }
+        public void setRecordType(int recordType) {
+            this.recordType = RecordType.valueOf(recordType);
         }
         public RecordType getRecordTypeEnum() {
             return recordType;
@@ -110,6 +120,9 @@ public class AuditLogHandler extends BaseHandler {
         public AuditLog setTime(Long time) {
             this.time = time;
             return this;
+        }
+
+        public AuditLog() {
         }
 
         public AuditLog(String subject, String description, RecordType recordType, String typeName, long recordId) {
