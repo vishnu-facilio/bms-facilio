@@ -1,6 +1,8 @@
 package com.facilio.bmsconsoleV3.commands;
 
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.aws.util.AwsUtil;
@@ -14,6 +16,7 @@ import com.facilio.services.factory.FacilioFactory;
 
 public class SendEmailForEmailConversationThreadingCommand extends FacilioCommand {
 
+	private static final Logger LOGGER = LogManager.getLogger(SendEmailForEmailConversationThreadingCommand.class.getName());
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -73,6 +76,8 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 			
 			mailJson.put(EmailClient.HEADER, HeaderJSON);
 		}
+		
+		LOGGER.error("emailConversation -- "+emailConversation.getId()+" mail JSON --- "+mailJson);
 		
 		AwsUtil.sendEmailViaMimeMessage(mailJson, null);
 		
