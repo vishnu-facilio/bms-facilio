@@ -35,7 +35,7 @@ public class AddDefaultFieldsForEmailThreadingCommand extends FacilioCommand {
 	    	
 	    	if(emailConversation.getFromType() == EmailConversationThreadingContext.From_Type.ADMIN.getIndex() && emailConversation.getMessageType() == EmailConversationThreadingContext.Message_Type.REPLY.getIndex()) {
 	    		
-	    		EmailToModuleDataContext emailToModuleData = MailMessageUtil.getEmailToModuleContext(emailConversation.getRecordId(), emailConversation.getModuleId());
+	    		EmailToModuleDataContext emailToModuleData = MailMessageUtil.getEmailToModuleContext(emailConversation.getRecordId(), emailConversation.getDataModuleId());
 		    	
 		    	if(emailToModuleData != null) {		// record created from Email
 		    		
