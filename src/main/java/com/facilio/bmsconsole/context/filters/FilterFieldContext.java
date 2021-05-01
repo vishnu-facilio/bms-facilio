@@ -39,15 +39,10 @@ public class FilterFieldContext {
         this.lookupFilters = lookupFilters;
 
         if (field instanceof BaseEnumField) {
-            List<EnumFieldValue<Integer>> values = ((BaseEnumField) field).getValues();
-            if (CollectionUtils.isNotEmpty(values)) {
-                options = new ArrayList<>();
-                for (EnumFieldValue value : values) {
-                    if (value.isVisible()) { //Have to check if this is needed. What if user wants to check old records with deleted enum options
-                        options.add(new FieldOption<>(value.getIndex(), value.getValue()));
-                    }
-                }
-            }
+            populateOptionsForEnum(((BaseEnumField) field).getValues());
+        }
+        else if (field instanceof StringSystemEnumField) {
+            populateOptionsForEnum(((StringSystemEnumField) field).getValues());
         }
         else if (field instanceof BooleanField) {
             options = new ArrayList<>();
@@ -69,6 +64,17 @@ public class FilterFieldContext {
                     lookup.getDisplayName(),
                     showLookupPopup != null ? showLookupPopup : lookup.getTypeEnum() != FacilioModule.ModuleType.PICK_LIST && StringUtils.isEmpty(((BaseLookupField) field).getSpecialType()),
                     lookupFilters);
+        }
+    }
+
+    private <I> void populateOptionsForEnum(List<EnumFieldValue<I>> values) {
+        if (CollectionUtils.isNotEmpty(values)) {
+            options = new ArrayList<>();
+            for (EnumFieldValue value : values) {
+                if (value.isVisible()) { //Have to check if this is needed. What if user wants to check old records with deleted enum options
+                    options.add(new FieldOption<>(value.getIndex(), value.getValue()));
+                }
+            }
         }
     }
 
