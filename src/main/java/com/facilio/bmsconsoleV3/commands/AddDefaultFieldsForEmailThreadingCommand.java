@@ -7,6 +7,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.bmsconsole.util.SupportEmailAPI;
@@ -14,6 +15,7 @@ import com.facilio.bmsconsoleV3.context.EmailConversationThreadingContext;
 import com.facilio.bmsconsoleV3.context.EmailToModuleDataContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.service.FacilioService;
 import com.facilio.v3.context.Constants;
 
@@ -26,6 +28,8 @@ public class AddDefaultFieldsForEmailThreadingCommand extends FacilioCommand {
 		List<EmailConversationThreadingContext> emailConversations = Constants.getRecordList((FacilioContext) context);
 	    
 		Long orgID = AccountUtil.getCurrentOrg().getOrgId();
+		
+		fillMessageType(emailConversations);
 		
 	    for(EmailConversationThreadingContext emailConversation : emailConversations) {
 	    	
@@ -56,6 +60,22 @@ public class AddDefaultFieldsForEmailThreadingCommand extends FacilioCommand {
 	    }
 	    
 		return false;
+	}
+
+	private void fillMessageType(List<EmailConversationThreadingContext> emailConversations) {
+		// TODO Auto-generated method stub
+		
+		ApplicationContext currentApp = AccountUtil.getCurrentApp();
+		EmailConversationThreadingContext.From_Type fromType = null;
+		if(currentApp.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
+			fromType = EmailConversationThreadingContext.From_Type.ADMIN;
+		}
+		else {
+			fromType = EmailConversationThreadingContext.From_Type.CLIENT;
+		}
+		for(EmailConversationThreadingContext emailConversation : emailConversations) {
+			emailConversation.setFromType(fromType.getIndex());
+		}
 	}
 
 }
