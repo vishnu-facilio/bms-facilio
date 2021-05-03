@@ -9,8 +9,8 @@ import java.text.MessageFormat;
 import java.util.List;
 
 public class BooleanQuestionHandler implements QuestionHandler<BooleanQuestionContext> {
-    @Override
-    public void validateSave(List<BooleanQuestionContext> questions) throws Exception {
+
+    private void commonValidate (List<BooleanQuestionContext> questions) {
         for (BooleanQuestionContext q : questions) {
             String trueLabel = q.getTrueLabel();
             String falseLabel = q.getFalseLabel();
@@ -20,13 +20,18 @@ public class BooleanQuestionHandler implements QuestionHandler<BooleanQuestionCo
     }
 
     @Override
+    public void validateSave(List<BooleanQuestionContext> questions) throws Exception {
+        commonValidate(questions);
+    }
+
+    @Override
     public void afterSave(List<BooleanQuestionContext> questions) throws Exception {
 
     }
 
     @Override
     public void validateUpdate(List<BooleanQuestionContext> questions) throws Exception {
-
+        commonValidate(questions);
     }
 
     @Override

@@ -12,14 +12,23 @@ import java.util.function.Function;
 
 @AllArgsConstructor
 public class CommonStringQuestionHandler<Q extends QuestionContext> implements QuestionHandler<Q> {
-    private Function<Q, Integer> maxLength;
+    public static final int BIG_STRING_MAX_LENGTH = 2000;
+    public static final int SHORT_STRING_MAX_LENGTH = 255;
 
-    @Override
-    public void validateSave(List<Q> questions) throws Exception {
+    private Function<Q, Integer> maxLength;
+    private int maxAllowedLen;
+
+    private void commonValidate (List<Q> questions) {
         for (Q q : questions) {
             Integer maxLen = maxLength.apply(q);
             FacilioUtil.throwIllegalArgumentException(maxLen != null && maxLen <= 0, MessageFormat.format("Invalid maxLength ({0}) specified while adding string question", maxLen));
+            FacilioUtil.throwIllegalArgumentException(maxLen != null && maxLen > maxAllowedLen, MessageFormat.format("Max Length ({0}) cannot be greater than {1}", maxLen, maxAllowedLen));
         }
+    }
+
+    @Override
+    public void validateSave(List<Q> questions) throws Exception {
+        commonValidate(questions);
     }
 
     @Override
@@ -29,7 +38,7 @@ public class CommonStringQuestionHandler<Q extends QuestionContext> implements Q
 
     @Override
     public void validateUpdate(List<Q> questions) throws Exception {
-
+        commonValidate(questions);
     }
 
     @Override

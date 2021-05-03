@@ -26,8 +26,8 @@ public enum QuestionType implements FacilioStringEnum {
     NUMBER ( FacilioConstants.QAndA.Questions.NUMBER_QUESTION, NumberQuestionContext.class, new NumberAnswerHandler(NumberAnswerContext.class), new CommonNumberQuestionHandler<>(NumberQuestionContext::getMinValue, NumberQuestionContext::getMaxValue)),
     DECIMAL (FacilioConstants.QAndA.Questions.DECIMAL_QUESTION, DecimalQuestionContext.class, new DecimalAnswerHandler(DecimalAnswerContext.class), new CommonNumberQuestionHandler<>(DecimalQuestionContext::getMinValue, DecimalQuestionContext::getMaxValue)),
 
-    SHORT_ANSWER (FacilioConstants.QAndA.Questions.SHORT_STRING_QUESTION, ShortStringQuestionContext.class, new StringAnswerHandler(StringAnswerContext.class, false), new CommonStringQuestionHandler<>(ShortStringQuestionContext::getMaxLength)),
-    LONG_ANSWER (FacilioConstants.QAndA.Questions.LONG_STRING_QUESTION, LongStringQuestionContext.class, new StringAnswerHandler(StringAnswerContext.class, true ), new CommonStringQuestionHandler<>(LongStringQuestionContext::getMaxLength)),
+    SHORT_ANSWER (FacilioConstants.QAndA.Questions.SHORT_STRING_QUESTION, ShortStringQuestionContext.class, new StringAnswerHandler(StringAnswerContext.class, false), new CommonStringQuestionHandler<>(ShortStringQuestionContext::getMaxLength, CommonStringQuestionHandler.SHORT_STRING_MAX_LENGTH)),
+    LONG_ANSWER (FacilioConstants.QAndA.Questions.LONG_STRING_QUESTION, LongStringQuestionContext.class, new StringAnswerHandler(StringAnswerContext.class, true ), new CommonStringQuestionHandler<>(LongStringQuestionContext::getMaxLength, CommonStringQuestionHandler.BIG_STRING_MAX_LENGTH)),
     DATE_TIME (FacilioConstants.QAndA.Questions.DATE_TIME_QUESTION, DateTimeQuestionContext.class, new DateTimeAnswerHandler(DateTimeAnswerContext.class)),
 
     MULTIPLE_CHOICE_ONE (FacilioConstants.QAndA.Questions.MCQ_SINGLE, MCQSingleContext.class, new MCQSingleAnswerHandler(MCQSingleAnswerContext.class), new MCQHandler<MCQSingleContext>(FacilioConstants.QAndA.Questions.MCQ_SINGLE_OPTIONS)),
