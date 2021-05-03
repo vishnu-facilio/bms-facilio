@@ -65,7 +65,7 @@ public class AddDefaultFieldsForEmailThreadingCommand extends FacilioCommand {
 		
 		ApplicationContext currentApp = AccountUtil.getCurrentApp();
 		EmailConversationThreadingContext.From_Type fromType = null;
-		if(currentApp.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
+		if(currentApp == null || currentApp.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
 			fromType = EmailConversationThreadingContext.From_Type.ADMIN;
 		}
 		else {
