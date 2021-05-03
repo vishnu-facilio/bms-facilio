@@ -595,7 +595,7 @@ public class AwsUtil
 					.withRegion(Regions.US_WEST_2).withCredentials(getAWSCredentialsProvider()).build();
 			
 			SendRawEmailResult response = client.sendRawEmail(request);
-			return response.getMessageId()+"@"+Regions.US_WEST_2+".amazonses.com";
+			return response.getMessageId()+"@"+Regions.US_WEST_2.getName()+".amazonses.com";
 		}
 	}
 
