@@ -1,6 +1,5 @@
 package com.facilio.services.email;
 
-import com.amazonaws.services.dynamodbv2.xspec.S;
 import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
@@ -58,8 +57,8 @@ public abstract class EmailClient {
 
     private static boolean checkIfActiveUserFromEmail(String email) throws Exception { //TODO Have to handle this in bulk. For now all emails are not sent in user thread and so okay I guess
         UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
-        User user = userBean.getUserFromEmail(email, null, AccountUtil.getCurrentOrg().getOrgId());
-        return (user == null || (user != null && user.getUserStatus()));
+        User user = userBean.getUserFromEmail(email, null, AccountUtil.getCurrentOrg().getOrgId(), true);
+        return (user == null || user.getUserStatus());
     }
 
     public void sendEmailWithActiveUserCheck (JSONObject mailJson) throws Exception {
@@ -82,7 +81,7 @@ public abstract class EmailClient {
         if (AccountUtil.getCurrentOrg() != null) {
             Set<String> emailAddress = getEmailAddresses(mailJson, TO, true);
             if (CollectionUtils.isEmpty(emailAddress)) { //Not sending email if to is empty. Not even checking cc or Bcc in this case
-                LOGGER.info(MessageFormat.format("Not sending email since 'to address' ({0}) is empty after removing inactive users", mailJson.get(TO)));
+                LOGGER.info(MessageFormat.format("Not sending email since ''to address'' ({0}) is empty after removing inactive users", mailJson.get(TO)));
                 return false;
             }
             mailJson.put(TO, combineEmailsAgain(emailAddress));

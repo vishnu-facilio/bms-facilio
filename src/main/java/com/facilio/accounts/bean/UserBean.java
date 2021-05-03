@@ -63,7 +63,11 @@ public interface UserBean {
 
 	public boolean deleteUserPhoto(long uid, long photoId) throws Exception;
 
-	public User getAppUserForUserName(String username, long appId, long orgId) throws Exception;
+	public User getUserFromEmail(String email, String identifier, long orgId) throws Exception;
+
+    public User getUserFromEmail(String email, String identifier, long orgId, boolean fetchInactive) throws Exception;
+
+    public User getAppUserForUserName(String username, long appId, long orgId) throws Exception;
     
     public User getUser(String email, String identifier) throws Exception;
     
@@ -101,9 +105,4 @@ public interface UserBean {
 	public int deleteUserFromApps(User user, long applicationId) throws Exception;
 	
 	public int deletePeopleForUser(User user) throws Exception;
-	
-	public User getUserFromEmail(String email, String identifier, long orgId) throws Exception;
-	
-	
-	
 }

@@ -1711,9 +1711,14 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		} 
 		return false;
 	}
-	
+
 	@Override
 	public Map<String, Object> getUserForEmail(String email, long orgId, String identifier) throws Exception {
+		return getUserForEmail(email, orgId, identifier, false);
+	}
+	
+	@Override
+	public Map<String, Object> getUserForEmail(String email, long orgId, String identifier, boolean fetchInactive) throws Exception {
 		// TODO Auto-generated method stub
 		List<FacilioField> fields = new ArrayList<FacilioField>();
 		fields.addAll(IAMAccountConstants.getAccountsUserFields());
@@ -1723,7 +1728,10 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "orgDeletedTime", "-1", NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.DELETED_TIME", "orgUserDeletedTime", "-1", NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USER_STATUS", "status", "1", NumberOperators.EQUALS));
+
+		if (!fetchInactive) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USER_STATUS", "status", "1", NumberOperators.EQUALS));
+		}
 
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.EMAIL", "email", email, StringOperators.IS));
 		

@@ -98,6 +98,8 @@ public interface IAMUserBean {
     public List<IAMUser> getUserDataForUidsv3(String userIds, long orgId, boolean shouldFetchDeleted) throws Exception;
 	    	
     public Map<String, Object> getUserForEmail(String emailOrPhone, long orgId, String identifier) throws Exception;
+
+	public Map<String, Object> getUserForEmail(String emailOrPhone, long orgId, String identifier, boolean fetchInactive) throws Exception;
     
     public Map<String, Object> getUserForPhone(String phone, long orgId, String identifier) throws Exception;
     

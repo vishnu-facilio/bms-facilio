@@ -247,6 +247,10 @@ public class IAMUserUtil {
 	public static Map<String, Object> getUserForEmail(String email, String identifier, long orgId) throws Exception {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getUserForEmail(email, orgId, identifier));
 	}
+
+	public static Map<String, Object> getUserForEmail(String email, String identifier, long orgId, boolean fetchInactive) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getUserForEmail(email, orgId, identifier, fetchInactive));
+	}
 	
 	public static Map<String, Object> getUserForUsername(String username, long orgId, String identifier) throws Exception {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getUserForUsername(username, orgId, identifier));

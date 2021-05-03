@@ -583,6 +583,16 @@ public class UserBeanImpl implements UserBean {
 	}
 
 	@Override
+	public User getUserFromEmail(String email, String identifier, long orgId, boolean fetchInactive) throws Exception {
+
+		Map<String, Object> props = IAMUserUtil.getUserForEmail(email, identifier , orgId, fetchInactive);
+		if (props != null && !props.isEmpty()) {
+			return getAppUser(-1, props, true, true, false);
+		}
+		return null;
+	}
+
+	@Override
 	public User getAppUserForUserName(String username, long appId, long orgId) throws Exception {
 
 		AppDomain appDomain = ApplicationApi.getAppDomainForApplication(appId);
