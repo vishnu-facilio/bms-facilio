@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.util;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +30,8 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.util.WorkflowUtil;
 
 public class FormRuleAPI {
 	
@@ -375,9 +376,22 @@ public static List<FormRuleTriggerFieldContext> getFormRuleTriggerFields(FormRul
 		if (props != null && !props.isEmpty()) {
 			List<FormRuleActionContext> formRuleActionContext = FieldUtil.getAsBeanListFromMapList(props, FormRuleActionContext.class);
 			
+			List<Long> workflowIds = new ArrayList<>();
 			for(FormRuleActionContext formRuleAction : formRuleActionContext) {
-				
-				formRuleAction.setFormRuleActionFieldsContext(getFormRuleActionFieldContext(formRuleAction.getId()));
+				if (formRuleAction.getActionTypeEnum() == FormActionType.EXECUTE_SCRIPT) {
+					workflowIds.add(formRuleAction.getWorkflowId());
+				}
+				else {
+					formRuleAction.setFormRuleActionFieldsContext(getFormRuleActionFieldContext(formRuleAction.getId()));
+				}
+			}
+			if (!workflowIds.isEmpty()) {
+				Map<Long, WorkflowContext> workflows = WorkflowUtil.getWorkflowsAsMap(workflowIds);
+				for(FormRuleActionContext formRuleAction : formRuleActionContext) {
+					if (formRuleAction.getWorkflowId() != -1) {
+						formRuleAction.setWorkflow(workflows.get(formRuleAction.getWorkflowId()));
+					}
+				}
 			}
 			return formRuleActionContext;
 		}

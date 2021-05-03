@@ -306,4 +306,29 @@ public class FacilioForm implements Serializable {
 	public void setAppId(long appId) {
 		this.appId = appId;
 	}
+	
+	public enum FormSourceType {
+		FROM_BUILDER,
+		FROM_FORM,
+		FROM_BULK_FORM,
+		;
+
+		public Integer getIndex() {
+			return ordinal() + 1;
+		}
+
+		public String getValue() {
+			return name();
+		}
+
+		public static FormSourceType valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+	}
+	
+	
+	
 }

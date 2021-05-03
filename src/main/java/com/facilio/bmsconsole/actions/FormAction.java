@@ -6,18 +6,16 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
-import org.apache.commons.collections.CollectionUtils;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FacilioForm.FormSourceType;
 import com.facilio.bmsconsole.forms.FormFactory;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
-import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -336,7 +334,7 @@ public class FormAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.FORM_ID, formId);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.FETCH_FORM_RULE_FIELDS, fetchFormRuleFields);
-		context.put("fromBuilder", isFromBuilder());
+		context.put(FacilioConstants.ContextNames.FORM_SOURCE, formSourceType);
 		
 		FacilioChain c = FacilioChainFactory.getFormMetaChain();
 		c.execute(context);
@@ -347,20 +345,23 @@ public class FormAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	private Boolean fromBuilder;
-	public Boolean getFromBuilder() {
-		return fromBuilder;
-	}
 	public void setFromBuilder(Boolean fromBuilder) {
-		this.fromBuilder = fromBuilder;
-	}
-	private boolean isFromBuilder() {
-		if (fromBuilder == null) {
-			return false;
+		if (fromBuilder != null) {
+			formSourceType = FormSourceType.FROM_BUILDER;
 		}
-		return fromBuilder;
 	}
 	
+	private FormSourceType formSourceType;
+	public FormSourceType getFormSourceType() {
+		return formSourceType;
+	}
+
+	public void setFormSourceType(int type) {
+		if (type != -1) {
+			formSourceType = FormSourceType.valueOf(type);
+		}
+	}
+
 	private FormSection formSection;
 	public FormSection getFormSection() {
 		return formSection;

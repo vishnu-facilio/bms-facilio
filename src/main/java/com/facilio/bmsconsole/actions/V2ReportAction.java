@@ -938,6 +938,7 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, reportContext.getModule().getName());
 		if (startTime != -1 && endTime != -1) {
 			reportContext.setDateRange(new DateRange(startTime, endTime));
+			reportContext.setDateOperator(DateOperators.BETWEEN);
 		}
 		reportContext.setUserFilters(userFilters, true);
 	}

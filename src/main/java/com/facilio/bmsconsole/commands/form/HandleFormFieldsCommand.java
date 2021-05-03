@@ -10,10 +10,12 @@ import org.json.simple.JSONObject;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FacilioForm.FormSourceType;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.fw.BeanFactory;
@@ -37,11 +39,15 @@ public class HandleFormFieldsCommand extends FacilioCommand {
 		
 		FacilioForm form = (FacilioForm) context.get(FacilioConstants.ContextNames.FORM);
 		if (form != null) {
-			boolean isFromBuilder = (Boolean) context.getOrDefault("fromBuilder", false);
+			FormSourceType formSourceType = (FormSourceType) context.getOrDefault(ContextNames.FORM_SOURCE, FormSourceType.FROM_FORM);
+			boolean isFromBuilder = formSourceType == formSourceType.FROM_BUILDER;
 			isAssetModule = AssetsAPI.isAssetsModule(module);
 			for(FormField field: form.getFields()) {
 				if (!isFromBuilder) {
 					handleDefaultValue(field);
+				}
+				else if (formSourceType == FormSourceType.FROM_BULK_FORM) {
+					field.setValue(null);
 				}
 				setLookupName(field, moduleName, isFromBuilder);
 				addFilters(module, field);

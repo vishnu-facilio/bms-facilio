@@ -20,6 +20,14 @@ public class FormRuleActionContext {
 	public void setWorkflowId(long workflowId) {
 		this.workflowId = workflowId;
 	}
+	
+	private WorkflowContext workflow;
+	public WorkflowContext getWorkflow() {
+		return workflow;
+	}
+	public void setWorkflow(WorkflowContext workflow) {
+		this.workflow = workflow;
+	}
 
 	public FormRuleContext getRuleContext() {
 		return ruleContext;
