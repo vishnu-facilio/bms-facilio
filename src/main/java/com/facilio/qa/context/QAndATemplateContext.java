@@ -37,7 +37,6 @@ public abstract class QAndATemplateContext <R extends ResponseContext> extends V
     private String name;
     private String description;
     private QAndAType qAndAType;
-    private Long responseModuleId;
 
     private List<PageContext> pages;
 

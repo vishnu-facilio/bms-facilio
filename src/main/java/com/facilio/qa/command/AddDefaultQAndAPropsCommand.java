@@ -40,7 +40,6 @@ public class AddDefaultQAndAPropsCommand extends FacilioCommand {
 
         for (QAndATemplateContext template : list) {
             template.setQAndAType(type);
-            template.setResponseModuleId(responseModule.getModuleId());
         }
 
         return false;

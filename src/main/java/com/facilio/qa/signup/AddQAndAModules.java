@@ -56,7 +56,6 @@ public class AddQAndAModules extends SignUpData {
         SystemEnumField typeField = (SystemEnumField) FieldFactory.getDefaultField("type", "Type", "Q_AND_A_TYPE", FieldType.SYSTEM_ENUM);
         typeField.setEnumName("QAndAType");
         fields.add(typeField);
-        fields.add(FieldFactory.getDefaultField("responseModuleId", "Response Module", "RESPONSE_MODULE_ID", FieldType.NUMBER));
 
         module.setFields(fields);
         return module;
@@ -101,7 +100,6 @@ public class AddQAndAModules extends SignUpData {
         StringSystemEnumField typeField = (StringSystemEnumField) FieldFactory.getDefaultField("questionType", "Type", "QUESTION_TYPE", FieldType.STRING_SYSTEM_ENUM);
         typeField.setEnumName("QuestionType");
         fields.add(typeField);
-        fields.add(FieldFactory.getDefaultField("answerFieldId", "Answer Field", "ANSWER_FIELD_ID", FieldType.NUMBER));
         fields.add(FieldFactory.getDefaultField("commentsLabel", "Comments Label", "COMMENTS_LABEL", FieldType.STRING));
         fields.add(FieldFactory.getDefaultField("attachmentLabel", "Attachments Label", "ATTACHMENTS_LABEL", FieldType.STRING));
         fields.add(FieldFactory.getDefaultField("mandatory", "Is Mandatory?", "MANDATORY", FieldType.BOOLEAN));

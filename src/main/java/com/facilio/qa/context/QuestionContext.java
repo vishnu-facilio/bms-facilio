@@ -48,7 +48,6 @@ public class QuestionContext extends V3Context {
     private String description;
     private Boolean mandatory;
     private String commentsLabel, attachmentLabel;
-    private Integer answerFieldId;
     private QuestionType questionType;
     private Integer position;
     private ClientAnswerContext answer;
