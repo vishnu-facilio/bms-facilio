@@ -974,7 +974,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		}
 
 		if (prop == null) {
-			return true;
+			return false; // temp
 		}
 
 		SecurityPolicy userSecurityPolicy = getUserSecurityPolicy(uid, orgId);
