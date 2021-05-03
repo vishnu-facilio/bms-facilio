@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -260,16 +261,23 @@ public static List<FormRuleTriggerFieldContext> getFormRuleTriggerFields(FormRul
 		return null;
 	}
 	
-	public static List<FormRuleContext> getFormRuleContext(Long formId,TriggerType triggerType) throws Exception {
+	public static List<FormRuleContext> getFormRuleContext(Long formId,TriggerType triggerType, Map<String, Object> formData) throws Exception {
 		if(formId == null || formId <=0) {
 			throw new IllegalArgumentException("Form Cannot Be Null");
+		}
+		
+		List<Long> triggerValues = new ArrayList<>();
+		triggerValues.add((long) triggerType.getIntVal());
+		// Temp need to remove 
+		if (triggerType.equals(TriggerType.FORM_ON_LOAD) && formData != null && !formData.isEmpty()) {
+			triggerValues.add((long) TriggerType.FIELD_UPDATE.getIntVal());
 		}
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormRuleFields());
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getFormRuleFields())
 				.table(ModuleFactory.getFormRuleModule().getTableName())
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("formId"), ""+formId, NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("triggerType"), ""+triggerType.getIntVal(), NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("triggerType"), StringUtils.join(triggerValues, ","), NumberOperators.EQUALS));
 		
 		
 		List<Map<String, Object>> props = selectBuilder.get();
