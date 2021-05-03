@@ -444,6 +444,27 @@ public class AwsUtil
 			sendMailViaMessage(mailJson, to, cc, bcc);
 		}
 	}
+	
+	public static void sendVerificationMailForFromAddressConfig(String email) {
+		
+		try {
+			
+			VerifyEmailIdentityRequest verifyEmailAddressResult = new VerifyEmailIdentityRequest()
+																	.withEmailAddress(email)
+																	;
+			
+			AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
+					.withRegion(Regions.US_WEST_2).withCredentials(getAWSCredentialsProvider()).build();
+			
+			VerifyEmailIdentityResult result = client.verifyEmailIdentity(verifyEmailAddressResult);
+			
+			LOGGER.info("verification response -- "+result);
+			
+		} catch (Exception ex) {
+			LOGGER.info("Error During send Verification mail to " + email + " " + ex.getMessage());
+			throw ex;
+		}
+	}
 
 	public static void sendMailViaMessage(JSONObject mailJson,HashSet<String> to, HashSet<String> cc, HashSet<String> bcc) {
 

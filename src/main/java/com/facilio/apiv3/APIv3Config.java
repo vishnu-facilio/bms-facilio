@@ -142,6 +142,15 @@ public class APIv3Config {
 //                    .afterTransaction(new SampleAfterTransactionCommand())
 //                .build();
 //    }
+	
+	@Module(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME)
+    public static Supplier<V3Config> getEmailFromAddressCRUD() {
+        return () -> new V3Config(EmailFromAddress.class, null)
+                .create()
+                    .beforeSave(TransactionChainFactoryV3.getEmailFromAddressBeforeSaveChain())
+                    .afterSave(TransactionChainFactoryV3.getEmailFromAddressAfterSaveChain())
+                .build();
+    }
 
     @Module("assetdepreciation")
     public static Supplier<V3Config> getAssetDepreciation() {

@@ -13,7 +13,6 @@ import org.json.simple.parser.ParseException;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionScheduler;
-import com.facilio.bmsconsoleV3.util.V3Util;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioIntEnum;
@@ -22,6 +21,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.tasker.ScheduleInfo;
+import com.facilio.v3.util.V3Util;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 

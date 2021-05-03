@@ -20,7 +20,6 @@ import com.facilio.bmsconsoleV3.context.EmailConversationThreadingContext;
 import com.facilio.bmsconsoleV3.context.EmailToModuleDataContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.util.V3AttachmentAPI;
-import com.facilio.bmsconsoleV3.util.V3Util;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.fs.FileInfo;
 import com.facilio.modules.fields.FileField;
@@ -31,6 +30,8 @@ import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.AttachmentV3Context;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.ChainUtil;
+import com.facilio.v3.util.V3Util;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;

@@ -63,6 +63,8 @@ import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.trigger.command.*;
+
+import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import java.util.Collections;
@@ -913,5 +915,18 @@ public class TransactionChainFactoryV3 {
         chain.addCommand(new AddSuplimentsForEmailBaseMessageCommand());
         return chain;
     }
+
+	public static FacilioChain getEmailFromAddressBeforeSaveChain() {
+		 FacilioChain chain = getDefaultChain();
+		 chain.addCommand(new EmailFromAddressValidateCommand());
+		 chain.addCommand(new EmailFromAddressAddDefaultValuesCommand());
+	     return chain;
+	}
+	
+	public static FacilioChain getEmailFromAddressAfterSaveChain() {
+		 FacilioChain chain = getDefaultChain();
+		 chain.addCommand(new SendVerifcationEmailForFromAddressCommand());
+	     return chain;
+	}
 
 }

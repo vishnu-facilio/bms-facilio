@@ -1141,6 +1141,7 @@ public class FacilioChainFactory {
 	public static FacilioChain getAddSupportEmailChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new AddSupportEmailCommand());
+		c.addCommand(new AddSupportEmailToEmailFromAddressCommand());
 		return c;
 	}
 	
@@ -1153,7 +1154,6 @@ public class FacilioChainFactory {
 	public static FacilioChain getUpdateSupportEmailChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new UpdateSupportEmailCommand());
-		System.out.println("........ c"+ c);
 		return c;
 	}
 	

@@ -425,7 +425,8 @@ public class FieldUtil {
 					FacilioConstants.ContextNames.Tenant.DEALS_AND_OFFERS,
 					FacilioConstants.ContextNames.Tenant.AUDIENCE,
 					FacilioConstants.ContextNames.FacilityBooking.FACILITY,
-					FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING
+					FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING,
+					FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME
 //					FacilioConstants.Inspection.INSPECTION_TEMPLATE,
 //					FacilioConstants.Inspection.INSPECTION_RESPONSE
 					)));
@@ -500,7 +501,8 @@ public class FieldUtil {
 					FacilioConstants.ContextNames.Tenant.AUDIENCE,
 					FacilioConstants.ContextNames.FacilityBooking.FACILITY,
 					FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING,
-					FacilioConstants.ContextNames.JOB_PLAN
+					FacilioConstants.ContextNames.JOB_PLAN,
+					FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME
 
 					))
 			);

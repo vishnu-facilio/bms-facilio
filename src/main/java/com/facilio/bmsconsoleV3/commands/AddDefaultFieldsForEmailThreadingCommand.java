@@ -2,7 +2,6 @@ package com.facilio.bmsconsoleV3.commands;
 
 import java.util.List;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -15,7 +14,6 @@ import com.facilio.bmsconsoleV3.context.EmailConversationThreadingContext;
 import com.facilio.bmsconsoleV3.context.EmailToModuleDataContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.service.FacilioService;
 import com.facilio.v3.context.Constants;
 

@@ -2428,6 +2428,10 @@ public class FacilioConstants {
 		public static final String INSPECTION_CATEGORY = "inspectionCategory";
 		public static final String INSPECTION_PRIORITY = "inspectionPriority";
 	}
+	
+	public static class Email {
+		public static final String EMAIL_FROM_ADDRESS_MODULE_NAME = "emailFromAddress";
+	}
 
 	public static class QAndA {
 		public static final String Q_AND_A_TEMPLATE = "qandaTemplate";
