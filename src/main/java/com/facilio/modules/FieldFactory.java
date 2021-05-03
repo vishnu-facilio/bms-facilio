@@ -6,9 +6,11 @@ import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.agent.AgentKeys;
 import com.facilio.agent.integration.AgentIntegrationKeys;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.tasker.tasks.EventUtil;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.*;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import org.apache.commons.lang3.tuple.Pair;
@@ -55,8 +57,14 @@ public class FieldFactory {
         return lookupModuleVsSortFieldName;
     }
 
-    public static Pair<String, Boolean> getSortableFieldName(String moduleName) {
-        return lookupModuleVsSortFieldName.get(moduleName);
+    public static Pair<String, Boolean> getSortableFieldName(String moduleName) throws Exception {
+    	 Pair<String, Boolean> sortField = lookupModuleVsSortFieldName.get(moduleName);
+    	if (sortField == null) {
+    		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+    		FacilioField primaryField = modBean.getPrimaryField(moduleName);
+    		sortField = Pair.of(primaryField.getName(), true);
+    	}
+        return sortField;
     }
 
     public static List<FacilioField> getConnectionApiFields() {
