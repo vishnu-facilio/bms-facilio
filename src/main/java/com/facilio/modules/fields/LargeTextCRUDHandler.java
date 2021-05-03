@@ -69,18 +69,21 @@ public class LargeTextCRUDHandler extends BaseMultiValueCRUDHandler<String> {
 			throws Exception {
 		List<Map<String, Object>> props = relBuilder.getAsProps();
         if (CollectionUtils.isNotEmpty(props)) {
-        	Map<String, Object> record = props.get(0);
-            Long recordId = (Long) ((Map<String, Object>)record.get(getParentFieldName())).get("id");
-            Long fileId = (Long) record.get(valueField.getName());
-            
-            FileStore fs = FacilioFactory.getFileStore();
-            
-            String value = null;
-            try (InputStream is = fs.readFile(fileId)) {
-            	value = IOUtils.toString(is);
-	        }
-            
-            addToRecordMap(recordId, value);
+        	
+        	for(Map<String, Object> record : props) {
+        		
+        		Long recordId = (Long) ((Map<String, Object>)record.get(getParentFieldName())).get("id");
+                Long fileId = (Long) record.get(valueField.getName());
+                
+                FileStore fs = FacilioFactory.getFileStore();
+                
+                String value = null;
+                try (InputStream is = fs.readFile(fileId)) {
+                	value = IOUtils.toString(is);
+    	        }
+                
+                addToRecordMap(recordId, value);
+        	}
         }
 		
 	}
