@@ -155,7 +155,9 @@ public enum FormActionType {
 				if (formDetails == null && formRuleActionContext.getRuleContext().getFormId() > 0) {
 					formDetails = FormsAPI.getFormFromDB(formRuleActionContext.getRuleContext().getFormId());
 				}
-				CommonCommandUtil.appendModuleNameInKey(formDetails.getModule().getName(), formDetails.getModule().getName(), tempFormData, placeHolders);
+				if (formDetails != null) {
+					CommonCommandUtil.appendModuleNameInKey(formDetails.getModule().getName(), formDetails.getModule().getName(), tempFormData, placeHolders);	
+				}
 			}
 			
 			for(FormRuleActionFieldsContext actionField : formRuleActionContext.getFormRuleActionFieldsContext()) {
