@@ -1611,6 +1611,7 @@ public class FormFactory {
 		fields.add(new FormField("receivedTime", FieldDisplayType.DATETIME, "Received Time", Required.REQUIRED, 3, 2));
 		fields.add(new FormField("avatar",FieldDisplayType.IMAGE,"Photo",Required.OPTIONAL,4,2));
 		fields.add(new FormField("deliveryArea", FieldDisplayType.LOOKUP_SIMPLE, "Delivery Area", Required.OPTIONAL, "deliveryArea", 5, 2));
+		fields.add(new FormField("signature", FieldDisplayType.SIGNATURE, "Signature", Required.OPTIONAL, 6, 1));
 		return fields;
 	}
 	
