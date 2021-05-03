@@ -77,6 +77,16 @@ public abstract class EmailClient {
         return emailAddresses.stream().collect(Collectors.joining(","));
     }
 
+    private void handleOtherEmailAddress (JSONObject mailJson, String key) throws Exception {
+        Set<String> emailAddress = getEmailAddresses(mailJson, key, true);
+        if (CollectionUtils.isNotEmpty(emailAddress)) {
+            mailJson.put(key, combineEmailsAgain(emailAddress));
+        }
+        else {
+            mailJson.remove(key);
+        }
+    }
+
     private boolean removeInActiveUsers (JSONObject mailJson) throws Exception {
         if (AccountUtil.getCurrentOrg() != null) {
             Set<String> emailAddress = getEmailAddresses(mailJson, TO, true);
@@ -85,14 +95,8 @@ public abstract class EmailClient {
                 return false;
             }
             mailJson.put(TO, combineEmailsAgain(emailAddress));
-            emailAddress = getEmailAddresses(mailJson, CC, true);
-            if (CollectionUtils.isNotEmpty(emailAddress)) {
-                mailJson.put(CC, combineEmailsAgain(emailAddress));
-            }
-            emailAddress = getEmailAddresses(mailJson, BCC, true);
-            if (CollectionUtils.isNotEmpty(emailAddress)) {
-                mailJson.put(BCC, combineEmailsAgain(emailAddress));
-            }
+            handleOtherEmailAddress(mailJson, CC);
+            handleOtherEmailAddress(mailJson, BCC);
         }
         return true;
     }
