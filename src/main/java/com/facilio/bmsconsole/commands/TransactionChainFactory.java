@@ -1030,7 +1030,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ForkChainToInstantJobCommand()
 				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ALARM_NOTIFICATION_RULE, RuleType.MODULE_RULE_NOTIFICATION))
 			);
-			c.addCommand(new AddAlarmFollowersCommand());
+//			c.addCommand(new AddAlarmFollowersCommand());
 			c.addCommand(new ConstructTicketNotesCommand());
 			c.addCommand(getAddNotesChain());
 			return c;

@@ -33,7 +33,6 @@ class AwsEmailClient extends EmailClient {
     }
 
     private void sendEmailViaAws(JSONObject mailJson) throws Exception  {
-
         if(canSendEmail(mailJson)) {
             AwsUtil.sendMailViaMessage(mailJson, getEmailAddresses(mailJson, TO), getEmailAddresses(mailJson, CC),getEmailAddresses(mailJson, BCC));
         }

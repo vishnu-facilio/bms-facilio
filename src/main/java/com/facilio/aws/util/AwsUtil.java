@@ -466,7 +466,7 @@ public class AwsUtil
 		}
 	}
 
-	public static void sendMailViaMessage(JSONObject mailJson,HashSet<String> to, HashSet<String> cc, HashSet<String> bcc) {
+	public static void sendMailViaMessage(JSONObject mailJson,Set<String> to, Set<String> cc, Set<String> bcc) {
 
 		Destination destination = new Destination().withToAddresses(to);
 		if (CollectionUtils.isNotEmpty(cc)) {

@@ -1,9 +1,15 @@
 package com.facilio.services.email;
 
+import com.amazonaws.services.dynamodbv2.xspec.S;
+import com.facilio.accounts.bean.UserBean;
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.util.CommonAPI;
+import com.facilio.fw.BeanFactory;
 import com.facilio.time.DateTimeUtil;
+import com.facilio.util.FacilioUtil;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -17,9 +23,12 @@ import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.internet.*;
 import java.net.URL;
+import java.text.MessageFormat;
 import java.time.ZoneId;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public abstract class EmailClient {
 
@@ -46,12 +55,53 @@ public abstract class EmailClient {
     public static final String ERROR_AND_ALERT_AT_FACILIO="error+alert@facilio.com";
 
     protected abstract Session getSession();
+
+    private static boolean checkIfActiveUserFromEmail(String email) throws Exception { //TODO Have to handle this in bulk. For now all emails are not sent in user thread and so okay I guess
+        UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
+        User user = userBean.getUserFromEmail(email, null, AccountUtil.getCurrentOrg().getOrgId());
+        return (user == null || (user != null && user.getUserStatus()));
+    }
+
+    public void sendEmailWithActiveUserCheck (JSONObject mailJson) throws Exception {
+        if (removeInActiveUsers(mailJson)) {
+            sendEmail(mailJson);
+        }
+    }
+
+    public void sendEmailWithActiveUserCheck (JSONObject mailJson, Map<String, String> files) throws Exception {
+        if (removeInActiveUsers(mailJson)) {
+            sendEmail(mailJson, files);
+        }
+    }
+
+    private String combineEmailsAgain (Set<String> emailAddresses) { //TODO Have to handle this better
+        return emailAddresses.stream().collect(Collectors.joining(","));
+    }
+
+    private boolean removeInActiveUsers (JSONObject mailJson) throws Exception {
+        if (AccountUtil.getCurrentOrg() != null) {
+            Set<String> emailAddress = getEmailAddresses(mailJson, TO, true);
+            if (CollectionUtils.isEmpty(emailAddress)) { //Not sending email if to is empty. Not even checking cc or Bcc in this case
+                LOGGER.info(MessageFormat.format("Not sending email since 'to address' ({0}) is empty after removing inactive users", mailJson.get(TO)));
+                return false;
+            }
+            mailJson.put(TO, combineEmailsAgain(emailAddress));
+            emailAddress = getEmailAddresses(mailJson, CC, true);
+            if (CollectionUtils.isNotEmpty(emailAddress)) {
+                mailJson.put(CC, combineEmailsAgain(emailAddress));
+            }
+            emailAddress = getEmailAddresses(mailJson, BCC, true);
+            if (CollectionUtils.isNotEmpty(emailAddress)) {
+                mailJson.put(BCC, combineEmailsAgain(emailAddress));
+            }
+        }
+        return true;
+    }
+
     public abstract void sendEmail(JSONObject mailJson) throws Exception;
     public abstract void sendEmail(JSONObject mailJson, Map<String, String> files) throws Exception;
 
     MimeMessage getEmailMessage(JSONObject mailJson, Map<String, String> files) throws Exception {
-
-
         Session session = getSession();
         MimeMessage message = constructMimeMessageContent(mailJson,session,files);
         message.addHeader(HOST, FacilioProperties.getAppDomain());
@@ -206,27 +256,30 @@ public abstract class EmailClient {
         return canSendEmail(mailJson);
     }
 
-    boolean canSendEmail(JSONObject mailJson) {
+    boolean canSendEmail(JSONObject mailJson) throws Exception {
         if (FacilioProperties.isDevelopment()) {
             return false;
         }
         return (getEmailAddresses(mailJson, TO).size() >0 );
     }
-    HashSet<String> getEmailAddresses(JSONObject mailJson, String key){
+
+    Set<String> getEmailAddresses(JSONObject mailJson, String key) throws Exception {
+        return getEmailAddresses(mailJson, key, false);
+    }
+
+    private Set<String> getEmailAddresses(JSONObject mailJson, String key, boolean checkActive) throws Exception {
         String emailAddressString = (String)mailJson.get(key);
         HashSet<String> emailAddress = new HashSet<>();
-        if( !FacilioProperties.isProduction() ) {
-            if(emailAddressString != null) {
-                for(String address : emailAddressString.split(",")) {
-                    if(address.contains("@facilio.com")) {
+        if(StringUtils.isNotEmpty(emailAddressString)) {
+            if (!FacilioProperties.isProduction()) {
+                for (String address : FacilioUtil.splitByComma(emailAddressString)) {
+                    if (address.contains("@facilio.com") && (!checkActive || checkIfActiveUserFromEmail(address))) {
                         emailAddress.add(address);
                     }
                 }
-            }
-        } else {
-            if(emailAddressString != null) {
-                for (String address : emailAddressString.split(",")) {
-                    if (address != null && address.contains("@")) {
+            } else {
+                for (String address : FacilioUtil.splitByComma(emailAddressString)) {
+                    if (address != null && address.contains("@") && (!checkActive || checkIfActiveUserFromEmail(address))) {
                         emailAddress.add(address);
                     }
                 }

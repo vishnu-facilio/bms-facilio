@@ -2546,10 +2546,8 @@ public class FacilioConstants {
 		public static final String TEMPLATE_TYPE = "templateType";
 		public static final String TEMPLATE_ID = "templateId";
 
-		public static final String NOTIFIED_EMAILS = "notifiedEmails";
 		public static final String NOTIFICATION_EMAIL = "notificationEMail";
-		
-		public static final String NOTIFIED_SMS = "notifiedSMS";
+
 		public static final String NOTIFICATION_SMS = "notificationSMS";
 		
 		public static final String WORKFLOW = "workflow";

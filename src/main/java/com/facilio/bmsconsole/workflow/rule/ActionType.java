@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
@@ -25,8 +24,6 @@ import com.facilio.fs.FileInfo;
 import com.facilio.modules.fields.FileField;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.trigger.util.TriggerUtil;
-import com.facilio.v3.RESTAPIHandler;
-import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.AttachmentV3Context;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.ChainUtil;
@@ -41,7 +38,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.log4j.Priority;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -83,7 +79,6 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
-import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
@@ -111,15 +106,9 @@ public enum ActionType {
 			if (obj != null) {
 				try {
 					String to = (String) obj.get("to");
-					if (to != null && !to.isEmpty() && checkIfActiveUserFromEmail(to)) {
+					if (to != null && !to.isEmpty()) {
 						String attachmentsUrl = (String) obj.getOrDefault("attachmentsUrl", null);
 						String attachmentsNames = (String) obj.getOrDefault("attachmentsNames", null);
-						List<String> emails = new ArrayList<>();
-						emails.add(to);
-						if (context != null) {
-							context.put(FacilioConstants.Workflow.NOTIFIED_EMAILS, emails);
-						}
-						
 						if(StringUtils.isNotEmpty(attachmentsUrl) && StringUtils.isNotEmpty(attachmentsNames)){
 							String[] urls = attachmentsUrl.split(",");
 							String[] names = attachmentsNames.split(",");
@@ -128,11 +117,11 @@ public enum ActionType {
 								for(int i = 0; i < names.length; i++) {
 									filesMap.put(names[i], urls[i]);
 								}
-								FacilioFactory.getEmailClient().sendEmail(obj, filesMap);
+								FacilioFactory.getEmailClient().sendEmailWithActiveUserCheck(obj, filesMap);
 								return;
 							}
 						}
-						FacilioFactory.getEmailClient().sendEmail(obj);
+						FacilioFactory.getEmailClient().sendEmailWithActiveUserCheck(obj);
 						
 					}
 				} catch (Exception e) {
@@ -150,13 +139,7 @@ public enum ActionType {
 				try {
 					String to = (String) obj.get("to");
 					if (to != null && !to.isEmpty() && checkIfActiveUserFromPhone(to)) {
-						List<String> sms = new ArrayList<>();
 						SMSUtil.sendSMS(obj);
-
-						sms.add(to);
-						if (context != null) {
-							context.put(FacilioConstants.Workflow.NOTIFIED_SMS, sms);
-						}
 					}
 				} catch (Exception e) {
 					LOGGER.error("Exception occurred ", e);
@@ -182,36 +165,30 @@ public enum ActionType {
 					}
 
 					if (toEmails != null && !toEmails.isEmpty()) {
-						List<String> emails = new ArrayList<>();
 						boolean sendAsSeparateMail = (boolean) obj.getOrDefault("sendAsSeparateMail", false);
 						if (!sendAsSeparateMail) {
 							StringJoiner activeToEmails = new StringJoiner(",");
 							for (Object toEmail : toEmails) {
 								String to = (String) toEmail;
-								if (StringUtils.isNotEmpty(to) && checkIfActiveUserFromEmail(to)) {
+								if (StringUtils.isNotEmpty(to)) {
 									activeToEmails.add(to);
-									emails.add(to);
 								}
 							}
 							obj.put("to", activeToEmails.toString());
-							FacilioFactory.getEmailClient().sendEmail(obj);
+							FacilioFactory.getEmailClient().sendEmailWithActiveUserCheck(obj);
 						} else {
 							for (Object toEmail : toEmails) {
 								String to = (String) toEmail;
-								if (StringUtils.isNotEmpty(to) && checkIfActiveUserFromEmail(to)) {
+								if (StringUtils.isNotEmpty(to)) {
 									obj.put("to", to);
 
 									if (AccountUtil.getCurrentOrg().getId() == 104) {
 										LOGGER.info("Gonna Email : " + obj.toJSONString());
 									}
 
-									FacilioFactory.getEmailClient().sendEmail(obj);
-									emails.add(to);
+									FacilioFactory.getEmailClient().sendEmailWithActiveUserCheck(obj);
 								}
 							}
-						}
-						if (context != null) {
-							context.put(FacilioConstants.Workflow.NOTIFIED_EMAILS, emails);
 						}
 					}
 				} catch (Exception e) {
@@ -237,17 +214,12 @@ public enum ActionType {
 						tos = getTo(toNums.toString());
 					}
 					if (tos != null && !tos.isEmpty()) {
-						List<String> sms = new ArrayList<>();
 						for (Object toObj : tos) {
 							String to = (String) toObj;
 							if (to != null && !to.isEmpty() && checkIfActiveUserFromPhone(to)) {
 								obj.put("to", to);
 								SMSUtil.sendSMS(obj);
-								sms.add(to);
 							}
-						}
-						if (context != null) {
-							context.put(FacilioConstants.Workflow.NOTIFIED_SMS, sms);
 						}
 					}
 				} catch (Exception e) {
@@ -1390,9 +1362,6 @@ public enum ActionType {
 						WhatsappUtil.sendMessage(obj); 
 						
 						sms.add(to);
-						if (context != null) {
-							context.put(FacilioConstants.Workflow.NOTIFIED_SMS, sms);
-						}
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -1806,12 +1775,6 @@ public enum ActionType {
 		json.put("to", "+919840425388");
 		json.put("message", "hello world");
 		t.performAction(json, null, null, null);
-	}
-	
-	private static boolean checkIfActiveUserFromEmail(String email) throws Exception {
-		UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
-		User user = userBean.getUserFromEmail(email, null, AccountUtil.getCurrentOrg().getOrgId());
-		return (user == null || (user != null && user.getUserStatus()));
 	}
 
 	private static boolean checkIfActiveUserFromPhone(String phone) throws Exception {

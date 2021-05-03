@@ -26,7 +26,7 @@ public class SendNotificationJob extends InstantJob {
 			
 			JSONObject mailJson = (JSONObject) context.get(FacilioConstants.ContextNames.NOTIFICATION_OBJECT);
 			Map<String,String> attachements = (Map<String, String>) context.get(FacilioConstants.ContextNames.ATTACHMENT_MAP_FILE_LIST);
-			FacilioFactory.getEmailClient().sendEmail(mailJson,attachements);
+			FacilioFactory.getEmailClient().sendEmailWithActiveUserCheck(mailJson,attachements);
 			break;
 		case SMS_NOTIFICATION:
 			
