@@ -969,7 +969,10 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 	
 	private void addRuleLogEntry(Context context,Object record,boolean isTrueAction) throws Exception {
 		
-		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() != 339l && AccountUtil.getCurrentOrg().getOrgId() != 405l) {
+		Boolean executeReadingRuleThroughAutomatedHistory = (Boolean) context.get(FacilioConstants.OrgInfoKeys.EXECUTE_READING_RULE_THROUGH_AUTOMATED_HISTORY);
+		executeReadingRuleThroughAutomatedHistory = executeReadingRuleThroughAutomatedHistory == null ? Boolean.FALSE : executeReadingRuleThroughAutomatedHistory;  
+		 
+		if (!executeReadingRuleThroughAutomatedHistory) {
 			ReadingRuleContext currentRule = null;
 			if (isTrueAction) {
 				if (this.getRuleTypeEnum() == RuleType.ALARM_TRIGGER_RULE) {
@@ -1092,7 +1095,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 
 		PreEventContext event = new PreEventContext();
 		
-		if(AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getOrgId() == 1 && AccountUtil.getCurrentOrg().getOrgId() == 339 || AccountUtil.getCurrentOrg().getOrgId() == 405) && reading.getParent() == null) {
+		if(reading.getParent() == null) {
 			event.setResource(resource);
 		}
 		else {

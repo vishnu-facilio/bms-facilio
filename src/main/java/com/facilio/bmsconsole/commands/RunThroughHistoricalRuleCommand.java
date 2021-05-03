@@ -53,9 +53,6 @@ public class RunThroughHistoricalRuleCommand extends FacilioCommand  implements 
 	public boolean executeCommand(Context context) throws Exception {
 		
 		long maximumDailyEventRuleJobsPerOrg = 10000l; 
-		if (AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getOrgId() == 339 || AccountUtil.getCurrentOrg().getOrgId() == 405)) {
-			maximumDailyEventRuleJobsPerOrg = 60000l;
-		}
 		
 		Map<String, String> orgInfoMap = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.HISTORICAL_READING_RULE_JOBS_THRESHOLD);
     	if (orgInfoMap != null && MapUtils.isNotEmpty(orgInfoMap)) {
@@ -65,10 +62,11 @@ public class RunThroughHistoricalRuleCommand extends FacilioCommand  implements 
 			}
     	}
 		
-
-		DateRange range = (DateRange) context.get(FacilioConstants.ContextNames.DATE_RANGE);
+    	
+    	DateRange range = (DateRange) context.get(FacilioConstants.ContextNames.DATE_RANGE);
 		Integer ruleJobType = (Integer) context.get(FacilioConstants.ContextNames.RULE_JOB_TYPE);
 		JSONObject loggerInfo = (JSONObject) context.get(FacilioConstants.ContextNames.HISTORICAL_RULE_LOGGER_PROPS);
+		boolean isAutomatedSystemHistory = (loggerInfo != null && loggerInfo.get("skipLoggerUpdate") != null && (Boolean)loggerInfo.get("skipLoggerUpdate")) ? true : false;
 
 		Boolean isInclude = (Boolean) context.get(FacilioConstants.ContextNames.IS_INCLUDE);
 		isInclude = (isInclude == null) ? true : isInclude;
@@ -118,7 +116,7 @@ public class RunThroughHistoricalRuleCommand extends FacilioCommand  implements 
 		DateRange firstInterval = intervals.get(0);
 		DateRange lastInterval = intervals.get(intervals.size()-1);
 		
-		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() != 339 && AccountUtil.getCurrentOrg().getOrgId() != 405) {
+		if (AccountUtil.getCurrentOrg() != null && !isAutomatedSystemHistory) {
 			long activeCurrentRuleResourceLogs = WorkflowRuleResourceLoggerAPI.getActiveWorkflowRuleResourceLogsByRuleAndResourceId(primaryId, secondaryIds, ruleJobType);
 			if(activeCurrentRuleResourceLogs > 0)
 			{

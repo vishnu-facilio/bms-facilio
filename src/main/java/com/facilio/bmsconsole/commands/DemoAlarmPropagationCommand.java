@@ -67,18 +67,22 @@ public class DemoAlarmPropagationCommand extends FacilioCommand{
 		ZonedDateTime currentTimeZdt = (ZonedDateTime) context.get(ContextNames.START_TIME);
 		long currentTime = currentTimeZdt.toInstant().toEpochMilli();
 		
+		boolean executeReadingRuleThroughAutomatedHistory = false;
 		Map<String, String> orgInfoMap = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.EXECUTE_READING_RULE_THROUGH_AUTOMATED_HISTORY);
     	if (orgInfoMap != null && MapUtils.isNotEmpty(orgInfoMap)) {
     		String executeReadingRuleThroughAutomatedHistoryProp = orgInfoMap.get(FacilioConstants.OrgInfoKeys.EXECUTE_READING_RULE_THROUGH_AUTOMATED_HISTORY);
 			if (executeReadingRuleThroughAutomatedHistoryProp != null && !executeReadingRuleThroughAutomatedHistoryProp.isEmpty() && StringUtils.isNotEmpty(executeReadingRuleThroughAutomatedHistoryProp) && Boolean.valueOf(executeReadingRuleThroughAutomatedHistoryProp) == Boolean.FALSE) {
         		return false;
 			}
+			else if(executeReadingRuleThroughAutomatedHistoryProp != null && !executeReadingRuleThroughAutomatedHistoryProp.isEmpty() && StringUtils.isNotEmpty(executeReadingRuleThroughAutomatedHistoryProp) && Boolean.valueOf(executeReadingRuleThroughAutomatedHistoryProp)) {
+				executeReadingRuleThroughAutomatedHistory = true;
+			}
     	}
 		
 		FacilioContext runThroughRuleChainContext = new FacilioContext();
 		runThroughRuleChainContext.put(FacilioConstants.ContextNames.RULE_JOB_TYPE, RuleJobType.READING_ALARM.getIndex());
 		
-		if (AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getOrgId() == 339 || AccountUtil.getCurrentOrg().getOrgId() == 1 || AccountUtil.getCurrentOrg().getOrgId() == 405)) {
+		if (executeReadingRuleThroughAutomatedHistory) {
 			JSONObject jobProps = BmsJobUtil.getJobProps(jobId, "DemoAlarmPropagationJob");
 			if(jobProps == null) {
 				LOGGER.error("DemoAlarmPropagationJob empty jobProps");
@@ -99,7 +103,6 @@ public class DemoAlarmPropagationCommand extends FacilioCommand{
 			endTime = endTime-1000;
 			
 			LOGGER.info("DemoAlarmPropagationJob jobProps: "+jobProps+ " startTime: "+startTime+" endTime: "+endTime);	
-
 			runThroughRuleChainContext.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(startTime, endTime));
 		}
 		else {
@@ -107,7 +110,7 @@ public class DemoAlarmPropagationCommand extends FacilioCommand{
 			runThroughRuleChainContext.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(DateTimeUtil.getDayStartTimeOf(yesterdayTime), DateTimeUtil.getDayEndTimeOf(yesterdayTime)));
 		}
 		
-		HashMap<Long, List<Long>> ruleIdVsResourceIds = getAllRulesFromReadingAlarms(jobId);
+		HashMap<Long, List<Long>> ruleIdVsResourceIds = getAllRulesFromReadingAlarms(jobId, executeReadingRuleThroughAutomatedHistory);
 		
 		if(ruleIdVsResourceIds != null && MapUtils.isNotEmpty(ruleIdVsResourceIds)) 
 		{
@@ -129,7 +132,7 @@ public class DemoAlarmPropagationCommand extends FacilioCommand{
 		return false;
 	}
 
-   private HashMap<Long,List<Long>> getAllRulesFromReadingAlarms(Long jobId) throws Exception
+   private HashMap<Long,List<Long>> getAllRulesFromReadingAlarms(Long jobId, boolean executeReadingRuleThroughAutomatedHistory) throws Exception
    {
 	   if(jobId == null) {
 		   return null;
@@ -138,13 +141,13 @@ public class DemoAlarmPropagationCommand extends FacilioCommand{
 	   	HashMap<Long,List<Long>> ruleIdVsResourceIds = new HashMap<Long,List<Long>>();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		if (AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getOrgId() == 339 || AccountUtil.getCurrentOrg().getOrgId() == 1 || AccountUtil.getCurrentOrg().getOrgId() == 405)) {
+		if (executeReadingRuleThroughAutomatedHistory) {
 			Criteria criteria = new Criteria();
 			criteria.addAndCondition(CriteriaAPI.getCondition("RULE_TYPE", "ruleType", ""+RuleType.READING_RULE.getIntVal(), NumberOperators.EQUALS));
 			criteria.addAndCondition(CriteriaAPI.getCondition("STATUS", "status", ""+true, BooleanOperators.IS));
 			
 			AssetCategoryContext assetCategory = AssetsAPI.getCategory("AHU");
-			if(AccountUtil.getCurrentOrg().getOrgId() == 339) {
+			if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339) {
 				if(jobId == 339l && assetCategory != null && assetCategory.getId() > 0) {	
 					criteria.addAndCondition(CriteriaAPI.getCondition("ASSET_CATEGORY_ID", "assetCategoryId", ""+assetCategory.getId(), NumberOperators.EQUALS));
 				}

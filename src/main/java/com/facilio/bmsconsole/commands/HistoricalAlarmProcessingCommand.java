@@ -64,6 +64,7 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 			JSONObject loggerInfo = parentRuleResourceLoggerContext.getLoggerInfo();
 			RuleJobType ruleJobType = parentRuleResourceLoggerContext.getRuleJobTypeEnum();
 			Type type = Type.valueOf(ruleJobType.getValue());
+			boolean isAutomatedSystemHistory = (loggerInfo != null && loggerInfo.get("skipLoggerUpdate") != null && (Boolean)loggerInfo.get("skipLoggerUpdate")) ? true : false;
 			Long totalAlarmOccurrenceCount = 0l;
 			
 			ExecuteHistoricalRule historyExecutionType = ruleJobType.getHistoryRuleExecutionType();
@@ -74,13 +75,13 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 				Criteria readingOccurenceDeletionCriteria = historyExecutionType.getOccurrenceDeletionCriteria(loggerInfo, Type.READING_ALARM);
 				Criteria readingEventsDeletionCriteria = historyExecutionType.getEventsProcessingCriteria(loggerInfo, Type.READING_ALARM);
 				DateRange modifiedDateRange = WorkflowRuleHistoricalAlarmsAPI.deleteAllAlarmOccurrencesBasedonCriteria(readingOccurenceDeletionCriteria, readingEventsDeletionCriteria, lesserStartTime, greaterEndTime, Type.READING_ALARM, loggerInfo);
-				totalAlarmOccurrenceCount = fetchAndProcessAllEventsBasedOnAlarmDeletionRange(primaryRuleId, eventsFetchCriteria, modifiedDateRange.getStartTime(), modifiedDateRange.getEndTime(), Type.PRE_ALARM, totalAlarmOccurrenceCount);
+				totalAlarmOccurrenceCount = fetchAndProcessAllEventsBasedOnAlarmDeletionRange(primaryRuleId, eventsFetchCriteria, modifiedDateRange.getStartTime(), modifiedDateRange.getEndTime(), Type.PRE_ALARM, totalAlarmOccurrenceCount, isAutomatedSystemHistory);
 			}
 			else {
 				if(ruleJobType.getRollUpAlarmType() != null) {
-					fetchAndProcessAllEventsBasedOnAlarmDeletionRange(primaryRuleId, historyExecutionType.getEventsProcessingCriteria(loggerInfo, Type.valueOf(ruleJobType.getRollUpAlarmType().getIndex())), lesserStartTime, greaterEndTime, Type.valueOf(ruleJobType.getRollUpAlarmType().getIndex()), totalAlarmOccurrenceCount);
+					fetchAndProcessAllEventsBasedOnAlarmDeletionRange(primaryRuleId, historyExecutionType.getEventsProcessingCriteria(loggerInfo, Type.valueOf(ruleJobType.getRollUpAlarmType().getIndex())), lesserStartTime, greaterEndTime, Type.valueOf(ruleJobType.getRollUpAlarmType().getIndex()), totalAlarmOccurrenceCount, isAutomatedSystemHistory);
 				}
-				totalAlarmOccurrenceCount = fetchAndProcessAllEventsBasedOnAlarmDeletionRange(primaryRuleId, eventsFetchCriteria, lesserStartTime, greaterEndTime, type, totalAlarmOccurrenceCount);			
+				totalAlarmOccurrenceCount = fetchAndProcessAllEventsBasedOnAlarmDeletionRange(primaryRuleId, eventsFetchCriteria, lesserStartTime, greaterEndTime, type, totalAlarmOccurrenceCount, isAutomatedSystemHistory);			
 			}			
 		
 			if(parentRuleResourceLoggerContext.getStatus() == WorkflowRuleResourceLoggerContext.Status.PARTIALLY_PROCESSED_STATE.getIntVal()) {
@@ -102,7 +103,7 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 		return false;
 	}
 	
-	private Long fetchAndProcessAllEventsBasedOnAlarmDeletionRange(long primaryRuleId, Criteria fetchEventsCriteria, long lesserStartTime, long greaterEndTime, Type type, Long totalAlarmOccurrenceCount) throws Exception
+	private Long fetchAndProcessAllEventsBasedOnAlarmDeletionRange(long primaryRuleId, Criteria fetchEventsCriteria, long lesserStartTime, long greaterEndTime, Type type, Long totalAlarmOccurrenceCount, boolean isAutomatedSystemHistory) throws Exception
 	{
 		final int EVENTS_FETCH_LIMIT_COUNT = 5000; 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -151,7 +152,7 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 			FacilioChain addEvent = TransactionChainFactory.getV2AddEventChain(true);
 			addEvent.getContext().put(EventConstants.EventContextNames.EVENT_LIST, baseEvents);
 			addEvent.getContext().put(EventConstants.EventContextNames.IS_HISTORICAL_EVENT, true);
-			if (AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getOrgId() == 339|| AccountUtil.getCurrentOrg().getOrgId() == 405) && type != Type.SENSOR_ROLLUP_ALARM && type != Type.SENSOR_ALARM) {
+			if (isAutomatedSystemHistory && type != Type.SENSOR_ROLLUP_ALARM && type != Type.SENSOR_ALARM) {
 				addEvent.getContext().put(EventConstants.EventContextNames.CONSTRUCT_HISTORICAL_AUTO_CLEAR_EVENT, false);
 			}
 			else {

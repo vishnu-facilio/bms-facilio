@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -74,6 +75,15 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
     	Integer ruleJobType = (Integer) loggerInfo.get("ruleJobType");
     	RuleJobType ruleJobTypeEnum = RuleJobType.valueOf(ruleJobType);
 
+		boolean executeReadingRuleThroughAutomatedHistory = false;
+		Map<String, String> orgInfoMap = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.EXECUTE_READING_RULE_THROUGH_AUTOMATED_HISTORY);
+    	if (orgInfoMap != null && MapUtils.isNotEmpty(orgInfoMap)) {
+    		String executeReadingRuleThroughAutomatedHistoryProp = orgInfoMap.get(FacilioConstants.OrgInfoKeys.EXECUTE_READING_RULE_THROUGH_AUTOMATED_HISTORY);
+			if (executeReadingRuleThroughAutomatedHistoryProp != null && !executeReadingRuleThroughAutomatedHistoryProp.isEmpty() && StringUtils.isNotEmpty(executeReadingRuleThroughAutomatedHistoryProp) && Boolean.valueOf(executeReadingRuleThroughAutomatedHistoryProp)) {
+				executeReadingRuleThroughAutomatedHistory = true;
+			}
+    	}
+    	
 		ReadingRuleContext readingRule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(ruleId, false, true);
 		ReadingRuleAPI.constructWorkflowAndCriteria(readingRule);
 		
@@ -82,7 +92,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 			throw new Exception("Invalid params to execute daily reading event job: "+jobId);				
 		}
 		readingRule.setMatchedResources(Collections.singletonMap(currentResourceContext.getId(), currentResourceContext));
-
+ 
 		LOGGER.info("Historical Reading Rule Run started for jobId: "+jobId+" with RuleType " +ruleJobTypeEnum.getValue()+ " and RuleId : "+ruleId+" for resource : "+resourceId+" between "+startTime+" and "+endTime+". Triggered at  -- "+processStartTime);				
 		boolean isFirstIntervalJob = Boolean.TRUE.equals((Boolean) jobStatesMap.get("isFirstIntervalJob"));
 		boolean isLastIntervalJob = Boolean.TRUE.equals((Boolean) jobStatesMap.get("isLastIntervalJob"));
@@ -110,11 +120,11 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 		}				
 		
 		if (fields != null && !fields.isEmpty()) {
-			supportFieldsRDM = getSupportingData(fields, startTime, endTime, -1, jobStatesMap);
+			supportFieldsRDM = getSupportingData(fields, startTime, endTime, -1, jobStatesMap, executeReadingRuleThroughAutomatedHistory);
 		}	
 		Map<String, List<ReadingDataMeta>> currentRDMList = null;
 		if (fields != null) {
-			currentRDMList = getSupportingData(fields, startTime, endTime, resourceId, jobStatesMap);
+			currentRDMList = getSupportingData(fields, startTime, endTime, resourceId, jobStatesMap, executeReadingRuleThroughAutomatedHistory);
 		}
 		
 		
@@ -141,8 +151,8 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 			
 			if(previousFetchStartReading != null)
 			{
-				Map<String, List<ReadingDataMeta>> beforeCurrentFields = prepareCurrentFieldsRDM(readingRule, previousFetchStartReading.getTtime(), startTime, resourceId, fields);
-				executeWorkflows(readingRule, alarmRule, Collections.singletonList(previousFetchStartReading), beforeCurrentFields, fields, beforeFetchFirstEvent, new BaseEventContext(), currentResourceContext, constructAssetTimeVsEventsMap(fields, resourceId, previousFetchStartReading.getTtime(), startTime), preRequisiteFields);
+				Map<String, List<ReadingDataMeta>> beforeCurrentFields = prepareCurrentFieldsRDM(readingRule, previousFetchStartReading.getTtime(), startTime, resourceId, fields, executeReadingRuleThroughAutomatedHistory);
+				executeWorkflows(readingRule, alarmRule, Collections.singletonList(previousFetchStartReading), beforeCurrentFields, fields, beforeFetchFirstEvent, new BaseEventContext(), currentResourceContext, constructAssetTimeVsEventsMap(fields, resourceId, previousFetchStartReading.getTtime(), startTime), preRequisiteFields, executeReadingRuleThroughAutomatedHistory);
 				if(beforeFetchFirstEvent != null && !beforeFetchFirstEvent.isEmpty() && !beforeFetchFirstEvent.get(0).getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY))
 				{
 					previousEventMeta = beforeFetchFirstEvent.get(0);
@@ -164,7 +174,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 			endTime = readings.get(readings.size() - 1).getTtime();
 
 			LinkedHashMap<Long,List<SensorEventContext>> assetTimeVsEventsMap = constructAssetTimeVsEventsMap(fields, resourceId, startTime, endTime);
-			FacilioContext context = executeWorkflows(readingRule, alarmRule, readings, currentFields, fields, events, previousEventMeta, currentResourceContext, assetTimeVsEventsMap, preRequisiteFields);
+			FacilioContext context = executeWorkflows(readingRule, alarmRule, readings, currentFields, fields, events, previousEventMeta, currentResourceContext, assetTimeVsEventsMap, preRequisiteFields, executeReadingRuleThroughAutomatedHistory);
 			
 			if(context.containsKey(FacilioConstants.ContextNames.RULE_LOG_MODULE_DATA)) {
 				
@@ -202,9 +212,9 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 					ReadingContext nextSingleReading = fetchSingleReading(readingRule, resourceId, endTime, NumberOperators.GREATER_THAN, "TTIME");
 					if(nextSingleReading != null)
 					{
-						Map<String, List<ReadingDataMeta>> extendedCurrentFields = prepareCurrentFieldsRDM(readingRule, endTime, nextSingleReading.getTtime(), resourceId, fields);
+						Map<String, List<ReadingDataMeta>> extendedCurrentFields = prepareCurrentFieldsRDM(readingRule, endTime, nextSingleReading.getTtime(), resourceId, fields,executeReadingRuleThroughAutomatedHistory);
 						
-						executeWorkflows(readingRule, alarmRule, Collections.singletonList(nextSingleReading), extendedCurrentFields, fields, nextJobFirstEvent, previousEventMeta, currentResourceContext, constructAssetTimeVsEventsMap(fields, resourceId, endTime, nextSingleReading.getTtime()), preRequisiteFields);
+						executeWorkflows(readingRule, alarmRule, Collections.singletonList(nextSingleReading), extendedCurrentFields, fields, nextJobFirstEvent, previousEventMeta, currentResourceContext, constructAssetTimeVsEventsMap(fields, resourceId, endTime, nextSingleReading.getTtime()), preRequisiteFields, executeReadingRuleThroughAutomatedHistory);
 						if(nextJobFirstEvent != null && !nextJobFirstEvent.isEmpty() && nextJobFirstEvent.get(0).getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY))
 						{
 							events.add(nextJobFirstEvent.get(0));
@@ -222,7 +232,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 		return events;
 	}
 	
-	private FacilioContext executeWorkflows(ReadingRuleContext readingRule, AlarmRuleContext alarmRule, List<ReadingContext> readings, Map<String, List<ReadingDataMeta>> supportFieldsRDM, List<WorkflowFieldContext> fields, List<BaseEventContext> baseEvents,BaseEventContext previousEventMeta, ResourceContext currentResourceContext, LinkedHashMap<Long,List<SensorEventContext>> assetTimeVsEventsMap,List<WorkflowFieldContext> preRequisiteFields) throws Exception
+	private FacilioContext executeWorkflows(ReadingRuleContext readingRule, AlarmRuleContext alarmRule, List<ReadingContext> readings, Map<String, List<ReadingDataMeta>> supportFieldsRDM, List<WorkflowFieldContext> fields, List<BaseEventContext> baseEvents,BaseEventContext previousEventMeta, ResourceContext currentResourceContext, LinkedHashMap<Long,List<SensorEventContext>> assetTimeVsEventsMap,List<WorkflowFieldContext> preRequisiteFields, boolean executeReadingRuleThroughAutomatedHistory) throws Exception
 	{
 		int alarmCount = 0;
 		FacilioContext context = new FacilioContext();
@@ -238,6 +248,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 			context.put(EventConstants.EventContextNames.IS_HISTORICAL_EVENT, true);
 			context.put(FacilioConstants.ContextNames.IS_HISTORICAL, true);
 			context.put(FacilioConstants.ContextNames.ALARM_RULE_META, alarmRule);
+			context.put(FacilioConstants.OrgInfoKeys.EXECUTE_READING_RULE_THROUGH_AUTOMATED_HISTORY, executeReadingRuleThroughAutomatedHistory);
 			ReadingDataMeta prevRDM = null;			
 			int itr = 0;
 			
@@ -260,7 +271,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 						context.put(FacilioConstants.ContextNames.CURRRENT_READING_DATA_META, rdmCache);
 						
 						boolean shouldSkipCurrentReading = false, isPreRequisiteReadingsMissing = false;
-						if (AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getOrgId() == 339 || AccountUtil.getCurrentOrg().getOrgId() == 405 || AccountUtil.getCurrentOrg().getOrgId() == 1)) {							
+						if (executeReadingRuleThroughAutomatedHistory) {							
 							isPreRequisiteReadingsMissing = checkForNullReadingsInWorkflowFields(preRequisiteFields, rdmCache, reading);
 							shouldSkipCurrentReading = checkForNullReadingsInWorkflowFields(fields, rdmCache, reading);
 
@@ -288,9 +299,9 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 								}
 							}		
 						}
-						
-						if(AccountUtil.getCurrentOrg().getOrgId() == 405 && !isPreRequisiteReadingsMissing && shouldSkipCurrentReading) {
-							LOGGER.info("Coearing Prerequisite Historical for ReadingRule: "+readingRule.getId()+" and reading " +reading+ ". WorkflowFields: "+fields);				
+												
+						if(executeReadingRuleThroughAutomatedHistory && !isPreRequisiteReadingsMissing && shouldSkipCurrentReading) {
+							LOGGER.info("Clearing Prerequisite Historical for ReadingRule: "+readingRule.getId()+" and reading " +reading+ ". WorkflowFields: "+fields);				
 							context.put(FacilioConstants.ContextNames.ONLY_PREQUISITE_READINGS_PRESENT, Boolean.TRUE);
 						}
 						else if(shouldSkipCurrentReading) {
@@ -395,11 +406,11 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 		}
 	}
 	
-	private Map<String, List<ReadingDataMeta>> getSupportingData(List<WorkflowFieldContext> fields, long startTime, long endTime, long resourceId, HashMap<String, Boolean> jobStatesMap) throws Exception {
-		return getSupportingData(fields, startTime, endTime, resourceId, true, jobStatesMap);
+	private Map<String, List<ReadingDataMeta>> getSupportingData(List<WorkflowFieldContext> fields, long startTime, long endTime, long resourceId, HashMap<String, Boolean> jobStatesMap, boolean executeReadingRuleThroughAutomatedHistory) throws Exception {
+		return getSupportingData(fields, startTime, endTime, resourceId, true, jobStatesMap,executeReadingRuleThroughAutomatedHistory);
 	}
 	
-	private Map<String, List<ReadingDataMeta>> getSupportingData(List<WorkflowFieldContext> fields, long startTime, long endTime, long resourceId, boolean canConstructErrorMessage, HashMap<String, Boolean> jobStatesMap) throws Exception {
+	private Map<String, List<ReadingDataMeta>> getSupportingData(List<WorkflowFieldContext> fields, long startTime, long endTime, long resourceId, boolean canConstructErrorMessage, HashMap<String, Boolean> jobStatesMap, boolean executeReadingRuleThroughAutomatedHistory) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		Map<String, List<ReadingDataMeta>> supportingValues = new HashMap<>();
 		for (WorkflowFieldContext field : fields) {
@@ -450,7 +461,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 					supportingValues.put(rdmKey, rdms);
 				}
 				else {	
-					if(canConstructErrorMessage && jobStatesMap != null && AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getOrgId() != 339 && AccountUtil.getCurrentOrg().getOrgId() != 405)) {
+					if(canConstructErrorMessage && jobStatesMap != null && !executeReadingRuleThroughAutomatedHistory) { //Error won't be displayed for HCA and Starwood for both user and system triggered history
 						jobStatesMap.put("isManualFailed",true);
 						supportingValues.put(rdmKey, null);
 						ResourceContext currentResource = ResourceAPI.getResource(resourceId);
@@ -577,15 +588,15 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 		}
 	}
 	
-	private Map<String, List<ReadingDataMeta>> prepareCurrentFieldsRDM(ReadingRuleContext rule, long startTime, long endTime, long resourceId, List<WorkflowFieldContext> fields) throws Exception
+	private Map<String, List<ReadingDataMeta>> prepareCurrentFieldsRDM(ReadingRuleContext rule, long startTime, long endTime, long resourceId, List<WorkflowFieldContext> fields, boolean executeReadingRuleThroughAutomatedHistory) throws Exception
 	{
 		Map<String, List<ReadingDataMeta>> extendedSupportFieldsRDM = null;
 		if (fields != null && !fields.isEmpty()) {
-			extendedSupportFieldsRDM = getSupportingData(fields, startTime, endTime, -1, false, null);
+			extendedSupportFieldsRDM = getSupportingData(fields, startTime, endTime, -1, false, null,executeReadingRuleThroughAutomatedHistory);
 		}	
 		Map<String, List<ReadingDataMeta>> extendedCurrentRDMList = null;
 		if (fields != null) {
-			extendedCurrentRDMList = getSupportingData(fields, startTime, endTime, resourceId, false, null);
+			extendedCurrentRDMList = getSupportingData(fields, startTime, endTime, resourceId, false, null,executeReadingRuleThroughAutomatedHistory);
 		}
 		
 		Map<String, List<ReadingDataMeta>> extendedCurrentFields = extendedSupportFieldsRDM;

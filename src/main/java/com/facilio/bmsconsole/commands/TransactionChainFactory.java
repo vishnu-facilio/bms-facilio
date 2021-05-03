@@ -25,6 +25,7 @@ import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
 import com.facilio.bmsconsole.commands.reservation.CreateExternalAttendeesCommand;
 import com.facilio.bmsconsole.commands.reservation.CreateInternalAttendeesCommand;
 import com.facilio.bmsconsole.commands.reservation.ValidateAndSetReservationPropCommand;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsole.workflow.rule.impact.AddOrUpdateAlarmImpactCommand;
 import com.facilio.bmsconsole.workflow.rule.impact.util.AlarmImpactAPI;
@@ -49,8 +50,11 @@ import com.facilio.mv.command.*;
 import com.facilio.trigger.context.TriggerType;
 import com.facilio.workflows.command.*;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
+import java.util.Map;
 
 public class TransactionChainFactory {
 
@@ -3505,9 +3509,10 @@ public class TransactionChainFactory {
 				c.addCommand(new ForkChainToInstantJobCommand()
 						.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ALARM_NOTIFICATION_RULE, RuleType.MODULE_RULE_NOTIFICATION))
 				);		
-			} else if (isHistorical && (AccountUtil.getCurrentOrg().getId() == 339l || AccountUtil.getCurrentOrg().getOrgId() == 405)) {
-				c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.MODULE_RULE));
+			} else {	
+				c.addCommand(new ExecuteAutomatedRuleHistoryWorkflowsCommand());
 			}
+			
 			c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.ALARM_ACTIVITY));
 			return c;
 		}
