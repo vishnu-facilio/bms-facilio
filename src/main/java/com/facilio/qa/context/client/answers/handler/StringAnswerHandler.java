@@ -1,9 +1,9 @@
-package com.facilio.qa.context.answers.handler;
+package com.facilio.qa.context.client.answers.handler;
 
 import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.AnswerHandler;
 import com.facilio.qa.context.QuestionContext;
-import com.facilio.qa.context.answers.StringAnswerContext;
+import com.facilio.qa.context.client.answers.StringAnswerContext;
 
 public class StringAnswerHandler extends AnswerHandler<StringAnswerContext> {
     private boolean isBigString;

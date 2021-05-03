@@ -1,5 +1,6 @@
-package com.facilio.qa.context;
+package com.facilio.qa.context.answers;
 
+import com.facilio.qa.context.AnswerContext;
 import com.facilio.v3.context.V3Context;
 import lombok.Getter;
 import lombok.Setter;

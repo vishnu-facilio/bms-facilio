@@ -1,9 +1,9 @@
-package com.facilio.qa.context.answers.handler;
+package com.facilio.qa.context.client.answers.handler;
 
 import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.AnswerHandler;
 import com.facilio.qa.context.QuestionContext;
-import com.facilio.qa.context.answers.NumberAnswerContext;
+import com.facilio.qa.context.client.answers.NumberAnswerContext;
 
 public class NumberAnswerHandler extends AnswerHandler<NumberAnswerContext> {
 

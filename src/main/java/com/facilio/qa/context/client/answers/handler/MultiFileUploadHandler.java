@@ -1,10 +1,10 @@
-package com.facilio.qa.context.answers.handler;
+package com.facilio.qa.context.client.answers.handler;
 
 import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.AnswerHandler;
-import com.facilio.qa.context.MultiFileAnswerContext;
+import com.facilio.qa.context.answers.MultiFileAnswerContext;
 import com.facilio.qa.context.QuestionContext;
-import com.facilio.qa.context.answers.MultiFileUploadAnswerContext;
+import com.facilio.qa.context.client.answers.MultiFileUploadAnswerContext;
 import com.facilio.qa.context.questions.MultiFileUploadQuestionContext;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.lang3.StringUtils;

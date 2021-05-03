@@ -1,9 +1,9 @@
-package com.facilio.qa.context.answers.handler;
+package com.facilio.qa.context.client.answers.handler;
 
 import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.AnswerHandler;
 import com.facilio.qa.context.QuestionContext;
-import com.facilio.qa.context.answers.FileUploadAnswerContext;
+import com.facilio.qa.context.client.answers.FileUploadAnswerContext;
 
 public class FileUploadAnswerHandler extends AnswerHandler<FileUploadAnswerContext> {
     public FileUploadAnswerHandler(Class<FileUploadAnswerContext> answerClass) {

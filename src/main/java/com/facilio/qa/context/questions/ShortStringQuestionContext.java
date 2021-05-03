@@ -13,6 +13,6 @@ import lombok.extern.log4j.Log4j;
         use = JsonTypeInfo.Id.NONE
 )
 public class ShortStringQuestionContext extends QuestionContext {
-    private int maxLength;
+    private Integer maxLength;
     private String placeHolder;
 }

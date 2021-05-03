@@ -1,9 +1,9 @@
-package com.facilio.qa.context.answers.handler;
+package com.facilio.qa.context.client.answers.handler;
 
 import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.AnswerHandler;
 import com.facilio.qa.context.QuestionContext;
-import com.facilio.qa.context.answers.DateTimeAnswerContext;
+import com.facilio.qa.context.client.answers.DateTimeAnswerContext;
 
 public class DateTimeAnswerHandler extends AnswerHandler<DateTimeAnswerContext> {
     public DateTimeAnswerHandler(Class<DateTimeAnswerContext> answerClass) {

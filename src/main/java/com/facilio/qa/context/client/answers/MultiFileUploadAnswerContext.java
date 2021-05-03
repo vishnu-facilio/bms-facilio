@@ -1,7 +1,7 @@
-package com.facilio.qa.context.answers;
+package com.facilio.qa.context.client.answers;
 
 import com.facilio.qa.context.ClientAnswerContext;
-import com.facilio.qa.context.MultiFileAnswerContext;
+import com.facilio.qa.context.answers.MultiFileAnswerContext;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

@@ -1,10 +1,10 @@
 package com.facilio.qa.context;
 
 import com.facilio.constants.FacilioConstants;
-import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FacilioStringEnum;
 import com.facilio.qa.context.answers.*;
-import com.facilio.qa.context.answers.handler.*;
+import com.facilio.qa.context.client.answers.*;
+import com.facilio.qa.context.client.answers.handler.*;
 import com.facilio.qa.context.questions.*;
 import com.facilio.qa.context.questions.handler.MCQHandler;
 import lombok.Getter;

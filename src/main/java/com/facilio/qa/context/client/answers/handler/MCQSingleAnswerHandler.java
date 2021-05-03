@@ -1,9 +1,9 @@
-package com.facilio.qa.context.answers.handler;
+package com.facilio.qa.context.client.answers.handler;
 
 import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.AnswerHandler;
 import com.facilio.qa.context.QuestionContext;
-import com.facilio.qa.context.answers.MCQSingleAnswerContext;
+import com.facilio.qa.context.client.answers.MCQSingleAnswerContext;
 import com.facilio.qa.context.questions.MCQSingleContext;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.lang3.StringUtils;

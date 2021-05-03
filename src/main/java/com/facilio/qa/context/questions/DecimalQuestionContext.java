@@ -13,6 +13,6 @@ import lombok.extern.log4j.Log4j;
         use = JsonTypeInfo.Id.NONE
 )
 public class DecimalQuestionContext extends QuestionContext {
-    private double minValue, maxValue;
+    private Double minValue, maxValue;
     private String placeHolder;
 }

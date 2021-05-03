@@ -1,9 +1,9 @@
-package com.facilio.qa.context.answers.handler;
+package com.facilio.qa.context.client.answers.handler;
 
 import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.AnswerHandler;
 import com.facilio.qa.context.QuestionContext;
-import com.facilio.qa.context.answers.BooleanAnswerContext;
+import com.facilio.qa.context.client.answers.BooleanAnswerContext;
 
 public class BooleanAnswerHandler extends AnswerHandler<BooleanAnswerContext> {
     public BooleanAnswerHandler(Class<BooleanAnswerContext> answerClass) {

@@ -6,7 +6,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.qa.command.QAndAReadOnlyChainFactory;
 import com.facilio.qa.command.QAndATransactionChainFactory;
 import com.facilio.qa.context.AnswerContext;
-import com.facilio.qa.context.MultiFileAnswerContext;
+import com.facilio.qa.context.answers.MultiFileAnswerContext;
 import com.facilio.qa.context.PageContext;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.questions.MCQOptionContext;
