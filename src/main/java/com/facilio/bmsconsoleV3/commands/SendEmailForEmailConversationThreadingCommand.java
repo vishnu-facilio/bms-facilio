@@ -6,11 +6,14 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.util.MailMessageUtil;
+import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsoleV3.context.EmailConversationThreadingContext;
 import com.facilio.bmsconsoleV3.context.EmailToModuleDataContext;
 import com.facilio.control.util.ControlScheduleUtil;
+import com.facilio.fw.BeanFactory;
 import com.facilio.services.email.EmailClient;
 import com.facilio.services.factory.FacilioFactory;
 
@@ -23,6 +26,7 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 		
 		EmailConversationThreadingContext emailConversation = (EmailConversationThreadingContext) ControlScheduleUtil.getObjectFromRecordMap(context, MailMessageUtil.EMAIL_CONVERSATION_THREADING_MODULE_NAME);
 		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		if(emailConversation.getFromType() == EmailConversationThreadingContext.From_Type.ADMIN.getIndex()) {
 			if(emailConversation.getMessageType() == EmailConversationThreadingContext.Message_Type.REPLY.getIndex()) {
@@ -33,7 +37,7 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 					
 					String messageId = emailToModuleContext.getMessageId();
 					
-					sendMail(emailConversation, messageId);
+					emailConversation.setMessageId(sendMail(emailConversation, messageId));
 				}
 				else {
 					
@@ -43,20 +47,22 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 						
 						String messageId = firstEmailConversationOfThisRecord.getMessageId();
 						
-						sendMail(emailConversation, messageId);
+						emailConversation.setMessageId(sendMail(emailConversation, messageId));
 					}
 					
 					else {
-						sendMail(emailConversation, null);
+						emailConversation.setMessageId(sendMail(emailConversation, null));
 					}
 				}
 				
+				RecordAPI.updateRecord(emailConversation, modBean.getModule(MailMessageUtil.EMAIL_CONVERSATION_THREADING_MODULE_NAME), modBean.getAllFields(MailMessageUtil.EMAIL_CONVERSATION_THREADING_MODULE_NAME));
 			}
 		}
+		
 		return false;
 	}
 	
-	private void sendMail(EmailConversationThreadingContext emailConversation,String messageId) throws Exception {
+	private String sendMail(EmailConversationThreadingContext emailConversation,String messageId) throws Exception {
 		
 		JSONObject mailJson = new JSONObject();
 		
@@ -79,7 +85,9 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 		
 		LOGGER.error("emailConversation -- "+emailConversation.getId()+" mail JSON --- "+mailJson);
 		
-		AwsUtil.sendEmailViaMimeMessage(mailJson, null);
+		String returnMessageId = AwsUtil.sendEmailViaMimeMessage(mailJson, null);
+		
+		return returnMessageId;
 		
 //		FacilioFactory.getEmailClient().sendEmail(mailJson);
 	}

@@ -585,7 +585,7 @@ public class AwsUtil
 		}
 	}
 
-	public static void sendEmailViaMimeMessage(JSONObject mailJson, Map<String, String> files) throws Exception {
+	public static String sendEmailViaMimeMessage(JSONObject mailJson, Map<String, String> files) throws Exception {
 		MimeMessage message = getEmailMessage(mailJson, files);
 		try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
 			message.writeTo(outputStream);
@@ -593,7 +593,9 @@ public class AwsUtil
 			SendRawEmailRequest request = new SendRawEmailRequest(rawMessage);
 			AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
 					.withRegion(Regions.US_WEST_2).withCredentials(getAWSCredentialsProvider()).build();
-			client.sendRawEmail(request);
+			
+			SendRawEmailResult response = client.sendRawEmail(request);
+			return response.getMessageId();
 		}
 	}
 

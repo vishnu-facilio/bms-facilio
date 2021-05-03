@@ -1676,6 +1676,12 @@ public enum ActionType {
 					if(emailToModuleData != null) {
 						recordId = emailToModuleData.getRecordId();
 					}
+					else {
+						EmailConversationThreadingContext conversation = MailMessageUtil.getEmailConversationData(mailContext.getReferenceMessageId(), module);
+						if(conversation != null) {
+							recordId = conversation.getRecordId();
+						}
+					}
 				}
 				else {
 					Long localId = MailMessageUtil.getLocalIdFromSubject(mailContext.getSubject());

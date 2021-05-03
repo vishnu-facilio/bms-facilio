@@ -69,6 +69,40 @@ public class MailMessageUtil {
         LOGGER.info("Updated" + rowupdate);
     }
     
+    public static EmailConversationThreadingContext getEmailConversationData(String referenceMessageId,FacilioModule module) throws Exception {
+    	
+    	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+    	
+    	List<FacilioField> selectFields = new ArrayList<FacilioField>();
+    	
+    	selectFields.addAll(modBean.getAllFields(MailMessageUtil.EMAIL_CONVERSATION_THREADING_MODULE_NAME));
+    	
+    	Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(selectFields);
+    	
+    	SelectRecordsBuilder<EmailConversationThreadingContext> select = new SelectRecordsBuilder<EmailConversationThreadingContext>()
+    			.select(selectFields)
+    			.beanClass(EmailConversationThreadingContext.class)
+    			.moduleName(MailMessageUtil.EMAIL_CONVERSATION_THREADING_MODULE_NAME)
+    			.andCondition(CriteriaAPI.getCondition(fieldMap.get("messageId"), referenceMessageId, StringOperators.IS))
+    			.andCondition(CriteriaAPI.getCondition(fieldMap.get("dataModuleId"), ""+module.getModuleId(), NumberOperators.EQUALS))
+    			;
+    	
+    	List<EmailConversationThreadingContext> EmailConversationThreadingContexts = select.get();
+    	
+    	if(EmailConversationThreadingContexts != null && !EmailConversationThreadingContexts.isEmpty()) {
+    		EmailConversationThreadingContext EmailConversationThreadingContext = EmailConversationThreadingContexts.get(0);
+    		if(EmailConversationThreadingContext.getDataModuleId() > 0 && EmailConversationThreadingContext.getRecordId() > 0) {
+    			
+    			List<ModuleBaseWithCustomFields> records = V3RecordAPI.getRecordsList(modBean.getModule(EmailConversationThreadingContext.getDataModuleId()).getName(), Collections.singletonList(EmailConversationThreadingContext.getRecordId()));
+    			
+    			if(records != null && !records.isEmpty()) {
+    				return EmailConversationThreadingContext;
+    			}
+    		}
+    	}
+    	return null;
+    }
+    
     public static EmailToModuleDataContext getEmailToModuleData(String referenceMessageId,FacilioModule module) throws Exception {
     	
     	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
