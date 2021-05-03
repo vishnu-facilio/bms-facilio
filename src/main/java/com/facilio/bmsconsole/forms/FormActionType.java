@@ -151,7 +151,11 @@ public enum FormActionType {
 			Map<String,Object> placeHolders = new HashMap<>();
 			if (MapUtils.isNotEmpty(formData)) {
 				Map<String,Object> tempFormData = new HashMap<>(formData);
-				CommonCommandUtil.appendModuleNameInKey(formRuleActionContext.getRuleContext().getFormContext().getModule().getName(), formRuleActionContext.getRuleContext().getFormContext().getModule().getName(), tempFormData, placeHolders);
+				FacilioForm formDetails = formRuleActionContext.getRuleContext().getFormContext();
+				if (formDetails == null && formRuleActionContext.getRuleContext().getFormId() > 0) {
+					formDetails = FormsAPI.getFormFromDB(formRuleActionContext.getRuleContext().getFormId());
+				}
+				CommonCommandUtil.appendModuleNameInKey(formDetails.getModule().getName(), formDetails.getModule().getName(), tempFormData, placeHolders);
 			}
 			
 			for(FormRuleActionFieldsContext actionField : formRuleActionContext.getFormRuleActionFieldsContext()) {
