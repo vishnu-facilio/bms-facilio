@@ -17,6 +17,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.json.simple.JSONArray;
 
+import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
@@ -693,5 +694,37 @@ public class WorkflowContext implements Serializable {
 	public void setRunAsAdmin(boolean runAsAdmin) {
 		this.runAsAdmin = runAsAdmin;
 	}
+	
+	private long sysCreatedTime = -1;
+	public long getSysCreatedTime() {
+		return sysCreatedTime;
+	}
+	public void setSysCreatedTime(long sysCreatedTime) {
+		this.sysCreatedTime = sysCreatedTime;
+	}
+	
+	private long sysModifiedTime = -1;
+	public long getSysModifiedTime() {
+		return sysModifiedTime;
+	}
+	public void setSysModifiedTime(long sysModifiedTime) {
+		this.sysModifiedTime = sysModifiedTime;
+	}
+	
+	private long sysCreatedBy;
+	public long getSysCreatedBy() {
+		return sysCreatedBy;
+	}
+	public void setSysCreatedBy(long sysCreatedBy) {
+		this.sysCreatedBy = sysCreatedBy;
+	}
 
+	private long sysModifiedBy;
+	public long getSysModifiedBy() {
+		return sysModifiedBy;
+	}
+	public void setSysModifiedBy(long sysModifiedBy) {
+		this.sysModifiedBy = sysModifiedBy;
+	}
+	
 }

@@ -4,11 +4,13 @@ import java.util.Map;
 
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.workflowv2.contexts.WorkflowNamespaceContext;
 import com.facilio.workflowv2.util.UserFunctionAPI;
 import com.facilio.workflowv2.util.WorkflowV2Util;
@@ -22,6 +24,11 @@ public class AddNameSpaceCommand extends FacilioCommand {
 		WorkflowNamespaceContext workflowNamespaceContext = (WorkflowNamespaceContext) context.get(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT);
 		
 		checkWhetherNameSpaceAlreadyExist(workflowNamespaceContext.getName());
+		
+		workflowNamespaceContext.setSysCreatedBy(AccountUtil.getCurrentUser().getOuid());
+		workflowNamespaceContext.setSysModifiedBy(AccountUtil.getCurrentUser().getOuid());
+		workflowNamespaceContext.setSysCreatedTime(DateTimeUtil.getCurrenTime());
+		workflowNamespaceContext.setSysModifiedTime(DateTimeUtil.getCurrenTime());
 		
 		addNameSpace(workflowNamespaceContext);
 		return false;

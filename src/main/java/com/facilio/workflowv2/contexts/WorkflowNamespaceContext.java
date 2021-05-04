@@ -2,6 +2,7 @@ package com.facilio.workflowv2.contexts;
 
 import java.util.List;
 
+import com.facilio.accounts.dto.IAMUser;
 import com.facilio.workflows.context.WorkflowUserFunctionContext;
 
 public class WorkflowNamespaceContext {
@@ -34,5 +35,37 @@ public class WorkflowNamespaceContext {
 	}
 	public void setFunctions(List<WorkflowUserFunctionContext> functions) {
 		this.functions = functions;
+	}
+	
+	private long sysCreatedTime = -1;
+	public long getSysCreatedTime() {
+		return sysCreatedTime;
+	}
+	public void setSysCreatedTime(long sysCreatedTime) {
+		this.sysCreatedTime = sysCreatedTime;
+	}
+
+	private long sysModifiedTime = -1;
+	public long getSysModifiedTime() {
+		return sysModifiedTime;
+	}
+	public void setSysModifiedTime(long sysModifiedTime) {
+		this.sysModifiedTime = sysModifiedTime;
+	}
+	
+	private long sysCreatedBy;
+	public long getSysCreatedBy() {
+		return sysCreatedBy;
+	}
+	public void setSysCreatedBy(long sysCreatedBy) {
+		this.sysCreatedBy = sysCreatedBy;
+	}
+
+	private long sysModifiedBy;
+	public long getSysModifiedBy() {
+		return sysModifiedBy;
+	}
+	public void setSysModifiedBy(long sysModifiedBy) {
+		this.sysModifiedBy = sysModifiedBy;
 	}
 }

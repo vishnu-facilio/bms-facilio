@@ -5658,6 +5658,9 @@ public class FieldFactory {
         fields.add(getField("isLogNeeded", "IS_LOG_NEEDED", module, FieldType.BOOLEAN));
         fields.add(getField("isV2Script", "IS_V2", module, FieldType.BOOLEAN));
         fields.add(getField("runAsAdmin", "RUN_AS_ADMIN", module, FieldType.BOOLEAN));
+        
+        fields.addAll(FieldFactory.getSystemPointFields(module));
+        
         return fields;
     }
 
@@ -5680,6 +5683,8 @@ public class FieldFactory {
         fields.add(getIdField(module));
 
         fields.add(getField("name", "NAME", module, FieldType.STRING));
+        
+        fields.addAll(FieldFactory.getSystemPointFields(module));
 
         return fields;
     }

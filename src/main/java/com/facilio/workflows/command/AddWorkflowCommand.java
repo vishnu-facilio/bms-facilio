@@ -10,6 +10,7 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowUserFunctionContext;
 import com.facilio.workflowv2.util.WorkflowV2Util;
@@ -26,6 +27,12 @@ public class AddWorkflowCommand extends FacilioCommand {
 			workflow = (WorkflowUserFunctionContext) context.get(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT);
 			workflow.setType(WorkflowContext.WorkflowType.USER_DEFINED.getValue());
 		}
+		
+		workflow.setSysCreatedBy(AccountUtil.getCurrentUser().getOuid());
+		workflow.setSysModifiedBy(AccountUtil.getCurrentUser().getOuid());
+		workflow.setSysCreatedTime(DateTimeUtil.getCurrenTime());
+		workflow.setSysModifiedTime(DateTimeUtil.getCurrenTime());
+		
 		workflow.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
