@@ -153,10 +153,33 @@ public class ImportFieldFactory {
 				fields = getPMResourcePlannerFields();
 				break;
 			}
+			case "pmreminder" :{
+				fields = getPMReminderFields();
+				break;
+			}
 		}
 		return fields;
 	}
 	
+	public static List<FacilioField> getPMReminderFields() {
+		// TODO Auto-generated method stub
+		
+		List<FacilioField> fields = new ArrayList<FacilioField>();
+		fields.addAll(FieldFactory.getPMReminderFields());
+		fields.add(FieldFactory.getField("emailTo","Email To",null, ModuleFactory.getPMReminderModule(), FieldType.STRING));
+		fields.add(FieldFactory.getField("emailCC","Email CC",null, ModuleFactory.getPMReminderModule(), FieldType.STRING));
+		fields.add(FieldFactory.getField("emailBCC","Email BCC",null, ModuleFactory.getPMReminderModule(), FieldType.STRING));
+		fields.add(FieldFactory.getField("emailSubject","Email Subject",null, ModuleFactory.getPMReminderModule(), FieldType.STRING));
+		fields.add(FieldFactory.getField("emailMessage","Email Message",null, ModuleFactory.getPMReminderModule(), FieldType.STRING));
+		fields.add(FieldFactory.getField("mobileNotificationTo","Mobile Notification To",null, ModuleFactory.getPMReminderModule(), FieldType.STRING));
+		fields.add(FieldFactory.getField("mobileNotificationSubject","Mobile Notification Subject",null, ModuleFactory.getPMReminderModule(), FieldType.STRING));
+		fields.add(FieldFactory.getField("mobileNotificationMessage","Mobile Notification Message",null, ModuleFactory.getPMReminderModule(), FieldType.STRING));
+		fields.add(FieldFactory.getField("smsTo","SMS To",null, ModuleFactory.getPMReminderModule(), FieldType.STRING));
+		fields.add(FieldFactory.getField("smsMessage","SMS Message",null, ModuleFactory.getPMReminderModule(), FieldType.STRING));
+		return fields;
+		
+	}
+
 	public static List<FacilioField> getPMResourcePlannerFields() {
 		// TODO Auto-generated method stub
 		

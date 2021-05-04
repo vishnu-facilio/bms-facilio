@@ -422,6 +422,9 @@ public class ProcessImportCommand extends FacilioCommand {
 				else if(module.equals(ModuleFactory.getPMResourcePlannerModule().getName())){
 					fields = ImportFieldFactory.getPMResourcePlannerFields();
 				}
+				else if(module.equals(ModuleFactory.getPMReminderModule().getName())){
+					fields = ImportFieldFactory.getPMReminderFields();
+				}
 				else{
 					fields = bean.getAllFields(module);
 				}

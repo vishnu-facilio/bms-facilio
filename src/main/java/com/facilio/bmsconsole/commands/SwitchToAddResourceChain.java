@@ -15,10 +15,15 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.accounts.bean.UserBean;
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.context.BimImportProcessMappingContext;
 import com.facilio.bmsconsole.context.PMIncludeExcludeResourceContext;
+import com.facilio.bmsconsole.context.PMReminder;
+import com.facilio.bmsconsole.context.PMReminderAction;
 import com.facilio.bmsconsole.context.PMResourcePlannerContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PMTriggerContext.TriggerExectionSource;
@@ -28,6 +33,9 @@ import com.facilio.bmsconsole.context.PurchasedItemContext;
 import com.facilio.bmsconsole.context.PurchasedToolContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.templates.EMailTemplate;
+import com.facilio.bmsconsole.templates.PushNotificationTemplate;
+import com.facilio.bmsconsole.templates.SMSTemplate;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.TaskTemplate;
 import com.facilio.bmsconsole.templates.Template.Type;
@@ -37,9 +45,12 @@ import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
+import com.facilio.bmsconsole.workflow.rule.ActionContext;
+import com.facilio.bmsconsole.workflow.rule.ActionType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -51,6 +62,10 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.ScheduleInfo;
+import com.facilio.util.FacilioUtil;
+import com.facilio.workflows.context.ExpressionContext;
+import com.facilio.workflows.context.ParameterContext;
+import com.facilio.workflows.context.WorkflowContext;
 import com.mysql.jdbc.StringUtils;
 
 public class SwitchToAddResourceChain extends FacilioCommand {
@@ -618,6 +633,83 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 				updatePM.execute();
 			}
 		}
+		else if(facilioModule.getName().equals(ModuleFactory.getPMReminderModule().getName())) {
+			
+			Map<Long,List<PMReminder>> pmMap = new HashMap<Long, List<PMReminder>>();
+			
+			for(ReadingContext reading :readingsContext) {
+				Map<String, Object> props = FieldUtil.getAsProperties(reading);
+				
+				props = removeNullNodes.apply(props);
+				
+				List<PMReminderAction> reminderActions = new ArrayList<PMReminderAction>();
+				
+				if(props.get("emailTo") != null) {
+					String emailTo = (String) props.get("emailTo");
+					String emailCC = (String) props.get("emailCC");
+					String emailBCC = (String) props.get("emailBCC");
+					String emailSubject = (String) props.get("emailSubject");
+					String emailMessage = (String) props.get("emailMessage");
+					
+					PMReminderAction action = constructEmailAction(emailTo,emailCC,emailBCC,emailSubject,emailMessage);
+					
+					reminderActions.add(action);
+				}				
+				if(props.get("mobileNotificationTo") != null) {
+					String mobileNotificationTo = (String) props.get("mobileNotificationTo");
+					String mobileNotificationSubject = (String) props.get("mobileNotificationSubject");
+					String mobileNotificationMessage = (String) props.get("mobileNotificationMessage");
+					
+					PMReminderAction action = constructMobileNotificationAction(mobileNotificationTo,mobileNotificationSubject,mobileNotificationMessage);
+					
+					reminderActions.add(action);
+					
+				}
+				if(props.get("smsTo") != null) {
+					String smsTo = (String) props.get("smsTo");
+					String smsMessage = (String) props.get("smsMessage");
+					
+					PMReminderAction action = constructSMSAction(smsTo,smsMessage);
+					
+					reminderActions.add(action);
+				}
+				PMReminder pmReminder = FieldUtil.getAsBeanFromMap(props, PMReminder.class);
+				
+				pmReminder.setReminderActions(reminderActions);
+				
+				List<PMReminder> reminders = pmMap.getOrDefault(pmReminder.getPmId(), new ArrayList<PMReminder>());
+				
+				reminders.add(pmReminder);
+				
+				pmMap.put(pmReminder.getPmId(), reminders);
+					
+			}
+			
+			for(Long pmId : pmMap.keySet()) {
+				
+				PreventiveMaintenance pm = PreventiveMaintenanceAPI.getPMsDetails(Collections.singleton(pmId)).get(0);
+				
+				List<PMReminder> reminders = pmMap.get(pmId);
+				
+				pm.setReminders(reminders);
+				
+				FacilioChain updatePM = FacilioChainFactory.getUpdateNewPreventiveMaintenanceChain();
+				
+				FacilioContext newContext = updatePM.getContext();
+				
+				WorkorderTemplate template = (WorkorderTemplate)TemplateAPI.getTemplate(pm.getTemplateId());
+				
+				newContext.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(pmId));
+				newContext.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
+				newContext.put(FacilioConstants.ContextNames.WORK_ORDER, template.getWorkorder());
+				newContext.put(FacilioConstants.ContextNames.TASK_SECTION_TEMPLATES, template.getSectionTemplates());
+				newContext.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
+//				newContext.put(FacilioConstants.ContextNames.SKIP_WO_CREATION,true);
+				
+				updatePM.execute();
+			}
+		}
+		
 		else {
 			FacilioChain c = TransactionChainFactory.getGenericImportChain();
 			c.execute(context);
@@ -626,6 +718,325 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 		return false;
 	}
 	
+	private PMReminderAction constructMobileNotificationAction(String mobileNotificationTo,String mobileNotificationSubject, String mobileNotificationMessage) throws Exception {
+
+		
+		PMReminderAction reminderAction = new PMReminderAction();
+		
+		ActionContext action = new ActionContext();
+		action.setActionType(ActionType.PUSH_NOTIFICATION);
+		
+		PushNotificationTemplate pushTemplate = new PushNotificationTemplate();
+		
+		pushTemplate.setType(Type.PUSH_NOTIFICATION);
+		pushTemplate.setName("New WorkOrder Push Notification Template");
+		pushTemplate.setTitle(mobileNotificationSubject);
+		
+		List<String> toString = new ArrayList<String>();
+		
+		WorkflowContext workflow = new WorkflowContext();
+		ParameterContext parameter = new ParameterContext();
+		parameter.setName("org.domain");
+		parameter.setTypeString("String");
+		workflow.addParamater(parameter);
+		
+		
+		ParameterContext parameter1 = new ParameterContext();
+		parameter1.setName("workorder.id");
+		parameter1.setTypeString("String");
+		workflow.addParamater(parameter1);
+		
+		ExpressionContext expressionDef = new ExpressionContext();
+		
+		expressionDef.setName("org.domain");
+		expressionDef.setConstant("${org.domain}");
+		
+		workflow.addWorkflowExpression(expressionDef);
+		
+		ExpressionContext expressionDef1 = new ExpressionContext();
+		
+		expressionDef1.setName("workorder.id");
+		expressionDef1.setConstant("${workorder.id}");
+		
+		workflow.addWorkflowExpression(expressionDef1);
+		
+		String[] toList = FacilioUtil.splitByComma(mobileNotificationTo);
+		
+		for(int i=0;i<toList.length;i++) {
+			
+			String to = toList[i].trim();
+			
+			UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
+	        User user = userBean.getUserFromEmail(to, null, AccountUtil.getCurrentOrg().getOrgId(), true);
+	        
+	        if(user != null && user.getUserStatus()) {
+	        	
+	        	String name = "user_id"+(i+1);
+	        	
+	        	ExpressionContext expression = getExpressionTemplateforNotificationTemp(name,"ouid", user.getOuid());
+	        	
+	        	workflow.addWorkflowExpression(expression);
+	        	
+	        	toString.add("${"+name+":-}");
+	        }
+		}
+		
+		String to1 = toString.stream().collect(Collectors.joining(","));
+		
+		pushTemplate.setTo(to1);
+		
+		pushTemplate.setWorkflow(workflow);
+		
+		pushTemplate.setBody(getMobileNotificationBody(mobileNotificationSubject,mobileNotificationMessage,to1));
+		
+		action.setTemplate(pushTemplate);
+		
+		reminderAction.setAction(action);
+		
+		return reminderAction;
+	}
+
+	private String getMobileNotificationBody(String title,String text,String to) {
+		
+		JSONObject res = new JSONObject();
+		
+		JSONObject notification = new JSONObject();
+		
+		notification.put("content_available", true);
+		notification.put("summary_id", "${workorder.id}");
+		notification.put("sound", "default");
+		notification.put("module_name", "workorder");
+		notification.put("priority", "high");
+		notification.put("click_action", "WORKORDER_SUMMARY");
+		notification.put("title", title);
+		notification.put("text", text);
+		
+		JSONObject data = new JSONObject();
+		
+		data.put("content_available", true);
+		data.put("summary_id", "${workorder.id}");
+		data.put("sound", "default");
+		data.put("module_name", "workorder");
+		data.put("priority", "high");
+		data.put("click_action", "WORKORDER_SUMMARY");
+		data.put("title", title);
+		data.put("text", text);
+		
+		
+		res.put("name", "WORKORDER_PUSH_NOTIFICATION");
+		res.put("notification", notification);
+		res.put("data", data);
+		res.put("id", to);
+		
+		return res.toJSONString();
+	}
+
+	private PMReminderAction constructSMSAction(String smsTo, String smsMessage) throws Exception {
+		// TODO Auto-generated method stub
+		
+		PMReminderAction reminderAction = new PMReminderAction();
+		
+		ActionContext action = new ActionContext();
+		action.setActionType(ActionType.BULK_SMS_NOTIFICATION);
+		
+		SMSTemplate smsTemplate = new SMSTemplate();
+		
+		smsTemplate.setType(Type.SMS);
+		smsTemplate.setName("New WorkOrder SMS Template");
+		
+		smsTemplate.setMessage(smsMessage);
+		
+		List<String> toString = new ArrayList<String>();
+		
+		WorkflowContext workflow = new WorkflowContext();
+		ParameterContext parameter = new ParameterContext();
+		parameter.setName("org.domain");
+		parameter.setTypeString("String");
+		workflow.setParameters(Collections.singletonList(parameter));
+		
+		ExpressionContext expressionDef = new ExpressionContext();
+		
+		expressionDef.setName("org.domain");
+		expressionDef.setConstant("${org.domain}");
+		
+		workflow.addWorkflowExpression(expressionDef);
+		
+		String[] toList = FacilioUtil.splitByComma(smsTo);
+		
+		for(int i=0;i<toList.length;i++) {
+			
+			String to = toList[i].trim();
+			
+			UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
+	        User user = userBean.getUserFromEmail(to, null, AccountUtil.getCurrentOrg().getOrgId(), true);
+	        
+	        if(user != null && user.getUserStatus()) {
+	        	
+	        	String name = "user_phone"+(i+1);
+	        	
+	        	ExpressionContext expression = getExpressionTemplateforNotificationTemp(name,"phone", user.getOuid());
+	        	
+	        	workflow.addWorkflowExpression(expression);
+	        	
+	        	toString.add("${"+name+":-}");
+	        }
+		}
+		
+		smsTemplate.setTo(toString.stream().collect(Collectors.joining(",")));
+		
+		smsTemplate.setWorkflow(workflow);
+		
+		action.setTemplate(smsTemplate);
+		
+		reminderAction.setAction(action);
+		
+		return reminderAction;
+		
+	}
+
+	private PMReminderAction constructEmailAction(String emailTo, String emailCC, String emailBCC, String emailSubject,String emailMessage) throws Exception {
+		
+		PMReminderAction reminderAction = new PMReminderAction();
+		
+		ActionContext action = new ActionContext();
+		action.setActionType(ActionType.BULK_EMAIL_NOTIFICATION);
+		
+		EMailTemplate emailTemplate = new EMailTemplate();
+		
+		emailTemplate.setType(Type.EMAIL);
+		emailTemplate.setName("New WorkOrder Email Template");
+		emailTemplate.setSendAsSeparateMail(Boolean.TRUE);
+		
+		emailTemplate.setSubject(emailSubject);
+		emailTemplate.setMessage(emailMessage);
+		emailTemplate.setHtml(Boolean.TRUE);
+		
+		List<String> toString = new ArrayList<String>();
+		List<String> ccString = new ArrayList<String>();
+		List<String> bccString = new ArrayList<String>();
+		
+		WorkflowContext workflow = new WorkflowContext();
+		ParameterContext parameter = new ParameterContext();
+		parameter.setName("org.domain");
+		parameter.setTypeString("String");
+		workflow.setParameters(Collections.singletonList(parameter));
+		
+		ExpressionContext expressionDef = new ExpressionContext();
+		
+		expressionDef.setName("org.domain");
+		expressionDef.setConstant("${org.domain}");
+		
+		workflow.addWorkflowExpression(expressionDef);
+		
+		String[] toList = FacilioUtil.splitByComma(emailTo);
+		
+		for(int i=0;i<toList.length;i++) {
+			
+			String to = toList[i].trim();
+			
+			UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
+	        User user = userBean.getUserFromEmail(to, null, AccountUtil.getCurrentOrg().getOrgId(), true);
+	        
+	        if(user != null && user.getUserStatus()) {
+	        	
+	        	String name = "user_email"+(i+1);
+	        	
+	        	ExpressionContext expression = getExpressionTemplateforNotificationTemp(name,"email", user.getOuid());
+	        	
+	        	workflow.addWorkflowExpression(expression);
+	        	
+	        	toString.add("${"+name+":-}");
+	        }
+		}
+		
+		emailTemplate.setTo(toString.stream().collect(Collectors.joining(",")));
+		
+		if(emailCC != null) {
+			
+			String[] ccList = FacilioUtil.splitByComma(emailCC);
+			
+			for(int i=0;i<ccList.length;i++) {
+				
+				String cc = ccList[i].trim();
+				
+				UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
+		        User user = userBean.getUserFromEmail(cc, null, AccountUtil.getCurrentOrg().getOrgId(), true);
+		        
+		        if(user != null && user.getUserStatus()) {
+		        	
+		        	String name = "cc_user_email"+(i+1);
+		        	
+		        	ExpressionContext expression = getExpressionTemplateforNotificationTemp(name,"email", user.getOuid());
+		        	
+		        	workflow.addWorkflowExpression(expression);
+		        	
+		        	ccString.add("${"+name+":-}");
+		        }
+			}
+			
+			emailTemplate.setCc(ccString.stream().collect(Collectors.joining(",")));
+		}
+		
+		if(emailBCC != null) {
+			
+			String[] bccList = FacilioUtil.splitByComma(emailBCC);
+			
+			for(int i=0;i<bccList.length;i++) {
+				
+				String bcc = bccList[i].trim();
+				
+				UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
+		        User user = userBean.getUserFromEmail(bcc, null, AccountUtil.getCurrentOrg().getOrgId(), true);
+		        
+		        if(user != null && user.getUserStatus()) {
+		        	
+		        	String name = "bcc_user_email"+(i+1);
+		        	
+		        	ExpressionContext expression = getExpressionTemplateforNotificationTemp(name,"email", user.getOuid());
+		        	
+		        	workflow.addWorkflowExpression(expression);
+		        	
+		        	bccString.add("${"+name+":-}");
+		        }
+			}
+			
+			emailTemplate.setBcc(bccString.stream().collect(Collectors.joining(",")));
+		}
+		
+		emailTemplate.setWorkflow(workflow);
+		
+		action.setTemplate(emailTemplate);
+		
+		reminderAction.setAction(action);
+		
+		return reminderAction;
+	}
+	
+	
+	private ExpressionContext getExpressionTemplateforNotificationTemp(String name,String fieldName,long ouid) {
+		
+		ExpressionContext exp = new ExpressionContext();
+    	exp.setName(name);
+    	exp.setFieldName(fieldName);
+    	exp.setModuleName("users");
+    	exp.setAggregateString("[0]");
+    	
+    	Criteria cri = new Criteria();
+    	
+    	Condition condition = new Condition();
+    	
+    	condition.setFieldName("ouid");
+    	condition.setOperator(NumberOperators.EQUALS);
+    	condition.setSequence(1);
+    	condition.setValue(ouid+"");
+    	
+    	cri.addAndCondition(condition);
+    	
+    	exp.setCriteria(cri);
+    	
+    	return exp;
+	}
+
 	private ScheduleInfo fillAndGetScheduleInfo(Map<String, Object> props, FacilioFrequency frequencyEnum) {
 		
 		ScheduleInfo schedule = new ScheduleInfo();

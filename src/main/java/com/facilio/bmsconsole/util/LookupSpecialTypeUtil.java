@@ -66,6 +66,7 @@ public class LookupSpecialTypeUtil {
 				|| ModuleFactory.getPMIncludeExcludeResourceModule().getName().equals(specialType)
 				|| ModuleFactory.getPMTriggersModule().getName().equals(specialType)
 				|| ModuleFactory.getPMResourcePlannerModule().getName().equals(specialType)
+				|| ModuleFactory.getPMReminderModule().getName().equals(specialType)
 				|| FacilioConstants.ContextNames.WORK_ORDER_TEMPLATE.equals(specialType)
 				|| FacilioConstants.ContextNames.FORMULA_FIELD.equals(specialType)
 				|| FacilioConstants.ContextNames.KPI.equals(specialType)
@@ -872,6 +873,9 @@ public class LookupSpecialTypeUtil {
 		else if(ModuleFactory.getPMResourcePlannerModule().getName().equals(specialType)){
 			return ModuleFactory.getPMResourcePlannerModule();
 		}
+		else if(ModuleFactory.getPMReminderModule().getName().equals(specialType)){
+			return ModuleFactory.getPMReminderModule();
+		}
 		return null;
 	}
 	
@@ -975,6 +979,9 @@ public class LookupSpecialTypeUtil {
 		}
 		else if(ModuleFactory.getPMResourcePlannerModule().getName().equals(specialType)){
 			return FieldFactory.getPMResourcePlannerFields();
+		}
+		else if(ModuleFactory.getPMReminderModule().getName().equals(specialType)){
+			return FieldFactory.getPMReminderFields();
 		}
 		return null;
 	}
