@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +33,6 @@ import com.facilio.bmsconsole.context.ToolStatusContext;
 import com.facilio.bmsconsole.context.ToolTypesCategoryContext;
 import com.facilio.bmsconsole.context.ToolTypesStatusContext;
 import com.facilio.bmsconsole.context.VisitorTypeContext;
-import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -76,14 +74,8 @@ public class PickListAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.FILTERS, json);
 		}
 		if (StringUtils.isNotEmpty(defaultIds)) {
-			List<Long> defaultIdList = new ArrayList<>();
-			if (defaultIds.startsWith("${")) {
-				Object value = FormsAPI.resolveDefaultValPlaceholder(defaultIds);
-				defaultIdList.add((Long) value);
-			}else {
-				String[] ids = FacilioUtil.splitByComma(defaultIds);
-				defaultIdList = Arrays.stream(ids).map(Long::parseLong).collect(Collectors.toList());
-			}
+			String[] ids = FacilioUtil.splitByComma(defaultIds);
+			List<Long> defaultIdList = Arrays.stream(ids).map(Long::parseLong).collect(Collectors.toList());
 			context.put(FacilioConstants.PickList.DEFAULT_ID_LIST, defaultIdList);
 		}
 	}
