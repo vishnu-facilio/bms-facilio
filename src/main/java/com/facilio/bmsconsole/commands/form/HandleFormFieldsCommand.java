@@ -43,11 +43,11 @@ public class HandleFormFieldsCommand extends FacilioCommand {
 			boolean isFromBuilder = formSourceType == formSourceType.FROM_BUILDER;
 			isAssetModule = AssetsAPI.isAssetsModule(module);
 			for(FormField field: form.getFields()) {
-				if (!isFromBuilder) {
-					handleDefaultValue(field);
-				}
-				else if (formSourceType == FormSourceType.FROM_BULK_FORM) {
+				if (formSourceType == FormSourceType.FROM_BULK_FORM) {
 					field.setValue(null);
+				}
+				else if (!isFromBuilder) {
+					handleDefaultValue(field);
 				}
 				setLookupName(field, moduleName, isFromBuilder);
 				addFilters(module, field);
