@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.modules.FacilioModule;
@@ -73,7 +74,11 @@ public class ReportExportUtil {
 		if(fileFormat == FileFormat.IMAGE) {
 			url.append("&showOnlyImage=true");
 		}
-		
+		String filterJsonString=(String)context.get(FacilioConstants.ContextNames.FILTERS);
+		if(filterJsonString!=null)
+		{
+			url.append(ReportsUtil.encodeURIComponent(filterJsonString));
+		}
 		if(report.getDateRange() != null) {
 			JSONObject dateRange = new JSONObject();
 			dateRange.put("startTime", report.getDateRange().getStartTime());

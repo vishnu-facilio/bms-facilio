@@ -2245,16 +2245,22 @@ public class V2ReportAction extends FacilioAction {
 	public String exportModuleReport() throws Exception {
 		FacilioChain exportChain = null;
 		FacilioContext context;
+ 	
+		
 		if (reportId != -1) {
 			boolean fetchData = fileFormat != FileFormat.IMAGE && fileFormat != FileFormat.PDF;
 			exportChain = TransactionChainFactory.getExportModuleReportFileChain(fetchData);
 			context = exportChain.getContext();
+			context.put(FacilioConstants.ContextNames.FILTERS, getFilters());
+			//pass filterJsonString as is, will be set in summary url in export command
 			getReport(context);
 		} else {
 			exportChain = TransactionChainFactory.getExportModuleAnalyticsFileChain();
 			context = exportChain.getContext();
 			updateContext(context);
 		}
+		
+
 		
 		setExportParamsInContext(context);
 		
