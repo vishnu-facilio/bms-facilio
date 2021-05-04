@@ -10,15 +10,18 @@ import com.facilio.bmsconsoleV3.context.floorplan.V3MarkerContext;
 import com.facilio.bmsconsoleV3.context.floorplan.V3MarkerdZonesContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.context.V3Context;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.FieldFactory;
 
@@ -116,9 +119,21 @@ public class SerializeCommand extends FacilioCommand {
 					// 	}
 					// }			
 
-					V3DeskContext desk;
+				
+					
+					
+					FacilioModule recordModule = modBean.getModule(marker.getMarkerModuleId());
+           		 
+           		 if(recordModule.getName().equals("desks")) {
+           			V3DeskContext desk;
 					desk = (V3DeskContext) V3RecordAPI.getRecord(deskModule.getName(), marker.getRecordId(),V3DeskContext.class);
 					marker.setDesk(desk);
+           		 }
+           		 else {
+           			ModuleBaseWithCustomFields record =  V3RecordAPI.getRecord(recordModule.getName(), marker.getRecordId());
+                    
+                    marker.setModuleData(record);
+           		 }
 
 				}
 

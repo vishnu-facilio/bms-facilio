@@ -1117,7 +1117,7 @@ public class APIv3Config {
     public static Supplier<V3Config> getIndoorFloorPlan() {
         return () -> new V3Config(V3IndoorFloorPlanContext.class, new ModuleCustomFieldCount30())
                 .create().afterSave(TransactionChainFactoryV3.addfloorplanObjectsChain())
-                .update().afterSave(new AddOrUpdateObjectCommand())
+                .update().afterSave(TransactionChainFactoryV3.AddORUpdateMarkersAndModulesCommand())
                 .list().afterFetch(TransactionChainFactoryV3.getFloorPlanObjectsChain())
                 .summary().afterFetch(TransactionChainFactoryV3.getFloorPlanObjectsChain())
                 .build();

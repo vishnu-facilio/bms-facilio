@@ -28,6 +28,8 @@ import com.facilio.bmsconsoleV3.commands.floorplan.AddDeskCommand;
 import com.facilio.bmsconsoleV3.commands.floorplan.AddFloorplanObjectsCommand;
 import com.facilio.bmsconsoleV3.commands.floorplan.AddMarkedZonesCommand;
 import com.facilio.bmsconsoleV3.commands.floorplan.AddMarkerCommand;
+import com.facilio.bmsconsoleV3.commands.floorplan.AddORUpdateModuleRecordCommand;
+import com.facilio.bmsconsoleV3.commands.floorplan.AddOrUpdateObjectCommand;
 import com.facilio.bmsconsoleV3.commands.floorplan.SerializeCommand;
 import com.facilio.bmsconsoleV3.commands.floorplan.UpdateDeskCommand;
 import com.facilio.bmsconsoleV3.commands.floorplan.UpdateMarkerCommand;
@@ -883,6 +885,14 @@ public class TransactionChainFactoryV3 {
         chain.addCommand(new AddMarkerCommand());
         return chain;
     }
+
+    public static FacilioChain AddORUpdateMarkersAndModulesCommand() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new AddORUpdateModuleRecordCommand());
+        chain.addCommand(new AddOrUpdateObjectCommand());        
+        return chain;
+    }
+
 
     public static FacilioChain updateMarkersAndModulesCommand() {
         FacilioChain chain = getDefaultChain();
