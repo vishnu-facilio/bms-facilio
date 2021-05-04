@@ -903,6 +903,8 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 		
 		EMailTemplate emailTemplate = new EMailTemplate();
 		
+		emailTemplate.setFrom("noreply@${org.domain}.facilio.com");
+		
 		emailTemplate.setType(Type.EMAIL);
 		emailTemplate.setName("New WorkOrder Email Template");
 		emailTemplate.setSendAsSeparateMail(Boolean.TRUE);

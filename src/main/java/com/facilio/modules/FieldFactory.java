@@ -5765,8 +5765,8 @@ public class FieldFactory {
         pmId.setColumnName("PM_ID");
         pmId.setModule(module);
         fields.add(pmId);
-
-        fields.add(getField("name", "NAME", FieldType.STRING));
+        
+        fields.add(getNameField(module));
 
         FacilioField type = new FacilioField();
         type.setName("type");
