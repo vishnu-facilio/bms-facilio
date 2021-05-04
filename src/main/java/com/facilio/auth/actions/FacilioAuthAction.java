@@ -905,7 +905,7 @@ public class FacilioAuthAction extends FacilioAction {
 					LOGGER.log(Level.SEVERE, "validateLogin() : default org id : " + defaultOrg.getOrgId());
 					securityPolicy = IAMUserUtil.getUserSecurityPolicy(getUsername(), AppDomain.GroupType.FACILIO, defaultOrg.getOrgId());
 					LOGGER.log(Level.SEVERE,"validateLogin() : security policy is null : " + (securityPolicy == null));
-					LOGGER.log(Level.SEVERE,"validateLogin() : security policy id : " + securityPolicy.getId());
+					LOGGER.log(Level.SEVERE,"validateLogin() : security policy id : " + (securityPolicy != null ? securityPolicy.getId(): -1L));
 				}
 
 				boolean hasMfaSettings;
