@@ -77,7 +77,7 @@ public class ReportExportUtil {
 		String filterJsonString=(String)context.get(FacilioConstants.ContextNames.FILTERS);
 		if(filterJsonString!=null)
 		{
-			url.append(ReportsUtil.encodeURIComponent(filterJsonString));
+			url.append("&filters="+ReportsUtil.encodeURIComponent(filterJsonString));
 		}
 		if(report.getDateRange() != null) {
 			JSONObject dateRange = new JSONObject();
