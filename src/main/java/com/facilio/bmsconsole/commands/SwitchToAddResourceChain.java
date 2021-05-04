@@ -492,10 +492,18 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 				
 				WorkorderTemplate template = (WorkorderTemplate)TemplateAPI.getTemplate(pm.getTemplateId());
 				
+				List<TaskSectionTemplate> taskSectionTemplates = new ArrayList<TaskSectionTemplate>();
+				if(template.getSectionTemplates() != null) {
+					taskSectionTemplates.addAll(template.getSectionTemplates());
+				}
+				if(template.getPreRequestSectionTemplates() != null && !template.getPreRequestSectionTemplates().isEmpty()) {
+					taskSectionTemplates.addAll(template.getPreRequestSectionTemplates());
+				}
+				
 				newContext.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(pmId));
 				newContext.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 				newContext.put(FacilioConstants.ContextNames.WORK_ORDER, template.getWorkorder());
-				newContext.put(FacilioConstants.ContextNames.TASK_SECTION_TEMPLATES, template.getSectionTemplates());
+				newContext.put(FacilioConstants.ContextNames.TASK_SECTION_TEMPLATES, taskSectionTemplates);
 				newContext.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
 //				newContext.put(FacilioConstants.ContextNames.SKIP_WO_CREATION,true);
 				
@@ -549,10 +557,18 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 				
 				WorkorderTemplate template = (WorkorderTemplate)TemplateAPI.getTemplate(pm.getTemplateId());
 				
+				List<TaskSectionTemplate> taskSectionTemplates = new ArrayList<TaskSectionTemplate>();
+				if(template.getSectionTemplates() != null) {
+					taskSectionTemplates.addAll(template.getSectionTemplates());
+				}
+				if(template.getPreRequestSectionTemplates() != null && !template.getPreRequestSectionTemplates().isEmpty()) {
+					taskSectionTemplates.addAll(template.getPreRequestSectionTemplates());
+				}
+				
 				newContext.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(pmId));
 				newContext.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 				newContext.put(FacilioConstants.ContextNames.WORK_ORDER, template.getWorkorder());
-				newContext.put(FacilioConstants.ContextNames.TASK_SECTION_TEMPLATES, template.getSectionTemplates());
+				newContext.put(FacilioConstants.ContextNames.TASK_SECTION_TEMPLATES, taskSectionTemplates);
 				newContext.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
 //				newContext.put(FacilioConstants.ContextNames.SKIP_WO_CREATION,true);
 				
@@ -623,10 +639,18 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 				
 				WorkorderTemplate template = (WorkorderTemplate)TemplateAPI.getTemplate(pm.getTemplateId());
 				
+				List<TaskSectionTemplate> taskSectionTemplates = new ArrayList<TaskSectionTemplate>();
+				if(template.getSectionTemplates() != null) {
+					taskSectionTemplates.addAll(template.getSectionTemplates());
+				}
+				if(template.getPreRequestSectionTemplates() != null && !template.getPreRequestSectionTemplates().isEmpty()) {
+					taskSectionTemplates.addAll(template.getPreRequestSectionTemplates());
+				}
+				
 				newContext.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(pmId));
 				newContext.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 				newContext.put(FacilioConstants.ContextNames.WORK_ORDER, template.getWorkorder());
-				newContext.put(FacilioConstants.ContextNames.TASK_SECTION_TEMPLATES, template.getSectionTemplates());
+				newContext.put(FacilioConstants.ContextNames.TASK_SECTION_TEMPLATES, taskSectionTemplates);
 				newContext.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
 //				newContext.put(FacilioConstants.ContextNames.SKIP_WO_CREATION,true);
 				
@@ -699,10 +723,18 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 				
 				WorkorderTemplate template = (WorkorderTemplate)TemplateAPI.getTemplate(pm.getTemplateId());
 				
+				List<TaskSectionTemplate> taskSectionTemplates = new ArrayList<TaskSectionTemplate>();
+				if(template.getSectionTemplates() != null) {
+					taskSectionTemplates.addAll(template.getSectionTemplates());
+				}
+				if(template.getPreRequestSectionTemplates() != null && !template.getPreRequestSectionTemplates().isEmpty()) {
+					taskSectionTemplates.addAll(template.getPreRequestSectionTemplates());
+				}
+				
 				newContext.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(pmId));
 				newContext.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 				newContext.put(FacilioConstants.ContextNames.WORK_ORDER, template.getWorkorder());
-				newContext.put(FacilioConstants.ContextNames.TASK_SECTION_TEMPLATES, template.getSectionTemplates());
+				newContext.put(FacilioConstants.ContextNames.TASK_SECTION_TEMPLATES, taskSectionTemplates);
 				newContext.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
 //				newContext.put(FacilioConstants.ContextNames.SKIP_WO_CREATION,true);
 				
