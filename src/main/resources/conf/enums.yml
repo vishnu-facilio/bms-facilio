@@ -163,6 +163,9 @@ enums:
   - name: QAndAResponseStatus
     enumClassName: com.facilio.qa.context.ResponseContext$ResponseStatus
 
+  - name: AuditLogRecordType
+    enumClassName: com.facilio.wmsv2.handler.AuditLogHandler$RecordType
+
   - name: InspectionCreationType
     enumClassName: com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext$CreationType
 

@@ -2775,4 +2775,9 @@ public class ReadOnlyChainFactory {
 		return chain;
 	}
 
+	public static FacilioChain getAuditLogs() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetAuditLogsCommand());
+		return chain;
+	}
 }

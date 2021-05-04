@@ -63,7 +63,7 @@ public class StateFlowAction extends FacilioAction {
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.TRANSITION, stateTransition);
-		sendAuditLogs(new AuditLogHandler.AuditLog("Add Or Update State Transition",
+		sendAuditLogs(new AuditLogHandler.AuditLogContext("Add Or Update State Transition",
 				"State transition has been updated", AuditLogHandler.RecordType.SETTING,
 				"StateTransition", stateTransition.getId()));
 		return SUCCESS;

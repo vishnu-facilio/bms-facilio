@@ -5,6 +5,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.AuditLogUtil;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.wmsv2.constants.Topics;
 import com.facilio.wmsv2.message.Message;
 import com.facilio.wmsv2.message.TopicHandler;
@@ -32,7 +33,7 @@ public class AuditLogHandler extends BaseHandler {
         try {
             LOGGER.error(message.toString());
             JSONObject content = message.getContent();
-            AuditLog auditLog = FieldUtil.getAsBeanFromJson(content, AuditLog.class);
+            AuditLogContext auditLog = FieldUtil.getAsBeanFromJson(content, AuditLogContext.class);
             AuditLogUtil.insertAuditLog(auditLog);
         } catch (Exception e) {
             LOGGER.error("Error in inserting log", e);
@@ -40,21 +41,12 @@ public class AuditLogHandler extends BaseHandler {
         return null;
     }
 
-    public static class AuditLog {
-        private Long id;
-
-        public Long getId() {
-            return id;
-        }
-        public void setId(Long id) {
-            this.id = id;
-        }
-
+    public static class AuditLogContext extends ModuleBaseWithCustomFields {
         private String subject;
         public String getSubject() {
             return subject;
         }
-        public AuditLog setSubject(String subject) {
+        public AuditLogContext setSubject(String subject) {
             this.subject = subject;
             return this;
         }
@@ -63,7 +55,7 @@ public class AuditLogHandler extends BaseHandler {
         public String getDescription() {
             return description;
         }
-        public AuditLog setDescription(String description) {
+        public AuditLogContext setDescription(String description) {
             this.description = description;
             return this;
         }
@@ -81,7 +73,7 @@ public class AuditLogHandler extends BaseHandler {
         public RecordType getRecordTypeEnum() {
             return recordType;
         }
-        public AuditLog setRecordType(RecordType recordType) {
+        public AuditLogContext setRecordType(RecordType recordType) {
             this.recordType = recordType;
             return this;
         }
@@ -90,7 +82,7 @@ public class AuditLogHandler extends BaseHandler {
         public String getTypeName() {
             return typeName;
         }
-        public AuditLog setTypeName(String typeName) {
+        public AuditLogContext setTypeName(String typeName) {
             this.typeName = typeName;
             return this;
         }
@@ -99,7 +91,7 @@ public class AuditLogHandler extends BaseHandler {
         public long getRecordId() {
             return recordId;
         }
-        public AuditLog setRecordId(long recordId) {
+        public AuditLogContext setRecordId(long recordId) {
             this.recordId = recordId;
             return this;
         }
@@ -108,7 +100,7 @@ public class AuditLogHandler extends BaseHandler {
         public User getPerformedBy() {
             return performedBy;
         }
-        public AuditLog setPerformedBy(User performedBy) {
+        public AuditLogContext setPerformedBy(User performedBy) {
             this.performedBy = performedBy;
             return this;
         }
@@ -117,15 +109,15 @@ public class AuditLogHandler extends BaseHandler {
         public Long getTime() {
             return time;
         }
-        public AuditLog setTime(Long time) {
+        public AuditLogContext setTime(Long time) {
             this.time = time;
             return this;
         }
 
-        public AuditLog() {
+        public AuditLogContext() {
         }
 
-        public AuditLog(String subject, String description, RecordType recordType, String typeName, long recordId) {
+        public AuditLogContext(String subject, String description, RecordType recordType, String typeName, long recordId) {
             this.subject = subject;
             this.description = description;
             this.recordType = recordType;

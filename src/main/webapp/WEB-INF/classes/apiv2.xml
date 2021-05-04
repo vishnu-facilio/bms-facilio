@@ -489,6 +489,11 @@
 				class="com.facilio.bmsconsole.actions.StateFlowAction" method="updateStateTransitionStates" />
 	</package>
 
+	<package name="auditLogs" extends="v2Api" namespace="/api/v2/auditLogs">
+		<action name="list"
+				class="com.facilio.bmsconsole.actions.AuditLogAction" method="getAuditLogs" />
+	</package>
+
 	<package name="assetDepreciation" extends="v2Api" namespace="/api/v2/asset/depreciation">
 		<action name="chart"
 				class="com.facilio.bmsconsole.actions.AssetDepreciationAction" method="getDepreciationChart" />
