@@ -368,12 +368,16 @@ public class ProcessImportCommand extends FacilioCommand {
 					moduleObj = ModuleFactory.getZoneRelModule();
 				}
 
+				if (fieldMapping.containsKey(module + "__formId") && colVal.get(fieldMapping.get(module + "__formId")) != null) {
+					props.put("formId", colVal.get(fieldMapping.get(module + "__formId")));
+				}
+
 				if (moduleObj != null && moduleObj.isStateFlowEnabled()) {
 					StateFlowRuleContext defaultStateFlow = StateFlowRulesAPI.getDefaultStateFlow(moduleObj);
 					if (defaultStateFlow != null) {
 						props.put(FacilioConstants.ContextNames.STATE_FLOW_ID, defaultStateFlow.getId());
 					}
-				} 
+				}
 				else if (AssetsAPI.isAssetsModule(importProcessContext.getModule())) {
 					StateFlowRuleContext stateFlow = StateFlowRulesAPI.getDefaultStateFlow(modBean.getModule(FacilioConstants.ContextNames.ASSET));
 					if (stateFlow != null) {
@@ -463,6 +467,7 @@ public class ProcessImportCommand extends FacilioCommand {
 							if (!props.containsKey(facilioField.getName())) {
 								props.put(facilioField.getName(), enumIndex);
 							}
+							isfilledByLookup = true;
 						} else if (facilioField.getDataType() == FieldType.MULTI_ENUM.getTypeAsInt()) {
 							MultiEnumField multiEnumField = (MultiEnumField) facilioField;
 							String enumString = (String) colVal.get(fieldMapping.get(key));
@@ -478,6 +483,7 @@ public class ProcessImportCommand extends FacilioCommand {
 							if (!props.containsKey(facilioField.getName())) {
 								props.put(facilioField.getName(), enumIndices);
 							}
+							isfilledByLookup = true;
 						} else if (facilioField.getDataType() == FieldType.MULTI_LOOKUP.getTypeAsInt()) {
 							String value = (String) colVal.get(fieldMapping.get(key));
 							List<Map<String,Object>> lookupRecords = new ArrayList<>();
@@ -487,6 +493,7 @@ public class ProcessImportCommand extends FacilioCommand {
 							if (CollectionUtils.isNotEmpty(lookupRecords)) {
 								props.put(facilioField.getName(), lookupRecords);
 							}
+							isfilledByLookup = true;
 						} else if (facilioField.getName().equals(FacilioConstants.ContextNames.SITE_ID)) {
 							String cellValueString = cellValue.toString();
 							if (StringUtils.isNotEmpty(cellValueString)) {
@@ -587,6 +594,7 @@ public class ProcessImportCommand extends FacilioCommand {
 
 							}
 						} else if (facilioField.getDisplayType().equals(FacilioField.FieldDisplayType.LOOKUP_POPUP) && (fieldMapping.get(key) != null)) {
+							// TODO remove this handle based on data type
 							Map<String, Object> specialLookupList;
 							try {
 								specialLookupList = getSpecialLookupProps(lookupField, colVal, importProcessContext);
