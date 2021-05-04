@@ -244,7 +244,7 @@ public class AddInspectionModules extends SignUpData {
         LookupField siteField = (LookupField) FieldFactory.getDefaultField("site", "Site", "SITE_ID", FieldType.LOOKUP);
         siteField.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.SITE));
         fields.add(siteField);
-        LookupField parentField = (LookupField) FieldFactory.getDefaultField("parent", "Parent", "PARENT_ID", FieldType.LOOKUP);
+        LookupField parentField = (LookupField) FieldFactory.getDefaultField("parent", "Parent", "PARENT_ID", FieldType.LOOKUP,true);
         parentField.setLookupModule(inspection);
         fields.add(parentField);
         
