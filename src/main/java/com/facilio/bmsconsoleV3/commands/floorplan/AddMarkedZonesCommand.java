@@ -5,11 +5,13 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.floorplan.V3IndoorFloorPlanContext;
 import com.facilio.bmsconsoleV3.context.floorplan.V3MarkerdZonesContext;
+import com.facilio.bmsconsoleV3.util.DesksAPI;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 
@@ -48,7 +50,14 @@ public class AddMarkedZonesCommand extends FacilioCommand {
 						floorObject.put("id", floorplan.getId());
 						zone.setIndoorfloorplan(FieldUtil.getAsBeanFromMap(floorObject, V3IndoorFloorPlanContext.class));
 					}
-					V3RecordAPI.addRecord(false, zones, zoneModule, zonefields);
+					Map<Long, List<UpdateChangeSet>> zoneChangeSet = V3RecordAPI.addRecord(false, zones, zoneModule, zonefields, true);
+					if(zoneChangeSet != null && !zoneChangeSet.isEmpty()) {
+					for(Long zoneId : zoneChangeSet.keySet()) {
+						V3MarkerdZonesContext changedZone = (V3MarkerdZonesContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.Floorplan.MARKED_ZONES, zoneId, V3MarkerdZonesContext.class);
+						
+						DesksAPI.AddorDeleteFacilityForSpace(changedZone);
+					}
+					}
 				}
 			}
 		}

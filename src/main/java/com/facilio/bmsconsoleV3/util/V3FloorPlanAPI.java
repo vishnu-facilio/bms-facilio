@@ -21,6 +21,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 
@@ -156,7 +157,14 @@ public class V3FloorPlanAPI {
 						floorObject.put("id", floorplan.getId());
 						zone.setIndoorfloorplan(FieldUtil.getAsBeanFromMap(floorObject, V3IndoorFloorPlanContext.class));
 					}
-					V3RecordAPI.addRecord(false, zones, module, fields);
+					Map<Long, List<UpdateChangeSet>> zoneChangeSet = V3RecordAPI.addRecord(false, zones, module, fields, true);
+					if(zoneChangeSet != null && !zoneChangeSet.isEmpty()) {
+						for(Long zoneId : zoneChangeSet.keySet()) {
+							V3MarkerdZonesContext changedZone = (V3MarkerdZonesContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.Floorplan.MARKED_ZONES, zoneId, V3MarkerdZonesContext.class);
+							
+							DesksAPI.AddorDeleteFacilityForSpace(changedZone);
+						}
+						}
 				}
         
         return null;
@@ -187,7 +195,14 @@ public class V3FloorPlanAPI {
 						Map<String, Object> floorObject = new HashMap<>();
 						floorObject.put("id", floorplan.getId());
 						zone.setIndoorfloorplan(FieldUtil.getAsBeanFromMap(floorObject, V3IndoorFloorPlanContext.class));
-                        V3RecordAPI.updateRecord(zone, module, fields);
+						Map<Long, List<UpdateChangeSet>> zoneChangeSet = V3RecordAPI.updateRecord(zone, module, fields, true);
+                        if(zoneChangeSet != null && !zoneChangeSet.isEmpty()) {
+        					for(Long zoneId : zoneChangeSet.keySet()) {
+        						V3MarkerdZonesContext changedzone = (V3MarkerdZonesContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.Floorplan.MARKED_ZONES, zoneId, V3MarkerdZonesContext.class);
+        						
+        						DesksAPI.AddorDeleteFacilityForSpace(changedzone);
+        					}
+                        }
 					}
 				}
         
