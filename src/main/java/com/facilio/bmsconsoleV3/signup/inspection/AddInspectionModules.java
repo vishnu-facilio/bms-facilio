@@ -1,7 +1,16 @@
 package com.facilio.bmsconsoleV3.signup.inspection;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.AbstractStateTransitionRuleContext;
@@ -19,18 +28,15 @@ import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
+import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
-import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.modules.fields.SystemEnumField;
-import com.facilio.modules.fields.FacilioField.FieldDisplayType;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class AddInspectionModules extends SignUpData {
     @Override
@@ -77,7 +83,57 @@ public class AddInspectionModules extends SignUpData {
         addModuleChain1.execute();
         
         addDefaultStateFlow(inspectionResponseModule);
+        
+        addDefaultFormForInspectionTemplate(inspection);
     }
+
+
+	public void addDefaultFormForInspectionTemplate(FacilioModule inspection) throws Exception {
+		// TODO Auto-generated method stub
+		
+      ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+	  FacilioForm defaultForm = new FacilioForm();
+      defaultForm.setName("standard");
+      defaultForm.setModule(inspection);
+      defaultForm.setDisplayName("Standard");
+      defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+      defaultForm.setShowInWeb(true);
+
+      FormSection section = new FormSection();
+      section.setName("Default Section");
+      section.setSectionType(FormSection.SectionType.FIELDS);
+      section.setShowLabel(true);
+
+      Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(inspection.getName()));
+      List<FormField> fields = new ArrayList<>();
+      
+      fields.add(new FormField(fieldMap.get("name").getFieldId(), "name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
+      fields.add(new FormField(fieldMap.get("description").getFieldId(), "description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+      
+      fields.add(new FormField(fieldMap.get("creationType").getFieldId(), "creationType", FacilioField.FieldDisplayType.SELECTBOX, "Inspection Type", FormField.Required.OPTIONAL, 5, 1));
+      fields.add(new FormField(fieldMap.get("assignmentType").getFieldId(), "assignmentType", FacilioField.FieldDisplayType.SELECTBOX, "Category", FormField.Required.OPTIONAL, 5, 1));
+      
+      fields.add(new FormField(fieldMap.get("baseSpace").getFieldId(), "baseSpace", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Building", FormField.Required.OPTIONAL, 6, 1));
+      fields.add(new FormField(fieldMap.get("assetCategory").getFieldId(), "assetCategory", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Asset Category", FormField.Required.OPTIONAL, 6, 1));
+      fields.add(new FormField(fieldMap.get("spaceCategory").getFieldId(), "spaceCategory", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Space Category", FormField.Required.OPTIONAL, 6, 1));
+      
+      fields.add(new FormField(fieldMap.get("resource").getFieldId(), "resource", FacilioField.FieldDisplayType.WOASSETSPACECHOOSER, "Space/Asset", FormField.Required.OPTIONAL, 5, 1));
+      
+      fields.add(new FormField(fieldMap.get("vendor").getFieldId(), "vendor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Vendor", FormField.Required.OPTIONAL, 6, 1));
+      fields.add(new FormField(fieldMap.get("tenant").getFieldId(), "tenant", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Tenant", FormField.Required.OPTIONAL, 6, 1));
+      fields.add(new FormField(fieldMap.get("category").getFieldId(), "category", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Category", FormField.Required.OPTIONAL, 6, 1));
+      fields.add(new FormField(fieldMap.get("priority").getFieldId(), "priority", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Priority", FormField.Required.OPTIONAL, 6, 1));
+      
+      fields.add(new FormField(-1, "assignment", FacilioField.FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", FormField.Required.OPTIONAL, 6, 1));
+      
+      section.setFields(fields);
+      
+      section.setSequenceNumber(1);
+
+      defaultForm.setSections(Collections.singletonList(section));
+      FormsAPI.createForm(defaultForm, inspection);
+	}
 
 
 	public FacilioModule constructInspectionTriggersInclExcl(ModuleBean modBean) throws Exception {
