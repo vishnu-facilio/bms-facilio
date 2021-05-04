@@ -52,6 +52,7 @@ public class GetModuleListCommand extends FacilioCommand {
 			moduleList.add(modBean.getModule("asset"));
 			moduleList.add(modBean.getModule("site"));
 			moduleList.add(modBean.getModule("building"));
+			moduleList.add(modBean.getModule("floor"));
 			moduleList.add(modBean.getModule("space"));
 			moduleList.add(modBean.getModule("alarm"));
 			moduleList.add(modBean.getModule("vendors"));
@@ -77,6 +78,10 @@ public class GetModuleListCommand extends FacilioCommand {
 			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.FACILITY_BOOKING)) {
 				moduleList.add(modBean.getModule(ContextNames.FacilityBooking.FACILITY));
 				moduleList.add(modBean.getModule(ContextNames.FacilityBooking.FACILITY_BOOKING));
+			}
+			if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY)) {
+				moduleList.add(modBean.getModule(ContextNames.TOOL));
+				moduleList.add(modBean.getModule(ContextNames.ITEM));
 			}
 		}
 		context.put(FacilioConstants.ContextNames.MODULE_LIST, moduleList);
