@@ -902,7 +902,10 @@ public class FacilioAuthAction extends FacilioAction {
 					List<Map<String, Object>> userData = IAMUserUtil.getUserData(getUsername(), AppDomain.GroupType.FACILIO);
 					Map<String, Object> userMap = userData.get(0);
 					Organization defaultOrg = IAMUserUtil.getDefaultOrg((long) userMap.get("uid"));
+					LOGGER.log(Level.SEVERE, "validateLogin() : default org id : " + defaultOrg.getOrgId());
 					securityPolicy = IAMUserUtil.getUserSecurityPolicy(getUsername(), AppDomain.GroupType.FACILIO, defaultOrg.getOrgId());
+					LOGGER.log(Level.SEVERE,"validateLogin() : security policy is null : " + (securityPolicy == null));
+					LOGGER.log(Level.SEVERE,"validateLogin() : security policy id : " + securityPolicy.getId());
 				}
 
 				boolean hasMfaSettings;
