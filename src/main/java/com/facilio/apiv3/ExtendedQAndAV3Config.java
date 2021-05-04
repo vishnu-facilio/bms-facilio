@@ -7,6 +7,7 @@ import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTriggerContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTriggerIncludeExcludeResourceContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.qa.command.InspectionResponseSupplementSupplyCommand;
 import com.facilio.qa.command.QAndAReadOnlyChainFactory;
 import com.facilio.qa.command.QAndATransactionChainFactory;
 import com.facilio.v3.V3Builder.V3Config;
@@ -80,6 +81,10 @@ public class ExtendedQAndAV3Config {
     @Module(FacilioConstants.Inspection.INSPECTION_RESPONSE)
     public static Supplier<V3Config> getInspectionResponse() {
         return () -> new V3Config(InspectionResponseContext.class, null)
+        		.list()
+        		.beforeFetch(new InspectionResponseSupplementSupplyCommand())
+        		.summary()
+        		.beforeFetch(new InspectionResponseSupplementSupplyCommand())
                 .build();
     }
 }
