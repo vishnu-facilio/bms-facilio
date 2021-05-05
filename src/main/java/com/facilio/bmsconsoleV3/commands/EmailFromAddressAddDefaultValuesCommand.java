@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.EmailFromAddress;
 import com.facilio.chain.FacilioContext;
@@ -28,8 +29,19 @@ public class EmailFromAddressAddDefaultValuesCommand extends FacilioCommand {
 			
 			emailFromAddress.setCreationType(EmailFromAddress.CreationType.CUSTOM.getIndex());
 			
+			checkForOrgDomainAndSetAutoVerified(emailFromAddress);
 		}
 		return false;
+	}
+
+	private void checkForOrgDomainAndSetAutoVerified(EmailFromAddress emailFromAddress) {
+		// TODO Auto-generated method stub
+		
+		String domain = emailFromAddress.getEmail().split("@")[1];
+		
+		if(domain.equalsIgnoreCase(AccountUtil.getCurrentOrg().getDomain()+".facilio.com")) {
+			emailFromAddress.setVerificationStatus(true);
+		}
 	}
 
 }

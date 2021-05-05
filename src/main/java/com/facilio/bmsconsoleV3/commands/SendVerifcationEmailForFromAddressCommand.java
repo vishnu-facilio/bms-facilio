@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.chain.Context;
 
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.EmailFromAddress;
 import com.facilio.chain.FacilioContext;
@@ -22,7 +23,9 @@ public class SendVerifcationEmailForFromAddressCommand extends FacilioCommand {
 		for(EmailFromAddress emailFromAddress : emailFromAddreses) {
 			
 			if(!emailFromAddress.isVerificationStatus()) {
-				AwsUtil.sendVerificationMailForFromAddressConfig(emailFromAddress.getEmail());
+				if(FacilioProperties.isProduction()) {
+					AwsUtil.sendVerificationMailForFromAddressConfig(emailFromAddress.getEmail());
+				}
 			}
 		}
 		
