@@ -481,8 +481,6 @@ public class AwsUtil
 			
 			GetIdentityVerificationAttributesResult result = client.getIdentityVerificationAttributes(getIdentityVerificationAttributesRequest);
 			
-			LOGGER.error("result -- "+result);
-			
 			Map<String, IdentityVerificationAttributes> resultmap = result.getVerificationAttributes();
 			
 			LOGGER.error("resultmap -- "+resultmap);
@@ -492,8 +490,6 @@ public class AwsUtil
 				IdentityVerificationAttributes status = resultmap.get(email);
 				
 				if(status != null) {
-					
-					LOGGER.error("email -- "+resultmap +" status  "+status +" status Value -- "+status.getVerificationStatus());
 					
 					if(status.getVerificationStatus().equals("Success")) {
 						facilioResultMap.put(email, Boolean.TRUE);
@@ -508,7 +504,7 @@ public class AwsUtil
 			return facilioResultMap;
 			
 		} catch (Exception ex) {
-			LOGGER.info("Error During Verification mail to " + emails + " " + ex.getMessage());
+			LOGGER.info("Error During Verification mail " + emails + " " + ex.getMessage());
 			throw ex;
 		}
 	}
