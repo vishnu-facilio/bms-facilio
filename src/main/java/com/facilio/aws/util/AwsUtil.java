@@ -465,6 +465,53 @@ public class AwsUtil
 			throw ex;
 		}
 	}
+	
+	
+	public static Map<String, Boolean> getVerificationMailStatus(List<String> emails) {
+		
+		try {
+			
+			Map<String,Boolean> facilioResultMap = new HashMap<String, Boolean>();
+			
+			GetIdentityVerificationAttributesRequest getIdentityVerificationAttributesRequest = new GetIdentityVerificationAttributesRequest()
+																									.withIdentities(emails);
+			
+			AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
+					.withRegion(Regions.US_WEST_2).withCredentials(getAWSCredentialsProvider()).build();
+			
+			GetIdentityVerificationAttributesResult result = client.getIdentityVerificationAttributes(getIdentityVerificationAttributesRequest);
+			
+			LOGGER.error("result -- "+result);
+			
+			Map<String, IdentityVerificationAttributes> resultmap = result.getVerificationAttributes();
+			
+			LOGGER.error("resultmap -- "+resultmap);
+			
+			for(String email : emails) {
+				
+				IdentityVerificationAttributes status = resultmap.get(email);
+				
+				if(status != null) {
+					
+					LOGGER.error("email -- "+resultmap +" status  "+status +" status Value -- "+status.getVerificationStatus());
+					
+					if(status.getVerificationStatus().equals("Success")) {
+						facilioResultMap.put(email, Boolean.TRUE);
+					}
+					else {
+						facilioResultMap.put(email, Boolean.FALSE);
+					}
+				}
+				
+			}
+			
+			return facilioResultMap;
+			
+		} catch (Exception ex) {
+			LOGGER.info("Error During Verification mail to " + emails + " " + ex.getMessage());
+			throw ex;
+		}
+	}
 
 	public static void sendMailViaMessage(JSONObject mailJson,Set<String> to, Set<String> cc, Set<String> bcc) {
 

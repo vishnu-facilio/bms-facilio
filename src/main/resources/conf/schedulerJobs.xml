@@ -190,4 +190,7 @@
 	
 	<job name='ScheduleInspectionStatusChange' classname='com.facilio.bmsconsole.jobs.ScheduleInspectionStatusChangeJob' transactionTimeout='900000'/>
 	<job name='OpenScheduledInspection' classname='com.facilio.bmsconsole.jobs.OpenScheduledInspection' transactionTimeout='900000'/>
+	
+	
+	<job name='getVerifiedEmailAddressFromAWS' classname='com.facilio.bmsconsole.jobs.GetVerifiedEmailAddressFromAWSJob' transactionTimeout='900000'/>
 </scheduler>
