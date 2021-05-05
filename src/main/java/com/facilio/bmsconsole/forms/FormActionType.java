@@ -98,7 +98,13 @@ public enum FormActionType {
 			Map<String,Object> placeHolders = new HashMap<>();
 			if (MapUtils.isNotEmpty(formData)) {
 				Map<String,Object> tempFormData = new HashMap<>(formData);	
-				CommonCommandUtil.appendModuleNameInKey(formRuleActionContext.getRuleContext().getFormContext().getModule().getName(), formRuleActionContext.getRuleContext().getFormContext().getModule().getName(), tempFormData, placeHolders);
+				FacilioForm formDetails = formRuleActionContext.getRuleContext().getFormContext();
+				if (formDetails == null && formRuleActionContext.getRuleContext().getFormId() > 0) {
+					formDetails = FormsAPI.getFormFromDB(formRuleActionContext.getRuleContext().getFormId());
+				}
+				if (formDetails != null) {
+					CommonCommandUtil.appendModuleNameInKey(formDetails.getModule().getName(), formDetails.getModule().getName(), tempFormData, placeHolders);	
+				}
 			}
 			
 			List<Long> valueFilledFields = (List<Long>) facilioContext.getOrDefault(FormRuleAPI.VALUE_FILLED_FIELD_IDS, new ArrayList<Long>());
