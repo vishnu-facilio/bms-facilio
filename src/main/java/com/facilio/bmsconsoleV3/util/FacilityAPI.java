@@ -300,6 +300,27 @@ public class FacilityAPI {
         List<FacilityContext> list = builder.get();
         return  list;
     }
+    
+    public static List<V3FacilityBookingContext> getFacilityBookingListWithSlots(Long facilityId) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        String bookingModule = FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING;
+        List<FacilioField> fields = modBean.getAllFields(bookingModule);
+
+        SelectRecordsBuilder<V3FacilityBookingContext> builder = new SelectRecordsBuilder<V3FacilityBookingContext>()
+                .moduleName(bookingModule)
+                .select(fields)
+                .beanClass(V3FacilityBookingContext.class);
+
+        List<V3FacilityBookingContext> list = builder.get();
+        if(CollectionUtils.isNotEmpty(list)) {
+            for(V3FacilityBookingContext booking : list) {
+                if (booking != null) {
+                    booking.setSlotList(FacilityAPI.getBookingSlots(booking.getId()));
+                }
+            }
+        }
+        return  list;
+    }
 
     public static void createSlots(FacilityContext facility, long startTime, Long endTime) throws Exception {
         List<SlotContext> slots = FacilityAPI.getFacilitySlots(facility, startTime, endTime);

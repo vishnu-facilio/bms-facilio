@@ -245,5 +245,12 @@
                 method="addOrUpdateAnswers">
         </action>
     </package>
+    
+    <package name="floorplan" namespace="/api/v3/floorplan" extends="v3Api">
+        <action name="getFacilityDetails"
+                class="com.facilio.bmsconsoleV3.actions.FloorplanAction"
+                method="getFacilityDetails">
+        </action>
+    </package>
 
 </struts>

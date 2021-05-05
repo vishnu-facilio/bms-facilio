@@ -12,7 +12,6 @@ import com.facilio.bmsconsoleV3.context.floorplan.V3DeskContext;
 import com.facilio.bmsconsoleV3.util.DesksAPI;
 
 public class CreateFacilityForDesksCommandV3 extends FacilioCommand {
-	private static final Logger LOGGER = Logger.getLogger(GenerateSlotCommand.class.getName());
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
