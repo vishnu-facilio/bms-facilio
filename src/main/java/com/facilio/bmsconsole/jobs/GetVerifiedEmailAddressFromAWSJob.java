@@ -5,24 +5,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.EmailFromAddress;
-import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.mssql.SelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.qa.context.ResponseContext;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 
 public class GetVerifiedEmailAddressFromAWSJob extends FacilioJob {
+	
+	private static final Logger LOGGER = LogManager.getLogger(GetVerifiedEmailAddressFromAWSJob.class.getName());
 
 	@Override
 	public void execute(JobContext jc) throws Exception {
@@ -42,9 +44,13 @@ public class GetVerifiedEmailAddressFromAWSJob extends FacilioJob {
 		
 		List<EmailFromAddress> unverifiedEmailFromAddress = select.get();
 		
+		LOGGER.error("unverifiedEmailFromAddress -- "+unverifiedEmailFromAddress);
+		
 		if(unverifiedEmailFromAddress != null) {
 			
 			Map<String, List<EmailFromAddress>> emailMap = unverifiedEmailFromAddress.stream().collect(Collectors.groupingBy(EmailFromAddress::getEmail));
+			
+			LOGGER.error("emailMap -- "+emailMap);
 			
 			Map<String, Boolean> result = AwsUtil.getVerificationMailStatus(new ArrayList<String>(emailMap.keySet()));
 			
