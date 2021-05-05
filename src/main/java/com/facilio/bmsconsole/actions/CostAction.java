@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import com.facilio.util.FacilioUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -18,7 +19,7 @@ public class CostAction extends FacilioAction {
 		}
 		catch(Exception e) {
 			LOGGER.error("Error occurred during addition of Utility Provider", e); 
-			throw new IllegalArgumentException(FacilioConstants.ERROR_MESSAGE);
+			throw new IllegalArgumentException(FacilioUtil.ERROR_MESSAGE);
 		}
 	}
 	

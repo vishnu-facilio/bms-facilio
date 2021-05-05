@@ -31,27 +31,31 @@ public class ConstructAnswerPOJOsCommand extends FacilioCommand {
         List<ClientAnswerContext> answerContextList = new ArrayList<>();
         Map<Long, AnswerContext> questionVsAnswer = new HashMap<>();
         for (Map<String, Object> prop : answers) {
-            Long questionId = (Long) prop.get("question");
-            QuestionContext question = questions.get(questionId);
-            FacilioUtil.throwIllegalArgumentException(question == null || question.getParent().getId() != response.getParent().getId(), "Invalid question specified during add/ update answers");
-            AnswerHandler handler = question.getQuestionType().getAnswerHandler();
-            ClientAnswerContext answer = FieldUtil.<ClientAnswerContext>getAsBeanFromMap(prop, handler.getAnswerClass());
-            FacilioUtil.throwIllegalArgumentException(answer.getAnswer() == null, MessageFormat.format("Answer cannot be for question : {0}", questionId));
+            try {
+                Long questionId = (Long) prop.get("question");
+                QuestionContext question = questions.get(questionId);
+                FacilioUtil.throwIllegalArgumentException(question == null || question.getParent().getId() != response.getParent().getId(), "Invalid question specified during add/ update answers");
+                AnswerHandler handler = question.getQuestionType().getAnswerHandler();
+                ClientAnswerContext answer = FieldUtil.<ClientAnswerContext>getAsBeanFromMap(prop, handler.getAnswerClass());
+                FacilioUtil.throwIllegalArgumentException(answer.getAnswer() == null, MessageFormat.format("Answer cannot be null for question : {0}", questionId));
 
-            AnswerContext answerContext = handler.deSerialize(answer, question);
-            answerContext.setQuestion(question);
-            answerContext.setParent(question.getParent());
-            answerContext.setResponse(response);
-            answerContext._setId(answer.getId());
+                AnswerContext answerContext = handler.deSerialize(answer, question);
+                answerContext.setQuestion(question);
+                answerContext.setParent(question.getParent());
+                answerContext.setResponse(response);
+                answerContext._setId(answer.getId());
 
-            if (answerContext.getId() < 0) {
-                getToBeAdded().add(answerContext);
+                if (answerContext.getId() < 0) {
+                    getToBeAdded().add(answerContext);
+                } else {
+                    getToBeUpdated().add(answerContext); // Assumption is always all the props of answer will be updated
+                }
+                answerContextList.add(answer);
+                questionVsAnswer.put(questionId, answerContext);
             }
-            else {
-                getToBeUpdated().add(answerContext); // Assumption is always all the props of answer will be updated
+            catch (Exception e) {
+
             }
-            answerContextList.add(answer);
-            questionVsAnswer.put(questionId, answerContext);
         }
 
         if (CollectionUtils.isNotEmpty(toBeAdded)) {
