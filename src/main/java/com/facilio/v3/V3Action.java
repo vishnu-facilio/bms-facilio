@@ -3,6 +3,7 @@ package com.facilio.v3;
 import com.facilio.aws.util.FacilioProperties;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
@@ -227,12 +228,12 @@ public class V3Action extends ActionSupport {
 	public String getStackTrace() {
 		return stackTrace;
 	}
+	private static final int MAX_LENGTH_OF_TRACE = 5000;
 	public void setStackTrace(Exception e) {
 		if (e != null) {
-			LogManager.getLogger(this.getClass().getName()).error("Exception occured: - ", e);
+			LogManager.getLogger(this.getClass().getName()).error("Exception occurred: - ", e);
 			if(!FacilioProperties.isProduction()) {
-				this.stackTrace = ExceptionUtils.getStackTrace(e);
-				System.out.println(this.stackTrace);
+				this.stackTrace = StringUtils.abbreviate(ExceptionUtils.getStackTrace(e), MAX_LENGTH_OF_TRACE) ;
 			}
 		}
 	}

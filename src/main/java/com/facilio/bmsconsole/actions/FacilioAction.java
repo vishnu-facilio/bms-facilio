@@ -85,7 +85,7 @@ public class FacilioAction extends ActionSupport {
 			if (StringUtils.isEmpty(message)) {
 				this.message = FacilioConstants.ERROR_MESSAGE;
 			}
-//			setStackTrace(exception); // I'm not sure if anyone's using this given we have graylog
+			setStackTrace(exception);
 		} catch (Exception e) {
 			LogManager.getLogger(this.getClass().getName()).error("Exception occurred inside handle Exception: - ", e);
 		}
@@ -168,12 +168,14 @@ public class FacilioAction extends ActionSupport {
 	public String getStackTrace() {
 		return stackTrace;
 	}
+
+	private static final int MAX_LENGTH_OF_TRACE = 5000;
 	public void setStackTrace(Exception e) {
 		if (e != null) {
 			LogManager.getLogger(this.getClass().getName()).error("Exception occured: - ", e);
 			if((!FacilioProperties.isProduction() && !FacilioProperties.isOnpremise()) || getFetchStackTrace()) {
-				this.stackTrace = ExceptionUtils.getStackTrace(e);
-				System.out.println(this.stackTrace);
+				this.stackTrace = StringUtils.abbreviate(ExceptionUtils.getStackTrace(e), MAX_LENGTH_OF_TRACE) ;
+//				System.out.println(this.stackTrace);
 			}
 		}
 	}
