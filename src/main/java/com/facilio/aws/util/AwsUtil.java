@@ -505,8 +505,8 @@ public class AwsUtil
 			
 		} catch (Exception ex) {
 			LOGGER.info("Error During Verification mail " + emails + " " + ex.getMessage());
-			throw ex;
 		}
+		return null;
 	}
 
 	public static void sendMailViaMessage(JSONObject mailJson,Set<String> to, Set<String> cc, Set<String> bcc) {
