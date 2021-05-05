@@ -8,6 +8,7 @@ import com.facilio.qa.context.*;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.json.simple.JSONObject;
 
 import java.text.MessageFormat;
@@ -54,7 +55,8 @@ public class ConstructAnswerPOJOsCommand extends FacilioCommand {
                 questionVsAnswer.put(questionId, answerContext);
             }
             catch (Exception e) {
-
+                prop.put("error", FacilioUtil.constructMessageFromException(e));
+                getErrors().add(prop);
             }
         }
 
@@ -64,10 +66,19 @@ public class ConstructAnswerPOJOsCommand extends FacilioCommand {
         if (CollectionUtils.isNotEmpty(toBeUpdated)) {
             context.put(FacilioConstants.QAndA.Command.ANSWERS_TO_BE_UPDATED, toBeUpdated);
         }
+        if (CollectionUtils.isNotEmpty(errors)) {
+            context.put(FacilioConstants.QAndA.Command.ANSWER_ERRORS, errors);
+        }
         context.put(FacilioConstants.QAndA.Command.ANSWER_LIST, answerContextList);
         context.put(FacilioConstants.QAndA.Command.QUESTION_VS_ANSWER, questionVsAnswer);
 
         return false;
+    }
+
+    private List<Map<String, Object>> errors = null;
+    private List<Map<String, Object>> getErrors() {
+        errors = errors == null ? new ArrayList<>() : errors;
+        return errors;
     }
 
     private List<AnswerContext> toBeAdded = null;

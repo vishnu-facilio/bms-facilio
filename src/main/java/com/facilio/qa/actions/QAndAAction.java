@@ -12,6 +12,7 @@ import com.facilio.v3.V3Action;
 import com.facilio.v3.context.Constants;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
 import java.util.List;
@@ -28,6 +29,10 @@ public class QAndAAction extends RESTAPIHandler {
 
         List<ClientAnswerContext> answers = (List<ClientAnswerContext>) context.get(FacilioConstants.QAndA.Command.ANSWER_LIST);
         this.getData().put("answers", answers);
+        List<Map<String, Object>> errors = (List<Map<String, Object>>) context.get(FacilioConstants.QAndA.Command.ANSWER_ERRORS);
+        if (CollectionUtils.isNotEmpty(errors)) {
+            this.getData().put("errors", errors);
+        }
 
         return SUCCESS;
     }

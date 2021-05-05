@@ -2461,6 +2461,7 @@ public class FacilioConstants {
 		}
 
 		public static class Command {
+			public static final String ANSWER_ERRORS = "answerErrors";
 			public static final String ANSWER_DATA = "answerData";
 			public static final String ANSWER_LIST = "answerList";
 			public static final String QUESTION_LIST = "questionList";
