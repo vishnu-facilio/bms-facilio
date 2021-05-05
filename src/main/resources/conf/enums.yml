@@ -166,6 +166,9 @@ enums:
   - name: AuditLogRecordType
     enumClassName: com.facilio.wmsv2.handler.AuditLogHandler$RecordType
 
+  - name: AuditLogSourceType
+    enumClassName: com.facilio.wmsv2.handler.AuditLogHandler$SourceType
+
   - name: InspectionCreationType
     enumClassName: com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext$CreationType
 

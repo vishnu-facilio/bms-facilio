@@ -114,6 +114,31 @@ public class AuditLogHandler extends BaseHandler {
             return this;
         }
 
+        private SourceType sourceType;
+        public int getSourceType() {
+            if (sourceType == null) {
+                return -1;
+            }
+            return sourceType.getIndex();
+        }
+        public SourceType getSourceTypeEnum() {
+            return sourceType;
+        }
+        public void setSourceType(int sourceType) {
+            this.sourceType = SourceType.valueOf(sourceType);
+        }
+        public void setSourceType(SourceType sourceType) {
+            this.sourceType = sourceType;
+        }
+
+        private long appId = -1;
+        public long getAppId() {
+            return appId;
+        }
+        public void setAppId(long appId) {
+            this.appId = appId;
+        }
+
         public AuditLogContext() {
         }
 
@@ -133,11 +158,54 @@ public class AuditLogHandler extends BaseHandler {
                 if (time == null) {
                     time = System.currentTimeMillis();
                 }
+                if (appId < 0 && AccountUtil.getCurrentAccount() != null) {
+                    appId = AccountUtil.getCurrentApp().getId();
+                }
+                try {
+                    if (!AccountUtil.getCurrentAccount().isFromMobile()) {
+                        sourceType = SourceType.WEB;
+                    }
+                    if (AccountUtil.getCurrentAccount().isFromAndroid()) {
+                        sourceType = SourceType.ANDROID;
+                    }
+                    if (AccountUtil.getCurrentAccount().isFromIos()) {
+                        sourceType = SourceType.IOS;
+                    }
+                } catch (Exception ex) {}
                 return FieldUtil.getAsJSON(this);
             } catch (Exception ex) {
                // log the exception
             }
             return null;
+        }
+    }
+
+    public enum SourceType implements FacilioEnum {
+        WEB("Web"),
+        ANDROID("Android"),
+        IOS("iOS"),
+        API("API");
+
+        private String name;
+
+        SourceType(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public static SourceType valueOf(int type) {
+            if (type > 0 && type <= values().length) {
+                return values()[type - 1];
+            }
+            return null;
+        }
+
+        @Override
+        public Integer getIndex() {
+            return ordinal() + 1;
         }
     }
 
@@ -152,7 +220,7 @@ public class AuditLogHandler extends BaseHandler {
         }
 
         @Override
-        public int getIndex() {
+        public Integer getIndex() {
             return ordinal() + 1;
         }
 
