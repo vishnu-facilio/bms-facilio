@@ -2,15 +2,23 @@ package com.facilio.qa.signup;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.RollUpField;
+import com.facilio.bmsconsole.util.RollUpFieldUtil;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.*;
+import com.facilio.qa.context.ResponseContext;
 import com.facilio.util.FacilioUtil;
+import com.facilio.v3.context.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,8 +47,10 @@ public class AddQAndAModules extends SignUpData {
         addModuleChain.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
         addModuleChain.execute();
 
+        ModuleBean modBean = Constants.getModBean();
         addQuestionSubModules(question);
-        addAnswerSubModules(answer);
+        addAnswerSubModules(modBean, answer);
+        addRollUpFields(modBean, qAndA, response, page, question, answer);
     }
 
     private FacilioModule constructQAndA() {
@@ -56,6 +66,9 @@ public class AddQAndAModules extends SignUpData {
         SystemEnumField typeField = (SystemEnumField) FieldFactory.getDefaultField("type", "Type", "Q_AND_A_TYPE", FieldType.SYSTEM_ENUM);
         typeField.setEnumName("QAndAType");
         fields.add(typeField);
+        fields.add(FieldFactory.getDefaultField("totalPages", "Total Pages", "TOTAL_PAGES", FieldType.NUMBER));
+        fields.add(FieldFactory.getDefaultField("totalQuestions", "Total Questions", "TOTAL_QUESTIONS", FieldType.NUMBER));
+        fields.add(FieldFactory.getDefaultField("totalResponses", "Total Responses", "TOTAL_RESPONSES", FieldType.NUMBER));
 
         module.setFields(fields);
         return module;
@@ -360,7 +373,7 @@ public class AddQAndAModules extends SignUpData {
         return module;
     }
 
-    private void addAnswerSubModules(FacilioModule answer) throws Exception {
+    private void addAnswerSubModules(ModuleBean modBean, FacilioModule answer) throws Exception {
         List<FacilioModule> modules = new ArrayList<>();
         FacilioModule multiFileAnswer = constructMultiFileAnswer(answer);
         modules.add(multiFileAnswer);
@@ -370,7 +383,6 @@ public class AddQAndAModules extends SignUpData {
         addModuleChain.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
         addModuleChain.getContext().put(FacilioConstants.Module.IGNORE_MODIFIED_SYS_FIELDS, true);
         addModuleChain.execute();
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         addMultiFileAnswerLineItemField(modBean, answer, multiFileAnswer);
         addMultiEnumLookupField(modBean, answer);
     }
@@ -418,5 +430,44 @@ public class AddQAndAModules extends SignUpData {
         multiEnumAnswerField.setRelModule(relModule);
 
         modBean.addField(multiEnumAnswerField);
+    }
+
+    public static void addRollUpFields(ModuleBean modBean, FacilioModule qAndA, FacilioModule response, FacilioModule page, FacilioModule question, FacilioModule answer) throws Exception {
+        FacilioField pageParentField = modBean.getField("parent", page.getName());
+        FacilioUtil.throwIllegalArgumentException(pageParentField == null, "Parent field of page cannot be null. This shouldn't happen");
+        FacilioField questionParentField = modBean.getField("parent", question.getName());
+        FacilioUtil.throwIllegalArgumentException(questionParentField == null, "Parent field of question cannot be null. This shouldn't happen");
+        FacilioField answerResponseField = modBean.getField("response", answer.getName());
+        FacilioUtil.throwIllegalArgumentException(answerResponseField == null, "Response field of answer cannot be null. This shouldn't happen");
+        FacilioField totalPagesField = modBean.getField("totalPages", qAndA.getName());
+        FacilioUtil.throwIllegalArgumentException(totalPagesField == null, "totalPages field of template cannot be null. This shouldn't happen");
+        FacilioField totalQuestionsField = modBean.getField("totalQuestions", qAndA.getName());
+        FacilioUtil.throwIllegalArgumentException(totalQuestionsField == null, "totalQuestions field of template cannot be null. This shouldn't happen");
+        FacilioField totalAnsweredField = modBean.getField("totalAnswered", response.getName());
+        FacilioUtil.throwIllegalArgumentException(totalAnsweredField == null, "totalAnswered field of response cannot be null. This shouldn't happen");
+
+        List<RollUpField> rollUpFields = new ArrayList<>();
+        rollUpFields.add(constructRollUpField("Total Pages", page, pageParentField, qAndA, totalPagesField, null));
+        rollUpFields.add(constructRollUpField("Total Questions", question, questionParentField, qAndA, totalQuestionsField, null));
+        rollUpFields.add(constructRollUpField("Total Answered Questions", answer, answerResponseField, response, totalAnsweredField, null));
+        RollUpFieldUtil.addRollUpField(rollUpFields);
+
+    }
+
+    public static RollUpField constructRollUpField(String desc, FacilioModule childModule, FacilioField childLookupField, FacilioModule parentModule, FacilioField parentRollupField, Condition condition) throws Exception {
+        RollUpField rollUp = new RollUpField();
+        rollUp.setDescription(desc);
+        rollUp.setAggregateFunctionId(BmsAggregateOperators.CommonAggregateOperator.COUNT.getValue());
+        rollUp.setChildModuleId(childModule.getModuleId());
+        rollUp.setChildFieldId(childLookupField.getFieldId());
+        rollUp.setParentModuleId(parentModule.getModuleId());
+        rollUp.setParentRollUpFieldId(parentRollupField.getFieldId());
+        rollUp.setIsSystemRollUpField(true);
+        if (condition != null) {
+            Criteria criteria = new Criteria();
+            criteria.addAndCondition(condition);
+            rollUp.setChildCriteriaId(CriteriaAPI.addCriteria(criteria));
+        }
+        return rollUp;
     }
 }

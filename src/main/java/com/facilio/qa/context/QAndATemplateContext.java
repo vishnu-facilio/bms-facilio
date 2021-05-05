@@ -37,6 +37,7 @@ public abstract class QAndATemplateContext <R extends ResponseContext> extends V
     private String name;
     private String description;
     private QAndAType qAndAType;
+    private Integer totalPages, totalQuestions, totalResponses;
 
     private List<PageContext> pages;
 
@@ -59,6 +60,7 @@ public abstract class QAndATemplateContext <R extends ResponseContext> extends V
         response.setQAndAType(this.qAndAType);
         response.setParent(this);
         response.setResStatus(ResponseContext.ResponseStatus.NOT_ANSWERED);
+        response.setTotalAnswered(0);
         addDefaultPropsForResponse(response);
         return response;
     }

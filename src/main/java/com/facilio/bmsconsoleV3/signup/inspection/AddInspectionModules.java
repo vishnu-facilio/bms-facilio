@@ -7,10 +7,12 @@ import java.util.Map;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.RollUpField;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.util.FormsAPI;
+import com.facilio.bmsconsole.util.RollUpFieldUtil;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.AbstractStateTransitionRuleContext;
@@ -19,12 +21,14 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
@@ -37,6 +41,10 @@ import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.modules.fields.SystemEnumField;
+import com.facilio.qa.context.ResponseContext;
+import com.facilio.qa.signup.AddQAndAModules;
+import com.facilio.util.FacilioUtil;
+import com.facilio.v3.context.Constants;
 
 public class AddInspectionModules extends SignUpData {
     @Override
@@ -64,7 +72,8 @@ public class AddInspectionModules extends SignUpData {
         addModuleChain = TransactionChainFactory.addSystemModuleChain();
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
         addModuleChain.execute();
-        
+        addInspectionResponseRollUpToTemplate(Constants.getModBean(), inspectionResponseModule);
+
         List<FacilioModule> modules1 = new ArrayList<>();
         
         modules1.add(constructInspectionTriggers(modBean, inspection));
@@ -361,6 +370,20 @@ public class AddInspectionModules extends SignUpData {
 
         module.setFields(fields);
         return module;
+    }
+
+    public static void addInspectionResponseRollUpToTemplate(ModuleBean modBean, FacilioModule inspectionResponse) throws Exception {
+        FacilioModule qandaTemplate = modBean.getModule(FacilioConstants.QAndA.Q_AND_A_TEMPLATE);
+        FacilioUtil.throwIllegalArgumentException(qandaTemplate == null, "Q And A Template module cannot be null. This shouldn't happen");
+        FacilioField responseParentField = modBean.getField("parent", inspectionResponse.getName());
+        FacilioUtil.throwIllegalArgumentException(responseParentField == null, "Parent field of Inspection response cannot be null. This shouldn't happen");
+        FacilioField totalResponsesField = modBean.getField("totalResponses", qandaTemplate.getName());
+        FacilioUtil.throwIllegalArgumentException(totalResponsesField == null, "totalResponses field of template cannot be null. This shouldn't happen");
+        FacilioField inspectionResponseStatusField = modBean.getField("status", inspectionResponse.getName());
+        FacilioUtil.throwIllegalArgumentException(inspectionResponseStatusField == null, "status field of Inspection Response cannot be null. This shouldn't happen");
+
+        RollUpField rollUpField = AddQAndAModules.constructRollUpField("Inspection Response RollUP", inspectionResponse, responseParentField, qandaTemplate, totalResponsesField, CriteriaAPI.getCondition(inspectionResponseStatusField, String.valueOf(InspectionResponseContext.Status.PRE_OPEN.getIndex()), PickListOperators.ISN_T));
+        RollUpFieldUtil.addRollUpField(Collections.singletonList(rollUpField));
     }
 
     public List<FacilioField> getInspectionCommonFieldList(ModuleBean modBean) throws Exception {
