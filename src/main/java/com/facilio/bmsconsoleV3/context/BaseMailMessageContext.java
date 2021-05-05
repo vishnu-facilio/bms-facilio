@@ -112,9 +112,14 @@ public class BaseMailMessageContext extends V3Context {
             String  textContentString = MailMessageUtil.getContentFromMessage(message, MailMessageUtil.TEXT_CONTENT_TYPE);
             
             if(textContentString != null) {
-            	String actualReply = EmailMessageParser.read(textContentString).getReply();
-            	mailContext.setTextContent(textContentString);
-            	mailContext.setContent(actualReply);
+            	try {
+            		String actualReply = EmailMessageParser.read(textContentString).getReply();
+                	mailContext.setTextContent(textContentString);
+                	mailContext.setContent(actualReply);
+            	}
+            	catch(Exception e) {
+            		LOGGER.error(e);
+            	}
             }
             
             List<Map<String, Object>> attachments = MailMessageUtil.getAttachments(message);
