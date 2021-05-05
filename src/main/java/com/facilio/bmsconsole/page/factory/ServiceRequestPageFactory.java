@@ -8,10 +8,12 @@ import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.modules.FacilioModule;
 import org.apache.commons.collections4.CollectionUtils;
 
+import java.util.HashMap;
+
 public class ServiceRequestPageFactory extends PageFactory {
     public static Page getServiceRequestPage(ServiceRequestContext record, FacilioModule module) throws Exception {
 
-        if (FacilioProperties.isDevelopment() || (AccountUtil.getCurrentOrg().getId() == 204l || AccountUtil.getCurrentOrg().getId() == 75l)) {
+        if (FacilioProperties.isDevelopment() || (AccountUtil.getCurrentOrg().getId() == 204l || AccountUtil.getCurrentOrg().getId() == 75l || AccountUtil.getCurrentOrg().getId() == 1l)) {
             Page page = new Page();
 
             Page.Tab tab1 = page.new Tab("summary");
@@ -25,6 +27,7 @@ public class ServiceRequestPageFactory extends PageFactory {
 
             PageWidget detailsWidget = new PageWidget(PageWidget.WidgetType.SR_DETAILS_WIDGET);
             detailsWidget.addToLayoutParams(tab1Sec1, 6, 24);
+            detailsWidget.addToWidgetParams("hideBg", true);
             tab1Sec1.addWidget(detailsWidget);
 
             Page.Tab tab2 = page.new Tab("Notes & Attachments");
@@ -32,8 +35,10 @@ public class ServiceRequestPageFactory extends PageFactory {
 
             Page.Section tab2sec1 = page.new Section();
             tab2.addSection(tab2sec1);
-
-            addCommonSubModuleWidget(tab2sec1, module, record);
+            HashMap<String, String> titleMap = new HashMap<>();
+            titleMap.put("notes", "Note");
+            titleMap.put("documents", "Attachment");
+            addCommonSubModuleWidget(tab2sec1, module, record, titleMap, false);
             Page.Tab tab3 = page.new Tab("related list");
             Page.Section tab3Sec1 = page.new Section();
             tab3.addSection(tab3Sec1);
