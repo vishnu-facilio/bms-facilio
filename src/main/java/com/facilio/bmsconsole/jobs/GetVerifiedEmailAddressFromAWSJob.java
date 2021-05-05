@@ -8,7 +8,9 @@ import java.util.stream.Collectors;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.EmailFromAddress;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
@@ -30,6 +32,9 @@ public class GetVerifiedEmailAddressFromAWSJob extends FacilioJob {
 	public void execute(JobContext jc) throws Exception {
 		// TODO Auto-generated method stub
 		
+		if(!FacilioProperties.isProduction()) {
+			return;
+		}
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		List<FacilioField> emailFromAddressField = modBean.getAllFields(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME);
