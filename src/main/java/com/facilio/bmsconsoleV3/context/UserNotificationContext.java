@@ -2,6 +2,8 @@ package com.facilio.bmsconsoleV3.context;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.util.FacilioUtil;
@@ -23,16 +25,6 @@ public class UserNotificationContext extends V3Context {
     }
 
     private User user;
-
-    public String getAppName() {
-        return appName;
-    }
-
-    public void setAppName(String appName) {
-        this.appName = appName;
-    }
-
-    private String appName;
 
     public JSONObject getInfo() {
         return info;
@@ -233,6 +225,9 @@ public class UserNotificationContext extends V3Context {
         userNotification.setTitle((String) notiObj.get("title"));
         if (obj.containsKey("application")) {
             userNotification.setApplication((long) obj.get("application"));
+        }
+        else {
+            userNotification.setApplication(ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
         }
         userNotification.setNotificationStatus(UserNotificationContext.NotificationStatus.UNSEEN);
         return  userNotification;
