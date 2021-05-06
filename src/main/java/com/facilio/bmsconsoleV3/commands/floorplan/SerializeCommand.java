@@ -97,37 +97,32 @@ public class SerializeCommand extends FacilioCommand {
 
 		// need to handle for all the modules Like Desk, locker, etc...
 		if (CollectionUtils.isNotEmpty(markers)) {
-			Map<Long, List<Long>> moduleRecordsMap = new HashMap<>();
 			for (V3MarkerContext marker : markers) {
-				List<Long> recordIds = new ArrayList<>();
 				if (marker.getRecordId() != null) {
 
-					Long id = marker.getRecordId();
-					
-					// if (id > 0) {
-					// 	SelectRecordsBuilder deskbuilder = new SelectRecordsBuilder()
-					// 	.module(deskModule).select(fields)
-					// 	.beanClass(V3DeskContext.class)
-					// 	.andCondition(CriteriaAPI.getCondition("Desks.ID", "id", String.valueOf(id), NumberOperators.EQUALS))
-					// 	.fetchSupplements(Arrays.asList((LookupField) deskFieldMap.get("employee")))
-					// 	.fetchSupplements(Arrays.asList((LookupField) deskFieldMap.get("department")));
-
-					// 	List<V3DeskContext> desks = deskbuilder.get();
-					// 	for (V3DeskContext desk : desks) {
-					// 		marker.setDesk(desk);
-
-					// 	}
-					// }			
-
-				
-					
-					
 					FacilioModule recordModule = modBean.getModule(marker.getMarkerModuleId());
            		 
            		 if(recordModule.getName().equals("desks")) {
-           			V3DeskContext desk;
-					desk = (V3DeskContext) V3RecordAPI.getRecord(deskModule.getName(), marker.getRecordId(),V3DeskContext.class);
-					marker.setDesk(desk);
+
+					Long id = marker.getRecordId();
+					
+					if (id > 0) {
+						SelectRecordsBuilder deskbuilder = new SelectRecordsBuilder()
+						.module(deskModule).select(fields)
+						.beanClass(V3DeskContext.class)
+						.andCondition(CriteriaAPI.getCondition("Desks.ID", "id", String.valueOf(id), NumberOperators.EQUALS))
+						.fetchSupplements(Arrays.asList((LookupField) deskFieldMap.get("employee")))
+						.fetchSupplements(Arrays.asList((LookupField) deskFieldMap.get("department")));
+
+						List<V3DeskContext> desks = deskbuilder.get();
+						for (V3DeskContext desk : desks) {
+							marker.setDesk(desk);
+
+						}
+					}
+           			// V3DeskContext desk;
+					// desk = (V3DeskContext) V3RecordAPI.getRecord(deskModule.getName(), marker.getRecordId(),V3DeskContext.class);
+					// marker.setDesk(desk);
            		 }
            		 else {
            			ModuleBaseWithCustomFields record =  V3RecordAPI.getRecord(recordModule.getName(), marker.getRecordId());
