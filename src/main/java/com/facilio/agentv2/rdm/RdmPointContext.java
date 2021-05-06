@@ -16,15 +16,15 @@ public class RdmPointContext extends Point {
 
     private String path;
 
-    public String getDetails() {
+    public JSONObject getDetails() {
         return details;
     }
 
-    public void setDetails(String details) {
+    public void setDetails(JSONObject details) {
         this.details = details;
     }
 
-    private String details;
+    private JSONObject details;
 
     public String getRdmPointClass() {
         return rdmPointClass;
