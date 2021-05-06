@@ -1,11 +1,32 @@
 package com.facilio.bmsconsole.util;
 
-import com.facilio.accounts.util.AccountUtil;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+
+import javax.mail.BodyPart;
+import javax.mail.Message;
+import javax.mail.Part;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.mail.util.MimeMessageParser;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsoleV3.context.BaseMailMessageContext;
 import com.facilio.bmsconsoleV3.context.EmailConversationThreadingContext;
+import com.facilio.bmsconsoleV3.context.EmailFromAddress;
+import com.facilio.bmsconsoleV3.context.EmailFromAddress.SourceType;
 import com.facilio.bmsconsoleV3.context.EmailToModuleDataContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioChain;
@@ -13,36 +34,20 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.fs.FileInfo;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.InsertRecordBuilder;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LargeTextField;
 import com.facilio.modules.fields.SupplementRecord;
-import com.facilio.pdf.PdfUtil;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.mail.util.MimeMessageParser;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import javax.mail.BodyPart;
-import javax.mail.Message;
-import javax.mail.Multipart;
-import javax.mail.Part;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
-import java.util.function.Function;
 
 public class MailMessageUtil {
 
@@ -102,6 +107,55 @@ public class MailMessageUtil {
     	}
     	return null;
     }
+    
+    public static EmailFromAddress getEmailFromAddress(String email,boolean isVerified) throws Exception {
+    	
+    	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		List<FacilioField> emailFromAddressField = modBean.getAllFields(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME);
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(emailFromAddressField);
+    	
+    	SelectRecordsBuilder<EmailFromAddress> select = new SelectRecordsBuilder<EmailFromAddress>()
+				.beanClass(EmailFromAddress.class)
+				.select(emailFromAddressField)
+				.moduleName(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME)
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("email"), email, StringOperators.IS));
+    	if(isVerified) {
+    		select.andCondition(CriteriaAPI.getCondition(fieldMap.get("verificationStatus"), Boolean.FALSE.toString(), BooleanOperators.IS));
+    	}
+			
+    	List<EmailFromAddress> fromAddress = select.get();
+    	
+    	if(fromAddress != null && !fromAddress.isEmpty()) {
+    		return fromAddress.get(0);
+    	}
+    	return null;
+    }
+    
+    public static EmailFromAddress getDefaultEmailFromAddress(SourceType sourceType) throws Exception {
+		// TODO Auto-generated method stub
+		
+    	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		List<FacilioField> emailFromAddressField = modBean.getAllFields(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME);
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(emailFromAddressField);
+    	
+    	SelectRecordsBuilder<EmailFromAddress> select = new SelectRecordsBuilder<EmailFromAddress>()
+				.beanClass(EmailFromAddress.class)
+				.select(emailFromAddressField)
+				.moduleName(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME)
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("creationType"), EmailFromAddress.CreationType.DEFAULT.getIndex()+"", NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("sourceType"), sourceType.getIndex()+"", NumberOperators.EQUALS));
+			
+    	List<EmailFromAddress> fromAddress = select.get();
+    	
+    	if(fromAddress != null && !fromAddress.isEmpty()) {
+    		return fromAddress.get(0);
+    	}
+    	return null;
+	}
     
     public static EmailToModuleDataContext getEmailToModuleData(String referenceMessageId,FacilioModule module) throws Exception {
     	
@@ -349,5 +403,5 @@ public class MailMessageUtil {
 
     
     public static Function<String,String> getFirstMessageId = (messageIDs) -> messageIDs.substring(messageIDs.indexOf('<')+1, messageIDs.indexOf('>'));
-    
+
 }
