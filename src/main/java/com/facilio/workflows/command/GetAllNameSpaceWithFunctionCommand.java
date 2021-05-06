@@ -8,11 +8,13 @@ import java.util.Map;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
+import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -38,9 +40,17 @@ public class GetAllNameSpaceWithFunctionCommand extends FacilioCommand {
 		
 		List<Long> nameSpaceIds = new ArrayList<>();
 		
+		UserBean userBean = (UserBean) BeanFactory.lookup("UserBean", AccountUtil.getCurrentOrg().getOrgId());
+		
 		if(props != null && !props.isEmpty()) {
 			for(Map<String, Object> prop :props) {
 				WorkflowNamespaceContext workflowNamespaceContext = FieldUtil.getAsBeanFromMap(prop, WorkflowNamespaceContext.class);
+				if(workflowNamespaceContext.getSysCreatedBy() > 0) {
+					workflowNamespaceContext.setSysCreatedByObj(userBean.getUser(workflowNamespaceContext.getSysCreatedBy(), false));
+				}
+				if(workflowNamespaceContext.getSysModifiedBy() > 0) {
+					workflowNamespaceContext.setSysModifiedByObj(userBean.getUser(workflowNamespaceContext.getSysModifiedBy(), false));
+				}
 				nameSpaceIds.add(workflowNamespaceContext.getId());
 				workflowNamespaceContexts.add(workflowNamespaceContext);
 			}
@@ -74,10 +84,19 @@ public class GetAllNameSpaceWithFunctionCommand extends FacilioCommand {
 
 		List<Map<String, Object>> props = selectBuilder.get();
 
+		UserBean userBean = (UserBean) BeanFactory.lookup("UserBean", AccountUtil.getCurrentOrg().getOrgId());
+		
 		Map<Long,List<WorkflowUserFunctionContext>> nameSpaceMap = new HashMap<>(); 
 		if (props != null && !props.isEmpty()) {
 			for(Map<String, Object> prop :props) {
 				WorkflowUserFunctionContext workflowContext = FieldUtil.getAsBeanFromMap(prop, WorkflowUserFunctionContext.class);
+				
+				if(workflowContext.getSysCreatedBy() > 0) {
+					workflowContext.setSysCreatedByObj(userBean.getUser(workflowContext.getSysCreatedBy(), false));
+				}
+				if(workflowContext.getSysModifiedBy() > 0) {
+					workflowContext.setSysModifiedByObj(userBean.getUser(workflowContext.getSysModifiedBy(), false));
+				}
 				
 				workflowContext.fillFunctionHeaderFromScript();
 				

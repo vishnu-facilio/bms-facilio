@@ -68,4 +68,20 @@ public class WorkflowNamespaceContext {
 	public void setSysModifiedBy(long sysModifiedBy) {
 		this.sysModifiedBy = sysModifiedBy;
 	}
+	
+	private IAMUser sysCreatedByObj;
+	private IAMUser sysModifiedByObj;
+
+	public IAMUser getSysCreatedByObj() {
+		return sysCreatedByObj;
+	}
+	public void setSysCreatedByObj(IAMUser sysCreatedByObj) {
+		this.sysCreatedByObj = sysCreatedByObj;
+	}
+	public IAMUser getSysModifiedByObj() {
+		return sysModifiedByObj;
+	}
+	public void setSysModifiedByObj(IAMUser sysModifiedByObj) {
+		this.sysModifiedByObj = sysModifiedByObj;
+	}
 }
