@@ -33,4 +33,9 @@ public class NumberAnswerHandler extends AnswerHandler<NumberAnswerContext> {
         answerContext.setNumberAnswer(answer.getAnswer());
         return answerContext;
     }
+
+    @Override
+    public boolean checkIfAnswerIsNull (AnswerContext answer) throws Exception {
+        return answer.getNumberAnswer() == null;
+    }
 }

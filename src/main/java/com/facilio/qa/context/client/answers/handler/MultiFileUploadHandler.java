@@ -9,6 +9,7 @@ import com.facilio.qa.context.questions.MultiFileUploadQuestionContext;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
 import lombok.SneakyThrows;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -50,5 +51,19 @@ public class MultiFileUploadHandler extends AnswerHandler<MultiFileUploadAnswerC
             answerContext.setRemarks(answer.getRemarks());
         }
         return answerContext;
+    }
+
+    @Override
+    public boolean checkIfAnswerIsNull (AnswerContext answer) throws Exception {
+        return CollectionUtils.isEmpty(answer.getMultiFileAnswer());
+    }
+
+    @Override
+    public boolean checkIfAnswerIsNull (MultiFileUploadAnswerContext answer, QuestionContext question) throws Exception {
+        return CollectionUtils.isEmpty(answer.getAnswer()) && checkEachAnswerIsNull(answer.getAnswer());
+    }
+
+    private boolean checkEachAnswerIsNull (List<MultiFileUploadAnswerContext.MultiFileAnswer> files) {
+        return files.stream().anyMatch(f -> f.getId() == null);
     }
 }

@@ -43,7 +43,7 @@ public class MCQMultiAnswerHandler extends AnswerHandler<MCQMultiAnswerContext> 
     @Override
     public AnswerContext deSerialize(MCQMultiAnswerContext answer, QuestionContext question) throws Exception {
         MCQMultiContext mcqQuestion = (MCQMultiContext) question;
-        boolean isOther = StringUtils.isNotEmpty(mcqQuestion.getOtherOptionLabel());
+        boolean isOther = isOther(mcqQuestion);
         List<Long> selected = answer.getAnswer().getSelected();
         V3Util.throwRestException(CollectionUtils.isEmpty(selected)
                                                     && (!isOther || StringUtils.isEmpty(answer.getAnswer().getOther()))
@@ -66,10 +66,28 @@ public class MCQMultiAnswerHandler extends AnswerHandler<MCQMultiAnswerContext> 
         return answerContext;
     }
 
+    private boolean isOther (MCQMultiContext question) {
+        return StringUtils.isNotEmpty(question.getOtherOptionLabel());
+    }
+
     @SneakyThrows
     private MCQOptionContext validateAndCreateMCQOption (Long selected, MCQMultiContext mcqQuestion) {
         V3Util.throwRestException(selected != null && !mcqQuestion.getOptions().stream().anyMatch(o -> o._getId() == selected)
                 , ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid select option ({0}) is specified while adding MCQ Answer", selected));
         return new MCQOptionContext(selected);
+    }
+
+    @Override
+    public boolean checkIfAnswerIsNull (AnswerContext answer) throws Exception {
+        return CollectionUtils.isEmpty(answer.getMultiEnumAnswer())
+                                    && (!isOther((MCQMultiContext) answer.getQuestion()) || StringUtils.isEmpty(answer.getEnumOtherAnswer()))
+                                    ;
+    }
+
+    @Override
+    public boolean checkIfAnswerIsNull (MCQMultiAnswerContext answer, QuestionContext question) throws Exception {
+        return CollectionUtils.isEmpty(answer.getAnswer().getSelected())
+                            && (isOther((MCQMultiContext) question) || StringUtils.isEmpty(answer.getAnswer().getOther()))
+                            ;
     }
 }

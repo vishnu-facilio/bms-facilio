@@ -50,4 +50,14 @@ public class StringAnswerHandler extends AnswerHandler<StringAnswerContext> {
             return ((ShortStringQuestionContext) question).getMaxLength() == null ? CommonStringQuestionHandler.SHORT_STRING_MAX_LENGTH : ((ShortStringQuestionContext) question).getMaxLength();
         }
     }
+
+    @Override
+    public boolean checkIfAnswerIsNull (AnswerContext answer) throws Exception {
+        return StringUtils.isEmpty(isBigString ? answer.getLongAnswer() : answer.getShortAnswer());
+    }
+
+    @Override
+    public boolean checkIfAnswerIsNull (StringAnswerContext answer, QuestionContext question) throws Exception {
+        return StringUtils.isEmpty(answer.getAnswer());
+    }
 }

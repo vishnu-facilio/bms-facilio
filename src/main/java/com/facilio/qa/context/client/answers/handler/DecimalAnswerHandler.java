@@ -33,4 +33,9 @@ public class DecimalAnswerHandler extends AnswerHandler<DecimalAnswerContext> {
         answerContext.setDecimalAnswer(answer.getAnswer());
         return answerContext;
     }
+
+    @Override
+    public boolean checkIfAnswerIsNull (AnswerContext answer) throws Exception {
+        return answer.getDecimalAnswer() == null;
+    }
 }

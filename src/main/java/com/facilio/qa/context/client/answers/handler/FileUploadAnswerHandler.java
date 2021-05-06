@@ -25,4 +25,14 @@ public class FileUploadAnswerHandler extends AnswerHandler<FileUploadAnswerConte
         answerContext.setFileAnswerId(answer.getAnswer().getId());
         return answerContext;
     }
+
+    @Override
+    public boolean checkIfAnswerIsNull (AnswerContext answer) throws Exception {
+        return answer.getFileAnswerId() == null;
+    }
+
+    @Override
+    public boolean checkIfAnswerIsNull (FileUploadAnswerContext answer, QuestionContext question) throws Exception {
+        return answer.getAnswer().getId() == null;
+    }
 }

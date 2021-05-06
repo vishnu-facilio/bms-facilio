@@ -23,4 +23,9 @@ public class DateTimeAnswerHandler extends AnswerHandler<DateTimeAnswerContext> 
         answerContext.setDateTimeAnswer(answer.getAnswer());
         return answerContext;
     }
+
+    @Override
+    public boolean checkIfAnswerIsNull (AnswerContext answer) throws Exception {
+        return answer.getDateTimeAnswer() == null;
+    }
 }

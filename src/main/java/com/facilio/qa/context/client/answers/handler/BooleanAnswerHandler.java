@@ -23,4 +23,9 @@ public class BooleanAnswerHandler extends AnswerHandler<BooleanAnswerContext> {
         answerContext.setBooleanAnswer(answer.getAnswer());
         return answerContext;
     }
+
+    @Override
+    public boolean checkIfAnswerIsNull (AnswerContext answer) throws Exception {
+        return answer.getBooleanAnswer() == null;
+    }
 }

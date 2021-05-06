@@ -5,7 +5,6 @@ import com.facilio.qa.context.AnswerHandler;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.client.answers.MCQSingleAnswerContext;
 import com.facilio.qa.context.questions.MCQSingleContext;
-import com.facilio.util.FacilioUtil;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.lang3.StringUtils;
@@ -22,7 +21,7 @@ public class MCQSingleAnswerHandler extends AnswerHandler<MCQSingleAnswerContext
         MCQSingleAnswerContext mcqSingleAnswer = new MCQSingleAnswerContext();
         MCQSingleAnswerContext.MCQAnswer mcqAnswer = new MCQSingleAnswerContext.MCQAnswer();
         mcqAnswer.setSelected(answer.getEnumAnswer());
-        if ( StringUtils.isNotEmpty(((MCQSingleContext) answer.getQuestion()).getOtherOptionLabel()) ) {
+        if ( isOther((MCQSingleContext) answer.getQuestion()) )  {
             mcqAnswer.setOther(answer.getEnumOtherAnswer());
         }
         mcqSingleAnswer.setAnswer(mcqAnswer);
@@ -32,7 +31,7 @@ public class MCQSingleAnswerHandler extends AnswerHandler<MCQSingleAnswerContext
     @Override
     public AnswerContext deSerialize(MCQSingleAnswerContext answer, QuestionContext question) throws Exception {
         MCQSingleContext mcqQuestion = (MCQSingleContext) question;
-        boolean isOther = StringUtils.isNotEmpty(mcqQuestion.getOtherOptionLabel());
+        boolean isOther = isOther(mcqQuestion);
         Long selected = answer.getAnswer().getSelected();
         V3Util.throwRestException(selected == null
                                                     && (!isOther || StringUtils.isEmpty(answer.getAnswer().getOther()))
@@ -48,5 +47,20 @@ public class MCQSingleAnswerHandler extends AnswerHandler<MCQSingleAnswerContext
             answer.getAnswer().setOther(null);
         }
         return answerContext;
+    }
+
+    private boolean isOther (MCQSingleContext question) {
+        return StringUtils.isNotEmpty(question.getOtherOptionLabel());
+    }
+
+    @Override
+    public boolean checkIfAnswerIsNull (AnswerContext answer) throws Exception {
+        return answer.getEnumAnswer() == null && (!isOther((MCQSingleContext) answer.getQuestion()) || StringUtils.isEmpty(answer.getEnumOtherAnswer()));
+    }
+
+    @Override
+    public boolean checkIfAnswerIsNull (MCQSingleAnswerContext answer, QuestionContext question) throws Exception {
+        return answer.getAnswer().getSelected() == null
+                && (!isOther((MCQSingleContext) question) || StringUtils.isEmpty(answer.getAnswer().getOther()));
     }
 }
