@@ -7,7 +7,8 @@ import com.facilio.qa.context.client.answers.StringAnswerContext;
 import com.facilio.qa.context.questions.LongStringQuestionContext;
 import com.facilio.qa.context.questions.ShortStringQuestionContext;
 import com.facilio.qa.context.questions.handler.CommonStringQuestionHandler;
-import com.facilio.util.FacilioUtil;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.util.V3Util;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.MessageFormat;
@@ -27,10 +28,10 @@ public class StringAnswerHandler extends AnswerHandler<StringAnswerContext> {
     }
 
     @Override
-    public AnswerContext deSerialize(StringAnswerContext answer, QuestionContext question) {
-        FacilioUtil.throwIllegalArgumentException(StringUtils.isEmpty(answer.getAnswer()), "String answer cannot be empty");
+    public AnswerContext deSerialize(StringAnswerContext answer, QuestionContext question) throws Exception {
+        V3Util.throwRestException(StringUtils.isEmpty(answer.getAnswer()), ErrorCode.VALIDATION_ERROR, "String answer cannot be empty");
         int maxLength = maxLength(question);
-        FacilioUtil.throwIllegalArgumentException(answer.getAnswer().length() > maxLength, MessageFormat.format("String answer length ({0}) is greater than the max length ({1}) allowed", answer.getAnswer().length(), maxLength));
+        V3Util.throwRestException(answer.getAnswer().length() > maxLength, ErrorCode.VALIDATION_ERROR, MessageFormat.format("String answer length ({0}) is greater than the max length ({1}) allowed", answer.getAnswer().length(), maxLength));
         AnswerContext answerContext = new AnswerContext();
         if (isBigString) {
             answerContext.setLongAnswer(answer.getAnswer());

@@ -52,6 +52,10 @@ public class QuestionContext extends V3Context {
     private Integer position;
     private ClientAnswerContext answer;
 
+    public boolean mandatory() {
+        return mandatory == null ? false : mandatory.booleanValue();
+    }
+
     public void setAnswer (List<ClientAnswerContext> answers) {
         answer = CollectionUtils.isEmpty(answers) ? null : answers.get(0);
     }

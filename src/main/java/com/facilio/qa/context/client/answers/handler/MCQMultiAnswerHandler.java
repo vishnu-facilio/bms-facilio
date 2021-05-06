@@ -6,7 +6,9 @@ import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.client.answers.MCQMultiAnswerContext;
 import com.facilio.qa.context.questions.MCQMultiContext;
 import com.facilio.qa.context.questions.MCQOptionContext;
-import com.facilio.util.FacilioUtil;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.util.V3Util;
+import lombok.SneakyThrows;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -39,13 +41,13 @@ public class MCQMultiAnswerHandler extends AnswerHandler<MCQMultiAnswerContext> 
     }
 
     @Override
-    public AnswerContext deSerialize(MCQMultiAnswerContext answer, QuestionContext question) {
+    public AnswerContext deSerialize(MCQMultiAnswerContext answer, QuestionContext question) throws Exception {
         MCQMultiContext mcqQuestion = (MCQMultiContext) question;
         boolean isOther = StringUtils.isNotEmpty(mcqQuestion.getOtherOptionLabel());
         List<Long> selected = answer.getAnswer().getSelected();
-        FacilioUtil.throwIllegalArgumentException(CollectionUtils.isEmpty(selected)
+        V3Util.throwRestException(CollectionUtils.isEmpty(selected)
                                                     && (!isOther || StringUtils.isEmpty(answer.getAnswer().getOther()))
-                                                    , "At least one option need to be selected for MCQ");
+                                                    , ErrorCode.VALIDATION_ERROR, "At least one option need to be selected for MCQ");
         AnswerContext answerContext = new AnswerContext();
         if (CollectionUtils.isNotEmpty(selected)) { // Check is for handling answers only with 'other' option
             answerContext.setMultiEnumAnswer(selected.stream()
@@ -64,9 +66,10 @@ public class MCQMultiAnswerHandler extends AnswerHandler<MCQMultiAnswerContext> 
         return answerContext;
     }
 
+    @SneakyThrows
     private MCQOptionContext validateAndCreateMCQOption (Long selected, MCQMultiContext mcqQuestion) {
-        FacilioUtil.throwIllegalArgumentException(selected != null && !mcqQuestion.getOptions().stream().anyMatch(o -> o._getId() == selected)
-                , MessageFormat.format("Invalid select option ({0}) is specified while adding MCQ Answer", selected));
+        V3Util.throwRestException(selected != null && !mcqQuestion.getOptions().stream().anyMatch(o -> o._getId() == selected)
+                , ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid select option ({0}) is specified while adding MCQ Answer", selected));
         return new MCQOptionContext(selected);
     }
 }

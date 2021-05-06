@@ -19,16 +19,21 @@ import java.util.function.Supplier;
 @Config
 public class ExtendedQAndAV3Config {
 
-    /*
-    All modules extending Q and A template should make sure to include the following
-
-    .create()
-    .beforeSave(QAndATransactionChainFactory.commonQAndABeforeSave())
-
-    .summary()
-    .afterFetch(QAndAReadOnlyChainFactory.commonAfterQAndATemplateFetch())
-
-    Make sure to add them directly or include them in the chain of corresponding hooks
+    /**
+     * All modules extending Q and A template should make sure to include the following
+     *
+     *     .create()
+     *     .beforeSave(QAndATransactionChainFactory.commonQAndABeforeSave())
+     *
+     *     .summary()
+     *     .afterFetch(QAndAReadOnlyChainFactory.commonAfterQAndATemplateFetch())
+     *
+     * All modules extending Q and A response should make sure to include the following
+     *      .update()
+     *      .beforeSave(QAndATransactionChainFactory.commonBeforeQAndAResponseUpdate())
+     *
+     * Make sure to add them directly or include them in the chain of corresponding hooks
+     *
      */
 
 
@@ -81,6 +86,8 @@ public class ExtendedQAndAV3Config {
     @Module(FacilioConstants.Inspection.INSPECTION_RESPONSE)
     public static Supplier<V3Config> getInspectionResponse() {
         return () -> new V3Config(InspectionResponseContext.class, null)
+                .update()
+                .beforeSave(QAndATransactionChainFactory.commonBeforeQAndAResponseUpdate())
         		.list()
         		.beforeFetch(new InspectionResponseSupplementSupplyCommand())
         		.summary()

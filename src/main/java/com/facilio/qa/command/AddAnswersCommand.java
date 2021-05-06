@@ -13,7 +13,7 @@ public class AddAnswersCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         List<AnswerContext> answers = (List<AnswerContext>) context.get(FacilioConstants.QAndA.Command.ANSWERS_TO_BE_ADDED);
         if (CollectionUtils.isNotEmpty(answers)) {
-            QAndAUtil.addRecordViaChain(FacilioConstants.QAndA.ANSWER, answers);
+            QAndAUtil.addRecordViaV3Chain(FacilioConstants.QAndA.ANSWER, answers);
         }
 
         return false;

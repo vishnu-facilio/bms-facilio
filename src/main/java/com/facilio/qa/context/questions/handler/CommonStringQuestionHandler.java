@@ -2,7 +2,9 @@ package com.facilio.qa.context.questions.handler;
 
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.QuestionHandler;
-import com.facilio.util.FacilioUtil;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
+import com.facilio.v3.util.V3Util;
 import lombok.AllArgsConstructor;
 
 import java.text.MessageFormat;
@@ -18,11 +20,11 @@ public class CommonStringQuestionHandler<Q extends QuestionContext> implements Q
     private Function<Q, Integer> maxLength;
     private int maxAllowedLen;
 
-    private void commonValidate (List<Q> questions) {
+    private void commonValidate (List<Q> questions) throws RESTException {
         for (Q q : questions) {
             Integer maxLen = maxLength.apply(q);
-            FacilioUtil.throwIllegalArgumentException(maxLen != null && maxLen <= 0, MessageFormat.format("Invalid maxLength ({0}) specified while adding string question", maxLen));
-            FacilioUtil.throwIllegalArgumentException(maxLen != null && maxLen > maxAllowedLen, MessageFormat.format("Max Length ({0}) cannot be greater than {1}", maxLen, maxAllowedLen));
+            V3Util.throwRestException(maxLen != null && maxLen <= 0, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid maxLength ({0}) specified while adding string question", maxLen));
+            V3Util.throwRestException(maxLen != null && maxLen > maxAllowedLen, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Max Length ({0}) cannot be greater than {1}", maxLen, maxAllowedLen));
         }
     }
 

@@ -11,8 +11,9 @@ import com.facilio.qa.QAndAUtil;
 import com.facilio.qa.context.QuestionHandler;
 import com.facilio.qa.context.questions.BaseMCQContext;
 import com.facilio.qa.context.questions.MCQOptionContext;
-import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.util.V3Util;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -28,9 +29,9 @@ public class MCQHandler<Q extends BaseMCQContext> implements QuestionHandler<Q> 
     private String moduleName;
 
     @Override
-    public void validateSave(List<Q> questions) {
+    public void validateSave(List<Q> questions) throws Exception {
         for (BaseMCQContext question : questions) {
-            FacilioUtil.throwIllegalArgumentException(CollectionUtils.isEmpty(question.getOptions()) || question.getOptions().size() < 2, "Minimum 2 options needed for MCQs");
+            V3Util.throwRestException(CollectionUtils.isEmpty(question.getOptions()) || question.getOptions().size() < 2, ErrorCode.VALIDATION_ERROR, "Minimum 2 options needed for MCQs");
         }
     }
 
@@ -44,9 +45,9 @@ public class MCQHandler<Q extends BaseMCQContext> implements QuestionHandler<Q> 
     }
 
     @Override
-    public void validateUpdate(List<Q> questions) {
+    public void validateUpdate(List<Q> questions) throws Exception {
         for (BaseMCQContext question : questions) {
-            FacilioUtil.throwIllegalArgumentException(question.getOptions() != null && question.getOptions().size() < 2, "Minimum 2 options needed for MCQs");
+            V3Util.throwRestException(question.getOptions() != null && question.getOptions().size() < 2, ErrorCode.VALIDATION_ERROR, "Minimum 2 options needed for MCQs");
         }
     }
 

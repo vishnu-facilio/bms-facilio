@@ -5,7 +5,8 @@ import com.facilio.qa.context.AnswerHandler;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.client.answers.NumberAnswerContext;
 import com.facilio.qa.context.questions.NumberQuestionContext;
-import com.facilio.util.FacilioUtil;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.util.V3Util;
 
 import java.text.MessageFormat;
 
@@ -23,11 +24,11 @@ public class NumberAnswerHandler extends AnswerHandler<NumberAnswerContext> {
     }
 
     @Override
-    public AnswerContext deSerialize(NumberAnswerContext answer, QuestionContext question) {
+    public AnswerContext deSerialize(NumberAnswerContext answer, QuestionContext question) throws Exception {
         Long minValue = ((NumberQuestionContext) question).getMinValue();
         Long maxValue = ((NumberQuestionContext) question).getMaxValue();
-        FacilioUtil.throwIllegalArgumentException(minValue != null && answer.getAnswer() < minValue, MessageFormat.format("Answer ({0}) cannot be less than the min value ({1})", answer.getAnswer(), minValue));
-        FacilioUtil.throwIllegalArgumentException(maxValue != null && answer.getAnswer() > maxValue, MessageFormat.format("Answer ({0}) cannot be greater than the max value ({1})", answer.getAnswer(), maxValue));
+        V3Util.throwRestException(minValue != null && answer.getAnswer() < minValue, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Answer ({0}) cannot be less than the min value ({1})", answer.getAnswer(), minValue));
+        V3Util.throwRestException(maxValue != null && answer.getAnswer() > maxValue, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Answer ({0}) cannot be greater than the max value ({1})", answer.getAnswer(), maxValue));
         AnswerContext answerContext = new AnswerContext();
         answerContext.setNumberAnswer(answer.getAnswer());
         return answerContext;

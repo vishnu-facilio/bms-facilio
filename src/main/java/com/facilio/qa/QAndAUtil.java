@@ -2,6 +2,7 @@ package com.facilio.qa;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -11,7 +12,9 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.qa.command.QAndAReadOnlyChainFactory;
 import com.facilio.qa.context.QuestionContext;
@@ -159,7 +162,7 @@ public class QAndAUtil {
         c.execute();
     }
 
-    public static <T extends ModuleBaseWithCustomFields> void addRecordViaChain(String moduleName, List<T> records) throws Exception {
+    public static <T extends V3Context> void addRecordViaV3Chain(String moduleName, List<T> records) throws Exception {
         FacilioModule module = ChainUtil.getModule(moduleName);
         V3Config v3Config = ChainUtil.getV3Config(module);
         FacilioChain createRecordChain = ChainUtil.getCreateRecordChain(module.getName());
@@ -176,5 +179,45 @@ public class QAndAUtil {
         addAnswerContext.put(Constants.RECORD_MAP, recordMap);
 
         createRecordChain.execute();
+    }
+
+    public static <T extends V3Context> int updateRecordViaV3Chain(String moduleName, T record, T oldRecord) throws Exception { //Expecting record with full props. That's how fw works
+        FacilioModule module = ChainUtil.getModule(moduleName);
+        V3Config v3Config = ChainUtil.getV3Config(module);
+        Class beanClass = ChainUtil.getBeanClass(v3Config, module);
+        FacilioChain patchChain = ChainUtil.getPatchChain(moduleName);
+        FacilioContext context = patchChain.getContext();
+
+        Constants.setV3config(context, v3Config);
+        Constants.setModuleName(context, moduleName);
+        Constants.addToOldRecordMap(context, moduleName, oldRecord);
+        context.put(Constants.RECORD_ID, record._getId());
+        context.put(Constants.BEAN_CLASS, beanClass);
+        context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
+        context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
+
+        Map<String, List> recordMap = new HashMap<>();
+        recordMap.put(module.getName(), Collections.singletonList(record));
+        context.put(Constants.RECORD_MAP, recordMap);
+        patchChain.execute();
+
+        Integer count = (Integer) context.get(Constants.ROWS_UPDATED);
+        return count == null ? 0 : count;
+    }
+
+    public static <T extends V3Context> List<T> getChildRecordsFromTemplate (String moduleName, long templateId) throws Exception {
+        ModuleBean modBean = Constants.getModBean();
+        FacilioModule module = modBean.getModule(moduleName);
+        List<FacilioField> fields = modBean.getAllFields(moduleName);
+        FacilioField parentField = FieldFactory.filterField(fields, "parent");
+
+        List<T> records = new SelectRecordsBuilder<T>()
+                                .select(fields)
+                                .module(module)
+                                .beanClass(FacilioConstants.ContextNames.getClassFromModule(module))
+                                .andCondition(CriteriaAPI.getCondition(parentField, String.valueOf(templateId), PickListOperators.IS))
+                                .get();
+
+        return records;
     }
 }

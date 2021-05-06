@@ -15,6 +15,12 @@ public class QAndATransactionChainFactory {
 //        c.addCommand(new AddPagesAndQuestionsCommand());
         return c;
     }
+
+    public static FacilioChain commonBeforeQAndAResponseUpdate() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ValidateResponseSubmit());
+        return c;
+    }
     
     public static FacilioChain inspectionAfterSaveChain() {
         FacilioChain c = getDefaultChain();
@@ -105,6 +111,7 @@ public class QAndATransactionChainFactory {
         c.addCommand(new AddAnswersCommand());
         c.addCommand(new UpdateAnswersCommand());
         c.addCommand(new ConstructAnswerResponseCommand());
+        c.addCommand(new UpdateResponseStateCommand());
         return c;
     }
 

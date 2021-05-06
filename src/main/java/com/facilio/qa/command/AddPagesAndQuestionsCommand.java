@@ -8,10 +8,11 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.qa.context.PageContext;
 import com.facilio.qa.context.QAndATemplateContext;
 import com.facilio.qa.context.QuestionContext;
-import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.context.SubFormContext;
 import com.facilio.v3.context.V3Context;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -51,7 +52,7 @@ public class AddPagesAndQuestionsCommand extends FacilioCommand {
         record.setRelations(Collections.singletonMap(subModuleName, Collections.singletonList(subFormContext)));
     }
 
-    private void handleQuestions (QAndATemplateContext template, PageContext page, FacilioField questionPageField) {
+    private void handleQuestions (QAndATemplateContext template, PageContext page, FacilioField questionPageField) throws Exception {
         List<QuestionContext> pageQuestions = page.getQuestions();
         if (CollectionUtils.isNotEmpty(pageQuestions)) {
             Map<String, List<SubFormContext>> questions = new HashMap<>();
@@ -66,8 +67,8 @@ public class AddPagesAndQuestionsCommand extends FacilioCommand {
         page.setQuestions(null);
     }
 
-    private void addToRelation (Map<String, List<SubFormContext>> questionRelations, QuestionContext question, FacilioField questionPageField) {
-        FacilioUtil.throwIllegalArgumentException(question.getQuestionType() == null, "Question type cannot be null");
+    private void addToRelation (Map<String, List<SubFormContext>> questionRelations, QuestionContext question, FacilioField questionPageField) throws Exception {
+        V3Util.throwRestException(question.getQuestionType() == null, ErrorCode.VALIDATION_ERROR, "Question type cannot be null");
         String moduleName = question.getQuestionType().getSubModuleName();
         List<SubFormContext> questions = questionRelations.get(moduleName);
         if (questions == null) {

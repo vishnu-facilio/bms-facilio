@@ -88,6 +88,12 @@ public class Constants {
         Map<Long, T> oldRecords = (Map<Long, T>) oldRecordsMap.computeIfAbsent(moduleName, k -> new HashMap<>());
         oldRecords.put(record.getId(), record);
     }
+
+    public static <T extends ModuleBaseWithCustomFields> Map<Long, T> getOldRecordMap (Context context) {
+        String moduleName = Constants.getModuleName(context);
+        return getOldRecordMap(context, moduleName);
+    }
+
     public static <T extends ModuleBaseWithCustomFields> Map<Long, T> getOldRecordMap (Context context, String moduleName) {
         Map<String, Map<Long, ? extends ModuleBaseWithCustomFields>> oldRecordsMap = (Map<String, Map<Long, ? extends ModuleBaseWithCustomFields>>) context.get(OLD_RECORD_MAP);
         return oldRecordsMap == null ? null : (Map<Long, T>) oldRecordsMap.get(moduleName);

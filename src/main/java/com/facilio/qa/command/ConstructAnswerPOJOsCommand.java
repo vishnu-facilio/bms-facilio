@@ -6,9 +6,11 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.qa.QAndAUtil;
 import com.facilio.qa.context.*;
 import com.facilio.util.FacilioUtil;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.util.V3Util;
+import lombok.SneakyThrows;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.json.simple.JSONObject;
 
 import java.text.MessageFormat;
@@ -24,7 +26,7 @@ public class ConstructAnswerPOJOsCommand extends FacilioCommand {
         JSONObject answerData = (JSONObject) context.get(FacilioConstants.QAndA.Command.ANSWER_DATA);
         ResponseContext response = (ResponseContext) context.get(FacilioConstants.QAndA.RESPONSE);
         List<Map<String, Object>> answers = (List<Map<String, Object>>) answerData.get("answers");
-        FacilioUtil.throwIllegalArgumentException(CollectionUtils.isEmpty(answers), "Answers cannot be empty while add or updating answers");
+        V3Util.throwRestException(CollectionUtils.isEmpty(answers), ErrorCode.VALIDATION_ERROR, "Answers cannot be empty while add or updating answers");
 
         List<Long> questionIds = answers.stream().map(this::fetchQuestionId).collect(Collectors.toList());
         Map<Long, QuestionContext> questions = QAndAUtil.fetchExtendedQuestionMap(questionIds, true);
@@ -35,10 +37,10 @@ public class ConstructAnswerPOJOsCommand extends FacilioCommand {
             try {
                 Long questionId = (Long) prop.get("question");
                 QuestionContext question = questions.get(questionId);
-                FacilioUtil.throwIllegalArgumentException(question == null || question.getParent().getId() != response.getParent().getId(), "Invalid question specified during add/ update answers");
+                V3Util.throwRestException(question == null || question.getParent().getId() != response.getParent().getId(), ErrorCode.VALIDATION_ERROR, "Invalid question specified during add/ update answers");
                 AnswerHandler handler = question.getQuestionType().getAnswerHandler();
                 ClientAnswerContext answer = FieldUtil.<ClientAnswerContext>getAsBeanFromMap(prop, handler.getAnswerClass());
-                FacilioUtil.throwIllegalArgumentException(answer.getAnswer() == null, MessageFormat.format("Answer cannot be null for question : {0}", questionId));
+                V3Util.throwRestException(answer.getAnswer() == null, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Answer cannot be null for question : {0}", questionId));
 
                 AnswerContext answerContext = handler.deSerialize(answer, question);
                 answerContext.setQuestion(question);
@@ -93,9 +95,10 @@ public class ConstructAnswerPOJOsCommand extends FacilioCommand {
         return toBeUpdated;
     }
 
-    private Long fetchQuestionId (Map<String, Object> answer) {
+    @SneakyThrows
+    private Long fetchQuestionId (Map<String, Object> answer)  {
         Long questionId = (Long) answer.get("question");
-        FacilioUtil.throwIllegalArgumentException(questionId == null, "Question cannot be null while add/ update of answer");
+        V3Util.throwRestException(questionId == null, ErrorCode.VALIDATION_ERROR, "Question cannot be null while add/ update of answer");
         return questionId;
     }
 }

@@ -81,33 +81,35 @@ public class PatchSubModules extends FacilioCommand {
 
         for (ModuleBaseWithCustomFields record: recordList) {
             Map<String, List<Map<String, Object>>> subForm = record.getSubForm();
-            Set<String> subModuleNames = subForm.keySet();
-            for (String subModuleName: subModuleNames) {
-                Map<Long, ModuleBaseWithCustomFields> subModuleRecordMap
-                        = subModuleMap.get(subModuleName);
-                List<Map<String, Object>> subModulePropList = subForm.get(subModuleName);
+            if (MapUtils.isNotEmpty(subForm)) {
+                Set<String> subModuleNames = subForm.keySet();
+                for (String subModuleName : subModuleNames) {
+                    Map<Long, ModuleBaseWithCustomFields> subModuleRecordMap
+                            = subModuleMap.get(subModuleName);
+                    List<Map<String, Object>> subModulePropList = subForm.get(subModuleName);
 
-                List<Map<String, Object>> changedProps = new ArrayList<>();
-                for (Map<String, Object> subModuleProp: subModulePropList) {
-                    Long id = (Long) subModuleProp.get("id");
-                    if (id == null) {
-                        changedProps.add(subModuleProp);
-                        continue;
-                    }
-
-                    ModuleBaseWithCustomFields subModuleRecord = subModuleRecordMap.get(id);
-                    Map<String, Object> newProp = FieldUtil.getAsProperties(subModuleRecord);
-                    Set<String> propKeys = newProp.keySet();
-                    for (String prop: propKeys) {
-                        if (!subModuleProp.containsKey(prop)) {
+                    List<Map<String, Object>> changedProps = new ArrayList<>();
+                    for (Map<String, Object> subModuleProp : subModulePropList) {
+                        Long id = (Long) subModuleProp.get("id");
+                        if (id == null) {
+                            changedProps.add(subModuleProp);
                             continue;
                         }
 
-                        newProp.put(prop, subModuleProp.get(prop));
+                        ModuleBaseWithCustomFields subModuleRecord = subModuleRecordMap.get(id);
+                        Map<String, Object> newProp = FieldUtil.getAsProperties(subModuleRecord);
+                        Set<String> propKeys = newProp.keySet();
+                        for (String prop : propKeys) {
+                            if (!subModuleProp.containsKey(prop)) {
+                                continue;
+                            }
+
+                            newProp.put(prop, subModuleProp.get(prop));
+                        }
+                        changedProps.add(newProp);
                     }
-                    changedProps.add(newProp);
+                    subForm.put(subModuleName, changedProps);
                 }
-                subForm.put(subModuleName, changedProps);
             }
         }
         return false;

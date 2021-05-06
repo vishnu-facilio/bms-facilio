@@ -8,7 +8,6 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.qa.context.QAndATemplateContext;
 import com.facilio.qa.context.QAndAType;
-import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
@@ -36,7 +35,7 @@ public class AddDefaultQAndAPropsCommand extends FacilioCommand {
         QAndAType type = QAndAType.getQAndATypeFromTemplateModule(moduleName);
         V3Util.throwRestException(type == null, ErrorCode.VALIDATION_ERROR, "Invalid module for q and a");
         FacilioModule responseModule = modBean.getModule(type.getResponseModule());
-        FacilioUtil.throwIllegalArgumentException(responseModule == null, MessageFormat.format("Invalid response module for type {0}. This is not supposed to happen", type.getValue()));
+        V3Util.throwRestException(responseModule == null, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid response module for type {0}. This is not supposed to happen", type.getValue()));
 
         for (QAndATemplateContext template : list) {
             template.setQAndAType(type);

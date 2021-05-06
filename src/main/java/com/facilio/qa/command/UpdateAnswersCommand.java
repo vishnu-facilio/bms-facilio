@@ -7,12 +7,20 @@ import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.qa.context.AnswerContext;
-import com.facilio.util.FacilioUtil;
+import com.facilio.qa.context.ResponseContext;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.ChainUtil;
+import com.facilio.v3.util.V3Util;
+import lombok.SneakyThrows;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -26,8 +34,15 @@ public class UpdateAnswersCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         List<AnswerContext> answers = (List<AnswerContext>) context.get(FacilioConstants.QAndA.Command.ANSWERS_TO_BE_UPDATED);
         if (CollectionUtils.isNotEmpty(answers)) {
+            ResponseContext response = (ResponseContext) context.get(FacilioConstants.QAndA.RESPONSE);
             List<Long> ids = answers.stream().map(AnswerContext::_getId).collect(Collectors.toList());
-            Map<Long, AnswerContext> oldRecords = V3RecordAPI.getRecordsMap(FacilioConstants.QAndA.ANSWER, ids);
+            Map<String, FacilioField> fields = FieldFactory.getAsMap(Constants.getModBean().getAllFields(FacilioConstants.QAndA.ANSWER));
+
+            Criteria criteria = new Criteria();
+            criteria.addAndCondition(CriteriaAPI.getCondition(fields.get("parent"), String.valueOf(response.getParent()._getId()), PickListOperators.IS));
+            criteria.addAndCondition(CriteriaAPI.getCondition(fields.get("response"), String.valueOf(response._getId()), PickListOperators.IS));
+
+            Map<Long, AnswerContext> oldRecords = V3RecordAPI.getRecordsMap(FacilioConstants.QAndA.ANSWER, ids, criteria);
             answers.stream().forEach(a -> setDefaultProps(a, oldRecords));
 
             FacilioModule module = ChainUtil.getModule(FacilioConstants.QAndA.ANSWER);
@@ -51,9 +66,10 @@ public class UpdateAnswersCommand extends FacilioCommand {
         return false;
     }
 
+    @SneakyThrows
     private void setDefaultProps(AnswerContext answer, Map<Long, AnswerContext> oldRecords) {
         AnswerContext oldAnswer = oldRecords.get(answer._getId());
-        FacilioUtil.throwIllegalArgumentException(oldAnswer == null, "Invalid answer id sent while saving answer");
+        V3Util.throwRestException(oldAnswer == null, ErrorCode.VALIDATION_ERROR, "Invalid answer id sent while saving answer");
 
         answer.setSysCreatedBy(oldAnswer.getSysCreatedBy());
         answer.setSysCreatedTime(oldAnswer.getSysCreatedTime());

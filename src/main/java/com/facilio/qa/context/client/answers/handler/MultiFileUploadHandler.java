@@ -6,7 +6,9 @@ import com.facilio.qa.context.answers.MultiFileAnswerContext;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.client.answers.MultiFileUploadAnswerContext;
 import com.facilio.qa.context.questions.MultiFileUploadQuestionContext;
-import com.facilio.util.FacilioUtil;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.util.V3Util;
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -39,8 +41,9 @@ public class MultiFileUploadHandler extends AnswerHandler<MultiFileUploadAnswerC
         return answerContext;
     }
 
+    @SneakyThrows
     private MultiFileAnswerContext constructMultiFileAnswerContext (MultiFileUploadAnswerContext.MultiFileAnswer answer, boolean isRemarksEnabled) {
-        FacilioUtil.throwIllegalArgumentException(answer.getId() == null, "File ID cannot be null while adding file answers"); //Assuming we'll upload file first and send only id
+        V3Util.throwRestException(answer.getId() == null, ErrorCode.VALIDATION_ERROR, "File ID cannot be null while adding file answers"); //Assuming we'll upload file first and send only id
         MultiFileAnswerContext answerContext = new MultiFileAnswerContext();
         answerContext.setFileAnswerId(answer.getId());
         if (isRemarksEnabled) {

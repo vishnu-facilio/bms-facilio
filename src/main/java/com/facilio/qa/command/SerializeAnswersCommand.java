@@ -8,8 +8,10 @@ import com.facilio.qa.QAndAUtil;
 import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.ClientAnswerContext;
 import com.facilio.qa.context.QuestionContext;
-import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.util.V3Util;
+import lombok.SneakyThrows;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -42,9 +44,10 @@ public class SerializeAnswersCommand extends FacilioCommand {
         return questions;
     }
 
+    @SneakyThrows
     private ClientAnswerContext serialze (AnswerContext answer, Map<Long, QuestionContext> questions) {
         QuestionContext question = questions.get(answer.getQuestion()._getId());
-        FacilioUtil.throwIllegalArgumentException(question == null, MessageFormat.format("Question ID ({0}) is not present in given question map. This is not supposed to happen", answer.getQuestion()._getId()));
+        V3Util.throwRestException(question == null, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Question ID ({0}) is not present in given question map. This is not supposed to happen", answer.getQuestion()._getId()));
         answer.setQuestion(question);
         ClientAnswerContext clientAnswer = question.getQuestionType().getAnswerHandler().serialize(answer);
         clientAnswer.addQuestionId(question);

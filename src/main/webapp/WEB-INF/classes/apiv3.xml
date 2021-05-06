@@ -44,8 +44,9 @@
                 <param name="includeProperties">^code.*,^data.*,^meta.*,message</param>
             </result>
             <result name="failure" type="json">
+                <param name="excludeNullProperties">true</param>
                 <param name="ignoreHierarchy">false</param>
-                <param name="includeProperties">^message.*,^code.*,^stackTrace.*</param>
+                <param name="includeProperties">^message.*,^code.*,^data.*,^stackTrace.*</param>
             </result>
             <result name="sessionexpired" type="httpheader">
                 <param name="status">440</param>

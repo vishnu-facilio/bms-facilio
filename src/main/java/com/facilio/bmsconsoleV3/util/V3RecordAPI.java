@@ -116,6 +116,10 @@ public class V3RecordAPI {
     }
 
     private static <T extends ModuleBaseWithCustomFields> SelectRecordsBuilder<T> constructBuilder(String modName, Collection<Long> recordIds, Class<T> beanClass) throws Exception {
+        return constructBuilder(modName, recordIds, beanClass, null);
+    }
+
+    private static <T extends ModuleBaseWithCustomFields> SelectRecordsBuilder<T> constructBuilder(String modName, Collection<Long> recordIds, Class<T> beanClass, Criteria criteria) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(modName);
         List<FacilioField> fields = modBean.getAllFields(modName);
@@ -130,6 +134,10 @@ public class V3RecordAPI {
                 .select(fields)
                 .andCondition(CriteriaAPI.getIdCondition(recordIds, module))
                 ;
+
+        if (criteria != null) {
+            builder.andCriteria(criteria);
+        }
 
         return builder;
     }
@@ -149,11 +157,19 @@ public class V3RecordAPI {
     }
 
     public static <T extends ModuleBaseWithCustomFields> Map<Long, T> getRecordsMap (String modName, Collection<Long> recordIds) throws Exception{
-        return getRecordsMap(modName, recordIds, null);
+        return getRecordsMap(modName, recordIds, null, null);
+    }
+
+    public static <T extends ModuleBaseWithCustomFields> Map<Long, T> getRecordsMap (String modName, Collection<Long> recordIds, Criteria criteria) throws Exception{
+        return getRecordsMap(modName, recordIds, null, criteria);
     }
 
     public static <T extends ModuleBaseWithCustomFields> Map<Long, T> getRecordsMap (String modName, Collection<Long> recordIds, Class<T> beanClass) throws Exception{
-        Map<Long, T> recordMap = constructBuilder(modName, recordIds, beanClass).getAsMap();
+        return getRecordsMap(modName, recordIds, beanClass, null);
+    }
+
+    public static <T extends ModuleBaseWithCustomFields> Map<Long, T> getRecordsMap (String modName, Collection<Long> recordIds, Class<T> beanClass, Criteria criteria) throws Exception{
+        Map<Long, T> recordMap = constructBuilder(modName, recordIds, beanClass, criteria).getAsMap();
         return recordMap;
     }
 
