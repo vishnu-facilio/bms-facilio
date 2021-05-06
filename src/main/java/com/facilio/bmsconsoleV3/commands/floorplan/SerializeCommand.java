@@ -105,14 +105,16 @@ public class SerializeCommand extends FacilioCommand {
            		 if(recordModule.getName().equals("desks")) {
 
 					Long id = marker.getRecordId();
+					List<LookupField> supplements = new ArrayList<>();
+					supplements.add((LookupField) deskFieldMap.get("employee"));
+					supplements.add((LookupField) deskFieldMap.get("department"));
 					
 					if (id > 0) {
 						SelectRecordsBuilder deskbuilder = new SelectRecordsBuilder()
 						.module(deskModule).select(fields)
 						.beanClass(V3DeskContext.class)
 						.andCondition(CriteriaAPI.getCondition("Desks.ID", "id", String.valueOf(id), NumberOperators.EQUALS))
-						.fetchSupplements(Arrays.asList((LookupField) deskFieldMap.get("employee")))
-						.fetchSupplements(Arrays.asList((LookupField) deskFieldMap.get("department")));
+						.fetchSupplements(supplements);
 
 						List<V3DeskContext> desks = deskbuilder.get();
 						for (V3DeskContext desk : desks) {
