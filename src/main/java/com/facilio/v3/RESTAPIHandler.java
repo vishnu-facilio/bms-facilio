@@ -252,8 +252,6 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         createRecordChain.execute();
 
         Map<String, List<ModuleBaseWithCustomFields>> recordMap = (Map<String, List<ModuleBaseWithCustomFields>>) context.get(Constants.RECORD_MAP);
-        Set<String> extendedModules = Constants.getExtendedModules(context);
-        moduleName = CollectionUtils.isEmpty(extendedModules) ? moduleName : extendedModules.stream().findFirst().get();
         long id = recordMap.get(moduleName).get(0).getId();
         this.setId(id);
         handleSummaryRequest(moduleName, id);
