@@ -4,11 +4,9 @@ import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.point.Point;
 import com.facilio.modules.FieldUtil;
-import org.apache.kafka.common.protocol.types.Field;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import java.util.Map;
 
@@ -18,15 +16,15 @@ public class RdmPointContext extends Point {
 
     private String path;
 
-    public JSONObject getDetails() {
+    public String getDetails() {
         return details;
     }
 
-    public void setDetails(JSONObject details) {
+    public void setDetails(String details) {
         this.details = details;
     }
 
-    private JSONObject details;
+    private String details;
 
     public String getRdmPointClass() {
         return rdmPointClass;
@@ -75,47 +73,7 @@ public class RdmPointContext extends Point {
             return (RdmPoint) point.getPointFromMap(pointMap);*/
             JSONObject jsonObject = new JSONObject();
             jsonObject.putAll(pointMap);
-            RdmPointContext point = new RdmPointContext();
-
-            if (jsonObject.containsKey("controllerId")) {
-                point.setControllerId((Long) jsonObject.get("controllerId"));
-            }
-            if (jsonObject.containsKey("thresholdJson")) {
-                point.setThresholdJSON(jsonObject.get("thresholdJson").toString());
-            }
-            if (jsonObject.containsKey("dataType")) {
-                point.setDataType((Integer) jsonObject.get("dataType"));
-            }
-            if (jsonObject.containsKey("pointType")) {
-                point.setPointType((Integer) jsonObject.get("pointType"));
-            }
-            if (jsonObject.containsKey("deviceName")) {
-                point.setDeviceName(jsonObject.get("deviceName").toString());
-            }
-            if (jsonObject.containsKey("deviceId")) {
-                point.setDeviceId((Long) jsonObject.get("deviceId"));
-            }
-            if (jsonObject.containsKey("logical")) {
-                point.setLogical((Boolean) jsonObject.get("logical"));
-            }
-            if (jsonObject.containsKey("orgId")) {
-                point.setOrgId((Long) jsonObject.get("orgId"));
-            }
-            if (jsonObject.containsKey("writable")) {
-                point.setWritable((Boolean) jsonObject.get("writable"));
-            }
-            if (jsonObject.containsKey("agentWritable")) {
-                point.setAgentWritable((Boolean) jsonObject.get("agentWritable"));
-            }
-            if (jsonObject.containsKey("configureStatus")) {
-                point.setConfigureStatus((Integer) jsonObject.get("configureStatus"));
-            }
-            point.setPath(jsonObject.get("path").toString());
-            point.setRdmPointClass(jsonObject.get("rdmPointClass").toString());
-            if (jsonObject.containsKey("details") && jsonObject.get("details") != null) {
-                point.setDetails((JSONObject) new JSONParser().parse(jsonObject.get("details").toString()));
-            }
-            return point;
+            return FieldUtil.getAsBeanFromJson(jsonObject, RdmPointContext.class);
         }
         throw new Exception("Mandatory fields like " + AgentConstants.PATH + " might be missing from the input parameter -> " + pointMap);
     }
