@@ -39,12 +39,14 @@ public class ServiceRequestPageFactory extends PageFactory {
             titleMap.put("notes", "Note");
             titleMap.put("documents", "Attachment");
             addCommonSubModuleWidget(tab2sec1, module, record, titleMap, false);
-            Page.Tab tab3 = page.new Tab("related list");
-            Page.Section tab3Sec1 = page.new Section();
-            tab3.addSection(tab3Sec1);
-            addRelatedListWidgets(tab3Sec1, record.getModuleId());
-            if (CollectionUtils.isNotEmpty(tab3Sec1.getWidgets())) {
-                page.addTab(tab3);
+            if (!AccountUtil.getCurrentUser().isPortalUser()) {
+                Page.Tab tab3 = page.new Tab("related list");
+                Page.Section tab3Sec1 = page.new Section();
+                tab3.addSection(tab3Sec1);
+                addRelatedListWidgets(tab3Sec1, record.getModuleId());
+                if (CollectionUtils.isNotEmpty(tab3Sec1.getWidgets())) {
+                    page.addTab(tab3);
+                }
             }
 
             return page;
