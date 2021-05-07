@@ -426,7 +426,10 @@ public class FieldUtil {
 					FacilioConstants.ContextNames.Tenant.AUDIENCE,
 					FacilioConstants.ContextNames.FacilityBooking.FACILITY,
 					FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING,
-					FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME
+					FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME,
+					FacilioConstants.ContextNames.Floorplan.DESKS,
+					FacilioConstants.ContextNames.PARKING_STALL,
+					FacilioConstants.ContextNames.LOCKERS
 //					FacilioConstants.Inspection.INSPECTION_TEMPLATE,
 //					FacilioConstants.Inspection.INSPECTION_RESPONSE
 					)));
