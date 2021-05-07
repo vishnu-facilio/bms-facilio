@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import javax.mail.BodyPart;
@@ -33,6 +34,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -65,6 +67,18 @@ public class MailMessageUtil {
     
     public static final String BASE_MAIL_MESSAGE_MODULE_NAME = "customMailMessages";
 
+    public static BiFunction<String, String, String> getWholeEmailFromNameAndEmail = (name,email) ->{
+		
+		String newEmail = "\""+name+"\" <"+email+">";
+		
+		return newEmail;
+	};
+	
+	public static Function<String, String> getNameFromEmail = (email) ->{
+		
+		return email.split("@")[0];
+	};
+    
     public static void updateLatestMailUID(SupportEmailContext supportEmail, long id) throws Exception {
         GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
                 .table(ModuleFactory.getSupportEmailsModule().getTableName())
@@ -155,6 +169,28 @@ public class MailMessageUtil {
     		return fromAddress.get(0);
     	}
     	return null;
+	}
+    
+    public static List<EmailFromAddress> getEmailFromAddress(Criteria criteria) throws Exception {
+		// TODO Auto-generated method stub
+		
+    	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		List<FacilioField> emailFromAddressField = modBean.getAllFields(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME);
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(emailFromAddressField);
+    	
+    	SelectRecordsBuilder<EmailFromAddress> select = new SelectRecordsBuilder<EmailFromAddress>()
+				.beanClass(EmailFromAddress.class)
+				.select(emailFromAddressField)
+				.moduleName(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME);
+				
+		if(criteria != null) {
+			select.andCriteria(criteria);
+		}
+    	List<EmailFromAddress> fromAddress = select.get();
+    	
+    	return fromAddress;
 	}
     
     public static EmailToModuleDataContext getEmailToModuleData(String referenceMessageId,FacilioModule module) throws Exception {

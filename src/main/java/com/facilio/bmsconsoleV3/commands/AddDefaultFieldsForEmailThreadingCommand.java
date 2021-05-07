@@ -36,14 +36,12 @@ public class AddDefaultFieldsForEmailThreadingCommand extends FacilioCommand {
 	    	
 	    	if(emailConversation.getFromType() == EmailConversationThreadingContext.From_Type.ADMIN.getIndex() && emailConversation.getMessageType() == EmailConversationThreadingContext.Message_Type.REPLY.getIndex()) {
 	    		
-	    		emailConversation.setFrom(null);
-	    		
 	    		if(!emailConversation.getFrom().contains("<")) {
 	    			
 	    			EmailFromAddress emailFromAddress = MailMessageUtil.getEmailFromAddress(emailConversation.getTo(), true);
 	    			
 	    			if(emailFromAddress != null) {
-	    				emailConversation.setTo(getWholeEmailFromNameAndEmail.apply(emailFromAddress.getDisplayName(), emailConversation.getTo()));
+	    				emailConversation.setTo(MailMessageUtil.getWholeEmailFromNameAndEmail.apply(emailFromAddress.getDisplayName(), emailConversation.getTo()));
 	    			}
 	    			else {
 	    				throw new RESTException(ErrorCode.VALIDATION_ERROR, "From email is not verified");
@@ -56,10 +54,10 @@ public class AddDefaultFieldsForEmailThreadingCommand extends FacilioCommand {
 		    		
 		    		if(people.getName() != null ) {
 		    			
-		    			emailConversation.setTo(getWholeEmailFromNameAndEmail.apply(people.getName(), emailConversation.getTo()));
+		    			emailConversation.setTo(MailMessageUtil.getWholeEmailFromNameAndEmail.apply(people.getName(), emailConversation.getTo()));
 		    		}
 		    		else {
-		    			emailConversation.setTo(getWholeEmailFromNameAndEmail.apply(getNameFromEmail.apply(emailConversation.getTo()), emailConversation.getTo()));
+		    			emailConversation.setTo(MailMessageUtil.getWholeEmailFromNameAndEmail.apply(MailMessageUtil.getNameFromEmail.apply(emailConversation.getTo()), emailConversation.getTo()));
 		    		}
 		    	}
 	    	}
@@ -72,17 +70,17 @@ public class AddDefaultFieldsForEmailThreadingCommand extends FacilioCommand {
 		    		
 		    		if(people.getName() != null ) {
 		    			
-		    			emailConversation.setFrom(getWholeEmailFromNameAndEmail.apply(people.getName(), emailConversation.getFrom()));
+		    			emailConversation.setFrom(MailMessageUtil.getWholeEmailFromNameAndEmail.apply(people.getName(), emailConversation.getFrom()));
 		    		}
 		    		else {
-		    			emailConversation.setFrom(getWholeEmailFromNameAndEmail.apply(getNameFromEmail.apply(emailConversation.getFrom()), emailConversation.getFrom()));
+		    			emailConversation.setFrom(MailMessageUtil.getWholeEmailFromNameAndEmail.apply(MailMessageUtil.getNameFromEmail.apply(emailConversation.getFrom()), emailConversation.getFrom()));
 		    		}
 	    		}
 	    		if(emailConversation.getTo() != null && !emailConversation.getTo().contains("<")) {
 	    			
 	    			EmailFromAddress emailFromAddress = MailMessageUtil.getEmailFromAddress(emailConversation.getTo(), false);
 	    			
-	    			emailConversation.setTo(getWholeEmailFromNameAndEmail.apply(emailFromAddress.getDisplayName(), emailConversation.getTo()));
+	    			emailConversation.setTo(MailMessageUtil.getWholeEmailFromNameAndEmail.apply(emailFromAddress.getDisplayName(), emailConversation.getTo()));
 	    		}
 	    	}
 	    }
@@ -90,18 +88,6 @@ public class AddDefaultFieldsForEmailThreadingCommand extends FacilioCommand {
 		return false;
 	}
 	
-	BiFunction<String, String, String> getWholeEmailFromNameAndEmail = (name,email) ->{
-		
-		String newEmail = "\""+name+"\" <"+email+">";
-		
-		return newEmail;
-	};
-	
-	Function<String, String> getNameFromEmail = (email) ->{
-		
-		return email.split("@")[0];
-	};
-
 	private void fillMessageType(List<EmailConversationThreadingContext> emailConversations) {
 		// TODO Auto-generated method stub
 		

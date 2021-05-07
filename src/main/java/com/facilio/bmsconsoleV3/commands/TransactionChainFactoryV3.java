@@ -933,6 +933,18 @@ public class TransactionChainFactoryV3 {
 	     return chain;
 	}
 	
+	public static FacilioChain getReSendVerificationEmailChain() {
+		 FacilioChain chain = getDefaultChain();
+		 chain.addCommand(new ReSendVerificationEmailCommand());
+	     return chain;
+	}
+	
+	public static FacilioChain getFromEmailForEmailThreadingReplyChain() {
+		 FacilioChain chain = getDefaultChain();
+		 chain.addCommand(new FromEmailForEmailThreadingReplyCommand());
+	     return chain;
+	}
+	
 	public static FacilioChain getEmailFromAddressAfterSaveChain() {
 		 FacilioChain chain = getDefaultChain();
 		 chain.addCommand(new SendVerifcationEmailForFromAddressCommand());
