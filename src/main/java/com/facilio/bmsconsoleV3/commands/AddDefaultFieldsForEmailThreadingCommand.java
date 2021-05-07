@@ -38,10 +38,10 @@ public class AddDefaultFieldsForEmailThreadingCommand extends FacilioCommand {
 	    		
 	    		if(!emailConversation.getFrom().contains("<")) {
 	    			
-	    			EmailFromAddress emailFromAddress = MailMessageUtil.getEmailFromAddress(emailConversation.getTo(), true);
+	    			EmailFromAddress emailFromAddress = MailMessageUtil.getEmailFromAddress(emailConversation.getFrom(), true);
 	    			
 	    			if(emailFromAddress != null) {
-	    				emailConversation.setTo(MailMessageUtil.getWholeEmailFromNameAndEmail.apply(emailFromAddress.getDisplayName(), emailConversation.getTo()));
+	    				emailConversation.setFrom(MailMessageUtil.getWholeEmailFromNameAndEmail.apply(emailFromAddress.getDisplayName(), emailConversation.getFrom()));
 	    			}
 	    			else {
 	    				throw new RESTException(ErrorCode.VALIDATION_ERROR, "From email is not verified");

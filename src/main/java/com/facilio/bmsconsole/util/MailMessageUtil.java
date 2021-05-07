@@ -136,7 +136,7 @@ public class MailMessageUtil {
 				.moduleName(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME)
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("email"), email, StringOperators.IS));
     	if(isVerified) {
-    		select.andCondition(CriteriaAPI.getCondition(fieldMap.get("verificationStatus"), Boolean.FALSE.toString(), BooleanOperators.IS));
+    		select.andCondition(CriteriaAPI.getCondition(fieldMap.get("verificationStatus"), Boolean.TRUE.toString(), BooleanOperators.IS));
     	}
 			
     	List<EmailFromAddress> fromAddress = select.get();

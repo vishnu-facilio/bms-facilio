@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.util.MailMessageUtil;
@@ -63,6 +64,10 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 	}
 	
 	private String sendMail(EmailConversationThreadingContext emailConversation,String messageId) throws Exception {
+		
+		if(!FacilioProperties.isProduction()) {
+			return null;
+		}
 		
 		JSONObject mailJson = new JSONObject();
 		
