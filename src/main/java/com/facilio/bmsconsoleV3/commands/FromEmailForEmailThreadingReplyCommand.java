@@ -19,6 +19,7 @@ import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
@@ -81,6 +82,7 @@ public class FromEmailForEmailThreadingReplyCommand extends FacilioCommand {
 			
 			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(emailFromAddressField);
 			
+			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("verificationStatus"), Boolean.TRUE.toString(), BooleanOperators.IS));
 			
 			if(fromAddress != null) {
 				criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("email"), fromAddress.getEmail(), StringOperators.ISN_T));
