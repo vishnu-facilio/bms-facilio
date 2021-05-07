@@ -4,28 +4,30 @@ import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FieldUtil;
 import com.facilio.trigger.context.BaseTriggerContext;
 import com.facilio.trigger.context.TriggerActionContext;
 import com.facilio.trigger.util.TriggerUtil;
 import com.facilio.v3.V3Action;
 
 import java.util.List;
+import java.util.Map;
 
 public class TriggerAction extends V3Action {
 	private static final long serialVersionUID = 1L;
 	
-	private BaseTriggerContext trigger;
-	public BaseTriggerContext getTrigger() {
+	private Map<String, Object> trigger;
+	public Map<String, Object> getTrigger() {
 		return trigger;
 	}
-	public void setTrigger(BaseTriggerContext trigger) {
+	public void setTrigger(Map<String, Object> trigger) {
 		this.trigger = trigger;
 	}
 
 	public String addOrUpdateTrigger() throws Exception {
 		FacilioChain chain = TransactionChainFactoryV3.getTriggerAddOrUpdateChain();
 		FacilioContext context = chain.getContext();
-		context.put(TriggerUtil.TRIGGER_CONTEXT, trigger);
+		context.put(TriggerUtil.TRIGGER_CONTEXT, FieldUtil.getAsBeanFromMap(trigger,  BaseTriggerContext.class));
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
 		chain.execute();
 		setData(TriggerUtil.TRIGGER_CONTEXT, trigger);

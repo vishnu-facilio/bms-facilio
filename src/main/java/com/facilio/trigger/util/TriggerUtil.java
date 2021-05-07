@@ -1,28 +1,28 @@
 package com.facilio.trigger.util;
 
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
-import com.facilio.db.builder.GenericDeleteRecordBuilder;
-import com.facilio.modules.*;
-import com.facilio.trigger.context.*;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.map.HashedMap;
-import org.apache.commons.lang3.StringUtils;
-
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.time.DateTimeUtil;
+import com.facilio.trigger.command.AddOrUpdateTriggerCommand;
+import com.facilio.trigger.context.*;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.map.HashedMap;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class TriggerUtil {
 	
@@ -71,6 +71,7 @@ public class TriggerUtil {
 		if(CollectionUtils.isNotEmpty(triggers)) {
 			BaseTriggerContext trigger = triggers.get(0);
 			fillTriggerExtras(Collections.singletonList(trigger));
+			trigger.handleGet();
 			return trigger;
 		}
 		return null;
@@ -83,9 +84,52 @@ public class TriggerUtil {
 				.select(fields)
 				.table(module.getTableName())
 				.andCondition(CriteriaAPI.getIdCondition(ids, module));
-		return FieldUtil.getAsBeanListFromMapList(select.get(), BaseTriggerContext.class);
+		List<BaseTriggerContext> triggerList = FieldUtil.getAsBeanListFromMapList(select.get(), BaseTriggerContext.class);
+		return getExtendedTriggers(triggerList);
 	}
-	
+
+	private static List<BaseTriggerContext> getExtendedTriggers(List<BaseTriggerContext> triggerList) throws Exception {
+		List<BaseTriggerContext> triggers = new ArrayList<>();
+		if (CollectionUtils.isEmpty(triggerList)) {
+			return triggers;
+		}
+
+		Map<TriggerType, List<BaseTriggerContext>> triggerMap = new HashMap<>();
+		for (BaseTriggerContext trigger : triggerList) {
+			List<BaseTriggerContext> triggerIds = triggerMap.get(trigger.getTypeEnum());
+			if (triggerIds == null) {
+				triggerIds = new ArrayList<>();
+				triggerMap.put(trigger.getTypeEnum(), triggerIds);
+			}
+			triggerIds.add(trigger);
+		}
+
+		for (Map.Entry<TriggerType, List<BaseTriggerContext>> entry : triggerMap.entrySet()) {
+			TriggerType key = entry.getKey();
+			FacilioModule triggerModule = AddOrUpdateTriggerCommand.getTriggerModule(key);
+
+			List<BaseTriggerContext> triggerValues = entry.getValue();
+			if ("trigger".equals(triggerModule.getName())) {
+				triggers.addAll(triggerValues);
+				continue;
+			}
+
+			Map<Long, BaseTriggerContext> triggerValueMap = triggerValues.stream().collect(Collectors.toMap(BaseTriggerContext::getId, Function.identity()));
+			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+					.table(triggerModule.getTableName())
+					.select(AddOrUpdateTriggerCommand.getTriggerFields(key))
+					.andCondition(CriteriaAPI.getIdCondition(triggerValueMap.keySet(), triggerModule));
+			List<Map<String, Object>> maps = builder.get();
+			for (Map<String, Object> map : maps) {
+				long id = (long) map.get("id");
+				map.putAll(FieldUtil.getAsProperties(triggerValueMap.get(id)));
+			}
+			List resolvedTriggerList = FieldUtil.getAsBeanListFromMapList(maps, AddOrUpdateTriggerCommand.getTriggerClass(key));
+			triggers.addAll(resolvedTriggerList);
+		}
+		return triggers;
+	}
+
 	public static List<BaseTriggerContext> getTriggers(FacilioModule module, List<EventType> activityTypes, Criteria criteria, boolean onlyActive, boolean excludeInternal, TriggerType... triggerTypes) throws Exception {
 		FacilioModule triggerModule = ModuleFactory.getTriggerModule();
 		List<FacilioField> fields = FieldFactory.getTriggerFields();
@@ -140,7 +184,7 @@ public class TriggerUtil {
 			fillTriggerExtras(triggers);
 		}
 
-		return triggers;
+		return getExtendedTriggers(triggers);
 	}
 	
 	public static void fillTriggerExtras(List<BaseTriggerContext> triggers) throws Exception {

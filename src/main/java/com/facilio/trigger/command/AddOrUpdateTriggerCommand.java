@@ -100,7 +100,7 @@ public class AddOrUpdateTriggerCommand extends FacilioCommand {
 		return false;
 	}
 
-	private FacilioModule getTriggerModule(TriggerType triggerType) {
+	public static FacilioModule getTriggerModule(TriggerType triggerType) {
 		switch (triggerType) {
 			case MODULE_TRIGGER:
 			case SLA_DUE_DATE_TRIGGER:
@@ -113,7 +113,20 @@ public class AddOrUpdateTriggerCommand extends FacilioCommand {
 		}
 	}
 
-	public List<FacilioField> getTriggerFields(TriggerType triggerType) {
+	public static Class getTriggerClass(TriggerType triggerType) {
+		switch (triggerType) {
+			case MODULE_TRIGGER:
+			case SLA_DUE_DATE_TRIGGER:
+			case SCORING_RULE_TRIGGER:
+			case TIMESERIES_COMPLETED_TRIGGER:
+				return BaseTriggerContext.class;
+
+			default:
+				throw new IllegalArgumentException("Invalid trigger type");
+		}
+	}
+
+	public static List<FacilioField> getTriggerFields(TriggerType triggerType) {
 		switch (triggerType) {
 			case MODULE_TRIGGER:
 			case SLA_DUE_DATE_TRIGGER:

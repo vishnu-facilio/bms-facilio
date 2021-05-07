@@ -2,12 +2,20 @@ package com.facilio.trigger.context;
 
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, visible = true, property = "type")
+@JsonSubTypes({
+		@JsonSubTypes.Type(value = BaseTriggerContext.class, name = "1"),
+		@JsonSubTypes.Type(value = BaseTriggerContext.class, name = "2"),
+		@JsonSubTypes.Type(value = BaseTriggerContext.class, name = "3")
+})
 public class BaseTriggerContext {
 
 	private long id = -1;
@@ -170,4 +178,6 @@ public class BaseTriggerContext {
 
 		validated = true;
 	}
+
+	public void handleGet() {}
 }
