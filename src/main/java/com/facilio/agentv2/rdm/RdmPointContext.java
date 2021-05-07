@@ -112,7 +112,9 @@ public class RdmPointContext extends Point {
             }
             point.setPath(jsonObject.get("path").toString());
             point.setRdmPointClass(jsonObject.get("rdmPointClass").toString());
-            point.setDetails((JSONObject) new JSONParser().parse(jsonObject.get("details").toString()));
+            if (jsonObject.containsKey("details") && jsonObject.get("details") != null) {
+                point.setDetails((JSONObject) new JSONParser().parse(jsonObject.get("details").toString()));
+            }
             return point;
         }
         throw new Exception("Mandatory fields like " + AgentConstants.PATH + " might be missing from the input parameter -> " + pointMap);
