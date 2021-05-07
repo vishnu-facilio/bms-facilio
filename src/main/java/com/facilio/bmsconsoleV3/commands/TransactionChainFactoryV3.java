@@ -907,6 +907,13 @@ public class TransactionChainFactoryV3 {
         return chain;
     }
     
+    public static FacilioChain getEmailConversationThreadingBeforeListChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new AddSuplimentsForEmailBaseMessageCommand());
+        chain.addCommand(new AddFetchCriteriaForEmailConversationThreadingCommand());
+        return chain;
+    }
+    
     public static FacilioChain getAddEmailConversationThreadingAfterSaveChain() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new SendEmailForEmailConversationThreadingCommand());

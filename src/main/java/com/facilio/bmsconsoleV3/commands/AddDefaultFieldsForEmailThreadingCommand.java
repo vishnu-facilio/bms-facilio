@@ -62,7 +62,7 @@ public class AddDefaultFieldsForEmailThreadingCommand extends FacilioCommand {
 		    	}
 	    	}
 	    	
-	    	if(emailConversation.getFromType() == EmailConversationThreadingContext.From_Type.CLIENT.getIndex()) {
+	    	if(emailConversation.getFromType() == EmailConversationThreadingContext.From_Type.CLIENT.getIndex() && emailConversation.getMessageType() == EmailConversationThreadingContext.Message_Type.REPLY.getIndex()) {
 	    		
 	    		if(!emailConversation.getFrom().contains("<")) {
 	    			

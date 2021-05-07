@@ -192,7 +192,7 @@ public class APIv3Config {
                 .beforeSave(TransactionChainFactoryV3.getAddEmailConversationThreadingBeforeSaveChain())
                 .afterSave(TransactionChainFactoryV3.getAddEmailConversationThreadingAfterSaveChain())
                 .list()
-                .beforeFetch(new AddSuplimentsForEmailBaseMessageCommand())
+                .beforeFetch(TransactionChainFactoryV3.getEmailConversationThreadingBeforeListChain())
                 .summary()
                 .beforeFetch(new AddSuplimentsForEmailBaseMessageCommand())
                 .build();
