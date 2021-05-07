@@ -14145,6 +14145,35 @@ INSERT INTO Fields (ORGID, MODULEID, NAME, DISPLAY_NAME, DISPLAY_TYPE, COLUMN_NA
 VALUES (${orgId}, @MOVES_MODULE_ID, 'approvalFlowId', 'Approval Flow Id', 9, 'APPROVAL_FLOW_ID', 2, true, false, true, 0);
 INSERT INTO NumberFields (FIELDID, ORGID) VALUES ((SELECT LAST_INSERT_ID()), ${orgId});
 
+
+--- adding Lockers Module 
+INSERT INTO Modules (ORGID, NAME, DISPLAY_NAME, TABLE_NAME, EXTENDS_ID, MODULE_TYPE, IS_TRASH_ENABLED) VALUES (${orgId}, 'lockers', 'Lockers', 'Lockers', @SPACE_MODULE_ID, @BASE_ENTITY_MODULE_TYPE, true);
+SET @LOCKERS_MODULE_ID := (SELECT LAST_INSERT_ID());
+
+INSERT INTO Fields (ORGID, MODULEID, NAME, DISPLAY_NAME, DISPLAY_TYPE, COLUMN_NAME, DATA_TYPE, REQUIRED, DISABLED, IS_DEFAULT) 
+VALUES (${orgId}, @LOCKERS_MODULE_ID, 'employee', 'Employee', 11, 'EMPLOYEE_ID', 7, false, false, true);
+INSERT INTO LookupFields (FIELDID, ORGID, LOOKUP_MODULE_ID) 
+VALUES ((SELECT LAST_INSERT_ID()), ${orgId}, @EMPLOYEE_MODULE_ID);
+
+--adding another space category for lockers
+
+INSERT INTO Space_Category (ORGID, MODULEID, NAME, DESCRIPTION, SPACE_MODULE_ID) 
+VALUES (${orgId}, @SPACE_CATEGORY_MODULE_ID, 'Lockers', 'Lockers', @LOCKERS_MODULE_ID);
+
+--- adding Parking Stall Module 
+INSERT INTO Modules (ORGID, NAME, DISPLAY_NAME, TABLE_NAME, EXTENDS_ID, MODULE_TYPE, IS_TRASH_ENABLED) VALUES (${orgId}, 'parkingstall', 'Parking Stalls', 'Parking_Stall', @SPACE_MODULE_ID, @BASE_ENTITY_MODULE_TYPE, true);
+SET @PARKING_STALL_MODULE_ID := (SELECT LAST_INSERT_ID());
+
+INSERT INTO Fields (ORGID, MODULEID, NAME, DISPLAY_NAME, DISPLAY_TYPE, COLUMN_NAME, DATA_TYPE, REQUIRED, DISABLED, IS_DEFAULT) 
+VALUES (${orgId}, @PARKING_STALL_MODULE_ID, 'parkingType', 'Parking Type', 3, 'PARKING_TYPE', 12, true, false, true);
+INSERT INTO SystemEnumFields (FIELDID, ORGID, ENUM_NAME) VALUES ((SELECT LAST_INSERT_ID()), ${orgId}, 'parkingType');
+
+--adding another space category for parking_stall
+
+INSERT INTO Space_Category (ORGID, MODULEID, NAME, DESCRIPTION, SPACE_MODULE_ID) 
+VALUES (${orgId}, @SPACE_CATEGORY_MODULE_ID, 'Parking Stall', 'Parking Stall', @PARKING_STALL_MODULE_ID);
+
+
 --adding Delivery Areas module
 
 INSERT INTO Modules (ORGID, NAME, DISPLAY_NAME, TABLE_NAME, MODULE_TYPE, IS_TRASH_ENABLED) VALUES (${orgId}, 'deliveryArea', 'Delivery Area', 'Delivery_Area', @BASE_ENTITY_MODULE_TYPE, true);

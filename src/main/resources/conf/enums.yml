@@ -207,4 +207,7 @@ enums:
 
   - name: EmailFromAddressCreationType
     enumClassName: com.facilio.bmsconsoleV3.context.EmailFromAddress$CreationType
+    
+  - name: ParkingType
+    enumClassName: com.facilio.bmsconsoleV3.context.V3ParkingStallContext$ParkingType
 

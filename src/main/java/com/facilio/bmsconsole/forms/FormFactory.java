@@ -395,6 +395,8 @@ public class FormFactory {
 		List<FacilioForm> movesFormsList = Arrays.asList(getMovesForm());
 		List<FacilioForm> deliveriesFormsList = Arrays.asList(getDeliveriesForm(), getDeliveriesPortalForm());
 		List<FacilioForm> deliveryAreaFormsList = Arrays.asList(getDeliveryAreaForm(),getDeliveryAreaPortalForm());
+		List<FacilioForm> lockersFormsList = Arrays.asList(getLockersForm(),getLockersPortalForm());
+		List<FacilioForm> parkingStallFormsList = Arrays.asList(getParkingStallForm(),getParkingStallPortalForm());
 		List<FacilioForm> peopleFormsList = Arrays.asList(getPeopleForm());
 
 		List<FacilioForm> reservationFormsList = Arrays.asList(getReservationForm());
@@ -458,6 +460,8 @@ public class FormFactory {
 				.put(FacilioConstants.ContextNames.DEPARTMENT, getFormMap(departmentFormsList))
 				.put(FacilioConstants.ContextNames.DELIVERIES, getFormMap(deliveriesFormsList))
 				.put(FacilioConstants.ContextNames.DELIVERY_AREA, getFormMap(deliveryAreaFormsList))
+				.put(FacilioConstants.ContextNames.LOCKERS, getFormMap(lockersFormsList))
+				.put(FacilioConstants.ContextNames.PARKING_STALL, getFormMap(parkingStallFormsList))
 				.put(FacilioConstants.ContextNames.MOVES, getFormMap(movesFormsList))
 				.put(FacilioConstants.ContextNames.Reservation.RESERVATION, getFormMap(reservationFormsList))
 				.put(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS, getFormMap(rentalLeaseFormsList))
@@ -1176,24 +1180,68 @@ public class FormFactory {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("NEW DELIVERY AREA");
 		form.setName("default_deliveryArea_web");
-		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.DELIVERIES));
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.DELIVERY_AREA));
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getDeliveryAreaFormField());
 		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
-	}
+	} 
 	
 	public static FacilioForm getDeliveryAreaPortalForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("NEW DELIVERY AREA");
 		form.setName("default_deliveryArea_portal");
-		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.DELIVERIES));
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.DELIVERY_AREA));
 		form.setLabelPosition(LabelPosition.LEFT);
-		form.setFields(getDeliveryAreaFormField());
+		form.setFields(getLockersFormFields());
 		form.setAppLinkName(ApplicationLinkNames.OCCUPANT_PORTAL_APP);
 		return form;
 	}
 
+	public static FacilioForm getLockersForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("NEW LOCKER");
+		form.setName("default_lockers_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.LOCKERS));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getLockersFormFields());
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+		return form;
+	}
+	
+	public static FacilioForm getLockersPortalForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("NEW LOCKER");
+		form.setName("default_lockers_portal");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.LOCKERS));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getLockersFormFields());
+		form.setAppLinkName(ApplicationLinkNames.OCCUPANT_PORTAL_APP);
+		return form;
+	}
+	
+	public static FacilioForm getParkingStallForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("NEW PARKING STALL");
+		form.setName("default_parking_stall_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.PARKING_STALL));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getParkingStallFormFields());
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+		return form;
+	}
+	
+	public static FacilioForm getParkingStallPortalForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("NEW PARKING STALL");
+		form.setName("default_parking_stall_portal");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.PARKING_STALL));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getParkingStallFormFields());
+		form.setAppLinkName(ApplicationLinkNames.OCCUPANT_PORTAL_APP);
+		return form;
+	}
+	
 	private static List<FormField> getWebWorkOrderFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.REQUIRED, 1, 1));
@@ -1606,12 +1654,39 @@ public class FormFactory {
 	
 	private static List<FormField> getDeliveriesFormField() {
 		List<FormField> fields = new ArrayList<>();
-		fields.add(new FormField("serialNumber", FieldDisplayType.TEXTBOX, "Serial Number", Required.OPTIONAL, 1, 2));
+		fields.add(new FormField("trackingNumber", FieldDisplayType.TEXTBOX, "Tracking Number", Required.OPTIONAL, 1, 2));
 		fields.add(new FormField("employee", FieldDisplayType.LOOKUP_SIMPLE, "Recipient", Required.REQUIRED, "employee", 2, 2));
 		fields.add(new FormField("receivedTime", FieldDisplayType.DATETIME, "Received Time", Required.REQUIRED, 3, 2));
 		fields.add(new FormField("avatar",FieldDisplayType.IMAGE,"Photo",Required.OPTIONAL,4,2));
 		fields.add(new FormField("deliveryArea", FieldDisplayType.LOOKUP_SIMPLE, "Delivery Area", Required.OPTIONAL, "deliveryArea", 5, 2));
 		fields.add(new FormField("signature", FieldDisplayType.SIGNATURE, "Signature", Required.OPTIONAL, 6, 1));
+		return fields;
+	}
+	
+	private static List<FormField> getLockersFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("area", FieldDisplayType.NUMBER, "Area", Required.OPTIONAL, 3, 2));
+		fields.add(new FormField("maxOccupancy", FieldDisplayType.NUMBER, "Max Occupancy", Required.OPTIONAL, 4, 3));
+		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED,"site", 5, 2));
+		fields.add(new FormField("building", FieldDisplayType.LOOKUP_SIMPLE, "Building", Required.OPTIONAL,"building", 6, 3));
+		fields.add(new FormField("floor", FieldDisplayType.LOOKUP_SIMPLE, "Floor", Required.OPTIONAL,"floor", 7, 1));
+		fields.add(new FormField("employee", FieldDisplayType.LOOKUP_SIMPLE, "Employee", Required.REQUIRED, "employee", 8, 2));
+		
+		return fields;
+	}
+	
+	private static List<FormField> getParkingStallFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("area", FieldDisplayType.NUMBER, "Area", Required.OPTIONAL, 3, 2));
+		fields.add(new FormField("maxOccupancy", FieldDisplayType.NUMBER, "Max Occupancy", Required.OPTIONAL, 4, 3));
+		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED,"site", 5, 2));
+		fields.add(new FormField("building", FieldDisplayType.LOOKUP_SIMPLE, "Building", Required.OPTIONAL,"building", 6, 3));
+		fields.add(new FormField("floor", FieldDisplayType.LOOKUP_SIMPLE, "Floor", Required.OPTIONAL,"floor", 7, 1));
+		fields.add(new FormField("parkingType", FieldDisplayType.SELECTBOX, "Parking Type", Required.REQUIRED, 8, 2));
 		return fields;
 	}
 	

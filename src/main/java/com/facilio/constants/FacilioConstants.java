@@ -1903,6 +1903,8 @@ public class FacilioConstants {
 		public static final String MOVES = "moves";
 		public static final String DELIVERIES = "deliveries";
 		public static final String DELIVERY_AREA = "deliveryArea";
+		public static final String LOCKERS = "lockers";
+		public static final String PARKING_STALL = "parkingstall";
 
 
 		public static class WorkPermit {
@@ -2357,6 +2359,8 @@ public class FacilioConstants {
 			classMap.put(MOVES, V3MovesContext.class);
 			classMap.put(DELIVERIES, V3DeliveriesContext.class);
 			classMap.put(DELIVERY_AREA, V3DeliveryAreaContext.class);
+			classMap.put(LOCKERS, V3LockersContext.class);
+			classMap.put(PARKING_STALL, V3ParkingStallContext.class);
 			
 			classMap.put(QAndA.Q_AND_A_TEMPLATE, QAndATemplateContext.class);
 			classMap.put(QAndA.PAGE, PageContext.class);

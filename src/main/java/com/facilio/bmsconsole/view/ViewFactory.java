@@ -975,6 +975,21 @@ public class ViewFactory {
 		
 		order = 1;
 		views = new LinkedHashMap<>();
+		views.put("all", getAllDeliveryAreaView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.DELIVERY_AREA, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllLockersView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.LOCKERS, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllParkingStallView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.PARKING_STALL, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
 		views.put("all",getAllInspectionTemplateViews().setOrder(order++));
 		viewsMap.put(FacilioConstants.Inspection.INSPECTION_TEMPLATE, views);
 		
@@ -8911,6 +8926,57 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All Deliveries");
 		allView.setModuleName(FacilioConstants.ContextNames.DELIVERIES);
+		allView.setSortFields(sortFields);
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		allView.setViewSharing(getSharingContext(appDomains));
+
+		return allView;
+	}
+	
+	private static FacilioView getAllDeliveryAreaView() {
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Delivery Areas");
+		allView.setModuleName(FacilioConstants.ContextNames.DELIVERY_AREA);
+		allView.setSortFields(sortFields);
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		allView.setViewSharing(getSharingContext(appDomains));
+
+		return allView;
+	}
+	
+	private static FacilioView getAllLockersView() {
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("name","NAME",FieldType.STRING), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Lockers");
+		allView.setModuleName(FacilioConstants.ContextNames.LOCKERS);
+		allView.setSortFields(sortFields);
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		allView.setViewSharing(getSharingContext(appDomains));
+
+		return allView;
+	}
+	
+	private static FacilioView getAllParkingStallView() {
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("name","NAME",FieldType.STRING), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Parking Stalls");
+		allView.setModuleName(FacilioConstants.ContextNames.PARKING_STALL);
 		allView.setSortFields(sortFields);
 
 		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
