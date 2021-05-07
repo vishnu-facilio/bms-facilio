@@ -86,7 +86,7 @@ public class FromEmailForEmailThreadingReplyCommand extends FacilioCommand {
 				criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("email"), fromAddress.getEmail(), StringOperators.ISN_T));
 			}
 			if(record.getSiteId() > 0) {
-				criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("siteId"), record.getSiteId()+"", NumberOperators.EQUALS));
+				criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(modBean.getModule(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME)), record.getSiteId()+"", NumberOperators.EQUALS));
 			}
 			
 			List<EmailFromAddress> emailAddressList = MailMessageUtil.getEmailFromAddress(criteria);
