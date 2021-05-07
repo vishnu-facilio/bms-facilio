@@ -72,7 +72,7 @@ public class QuotationValidationAndCostCalculationCommand extends FacilioCommand
                 else {
                     quotation.setCustomerType(QuotationContext.CustomerType.OTHERS.getIndex());
                 }
-                QuotationAPI.validateForWorkorder(quotation);
+//                QuotationAPI.validateForWorkorder(quotation);
             }
         } else {
             LOGGER.error("Quotation List is empty");

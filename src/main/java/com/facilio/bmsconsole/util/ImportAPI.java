@@ -749,6 +749,9 @@ public class ImportAPI {
 		}
 		return false;
 	}
+	public static boolean isSpaceExtendedModule (FacilioModule module) {
+			return module.instanceOf(FacilioConstants.ContextNames.SPACE);
+	}
 
 	public static boolean isBaseSpaceExtendedModule(FacilioModule module) {
 		if (module.getName().equals(FacilioConstants.ContextNames.BASE_SPACE)) {

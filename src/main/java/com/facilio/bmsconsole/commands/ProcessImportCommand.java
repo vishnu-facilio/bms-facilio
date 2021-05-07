@@ -161,7 +161,7 @@ public class ProcessImportCommand extends FacilioCommand {
 				}
 			}
 
-			else if (module.equals(FacilioConstants.ContextNames.SPACE) || module.equals(FacilioConstants.ContextNames.TENANT_UNIT_SPACE)) {
+			else if (module.equals(FacilioConstants.ContextNames.SPACE) || (importProcessContext.getModule() != null && ImportAPI.isSpaceExtendedModule(importProcessContext.getModule()))) {
 
 				if(!isBim){
 					ArrayList<String> spaceFields = new ArrayList<>();
@@ -175,7 +175,6 @@ public class ProcessImportCommand extends FacilioCommand {
 					String name = (String) colVal.get(fieldMapping.get("resource__name"));
 
 					String [] Ids = {"site","building","floor", "space1", "space2", "space3", "space4"};
-					SpaceCategoryContext tenantUnitSpaceCategory = SpaceAPI.getSpaceCategoryContext("Tenant Unit");
 
 					for(int k =0 ;k<Ids.length ;k++) {
 						HashMap<String, Object> sendToSpaceID = new HashMap<>();
@@ -201,11 +200,12 @@ public class ProcessImportCommand extends FacilioCommand {
 						}
 					}
 
-					if (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.TENANT_UNIT_SPACE)) {
-						props.put(FacilioConstants.ContextNames.SPACE_CATEGORY_FIELD, tenantUnitSpaceCategory);
+					if (ImportAPI.isSpaceExtendedModule(importProcessContext.getModule())) {
+						SpaceCategoryContext spaceCategory = SpaceAPI.getSpaceCategoryFromModule(importProcessContext.getModuleId());
+						props.put(FacilioConstants.ContextNames.SPACE_CATEGORY_FIELD, spaceCategory);
 						SpaceContext space = SpaceAPI.getSpaceFromHierarchy(props, name);
-						if (space != null && !(space.getSpaceCategory() != null  && space.getSpaceCategory().getId() == tenantUnitSpaceCategory.getId())) {
-							SpaceAPI.addTenantUnitExtentedModuleEntry(space);
+						if (space != null && !(space.getSpaceCategory() != null  && space.getSpaceCategory().getId() == spaceCategory.getId())) {
+							SpaceAPI.addSpaceExtentedModuleEntry(space, module);
 						}
 					}
 				}
@@ -842,67 +842,75 @@ public class ProcessImportCommand extends FacilioCommand {
 				moduleName = lookupField.getLookupModule().getName();
 			}
 			switch (moduleName) {
-			case "asset": {
-				long assetid = AssetsAPI.getAssetId(value.toString(), lookupField.getOrgId());
-				AssetContext asset = AssetsAPI.getAssetInfo(assetid);
+				case "asset": {
+					long assetid = AssetsAPI.getAssetId(value.toString(), lookupField.getOrgId());
+					AssetContext asset = AssetsAPI.getAssetInfo(assetid);
 
-				return FieldUtil.getAsProperties(asset);
-			}
-			case "site": {
-				Long siteId = new ImportSiteAction().getSiteId(value.toString());
-				if (siteId != null) {
-					SiteContext site = SpaceAPI.getSiteSpace(siteId);
-					return FieldUtil.getAsProperties(site);
-				} else {
-					throw new Exception("Value not found");
+					return FieldUtil.getAsProperties(asset);
 				}
-			}
-			case "resource": {
-				ResourceContext resource = getResource(value.toString());
-				return FieldUtil.getAsProperties(resource);
-			}
-			case "users": {
-				long appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
-				AppDomain appDomainObj = ApplicationApi.getAppDomainForApplication(appId);
-			    User user = AccountUtil.getUserBean().getUser(value.toString(), appDomainObj != null ? appDomainObj.getIdentifier() : null);
-				if(user == null) {
-					throw new Exception("Value not found");
-				}
-				return FieldUtil.getAsProperties(user);
-			}
-			case "location":{
-				if(value != null) {
-					String [] locationSplit = value.toString().split(",");
-
-					double lat = Double.parseDouble(locationSplit[0]);
-					double lon = Double.parseDouble(locationSplit[locationSplit.length - 1]);
-
-					LocationContext existingLocation = LocationAPI.getLocation((long)lat, (long)lon, AccountUtil.getCurrentOrg().getOrgId());
-
-					if(existingLocation == null) {
-						LocationContext newLocation = new LocationContext();
-						newLocation.setName("Import" + importProcessContext.getId());
-						newLocation.setLat(lat);
-						newLocation.setLng(lon);
-						newLocation.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-
-						// newLocation.setSiteId((long)siteObj.get("id"));
-						long locationId = LocationAPI.addLocation(newLocation);
-						newLocation.setId(locationId);
-						return FieldUtil.getAsProperties(newLocation);
-					}
-					else {
-						return FieldUtil.getAsProperties(existingLocation);
+				case "site": {
+					Long siteId = new ImportSiteAction().getSiteId(value.toString());
+					if (siteId != null) {
+						SiteContext site = SpaceAPI.getSiteSpace(siteId);
+						return FieldUtil.getAsProperties(site);
+					} else {
+						throw new Exception("Value not found");
 					}
 				}
-			}
-			case "groups": {
-				Group group = AccountUtil.getGroupBean().getGroup(value.toString());
-				if (group == null && lookupField.getName().equals("assignmentGroup")) {
-					throw new Exception("Value not found");
+				case "resource": {
+					ResourceContext resource = getResource(value.toString());
+					return FieldUtil.getAsProperties(resource);
 				}
-				return FieldUtil.getAsProperties(group);
-			}
+				case "users": {
+					long appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+					AppDomain appDomainObj = ApplicationApi.getAppDomainForApplication(appId);
+					User user = AccountUtil.getUserBean().getUser(value.toString(), appDomainObj != null ? appDomainObj.getIdentifier() : null);
+					if (user == null) {
+						throw new Exception("Value not found");
+					}
+					return FieldUtil.getAsProperties(user);
+				}
+				case "location": {
+					if (value != null) {
+						String[] locationSplit = value.toString().split(",");
+
+						double lat = Double.parseDouble(locationSplit[0]);
+						double lon = Double.parseDouble(locationSplit[locationSplit.length - 1]);
+
+						LocationContext existingLocation = LocationAPI.getLocation((long) lat, (long) lon, AccountUtil.getCurrentOrg().getOrgId());
+
+						if (existingLocation == null) {
+							LocationContext newLocation = new LocationContext();
+							newLocation.setName("Import" + importProcessContext.getId());
+							newLocation.setLat(lat);
+							newLocation.setLng(lon);
+							newLocation.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+
+							// newLocation.setSiteId((long)siteObj.get("id"));
+							long locationId = LocationAPI.addLocation(newLocation);
+							newLocation.setId(locationId);
+							return FieldUtil.getAsProperties(newLocation);
+						} else {
+							return FieldUtil.getAsProperties(existingLocation);
+						}
+					}
+				}
+				case "groups": {
+					Group group = AccountUtil.getGroupBean().getGroup(value.toString());
+					if (group == null && lookupField.getName().equals("assignmentGroup")) {
+						throw new Exception("Value not found");
+					}
+					return FieldUtil.getAsProperties(group);
+				}
+				case "preventivemaintenance": {
+					if (value != null) {
+						PreventiveMaintenance pm = PreventiveMaintenanceAPI.getPM((long) Double.parseDouble(value.toString()), false);
+						if (pm != null) {
+							return FieldUtil.getAsProperties(pm);
+						}
+					}
+					return null;
+				}
 			}
 
 		} catch (Exception e) {

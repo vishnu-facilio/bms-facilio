@@ -1,36 +1,10 @@
 package com.facilio.bmsconsole.util;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
-import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.FloorContext;
-import com.facilio.bmsconsole.context.LocationContext;
-import com.facilio.bmsconsole.context.PhotosContext;
-import com.facilio.bmsconsole.context.SiteContext;
-import com.facilio.bmsconsole.context.SpaceCategoryContext;
-import com.facilio.bmsconsole.context.SpaceContext;
-import com.facilio.bmsconsole.context.TenantUnitSpaceContext;
-import com.facilio.bmsconsole.context.ZoneContext;
 import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
@@ -41,27 +15,22 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.db.criteria.operators.BuildingOperator;
-import com.facilio.db.criteria.operators.CommonOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.PickListOperators;
-import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.db.criteria.operators.*;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.BmsAggregateOperators;
+import com.facilio.modules.*;
 import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
-import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.InsertRecordBuilder;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SupplementRecord;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+
+import java.sql.SQLException;
+import java.util.*;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class SpaceAPI {
 	
@@ -1819,9 +1788,9 @@ public static List<Map<String,Object>> getBuildingArea(String buildingList) thro
 
 	}
 
-	public static long addTenantUnitExtentedModuleEntry(SpaceContext space) throws Exception{
+	public static long addSpaceExtentedModuleEntry(SpaceContext space, String moduleName) throws Exception{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT_UNIT_SPACE);
+		FacilioModule module = modBean.getModule(moduleName);
 
 		Map<String, Object> record = new HashMap<>();
 		record.put("id", space.getId());
@@ -1850,6 +1819,26 @@ public static List<Map<String,Object>> getBuildingArea(String buildingList) thro
 				.beanClass(SpaceCategoryContext.class)
 				.select(fields)
 				.andCondition(CriteriaAPI.getNameCondition(name ,module));
+		List<SpaceCategoryContext> spaceCategories = builder.get();
+		if(spaceCategories.size() > 0)
+		{
+			spaceCategory = spaceCategories.get(0);
+		}
+		return spaceCategory;
+	}
+	public static SpaceCategoryContext getSpaceCategoryFromModule(long moduleId) throws Exception
+	{
+		SpaceCategoryContext spaceCategory = null;
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module  = modBean.getModule(FacilioConstants.ContextNames.SPACE_CATEGORY);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SPACE_CATEGORY);
+		Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
+
+		SelectRecordsBuilder<SpaceCategoryContext> builder = new SelectRecordsBuilder<SpaceCategoryContext>()
+				.module(module)
+				.beanClass(SpaceCategoryContext.class)
+				.select(fields)
+				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("spaceModuleId"), String.valueOf(moduleId), NumberOperators.EQUALS));
 		List<SpaceCategoryContext> spaceCategories = builder.get();
 		if(spaceCategories.size() > 0)
 		{
