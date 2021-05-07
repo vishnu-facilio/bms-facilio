@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.agentv2.triggers.PostTimeseriesTriggerContext;
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -105,9 +106,9 @@ public class AddOrUpdateTriggerCommand extends FacilioCommand {
 			case MODULE_TRIGGER:
 			case SLA_DUE_DATE_TRIGGER:
 			case SCORING_RULE_TRIGGER:
-            case TIMESERIES_COMPLETED_TRIGGER:
 				return ModuleFactory.getTriggerModule();
-
+            case TIMESERIES_COMPLETED_TRIGGER:
+                return ModuleFactory.getPostTimeseriesTriggerModule();
 			default:
 				throw new IllegalArgumentException("Invalid trigger type");
 		}
@@ -118,9 +119,9 @@ public class AddOrUpdateTriggerCommand extends FacilioCommand {
 			case MODULE_TRIGGER:
 			case SLA_DUE_DATE_TRIGGER:
 			case SCORING_RULE_TRIGGER:
-			case TIMESERIES_COMPLETED_TRIGGER:
 				return BaseTriggerContext.class;
-
+            case TIMESERIES_COMPLETED_TRIGGER:
+                return PostTimeseriesTriggerContext.class;
 			default:
 				throw new IllegalArgumentException("Invalid trigger type");
 		}
@@ -131,9 +132,9 @@ public class AddOrUpdateTriggerCommand extends FacilioCommand {
 			case MODULE_TRIGGER:
 			case SLA_DUE_DATE_TRIGGER:
 			case SCORING_RULE_TRIGGER:
+                return FieldFactory.getTriggerFields();
             case TIMESERIES_COMPLETED_TRIGGER:
-				return FieldFactory.getTriggerFields();
-
+                return FieldFactory.getPostTimeseriesTriggerActionFields();
 			default:
 				throw new IllegalArgumentException("Invalid trigger type");
 		}

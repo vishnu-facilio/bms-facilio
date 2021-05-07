@@ -4519,4 +4519,21 @@ public class ModuleFactory {
 		return facilioAuditModule;
 	}
 
+    public static FacilioModule getPostTimeseriesTriggerModule() {
+        FacilioModule module = new FacilioModule();
+        module.setName("postTimeseriesTrigger");
+        module.setDisplayName("Post Timeseries Trigger");
+        module.setTableName("PostTimeseriesTrigger");
+        module.setExtendModule(getTriggerModule());
+        return module;
+    }
+
+
+    public static FacilioModule getPostTimeseriesTriggerVsResourcesModule() {
+        FacilioModule module = new FacilioModule();
+        module.setName("postTimeseriesTrigger_Resources_Rel");
+        module.setDisplayName("Post Timeseries Trigger vs Resources Rel");
+        module.setTableName("PostTimeseriesTrigger_Resources_Rel");
+        return module;
+    }
 }

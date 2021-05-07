@@ -9595,7 +9595,16 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("status", "STATUS", module, FieldType.BOOLEAN));
         return fields;
     }
-    
+
+    public static List<FacilioField> getPostTimeseriesTriggerFields() {
+        FacilioModule module = ModuleFactory.getPostTimeseriesTriggerModule();
+        List<FacilioField> fields = new ArrayList<>();
+        fields.addAll(getTriggerFields());
+        fields.add(getField("siteId", "SITE_ID", module, FieldType.NUMBER));
+        return fields;
+
+    }
+
     public static List<FacilioField> getTriggerActionFields() {
         FacilioModule module = ModuleFactory.getTriggerActionModule();
         List<FacilioField> fields = new ArrayList<>();
@@ -9605,6 +9614,14 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("typeRefPrimaryId", "TYPE_PRIMARY_ID", module, FieldType.NUMBER));
         fields.add(getField("triggerId", "TRIGGER_ID", module, FieldType.NUMBER));
         fields.add(getField("executionOrder", "EXECUTION_ORDER", module, FieldType.NUMBER));
+        return fields;
+    }
+
+    public static List<FacilioField> getPostTimeseriesTriggerActionFields() {
+        FacilioModule module = ModuleFactory.getPostTimeseriesTriggerVsResourcesModule();
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.NUMBER));
+        fields.add(getField("triggerId", "TRIGGER_ID", module, FieldType.NUMBER));
         return fields;
     }
 

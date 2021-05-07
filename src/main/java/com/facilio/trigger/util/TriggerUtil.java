@@ -85,10 +85,10 @@ public class TriggerUtil {
 				.table(module.getTableName())
 				.andCondition(CriteriaAPI.getIdCondition(ids, module));
 		List<BaseTriggerContext> triggerList = FieldUtil.getAsBeanListFromMapList(select.get(), BaseTriggerContext.class);
-		return getExtendedTriggers(triggerList);
-	}
+        return getExtendedTriggers(triggerList, null);
+    }
 
-	private static List<BaseTriggerContext> getExtendedTriggers(List<BaseTriggerContext> triggerList) throws Exception {
+    private static List<BaseTriggerContext> getExtendedTriggers(List<BaseTriggerContext> triggerList, Criteria criteria) throws Exception {
 		List<BaseTriggerContext> triggers = new ArrayList<>();
 		if (CollectionUtils.isEmpty(triggerList)) {
 			return triggers;
@@ -119,6 +119,9 @@ public class TriggerUtil {
 					.table(triggerModule.getTableName())
 					.select(AddOrUpdateTriggerCommand.getTriggerFields(key))
 					.andCondition(CriteriaAPI.getIdCondition(triggerValueMap.keySet(), triggerModule));
+            if (criteria != null) {
+                builder.andCriteria(criteria);
+            }
 			List<Map<String, Object>> maps = builder.get();
 			for (Map<String, Object> map : maps) {
 				long id = (long) map.get("id");
@@ -130,7 +133,7 @@ public class TriggerUtil {
 		return triggers;
 	}
 
-	public static List<BaseTriggerContext> getTriggers(FacilioModule module, List<EventType> activityTypes, Criteria criteria, boolean onlyActive, boolean excludeInternal, TriggerType... triggerTypes) throws Exception {
+    public static List<BaseTriggerContext> getTriggers(FacilioModule module, List<EventType> activityTypes, Criteria criteria, boolean onlyActive, boolean excludeInternal, Criteria extendedCriteria, TriggerType... triggerTypes) throws Exception {
 		FacilioModule triggerModule = ModuleFactory.getTriggerModule();
 		List<FacilioField> fields = FieldFactory.getTriggerFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -184,7 +187,7 @@ public class TriggerUtil {
 			fillTriggerExtras(triggers);
 		}
 
-		return getExtendedTriggers(triggers);
+        return getExtendedTriggers(triggers, extendedCriteria);
 	}
 	
 	public static void fillTriggerExtras(List<BaseTriggerContext> triggers) throws Exception {

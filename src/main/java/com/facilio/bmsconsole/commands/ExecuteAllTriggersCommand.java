@@ -53,8 +53,8 @@ public class ExecuteAllTriggersCommand extends FacilioCommand {
 				
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioModule module = modBean.getModule(moduleName);
-				
-				List<BaseTriggerContext> triggers = TriggerUtil.getTriggers(module, activities, null, true, false, triggerType);
+
+				List<BaseTriggerContext> triggers = TriggerUtil.getTriggers(module, activities, null, true, false, null, triggerType);
 
 				List records = new LinkedList<>(entry.getValue());
 				Iterator it = records.iterator();
