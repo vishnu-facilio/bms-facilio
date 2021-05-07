@@ -55,7 +55,7 @@ public class UpdateDeskCommand extends FacilioCommand {
 
 					}
 
-                    if (CollectionUtils.sizeIsEmpty(addDeskList)) {
+                    if (CollectionUtils.isNotEmpty(addDeskList)) {
                     	Map<Long, List<UpdateChangeSet>> changes = V3RecordAPI.addRecord(false, addDeskList, deskModule, fields, true);
                     	if(changes != null && !changes.isEmpty()) {
                     		deskChangeSet.putAll(changes);
