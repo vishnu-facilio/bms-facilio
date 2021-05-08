@@ -1,5 +1,6 @@
 package com.facilio.trigger.context;
 
+import com.facilio.bmsconsole.instant.jobs.PostTimeseriesWorkflowExecutionJob;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -14,7 +15,8 @@ import java.util.Objects;
 @JsonSubTypes({
 		@JsonSubTypes.Type(value = BaseTriggerContext.class, name = "1"),
 		@JsonSubTypes.Type(value = BaseTriggerContext.class, name = "2"),
-		@JsonSubTypes.Type(value = BaseTriggerContext.class, name = "3")
+		@JsonSubTypes.Type(value = BaseTriggerContext.class, name = "3"),
+		@JsonSubTypes.Type(value = BaseTriggerContext.class, name = "4")
 })
 public class BaseTriggerContext {
 
@@ -174,6 +176,7 @@ public class BaseTriggerContext {
 				if (getModuleId() < 0) {
 					throw new IllegalArgumentException("Module id is mandatory");
 				}
+			case TIMESERIES_COMPLETED_TRIGGER:
 		}
 
 		validated = true;
