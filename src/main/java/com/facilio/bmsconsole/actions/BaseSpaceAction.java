@@ -228,6 +228,17 @@ public class BaseSpaceAction extends FacilioAction {
 		this.withReadings = withReadings;
 	}
 	
+	private Boolean fetchDeleted;
+	public Boolean getFetchDeleted() {
+		if (fetchDeleted == null) {
+			return false;
+		}
+		return fetchDeleted;
+	}
+	public void setFetchDeleted(Boolean fetchDeleted) {
+		this.fetchDeleted = fetchDeleted;
+	}
+	
 	
 /******************      V2 Api    ******************/
 	
@@ -256,6 +267,7 @@ public class BaseSpaceAction extends FacilioAction {
 	public String basespaceDetailsWithHierarchy() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.SPACE_ID, spaceId);
+		context.put(FacilioConstants.ContextNames.FETCH_DELETED_RECORDS, getFetchDeleted());
 		FacilioChain chain = ReadOnlyChainFactory.getBasespaceWithHierarchy();
 		chain.execute(context);
 		basespace = (BaseSpaceContext) context.get(FacilioConstants.ContextNames.BASE_SPACE);

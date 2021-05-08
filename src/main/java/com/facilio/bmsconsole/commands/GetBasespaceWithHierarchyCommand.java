@@ -12,8 +12,9 @@ public class GetBasespaceWithHierarchyCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		long spaceid = (Long) context.get(FacilioConstants.ContextNames.SPACE_ID);
+		boolean fetchDeleted = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_DELETED_RECORDS, false);
 		if(spaceid > 0){
-			BaseSpaceContext basespace = SpaceAPI.getBasespaceDetailsWithHierarchy(spaceid);
+			BaseSpaceContext basespace = SpaceAPI.getBasespaceDetailsWithHierarchy(spaceid, fetchDeleted);
 			context.put(FacilioConstants.ContextNames.BASE_SPACE, basespace);
 		}
 		return false;

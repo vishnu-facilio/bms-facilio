@@ -406,11 +406,11 @@ public class SpaceAPI {
 //																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																	.andCustomWhere(module.getTableName()+".ID = ?", id);
 		
-		List<BaseSpaceContext> spaces = selectBuilder.get();
-		
 		if (fetchDeleted) {
 			selectBuilder.fetchDeleted();
 		}
+		
+		List<BaseSpaceContext> spaces = selectBuilder.get();
 		
 		if(spaces != null && !spaces.isEmpty()) {
 			return spaces.get(0);
@@ -418,8 +418,8 @@ public class SpaceAPI {
 		return null;
 	}
 
-	public static BaseSpaceContext getBasespaceDetailsWithHierarchy(long id) throws Exception {
-		BaseSpaceContext baseSpace = getBaseSpace(id);
+	public static BaseSpaceContext getBasespaceDetailsWithHierarchy(long id, boolean fetchDeleted) throws Exception {
+		BaseSpaceContext baseSpace = getBaseSpace(id, fetchDeleted);
 		baseSpace = fetchHierarchy(baseSpace);
 		return baseSpace;
 	}
