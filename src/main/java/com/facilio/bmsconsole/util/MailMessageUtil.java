@@ -438,6 +438,15 @@ public class MailMessageUtil {
     
 
     
-    public static Function<String,String> getFirstMessageId = (messageIDs) -> messageIDs.substring(messageIDs.indexOf('<')+1, messageIDs.indexOf('>'));
+    public static Function<String,String> getFirstMessageId = (messageIDs) -> {
+    
+    	if(messageIDs.contains("<")) {
+    		
+    		return messageIDs.substring(messageIDs.indexOf('<')+1, messageIDs.indexOf('>'));
+    	}
+    	else {
+    		return messageIDs;
+    	}
+    };
 
 }
