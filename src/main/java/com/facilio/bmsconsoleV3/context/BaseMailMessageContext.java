@@ -138,6 +138,7 @@ public class BaseMailMessageContext extends V3Context {
             	mailContext.setMessageId(MailMessageUtil.getFirstMessageId.apply(messageIDList[0]));
             }
             if(referenceHeader != null && referenceHeader[0] != null) {
+            	LOGGER.error("referenceHeader ----" + referenceHeader[0]);
             	mailContext.setReferenceMessageId(MailMessageUtil.getFirstMessageId.apply(referenceHeader[0]));
             }
             if(inReplyTo != null && inReplyTo[0] != null) {
