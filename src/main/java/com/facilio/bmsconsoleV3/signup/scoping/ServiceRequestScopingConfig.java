@@ -26,6 +26,16 @@ public class ServiceRequestScopingConfig extends SignUpData {
             scoping.setFieldValueGenerator("com.facilio.modules.SiteValueGenerator");
             scoping.setModuleId(module.getModuleId());
             ApplicationApi.addScopingConfigForApp(Collections.singletonList(scoping));
+            
+            
+            long tenantAppScopingId = ApplicationApi.addScoping(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
+            scoping = new ScopingConfigContext();
+            scoping.setFieldName("requester");
+            scoping.setScopingId(tenantAppScopingId);
+            scoping.setOperatorId(36);
+            scoping.setFieldValueGenerator("com.facilio.modules.PeopleValueGenerator");
+            scoping.setModuleId(module.getModuleId());
+            ApplicationApi.addScopingConfigForApp(Collections.singletonList(scoping));
         }
         catch(Exception e){
             e.printStackTrace();

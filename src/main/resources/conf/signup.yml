@@ -28,6 +28,7 @@ classes:
   - com.facilio.bmsconsoleV3.signup.scoping.PreAlarmScopingConfig
   - com.facilio.bmsconsoleV3.signup.scoping.VendorScopingConfig
   - com.facilio.bmsconsoleV3.signup.scoping.ServiceRequestScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.controlGroupTenantSharingScopingConfig
   - com.facilio.bmsconsoleV3.signup.scoping.TenantContactScopingConfig
   - com.facilio.bmsconsoleV3.signup.scoping.ReadingEventScopingConfig
   - com.facilio.bmsconsoleV3.signup.scoping.BaseAlarmScopingConfig
