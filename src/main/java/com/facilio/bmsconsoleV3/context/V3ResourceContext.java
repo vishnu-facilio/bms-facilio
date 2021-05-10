@@ -118,7 +118,7 @@ public class V3ResourceContext extends V3Context {
 
 	@JsonIgnore
 	public String getAvatarUrl() throws Exception {
-		if (avatarUrl == null && this.photoId > 0) {
+		if (avatarUrl == null && (this.photoId != null && this.photoId > 0)) {
 			FileStore fs = FacilioFactory.getFileStore();
 			avatarUrl = fs.getPrivateUrl(this.photoId);
 		}

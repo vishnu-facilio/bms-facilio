@@ -16,6 +16,9 @@ import com.facilio.bmsconsole.templates.DefaultTemplate;
 import com.facilio.bmsconsole.util.ConnectedAppAPI;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsoleV3.context.InviteVisitorContextV3;
+import com.facilio.bmsconsoleV3.context.V3DeliveriesContext;
+import com.facilio.bmsconsoleV3.context.V3LockersContext;
+import com.facilio.bmsconsoleV3.context.V3ParkingStallContext;
 import com.facilio.bmsconsoleV3.context.VisitorLogContextV3;
 import com.facilio.bmsconsoleV3.context.communityfeatures.DealsAndOffersContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.NeighbourhoodContext;
@@ -144,6 +147,12 @@ public class PageFactory {
 				
 			case ContextNames.SERVICE_REQUEST:
 				return ServiceRequestPageFactory.getServiceRequestPage((ServiceRequestContext) record, module);
+			case ContextNames.LOCKERS:
+				return LockersPageFactory.getLockersPage((V3LockersContext) record, module);
+			case ContextNames.PARKING_STALL:
+				return ParkingStallPageFactory.getParkingStallPage((V3ParkingStallContext) record, module);
+			case ContextNames.DELIVERIES:
+				return CustomModulePageFactory.getCustomModulePage((V3DeliveriesContext) record, module);
 		}
 		if (module.getExtendModule() == null) {	// temp
 			// etisalat changes will be changed to standard method

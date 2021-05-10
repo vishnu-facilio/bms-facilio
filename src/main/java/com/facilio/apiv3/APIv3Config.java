@@ -1192,7 +1192,9 @@ public class APIv3Config {
                 .create()
                 .update()
                 .list()
+                .beforeFetch(new LoadDeliveriesLookupCommand())
                 .summary()
+                .beforeFetch(new LoadDeliveriesLookupCommand())
                 .build();
     }
     
@@ -1203,6 +1205,32 @@ public class APIv3Config {
                 .update()
                 .list()
                 .summary()
+                .build();
+    }
+    
+    @Module("lockers")
+    public static Supplier<V3Config> getLockers() {
+        return () -> new V3Config(V3LockersContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .beforeSave(new AddSpaceCommandV3())
+                .update()
+                .list()
+                .beforeFetch(new LoadLockersLookupCommand())
+                .summary()
+                .beforeFetch(new LoadLockersLookupCommand())
+                .build();
+    }
+    
+    @Module("parkingstall")
+    public static Supplier<V3Config> getParkingStall() {
+        return () -> new V3Config(V3ParkingStallContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .beforeSave(new AddSpaceCommandV3())
+                .update()
+                .list()
+                .beforeFetch(new LoadParkingStallLookupCommand())
+                .summary()
+                .beforeFetch(new LoadParkingStallLookupCommand())
                 .build();
     }
     
