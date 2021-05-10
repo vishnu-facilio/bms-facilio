@@ -14,6 +14,8 @@ import lombok.extern.log4j.Log4j;
 )
 public class DateTimeQuestionContext extends QuestionContext {
     private Boolean showTime;
+    private String placeHolder;
+
     public boolean showTime() {
         return showTime == null ? false : showTime;
     }

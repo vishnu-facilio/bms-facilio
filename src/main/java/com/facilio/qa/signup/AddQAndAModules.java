@@ -264,6 +264,7 @@ public class AddQAndAModules extends SignUpData {
 
         List<FacilioField> fields = new ArrayList<>();
         fields.add(FieldFactory.getDefaultField("showTime", "Show Time", "SHOW_TIME", FieldType.BOOLEAN));
+        fields.add(FieldFactory.getDefaultField("placeHolder", "Place Holder", "PLACE_HOLDER", FieldType.STRING));
 
         module.setFields(fields);
         return module;
