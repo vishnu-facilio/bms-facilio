@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.context;
 
+import com.facilio.bmsconsole.activity.EmailConversationThreadingActivityType;
 import com.facilio.modules.FacilioIntEnum;
 
 import lombok.Getter;
@@ -37,17 +38,31 @@ public class EmailConversationThreadingContext extends BaseMailMessageContext {
 	}
 	
 	public enum Message_Type implements FacilioIntEnum {
-		REPLY,
-		PUBLIC_NOTE,
-		PRIVATE_NOTE
+		REPLY(EmailConversationThreadingActivityType.REPLIED),
+		PUBLIC_NOTE(EmailConversationThreadingActivityType.ADDED_PUBLIC_NOTE),
+		PRIVATE_NOTE(EmailConversationThreadingActivityType.ADDED_PRIVATE_NOTE)
 		;
 		
+		EmailConversationThreadingActivityType activityType;
+		
+		Message_Type(EmailConversationThreadingActivityType activityType) {
+			this.activityType = activityType;
+		}
+		
+		public EmailConversationThreadingActivityType getActivityType() {
+			return activityType;
+		}
+				
 		public static Message_Type valueOf (int value) {
 			if (value > 0 && value <= values().length) {
 				return values()[value - 1];
 			}
 			return null;
 		}
+	}
+	
+	public Message_Type getMessageTypeEnum() {
+		return messageType;
 	}
 
 	public int getFromType() {

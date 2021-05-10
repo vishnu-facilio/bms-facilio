@@ -191,6 +191,7 @@ public class APIv3Config {
                 .create()
                 .beforeSave(TransactionChainFactoryV3.getAddEmailConversationThreadingBeforeSaveChain())
                 .afterSave(TransactionChainFactoryV3.getAddEmailConversationThreadingAfterSaveChain())
+                .afterTransaction(new AddActivitiesCommandV3())
                 .list()
                 .beforeFetch(TransactionChainFactoryV3.getEmailConversationThreadingBeforeListChain())
                 .afterFetch(TransactionChainFactoryV3.getEmailConversationThreadingAfterListChain())

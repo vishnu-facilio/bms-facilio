@@ -41,7 +41,10 @@ public interface ActivityType {
 		for (ActivityType type: CommonActivityType.values()) {
 			activityMap.put(type.getValue(), type);
 		}
-		// Max number = 78
+		for (ActivityType type: EmailConversationThreadingActivityType.values()) {
+			activityMap.put(type.getValue(), type);
+		}
+		// Max number = 81
 
 		return activityMap;
 	}

@@ -1776,6 +1776,7 @@ public class FacilioConstants {
 		public static final String SERVICE_REQUEST_PRIORITY = "servicerequestpriority";
 		public static final String SERVICE_REQUESTS = "serviceRequests";
 		public static final String SERVICE_REQUEST = "serviceRequest";
+		public static final String SERVICE_REQUEST_ACTIVITY = "servicerequestsactivity";
 		public static final String SERVICE_REQUEST_ATTACHMENT = "servicerequestsattachments";
 
 		public static final String SAFETY_PLAN = "safetyPlan";

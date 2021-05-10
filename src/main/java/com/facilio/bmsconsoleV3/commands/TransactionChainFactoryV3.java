@@ -917,6 +917,7 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getAddEmailConversationThreadingAfterSaveChain() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new SendEmailForEmailConversationThreadingCommand());
+        chain.addCommand(new AddActivityInRelatedModuleFroEmailConversationThreadingCommand());
         return chain;
     }
     
