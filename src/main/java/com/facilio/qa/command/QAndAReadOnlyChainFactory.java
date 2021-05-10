@@ -18,6 +18,7 @@ public class QAndAReadOnlyChainFactory {
         FacilioChain c = getDefaultChain();
         c.addCommand(new FetchQuestionsFromPagesCommand());
         c.addCommand(new FetchAnswersForQuestionsCommand());
+        c.addCommand(new FetchAnswerSummaryForQuestionsCommand());
         return c;
     }
 

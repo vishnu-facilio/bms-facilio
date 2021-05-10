@@ -17,7 +17,9 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.qa.command.QAndAReadOnlyChainFactory;
+import com.facilio.qa.context.PageContext;
 import com.facilio.qa.context.QuestionContext;
+import com.facilio.util.FacilioStreamUtil;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.context.V3Context;
@@ -32,6 +34,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.ToLongFunction;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class QAndAUtil {
     public static void splitAndAddQuestionModules (FacilioContext context, List<QuestionContext> list) {
@@ -160,6 +163,10 @@ public class QAndAUtil {
         FacilioChain c = QAndAReadOnlyChainFactory.callQuestionFetchHandlers();
         c.getContext().put(FacilioConstants.QAndA.Command.QUESTION_LIST, questions);
         c.execute();
+    }
+
+    public static Stream<QuestionContext> getQuestionStream (PageContext page) {
+        return FacilioStreamUtil.emptyIfNull(page.getQuestions());
     }
 
     public static <T extends V3Context> void addRecordViaV3Chain(String moduleName, List<T> records) throws Exception {

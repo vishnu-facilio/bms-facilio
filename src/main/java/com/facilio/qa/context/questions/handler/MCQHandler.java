@@ -8,6 +8,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.qa.QAndAUtil;
+import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.QuestionHandler;
 import com.facilio.qa.context.questions.BaseMCQContext;
 import com.facilio.qa.context.questions.MCQOptionContext;
@@ -27,6 +28,16 @@ import java.util.stream.IntStream;
 public class MCQHandler<Q extends BaseMCQContext> implements QuestionHandler<Q> {
 
     private String moduleName;
+
+    @Override
+    public boolean showSummaryOfResponses(QuestionContext question) throws Exception {
+        return true;
+    }
+
+    @Override
+    public boolean hideShowResponseButton(QuestionContext question) throws Exception {
+        return true;
+    }
 
     @Override
     public void validateSave(List<Q> questions) throws Exception {

@@ -40,7 +40,8 @@ public class MCQSingleAnswerHandler extends AnswerHandler<MCQSingleAnswerContext
                 , ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid select option ({0}) is specified while adding MCQ Answer", selected));
         AnswerContext answerContext = new AnswerContext();
         answerContext.setEnumAnswer(selected);
-        if ( isOther ) {
+        if ( isOther && StringUtils.isNotEmpty(answer.getAnswer().getOther()) ) {
+            V3Util.throwRestException(selected != null, ErrorCode.VALIDATION_ERROR, "Only one option can be selected for MCQ");
             answerContext.setEnumOtherAnswer(answer.getAnswer().getOther());
         }
         else {

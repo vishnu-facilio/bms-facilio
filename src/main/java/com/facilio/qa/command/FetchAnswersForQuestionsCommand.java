@@ -10,6 +10,7 @@ import com.facilio.qa.QAndAUtil;
 import com.facilio.qa.context.ClientAnswerContext;
 import com.facilio.qa.context.PageContext;
 import com.facilio.qa.context.QuestionContext;
+import com.facilio.util.FacilioStreamUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
@@ -29,7 +30,7 @@ public class FetchAnswersForQuestionsCommand extends FacilioCommand {
         List<PageContext> pages = Constants.getRecordList((FacilioContext) context);
         Long responseId = getResponseId((FacilioContext) context);
         if (CollectionUtils.isNotEmpty(pages) && responseId != null) {
-            Map<Long, QuestionContext> questions = pages.stream().flatMap(this::getQuestions).collect(Collectors.toMap(QuestionContext::_getId, Function.identity()));
+            Map<Long, QuestionContext> questions = pages.stream().flatMap(QAndAUtil::getQuestionStream).collect(Collectors.toMap(QuestionContext::_getId, Function.identity()));
             QAndAUtil.fetchChildrenFromParent(questions.values(),
                                             FacilioConstants.QAndA.ANSWER,
                                             "question",
@@ -50,13 +51,8 @@ public class FetchAnswersForQuestionsCommand extends FacilioCommand {
     }
 
     private Long getResponseId (FacilioContext context) {
-        Map<String, List<Object>> bodyParams = Constants.getQueryParams(context);
-        List<Object> responseId = MapUtils.isEmpty(bodyParams) ? null : bodyParams.get("response");
-        return CollectionUtils.isEmpty(responseId) ? null : FacilioUtil.parseLong(responseId.get(0));
-    }
-
-    private Stream<QuestionContext> getQuestions (PageContext page) {
-        return (page.getQuestions() == null ? Collections.EMPTY_LIST : page.getQuestions()).stream();
+        Object responseId = Constants.getQueryParam(context, "response");
+        return responseId == null ? null : FacilioUtil.parseLong(responseId);
     }
 
     private Criteria getResponseCriteria (Long responseId) throws Exception {

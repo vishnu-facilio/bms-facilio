@@ -51,6 +51,8 @@ public class QuestionContext extends V3Context {
     private QuestionType questionType;
     private Integer position;
     private ClientAnswerContext answer;
+    private Boolean showResponses; //Only for client use
+    private Integer answered;
 
     public boolean mandatory() {
         return mandatory == null ? false : mandatory.booleanValue();

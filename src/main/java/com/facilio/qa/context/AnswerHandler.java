@@ -1,10 +1,12 @@
 package com.facilio.qa.context;
 
 import com.facilio.qa.context.client.answers.BooleanAnswerContext;
+import com.facilio.time.DateRange;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.io.Serializable;
+import java.util.List;
 
 @AllArgsConstructor
 @Getter
@@ -22,6 +24,10 @@ public abstract class AnswerHandler<A extends ClientAnswerContext> implements Se
 
     public boolean checkIfAnswerIsNull (A answer, QuestionContext question) throws Exception {
         return answer.getAnswer() == null;
+    }
+
+    public void setSummaryOfResponses (List<QuestionContext> questions, DateRange range) throws Exception {
+
     }
 
 }

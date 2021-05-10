@@ -14,7 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.text.MessageFormat;
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class MCQMultiAnswerHandler extends AnswerHandler<MCQMultiAnswerContext> {
@@ -30,7 +30,7 @@ public class MCQMultiAnswerHandler extends AnswerHandler<MCQMultiAnswerContext> 
         if (CollectionUtils.isNotEmpty(answer.getMultiEnumAnswer())) { // Check is for handling answers only with 'other' option
             multiAnswer.setSelected(answer.getMultiEnumAnswer().stream()
                                         .map(MCQOptionContext::_getId)
-                                        .collect(Collectors.toList()));
+                                        .collect(Collectors.toSet()));
         }
         if ( StringUtils.isNotEmpty(((MCQMultiContext) answer.getQuestion()).getOtherOptionLabel()) ) {
             multiAnswer.setOther(answer.getEnumOtherAnswer());
@@ -44,7 +44,7 @@ public class MCQMultiAnswerHandler extends AnswerHandler<MCQMultiAnswerContext> 
     public AnswerContext deSerialize(MCQMultiAnswerContext answer, QuestionContext question) throws Exception {
         MCQMultiContext mcqQuestion = (MCQMultiContext) question;
         boolean isOther = isOther(mcqQuestion);
-        List<Long> selected = answer.getAnswer().getSelected();
+        Set<Long> selected = answer.getAnswer().getSelected();
         V3Util.throwRestException(CollectionUtils.isEmpty(selected)
                                                     && (!isOther || StringUtils.isEmpty(answer.getAnswer().getOther()))
                                                     , ErrorCode.VALIDATION_ERROR, "At least one option need to be selected for MCQ");

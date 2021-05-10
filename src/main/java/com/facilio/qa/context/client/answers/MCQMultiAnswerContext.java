@@ -4,7 +4,7 @@ import com.facilio.qa.context.ClientAnswerContext;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -15,7 +15,7 @@ public class MCQMultiAnswerContext extends ClientAnswerContext<MCQMultiAnswerCon
     @Getter
     @Setter
     public static class MCQMultiAnswer {
-        private List<Long> selected;
+        private Set<Long> selected;
         private String other;
     }
 }

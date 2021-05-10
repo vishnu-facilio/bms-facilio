@@ -11,6 +11,7 @@ import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.V3Builder.V3Config;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.json.simple.JSONObject;
 
@@ -198,6 +199,16 @@ public class Constants {
 
     public static Map getQueryParams(Context context) {
         return (Map) context.get(QUERY_PARAMS);
+    }
+
+    public static List<Object> getQueryParamList (Context context, String paramName) {
+        Map<String, List<Object>> bodyParams = getQueryParams(context);
+        return MapUtils.isEmpty(bodyParams) ? null : bodyParams.get(paramName);
+    }
+
+    public static Object getQueryParam (Context context, String paramName) {
+        List<Object> values = getQueryParamList(context, paramName);
+        return CollectionUtils.isEmpty(values) ? null : values.get(0);
     }
 
     public static final String RECORD_ID = "recordId";
