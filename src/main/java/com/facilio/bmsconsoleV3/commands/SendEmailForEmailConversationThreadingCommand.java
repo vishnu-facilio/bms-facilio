@@ -1,5 +1,9 @@
 package com.facilio.bmsconsoleV3.commands;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -13,10 +17,14 @@ import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsoleV3.context.EmailConversationThreadingContext;
 import com.facilio.bmsconsoleV3.context.EmailToModuleDataContext;
+import com.facilio.bmsconsoleV3.util.V3AttachmentAPI;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.services.email.EmailClient;
 import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.v3.context.AttachmentV3Context;
 
 public class SendEmailForEmailConversationThreadingCommand extends FacilioCommand {
 
@@ -88,9 +96,21 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 			mailJson.put(EmailClient.HEADER, HeaderJSON);
 		}
 		
-		LOGGER.error("emailConversation -- "+emailConversation.getId()+" mail JSON --- "+mailJson);
+		List<AttachmentV3Context> attachments = V3AttachmentAPI.getAttachments(emailConversation.getId(), MailMessageUtil.EMAIL_CONVERSATION_THREADING_ATTACHMENT_MODULE);
 		
-		String returnMessageId = AwsUtil.sendEmailViaMimeMessage(mailJson, null);
+		Map<String, String> files = null;
+		if(attachments != null && !attachments.isEmpty()) {
+			files = new HashMap<String, String>();
+			for(AttachmentV3Context attachment : attachments) {
+				attachment.getFileUrl();
+				
+				files.put(attachment.getFileFileName(), attachment.getFileDownloadUrl());
+			}
+		}
+		
+		LOGGER.error("emailConversation -- "+emailConversation.getId()+" mail JSON --- "+mailJson +" files -- "+files);
+		
+		String returnMessageId = AwsUtil.sendEmailViaMimeMessage(mailJson, files);
 		
 		return returnMessageId;
 		

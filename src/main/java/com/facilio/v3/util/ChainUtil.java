@@ -426,7 +426,12 @@ public class ChainUtil {
             } else {
                 beanClass = FacilioConstants.ContextNames.getClassFromModule(module);
                 if (beanClass == null) {
-                    beanClass = V3Context.class;
+                	if (module.getTypeEnum() == FacilioModule.ModuleType.ATTACHMENTS) {
+                        beanClass = AttachmentV3Context.class;
+                    }
+                	else {
+                		beanClass = V3Context.class;
+                	}
                 }
             }
         }

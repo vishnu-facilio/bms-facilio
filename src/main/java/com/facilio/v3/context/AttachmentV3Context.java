@@ -115,4 +115,11 @@ public class AttachmentV3Context extends V3Context {
         this.parent = parent;
     }
 
+    
+    public Long getParentId() {
+    	if(parent != null) {
+    		return parent.getId();
+    	}
+    	return null;
+    }
 }

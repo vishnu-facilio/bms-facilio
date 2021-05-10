@@ -24,6 +24,7 @@ import com.facilio.fs.FileInfo;
 import com.facilio.modules.fields.FileField;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.trigger.util.TriggerUtil;
+import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.AttachmentV3Context;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.ChainUtil;
@@ -79,6 +80,7 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
@@ -1695,6 +1697,8 @@ public enum ActionType {
 					
 					EmailConversationThreadingContext emailConversationContext = FieldUtil.getAsBeanFromJson(FieldUtil.getAsJSON(mailContext), EmailConversationThreadingContext.class);
 					
+					addAttachments(mailContext, emailConversationContext,MailMessageUtil.EMAIL_CONVERSATION_THREADING_ATTACHMENT_MODULE);
+					
 					emailConversationContext.setParentBaseMail(mailContext);
 					emailConversationContext.setDataModuleId(module.getModuleId());
 					emailConversationContext.setRecordId(recordId);
@@ -1703,24 +1707,37 @@ public enum ActionType {
 					emailConversationContext.setMessageType(EmailConversationThreadingContext.Message_Type.REPLY.getIndex());
 					
 					
-					FacilioContext contextNew = V3Util.createRecord(modBean.getModule(MailMessageUtil.EMAIL_CONVERSATION_THREADING_MODULE_NAME), FieldUtil.getAsJSON(emailConversationContext));
+					FacilioContext contextNew = V3Util.createRecord(modBean.getModule(MailMessageUtil.EMAIL_CONVERSATION_THREADING_MODULE_NAME), Collections.singletonList(emailConversationContext));
 				}
 				
 				if(recordId == null) {
 					
 					obj.put("siteId", mailContext.getSiteId());
-					 
-					FacilioContext contextNew = V3Util.createRecord(module, obj);	//adding record to the corresponding module.
+					
+					V3Config v3Config = ChainUtil.getV3Config(module.getName());
+					
+					ModuleBaseWithCustomFields record = (ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromJson(obj, v3Config.getBeanClass());
+					
+					List<FacilioModule> subModules = modBean.getSubModules(module.getName(), FacilioModule.ModuleType.ATTACHMENTS);
+					
+					if(subModules != null && !subModules.isEmpty()) {
+						
+						addAttachments(mailContext, record, subModules.get(0).getName());
+					}
+					
+					FacilioContext contextNew = V3Util.createRecord(module,Collections.singletonList(record));	//adding record to the corresponding module.
 			        
 			        Map<String, List<ModuleBaseWithCustomFields>> recordMap = (Map<String, List<ModuleBaseWithCustomFields>>) contextNew.get(Constants.RECORD_MAP);
 			        
 			        EmailToModuleDataContext emailToModuleData = FieldUtil.getAsBeanFromJson(FieldUtil.getAsJSON(mailContext), EmailToModuleDataContext.class);
-					
+			        
 					emailToModuleData.setParentBaseMail(mailContext);
 					emailToModuleData.setRecordId(recordMap.get(module.getName()).get(0).getId());
 					emailToModuleData.setDataModuleId(module.getModuleId());
+					
+					addAttachments(mailContext, emailToModuleData, MailMessageUtil.EMAIL_TO_MODULE_DATA_ATTACHMENT_MODULE);
 			        
-					V3Util.createRecord(modBean.getModule(MailMessageUtil.EMAIL_TO_MODULE_DATA_MODULE_NAME), FieldUtil.getAsJSON(emailToModuleData));
+					V3Util.createRecord(modBean.getModule(MailMessageUtil.EMAIL_TO_MODULE_DATA_MODULE_NAME), Collections.singletonList(emailToModuleData));
 				}
 			}
 			
@@ -2022,6 +2039,44 @@ public enum ActionType {
 			}
 		}
 	}
+	
+	
+	private static void addAttachments(BaseMailMessageContext mailContext,ModuleBaseWithCustomFields parent,String attachmentModuleName) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			
+		List<AttachmentV3Context> attachments = V3AttachmentAPI.getAttachments(mailContext.getId(), FacilioConstants.ContextNames.MAIL_ATTACHMENT);
+		
+		if(attachments == null || attachments.isEmpty()) {
+			return;
+		}
+		
+		List<Map<String,Object>> newAttachments = new ArrayList<Map<String,Object>>();
+		
+		for(AttachmentV3Context attachment : attachments) {
+			
+			FileStore fs = FacilioFactory.getFileStore();
+			Long fileId = attachment.getFileId();
+			FileInfo fileInfo = null;
+			InputStream downloadStream = null;
+			fileInfo = fs.getFileInfo(fileId, true);
+			downloadStream = fs.readFile(fileInfo);
+			File file = File.createTempFile(attachment.getFileFileName(), "");
+			FileUtils.copyInputStreamToFile(downloadStream, file);
+			
+			
+			 Map<String, Object> attachmentObject = new HashMap<>();
+             attachmentObject.put("fileFileName", fileInfo.getFileName());
+             attachmentObject.put("fileContentType", fileInfo.getContentType());
+             attachmentObject.put("file", file);
+			
+			newAttachments.add(attachmentObject);
+		}
+		
+		Map<String, List<Map<String, Object>>> subForm = new HashMap<String, List<Map<String,Object>>>();
+		subForm.put(attachmentModuleName, newAttachments);
+		parent.setSubForm(subForm);
+	}
+	
 	private static void addFileFields(List<AttachmentV3Context> attachments,JSONObject obj,List<FacilioField> fields,ModuleBaseWithCustomFields record) throws Exception {
 		List<FileField> fileFields = new ArrayList<>();
 		Iterator<String> keysItr = obj.keySet().iterator();

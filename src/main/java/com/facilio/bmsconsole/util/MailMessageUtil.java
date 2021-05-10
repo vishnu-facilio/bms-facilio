@@ -66,6 +66,12 @@ public class MailMessageUtil {
     public static final String EMAIL_CONVERSATION_THREADING_MODULE_NAME = "emailConversationThreading";
     
     public static final String BASE_MAIL_MESSAGE_MODULE_NAME = "customMailMessages";
+    
+    public static final String MAIL_ATTACHMENT_MODULE = "mailAttachments";
+    
+    public static final String EMAIL_CONVERSATION_THREADING_ATTACHMENT_MODULE = "emailConversationThreadingattachments";
+    
+    public static final String EMAIL_TO_MODULE_DATA_ATTACHMENT_MODULE = "emailToModuleDataattachments";
 
     public static BiFunction<String, String, String> getWholeEmailFromNameAndEmail = (name,email) ->{
 		

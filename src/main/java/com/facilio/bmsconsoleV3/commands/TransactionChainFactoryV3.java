@@ -488,7 +488,7 @@ public class TransactionChainFactoryV3 {
 	
 	public static FacilioChain getServiceRequestAfterSaveChain() {
 		FacilioChain c = getDefaultChain();
-		c.addCommand(new UpdateAttachmentsParentIdCommandV3());
+//		c.addCommand(new UpdateAttachmentsParentIdCommandV3());
 		c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
 		return c;
 	}
@@ -955,6 +955,12 @@ public class TransactionChainFactoryV3 {
 	public static FacilioChain getEmailFromAddressAfterSaveChain() {
 		 FacilioChain chain = getDefaultChain();
 		 chain.addCommand(new SendVerifcationEmailForFromAddressCommand());
+	     return chain;
+	}
+
+	public static Command getEmailConversationThreadingAfterListChain() {
+		FacilioChain chain = getDefaultChain();
+		 chain.addCommand(new AddAttachmentsForEmailConversationThreadingCommand());
 	     return chain;
 	}
 
