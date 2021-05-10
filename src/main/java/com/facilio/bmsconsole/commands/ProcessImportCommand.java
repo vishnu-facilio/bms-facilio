@@ -161,7 +161,7 @@ public class ProcessImportCommand extends FacilioCommand {
 				}
 			}
 
-			else if (module.equals(FacilioConstants.ContextNames.SPACE) || (importProcessContext.getModule() != null && ImportAPI.isSpaceExtendedModule(importProcessContext.getModule()))) {
+			else if (importProcessContext.getModule() != null && ImportAPI.isSpaceModule(importProcessContext.getModule())) {
 
 				if(!isBim){
 					ArrayList<String> spaceFields = new ArrayList<>();
@@ -200,11 +200,11 @@ public class ProcessImportCommand extends FacilioCommand {
 						}
 					}
 
-					if (ImportAPI.isSpaceExtendedModule(importProcessContext.getModule())) {
+					if (!module.equals(FacilioConstants.ContextNames.SPACE) && ImportAPI.isSpaceModule(importProcessContext.getModule())) {
 						SpaceCategoryContext spaceCategory = SpaceAPI.getSpaceCategoryFromModule(importProcessContext.getModuleId());
-						props.put(FacilioConstants.ContextNames.SPACE_CATEGORY_FIELD, spaceCategory);
 						SpaceContext space = SpaceAPI.getSpaceFromHierarchy(props, name);
-						if (space != null && !(space.getSpaceCategory() != null  && space.getSpaceCategory().getId() == spaceCategory.getId())) {
+						if (spaceCategory != null && space != null && !(space.getSpaceCategory() != null  && space.getSpaceCategory().getId() == spaceCategory.getId())) {
+							props.put(FacilioConstants.ContextNames.SPACE_CATEGORY_FIELD, spaceCategory);
 							SpaceAPI.addSpaceExtentedModuleEntry(space, module);
 						}
 					}

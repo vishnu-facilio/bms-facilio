@@ -1840,7 +1840,7 @@ public static List<Map<String,Object>> getBuildingArea(String buildingList) thro
 				.select(fields)
 				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("spaceModuleId"), String.valueOf(moduleId), NumberOperators.EQUALS));
 		List<SpaceCategoryContext> spaceCategories = builder.get();
-		if(spaceCategories.size() > 0)
+		if(CollectionUtils.isNotEmpty(spaceCategories))
 		{
 			spaceCategory = spaceCategories.get(0);
 		}
