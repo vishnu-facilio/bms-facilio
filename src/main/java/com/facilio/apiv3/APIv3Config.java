@@ -1212,7 +1212,7 @@ public class APIv3Config {
     public static Supplier<V3Config> getLockers() {
         return () -> new V3Config(V3LockersContext.class, new ModuleCustomFieldCount30())
                 .create()
-                .beforeSave(new AddSpaceCommandV3())
+                .beforeSave(new AddLockersSpaceCommand())
                 .update()
                 .list()
                 .beforeFetch(new LoadLockersLookupCommand())
@@ -1225,7 +1225,7 @@ public class APIv3Config {
     public static Supplier<V3Config> getParkingStall() {
         return () -> new V3Config(V3ParkingStallContext.class, new ModuleCustomFieldCount30())
                 .create()
-                .beforeSave(new AddSpaceCommandV3())
+                .beforeSave(new AddParkingStallSpaceCommand())
                 .update()
                 .list()
                 .beforeFetch(new LoadParkingStallLookupCommand())
