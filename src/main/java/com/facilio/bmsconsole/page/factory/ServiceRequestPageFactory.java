@@ -30,13 +30,13 @@ public class ServiceRequestPageFactory extends PageFactory {
             detailsWidget.addToWidgetParams("hideBg", true);
             tab1Sec1.addWidget(detailsWidget);
 
-            Page.Tab tab2 = page.new Tab("Notes & Attachments");
+            Page.Tab tab2 = page.new Tab("Comments & Attachments");
             page.addTab(tab2);
 
             Page.Section tab2sec1 = page.new Section();
             tab2.addSection(tab2sec1);
             HashMap<String, String> titleMap = new HashMap<>();
-            titleMap.put("notes", "Note");
+            titleMap.put("notes", "Comment");
             titleMap.put("documents", "Attachment");
             addCommonSubModuleWidget(tab2sec1, module, record, titleMap, false);
             if (!AccountUtil.getCurrentUser().isPortalUser()) {
