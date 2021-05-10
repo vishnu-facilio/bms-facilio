@@ -366,7 +366,7 @@ public class APIv3Config {
                     .showStateFlowList()
                 .summary()
                     .beforeFetch(new LoadServiceRequestLookupCommandV3())
-//                    .afterFetch(new FetchEmailConversationThreadingCommand())
+                    .afterFetch(new FetchEmailToModuleDataReccordCommand())
                 .build();
     }
     
