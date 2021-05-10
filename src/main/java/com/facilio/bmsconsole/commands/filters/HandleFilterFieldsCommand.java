@@ -71,7 +71,7 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
 
         // TODO Handle multiple scope fields
         // Need to filter only if a valid criteria is present which means scope is set
-        if (scopeFieldsAndCriteria != null && scopeFieldsAndCriteria.getCriteria() != null && CollectionUtils.isNotEmpty(scopeFieldsAndCriteria.getFields())) {
+        if (scopeFieldsAndCriteria != null && scopeFieldsAndCriteria.getCriteria() != null && !scopeFieldsAndCriteria.getCriteria().isEmpty() && CollectionUtils.isNotEmpty(scopeFieldsAndCriteria.getFields())) {
             fields.removeAll(scopeFieldsAndCriteria.getFields());
         }
         return fields;
