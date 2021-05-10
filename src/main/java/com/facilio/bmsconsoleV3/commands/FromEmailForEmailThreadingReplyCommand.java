@@ -84,6 +84,8 @@ public class FromEmailForEmailThreadingReplyCommand extends FacilioCommand {
 			
 			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("verificationStatus"), Boolean.TRUE.toString(), BooleanOperators.IS));
 			
+			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("sourceType"), EmailFromAddress.SourceType.SUPPORT.getIndex()+"", NumberOperators.EQUALS));
+			
 			if(fromAddress != null) {
 				criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("email"), fromAddress.getEmail(), StringOperators.ISN_T));
 			}
