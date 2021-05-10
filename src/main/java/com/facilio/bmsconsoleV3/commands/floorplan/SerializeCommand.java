@@ -4,24 +4,19 @@ import org.apache.commons.collections4.CollectionUtils;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.floorplan.V3DeskContext;
-import com.facilio.bmsconsoleV3.context.floorplan.V3FloorplanMarkersContext;
 import com.facilio.bmsconsoleV3.context.floorplan.V3IndoorFloorPlanContext;
 import com.facilio.bmsconsoleV3.context.floorplan.V3MarkerContext;
 import com.facilio.bmsconsoleV3.context.floorplan.V3MarkerdZonesContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.v3.context.Constants;
-import com.facilio.v3.context.V3Context;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.FieldFactory;
 
@@ -29,12 +24,8 @@ import com.facilio.modules.FieldFactory;
 import org.apache.commons.chain.Context;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class SerializeCommand extends FacilioCommand {
 
@@ -113,18 +104,14 @@ public class SerializeCommand extends FacilioCommand {
 						SelectRecordsBuilder deskbuilder = new SelectRecordsBuilder()
 						.module(deskModule).select(fields)
 						.beanClass(V3DeskContext.class)
-						.andCondition(CriteriaAPI.getCondition("Desks.ID", "id", String.valueOf(id), NumberOperators.EQUALS))
+						.andCondition(CriteriaAPI.getIdCondition(id, deskModule))
 						.fetchSupplements(supplements);
 
-						List<V3DeskContext> desks = deskbuilder.get();
-						for (V3DeskContext desk : desks) {
+						V3DeskContext desk = (V3DeskContext) deskbuilder.fetchFirst();
+						if(desk != null) {
 							marker.setDesk(desk);
-
 						}
 					}
-           			// V3DeskContext desk;
-					// desk = (V3DeskContext) V3RecordAPI.getRecord(deskModule.getName(), marker.getRecordId(),V3DeskContext.class);
-					// marker.setDesk(desk);
            		 }
            		 else {
            			ModuleBaseWithCustomFields record =  V3RecordAPI.getRecord(recordModule.getName(), marker.getRecordId());
