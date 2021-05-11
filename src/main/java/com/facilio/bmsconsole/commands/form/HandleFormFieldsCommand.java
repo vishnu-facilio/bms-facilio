@@ -22,6 +22,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.BaseLookupField;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 
 public class HandleFormFieldsCommand extends FacilioCommand {
 	
@@ -91,8 +92,8 @@ public class HandleFormFieldsCommand extends FacilioCommand {
 	
 	private void setLookupName(FormField formField, String moduleName, boolean isFromBuilder) throws Exception {
 		FacilioField field = formField.getField();
-		if (field != null && field instanceof BaseLookupField) {
-			if (!isFromBuilder && formField.getConfig() != null) {
+		if ((field != null && field instanceof BaseLookupField && !isFromBuilder) || (formField.getDisplayTypeEnum() == FieldDisplayType.LOOKUP_SIMPLE)) {
+			if (formField.getConfig() != null) {
 				JSONObject config = formField.getConfig();
 				boolean filterEnabled = (boolean) config.getOrDefault("isFiltersEnabled", false);
 				if (filterEnabled) {

@@ -21,6 +21,8 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.util.FacilioUtil;
+import com.facilio.accounts.dto.AppDomain.AppDomainType;
+import com.facilio.accounts.util.AccountUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -138,6 +140,17 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 		if(scopeCriteria != null && !scopeCriteria.isEmpty())
 		{
 			builder.andCriteria(scopeCriteria);
+		}
+		
+		//TODO remove here and handle in select builder always
+		boolean checkPermission = (boolean) context.getOrDefault("checkPermission", false);
+		if (checkPermission) {
+			if (AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomainType.FACILIO && AccountUtil.getCurrentUser().getRole() != null) {
+				Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria(moduleName, "read");
+				if (permissionCriteria != null) {
+					builder.andCriteria(permissionCriteria);
+				}
+			}
 		}
 		
 		Criteria clientFilterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA);

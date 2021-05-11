@@ -764,6 +764,8 @@ public class ExportUtil {
 			context.put(ContextNames.SKIP_MODULE_CRITERIA, true);
 		}
 		
+		context.put("checkPermission", true);
+		
 		FacilioChain moduleListChain = ReadOnlyChainFactory.fetchModuleDataListChain();
 		moduleListChain.execute(context);
 
