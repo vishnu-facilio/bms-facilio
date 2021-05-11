@@ -1,15 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.RecordAPI;
@@ -31,6 +21,15 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.util.FacilioUtil;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GenericGetModuleDataListCommand extends FacilioCommand {
 	private static final Logger LOGGER = LogManager.getLogger(GenericGetModuleDataListCommand.class.getName());
@@ -126,7 +125,7 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 		}
 		
 		List<SupplementRecord> supplementFields = (List<SupplementRecord>) context.get(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS);
-        if (CollectionUtils.isNotEmpty(supplementFields)) {
+        if (CollectionUtils.isNotEmpty(supplementFields) && !fetchCount) {
         		builder.fetchSupplements(supplementFields);
         }
 		
