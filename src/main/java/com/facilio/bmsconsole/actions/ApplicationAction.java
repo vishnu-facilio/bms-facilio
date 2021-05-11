@@ -109,10 +109,23 @@ public class ApplicationAction extends FacilioAction {
 		this.fetchAllLayouts = fetchAllLayouts;
 	}
 
+	private Boolean addLayout = false;
+
+	public Boolean getAddLayout() {
+		return addLayout;
+	}
+
+	public void setAddLayout(Boolean addLayout) {
+		this.addLayout = addLayout;
+	}
+
+
 	public String addOrUpdateApplication() throws Exception {
 		FacilioChain chain = TransactionChainFactory.getAddOrUpdateApplication();
 		FacilioContext context = chain.getContext();
 		context.put(FacilioConstants.ContextNames.APPLICATION, application);
+		context.put(FacilioConstants.ContextNames.ADD_APPLICATION_LAYOUT, getAddLayout());
+
 		chain.execute();
 		return SUCCESS;
 	}

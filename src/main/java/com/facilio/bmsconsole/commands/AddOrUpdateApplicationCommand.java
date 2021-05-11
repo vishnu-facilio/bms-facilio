@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.bmsconsole.context.ApplicationLayoutContext;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
@@ -22,6 +23,7 @@ public class AddOrUpdateApplicationCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		ApplicationContext application = (ApplicationContext) context.get(FacilioConstants.ContextNames.APPLICATION);
+		Boolean addLayout = (Boolean) context.getOrDefault(FacilioConstants.ContextNames.ADD_APPLICATION_LAYOUT, false);
 
 		if (application != null) {
 			application.setIsDefault(false);
@@ -29,6 +31,11 @@ public class AddOrUpdateApplicationCommand extends FacilioCommand {
 				update(FieldUtil.getAsProperties(application), ModuleFactory.getApplicationModule(), FieldFactory.getApplicationFields(), application.getId());
 			} else {
 				add(FieldUtil.getAsProperties(application), ModuleFactory.getApplicationModule(), FieldFactory.getApplicationFields());
+				if(addLayout != null && addLayout) {
+					ApplicationContext app = ApplicationApi.getApplicationForLinkName(application.getLinkName());
+					ApplicationLayoutContext layout = new ApplicationLayoutContext(app.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.WEB, app.getLinkName());
+					ApplicationApi.addApplicationLayout(layout);
+				}
 			}
 
 		}

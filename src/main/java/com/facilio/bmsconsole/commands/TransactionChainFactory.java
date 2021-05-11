@@ -5278,7 +5278,7 @@ public class TransactionChainFactory {
 
 		return c;
 	}
-	
+
 	public static FacilioChain addTenantContactChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForTenantContact());
@@ -5287,6 +5287,10 @@ public class TransactionChainFactory {
 		c.addCommand(new GenericAddModuleDataListCommand());
 		c.addCommand(new UpdatePeoplePrimaryContactCommand());
 		c.addCommand(new UpdateTenantAppPortalAccessCommand());
+		c.addCommand(new ExecuteStateFlowCommand());
+		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.MODULE_RULE));
+		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+
 
 		return c;
 	}
@@ -5326,6 +5330,10 @@ public class TransactionChainFactory {
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		c.addCommand(new UpdatePeoplePrimaryContactCommand());
 		c.addCommand(new UpdateTenantAppPortalAccessCommand());
+		c.addCommand(new UpdateStateForModuleDataCommand());
+		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.MODULE_RULE));
+		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+
 		return c;
 	}
 	
