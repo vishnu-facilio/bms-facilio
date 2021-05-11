@@ -30,8 +30,8 @@ public class ServiceRequestPageFactory extends PageFactory {
             detailsWidget.addToLayoutParams(tab1Sec1, 6, 24);
             detailsWidget.addToWidgetParams("hideBg", true);
             tab1Sec1.addWidget(detailsWidget);
-
-            Page.Tab tab2 = page.new Tab("Comments & Attachments");
+            String tab2Title = AccountUtil.getCurrentUser().isPortalUser() ? "Attachments" : "Comments & Attachments";
+            Page.Tab tab2 = page.new Tab(tab2Title);
             page.addTab(tab2);
 
             Page.Section tab2sec1 = page.new Section();
@@ -39,7 +39,11 @@ public class ServiceRequestPageFactory extends PageFactory {
             HashMap<String, String> titleMap = new HashMap<>();
             titleMap.put("notes", "Comment");
             titleMap.put("documents", "Attachment");
-            addCommonSubModuleWidget(tab2sec1, module, record, titleMap, false);
+            if (AccountUtil.getCurrentUser().isPortalUser()) {
+                addCommonSubModuleWidget(tab2sec1, module, record, titleMap, false, PageWidget.WidgetType.ATTACHMENT);
+            } else {
+                addCommonSubModuleWidget(tab2sec1, module, record, titleMap, false);
+            }
             if (!AccountUtil.getCurrentUser().isPortalUser()) {
                 Page.Tab tab3 = page.new Tab("related list");
                 Page.Section tab3Sec1 = page.new Section();

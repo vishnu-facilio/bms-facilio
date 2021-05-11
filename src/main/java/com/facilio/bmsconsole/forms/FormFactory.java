@@ -2562,12 +2562,11 @@ public class FormFactory {
 		fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 3, 1));
-		fields.add(new FormField("resource", FieldDisplayType.WOASSETSPACECHOOSER, "Space/Asset", Required.OPTIONAL, 4, 1));
-		fields.add(new FormField("assignment", FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", Required.OPTIONAL, 5, 1));
-		fields.add(new FormField("urgency", FieldDisplayType.LOOKUP_SIMPLE, "Urgency", Required.OPTIONAL, "servicerequestpriority", 6, 1));
-		fields.add(new FormField("classification", FieldDisplayType.SELECTBOX, "Classification", Required.OPTIONAL, "classification" , 7, 1));
-		fields.add(new FormField("requestType", FieldDisplayType.SELECTBOX, "Request Type", Required.OPTIONAL, "requestType" , 8, 1));
-		fields.add(new FormField("ratingVal", FieldDisplayType.NUMBER, "Rating", Required.OPTIONAL, 9, 1));
+		fields.add(new FormField("requester", FieldDisplayType.LOOKUP_SIMPLE, "Requester", Required.REQUIRED, "people" , 4, 1));
+		fields.add(new FormField("resource", FieldDisplayType.WOASSETSPACECHOOSER, "Space/Asset", Required.OPTIONAL, 5, 1));
+		fields.add(new FormField("assignment", FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", Required.OPTIONAL, 6, 1));
+		fields.add(new FormField("urgency", FieldDisplayType.LOOKUP_SIMPLE, "Urgency", Required.OPTIONAL, "servicerequestpriority", 7, 1));
+		fields.add(new FormField("classification", FieldDisplayType.SELECTBOX, "Classification", Required.OPTIONAL, "classification" , 8, 1));
 		return fields;
 	}
 
