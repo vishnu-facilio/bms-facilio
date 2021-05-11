@@ -12,12 +12,21 @@ import com.facilio.modules.FacilioModule;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ServiceCatalogContext implements Serializable, FormInterface {
+	
+	
+	private long appId = -1;
 
     private long id = -1;
     public long getId() {
         return id;
     }
-    public void setId(long id) {
+    public long getAppId() {
+		return appId;
+	}
+	public void setAppId(long appId) {
+		this.appId = appId;
+	}
+	public void setId(long id) {
         this.id = id;
     }
 

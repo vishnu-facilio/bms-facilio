@@ -86,11 +86,21 @@ public class ServiceCatalogAction extends FacilioAction {
     public void setServiceCatalogGroupOrderBy(Boolean serviceCatalogGroupOrderBy) {
         this.serviceCatalogGroupOrderBy = serviceCatalogGroupOrderBy;
     }
+    
+    public long getAppId() {
+		return appId;
+	}
+	public void setAppId(long appId) {
+		this.appId = appId;
+	}
+
+	private long appId = -1;
 
     public String getServiceCatalogList() throws Exception {
         FacilioChain chain = ReadOnlyChainFactory.getServiceCatalogListChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.GROUP_ID, groupId);
+        context.put(FacilioConstants.ContextNames.APP_ID, appId);
         if (fetchComplaintType != null) {
         		context.put(FacilioConstants.ContextNames.FETCH_COMPLAINT_TYPE, fetchComplaintType);
         }

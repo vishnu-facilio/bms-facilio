@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -11,10 +12,13 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.ServiceCatalogContext;
 import com.facilio.bmsconsole.context.ServiceCatalogGroupContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsole.util.ServiceCatalogApi;
 import com.facilio.chain.FacilioChain;
@@ -37,6 +41,11 @@ public class GetAllServiceCatalogCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         long groupId = (long) context.get(FacilioConstants.ContextNames.GROUP_ID);
+        long appId = (long) context.get(FacilioConstants.ContextNames.APP_ID);
+        if (appId < 0) {
+			ApplicationContext app = AccountUtil.getCurrentApp();
+			appId = app.getId();			
+		}
         Boolean fetchComplaintType = (Boolean) context.get(FacilioConstants.ContextNames.FETCH_COMPLAINT_TYPE);
         Boolean serviceCatalogGroupOrderBy = (Boolean) context.get(FacilioConstants.ContextNames.SERVICE_CATALOG_GROUP_ORDER_BY);
 
@@ -48,6 +57,10 @@ public class GetAllServiceCatalogCommand extends FacilioCommand {
 
         if (groupId > 0) {
             builder.andCondition(CriteriaAPI.getCondition("GROUP_ID", "groupId", String.valueOf(groupId), NumberOperators.EQUALS));
+        }
+        
+        if (appId > 0) {
+            builder.andCondition(CriteriaAPI.getCondition("APP_ID", "appId", String.valueOf(appId), NumberOperators.EQUALS));
         }
 
         JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);

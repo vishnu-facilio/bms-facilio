@@ -8641,6 +8641,7 @@ public class FieldFactory {
         fields.add(getField("moduleId", "MODULEID", module, FieldType.NUMBER));
         fields.add(getField("formId", "FORM_ID", module, FieldType.NUMBER));
         fields.add(getField("externalURL", "EXTERNAL_URL", module, FieldType.STRING));
+        fields.add(getField("appId", "APP_ID", module, FieldType.NUMBER));
 
         return fields;
     }
