@@ -127,7 +127,9 @@ public class FormTemplate extends Template {
 	private boolean handleValue(JSONObject jsonObj, FormField field) throws Exception {
 		Object value = field.getValue();
 		if (field.getField() != null && field.getField().getDataTypeEnum() == FieldType.LOOKUP) {
-			jsonObj.put(field.getName(), getEmptyLookedUpProp(value));
+			if(value != null && !value.equals("{}")) {
+				jsonObj.put(field.getName(), getEmptyLookedUpProp(value));
+			}
 			return true;
 		}
 		
@@ -135,16 +137,27 @@ public class FormTemplate extends Template {
 			case ContextNames.WORK_ORDER:{
 				return handleWorkOrderValue(jsonObj, field);
 			}
+			case ContextNames.SERVICE_REQUEST:{
+				return handleServiceRequestValue(jsonObj, field);
+			}
 		}
 		
 		return false;
 	}
 	
+	private boolean handleServiceRequestValue(JSONObject jsonObj, FormField field) throws Exception {
+		// TODO Auto-generated method stub
+		
+		if(handleAssignmentValue(jsonObj, field)) {
+			return true;
+		}
+		return false;
+	}
 	private Map<String, Object> getEmptyLookedUpProp(Object id) {
 		return Collections.singletonMap("id", id);
 	}
 	
-	private boolean handleWorkOrderValue(JSONObject jsonObj, FormField field) throws Exception {
+	public boolean handleAssignmentValue(JSONObject jsonObj2, FormField field) throws Exception {
 		if (field.getName().equals("assignment")) {
 			JSONObject assignmentObj = FacilioUtil.parseJson(field.getValue().toString());
 			JSONObject assignedTo = (JSONObject) assignmentObj.get("assignedTo");
@@ -157,7 +170,16 @@ public class FormTemplate extends Template {
 			}
 			return true;
 		}
-		else if (field.getName().equals(ContextNames.TASK_LIST)) {
+		return false;
+	}
+	
+	private boolean handleWorkOrderValue(JSONObject jsonObj, FormField field) throws Exception {
+		
+		if(handleAssignmentValue(jsonObj, field)) {
+			return true;
+		}
+		
+		if (field.getName().equals(ContextNames.TASK_LIST)) {
 			JobPlanContext jobPlan = JobPlanApi.getJobPlan(Long.parseLong(field.getValue().toString()));
 			jsonObj.put("taskList", FieldUtil.getAsJSON(jobPlan.getTasks()));
 			return true;
