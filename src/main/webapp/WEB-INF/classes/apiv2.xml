@@ -126,6 +126,22 @@
 		<action name="getMainEnergyMeters" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="getAllMainEnergyMeters">
 		</action>
+
+		<action name="createSecurityPolicy" class="com.facilio.bmsconsole.actions.SecurityPoliciesSettingsAction"
+				method="createSecurityPolicy">
+		</action>
+
+		<action name="updateSecurityPolicy" class="com.facilio.bmsconsole.actions.SecurityPoliciesSettingsAction"
+				method="updateSecurityPolicy">
+		</action>
+
+		<action name="getSecurityPolicy" class="com.facilio.bmsconsole.actions.SecurityPoliciesSettingsAction"
+				method="fetchSecurityPolicy">
+		</action>
+
+		<action name="getAllSecurityPolicies" class="com.facilio.bmsconsole.actions.SecurityPoliciesSettingsAction"
+				method="getAllSecurityPolicy">
+		</action>
 		
 		<action name="validateInviteLink" class="com.facilio.auth.actions.FacilioAuthAction"
 			method="validateInviteLink">

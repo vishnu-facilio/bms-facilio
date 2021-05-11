@@ -20,6 +20,7 @@ import javax.transaction.TransactionManager;
 import com.facilio.accounts.dto.*;
 import com.facilio.accounts.sso.AccountSSO;
 import com.facilio.accounts.sso.SSOUtil;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.operators.*;
 import com.facilio.db.util.DBConf;
 import com.facilio.iam.accounts.context.SecurityPolicy;

@@ -1,11 +1,16 @@
 package com.facilio.iam.accounts.context;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
+import java.util.List;
 
 @Data
-public class SecurityPolicy {
+@NoArgsConstructor
+public class SecurityPolicy implements Serializable {
     private String name;
-    private long id = -1l;
+    private long id = -1L;
     private Boolean isDefault;
     private Boolean isTOTPEnabled;
     private Boolean isMOTPEnabled;
@@ -19,4 +24,6 @@ public class SecurityPolicy {
     private Boolean isWebSessManagementEnabled;
     private Integer webSessLifeTime;
     private Integer idleSessionTimeOut;
+    private List<Long> users;
+    private long orgId = -1L;
 }
