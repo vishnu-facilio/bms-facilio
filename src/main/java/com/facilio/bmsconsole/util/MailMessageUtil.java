@@ -238,6 +238,7 @@ public class MailMessageUtil {
     			.moduleName(MailMessageUtil.EMAIL_TO_MODULE_DATA_MODULE_NAME)
     			.andCondition(CriteriaAPI.getCondition(fieldMap.get("recordId"), ""+recordId, NumberOperators.EQUALS))
     			.andCondition(CriteriaAPI.getCondition(fieldMap.get("dataModuleId"), ""+moduleId, NumberOperators.EQUALS))
+    			.fetchSupplements(getMailMessageSupliments())
     			;
     	
     	List<EmailToModuleDataContext> emailToModuleDatas = select.get();
