@@ -5,6 +5,7 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.context.ServiceRequestContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -47,6 +48,14 @@ public class ServiceRequestPageFactory extends PageFactory {
                 if (CollectionUtils.isNotEmpty(tab3Sec1.getWidgets())) {
                     page.addTab(tab3);
                 }
+                Page.Tab tab4 = page.new Tab("Activity");
+                page.addTab(tab4);
+                Page.Section tab4Sec1 = page.new Section();
+                tab4.addSection(tab4Sec1);
+                PageWidget activityWidget = new PageWidget(PageWidget.WidgetType.ACTIVITY);
+                activityWidget.addToLayoutParams(tab4Sec1, 24, 3);
+                activityWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.SERVICE_REQUEST_ACTIVITY);
+                tab4Sec1.addWidget(activityWidget);
             }
 
             return page;
