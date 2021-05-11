@@ -359,6 +359,7 @@ public class MailMessageUtil {
     public static long createRecordToMailModule(SupportEmailContext supportMail, Message rawEmail) throws Exception {
         BaseMailMessageContext mailMessage = BaseMailMessageContext.instance(rawEmail);
         mailMessage.setParentId(supportMail.getId());
+        mailMessage.setSiteId(supportMail.getSiteId());
         Map<String, List<Map<String, Object>>> attachments = new HashMap<>();
         if (mailMessage.getAttachmentsList().size() > 0) {
             attachments.put("mailAttachments", mailMessage.getAttachmentsList());
