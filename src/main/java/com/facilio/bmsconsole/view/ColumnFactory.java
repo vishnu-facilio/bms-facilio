@@ -239,6 +239,8 @@ public class ColumnFactory {
 		columnMap.put(FacilioConstants.ContextNames.DEPARTMENT + "-default", getDefaultDepartmentColumns());
 		columnMap.put(FacilioConstants.ContextNames.MOVES + "-default", getDefaultMovesColumns());
 		columnMap.put(FacilioConstants.ContextNames.DELIVERIES + "-default", getDefaultDeliveriesColumns());
+		columnMap.put(FacilioConstants.ContextNames.LOCKERS + "-default", getDefaultLockersColumns());
+		columnMap.put(FacilioConstants.ContextNames.PARKING_STALL + "-default", getDefaultParkingStallColumns());
 		
 		// Community Features
 		columnMap.put("announcement-default", getDefaultAnnouncementColumns());
@@ -1792,11 +1794,34 @@ public class ColumnFactory {
 	
 	private static List<ViewField> getDefaultDeliveriesColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
-		columns.add(new ViewField("employee", "Employee"));
-		columns.add(new ViewField("department", "Department"));
-		columns.add(new ViewField("site", "Site"));
+		columns.add(new ViewField("employee", "Recipient"));
 		columns.add(new ViewField("receivedTime", "Received Time"));
 		columns.add(new ViewField("deliveredTime", "Delivered Time"));
+		columns.add(new ViewField("deliveryArea", "deliveryArea"));
+
+		return columns;
+
+	}
+	
+	private static List<ViewField> getDefaultLockersColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Lockers"));
+		columns.add(new ViewField("building", "Building"));
+		columns.add(new ViewField("area", "Total Area"));
+		columns.add(new ViewField("isOccupied", "Occupancy Status"));
+		columns.add(new ViewField("employee", "Employee"));
+
+		return columns;
+
+	}
+	
+	private static List<ViewField> getDefaultParkingStallColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Parking Stall"));
+		columns.add(new ViewField("building", "Building"));
+		columns.add(new ViewField("area", "Total Area"));
+		columns.add(new ViewField("isOccupied", "Occupancy Status"));
+		columns.add(new ViewField("parkingType", "Parking Type"));
 
 		return columns;
 

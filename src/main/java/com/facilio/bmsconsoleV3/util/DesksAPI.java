@@ -28,7 +28,10 @@ public class DesksAPI {
     	List<FacilityContext> existingFacilities = FacilityAPI.getFacilityList(desk.getId(),deskModule.getModuleId());
     	
 		if(existingFacilities != null && !existingFacilities.isEmpty()) {
-			List<Long> ids = new ArrayList(existingFacilities);
+			List<Long> ids = new ArrayList<>();
+            for (FacilityContext ef : existingFacilities) {
+                ids.add(ef.getId());
+            }
 			if(desk.getDeskType() != 3) {
 				DeleteRecordBuilder<FacilityContext> deleteBuilder = new DeleteRecordBuilder<FacilityContext>()
                         .module(facilityModule)
@@ -129,7 +132,10 @@ public static void AddorDeleteFacilityForSpace(V3MarkerdZonesContext zone) throw
     	List<FacilityContext> existingFacilities = FacilityAPI.getFacilityList(space.getId(),spaceModule.getModuleId());
     	
 		if(existingFacilities != null && !existingFacilities.isEmpty()) {
-			List<Long> ids = new ArrayList(existingFacilities);
+			List<Long> ids = new ArrayList<>();
+            for (FacilityContext ef : existingFacilities) {
+                ids.add(ef.getId());
+            }
 			if(!zone.isIsReservable()) {
 				DeleteRecordBuilder<FacilityContext> deleteBuilder = new DeleteRecordBuilder<FacilityContext>()
                         .module(facilityModule)

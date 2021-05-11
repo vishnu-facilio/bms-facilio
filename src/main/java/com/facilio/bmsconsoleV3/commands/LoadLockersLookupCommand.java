@@ -28,6 +28,8 @@ public class LoadLockersLookupCommand extends FacilioCommand {
         List<LookupField> additionaLookups = new ArrayList<LookupField>();
         LookupField employeeField = (LookupField) fieldsAsMap.get("employee");
         additionaLookups.add(employeeField);
+		LookupField siteField = (LookupField) fieldsAsMap.get("site");
+		additionaLookups.add(siteField);
         LookupField buildingField = (LookupField) fieldsAsMap.get("building");
         additionaLookups.add(buildingField);
         LookupField floorField = (LookupField) fieldsAsMap.get("floor");
