@@ -177,6 +177,7 @@ public abstract class EmailClient {
                 }
                 attachment.setDataHandler(new DataHandler(fileDataSource));
                 attachment.setFileName(file.getKey());
+                attachment.setHeader("Content-ID", "<"+file.getKey()+">");
                 messageContent.addBodyPart(attachment);
             }
         }

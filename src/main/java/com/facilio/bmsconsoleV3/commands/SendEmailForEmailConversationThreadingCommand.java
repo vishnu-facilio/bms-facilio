@@ -102,9 +102,11 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 		if(attachments != null && !attachments.isEmpty()) {
 			files = new HashMap<String, String>();
 			for(AttachmentV3Context attachment : attachments) {
-				attachment.getFileUrl();
-				
-				files.put(attachment.getFileFileName(), attachment.getFileDownloadUrl());
+				String fileName = attachment.getFileFileName();
+				if(attachment.getDatum("contentId") != null) {
+					fileName = (String) attachment.getDatum("contentId");
+				}
+				files.put(fileName, attachment.getFileDownloadUrl());
 			}
 		}
 		
