@@ -33,6 +33,7 @@ import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class GenericGetModuleDataListCommand extends FacilioCommand {
 	private static final Logger LOGGER = LogManager.getLogger(GenericGetModuleDataListCommand.class.getName());
@@ -146,13 +147,7 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 		//TODO remove here and handle in select builder always
 		boolean checkPermission = (boolean) context.getOrDefault("checkPermission", false);
 		if (checkPermission) {
-			if (AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomainType.FACILIO && AccountUtil.getCurrentUser().getRole() != null) {
-				String permModName =  getModuleNameForPermission(moduleName);
-				Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria(permModName, "read");
-				if (permissionCriteria != null) {
-					builder.andCriteria(permissionCriteria);
-				}
-			}
+			setPermissionCriteria(moduleName, fields, builder);
 		}
 		
 		Criteria clientFilterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA);
@@ -227,11 +222,26 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 		return false;
 	}
 	
-	private String getModuleNameForPermission(String moduleName) {
+	private void setPermissionCriteria(String moduleName, List<FacilioField> fields, SelectRecordsBuilder builder) {
+		boolean isInventory = false;
 		if (InventoryApi.checkIfInventoryModule(moduleName)) {
-			return ContextNames.INVENTORY;
+			moduleName =  ContextNames.INVENTORY;
+			isInventory = true;
 		}
-		return moduleName;
+		
+		if (AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomainType.FACILIO && AccountUtil.getCurrentUser().getRole() != null) {
+			Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria(moduleName, "read");
+			if(permissionCriteria != null) {
+				if (isInventory && !moduleName.equals(ContextNames.STORE_ROOM)) {
+					Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+					FacilioField storeRoomField = fieldMap.get("storeRoom");
+					if (storeRoomField != null) {
+						builder.innerJoin("Store_room").on(storeRoomField.getCompleteColumnName()+"= Store_room.ID");
+					}
+				}
+				builder.andCriteria(permissionCriteria);
+			}
+		}
 	}
 
 }
