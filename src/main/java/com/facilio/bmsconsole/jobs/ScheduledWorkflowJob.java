@@ -34,11 +34,20 @@ public class ScheduledWorkflowJob extends FacilioJob{
 			ScheduledWorkflowContext scheduledWorkflowContext = WorkflowV2API.getScheduledWorkflowContext(id,true);
 			
 			if(scheduledWorkflowContext != null) {
-				List<ActionContext> actions = scheduledWorkflowContext.getActions();
-				if (CollectionUtils.isNotEmpty(actions)) {
-					for (ActionContext action : actions) {
-						FacilioContext context = new FacilioContext();
-						action.executeAction(null, context, null, null);
+				if(scheduledWorkflowContext.getWorkflowId() > 0)  {
+					WorkflowContext workflow = WorkflowUtil.getWorkflowContext(scheduledWorkflowContext.getWorkflowId());
+
+					FacilioChain chain = TransactionChainFactory.getExecuteWorkflowChain();
+					chain.getContext().put(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
+					chain.execute();
+				}
+				else {
+					List<ActionContext> actions = scheduledWorkflowContext.getActions();
+					if (CollectionUtils.isNotEmpty(actions)) {
+						for (ActionContext action : actions) {
+							FacilioContext context = new FacilioContext();
+							action.executeAction(null, context, null, null);
+						}
 					}
 				}
 
