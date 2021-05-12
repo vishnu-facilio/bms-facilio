@@ -59,8 +59,14 @@ public class ExecuteFormActionRulesCommand extends FacilioCommand {
 					
 					if (fieldObj.getField() != null && fieldObj.getField().getName() != null && cloneFormData.containsKey(fieldObj.getField().getName())) {
 						if (fieldObj.getDisplayTypeEnum() == FieldDisplayType.LOOKUP_SIMPLE) {
-							HashMap lookupData = (HashMap) cloneFormData.get(fieldObj.getField().getName());
-							long id = (long) lookupData.get("id");
+							long id = -1;
+							if (cloneFormData.get(fieldObj.getField().getName()) instanceof Long) {
+								id = (long) cloneFormData.get(fieldObj.getField().getName());	
+							}
+							else if (cloneFormData.get(fieldObj.getField().getName()) instanceof HashMap) {
+								 HashMap lookupData = (HashMap) cloneFormData.get(fieldObj.getField().getName());
+								 id = (long) lookupData.get("id");
+							}
 							if (id > 0) {
 								hasValue = true;
 							}
