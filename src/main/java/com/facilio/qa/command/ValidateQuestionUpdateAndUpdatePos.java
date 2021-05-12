@@ -28,7 +28,7 @@ public class ValidateQuestionUpdateAndUpdatePos extends FacilioCommand {
             for (QuestionContext question : list) {
                 QuestionContext oldQuestion = oldQuestionsMap.get(question.getId());
                 V3Util.throwRestException(question.getParent() != null && question.getParent().getId() > 0 && question.getParent().getId() != question.getParent().getId(), ErrorCode.VALIDATION_ERROR, "Cannot update parent template of question");
-                if (question.getPosition() != oldQuestion.getPosition() ||
+                if ((question.getPosition() != null && question.getPosition() != oldQuestion.getPosition()) ||
                         (question.getPage() != null && question.getPage().getId() > 0 && question.getPage().getId() != oldQuestion.getPage().getId())
                 ) {
                     V3Util.throwRestException(question.getPosition() <= 0, ErrorCode.VALIDATION_ERROR, "Invalid position for question");

@@ -325,6 +325,7 @@ public class AddQAndAModules extends SignUpData {
         fields.add(FieldFactory.getDefaultField("parentId", "Parent Id", "PARENT_ID", FieldType.NUMBER));
         fields.add(FieldFactory.getDefaultField("label", "Label", "LABEL", FieldType.STRING));
         fields.add(FieldFactory.getDefaultField("position", "Position", "POSITION_VAL", FieldType.NUMBER));
+        fields.add(FieldFactory.getDefaultField("other", "Is Other?", "IS_OTHER", FieldType.BOOLEAN));
 
         return fields;
     }

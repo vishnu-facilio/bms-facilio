@@ -19,4 +19,8 @@ public class MCQOptionContext extends V3Context {
     private Long parentId; // Not having it as lookup because this is not used in forms or anything. Also this means I can avoid the extra handling done for lookup since this won't be a separate list anyway
     private String label;
     private Integer position;
+    private Boolean other;
+    public boolean otherEnabled() {
+        return other == null ? false : other.booleanValue();
+    }
 }

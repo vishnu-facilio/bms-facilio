@@ -43,6 +43,7 @@ public class MCQHandler<Q extends BaseMCQContext> implements QuestionHandler<Q> 
     public void validateSave(List<Q> questions) throws Exception {
         for (BaseMCQContext question : questions) {
             V3Util.throwRestException(CollectionUtils.isEmpty(question.getOptions()) || question.getOptions().size() < 2, ErrorCode.VALIDATION_ERROR, "Minimum 2 options needed for MCQs");
+            V3Util.throwRestException(question.getOptions().stream().filter(MCQOptionContext::otherEnabled).count() > 1, ErrorCode.VALIDATION_ERROR, "Only one other option can be present");
         }
     }
 
@@ -59,6 +60,7 @@ public class MCQHandler<Q extends BaseMCQContext> implements QuestionHandler<Q> 
     public void validateUpdate(List<Q> questions) throws Exception {
         for (BaseMCQContext question : questions) {
             V3Util.throwRestException(question.getOptions() != null && question.getOptions().size() < 2, ErrorCode.VALIDATION_ERROR, "Minimum 2 options needed for MCQs");
+            V3Util.throwRestException(question.getOptions().stream().filter(MCQOptionContext::otherEnabled).count() > 1, ErrorCode.VALIDATION_ERROR, "Only one other option can be present");
         }
     }
 

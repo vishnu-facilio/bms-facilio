@@ -14,7 +14,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.text.MessageFormat;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class MCQMultiAnswerHandler extends AnswerHandler<MCQMultiAnswerContext> {
@@ -26,13 +28,10 @@ public class MCQMultiAnswerHandler extends AnswerHandler<MCQMultiAnswerContext> 
     public MCQMultiAnswerContext serialize(AnswerContext answer) {
         MCQMultiAnswerContext mcqMultiAnswer = new MCQMultiAnswerContext();
         MCQMultiAnswerContext.MCQMultiAnswer multiAnswer = new MCQMultiAnswerContext.MCQMultiAnswer();
-
-        if (CollectionUtils.isNotEmpty(answer.getMultiEnumAnswer())) { // Check is for handling answers only with 'other' option
-            multiAnswer.setSelected(answer.getMultiEnumAnswer().stream()
-                                        .map(MCQOptionContext::_getId)
-                                        .collect(Collectors.toSet()));
-        }
-        if ( StringUtils.isNotEmpty(((MCQMultiContext) answer.getQuestion()).getOtherOptionLabel()) ) {
+        multiAnswer.setSelected(answer.getMultiEnumAnswer().stream()
+                                    .map(MCQOptionContext::_getId)
+                                    .collect(Collectors.toSet()));
+        if ( StringUtils.isNotEmpty(answer.getEnumOtherAnswer()) )  { // Assumption is we'll validate option before adding and so not doing any check here
             multiAnswer.setOther(answer.getEnumOtherAnswer());
         }
         mcqMultiAnswer.setAnswer(multiAnswer);
@@ -43,51 +42,40 @@ public class MCQMultiAnswerHandler extends AnswerHandler<MCQMultiAnswerContext> 
     @Override
     public AnswerContext deSerialize(MCQMultiAnswerContext answer, QuestionContext question) throws Exception {
         MCQMultiContext mcqQuestion = (MCQMultiContext) question;
-        boolean isOther = isOther(mcqQuestion);
         Set<Long> selected = answer.getAnswer().getSelected();
-        V3Util.throwRestException(CollectionUtils.isEmpty(selected)
-                                                    && (!isOther || StringUtils.isEmpty(answer.getAnswer().getOther()))
-                                                    , ErrorCode.VALIDATION_ERROR, "At least one option need to be selected for MCQ");
+        V3Util.throwRestException(CollectionUtils.isEmpty(selected), ErrorCode.VALIDATION_ERROR, "At least one option need to be selected for MCQ");
         AnswerContext answerContext = new AnswerContext();
+        Map<Long, MCQOptionContext> optionMap = mcqQuestion.getOptions().stream().collect(Collectors.toMap(MCQOptionContext::_getId, Function.identity()));
         if (CollectionUtils.isNotEmpty(selected)) { // Check is for handling answers only with 'other' option
             answerContext.setMultiEnumAnswer(selected.stream()
-                    .map(id -> validateAndCreateMCQOption(id, mcqQuestion))
+                    .map(id -> validateAndReturnMCQOption(id, optionMap, answer, answerContext))
                     .collect(Collectors.toList()));
         }
         else {
             answerContext.setMultiEnumAnswer(Collections.emptyList()); // To handle deletion
         }
-        if (isOther) {
-            answerContext.setEnumOtherAnswer(answer.getAnswer().getOther());
-        }
-        else {
-            answer.getAnswer().setOther(null);
-        }
+        answer.getAnswer().setOther(answerContext.getEnumOtherAnswer()); // To have proper client response
         return answerContext;
     }
 
-    private boolean isOther (MCQMultiContext question) {
-        return StringUtils.isNotEmpty(question.getOtherOptionLabel());
-    }
-
     @SneakyThrows
-    private MCQOptionContext validateAndCreateMCQOption (Long selected, MCQMultiContext mcqQuestion) {
-        V3Util.throwRestException(selected != null && !mcqQuestion.getOptions().stream().anyMatch(o -> o._getId() == selected)
-                , ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid select option ({0}) is specified while adding MCQ Answer", selected));
+    private MCQOptionContext validateAndReturnMCQOption(Long selected, Map<Long, MCQOptionContext> optionMap, MCQMultiAnswerContext answer, AnswerContext answerContext) {
+        V3Util.throwRestException(selected == null, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid select option ({0}) is specified while adding MCQ Answer", selected));
+        MCQOptionContext option = optionMap.get(selected);
+        V3Util.throwRestException(option == null, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid select option ({0}) is specified while adding MCQ Answer", selected));
+        if (option.otherEnabled() && StringUtils.isNotEmpty(answer.getAnswer().getOther())) {
+            answerContext.setEnumOtherAnswer(answer.getAnswer().getOther());
+        }
         return new MCQOptionContext(selected);
     }
 
     @Override
     public boolean checkIfAnswerIsNull (AnswerContext answer) throws Exception {
-        return CollectionUtils.isEmpty(answer.getMultiEnumAnswer())
-                                    && (!isOther((MCQMultiContext) answer.getQuestion()) || StringUtils.isEmpty(answer.getEnumOtherAnswer()))
-                                    ;
+        return CollectionUtils.isEmpty(answer.getMultiEnumAnswer());
     }
 
     @Override
     public boolean checkIfAnswerIsNull (MCQMultiAnswerContext answer, QuestionContext question) throws Exception {
-        return CollectionUtils.isEmpty(answer.getAnswer().getSelected())
-                            && (isOther((MCQMultiContext) question) || StringUtils.isEmpty(answer.getAnswer().getOther()))
-                            ;
+        return CollectionUtils.isEmpty(answer.getAnswer().getSelected());
     }
 }

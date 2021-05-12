@@ -4,12 +4,15 @@ import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.AnswerHandler;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.client.answers.MCQSingleAnswerContext;
+import com.facilio.qa.context.questions.MCQOptionContext;
 import com.facilio.qa.context.questions.MCQSingleContext;
+import com.facilio.util.FacilioUtil;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.MessageFormat;
+import java.util.Optional;
 
 public class MCQSingleAnswerHandler extends AnswerHandler<MCQSingleAnswerContext> {
     public MCQSingleAnswerHandler(Class<MCQSingleAnswerContext> answerClass) {
@@ -21,7 +24,7 @@ public class MCQSingleAnswerHandler extends AnswerHandler<MCQSingleAnswerContext
         MCQSingleAnswerContext mcqSingleAnswer = new MCQSingleAnswerContext();
         MCQSingleAnswerContext.MCQAnswer mcqAnswer = new MCQSingleAnswerContext.MCQAnswer();
         mcqAnswer.setSelected(answer.getEnumAnswer());
-        if ( isOther((MCQSingleContext) answer.getQuestion()) )  {
+        if ( StringUtils.isNotEmpty(answer.getEnumOtherAnswer()) )  { // Assumption is we'll validate option before adding and so not doing any check here
             mcqAnswer.setOther(answer.getEnumOtherAnswer());
         }
         mcqSingleAnswer.setAnswer(mcqAnswer);
@@ -31,17 +34,13 @@ public class MCQSingleAnswerHandler extends AnswerHandler<MCQSingleAnswerContext
     @Override
     public AnswerContext deSerialize(MCQSingleAnswerContext answer, QuestionContext question) throws Exception {
         MCQSingleContext mcqQuestion = (MCQSingleContext) question;
-        boolean isOther = isOther(mcqQuestion);
         Long selected = answer.getAnswer().getSelected();
-        V3Util.throwRestException(selected == null
-                                                    && (!isOther || StringUtils.isEmpty(answer.getAnswer().getOther()))
-                , ErrorCode.VALIDATION_ERROR, "At least one option need to be selected for MCQ");
-        V3Util.throwRestException(selected != null && !mcqQuestion.getOptions().stream().anyMatch(o -> o._getId() == selected)
-                , ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid select option ({0}) is specified while adding MCQ Answer", selected));
+        V3Util.throwRestException(selected == null, ErrorCode.VALIDATION_ERROR, "At least one option need to be selected for MCQ");
+        Optional<MCQOptionContext> option = mcqQuestion.getOptions().stream().filter(o -> o._getId() == selected).findFirst();
+        V3Util.throwRestException(!option.isPresent(), ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid select option ({0}) is specified while adding MCQ Answer", selected));
         AnswerContext answerContext = new AnswerContext();
         answerContext.setEnumAnswer(selected);
-        if ( isOther && StringUtils.isNotEmpty(answer.getAnswer().getOther()) ) {
-            V3Util.throwRestException(selected != null, ErrorCode.VALIDATION_ERROR, "Only one option can be selected for MCQ");
+        if ( option.get().otherEnabled() && StringUtils.isNotEmpty(answer.getAnswer().getOther()) ) {
             answerContext.setEnumOtherAnswer(answer.getAnswer().getOther());
         }
         else {
@@ -50,18 +49,13 @@ public class MCQSingleAnswerHandler extends AnswerHandler<MCQSingleAnswerContext
         return answerContext;
     }
 
-    private boolean isOther (MCQSingleContext question) {
-        return StringUtils.isNotEmpty(question.getOtherOptionLabel());
-    }
-
     @Override
     public boolean checkIfAnswerIsNull (AnswerContext answer) throws Exception {
-        return answer.getEnumAnswer() == null && (!isOther((MCQSingleContext) answer.getQuestion()) || StringUtils.isEmpty(answer.getEnumOtherAnswer()));
+        return answer.getEnumAnswer() == null;
     }
 
     @Override
     public boolean checkIfAnswerIsNull (MCQSingleAnswerContext answer, QuestionContext question) throws Exception {
-        return answer.getAnswer().getSelected() == null
-                && (!isOther((MCQSingleContext) question) || StringUtils.isEmpty(answer.getAnswer().getOther()));
+        return answer.getAnswer().getSelected() == null;
     }
 }
