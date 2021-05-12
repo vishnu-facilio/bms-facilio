@@ -137,6 +137,7 @@ public class WorkflowRuleAPI {
 			case APPROVAL_STATE_TRANSITION:
 				ApprovalRulesAPI.addApproverRuleChildren((ApproverWorkflowRuleContext) rule);
 				AbstractStateTransitionRuleContext stateflowTransition = (AbstractStateTransitionRuleContext) rule;
+				StateFlowRulesAPI.addTimeFieldBasedTransition(stateflowTransition);
 				if (stateflowTransition.getDialogTypeEnum() != null && stateflowTransition.getDialogTypeEnum() == AbstractStateTransitionRuleContext.DialogType.MODULE) {
 					StateFlowRulesAPI.addOrUpdateFormDetails(stateflowTransition);
 				}

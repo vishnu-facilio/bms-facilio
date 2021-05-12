@@ -362,8 +362,10 @@ public class FacilioAction extends ActionSupport {
 		if (auditLog == null) {
 			return;
 		}
+		long orgId = AccountUtil.getCurrentOrg() != null ? AccountUtil.getCurrentOrg().getOrgId() : -1;
 		SessionManager.getInstance().sendMessage(new Message()
 				.setTopic(Topics.System.auditLogs)
+				.setOrgId(orgId)
 				.setContent(auditLog
 						.toJSON()
 				)

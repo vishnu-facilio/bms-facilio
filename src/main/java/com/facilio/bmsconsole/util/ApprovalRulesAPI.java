@@ -228,6 +228,7 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 		StateflowTransitionContext oldRule = (StateflowTransitionContext) getWorkflowRule(rule.getId());
 		updateWorkflowRuleWithChildren(rule);
 
+		StateFlowRulesAPI.addTimeFieldBasedTransition(rule);
 		updateApproverRule(oldRule, rule);
 
 		if (rule.getDialogTypeEnum() != null && rule.getDialogTypeEnum() == StateflowTransitionContext.DialogType.MODULE) {
