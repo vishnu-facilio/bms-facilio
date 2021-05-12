@@ -54,6 +54,7 @@ public class ExecuteFormActionRulesCommand extends FacilioCommand {
 			if (triggerType.equals(TriggerType.FORM_ON_LOAD) && formData != null && !formData.isEmpty()) {
 				List<FormRuleTriggerFieldContext> triggerFields = FormRuleAPI.getFormRuleTriggerFields(formRuleContext);
 				boolean hasValue = false;
+				if (triggerFields != null && !triggerFields.isEmpty()) {
 				for (FormRuleTriggerFieldContext triggerField : triggerFields) {					
 					FormField fieldObj = FormsAPI.getFormFieldFromId(triggerField.getFieldId());	
 					
@@ -84,6 +85,10 @@ public class ExecuteFormActionRulesCommand extends FacilioCommand {
 						
 					}				
 				}	
+			}
+				else {
+					hasValue = true;
+				}
 				if (hasValue) {
 					flag = formRuleContext.evaluateCriteria(formData, (FacilioContext)context);
 				}	
