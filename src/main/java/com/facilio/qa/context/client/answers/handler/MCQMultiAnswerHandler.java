@@ -1,11 +1,24 @@
 package com.facilio.qa.context.client.answers.handler;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.modules.BmsAggregateOperators;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.qa.QAndAUtil;
 import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.AnswerHandler;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.client.answers.MCQMultiAnswerContext;
 import com.facilio.qa.context.questions.MCQMultiContext;
 import com.facilio.qa.context.questions.MCQOptionContext;
+import com.facilio.time.DateRange;
+import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
 import lombok.SneakyThrows;
@@ -13,11 +26,10 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.MessageFormat;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class MCQMultiAnswerHandler extends AnswerHandler<MCQMultiAnswerContext> {
     public MCQMultiAnswerHandler(Class<MCQMultiAnswerContext> answerClass) {
@@ -77,5 +89,34 @@ public class MCQMultiAnswerHandler extends AnswerHandler<MCQMultiAnswerContext> 
     @Override
     public boolean checkIfAnswerIsNull (MCQMultiAnswerContext answer, QuestionContext question) throws Exception {
         return CollectionUtils.isEmpty(answer.getAnswer().getSelected());
+    }
+
+    @Override
+    public void setSummaryOfResponses(Long parentId, List<QuestionContext> questions, DateRange range) throws Exception {
+        ModuleBean modBean = Constants.getModBean();
+        FacilioModule module = modBean.getModule(FacilioConstants.QAndA.ANSWER);
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
+
+        FacilioModule relModule = modBean.getModule(FacilioConstants.QAndA.Answers.MCQ_MULTI_ANSWER_REL);
+        Map<String, FacilioField> relFieldMap = FieldFactory.getAsMap(modBean.getAllFields(relModule.getName()));
+
+        FacilioField questionField = fieldMap.get("question");
+        FacilioField enumField = relFieldMap.get("right");
+        Map<Long, QuestionContext> questionMap = questions.stream().collect(Collectors.toMap(QuestionContext::_getId, Function.identity()));
+
+        FacilioField idField = FieldFactory.getIdField(module);
+        List<Map<String, Object>> props = new SelectRecordsBuilder<AnswerContext>()
+                .module(module)
+                .innerJoin(relModule.getTableName())
+                .on(new StringJoiner("=").add(idField.getCompleteColumnName()).add(relFieldMap.get("left").getCompleteColumnName()).toString())
+                .select(Stream.of(questionField, enumField).collect(Collectors.toList()))
+                .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, idField)
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("parent"), String.valueOf(parentId), PickListOperators.IS))
+                .andCondition(CriteriaAPI.getCondition(questionField, questionMap.keySet(), PickListOperators.IS))
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("sysModifiedTime"), range.toString(), DateOperators.BETWEEN))
+                .groupBy(new StringJoiner(",").add(questionField.getCompleteColumnName()).add(enumField.getCompleteColumnName()).toString())
+                .getAsProps();
+
+        QAndAUtil.populateMCQSummary(props, questionMap, questionField, enumField, idField);
     }
 }

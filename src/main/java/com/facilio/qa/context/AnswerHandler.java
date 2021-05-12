@@ -1,6 +1,5 @@
 package com.facilio.qa.context;
 
-import com.facilio.qa.context.client.answers.BooleanAnswerContext;
 import com.facilio.time.DateRange;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,7 +25,7 @@ public abstract class AnswerHandler<A extends ClientAnswerContext> implements Se
         return answer.getAnswer() == null;
     }
 
-    public void setSummaryOfResponses (List<QuestionContext> questions, DateRange range) throws Exception {
+    public void setSummaryOfResponses(Long parentId, List<QuestionContext> questions, DateRange range) throws Exception {
 
     }
 

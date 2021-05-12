@@ -11,20 +11,22 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.PickListOperators;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.qa.command.QAndAReadOnlyChainFactory;
 import com.facilio.qa.context.PageContext;
 import com.facilio.qa.context.QuestionContext;
+import com.facilio.qa.context.questions.BaseMCQContext;
+import com.facilio.qa.context.questions.MCQOptionContext;
 import com.facilio.util.FacilioStreamUtil;
+import com.facilio.util.FacilioUtil;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.context.V3Context;
+import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.ChainUtil;
 import com.facilio.v3.util.ExtendedModuleUtil;
+import com.facilio.v3.util.V3Util;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -226,5 +228,36 @@ public class QAndAUtil {
                                 .get();
 
         return records;
+    }
+
+    public static void populateMCQSummary (List<Map<String, Object>> props, Map<Long, QuestionContext> questionMap, FacilioField questionField, FacilioField enumField, FacilioField idField) throws Exception {
+        if (CollectionUtils.isNotEmpty(props)) {
+            Map<Long, Map<Long, BaseMCQContext.OptionSummary>> summaryMap = new HashMap<>();
+            for (Map<String, Object> prop : props) {
+                Long questionId = (Long) ((Map<String, Object>) prop.get(questionField.getName())).get("id");
+                Long enumAnswer = enumField.getDataTypeEnum() == FieldType.NUMBER ? (Long) prop.get(enumField.getName()) : (Long) ((Map<String, Object>) prop.get(enumField.getName())).get("id");
+                BaseMCQContext mcq = (BaseMCQContext) questionMap.get(questionId);
+                double count = ((Number) prop.get(idField.getName())).doubleValue();
+                double total = mcq.getAnswered() == null ? 0 : mcq.getAnswered().doubleValue();
+                V3Util.throwRestException(total < count, ErrorCode.UNHANDLED_EXCEPTION, "Total answered cannot be less than individual mcq answer count. This is not supposed to happen");
+
+                BaseMCQContext.OptionSummary summary = new BaseMCQContext.OptionSummary(enumAnswer, FacilioUtil.roundOff(count / total * 100, 2), (int) count);
+                summaryMap.computeIfAbsent(questionId, k -> new HashMap<>()).put(enumAnswer, summary);
+            }
+
+            questionMap.values().forEach(q -> populateIndividualSummary((BaseMCQContext) q, summaryMap));
+        }
+    }
+
+    private static void populateIndividualSummary (BaseMCQContext question, Map<Long, Map<Long, BaseMCQContext.OptionSummary>> summaryMap) {
+        Map<Long, BaseMCQContext.OptionSummary> questionSummary = summaryMap.get(question._getId());
+        if (questionSummary != null) {
+            List<BaseMCQContext.OptionSummary> summaryList = new ArrayList<>();
+            for (MCQOptionContext option : question.getOptions()) {
+                BaseMCQContext.OptionSummary summary = questionSummary.get(option._getId());
+                summaryList.add(summary == null ? new BaseMCQContext.OptionSummary(option._getId(), 0d, 0) : summary);
+            }
+            question.setSummary(summaryList);
+        }
     }
 }

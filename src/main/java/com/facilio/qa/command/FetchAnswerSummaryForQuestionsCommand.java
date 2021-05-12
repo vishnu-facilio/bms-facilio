@@ -52,9 +52,10 @@ public class FetchAnswerSummaryForQuestionsCommand extends FacilioCommand {
                                                                                 .filter(this::isSummaryNeeded)
                                                                                 .collect(Collectors.toMap(QuestionContext::_getId, Function.identity()));
                         if (MapUtils.isNotEmpty(questions)) {
-                            fetchAnswered(questions, range, pages.get(0).getParent()._getId());
+                            Long parentId = pages.get(0).getParent()._getId();
+                            fetchAnswered(questions, range, parentId);
                             Map<QuestionType, List<QuestionContext>> questionTypeListMap = ExtendedModuleUtil.splitRecordsByType(questions.values(), QuestionContext::getQuestionType);
-                            questionTypeListMap.forEach((type, questionList) -> fetchSummaryViaHandler(type, questionList, range));
+                            questionTypeListMap.forEach((type, questionList) -> fetchSummaryViaHandler(type, parentId, questionList, range));
                         }
 
                     }
@@ -82,10 +83,10 @@ public class FetchAnswerSummaryForQuestionsCommand extends FacilioCommand {
     }
 
     @SneakyThrows
-    private void fetchSummaryViaHandler (QuestionType type, List<QuestionContext> questions, DateRange range) {
+    private void fetchSummaryViaHandler (QuestionType type, Long parentId, List<QuestionContext> questions, DateRange range) {
         AnswerHandler handler = type.getAnswerHandler();
         if (handler != null) {
-            handler.setSummaryOfResponses(questions, range);
+            handler.setSummaryOfResponses(parentId, questions, range);
         }
     }
 
