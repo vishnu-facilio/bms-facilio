@@ -427,12 +427,53 @@ public class MailMessageUtil {
                     File file = File.createTempFile(fileName, "");
                     FileUtils.copyInputStreamToFile(bodyPart.getInputStream(), file);
                     attachmentObject.put("file", file);
+                    attachmentObject.put("type", 1);
+                    attachmentObject.put("contentId", getFirstMessageId.apply(bodyPart.getContentID()));
                     
                     attachmentsList.add(attachmentObject);
                 }
             }
             
         }
+        return attachmentsList;
+    }
+    
+    public static List<Map<String, Object>> getInlineImages(Message message,List<Map<String, Object>> attachmentsList) throws Exception {
+        attachmentsList = attachmentsList == null ? new ArrayList<>() : attachmentsList;
+        if (message.isMimeType("multipart/*")) {
+        	MimeMultipart mimeMultipart = (MimeMultipart) message.getContent();
+        	getInlineImages(mimeMultipart, attachmentsList);
+        }
+        
+        return attachmentsList;
+    }
+    public static List<Map<String, Object>> getInlineImages(MimeMultipart mimeMultipart,List<Map<String, Object>> attachmentsList) throws Exception {
+        
+            
+        int partCount = mimeMultipart.getCount();
+        for (int i = 0; i < partCount; i++) {
+            MimeBodyPart bodyPart = (MimeBodyPart) mimeMultipart.getBodyPart(i);
+            if (Part.INLINE.equalsIgnoreCase(bodyPart.getDisposition())) {
+                String fileName = bodyPart.getFileName();
+                MimeMessage attachmentMessage = new MimeMessage(null, bodyPart.getInputStream());
+                MimeMessageParser parser = new MimeMessageParser(attachmentMessage);
+                parser.parse();
+                Map<String, Object> attachmentObject = new HashMap<>();
+                attachmentObject.put("fileFileName", bodyPart.getFileName());
+                attachmentObject.put("fileContentType", bodyPart.getContentType());
+                File file = File.createTempFile(fileName, "");
+                FileUtils.copyInputStreamToFile(bodyPart.getInputStream(), file);
+                attachmentObject.put("file", file);
+                attachmentObject.put("type", 2);
+                attachmentObject.put("contentId", getFirstMessageId.apply(bodyPart.getContentID()));
+                
+                attachmentsList.add(attachmentObject);
+            }
+            else if (bodyPart.getContent() instanceof MimeMultipart){
+            	getInlineImages(((MimeMultipart) bodyPart.getContent()),attachmentsList);
+            }
+        }
+            
         return attachmentsList;
     }
     

@@ -2068,6 +2068,9 @@ public enum ActionType {
              attachmentObject.put("fileFileName", fileInfo.getFileName());
              attachmentObject.put("fileContentType", fileInfo.getContentType());
              attachmentObject.put("file", file);
+             attachmentObject.put("type", attachment.getDatum("type"));
+             attachmentObject.put("contentId", attachment.getDatum("contentId"));
+
 			
 			newAttachments.add(attachmentObject);
 		}

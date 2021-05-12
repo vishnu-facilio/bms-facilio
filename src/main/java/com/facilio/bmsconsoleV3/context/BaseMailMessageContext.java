@@ -109,7 +109,7 @@ public class BaseMailMessageContext extends V3Context {
             	mailContext.setHtmlContent(htmlContentString);
             }
             
-            String  textContentString = MailMessageUtil.getContentFromMessage(message, MailMessageUtil.TEXT_CONTENT_TYPE);
+            String textContentString = MailMessageUtil.getContentFromMessage(message, MailMessageUtil.TEXT_CONTENT_TYPE);
             
             if(textContentString != null) {
             	try {
@@ -123,6 +123,8 @@ public class BaseMailMessageContext extends V3Context {
             }
             
             List<Map<String, Object>> attachments = MailMessageUtil.getAttachments(message);
+            
+            MailMessageUtil.getInlineImages(message, attachments);
             
             if(!CollectionUtils.isNullOrEmpty(attachments)) {
             	mailContext.setAttachmentsList(attachments);
