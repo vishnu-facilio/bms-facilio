@@ -253,6 +253,22 @@
         </action>
     </package>
 
+    <package name="qandaQuestionAnswers" namespace="/api/v3/qanda/questions/fetchanswers" extends="v3Api">
+        <action name="*"
+                class="com.facilio.qa.actions.QAndAAction"
+                method="fetchAnswers">
+            <param name="questionId">{1}</param>
+        </action>
+    </package>
+
+    <package name="qandaQuestionOtherOptions" namespace="/api/v3/qanda/questions/fetchotheroptions" extends="v3Api">
+        <action name="*"
+                class="com.facilio.qa.actions.QAndAAction"
+                method="fetchOtherOptions">
+            <param name="questionId">{1}</param>
+        </action>
+    </package>
+
     <package name="qandaAnswers" namespace="/api/v3/qanda/answers" extends="v3Api">
         <action name="save"
                 class="com.facilio.qa.actions.QAndAAction"

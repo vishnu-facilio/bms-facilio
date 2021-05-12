@@ -26,8 +26,9 @@ public class SerializeAnswersCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         List<AnswerContext> answers = Constants.getRecordList((FacilioContext) context);
         if (CollectionUtils.isNotEmpty(answers)) {
+            boolean isSingleResponse = (boolean) context.getOrDefault(FacilioConstants.QAndA.Command.IS_SINGLE_RESPONSE, false);
             Map<Long, QuestionContext> questions = getQuestionMap((FacilioContext) context, answers);
-            List<ClientAnswerContext> clientAnswers = answers.stream().map(a -> serialze(a, questions)).collect(Collectors.toList());
+            List<ClientAnswerContext> clientAnswers = answers.stream().map(a -> serialze(a, questions, isSingleResponse)).collect(Collectors.toList());
             Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
             recordMap.put(FacilioConstants.QAndA.ANSWER, clientAnswers);
             Constants.setJsonRecordMap(context, FieldUtil.getAsJSON(recordMap));
@@ -45,14 +46,20 @@ public class SerializeAnswersCommand extends FacilioCommand {
     }
 
     @SneakyThrows
-    private ClientAnswerContext serialze (AnswerContext answer, Map<Long, QuestionContext> questions) {
+    private ClientAnswerContext serialze(AnswerContext answer, Map<Long, QuestionContext> questions, boolean isSingleResponse) {
         QuestionContext question = questions.get(answer.getQuestion()._getId());
         V3Util.throwRestException(question == null, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Question ID ({0}) is not present in given question map. This is not supposed to happen", answer.getQuestion()._getId()));
         answer.setQuestion(question);
         ClientAnswerContext clientAnswer = question.getQuestionType().getAnswerHandler().serialize(answer);
         clientAnswer.addQuestionId(question);
         clientAnswer.setId(answer._getId());
-        clientAnswer.setComments(answer.getComments()); // Here not doing any check with question because comments can be disabled after few responses have been added
+
+        if (isSingleResponse) {
+            clientAnswer.setComments(answer.getComments()); // Here not doing any check with question because comments can be disabled after few responses have been added
+        }
+        else {
+            clientAnswer.setResponseId(answer.getResponse()._getId());
+        }
 
         return clientAnswer;
     }

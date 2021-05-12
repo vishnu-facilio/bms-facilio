@@ -58,7 +58,7 @@ public class QAndAV3Config {
                     .beforeFetch(QAndAReadOnlyChainFactory.beforeAnswerFetchChain())
                     .afterFetch(QAndAReadOnlyChainFactory.afterAnswerFetchChain())
                 .summary()
-                .afterFetch(QAndAReadOnlyChainFactory.afterAnswerFetchChain())
+                    .afterFetch(QAndAReadOnlyChainFactory.afterAnswerFetchChain())
                 .build();
     }
 

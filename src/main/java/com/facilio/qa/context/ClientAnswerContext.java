@@ -9,6 +9,7 @@ public abstract class ClientAnswerContext<A> {
     private Long id;
     private Long question;
     private String comments;
+    private Long responseId;
 
     public void addQuestionId (QuestionContext question) {
         this.question = question == null ? null : question._getId();

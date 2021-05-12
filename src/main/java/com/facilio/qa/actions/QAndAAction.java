@@ -4,9 +4,11 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.qa.command.QAndAReadOnlyChainFactory;
 import com.facilio.qa.command.QAndATransactionChainFactory;
 import com.facilio.qa.context.ClientAnswerContext;
 import com.facilio.qa.context.ResponseContext;
+import com.facilio.time.DateRange;
 import com.facilio.v3.RESTAPIHandler;
 import com.facilio.v3.V3Action;
 import com.facilio.v3.context.Constants;
@@ -28,10 +30,10 @@ public class QAndAAction extends RESTAPIHandler {
         addOrUpdateAnswersChain.execute();
 
         List<ClientAnswerContext> answers = (List<ClientAnswerContext>) context.get(FacilioConstants.QAndA.Command.ANSWER_LIST);
-        this.getData().put("answers", answers);
+        this.setData("answers", answers);
         List<Map<String, Object>> errors = (List<Map<String, Object>>) context.get(FacilioConstants.QAndA.Command.ANSWER_ERRORS);
         if (CollectionUtils.isNotEmpty(errors)) {
-            this.getData().put("errors", errors);
+            this.setData("errors", errors);
         }
 
         return SUCCESS;
@@ -46,6 +48,36 @@ public class QAndAAction extends RESTAPIHandler {
 
         ResponseContext response = (ResponseContext) context.get(FacilioConstants.QAndA.RESPONSE);
         handleSummaryRequest(response.getQAndAType().getResponseModule(), response._getId());
+
+        return SUCCESS;
+    }
+
+    private long questionId;
+    private long startTime, endTime;
+
+    public String fetchAnswers() throws Exception {
+        FacilioChain fetchAnswersChain = QAndAReadOnlyChainFactory.fetchAnswersOfQuestion();
+        FacilioContext context = fetchAnswersChain.getContext();
+
+        context.put(FacilioConstants.QAndA.Command.QUESTION_ID, questionId);
+        context.put(FacilioConstants.QAndA.Command.ANSWER_RANGE, new DateRange(startTime ,endTime));
+
+        fetchAnswersChain.execute();
+        List<ClientAnswerContext> answers = (List<ClientAnswerContext>) context.get(FacilioConstants.QAndA.Command.ANSWER_LIST);
+        this.setData("answers", answers);
+
+        return SUCCESS;
+    }
+
+    public String fetchOtherOptions() throws Exception {
+        FacilioChain fetchOtherOptionsChain = QAndAReadOnlyChainFactory.fetchOtherOptionsOfMCQ();
+        FacilioContext context = fetchOtherOptionsChain.getContext();
+
+        context.put(FacilioConstants.QAndA.Command.QUESTION_ID, questionId);
+        context.put(FacilioConstants.QAndA.Command.ANSWER_RANGE, new DateRange(startTime ,endTime));
+
+        fetchOtherOptionsChain.execute();
+        this.setData("otherResponses", context.get(FacilioConstants.QAndA.Command.OTHER_RESPONSES));
 
         return SUCCESS;
     }

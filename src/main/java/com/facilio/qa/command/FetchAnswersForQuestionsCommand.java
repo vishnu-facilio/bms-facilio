@@ -1,11 +1,14 @@
 package com.facilio.qa.command;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.qa.QAndAUtil;
 import com.facilio.qa.context.ClientAnswerContext;
 import com.facilio.qa.context.PageContext;
@@ -31,23 +34,9 @@ public class FetchAnswersForQuestionsCommand extends FacilioCommand {
         Long responseId = getResponseId((FacilioContext) context);
         if (CollectionUtils.isNotEmpty(pages) && responseId != null) {
             Map<Long, QuestionContext> questions = pages.stream().flatMap(QAndAUtil::getQuestionStream).collect(Collectors.toMap(QuestionContext::_getId, Function.identity()));
-            QAndAUtil.fetchChildrenFromParent(questions.values(),
-                                            FacilioConstants.QAndA.ANSWER,
-                                            "question",
-                                            null,
-                                            ClientAnswerContext::getQuestion,
-                                            ClientAnswerContext::addQuestionId,
-                                            QuestionContext::setAnswer,
-                                            null,
-                                            getResponseCriteria(responseId),
-                                            c -> addQuestionToFetchChain(c, questions));
-
+            QAndAUtil.populateAnswersForQuestions(questions, getResponseCriteria(pages.get(0).getParent()._getId(), responseId), true);
         }
         return false;
-    }
-
-    private void addQuestionToFetchChain(FacilioContext context, Map<Long, QuestionContext> questions) {
-        context.put(FacilioConstants.QAndA.Command.QUESTION_MAP, questions);
     }
 
     private Long getResponseId (FacilioContext context) {
@@ -55,9 +44,12 @@ public class FetchAnswersForQuestionsCommand extends FacilioCommand {
         return responseId == null ? null : FacilioUtil.parseLong(responseId);
     }
 
-    private Criteria getResponseCriteria (Long responseId) throws Exception {
+    private Criteria getResponseCriteria (Long parentId, Long responseId) throws Exception {
+        ModuleBean modBean = Constants.getModBean();
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.QAndA.ANSWER));
         Criteria criteria = new Criteria();
-        criteria.addAndCondition(CriteriaAPI.getCondition(Constants.getModBean().getField("response", FacilioConstants.QAndA.ANSWER), responseId.toString(), PickListOperators.IS));
+        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("parent"), parentId.toString(), PickListOperators.IS));
+        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("response"), responseId.toString(), PickListOperators.IS));
         return criteria;
     }
 }

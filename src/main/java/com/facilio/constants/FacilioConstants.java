@@ -2460,7 +2460,11 @@ public class FacilioConstants {
 			public static final String QUESTION_VS_ANSWER = "questionVsAnswer";
 			public static final String ANSWERS_TO_BE_ADDED = "answersToBeAdded";
 			public static final String ANSWERS_TO_BE_UPDATED = "answersToBeUpdated";
-		}
+            public static final String QUESTION_ID = "questionId";
+			public static final String ANSWER_RANGE = "answerRange";
+            public static final String IS_SINGLE_RESPONSE = "isSingleResponse";
+            public static final String OTHER_RESPONSES = "otherResponses";
+        }
 	}
 	
 	public static class OrgInfoKeys {

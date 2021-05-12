@@ -52,4 +52,16 @@ public class QAndAReadOnlyChainFactory {
         c.addCommand(new SerializeAnswersCommand());
         return c;
     }
+
+    public static FacilioChain fetchAnswersOfQuestion() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchAnswersOfAQuestionCommand());
+        return c;
+    }
+
+    public static FacilioChain fetchOtherOptionsOfMCQ() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchOtherOptionsOfMCQ());
+        return c;
+    }
 }

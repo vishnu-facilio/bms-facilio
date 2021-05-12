@@ -51,6 +51,7 @@ public class QuestionContext extends V3Context {
     private QuestionType questionType;
     private Integer position;
     private ClientAnswerContext answer;
+    private List<ClientAnswerContext> answers;
 
     //Only for client use
     private Boolean showResponses;

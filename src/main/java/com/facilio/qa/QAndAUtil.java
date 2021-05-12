@@ -14,6 +14,7 @@ import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.qa.command.QAndAReadOnlyChainFactory;
+import com.facilio.qa.context.ClientAnswerContext;
 import com.facilio.qa.context.PageContext;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.questions.BaseMCQContext;
@@ -259,5 +260,34 @@ public class QAndAUtil {
             }
             question.setSummary(summaryList);
         }
+    }
+
+    public static void populateAnswersForQuestions (Map<Long, QuestionContext> questions, Criteria criteria, boolean isSingleResponse) throws Exception {
+        QAndAUtil.fetchChildrenFromParent(questions.values(),
+                FacilioConstants.QAndA.ANSWER,
+                "question",
+                null,
+                ClientAnswerContext::getQuestion,
+                ClientAnswerContext::addQuestionId,
+                isSingleResponse ? QuestionContext::setAnswer : QuestionContext::setAnswers,
+                null,
+                criteria,
+                c -> addQuestionToFetchChain(c, questions, isSingleResponse));
+    }
+
+    private static void addQuestionToFetchChain(FacilioContext context, Map<Long, QuestionContext> questions, boolean isSingleResponse) {
+        context.put(FacilioConstants.QAndA.Command.QUESTION_MAP, questions);
+        context.put(FacilioConstants.QAndA.Command.IS_SINGLE_RESPONSE, isSingleResponse);
+    }
+
+    public static QuestionContext fetchQuestionWithProps (long id) throws Exception {
+        QuestionContext question = V3RecordAPI.getRecord(FacilioConstants.QAndA.QUESTION, id);
+        if (question == null) {
+            return null;
+        }
+        List<QuestionContext> questions = Stream.of(question).collect(Collectors.toList());
+        ExtendedModuleUtil.replaceWithExtendedRecords(questions, q -> q.getQuestionType().getSubModuleName());
+        question.getQuestionType().getQuestionHandler().afterFetch(questions);
+        return questions.get(0);
     }
 }
