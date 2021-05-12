@@ -117,6 +117,14 @@ public class MCQHandler<Q extends BaseMCQContext> implements QuestionHandler<Q> 
     }
 
     private List<MCQOptionContext> setDefaultPropsForOptions(BaseMCQContext question) {
+        // Moving other option to last if present
+        List<MCQOptionContext> options = question.getOptions();
+        OptionalInt indexOpt = IntStream.range(0, question.getOptions().size()).filter(i -> options.get(i).otherEnabled()).findFirst();
+        if (indexOpt.isPresent() && indexOpt.getAsInt() < (options.size()-1)) { // Adding other option at last
+            MCQOptionContext option = options.remove(indexOpt.getAsInt());
+            options.add(option);
+        }
+
         IntStream.range(0, question.getOptions().size())
             .forEach(idx -> {
                 MCQOptionContext option = question.getOptions().get(idx);

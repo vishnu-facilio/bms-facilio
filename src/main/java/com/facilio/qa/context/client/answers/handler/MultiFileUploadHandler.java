@@ -32,8 +32,9 @@ public class MultiFileUploadHandler extends AnswerHandler<MultiFileUploadAnswerC
     }
 
     @Override
-    public AnswerContext deSerialize(MultiFileUploadAnswerContext answer, QuestionContext question) {
+    public AnswerContext deSerialize(MultiFileUploadAnswerContext answer, QuestionContext question) throws Exception {
         boolean isRemarksEnabled = StringUtils.isNotEmpty(((MultiFileUploadQuestionContext) question).getIndividualRemarksLabel());
+        V3Util.throwRestException(checkIfAnswerIsNull(answer, question), ErrorCode.VALIDATION_ERROR, "File IDs cannot be empty while adding file upload answer");
         List<MultiFileAnswerContext> multiAnswers = answer.getAnswer().stream()
                                                         .map(a -> constructMultiFileAnswerContext(a, isRemarksEnabled))
                                                         .collect(Collectors.toList());
@@ -60,7 +61,7 @@ public class MultiFileUploadHandler extends AnswerHandler<MultiFileUploadAnswerC
 
     @Override
     public boolean checkIfAnswerIsNull (MultiFileUploadAnswerContext answer, QuestionContext question) throws Exception {
-        return CollectionUtils.isEmpty(answer.getAnswer()) && checkEachAnswerIsNull(answer.getAnswer());
+        return CollectionUtils.isEmpty(answer.getAnswer()) || checkEachAnswerIsNull(answer.getAnswer());
     }
 
     private boolean checkEachAnswerIsNull (List<MultiFileUploadAnswerContext.MultiFileAnswer> files) {
