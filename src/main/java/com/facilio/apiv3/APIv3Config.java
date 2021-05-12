@@ -740,7 +740,7 @@ public class APIv3Config {
 
     @Module("employee")
     public static Supplier<V3Config> getEmployee() {
-        return () -> new V3Config(V3EmployeeContext.class, new ModuleCustomFieldCount30())
+        return () -> new V3Config(V3EmployeeContext.class, new ModuleCustomFieldCount50())
                 .create()
                     .beforeSave(TransactionChainFactoryV3.getEmployeeBeforeSaveChain())
                     .afterSave(new UpdateEmployeePeopleAppPortalAccessCommandV3())
