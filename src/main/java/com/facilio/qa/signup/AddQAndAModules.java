@@ -158,6 +158,7 @@ public class AddQAndAModules extends SignUpData {
         LookupField responseField = (LookupField) FieldFactory.getDefaultField("response", "Response", "RESPONSE_ID", FieldType.LOOKUP);
         responseField.setLookupModule(response);
         fields.add(responseField);
+        fields.add(FieldFactory.getDefaultField("comments", "Comments", "COMMENTS", FieldType.STRING, FacilioField.FieldDisplayType.TEXTAREA));
         fields.add(FieldFactory.getDefaultField("enumAnswer", "Enum Answer", "ENUM_ANSWER", FieldType.NUMBER));
         fields.add(FieldFactory.getDefaultField("enumOtherAnswer", "Enum Other Answer", "ENUM_OTHER_ANSWER", FieldType.STRING));
         fields.add(FieldFactory.getDefaultField("numberAnswer", "Number Answer", "NUMBER_ANSWER", FieldType.NUMBER));

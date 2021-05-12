@@ -11,6 +11,7 @@ import com.facilio.v3.util.V3Util;
 import lombok.SneakyThrows;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import java.text.MessageFormat;
@@ -47,6 +48,12 @@ public class ConstructAnswerPOJOsCommand extends FacilioCommand {
                 answerContext.setParent(question.getParent());
                 answerContext.setResponse(response);
                 answerContext._setId(answer.getId());
+                if (StringUtils.isNotEmpty(question.getCommentsLabel())) { // Adding comments only if it's enabled
+                    answerContext.setComments(answer.getComments());
+                }
+                else {
+                    answer.setComments(null); // To handle response
+                }
 
                 if (answerContext.getId() < 0) {
                     getToBeAdded().add(answerContext);

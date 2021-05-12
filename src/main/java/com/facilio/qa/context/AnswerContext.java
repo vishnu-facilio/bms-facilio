@@ -15,6 +15,8 @@ public class AnswerContext extends V3Context {
     private QAndATemplateContext parent;
     private ResponseContext response;
     private QuestionContext question;
+    private String comments;
+
     private Long enumAnswer;
     private String enumOtherAnswer;
     private Long numberAnswer;

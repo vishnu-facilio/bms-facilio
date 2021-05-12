@@ -52,6 +52,7 @@ public class SerializeAnswersCommand extends FacilioCommand {
         ClientAnswerContext clientAnswer = question.getQuestionType().getAnswerHandler().serialize(answer);
         clientAnswer.addQuestionId(question);
         clientAnswer.setId(answer._getId());
+        clientAnswer.setComments(answer.getComments()); // Here not doing any check with question because comments can be disabled after few responses have been added
 
         return clientAnswer;
     }
