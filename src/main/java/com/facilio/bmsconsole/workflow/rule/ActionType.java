@@ -1183,13 +1183,14 @@ public enum ActionType {
 				WorkflowContext workflowContext = WorkflowUtil.getWorkflowContext((Long)obj.get("resultWorkflowId"));
 				workflowContext.setLogNeeded(true);
 	
-				Map<String, Object> props = FieldUtil.getAsProperties(currentRecord);
-	
-				List<Object> currentRecordList = new ArrayList<>();
-				currentRecordList.add(props);
-	
 				context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflowContext);
-				context.put(WorkflowV2Util.WORKFLOW_PARAMS, currentRecordList);
+
+				if (currentRecord != null) {
+					Map<String, Object> props = FieldUtil.getAsProperties(currentRecord);
+					List<Object> currentRecordList = new ArrayList<>();
+					currentRecordList.add(props);
+					context.put(WorkflowV2Util.WORKFLOW_PARAMS, currentRecordList);
+				}
 	
 				FacilioChain chain = TransactionChainFactory.getExecuteWorkflowChain();
 				
