@@ -99,6 +99,8 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 		List<AttachmentV3Context> attachments = V3AttachmentAPI.getAttachments(emailConversation.getId(), MailMessageUtil.EMAIL_CONVERSATION_THREADING_ATTACHMENT_MODULE);
 		
 		Map<String, String> files = null;
+		
+		FileStore fs = FacilioFactory.getFileStore();
 		if(attachments != null && !attachments.isEmpty()) {
 			files = new HashMap<String, String>();
 			for(AttachmentV3Context attachment : attachments) {
@@ -106,7 +108,7 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 				if(attachment.getDatum("contentId") != null) {
 					fileName = (String) attachment.getDatum("contentId");
 				}
-				files.put(fileName, attachment.getFileDownloadUrl());
+				files.put(fileName, fs.getOrgiDownloadUrl(attachment.getFileId()));
 			}
 		}
 		
