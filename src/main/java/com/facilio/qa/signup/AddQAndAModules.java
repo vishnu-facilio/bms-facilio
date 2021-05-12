@@ -279,7 +279,6 @@ public class AddQAndAModules extends SignUpData {
 
         List<FacilioField> fields = new ArrayList<>();
         fields.add(FieldFactory.getDefaultField("displayFormat", "Display Format", "DISPLAY_FORMAT", FieldType.STRING));
-        fields.add(FieldFactory.getDefaultField("otherOptionLabel", "Other Option Label", "OTHER_OPTION_LABEL", FieldType.STRING));
 
         module.setFields(fields);
         return module;
@@ -294,7 +293,6 @@ public class AddQAndAModules extends SignUpData {
 
         List<FacilioField> fields = new ArrayList<>();
         fields.add(FieldFactory.getDefaultField("displayFormat", "Display Format", "DISPLAY_FORMAT", FieldType.STRING));
-        fields.add(FieldFactory.getDefaultField("otherOptionLabel", "Other Option Label", "OTHER_OPTION_LABEL", FieldType.STRING));
 
         module.setFields(fields);
         return module;
