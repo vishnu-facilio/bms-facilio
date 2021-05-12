@@ -27,6 +27,8 @@ public class FetchFloorplanFacilitiesCommmand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		
 		List<Long> spaceIds = (List<Long>) context.get(FacilioConstants.ContextNames.SPACE_LIST);
+		long startTime =  (long) context.get(FacilioConstants.ContextNames.START_TIME);
+		long endTime =  (long) context.get(FacilioConstants.ContextNames.END_TIME);
 		
 		if(!Collections.isEmpty(spaceIds)) {
 		
@@ -46,7 +48,7 @@ public class FetchFloorplanFacilitiesCommmand extends FacilioCommand {
 	        Map<Long, List<V3FacilityBookingContext>> BookingsMap = new HashMap<>();
 	        for (FacilityContext facility : list) {
 	        	FacilitiesMap.put(facility.getParentId(), facility);
-	        	BookingsMap.put(facility.getParentId(), FacilityAPI.getFacilityBookingListWithSlots(facility.getId()));
+	        	BookingsMap.put(facility.getParentId(), FacilityAPI.getFacilityBookingListWithSlots(facility.getId(),startTime,endTime));
 	        }
 	        
 	        context.put(FacilioConstants.ContextNames.FacilityBooking.FACILITY, FacilitiesMap);

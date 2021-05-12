@@ -301,15 +301,23 @@ public class FacilityAPI {
         return  list;
     }
     
-    public static List<V3FacilityBookingContext> getFacilityBookingListWithSlots(Long facilityId) throws Exception {
+    public static List<V3FacilityBookingContext> getFacilityBookingListWithSlots(Long facilityId, long startTime, long endTime) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         String bookingModule = FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING;
         List<FacilioField> fields = modBean.getAllFields(bookingModule);
+        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 
         SelectRecordsBuilder<V3FacilityBookingContext> builder = new SelectRecordsBuilder<V3FacilityBookingContext>()
                 .moduleName(bookingModule)
                 .select(fields)
                 .beanClass(V3FacilityBookingContext.class);
+        if(facilityId != null) {
+        	builder.andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("facility"), String.valueOf(facilityId), NumberOperators.EQUALS));
+        }
+        
+        if(startTime > 0 && endTime > 0) {
+        	builder.andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("bookingDate"), startTime + "," + endTime, DateOperators.BETWEEN));
+        }
 
         List<V3FacilityBookingContext> list = builder.get();
         if(CollectionUtils.isNotEmpty(list)) {

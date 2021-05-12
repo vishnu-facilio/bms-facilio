@@ -24,6 +24,22 @@ public class FloorplanAction extends V3Action {
 		this.spaceIds = spaceIds;
 	}
 	
+	private long startTime = -1;
+	public long getStartTime() {
+		return startTime;
+	}
+	public void setStartTime(long startTime) {
+		this.startTime = startTime;
+	}
+	
+	private long endTime = -1;
+	public long getEndTime() {
+		return endTime;
+	}
+	public void setEndTime(long endTime) {
+		this.endTime = endTime;
+	}
+	
 	public String getFacilityDetails() throws Exception {
 		
 		FacilioChain chain = ReadOnlyChainFactoryV3.getFloorplanFacilitiesChain();
@@ -31,6 +47,8 @@ public class FloorplanAction extends V3Action {
 		FacilioContext context = chain.getContext();
 		
 		context.put(FacilioConstants.ContextNames.SPACE_LIST, spaceIds);
+		context.put(FacilioConstants.ContextNames.START_TIME, startTime);
+		context.put(FacilioConstants.ContextNames.END_TIME, endTime);
 		
 		chain.execute();
 		
