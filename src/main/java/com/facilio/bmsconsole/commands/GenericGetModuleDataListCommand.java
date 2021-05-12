@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.InventoryApi;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.view.CustomModuleData;
@@ -146,7 +147,8 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 		boolean checkPermission = (boolean) context.getOrDefault("checkPermission", false);
 		if (checkPermission) {
 			if (AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomainType.FACILIO && AccountUtil.getCurrentUser().getRole() != null) {
-				Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria(moduleName, "read");
+				String permModName =  getModuleNameForPermission(moduleName);
+				Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria(permModName, "read");
 				if (permissionCriteria != null) {
 					builder.andCriteria(permissionCriteria);
 				}
@@ -225,6 +227,11 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 		return false;
 	}
 	
-	
+	private String getModuleNameForPermission(String moduleName) {
+		if (InventoryApi.checkIfInventoryModule(moduleName)) {
+			return ContextNames.INVENTORY;
+		}
+		return moduleName;
+	}
 
 }
