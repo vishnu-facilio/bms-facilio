@@ -935,7 +935,17 @@ public static List<InventoryVendorContext> getInventoryVendorList() throws Excep
 	
 		return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
 	}
-	
-	
+
+
+	public static boolean checkIfInventoryModule(String modName){
+		
+		//temp soln until these modules are moved to v3
+
+		if(modName.equals(FacilioConstants.ContextNames.STORE_ROOM) || modName.equals(FacilioConstants.ContextNames.ITEM) || modName.equals(FacilioConstants.ContextNames.PURCHASED_ITEM) || modName.equals(FacilioConstants.ContextNames.TOOL) || modName.equals(FacilioConstants.ContextNames.ITEM_TRANSACTIONS) || modName.equals(FacilioConstants.ContextNames.TOOL_TRANSACTIONS) || modName.equals(FacilioConstants.ContextNames.SERVICE)) {
+			return true;
+		}
+		return false;
+
+	}
 	
 }
