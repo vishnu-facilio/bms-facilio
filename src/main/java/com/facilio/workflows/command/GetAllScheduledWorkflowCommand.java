@@ -44,7 +44,6 @@ public class GetAllScheduledWorkflowCommand extends FacilioCommand {
 			}
 		}
 		
-		Map<Long,WorkflowContext> workflowMap = WorkflowUtil.getWorkflowsAsMap(workflowIds);
 		SchedulerAPI.getSchedulerActions(scheduledWorkflowContexts);
 		
 		for(ScheduledWorkflowContext scheduledWorkflowContext :scheduledWorkflowContexts) {
