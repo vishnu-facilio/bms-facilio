@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.jobs;
 
+import com.facilio.bmsconsole.workflow.rule.ActionContext;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Priority;
@@ -17,6 +19,8 @@ import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2API;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 
+import java.util.List;
+
 public class ScheduledWorkflowJob extends FacilioJob{
 
 	private static final Logger LOGGER = LogManager.getLogger(ScheduledWorkflowJob.class.getName());
@@ -30,15 +34,22 @@ public class ScheduledWorkflowJob extends FacilioJob{
 			ScheduledWorkflowContext scheduledWorkflowContext = WorkflowV2API.getScheduledWorkflowContext(id,true);
 			
 			if(scheduledWorkflowContext != null) {
-				
-				WorkflowContext workflow = WorkflowUtil.getWorkflowContext(scheduledWorkflowContext.getWorkflowId());
-				
-				FacilioContext context = new FacilioContext();
-				context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
-				
-				FacilioChain chain = TransactionChainFactory.getExecuteWorkflowChain();
-				
-				chain.execute(context);
+				List<ActionContext> actions = scheduledWorkflowContext.getActions();
+				if (CollectionUtils.isNotEmpty(actions)) {
+					for (ActionContext action : actions) {
+						FacilioContext context = new FacilioContext();
+						action.executeAction(null, context, null, null);
+					}
+				}
+
+//				WorkflowContext workflow = WorkflowUtil.getWorkflowContext(scheduledWorkflowContext.getWorkflowId());
+//
+//				FacilioContext context = new FacilioContext();
+//				context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
+//
+//				FacilioChain chain = TransactionChainFactory.getExecuteWorkflowChain();
+//
+//				chain.execute(context);
 			}
 			
 			LOGGER.error("ScheduledWorkflowJob for ID - "+ id +" Completed at "+System.currentTimeMillis());
