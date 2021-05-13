@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -41,7 +42,16 @@ private static final long serialVersionUID = 1L;
 	private TenantContactContext tenantContact;
 	private List<TenantContactContext> tenantContacts;
 	
-	
+	private TenantContactContext tenantcontact;
+
+	public TenantContactContext getTenantcontact() {
+		return tenantcontact;
+	}
+
+	public void setTenantcontact(TenantContactContext tenantcontact) {
+		this.tenantcontact = tenantcontact;
+	}
+
 	public TenantContactContext getTenantContact() {
 		return tenantContact;
 	}
@@ -88,7 +98,15 @@ private static final long serialVersionUID = 1L;
 	public void setId(long id) {
 		this.id = id;
 	}
-	
+
+	private long stateTransitionId = -1;
+	public long getStateTransitionId() {
+		return stateTransitionId;
+	}
+	public void setStateTransitionId(long stateTransitionId) {
+		this.stateTransitionId = stateTransitionId;
+	}
+
 	public String addTenantContacts() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(tenantContacts) || tenantContact != null) {
@@ -111,20 +129,24 @@ private static final long serialVersionUID = 1L;
 	
 	public String updateTenantContacts() throws Exception {
 		
-		if(!CollectionUtils.isEmpty(tenantContacts)) {
-			
-			FacilioChain c = TransactionChainFactory.updateTenantContactChain();
-			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
-			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
-		
-			for(TenantContactContext tc : tenantContacts) {
-				tc.parseFormData();
-				RecordAPI.handleCustomLookup(tc.getData(), FacilioConstants.ContextNames.TENANT_CONTACT);
-			}
-			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, tenantContacts);
-			c.execute();
-			setResult(FacilioConstants.ContextNames.TENANT_CONTACTS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
+		if(CollectionUtils.isEmpty(tenantContacts) && tenantcontact != null) {
+			tenantContacts = new ArrayList<>();
+			tenantContacts.add(tenantcontact);
 		}
+			
+		FacilioChain c = TransactionChainFactory.updateTenantContactChain();
+		c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
+		c.getContext().put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
+		c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
+
+		for(TenantContactContext tc : tenantContacts) {
+			tc.parseFormData();
+			RecordAPI.handleCustomLookup(tc.getData(), FacilioConstants.ContextNames.TENANT_CONTACT);
+		}
+		c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, tenantContacts);
+		c.execute();
+		setResult(FacilioConstants.ContextNames.TENANT_CONTACTS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
+
 		return SUCCESS;
 	}
 
