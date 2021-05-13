@@ -17,19 +17,9 @@ public class ServiceRequestPageFactory extends PageFactory {
         if (FacilioProperties.isDevelopment() || (AccountUtil.getCurrentOrg().getId() == 204l || AccountUtil.getCurrentOrg().getId() == 75l || AccountUtil.getCurrentOrg().getId() == 1l)) {
             Page page = new Page();
 
-            Page.Tab tab1 = page.new Tab("summary");
+            Page.Tab tab1 = page.new Tab("summary", "serviceRequestDetails");
             page.addTab(tab1);
 
-            Page.Section tab1Sec1 = page.new Section();
-            tab1.addSection(tab1Sec1);
-            PageWidget emailThreadWidget = new PageWidget(PageWidget.WidgetType.SR_EMAIL_THREAD);
-            emailThreadWidget.addToLayoutParams(tab1Sec1, 18, 24);
-            tab1Sec1.addWidget(emailThreadWidget);
-
-            PageWidget detailsWidget = new PageWidget(PageWidget.WidgetType.SR_DETAILS_WIDGET);
-            detailsWidget.addToLayoutParams(tab1Sec1, 6, 24);
-            detailsWidget.addToWidgetParams("hideBg", true);
-            tab1Sec1.addWidget(detailsWidget);
             String tab2Title = AccountUtil.getCurrentUser().isPortalUser() ? "Attachments" : "Comments & Attachments";
             Page.Tab tab2 = page.new Tab(tab2Title);
             page.addTab(tab2);
