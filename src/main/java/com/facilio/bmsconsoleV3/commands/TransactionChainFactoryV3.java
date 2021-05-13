@@ -965,4 +965,10 @@ public class TransactionChainFactoryV3 {
 	     return chain;
 	}
 
+	public static Command getServiceRequestAfterUpdateChain() {
+		FacilioChain chain = getDefaultChain();
+		 chain.addCommand(new FillActivityforServiceRequestCommand());
+	     return chain;
+	}
+
 }
