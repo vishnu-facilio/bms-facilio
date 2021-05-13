@@ -17,10 +17,14 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.ServiceCatalogContext;
 import com.facilio.bmsconsole.context.ServiceCatalogGroupContext;
+import com.facilio.bmsconsole.context.SharingContext;
+import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsole.util.ServiceCatalogApi;
+import com.facilio.bmsconsole.util.SharingAPI;
+import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -38,7 +42,7 @@ import com.facilio.modules.fields.FacilioField;
 
 public class GetAllServiceCatalogCommand extends FacilioCommand {
 
-    @Override
+	@Override
     public boolean executeCommand(Context context) throws Exception {
         long groupId = (long) context.get(FacilioConstants.ContextNames.GROUP_ID);
         long appId = (long) context.get(FacilioConstants.ContextNames.APP_ID);
@@ -143,6 +147,21 @@ public class GetAllServiceCatalogCommand extends FacilioCommand {
                 
             }
         }
+        
+		Map<Long, SharingContext<SingleSharingContext>> sharingMap = SharingAPI.getSharingMap(ModuleFactory.getServiceCatalogItemSharingModule(), SingleSharingContext.class);
+		if (!serviceCatalogs.isEmpty() && serviceCatalogs != null) {
+			List<ServiceCatalogContext> serviceCatalogsToBeRemoved = new ArrayList<ServiceCatalogContext>();
+			for(ServiceCatalogContext serviceCatalog: serviceCatalogs) {
+					if (sharingMap != null && sharingMap.containsKey(serviceCatalog.getId())) {
+						if (sharingMap.get(serviceCatalog.getId()) != null && !sharingMap.get(serviceCatalog.getId()).isAllowed()) {
+							serviceCatalogsToBeRemoved.add(serviceCatalog);
+						}else {
+							serviceCatalog.setSharing(sharingMap.get(serviceCatalog.getId()));
+						}
+					}
+			}
+			serviceCatalogs.removeAll(serviceCatalogsToBeRemoved);
+		}
 
         context.put(FacilioConstants.ContextNames.SERVICE_CATALOGS, serviceCatalogs);
 

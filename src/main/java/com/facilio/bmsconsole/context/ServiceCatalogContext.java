@@ -15,8 +15,17 @@ public class ServiceCatalogContext implements Serializable, FormInterface {
 	
 	
 	private long appId = -1;
+	
+	private SharingContext<SingleSharingContext> sharing;
 
-    private long id = -1;
+    public SharingContext<SingleSharingContext> getSharing() {
+		return sharing;
+	}
+	public void setSharing(SharingContext<SingleSharingContext> sharing) {
+		this.sharing = sharing;
+	}
+
+	private long id = -1;
     public long getId() {
         return id;
     }

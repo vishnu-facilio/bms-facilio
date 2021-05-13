@@ -2197,6 +2197,14 @@ public class ModuleFactory {
 		return viewSharing;
 	}
 	
+	public static FacilioModule getServiceCatalogItemSharingModule() {
+		FacilioModule viewSharing = new FacilioModule();
+		viewSharing.setName("serviceCatalogItemSharing");
+		viewSharing.setDisplayName("Service Catalog Item Sharing");
+		viewSharing.setTableName("Service_Catalog_Item_Sharing");
+		return viewSharing;
+	}
+	
 	public static FacilioModule getReportSharingModule() {
 		FacilioModule viewSharing = new FacilioModule();
 		viewSharing.setName("reportSharing");
