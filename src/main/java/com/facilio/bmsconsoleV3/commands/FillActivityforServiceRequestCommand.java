@@ -7,12 +7,15 @@ import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.activity.CommonActivityType;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsoleV3.context.V3ServiceRequestContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.v3.context.Constants;
 
 public class FillActivityforServiceRequestCommand extends FacilioCommand {
@@ -65,7 +68,9 @@ public class FillActivityforServiceRequestCommand extends FacilioCommand {
 	}
 	
 	
-	private void addAssignmentActivity(V3ServiceRequestContext serviceRequest, Context context) {
+	private void addAssignmentActivity(V3ServiceRequestContext serviceRequest, Context context) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         JSONObject info = new JSONObject();
         
         info.put("assignedBy", AccountUtil.getCurrentUser().getOuid());
@@ -79,7 +84,8 @@ public class FillActivityforServiceRequestCommand extends FacilioCommand {
         
         JSONObject newinfo = new JSONObject();
         newinfo.put("assigned", info);
-        CommonCommandUtil.addActivityToContext(serviceRequest.getId(), -1, WorkOrderActivityType.ASSIGN, newinfo, (FacilioContext) context);
+        newinfo.put("moduleDisplayName", modBean.getModule(FacilioConstants.ContextNames.SERVICE_REQUEST).getDisplayName());
+        CommonCommandUtil.addActivityToContext(serviceRequest.getId(), -1, CommonActivityType.ASSIGNED, newinfo, (FacilioContext) context);
     }
 
 }

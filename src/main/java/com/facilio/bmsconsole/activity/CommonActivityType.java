@@ -56,7 +56,14 @@ public enum CommonActivityType implements ActivityType {
         public String constructMessage(JSONObject json) {
             return "emailed.";
         }
-    }
+    },
+    ASSIGNED(83) {
+		@Override
+		public String constructMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return " assigned the "+json.get("moduleDisplayName") +" to ";
+		}
+	},
     ;
 
 
