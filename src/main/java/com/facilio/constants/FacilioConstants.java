@@ -1843,6 +1843,7 @@ public class FacilioConstants {
 		public static final String QUOTE_ASSOCIATED_TERMS = "quoteterms";
 		public static final String OLD_TAX_ID = "oldTaxId";
 		public static final String OLD_RECORD_ID = "oldRecordId";
+		public static final String OLD_RECORD_MAP = "oldRecordMap";
 		public static final String QUOTE_NOTES = "quotenotes";
 		public static final String QUOTE_ATTACHMENTS = "quoteattachments";
 		public static final String QUOTE_MAIL_ATTACHMENTS = "quoteMailAttachments";

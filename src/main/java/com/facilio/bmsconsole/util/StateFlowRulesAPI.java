@@ -219,7 +219,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			info.put("oldValue", oldState.getDisplayName());
 			info.put("newValue", facilioStatus.getDisplayName());
 			ActivityType activityType = null;
-			List<String> CommonActivityModules = Arrays.asList(new String[] {"site", "building", "floor", "space", "workpermit", "quote", "vendors"});
+			List<String> CommonActivityModules = Arrays.asList(new String[] {"site", "building", "floor", "space", "workpermit", "quote", "vendors","serviceRequest"});
 			if ((module.getName().contains("workorder"))) {
 				activityType = WorkOrderActivityType.UPDATE_STATUS;
 			}

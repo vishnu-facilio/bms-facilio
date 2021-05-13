@@ -971,4 +971,10 @@ public class TransactionChainFactoryV3 {
 	     return chain;
 	}
 
+	public static Command getServiceRequestBeforeUpdateChain() {
+		FacilioChain chain = getDefaultChain();
+		 chain.addCommand(new FillOldServiceRequestCommand());
+	     return chain;
+	}
+
 }

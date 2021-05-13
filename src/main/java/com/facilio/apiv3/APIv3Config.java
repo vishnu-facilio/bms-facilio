@@ -361,6 +361,7 @@ public class APIv3Config {
                     .beforeSave(new AddRequesterForServiceRequestCommandV3())
                     .afterSave(TransactionChainFactoryV3.getServiceRequestAfterSaveChain())
                 .update()
+                	.beforeSave(TransactionChainFactoryV3.getServiceRequestBeforeUpdateChain())
                 	.afterSave(TransactionChainFactoryV3.getServiceRequestAfterUpdateChain())
                 	.afterTransaction(new AddActivitiesCommandV3())
                 .delete()
