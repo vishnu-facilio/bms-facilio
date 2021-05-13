@@ -410,6 +410,7 @@ public class PageFactory {
 		widget.addToWidgetParams("chartParams", obj);
 	}
 	
+	@SuppressWarnings("unchecked")
 	protected static void addChartParams(PageWidget widget, String chartType, AggregateOperator xAggr, String xFieldName, AggregateOperator yAggr, 
 			List<String> yFieldNameArray,String groupByFieldName, DateOperators dateOperator, String dateOperatorValue, Criteria criteria) {
 		JSONObject obj = new JSONObject();
@@ -420,17 +421,27 @@ public class PageFactory {
 		xField.put("fieldName", xFieldName);
 		obj.put("xField", xField);
 		
-		org.json.simple.JSONArray yFields = new JSONArray();
-		
-		for(String yFieldName:yFieldNameArray) {
-			JSONObject yField = new JSONObject();
-			yField.put("aggr", yAggr.getValue());
-			yField.put("fieldName", yFieldName);
-			yFields.add(yField);
-		}
-		
-		obj.put("yField", yFields);
-		obj.put("isMultipleMetric",true);
+		if( yFieldNameArray != null) {
+			
+			org.json.simple.JSONArray yFields = new JSONArray();
+			
+			for(String yFieldName:yFieldNameArray) {
+				if(yFieldName != null) {
+					JSONObject yField = new JSONObject();
+					yField.put("aggr", yAggr.getValue());
+					yField.put("fieldName", yFieldName);
+					yFields.add(yField);
+				} else {
+					yFields.add(null);
+				}
+			}
+			
+			obj.put("yField", yFields);
+			obj.put("isMultipleMetric",true);
+			
+			} else {
+				obj.put("yField", null);
+			}
 		
 		JSONObject groupBy = new JSONObject();
 		groupBy.put("fieldName", groupByFieldName);
@@ -442,6 +453,8 @@ public class PageFactory {
 		
 		widget.addToWidgetParams("chartParams", obj);
 	}
+	
+	@SuppressWarnings("unchecked")
 	protected static void addChartParams(PageWidget widget, String chartType, AggregateOperator xAggr, String xFieldName, AggregateOperator yAggr, 
 			List<String> yFieldNameArray,String groupByFieldName, DateOperators dateOperator, List<Long> dateOperatorValue, Criteria criteria) {
 		JSONObject obj = new JSONObject();
@@ -452,26 +465,88 @@ public class PageFactory {
 		xField.put("fieldName", xFieldName);
 		obj.put("xField", xField);
 		
-		org.json.simple.JSONArray yFields = new JSONArray();
-		
-		for(String yFieldName:yFieldNameArray) {
-			JSONObject yField = new JSONObject();
-			yField.put("aggr", yAggr.getValue());
-			yField.put("fieldName", yFieldName);
-			yFields.add(yField);
-		}
-		
-		obj.put("yField", yFields);
-		obj.put("isMultipleMetric",true);
+		if( yFieldNameArray != null) {
+			
+			org.json.simple.JSONArray yFields = new JSONArray();
+			
+			for(String yFieldName:yFieldNameArray) {
+				if(yFieldName != null) {
+					JSONObject yField = new JSONObject();
+					yField.put("aggr", yAggr.getValue());
+					yField.put("fieldName", yFieldName);
+					yFields.add(yField);
+				} else {
+					yFields.add(null);
+				}
+			}
+			
+			obj.put("yField", yFields);
+			obj.put("isMultipleMetric",true);
+			
+			} else {
+				obj.put("yField", null);
+			}
 		
 		JSONObject groupBy = new JSONObject();
 		groupBy.put("fieldName", groupByFieldName);
 		obj.put("groupBy", groupBy);
 		
 		obj.put("dateOperator", dateOperator.getOperatorId());
-
 		obj.put("dateOperatorValue", dateOperatorValue);
 		obj.put("criteria", criteria);
+		
+		widget.addToWidgetParams("chartParams", obj);
+	}
+	
+	@SuppressWarnings("unchecked")
+	protected static void addChartParams(PageWidget widget, String chartType, AggregateOperator xAggr, String xFieldName, AggregateOperator yAggr, 
+			List<String> yFieldNameArray,String groupByFieldName, DateOperators dateOperator, List<Long> dateOperatorValue, Criteria criteria, String dateFieldName, String moduleName) {
+		JSONObject obj = new JSONObject();
+		obj.put("chartType", chartType);
+		
+		JSONObject xField = new JSONObject();
+		if(xAggr != null) {
+			xField.put("aggr", xAggr.getValue());
+		}
+		xField.put("fieldName", xFieldName);
+		obj.put("xField", xField);
+		
+		if(dateFieldName != null) {
+			JSONObject dateField = new JSONObject();
+			dateField.put("fieldName", dateFieldName);
+			obj.put("dateField", dateField);
+		}
+		
+		if( yFieldNameArray != null) {
+			
+		org.json.simple.JSONArray yFields = new JSONArray();
+		
+		for(String yFieldName:yFieldNameArray) {
+			if(yFieldName != null) {
+				JSONObject yField = new JSONObject();
+				yField.put("aggr", yAggr.getValue());
+				yField.put("fieldName", yFieldName);
+				yFields.add(yField);
+			} else {
+				yFields.add(null);
+			}
+		}
+		
+		obj.put("yField", yFields);
+		obj.put("isMultipleMetric",true);
+		
+		} else {
+			obj.put("yField", null);
+		}
+		
+		JSONObject groupBy = new JSONObject();
+		groupBy.put("fieldName", groupByFieldName);
+		obj.put("groupBy", groupBy);
+		
+		obj.put("dateOperator", dateOperator.getOperatorId());
+		obj.put("dateOperatorValue", dateOperatorValue);
+		obj.put("criteria", criteria);
+		obj.put("moduleName", moduleName);
 		
 		widget.addToWidgetParams("chartParams", obj);
 	}
