@@ -21,7 +21,9 @@ import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.bmsconsole.util.VendorsAPI;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
@@ -127,11 +129,23 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 						ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 						FacilioField field = modBean.getField(permission.getFieldId());
 						// todo check here
-						Map<String,Object> userObj = (Map<String, Object>) FieldUtil.getAsProperties(object).get(field.getName());
-						if (userObj != null) {
-							Long ouid = (Long) userObj.get("id");
-							if (ouid != null && ouid == user.getOuid()) {
-								return true;
+						if (field instanceof LookupField) {
+							FacilioModule lookupModule = ((LookupField) field).getLookupModule();
+							Map<String, Object> obj = (Map<String, Object>) FieldUtil.getAsProperties(object).get(field.getName());
+							if (obj != null) {
+								Long objId = (Long) obj.get("id");
+								if ("users".equals(lookupModule.getName())) {
+									if (objId != null && objId == user.getOuid()) {
+										return true;
+									}
+								} else {
+									FacilioModule peopleModule = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
+									if (lookupModule.getExtendedModuleIds().contains(peopleModule.getModuleId())) {
+										if (objId != null && objId.equals(user.getPeopleId())) {
+											return true;
+										}
+									}
+								}
 							}
 						}
 					}
@@ -247,9 +261,19 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 					// todo check here
 					Map<String, Object> userObj = (Map<String, Object>) FieldUtil.getAsProperties(object).get(field.getName());
 					if (userObj != null) {
-						Long ouid = (Long) userObj.get("id");
-						map.put("permissionId", ouid);
-						ouIds.add(ouid);
+						FacilioModule lookupModule = ((LookupField) field).getLookupModule();
+						Long objId = (Long) userObj.get("id");
+						if ("users".equals(lookupModule.getName())) {
+							map.put("permissionId", objId);
+							ouIds.add(objId);
+						} else {
+							FacilioModule peopleModule = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
+							if (lookupModule.getExtendedModuleIds().contains(peopleModule.getModuleId())) {
+								long userIdForPeople = PeopleAPI.getUserIdForPeople(objId);
+								map.put("permissionId", userIdForPeople);
+								ouIds.add(userIdForPeople);
+							}
+						}
 					}
 					break;
 				}

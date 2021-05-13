@@ -475,7 +475,20 @@ public class PeopleAPI {
 		}
 		return -1;
 	}
-		
+
+	public static long getUserIdForPeople(long peopleId) throws Exception {
+		List<FacilioField> fields = AccountConstants.getAppOrgUserFields();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("ORG_Users")
+				;
+		selectBuilder.andCondition(CriteriaAPI.getCondition("PEOPLE_ID", "peopleId", String.valueOf(peopleId), NumberOperators.EQUALS));
+		Map<String, Object> map = selectBuilder.fetchFirst();
+		if (map != null) {
+			return (long) map.get("ouid");
+		}
+		return -1;
+	}
 	
 	public static long getPeopleIdForUser(long ouId) throws Exception {
 		List<FacilioField> fields = AccountConstants.getAppOrgUserFields();

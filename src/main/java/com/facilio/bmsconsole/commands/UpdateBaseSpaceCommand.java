@@ -1,27 +1,20 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.modules.UpdateChangeSet;
-import org.apache.commons.chain.Context;
-
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.context.SpaceContext;
-import com.facilio.bmsconsole.context.TenantUnitSpaceContext;
 import com.facilio.bmsconsole.util.RecordAPI;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
-import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.UpdateRecordBuilder;
+import com.facilio.modules.UpdateChangeSet;
+import org.apache.commons.chain.Context;
+
+import java.util.*;
 
 public class UpdateBaseSpaceCommand extends FacilioCommand {
 
@@ -48,12 +41,13 @@ public class UpdateBaseSpaceCommand extends FacilioCommand {
 			FacilioModule module = modBean.getModule(moduleName);
 			CommonCommandUtil.handleFormDataAndSupplement(modBean.getAllFields(moduleName), baseSpace.getData(), Collections.EMPTY_LIST);
 			Map<Long, List<UpdateChangeSet>> changeSet = RecordAPI.updateRecord(baseSpace, module, modBean.getAllFields(moduleName), true);
-			
-			Map<Long, List<UpdateChangeSet>> changeSetMap = (Map<Long, List<UpdateChangeSet>>) context.get(ContextNames.CHANGE_SET);
-			
+
+			Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = CommonCommandUtil.getChangeSetMap((FacilioContext) context);
+
 			if (changeSetMap == null) {
-				context.put(FacilioConstants.ContextNames.CHANGE_SET, changeSet);
+				changeSetMap = new HashMap<>();
 			}
+			context.put(ContextNames.CHANGE_SET_MAP, changeSetMap);
 
 			CommonCommandUtil.appendChangeSetMapToContext(context, changeSet, moduleName);
 

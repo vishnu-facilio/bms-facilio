@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.fields.LookupField;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -36,9 +38,9 @@ public class FetchApprovalRulesCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		List<WorkOrderContext> workOrders = (List<WorkOrderContext>) context.get(FacilioConstants.ContextNames.WORK_ORDER_LIST);
+		List<WorkOrderContext> workOrders = (List<WorkOrderContext>) context.get(ContextNames.WORK_ORDER_LIST);
 		if (workOrders == null) {
-			WorkOrderContext wo = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
+			WorkOrderContext wo = (WorkOrderContext) context.get(ContextNames.WORK_ORDER);
 			if (wo != null) {
 				workOrders = Collections.singletonList(wo);
 			}
@@ -48,7 +50,7 @@ public class FetchApprovalRulesCommand extends FacilioCommand {
 			
 //			if (workOrders.get(0).getModuleState() != null && workOrders.get(0).getModuleState().getId() != -1) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			String viewName = (String) context.get(FacilioConstants.ContextNames.CV_NAME);
+			String viewName = (String) context.get(ContextNames.CV_NAME);
 			if (modBean.getField("moduleState", ContextNames.WORK_ORDER) != null && ((viewName != null && viewName.equals("approval_requested")) || workOrders.size() == 1)) {
 				setAvailableStates(context, workOrders);
 			}
@@ -154,11 +156,23 @@ public class FetchApprovalRulesCommand extends FacilioCommand {
 									case FIELD:
 										if (approverContext.getFieldId() > 0) {
 											FacilioField field = modBean.getField(approverContext.getFieldId());
-											Map<String,Object> userObj = (Map<String, Object>) FieldUtil.getAsProperties(wo).get(field.getName());
-											if (userObj != null) {
-												Long ouid = (Long) userObj.get("id");
-												if (ouid != null && ouid == currentUser.getOuid()) {
-													wo.setCanCurrentUserApprove(true);
+											if (field instanceof LookupField) {
+												FacilioModule lookupModule = ((LookupField) field).getLookupModule();
+												Map<String, Object> userObj = (Map<String, Object>) FieldUtil.getAsProperties(wo).get(field.getName());
+												if (userObj != null) {
+													Long objId = (Long) userObj.get("id");
+													if ("users".equals(lookupModule.getName())) {
+														if (objId != null && objId == currentUser.getOuid()) {
+															return true;
+														}
+													} else {
+														FacilioModule peopleModule = modBean.getModule(ContextNames.PEOPLE);
+														if (lookupModule.getExtendedModuleIds().contains(peopleModule.getModuleId())) {
+															if (objId != null && objId.equals(currentUser.getPeopleId())) {
+																return true;
+															}
+														}
+													}
 												}
 											}
 										}
