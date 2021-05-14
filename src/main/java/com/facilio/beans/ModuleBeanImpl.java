@@ -1288,6 +1288,8 @@ public class ModuleBeanImpl implements ModuleBean {
 		}
 		List<EnumFieldValue<Integer>> enumsToBeAdded = new ArrayList<>();
 		List<EnumFieldValue<Integer>> enumsToBeUpdated = new ArrayList<>();
+		List<String> enumsValuesToBeUpdated = new LinkedList<String>();
+		List<String> enumsValuesToBeAdded = new LinkedList<String>();
 		int i = 1;
 		int maxIndex = 1;
 		for (EnumFieldValue<Integer> enumVal : field.getValues()) {
@@ -1296,12 +1298,43 @@ public class ModuleBeanImpl implements ModuleBean {
 			}
 			enumVal.setSequence(i++);
 			if (enumVal.getId() == -1) {
+				if (enumsValuesToBeAdded.isEmpty() || !enumsValuesToBeAdded.contains(enumVal.getValue().toLowerCase())) {
 				enumsToBeAdded.add(enumVal);
+				enumsValuesToBeAdded.add(enumVal.getValue().toLowerCase());
+				}
 			}
 			else {
-				enumsToBeUpdated.add(enumVal);
+				// To make sure either one get deleted while updating the two enumval with the same value
+				if (enumsValuesToBeUpdated.contains(enumVal.getValue().toLowerCase())) {
+					deleteEnumVal(enumVal);
+					enumsToBeUpdated.stream()
+						     .filter(item -> item.getValue().equalsIgnoreCase(enumVal.getValue()))
+						     .collect(Collectors.toList()).get(0).setVisible(true);
+				}
+				else {
+					enumsToBeUpdated.add(enumVal);
+					enumsValuesToBeUpdated.add(enumVal.getValue().toLowerCase());
+				}
 			}
 		}
+		
+		// To make sure the new items doesnt get presented in the older disabled items list.
+		if (enumsToBeAdded != null && !enumsToBeAdded.isEmpty()) {
+			List<EnumFieldValue<Integer>> itemsToBeRemoved = new ArrayList<>();
+			for (EnumFieldValue<Integer> enumVal : enumsToBeAdded) {
+				if (enumsValuesToBeUpdated.contains(enumVal.getValue().toLowerCase())) {
+					enumsToBeUpdated.stream()
+						     .filter(item -> item.getValue().equalsIgnoreCase(enumVal.getValue().toLowerCase()))
+						     .collect(Collectors.toList()).get(0).setVisible(true);
+					itemsToBeRemoved.add(enumVal);
+				}
+			}
+			if (itemsToBeRemoved != null && !itemsToBeRemoved.isEmpty()) {
+				enumsToBeAdded.removeAll(itemsToBeRemoved);
+			}
+		}
+		
+		
 		if (!enumsToBeUpdated.isEmpty()) {
 			enumsToBeUpdated.sort(Comparator.<EnumFieldValue<Integer>>comparingInt(EnumFieldValue::getSequence).reversed());
 			for(EnumFieldValue<Integer> enumVal: enumsToBeUpdated) {
@@ -1321,6 +1354,16 @@ public class ModuleBeanImpl implements ModuleBean {
 														.andCustomWhere("FIELDID = ?", field.getFieldId())
 														;
 		deleteBuilder.delete();
+	}
+	
+	private int deleteEnumVal (EnumFieldValue enumVal) throws Exception {
+		FacilioModule module = ModuleFactory.getEnumFieldValuesModule();
+		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getIdCondition(enumVal.getId(), module))
+				;
+		return deleteBuilder.delete();
+
 	}
 	
 	@Override
