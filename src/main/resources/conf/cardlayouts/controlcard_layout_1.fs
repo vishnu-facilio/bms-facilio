@@ -7,11 +7,34 @@ Map cardLayout(Map params) {
         date = new NameSpace("date");
         dateRangeObj = date.getDateRange("Today");
         period = "Last Value";
-        db = {
-            criteria: [parentId == (params.reading.parentId) && ttime == dateRangeObj],
-            field: params.reading.fieldName,
-            aggregation: params.reading.yAggr
-        };
+        db = {};
+         if (params.dateRange == null) {
+             db = {
+                criteria: [parentId == (params.reading.parentId) && ttime == dateRangeObj],
+                field: params.reading.fieldName,
+                aggregation: params.reading.yAggr
+            };
+        }
+        else {
+            if (params.dateRange != "none") {
+                date = new NameSpace("date");
+                dateRangeObj = date.getDateRange(params.dateRange);
+                period = params.dateRange;
+                db = {
+                    criteria: [parentId == (params.reading.parentId)],
+                    field: params.reading.fieldName,
+                    aggregation: params.reading.yAggr
+                };
+            } else {
+                db = {
+                    criteria: [parentId == (params.reading.parentId)],
+                    field: params.reading.fieldName,
+                    aggregation: params.reading.yAggr
+                };
+            }
+        }
+        
+       
         fetchModule = Module(params.reading.moduleName);
         cardValue = fetchModule.fetch(db);
         enumMap = Reading(fieldid, params.reading.parentId).getEnumMap();
