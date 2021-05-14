@@ -1304,17 +1304,8 @@ public class ModuleBeanImpl implements ModuleBean {
 				}
 			}
 			else {
-				// To make sure either one get deleted while updating the two enumval with the same value
-				if (enumsValuesToBeUpdated.contains(enumVal.getValue().toLowerCase())) {
-					deleteEnumVal(enumVal);
-					enumsToBeUpdated.stream()
-						     .filter(item -> item.getValue().equalsIgnoreCase(enumVal.getValue()))
-						     .collect(Collectors.toList()).get(0).setVisible(true);
-				}
-				else {
 					enumsToBeUpdated.add(enumVal);
 					enumsValuesToBeUpdated.add(enumVal.getValue().toLowerCase());
-				}
 			}
 		}
 		
