@@ -21,7 +21,7 @@ Map cardLayout(Map params) {
                 dateRangeObj = date.getDateRange(params.dateRange);
                 period = params.dateRange;
                 db = {
-                    criteria: [parentId == (params.reading.parentId)],
+                    criteria: [parentId == (params.reading.parentId) && ttime == dateRangeObj],
                     field: params.reading.fieldName,
                     aggregation: params.reading.yAggr
                 };
