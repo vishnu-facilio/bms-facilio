@@ -360,6 +360,11 @@ public class FormsAPI {
 					.addRecords(fieldProps);
 			
 			fieldInsertBuilder.save();
+			
+			int count=0;
+			for(Map<String, Object> fieldProp : fieldProps) {
+				fields.get(count++).setId((long)fieldProp.get("id"));
+			}
 		}
 	}
 	

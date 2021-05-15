@@ -73,7 +73,7 @@ public class InspectionPageFactory extends PageFactory {
         
         Criteria criteria = new Criteria();
         
-        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("resStatus"), ResponseContext.ResponseStatus.DISABLED.getIndex()+"", NumberOperators.NOT_EQUALS));
+        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("responseStatus"), ResponseContext.ResponseStatus.DISABLED.getIndex()+"", NumberOperators.NOT_EQUALS));
         criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("parent"), record.getId()+"", NumberOperators.EQUALS));
         
 		addChartParams(inspectionCountInsight, "donut",null, "resStatus", null,  null , null, DateOperators.CURRENT_YEAR, null, criteria, "sysCreatedTime", FacilioConstants.Inspection.INSPECTION_RESPONSE);
@@ -86,7 +86,7 @@ public class InspectionPageFactory extends PageFactory {
         
         criteria = new Criteria();
         
-        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("resStatus"), ResponseContext.ResponseStatus.DISABLED.getIndex()+"", NumberOperators.NOT_EQUALS));
+        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("responseStatus"), ResponseContext.ResponseStatus.DISABLED.getIndex()+"", NumberOperators.NOT_EQUALS));
         criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("parent"), record.getId()+"", NumberOperators.EQUALS));
         
 		addChartParams(inspectionInsightByTime, "bar",DateAggregateOperator.MONTH, "sysCreatedTime", null,  null , null, DateOperators.CURRENT_YEAR, null, criteria, "sysCreatedTime", FacilioConstants.Inspection.INSPECTION_RESPONSE);

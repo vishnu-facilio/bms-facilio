@@ -4,13 +4,24 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.actions.FormRuleAction;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.RollUpField;
 import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormActionType;
 import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormRuleActionContext;
+import com.facilio.bmsconsole.forms.FormRuleActionFieldsContext;
+import com.facilio.bmsconsole.forms.FormRuleContext;
+import com.facilio.bmsconsole.forms.FormRuleTriggerFieldContext;
 import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.util.FormRuleAPI;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsole.util.RollUpFieldUtil;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -22,12 +33,15 @@ import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext;
+import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.EnumOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -108,40 +122,207 @@ public class AddInspectionModules extends SignUpData {
       defaultForm.setDisplayName("Standard");
       defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
       defaultForm.setShowInWeb(true);
+      
+      Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(inspection.getName()));
+      
+      List<FormSection> sections = new ArrayList<FormSection>();
 
       FormSection section = new FormSection();
-      section.setName("Default Section");
+      section.setName("Configuration");
       section.setSectionType(FormSection.SectionType.FIELDS);
       section.setShowLabel(true);
 
-      Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(inspection.getName()));
       List<FormField> fields = new ArrayList<>();
       
-      fields.add(new FormField(fieldMap.get("name").getFieldId(), "name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
-      fields.add(new FormField(fieldMap.get("description").getFieldId(), "description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+      int seq = 0;
+      fields.add(new FormField(fieldMap.get("creationType").getFieldId(), "creationType", FacilioField.FieldDisplayType.SELECTBOX, "Scope", FormField.Required.REQUIRED, ++seq, 1));
+      fields.add(new FormField(fieldMap.get("site").getFieldId(), "site", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED, ++seq, 1));
+      fields.add(new FormField(fieldMap.get("baseSpace").getFieldId(), "baseSpace", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Building", FormField.Required.OPTIONAL, ++seq, 1,Boolean.TRUE));
       
-      fields.add(new FormField(fieldMap.get("creationType").getFieldId(), "creationType", FacilioField.FieldDisplayType.SELECTBOX, "Inspection Type", FormField.Required.OPTIONAL, 5, 1));
-      fields.add(new FormField(fieldMap.get("assignmentType").getFieldId(), "assignmentType", FacilioField.FieldDisplayType.SELECTBOX, "Category", FormField.Required.OPTIONAL, 5, 1));
+      fields.add(new FormField(fieldMap.get("assignmentType").getFieldId(), "assignmentType", FacilioField.FieldDisplayType.SELECTBOX, "Scope Category", FormField.Required.OPTIONAL, ++seq, 1,Boolean.TRUE));
       
-      fields.add(new FormField(fieldMap.get("baseSpace").getFieldId(), "baseSpace", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Building", FormField.Required.OPTIONAL, 6, 1));
-      fields.add(new FormField(fieldMap.get("assetCategory").getFieldId(), "assetCategory", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Asset Category", FormField.Required.OPTIONAL, 6, 1));
-      fields.add(new FormField(fieldMap.get("spaceCategory").getFieldId(), "spaceCategory", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Space Category", FormField.Required.OPTIONAL, 6, 1));
+      fields.add(new FormField(fieldMap.get("assetCategory").getFieldId(), "assetCategory", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Asset Category", FormField.Required.OPTIONAL, ++seq, 1,Boolean.TRUE));
+      fields.add(new FormField(fieldMap.get("spaceCategory").getFieldId(), "spaceCategory", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Space Category", FormField.Required.OPTIONAL, ++seq, 1,Boolean.TRUE));
       
-      fields.add(new FormField(fieldMap.get("resource").getFieldId(), "resource", FacilioField.FieldDisplayType.WOASSETSPACECHOOSER, "Space/Asset", FormField.Required.OPTIONAL, 5, 1));
-      
-      fields.add(new FormField(fieldMap.get("vendor").getFieldId(), "vendor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Vendor", FormField.Required.OPTIONAL, 6, 1));
-      fields.add(new FormField(fieldMap.get("tenant").getFieldId(), "tenant", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Tenant", FormField.Required.OPTIONAL, 6, 1));
-      fields.add(new FormField(fieldMap.get("category").getFieldId(), "category", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Category", FormField.Required.OPTIONAL, 6, 1));
-      fields.add(new FormField(fieldMap.get("priority").getFieldId(), "priority", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Priority", FormField.Required.OPTIONAL, 6, 1));
-      
-      fields.add(new FormField(-1, "assignment", FacilioField.FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", FormField.Required.OPTIONAL, 6, 1));
+      fields.add(new FormField(fieldMap.get("resource").getFieldId(), "resource", FacilioField.FieldDisplayType.WOASSETSPACECHOOSER, "Space/Asset", FormField.Required.OPTIONAL, ++seq, 1,Boolean.TRUE));
       
       section.setFields(fields);
       
       section.setSequenceNumber(1);
+      
+      sections.add(section);
+      
+      FormSection configSection = new FormSection();
+      configSection.setName("Inspection Details");
+      configSection.setSectionType(FormSection.SectionType.FIELDS);
+      configSection.setShowLabel(true);
+      
+      List<FormField> configFields = new ArrayList<>();
+      
+      seq = 0;
+      
+      configFields.add(new FormField(fieldMap.get("name").getFieldId(), "name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, ++seq, 1));
+      configFields.add(new FormField(fieldMap.get("description").getFieldId(), "description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, ++seq, 1));
+      configFields.add(new FormField(fieldMap.get("vendor").getFieldId(), "vendor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Vendor", FormField.Required.OPTIONAL, ++seq, 1));
+      configFields.add(new FormField(fieldMap.get("tenant").getFieldId(), "tenant", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Tenant", FormField.Required.OPTIONAL, ++seq, 1));
+      configFields.add(new FormField(fieldMap.get("category").getFieldId(), "category", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Category", FormField.Required.OPTIONAL, ++seq, 1));
+      configFields.add(new FormField(fieldMap.get("priority").getFieldId(), "priority", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Priority", FormField.Required.OPTIONAL, ++seq, 1));
+      
+      configFields.add(new FormField(-1, "assignment", FacilioField.FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", FormField.Required.OPTIONAL, ++seq, 1));
 
-      defaultForm.setSections(Collections.singletonList(section));
+      configSection.setFields(configFields);
+      
+      configSection.setSequenceNumber(2);
+      
+      sections.add(configSection);
+      
+      defaultForm.setSections(sections);
       FormsAPI.createForm(defaultForm, inspection);
+      
+      Map<Long, FormField> formFieldMap = defaultForm.getSections().stream().map(FormSection::getFields).flatMap(List::stream).collect(Collectors.toMap(FormField::getFieldId, Function.identity()));
+      
+      addSingleAssetSelectRule(defaultForm, fieldMap, formFieldMap);
+      addMultipleAssetSelectRule(defaultForm, fieldMap, formFieldMap);
+	}
+	
+	public void addSingleAssetSelectRule(FacilioForm defaultForm,Map<String, FacilioField> fieldMap,Map<Long, FormField> formFieldMap) throws Exception {
+		
+		FormRuleContext singleRule = new FormRuleContext();
+	      singleRule.setName("Single Resource Show/Hide Rule");
+	      singleRule.setDescription("Rule To Show/Hide single resource's related fields.");
+	      singleRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
+	      singleRule.setTriggerType(FormRuleContext.TriggerType.FIELD_UPDATE.getIntVal());
+	      singleRule.setFormId(defaultForm.getId());
+	      singleRule.setType(FormRuleContext.FormRuleType.FROM_RULE.getIntVal());
+	      
+	      Criteria criteria = new Criteria();
+	      
+	      criteria.addAndCondition(CriteriaAPI.getCondition("CREATION_TYPE","creationType", InspectionTemplateContext.CreationType.SINGLE.getVal()+"", EnumOperators.IS));
+	      
+	      singleRule.setCriteria(criteria);
+	      
+	      FormRuleTriggerFieldContext triggerField = new FormRuleTriggerFieldContext();
+	      triggerField.setFieldId(formFieldMap.get(fieldMap.get("creationType").getId()).getId());
+	      singleRule.setTriggerFields(Collections.singletonList(triggerField));
+	      
+	      List<FormRuleActionContext> actions = new ArrayList<FormRuleActionContext>();
+	      
+	      FormRuleActionContext showAction = new FormRuleActionContext(); 
+	      showAction.setActionType(FormActionType.SHOW_FIELD.getVal());
+	      
+	      FormRuleActionFieldsContext actionField = new FormRuleActionFieldsContext();
+	      
+	      actionField.setFormFieldId(formFieldMap.get(fieldMap.get("resource").getId()).getId());
+	      
+	      showAction.setFormRuleActionFieldsContext(Collections.singletonList(actionField));
+	      
+	      actions.add(showAction);
+	      
+	      
+	      FormRuleActionContext  hideAction = new FormRuleActionContext(); 
+	      hideAction.setActionType(FormActionType.HIDE_FIELD.getVal());
+	      
+	      List<FormRuleActionFieldsContext> hidefields = new ArrayList<FormRuleActionFieldsContext>();
+	      
+	      FormRuleActionFieldsContext hideField1 = new FormRuleActionFieldsContext();
+	      hideField1.setFormFieldId(formFieldMap.get(fieldMap.get("assignmentType").getId()).getId());
+	      hidefields.add(hideField1);
+	      
+	      FormRuleActionFieldsContext hideField2 = new FormRuleActionFieldsContext();
+	      hideField2.setFormFieldId(formFieldMap.get(fieldMap.get("baseSpace").getId()).getId());
+	      hidefields.add(hideField2);
+	      
+	      FormRuleActionFieldsContext hideField3 = new FormRuleActionFieldsContext();
+	      hideField3.setFormFieldId(formFieldMap.get(fieldMap.get("assetCategory").getId()).getId());
+	      hidefields.add(hideField3);
+	      
+	      FormRuleActionFieldsContext hideField4 = new FormRuleActionFieldsContext();
+	      hideField4.setFormFieldId(formFieldMap.get(fieldMap.get("spaceCategory").getId()).getId());
+	      hidefields.add(hideField4);
+	      
+	      hideAction.setFormRuleActionFieldsContext(hidefields);
+	      
+	      actions.add(hideAction);
+	      
+	      singleRule.setActions(actions);
+	      
+	      FacilioChain chain = TransactionChainFactory.getAddFormRuleChain();
+		  Context context = chain.getContext();
+			
+		  context.put(FormRuleAPI.FORM_RULE_CONTEXT,singleRule);
+			
+		  chain.execute();
+		
+	}
+	
+	public void addMultipleAssetSelectRule(FacilioForm defaultForm,Map<String, FacilioField> fieldMap,Map<Long, FormField> formFieldMap) throws Exception {
+		
+		FormRuleContext multipleRule = new FormRuleContext();
+		multipleRule.setName("Multiple Resource Show/Hide Rule");
+		multipleRule.setDescription("Rule to Show/Hide Multiple Resource's related fields.");
+		multipleRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
+	      multipleRule.setTriggerType(FormRuleContext.TriggerType.FIELD_UPDATE.getIntVal());
+	      multipleRule.setFormId(defaultForm.getId());
+	      multipleRule.setType(FormRuleContext.FormRuleType.FROM_RULE.getIntVal());
+	      
+	      Criteria criteria = new Criteria();
+	      
+	      criteria.addAndCondition(CriteriaAPI.getCondition("CREATION_TYPE","creationType", InspectionTemplateContext.CreationType.MULTIPLE.getVal()+"", EnumOperators.IS));
+	      
+	      multipleRule.setCriteria(criteria);
+	      
+	      FormRuleTriggerFieldContext triggerField = new FormRuleTriggerFieldContext();
+	      triggerField.setFieldId(formFieldMap.get(fieldMap.get("creationType").getId()).getId());
+	      multipleRule.setTriggerFields(Collections.singletonList(triggerField));
+	      
+	      List<FormRuleActionContext> actions = new ArrayList<FormRuleActionContext>();
+	      
+	      FormRuleActionContext hideAction = new FormRuleActionContext(); 
+	      hideAction.setActionType(FormActionType.HIDE_FIELD.getVal());
+	      
+	      FormRuleActionFieldsContext actionField = new FormRuleActionFieldsContext();
+	      
+	      actionField.setFormFieldId(formFieldMap.get(fieldMap.get("resource").getId()).getId());
+	      
+	      hideAction.setFormRuleActionFieldsContext(Collections.singletonList(actionField));
+	      
+	      actions.add(hideAction);
+	      
+	      
+	      FormRuleActionContext  showAction = new FormRuleActionContext(); 
+	      showAction.setActionType(FormActionType.SHOW_FIELD.getVal());
+	      
+	      List<FormRuleActionFieldsContext> showfields = new ArrayList<FormRuleActionFieldsContext>();
+	      
+	      FormRuleActionFieldsContext showField1 = new FormRuleActionFieldsContext();
+	      showField1.setFormFieldId(formFieldMap.get(fieldMap.get("assignmentType").getId()).getId());
+	      showfields.add(showField1);
+	      
+	      FormRuleActionFieldsContext showField2 = new FormRuleActionFieldsContext();
+	      showField2.setFormFieldId(formFieldMap.get(fieldMap.get("baseSpace").getId()).getId());
+	      showfields.add(showField2);
+	      
+	      FormRuleActionFieldsContext showField3 = new FormRuleActionFieldsContext();
+	      showField3.setFormFieldId(formFieldMap.get(fieldMap.get("assetCategory").getId()).getId());
+	      showfields.add(showField3);
+	      
+	      FormRuleActionFieldsContext showField4 = new FormRuleActionFieldsContext();
+	      showField4.setFormFieldId(formFieldMap.get(fieldMap.get("spaceCategory").getId()).getId());
+	      showfields.add(showField4);
+	      
+	      showAction.setFormRuleActionFieldsContext(showfields);
+	      
+	      actions.add(showAction);
+	      
+	      multipleRule.setActions(actions);
+	      
+	      FacilioChain chain = TransactionChainFactory.getAddFormRuleChain();
+		  Context context = chain.getContext();
+			
+		  context.put(FormRuleAPI.FORM_RULE_CONTEXT,multipleRule);
+			
+		  chain.execute();
+		
 	}
 
 
