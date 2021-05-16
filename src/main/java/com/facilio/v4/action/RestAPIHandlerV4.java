@@ -99,4 +99,30 @@ public class RestAPIHandlerV4 extends RESTAPIHandler {
 		
 		currentData.putAll(moduleData);
 	}
+	
+	String propertyName;
+	String propertyAddress;
+	public String sample() {
+		
+		LOGGER.log(Level.SEVERE, "propertyName -- "+propertyName);
+		LOGGER.log(Level.SEVERE, "propertyAddress -- "+propertyAddress);
+		
+		return SUCCESS;
+	}
+
+	public String getPropertyName() {
+		return propertyName;
+	}
+
+	public void setPropertyName(String propertyName) {
+		this.propertyName = propertyName;
+	}
+
+	public String getPropertyAddress() {
+		return propertyAddress;
+	}
+
+	public void setPropertyAddress(String propertyAddress) {
+		this.propertyAddress = propertyAddress;
+	}
 }
