@@ -101,5 +101,25 @@ public class InspectionPageFactory extends PageFactory {
 
         return page;
 	}
+	
+	
+	public static Page getInspectionResponsePage(InspectionResponseContext record, FacilioModule module) throws Exception {
+		
+		Page page = new Page();
+		
+		
+        Page.Tab summaryTab = page.new Tab("summary");
+        Page.Section SummarySec = page.new Section();
+        
+        PageWidget secondaryDetailsWidget = new PageWidget(PageWidget.WidgetType.INSPECTION_RESPONSE_WIDGET);
+        secondaryDetailsWidget.addToLayoutParams(SummarySec, 24, 24);
+        SummarySec.addWidget(secondaryDetailsWidget);
+        
+        summaryTab.addSection(SummarySec);
+        page.addTab(summaryTab);
+        
+        
+        return page;
+	}
 
 }

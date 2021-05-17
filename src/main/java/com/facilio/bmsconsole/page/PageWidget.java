@@ -329,6 +329,8 @@ public class PageWidget {
 		INSPECTION_TEMPLATE_inspectionInsights("inspectionInsights"),
 		INSPECTION_TEMPLATE_inspectionQuestions("inspectionQuestions"),
 		INSPECTION_TEMPLATE_history("inspectionHistory"),
+		
+		INSPECTION_RESPONSE_WIDGET("inspectionResponseWidget"),
 
 		// Service Request Module Widgets
 		SR_EMAIL_THREAD("srEmailThread"),

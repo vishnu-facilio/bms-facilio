@@ -27,6 +27,7 @@ import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.Announcem
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnnouncementContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.FacilityContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.V3FacilityBookingContext;
+import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
@@ -144,6 +145,8 @@ public class PageFactory {
 				
 			case FacilioConstants.Inspection.INSPECTION_TEMPLATE:
 				return InspectionPageFactory.getInspectionTemplatePage((InspectionTemplateContext) record, module);
+			case FacilioConstants.Inspection.INSPECTION_RESPONSE:
+				return InspectionPageFactory.getInspectionResponsePage((InspectionResponseContext) record, module);
 				
 			case ContextNames.SERVICE_REQUEST:
 				return ServiceRequestPageFactory.getServiceRequestPage((ServiceRequestContext) record, module);
