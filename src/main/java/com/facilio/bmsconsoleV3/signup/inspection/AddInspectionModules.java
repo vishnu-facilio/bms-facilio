@@ -485,6 +485,14 @@ public class AddInspectionModules extends SignUpData {
                 FacilioModule.ModuleType.Q_AND_A_RESPONSE,
                 modBean.getModule(FacilioConstants.QAndA.RESPONSE)
         );
+        
+        Criteria criteria = new Criteria();
+        
+        criteria.addAndCondition(CriteriaAPI.getCondition("STATUS", "status", InspectionResponseContext.Status.PRE_OPEN.getIndex()+"", EnumOperators.ISN_T));
+        
+        Long criteriaID = CriteriaAPI.addCriteria(criteria);
+        
+        module.setCriteriaId(criteriaID);
 
         List<FacilioField> fields = new ArrayList<>();
         LookupField siteField = (LookupField) FieldFactory.getDefaultField("site", "Site", "SITE_ID", FieldType.LOOKUP);
