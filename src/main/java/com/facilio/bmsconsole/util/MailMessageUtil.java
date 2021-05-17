@@ -73,6 +73,17 @@ public class MailMessageUtil {
 		
 		return email.split("@")[0];
 	};
+	
+	public static Function<String,String> getFirstMessageId = (messageIDs) -> {
+	    
+    	if(messageIDs.contains("<")) {
+    		
+    		return messageIDs.substring(messageIDs.indexOf('<')+1, messageIDs.indexOf('>'));
+    	}
+    	else {
+    		return messageIDs;
+    	}
+    };
     
     public static void updateLatestMailUID(SupportEmailContext supportEmail, long id) throws Exception {
         GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
@@ -476,18 +487,5 @@ public class MailMessageUtil {
             
         return attachmentsList;
     }
-    
-
-    
-    public static Function<String,String> getFirstMessageId = (messageIDs) -> {
-    
-    	if(messageIDs.contains("<")) {
-    		
-    		return messageIDs.substring(messageIDs.indexOf('<')+1, messageIDs.indexOf('>'));
-    	}
-    	else {
-    		return messageIDs;
-    	}
-    };
 
 }

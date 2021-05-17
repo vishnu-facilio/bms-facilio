@@ -1700,6 +1700,8 @@ public enum ActionType {
 					
 					addAttachments(mailContext, emailConversationContext,MailMessageUtil.EMAIL_CONVERSATION_THREADING_ATTACHMENT_MODULE);
 					
+					emailConversationContext.setFromPeople(PeopleAPI.getOrAddPeople(mailContext.getFrom()));
+					
 					emailConversationContext.setParentBaseMail(mailContext);
 					emailConversationContext.setDataModuleId(module.getModuleId());
 					emailConversationContext.setRecordId(recordId);

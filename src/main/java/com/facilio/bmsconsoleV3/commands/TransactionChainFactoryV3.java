@@ -962,6 +962,7 @@ public class TransactionChainFactoryV3 {
 	public static Command getEmailConversationThreadingAfterListChain() {
 		FacilioChain chain = getDefaultChain();
 		 chain.addCommand(new AddAttachmentsForEmailConversationThreadingCommand());
+		 chain.addCommand(new SetUserAndPeopleForEmailConversationThreadingCommand());
 	     return chain;
 	}
 

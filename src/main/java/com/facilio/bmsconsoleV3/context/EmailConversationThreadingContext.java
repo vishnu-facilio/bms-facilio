@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.context;
 
 import com.facilio.bmsconsole.activity.EmailConversationThreadingActivityType;
+import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.modules.FacilioIntEnum;
 
 import lombok.Getter;
@@ -17,6 +18,7 @@ public class EmailConversationThreadingContext extends BaseMailMessageContext {
 	
 	Long dataModuleId;
 	Long recordId;
+	PeopleContext fromPeople;
 	BaseMailMessageContext parentBaseMail;
 	String replyCC;
 	String replyBCC;

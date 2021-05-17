@@ -6,10 +6,13 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.PeopleContext.PeopleType;
 import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -103,6 +106,27 @@ public class PeopleAPI {
 		}
 		updatePeopleIdInOrgUsers(pplId, user.getOuid());
 		
+	}
+	
+	public static PeopleContext getOrAddPeople(String email) throws Exception {
+		
+		email = MailMessageUtil.getFirstMessageId.apply(email);
+		
+		PeopleContext people = PeopleAPI.getPeople(email);
+		
+		if(people == null) {
+			people = new PeopleContext();
+			people.setEmail(email);
+			FacilioChain c = TransactionChainFactory.addPeopleChain();
+			c.getContext().put(FacilioConstants.ContextNames.VERIFY_USER, false);
+			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
+			c.getContext().put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
+			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
+
+			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(people));
+			c.execute();
+		}
+		return people;
 	}
 	
 	
