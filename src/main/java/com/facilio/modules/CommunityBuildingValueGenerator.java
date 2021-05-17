@@ -29,15 +29,15 @@ public class CommunityBuildingValueGenerator extends ValueGenerator{
         List<Long> siteIds = new ArrayList<Long>();
 
         try {
-            if (appType == AppDomain.AppDomainType.TENANT_PORTAL.getIndex()) {
+            if (appType == AppDomain.AppDomainType.TENANT_PORTAL.getIndex() || appType == AppDomain.AppDomainType.SERVICE_PORTAL.getIndex()) {
                 TenantContext tenant = PeopleAPI.getTenantForUser(AccountUtil.getCurrentUser().getId());
                 if (tenant != null) {
-                    //assuming one site -> one tenant mapping for now
-                    siteIds.add(tenant.getSiteId());
-
                     List<TenantUnitSpaceContext> tenantUnits = TenantsAPI.getTenantUnitsForTenant(tenant.getId());
                     if (CollectionUtils.isNotEmpty(tenantUnits)) {
                         for (TenantUnitSpaceContext ts : tenantUnits) {
+                            if(!siteIds.contains(ts.getSiteId())) {
+                                siteIds.add(ts.getSiteId());
+                            }
                             if (ts.getBuilding() != null) {
                                 if(!buildingIds.contains(ts.getBuilding().getId())) {
                                     buildingIds.add(ts.getBuilding().getId());
@@ -51,8 +51,6 @@ public class CommunityBuildingValueGenerator extends ValueGenerator{
                         return criteria;
                     }
                 }
-            } else if (appType == AppDomain.AppDomainType.SERVICE_PORTAL.getIndex()) {
-
             } else if (appType == AppDomain.AppDomainType.FACILIO.getIndex()) {
 
             } else if (appType == AppDomain.AppDomainType.CLIENT_PORTAL.getIndex()) {
