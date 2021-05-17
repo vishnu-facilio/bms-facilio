@@ -69,7 +69,7 @@ public class InspectionPageFactory extends PageFactory {
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.Inspection.INSPECTION_RESPONSE));
         
         PageWidget inspectionCountInsight = new PageWidget(PageWidget.WidgetType.CHART,"inspectionCountInsight");
-        inspectionCountInsight.addToLayoutParams(insightTabSec, 12, 8);
+        inspectionCountInsight.addToLayoutParams(insightTabSec, 24, 8);
         
         Criteria criteria = new Criteria();
         
@@ -80,20 +80,6 @@ public class InspectionPageFactory extends PageFactory {
 		
 		insightTabSec.addWidget(inspectionCountInsight);
 		
-		
-		PageWidget inspectionInsightByTime = new PageWidget(PageWidget.WidgetType.CHART,"inspectionInsightByTime");
-		inspectionInsightByTime.addToLayoutParams(insightTabSec, 12, 8);
-        
-        criteria = new Criteria();
-        
-        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("responseStatus"), ResponseContext.ResponseStatus.DISABLED.getIndex()+"", NumberOperators.NOT_EQUALS));
-        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("parent"), record.getId()+"", NumberOperators.EQUALS));
-        
-		addChartParams(inspectionInsightByTime, "bar",DateAggregateOperator.MONTH, "sysCreatedTime", null,  null , null, DateOperators.CURRENT_YEAR, null, criteria, "sysCreatedTime", FacilioConstants.Inspection.INSPECTION_RESPONSE);
-		
-		insightTabSec.addWidget(inspectionInsightByTime);
-        
-        
         PageWidget inspectionQuestions = new PageWidget(PageWidget.WidgetType.INSPECTION_TEMPLATE_inspectionQuestions);
         inspectionQuestions.addToLayoutParams(insightTabSec, 24, 6);
         insightTabSec.addWidget(inspectionQuestions);
@@ -101,7 +87,7 @@ public class InspectionPageFactory extends PageFactory {
         insightTab.addSection(insightTabSec);
         page.addTab(insightTab);
 
-        Page.Tab historyTab = page.new Tab("inspectionHistory");
+        Page.Tab historyTab = page.new Tab("History");
         Page.Section historyTabSec = page.new Section();
         
         PageWidget history = new PageWidget(PageWidget.WidgetType.INSPECTION_TEMPLATE_history);
