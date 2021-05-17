@@ -33,70 +33,12 @@ public class ExecuteFormActionRulesCommand extends FacilioCommand {
 		
 		JSONArray resultJson = new JSONArray();
 		context.put(FormRuleAPI.FORM_RULE_RESULT_JSON, resultJson);
-		
-		
-		Map<String,Object> cloneFormData = new HashMap<String, Object>();
-		if (triggerType.equals(TriggerType.FORM_ON_LOAD) && formData != null && !formData.isEmpty()) {
-		 cloneFormData = new HashMap<String, Object>(formData);
-			if (formData.containsKey("data")) {
-				Map<String,Object> customData = (Map<String, Object>) formData.get("data");
-				cloneFormData.putAll(customData);
-				cloneFormData.remove("data");
-			}
-		}
-		
+				
 		for(FormRuleContext formRuleContext :formRuleContexts) {	
 			if (formRuleContext.getFormContext() == null && form != null) {
 				formRuleContext.setFormContext(form);
 			}
-			boolean flag = false;	
-			
-			if (triggerType.equals(TriggerType.FORM_ON_LOAD) && formData != null && !formData.isEmpty()) {
-				List<FormRuleTriggerFieldContext> triggerFields = FormRuleAPI.getFormRuleTriggerFields(formRuleContext);
-				boolean hasValue = false;
-				if (triggerFields != null && !triggerFields.isEmpty()) {
-				for (FormRuleTriggerFieldContext triggerField : triggerFields) {					
-					FormField fieldObj = FormsAPI.getFormFieldFromId(triggerField.getFieldId());	
-					
-					if (fieldObj.getField() != null && fieldObj.getField().getName() != null && cloneFormData.containsKey(fieldObj.getField().getName())) {
-						if (fieldObj.getDisplayTypeEnum() == FieldDisplayType.LOOKUP_SIMPLE) {
-							long id = -1;
-							if (cloneFormData.get(fieldObj.getField().getName()) instanceof Long) {
-								id = (long) cloneFormData.get(fieldObj.getField().getName());	
-							}
-							else if (cloneFormData.get(fieldObj.getField().getName()) instanceof HashMap) {
-								 HashMap lookupData = (HashMap) cloneFormData.get(fieldObj.getField().getName());
-								 id = (long) lookupData.get("id");
-							}
-							if (id > 0) {
-								hasValue = true;
-							}
-						}
-						
-						else if (fieldObj.getDisplayTypeEnum() == FieldDisplayType.NUMBER || fieldObj.getDisplayTypeEnum() == FieldDisplayType.DECIMAL) {	
-							if (!cloneFormData.get(fieldObj.getField().getName()).equals((long) -99)) {
-								hasValue = true;
-							}
-						}
-						
-						else if (cloneFormData.containsKey(fieldObj.getField().getName())) {
-							hasValue = true;
-						}
-						
-					}				
-				}	
-			}
-				else {
-					hasValue = true;
-				}
-				if (hasValue) {
-					flag = formRuleContext.evaluateCriteria(formData, (FacilioContext)context);
-				}	
-			}			
-			else {
-				 flag = formRuleContext.evaluateCriteria(formData, (FacilioContext)context);
-			}
-						
+			boolean flag = formRuleContext.evaluateCriteria(formData, (FacilioContext)context);
 			if(flag) {
 				formRuleContext.executeAction((FacilioContext)context);
 			}

@@ -269,10 +269,7 @@ public static List<FormRuleTriggerFieldContext> getFormRuleTriggerFields(FormRul
 		
 		List<Long> triggerValues = new ArrayList<>();
 		triggerValues.add((long) triggerType.getIntVal());
-		// Temp need to remove 
-		if (triggerType.equals(TriggerType.FORM_ON_LOAD) && formData != null && !formData.isEmpty()) {
-			triggerValues.add((long) TriggerType.FIELD_UPDATE.getIntVal());
-		}
+
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormRuleFields());
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getFormRuleFields())
@@ -293,8 +290,8 @@ public static List<FormRuleTriggerFieldContext> getFormRuleTriggerFields(FormRul
 		return formRuleContexts;
 	}
 	
-	public static List<FormRuleContext> getFormRuleContext(Long formId,Long formFieldId,TriggerType triggerType) throws Exception {
-		if(triggerType == TriggerType.FIELD_UPDATE && (formFieldId == null || formFieldId <=0)) {
+	public static List<FormRuleContext> getFormRuleContext(Long formId,List<Long> formFieldId,TriggerType triggerType) throws Exception {
+		if(triggerType == TriggerType.FIELD_UPDATE && (formFieldId == null || formFieldId.isEmpty())) {
 			throw new IllegalArgumentException("Field Cannot Be Null for Action Type Field Update");
 		}
 		if(formId == null || formId <=0) {
@@ -310,7 +307,7 @@ public static List<FormRuleTriggerFieldContext> getFormRuleTriggerFields(FormRul
 				.innerJoin(ModuleFactory.getFormRuleTriggerFieldModule().getTableName())
 				.on(ModuleFactory.getFormRuleModule().getTableName()+".ID = "+ModuleFactory.getFormRuleTriggerFieldModule().getTableName()+".RULE_ID")
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("formId"), ""+formId, NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("fieldId"), ""+formFieldId, NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("fieldId"), ""+StringUtils.join(formFieldId, ","), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("triggerType"), ""+triggerType.getIntVal(), NumberOperators.EQUALS))
 				.orderBy("RULE_EXECUTION_ORDER");
 		
