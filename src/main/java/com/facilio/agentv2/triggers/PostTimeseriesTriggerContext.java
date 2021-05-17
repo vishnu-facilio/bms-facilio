@@ -55,7 +55,7 @@ public class PostTimeseriesTriggerContext extends BaseTriggerContext {
     public List<Long> getResourceIds() throws Exception {
 
         FacilioModule module = ModuleFactory.getPostTimeseriesTriggerVsResourcesModule();
-        Map<String, FacilioField> fields = FieldFactory.getAsMap(FieldFactory.getPostTimeseriesTriggerActionFields());
+        Map<String, FacilioField> fields = FieldFactory.getAsMap(FieldFactory.getPostTimeseriesTriggerVsResourcesFields());
         List<Long> values = new ArrayList<>();
         values.add(this.getId());
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().table(module.getTableName())

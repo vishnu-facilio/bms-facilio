@@ -4523,7 +4523,7 @@ public class ModuleFactory {
         FacilioModule module = new FacilioModule();
         module.setName("postTimeseriesTrigger");
         module.setDisplayName("Post Timeseries Trigger");
-        module.setTableName("PostTimeseriesTrigger");
+		module.setTableName("Post_Timeseries_Trigger");
         module.setExtendModule(getTriggerModule());
         return module;
     }
@@ -4533,7 +4533,7 @@ public class ModuleFactory {
         FacilioModule module = new FacilioModule();
         module.setName("postTimeseriesTrigger_Resources_Rel");
         module.setDisplayName("Post Timeseries Trigger vs Resources Rel");
-        module.setTableName("PostTimeseriesTrigger_Resources_Rel");
+		module.setTableName("Post_Timeseries_Trigger_Resources_Rel");
         return module;
     }
 }

@@ -134,7 +134,7 @@ public class AddOrUpdateTriggerCommand extends FacilioCommand {
 			case SCORING_RULE_TRIGGER:
                 return FieldFactory.getTriggerFields();
             case TIMESERIES_COMPLETED_TRIGGER:
-                return FieldFactory.getPostTimeseriesTriggerActionFields();
+				return FieldFactory.getPostTimeseriesTriggerFields();
 			default:
 				throw new IllegalArgumentException("Invalid trigger type");
 		}

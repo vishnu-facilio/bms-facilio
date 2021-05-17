@@ -9599,7 +9599,7 @@ public class FieldFactory extends BaseFieldFactory {
     public static List<FacilioField> getPostTimeseriesTriggerFields() {
         FacilioModule module = ModuleFactory.getPostTimeseriesTriggerModule();
         List<FacilioField> fields = new ArrayList<>();
-        fields.addAll(getTriggerFields());
+        fields.add(getIdField(module));
         fields.add(getField("siteId", "SITE_ID", module, FieldType.NUMBER));
         return fields;
 
@@ -9617,11 +9617,12 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
-    public static List<FacilioField> getPostTimeseriesTriggerActionFields() {
+    public static List<FacilioField> getPostTimeseriesTriggerVsResourcesFields() {
         FacilioModule module = ModuleFactory.getPostTimeseriesTriggerVsResourcesModule();
         List<FacilioField> fields = new ArrayList<>();
-        fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.NUMBER));
+        fields.add(getIdField(module));
         fields.add(getField("triggerId", "TRIGGER_ID", module, FieldType.NUMBER));
+        fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.NUMBER));
         return fields;
     }
 

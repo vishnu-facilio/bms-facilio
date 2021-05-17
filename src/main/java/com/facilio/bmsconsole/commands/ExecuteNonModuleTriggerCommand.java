@@ -31,8 +31,8 @@ public class ExecuteNonModuleTriggerCommand extends FacilioCommand {
         TriggerType triggerType = (TriggerType) context.get(FacilioConstants.ContextNames.TRIGGER_TYPE);
         List<EventType> activities = CommonCommandUtil.getEventTypes(context);
         if (activities != null && activities.size() > 0) {
-            Map<String, FacilioField> fields = FieldFactory.getAsMap(FieldFactory.getPostTimeseriesTriggerActionFields());
-            Long siteId = (Long) context.get("siteId");
+            Map<String, FacilioField> fields = FieldFactory.getAsMap(FieldFactory.getPostTimeseriesTriggerFields());
+            Long siteId = (Long) context.get(FacilioConstants.ContextNames.SITE_ID);
             Collection<Long> values = new ArrayList<>();
             values.add(siteId);
             Criteria criteria = new Criteria();
@@ -44,7 +44,9 @@ public class ExecuteNonModuleTriggerCommand extends FacilioCommand {
                 List<BaseTriggerContext> trigs = new ArrayList<>();
                 trigs.add(trigger);
                 for (Long resourceId : resourceIds) {
-                    context.put("resourceId", resourceId);
+                    List<Long> params = new ArrayList<>();
+                    params.add(resourceId);
+                    context.put(FacilioConstants.ContextNames.WORK_FLOW_PARAMS, params);
                     TriggerUtil.executeTriggerActions(trigs, (FacilioContext) context, null, null, null);
                 }
             }
