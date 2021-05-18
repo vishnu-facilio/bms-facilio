@@ -95,10 +95,17 @@ public class DeleteCommand extends FacilioCommand {
      }
 
     private int deleteRows(FacilioModule module, List<Long> rowIds) throws Exception {
-        return new DeleteRecordBuilder()
+        DeleteRecordBuilder builder = new DeleteRecordBuilder()
                 .module(module)
                 .andCondition(CriteriaAPI.getIdCondition(rowIds, module))
-                .markAsDelete();
+                ;
+
+        if (module.isTrashEnabled()) {
+            return builder.markAsDelete();
+        }
+        else {
+            return builder.delete();
+        }
     }
 
     private List<Long> checkLookupData(FacilioModule parentModule, FacilioModule childModule, List<FacilioField> relatedLookupFields, List<Long> recordIds) throws Exception {

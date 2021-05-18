@@ -69,7 +69,8 @@ public class UpdateAnswersCommand extends FacilioCommand {
     @SneakyThrows
     private void setDefaultProps(AnswerContext answer, Map<Long, AnswerContext> oldRecords) {
         AnswerContext oldAnswer = oldRecords.get(answer._getId());
-        V3Util.throwRestException(oldAnswer == null, ErrorCode.VALIDATION_ERROR, "Invalid answer id sent while saving answer");
+        V3Util.throwRestException(oldAnswer == null || oldAnswer.getQuestion().getId() != answer.getQuestion().getId()
+                                    , ErrorCode.VALIDATION_ERROR, "Invalid answer id sent while saving answer");
 
         answer.setSysCreatedBy(oldAnswer.getSysCreatedBy());
         answer.setSysCreatedTime(oldAnswer.getSysCreatedTime());
