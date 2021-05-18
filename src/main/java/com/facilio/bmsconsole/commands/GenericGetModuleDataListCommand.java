@@ -241,12 +241,9 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 					FacilioField storeRoomField = fieldMap.get("storeRoom");
 					if (storeRoomField != null) {
 						builder.innerJoin("Store_room").on(storeRoomField.getCompleteColumnName()+"= Store_room.ID");
-					}
-					FacilioField storeRoomIdField = fieldMap.get("storeRoomId");
-					if (storeRoomIdField != null) {
 						Set<Long> storeIds = StoreroomApi.getStoreRoomList(null, false);
 						if(CollectionUtils.isNotEmpty(storeIds)) {
-							builder.andCondition(CriteriaAPI.getCondition(storeRoomIdField, storeIds, NumberOperators.EQUALS));
+							builder.andCondition(CriteriaAPI.getCondition(storeRoomField, storeIds, NumberOperators.EQUALS));
 						}
 					}
 				}
