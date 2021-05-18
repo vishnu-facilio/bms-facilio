@@ -92,7 +92,9 @@ public class HandleFormFieldsCommand extends FacilioCommand {
 	
 	private void setLookupName(FormField formField, String moduleName, boolean isFromBuilder) throws Exception {
 		FacilioField field = formField.getField();
-		if ((field != null && field instanceof BaseLookupField && !isFromBuilder) || (formField.getDisplayTypeEnum() == FieldDisplayType.LOOKUP_SIMPLE)) {
+		boolean isLookup = formField.getDisplayTypeEnum() == FieldDisplayType.LOOKUP_SIMPLE || formField.getDisplayTypeEnum() == FieldDisplayType.MULTI_LOOKUP_SIMPLE;
+		// If its a lookup field or a special lookup form field
+		if ((field != null && field instanceof BaseLookupField && !isFromBuilder && isLookup) || isLookup) {
 			if (formField.getConfig() != null) {
 				JSONObject config = formField.getConfig();
 				boolean filterEnabled = (boolean) config.getOrDefault("isFiltersEnabled", false);

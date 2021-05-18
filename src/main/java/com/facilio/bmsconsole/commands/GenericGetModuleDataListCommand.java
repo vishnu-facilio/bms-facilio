@@ -5,6 +5,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.InventoryApi;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
+import com.facilio.bmsconsole.util.StoreroomApi;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
@@ -12,6 +13,7 @@ import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
 import com.facilio.modules.FacilioModule;
@@ -34,6 +36,7 @@ import org.json.simple.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class GenericGetModuleDataListCommand extends FacilioCommand {
 	private static final Logger LOGGER = LogManager.getLogger(GenericGetModuleDataListCommand.class.getName());
@@ -222,7 +225,7 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 		return false;
 	}
 	
-	private void setPermissionCriteria(String moduleName, List<FacilioField> fields, SelectRecordsBuilder builder) {
+	private void setPermissionCriteria(String moduleName, List<FacilioField> fields, SelectRecordsBuilder builder) throws Exception {
 		boolean isInventory = false;
 		if (InventoryApi.checkIfInventoryModule(moduleName)) {
 			moduleName =  ContextNames.INVENTORY;
@@ -232,11 +235,19 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 		if (AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomainType.FACILIO && AccountUtil.getCurrentUser().getRole() != null) {
 			Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria(moduleName, "read");
 			if(permissionCriteria != null) {
+				// TODO remove special handling
 				if (isInventory && !moduleName.equals(ContextNames.STORE_ROOM)) {
 					Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 					FacilioField storeRoomField = fieldMap.get("storeRoom");
 					if (storeRoomField != null) {
 						builder.innerJoin("Store_room").on(storeRoomField.getCompleteColumnName()+"= Store_room.ID");
+					}
+					FacilioField storeRoomIdField = fieldMap.get("storeRoomId");
+					if (storeRoomIdField != null) {
+						Set<Long> storeIds = StoreroomApi.getStoreRoomList(null, false);
+						if(CollectionUtils.isNotEmpty(storeIds)) {
+							builder.andCondition(CriteriaAPI.getCondition(storeRoomIdField, storeIds, NumberOperators.EQUALS));
+						}
 					}
 				}
 				builder.andCriteria(permissionCriteria);
