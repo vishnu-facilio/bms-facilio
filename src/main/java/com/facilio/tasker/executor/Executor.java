@@ -77,8 +77,8 @@ public class Executor implements Runnable {
 			LOGGER.debug(name+"::"+startTime+"::"+endTime);
 			int freeThreads = getNoOfFreeThreads();
 			LOGGER.info("Initial number of free threads  : "+freeThreads);
-			List<JobContext> scheduledJobs = updateScheduledStatus(FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,()->JobStore.getIncompletedJobs(name, startTime, endTime, getMaxRetry(), includedOrgs, excludedOrgs,freeThreads)));
-			scheduledJobs.addAll(updateScheduledStatus(FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,()->JobStore.getJobs(name, startTime, endTime, getMaxRetry(), includedOrgs, excludedOrgs,(freeThreads-scheduledJobs.size())))));
+			List<JobContext> scheduledJobs = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,()->updateScheduledStatus(JobStore.getIncompletedJobs(name, startTime, endTime, getMaxRetry(), includedOrgs, excludedOrgs,freeThreads)));
+			scheduledJobs.addAll(FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,()->updateScheduledStatus(JobStore.getJobs(name, startTime, endTime, getMaxRetry(), includedOrgs, excludedOrgs,(freeThreads-scheduledJobs.size())))));
 			LOGGER.info("Final Jobs to ready to execute count is  : "+(scheduledJobs.size()));
 			for(JobContext jc : scheduledJobs) {
 				try {
@@ -115,6 +115,7 @@ public class Executor implements Runnable {
 					rowsUpdated = statement.executeUpdate();
 					if(rowsUpdated == 1){
 						scheduledJobs.add(job);
+					LOGGER.info("Status updated in Job Executor for ensure.");
 					}
 					LOGGER.debug("query : " + statement.toString());
 				} catch (SQLException e) {
