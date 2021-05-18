@@ -105,7 +105,7 @@ public class Executor implements Runnable {
 		if(CollectionUtils.isNotEmpty(jobs)) {
 			for (JobContext job : jobs){
 				int rowsUpdated = 0;
-				String query = "update Jobs set STATUS = 4 where ORGID = ? AND JOBID = ? and JOBNAME= ? and EXECUTION_ERROR_COUNT = ?";
+				String query = "update Jobs set STATUS = 4 where ORGID = ? AND JOBID = ? and JOBNAME= ? and EXECUTION_ERROR_COUNT = ? and STATUS != 4";
 				try(Connection connection = FacilioConnectionPool.getInstance().getDirectConnection();
 					PreparedStatement statement = connection.prepareStatement(query)){
 					statement.setLong(1, job.getOrgId());
