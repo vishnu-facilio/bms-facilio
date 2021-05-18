@@ -62,19 +62,17 @@ public class BaseMailMessageContext extends V3Context {
     private String htmlContent;
     private String textContent;
     
-    @JsonIgnore
-    public void setCc(List<String> ccList) {
-    	
-    	if(ccList != null && !ccList.isEmpty()) {
-    		cc = ccList.stream().collect(Collectors.joining(","));
-    	}
-    }
-    @JsonIgnore
-    public void setBcc(List<String> bccList) {
-    	if(bccList != null && !bccList.isEmpty()) {
-    		bcc = bccList.stream().collect(Collectors.joining(","));
-    	}
-    }
+//    public void setCc(List<String> ccList) {
+//    	
+//    	if(ccList != null && !ccList.isEmpty()) {
+//    		cc = ccList.stream().collect(Collectors.joining(","));
+//    	}
+//    }
+//    public void setBcc(List<String> bccList) {
+//    	if(bccList != null && !bccList.isEmpty()) {
+//    		bcc = bccList.stream().collect(Collectors.joining(","));
+//    	}
+//    }
 
     public static BaseMailMessageContext instance(Message message) throws Exception {
         BaseMailMessageContext mailContext = new BaseMailMessageContext();
