@@ -105,6 +105,11 @@ public class GetAvailableStateCommand extends FacilioCommand {
 						iterator.remove();
 						continue;
 					}
+				} else if (AccountUtil.getCurrentUser().getAppDomain().getAppDomainType() == AppDomainType.SERVICE_PORTAL.getIndex()) {
+					if (!transition.isShowInOccupantPortal()) {
+						iterator.remove();
+						continue;
+					}
 				}
 			}
 		}

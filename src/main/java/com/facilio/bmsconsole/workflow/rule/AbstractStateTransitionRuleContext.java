@@ -179,6 +179,20 @@ public abstract class AbstractStateTransitionRuleContext extends ApproverWorkflo
         return showInTenantPortal;
     }
 
+    private Boolean showInOccupantPortal;
+    public Boolean getShowInOccupantPortal() {
+        return showInOccupantPortal;
+    }
+    public void setShowInOccupantPortal(Boolean showInOccupantPortal) {
+        this.showInOccupantPortal = showInOccupantPortal;
+    }
+    public Boolean isShowInOccupantPortal() {
+        if (this.showInOccupantPortal == null) {
+            return false;
+        }
+        return showInOccupantPortal;
+    }
+
     protected abstract void executeTrue(Object record, Context context, Map<String, Object> placeHolders) throws Exception;
 
     @Override

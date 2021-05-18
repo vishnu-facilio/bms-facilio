@@ -89,6 +89,12 @@ public class StateFlowListCommand extends FacilioCommand {
                     continue;
                 }
             }
+            else if (AccountUtil.getCurrentUser().getAppDomain().getAppDomainType() == AppDomain.AppDomainType.SERVICE_PORTAL.getIndex()) {
+                if (!transition.isShowInOccupantPortal()) {
+                    iterator.remove();
+                    continue;
+                }
+            }
         }
     }
 

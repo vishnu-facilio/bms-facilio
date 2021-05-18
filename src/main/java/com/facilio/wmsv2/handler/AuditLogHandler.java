@@ -31,6 +31,14 @@ public class AuditLogHandler extends BaseHandler {
     @Override
     public Message processOutgoingMessage(Message message) {
         try {
+            if (AccountUtil.getCurrentAccount() == null) {
+                AccountUtil.setCurrentAccount(message.getOrgId());
+            }
+            if (AccountUtil.getCurrentAccount() == null) {
+                // don't process if the current account is empty
+                return null;
+            }
+
             LOGGER.error(message.toString());
             JSONObject content = message.getContent();
             AuditLogContext auditLog = FieldUtil.getAsBeanFromJson(content, AuditLogContext.class);
@@ -111,6 +119,22 @@ public class AuditLogHandler extends BaseHandler {
         }
         public AuditLogContext setTime(Long time) {
             this.time = time;
+            return this;
+        }
+
+        private ActionType actionType;
+        public int getActionType() {
+            return actionType.getIndex();
+        }
+        public ActionType getActionTypeEnum() {
+            return actionType;
+        }
+        public AuditLogContext setActionType(int actionType) {
+            this.actionType = ActionType.valueOf(actionType);
+            return this;
+        }
+        public AuditLogContext setActionType(ActionType actionType) {
+            this.actionType = actionType;
             return this;
         }
 
@@ -230,6 +254,36 @@ public class AuditLogHandler extends BaseHandler {
         }
 
         public static RecordType valueOf(int type) {
+            if (type > 0 && type <= values().length) {
+                return values()[type - 1];
+            }
+            return null;
+        }
+    }
+
+    public enum ActionType implements FacilioEnum {
+        ADD("Add"),
+        UPDATE("Update"),
+        DELETE("Delete"),
+        ;
+
+        private String name;
+
+        ActionType(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String getValue() {
+            return name;
+        }
+
+        @Override
+        public Integer getIndex() {
+            return ordinal() + 1;
+        }
+
+        public static ActionType valueOf(int type) {
             if (type > 0 && type <= values().length) {
                 return values()[type - 1];
             }

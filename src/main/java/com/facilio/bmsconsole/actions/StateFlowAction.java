@@ -57,15 +57,17 @@ public class StateFlowAction extends FacilioAction {
 	
 	public String addOrUpdateStateTransition() throws Exception {
 		FacilioContext context = new FacilioContext();
+
+		boolean add  = stateTransition.getId() <= 0;
 		
 		updateStateContext(context);
 		FacilioChain chain = TransactionChainFactory.getAddOrUpdateStateFlowTransition();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.TRANSITION, stateTransition);
-		sendAuditLogs(new AuditLogHandler.AuditLogContext("Add Or Update State Transition",
-				"State transition has been updated", AuditLogHandler.RecordType.SETTING,
-				"StateTransition", stateTransition.getId()));
+		sendAuditLogs(new AuditLogHandler.AuditLogContext("State Transition is " + (add ? "added" : "updated"),
+				"State transition has been " + (add ? "added" : "updated"), AuditLogHandler.RecordType.SETTING,
+				"StateTransition", stateTransition.getId()).setActionType(add ? AuditLogHandler.ActionType.ADD : AuditLogHandler.ActionType.UPDATE));
 		return SUCCESS;
 	}
 	

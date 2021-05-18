@@ -8257,6 +8257,7 @@ public class FieldFactory {
 
         list.add(getField("showInTenantPortal", "SHOW_IN_TENANT_PORTAL", stageRuleModule, FieldType.BOOLEAN));
         list.add(getField("showInVendorPortal", "SHOW_IN_VENDOR_PORTAL", stageRuleModule, FieldType.BOOLEAN));
+        list.add(getField("showInOccupantPortal", "SHOW_IN_OCCUPANT_PORTAL", stageRuleModule, FieldType.BOOLEAN));
         return list;
     }
 
