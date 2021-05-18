@@ -124,6 +124,9 @@ public class AuditLogHandler extends BaseHandler {
 
         private ActionType actionType;
         public int getActionType() {
+            if (actionType == null) {
+                return -1;
+            }
             return actionType.getIndex();
         }
         public ActionType getActionTypeEnum() {
@@ -199,6 +202,7 @@ public class AuditLogHandler extends BaseHandler {
                 return FieldUtil.getAsJSON(this);
             } catch (Exception ex) {
                // log the exception
+                LOGGER.error(ex);
             }
             return null;
         }
