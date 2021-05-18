@@ -6,8 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import org.apache.commons.chain.Context;
 
+import com.facilio.agent.commands.UpdateAgentMessageCommand;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormRuleContext;
@@ -21,7 +25,8 @@ import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 
 public class ValidateAndFillFromRuleParamsCommand extends FacilioCommand {
-
+	
+	private static final Logger LOGGER = LogManager.getLogger(ValidateAndFillFromRuleParamsCommand.class.getName());
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		
@@ -118,6 +123,8 @@ public class ValidateAndFillFromRuleParamsCommand extends FacilioCommand {
 			}
 		}
 		
+		LOGGER.info("ruleInfoObject - formRuleContexts"+ formRuleContexts);
+		LOGGER.info("ruleInfoObject - formData"+ formData + triggerType);
 		context.put(ContextNames.FORM, form);
 		
 		return false;

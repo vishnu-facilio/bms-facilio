@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 
 import com.facilio.bmsconsole.forms.FacilioForm;
@@ -19,7 +21,7 @@ import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 
 public class ExecuteFormActionRulesCommand extends FacilioCommand {
-
+	private static final Logger LOGGER = LogManager.getLogger(ExecuteFormActionRulesCommand.class.getName());
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		
@@ -39,6 +41,7 @@ public class ExecuteFormActionRulesCommand extends FacilioCommand {
 				formRuleContext.setFormContext(form);
 			}
 			boolean flag = formRuleContext.evaluateCriteria(formData, (FacilioContext)context);
+			LOGGER.info("ruleInfoObject - flag"+ flag);
 			if(flag) {
 				formRuleContext.executeAction((FacilioContext)context);
 			}
