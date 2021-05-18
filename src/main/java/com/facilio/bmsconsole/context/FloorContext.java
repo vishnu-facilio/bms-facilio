@@ -32,6 +32,10 @@ public class FloorContext extends BaseSpaceContext {
 		this.defaultFloorPlanId = defaultFloorPlanId;
 	}
 
+	private long indoorFloorPlanId;
+
+	
+
 	private String floorPlanInfo;
 	
 	public String getFloorPlanInfo() {
@@ -50,4 +54,19 @@ public class FloorContext extends BaseSpaceContext {
 	public void setNoOfIndependentSpaces(long noOfIndependentSpaces) {
 		this.noOfIndependentSpaces = noOfIndependentSpaces;
 	}
+
+    /**
+     * @return long return the indoorFloorPlanId
+     */
+    public long getIndoorFloorPlanId() {
+        return indoorFloorPlanId;
+    }
+
+    /**
+     * @param indoorFloorPlanId the indoorFloorPlanId to set
+     */
+    public void setIndoorFloorPlanId(long indoorFloorPlanId) {
+        this.indoorFloorPlanId = indoorFloorPlanId;
+    }
+
 }
