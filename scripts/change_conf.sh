@@ -77,6 +77,7 @@ fi
 if [ "$DEPLOYMENT_GROUP_NAME" = "syd-production-scheduler" ]; then
     echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
     cp $FACILIO_HOME/deployment-files/awsprops-syd-scheduler.properties $CONF_DIR/awsprops.properties
+    cp $FACILIO_HOME/deployment-files/log4j-syd-scheduler.properties $CLASSES_DIR/log4j.properties
     cp $FACILIO_HOME/deployment-files/service-syd.yml $CONF_DIR/service.yml
     cp $FACILIO_HOME/setenv-syd.sh $APP_HOME/bin/setenv.sh
     echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
@@ -85,6 +86,7 @@ fi
 if [ "$DEPLOYMENT_GROUP_NAME" = "syd-production-user" ]; then
     echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
     cp $FACILIO_HOME/deployment-files/awsprops-syd-user.properties $CONF_DIR/awsprops.properties
+    cp $FACILIO_HOME/deployment-files/log4j-syd-user.properties $CLASSES_DIR/log4j.properties
     cp $FACILIO_HOME/deployment-files/service-syd.yml $CONF_DIR/service.yml
     cp $FACILIO_HOME/setenv-syd.sh $APP_HOME/bin/setenv.sh
     echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
