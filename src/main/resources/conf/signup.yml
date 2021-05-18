@@ -51,6 +51,10 @@ classes:
   - com.facilio.bmsconsoleV3.signup.scoping.PeopleAnnouncementScopingConfig
   - com.facilio.bmsconsoleV3.signup.scoping.VisitorLoggingScopingConfig
   - com.facilio.bmsconsoleV3.signup.scoping.SafetyPlanScopingConfig
+
+  # Adding default jobs
+  - com.facilio.bmsconsoleV3.signup.jobs.DefaultJobsOnSignUp
+
     # adding site module
   - com.facilio.bmsconsoleV3.signup.moduleconfig.SiteModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.FloorModule
