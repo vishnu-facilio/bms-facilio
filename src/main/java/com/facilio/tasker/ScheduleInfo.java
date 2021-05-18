@@ -329,7 +329,7 @@ public class ScheduleInfo implements Serializable {
 					throw new IllegalArgumentException("Invalid value range of Months");
 				}
 				addAndSortValue(zdt.getMonthValue());
-				if(!values.contains(zdt.getMonthValue()) || (yearlyDayValue != -1 && yearlyDayValue < zdt.getDayOfMonth()) || zdt.toLocalTime().isAfter(times.get(times.size() - 1).plusSeconds(1))) {
+				if(!values.contains(zdt.getMonthValue()) || (zdt.toLocalTime().isAfter(times.get(times.size() - 1).plusSeconds(1)) && (yearlyDayValue == -1 || yearlyDayValue < zdt.getDayOfMonth())) ) {
 					zdt = incrementYear(zdt, 1);
 				}
 				else if (yearlyDayValue != -1 && yearlyDayValue > zdt.getDayOfMonth()) {

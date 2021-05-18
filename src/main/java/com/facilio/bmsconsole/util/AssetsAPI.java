@@ -38,6 +38,7 @@ import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsoleV3.context.AssetDepartmentContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -1647,6 +1648,25 @@ public class AssetsAPI {
 		
 		FacilioChain deleteAssetChain = FacilioChainFactory.getDeleteAssetChain();
 		deleteAssetChain.execute(context);
+	}
+	
+	public static long getAssetExpiryRuleId() throws Exception {
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleFields());
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+		
+		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
+		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), String.valueOf(assetModule.getModuleId()),NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("ruleType"), String.valueOf(RuleType.BUSSINESS_LOGIC_ASSET_RULE.getIntVal()),NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("name"), "Warranty Expiry", StringOperators.IS))
+				;
+
+		ruleBuilder.select(Collections.singletonList(FieldFactory.getIdField(module)));
+		return (long) ruleBuilder.fetchFirst().get("id");
 	}
 	
 }
