@@ -8,10 +8,13 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.FormRuleAction;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.BaseScheduleContext;
 import com.facilio.bmsconsole.context.RollUpField;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormActionType;
@@ -21,6 +24,7 @@ import com.facilio.bmsconsole.forms.FormRuleActionFieldsContext;
 import com.facilio.bmsconsole.forms.FormRuleContext;
 import com.facilio.bmsconsole.forms.FormRuleTriggerFieldContext;
 import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.bmsconsole.util.FormRuleAPI;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsole.util.RollUpFieldUtil;
@@ -57,6 +61,10 @@ import com.facilio.modules.fields.NumberField;
 import com.facilio.modules.fields.SystemEnumField;
 import com.facilio.qa.context.ResponseContext;
 import com.facilio.qa.signup.AddQAndAModules;
+import com.facilio.tasker.FacilioTimer;
+import com.facilio.tasker.ScheduleInfo;
+import com.facilio.tasker.ScheduleInfo.FrequencyType;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 
@@ -108,7 +116,25 @@ public class AddInspectionModules extends SignUpData {
         addDefaultStateFlow(inspectionResponseModule);
         
         addDefaultFormForInspectionTemplate(inspection);
+        
+        addDefaultScheduleJobs();
     }
+
+
+	public void addDefaultScheduleJobs() throws Exception {
+		// TODO Auto-generated method stub
+
+		FacilioTimer.schedulePeriodicJob(AccountUtil.getCurrentOrg().getId(), "ScheduleInspectionStatusChange", 50, 1800, "facilio");
+		
+		ScheduleInfo scheduleInfo = new ScheduleInfo();
+		scheduleInfo.setTimes(Collections.singletonList("00:00"));
+		scheduleInfo.setFrequencyType(FrequencyType.DAILY);
+		FacilioTimer.scheduleCalendarJob((long)BaseScheduleContext.ScheduleType.INSPECTION.getIndex(), "BaseSchedulerJob", DateTimeUtil.getCurrenTime(), scheduleInfo, "facilio");
+		
+		JSONObject props = new JSONObject();
+		props.put("saveAsV3", Boolean.TRUE);
+		BmsJobUtil.addJobProps((long)BaseScheduleContext.ScheduleType.INSPECTION.getIndex(), "BaseSchedulerJob", props);
+	}
 
 
 	public void addDefaultFormForInspectionTemplate(FacilioModule inspection) throws Exception {
