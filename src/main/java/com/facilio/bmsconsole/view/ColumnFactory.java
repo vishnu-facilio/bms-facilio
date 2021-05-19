@@ -1781,13 +1781,10 @@ public class ColumnFactory {
 	
 	private static List<ViewField> getDefaultMovesColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
-		columns.add(new ViewField("employee", "Employee"));
-		columns.add(new ViewField("department", "Department"));
 		columns.add(new ViewField("from", "From"));
 		columns.add(new ViewField("to", "To"));
 		columns.add(new ViewField("timeOfMove", "Time of Move"));
 		columns.add(new ViewField("moveType", "Move Type"));
-		columns.add(new ViewField("site", "Site"));
 		return columns;
 
 	}
@@ -1808,7 +1805,6 @@ public class ColumnFactory {
 		columns.add(new ViewField("name", "Lockers"));
 		columns.add(new ViewField("building", "Building"));
 		columns.add(new ViewField("area", "Total Area"));
-		columns.add(new ViewField("isOccupied", "Occupancy Status"));
 		columns.add(new ViewField("employee", "Employee"));
 
 		return columns;
@@ -1820,7 +1816,6 @@ public class ColumnFactory {
 		columns.add(new ViewField("name", "Parking Stall"));
 		columns.add(new ViewField("building", "Building"));
 		columns.add(new ViewField("area", "Total Area"));
-		columns.add(new ViewField("isOccupied", "Occupancy Status"));
 		columns.add(new ViewField("parkingType", "Parking Type"));
 
 		return columns;
