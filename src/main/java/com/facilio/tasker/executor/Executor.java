@@ -115,7 +115,6 @@ public class Executor implements Runnable {
 					rowsUpdated = statement.executeUpdate();
 					if(rowsUpdated == 1){
 						scheduledJobs.add(job);
-					LOGGER.info("Status updated in Job Executor for ensure.");
 					}
 					LOGGER.debug("query : " + statement.toString());
 				} catch (SQLException e) {
