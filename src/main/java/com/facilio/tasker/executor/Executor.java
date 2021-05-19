@@ -1,27 +1,28 @@
 package com.facilio.tasker.executor;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.*;
-import java.util.concurrent.*;
-
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.transaction.FacilioConnectionPool;
-import com.facilio.server.ServerInfo;
 import com.facilio.service.FacilioService;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.tasker.FacilioScheduler;
 import com.facilio.tasker.config.SchedulerJobConf;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 import com.facilio.tasker.job.JobStore;
 import com.facilio.tasker.job.JobTimeOutInfo;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.*;
 
 public class Executor implements Runnable {
 
@@ -54,13 +55,10 @@ public class Executor implements Runnable {
 		executor = Executors.newScheduledThreadPool(noOfThreads+1);
 		executor.scheduleAtFixedRate(this, 0, bufferPeriod*1000, TimeUnit.MILLISECONDS);
 	}
-	private int getNoOfFreeThreads(){
-		int freeThreads = 0;
-		if (executor instanceof ScheduledThreadPoolExecutor) {
-			ScheduledThreadPoolExecutor implementation = (ScheduledThreadPoolExecutor) executor;
-			freeThreads = implementation.getCorePoolSize() - implementation.getQueue().size();
-		}
-		return freeThreads;
+
+	private int getNoOfFreeThreads () {
+		ScheduledThreadPoolExecutor implementation = (ScheduledThreadPoolExecutor)executor;
+		return implementation.getActiveCount();
 	}
 	@Override
 	public void run()
@@ -77,8 +75,8 @@ public class Executor implements Runnable {
 			LOGGER.debug(name+"::"+startTime+"::"+endTime);
 			int freeThreads = getNoOfFreeThreads();
 			LOGGER.info("Initial number of free threads  : "+freeThreads);
-			List<JobContext> scheduledJobs = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,()->updateScheduledStatus(JobStore.getIncompletedJobs(name, startTime, endTime, getMaxRetry(), includedOrgs, excludedOrgs,freeThreads)));
-			scheduledJobs.addAll(FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,()->updateScheduledStatus(JobStore.getJobs(name, startTime, endTime, getMaxRetry(), includedOrgs, excludedOrgs,(freeThreads-scheduledJobs.size())))));
+			List<JobContext> scheduledJobs = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,()->JobStore.updateScheduledStatus(JobStore.getIncompletedJobs(name, startTime, endTime, getMaxRetry(), includedOrgs, excludedOrgs,freeThreads)));
+			scheduledJobs.addAll(FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,()->JobStore.updateScheduledStatus(JobStore.getJobs(name, startTime, endTime, getMaxRetry(), includedOrgs, excludedOrgs,(freeThreads-scheduledJobs.size())))));
 			LOGGER.info("Final Jobs to ready to execute count is  : "+(scheduledJobs.size()));
 			for(JobContext jc : scheduledJobs) {
 				try {
@@ -98,33 +96,6 @@ public class Executor implements Runnable {
 		finally {
 			currentThread.setName(threadName);
 		}
-	}
-
-	private List<JobContext> updateScheduledStatus ( List<JobContext> jobs ) {
-		List<JobContext> scheduledJobs = new ArrayList<>();
-		if(CollectionUtils.isNotEmpty(jobs)) {
-			for (JobContext job : jobs){
-				int rowsUpdated = 0;
-				String query = "update Jobs set STATUS = 4 where ORGID = ? AND JOBID = ? and JOBNAME= ? and EXECUTION_ERROR_COUNT = ? and STATUS != 4";
-				try(Connection connection = FacilioConnectionPool.getInstance().getDirectConnection();
-					PreparedStatement statement = connection.prepareStatement(query)){
-					statement.setLong(1, job.getOrgId());
-					statement.setLong(2, job.getJobId());
-					statement.setString(3,job.getJobName());
-					statement.setInt(4, job.getJobExecutionCount());
-					rowsUpdated = statement.executeUpdate();
-					if(rowsUpdated == 1){
-						scheduledJobs.add(job);
-					}
-					LOGGER.debug("query : " + statement.toString());
-				} catch (SQLException e) {
-					LOGGER.error("Exception while updating Job " + job.getJobName() + "_" + job.getJobId(), e);
-				}
-				LOGGER.debug("Updated Job " + job.getJobName() + " " + rowsUpdated );
-			}
-		}
-		LOGGER.info("Successfully scheduled updated Jobs "+scheduledJobs.size() +" out of "+ jobs.size());
-		return scheduledJobs;
 	}
 
 	private void scheduleJob(JobContext jc) throws InstantiationException, IllegalAccessException  {
