@@ -71,24 +71,27 @@ public class AddInspectionTriggersCommand extends FacilioCommand {
 			
 			triggers.stream().forEach((trigger) -> {
 				try {
-					BaseScheduleContext scheduleTrigger = trigger.getSchedule();
-					
-					scheduleTrigger.setModuleId(modBean.getModule(FacilioConstants.Inspection.INSPECTION_TEMPLATE).getModuleId());
-					scheduleTrigger.setRecordId(trigger.getParent().getId());
-					scheduleTrigger.setScheduleType(ScheduleType.INSPECTION);
-					scheduleTrigger.setDataModuleId(modBean.getModule(FacilioConstants.Inspection.INSPECTION_RESPONSE).getModuleId());
-					
-					GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-							.table(ModuleFactory.getBaseSchedulerModule().getTableName())
-			                .fields(FieldFactory.getBaseSchedulerFields());
-					
-					Map<String, Object> props = FieldUtil.getAsProperties(scheduleTrigger);
-					insertBuilder.addRecord(props);
-					insertBuilder.save();
-					
-					scheduleTrigger.setId((Long) props.get("id"));
-					
-					trigger.setScheduleId(scheduleTrigger.getId());
+					if(trigger.getType() == InspectionTriggerContext.TriggerType.SCHEDULE.getVal()) {
+						
+						BaseScheduleContext scheduleTrigger = trigger.getSchedule();
+						
+						scheduleTrigger.setModuleId(modBean.getModule(FacilioConstants.Inspection.INSPECTION_TEMPLATE).getModuleId());
+						scheduleTrigger.setRecordId(trigger.getParent().getId());
+						scheduleTrigger.setScheduleType(ScheduleType.INSPECTION);
+						scheduleTrigger.setDataModuleId(modBean.getModule(FacilioConstants.Inspection.INSPECTION_RESPONSE).getModuleId());
+						
+						GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+								.table(ModuleFactory.getBaseSchedulerModule().getTableName())
+				                .fields(FieldFactory.getBaseSchedulerFields());
+						
+						Map<String, Object> props = FieldUtil.getAsProperties(scheduleTrigger);
+						insertBuilder.addRecord(props);
+						insertBuilder.save();
+						
+						scheduleTrigger.setId((Long) props.get("id"));
+						
+						trigger.setScheduleId(scheduleTrigger.getId());
+					}
 					
 				}
 				catch(Exception e) {
@@ -126,16 +129,18 @@ public class AddInspectionTriggersCommand extends FacilioCommand {
 			
 			triggers.stream().forEach((trigger) -> {
 				
-				BaseScheduleContext baseSchedule = trigger.getSchedule();
-				
-				try {
-					BmsJobUtil.deleteJobWithProps(baseSchedule.getId(), "BaseSchedulerSingleInstanceJob");
+				if(trigger.getType() == InspectionTriggerContext.TriggerType.SCHEDULE.getVal()) {
+					BaseScheduleContext baseSchedule = trigger.getSchedule();
 					
-					FacilioTimer.scheduleOneTimeJobWithDelay(baseSchedule.getId(), "BaseSchedulerSingleInstanceJob", 10, "priority");
-					BmsJobUtil.addJobProps(baseSchedule.getId(), "BaseSchedulerSingleInstanceJob", props);
-					
-				} catch (Exception e) {
-					LOGGER.log(Level.SEVERE, e.getMessage(), e);
+					try {
+						BmsJobUtil.deleteJobWithProps(baseSchedule.getId(), "BaseSchedulerSingleInstanceJob");
+						
+						FacilioTimer.scheduleOneTimeJobWithDelay(baseSchedule.getId(), "BaseSchedulerSingleInstanceJob", 10, "priority");
+						BmsJobUtil.addJobProps(baseSchedule.getId(), "BaseSchedulerSingleInstanceJob", props);
+						
+					} catch (Exception e) {
+						LOGGER.log(Level.SEVERE, e.getMessage(), e);
+					}
 				}
 			});
 		}

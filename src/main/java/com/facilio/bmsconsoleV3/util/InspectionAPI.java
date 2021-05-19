@@ -64,20 +64,24 @@ public class InspectionAPI {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		List<Long> scheduleIds = triggers.stream().map(InspectionTriggerContext::getScheduleId).collect(Collectors.toList());
+		List<Long> scheduleIds = triggers.stream().filter((trigger) -> {
+				return trigger.getType() == InspectionTriggerContext.TriggerType.SCHEDULE.getVal() ? true : false; 
+		}).map(InspectionTriggerContext::getScheduleId).collect(Collectors.toList());
 		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getBaseSchedulerFields())
-				.table(ModuleFactory.getBaseSchedulerModule().getTableName())
-				.andCondition(CriteriaAPI.getIdCondition(scheduleIds, ModuleFactory.getBaseSchedulerModule()));
+		if(scheduleIds != null && !scheduleIds.isEmpty()) {
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+					.select(FieldFactory.getBaseSchedulerFields())
+					.table(ModuleFactory.getBaseSchedulerModule().getTableName())
+					.andCondition(CriteriaAPI.getIdCondition(scheduleIds, ModuleFactory.getBaseSchedulerModule()));
+				
+			List<Map<String, Object>> props = selectBuilder.get();
 			
-		List<Map<String, Object>> props = selectBuilder.get();
-		
-		List<BaseScheduleContext> baseSchedules = FieldUtil.getAsBeanListFromMapList(props, BaseScheduleContext.class);
-		
-		Map<Long, List<BaseScheduleContext>> baseScheduleIDMap = baseSchedules.stream().collect(Collectors.groupingBy(BaseScheduleContext::getId));
-		
-		triggers.forEach((trigger) -> {trigger.setSchedule(baseScheduleIDMap.get(trigger.getScheduleId()).get(0));});
+			List<BaseScheduleContext> baseSchedules = FieldUtil.getAsBeanListFromMapList(props, BaseScheduleContext.class);
+			
+			Map<Long, List<BaseScheduleContext>> baseScheduleIDMap = baseSchedules.stream().collect(Collectors.groupingBy(BaseScheduleContext::getId));
+			
+			triggers.forEach((trigger) -> {trigger.setSchedule(baseScheduleIDMap.get(trigger.getScheduleId()).get(0));});
+		}
 	}
 
 	private static void fetchInclExcl(List<InspectionTriggerContext> triggers) throws Exception {
