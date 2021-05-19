@@ -563,31 +563,4 @@ public class JobStore {
 		}
 		
 	}
-
-	public static List<JobContext> updateScheduledStatus ( List<JobContext> jobs ) {
-		List<JobContext> scheduledJobs = new ArrayList<>();
-		if(CollectionUtils.isNotEmpty(jobs)) {
-			for (JobContext job : jobs){
-				int rowsUpdated = 0;
-				String query = "update Jobs set STATUS = 4 where ORGID = ? AND JOBID = ? and JOBNAME= ? and EXECUTION_ERROR_COUNT = ? and STATUS != 4";
-				try(Connection connection = FacilioConnectionPool.getInstance().getDirectConnection();
-					PreparedStatement statement = connection.prepareStatement(query)){
-					statement.setLong(1, job.getOrgId());
-					statement.setLong(2, job.getJobId());
-					statement.setString(3,job.getJobName());
-					statement.setInt(4, job.getJobExecutionCount());
-					rowsUpdated = statement.executeUpdate();
-					if(rowsUpdated == 1){
-						scheduledJobs.add(job);
-					}
-					LOGGER.debug("query : " + statement.toString());
-				} catch (SQLException e) {
-					LOGGER.error("Exception while updating Job " + job.getJobName() + "_" + job.getJobId(), e);
-				}
-				LOGGER.debug("Updated Job " + job.getJobName() + " " + rowsUpdated );
-			}
-		}
-		LOGGER.info("Successfully scheduled updated Jobs "+scheduledJobs.size() +" out of "+ jobs.size());
-		return scheduledJobs;
-	}
 }

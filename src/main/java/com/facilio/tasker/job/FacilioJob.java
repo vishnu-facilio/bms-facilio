@@ -36,7 +36,10 @@ public abstract class FacilioJob implements Runnable {
     @Override
     public void run () {
         try {
-            FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,() -> JobStore.updateStartExecution(jc.getOrgId(),jc.getJobId(),jc.getJobName(),jc.getJobStartTime(),jc.getJobExecutionCount()));
+            if((FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,() -> JobStore.updateStartExecution(jc.getOrgId(),jc.getJobId(),jc.getJobName(),jc.getJobStartTime(),jc.getJobExecutionCount())) < 1)) {
+                executor.jobEnd(jc.getJobKey());
+                return;
+            }
             AccountUtil.cleanCurrentAccount();
             long startTime = 0L;
             Thread currentThread = Thread.currentThread();
