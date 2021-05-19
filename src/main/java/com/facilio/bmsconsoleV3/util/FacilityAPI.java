@@ -20,6 +20,10 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.LookupFieldMeta;
+import com.facilio.modules.fields.MultiLookupField;
+import com.facilio.modules.fields.MultiLookupMeta;
+import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.context.V3Context;
 import com.facilio.v3.util.CommandUtil;
@@ -306,11 +310,35 @@ public class FacilityAPI {
         String bookingModule = FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING;
         List<FacilioField> fields = modBean.getAllFields(bookingModule);
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+        
+        FacilioModule pplModule = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
+
+        List<SupplementRecord> fetchLookupsList = new ArrayList<>();
+        LookupFieldMeta facilityField = new LookupFieldMeta((LookupField) fieldsAsMap.get("facility"));
+        LookupField facilityLocationField = (LookupField) modBean.getField("location", FacilioConstants.ContextNames.FacilityBooking.FACILITY);
+        facilityField.addChildLookupField(facilityLocationField);
+
+        SupplementRecord reservedFor = (SupplementRecord) fieldsAsMap.get("reservedFor");
+
+        MultiLookupMeta internalAttendees = new MultiLookupMeta((MultiLookupField) fieldsAsMap.get("internalAttendees"));
+        FacilioField emailField = FieldFactory.getField("email", "EMAIL", pplModule, FieldType.STRING);
+        FacilioField phoneField = FieldFactory.getField("phone", "PHONE", pplModule, FieldType.STRING);
+
+        List<FacilioField> selectFieldsList = new ArrayList<>();
+        selectFieldsList.add(emailField);
+        selectFieldsList.add(phoneField);
+
+        internalAttendees.setSelectFields(selectFieldsList);
+
+        fetchLookupsList.add(facilityField);
+        fetchLookupsList.add(reservedFor);
+        fetchLookupsList.add(internalAttendees);
 
         SelectRecordsBuilder<V3FacilityBookingContext> builder = new SelectRecordsBuilder<V3FacilityBookingContext>()
                 .moduleName(bookingModule)
                 .select(fields)
-                .beanClass(V3FacilityBookingContext.class);
+                .beanClass(V3FacilityBookingContext.class)
+                .fetchSupplements(fetchLookupsList);
         if(facilityId != null) {
         	builder.andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("facility"), String.valueOf(facilityId), NumberOperators.EQUALS));
         }
