@@ -58,7 +58,7 @@ public class Executor implements Runnable {
 
 	private int getNoOfFreeThreads () {
 		ScheduledThreadPoolExecutor implementation = (ScheduledThreadPoolExecutor)executor;
-		return implementation.getActiveCount();
+		return (implementation.getCorePoolSize() - implementation.getActiveCount());
 	}
 	@Override
 	public void run()
