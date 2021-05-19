@@ -27,6 +27,7 @@ public class InspectionResponseSupplementSupplyCommand extends FacilioCommand {
 	        supplements.add((SupplementRecord) fieldMap.get("tenant"));
 	        supplements.add((SupplementRecord) fieldMap.get("category"));
 	        supplements.add((SupplementRecord) fieldMap.get("priority"));
+	        supplements.add((SupplementRecord) fieldMap.get("site"));
 
 	        context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, supplements);
 	        

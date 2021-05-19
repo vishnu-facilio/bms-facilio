@@ -28,6 +28,12 @@ public class QAndAReadOnlyChainFactory {
         return c;
     }
     
+    public static FacilioChain commonBeforeInspectionTemplateFetch() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddCommonSupplementsForQAndACommand());
+        return c;
+    }
+    
     public static FacilioChain commonAfterInspectionTemplateFetch() {
         FacilioChain c = getDefaultChain();
         c.addCommand(commonAfterQAndATemplateFetch());
