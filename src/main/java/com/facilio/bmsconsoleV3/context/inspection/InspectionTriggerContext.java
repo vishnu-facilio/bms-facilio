@@ -40,9 +40,20 @@ public class InspectionTriggerContext extends V3Context {
 	}
 	
 	public enum TriggerType {
-		SCHEDULE,
-		USER,
+		SCHEDULE("Schedule"),
+		USER("Manual"),
 		;
+		
+		String name;
+		
+		public String getName() {
+			return name;
+		}
+		
+		TriggerType (String name) {
+			this.name = name;
+		}
+		
 		
 		public int getVal() {
 			return ordinal() + 1;
