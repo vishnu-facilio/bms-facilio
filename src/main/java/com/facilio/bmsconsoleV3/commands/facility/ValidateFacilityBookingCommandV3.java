@@ -99,15 +99,17 @@ public class ValidateFacilityBookingCommandV3 extends FacilioCommand {
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Only " + facility.getMaxAttendeeCountPerBooking() + " attendees per booking is permitted");
                     }
                     int bookingAttendeesCount = 0;
-                    if (CollectionUtils.isNotEmpty(booking.getInternalAttendees())) {
-                        bookingAttendeesCount += booking.getInternalAttendees().size();
-                    }
-                    if (CollectionUtils.isNotEmpty(booking.getFacilityBookingExternalAttendee())) {
-                        bookingAttendeesCount += booking.getFacilityBookingExternalAttendee().size();
-                    }
+                    if(facility.isAttendeeListNeeded()) {
+                        if (CollectionUtils.isNotEmpty(booking.getInternalAttendees())) {
+                            bookingAttendeesCount += booking.getInternalAttendees().size();
+                        }
+                        if (CollectionUtils.isNotEmpty(booking.getFacilityBookingExternalAttendee())) {
+                            bookingAttendeesCount += booking.getFacilityBookingExternalAttendee().size();
+                        }
 
-                    if (bookingAttendeesCount != booking.getNoOfAttendees()) {
-                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Attendee List is not matching the booking count");
+                        if (bookingAttendeesCount != booking.getNoOfAttendees()) {
+                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Attendee List is not matching the booking count");
+                        }
                     }
                 }
             }
