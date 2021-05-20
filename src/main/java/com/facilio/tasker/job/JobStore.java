@@ -74,7 +74,7 @@ public class JobStore {
 				}
 				else {
                     SchedulerJobConf.Job schedulerJob = FacilioScheduler.getSchedulerJob(job.getJobName());
-                    pstmt.setInt(6, 100);
+                    pstmt.setInt(6, job.getTransactionTimeout());
 				}
 				
 				pstmt.setBoolean(7, job.isPeriodic());
