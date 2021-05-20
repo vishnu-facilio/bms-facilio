@@ -274,10 +274,10 @@ public class JobStore {
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 
-			StringBuilder sql = new StringBuilder("SELECT * FROM Jobs WHERE EXECUTOR_NAME = ? AND IS_ACTIVE = ? AND STATUS = ? AND NEXT_EXECUTION_TIME < ? AND EXECUTION_ERROR_COUNT < ?  LIMIT ?");
+			StringBuilder sql = new StringBuilder("SELECT * FROM Jobs WHERE EXECUTOR_NAME = ? AND IS_ACTIVE = ? AND STATUS = ? AND NEXT_EXECUTION_TIME < ? AND EXECUTION_ERROR_COUNT < ? ");
 			appendOrgId(sql, include, false);
 			appendOrgId(sql, exclude, true);
-
+			sql.append(" LIMIT ?");
 			getPstmt = conn.prepareStatement(sql.toString());
 			getPstmt.setString(1, executorName);
 			getPstmt.setBoolean(2, JobConstants.ENABLED);
@@ -313,9 +313,10 @@ public class JobStore {
 
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			StringBuilder sql = new StringBuilder("SELECT * FROM Jobs WHERE NEXT_EXECUTION_TIME < ? and EXECUTOR_NAME = ? AND IS_ACTIVE = ? AND STATUS = ? AND (CURRENT_EXECUTION_TIME + TRANSACTION_TIMEOUT) < ? AND EXECUTION_ERROR_COUNT < ?  LIMIT ?");
+			StringBuilder sql = new StringBuilder("SELECT * FROM Jobs WHERE NEXT_EXECUTION_TIME < ? and EXECUTOR_NAME = ? AND IS_ACTIVE = ? AND STATUS = ? AND (CURRENT_EXECUTION_TIME + TRANSACTION_TIMEOUT) < ? AND EXECUTION_ERROR_COUNT < ? ");
 			appendOrgId(sql, include, false);
 			appendOrgId(sql, exclude, true);
+			sql.append("  LIMIT ?");
 			getPstmt = conn.prepareStatement(sql.toString());
 			getPstmt.setLong(1, endTime);
 			getPstmt.setString(2, executorName);
