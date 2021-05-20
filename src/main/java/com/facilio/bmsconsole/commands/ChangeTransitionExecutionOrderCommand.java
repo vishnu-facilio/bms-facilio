@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -51,22 +52,25 @@ public class ChangeTransitionExecutionOrderCommand extends FacilioCommand {
 			}
 			
 			FacilioField executionOrderField = FieldFactory.getField("executionOrder", "EXECUTION_ORDER", ModuleFactory.getWorkflowRuleModule(), FieldType.NUMBER);
-			for (int i = 0; i < stateFlows.size(); i++) {
-				StateFlowRuleContext stateFlowRuleContext = stateFlows.get(i);
-				
-				GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
-						.table(ModuleFactory.getWorkflowRuleModule().getTableName())
-						.fields(Collections.singletonList(executionOrderField))
-						.andCondition(CriteriaAPI.getIdCondition(stateFlowRuleContext.getId(), ModuleFactory.getWorkflowRuleModule()))
-//						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getWorkflowRuleModule()));
-						;
-				
-				Map map = new HashMap<>();
-				map.put("executionOrder", i + 1);
-				builder.update(map);
+			int counter = 0;
+			for (StateFlowRuleContext stateFlowRuleContext : stateFlows) {
+				updateExecutionOrder(stateFlowRuleContext, executionOrderField, counter++);
 			}
+			updateExecutionOrder((StateFlowRuleContext) stateFlowAsMap.values().toArray()[0], executionOrderField, counter++);
 		}
 		return false;
+	}
+
+	private void updateExecutionOrder(StateFlowRuleContext stateFlowRuleContext, FacilioField executionOrderField, int i) throws SQLException {
+		GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+				.table(ModuleFactory.getWorkflowRuleModule().getTableName())
+				.fields(Collections.singletonList(executionOrderField))
+				.andCondition(CriteriaAPI.getIdCondition(stateFlowRuleContext.getId(), ModuleFactory.getWorkflowRuleModule()))
+				;
+
+		Map map = new HashMap<>();
+		map.put("executionOrder", i + 1);
+		builder.update(map);
 	}
 
 }

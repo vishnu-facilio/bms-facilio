@@ -201,7 +201,11 @@ public abstract class AbstractStateTransitionRuleContext extends ApproverWorkflo
         boolean shouldExecuteTrueActions = super.validateApproversForTrueAction(record);
 
         if (shouldExecuteTrueActions) {
-            boolean isValid = super.validationCheck(moduleRecord);
+            boolean isValid = true;
+
+            if (type == TransitionType.NORMAL) {
+                isValid = super.validationCheck(moduleRecord);
+            }
 
             if (isValid) {
                 boolean shouldExecute = true;

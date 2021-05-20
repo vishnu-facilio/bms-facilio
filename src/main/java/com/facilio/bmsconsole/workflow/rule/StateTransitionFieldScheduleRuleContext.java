@@ -39,16 +39,9 @@ public class StateTransitionFieldScheduleRuleContext extends WorkflowRuleContext
 
     @Override
     public void executeTrueActions(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(getModuleId());
-
         long stateTransitionId = getParentRuleId();
         StateflowTransitionContext stateTransition = (StateflowTransitionContext) StateFlowRulesAPI.getStateTransition(stateTransitionId);
-
-        ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) record;
-
-        FacilioStatus toStatus = TicketAPI.getStatus(stateTransition.getToStateId());
-        StateFlowRulesAPI.updateState(moduleRecord, module, toStatus, false, context);
+        stateTransition.executeTrueActions(record, context, placeHolders);
 
         super.executeTrueActions(record, context, placeHolders);
     }
