@@ -142,10 +142,10 @@ public class JobStore {
 		if(job.getJobId() == -1) {
 			throw new IllegalArgumentException("Job ID cannot be null");
 		}
-//
-//		if(FacilioScheduler.getSchedulerJob(job.getJobName()) == null) {
-//			throw new IllegalArgumentException("Scheduled Job is not configured");
-//		}
+
+		if(FacilioScheduler.getSchedulerJob(job.getJobName()) == null) {
+			throw new IllegalArgumentException("Scheduled Job is not configured");
+		}
 		
 		if(job.getJobName() == null || job.getJobName().isEmpty()) {
 			throw new IllegalArgumentException("Job name cannot be null");
