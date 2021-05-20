@@ -72,7 +72,9 @@ public class GetAllModulesCommand extends FacilioCommand {
 			ContextNames.INSURANCE,
 			ContextNames.ITEM_TRANSACTIONS,
 			ContextNames.TOOL_TRANSACTIONS,
-			ContextNames.DELIVERY_AREA
+			ContextNames.DELIVERY_AREA,
+			ContextNames.LOCKERS,
+			ContextNames.PARKING_STALL
 
     });
 
