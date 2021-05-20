@@ -30,7 +30,7 @@ public class InsurancePageFactory extends PageFactory{
 		
 		Section tab1Sec3 = page.new Section();
 		tab1.addSection(tab1Sec3);
-		addNotesModule(tab1Sec3);
+		addNotesAttachmentsModule(tab1Sec3);
 		
 		return page;
 	}
@@ -41,7 +41,7 @@ public class InsurancePageFactory extends PageFactory{
 		section.addWidget(detailsWidget);
 	}
 
-	private static PageWidget addNotesModule(Section section) {
+	private static PageWidget addNotesAttachmentsModule(Section section) {
 
 		PageWidget subModuleGroup = new PageWidget(WidgetType.GROUP);
 		subModuleGroup.addToLayoutParams(section, 24, 8);
@@ -51,6 +51,10 @@ public class InsurancePageFactory extends PageFactory{
 		PageWidget notesWidget = new PageWidget();
 		notesWidget.setWidgetType(WidgetType.COMMENT);
 		subModuleGroup.addToWidget(notesWidget);
+		
+		PageWidget attachmentWidget = new PageWidget();
+		attachmentWidget.setWidgetType(WidgetType.ATTACHMENT);
+		subModuleGroup.addToWidget(attachmentWidget);
 
 		return subModuleGroup;
 	}
