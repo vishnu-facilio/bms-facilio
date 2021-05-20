@@ -239,6 +239,7 @@ public class ColumnFactory {
 		columnMap.put(FacilioConstants.ContextNames.DEPARTMENT + "-default", getDefaultDepartmentColumns());
 		columnMap.put(FacilioConstants.ContextNames.MOVES + "-default", getDefaultMovesColumns());
 		columnMap.put(FacilioConstants.ContextNames.DELIVERIES + "-default", getDefaultDeliveriesColumns());
+		columnMap.put(FacilioConstants.ContextNames.DELIVERY_AREA + "-default", getDefaultDeliveryAreaColumns());
 		columnMap.put(FacilioConstants.ContextNames.LOCKERS + "-default", getDefaultLockersColumns());
 		columnMap.put(FacilioConstants.ContextNames.PARKING_STALL + "-default", getDefaultParkingStallColumns());
 		
@@ -1795,6 +1796,16 @@ public class ColumnFactory {
 		columns.add(new ViewField("receivedTime", "Received Time"));
 		columns.add(new ViewField("deliveredTime", "Delivered Time"));
 		columns.add(new ViewField("deliveryArea", "deliveryArea"));
+
+		return columns;
+
+	}
+	
+	private static List<ViewField> getDefaultDeliveryAreaColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Area"));
+		columns.add(new ViewField("location", "Location"));
+		columns.add(new ViewField("isActive", "Active status"));
 
 		return columns;
 

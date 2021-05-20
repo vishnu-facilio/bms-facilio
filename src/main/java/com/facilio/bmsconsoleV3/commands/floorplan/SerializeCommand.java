@@ -43,6 +43,7 @@ public class SerializeCommand extends FacilioCommand {
 
 		FacilioModule floorplanzones = modBean.getModule(FacilioConstants.ContextNames.Floorplan.MARKED_ZONES);
 		List<FacilioField> zonesFields = modBean.getAllFields(floorplanzones.getName());
+		Map<String, FacilioField> zonesFieldMap = FieldFactory.getAsMap(fields);
 
 		if (CollectionUtils.isNotEmpty(floorplans)) {
 
@@ -58,10 +59,14 @@ public class SerializeCommand extends FacilioCommand {
 				List<V3MarkerContext> markers = builder.get();
 
 				floorplan.setMarkers(markers);
+				
+				List<LookupField> supplements = new ArrayList<>();
+				supplements.add((LookupField) zonesFieldMap.get("space"));
 
 				SelectRecordsBuilder zonesBuilder = new SelectRecordsBuilder()
 						.module(modBean.getModule(floorplanzones.getName())).select(zonesFields)
-						.beanClass(V3MarkerdZonesContext.class);
+						.beanClass(V3MarkerdZonesContext.class)
+						.fetchSupplements(supplements);
 
 				zonesBuilder.andCondition(CriteriaAPI.getCondition("FLOORPLAN_ID", "floorplanId",
 						String.valueOf(floorplan.getId()), NumberOperators.EQUALS));
