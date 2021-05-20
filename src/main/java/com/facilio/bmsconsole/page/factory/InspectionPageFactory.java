@@ -77,7 +77,7 @@ public class InspectionPageFactory extends PageFactory {
         criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("parent"), record.getId()+"", NumberOperators.EQUALS));
         
 		addChartParams(inspectionCountInsight, "donut",null, "responseStatus", null,  null , null, DateOperators.CURRENT_YEAR, null, criteria, "sysCreatedTime", FacilioConstants.Inspection.INSPECTION_RESPONSE);
-		
+		inspectionCountInsight.addToWidgetParams("type", "inspectionChart");
 		insightTabSec.addWidget(inspectionCountInsight);
 		
         PageWidget inspectionQuestions = new PageWidget(PageWidget.WidgetType.INSPECTION_TEMPLATE_inspectionQuestions);
