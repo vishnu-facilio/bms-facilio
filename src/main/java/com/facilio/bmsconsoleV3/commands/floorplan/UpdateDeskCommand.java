@@ -47,8 +47,7 @@ public class UpdateDeskCommand extends FacilioCommand {
                             	if(changes != null && !changes.isEmpty()) {
                             		deskChangeSet.putAll(changes);
                             	}
-                            }
-                            if (desk.getId() < 0 || desk != null) {
+                            } else if (desk.getId() < 0 || desk != null) {
                                 addDeskList.add(desk);
                             }
 						}

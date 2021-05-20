@@ -46,6 +46,7 @@ public class DesksAPI {
 			facility.setName(desk.getName());
 			facility.setParentModuleId(deskModule.getModuleId());
 			facility.setParentId(desk.getId());
+			facility.setSiteId(desk._getSiteId());
 			BaseSpaceContext location = SpaceAPI.getBaseSpace(desk.getId());
 			facility.setLocation(location);
 			facility.setFacilityType(2);
@@ -147,10 +148,11 @@ public static void AddorDeleteFacilityForSpace(V3MarkerdZonesContext zone) throw
 			List<FacilityContext> facilityprop = new ArrayList<FacilityContext>();
 			FacilityContext facility = new FacilityContext();
 			
-			facility.setName(space.getName());
+			BaseSpaceContext location = SpaceAPI.getBaseSpace(space.getId());
+			facility.setName(location.getName());
 			facility.setParentModuleId(spaceModule.getModuleId());
 			facility.setParentId(space.getId());
-			BaseSpaceContext location = SpaceAPI.getBaseSpace(space.getId());
+			facility.setSiteId(location.getSiteId());
 			facility.setLocation(location);
 			facility.setFacilityType(2);
 			facility.setUsageCapacity(100);
