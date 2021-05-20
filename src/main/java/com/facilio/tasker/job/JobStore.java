@@ -588,7 +588,7 @@ public class JobStore {
 				LOGGER.debug("Updated Job " + job.getJobName() + " " + rowsUpdated );
 			}
 		}
-		LOGGER.info("Successfully scheduled updated Jobs "+scheduledJobs.size() +" out of "+ jobs.size());
+		LOGGER.debug("Successfully scheduled updated Jobs "+scheduledJobs.size() +" out of "+ jobs.size());
 		return scheduledJobs;
 	}
 }

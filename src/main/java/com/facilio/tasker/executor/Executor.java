@@ -74,10 +74,10 @@ public class Executor implements Runnable {
 			
 			LOGGER.debug(name+"::"+startTime+"::"+endTime);
 			int freeThreads = getNoOfFreeThreads();
-			LOGGER.info("Initial number of free threads  : "+freeThreads);
+//			LOGGER.info("Initial number of free threads  : "+freeThreads);
 			List<JobContext> scheduledJobs = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,()->JobStore.updateScheduledStatus(JobStore.getIncompletedJobs(name, startTime, endTime, getMaxRetry(), includedOrgs, excludedOrgs,freeThreads)));
 			scheduledJobs.addAll(FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,()->JobStore.updateScheduledStatus(JobStore.getJobs(name, startTime, endTime, getMaxRetry(), includedOrgs, excludedOrgs,(freeThreads- scheduledJobs.size())))));
-			LOGGER.info("Final Jobs to ready to execute count is  : "+(scheduledJobs.size()));
+//			LOGGER.info("Final Jobs to ready to execute count is  : "+(scheduledJobs.size()));
 			for(JobContext jc : scheduledJobs) {
 				try {
 					scheduleJob(jc);
