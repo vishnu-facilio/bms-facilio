@@ -74,7 +74,7 @@ public class JobStore {
 				}
 				else {
                     SchedulerJobConf.Job schedulerJob = FacilioScheduler.getSchedulerJob(job.getJobName());
-                    pstmt.setInt(6, schedulerJob.getTransactionTimeout());
+                    pstmt.setInt(6, 100);
 				}
 				
 				pstmt.setBoolean(7, job.isPeriodic());
@@ -142,10 +142,10 @@ public class JobStore {
 		if(job.getJobId() == -1) {
 			throw new IllegalArgumentException("Job ID cannot be null");
 		}
-
-		if(FacilioScheduler.getSchedulerJob(job.getJobName()) == null) {
-			throw new IllegalArgumentException("Scheduled Job is not configured");
-		}
+//
+//		if(FacilioScheduler.getSchedulerJob(job.getJobName()) == null) {
+//			throw new IllegalArgumentException("Scheduled Job is not configured");
+//		}
 		
 		if(job.getJobName() == null || job.getJobName().isEmpty()) {
 			throw new IllegalArgumentException("Job name cannot be null");
@@ -264,7 +264,7 @@ public class JobStore {
 		}
 	}
 	
-	public static List<JobContext> getJobs(String executorName, long startTime, long endTime, int maxRetry, List<Long> include, List<Long> exclude) throws SQLException, JsonParseException, JsonMappingException, IOException, ParseException {
+	public static List<JobContext> getJobs(String executorName, long startTime, long endTime, int maxRetry, List<Long> include, List<Long> exclude, int limit) throws SQLException, JsonParseException, JsonMappingException, IOException, ParseException {
 		Connection conn = null;
 		PreparedStatement getPstmt = null;
 		ResultSet rs = null;
@@ -274,7 +274,7 @@ public class JobStore {
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 
-			StringBuilder sql = new StringBuilder("SELECT * FROM Jobs WHERE EXECUTOR_NAME = ? AND IS_ACTIVE = ? AND STATUS = ? AND NEXT_EXECUTION_TIME < ? AND EXECUTION_ERROR_COUNT < ?");
+			StringBuilder sql = new StringBuilder("SELECT * FROM Jobs WHERE EXECUTOR_NAME = ? AND IS_ACTIVE = ? AND STATUS = ? AND NEXT_EXECUTION_TIME < ? AND EXECUTION_ERROR_COUNT < ?  LIMIT ?");
 			appendOrgId(sql, include, false);
 			appendOrgId(sql, exclude, true);
 
@@ -284,7 +284,7 @@ public class JobStore {
 			getPstmt.setInt(3, JobConstants.JOB_COMPLETED);
 			getPstmt.setLong(4, endTime);
 			getPstmt.setInt(5, maxRetry);
-
+			getPstmt.setInt(6,limit);
 			rs = getPstmt.executeQuery();
 			while(rs.next()) {
 				jcs.add(getJobFromRS(rs));
@@ -304,7 +304,7 @@ public class JobStore {
 //		return getIncompletedJobs(executorName, startTime, endTime, maxRetry, null, null);
 //	}
 
-	public static List<JobContext> getIncompletedJobs(String executorName, long startTime, long endTime, int maxRetry, List<Long> include, List<Long> exclude) throws SQLException, IOException, ParseException {
+	public static List<JobContext> getIncompletedJobs(String executorName, long startTime, long endTime, int maxRetry, List<Long> include, List<Long> exclude, int limit) throws SQLException, IOException, ParseException {
 		Connection conn = null;
 		PreparedStatement getPstmt = null;
 		ResultSet rs = null;
@@ -313,7 +313,7 @@ public class JobStore {
 
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			StringBuilder sql = new StringBuilder("SELECT * FROM Jobs WHERE NEXT_EXECUTION_TIME < ? and EXECUTOR_NAME = ? AND IS_ACTIVE = ? AND STATUS = ? AND (CURRENT_EXECUTION_TIME + TRANSACTION_TIMEOUT) < ? AND EXECUTION_ERROR_COUNT < ?");
+			StringBuilder sql = new StringBuilder("SELECT * FROM Jobs WHERE NEXT_EXECUTION_TIME < ? and EXECUTOR_NAME = ? AND IS_ACTIVE = ? AND STATUS = ? AND (CURRENT_EXECUTION_TIME + TRANSACTION_TIMEOUT) < ? AND EXECUTION_ERROR_COUNT < ?  LIMIT ?");
 			appendOrgId(sql, include, false);
 			appendOrgId(sql, exclude, true);
 			getPstmt = conn.prepareStatement(sql.toString());
@@ -323,7 +323,7 @@ public class JobStore {
 			getPstmt.setInt(4, JobConstants.JOB_IN_PROGRESS);
 			getPstmt.setLong(5, System.currentTimeMillis());
 			getPstmt.setInt(6, maxRetry);
-
+			getPstmt.setInt(7,limit);
 			rs = getPstmt.executeQuery();
 			while(rs.next()) {
 				jcs.add(getJobFromRS(rs));
@@ -562,5 +562,32 @@ public class JobStore {
 			DBUtil.closeAll(conn, pstmt);
 		}
 		
+	}
+
+	public static List<JobContext> updateScheduledStatus ( List<JobContext> jobs ) {
+		List<JobContext> scheduledJobs = new ArrayList<>();
+		if(CollectionUtils.isNotEmpty(jobs)) {
+			for (JobContext job : jobs){
+				int rowsUpdated = 0;
+				String query = "update Jobs set STATUS = 4 where ORGID = ? AND JOBID = ? and JOBNAME= ? and EXECUTION_ERROR_COUNT = ? and STATUS != 4";
+				try(Connection connection = FacilioConnectionPool.getInstance().getDirectConnection();
+					PreparedStatement statement = connection.prepareStatement(query)){
+					statement.setLong(1, job.getOrgId());
+					statement.setLong(2, job.getJobId());
+					statement.setString(3,job.getJobName());
+					statement.setInt(4, job.getJobExecutionCount());
+					rowsUpdated = statement.executeUpdate();
+					if(rowsUpdated == 1){
+						scheduledJobs.add(job);
+					}
+					LOGGER.debug("query : " + statement.toString());
+				} catch (SQLException e) {
+					LOGGER.error("Exception while updating Job " + job.getJobName() + "_" + job.getJobId(), e);
+				}
+				LOGGER.debug("Updated Job " + job.getJobName() + " " + rowsUpdated );
+			}
+		}
+		LOGGER.info("Successfully scheduled updated Jobs "+scheduledJobs.size() +" out of "+ jobs.size());
+		return scheduledJobs;
 	}
 }
