@@ -5303,6 +5303,9 @@ public class TransactionChainFactory {
 		c.addCommand(new GenericAddModuleDataListCommand());
 		c.addCommand(new UpdatePeoplePrimaryContactCommand());
 		c.addCommand(new UpdateVendorContactAppPortalAccessCommand());
+		c.addCommand(new ExecuteStateFlowCommand());
+		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.MODULE_RULE));
+		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 
 		return c;
 	}
