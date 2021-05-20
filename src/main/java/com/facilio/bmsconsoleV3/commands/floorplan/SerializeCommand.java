@@ -43,7 +43,7 @@ public class SerializeCommand extends FacilioCommand {
 
 		FacilioModule floorplanzones = modBean.getModule(FacilioConstants.ContextNames.Floorplan.MARKED_ZONES);
 		List<FacilioField> zonesFields = modBean.getAllFields(floorplanzones.getName());
-		Map<String, FacilioField> zonesFieldMap = FieldFactory.getAsMap(fields);
+		Map<String, FacilioField> zonesFieldMap = FieldFactory.getAsMap(zonesFields);
 
 		if (CollectionUtils.isNotEmpty(floorplans)) {
 

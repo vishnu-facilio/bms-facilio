@@ -1188,7 +1188,9 @@ public class APIv3Config {
                 .update()
                 .afterSave(new UpdateEmployeeInDesksCommandV3())
                 .list()
+                .beforeFetch(new LoadMovesLookupCommand())
                 .summary()
+                .beforeFetch(new LoadMovesLookupCommand())
                 .build();
     }
     
@@ -1210,7 +1212,9 @@ public class APIv3Config {
                 .create()
                 .update()
                 .list()
+                .beforeFetch(new LoadDeliveryAreaLookupCommand())
                 .summary()
+                .beforeFetch(new LoadDeliveryAreaLookupCommand())
                 .build();
     }
     
