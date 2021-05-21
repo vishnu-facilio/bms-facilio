@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.enums.SourceType;
+import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -31,32 +32,32 @@ public class ImportBuildingAction {
 	private Long siteId;
 	
 	private HashMap<String, ImportSiteAction> building = null;
-	
-	public Long addBuilding(String buildingName, Long siteId, Long importId) throws Exception
-	{			
-			BuildingContext building = new BuildingContext();
-			building.setSpaceType(SpaceType.BUILDING);
-			building.setName(buildingName);
-			building.setSiteId(siteId);
-			building.setSourceType(SourceType.IMPORT.getIndex());
-			building.setSourceId(importId);
 
-		
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BUILDING);
-			
-			InsertRecordBuilder<BuildingContext> builder = new InsertRecordBuilder<BuildingContext>()
-															.moduleName(module.getName())
-															.table(module.getTableName())
-															.fields(modBean.getAllFields(module.getName()));
+	public Long addBuilding(String buildingName, Long siteId, Long importId) throws Exception {
+		BuildingContext building = new BuildingContext();
+		building.setSpaceType(SpaceType.BUILDING);
+		building.setName(buildingName);
+		building.setSiteId(siteId);
+		building.setSourceType(SourceType.IMPORT.getIndex());
+		building.setSourceId(importId);
 
-															
-			long id = builder.insert(building);
 
-			SpaceAPI.updateHelperFields(building);
-				
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BUILDING);
+		ImportAPI.setDefaultStateFlowAndStatus(building, module);
+
+		InsertRecordBuilder<BuildingContext> builder = new InsertRecordBuilder<BuildingContext>()
+				.moduleName(module.getName())
+				.table(module.getTableName())
+				.fields(modBean.getAllFields(module.getName()));
+
+
+		long id = builder.insert(building);
+
+		SpaceAPI.updateHelperFields(building);
+
 		return id;
-		
+
 	}
 
 	public Long getBuildingId(String buildingName) throws Exception {

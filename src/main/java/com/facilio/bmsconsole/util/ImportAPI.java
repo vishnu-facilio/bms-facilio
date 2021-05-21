@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.commands.ImportProcessLogContext;
 import com.facilio.bmsconsole.commands.data.ProcessXLS;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
+import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -600,6 +601,7 @@ public class ImportAPI {
 						fields.add("id");
 					}
 				}
+				fields.add("formId");
 
 				if (AssetsAPI.isAssetsModule(facilioModule)) {
 
@@ -754,12 +756,18 @@ public class ImportAPI {
 	}
 
 	public static boolean isBaseSpaceExtendedModule(FacilioModule module) {
-		if (module.getName().equals(FacilioConstants.ContextNames.BASE_SPACE)) {
-			return true;
-		} else if (module.getExtendModule() != null) {
-			return isBaseSpaceExtendedModule(module.getExtendModule());
+		return module.instanceOf(FacilioConstants.ContextNames.BASE_SPACE);
+	}
+
+	public static void setDefaultStateFlowAndStatus(ModuleBaseWithCustomFields record, FacilioModule module) throws Exception {
+		StateFlowRuleContext defaultStateFlow = StateFlowRulesAPI.getDefaultStateFlow(module);
+		if (defaultStateFlow != null) {
+			record.setStateFlowId(defaultStateFlow.getId());
+			if (defaultStateFlow.getDefaultStateId() > 0) {
+				FacilioStatus status = StateFlowRulesAPI.getStateContext(defaultStateFlow.getDefaultStateId());
+				record.setModuleState(status);
+			}
 		}
-		return false;
 	}
 
 

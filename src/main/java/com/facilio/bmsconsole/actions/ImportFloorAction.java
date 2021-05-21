@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.enums.SourceType;
+import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -47,6 +48,7 @@ public class ImportFloorAction {
 	
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.FLOOR);
+		ImportAPI.setDefaultStateFlowAndStatus(floor, module);
 		
 		InsertRecordBuilder<FloorContext> builder = new InsertRecordBuilder<FloorContext>()
 				.moduleName(module.getName())

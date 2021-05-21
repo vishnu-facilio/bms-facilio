@@ -25,10 +25,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class GenericParseDataForImportCommand extends FacilioCommand {
@@ -72,9 +69,12 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 		ArrayList<FacilioField> requiredFields = getRequiredFields(moduleName);
 
 		FacilioModule module = modBean.getModule(moduleName);
+		List<FacilioField> fieldsList = modBean.getAllFields(moduleName);
+		Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fieldsList);
 		if (ImportAPI.isInsertImport(importProcessContext)) {
 			if (module!=null && module.isStateFlowEnabled() && !AssetsAPI.isAssetsModule(importProcessContext.getModule()) && !moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER)) {
-				if (!fieldMapping.containsKey(moduleName + "__moduleState")) {
+				FacilioField moduleStateField = fieldsMap.get("moduleState");
+				if (!fieldMapping.containsKey(moduleStateField.getModule().getName() + "__moduleState")) {
 					missingColumns.add("Module State");
 				}
 			}

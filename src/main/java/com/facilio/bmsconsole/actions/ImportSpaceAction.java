@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.enums.SourceType;
+import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -51,11 +52,11 @@ public class ImportSpaceAction {
 		if(buildingId != null) {
 			space.setBuildingId(buildingId);
 		}
-		
-	
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SPACE);
-		
+		ImportAPI.setDefaultStateFlowAndStatus(space, module);
+
+
 		InsertRecordBuilder<SpaceContext> builder = new InsertRecordBuilder<SpaceContext>()
 				.moduleName(module.getName())
 				.table(module.getTableName())
@@ -83,6 +84,7 @@ public class ImportSpaceAction {
 	
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SPACE);
+		ImportAPI.setDefaultStateFlowAndStatus(space, module);
 		
 		InsertRecordBuilder<SpaceContext> builder = new InsertRecordBuilder<SpaceContext>()
 				.moduleName(module.getName())
