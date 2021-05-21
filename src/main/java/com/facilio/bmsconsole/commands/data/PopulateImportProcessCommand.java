@@ -331,17 +331,7 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 
 	private static UpdateRecordBuilder<ReadingContext> appendUpdateBuilderConditions(List<ReadingContext> readingsList, int j, UpdateRecordBuilder<ReadingContext> updateBuilder, FacilioField facilioField, FacilioModule module) {
 
-		if(facilioField.getDataType() == FieldType.LOOKUP.getTypeAsInt()) {
-			Map<String, Object> lookupField = (Map<String,Object>) readingsList.get(j).getData().get(facilioField.getName());
-			Long lookupId = (Long)lookupField.get("id");
-			updateBuilder.andCondition(CriteriaAPI.getCondition(facilioField,String.valueOf(lookupId), NumberOperators.EQUALS));
-		}
-		else if(facilioField.getDataType() == FieldType.ENUM.getTypeAsInt()) {
-			String enumString = (String) readingsList.get(j).getData().get(facilioField.getName());
-			EnumField enumField = (EnumField) facilioField;
-			updateBuilder.andCondition(CriteriaAPI.getCondition(facilioField,String.valueOf(enumField.getIndex(enumString)), NumberOperators.EQUALS));
-		} 
-		else if (StringUtils.equals(facilioField.getName(), "id")) {
+		if (StringUtils.equals(facilioField.getName(), "id")) {
 			updateBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(module), String.valueOf(readingsList.get(j).getId()), NumberOperators.EQUALS));
 		} 
 		else if (StringUtils.equals(facilioField.getName(), "localId")) {
@@ -352,6 +342,18 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 		} 
 		else if (facilioField.getDataType() == FieldType.NUMBER.getTypeAsInt()) {
 			updateBuilder.andCondition(CriteriaAPI.getCondition(facilioField, String.valueOf(readingsList.get(j).getData().get(facilioField.getName())), NumberOperators.EQUALS));
+		}
+		else if(facilioField.getDataType() == FieldType.LOOKUP.getTypeAsInt()) {
+			Map<String, Object> lookupFieldValue = (Map<String,Object>) readingsList.get(j).getData().get(facilioField.getName());
+			if (lookupFieldValue != null) {
+				Long lookupId = (Long) lookupFieldValue.get("id");
+				updateBuilder.andCondition(CriteriaAPI.getCondition(facilioField,String.valueOf(lookupId), NumberOperators.EQUALS));
+			}
+		}
+		else if(facilioField.getDataType() == FieldType.ENUM.getTypeAsInt()) {
+			String enumString = (String) readingsList.get(j).getData().get(facilioField.getName());
+			EnumField enumField = (EnumField) facilioField;
+			updateBuilder.andCondition(CriteriaAPI.getCondition(facilioField,String.valueOf(enumField.getIndex(enumString)), NumberOperators.EQUALS));
 		}
 		else {
 			updateBuilder.andCondition(CriteriaAPI.getCondition(facilioField, String.valueOf(readingsList.get(j).getData().get(facilioField.getName())), StringOperators.IS));

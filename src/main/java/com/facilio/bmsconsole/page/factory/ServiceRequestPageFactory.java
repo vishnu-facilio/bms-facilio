@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.page.factory;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.context.ServiceRequestContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
@@ -14,7 +13,6 @@ import java.util.HashMap;
 public class ServiceRequestPageFactory extends PageFactory {
     public static Page getServiceRequestPage(ServiceRequestContext record, FacilioModule module) throws Exception {
 
-        if (FacilioProperties.isDevelopment() || (AccountUtil.getCurrentOrg().getId() == 204l || AccountUtil.getCurrentOrg().getId() == 75l || AccountUtil.getCurrentOrg().getId() == 1l)) {
             Page page = new Page();
 
             Page.Tab tab1 = page.new Tab("summary", "serviceRequestDetails");
@@ -53,8 +51,5 @@ public class ServiceRequestPageFactory extends PageFactory {
             }
 
             return page;
-        } else {
-            return CustomModulePageFactory.getCustomModulePage(record, module);
-        }
     }
 }

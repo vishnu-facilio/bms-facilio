@@ -577,7 +577,7 @@ public class ProcessImportCommand extends FacilioCommand {
 								LOGGER.severe("Process Import Lookup Exception -- Row No --" + row_no + " Fields Mapping --" + fieldMapping.get(key));
 								if (colVal.get(fieldMapping.get(key)) == null) {
 									throw new ImportFieldValueMissingException(row_no, fieldMapping.get(key), e);
-								} else if (e.getMessage().equals("Value not found")) {
+								} else if (e.getMessage() != null && e.getMessage().equals("Value not found")) {
 									throw new ImportLookupModuleValueNotFoundException(colVal.get(fieldMapping.get(key)).toString(), row_no, fieldMapping.get(key), e);
 								} else {
 									throw e;
@@ -886,7 +886,6 @@ public class ProcessImportCommand extends FacilioCommand {
 							newLocation.setLng(lon);
 							newLocation.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 
-							// newLocation.setSiteId((long)siteObj.get("id"));
 							long locationId = LocationAPI.addLocation(newLocation);
 							newLocation.setId(locationId);
 							return FieldUtil.getAsProperties(newLocation);
