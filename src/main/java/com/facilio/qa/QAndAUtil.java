@@ -10,16 +10,19 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.qa.command.QAndAReadOnlyChainFactory;
+import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.ClientAnswerContext;
 import com.facilio.qa.context.PageContext;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.QuestionHandler;
 import com.facilio.qa.context.questions.BaseMCQContext;
 import com.facilio.qa.context.questions.MCQOptionContext;
+import com.facilio.time.DateRange;
 import com.facilio.util.FacilioStreamUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.V3Builder.V3Config;
@@ -294,5 +297,22 @@ public class QAndAUtil {
             handler.afterFetch(questions);
         }
         return question;
+    }
+
+    public static SelectRecordsBuilder<AnswerContext> constructAnswerSelectWithQuestionAndResponseTimeRange(ModuleBean modBean, Collection<Long> questionIds, long parentId, DateRange range) throws Exception {
+        FacilioModule answerModule = modBean.getModule(FacilioConstants.QAndA.ANSWER);
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(answerModule.getName()));
+
+        FacilioModule responseModule = modBean.getModule(FacilioConstants.QAndA.RESPONSE);
+        FacilioField responseSysModifiedTime = modBean.getField("sysModifiedTime", responseModule.getName());
+        FacilioField responseIdField = FieldFactory.getIdField(responseModule);
+
+        return new SelectRecordsBuilder<AnswerContext>()
+                .module(answerModule)
+                .innerJoin(responseModule.getTableName())
+                .on(new StringBuilder().append(fieldMap.get("response").getCompleteColumnName()).append("=").append(responseIdField.getCompleteColumnName()).toString())
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("parent"), String.valueOf(parentId), PickListOperators.IS))
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("question"), questionIds, PickListOperators.IS))
+                .andCondition(CriteriaAPI.getCondition(responseSysModifiedTime, range.toString(), DateOperators.BETWEEN));
     }
 }

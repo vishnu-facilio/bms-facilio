@@ -84,15 +84,11 @@ public class MCQSingleAnswerHandler extends AnswerHandler<MCQSingleAnswerContext
         Map<Long, QuestionContext> questionMap = questions.stream().collect(Collectors.toMap(QuestionContext::_getId, Function.identity()));
 
         FacilioField idField = FieldFactory.getIdField(module);
-        List<Map<String, Object>> props = new SelectRecordsBuilder<AnswerContext>()
-                .module(module)
-                .select(Stream.of(questionField, enumAnswerField).collect(Collectors.toList()))
-                .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, idField)
-                .andCondition(CriteriaAPI.getCondition(fieldMap.get("parent"), String.valueOf(parentId), PickListOperators.IS))
-                .andCondition(CriteriaAPI.getCondition(questionField, questionMap.keySet(), PickListOperators.IS))
-                .andCondition(CriteriaAPI.getCondition(fieldMap.get("sysModifiedTime"), range.toString(), DateOperators.BETWEEN))
-                .groupBy(new StringJoiner(",").add(questionField.getCompleteColumnName()).add(enumAnswerField.getCompleteColumnName()).toString())
-                .getAsProps();
+        List<Map<String, Object>> props = QAndAUtil.constructAnswerSelectWithQuestionAndResponseTimeRange(modBean, questionMap.keySet(), parentId, range)
+                                            .select(Stream.of(questionField, enumAnswerField).collect(Collectors.toList()))
+                                            .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, idField)
+                                            .groupBy(new StringJoiner(",").add(questionField.getCompleteColumnName()).add(enumAnswerField.getCompleteColumnName()).toString())
+                                            .getAsProps();
 
         QAndAUtil.populateMCQSummary(props, questionMap, questionField, enumAnswerField, idField);
     }

@@ -105,17 +105,13 @@ public class MCQMultiAnswerHandler extends AnswerHandler<MCQMultiAnswerContext> 
         Map<Long, QuestionContext> questionMap = questions.stream().collect(Collectors.toMap(QuestionContext::_getId, Function.identity()));
 
         FacilioField idField = FieldFactory.getIdField(module);
-        List<Map<String, Object>> props = new SelectRecordsBuilder<AnswerContext>()
-                .module(module)
-                .innerJoin(relModule.getTableName())
-                .on(new StringJoiner("=").add(idField.getCompleteColumnName()).add(relFieldMap.get("left").getCompleteColumnName()).toString())
-                .select(Stream.of(questionField, enumField).collect(Collectors.toList()))
-                .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, idField)
-                .andCondition(CriteriaAPI.getCondition(fieldMap.get("parent"), String.valueOf(parentId), PickListOperators.IS))
-                .andCondition(CriteriaAPI.getCondition(questionField, questionMap.keySet(), PickListOperators.IS))
-                .andCondition(CriteriaAPI.getCondition(fieldMap.get("sysModifiedTime"), range.toString(), DateOperators.BETWEEN))
-                .groupBy(new StringJoiner(",").add(questionField.getCompleteColumnName()).add(enumField.getCompleteColumnName()).toString())
-                .getAsProps();
+        List<Map<String, Object>> props = QAndAUtil.constructAnswerSelectWithQuestionAndResponseTimeRange(modBean, questionMap.keySet(), parentId, range)
+                                            .innerJoin(relModule.getTableName())
+                                            .on(new StringBuilder().append(idField.getCompleteColumnName()).append("=").append(relFieldMap.get("left").getCompleteColumnName()).toString())
+                                            .select(Stream.of(questionField, enumField).collect(Collectors.toList()))
+                                            .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, idField)
+                                            .groupBy(new StringJoiner(",").add(questionField.getCompleteColumnName()).add(enumField.getCompleteColumnName()).toString())
+                                            .getAsProps();
 
         QAndAUtil.populateMCQSummary(props, questionMap, questionField, enumField, idField);
     }

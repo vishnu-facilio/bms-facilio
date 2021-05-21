@@ -29,6 +29,7 @@ import org.apache.commons.collections4.MapUtils;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -48,14 +49,11 @@ public class FetchAnswerSummaryForQuestionsCommand extends FacilioCommand {
                     try {
                         DateRange range = new DateRange(FacilioUtil.parseLong(startTimeObj), FacilioUtil.parseLong(endTimeObj));
                         Map<Long, QuestionContext> questions = pages.stream().flatMap(QAndAUtil::getQuestionStream)
-                                                                                .map(this::setShowResponse)
-                                                                                .filter(this::isSummaryNeeded)
-                                                                                .collect(Collectors.toMap(QuestionContext::_getId, Function.identity()));
+                                                            .collect(Collectors.toMap(QuestionContext::_getId, Function.identity()));
                         if (MapUtils.isNotEmpty(questions)) {
                             Long parentId = pages.get(0).getParent()._getId();
-                            fetchAnswered(questions, range, parentId);
-                            Map<QuestionType, List<QuestionContext>> questionTypeListMap = ExtendedModuleUtil.splitRecordsByType(questions.values(), QuestionContext::getQuestionType);
-                            questionTypeListMap.forEach((type, questionList) -> fetchSummaryViaHandler(type, parentId, questionList, range));
+                            fetchAnswered(questions, parentId, range);
+                            handleTypeWiseSummary(questions, parentId, range);
                         }
 
                     }
@@ -69,10 +67,22 @@ public class FetchAnswerSummaryForQuestionsCommand extends FacilioCommand {
         return false;
     }
 
+    private void handleTypeWiseSummary(Map<Long, QuestionContext> questionMap, Long parentId, DateRange range) {
+        List<QuestionContext> questions = questionMap.values().stream()
+                                            .map(this::setShowResponse)
+                                            .filter(this::isSummaryNeeded).collect(Collectors.toList());
+        if (CollectionUtils.isNotEmpty(questions)) {
+            Map<QuestionType, List<QuestionContext>> questionTypeListMap = ExtendedModuleUtil.splitRecordsByType(questions, QuestionContext::getQuestionType);
+            questionTypeListMap.forEach((type, questionList) -> fetchSummaryViaHandler(type, parentId, questionList, range));
+        }
+    }
+
     @SneakyThrows
     private QuestionContext setShowResponse (QuestionContext q) {
         QuestionHandler handler = q.getQuestionType().getQuestionHandler();
-        q.setShowResponses(handler == null || !handler.hideShowResponseButton(q));
+        q.setShowResponses( (handler == null || !handler.hideShowResponseButton(q))
+                            && q.getAnswered() != null && q.getAnswered() > 0)
+                            ;
         return q;
     }
 
@@ -90,24 +100,21 @@ public class FetchAnswerSummaryForQuestionsCommand extends FacilioCommand {
         }
     }
 
-    private void fetchAnswered (Map<Long, QuestionContext> questions, DateRange range, Long parentId) throws Exception {
+    private void fetchAnswered (Map<Long, QuestionContext> questions, Long parentId, DateRange range) throws Exception {
         ModuleBean modBean = Constants.getModBean();
-        FacilioModule module = modBean.getModule(FacilioConstants.QAndA.ANSWER);
-        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
+        FacilioModule answerModule = modBean.getModule(FacilioConstants.QAndA.ANSWER);
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(answerModule.getName()));
         FacilioField questionField = fieldMap.get("question");
-        FacilioField idField = FieldFactory.getIdField(module);
-        List<Map<String, Object>> props = new SelectRecordsBuilder<AnswerContext>()
-                                            .module(module)
+        FacilioField answerIdField = FieldFactory.getIdField(answerModule);
+
+        List<Map<String, Object>> props = QAndAUtil.constructAnswerSelectWithQuestionAndResponseTimeRange(modBean, questions.keySet(), parentId, range)
                                             .select(Collections.singletonList(questionField))
-                                            .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, idField)
-                                            .andCondition(CriteriaAPI.getCondition(fieldMap.get("parent"), String.valueOf(parentId), PickListOperators.IS))
-                                            .andCondition(CriteriaAPI.getCondition(questionField, questions.keySet(), PickListOperators.IS))
-                                            .andCondition(CriteriaAPI.getCondition(fieldMap.get("sysModifiedTime"), range.toString(), DateOperators.BETWEEN))
+                                            .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, answerIdField)
                                             .groupBy(questionField.getCompleteColumnName())
                                             .getAsProps();
 
         for (Map<String, Object> prop : props) {
-            Integer count = ((Number) prop.get(idField.getName())).intValue();
+            Integer count = ((Number) prop.get(answerIdField.getName())).intValue();
             Long questionId = (Long) ( (Map<String, Object>) prop.get(questionField.getName()) ).get("id");
             questions.get(questionId).setAnswered(count);
         }
