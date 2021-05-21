@@ -64,7 +64,7 @@ const pupeteer = require(homedir + '/.npm-global/lib/node_modules/puppeteer');
 		await page.setExtraHTTPHeaders(headers);
 
 		page.on('response', async (response) => {
-			if (response.status() == 502) { // If server is not available, retry again
+			if (!errorOccurred && response.status() == 502) { // If server is not available, retry again
 				errorOccurred = true;
 				--retryCount;
 				console.log('Server not reachable for pdf generation', await response.text());
