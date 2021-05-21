@@ -3,7 +3,6 @@ package com.facilio.tasker.executor;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.service.FacilioService;
 import com.facilio.tasker.FacilioScheduler;
 import com.facilio.tasker.config.SchedulerJobConf;
@@ -11,14 +10,9 @@ import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 import com.facilio.tasker.job.JobStore;
 import com.facilio.tasker.job.JobTimeOutInfo;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -74,19 +68,19 @@ public class Executor implements Runnable {
 			
 			LOGGER.debug(name+"::"+startTime+"::"+endTime);
 			int freeThreads = getNoOfFreeThreads();
-//			LOGGER.info("Initial number of free threads  : "+freeThreads);
-			List<JobContext> scheduledJobs = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,()->JobStore.updateScheduledStatus(JobStore.getIncompletedJobs(name, startTime, endTime, getMaxRetry(), includedOrgs, excludedOrgs,freeThreads)));
-			scheduledJobs.addAll(FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,()->JobStore.updateScheduledStatus(JobStore.getJobs(name, startTime, endTime, getMaxRetry(), includedOrgs, excludedOrgs,(freeThreads- scheduledJobs.size())))));
+
+				//			LOGGER.info("Initial number of free threads  : "+freeThreads);
+				List<JobContext> scheduledJobs = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,() -> JobStore.getIncompletedJobs(name,startTime,endTime,getMaxRetry(),includedOrgs,excludedOrgs));
+				scheduledJobs.addAll(FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,() -> JobStore.getJobs(name,startTime,endTime,getMaxRetry(),includedOrgs,excludedOrgs)));
 //			LOGGER.info("Final Jobs to ready to execute count is  : "+(scheduledJobs.size()));
-			for(JobContext jc : scheduledJobs) {
-				try {
-					scheduleJob(jc);
+				for (JobContext jc : scheduledJobs) {
+					try {
+						scheduleJob(jc);
+					} catch (Exception e) {
+						LOGGER.error("Unable to schedule job : " + jc.getJobName());
+						LOGGER.error("Exception occurred ",e);
+					}
 				}
-				catch(Exception e) {
-					LOGGER.error("Unable to schedule job : "+jc.getJobName());
-					LOGGER.error("Exception occurred ", e);
-				}
-			}
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

@@ -264,7 +264,7 @@ public class JobStore {
 		}
 	}
 	
-	public static List<JobContext> getJobs(String executorName, long startTime, long endTime, int maxRetry, List<Long> include, List<Long> exclude, int limit) throws SQLException, JsonParseException, JsonMappingException, IOException, ParseException {
+	public static List<JobContext> getJobs(String executorName, long startTime, long endTime, int maxRetry, List<Long> include, List<Long> exclude) throws SQLException, JsonParseException, JsonMappingException, IOException, ParseException {
 		Connection conn = null;
 		PreparedStatement getPstmt = null;
 		ResultSet rs = null;
@@ -277,14 +277,14 @@ public class JobStore {
 			StringBuilder sql = new StringBuilder("SELECT * FROM Jobs WHERE EXECUTOR_NAME = ? AND IS_ACTIVE = ? AND STATUS = ? AND NEXT_EXECUTION_TIME < ? AND EXECUTION_ERROR_COUNT < ? ");
 			appendOrgId(sql, include, false);
 			appendOrgId(sql, exclude, true);
-			sql.append(" ORDER BY NEXT_EXECUTION_TIME LIMIT ?");
+//			sql.append(" ORDER BY NEXT_EXECUTION_TIME LIMIT ?");
 			getPstmt = conn.prepareStatement(sql.toString());
 			getPstmt.setString(1, executorName);
 			getPstmt.setBoolean(2, JobConstants.ENABLED);
 			getPstmt.setInt(3, JobConstants.JOB_COMPLETED);
 			getPstmt.setLong(4, endTime);
 			getPstmt.setInt(5, maxRetry);
-			getPstmt.setInt(6,limit);
+//			getPstmt.setInt(6,limit);
 			rs = getPstmt.executeQuery();
 			while(rs.next()) {
 				jcs.add(getJobFromRS(rs));
@@ -304,7 +304,7 @@ public class JobStore {
 //		return getIncompletedJobs(executorName, startTime, endTime, maxRetry, null, null);
 //	}
 
-	public static List<JobContext> getIncompletedJobs(String executorName, long startTime, long endTime, int maxRetry, List<Long> include, List<Long> exclude, int limit) throws SQLException, IOException, ParseException {
+	public static List<JobContext> getIncompletedJobs(String executorName, long startTime, long endTime, int maxRetry, List<Long> include, List<Long> exclude) throws SQLException, IOException, ParseException {
 		Connection conn = null;
 		PreparedStatement getPstmt = null;
 		ResultSet rs = null;
@@ -316,7 +316,7 @@ public class JobStore {
 			StringBuilder sql = new StringBuilder("SELECT * FROM Jobs WHERE NEXT_EXECUTION_TIME < ? and EXECUTOR_NAME = ? AND IS_ACTIVE = ? AND STATUS = ? AND (CURRENT_EXECUTION_TIME + TRANSACTION_TIMEOUT) < ? AND EXECUTION_ERROR_COUNT < ? ");
 			appendOrgId(sql, include, false);
 			appendOrgId(sql, exclude, true);
-			sql.append(" ORDER BY NEXT_EXECUTION_TIME LIMIT ?");
+//			sql.append(" ORDER BY NEXT_EXECUTION_TIME LIMIT ?");
 			getPstmt = conn.prepareStatement(sql.toString());
 			getPstmt.setLong(1, endTime);
 			getPstmt.setString(2, executorName);
@@ -324,7 +324,7 @@ public class JobStore {
 			getPstmt.setInt(4, JobConstants.JOB_IN_PROGRESS);
 			getPstmt.setLong(5, System.currentTimeMillis());
 			getPstmt.setInt(6, maxRetry);
-			getPstmt.setInt(7,limit);
+//			getPstmt.setInt(7,limit);
 			rs = getPstmt.executeQuery();
 			while(rs.next()) {
 				jcs.add(getJobFromRS(rs));
