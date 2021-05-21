@@ -17,6 +17,7 @@ import com.facilio.qa.command.QAndAReadOnlyChainFactory;
 import com.facilio.qa.context.ClientAnswerContext;
 import com.facilio.qa.context.PageContext;
 import com.facilio.qa.context.QuestionContext;
+import com.facilio.qa.context.QuestionHandler;
 import com.facilio.qa.context.questions.BaseMCQContext;
 import com.facilio.qa.context.questions.MCQOptionContext;
 import com.facilio.util.FacilioStreamUtil;
@@ -287,7 +288,11 @@ public class QAndAUtil {
         }
         List<QuestionContext> questions = Stream.of(question).collect(Collectors.toList());
         ExtendedModuleUtil.replaceWithExtendedRecords(questions, q -> q.getQuestionType().getSubModuleName());
-        question.getQuestionType().getQuestionHandler().afterFetch(questions);
-        return questions.get(0);
+        question = questions.get(0);
+        QuestionHandler handler = question.getQuestionType().getQuestionHandler();
+        if (handler != null) {
+            handler.afterFetch(questions);
+        }
+        return question;
     }
 }
