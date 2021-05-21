@@ -18,6 +18,7 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.LookupFieldMeta;
 import com.facilio.modules.FieldFactory;
 
 
@@ -61,7 +62,10 @@ public class SerializeCommand extends FacilioCommand {
 				floorplan.setMarkers(markers);
 				
 				List<LookupField> supplements = new ArrayList<>();
-				supplements.add((LookupField) zonesFieldMap.get("space"));
+				LookupFieldMeta spaceField = new LookupFieldMeta((LookupField) zonesFieldMap.get(FacilioConstants.ContextNames.SPACE));
+		        LookupField spaceCategoryField = (LookupField) modBean.getField("spaceCategory", FacilioConstants.ContextNames.SPACE);
+		        spaceField.addChildLookupField(spaceCategoryField);
+		        supplements.add(spaceField);
 
 				SelectRecordsBuilder zonesBuilder = new SelectRecordsBuilder()
 						.module(modBean.getModule(floorplanzones.getName())).select(zonesFields)
