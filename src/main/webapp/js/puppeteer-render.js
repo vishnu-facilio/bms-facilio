@@ -2,7 +2,7 @@ const homedir = require('os').homedir();
 const pupeteer = require(homedir + '/.npm-global/lib/node_modules/puppeteer');
 
 (async () => {
-    const browser = await pupeteer.launch({headless: true, devtools: false, defaultViewport: null})
+	const browser = await pupeteer.launch({headless: true, devtools: false, defaultViewport: null})
 
 	const page = await browser.newPage()
 
@@ -17,6 +17,7 @@ const pupeteer = require(homedir + '/.npm-global/lib/node_modules/puppeteer');
 	let retryCount = 2
 	let errorOccurred = false
 	const TIMEOUT_MS = 2000
+	const LOG_MAX_LEN = 5000;
 
 	var cookies = [
 		{
@@ -63,23 +64,34 @@ const pupeteer = require(homedir + '/.npm-global/lib/node_modules/puppeteer');
 		}
 		await page.setExtraHTTPHeaders(headers);
 
+		async function parseResponse(response) {
+			const contentType = response.headers()['content-type'];
+			if (response.url().startsWith("https://app.facilio.com/")) {
+				let text;
+				if (contentType && contentType.indexOf("application/json") !== -1) {
+					text = await response.json();
+					text = JSON.stringify(text);
+				}
+				else {
+					text = await response.text();
+				}
+				return text.substring(0,LOG_MAX_LEN);
+			}
+			else {
+				return response.url() +",  responsecode -" + response.status();
+			}
+		}
+
 		page.on('response', async (response) => {
 			if (!errorOccurred && response.status() == 502) { // If server is not available, retry again
 				errorOccurred = true;
 				--retryCount;
-				const contentType = response.headers.get("content-type");
-				  if (contentType && contentType.indexOf("application/json") !== -1) {
-				    console.log('Server not reachable for pdf generation', await response.json());
-				  } else if (response.url().startsWith("https://app.facilio.com/").){
-					  console.log('Server not reachable for pdf generation', await response.text());
-				  }
-				  else {
-					  console.log('Server not reachable for pdf generation', response.url());
-				  }
-				
+				let responseText = await parseResponse(response);
+				console.log('Server not reachable for pdf generation----\n', responseText);
 			}
 			else if (info.orgId == '396' && response.status() != 200 && response.status() != 304) {
-				console.log('Error occurred on pdf generation---',response.url(),  response.status());
+				let responseText = await parseResponse(response);
+				console.log('Error occurred on pdf generation----\n', responseText);
 			}
 		});
 
@@ -109,7 +121,7 @@ const pupeteer = require(homedir + '/.npm-global/lib/node_modules/puppeteer');
 				await loadPage();
 			}
 		}
-		
+
 		await loadPage();
 
 		if (isPdf) {
@@ -135,7 +147,7 @@ const pupeteer = require(homedir + '/.npm-global/lib/node_modules/puppeteer');
 				}
 			}
 			await page.pdf(config);
-			
+
 		}
 		else {
 			if (info.printableArea) {
