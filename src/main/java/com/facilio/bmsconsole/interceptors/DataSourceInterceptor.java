@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.interceptors;
 
+import java.text.MessageFormat;
 import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -44,9 +45,10 @@ public class DataSourceInterceptor extends AbstractInterceptor {
 			Organization org = IAMOrgUtil.getOrg(remoteScreen.getOrgId());
 			if(org != null) {
 				IAMAccount account = new IAMAccount(org, null);
+				AuthInterceptor.checkIfPuppeteerRequestAndLog(this.getClass().getSimpleName(), MessageFormat.format("Setting IAM account org in remoteScreen => {0}", account.getOrg() == null ? -1 : account.getOrg().getId()), request);
 				request.setAttribute("iamAccount", account);
 			}
-			
+			AuthInterceptor.checkIfPuppeteerRequestAndLog(this.getClass().getSimpleName(), "ORG is null in remote screen", request);
 		}
 		//connected device(new tv and kiosk) handling
 		else if(request.getAttribute("device") != null && request.getAttribute("device") instanceof ConnectedDeviceContext) {
@@ -54,20 +56,22 @@ public class DataSourceInterceptor extends AbstractInterceptor {
 			Organization org = IAMOrgUtil.getOrg(connectedDevice.getOrgId());
 			if(org != null) {
 				IAMAccount account = new IAMAccount(org, null);
+				AuthInterceptor.checkIfPuppeteerRequestAndLog(this.getClass().getSimpleName(), MessageFormat.format("Setting IAM account org in deevice auth => {0}", account.getOrg() == null ? -1 : account.getOrg().getId()), request);
 				request.setAttribute("iamAccount", account);
 			}
-			
+			AuthInterceptor.checkIfPuppeteerRequestAndLog(this.getClass().getSimpleName(), "ORG is null in device auth", request);
 		}
 		else {
 			Organization organization = null;
 			
 			AppDomain appDomain = IAMAppUtil.getAppDomain(request.getServerName());
+			AuthInterceptor.checkIfPuppeteerRequestAndLog(this.getClass().getSimpleName(), MessageFormat.format("App name => {0}", appDomain == null ? "null app domain" : appDomain.getDomain() ), request);
 			if (iamAccount != null) {
 				String currentOrgDomain = FacilioCookie.getUserCookie(request, "fc.currentOrg");
 				if (currentOrgDomain == null) {
 					currentOrgDomain = request.getHeader("X-Current-Org"); 
 				}
-				//the third check can be removed..It is added now for sutherland demo (894 is the custom domain id for org 343 in production)
+				//the third check can be removed..It is added now for sutherland demo (894 is the custom domain id for org 343 in production). That's added to allow multiple orgs with that custom domain
 				if(appDomain != null && appDomain.getOrgId() > 0 && (!FacilioProperties.isProduction() || appDomain.getId() != 894l)) {
 					organization = IAMOrgUtil.getOrg(appDomain.getOrgId());
 				}
@@ -78,13 +82,17 @@ public class DataSourceInterceptor extends AbstractInterceptor {
 					organization = IAMUserUtil.getDefaultOrg(iamAccount.getUser().getUid());
 				}
 				iamAccount.setOrg(organization);
+				AuthInterceptor.checkIfPuppeteerRequestAndLog(this.getClass().getSimpleName(), MessageFormat.format("Setting IAM account org in normal auth => {0}", iamAccount.getOrg() == null ? -1 : iamAccount.getOrg().getId()), request);
 			}
 			else {
+				AuthInterceptor.checkIfPuppeteerRequestAndLog(this.getClass().getSimpleName(), "Else of app domain with no iam account", request);
 				organization = IAMOrgUtil.getOrg(appDomain.getOrgId());
               	if(organization != null) {
                 	iamAccount = new IAMAccount(organization, null);
                 	request.setAttribute("iamAccount", iamAccount);
+					AuthInterceptor.checkIfPuppeteerRequestAndLog(this.getClass().getSimpleName(), MessageFormat.format("Setting IAM account org from app domain => {0}", iamAccount.getOrg() == null ? -1 : iamAccount.getOrg().getId()), request);
               	}
+				AuthInterceptor.checkIfPuppeteerRequestAndLog(this.getClass().getSimpleName(), "ORG is null in app domain auth", request);
 			}
 		}
 
@@ -97,6 +105,7 @@ public class DataSourceInterceptor extends AbstractInterceptor {
 
 		long timeTaken = System.currentTimeMillis() - time;
 		AuthInterceptor.logTimeTaken(this.getClass().getSimpleName(), timeTaken, request);
+		AuthInterceptor.checkIfPuppeteerRequestAndLog(this.getClass().getSimpleName(), "DateSource interceptor done", request);
 		return invocation.invoke();
 	}
 	

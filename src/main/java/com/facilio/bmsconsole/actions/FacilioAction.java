@@ -7,12 +7,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
+import com.facilio.bmsconsole.interceptors.AuthInterceptor;
 import com.facilio.fw.FacilioException;
 import com.facilio.util.FacilioUtil;
 import com.facilio.wmsv2.constants.Topics;
 import com.facilio.wmsv2.endpoint.SessionManager;
 import com.facilio.wmsv2.handler.AuditLogHandler;
 import com.facilio.wmsv2.message.Message;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.LogManager;
@@ -30,6 +32,7 @@ import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.filters.MultiReadServletRequest;
 import com.opensymphony.xwork2.ActionSupport;
 
+@Log4j
 public class FacilioAction extends ActionSupport {
 	
 	/**
@@ -161,8 +164,8 @@ public class FacilioAction extends ActionSupport {
 	private static final int MAX_LENGTH_OF_TRACE = 5000;
 	public void setStackTrace(Exception e) {
 		if (e != null) {
-			LogManager.getLogger(this.getClass().getName()).error("Exception occured: - ", e);
-			if((!FacilioProperties.isProduction() && !FacilioProperties.isOnpremise()) || getFetchStackTrace()) {
+			LOGGER.error("Exception occured: - ", e);
+			if((!FacilioProperties.isProduction() && !FacilioProperties.isOnpremise()) || getFetchStackTrace() || AuthInterceptor.isPuppeteerRequest()) {
 				this.stackTrace = StringUtils.abbreviate(ExceptionUtils.getStackTrace(e), MAX_LENGTH_OF_TRACE) ;
 //				System.out.println(this.stackTrace);
 			}

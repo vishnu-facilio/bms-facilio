@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.db.util.DBConf;
 import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;
 import com.facilio.screen.context.RemoteScreenContext;
@@ -37,6 +38,7 @@ import org.apache.struts2.dispatcher.Parameter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.text.MessageFormat;
 import java.util.*;
 
 public class ScopeInterceptor extends AbstractInterceptor {
@@ -73,6 +75,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
 
                     AccountUtil.cleanCurrentAccount();
                     AccountUtil.setCurrentAccount(account);
+                    AuthInterceptor.checkIfPuppeteerRequestAndLog(this.getClass().getSimpleName(), MessageFormat.format("Setting current account in thread local for remote with orgid => {0} and userid = {1}", DBConf.getInstance().getCurrentOrgId(), DBConf.getInstance().getCurrentUserId()), request);
                 } else {
                     LOGGER.log(Level.DEBUG, "Invalid remote Screen");
                     return logAndReturn(Action.LOGIN, null, startTime, request);
@@ -89,6 +92,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
 
                     AccountUtil.cleanCurrentAccount();
                     AccountUtil.setCurrentAccount(account);
+                    AuthInterceptor.checkIfPuppeteerRequestAndLog(this.getClass().getSimpleName(), MessageFormat.format("Setting current account in thread local for device with orgid => {0} and userid = {1}", DBConf.getInstance().getCurrentOrgId(), DBConf.getInstance().getCurrentUserId()), request);
                 } else {
                     LOGGER.log(Level.DEBUG, "Invalid Device screen");
                     return logAndReturn(Action.LOGIN, null, startTime, request);
@@ -101,7 +105,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
                 }
                 Account tempAccount = new Account(iamAccount.getOrg(), user);
                 AccountUtil.setCurrentAccount(tempAccount);
-
+                AuthInterceptor.checkIfPuppeteerRequestAndLog(this.getClass().getSimpleName(), MessageFormat.format("Setting temp current account in thread local for normal with orgid => {0} and userid = {1}", DBConf.getInstance().getCurrentOrgId(), DBConf.getInstance().getCurrentUserId()), request);
                 long appId = -1;
                 try {
                     String appLinkName = null;
@@ -166,6 +170,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
                 account.setUserSessionId(iamAccount.getUserSessionId());
                 AccountUtil.cleanCurrentAccount();
                 AccountUtil.setCurrentAccount(account);
+                AuthInterceptor.checkIfPuppeteerRequestAndLog(this.getClass().getSimpleName(), MessageFormat.format("Setting current account in thread local for normal with orgid => {0} and userid = {1}", DBConf.getInstance().getCurrentOrgId(), DBConf.getInstance().getCurrentUserId()), request);
             }
         }
 
@@ -347,6 +352,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
     private String logAndReturn(String returnStr, ActionInvocation invoke, long startTime, HttpServletRequest request) throws Exception {
         long timeTaken = System.currentTimeMillis() - startTime;
         AuthInterceptor.logTimeTaken(this.getClass().getSimpleName(), timeTaken, request);
+        AuthInterceptor.checkIfPuppeteerRequestAndLog(this.getClass().getSimpleName(), MessageFormat.format("Scope interceptor done with return {0}", invoke != null ? "(invoking will happen. no return)" : returnStr), request);
         return invoke == null ? returnStr : invoke.invoke();
     }
 

@@ -43,6 +43,7 @@ public class CacheInterceptor extends AbstractInterceptor {
 		}
 		long timeTaken = System.currentTimeMillis() - time;
 		AuthInterceptor.logTimeTaken(this.getClass().getSimpleName(), timeTaken, request);
+		AuthInterceptor.checkIfPuppeteerRequestAndLog(this.getClass().getSimpleName(), "Cache interceptor done", request);
 		return arg0.invoke();
 //		  HttpServletRequest request =
 //				  ServletActionContext.getRequest();

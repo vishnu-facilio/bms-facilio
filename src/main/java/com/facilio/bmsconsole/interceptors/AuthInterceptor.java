@@ -13,6 +13,7 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.iam.accounts.context.SecurityPolicy;
 import com.facilio.iam.accounts.exceptions.SecurityPolicyException;
+import com.facilio.util.RequestUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.log4j.Level;
@@ -74,6 +75,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 				}
 				IAMAccount iamAccount = IAMUserUtil.getPermalinkAccount(token, urlsToValidate);
 				if(iamAccount == null) {
+					checkIfPuppeteerRequestAndLog(this.getClass().getSimpleName(), "Returning error because of no IAM account in permalink", request);
 					return Action.ERROR;
 				} else {
                     request.setAttribute("iamAccount", iamAccount);
@@ -102,6 +104,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 					}
 
 					if (iamAccount != null) {
+						checkIfPuppeteerRequestAndLog(this.getClass().getSimpleName(), MessageFormat.format("Setting IAM account user => {0}", iamAccount.getUser() == null ? -1 : iamAccount.getUser().getId()), request);
 						request.setAttribute("iamAccount", iamAccount);
 					}
 					else {
@@ -115,6 +118,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 					LOGGER.log(Level.FATAL, "you are not allowed to access this page from remote screen.");
 					return Action.ERROR;
 				}
+				checkIfPuppeteerRequestAndLog(this.getClass().getSimpleName(), "Catch all else of auth methods", request);
 			}
 		} catch (Exception e) {
 			LOGGER.log(Level.FATAL, "error in auth interceptor", e);
@@ -124,6 +128,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 		request.getAttribute("iamAccount");
 		long timeTaken = System.currentTimeMillis() - time;
 		logTimeTaken(this.getClass().getSimpleName(), timeTaken, request);
+		AuthInterceptor.checkIfPuppeteerRequestAndLog(this.getClass().getSimpleName(), "Auth interceptor done", request);
 		return arg0.invoke();
 	}
 
@@ -225,6 +230,21 @@ public class AuthInterceptor extends AbstractInterceptor {
 			}
 		} catch (Exception e) {
 			LOGGER.log(Level.FATAL, "Exception while check authentication from remote-screen.", e);
+		}
+		return false;
+	}
+
+	public static void checkIfPuppeteerRequestAndLog(String className, String msg, HttpServletRequest request) {
+		if (true) {
+			LOGGER.info(MessageFormat.format("{0} => {1}. Request Uri : {2}", className, msg, request != null ? request.getRequestURI() : "null request"));
+		}
+	}
+
+	public static boolean isPuppeteerRequest() {
+		HttpServletRequest request = ActionContext.getContext() != null ? ServletActionContext.getRequest() : null;
+		if (request != null) {
+			String isExport = request.getHeader(RequestUtil.X_IS_EXPORT);
+			return StringUtils.isNotEmpty(isExport);
 		}
 		return false;
 	}
