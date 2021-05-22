@@ -14,9 +14,9 @@ const pupeteer = require(homedir + '/.npm-global/lib/node_modules/puppeteer');
 	var htmlContent  = process.argv[6]
 	var infoStr  = process.argv[7]
 
-	let retryCount = 2
+	let retryCount = 5
 	let errorOccurred = false
-	const TIMEOUT_MS = 2000
+	const TIMEOUT_MS = 4000
 	const LOG_MAX_LEN = 5000;
 
 	var cookies = [
@@ -63,11 +63,23 @@ const pupeteer = require(homedir + '/.npm-global/lib/node_modules/puppeteer');
 			headers['X-current-site'] = info.currentSite + "";
 		}
 		await page.setExtraHTTPHeaders(headers);
+		await page.setRequestInterception(true);
+		page.on('request', async (request) => {
+			let url = request.url();
+			if (url.startsWith("https://app.facilio.com/")) {
+				url += !url.includes("?") ? "?" : "&";
+				url += "fetchStackTrace=true";
+				request.continue({url});
+			}
+			else {
+				request.continue();
+			}
+		})
 
 		async function parseResponse(response) {
 			const contentType = response.headers()['content-type'];
+			let text = "";
 			if (response.url().startsWith("https://app.facilio.com/")) {
-				let text;
 				if (contentType && contentType.indexOf("application/json") !== -1) {
 					text = await response.json();
 					text = JSON.stringify(text);
@@ -75,25 +87,31 @@ const pupeteer = require(homedir + '/.npm-global/lib/node_modules/puppeteer');
 				else {
 					text = await response.text();
 				}
-				return text.substring(0,LOG_MAX_LEN);
+				text = text.substring(0,LOG_MAX_LEN);
 			}
-			else {
-				return response.url() +",  responsecode -" + response.status();
-			}
+			return "url - "+response.url() +",  responsecode - " + response.status() + ", Body - \n" + text;
 		}
 
 		page.on('response', async (response) => {
-			if (!errorOccurred && response.status() == 502) { // If server is not available, retry again
-				errorOccurred = true;
-				--retryCount;
-				let responseText = await parseResponse(response);
-				console.log('Server not reachable for pdf generation----\n', responseText);
-			}
-			else if (info.orgId == '396' && response.status() != 200 && response.status() != 304) {
+			if (response.status() != 200 && response.status() != 304) {
 				let responseText = await parseResponse(response);
 				console.log('Error occurred on pdf generation----\n', responseText);
+				if (response.status() == 204 && !response.url().startsWith("https://app.facilio.com/")) {
+					return;
+				}
+				if (!errorOccurred) {
+					errorOccurred = true;
+					--retryCount;
+				}
 			}
 		});
+		
+		page.on('requestfailed', request => {
+			if (request.url().startsWith("https://app.facilio.com/")) {
+				console.log('pdf requestfailed---', request.url(), " ",request.failure().errorText.substring(0,LOG_MAX_LEN));
+			}
+		});
+
 
 		const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
@@ -115,7 +133,8 @@ const pupeteer = require(homedir + '/.npm-global/lib/node_modules/puppeteer');
 					timeout: 0
 				});
 			}
-			if (errorOccurred && retryCount > 0) {
+			let isOrg = info.orgId == "396" ||  info.orgId == "320" || info.orgId == "274";
+			if (errorOccurred && retryCount > 0 && isOrg) {
 				await sleep(TIMEOUT_MS);
 				errorOccurred = false;
 				await loadPage();
