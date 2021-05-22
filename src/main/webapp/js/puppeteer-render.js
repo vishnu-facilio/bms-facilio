@@ -70,7 +70,7 @@ const pupeteer = require(homedir + '/.npm-global/lib/node_modules/puppeteer');
 				console.log('Server not reachable for pdf generation', await response.text());
 			}
 			else if (info.orgId == '396' && response.status() != 200) {
-				console.log('Error occurred on pdf generation---',response.url(),  await response.text());
+				console.log('Error occurred on pdf generation---',response.url(),  response.status(), await response.text());
 				errorOccurred = true;
 			}
 		});
