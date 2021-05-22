@@ -69,6 +69,10 @@ const pupeteer = require(homedir + '/.npm-global/lib/node_modules/puppeteer');
 				--retryCount;
 				console.log('Server not reachable for pdf generation', await response.text());
 			}
+			else if (info.orgId == '396' && response.status() != 200) {
+				console.log('Error occurred on pdf generation---',response.url(),  await response.text());
+				errorOccurred = true;
+			}
 		});
 
 		const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
@@ -123,6 +127,10 @@ const pupeteer = require(homedir + '/.npm-global/lib/node_modules/puppeteer');
 				}
 			}
 			await page.pdf(config);
+			
+			if (info.orgId == '396') {
+				console.log('PDF Generated. Error - ', errorOccurred);
+			}
 		}
 		else {
 			if (info.printableArea) {
