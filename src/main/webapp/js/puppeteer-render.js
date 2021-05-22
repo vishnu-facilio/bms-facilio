@@ -67,11 +67,19 @@ const pupeteer = require(homedir + '/.npm-global/lib/node_modules/puppeteer');
 			if (!errorOccurred && response.status() == 502) { // If server is not available, retry again
 				errorOccurred = true;
 				--retryCount;
-				console.log('Server not reachable for pdf generation', await response.text());
+				const contentType = response.headers.get("content-type");
+				  if (contentType && contentType.indexOf("application/json") !== -1) {
+				    console.log('Server not reachable for pdf generation', await response.json());
+				  } else if (response.url().startsWith("https://app.facilio.com/").){
+					  console.log('Server not reachable for pdf generation', await response.text());
+				  }
+				  else {
+					  console.log('Server not reachable for pdf generation', response.url());
+				  }
+				
 			}
-			else if (info.orgId == '396' && response.status() != 200) {
+			else if (info.orgId == '396' && response.status() != 200 && response.status() != 304) {
 				console.log('Error occurred on pdf generation---',response.url(),  response.status());
-				errorOccurred = true;
 			}
 		});
 
