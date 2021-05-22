@@ -235,7 +235,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 	}
 
 	public static void checkIfPuppeteerRequestAndLog(String className, String msg, HttpServletRequest request) {
-		if (true) {
+		if (isPuppeteerRequest()) {
 			LOGGER.info(MessageFormat.format("{0} => {1}. Request Uri : {2}", className, msg, request != null ? request.getRequestURI() : "null request"));
 		}
 	}
