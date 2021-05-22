@@ -965,7 +965,9 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	public boolean isSessionExpired(long uid, long orgId, long sessionId) throws Exception {
 		Map<String, Object> prop = null;
 		List<Map<String, Object>> sessions = (List<Map<String, Object>>) LRUCache.getUserSessionCache().get(uid+"");
-
+		if (sessions == null) {
+			return false;
+		}
 		for (Map<String, Object> session: sessions) {
 			long s = (long) session.get("id");
 			if (s == sessionId) {
