@@ -123,13 +123,16 @@ public class ImapsClient implements AutoCloseable {
             if(store.isConnected()) {
                 inbox = (IMAPFolder) store.getFolder(folderName);
                 inbox.open(Folder.READ_ONLY);
-                long hrsToCheckinMillis= days * 10 * 3600000;
-                long endDate = System.currentTimeMillis();
-                long startDate = System.currentTimeMillis() - hrsToCheckinMillis ;
-                SearchTerm olderThan = new ReceivedDateTerm(ComparisonTerm.LE, new Date(endDate));
-                SearchTerm newerThan = new ReceivedDateTerm(ComparisonTerm.GE, new Date(startDate));
-                SearchTerm andTerm = new AndTerm(olderThan, newerThan);
-                Message messages[] = inbox.search(andTerm);
+                int count = inbox.getMessageCount();					//getting only the last message
+                Message lastMessage = inbox.getMessage(count);
+                Message[] messages = {lastMessage};
+//                long hrsToCheckinMillis= days * 10 * 3600000;
+//                long endDate = System.currentTimeMillis();
+//                long startDate = System.currentTimeMillis() - hrsToCheckinMillis ;
+//                SearchTerm olderThan = new ReceivedDateTerm(ComparisonTerm.LE, new Date(endDate));
+//                SearchTerm newerThan = new ReceivedDateTerm(ComparisonTerm.GE, new Date(startDate));
+//                SearchTerm andTerm = new AndTerm(olderThan, newerThan);
+//                Message messages[] = inbox.search(andTerm);
                 log.info("Size" + messages.length);
                 parseMessage(messages, inbox, supportEmailContext);
             } else {
