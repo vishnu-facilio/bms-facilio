@@ -49,6 +49,15 @@ public abstract class Template implements Serializable {
 		this.name = name;
 	}
 	
+	private long userWorkflowId = -1;
+	
+	public long getUserWorkflowId() {
+		return userWorkflowId;
+	}
+	public void setUserWorkflowId(long userWorkflowId) {
+		this.userWorkflowId = userWorkflowId;
+	}
+
 	private long workflowId = -1;
 	public long getWorkflowId() {
 		return workflowId;
@@ -57,6 +66,15 @@ public abstract class Template implements Serializable {
 		this.workflowId = workflowId;
 	}
 	
+	private WorkflowContext userWorkflow;
+	
+	public WorkflowContext getUserWorkflow() {
+		return userWorkflow;
+	}
+	public void setUserWorkflow(WorkflowContext userWorkflow) {
+		this.userWorkflow = userWorkflow;
+	}
+
 	private WorkflowContext workflow;
 	public WorkflowContext getWorkflow() {
 		return workflow;
@@ -119,63 +137,71 @@ public abstract class Template implements Serializable {
 	
 	public final JSONObject getTemplate(Map<String, Object> parameters) throws Exception {
 		JSONObject json = getOriginalTemplate();
-		if (json != null && workflow != null) {
-			Map<String, Object> params;
-			if (workflow.isV2Script()) {
-				params = (Map<String, Object>) WorkflowUtil.getWorkflowExpressionResult(workflow, parameters);
-			}
-			else {
-				params = WorkflowUtil.getExpressionResultMap(workflow, parameters);
-			}
-			
+		if (json != null) {
 			JSONObject parsedJson = null;
-			if (isFtl()) {
-				// StrSubstitutor.replace(jsonStr, params);
-				parsedJson = new JSONObject();
-				for (Object key : json.keySet()) {
-					Object value = json.get(key);
-					if (value != null) {
-						if (value instanceof JSONArray) {
-							JSONArray newArray = new JSONArray();
-							for(Object arrayVal: (JSONArray)value) {
-								newArray.add(FreeMarkerAPI.processTemplate(arrayVal.toString(), params));
-							}
-							parsedJson.put(key, newArray);
-						}
-						else {
-							parsedJson.put(key, FreeMarkerAPI.processTemplate(value.toString(), params));
+			if (workflow != null) {
+				Map<String, Object> params;
+				if (workflow.isV2Script()) {
+					params = (Map<String, Object>) WorkflowUtil.getWorkflowExpressionResult(workflow, parameters);
+				}
+				else {
+					params = WorkflowUtil.getExpressionResultMap(workflow, parameters);
+				}
+				if (userWorkflow  != null) {
+					if (userWorkflow.isV2Script()) {
+						Map<String, Object> param = (Map<String, Object>) WorkflowUtil.getWorkflowExpressionResult(userWorkflow, parameters);
+						if (param != null && !param.isEmpty()) {
+							params.putAll(param);
 						}
 					}
 				}
-				parameters.put("mailType", "html");
-			}
-			else {
-				String jsonStr = json.toJSONString();
-				try {
-					for (String key : params.keySet()) {
-						Object value = params.get(key);
+				if (isFtl()) {
+					// StrSubstitutor.replace(jsonStr, params);
+					parsedJson = new JSONObject();
+					for (Object key : json.keySet()) {
+						Object value = json.get(key);
 						if (value != null) {
-							value = StringEscapeUtils.escapeJava(value.toString());
-							params.put(key, value);
+							if (value instanceof JSONArray) {
+								JSONArray newArray = new JSONArray();
+								for(Object arrayVal: (JSONArray)value) {
+									newArray.add(FreeMarkerAPI.processTemplate(arrayVal.toString(), params));
+								}
+								parsedJson.put(key, newArray);
+							}
+							else {
+								parsedJson.put(key, FreeMarkerAPI.processTemplate(value.toString(), params));
+							}
 						}
 					}
-					jsonStr = StringSubstitutor.replace(jsonStr, params);// StrSubstitutor.replace(jsonStr, params);
+					parameters.put("mailType", "html");
 				}
-				catch (Exception e) {
-					LOGGER.error(new StringBuilder("Error occurred during replacing of place holders \n")
-										.append("JSON : ")
-										.append(jsonStr)
-										.append("\nParams : ")
-										.append(params)
-										.append("\nParameters : ")
-										.append(parameters)
-										.toString(), e);
-					throw e;
+				else {
+					String jsonStr = json.toJSONString();
+					try {
+						for (String key : params.keySet()) {
+							Object value = params.get(key);
+							if (value != null) {
+								value = StringEscapeUtils.escapeJava(value.toString());
+								params.put(key, value);
+							}
+						}
+						jsonStr = StringSubstitutor.replace(jsonStr, params);// StrSubstitutor.replace(jsonStr, params);
+					}
+					catch (Exception e) {
+						LOGGER.error(new StringBuilder("Error occurred during replacing of place holders \n")
+											.append("JSON : ")
+											.append(jsonStr)
+											.append("\nParams : ")
+											.append(params)
+											.append("\nParameters : ")
+											.append(parameters)
+											.toString(), e);
+						throw e;
+					}
+					JSONParser parser = new JSONParser();
+					parsedJson = (JSONObject) parser.parse(jsonStr);
 				}
-				JSONParser parser = new JSONParser();
-				parsedJson = (JSONObject) parser.parse(jsonStr);
 			}
-			
 			return parsedJson;
 		}
 		return json;

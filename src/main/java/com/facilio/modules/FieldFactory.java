@@ -2959,6 +2959,7 @@ public class FieldFactory {
         fields.add(placeholder);
 
         fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.LOOKUP));
+        fields.add(getField("userWorkflowId", "USER_WORKFLOW_ID", module, FieldType.LOOKUP));
         fields.add(getField("ftl", "IS_FTL", module, FieldType.BOOLEAN));
 
         return fields;
