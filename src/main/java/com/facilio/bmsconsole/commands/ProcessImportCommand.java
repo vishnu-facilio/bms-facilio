@@ -202,10 +202,12 @@ public class ProcessImportCommand extends FacilioCommand {
 
 					if (!module.equals(FacilioConstants.ContextNames.SPACE)) {
 						SpaceCategoryContext spaceCategory = SpaceAPI.getSpaceCategoryFromModule(importProcessContext.getModuleId());
-						SpaceContext space = SpaceAPI.getSpaceFromHierarchy(props, name);
-						if (spaceCategory != null && space != null && !(space.getSpaceCategory() != null  && space.getSpaceCategory().getId() == spaceCategory.getId())) {
+						if (spaceCategory != null) {
 							props.put(FacilioConstants.ContextNames.SPACE_CATEGORY_FIELD, spaceCategory);
-							SpaceAPI.addSpaceExtentedModuleEntry(space, module);
+							SpaceContext space = SpaceAPI.getSpaceFromHierarchy(props, name);
+							if (space != null && !(space.getSpaceCategory() != null && space.getSpaceCategory().getId() == spaceCategory.getId())) {
+								SpaceAPI.addSpaceExtentedModuleEntry(space, module);
+							}
 						}
 					}
 				}
