@@ -92,6 +92,7 @@ public class FormFactory {
 		forms.put("employee_form", geEmployeeContactForm());
 		forms.put("department_form", getDepartmentForm());
 		forms.put("moves_form", getMovesForm());
+		forms.put("indoorfloorplan_form", getFloorPlanAddForm());
 		forms.put("deliveries_form", getDeliveriesForm());
 		forms.put("people_form", getPeopleForm());
 		forms.put("tenantunit_form", geTenantUnitSpaceForm());
@@ -393,6 +394,7 @@ public class FormFactory {
 		List<FacilioForm> employeeFormsList = Arrays.asList(geEmployeeContactForm());
 		List<FacilioForm> departmentFormsList = Arrays.asList(getDepartmentForm());
 		List<FacilioForm> movesFormsList = Arrays.asList(getMovesForm());
+		List<FacilioForm> indoorFloorplanFormList = Arrays.asList(getFloorPlanAddForm());
 		List<FacilioForm> deliveriesFormsList = Arrays.asList(getDeliveriesForm(), getDeliveriesPortalForm());
 		List<FacilioForm> deliveryAreaFormsList = Arrays.asList(getDeliveryAreaForm(),getDeliveryAreaPortalForm());
 		List<FacilioForm> lockersFormsList = Arrays.asList(getLockersForm(),getLockersPortalForm());
@@ -463,6 +465,7 @@ public class FormFactory {
 				.put(FacilioConstants.ContextNames.LOCKERS, getFormMap(lockersFormsList))
 				.put(FacilioConstants.ContextNames.PARKING_STALL, getFormMap(parkingStallFormsList))
 				.put(FacilioConstants.ContextNames.MOVES, getFormMap(movesFormsList))
+				.put(FacilioConstants.ContextNames.INDOOR_FLOOR_PLAN, getFormMap(indoorFloorplanFormList))
 				.put(FacilioConstants.ContextNames.Reservation.RESERVATION, getFormMap(reservationFormsList))
 				.put(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS, getFormMap(rentalLeaseFormsList))
 				.put(FacilioConstants.ContextNames.VISITOR_LOGGING, getFormMap(visitorLoggingForms))
@@ -1156,6 +1159,18 @@ public class FormFactory {
 		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
+
+		
+	public static FacilioForm getFloorPlanAddForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("CREATE FLOORPLAN");
+		form.setName("default_floorplan_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.INDOOR_FLOOR_PLAN));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getFloorplanFormField());
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+		return form;
+	}
 	
 	public static FacilioForm getDeliveriesForm() {
 		FacilioForm form = new FacilioForm();
@@ -1652,6 +1667,17 @@ public class FormFactory {
 		fields.add(new FormField("to", FieldDisplayType.LOOKUP_SIMPLE, "To", Required.REQUIRED, "desks", 5, 2));
 		fields.add(new FormField("from", FieldDisplayType.LOOKUP_SIMPLE, "From", Required.REQUIRED, "desks", 6, 2));
 
+		return fields;
+	}
+
+	private static List<FormField> getFloorplanFormField() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("floor", FieldDisplayType.LOOKUP_SIMPLE, "Floor", Required.REQUIRED,"floor", 7, 2));
+		fields.add(new FormField("site", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED,"site", 5, 2));
+		fields.add(new FormField("file", FieldDisplayType.FILE, "File", Required.REQUIRED, 4, 1));
+		
 		return fields;
 	}
 	
