@@ -5317,6 +5317,10 @@ public class TransactionChainFactory {
 		c.addCommand(new AddPeopleTypeForEmployeeCommand());
 		c.addCommand(new GenericAddModuleDataListCommand());
 		c.addCommand(new UpdateEmployeePeopleAppPortalAccessCommand());
+		c.addCommand(new ExecuteStateFlowCommand());
+		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.MODULE_RULE));
+		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+
 		return c;
 	}
 	public static FacilioChain getListOfFloorPlanChain() {
@@ -5348,6 +5352,11 @@ public class TransactionChainFactory {
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		c.addCommand(new UpdatePeoplePrimaryContactCommand());
 		c.addCommand(new UpdateVendorContactAppPortalAccessCommand());
+		c.addCommand(new GenericGetModuleDataListCommand());
+		c.addCommand(new UpdateStateForModuleDataCommand());
+		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.MODULE_RULE));
+		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+
 
 		return c;
 	}
@@ -5359,6 +5368,11 @@ public class TransactionChainFactory {
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		c.addCommand(new UpdatePeoplePrimaryContactCommand());
 		c.addCommand(new UpdateEmployeePeopleAppPortalAccessCommand());
+		c.addCommand(new GenericGetModuleDataListCommand());
+		c.addCommand(new UpdateStateForModuleDataCommand());
+		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.MODULE_RULE));
+		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+
 
 
 		return c;
