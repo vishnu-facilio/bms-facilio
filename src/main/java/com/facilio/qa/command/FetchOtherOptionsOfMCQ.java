@@ -63,13 +63,10 @@ public class FetchOtherOptionsOfMCQ extends FacilioCommand {
             Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
             FacilioField questionField = fieldMap.get("question");
 
-            SelectRecordsBuilder<AnswerContext> answerBuilder = new SelectRecordsBuilder<AnswerContext>()
-                    .module(module)
-                    .select(Stream.of(questionField, fieldMap.get("enumOtherAnswer"), fieldMap.get("response")).collect(Collectors.toList()))
-                    .beanClass(AnswerContext.class)
-                    .andCondition(CriteriaAPI.getCondition(fieldMap.get("parent"), question.getParent()._getId().toString(), PickListOperators.IS))
-                    .andCondition(CriteriaAPI.getCondition(questionField, question._getId().toString(), PickListOperators.IS))
-                    .andCondition(CriteriaAPI.getCondition(fieldMap.get("sysModifiedTime"), range.toString(), DateOperators.BETWEEN));
+            SelectRecordsBuilder<AnswerContext> answerBuilder = QAndAUtil.constructAnswerSelectWithQuestionAndResponseTimeRange(modBean, Collections.singletonList(question._getId()), question.getParent().getId(), range)
+                                                                .select(Stream.of(questionField, fieldMap.get("enumOtherAnswer"), fieldMap.get("response")).collect(Collectors.toList()))
+                                                                .beanClass(AnswerContext.class)
+                                                                ;
 
             switch (question.getQuestionType()) {
                 case MULTIPLE_CHOICE_ONE:

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.util.AccountUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -56,14 +57,26 @@ public enum LookupOperator implements Operator<Criteria> {
 					}
 					if(module != null) {
 						StringBuilder builder = new StringBuilder();
-						builder.append(lookupField.getTableName())
-								.append(".")
-								.append(lookupField.getColumnName())
+						builder.append(lookupField.getCompleteColumnName())
 								.append(" IN (SELECT ID FROM ")
-								.append(lookupModule.getTableName())
-								.append(" WHERE ")
+								.append(lookupModule.getTableName());
+
+						FacilioModule currentMod = lookupModule.getExtendModule();
+						while (currentMod != null) {
+							builder.append(" INNER JOIN ")
+									.append(currentMod.getTableName())
+									.append(" ON (")
+									.append(lookupModule.getTableName()).append(".ID = ")
+									.append(currentMod.getTableName()).append(".ID) ");
+							currentMod = currentMod.getExtendModule();
+						}
+
+						builder.append(" WHERE ")
+								.append(lookupModule.getTableName()).append(".ORGID = ")
+								.append(AccountUtil.getCurrentOrg().getId())
+								.append(" AND (")
 								.append(value.computeWhereClause())
-								.append(")");
+								.append("))");
 						
 						return builder.toString();
 					}

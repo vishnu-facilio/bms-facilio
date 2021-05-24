@@ -2,14 +2,17 @@ package com.facilio.qa.command;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.qa.QAndAUtil;
+import com.facilio.qa.context.QAndATemplateContext;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.time.DateRange;
 import com.facilio.v3.context.Constants;
@@ -36,12 +39,20 @@ public class FetchAnswersOfAQuestionCommand extends FacilioCommand {
         return false;
     }
 
-    private Criteria getCriteria (Long parentId, DateRange range) throws Exception {
+    private Criteria getCriteria (long parentId, DateRange range) throws Exception {
         ModuleBean modBean = Constants.getModBean();
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.QAndA.ANSWER));
         Criteria criteria = new Criteria();
-        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("parent"), parentId.toString(), PickListOperators.IS));
-        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("sysModifiedTime"), range.toString(), DateOperators.BETWEEN));
+        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("parent"), String.valueOf(parentId), PickListOperators.IS));
+
+        Criteria lookupCriteria = new Criteria();
+        Map<String, FacilioField> responseFieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.QAndA.RESPONSE));
+        lookupCriteria.addAndCondition(CriteriaAPI.getCondition(responseFieldMap.get("template"), String.valueOf(parentId), PickListOperators.IS));
+        lookupCriteria.addAndCondition(CriteriaAPI.getCondition(responseFieldMap.get("sysModifiedTime"), range.toString(), DateOperators.BETWEEN));
+
+        FacilioField responseField = fieldMap.get("response");
+        criteria.addAndCondition(CriteriaAPI.getCondition(responseField, lookupCriteria, LookupOperator.LOOKUP));
+
         return criteria;
     }
 }
