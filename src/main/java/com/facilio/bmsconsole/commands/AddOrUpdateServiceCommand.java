@@ -70,7 +70,7 @@ public class AddOrUpdateServiceCommand extends FacilioCommand{
 			insertRecordBuilder.withLocalId();
 		}
 
-		if(!supplements.isEmpty()) {
+		if(CollectionUtils.isNotEmpty(supplements)) {
 			insertRecordBuilder.insertSupplements(supplements);
 		}
 		insertRecordBuilder.addRecord(list.get(0));
@@ -88,7 +88,7 @@ public class AddOrUpdateServiceCommand extends FacilioCommand{
 				.fields(fields)
 				.andCondition(CriteriaAPI.getIdCondition(data.getId(), module));
 
-		if(!supplements.isEmpty()) {
+		if(CollectionUtils.isNotEmpty(supplements)) {
 			updateRecordBuilder.updateSupplements(supplements);
 		}
 

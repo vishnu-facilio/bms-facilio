@@ -250,7 +250,7 @@ public class ContractsAPI {
 				updateRecordBuilder.withChangeSet(ContractsContext.class);
 			}
 
-			if(!supplements.isEmpty()) {
+			if(CollectionUtils.isNotEmpty(supplements)) {
 				updateRecordBuilder.updateSupplements(supplements);
 			}
 
