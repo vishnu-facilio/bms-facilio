@@ -74,7 +74,7 @@ classes:
     # Adding Q And A
   - com.facilio.qa.signup.AddQAndAModules
   - com.facilio.bmsconsoleV3.signup.inspection.AddInspectionModules
-  - com.facilio.bmsconsoleV3.signup.inspection.AddInductionModules
+  - com.facilio.bmsconsoleV3.signup.induction.AddInductionModules
 
     # Adding AWS verify email Data fetch
   - com.facilio.bmsconsoleV3.signup.AddEmailConversationModules
