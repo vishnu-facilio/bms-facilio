@@ -1,5 +1,7 @@
 package com.facilio.qa.context;
 
+import com.facilio.bmsconsoleV3.context.induction.InductionResponseContext;
+import com.facilio.bmsconsoleV3.context.induction.InductionTemplateContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext;
 import com.facilio.constants.FacilioConstants;
@@ -14,7 +16,8 @@ import java.util.Map;
 @Getter
 @AllArgsConstructor
 public enum QAndAType implements FacilioIntEnum {
-    INSPECTION (FacilioConstants.Inspection.INSPECTION_TEMPLATE, InspectionTemplateContext.class, FacilioConstants.Inspection.INSPECTION_RESPONSE, InspectionResponseContext.class)
+    INSPECTION (FacilioConstants.Inspection.INSPECTION_TEMPLATE, InspectionTemplateContext.class, FacilioConstants.Inspection.INSPECTION_RESPONSE, InspectionResponseContext.class),
+    INDUCTION (FacilioConstants.Induction.INDUCTION_TEMPLATE, InductionTemplateContext.class, FacilioConstants.Induction.INDUCTION_RESPONSE, InductionResponseContext.class)
     ;
 
     private String templateModule;

@@ -485,7 +485,7 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
     }
     
     @Override 
-    public Value visitAssignSingleBracketVar(WorkflowV2Parser.AssignSingleBracketVarContext ctx) { 
+    public Value visitAssignSingleBracketVar(WorkflowV2Parser.AssignSingleBracketVarContext ctx) {
     	
     	String varName = ctx.VAR().getText();
     	

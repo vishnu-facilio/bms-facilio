@@ -181,6 +181,15 @@ enums:
   - name: InspectionResponseStatus
     enumClassName: com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext$Status
 
+  - name: InductionCreationType
+    enumClassName: com.facilio.bmsconsoleV3.context.induction.InductionTemplateContext$CreationType
+
+  - name: InductionResponseSourceType
+    enumClassName: com.facilio.bmsconsoleV3.context.induction.InductionResponseContext$SourceType
+
+  - name: InductionResponseStatus
+    enumClassName: com.facilio.bmsconsoleV3.context.induction.InductionResponseContext$Status
+
   - name: TicketSourceType
     enumClassName: com.facilio.bmsconsole.context.TicketContext$SourceType
     

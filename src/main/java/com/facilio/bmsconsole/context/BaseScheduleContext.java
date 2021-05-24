@@ -76,6 +76,7 @@ public class BaseScheduleContext implements Serializable {
 		COMMUNITY_ENGAGEMENT_EVENT(),
 		PM(),
 		INSPECTION(new InspectionScheduler()),
+		INDUCTION(new InspectionScheduler()),			// should  change
 		;
 		
 		public Integer getIndex() {

@@ -2420,6 +2420,15 @@ public class FacilioConstants {
 		public static final String INSPECTION_PRIORITY = "inspectionPriority";
 	}
 	
+	public static class Induction {
+		public static final String INDUCTION_TEMPLATE = "inductionTemplate";
+		public static final String INDUCTION_RESPONSE = "inductionResponse";
+		public static final String INDUCTION_TRIGGER = "inductionTrigger";
+		
+		public static final String INDUCTION_TRIGGER_INCL_EXCL = "inductionTriggerResourceInclExcl";
+		
+	}
+	
 	public static class Email {
 		public static final String EMAIL_FROM_ADDRESS_MODULE_NAME = "emailFromAddress";
 	}

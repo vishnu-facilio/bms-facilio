@@ -1,10 +1,38 @@
 
 package com.facilio.bmsconsole.page.factory;
 
-import com.facilio.accounts.dto.AppDomain;
-import com.facilio.accounts.util.AccountUtil;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.BaseAlarmContext;
+import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.ClientContext;
+import com.facilio.bmsconsole.context.ConnectedAppWidgetContext;
+import com.facilio.bmsconsole.context.FloorContext;
+import com.facilio.bmsconsole.context.FormulaFieldContext;
+import com.facilio.bmsconsole.context.HazardContext;
+import com.facilio.bmsconsole.context.InsuranceContext;
+import com.facilio.bmsconsole.context.MultiVariateAnomalyAlarm;
+import com.facilio.bmsconsole.context.OperationAlarmContext;
+import com.facilio.bmsconsole.context.PrecautionContext;
+import com.facilio.bmsconsole.context.ReadingAlarm;
+import com.facilio.bmsconsole.context.SafetyPlanContext;
+import com.facilio.bmsconsole.context.ServiceRequestContext;
+import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.context.SpaceContext;
+import com.facilio.bmsconsole.context.TenantUnitSpaceContext;
+import com.facilio.bmsconsole.context.VendorContext;
+import com.facilio.bmsconsole.context.VisitorLoggingContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.context.WorkPermitContext;
 import com.facilio.bmsconsole.context.sensor.SensorRollUpAlarmContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.Page.Section;
@@ -27,6 +55,8 @@ import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.Announcem
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnnouncementContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.FacilityContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.V3FacilityBookingContext;
+import com.facilio.bmsconsoleV3.context.induction.InductionResponseContext;
+import com.facilio.bmsconsoleV3.context.induction.InductionTemplateContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
@@ -45,14 +75,6 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.mv.context.MVProjectWrapper;
-import org.apache.commons.collections4.CollectionUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class PageFactory {
 
@@ -147,6 +169,11 @@ public class PageFactory {
 				return InspectionPageFactory.getInspectionTemplatePage((InspectionTemplateContext) record, module);
 			case FacilioConstants.Inspection.INSPECTION_RESPONSE:
 				return InspectionPageFactory.getInspectionResponsePage((InspectionResponseContext) record, module);
+				
+			case FacilioConstants.Induction.INDUCTION_TEMPLATE:
+				return InductionPageFactory.getInductionTemplatePage((InductionTemplateContext) record, module);
+			case FacilioConstants.Induction.INDUCTION_RESPONSE:
+				return InductionPageFactory.getInductionResponsePage((InductionResponseContext) record, module);
 				
 			case ContextNames.SERVICE_REQUEST:
 				return ServiceRequestPageFactory.getServiceRequestPage((ServiceRequestContext) record, module);

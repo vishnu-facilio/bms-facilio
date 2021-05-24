@@ -1,5 +1,8 @@
 package com.facilio.apiv3;
 
+import com.facilio.bmsconsoleV3.context.induction.InductionResponseContext;
+import com.facilio.bmsconsoleV3.context.induction.InductionTemplateContext;
+import com.facilio.bmsconsoleV3.context.induction.InductionTriggerIncludeExcludeResourceContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionCategoryContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionPriorityContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext;
@@ -7,6 +10,7 @@ import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTriggerContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTriggerIncludeExcludeResourceContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.qa.command.InductionResponseSupplementSupplyCommand;
 import com.facilio.qa.command.InspectionResponseSupplementSupplyCommand;
 import com.facilio.qa.command.QAndAReadOnlyChainFactory;
 import com.facilio.qa.command.QAndATransactionChainFactory;
@@ -94,5 +98,39 @@ public class ExtendedQAndAV3Config {
         		.summary()
         		.beforeFetch(new InspectionResponseSupplementSupplyCommand())
                 .build();
+    }
+    
+    
+    @Module(FacilioConstants.Induction.INDUCTION_TEMPLATE)
+    public static Supplier<V3Config> getInduction() {
+        return () -> new V3Config(InductionTemplateContext.class, null)
+                .create()
+                .beforeSave(QAndATransactionChainFactory.commonQAndABeforeSave())
+                .afterSave(QAndATransactionChainFactory.inductionAfterSaveChain())
+                .update()
+                .afterSave(QAndATransactionChainFactory.inductionAfterUpdateChain())
+//                .list()
+//                .delete()
+                .summary()
+                .beforeFetch(QAndAReadOnlyChainFactory.commonBeforeInductionTemplateFetch())
+                .afterFetch(QAndAReadOnlyChainFactory.commonAfterInductionTemplateFetch())
+                .build();
+    }
+    
+    @Module(FacilioConstants.Induction.INDUCTION_RESPONSE)
+    public static Supplier<V3Config> getInductionResponse() {
+        return () -> new V3Config(InductionResponseContext.class, null)
+                .update()
+                .beforeSave(QAndATransactionChainFactory.commonBeforeQAndAResponseUpdate())
+        		.list()
+        		.beforeFetch(new InductionResponseSupplementSupplyCommand())
+        		.summary()
+        		.beforeFetch(new InductionResponseSupplementSupplyCommand())
+                .build();
+    }
+    
+    @Module(FacilioConstants.Induction.INDUCTION_TRIGGER_INCL_EXCL)
+    public static Supplier<V3Config> getInductionTriggerInclExcl() {
+        return () -> new V3Config(InductionTriggerIncludeExcludeResourceContext.class, null);
     }
 }

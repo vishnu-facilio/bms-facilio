@@ -34,10 +34,23 @@ public class QAndAReadOnlyChainFactory {
         return c;
     }
     
+    public static FacilioChain commonBeforeInductionTemplateFetch() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddCommonSupplementsForQAndACommand());
+        return c;
+    }
+    
     public static FacilioChain commonAfterInspectionTemplateFetch() {
         FacilioChain c = getDefaultChain();
         c.addCommand(commonAfterQAndATemplateFetch());
         c.addCommand(new FetchRelatedItemsForInspectionTemplateCommand());
+        return c;
+    }
+    
+    public static FacilioChain commonAfterInductionTemplateFetch() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(commonAfterQAndATemplateFetch());
+        c.addCommand(new FetchRelatedItemsForInductionTemplateCommand());
         return c;
     }
 

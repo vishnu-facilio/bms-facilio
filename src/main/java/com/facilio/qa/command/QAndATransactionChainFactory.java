@@ -28,10 +28,23 @@ public class QAndATransactionChainFactory {
         return c;
     }
     
+    public static FacilioChain inductionAfterSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddInductionTriggersCommand());
+        return c;
+    }
+    
     public static FacilioChain inspectionAfterUpdateChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new DeleteInspectionTriggersCommand());
         c.addCommand(new AddInspectionTriggersCommand());
+        return c;
+    }
+    
+    public static FacilioChain inductionAfterUpdateChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new DeleteInductionTriggersCommand());
+        c.addCommand(new AddInductionTriggersCommand());
         return c;
     }
     

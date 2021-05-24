@@ -331,6 +331,16 @@ public class PageWidget {
 		INSPECTION_TEMPLATE_history("inspectionHistory"),
 		
 		INSPECTION_RESPONSE_WIDGET("inspectionResponseWidget"),
+		
+		INDUCTION_TEMPLATE_inductionsecondaryDetailsWidget("inductionSecondaryDetailsWidget"),
+		INDUCTION_TEMPLATE_inductionDetails("inductionDetails"),
+		INDUCTION_TEMPLATE_inductionPageDetails("inductionPageDetails"),
+		INDUCTION_TEMPLATE_inductionTriggers("inductionTriggers"),
+		INDUCTION_TEMPLATE_inductionInsights("inductionInsights"),
+		INDUCTION_TEMPLATE_inductionQuestions("inductionQuestions"),
+		INDUCTION_TEMPLATE_history("inductionHistory"),
+		
+		INDUCTION_RESPONSE_WIDGET("inductionResponseWidget"),
 
 		// Service Request Module Widgets
 		SR_EMAIL_THREAD("srEmailThread"),
