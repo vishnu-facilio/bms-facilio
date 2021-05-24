@@ -14,6 +14,7 @@ import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.qa.command.QAndAReadOnlyChainFactory;
 import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.ClientAnswerContext;
@@ -225,12 +226,21 @@ public class QAndAUtil {
         List<FacilioField> fields = modBean.getAllFields(moduleName);
         FacilioField parentField = FieldFactory.filterField(fields, "parent");
 
-        List<T> records = new SelectRecordsBuilder<T>()
-                                .select(fields)
-                                .module(module)
-                                .beanClass(FacilioConstants.ContextNames.getClassFromModule(module))
-                                .andCondition(CriteriaAPI.getCondition(parentField, String.valueOf(templateId), PickListOperators.IS))
-                                .get();
+        SelectRecordsBuilder<T> builder = new SelectRecordsBuilder<T>()
+                .select(fields)
+                .module(module)
+                .beanClass(FacilioConstants.ContextNames.getClassFromModule(module))
+                .andCondition(CriteriaAPI.getCondition(parentField, String.valueOf(templateId), PickListOperators.IS))
+                ;
+
+        if (moduleName.equals(FacilioConstants.QAndA.ANSWER)) {
+            builder.fetchSupplements(fields.stream()
+                    .filter(f -> f.getDataTypeEnum().isMultiRecord())
+                    .map(SupplementRecord.class::cast)
+                    .collect(Collectors.toList()));
+        }
+
+        List<T> records = builder.get();
 
         return records;
     }
