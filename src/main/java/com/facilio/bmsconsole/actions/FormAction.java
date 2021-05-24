@@ -230,6 +230,8 @@ public class FormAction extends FacilioAction {
 		c.execute(context);
 		
 		setFormId(getForm().getId());
+		
+		formSourceType = FormSourceType.FROM_BUILDER;
 		formDetails();
 		
 		return SUCCESS;
@@ -303,6 +305,8 @@ public class FormAction extends FacilioAction {
 		TransactionChainFactory.getAddFormCommand().execute(context);
 		
 		setFormName(form.getName());
+		
+		formSourceType = FormSourceType.FROM_BUILDER;
 		formDetails();
 		
 		return SUCCESS;

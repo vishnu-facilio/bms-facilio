@@ -931,6 +931,9 @@ public class FormsAPI {
 				for (FormField f: defaultForm.getFields()) {	// TODO get fields from all sections
 					if (!formFieldMap.containsKey(f.getName()) && (f.getField() == null || f.getField().isDefault())) {
 						FormField formField = FieldUtil.cloneBean(f, FormField.class);
+						formField.setId(-1);
+						formField.setFormId(-1);
+						formField.setSectionId(-1);
 						systemFields.add(formField);
 					}
 				}
