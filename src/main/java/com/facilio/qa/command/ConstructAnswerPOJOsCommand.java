@@ -8,6 +8,7 @@ import com.facilio.qa.context.*;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
+import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -22,11 +23,17 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ConstructAnswerPOJOsCommand extends FacilioCommand {
+
+    private boolean onlyValidate = false;
+    public ConstructAnswerPOJOsCommand(boolean onlyValidate) {
+        this.onlyValidate = onlyValidate;
+    }
+
     @Override
     public boolean executeCommand(Context context) throws Exception {
         JSONObject answerData = (JSONObject) context.get(FacilioConstants.QAndA.Command.ANSWER_DATA);
         ResponseContext response = (ResponseContext) context.get(FacilioConstants.QAndA.RESPONSE);
-        List<Map<String, Object>> answers = (List<Map<String, Object>>) answerData.get("answers");
+        List<Map<String, Object>> answers = answerData == null ? null : (List<Map<String, Object>>) answerData.get("answers");
         V3Util.throwRestException(CollectionUtils.isEmpty(answers), ErrorCode.VALIDATION_ERROR, "Answers cannot be empty while add or updating answers");
 
         List<Long> questionIds = answers.stream().map(this::fetchQuestionId).collect(Collectors.toList());
@@ -38,7 +45,7 @@ public class ConstructAnswerPOJOsCommand extends FacilioCommand {
             try {
                 Long questionId = (Long) prop.get("question");
                 QuestionContext question = questions.get(questionId);
-                V3Util.throwRestException(question == null || question.getParent().getId() != response.getParent().getId(), ErrorCode.VALIDATION_ERROR, "Invalid question specified during add/ update answers");
+                V3Util.throwRestException(question == null || (!onlyValidate && question.getParent().getId() != response.getParent().getId()), ErrorCode.VALIDATION_ERROR, "Invalid question specified during add/ update answers");
                 AnswerHandler handler = question.getQuestionType().getAnswerHandler();
                 ClientAnswerContext answer = FieldUtil.<ClientAnswerContext>getAsBeanFromMap(prop, handler.getAnswerClass());
                 V3Util.throwRestException(answer.getAnswer() == null, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Answer cannot be null for question : {0}", questionId));
@@ -46,22 +53,24 @@ public class ConstructAnswerPOJOsCommand extends FacilioCommand {
                 AnswerContext answerContext = handler.deSerialize(answer, question);
                 answerContext.setQuestion(question);
                 answerContext.setParent(question.getParent());
-                answerContext.setResponse(response);
-                answerContext._setId(answer.getId());
                 if (StringUtils.isNotEmpty(question.getCommentsLabel())) { // Adding comments only if it's enabled
                     answerContext.setComments(answer.getComments());
-                }
-                else {
+                } else {
                     answer.setComments(null); // To handle response
                 }
 
-                if (answerContext.getId() < 0) {
-                    getToBeAdded().add(answerContext);
-                } else {
-                    getToBeUpdated().add(answerContext); // Assumption is always all the props of answer will be updated
+                if (!onlyValidate) {
+                    answerContext.setResponse(response);
+                    answerContext._setId(answer.getId());
+
+                    if (answerContext.getId() < 0) {
+                        getToBeAdded().add(answerContext);
+                    } else {
+                        getToBeUpdated().add(answerContext); // Assumption is always all the props of answer will be updated
+                    }
+                    questionVsAnswer.put(questionId, answerContext);
                 }
                 answerContextList.add(answer);
-                questionVsAnswer.put(questionId, answerContext);
             }
             catch (Exception e) {
                 prop.put("error", FacilioUtil.constructMessageFromException(e));

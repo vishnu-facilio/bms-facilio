@@ -120,7 +120,7 @@ public class QAndATransactionChainFactory {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ValidateResponseStatus());
         c.addCommand(new VerifyApprovalCommand());
-        c.addCommand(new ConstructAnswerPOJOsCommand());
+        c.addCommand(new ConstructAnswerPOJOsCommand(false));
         c.addCommand(new AddAnswersCommand());
         c.addCommand(new UpdateAnswersCommand());
         c.addCommand(new ConstructAnswerResponseCommand());

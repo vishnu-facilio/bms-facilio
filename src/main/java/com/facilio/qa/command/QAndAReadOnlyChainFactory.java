@@ -83,4 +83,11 @@ public class QAndAReadOnlyChainFactory {
         c.addCommand(new FetchOtherOptionsOfMCQ());
         return c;
     }
+
+    public static FacilioChain validateAnswersChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ConstructAnswerPOJOsCommand(true));
+
+        return c;
+    }
 }

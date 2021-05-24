@@ -3,14 +3,12 @@ package com.facilio.qa.actions;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.qa.command.QAndAReadOnlyChainFactory;
 import com.facilio.qa.command.QAndATransactionChainFactory;
 import com.facilio.qa.context.ClientAnswerContext;
 import com.facilio.qa.context.ResponseContext;
 import com.facilio.time.DateRange;
 import com.facilio.v3.RESTAPIHandler;
-import com.facilio.v3.V3Action;
 import com.facilio.v3.context.Constants;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,6 +33,22 @@ public class QAndAAction extends RESTAPIHandler {
         if (CollectionUtils.isNotEmpty(errors)) {
             this.setData("errors", errors);
         }
+
+        return SUCCESS;
+    }
+
+    public String validateAnswers() throws Exception {
+        FacilioChain validateAnswersChain = QAndAReadOnlyChainFactory.validateAnswersChain();
+        FacilioContext context = validateAnswersChain.getContext();
+        context.put(FacilioConstants.QAndA.Command.ANSWER_DATA, this.getData());
+        validateAnswersChain.execute();
+
+        List<Map<String, Object>> errors = (List<Map<String, Object>>) context.get(FacilioConstants.QAndA.Command.ANSWER_ERRORS);
+        JSONObject data = new JSONObject();
+        if (CollectionUtils.isNotEmpty(errors)) {
+            data.put("errors", errors);
+        }
+        this.setData(data);
 
         return SUCCESS;
     }

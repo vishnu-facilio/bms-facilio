@@ -274,6 +274,10 @@
                 class="com.facilio.qa.actions.QAndAAction"
                 method="addOrUpdateAnswers">
         </action>
+        <action name="validate"
+                class="com.facilio.qa.actions.QAndAAction"
+                method="validateAnswers">
+        </action>
     </package>
     
     <package name="floorplan" namespace="/api/v3/floorplan" extends="v3Api">
