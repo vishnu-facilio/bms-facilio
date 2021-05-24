@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -7,6 +9,7 @@ import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.wmsv2.handler.AuditLogHandler;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
@@ -85,8 +88,21 @@ public class StateFlowAction extends FacilioAction {
 		
 		FacilioChain chain = ReadOnlyChainFactory.getStateTransitionList();
 		chain.execute(context);
-		
-		setResult(FacilioConstants.ContextNames.STATE_TRANSITION_LIST, context.get(FacilioConstants.ContextNames.STATE_TRANSITION_LIST));
+
+		List<StateflowTransitionContext> stateTransitions = (List<StateflowTransitionContext>) context.get(FacilioConstants.ContextNames.STATE_TRANSITION_LIST);
+		List<Map<String, Object>> transitionPros = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(stateTransitions)) {
+			for (StateflowTransitionContext transitionContext : stateTransitions) {
+				Map<String, Object> map = new HashMap<>();
+				map.put("id", transitionContext.getId());
+				map.put("name", transitionContext.getName());
+				map.put("fromStateId", transitionContext.getFromStateId());
+				map.put("toStateId", transitionContext.getToStateId());
+				map.put("type", transitionContext.getType());
+				transitionPros.add(map);
+			}
+		}
+		setResult(FacilioConstants.ContextNames.STATE_TRANSITION_LIST, transitionPros);
 		return SUCCESS;
 	}
 
