@@ -38,6 +38,7 @@ public abstract class ResponseContext <T extends QAndATemplateContext> extends V
     private Integer totalAnswered;
     private ResponseStatus resStatus;
     private QAndAType qAndAType;
+    private QAndATemplateContext template; // For internal use
 
     public Integer getType() {
         return qAndAType == null ? null : qAndAType.getIndex();
@@ -51,6 +52,10 @@ public abstract class ResponseContext <T extends QAndATemplateContext> extends V
     }
     public void setResponseStatus(Integer responseStatus) {
         this.resStatus = responseStatus == null ? null : ResponseStatus.valueOf(responseStatus);
+    }
+
+    public QAndATemplateContext getTemplate() {
+        return getParent() == null ? template : getParent();
     }
 
     public abstract T getParent();

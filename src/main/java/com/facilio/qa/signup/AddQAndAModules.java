@@ -129,6 +129,9 @@ public class AddQAndAModules extends SignUpData {
                 true);
 
         List<FacilioField> fields = new ArrayList<>();
+        LookupField templateField = (LookupField) FieldFactory.getDefaultField("template", "Parent Template", "TEMPLATE_ID", FieldType.LOOKUP);
+        templateField.setLookupModule(qAndA);
+        fields.add(templateField);
         SystemEnumField typeField = (SystemEnumField) FieldFactory.getDefaultField("type", "Type", "Q_AND_A_TYPE", FieldType.SYSTEM_ENUM);
         typeField.setEnumName("QAndAType");
         fields.add(typeField);
