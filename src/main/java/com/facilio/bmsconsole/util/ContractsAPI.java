@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.modules.fields.SupplementRecord;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
@@ -130,7 +131,8 @@ public class ContractsAPI {
 			addRecord(false,associatedTerms , module, fields);
 		}
 	}
-	public static void addRecord(boolean isLocalIdNeeded, List<? extends ModuleBaseWithCustomFields> list, FacilioModule module, List<FacilioField> fields) throws Exception {
+
+	public static void addRecord(boolean isLocalIdNeeded, List<? extends ModuleBaseWithCustomFields> list, FacilioModule module, List<FacilioField> fields, List<SupplementRecord> supplements) throws Exception {
 		if(CollectionUtils.isNotEmpty(list)) {
 			InsertRecordBuilder insertRecordBuilder = new InsertRecordBuilder<>()
 					.module(module)
@@ -138,8 +140,16 @@ public class ContractsAPI {
 			if(isLocalIdNeeded) {
 				insertRecordBuilder.withLocalId();
 			}
+			if(CollectionUtils.isNotEmpty(supplements)){
+				insertRecordBuilder.insertSupplements(supplements);
+			}
 			insertRecordBuilder.addRecords(list);
 			insertRecordBuilder.save();
+		}
+	}
+	public static void addRecord(boolean isLocalIdNeeded, List<? extends ModuleBaseWithCustomFields> list, FacilioModule module, List<FacilioField> fields) throws Exception {
+		if(CollectionUtils.isNotEmpty(list)) {
+			addRecord(isLocalIdNeeded, list, module, fields, null);
 		}
 	}
 	
@@ -228,20 +238,31 @@ public class ContractsAPI {
 						(LookupField) fieldsAsMap.get("toolType")));
 		return builder.get();
 	}
-	
-	public static void updateRecord(ModuleBaseWithCustomFields data, FacilioModule module, List<FacilioField> fields, boolean isChangeSetNeeded, FacilioContext context) throws Exception {
+
+	public static void updateRecord(ModuleBaseWithCustomFields data, FacilioModule module, List<FacilioField> fields, boolean isChangeSetNeeded, FacilioContext context, List<SupplementRecord> supplements) throws Exception {
 		if(data != null) {
 			UpdateRecordBuilder updateRecordBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
 					.module(module)
 					.fields(fields)
 					.andCondition(CriteriaAPI.getIdCondition(data.getId(), module));
-			
+
 			if (isChangeSetNeeded) {
 				updateRecordBuilder.withChangeSet(ContractsContext.class);
 			}
-			
+
+			if(!supplements.isEmpty()) {
+				updateRecordBuilder.updateSupplements(supplements);
+			}
+
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, updateRecordBuilder.update(data));
 			context.put(FacilioConstants.ContextNames.CHANGE_SET, updateRecordBuilder.getChangeSet());
+		}
+
+	}
+	
+	public static void updateRecord(ModuleBaseWithCustomFields data, FacilioModule module, List<FacilioField> fields, boolean isChangeSetNeeded, FacilioContext context) throws Exception {
+		if(data != null) {
+			updateRecord(data, module, fields, isChangeSetNeeded, context, null);
 		}
 		
 	}

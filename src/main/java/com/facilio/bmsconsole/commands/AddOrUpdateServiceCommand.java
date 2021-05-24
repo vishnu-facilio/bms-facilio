@@ -1,8 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.modules.fields.SupplementRecord;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -55,21 +58,40 @@ public class AddOrUpdateServiceCommand extends FacilioCommand{
 	}
 	
 	private void addRecord(boolean isLocalIdNeeded, List<? extends ModuleBaseWithCustomFields> list, FacilioModule module, List<FacilioField> fields) throws Exception {
+
+		//custom fields multi lookup handling
+		List<SupplementRecord> supplements = new ArrayList<>();
+		CommonCommandUtil.handleFormDataAndSupplement(fields, list.get(0).getData(), supplements);
+
 		InsertRecordBuilder insertRecordBuilder = new InsertRecordBuilder<>()
 				.module(module)
 				.fields(fields);
 		if(isLocalIdNeeded) {
 			insertRecordBuilder.withLocalId();
 		}
-		insertRecordBuilder.addRecords(list);
+
+		if(!supplements.isEmpty()) {
+			insertRecordBuilder.insertSupplements(supplements);
+		}
+		insertRecordBuilder.addRecord(list.get(0));
 		insertRecordBuilder.save();
 	}
 	
 	public void updateRecord(ModuleBaseWithCustomFields data, FacilioModule module, List<FacilioField> fields) throws Exception {
+
+		//custom fields multi lookup handling
+		List<SupplementRecord> supplements = new ArrayList<>();
+		CommonCommandUtil.handleFormDataAndSupplement(fields, data.getData(), supplements);
+
 		UpdateRecordBuilder updateRecordBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
 				.module(module)
 				.fields(fields)
 				.andCondition(CriteriaAPI.getIdCondition(data.getId(), module));
+
+		if(!supplements.isEmpty()) {
+			updateRecordBuilder.updateSupplements(supplements);
+		}
+
 		updateRecordBuilder.update(data);
 	}
 	

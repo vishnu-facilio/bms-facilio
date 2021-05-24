@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.modules.fields.SupplementRecord;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -70,7 +72,10 @@ public class AddOrUpdateWarrantyContractCommand extends FacilioCommand{
 			warrantyContractContext.setContractType(ContractType.WARRANTY);
 			
 			if (!isContractRevised && warrantyContractContext.getId() > 0) {
-				ContractsAPI.updateRecord(warrantyContractContext, module, fields, true, (FacilioContext) context);
+				//custom fields multi lookup handling
+				List<SupplementRecord> supplements = new ArrayList<>();
+				CommonCommandUtil.handleFormDataAndSupplement(fields, warrantyContractContext.getData(), supplements);
+				ContractsAPI.updateRecord(warrantyContractContext, module, fields, true, (FacilioContext) context, supplements);
 				
 				DeleteRecordBuilder<WarrantyContractLineItemContext> deleteBuilder = new DeleteRecordBuilder<WarrantyContractLineItemContext>()
 						.module(lineModule)
@@ -99,9 +104,16 @@ public class AddOrUpdateWarrantyContractCommand extends FacilioCommand{
 			else if (isContractRevised && warrantyContractContext.getId() > 0) {
 				if(warrantyContractContext.getStatusEnum() == Status.APPROVED) {
 					WarrantyContractContext revisedContract = warrantyContractContext.clone();
-					ContractsAPI.addRecord(true,Collections.singletonList(revisedContract), module, fields);
+					//custom fields multi lookup handling
+					List<SupplementRecord> supplements = new ArrayList<>();
+					CommonCommandUtil.handleFormDataAndSupplement(fields, revisedContract.getData(), supplements);
+					ContractsAPI.addRecord(true,Collections.singletonList(revisedContract), module, fields, supplements);
+
+					//custom fields multi lookup handling
+					List<SupplementRecord> updateSupplements = new ArrayList<>();
+					CommonCommandUtil.handleFormDataAndSupplement(fields, warrantyContractContext.getData(), updateSupplements);
 					warrantyContractContext.setStatus(Status.REVISED);
-					ContractsAPI.updateRecord(warrantyContractContext, module, fields, true, (FacilioContext) context);
+					ContractsAPI.updateRecord(warrantyContractContext, module, fields, true, (FacilioContext) context, updateSupplements);
 					updateLineItems(revisedContract);
 					ContractsAPI.updateAssetsAssociated(revisedContract.getId(), revisedContract.getAssociatedAssets());
 					ContractsAPI.updateTermsAssociated(revisedContract.getId(), revisedContract.getTermsAssociated());
@@ -124,6 +136,10 @@ public class AddOrUpdateWarrantyContractCommand extends FacilioCommand{
 				
 				warrantyContractContext.setStatus(WarrantyContractContext.Status.WAITING_FOR_APPROVAL);
 				warrantyContractContext.setRevisionNumber(0);
+
+				//custom fields multi lookup handling
+				List<SupplementRecord> supplements = new ArrayList<>();
+				CommonCommandUtil.handleFormDataAndSupplement(fields, warrantyContractContext.getData(), supplements);
 				ContractsAPI.addRecord(true,Collections.singletonList(warrantyContractContext), module, fields);
 				warrantyContractContext.setParentId(warrantyContractContext.getLocalId());
 				ContractsAPI.updateRecord(warrantyContractContext, module, fields, true, (FacilioContext) context);
