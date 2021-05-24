@@ -55,7 +55,7 @@ public abstract class ResponseContext <T extends QAndATemplateContext> extends V
     }
 
     public QAndATemplateContext getTemplate() {
-        return getParent() == null ? template : getParent();
+        return this instanceof DummyResponseContext ? template : getParent() == null ? template : getParent();
     }
 
     public abstract T getParent();
