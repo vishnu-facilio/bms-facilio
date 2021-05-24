@@ -23,6 +23,7 @@ public class ExecuteAutomatedRuleHistoryWorkflowsCommand extends FacilioCommand{
 			if (executeReadingRuleThroughAutomatedHistoryProp != null && !executeReadingRuleThroughAutomatedHistoryProp.isEmpty() && StringUtils.isNotEmpty(executeReadingRuleThroughAutomatedHistoryProp) && Boolean.valueOf(executeReadingRuleThroughAutomatedHistoryProp)) {
 				FacilioChain c = FacilioChain.getTransactionChain();
 				c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.MODULE_RULE));
+				c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.ALARM_WORKFLOW_RULE));
 				c.execute(context);
 			}
 			
