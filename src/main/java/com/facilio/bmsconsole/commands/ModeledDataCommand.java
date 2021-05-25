@@ -258,12 +258,13 @@ public class ModeledDataCommand extends AgentV2Command {
 					}
 					String readingKey = moduleName + "|" + resourceId;
 					ReadingContext reading = iModuleVsReading.get(readingKey);
-					if (reading == null) {
-						reading = new ReadingContext();
-						iModuleVsReading.put(readingKey, reading);
-					}
                     try {
-                        reading.addReading(field.getName(), FacilioUtil.castOrParseValueAsPerType(field, pointValue));
+                        Object value = FacilioUtil.castOrParseValueAsPerType(field, pointValue);
+                        if (reading == null) {
+                            reading = new ReadingContext();
+                            iModuleVsReading.put(readingKey, reading);
+                        }
+                        reading.addReading(field.getName(), value);
                         reading.setParentId(resourceId);
                         reading.setTtime(timeStamp);
                     } catch (NumberFormatException ex) {
