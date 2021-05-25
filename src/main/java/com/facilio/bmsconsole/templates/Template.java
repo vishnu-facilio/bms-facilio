@@ -25,6 +25,7 @@ public abstract class Template implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = LogManager.getLogger(Template.class.getName());
+	private static final String CUSTOM_SCRIPT_NAMESPACE = "cs";
 	private long id;
 	public long getId() {
 		return id;
@@ -148,7 +149,7 @@ public abstract class Template implements Serializable {
 				}
 				if (userWorkflow  != null) {
 					Map<String, Object> userParams = (Map<String, Object>) WorkflowUtil.getWorkflowExpressionResult(userWorkflow, parameters);
-					params.put("cs", userParams);
+					params.put(CUSTOM_SCRIPT_NAMESPACE, userParams);
 				}
 				if (isFtl()) {
 					// StrSubstitutor.replace(jsonStr, params);
