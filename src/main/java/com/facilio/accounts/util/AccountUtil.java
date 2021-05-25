@@ -541,6 +541,17 @@ public class AccountUtil {
 		}
 		return true;
 	}
-		
+
+	public static Boolean shouldApplyDBScoping(FacilioModule module) {
+    	try {
+			if (AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING) && AccountUtil.getCurrentApp() != null && (!AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP) || (AccountUtil.getCurrentOrg().getOrgId() == 274l && (module.getName().equals(FacilioConstants.ContextNames.PURCHASE_ORDER) || module.getName().equals(FacilioConstants.ContextNames.PURCHASE_REQUEST))))) {
+				return true;
+			}
+		}
+    	catch (Exception e){
+    		e.printStackTrace();
+		}
+    	return false;
+	}
 	
 }

@@ -8,16 +8,12 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.util.ApplicationApi;
-import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.bmsconsole.context.ScopingConfigContext;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.db.criteria.Condition;
@@ -42,7 +38,7 @@ public class ScopeHandlerImpl extends ScopeHandler {
     @Override
     public Collection<FacilioField> updateValuesForInsertAndGetFields(FacilioModule module, List<Map<String, Object>> props) {
         try {
-			if (AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING) && AccountUtil.getCurrentApp() != null && !AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)){
+			if (AccountUtil.shouldApplyDBScoping(module)){
 				ScopeFieldsAndCriteria scopeFields = constructScopingFieldsAndCriteria(module, null, true);
 				if(scopeFields != null) {
 					Collection<FacilioField> fields = scopeFields.getFields();
@@ -72,7 +68,7 @@ public class ScopeHandlerImpl extends ScopeHandler {
     @Override
     public ScopeFieldsAndCriteria updateValuesForUpdateAndGetFieldsAndCriteria (FacilioModule module, Collection<FacilioModule> joinModules, Map<String, Object> prop) {
         try {
-			if (AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING) && AccountUtil.getCurrentApp() != null && !AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)){
+			if (AccountUtil.shouldApplyDBScoping(module)){
 				Map<Long, Map<String, Object>> scopingMap = AccountUtil.getCurrentAppScopingMap();
 				if(MapUtils.isNotEmpty(scopingMap)) {
 					Map<String, Object> moduleScoping = scopingMap.get(module.getModuleId());
@@ -122,7 +118,7 @@ public class ScopeHandlerImpl extends ScopeHandler {
     @Override
     public ScopeFieldsAndCriteria getFieldsAndCriteriaForSelect(FacilioModule module, Collection<FacilioModule> joinModules) {
         try {
-			if (AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING) && AccountUtil.getCurrentApp() != null && !AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)){
+			if (AccountUtil.shouldApplyDBScoping(module)){
 				return constructScopingFieldsAndCriteria(module, joinModules, false);
 			}
 			else {
