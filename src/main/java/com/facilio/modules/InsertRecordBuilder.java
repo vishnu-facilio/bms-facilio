@@ -140,6 +140,7 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	}
 
 	public InsertRecordBuilder<E> insertSupplement(SupplementRecord supplement) {
+		Objects.requireNonNull(supplement, "Supplement record cannot be null");
 		if (insertSupplements == null) {
 			insertSupplements = new ArrayList<>();
 		}
@@ -148,6 +149,8 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	}
 
 	public InsertRecordBuilder<E> insertSupplements(Collection<? extends SupplementRecord> supplements) {
+		Objects.requireNonNull(supplements, "Supplement records cannot be null");
+		FacilioUtil.throwIllegalArgumentException(supplements.stream().anyMatch(Objects::isNull), "Supplement record cannot be null");
 		if (insertSupplements == null) {
 			insertSupplements = new ArrayList<>();
 		}

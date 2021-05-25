@@ -17,6 +17,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FileField;
 import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.modules.fields.UpdateSupplementHandler;
+import com.facilio.util.FacilioUtil;
 import com.google.common.collect.MapDifference;
 import com.google.common.collect.MapDifference.ValueDifference;
 import com.google.common.collect.Maps;
@@ -190,6 +191,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	}
 
 	public UpdateRecordBuilder<E> updateSupplement(SupplementRecord supplement) {
+		Objects.requireNonNull(supplement, "Supplement record cannot be null");
 		if (updateSupplements == null) {
 			updateSupplements = new ArrayList<>();
 		}
@@ -198,6 +200,8 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	}
 
 	public UpdateRecordBuilder<E> updateSupplements(Collection<? extends SupplementRecord> supplements) {
+		Objects.requireNonNull(supplements, "Supplement records cannot be null");
+		FacilioUtil.throwIllegalArgumentException(supplements.stream().anyMatch(Objects::isNull), "Supplement record cannot be null");
 		if (updateSupplements == null) {
 			updateSupplements = new ArrayList<>();
 		}

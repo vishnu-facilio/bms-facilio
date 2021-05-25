@@ -1,17 +1,13 @@
 package com.facilio.modules;
 
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.facilio.modules.fields.DeleteSupplementHandler;
 import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.modules.fields.UpdateSupplementHandler;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -149,6 +145,7 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	}
 
 	public DeleteRecordBuilder<E> deleteSupplement(SupplementRecord supplement) {
+		Objects.requireNonNull(supplement, "Supplement record cannot be null");
 		if (deleteSupplements == null) {
 			deleteSupplements = new ArrayList<>();
 		}
@@ -157,6 +154,8 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	}
 
 	public DeleteRecordBuilder<E> deleteSupplements(Collection<? extends SupplementRecord> supplements) {
+		Objects.requireNonNull(supplements, "Supplement records cannot be null");
+		FacilioUtil.throwIllegalArgumentException(supplements.stream().anyMatch(Objects::isNull), "Supplement record cannot be null");
 		if (deleteSupplements == null) {
 			deleteSupplements = new ArrayList<>();
 		}
