@@ -147,12 +147,8 @@ public abstract class Template implements Serializable {
 					params = WorkflowUtil.getExpressionResultMap(workflow, parameters);
 				}
 				if (userWorkflow  != null) {
-					if (userWorkflow.isV2Script()) {
-						Map<String, Object> param = (Map<String, Object>) WorkflowUtil.getWorkflowExpressionResult(userWorkflow, parameters);
-						if (param != null && !param.isEmpty()) {
-							params.putAll(param);
-						}
-					}
+					Map<String, Object> userParams = (Map<String, Object>) WorkflowUtil.getWorkflowExpressionResult(userWorkflow, parameters);
+					params.put("cs", userParams);
 				}
 				if (isFtl()) {
 					// StrSubstitutor.replace(jsonStr, params);
