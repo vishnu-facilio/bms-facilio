@@ -713,8 +713,6 @@ public class ColumnFactory {
 		
 		columns.add(new ViewField("site", "Site"));
 		columns.add(new ViewField("resource", "Space / Asset"));
-		columns.add(new ViewField("vendor", "Vendor"));
-		columns.add(new ViewField("tenant", "Tenant"));
 		columns.add(new ViewField("category", "Category"));
 		columns.add(new ViewField("priority", "Priority"));
 		columns.add(new ViewField("assignedTo", "Assigned To"));
@@ -734,8 +732,6 @@ public class ColumnFactory {
 		columns.add(new ViewField("site", "Site"));
 		columns.add(new ViewField("resource", "Space / Asset"));
 		columns.add(new ViewField("assignedTo", "Assigned To"));
-		columns.add(new ViewField("vendor", "Vendor"));
-		columns.add(new ViewField("tenant", "Tenant"));
 		columns.add(new ViewField("category", "Category"));
 		columns.add(new ViewField("priority", "Priority"));
 		
