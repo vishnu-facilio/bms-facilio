@@ -10,8 +10,8 @@ import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTriggerContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTriggerIncludeExcludeResourceContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.qa.command.InductionResponseSupplementSupplyCommand;
-import com.facilio.qa.command.InspectionResponseSupplementSupplyCommand;
+import com.facilio.qa.command.InductionSupplementSupplyCommand;
+import com.facilio.qa.command.InspectionSupplementSupplyCommand;
 import com.facilio.qa.command.QAndAReadOnlyChainFactory;
 import com.facilio.qa.command.QAndATransactionChainFactory;
 import com.facilio.v3.V3Builder.V3Config;
@@ -52,8 +52,20 @@ public class ExtendedQAndAV3Config {
 //                .list()
 //                .delete()
                 .summary()
-                .beforeFetch(QAndAReadOnlyChainFactory.commonBeforeInspectionTemplateFetch())
-                .afterFetch(QAndAReadOnlyChainFactory.commonAfterInspectionTemplateFetch())
+                .beforeFetch(new InspectionSupplementSupplyCommand())
+                .afterFetch(new InspectionSupplementSupplyCommand())
+                .build();
+    }
+    
+    @Module(FacilioConstants.Inspection.INSPECTION_RESPONSE)
+    public static Supplier<V3Config> getInspectionResponse() {
+        return () -> new V3Config(InspectionResponseContext.class, null)
+                .update()
+                .beforeSave(QAndATransactionChainFactory.commonBeforeQAndAResponseUpdate())
+        		.list()
+        		.beforeFetch(new InspectionSupplementSupplyCommand())
+        		.summary()
+        		.beforeFetch(new InspectionSupplementSupplyCommand())
                 .build();
     }
 
@@ -88,17 +100,6 @@ public class ExtendedQAndAV3Config {
         return () -> new V3Config(InspectionTriggerIncludeExcludeResourceContext.class, null);
     }
     
-    @Module(FacilioConstants.Inspection.INSPECTION_RESPONSE)
-    public static Supplier<V3Config> getInspectionResponse() {
-        return () -> new V3Config(InspectionResponseContext.class, null)
-                .update()
-                .beforeSave(QAndATransactionChainFactory.commonBeforeQAndAResponseUpdate())
-        		.list()
-        		.beforeFetch(new InspectionResponseSupplementSupplyCommand())
-        		.summary()
-        		.beforeFetch(new InspectionResponseSupplementSupplyCommand())
-                .build();
-    }
     
     
     @Module(FacilioConstants.Induction.INDUCTION_TEMPLATE)
@@ -112,8 +113,8 @@ public class ExtendedQAndAV3Config {
 //                .list()
 //                .delete()
                 .summary()
-                .beforeFetch(QAndAReadOnlyChainFactory.commonBeforeInductionTemplateFetch())
-                .afterFetch(QAndAReadOnlyChainFactory.commonAfterInductionTemplateFetch())
+                .beforeFetch(new InductionSupplementSupplyCommand())
+                .afterFetch(new InductionSupplementSupplyCommand())
                 .build();
     }
     
@@ -123,9 +124,9 @@ public class ExtendedQAndAV3Config {
                 .update()
                 .beforeSave(QAndATransactionChainFactory.commonBeforeQAndAResponseUpdate())
         		.list()
-        		.beforeFetch(new InductionResponseSupplementSupplyCommand())
+        		.beforeFetch(new InductionSupplementSupplyCommand())
         		.summary()
-        		.beforeFetch(new InductionResponseSupplementSupplyCommand())
+        		.beforeFetch(new InductionSupplementSupplyCommand())
                 .build();
     }
     
