@@ -53,7 +53,7 @@ public class ExtendedQAndAV3Config {
 //                .delete()
                 .summary()
                 .beforeFetch(new InspectionSupplementSupplyCommand())
-                .afterFetch(new InspectionSupplementSupplyCommand())
+                .afterFetch(QAndAReadOnlyChainFactory.commonAfterInspectionTemplateFetch())
                 .build();
     }
     
@@ -114,7 +114,7 @@ public class ExtendedQAndAV3Config {
 //                .delete()
                 .summary()
                 .beforeFetch(new InductionSupplementSupplyCommand())
-                .afterFetch(new InductionSupplementSupplyCommand())
+                .afterFetch(QAndAReadOnlyChainFactory.commonAfterInductionTemplateFetch())
                 .build();
     }
     
