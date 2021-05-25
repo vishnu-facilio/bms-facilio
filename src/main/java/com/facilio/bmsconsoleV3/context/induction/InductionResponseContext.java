@@ -10,10 +10,13 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext.SourceType;
+import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext.Status;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.qa.context.ResponseContext;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -60,12 +63,18 @@ public class InductionResponseContext extends ResponseContext <InductionTemplate
 		this.sourceType = type == null ? null : SourceType.typeMap.get(type);
 	}
     
+	@AllArgsConstructor
     public static enum SourceType implements FacilioIntEnum {
 		
-		PLANNED,
-		MANNUAL,
+		PLANNED("Planned"),
+		MANNUAL("Mannual"),
 		;
-		
+    	String name;
+		@Override
+		public String getValue() {
+			// TODO Auto-generated method stub
+			return this.name;
+		}
 		private static final Map<Integer, SourceType> typeMap = Collections.unmodifiableMap(initTypeMap());
 		private static Map<Integer, SourceType> initTypeMap() {
 			Map<Integer, SourceType> typeMap = new HashMap<>();
@@ -80,10 +89,18 @@ public class InductionResponseContext extends ResponseContext <InductionTemplate
 		}
 	}
     
+    @AllArgsConstructor
     public enum Status implements FacilioIntEnum {
-		PRE_OPEN,
-		OPEN,
+		PRE_OPEN("Pre Open"),
+		OPEN("Open"),
 		;
+    	
+    	String name;
+		@Override
+		public String getValue() {
+			// TODO Auto-generated method stub
+			return this.name;
+		}
 		
 		private static final Status[] TRIGGER_EXECUTION_SOURCE = Status.values();
 		public static Status valueOf(int type) {

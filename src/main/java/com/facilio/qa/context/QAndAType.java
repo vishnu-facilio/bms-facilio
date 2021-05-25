@@ -16,13 +16,18 @@ import java.util.Map;
 @Getter
 @AllArgsConstructor
 public enum QAndAType implements FacilioIntEnum {
-    INSPECTION (FacilioConstants.Inspection.INSPECTION_TEMPLATE, InspectionTemplateContext.class, FacilioConstants.Inspection.INSPECTION_RESPONSE, InspectionResponseContext.class),
-    INDUCTION (FacilioConstants.Induction.INDUCTION_TEMPLATE, InductionTemplateContext.class, FacilioConstants.Induction.INDUCTION_RESPONSE, InductionResponseContext.class)
+    INSPECTION ("Inspection",FacilioConstants.Inspection.INSPECTION_TEMPLATE, InspectionTemplateContext.class, FacilioConstants.Inspection.INSPECTION_RESPONSE, InspectionResponseContext.class),
+    INDUCTION ("Induction",FacilioConstants.Induction.INDUCTION_TEMPLATE, InductionTemplateContext.class, FacilioConstants.Induction.INDUCTION_RESPONSE, InductionResponseContext.class)
     ;
 
+	String name;
+	@Override
+	public String getValue() {
+		// TODO Auto-generated method stub
+		return this.name;
+	}
     private String templateModule;
     private Class<? extends QAndATemplateContext> templateClass;
-
     private String responseModule;
     private Class<? extends ResponseContext> responseClass;
 

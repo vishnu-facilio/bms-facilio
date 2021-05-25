@@ -16,6 +16,8 @@ import com.facilio.modules.FacilioIntEnum;
 import com.facilio.qa.context.QAndATemplateContext;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -100,13 +102,22 @@ public class InspectionTemplateContext extends QAndATemplateContext <InspectionR
         response.setStatus(InspectionResponseContext.Status.OPEN.getIndex());
     }
 
+    @AllArgsConstructor
+    @Getter
     public static enum CreationType implements FacilioIntEnum {
 		
-		SINGLE, 
-		MULTIPLE,
+		SINGLE("Single"), 
+		MULTIPLE("Multiple"),
 		;
+    	
 		public int getVal() {
 			return ordinal() + 1;
+		}
+		String name;
+		@Override
+		public String getValue() {
+			// TODO Auto-generated method stub
+			return this.name;
 		}
 		private static final CreationType[] CREATION_TYPES = CreationType.values();
 		public static CreationType valueOf(int type) {

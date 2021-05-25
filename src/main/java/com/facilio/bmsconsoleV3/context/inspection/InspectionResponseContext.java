@@ -14,6 +14,8 @@ import com.facilio.modules.FacilioIntEnum;
 import com.facilio.qa.context.ResponseContext;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -63,13 +65,18 @@ public class InspectionResponseContext extends ResponseContext <InspectionTempla
 	public void setSourceType(Integer type) { // Using wrapper object to avoid -1 being inserted
 		this.sourceType = type == null ? null : SourceType.typeMap.get(type);
 	}
-    
+    @AllArgsConstructor
     public static enum SourceType implements FacilioIntEnum {
 		
-		PLANNED,
-		MANNUAL,
+		PLANNED("Planned"),
+		MANNUAL("Mannual"),
 		;
-		
+    	String name;
+		@Override
+		public String getValue() {
+			// TODO Auto-generated method stub
+			return this.name;
+		}
 		private static final Map<Integer, SourceType> typeMap = Collections.unmodifiableMap(initTypeMap());
 		private static Map<Integer, SourceType> initTypeMap() {
 			Map<Integer, SourceType> typeMap = new HashMap<>();
@@ -84,10 +91,18 @@ public class InspectionResponseContext extends ResponseContext <InspectionTempla
 		}
 	}
     
+    @AllArgsConstructor
     public enum Status implements FacilioIntEnum {
-		PRE_OPEN,
-		OPEN,
+		PRE_OPEN("Pre Open"),
+		OPEN("Open"),
 		;
+    	
+    	String name;
+		@Override
+		public String getValue() {
+			// TODO Auto-generated method stub
+			return this.name;
+		}
 		
 		private static final Status[] TRIGGER_EXECUTION_SOURCE = Status.values();
 		public static Status valueOf(int type) {

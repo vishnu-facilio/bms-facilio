@@ -5,6 +5,8 @@ import com.facilio.util.FacilioEnumClassTypeIdResolverBase;
 import com.facilio.v3.context.V3Context;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
+
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -61,12 +63,20 @@ public abstract class ResponseContext <T extends QAndATemplateContext> extends V
     public abstract T getParent();
     public abstract void setParent(T template);
 
+    @AllArgsConstructor
     public enum ResponseStatus implements FacilioIntEnum {
-        DISABLED,
-        NOT_ANSWERED,
-        PARTIALLY_ANSWERED,
-        COMPLETED
+        DISABLED("Disabled"),
+        NOT_ANSWERED("Not Answered"),
+        PARTIALLY_ANSWERED("Partialy Answered"),
+        COMPLETED("Completed")
         ;
+    	
+    	String name;
+		@Override
+		public String getValue() {
+			// TODO Auto-generated method stub
+			return this.name;
+		}
 
         public static ResponseStatus valueOf (int value) {
             if (value > 0 && value <= values().length) {

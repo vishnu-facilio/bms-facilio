@@ -243,6 +243,12 @@ public class ColumnFactory {
 		columnMap.put(FacilioConstants.ContextNames.LOCKERS + "-default", getDefaultLockersColumns());
 		columnMap.put(FacilioConstants.ContextNames.PARKING_STALL + "-default", getDefaultParkingStallColumns());
 		
+		columnMap.put(FacilioConstants.Inspection.INSPECTION_TEMPLATE+"-default", getDefaultInspectionTemplateColumns());
+		columnMap.put(FacilioConstants.Inspection.INSPECTION_RESPONSE+"-default", getDefaultInspectionResponseColumns());
+		
+		columnMap.put(FacilioConstants.Induction.INDUCTION_TEMPLATE+"-default", getDefaultInductionTemplateColumns());
+		columnMap.put(FacilioConstants.Induction.INDUCTION_RESPONSE+"-default", getDefaultInductionResponseColumns());
+		
 		// Community Features
 		columnMap.put("announcement-default", getDefaultAnnouncementColumns());
 		columnMap.put("peopleannouncement-default", getDefaultAnnouncementColumns());
@@ -701,6 +707,72 @@ public class ColumnFactory {
 		columns.add(new ViewField("status", "Status"));
 		return columns;
 	}
+	
+	private static List<ViewField> getDefaultInspectionTemplateColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("site", "Site"));
+		columns.add(new ViewField("resource", "Space / Asset"));
+		columns.add(new ViewField("vendor", "Vendor"));
+		columns.add(new ViewField("tenant", "Tenant"));
+		columns.add(new ViewField("category", "Category"));
+		columns.add(new ViewField("priority", "Priority"));
+		columns.add(new ViewField("assignedTo", "Assigned To"));
+		
+		
+		columns.add(new ViewField("totalPages", "Total Pages"));
+		columns.add(new ViewField("totalQuestions", "Total Questions"));
+
+		return columns;
+	}
+	
+	private static List<ViewField> getDefaultInspectionResponseColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("responseStatus", "Status"));
+		
+		columns.add(new ViewField("site", "Site"));
+		columns.add(new ViewField("resource", "Space / Asset"));
+		columns.add(new ViewField("assignedTo", "Assigned To"));
+		columns.add(new ViewField("vendor", "Vendor"));
+		columns.add(new ViewField("tenant", "Tenant"));
+		columns.add(new ViewField("category", "Category"));
+		columns.add(new ViewField("priority", "Priority"));
+		
+		columns.add(new ViewField("totalAnswered", "Total Answered"));
+
+		return columns;
+	}
+	
+	
+	private static List<ViewField> getDefaultInductionTemplateColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("site", "Site"));
+		columns.add(new ViewField("resource", "Space / Asset"));
+		columns.add(new ViewField("assignedTo", "Assigned To"));
+		
+		
+		columns.add(new ViewField("totalPages", "Total Pages"));
+		columns.add(new ViewField("totalQuestions", "Total Questions"));
+
+		return columns;
+	}
+	
+	private static List<ViewField> getDefaultInductionResponseColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("responseStatus", "Status"));
+		
+		columns.add(new ViewField("site", "Site"));
+		columns.add(new ViewField("resource", "Space / Asset"));
+		columns.add(new ViewField("assignedTo", "Assigned To"));
+		
+		columns.add(new ViewField("totalAnswered", "Total Answered"));
+
+		return columns;
+	}
+	
 	private static List<ViewField> getDefaultContractColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 	//	columns.add(new ViewField("parentId", "ID"));

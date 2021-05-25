@@ -592,15 +592,24 @@ public class PreventiveMaintenance extends ResourceContext {
 
 	public static enum PMAssignmentType implements FacilioIntEnum {
 		
-		ALL_FLOORS,			//1
-		ALL_SPACES,
-		SPACE_CATEGORY,		//3
-		ASSET_CATEGORY,
-		CURRENT_ASSET,		//5
-		SPECIFIC_ASSET,
-		ALL_BUILDINGS,		//7
-		ALL_SITES
+		ALL_FLOORS("All Floors"),			//1
+		ALL_SPACES("All Spaces"),
+		SPACE_CATEGORY("Space Category"),		//3
+		ASSET_CATEGORY("Asset Category"),
+		CURRENT_ASSET("Current Asset"),		//5
+		SPECIFIC_ASSET("Specific Asset"),
+		ALL_BUILDINGS("All Buildings"),		//7
+		ALL_SITES("All Sites")
 		;
+		String name;
+		@Override
+		public String getValue() {
+			// TODO Auto-generated method stub
+			return this.name;
+		}
+		PMAssignmentType(String name) {
+			this.name = name;
+		}
 		public int getVal() {
 			return ordinal() + 1;
 		}
