@@ -11477,7 +11477,7 @@ VALUES (${orgId}, @EMAIL_FROM_ADDRESS_MODULE_NAME, 'creationType', 'Creation Typ
 INSERT INTO SystemEnumFields (FIELDID, ORGID, ENUM_NAME) VALUES ((SELECT LAST_INSERT_ID()), ${orgId}, 'EmailFromAddressCreationType');
 
 -- adding default email values
-SET @ORG_DOMAIN := (SELECT FACILIODOMAINNAME from Organizations where orgid = ${orgId});
+SET @ORG_DOMAIN := (SELECT FACILIODOMAINNAME from Organizations where ORGID = ${orgId});
 Insert into Email_From_Address(ORGID,MODULEID,DISPLAY_NAME,NAME,EMAIL,VERIFICATION_STATUS,SOURCE_TYPE,STATUS,CREATION_TYPE) 
 values(${orgId},@EMAIL_FROM_ADDRESS_MODULE_NAME,'Notification','defaultReplyMail',CONCAT('noreply@',@ORG_DOMAIN,'.facilio.com'),1,1,1,1);
 
