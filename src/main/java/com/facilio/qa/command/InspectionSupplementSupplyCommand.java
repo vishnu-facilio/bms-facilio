@@ -24,7 +24,10 @@ public class InspectionSupplementSupplyCommand extends FacilioCommand {
 	        
 	        supplements.add((SupplementRecord) fieldMap.get("sysCreatedBy"));
 	        supplements.add((SupplementRecord) fieldMap.get("sysModifiedBy"));
-	        supplements.add((SupplementRecord) fieldMap.get("parent"));
+	        
+	        if( Constants.getModuleName(context).equals(FacilioConstants.Inspection.INSPECTION_RESPONSE)) {
+	        	supplements.add((SupplementRecord) fieldMap.get("parent"));
+	        }
 	        supplements.add((SupplementRecord) fieldMap.get("resource"));
 	        supplements.add((SupplementRecord) fieldMap.get("vendor"));
 	        supplements.add((SupplementRecord) fieldMap.get("tenant"));
