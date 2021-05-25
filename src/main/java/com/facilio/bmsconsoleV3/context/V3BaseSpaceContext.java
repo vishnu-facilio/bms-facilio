@@ -143,7 +143,7 @@ public class V3BaseSpaceContext extends V3ResourceContext {
 	}
 	public void setBuildingId(Long buildingId) {
 		this.buildingId = buildingId;
-		if (buildingId > -1) {
+		if (buildingId != null && buildingId > -1) {
 			if (building == null) {
 				building = new BuildingContext();
 			}
@@ -159,7 +159,7 @@ public class V3BaseSpaceContext extends V3ResourceContext {
 		return building;
 	}
 	public void setBuilding(BuildingContext building) {
-		this.building = building.getId() > 0 ? building : null;
+		this.building = building != null ? (building.getId() > 0 ? building : null) : null;
 		this.buildingId = building != null ? (building.getId() > 0 ? building.getId() : null) : null;
 	}
 	
@@ -194,7 +194,7 @@ public class V3BaseSpaceContext extends V3ResourceContext {
 	}
 	public void setSpaceId1(Long spaceId1) {
 		this.spaceId1 = spaceId1;
-		if (spaceId1 > -1) {
+		if (spaceId1 != null && spaceId1 > -1) {
 			if (space1 == null) {
 				space1 = new V3SpaceContext();
 			}
@@ -219,7 +219,7 @@ public class V3BaseSpaceContext extends V3ResourceContext {
 	}
 	public void setSpaceId2(Long spaceId2) {
 		this.spaceId2 = spaceId2;
-		if (spaceId2 > -1) {
+		if (spaceId2 != null && spaceId2 > -1) {
 			if (space2 == null) {
 				space2 = new V3SpaceContext();
 			}
@@ -244,7 +244,7 @@ public class V3BaseSpaceContext extends V3ResourceContext {
 	}
 	public void setSpaceId3(Long spaceId3) {
 		this.spaceId3 = spaceId3;
-		if (spaceId3 > -1) {
+		if (spaceId3 != null && spaceId3 > -1) {
 			if (space3 == null) {
 				space3 = new V3SpaceContext();
 			}
@@ -269,7 +269,7 @@ public class V3BaseSpaceContext extends V3ResourceContext {
 	}
 	public void setSpaceId4(Long spaceId4) {
 		this.spaceId4 = spaceId4;
-		if (spaceId4 > -1) {
+		if (spaceId4 != null && spaceId4 > -1) {
 			if (space4 == null) {
 				space4 = new V3SpaceContext();
 			}
