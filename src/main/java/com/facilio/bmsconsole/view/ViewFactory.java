@@ -9003,7 +9003,7 @@ public class ViewFactory {
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
-		allView.setDisplayName("All Inspection Response");
+		allView.setDisplayName("All Inspections");
 		allView.setModuleName(FacilioConstants.Inspection.INSPECTION_RESPONSE);
 		allView.setSortFields(sortFields);
 
