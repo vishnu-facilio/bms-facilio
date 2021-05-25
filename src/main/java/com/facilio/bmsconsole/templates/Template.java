@@ -137,9 +137,8 @@ public abstract class Template implements Serializable {
 	
 	public final JSONObject getTemplate(Map<String, Object> parameters) throws Exception {
 		JSONObject json = getOriginalTemplate();
-		if (json != null) {
+		if (json != null && (workflow != null || userWorkflow != null)) {
 			JSONObject parsedJson = null;
-			if (workflow != null) {
 				Map<String, Object> params;
 				if (workflow.isV2Script()) {
 					params = (Map<String, Object>) WorkflowUtil.getWorkflowExpressionResult(workflow, parameters);
@@ -201,8 +200,7 @@ public abstract class Template implements Serializable {
 					JSONParser parser = new JSONParser();
 					parsedJson = (JSONObject) parser.parse(jsonStr);
 				}
-			}
-			return parsedJson;
+				return parsedJson;
 		}
 		return json;
 	}

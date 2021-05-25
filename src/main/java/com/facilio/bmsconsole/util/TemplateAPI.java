@@ -1798,6 +1798,9 @@ public class TemplateAPI {
 			if (template.getWorkflow() == null && template.getWorkflowId() == -1) {
 				throw new IllegalArgumentException("Workflow cannot be null if placeholders are present for a template.");
 			}
+			if (template.getUserWorkflow() != null) {
+				template.setUserWorkflowId(WorkflowUtil.addWorkflow(template.getUserWorkflow()));
+			}
 			template.setWorkflowId(WorkflowUtil.addWorkflow(template.getWorkflow()));
 		}
 	}

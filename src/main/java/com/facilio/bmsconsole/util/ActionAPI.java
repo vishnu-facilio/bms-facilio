@@ -469,6 +469,7 @@ public class ActionAPI {
 		action.setTemplate(emailTemplate);
 		
 		checkAndSetWorkflow(action.getTemplateJson(), emailTemplate);
+		checkAndSetUserWorkflow(action.getTemplateJson(), emailTemplate);
 	}
 	
 	private static void setSMSTemplate(ActionContext action) {
@@ -543,6 +544,15 @@ public class ActionAPI {
 			template.setWorkflow(workflowContext);
 		}
 	}
+	
+	private static void checkAndSetUserWorkflow(JSONObject templateJson, Template template) {
+		if (templateJson.containsKey("userWorkflow")) {
+			Map<String, Object> workflow = (Map<String, Object>) templateJson.get("userWorkflow");
+			WorkflowContext workflowContext = FieldUtil.getAsBeanFromMap(workflow, WorkflowContext.class);
+			template.setUserWorkflow(workflowContext);
+		}
+	}
+	
 	
 	private static void setDefaultTemplate(ActionContext action, WorkflowRuleContext rule) {
 		JSONTemplate jsonTemplate = new JSONTemplate();
