@@ -24,7 +24,9 @@ public class InductionSupplementSupplyCommand extends FacilioCommand {
         
         supplements.add((SupplementRecord) fieldMap.get("sysCreatedBy"));
         supplements.add((SupplementRecord) fieldMap.get("sysModifiedBy"));
-        supplements.add((SupplementRecord) fieldMap.get("parent"));
+        if( Constants.getModuleName(context).equals(FacilioConstants.Induction.INDUCTION_RESPONSE)) {
+        	supplements.add((SupplementRecord) fieldMap.get("parent"));
+        }
         supplements.add((SupplementRecord) fieldMap.get("resource"));
         supplements.add((SupplementRecord) fieldMap.get("assignmentGroup"));
         supplements.add((SupplementRecord) fieldMap.get("assignedTo"));
