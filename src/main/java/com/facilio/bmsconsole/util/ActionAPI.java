@@ -546,10 +546,12 @@ public class ActionAPI {
 	}
 	
 	private static void checkAndSetUserWorkflow(JSONObject templateJson, Template template) {
-		if (templateJson.containsKey("userWorkflow")) {
+		if (templateJson.containsKey("userWorkflow") && templateJson.get("userWorkflow") != null) {
 			Map<String, Object> workflow = (Map<String, Object>) templateJson.get("userWorkflow");
-			WorkflowContext workflowContext = FieldUtil.getAsBeanFromMap(workflow, WorkflowContext.class);
-			template.setUserWorkflow(workflowContext);
+			if (workflow != null && !workflow.isEmpty()) {
+				WorkflowContext workflowContext = FieldUtil.getAsBeanFromMap(workflow, WorkflowContext.class);
+				template.setUserWorkflow(workflowContext);
+			}
 		}
 	}
 	
