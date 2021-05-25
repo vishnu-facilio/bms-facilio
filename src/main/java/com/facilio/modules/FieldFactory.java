@@ -1575,6 +1575,7 @@ public class FieldFactory {
         fieldMappingFields.add(FieldFactory.getField("space3", "Space 3", "SPACE_3", module, FieldType.STRING));
         fieldMappingFields.add(FieldFactory.getField("asset", "Asset", "ASSET", module, FieldType.STRING));
         fieldMappingFields.add(FieldFactory.getField("site", "Site", "SITE", module, FieldType.STRING));
+        fieldMappingFields.add(FieldFactory.getField("formId", "Form ID", "FORM_ID", module, FieldType.STRING));
         return fieldMappingFields;
     }
 
