@@ -140,7 +140,7 @@ public class GetEmployeeOccupantPortalSummaryCommand extends FacilioCommand {
                 .moduleName(visitorInviteMod.getName())
                 .select(inviteFields)
                 .beanClass(InviteVisitorContextV3.class)
-                .andCondition(CriteriaAPI.getCondition(invitefieldsAsMap.get("expectedStartTime"), String.valueOf(currentTime) , DateOperators.IS_AFTER))
+                .andCondition(CriteriaAPI.getCondition(invitefieldsAsMap.get("expectedCheckInTime"), String.valueOf(currentTime) , DateOperators.IS_AFTER))
                 .limit(count)
                 .fetchSupplements(inviteLookups);
 
