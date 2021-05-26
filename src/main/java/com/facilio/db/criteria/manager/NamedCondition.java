@@ -117,7 +117,7 @@ public class NamedCondition {
                 return getCriteria().computePredicate(placeHolders).evaluate(record);
 
             case WORKFLOW:
-                Object result = workflowContext.executeWorkflow();
+                Object result = getWorkflowContext().executeWorkflow();
                 if (result != null && result instanceof Boolean) {
                     return (Boolean) result;
                 }
@@ -141,14 +141,14 @@ public class NamedCondition {
 
         switch (type) {
             case CRITERIA:
-                if (criteria == null || criteria.isEmpty()) {
+                if (getCriteria() == null || getCriteria().isEmpty()) {
                     throw new IllegalArgumentException("Criteria cannot be empty");
                 }
                 setCriteriaId(CriteriaAPI.addCriteria(getCriteria()));
                 break;
 
             case WORKFLOW:
-                if (workflowContext == null) {
+                if (getWorkflowContext() == null) {
                     throw new IllegalArgumentException("Workflow cannot be empty");
                 }
                 setWorkflowId(WorkflowUtil.addWorkflow(getWorkflowContext()));
