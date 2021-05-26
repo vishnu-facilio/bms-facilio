@@ -99,7 +99,7 @@ public class GetEmployeeOccupantPortalSummaryCommand extends FacilioCommand {
         List<FacilioField> srFields = modBean.getAllFields(FacilioConstants.ContextNames.SERVICE_REQUEST);
         Map<String, FacilioField> srfieldsAsMap = FieldFactory.getAsMap(srFields);
         List<LookupField> srLookups = new ArrayList<LookupField>();
-        LookupField srstatusField = (LookupField) deskfieldsAsMap.get(FacilioConstants.ContextNames.MODULE_STATE);
+        LookupField srstatusField = (LookupField) srfieldsAsMap.get(FacilioConstants.ContextNames.MODULE_STATE);
         if(srstatusField != null) {
         	srLookups.add(srstatusField);
         }
@@ -111,8 +111,8 @@ public class GetEmployeeOccupantPortalSummaryCommand extends FacilioCommand {
                 .beanClass(ServiceRequestContext.class)
                 .limit(count)
                 .fetchSupplements(srLookups);
-        if(srfieldsAsMap.get(FacilioConstants.ContextNames.MODULE_STATE) != null && closedStatus != null) {
-        	srbuilder.andCondition(CriteriaAPI.getCondition(srfieldsAsMap.get(FacilioConstants.ContextNames.MODULE_STATE),String.valueOf(closedStatus.getId()) ,PickListOperators.ISN_T));
+        if(srstatusField != null && closedStatus != null) {
+        	srbuilder.andCondition(CriteriaAPI.getCondition(srstatusField,String.valueOf(closedStatus.getId()) ,PickListOperators.ISN_T));
         }
         
         if(recordId > -1) {
