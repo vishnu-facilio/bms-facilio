@@ -5,7 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.modules.fields.SupplementRecord;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
 import com.facilio.beans.ModuleBean;
@@ -51,6 +53,13 @@ public class GenericUpdateListModuleDataCommand extends FacilioCommand {
 				if (withChangeSet != null && withChangeSet) {
 					updateBuilder.withChangeSet(ModuleBaseWithCustomFields.class);
 				}
+
+				List<SupplementRecord> supplements = new ArrayList<>();
+				CommonCommandUtil.handleFormDataAndSupplement(fields, record.getData(), supplements);
+				if(CollectionUtils.isNotEmpty(supplements)) {
+					updateBuilder.updateSupplements(supplements);
+				}
+
 				updateBuilder.update(record);
 				if (withChangeSet != null && withChangeSet) {
 					Map<Long, List<UpdateChangeSet>> recordChanges = updateBuilder.getChangeSet();

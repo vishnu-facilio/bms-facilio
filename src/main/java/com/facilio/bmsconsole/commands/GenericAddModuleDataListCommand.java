@@ -1,8 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import com.facilio.modules.fields.SupplementRecord;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -13,6 +15,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.collections4.CollectionUtils;
 
 public class GenericAddModuleDataListCommand extends FacilioCommand{
 
@@ -35,7 +38,17 @@ public class GenericAddModuleDataListCommand extends FacilioCommand{
 																						.module(module)
 																						.fields(fields)
 																						;
-			
+			List<SupplementRecord> supplements = new ArrayList<>();
+			for(FacilioField field : fields) {
+				if(field.getDataTypeEnum().isMultiRecord())  {
+					supplements.add((SupplementRecord) field);
+				}
+			}
+
+			if(CollectionUtils.isNotEmpty(supplements)) {
+				insertRecordBuilder.insertSupplements(supplements);
+			}
+
 			Boolean setLocalId = (Boolean) context.get(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID);
 			if (setLocalId != null && setLocalId) {
 				insertRecordBuilder.withLocalId();
@@ -48,6 +61,7 @@ public class GenericAddModuleDataListCommand extends FacilioCommand{
 			List<Long> ids = new ArrayList<>();
 			for(ModuleBaseWithCustomFields rec : record) {
 				CommonCommandUtil.handleLookupFormData(fields, rec.getData());
+				CommonCommandUtil.handleFormDataAndSupplement(fields, rec.getData(), Collections.EMPTY_LIST);
 				insertRecordBuilder.addRecord(rec);
 			}
 			insertRecordBuilder.save();

@@ -701,6 +701,7 @@ public class ReadOnlyChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForVendors());
 		c.addCommand(new LoadVendorLookUpCommand());
+		c.addCommand(new FetchCustomMultiRecordFieldsCommand());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		c.addCommand(new LookupPrimaryFieldHandlingCommand());
 		c.addCommand(new GetVendorDetailsCommand());
@@ -2537,6 +2538,7 @@ public class ReadOnlyChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForVendorContact());
 		c.addCommand(new AddVendorContactLookUpCommand());
+		c.addCommand(new FetchCustomMultiRecordFieldsCommand());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		return c;
 	}
