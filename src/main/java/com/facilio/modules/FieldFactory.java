@@ -8388,6 +8388,7 @@ public class FieldFactory {
         fields.add(getField("name", "NAME", validationModule, FieldType.STRING));
         fields.add(getField("errorMessage", "ERROR_MESSAGE", validationModule, FieldType.STRING));
         fields.add(getField("criteriaId", "CRITERIA_ID", validationModule, FieldType.NUMBER));
+        fields.add(getField("namedCriteriaId", "NAMED_CRITERIA_ID", validationModule, FieldType.NUMBER));
         return fields;
     }
 
@@ -8400,6 +8401,7 @@ public class FieldFactory {
         fields.add(getField("name", "NAME", module, FieldType.STRING));
         fields.add(getField("message", "MESSAGE", module, FieldType.STRING));
         fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.NUMBER));
+        fields.add(getField("namedCriteriaId", "NAMED_CRITERIA_ID", module, FieldType.NUMBER));
         return fields;
     }
 

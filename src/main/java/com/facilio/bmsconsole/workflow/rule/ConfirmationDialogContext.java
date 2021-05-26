@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.workflow.rule;
 
 import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.manager.NamedCriteria;
 
 public class ConfirmationDialogContext {
     private long id = -1;
@@ -49,5 +50,21 @@ public class ConfirmationDialogContext {
     }
     public void setCriteriaId(long criteriaId) {
         this.criteriaId = criteriaId;
+    }
+
+    private NamedCriteria namedCriteria;
+    public NamedCriteria getNamedCriteria() {
+        return namedCriteria;
+    }
+    public void setNamedCriteria(NamedCriteria namedCriteria) {
+        this.namedCriteria = namedCriteria;
+    }
+
+    private long namedCriteriaId = -1;
+    public long getNamedCriteriaId() {
+        return namedCriteriaId;
+    }
+    public void setNamedCriteriaId(long namedCriteriaId) {
+        this.namedCriteriaId = namedCriteriaId;
     }
 }

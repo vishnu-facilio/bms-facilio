@@ -1,15 +1,13 @@
 package com.facilio.bmsconsole.workflow.rule;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.manager.NamedCriteria;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.json.annotations.JSON;
 
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.db.criteria.Criteria;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleBaseWithCustomFields;
+import java.util.Map;
 
 public class ValidationContext {
 	private long id = -1;
@@ -59,7 +57,23 @@ public class ValidationContext {
 	public void setCriteriaId(long criteriaId) {
 		this.criteriaId = criteriaId;
 	}
-	
+
+	private NamedCriteria namedCriteria;
+	public NamedCriteria getNamedCriteria() {
+		return namedCriteria;
+	}
+	public void setNamedCriteria(NamedCriteria namedCriteria) {
+		this.namedCriteria = namedCriteria;
+	}
+
+	private long namedCriteriaId = -1;
+	public long getNamedCriteriaId() {
+		return namedCriteriaId;
+	}
+	public void setNamedCriteriaId(long namedCriteriaId) {
+		this.namedCriteriaId = namedCriteriaId;
+	}
+
 	@JSON(serialize = false)
 	public boolean isValid() {
 		if (StringUtils.isEmpty(errorMessage)) {
