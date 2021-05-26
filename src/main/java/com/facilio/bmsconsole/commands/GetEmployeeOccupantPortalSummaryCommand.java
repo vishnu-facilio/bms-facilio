@@ -180,8 +180,8 @@ public class GetEmployeeOccupantPortalSummaryCommand extends FacilioCommand {
                 .select(bookingfields)
                 .beanClass(V3FacilityBookingContext.class)
                 .andCondition(CriteriaAPI.getCondition(bookingfieldsAsMap.get("isCancelled"),String.valueOf(false), BooleanOperators.IS))
-                .andCondition(CriteriaAPI.getCondition(bookingfieldsAsMap.get("bookingDate"), String.valueOf(currentTime) , DateOperators.TODAY))
-                .orCondition(CriteriaAPI.getCondition(bookingfieldsAsMap.get("bookingDate"), String.valueOf(currentTime) , DateOperators.STARTING_TOMORROW))
+//                .andCondition(CriteriaAPI.getCondition(bookingfieldsAsMap.get("bookingDate"), String.valueOf(currentTime) , DateOperators.TODAY))
+//                .orCondition(CriteriaAPI.getCondition(bookingfieldsAsMap.get("bookingDate"), String.valueOf(currentTime) , DateOperators.STARTING_TOMORROW))
                 .limit(count);
         
         if(recordId > -1) {
@@ -189,13 +189,13 @@ public class GetEmployeeOccupantPortalSummaryCommand extends FacilioCommand {
         }
 
         List<V3FacilityBookingContext> bookinglist = bookingbuilder.get();
-        if(CollectionUtils.isNotEmpty(bookinglist)) {
-            for(V3FacilityBookingContext booking : bookinglist) {
-                if (booking != null) {
-                    booking.setSlotList(FacilityAPI.getBookingSlots(booking.getId()));
-                }
-            }
-        }
+//        if(CollectionUtils.isNotEmpty(bookinglist)) {
+//            for(V3FacilityBookingContext booking : bookinglist) {
+//                if (booking != null) {
+//                    booking.setSlotList(FacilityAPI.getBookingSlots(booking.getId()));
+//                }
+//            }
+//        }
         context.put(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING, bookinglist);
         
 
