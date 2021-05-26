@@ -34,6 +34,7 @@ public class GetEmployeeOccupantPortalSummaryCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		long recordId = (long) context.get(FacilioConstants.ContextNames.ID);
+		int count = (int) context.get(FacilioConstants.ContextNames.COUNT);
         
         FacilioModule empModule = modBean.getModule(FacilioConstants.ContextNames.EMPLOYEE);
         List<FacilioField> empFields = modBean.getAllFields(FacilioConstants.ContextNames.EMPLOYEE);
@@ -42,7 +43,9 @@ public class GetEmployeeOccupantPortalSummaryCommand extends FacilioCommand {
         SelectRecordsBuilder<EmployeeContext> employeebuilder = new SelectRecordsBuilder<EmployeeContext>()
                 .moduleName(empModule.getName())
                 .select(empFields)
-                .beanClass(EmployeeContext.class);
+                .beanClass(EmployeeContext.class)
+                .limit(count);
+        
         if(recordId > -1) {
         	employeebuilder.andCondition(CriteriaAPI.getIdCondition(recordId, empModule));
         }
@@ -58,7 +61,8 @@ public class GetEmployeeOccupantPortalSummaryCommand extends FacilioCommand {
         SelectRecordsBuilder<V3DeskContext> deskbuilder = new SelectRecordsBuilder<V3DeskContext>()
                 .moduleName(deskModule.getName())
                 .select(deskFields)
-                .beanClass(V3DeskContext.class);
+                .beanClass(V3DeskContext.class)
+                .limit(count);
         
         if(recordId > -1) {
         	deskbuilder.andCondition(CriteriaAPI.getCondition(deskfieldsAsMap.get("employee"), String.valueOf(recordId), PickListOperators.IS));
@@ -78,7 +82,8 @@ public class GetEmployeeOccupantPortalSummaryCommand extends FacilioCommand {
                 .moduleName(serviceReqModule.getName())
                 .select(srFields)
                 .beanClass(ServiceRequestContext.class)
-                .andCondition(CriteriaAPI.getCondition(srfieldsAsMap.get(FacilioConstants.ContextNames.MODULE_STATE),String.valueOf(closedStatus.getId()) ,PickListOperators.ISN_T));
+                .andCondition(CriteriaAPI.getCondition(srfieldsAsMap.get(FacilioConstants.ContextNames.MODULE_STATE),String.valueOf(closedStatus.getId()) ,PickListOperators.ISN_T))
+                .limit(count);
         
         if(recordId > -1) {
         	srbuilder.andCondition(CriteriaAPI.getCondition(srfieldsAsMap.get("requester"), String.valueOf(recordId), PickListOperators.IS));
@@ -98,7 +103,8 @@ public class GetEmployeeOccupantPortalSummaryCommand extends FacilioCommand {
                 .moduleName(visitorInviteMod.getName())
                 .select(inviteFields)
                 .beanClass(VisitorInviteContext.class)
-                .andCondition(CriteriaAPI.getCondition(invitefieldsAsMap.get("expectedStartTime"), String.valueOf(currentTime) , DateOperators.IS_AFTER));
+                .andCondition(CriteriaAPI.getCondition(invitefieldsAsMap.get("expectedStartTime"), String.valueOf(currentTime) , DateOperators.IS_AFTER))
+                .limit(count);
 
         List<VisitorInviteContext> invitelist = invitebuilder.get();
         context.put(FacilioConstants.ContextNames.VISITOR_INVITE, invitelist);
@@ -113,7 +119,8 @@ public class GetEmployeeOccupantPortalSummaryCommand extends FacilioCommand {
                 .moduleName(bookingModule.getName())
                 .select(bookingfields)
                 .beanClass(V3FacilityBookingContext.class)
-                .andCondition(CriteriaAPI.getCondition(bookingfieldsAsMap.get("isCancelled"),String.valueOf(false), BooleanOperators.IS));
+                .andCondition(CriteriaAPI.getCondition(bookingfieldsAsMap.get("isCancelled"),String.valueOf(false), BooleanOperators.IS))
+                .limit(count);
         
         if(recordId > -1) {
         	bookingbuilder.andCondition(CriteriaAPI.getCondition(bookingfieldsAsMap.get("reservedFor"), String.valueOf(recordId), PickListOperators.IS));
