@@ -245,7 +245,7 @@ public String getEmployeeOccupantPortalSummary() throws Exception {
 		setResult(FacilioConstants.ContextNames.EMPLOYEE, chain.getContext().get(FacilioConstants.ContextNames.EMPLOYEE));
 		setResult(FacilioConstants.ContextNames.Floorplan.DESKS, chain.getContext().get(FacilioConstants.ContextNames.Floorplan.DESKS));
 		setResult(FacilioConstants.ContextNames.SERVICE_REQUEST, chain.getContext().get(FacilioConstants.ContextNames.SERVICE_REQUEST));
-		setResult(FacilioConstants.ContextNames.VISITOR_INVITE, chain.getContext().get(FacilioConstants.ContextNames.VISITOR_INVITE));
+		setResult(FacilioConstants.ContextNames.INVITE_VISITOR, chain.getContext().get(FacilioConstants.ContextNames.INVITE_VISITOR));
 		setResult(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING, chain.getContext().get(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING));
 		return SUCCESS;
 	}
