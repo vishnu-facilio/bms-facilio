@@ -38,6 +38,8 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.bmsconsoleV3.context.inspection.InspectionCategoryContext;
+import com.facilio.bmsconsoleV3.context.inspection.InspectionPriorityContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
@@ -56,6 +58,7 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
@@ -78,8 +81,10 @@ public class AddInspectionModules extends SignUpData {
         
         List<FacilioModule> modules = new ArrayList<>();
         
-        modules.add(constructInspectionCategory());
-        modules.add(constructInspectionPriority());
+        FacilioModule insepctionCategoryModule = constructInspectionCategory();
+        FacilioModule insepctionPriorityModule = constructInspectionPriority();
+        modules.add(insepctionCategoryModule);
+        modules.add(insepctionPriorityModule);
         
         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
@@ -121,7 +126,50 @@ public class AddInspectionModules extends SignUpData {
         addDefaultFormForInspectionTemplate(inspection);
         
         addDefaultScheduleJobs();
+        
+        addDefaultInspectionPriorities(insepctionPriorityModule,modBean);
+        addDefaultInspectionCategories(insepctionCategoryModule,modBean);
     }
+
+
+    public void addDefaultInspectionCategories(FacilioModule insepctionCategoryModule,ModuleBean modBean) throws Exception {
+		// TODO Auto-generated method stub
+		
+		List<InspectionCategoryContext> categories = new ArrayList<InspectionCategoryContext>();
+		
+		categories.add(new InspectionCategoryContext("Inspection", "inspection", "Visual assessment of property and assets for safety, security and proper operations"));
+		categories.add(new InspectionCategoryContext("Compliance", "compliance", "Inspection to assess compliance with specific laws, regulations and guidelines"));
+		categories.add(new InspectionCategoryContext("Condition Assessment", "conditionAssessment", "Inspection to assess the conditions of property and assets"));
+		categories.add(new InspectionCategoryContext("Routines", "routines", "Scheduled inspections for routine assessments"));
+		categories.add(new InspectionCategoryContext("Investigation", "investigation", "Inspections to identify risks and assess effectiveness of current measure"));
+		categories.add(new InspectionCategoryContext("Logbook", "logbook", "Digitally log electrical, HVAC, DG readings for reporting and alerts"));
+		
+		InsertRecordBuilder<InspectionCategoryContext> insert = new InsertRecordBuilder<InspectionCategoryContext>()
+				.moduleName(FacilioConstants.Inspection.INSPECTION_CATEGORY)
+				.fields(modBean.getAllFields(FacilioConstants.Inspection.INSPECTION_CATEGORY))
+				.addRecords(categories);
+		
+			insert.save();
+	}
+
+
+	public void addDefaultInspectionPriorities(FacilioModule insepctionPriorityModule,ModuleBean modBean) throws Exception {
+		// TODO Auto-generated method stub
+		
+		
+		List<InspectionPriorityContext> priorites = new ArrayList<InspectionPriorityContext>();
+		
+		priorites.add(new InspectionPriorityContext("High", "High", null, 1, true, "#f00"));
+		priorites.add(new InspectionPriorityContext("Medium", "Medium", null, 2, true, "#fb9b00"));
+		priorites.add(new InspectionPriorityContext("Low", "Low", null, 3, true, "#f0d200"));
+		
+		InsertRecordBuilder<InspectionPriorityContext> insert = new InsertRecordBuilder<InspectionPriorityContext>()
+				.moduleName(FacilioConstants.Inspection.INSPECTION_PRIORITY)
+				.fields(modBean.getAllFields(FacilioConstants.Inspection.INSPECTION_PRIORITY))
+				.addRecords(priorites);
+		
+			insert.save();
+	}
 
 
 	public void addDefaultScheduleJobs() throws Exception {
