@@ -82,8 +82,10 @@ public class GetEmployeeOccupantPortalSummaryCommand extends FacilioCommand {
                 .moduleName(serviceReqModule.getName())
                 .select(srFields)
                 .beanClass(ServiceRequestContext.class)
-                .andCondition(CriteriaAPI.getCondition(srfieldsAsMap.get(FacilioConstants.ContextNames.MODULE_STATE),String.valueOf(closedStatus.getId()) ,PickListOperators.ISN_T))
                 .limit(count);
+        if(srfieldsAsMap.get(FacilioConstants.ContextNames.MODULE_STATE) != null && closedStatus != null) {
+        	srbuilder.andCondition(CriteriaAPI.getCondition(srfieldsAsMap.get(FacilioConstants.ContextNames.MODULE_STATE),String.valueOf(closedStatus.getId()) ,PickListOperators.ISN_T));
+        }
         
         if(recordId > -1) {
         	srbuilder.andCondition(CriteriaAPI.getCondition(srfieldsAsMap.get("requester"), String.valueOf(recordId), PickListOperators.IS));
