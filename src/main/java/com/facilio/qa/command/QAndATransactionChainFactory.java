@@ -80,7 +80,7 @@ public class QAndATransactionChainFactory {
 
     public static FacilioChain beforeQuestionSave() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new CallQuestionHandlersFromListCommand(CallQuestionHandlersFromListCommand.ListHandlerType.VALIDATE_SAVE));
+        c.addCommand(new CallQuestionHandlersFromListCommand(CallQuestionHandlersFromListCommand.ListHandlerType.BEFORE_SAVE));
         c.addCommand(new ValidateQuestionAddAndUpdatePos());
         return c;
     }
@@ -93,7 +93,7 @@ public class QAndATransactionChainFactory {
 
     public static FacilioChain beforeQuestionUpdate() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new CallQuestionHandlersFromListCommand(CallQuestionHandlersFromListCommand.ListHandlerType.VALIDATE_UPDATE));
+        c.addCommand(new CallQuestionHandlersFromListCommand(CallQuestionHandlersFromListCommand.ListHandlerType.BEFORE_UPDATE));
         c.addCommand(new ValidateQuestionUpdateAndUpdatePos());
         return c;
     }

@@ -6,6 +6,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.QuestionHandler;
 import com.facilio.qa.context.QuestionType;
+import com.facilio.v3.commands.SaveOptions;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.ExtendedModuleUtil;
 import lombok.AllArgsConstructor;
@@ -34,20 +35,22 @@ public class CallQuestionHandlersFromListCommand extends FacilioCommand {
             for (Map.Entry<QuestionType, List<QuestionContext>> entry : splitByType.entrySet()) {
                 QuestionType type = entry.getKey();
                 if (type.getQuestionHandler() != null && CollectionUtils.isNotEmpty(entry.getValue())) {
-                    callHandlerMethods(type.getQuestionHandler(), entry.getValue());
+                    callHandlerMethods((FacilioContext) context, type.getSubModuleName(), type.getQuestionHandler(), entry.getValue());
                 }
             }
         }
         return false;
     }
 
-    private void callHandlerMethods (QuestionHandler handler, List<? extends QuestionContext> questions) throws Exception {
+    private void callHandlerMethods (FacilioContext context, String subModule, QuestionHandler handler, List<? extends QuestionContext> questions) throws Exception {
         switch (handlerType) {
-            case VALIDATE_SAVE:
+            case BEFORE_SAVE:
                 handler.validateSave(questions);
+                addSaveOptions(context, subModule, handler);
                 break;
-            case VALIDATE_UPDATE:
+            case BEFORE_UPDATE:
                 handler.validateUpdate(questions);
+                addSaveOptions(context, subModule, handler);
                 break;
             case FETCH:
                 handler.afterFetch(questions);
@@ -55,9 +58,16 @@ public class CallQuestionHandlersFromListCommand extends FacilioCommand {
         }
     }
 
+    private void addSaveOptions (FacilioContext context, String subModule, QuestionHandler handler) throws Exception {
+        SaveOptions options = handler.defaultSaveOption();
+        if (options != null) {
+            Constants.addExtendedSaveOption(context, subModule, options);
+        }
+    }
+
     public static enum ListHandlerType {
-        VALIDATE_SAVE,
-        VALIDATE_UPDATE,
+        BEFORE_SAVE,
+        BEFORE_UPDATE,
         FETCH
         ;
     }

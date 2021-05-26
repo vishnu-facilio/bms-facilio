@@ -16,11 +16,7 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.qa.command.QAndAReadOnlyChainFactory;
-import com.facilio.qa.context.AnswerContext;
-import com.facilio.qa.context.ClientAnswerContext;
-import com.facilio.qa.context.PageContext;
-import com.facilio.qa.context.QuestionContext;
-import com.facilio.qa.context.QuestionHandler;
+import com.facilio.qa.context.*;
 import com.facilio.qa.context.questions.BaseMCQContext;
 import com.facilio.qa.context.questions.MCQOptionContext;
 import com.facilio.time.DateRange;
@@ -33,6 +29,7 @@ import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.ChainUtil;
 import com.facilio.v3.util.ExtendedModuleUtil;
 import com.facilio.v3.util.V3Util;
+import lombok.SneakyThrows;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -147,7 +144,7 @@ public class QAndAUtil {
 
     public static List<QuestionContext> fetchExtendedQuestions (Collection<Long> recordIds, boolean callFetchHandler) throws Exception {
         List<QuestionContext> questions = V3RecordAPI.getRecordsList(FacilioConstants.QAndA.QUESTION, recordIds);
-        ExtendedModuleUtil.replaceWithExtendedRecords(questions, q -> q.getQuestionType().getSubModuleName());
+        replaceWithExtendedQuestions(questions);
         if (callFetchHandler) {
             callFetchHandler(questions);
         }
@@ -294,13 +291,30 @@ public class QAndAUtil {
         context.put(FacilioConstants.QAndA.Command.IS_SINGLE_RESPONSE, isSingleResponse);
     }
 
+    public static void replaceWithExtendedQuestions (List<QuestionContext> questions) throws Exception {
+        ExtendedModuleUtil.replaceWithExtendedRecords(questions, QAndAUtil::getQuestionSubModuleName, QAndAUtil::getSupplementsFromQuestionSubModule);
+    }
+
+    private static String getQuestionSubModuleName (QuestionContext q) {
+        return Objects.requireNonNull(q.getQuestionType(), "Question Type cannot be null to get sub module from Question").getSubModuleName();
+    }
+
+    @SneakyThrows
+    private static Collection<SupplementRecord> getSupplementsFromQuestionSubModule (String subModule) {
+        QuestionType type = QuestionType.getTypeFromSubModule(subModule);
+        QuestionHandler handler = type.getQuestionHandler();
+        return handler == null ? null :
+                handler.defaultSaveOption() == null ? null :
+                    handler.defaultSaveOption().getSupplements();
+    }
+
     public static QuestionContext fetchQuestionWithProps (long id) throws Exception {
         QuestionContext question = V3RecordAPI.getRecord(FacilioConstants.QAndA.QUESTION, id);
         if (question == null) {
             return null;
         }
         List<QuestionContext> questions = Stream.of(question).collect(Collectors.toList());
-        ExtendedModuleUtil.replaceWithExtendedRecords(questions, q -> q.getQuestionType().getSubModuleName());
+        replaceWithExtendedQuestions(questions);
         question = questions.get(0);
         QuestionHandler handler = question.getQuestionType().getQuestionHandler();
         if (handler != null) {

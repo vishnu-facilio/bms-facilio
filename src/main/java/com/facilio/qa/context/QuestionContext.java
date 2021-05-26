@@ -66,6 +66,10 @@ public class QuestionContext extends V3Context {
         answer = CollectionUtils.isEmpty(answers) ? null : answers.get(0);
     }
 
+    public Boolean getAnswerRequired() {
+        return questionType == null ? null : questionType.getAnswerHandler() != null;
+    }
+
     public static class QuestionTypeIdResolver extends FacilioEnumClassTypeIdResolverBase<QuestionContext> {
         @Override
         protected Class<? extends QuestionContext> getSubClass(String value) {

@@ -6,10 +6,7 @@ import com.facilio.qa.context.answers.*;
 import com.facilio.qa.context.client.answers.*;
 import com.facilio.qa.context.client.answers.handler.*;
 import com.facilio.qa.context.questions.*;
-import com.facilio.qa.context.questions.handler.BooleanQuestionHandler;
-import com.facilio.qa.context.questions.handler.CommonNumberQuestionHandler;
-import com.facilio.qa.context.questions.handler.CommonStringQuestionHandler;
-import com.facilio.qa.context.questions.handler.MCQHandler;
+import com.facilio.qa.context.questions.handler.*;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
@@ -22,7 +19,7 @@ import java.util.Map;
 @Getter
 @Log4j
 public enum QuestionType implements FacilioStringEnum {
-    HEADING (FacilioConstants.QAndA.Questions.HEADING_QUESTION, HeadingQuestionContext.class, null),
+    HEADING (FacilioConstants.QAndA.Questions.HEADING_QUESTION, HeadingQuestionContext.class, null, new HeadingQuestionHandler()), // If Answer handler is null, it's assumed no answer is required for this question type
     NUMBER ( FacilioConstants.QAndA.Questions.NUMBER_QUESTION, NumberQuestionContext.class, new NumberAnswerHandler(NumberAnswerContext.class), new CommonNumberQuestionHandler<>(NumberQuestionContext::getMinValue, NumberQuestionContext::getMaxValue)),
     DECIMAL (FacilioConstants.QAndA.Questions.DECIMAL_QUESTION, DecimalQuestionContext.class, new DecimalAnswerHandler(DecimalAnswerContext.class), new CommonNumberQuestionHandler<>(DecimalQuestionContext::getMinValue, DecimalQuestionContext::getMaxValue)),
 

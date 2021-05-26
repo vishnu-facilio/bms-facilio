@@ -1031,6 +1031,9 @@ public class ModuleBeanImpl implements ModuleBean {
 				case SCORE:
 					addExtendedProps(ModuleFactory.getScoreFieldModule(), FieldFactory.getScoreFieldFields(), fieldProps);
 					break;
+				case LARGE_TEXT:
+					addExtendedProps(ModuleFactory.getLargeTextFieldsModule(), FieldFactory.getLargeTextFieldFields(), fieldProps);
+					break;
 				case LINE_ITEM:
 					if (field instanceof LineItemField) {
 						validateLineItemField((LineItemField) field, fieldProps);

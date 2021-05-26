@@ -2442,6 +2442,7 @@ public class FacilioConstants {
 
 		public static class Questions {
 			public static final String HEADING_QUESTION = "qandaHeadingQuestion";
+			public static final String HEADING_QUESTION_RICH_TEXT = "qandaHeadingQuestionRichText";
 			public static final String NUMBER_QUESTION = "qandaNumberQuestion";
 			public static final String DECIMAL_QUESTION = "qandaDecimalQuestion";
 			public static final String SHORT_STRING_QUESTION = "qandaShortStringQuestion";

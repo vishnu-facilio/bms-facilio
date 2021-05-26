@@ -178,6 +178,10 @@ public class AddQAndAModules extends SignUpData {
 
     private void addQuestionSubModules(FacilioModule question) throws Exception {
         List<FacilioModule> modules = new ArrayList<>();
+        FacilioModule headingQuestion = constructHeadingQuestion(question);
+        modules.add(headingQuestion);
+        FacilioModule headingRichText = constructHeadingRichTextField(headingQuestion);
+        modules.add(headingRichText);
         modules.add(constructNumberQuestion(question));
         modules.add(constructDecimalQuestion(question));
         modules.add(constructShortStringQuestion(question));
@@ -195,6 +199,44 @@ public class AddQAndAModules extends SignUpData {
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
         addModuleChain.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, false);
         addModuleChain.execute();
+
+        addRichTextField(headingQuestion, headingRichText);
+    }
+
+    private void addRichTextField (FacilioModule headingQuestion, FacilioModule richText) throws Exception {
+        LargeTextField field = (LargeTextField) FieldFactory.getDefaultField("richText", "Rich Text", null, FieldType.LARGE_TEXT);
+        field.setModule(headingQuestion);
+        field.setRelModuleId(richText.getModuleId());
+
+        Constants.getModBean().addField(field);
+    }
+
+    private FacilioModule constructHeadingRichTextField (FacilioModule headingQuestion) throws Exception {
+        FacilioModule module = new FacilioModule(FacilioConstants.QAndA.Questions.HEADING_QUESTION_RICH_TEXT,
+                "Q And A Heading Question Rich Text",
+                "Q_And_A_Heading_Question_Rich_Text",
+                FacilioModule.ModuleType.SUB_ENTITY
+                );
+
+        List<FacilioField> fields = new ArrayList<>();
+        LookupField parentField = (LookupField) FieldFactory.getDefaultField("parentId", "Parent ID", "PARENT_ID", FieldType.LOOKUP);
+        parentField.setLookupModule(headingQuestion);
+        fields.add(parentField);
+        fields.add(FieldFactory.getDefaultField("fileId", "File ID", "FILE_ID", FieldType.NUMBER));
+
+        module.setFields(fields);
+
+        return module;
+    }
+
+    private FacilioModule constructHeadingQuestion(FacilioModule question) {
+        FacilioModule module = new FacilioModule(FacilioConstants.QAndA.Questions.HEADING_QUESTION,
+                "Q And A Heading Questions",
+                "Q_And_A_Heading_Questions",
+                FacilioModule.ModuleType.SUB_ENTITY,
+                question);
+
+        return module;
     }
 
     private FacilioModule constructNumberQuestion(FacilioModule question) {

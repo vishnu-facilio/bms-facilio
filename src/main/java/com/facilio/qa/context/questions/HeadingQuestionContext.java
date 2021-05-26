@@ -8,10 +8,9 @@ import lombok.extern.log4j.Log4j;
 
 @Getter
 @Setter
-@Log4j
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NONE
 )
 public class HeadingQuestionContext extends QuestionContext {
-
+    private String richText;
 }

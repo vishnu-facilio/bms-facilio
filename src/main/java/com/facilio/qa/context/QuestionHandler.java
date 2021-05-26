@@ -1,8 +1,13 @@
 package com.facilio.qa.context;
 
+import com.facilio.v3.commands.SaveOptions;
+
 import java.util.List;
 
 public interface QuestionHandler<Q extends QuestionContext> {
+    default SaveOptions defaultSaveOption() throws Exception { // For now will use the same one for insert and update. We can have separate ones if needed later
+        return null;
+    }
 
     public void validateSave (List<Q> questions) throws Exception;
 

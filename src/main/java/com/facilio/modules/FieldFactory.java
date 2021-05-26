@@ -8176,6 +8176,9 @@ public class FieldFactory {
             case STRING_SYSTEM_ENUM:
                 columnFld = new StringSystemEnumField();
                 break;
+            case LARGE_TEXT:
+                columnFld = new LargeTextField();
+                break;
             default:
                 columnFld = new FacilioField();
                 break;
