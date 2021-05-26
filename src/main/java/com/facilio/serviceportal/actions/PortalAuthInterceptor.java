@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.facilio.iam.accounts.exceptions.AccountException;
 import com.opensymphony.xwork2.ActionContext;
+import lombok.var;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.struts2.ServletActionContext;
 
@@ -64,13 +66,16 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
                 portalDomain = domainArray[0];
             }
         }
-        String authRequired = ActionContext.getContext().getParameters().get("auth").getValue();
         IAMAccount iamAccount = AuthenticationUtil.validateToken(request, true);
         request.setAttribute("iamAccount", iamAccount);
 
-        if(authRequired != null && "true".equalsIgnoreCase(authRequired) && iamAccount == null) {
+        String authRequired = ActionContext.getContext().getParameters().get("auth").getValue();
+        var isAuthRequired = StringUtils.isEmpty(authRequired) || "true".equalsIgnoreCase(authRequired);
+
+        if (iamAccount == null && isAuthRequired) {
             throw new AccountException(AccountException.ErrorCode.NOT_PERMITTED, "Unauthorized");
         }
+
         request.setAttribute("isPortal", true);
         request.setAttribute("portalDomain", portalDomain);
 

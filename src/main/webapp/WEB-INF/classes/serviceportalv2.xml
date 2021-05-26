@@ -452,6 +452,7 @@
 		<action name="*" class="com.facilio.bmsconsole.actions.FileAction" method="previewFile">
 			<param name="permission">READ</param>
 			<param name="fileID">{1}</param>
+			<param name="auth">true</param>
 		</action>
 	</package>
 	<package name="newAssetServiceApiV2" namespace="/api/service/v2/assets" extends="newServicePortalApiV2">
