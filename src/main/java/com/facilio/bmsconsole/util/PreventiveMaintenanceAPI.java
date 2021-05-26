@@ -68,6 +68,7 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.BuildingOperator;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
@@ -577,6 +578,77 @@ public class PreventiveMaintenanceAPI {
 
 		return commonresourceIds;
  	}
+	
+	public static JSONObject getMultipleResourceCriteriaFromConfig(PMAssignmentType pmAssignmentType,Long siteId,Long baseSpaceId,Long spaceCategoryID,Long assetCategoryID){
+		
+		JSONObject returnObject = new JSONObject();
+		Criteria criteria = new Criteria();
+		switch(pmAssignmentType) {
+			case ALL_SITES:
+				returnObject.put(FacilioConstants.ContextNames.MODULE, FacilioConstants.ContextNames.SITE);
+				returnObject.put(FacilioConstants.ContextNames.CRITERIA, criteria);
+				break;
+			case ALL_BUILDINGS:
+				returnObject.put(FacilioConstants.ContextNames.MODULE, FacilioConstants.ContextNames.BUILDING);
+				if(siteId != null && siteId > 0) {
+					criteria.addAndCondition(CriteriaAPI.getCondition("SITE_ID", "site", siteId+"", PickListOperators.IS));
+				}
+				returnObject.put(FacilioConstants.ContextNames.CRITERIA, criteria);
+				break;
+			case ALL_FLOORS:
+				returnObject.put(FacilioConstants.ContextNames.MODULE, FacilioConstants.ContextNames.FLOOR);
+				if(siteId != null && siteId > 0) {
+					criteria.addAndCondition(CriteriaAPI.getCondition("SITE_ID", "site", siteId+"", PickListOperators.IS));
+				}
+				if(baseSpaceId != null && baseSpaceId > 0) {
+					criteria.addAndCondition(CriteriaAPI.getCondition("BUILDING_ID", "building", baseSpaceId+"", PickListOperators.IS));
+				}
+				returnObject.put(FacilioConstants.ContextNames.CRITERIA, criteria);
+				break;
+			case ALL_SPACES:
+				returnObject.put(FacilioConstants.ContextNames.MODULE, FacilioConstants.ContextNames.SPACE);
+				if(siteId != null && siteId > 0) {
+					criteria.addAndCondition(CriteriaAPI.getCondition("SITE_ID", "site", siteId+"", PickListOperators.IS));
+				}
+				if(baseSpaceId != null && baseSpaceId > 0) {
+					criteria.addAndCondition(CriteriaAPI.getCondition("BUILDING_ID", "building", baseSpaceId+"", PickListOperators.IS));
+				}
+				returnObject.put(FacilioConstants.ContextNames.CRITERIA, criteria);
+				break;
+			case SPACE_CATEGORY:
+				returnObject.put(FacilioConstants.ContextNames.MODULE, FacilioConstants.ContextNames.SPACE);
+				if(siteId != null && siteId > 0) {
+					criteria.addAndCondition(CriteriaAPI.getCondition("SITE_ID", "site", siteId+"", PickListOperators.IS));
+				}
+				if(baseSpaceId != null && baseSpaceId > 0) {
+					criteria.addAndCondition(CriteriaAPI.getCondition("BUILDING_ID", "building", baseSpaceId+"", PickListOperators.IS));
+				}
+				if(spaceCategoryID != null && spaceCategoryID > 0) {
+					criteria.addAndCondition(CriteriaAPI.getCondition("SPACE_CATEGORY_ID", "spaceCategory", spaceCategoryID+"", PickListOperators.IS));
+				}
+				returnObject.put(FacilioConstants.ContextNames.CRITERIA, criteria);
+				break;
+			case ASSET_CATEGORY:
+				returnObject.put(FacilioConstants.ContextNames.MODULE, FacilioConstants.ContextNames.ASSET);
+				if(siteId != null && siteId > 0) {
+					criteria.addAndCondition(CriteriaAPI.getCondition("SITE_ID", "siteId", siteId+"", PickListOperators.IS));
+				}
+				if(baseSpaceId != null && baseSpaceId > 0) {
+					criteria.addAndCondition(CriteriaAPI.getCondition("SPACE_ID", "space", baseSpaceId+"", BuildingOperator.BUILDING_IS));
+				}
+				if(assetCategoryID != null && assetCategoryID > 0) {
+					criteria.addAndCondition(CriteriaAPI.getCondition("CATEGORY", "category", assetCategoryID+"", PickListOperators.IS));
+				}
+				returnObject.put(FacilioConstants.ContextNames.CRITERIA, criteria);
+				break;
+			default:
+				break;
+		}
+		
+		return returnObject;
+	}
+
+	
 	public static long getEndTime(long startTime, List<PMTriggerContext> triggers) {
 		Optional<PMTriggerContext> minTrigger = triggers.stream().filter(i -> i.getTriggerExecutionSourceEnum() == TriggerExectionSource.SCHEDULE).min(Comparator.comparingInt(PMTriggerContext::getFrequency));
 

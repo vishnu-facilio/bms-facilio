@@ -286,5 +286,12 @@
                 method="getFacilityDetails">
         </action>
     </package>
+    
+    <package name="bulkResourceAllocation" namespace="/api/v3/resourceAllocation" extends="v3Api">
+        <action name="getModuleAndCrtieriaFromConfig"
+                class="com.facilio.bmsconsoleV3.actions.BulkResourceAllocationAction"
+                method="getModuleAndCrtieriaFromConfig">
+        </action>
+    </package>
 
 </struts>
