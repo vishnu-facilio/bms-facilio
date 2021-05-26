@@ -89,6 +89,15 @@ private static final long serialVersionUID = 1L;
 		this.id = id;
 	}
 	
+	private int count = 5;
+	public void setCount(int count) {
+		this.count = count;
+	}
+	
+	public int getCount() {
+		return this.count;
+	}
+	
 	public String addEmployees() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(employees)) {
@@ -224,5 +233,21 @@ private static final long serialVersionUID = 1L;
 		return SUCCESS;
 		  
 	}	
+	
+public String getEmployeeOccupantPortalSummary() throws Exception {
+		
+		FacilioChain chain = ReadOnlyChainFactory.getEmployeeOccupantPortalSummary();
+		chain.getContext().put(FacilioConstants.ContextNames.COUNT, count);
+		chain.getContext().put(FacilioConstants.ContextNames.ID, recordId);
+		
+		chain.execute();
+		
+		setResult(FacilioConstants.ContextNames.EMPLOYEE, chain.getContext().get(FacilioConstants.ContextNames.EMPLOYEE));
+		setResult(FacilioConstants.ContextNames.Floorplan.DESKS, chain.getContext().get(FacilioConstants.ContextNames.Floorplan.DESKS));
+		setResult(FacilioConstants.ContextNames.SERVICE_REQUEST, chain.getContext().get(FacilioConstants.ContextNames.SERVICE_REQUEST));
+		setResult(FacilioConstants.ContextNames.VISITOR_INVITE, chain.getContext().get(FacilioConstants.ContextNames.VISITOR_INVITE));
+		setResult(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING, chain.getContext().get(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING));
+		return SUCCESS;
+	}
 
 }

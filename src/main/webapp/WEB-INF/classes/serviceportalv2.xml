@@ -39,6 +39,11 @@
 		<action name="account" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="v2portalAccount"> 
 		</action>
+		
+		<action name="servicePortalHome" class="com.facilio.bmsconsole.actions.EmployeeAction"
+			method="getEmployeeOccupantPortalSummary"> 
+		</action>
+		
 		<action name="getFormMeta" class="com.facilio.bmsconsole.actions.FormAction"
 			method="v2fetchFormMeta">
 		</action>	

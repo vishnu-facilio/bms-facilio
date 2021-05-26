@@ -2783,4 +2783,10 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GenericGetModuleDataListCommand());
 		return chain;
 	}
+	
+	public static FacilioChain getEmployeeOccupantPortalSummary() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetEmployeeOccupantPortalSummaryCommand());
+		return chain;
+	}
 }

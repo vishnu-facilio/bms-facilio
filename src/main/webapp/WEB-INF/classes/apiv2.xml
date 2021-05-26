@@ -88,6 +88,10 @@
 		<action name="v2portalaccount" class="com.facilio.bmsconsole.actions.LoginAction"
 				method="v2portalAccount">
 	   </action>
+	   
+	   <action name="servicePortalHome" class="com.facilio.bmsconsole.actions.EmployeeAction"
+			method="getEmployeeOccupantPortalSummary"> 
+		</action>
 
 		<action name="v2fetchportalaccount" class="com.facilio.bmsconsole.actions.LoginAction"
 				method="v2portalAccount">
