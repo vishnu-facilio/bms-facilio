@@ -112,7 +112,7 @@ public class ExtendedQAndAV3Config {
                 .update()
                 .afterSave(QAndATransactionChainFactory.inductionAfterUpdateChain())
                 .list()
-                .beforeFetch(new InspectionSupplementSupplyCommand())
+                .beforeFetch(new InductionSupplementSupplyCommand())
                 .summary()
                 .beforeFetch(new InductionSupplementSupplyCommand())
                 .afterFetch(QAndAReadOnlyChainFactory.commonAfterInductionTemplateFetch())
