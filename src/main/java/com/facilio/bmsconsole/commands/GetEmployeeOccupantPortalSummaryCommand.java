@@ -180,7 +180,8 @@ public class GetEmployeeOccupantPortalSummaryCommand extends FacilioCommand {
                 .select(bookingfields)
                 .beanClass(V3FacilityBookingContext.class)
                 .andCondition(CriteriaAPI.getCondition(bookingfieldsAsMap.get("isCancelled"),String.valueOf(false), BooleanOperators.IS))
-                .andCondition(CriteriaAPI.getCondition(invitefieldsAsMap.get("bookingDate"), String.valueOf(currentTime) , DateOperators.IS_AFTER))
+                .andCondition(CriteriaAPI.getCondition(bookingfieldsAsMap.get("bookingDate"), String.valueOf(currentTime) , DateOperators.TODAY))
+                .orCondition(CriteriaAPI.getCondition(bookingfieldsAsMap.get("bookingDate"), String.valueOf(currentTime) , DateOperators.STARTING_TOMORROW))
                 .limit(count);
         
         if(recordId > -1) {
