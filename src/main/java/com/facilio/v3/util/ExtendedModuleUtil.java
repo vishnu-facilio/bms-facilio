@@ -2,6 +2,7 @@ package com.facilio.v3.util;
 
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.fields.SupplementRecord;
 
 import java.util.*;
 import java.util.function.Function;
@@ -37,10 +38,14 @@ public class ExtendedModuleUtil<T> {
     }
 
     public static <T extends ModuleBaseWithCustomFields> void replaceWithExtendedRecords(List<T> list, Function<T, String> getSubModuleFromRecord) throws Exception {
+        replaceWithExtendedRecords(list, getSubModuleFromRecord, null);
+    }
+
+    public static <T extends ModuleBaseWithCustomFields> void replaceWithExtendedRecords(List<T> list, Function<T, String> getSubModuleFromRecord, Function<String, Collection<SupplementRecord>> getSupplementFromSubModule) throws Exception {
         Map<String, List<Long>> moduleVsRecords = splitRecordIdsBySubModule(list, getSubModuleFromRecord);
         Map<Long, T> extendedRecords = new HashMap<>();
         for (Map.Entry<String, List<Long>> entry : moduleVsRecords.entrySet()) {
-            Map<Long, T> extendedRecordMap = V3RecordAPI.getRecordsMap(entry.getKey(), entry.getValue());
+            Map<Long, T> extendedRecordMap = V3RecordAPI.getRecordsMap(entry.getKey(), entry.getValue(), getSupplementFromSubModule == null ? null : getSupplementFromSubModule.apply(entry.getKey()));
             extendedRecords.putAll(extendedRecordMap);
         }
         list.replaceAll(r -> extendedRecords.get(r.getId()));

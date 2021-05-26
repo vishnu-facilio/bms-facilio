@@ -9,6 +9,7 @@ import com.facilio.db.criteria.operators.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.v3.context.V3Context;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -116,10 +117,10 @@ public class V3RecordAPI {
     }
 
     private static <T extends ModuleBaseWithCustomFields> SelectRecordsBuilder<T> constructBuilder(String modName, Collection<Long> recordIds, Class<T> beanClass) throws Exception {
-        return constructBuilder(modName, recordIds, beanClass, null);
+        return constructBuilder(modName, recordIds, beanClass, null, null);
     }
 
-    private static <T extends ModuleBaseWithCustomFields> SelectRecordsBuilder<T> constructBuilder(String modName, Collection<Long> recordIds, Class<T> beanClass, Criteria criteria) throws Exception {
+    private static <T extends ModuleBaseWithCustomFields> SelectRecordsBuilder<T> constructBuilder(String modName, Collection<Long> recordIds, Class<T> beanClass, Criteria criteria, Collection<SupplementRecord> supplements) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(modName);
         List<FacilioField> fields = modBean.getAllFields(modName);
@@ -135,8 +136,11 @@ public class V3RecordAPI {
                 .andCondition(CriteriaAPI.getIdCondition(recordIds, module))
                 ;
 
-        if (criteria != null) {
+        if (criteria != null && !criteria.isEmpty()) {
             builder.andCriteria(criteria);
+        }
+        if (CollectionUtils.isNotEmpty(supplements)) {
+            builder.fetchSupplements(supplements);
         }
 
         return builder;
@@ -160,6 +164,10 @@ public class V3RecordAPI {
         return getRecordsMap(modName, recordIds, null, null);
     }
 
+    public static <T extends ModuleBaseWithCustomFields> Map<Long, T> getRecordsMap (String modName, Collection<Long> recordIds, Collection<SupplementRecord> supplements) throws Exception{
+        return getRecordsMap(modName, recordIds, null, null, supplements);
+    }
+
     public static <T extends ModuleBaseWithCustomFields> Map<Long, T> getRecordsMap (String modName, Collection<Long> recordIds, Criteria criteria) throws Exception{
         return getRecordsMap(modName, recordIds, null, criteria);
     }
@@ -169,7 +177,11 @@ public class V3RecordAPI {
     }
 
     public static <T extends ModuleBaseWithCustomFields> Map<Long, T> getRecordsMap (String modName, Collection<Long> recordIds, Class<T> beanClass, Criteria criteria) throws Exception{
-        Map<Long, T> recordMap = constructBuilder(modName, recordIds, beanClass, criteria).getAsMap();
+        return getRecordsMap(modName, recordIds, beanClass, criteria, null);
+    }
+
+    public static <T extends ModuleBaseWithCustomFields> Map<Long, T> getRecordsMap (String modName, Collection<Long> recordIds, Class<T> beanClass, Criteria criteria, Collection<SupplementRecord> supplements) throws Exception{
+        Map<Long, T> recordMap = constructBuilder(modName, recordIds, beanClass, criteria, supplements).getAsMap();
         return recordMap;
     }
 

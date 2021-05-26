@@ -19,6 +19,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.text.MessageFormat;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,19 +36,24 @@ public class SaveCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         Map<String, List<ModuleBaseWithCustomFields>> recordMap = (Map<String, List<ModuleBaseWithCustomFields>>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
 
+        SaveOptions defaultOptions = SaveOptions.of((FacilioContext) context);
         Set<String> extendedModules = Constants.getExtendedModules(context); //For adding extended module which has module entry only for base module. Like Assets
         if (CollectionUtils.isEmpty(extendedModules)) {
-            insertData((FacilioContext) context, module.getName(), recordMap.get(module.getName()));
+            Map<Long, List<UpdateChangeSet>> changeSet = insertData(module.getName(), defaultOptions, null, recordMap.get(module.getName()));
+            CommonCommandUtil.appendChangeSetMapToContext(context, changeSet, module.getName());
         }
         else {
             for (String extendedModule : extendedModules) {
-                insertData((FacilioContext) context, extendedModule, recordMap.get(extendedModule));
+                SaveOptions saveOptions = Constants.getExtendedSaveOption(context, extendedModule);
+                Map<Long, List<UpdateChangeSet>> changeSet = insertData(extendedModule, defaultOptions, saveOptions, recordMap.get(module.getName()));
+                CommonCommandUtil.appendChangeSetMapToContext(context, changeSet, extendedModule); // For automation of this module
+                CommonCommandUtil.appendChangeSetMapToContext(context, changeSet, module.getName()); // For automation of parent module
             }
         }
         return false;
     }
 
-    private void insertData(FacilioContext context, String moduleName, List<ModuleBaseWithCustomFields> records) throws Exception {
+    private Map<Long, List<UpdateChangeSet>> insertData(String moduleName, SaveOptions defaultOptions, SaveOptions options, List<ModuleBaseWithCustomFields> records) throws Exception {
         try {
             //Copied from genericaddmoduledatacommand
             ModuleBean modBean = Constants.getModBean();
@@ -63,8 +69,7 @@ public class SaveCommand extends FacilioCommand {
                     .module(module)
                     .fields(fields);
 
-            Boolean setLocalId = (Boolean) context.get(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID);
-            if (setLocalId != null && setLocalId) {
+            if (isSetLocalId(defaultOptions) || isSetLocalId(options)) {
                 insertRecordBuilder.withLocalId();
             }
 
@@ -84,20 +89,29 @@ public class SaveCommand extends FacilioCommand {
             insertRecordBuilder.addRecords(records);
 
             //inserting multi select field values
-            List<SupplementRecord> supplementFields = (List<SupplementRecord>) context.get(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS);
-            if (CollectionUtils.isNotEmpty(supplementFields)) {
-                insertRecordBuilder.insertSupplements(supplementFields);
-            }
+            addSupplements(insertRecordBuilder, defaultOptions);
+            addSupplements(insertRecordBuilder, options);
 
             insertRecordBuilder.save();
 
             Map<Long, List<UpdateChangeSet>> changeSet = insertRecordBuilder.getChangeSet();
 
-            CommonCommandUtil.appendChangeSetMapToContext(context, changeSet, moduleName);
+            return changeSet;
         }
         catch (Exception e) {
             LOGGER.error(MessageFormat.format("Error occurred during save command for module : {0}", moduleName));
             throw e;
         }
+    }
+
+    private void addSupplements (InsertRecordBuilder insertRecordBuilder, SaveOptions options) {
+        Collection<SupplementRecord> supplementFields = options == null ? null : options.getSupplements();
+        if (CollectionUtils.isNotEmpty(supplementFields)) {
+            insertRecordBuilder.insertSupplements(supplementFields);
+        }
+    }
+
+    private boolean isSetLocalId (SaveOptions options) {
+        return options != null && options.isSetLocalId();
     }
 }

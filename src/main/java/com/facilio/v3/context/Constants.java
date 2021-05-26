@@ -10,6 +10,7 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.V3Builder.V3Config;
+import com.facilio.v3.commands.SaveOptions;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -196,6 +197,20 @@ public class Constants {
     public static void setExtendedModules (Context context, Set<String> extendedModules) {
         context.put(EXTENDED_MODULES, extendedModules);
     }
+
+    private static final String EXTENDED_MODULE_SAVE_OPTIONS = "extendedModuleSaveOptions";
+    public static Map<String, SaveOptions> getExtendedSaveOptions(Context context) {
+        return (Map<String, SaveOptions>) context.get(EXTENDED_MODULE_SAVE_OPTIONS);
+    }
+    public static SaveOptions getExtendedSaveOption(Context context, String moduleName) {
+        Map<String, SaveOptions> saveOptionsMap = getExtendedSaveOptions(context);
+        return saveOptionsMap == null ? null : saveOptionsMap.get(moduleName);
+    }
+    public static void addExtendedSaveOption (Context context, String moduleName, SaveOptions options) {
+        Map<String, SaveOptions> saveOptionsMap = (Map<String, SaveOptions>) context.computeIfAbsent(EXTENDED_MODULE_SAVE_OPTIONS, (k) -> new HashMap<>());
+        saveOptionsMap.put(moduleName, options);
+    }
+
 
     public static Map getQueryParams(Context context) {
         return (Map) context.get(QUERY_PARAMS);
