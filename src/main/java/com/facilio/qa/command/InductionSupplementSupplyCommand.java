@@ -30,6 +30,7 @@ public class InductionSupplementSupplyCommand extends FacilioCommand {
         if( Constants.getModuleName(context).equals(FacilioConstants.Induction.INDUCTION_TEMPLATE)) {
         	supplements.add((SupplementRecord) fieldMap.get("assetCategory"));
         	supplements.add((SupplementRecord) fieldMap.get("spaceCategory"));
+        	supplements.add((SupplementRecord) fieldMap.get("baseSpace"));
         }
         supplements.add((SupplementRecord) fieldMap.get("site"));
         supplements.add((SupplementRecord) fieldMap.get("resource"));

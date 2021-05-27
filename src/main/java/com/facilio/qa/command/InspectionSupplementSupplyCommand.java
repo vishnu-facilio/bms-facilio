@@ -31,6 +31,7 @@ public class InspectionSupplementSupplyCommand extends FacilioCommand {
 	        if( Constants.getModuleName(context).equals(FacilioConstants.Inspection.INSPECTION_TEMPLATE)) {
 	        	supplements.add((SupplementRecord) fieldMap.get("assetCategory"));
 	        	supplements.add((SupplementRecord) fieldMap.get("spaceCategory"));
+	        	supplements.add((SupplementRecord) fieldMap.get("baseSpace"));
 	        }
 	        supplements.add((SupplementRecord) fieldMap.get("site"));
 	        supplements.add((SupplementRecord) fieldMap.get("resource"));
