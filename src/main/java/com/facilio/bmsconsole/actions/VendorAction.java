@@ -118,8 +118,6 @@ public class VendorAction extends FacilioAction{
 			location.setId(locationId);
 		}
 		vendor.setTtime(System.currentTimeMillis());
-		vendor.setModifiedTime(System.currentTimeMillis());
-		vendor.setSysCreatedTime(System.currentTimeMillis());
 		if(vendor.getRegisteredBy() != null && vendor.getRegisteredBy().getId() > 0) {
 			vendor.setVendorSource(1);
 		}
