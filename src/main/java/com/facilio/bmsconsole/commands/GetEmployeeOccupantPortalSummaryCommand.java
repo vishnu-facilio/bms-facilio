@@ -155,11 +155,8 @@ public class GetEmployeeOccupantPortalSummaryCommand extends FacilioCommand {
         FacilioModule pplModule = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
         
         List<SupplementRecord> fetchLookupsList = new ArrayList<>();
-        LookupFieldMeta facilityField = new LookupFieldMeta((LookupField) bookingfieldsAsMap.get("facility"));
-        LookupField facilityLocationField = (LookupField) modBean.getField("location", FacilioConstants.ContextNames.FacilityBooking.FACILITY);
-        facilityField.addChildLookupField(facilityLocationField);
-
-        SupplementRecord reservedFor = (SupplementRecord) bookingfieldsAsMap.get("reservedFor");
+        LookupField facilityField = (LookupField) bookingfieldsAsMap.get("facility");
+        LookupField reservedFor = (LookupField) bookingfieldsAsMap.get("reservedFor");
 
         MultiLookupMeta internalAttendees = new MultiLookupMeta((MultiLookupField) bookingfieldsAsMap.get("internalAttendees"));
         FacilioField emailField = FieldFactory.getField("email", "EMAIL", pplModule, FieldType.STRING);
