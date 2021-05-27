@@ -26,14 +26,14 @@ public class LoadParkingStallLookupCommand extends FacilioCommand {
         }
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
         List<LookupField> additionaLookups = new ArrayList<LookupField>();
-        LookupField employeeField = (LookupField) fieldsAsMap.get("employee");
-        additionaLookups.add(employeeField);
 		LookupField siteField = (LookupField) fieldsAsMap.get("site");
 		additionaLookups.add(siteField);
         LookupField buildingField = (LookupField) fieldsAsMap.get("building");
         additionaLookups.add(buildingField);
         LookupField floorField = (LookupField) fieldsAsMap.get("floor");
         additionaLookups.add(floorField);
+        LookupField spaceCategoryField = (LookupField) fieldsAsMap.get("spaceCategory");
+        additionaLookups.add(spaceCategoryField);
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS,additionaLookups);
         return false;
     }

@@ -34,6 +34,8 @@ public class LoadLockersLookupCommand extends FacilioCommand {
         additionaLookups.add(buildingField);
         LookupField floorField = (LookupField) fieldsAsMap.get("floor");
         additionaLookups.add(floorField);
+        LookupField spaceCategoryField = (LookupField) fieldsAsMap.get("spaceCategory");
+        additionaLookups.add(spaceCategoryField);
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS,additionaLookups);
         return false;
     }
