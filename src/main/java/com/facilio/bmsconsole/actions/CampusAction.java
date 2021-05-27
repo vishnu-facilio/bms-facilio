@@ -222,6 +222,7 @@ public class CampusAction extends FacilioAction {
 		FacilioChain chain = ReadOnlyChainFactory.getSiteTotalAreaChain();
 		chain.execute();
 		setResult(FacilioConstants.ContextNames.TOTAL_AREA, chain.getContext().get(FacilioConstants.ContextNames.TOTAL_AREA));
+		setResult(FacilioConstants.ContextNames.UNIT, chain.getContext().get(FacilioConstants.ContextNames.UNIT));	
 		return SUCCESS;
 	}
 	
