@@ -246,9 +246,12 @@ public class ColumnFactory {
 		columnMap.put(FacilioConstants.Inspection.INSPECTION_TEMPLATE+"-default", getDefaultInspectionTemplateColumns());
 		columnMap.put(FacilioConstants.Inspection.INSPECTION_RESPONSE+"-default", getDefaultInspectionResponseColumns());
 		
+		columnMap.put(FacilioConstants.Inspection.INSPECTION_RESPONSE+"-hidden-all", getDefaultInspectionResponseColumnsWithName());
+		
 		columnMap.put(FacilioConstants.Induction.INDUCTION_TEMPLATE+"-default", getDefaultInductionTemplateColumns());
 		columnMap.put(FacilioConstants.Induction.INDUCTION_RESPONSE+"-default", getDefaultInductionResponseColumns());
 		
+		columnMap.put(FacilioConstants.Induction.INDUCTION_RESPONSE+"-hidden-all", getDefaultInductionResponseColumnsWithName());		
 		// Community Features
 		columnMap.put("announcement-default", getDefaultAnnouncementColumns());
 		columnMap.put("peopleannouncement-default", getDefaultAnnouncementColumns());
@@ -740,6 +743,24 @@ public class ColumnFactory {
 		return columns;
 	}
 	
+	private static List<ViewField> getDefaultInspectionResponseColumnsWithName() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("name", "Name"));
+		
+		columns.add(new ViewField("responseStatus", "Status"));
+		
+		columns.add(new ViewField("site", "Site"));
+		columns.add(new ViewField("resource", "Space / Asset"));
+		columns.add(new ViewField("assignedTo", "Assigned To"));
+		columns.add(new ViewField("category", "Category"));
+		columns.add(new ViewField("priority", "Priority"));
+		
+		columns.add(new ViewField("totalAnswered", "Total Answered"));
+
+		return columns;
+	}
+	
 	
 	private static List<ViewField> getDefaultInductionTemplateColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
@@ -757,6 +778,22 @@ public class ColumnFactory {
 	
 	private static List<ViewField> getDefaultInductionResponseColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("responseStatus", "Status"));
+		
+		columns.add(new ViewField("site", "Site"));
+		columns.add(new ViewField("resource", "Space / Asset"));
+		columns.add(new ViewField("assignedTo", "Assigned To"));
+		
+		columns.add(new ViewField("totalAnswered", "Total Answered"));
+
+		return columns;
+	}
+	
+	private static List<ViewField> getDefaultInductionResponseColumnsWithName() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("name", "Name"));
 		
 		columns.add(new ViewField("responseStatus", "Status"));
 		
