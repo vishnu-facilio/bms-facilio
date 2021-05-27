@@ -27,6 +27,11 @@ public class InductionSupplementSupplyCommand extends FacilioCommand {
         if( Constants.getModuleName(context).equals(FacilioConstants.Induction.INDUCTION_RESPONSE)) {
         	supplements.add((SupplementRecord) fieldMap.get("parent"));
         }
+        if( Constants.getModuleName(context).equals(FacilioConstants.Induction.INDUCTION_TEMPLATE)) {
+        	supplements.add((SupplementRecord) fieldMap.get("assetCategory"));
+        	supplements.add((SupplementRecord) fieldMap.get("spaceCategory"));
+        }
+        supplements.add((SupplementRecord) fieldMap.get("site"));
         supplements.add((SupplementRecord) fieldMap.get("resource"));
         supplements.add((SupplementRecord) fieldMap.get("assignmentGroup"));
         supplements.add((SupplementRecord) fieldMap.get("assignedTo"));

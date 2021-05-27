@@ -589,12 +589,12 @@ public class AddInductionModules extends SignUpData {
         siteField.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.SITE));
         fields.add(siteField);
         
-        SystemEnumField creationType = (SystemEnumField) FieldFactory.getDefaultField("creationType", "Creation Type", "CREATION_TYPE", FieldType.SYSTEM_ENUM);
+        SystemEnumField creationType = (SystemEnumField) FieldFactory.getDefaultField("creationType", "Scope", "CREATION_TYPE", FieldType.SYSTEM_ENUM);
         creationType.setEnumName("InductionCreationType");
         
         fields.add(creationType);
         
-        SystemEnumField assignmentType = (SystemEnumField) FieldFactory.getDefaultField("assignmentType", "Assigment Type", "ASSIGNMENT_TYPE", FieldType.SYSTEM_ENUM);
+        SystemEnumField assignmentType = (SystemEnumField) FieldFactory.getDefaultField("assignmentType", "Scope Category", "ASSIGNMENT_TYPE", FieldType.SYSTEM_ENUM);
         assignmentType.setEnumName("MultiResourceAssignmentType");
         
         fields.add(assignmentType);
