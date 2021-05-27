@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ConfirmationDialogContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -51,12 +52,13 @@ public class GetMatchedConfirmationDialogCommand extends FacilioCommand {
             }
 
             List<ConfirmationDialogContext> dialogContexts = new ArrayList<>();
+            Map<String, Object> placeHolders = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, moduleData, WorkflowRuleAPI.getOrgPlaceHolders());
             for (ConfirmationDialogContext confirmationDialog : confirmationDialogs) {
-                if (confirmationDialog.getCriteria() == null) {
+                if (confirmationDialog.getNamedCriteria() == null) {
                     dialogContexts.add(confirmationDialog); // it will match for all records
                     continue;
                 }
-                if (confirmationDialog.getCriteria().computePredicate().evaluate(moduleData)) {
+                if (confirmationDialog.getNamedCriteria().evaluate(moduleData, context, placeHolders)) {
                     dialogContexts.add(confirmationDialog);
                 }
             }

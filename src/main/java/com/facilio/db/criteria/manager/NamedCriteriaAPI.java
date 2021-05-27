@@ -15,10 +15,7 @@ import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -151,5 +148,36 @@ public class NamedCriteriaAPI {
                 .table(ModuleFactory.getNamedCriteriaModule().getTableName())
                 .andCondition(CriteriaAPI.getIdCondition(id, ModuleFactory.getNamedCriteriaModule()));
          builder.delete();
+    }
+
+    public static NamedCriteria convertCriteriaToNamedCriteria(String name, long moduleId, Criteria criteria) throws Exception {
+        NamedCriteria namedCriteria = new NamedCriteria();
+        namedCriteria.setName(name);
+        namedCriteria.setNamedCriteriaModuleId(moduleId);
+        namedCriteria.setPattern("1");
+
+        NamedCondition namedCondition = new NamedCondition();
+        namedCondition.setName(name);
+        namedCondition.setType(NamedCondition.Type.CRITERIA);
+        namedCondition.setCriteria(criteria);
+        namedCriteria.addCondition("1", namedCondition);
+
+        addOrUpdateNamedCriteria(namedCriteria);
+        return namedCriteria;
+    }
+
+    public static Criteria convertNamedCriteriaToCriteria(NamedCriteria namedCriteria) throws Exception {
+        if (namedCriteria == null) {
+            return null;
+        }
+
+        Map<String, NamedCondition> conditions = namedCriteria.getConditions();
+        Collection<NamedCondition> namedConditions = conditions.values();
+        for (NamedCondition condition : namedConditions) {
+            if (condition.getTypeEnum() == NamedCondition.Type.CRITERIA) {
+                return condition.getCriteria();
+            }
+        }
+        return null;
     }
 }

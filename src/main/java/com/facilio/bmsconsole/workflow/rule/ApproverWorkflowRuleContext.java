@@ -12,6 +12,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
@@ -117,10 +118,10 @@ public class ApproverWorkflowRuleContext extends WorkflowRuleContext {
         return result;
     }
 
-    protected boolean validationCheck(ModuleBaseWithCustomFields moduleRecord) throws Exception {
+    protected boolean validationCheck(ModuleBaseWithCustomFields moduleRecord, Context context, Map<String, Object> placeHolders) throws Exception {
         if (CollectionUtils.isNotEmpty(validations)) {
             for (ValidationContext validation : validations) {
-                if (!validation.validate(moduleRecord)) {
+                if (!validation.validate(moduleRecord, context, placeHolders)) {
                     throw new IllegalArgumentException(validation.getErrorMessage());
                 }
             }

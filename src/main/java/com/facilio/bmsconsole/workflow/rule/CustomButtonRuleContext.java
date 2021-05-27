@@ -153,7 +153,7 @@ public class CustomButtonRuleContext extends ApproverWorkflowRuleContext impleme
         shouldExecuteTrueActions = super.validateApproversForTrueAction(record);
 
         if (shouldExecuteTrueActions) {
-            boolean isValid = super.validationCheck(moduleRecord);
+            boolean isValid = super.validationCheck(moduleRecord, context, placeHolders);
             if (isValid) {
                 // write the logic
                 if (buttonType == ButtonType.ACTION) {

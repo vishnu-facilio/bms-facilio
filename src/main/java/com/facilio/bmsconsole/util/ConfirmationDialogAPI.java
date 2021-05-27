@@ -1,12 +1,14 @@
 package com.facilio.bmsconsole.util;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.workflow.rule.ConfirmationDialogContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.manager.NamedCriteria;
+import com.facilio.db.criteria.manager.NamedCriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -29,9 +31,13 @@ public class ConfirmationDialogAPI {
                 .fields(FieldFactory.getConfirmationDialogFields());
         for (ConfirmationDialogContext confirmationDialogContext : confirmationDialogs) {
             confirmationDialogContext.setParentId(parentId);
-            if (confirmationDialogContext.getCriteria() != null) {
-                long criteriaId = CriteriaAPI.addCriteria(confirmationDialogContext.getCriteria(), AccountUtil.getCurrentOrg().getId());
-                confirmationDialogContext.setCriteriaId(criteriaId);
+            if (confirmationDialogContext.getCriteria() != null) { // backward compatibility
+                WorkflowRuleContext workflowRule = WorkflowRuleAPI.getWorkflowRule(confirmationDialogContext.getParentId());
+                NamedCriteria namedCriteria = NamedCriteriaAPI.convertCriteriaToNamedCriteria(
+                        confirmationDialogContext.getName(),
+                        workflowRule.getModuleId(),
+                        confirmationDialogContext.getCriteria());
+                confirmationDialogContext.setNamedCriteriaId(namedCriteria.getId());
             }
             builder.addRecord(FieldUtil.getAsProperties(confirmationDialogContext));
         }
@@ -50,14 +56,19 @@ public class ConfirmationDialogAPI {
                 .andCondition(CriteriaAPI.getCondition("PARENT_ID", "parentId", String.valueOf(parentId), NumberOperators.EQUALS));
         List<ConfirmationDialogContext> confirmationDialogs = FieldUtil.getAsBeanListFromMapList(builder.get(), ConfirmationDialogContext.class);
         if (fetchChildren && CollectionUtils.isNotEmpty(confirmationDialogs)) {
-            List<Long> criteriaIds = confirmationDialogs.stream().filter(confirmationDialog -> confirmationDialog.getCriteriaId() > 0)
-                    .map(ConfirmationDialogContext::getCriteriaId).collect(Collectors.toList());
-            if (CollectionUtils.isNotEmpty(criteriaIds)) {
-                Map<Long, Criteria> criteriaMap = CriteriaAPI.getCriteriaAsMap(criteriaIds);
+            List<Long> namedCriteriaIds = confirmationDialogs.stream().filter(confirmationDialog -> confirmationDialog.getNamedCriteriaId() > 0)
+                    .map(ConfirmationDialogContext::getNamedCriteriaId).collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(namedCriteriaIds)) {
+                Map<Long, NamedCriteria> criteriaMap = NamedCriteriaAPI.getCriteriaAsMap(namedCriteriaIds);
 
                 for (ConfirmationDialogContext dialogContext : confirmationDialogs) {
-                    if (dialogContext.getCriteriaId() > 0) {
-                        dialogContext.setCriteria(criteriaMap.get(dialogContext.getCriteriaId()));
+                    if (dialogContext.getNamedCriteriaId() > 0) {
+                        NamedCriteria namedCriteria = criteriaMap.get(dialogContext.getNamedCriteriaId());
+                        dialogContext.setNamedCriteria(namedCriteria);
+
+                        Criteria criteria = NamedCriteriaAPI.convertNamedCriteriaToCriteria(namedCriteria);
+                        dialogContext.setCriteria(criteria);
+                        dialogContext.setCriteriaId(criteria.getCriteriaId());
                     }
                 }
             }
@@ -74,12 +85,6 @@ public class ConfirmationDialogAPI {
                     .table(ModuleFactory.getConfirmationDialogModule().getTableName())
                     .andCondition(CriteriaAPI.getIdCondition(dialogIds, ModuleFactory.getConfirmationDialogModule()));
             builder.delete();
-
-            for (ConfirmationDialogContext confirmationDialog : confirmationDialogs) {
-                if (confirmationDialog.getCriteriaId() > 0) {
-                    CriteriaAPI.deleteCriteria(confirmationDialog.getCriteriaId());
-                }
-            }
         }
     }
 }

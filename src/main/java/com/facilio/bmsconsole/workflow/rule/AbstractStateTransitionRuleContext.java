@@ -204,7 +204,7 @@ public abstract class AbstractStateTransitionRuleContext extends ApproverWorkflo
             boolean isValid = true;
 
             if (type == TransitionType.NORMAL) {
-                isValid = super.validationCheck(moduleRecord);
+                isValid = super.validationCheck(moduleRecord, context, placeHolders);
             }
 
             if (isValid) {

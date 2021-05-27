@@ -1,15 +1,14 @@
 package com.facilio.bmsconsole.workflow.rule;
 
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.manager.NamedCriteria;
-import com.facilio.modules.FieldUtil;
+import com.facilio.db.criteria.manager.NamedCriteriaAPI;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.json.annotations.JSON;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class ValidationContext {
@@ -52,7 +51,7 @@ public class ValidationContext {
 	public void setCriteria(Criteria criteria) {
 		this.criteria = criteria;
 	}
-	
+
 	private long criteriaId = -1;
 	public long getCriteriaId() {
 		return criteriaId;
@@ -78,23 +77,29 @@ public class ValidationContext {
 	}
 
 	@JSON(serialize = false)
-	public boolean isValid() {
+	public boolean isValid() throws Exception {
 		if (StringUtils.isEmpty(errorMessage)) {
 			return false;
 		}
 		
-		if (criteria == null || criteria.isEmpty()) {
-			return false;
+		if (namedCriteriaId < 0) {
+			if (criteria == null || criteria.isEmpty()) {
+				return false;
+			}
+
+			WorkflowRuleContext workflowRule = WorkflowRuleAPI.getWorkflowRule(ruleId);
+
+			String conditionName = StringUtils.isNotEmpty(name) ? name : errorMessage;
+
+			NamedCriteria namedCriteria = NamedCriteriaAPI.convertCriteriaToNamedCriteria(conditionName, workflowRule.getModuleId(), criteria);
+			this.namedCriteriaId = namedCriteria.getId();
 		}
 		return true;
 	}
 	
-	public boolean validate(ModuleBaseWithCustomFields moduleRecord) throws Exception {
-		if (criteria != null && !criteria.isEmpty()) {
-			Map<String, Object> prop = FieldUtil.getAsProperties(moduleRecord);
-			Map<String, Object> placeHolders = new HashMap<>();
-			CommonCommandUtil.appendModuleNameInKey(null, "workorder", prop, placeHolders);
-			return criteria.computePredicate(placeHolders).evaluate(moduleRecord);
+	public boolean validate(ModuleBaseWithCustomFields moduleRecord, Context context, Map<String, Object> placeHolders) throws Exception {
+		if (namedCriteria != null) {
+			return namedCriteria.evaluate(moduleRecord, context, placeHolders);
 		}
 		return true;
 	}

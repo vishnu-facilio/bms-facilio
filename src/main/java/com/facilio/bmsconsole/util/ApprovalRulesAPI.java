@@ -9,6 +9,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.workflow.rule.*;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.manager.NamedCondition;
+import com.facilio.db.criteria.manager.NamedCriteria;
+import com.facilio.db.criteria.manager.NamedCriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -376,13 +380,9 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 					.fields(fields);
 			
 			for (ValidationContext validationContext : validations) {
+				validationContext.setRuleId(parentId);
 				if (!validationContext.isValid()) {
 					throw new IllegalArgumentException("Invalid validation");
-				}
-				validationContext.setRuleId(parentId);
-				if (validationContext.getCriteria() != null) {
-					long criteriaId = CriteriaAPI.addCriteria(validationContext.getCriteria(),AccountUtil.getCurrentOrg().getId());
-					validationContext.setCriteriaId(criteriaId);
 				}
 				builder.addRecord(FieldUtil.getAsProperties(validationContext));
 			}
@@ -404,12 +404,6 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 					.table(validationModule.getTableName())
 					.andCondition(CriteriaAPI.getIdCondition(validationIds, validationModule));
 			builder.delete();
-			
-			for (ValidationContext validation: validations) {
-				if (validation.getCriteriaId() > 0) {
-					CriteriaAPI.deleteCriteria(validation.getCriteriaId());
-				}
-			}
 		}
 	}
 
@@ -422,18 +416,23 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 		List<Map<String, Object>> list = builder.get();
 		List<ValidationContext> validations = FieldUtil.getAsBeanListFromMapList(list, ValidationContext.class);
 		
-		List<Long> criteriaIds = new ArrayList<>();
+		List<Long> namedCriteriaIds = new ArrayList<>();
 		for (ValidationContext validation: validations) {
-			if (validation.getCriteriaId() > 0) {
-				criteriaIds.add(validation.getCriteriaId());
+			if (validation.getNamedCriteriaId() > 0) {
+				namedCriteriaIds.add(validation.getNamedCriteriaId());
 			}
 		}
-		if (CollectionUtils.isNotEmpty(criteriaIds)) {
-			Map<Long, Criteria> criteriaMap = CriteriaAPI.getCriteriaAsMap(criteriaIds);
+		if (CollectionUtils.isNotEmpty(namedCriteriaIds)) {
+			Map<Long, NamedCriteria> criteriaMap = NamedCriteriaAPI.getCriteriaAsMap(namedCriteriaIds);
 
 			for (ValidationContext validation: validations) {
-				if (validation.getCriteriaId() > 0) {
-					validation.setCriteria(criteriaMap.get(validation.getCriteriaId()));
+				if (validation.getNamedCriteriaId() > 0) {
+					NamedCriteria namedCriteria = criteriaMap.get(validation.getNamedCriteriaId());
+					validation.setNamedCriteria(namedCriteria);
+
+					Criteria criteria = NamedCriteriaAPI.convertNamedCriteriaToCriteria(namedCriteria);
+					validation.setCriteria(criteria);
+					validation.setCriteriaId(criteria.getCriteriaId());
 				}
 			}	
 		}
