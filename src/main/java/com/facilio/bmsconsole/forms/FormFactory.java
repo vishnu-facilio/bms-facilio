@@ -424,7 +424,7 @@ public class FormFactory {
 		List<FacilioForm> workPermitTypeChecklistForm = Arrays.asList(getWorkPermitTypeChecklistForm());
 
 		List<FacilioForm> facilityFormsList = Arrays.asList(getFacilityCreationForm());
-		List<FacilioForm> facilityBookingFormsList = Arrays.asList(getFacilityBookingForm(), getFacilityBookingPortalForm(), getFacilityHotDeskBookingForm(), getFacilitySpaceBookingForm());
+		List<FacilioForm> facilityBookingFormsList = Arrays.asList(getFacilityBookingForm(), getFacilityBookingPortalForm(), getFacilityHotDeskBookingForm(), getFacilitySpaceBookingForm(),getFacilityHotDeskBookingPortalForm(),getFacilitySpaceBookingPortalForm());
 		List<FacilioForm> facilitySpecialAvailabilityFormsList = Arrays.asList(getFacilitySpecialAvailabilityForm());
 		List<FacilioForm> amenityFormsList = Arrays.asList(getAmenityForm());
 		List<FacilioForm> externalAttendeeFormList = Arrays.asList(getExternalAttendeeForm());
@@ -3162,6 +3162,42 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(ContextNames.FacilityBooking.FACILITY_BOOKING));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("facility", FieldDisplayType.LOOKUP_SIMPLE, "Facility", Required.REQUIRED, "facility",1, 1));
+		fields.add(new FormField("reservedFor", FieldDisplayType.LOOKUP_SIMPLE, "Reserved By", Required.REQUIRED,"user",2, 1));
+		fields.add(new FormField("noOfAttendees", FieldDisplayType.NUMBER, "Number Of Attendees", Required.REQUIRED,3, 1));
+		fields.add(new FormField("bookingslot", FieldDisplayType.FACILITY_BOOKING_SLOTS, "Time Slots", Required.REQUIRED,4, 1));
+		fields.add(new FormField("internalAttendees", FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Internal Attendees", Required.OPTIONAL,5, 1));
+	
+		form.setFields(fields);
+		return form;
+	}
+	
+	private static FacilioForm getFacilityHotDeskBookingPortalForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("Hot Desk Booking");
+		form.setName("hot_desk_"+ ContextNames.FacilityBooking.FACILITY_BOOKING +"_portal");
+		form.setModule(ModuleFactory.getModule(ContextNames.FacilityBooking.FACILITY_BOOKING));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setAppLinkName(ApplicationLinkNames.OCCUPANT_PORTAL_APP);
+
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("facility", FieldDisplayType.LOOKUP_SIMPLE, "Facility", Required.REQUIRED, "facility",1, 1));
+		fields.add(new FormField("reservedFor", FieldDisplayType.LOOKUP_SIMPLE, "Reserved For", Required.REQUIRED,"user",2, 1));
+		fields.add(new FormField("bookingslot", FieldDisplayType.FACILITY_BOOKING_SLOTS, "Time Slots", Required.REQUIRED,4, 1));
+	
+		form.setFields(fields);
+		return form;
+	}
+	
+	private static FacilioForm getFacilitySpaceBookingPortalForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("Space Booking");
+		form.setName("Space_"+ ContextNames.FacilityBooking.FACILITY_BOOKING +"_portal");
+		form.setModule(ModuleFactory.getModule(ContextNames.FacilityBooking.FACILITY_BOOKING));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setAppLinkName(ApplicationLinkNames.OCCUPANT_PORTAL_APP);
 
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("facility", FieldDisplayType.LOOKUP_SIMPLE, "Facility", Required.REQUIRED, "facility",1, 1));
