@@ -60,8 +60,9 @@ public class GenericAddModuleDataListCommand extends FacilioCommand{
 			}
 			List<Long> ids = new ArrayList<>();
 			for(ModuleBaseWithCustomFields rec : record) {
+				List<SupplementRecord> sup = new ArrayList<>();
 				CommonCommandUtil.handleLookupFormData(fields, rec.getData());
-				CommonCommandUtil.handleFormDataAndSupplement(fields, rec.getData(), Collections.EMPTY_LIST);
+				CommonCommandUtil.handleFormDataAndSupplement(fields, rec.getData(), sup);
 				insertRecordBuilder.addRecord(rec);
 			}
 			insertRecordBuilder.save();
