@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -40,8 +41,17 @@ private static final long serialVersionUID = 1L;
 
 	private EmployeeContext employee;
 	private List<EmployeeContext> employees;
-	
-	
+
+	private long stateTransitionId = -1;
+
+	public long getStateTransitionId() {
+		return stateTransitionId;
+	}
+
+	public void setStateTransitionId(long stateTransitionId) {
+		this.stateTransitionId = stateTransitionId;
+	}
+
 	public EmployeeContext getEmployee() {
 		return employee;
 	}
@@ -118,10 +128,16 @@ private static final long serialVersionUID = 1L;
 	}
 	
 	public String updateEmployees() throws Exception {
+
+		if(CollectionUtils.isEmpty(employees) && employee != null) {
+			employees = new ArrayList<>();
+			employees.add(employee);
+		}
 		
 		if(!CollectionUtils.isEmpty(employees)) {
 			FacilioChain c = TransactionChainFactory.updateEmployeeChain();
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
+			c.getContext().put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			
 			for(EmployeeContext emp : employees) {
