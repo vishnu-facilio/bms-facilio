@@ -121,7 +121,8 @@ public class AddInspectionModules extends SignUpData {
         addModuleChain1.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules1);
         addModuleChain1.execute();
         
-        addDefaultStateFlow(inspectionResponseModule);
+        addDefaultStateFlowForInspectionTemplate(inspection);
+        addDefaultStateFlowForInspectionResponse(inspectionResponseModule);
         
         addDefaultFormForInspectionTemplate(inspection);
         
@@ -703,6 +704,8 @@ public class AddInspectionModules extends SignUpData {
                                                 FacilioModule.ModuleType.Q_AND_A,
                                                 modBean.getModule(FacilioConstants.QAndA.Q_AND_A_TEMPLATE)
                                                 );
+        
+        module.setStateFlowEnabled(Boolean.TRUE);
 
         List<FacilioField> fields = new ArrayList<>();
         
@@ -773,6 +776,8 @@ public class AddInspectionModules extends SignUpData {
                 FacilioModule.ModuleType.Q_AND_A_RESPONSE,
                 modBean.getModule(FacilioConstants.QAndA.RESPONSE)
         );
+        
+        module.setStateFlowEnabled(Boolean.TRUE);
         
         Criteria criteria = new Criteria();
         
@@ -898,7 +903,7 @@ public class AddInspectionModules extends SignUpData {
         return fields;
 	}
     
-    public void addDefaultStateFlow(FacilioModule inspectionModule) throws Exception {
+    public void addDefaultStateFlowForInspectionResponse(FacilioModule inspectionModule) throws Exception {
     	
     	FacilioStatus createdStatus = getFacilioStatus(inspectionModule, "created", "Created", StatusType.OPEN, Boolean.FALSE);
     	FacilioStatus assignedStatus = getFacilioStatus(inspectionModule, "assigned", "Assigned", StatusType.OPEN, Boolean.FALSE);
@@ -930,6 +935,27 @@ public class AddInspectionModules extends SignUpData {
          addStateflowTransitionContext(inspectionModule, stateFlowRuleContext, "Close", resolvedStatus, closed,TransitionType.NORMAL,null);
          addStateflowTransitionContext(inspectionModule, stateFlowRuleContext, "Re-Open", closed, assignedStatus,TransitionType.NORMAL,null);
          
+    }
+    
+    public void addDefaultStateFlowForInspectionTemplate(FacilioModule inspectionModule) throws Exception {
+    	
+    	FacilioStatus activeStatus = getFacilioStatus(inspectionModule, "active", "Active", StatusType.OPEN, Boolean.FALSE);
+    	FacilioStatus inActiveStatus = getFacilioStatus(inspectionModule, "inactive", "Inactive", StatusType.CLOSED, Boolean.FALSE);
+    	
+    	 StateFlowRuleContext stateFlowRuleContext = new StateFlowRuleContext();
+         stateFlowRuleContext.setName("Default Stateflow");
+         stateFlowRuleContext.setModuleId(inspectionModule.getModuleId());
+         stateFlowRuleContext.setModule(inspectionModule);
+         stateFlowRuleContext.setActivityType(EventType.CREATE);
+         stateFlowRuleContext.setExecutionOrder(1);
+         stateFlowRuleContext.setStatus(true);
+         stateFlowRuleContext.setDefaltStateFlow(true);
+         stateFlowRuleContext.setDefaultStateId(activeStatus.getId());
+         stateFlowRuleContext.setRuleType(WorkflowRuleContext.RuleType.STATE_FLOW);
+         WorkflowRuleAPI.addWorkflowRule(stateFlowRuleContext);
+         
+         addStateflowTransitionContext(inspectionModule, stateFlowRuleContext, "Inactivate", activeStatus, inActiveStatus,TransitionType.NORMAL,null);
+         addStateflowTransitionContext(inspectionModule, stateFlowRuleContext, "Activate", inActiveStatus, activeStatus,TransitionType.NORMAL,null);
     }
     
     

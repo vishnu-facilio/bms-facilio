@@ -97,13 +97,34 @@ public class AddInductionModules extends SignUpData {
         addModuleChain1.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules1);
         addModuleChain1.execute();
         
-        addDefaultStateFlow(InductionResponseModule);
+        addDefaultStateFlowForInductionTemplate(induction);
+        addDefaultStateFlowForInductionResponse(InductionResponseModule);
         
         addDefaultFormForInductionTemplate(induction);
         
 //        addDefaultScheduleJobs();
     }
 
+	public void addDefaultStateFlowForInductionTemplate(FacilioModule inductionModule) throws Exception {
+    	
+    	FacilioStatus activeStatus = getFacilioStatus(inductionModule, "active", "Active", StatusType.OPEN, Boolean.FALSE);
+    	FacilioStatus inActiveStatus = getFacilioStatus(inductionModule, "inactive", "Inactive", StatusType.CLOSED, Boolean.FALSE);
+    	
+    	 StateFlowRuleContext stateFlowRuleContext = new StateFlowRuleContext();
+         stateFlowRuleContext.setName("Default Stateflow");
+         stateFlowRuleContext.setModuleId(inductionModule.getModuleId());
+         stateFlowRuleContext.setModule(inductionModule);
+         stateFlowRuleContext.setActivityType(EventType.CREATE);
+         stateFlowRuleContext.setExecutionOrder(1);
+         stateFlowRuleContext.setStatus(true);
+         stateFlowRuleContext.setDefaltStateFlow(true);
+         stateFlowRuleContext.setDefaultStateId(activeStatus.getId());
+         stateFlowRuleContext.setRuleType(WorkflowRuleContext.RuleType.STATE_FLOW);
+         WorkflowRuleAPI.addWorkflowRule(stateFlowRuleContext);
+         
+         addStateflowTransitionContext(inductionModule, stateFlowRuleContext, "Inactivate", activeStatus, inActiveStatus,TransitionType.NORMAL,null);
+         addStateflowTransitionContext(inductionModule, stateFlowRuleContext, "Activate", inActiveStatus, activeStatus,TransitionType.NORMAL,null);
+    }
 
 //	public void addDefaultScheduleJobs() throws Exception {
 //		// TODO Auto-generated method stub
@@ -582,6 +603,8 @@ public class AddInductionModules extends SignUpData {
                                                 FacilioModule.ModuleType.Q_AND_A,
                                                 modBean.getModule(FacilioConstants.QAndA.Q_AND_A_TEMPLATE)
                                                 );
+        
+        module.setStateFlowEnabled(Boolean.TRUE);
 
         List<FacilioField> fields = new ArrayList<>();
         
@@ -652,6 +675,8 @@ public class AddInductionModules extends SignUpData {
                 FacilioModule.ModuleType.Q_AND_A_RESPONSE,
                 modBean.getModule(FacilioConstants.QAndA.RESPONSE)
         );
+        
+        module.setStateFlowEnabled(Boolean.TRUE);
         
         Criteria criteria = new Criteria();
         
@@ -761,7 +786,7 @@ public class AddInductionModules extends SignUpData {
         return fields;
 	}
     
-    public void addDefaultStateFlow(FacilioModule inductionModule) throws Exception {
+    public void addDefaultStateFlowForInductionResponse(FacilioModule inductionModule) throws Exception {
     	
     	FacilioStatus createdStatus = getFacilioStatus(inductionModule, "created", "Created", StatusType.OPEN, Boolean.FALSE);
     	FacilioStatus assignedStatus = getFacilioStatus(inductionModule, "assigned", "Assigned", StatusType.OPEN, Boolean.FALSE);
