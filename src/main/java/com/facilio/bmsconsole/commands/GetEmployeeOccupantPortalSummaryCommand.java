@@ -5,19 +5,16 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.EmployeeContext;
 import com.facilio.bmsconsole.context.ServiceRequestContext;
-import com.facilio.bmsconsole.context.VisitorInviteContext;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsoleV3.context.InviteVisitorContextV3;
 import com.facilio.bmsconsoleV3.context.facilitybooking.V3FacilityBookingContext;
 import com.facilio.bmsconsoleV3.context.floorplan.V3DeskContext;
-import com.facilio.bmsconsoleV3.util.FacilityAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
@@ -31,10 +28,11 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.LookupFieldMeta;
 import com.facilio.modules.fields.MultiLookupField;
 import com.facilio.modules.fields.MultiLookupMeta;
 import com.facilio.modules.fields.SupplementRecord;
+import com.facilio.time.DateRange;
+import com.facilio.time.DateTimeUtil;
 
 public class GetEmployeeOccupantPortalSummaryCommand extends FacilioCommand {
 	private static final Logger LOGGER = LogManager.getLogger(GetEmployeeOccupantPortalSummaryCommand.class.getName());
@@ -45,6 +43,7 @@ public class GetEmployeeOccupantPortalSummaryCommand extends FacilioCommand {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		long recordId = (long) context.get(FacilioConstants.ContextNames.ID);
 		int count = (int) context.get(FacilioConstants.ContextNames.COUNT);
+		DateRange range = new DateRange(DateTimeUtil.getDayStartTime(),DateTimeUtil.getDayStartTime(2));
         
         FacilioModule empModule = modBean.getModule(FacilioConstants.ContextNames.EMPLOYEE);
         List<FacilioField> empFields = modBean.getAllFields(FacilioConstants.ContextNames.EMPLOYEE);
@@ -127,7 +126,6 @@ public class GetEmployeeOccupantPortalSummaryCommand extends FacilioCommand {
         FacilioModule visitorInviteMod = modBean.getModule(FacilioConstants.ContextNames.INVITE_VISITOR);
         List<FacilioField> inviteFields = modBean.getAllFields(FacilioConstants.ContextNames.INVITE_VISITOR);
         Map<String, FacilioField> invitefieldsAsMap = FieldFactory.getAsMap(inviteFields);
-        long currentTime = System.currentTimeMillis();
         List<LookupField> inviteLookups = new ArrayList<LookupField>();
         LookupField invitestatusField = (LookupField) invitefieldsAsMap.get(FacilioConstants.ContextNames.MODULE_STATE);
         inviteLookups.add(invitestatusField);
@@ -140,7 +138,7 @@ public class GetEmployeeOccupantPortalSummaryCommand extends FacilioCommand {
                 .moduleName(visitorInviteMod.getName())
                 .select(inviteFields)
                 .beanClass(InviteVisitorContextV3.class)
-                .andCondition(CriteriaAPI.getCondition(invitefieldsAsMap.get("expectedCheckInTime"), String.valueOf(currentTime) , DateOperators.IS_AFTER))
+                .andCondition(CriteriaAPI.getCondition(invitefieldsAsMap.get("expectedCheckInTime"), range.toString(), DateOperators.BETWEEN))
                 .limit(count)
                 .fetchSupplements(inviteLookups);
 
@@ -176,9 +174,9 @@ public class GetEmployeeOccupantPortalSummaryCommand extends FacilioCommand {
                 .moduleName(bookingModule.getName())
                 .select(bookingfields)
                 .beanClass(V3FacilityBookingContext.class)
+                .andCondition(CriteriaAPI.getCondition(bookingfieldsAsMap.get("bookingDate"), range.toString(), DateOperators.BETWEEN))
                 .andCondition(CriteriaAPI.getCondition(bookingfieldsAsMap.get("isCancelled"),String.valueOf(false), BooleanOperators.IS))
-//                .andCondition(CriteriaAPI.getCondition(bookingfieldsAsMap.get("bookingDate"), String.valueOf(currentTime) , DateOperators.TODAY))
-//                .orCondition(CriteriaAPI.getCondition(bookingfieldsAsMap.get("bookingDate"), String.valueOf(currentTime) , DateOperators.STARTING_TOMORROW))
+                .fetchSupplements(fetchLookupsList)
                 .limit(count);
         
         if(recordId > -1) {
