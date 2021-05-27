@@ -217,29 +217,47 @@ public class QAndAUtil {
         return count == null ? 0 : count;
     }
 
-    public static <T extends V3Context> List<T> getChildRecordsFromTemplate (String moduleName, long templateId) throws Exception {
+    public static List<QuestionContext> getQuestionsFromTemplate (long templateId) throws Exception {
         ModuleBean modBean = Constants.getModBean();
-        FacilioModule module = modBean.getModule(moduleName);
-        List<FacilioField> fields = modBean.getAllFields(moduleName);
+        FacilioModule module = modBean.getModule(FacilioConstants.QAndA.QUESTION);
+        List<FacilioField> fields = modBean.getAllFields(module.getName());
         FacilioField parentField = FieldFactory.filterField(fields, "parent");
-
-        SelectRecordsBuilder<T> builder = new SelectRecordsBuilder<T>()
+        SelectRecordsBuilder<QuestionContext> builder = new SelectRecordsBuilder<QuestionContext>()
                 .select(fields)
                 .module(module)
                 .beanClass(FacilioConstants.ContextNames.getClassFromModule(module))
                 .andCondition(CriteriaAPI.getCondition(parentField, String.valueOf(templateId), PickListOperators.IS))
                 ;
+        List<QuestionContext> questions = builder.get();
+        replaceWithExtendedQuestions(questions);
+        callFetchHandler(questions);
+        return questions;
+    }
 
-        if (moduleName.equals(FacilioConstants.QAndA.ANSWER)) {
-            builder.fetchSupplements(fields.stream()
-                    .filter(f -> f.getDataTypeEnum().isMultiRecord())
-                    .map(SupplementRecord.class::cast)
-                    .collect(Collectors.toList()));
-        }
+    public static List<AnswerContext> getAnswersFromTemplateAndResponse (long templateId, long responseId) throws Exception {
+        ModuleBean modBean = Constants.getModBean();
+        FacilioModule module = modBean.getModule(FacilioConstants.QAndA.ANSWER);
+        List<FacilioField> fields = modBean.getAllFields(module.getName());
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+        FacilioField parentField = fieldMap.get("parent");
+        FacilioField responseField = fieldMap.get("response");
 
-        List<T> records = builder.get();
+        SelectRecordsBuilder<AnswerContext> builder = new SelectRecordsBuilder<AnswerContext>()
+                .select(fields)
+                .module(module)
+                .beanClass(FacilioConstants.ContextNames.getClassFromModule(module))
+                .andCondition(CriteriaAPI.getCondition(parentField, String.valueOf(templateId), PickListOperators.IS))
+                .andCondition(CriteriaAPI.getCondition(responseField, String.valueOf(responseId), PickListOperators.IS))
+                ;
 
-        return records;
+        builder.fetchSupplements(fields.stream()
+                .filter(f -> f.getDataTypeEnum().isMultiRecord())
+                .map(SupplementRecord.class::cast)
+                .collect(Collectors.toList()));
+
+        List<AnswerContext> answers = builder.get();
+
+        return answers;
     }
 
     public static void populateMCQSummary (List<Map<String, Object>> props, Map<Long, QuestionContext> questionMap, FacilioField questionField, FacilioField enumField, FacilioField idField) throws Exception {

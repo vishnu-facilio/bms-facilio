@@ -3,6 +3,7 @@ package com.facilio.qa.context;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.util.FacilioEnumClassTypeIdResolverBase;
 import com.facilio.v3.context.V3Context;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
 
@@ -38,8 +39,13 @@ public abstract class ResponseContext <T extends QAndATemplateContext> extends V
     }
 
     private Integer totalAnswered;
+
+    @JsonIgnore
     private ResponseStatus resStatus;
+
+    @JsonIgnore
     private QAndAType qAndAType;
+
     private QAndATemplateContext template; // For internal use
 
     public Integer getType() {
@@ -67,7 +73,7 @@ public abstract class ResponseContext <T extends QAndATemplateContext> extends V
     public enum ResponseStatus implements FacilioIntEnum {
         DISABLED("Disabled"),
         NOT_ANSWERED("Not Answered"),
-        PARTIALLY_ANSWERED("Partialy Answered"),
+        PARTIALLY_ANSWERED("Partially Answered"),
         COMPLETED("Completed")
         ;
     	
