@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseScheduleContext;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTriggerContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTriggerIncludeExcludeResourceContext;
 import com.facilio.constants.FacilioConstants;
@@ -103,6 +105,14 @@ public class InspectionAPI {
 				;
 		
 		List<InspectionTriggerIncludeExcludeResourceContext> inclExcls = select.get();
+		
+		List<Long> resourceIds = inclExcls.stream().map(InspectionTriggerIncludeExcludeResourceContext::getResourceId).collect(Collectors.toList());
+		
+		Map<Long, ResourceContext> resourceMap = ResourceAPI.getResourceAsMapFromIds(resourceIds);
+		
+		for(InspectionTriggerIncludeExcludeResourceContext inclExcl : inclExcls) {
+			inclExcl.setResource(resourceMap.get(inclExcl.getResourceId()));
+		}
 		
 		Map<Long, List<InspectionTriggerIncludeExcludeResourceContext>> groupedInclExcl = inclExcls.stream().collect(Collectors.groupingBy(InspectionTriggerIncludeExcludeResourceContext::getInspectionTriggerId));
 		
