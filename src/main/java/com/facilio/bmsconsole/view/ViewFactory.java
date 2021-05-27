@@ -1008,6 +1008,15 @@ public class ViewFactory {
 		views.put("all",getAllInspectionPriorityViews().setOrder(order++));
 		viewsMap.put(FacilioConstants.Inspection.INSPECTION_PRIORITY, views);
 		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all",getAllInductionTemplateViews().setOrder(order++));
+		viewsMap.put(FacilioConstants.Induction.INDUCTION_TEMPLATE, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all",getAllInductionResponseViews().setOrder(order++));
+		viewsMap.put(FacilioConstants.Induction.INDUCTION_RESPONSE, views);
 		
 		order = 1;
 		views = new LinkedHashMap<>();
@@ -9005,6 +9014,39 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All Inspections");
 		allView.setModuleName(FacilioConstants.Inspection.INSPECTION_RESPONSE);
+		allView.setSortFields(sortFields);
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		allView.setViewSharing(getSharingContext(appDomains));
+
+		return allView;
+	}
+	
+	
+	private static FacilioView getAllInductionTemplateViews() {
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Induction Templates");
+		allView.setModuleName(FacilioConstants.Induction.INDUCTION_TEMPLATE);
+		allView.setSortFields(sortFields);
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		allView.setViewSharing(getSharingContext(appDomains));
+
+		return allView;
+	}
+	
+	private static FacilioView getAllInductionResponseViews() {
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Inductions");
+		allView.setModuleName(FacilioConstants.Induction.INDUCTION_RESPONSE);
 		allView.setSortFields(sortFields);
 
 		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
