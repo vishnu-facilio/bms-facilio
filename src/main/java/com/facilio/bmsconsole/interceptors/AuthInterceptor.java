@@ -108,7 +108,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 						request.setAttribute("iamAccount", iamAccount);
 					}
 					else {
-						return handleLogin();
+						return handleLogin("account object missing", null);
 					}
 				}
 			}
@@ -122,7 +122,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 			}
 		} catch (Exception e) {
 			LOGGER.log(Level.FATAL, "error in auth interceptor", e);
-			return handleLogin();
+			return handleLogin("error in auth interceptor", e);
 		}
 
 		request.getAttribute("iamAccount");
@@ -143,20 +143,8 @@ public class AuthInterceptor extends AbstractInterceptor {
 		}
 	}
 	
-	private String handleLogin() throws Exception {
-//		HttpServletRequest request = ServletActionContext.getRequest();
-//		HttpServletResponse response = ServletActionContext.getResponse();
-//		if (request != null) {
-//			AppDomain appDomain = IAMAppUtil.getAppDomain(request.getServerName());
-//			if (appDomain != null && appDomain.getOrgId() > 0 && appDomain.getAppDomainTypeEnum() == AppDomain.AppDomainType.FACILIO) {
-//				AccountSSO sso = IAMOrgUtil.getAccountSSO(appDomain.getOrgId());
-//				Organization org = IAMOrgUtil.getOrg(appDomain.getOrgId());
-//				if (sso != null && sso.getIsActive()) {
-//					String ssoEndpoint = SSOUtil.getSSOEndpoint(org.getDomain());
-//					response.setHeader("X-Redirect-To", ssoEndpoint);
-//				}
-//			}
-//		}
+	private String handleLogin(String reason, Throwable ex)  {
+		LOGGER.log(Level.INFO, reason, ex);
 		return Action.LOGIN;
 	}
 
