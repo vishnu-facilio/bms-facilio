@@ -22,6 +22,7 @@ import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.modules.FieldType;
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -162,28 +163,42 @@ public enum FormActionType {
 			
 			for(FormRuleActionFieldsContext actionField : formRuleActionContext.getFormRuleActionFieldsContext()) {
 				
-				if(actionField.getCriteriaId() < 0 && actionField.getCriteria() == null) {
-					throw new IllegalArgumentException("No Filter Found");
-				}
-				Criteria criteria = actionField.getCriteria();
-				if(criteria == null) {
-					criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getId(), actionField.getCriteriaId());
-				}
+				FormField formField = FormsAPI.getFormFieldFromId(actionField.getFormFieldId());
 				
-				for(String key : criteria.getConditions().keySet()) {
+				if(formField.getField() != null && formField.getField().getDataTypeEnum() == FieldType.ENUM || formField.getField().getDataTypeEnum() == FieldType.SYSTEM_ENUM) {
 					
-					Condition condition = criteria.getConditions().get(key);
-					
-					if(condition.getValue() instanceof String && FormRuleAPI.containsPlaceHolders(condition.getValue())) {
-						String value = FormRuleAPI.replacePlaceHoldersAndGetResult(placeHolders, condition.getValue());
-						condition.setValue(value);
-						condition.setComputedWhereClause(null);
+					if(actionField.getActionMeta() == null) {
+						throw new IllegalArgumentException("No Filter Found");
 					}
+					
+					JSONObject json = FormRuleAPI.getActionJson(actionField.getFormFieldId(), FormActionType.APPLY_FILTER, actionField.getActionMeta());
+					
+					resultJson.add(json);
 				}
-				
-				JSONObject json = FormRuleAPI.getActionJson(actionField.getFormFieldId(), FormActionType.APPLY_FILTER, criteria);
-				
-				resultJson.add(json);
+				else {
+					if(actionField.getCriteriaId() < 0 && actionField.getCriteria() == null) {
+						throw new IllegalArgumentException("No Filter Found");
+					}
+					Criteria criteria = actionField.getCriteria();
+					if(criteria == null) {
+						criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getId(), actionField.getCriteriaId());
+					}
+					
+					for(String key : criteria.getConditions().keySet()) {
+						
+						Condition condition = criteria.getConditions().get(key);
+						
+						if(condition.getValue() instanceof String && FormRuleAPI.containsPlaceHolders(condition.getValue())) {
+							String value = FormRuleAPI.replacePlaceHoldersAndGetResult(placeHolders, condition.getValue());
+							condition.setValue(value);
+							condition.setComputedWhereClause(null);
+						}
+					}
+					
+					JSONObject json = FormRuleAPI.getActionJson(actionField.getFormFieldId(), FormActionType.APPLY_FILTER, criteria);
+					
+					resultJson.add(json);
+				}
 			}
 		}
 	},
