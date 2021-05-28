@@ -1620,7 +1620,13 @@ public class FacilioAuthAction extends FacilioAction {
 		}
 
 		setCookieProperties(cookie,true);
-		response.addCookie(cookie);
+
+		if (FacilioProperties.isProduction()) {
+			response.addCookie(cookie);
+		} else {
+			var cookieString = "fc.idToken.facilio="+authtoken+"; Max-Age=604800; Path=/; Secure; HttpOnly; SameSite=None";
+			response.setHeader("Set-Cookie", cookieString);
+		}
 
 		//temp handling. will be removed once service portal xml files are removed.
 		if(portalUser) {
