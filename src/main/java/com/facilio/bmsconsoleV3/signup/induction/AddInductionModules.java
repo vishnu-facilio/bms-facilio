@@ -634,6 +634,28 @@ public class AddInductionModules extends SignUpData {
         spaceCategory.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.SPACE_CATEGORY));
         fields.add(spaceCategory);
         
+        LookupField moduleStateField = (LookupField) FieldFactory.getField("moduleState", "Status", "MODULE_STATE", module, FieldType.LOOKUP);
+		moduleStateField.setDefault(true);
+		moduleStateField.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
+		moduleStateField.setLookupModule(modBean.getModule("ticketstatus"));
+		fields.add(moduleStateField);
+
+		FacilioField stateFlowIdField = FieldFactory.getField("stateFlowId", "State Flow Id", "STATE_FLOW_ID", module, FieldType.NUMBER);
+		stateFlowIdField.setDefault(true);
+		stateFlowIdField.setDisplayType(FieldDisplayType.NUMBER);
+		fields.add(stateFlowIdField);
+
+		LookupField approvalStateField = (LookupField) FieldFactory.getField("approvalStatus", "Approval Status", "APPROVAL_STATE", module, FieldType.LOOKUP);
+		approvalStateField.setDefault(true);
+		approvalStateField.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
+		approvalStateField.setLookupModule(modBean.getModule("ticketstatus"));
+		fields.add(approvalStateField);
+
+		FacilioField approvalFlowIdField = FieldFactory.getField("approvalFlowId", "Approval Flow Id", "APPROVAL_FLOW_ID", module, FieldType.NUMBER);
+		approvalFlowIdField.setDefault(true);
+		approvalFlowIdField.setDisplayType(FieldDisplayType.NUMBER);
+		fields.add(approvalFlowIdField);
+        
         fields.addAll(getInductionCommonFieldList(modBean));
         
         module.setFields(fields);
