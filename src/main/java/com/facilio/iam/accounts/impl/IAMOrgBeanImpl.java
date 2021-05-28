@@ -295,6 +295,7 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		org.setCountry(locale.getCountry());
 		org.setTimezone(timezone);
 		org.setCreatedTime(System.currentTimeMillis());
+		org.setLanguage((String) signupInfo.get("language"));
 
 		String dataSource = (String) signupInfo.get("dataSource");
 		if (StringUtils.isNotEmpty(dataSource)) {

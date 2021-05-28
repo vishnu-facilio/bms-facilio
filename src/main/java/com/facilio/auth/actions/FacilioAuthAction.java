@@ -73,6 +73,9 @@ import io.sentry.SentryClient;
 import io.sentry.SentryClientFactory;
 import io.sentry.context.Context;
 import io.sentry.event.UserBuilder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.var;
 
 import static com.facilio.iam.accounts.exceptions.AccountException.ErrorCode.ORG_DOMAIN_ALREADY_EXISTS;
 import static com.facilio.iam.accounts.exceptions.AccountException.ErrorCode.USER_DEACTIVATED_FROM_THE_ORG;
@@ -101,6 +104,9 @@ public class FacilioAuthAction extends FacilioAction {
 	private String newPassword;
 	private String title;
 	private static MessageDigest md;
+	
+	@Getter @Setter
+	private String language;
 
 	// Sentry instance for logging posts in issue tracking group
 	private static SentryClient sentry = SentryClientFactory.sentryClient("https://2fcce956a9b14116ab7bd8ca7db8591d@hentry.facilio.in/4");
@@ -330,6 +336,7 @@ public class FacilioAuthAction extends FacilioAction {
 		signupInfo.put("domainname", getDomainname());
 		signupInfo.put("isFacilioAuth", true);
 		signupInfo.put("timezone", getTimezone());
+		signupInfo.put("language", getLanguage());
 		signupInfo.put("servername", request.getServerName());
 		signupInfo.put("password", password);
 		signupInfo.put("dataSource", dataSource);
