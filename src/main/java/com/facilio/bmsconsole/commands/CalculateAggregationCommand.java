@@ -19,6 +19,7 @@ import org.json.simple.JSONObject;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
+import com.facilio.modules.FieldType;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
 
@@ -90,7 +91,7 @@ public class CalculateAggregationCommand extends FacilioCommand {
 		ArrayList<Object> parentIds = dp.getMetaData() != null ? (ArrayList) dp.getMetaData().get("parentIds") : null;
 		
 		long dataInterval = 0;
-		if(report.getxAggrEnum() == CommonAggregateOperator.ACTUAL) {
+		if(report.getxAggrEnum() == CommonAggregateOperator.ACTUAL && dp.getyAxis() != null && dp.getyAxis().getDataTypeEnum() == FieldType.BOOLEAN) {
 //			isNoData = true;
 			if(CollectionUtils.isNotEmpty(parentIds) && dp.getyAxis().getField() != null) {
 				Long parentId = Long.valueOf(String.valueOf(parentIds.get(0)));
