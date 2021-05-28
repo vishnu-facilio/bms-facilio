@@ -6,12 +6,16 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.ExecuteStateFlowCommand;
+import com.facilio.bmsconsole.commands.ExecuteStateTransitionsCommand;
+import com.facilio.bmsconsole.commands.SetTableNamesCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.PeopleContext.PeopleType;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -717,10 +721,30 @@ public class PeopleAPI {
 				return;
 			}
 			RecordAPI.addRecord(true, Collections.singletonList(tc), module, fields);
+			updateStateForPrimaryContact(tc);
 		}
 		
 	}
-	
+
+	private static void updateStateForPrimaryContact(PeopleContext ppl) throws Exception {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		if(ppl instanceof TenantContactContext) {
+			c.addCommand(SetTableNamesCommand.getForTenantContact());
+		}
+		else if(ppl instanceof VendorContactContext){
+			c.addCommand(SetTableNamesCommand.getForVendorContact());
+		}
+		else if(ppl instanceof ClientContactContext) {
+			c.addCommand(SetTableNamesCommand.getForClientContact());
+		}
+		c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
+		c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(ppl));
+		c.addCommand(new ExecuteStateFlowCommand());
+		c.addCommand(new ExecuteStateTransitionsCommand(WorkflowRuleContext.RuleType.STATE_RULE));
+		c.execute();
+
+	}
+
 	public static void updatePeopleRecord(PeopleContext ppl, FacilioModule module, List<FacilioField> fields) throws Exception {
 		PeopleContext peopleExisting = getPeople(ppl.getEmail());
 		if(peopleExisting == null) {
@@ -735,6 +759,7 @@ public class PeopleAPI {
 		PeopleContext peopleExisting = getPeople(ppl.getEmail());
 		if(peopleExisting == null) {
 			RecordAPI.addRecord(true, Collections.singletonList(ppl), module, fields);
+			updateStateForPrimaryContact(ppl);
 			PeopleAPI.unMarkPrimaryContact(ppl, parentId);
 			
 			return;

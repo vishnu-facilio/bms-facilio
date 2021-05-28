@@ -5,11 +5,17 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.ExecuteStateFlowCommand;
+import com.facilio.bmsconsole.commands.ExecuteStateTransitionsCommand;
+import com.facilio.bmsconsole.commands.SetTableNamesCommand;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.util.RecordAPI;
+import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.context.*;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -137,9 +143,30 @@ public class V3PeopleAPI {
                 return;
             }
             V3RecordAPI.addRecord(true, Collections.singletonList(tc), module, fields);
+            updateStateForPrimaryContact(tc);
         }
 
     }
+
+    private static void updateStateForPrimaryContact(V3PeopleContext ppl) throws Exception {
+        FacilioChain c = FacilioChain.getTransactionChain();
+        if(ppl instanceof V3TenantContactContext) {
+            c.addCommand(SetTableNamesCommand.getForTenantContact());
+        }
+        else if(ppl instanceof V3VendorContactContext){
+            c.addCommand(SetTableNamesCommand.getForVendorContact());
+        }
+        else if(ppl instanceof V3ClientContactContext) {
+            c.addCommand(SetTableNamesCommand.getForClientContact());
+        }
+        c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
+        c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(ppl));
+        c.addCommand(new ExecuteStateFlowCommand());
+        c.addCommand(new ExecuteStateTransitionsCommand(WorkflowRuleContext.RuleType.STATE_RULE));
+        c.execute();
+
+    }
+
 
     public static void updatePeopleRecord(V3PeopleContext ppl, FacilioModule module, List<FacilioField> fields) throws Exception {
         V3PeopleContext peopleExisting = getPeople(ppl.getEmail());
@@ -155,6 +182,7 @@ public class V3PeopleAPI {
         V3PeopleContext peopleExisting = getPeople(ppl.getEmail());
         if(peopleExisting == null) {
             V3RecordAPI.addRecord(true, Collections.singletonList(ppl), module, fields);
+            updateStateForPrimaryContact(ppl);
             unMarkPrimaryContact(ppl, parentId);
 
             return;
