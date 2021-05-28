@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.ClientContext;
@@ -47,7 +48,8 @@ public enum PickListOperators implements Operator<String> {
 					return builder.toString();
 				}
 				else {
-					if(value.trim().equals(FacilioConstants.Criteria.LOGGED_IN_USER)) {
+					value = value.trim();
+					if(value.equals(FacilioConstants.Criteria.LOGGED_IN_USER) || value.equals(FacilioConstants.Criteria.LOGGED_IN_PEOPLE)) {
 						value = "?";
 					}
 					return columnName+" = "+value;
@@ -81,7 +83,8 @@ public enum PickListOperators implements Operator<String> {
 					builder.append(")");
 				}
 				else {
-					if(value.trim().equals(FacilioConstants.Criteria.LOGGED_IN_USER)) {
+					value = value.trim();
+					if(value.equals(FacilioConstants.Criteria.LOGGED_IN_USER) || value.equals(FacilioConstants.Criteria.LOGGED_IN_PEOPLE)) {
 						value = "?";
 					}
 					builder.append(" != ")
@@ -107,6 +110,7 @@ public enum PickListOperators implements Operator<String> {
 	
 	private static final long LOGGED_IN_USER_ID = -99;
 	private static final long LOGGED_IN_USER_GROUP_ID = -100;
+	private static final long LOGGED_IN_PEOPLE_ID = -101;
 	
 	private static Predicate computeUserPredicate(String value) {
 		if(value.contains(",")) {
@@ -126,6 +130,9 @@ public enum PickListOperators implements Operator<String> {
 		if(value.equals(FacilioConstants.Criteria.LOGGED_IN_USER)) {
 			return new PickListPredicate(LOGGED_IN_USER_ID);
 		}
+		else if(value.equals(FacilioConstants.Criteria.LOGGED_IN_PEOPLE)) {
+			return new PickListPredicate(LOGGED_IN_PEOPLE_ID);
+		}
 		else if(value.equals(FacilioConstants.Criteria.LOGGED_IN_USER_GROUP)) {
 			return new PickListPredicate(LOGGED_IN_USER_GROUP_ID);
 		}
@@ -135,11 +142,12 @@ public enum PickListOperators implements Operator<String> {
 	}
 	
 	private static void replaceLoggedUserInMultpleValues(StringBuilder builder, String value) {
-		if(value.contains(FacilioConstants.Criteria.LOGGED_IN_USER) || value.contains(FacilioConstants.Criteria.LOGGED_IN_USER_GROUP)) {
+		if(value.contains(FacilioConstants.Criteria.LOGGED_IN_USER) || value.contains(FacilioConstants.Criteria.LOGGED_IN_USER_GROUP)
+				|| value.contains(FacilioConstants.Criteria.LOGGED_IN_PEOPLE)) {
 			String[] values = value.trim().split("\\s*,\\s*");
 			for(int i=0; i<values.length; i++) {
 				String val = values[i];
-				if(val.equals(FacilioConstants.Criteria.LOGGED_IN_USER)) {
+				if(val.equals(FacilioConstants.Criteria.LOGGED_IN_USER) || val.equals(FacilioConstants.Criteria.LOGGED_IN_PEOPLE)) {
 					val = "?";
 				}
 				else if (val.equals(FacilioConstants.Criteria.LOGGED_IN_USER_GROUP)) {
@@ -196,6 +204,14 @@ public enum PickListOperators implements Operator<String> {
 		if(value.contains(FacilioConstants.Criteria.LOGGED_IN_USER)) {
 			List<Object> objs = new ArrayList<>();
 			objs.add(AccountUtil.getCurrentUser().getId());
+			return objs;
+		}
+		else if (value.contains(FacilioConstants.Criteria.LOGGED_IN_PEOPLE)) {
+			List<Object> objs = new ArrayList<>();
+			long pplId = getPeopleId();
+			if(pplId > 0) {
+				objs.add(pplId);
+			}
 			return objs;
 		}
 		else if (value.contains(FacilioConstants.Criteria.LOGGED_IN_USER_GROUP)) {
@@ -278,11 +294,15 @@ public enum PickListOperators implements Operator<String> {
 					else {
 						return false;
 					}
+					
 					if(id == LOGGED_IN_USER_ID) {
 						return currentId == AccountUtil.getCurrentUser().getId();
 					}
 					else if(id == LOGGED_IN_USER_GROUP_ID) {
 						return getLoggedInUserGroupIds().contains(currentId);
+					}
+					else if(id == LOGGED_IN_PEOPLE_ID) {
+						return currentId == getPeopleId();
 					}
 					else {
 						return currentId == id;
@@ -310,5 +330,14 @@ public enum PickListOperators implements Operator<String> {
 			log.info("Exception occurred ", e);
 		}
 		return ids;
+	}
+	
+	private static long getPeopleId() {
+		try {
+			return V3PeopleAPI.getPeopleIdForUser(AccountUtil.getCurrentUser().getId());
+		} catch (Exception e) {
+			log.error("Exception while getting people", e);
+		}
+		return -1;
 	}
 }

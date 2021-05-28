@@ -1,6 +1,7 @@
 package com.facilio.db.criteria.operators;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -12,8 +13,7 @@ import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.constants.FacilioConstants.Criteria;
+import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.db.criteria.FacilioModulePredicate;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -106,10 +106,11 @@ public enum MultiFieldOperators implements Operator<String> {
 
 	@Override
 	public List<Object> computeValues(String value) {
-		if(value.contains(FacilioConstants.Criteria.LOGGED_IN_USER)) {
-			List<Object> objs = new ArrayList<>();
-			objs.add(AccountUtil.getCurrentUser().getId());
-			return objs;
+		if (isPlaceholder(value)) {
+			Object val = getResolvedVal(value);
+			if (val != null) {
+				return Collections.singletonList(val); 
+			}
 		}
 		return null;
 	}
@@ -156,7 +157,8 @@ public enum MultiFieldOperators implements Operator<String> {
 						builder.append(field.getTableName()).append(".ID IN (SELECT ")
 						.append(parentName).append(" FROM ")
 						.append(relModule.getTableName())
-						.append(" WHERE ")
+						.append(" WHERE")
+						.append(" ORGID = ").append(AccountUtil.getCurrentOrg().getOrgId()).append(" AND")
 						.append(" MODULEID = ").append(relModule.getModuleId()).append(" AND ")
 						.append(childName)
 						;
@@ -167,7 +169,7 @@ public enum MultiFieldOperators implements Operator<String> {
 							builder.append(")");
 						}
 						else {
-							if(value.trim().equals(FacilioConstants.Criteria.LOGGED_IN_USER)) {
+							if(isPlaceholder(value.trim())) {
 								value = "?";
 							}
 							builder.append(" = ")
@@ -208,8 +210,8 @@ public enum MultiFieldOperators implements Operator<String> {
 					List<Long> values;
 					if (((List) object).get(0) instanceof Map) {
 						values = ((List<Map>) object).stream().map(val ->(long) val.get("id")).collect(Collectors.toList());
-						if(value.equals(Criteria.LOGGED_IN_USER)) {
-							return values.contains(FacilioUtil.parseLong(AccountUtil.getCurrentUser().getId()));
+						if(isPlaceholder(value)) {
+							return values.contains(FacilioUtil.parseLong(getResolvedVal(value)));
 						}
 					}
 					else {
@@ -223,11 +225,11 @@ public enum MultiFieldOperators implements Operator<String> {
 	}
 	
 	private static void replaceLoggedUserInMultpleValues(StringBuilder builder, String value) {
-		if(value.contains(Criteria.LOGGED_IN_USER)) {
+		if(value.contains("${")) {
 			String[] values = value.trim().split("\\s*,\\s*");
 			for(int i=0; i<values.length; i++) {
 				String val = values[i];
-				if(val.equals(Criteria.LOGGED_IN_USER)) {
+				if(isPlaceholder(val)) {
 					val = "?";
 				}
 				if(i != 0) {
@@ -240,4 +242,18 @@ public enum MultiFieldOperators implements Operator<String> {
 			builder.append(value);
 		}
 	}
+	
+	private static boolean isPlaceholder(String val) {
+		return val.startsWith("${");
+	}
+	
+	private static Object getResolvedVal(String value) {
+		try {
+			return FormsAPI.resolveDefaultValPlaceholder(value);
+		} catch (Exception e) {
+			LOGGER.error("Exception while computing values", e);
+		}
+		return null;
+	}
+	
 }
