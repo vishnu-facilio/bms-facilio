@@ -218,7 +218,7 @@ public class FacilioCorsFilter implements Filter {
     private void handleInvalid(HttpServletRequest request, HttpServletResponse response) {
         LOGGER.info("send 403 for " + request.getServerName()+request.getRequestURI() + " with origin " + request.getHeader(ORIGIN));
         response.setContentType("text/plain");
-        response.setStatus(403);
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.resetBuffer();
     }
 
