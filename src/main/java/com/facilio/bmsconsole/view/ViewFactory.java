@@ -990,6 +990,11 @@ public class ViewFactory {
 		
 		order = 1;
 		views = new LinkedHashMap<>();
+		views.put("all", getAllDesksView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.Floorplan.DESKS, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
 		views.put("all",getAllInspectionTemplateViews().setOrder(order++));
 		viewsMap.put(FacilioConstants.Inspection.INSPECTION_TEMPLATE, views);
 		
@@ -8982,6 +8987,23 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All Parking Stalls");
 		allView.setModuleName(FacilioConstants.ContextNames.PARKING_STALL);
+		allView.setSortFields(sortFields);
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		allView.setViewSharing(getSharingContext(appDomains));
+
+		return allView;
+	}
+	
+	private static FacilioView getAllDesksView() {
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("name","NAME",FieldType.STRING), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Desks");
+		allView.setModuleName(FacilioConstants.ContextNames.Floorplan.DESKS);
 		allView.setSortFields(sortFields);
 
 		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();

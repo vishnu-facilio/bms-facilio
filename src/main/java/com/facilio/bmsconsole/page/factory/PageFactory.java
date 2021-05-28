@@ -55,6 +55,7 @@ import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.Announcem
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnnouncementContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.FacilityContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.V3FacilityBookingContext;
+import com.facilio.bmsconsoleV3.context.floorplan.V3DeskContext;
 import com.facilio.bmsconsoleV3.context.induction.InductionResponseContext;
 import com.facilio.bmsconsoleV3.context.induction.InductionTemplateContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext;
@@ -181,6 +182,8 @@ public class PageFactory {
 				return LockersPageFactory.getLockersPage((V3LockersContext) record, module);
 			case ContextNames.PARKING_STALL:
 				return ParkingStallPageFactory.getParkingStallPage((V3ParkingStallContext) record, module);
+			case ContextNames.Floorplan.DESKS:
+				return DesksPageFactory.getDesksPage((V3DeskContext) record, module);
 			case ContextNames.DELIVERIES:
 				return CustomModulePageFactory.getCustomModulePage((V3DeliveriesContext) record, module);
 		}

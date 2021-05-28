@@ -242,7 +242,7 @@ public class ColumnFactory {
 		columnMap.put(FacilioConstants.ContextNames.DELIVERY_AREA + "-default", getDefaultDeliveryAreaColumns());
 		columnMap.put(FacilioConstants.ContextNames.LOCKERS + "-default", getDefaultLockersColumns());
 		columnMap.put(FacilioConstants.ContextNames.PARKING_STALL + "-default", getDefaultParkingStallColumns());
-		
+		columnMap.put(FacilioConstants.ContextNames.Floorplan.DESKS + "-default", getDefaultDeskColumns());
 		columnMap.put(FacilioConstants.Inspection.INSPECTION_TEMPLATE+"-default", getDefaultInspectionTemplateColumns());
 		columnMap.put(FacilioConstants.Inspection.INSPECTION_RESPONSE+"-default", getDefaultInspectionResponseColumns());
 		
@@ -1934,6 +1934,16 @@ public class ColumnFactory {
 		columns.add(new ViewField("area", "Total Area"));
 		columns.add(new ViewField("parkingType", "Parking Type"));
 
+		return columns;
+
+	}
+	
+	private static List<ViewField> getDefaultDeskColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Desk"));
+		columns.add(new ViewField("building", "Building"));
+		columns.add(new ViewField("area", "Total Area"));
+		columns.add(new ViewField("employee", "Employee"));
 		return columns;
 
 	}

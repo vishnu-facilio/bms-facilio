@@ -74,7 +74,9 @@ public class GetAllModulesCommand extends FacilioCommand {
 			ContextNames.TOOL_TRANSACTIONS,
 			ContextNames.DELIVERY_AREA,
 			ContextNames.LOCKERS,
-			ContextNames.PARKING_STALL
+			ContextNames.PARKING_STALL,
+			ContextNames.Floorplan.DESKS,
+			ContextNames.Floorplan.INDOOR_FLOORPLAN
 
     });
 

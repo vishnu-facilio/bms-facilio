@@ -1157,7 +1157,9 @@ public class APIv3Config {
                 .update()
                 .afterSave(new CreateFacilityForDesksCommandV3())
                 .list()
+                .beforeFetch(new LoadDesksLookupCommand())
                 .summary()
+                .beforeFetch(new LoadDesksLookupCommand())
                 .build();
     }
     @Module("floorplanmarkertypes")
