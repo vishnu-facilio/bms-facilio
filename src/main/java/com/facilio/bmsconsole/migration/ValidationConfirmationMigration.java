@@ -10,6 +10,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.manager.NamedCondition;
 import com.facilio.db.criteria.manager.NamedCriteria;
 import com.facilio.db.criteria.manager.NamedCriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -25,7 +26,8 @@ public class ValidationConfirmationMigration {
         FacilioModule validationModule = ModuleFactory.getValidationModule();
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(validationModule.getTableName())
-                .select(FieldFactory.getValidationFields(validationModule));
+                .select(FieldFactory.getValidationFields(validationModule))
+                .andCondition(CriteriaAPI.getCondition("NAMED_CRITERIA_ID", "namedCriteriaId", "", CommonOperators.IS_EMPTY));
         List<ValidationContext> list = FieldUtil.getAsBeanListFromMapList(builder.get(), ValidationContext.class);
         if (CollectionUtils.isNotEmpty(list)) {
             for (ValidationContext validationContext : list) {
@@ -65,7 +67,8 @@ public class ValidationConfirmationMigration {
     public static void migrateConfirmationDialogCriteria() throws Exception {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getConfirmationDialogModule().getTableName())
-                .select(FieldFactory.getConfirmationDialogFields());
+                .select(FieldFactory.getConfirmationDialogFields())
+                .andCondition(CriteriaAPI.getCondition("NAMED_CRITERIA_ID", "namedCriteriaId", "", CommonOperators.IS_EMPTY));;
         List<ConfirmationDialogContext> list = FieldUtil.getAsBeanListFromMapList(builder.get(), ConfirmationDialogContext.class);
 
         if (CollectionUtils.isNotEmpty(list)) {
