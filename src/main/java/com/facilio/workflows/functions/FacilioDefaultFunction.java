@@ -5,6 +5,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.*;
@@ -900,6 +901,23 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 		}
 		
 	},
+	UPDATE_VENDOR_PORTAL_ACCESS (28, "updateVendorPortalAccess") {
+		
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+		
+			VendorContactContext contact = (VendorContactContext) RecordAPI.getRecord(FacilioConstants.ContextNames.VENDOR_CONTACT, Long.valueOf(objects[0].toString()));
+			FacilioChain c = TransactionChainFactory.updateVendorContactAppAccessChain();
+			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
+			
+			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(contact));
+			
+			c.execute();
+			
+			return null;
+		}
+	},
+
 	;
 	private Integer value;
 	private String functionName;
