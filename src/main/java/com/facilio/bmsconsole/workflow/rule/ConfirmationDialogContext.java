@@ -37,17 +37,21 @@ public class ConfirmationDialogContext {
     }
 
     private Criteria criteria;
+    @Deprecated
     public Criteria getCriteria() {
         return criteria;
     }
+    @Deprecated
     public void setCriteria(Criteria criteria) {
         this.criteria = criteria;
     }
 
     private long criteriaId = -1;
+    @Deprecated
     public long getCriteriaId() {
         return criteriaId;
     }
+    @Deprecated
     public void setCriteriaId(long criteriaId) {
         this.criteriaId = criteriaId;
     }

@@ -15,6 +15,7 @@ import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.sql.SQLException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -144,10 +145,14 @@ public class NamedCriteriaAPI {
     }
 
     public static void deleteCriteria(Long id) throws Exception {
-        GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
-                .table(ModuleFactory.getNamedCriteriaModule().getTableName())
-                .andCondition(CriteriaAPI.getIdCondition(id, ModuleFactory.getNamedCriteriaModule()));
-         builder.delete();
+        try {
+            GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+                    .table(ModuleFactory.getNamedCriteriaModule().getTableName())
+                    .andCondition(CriteriaAPI.getIdCondition(id, ModuleFactory.getNamedCriteriaModule()));
+            builder.delete();
+        } catch (SQLException ex) {
+            throw new IllegalArgumentException("Cannot delete this condition");
+        }
     }
 
     public static NamedCriteria convertCriteriaToNamedCriteria(String name, long moduleId, Criteria criteria) throws Exception {
