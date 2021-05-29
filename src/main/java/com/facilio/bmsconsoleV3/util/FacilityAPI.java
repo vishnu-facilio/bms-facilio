@@ -208,8 +208,14 @@ public class FacilityAPI {
             cal.setTimeInMillis(startDay);
 
             while (startDay <= endDateTime) {
-                int day = cal.get(Calendar.DAY_OF_WEEK) - 1;
-                    if (weekDayMap.containsKey(day)) {
+                int day = 0;
+                if(cal.get(Calendar.DAY_OF_WEEK) ==  1)  {
+                    day = 7;
+                }
+                else {
+                    day = cal.get(Calendar.DAY_OF_WEEK) - 1;
+                }
+                if (weekDayMap.containsKey(day)) {
                         List<WeekDayAvailability> weekDaysForDay = weekDayMap.get(day);
                         if (CollectionUtils.isNotEmpty(weekDaysForDay)) {
                             for (WeekDayAvailability wk : weekDaysForDay) {
