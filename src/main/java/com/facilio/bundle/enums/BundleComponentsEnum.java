@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.facilio.bundle.context.ModuleBundleComponent;
+import com.facilio.bundle.context.*;
 import com.facilio.bundle.interfaces.BundleComponentInterface;
 
 import lombok.Getter;
@@ -14,8 +14,8 @@ import lombok.Getter;
 public enum BundleComponentsEnum {
 
 	MODULE(1,"Module",ModuleBundleComponent.class),
-	FIELD(2,"Field",ModuleBundleComponent.class,BundleComponentsEnum.MODULE),
-	FUNCTION(3,"Function",ModuleBundleComponent.class),
+	FIELD(2,"Field",FieldBundleComponent.class,BundleComponentsEnum.MODULE),
+	FUNCTION(3,"Function",FunctionBundleComponent.class),
 	;
 	
 	int value;

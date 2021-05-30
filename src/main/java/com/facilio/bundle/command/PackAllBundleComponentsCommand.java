@@ -12,6 +12,10 @@ import com.facilio.bundle.interfaces.BundleComponentInterface;
 import com.facilio.bundle.utils.BundleConstants;
 import com.facilio.chain.FacilioContext;
 
+import io.jsonwebtoken.lang.Collections;
+import lombok.extern.log4j.Log4j;
+
+@Log4j
 public class PackAllBundleComponentsCommand extends FacilioCommand {
 
 	@Override
@@ -20,7 +24,7 @@ public class PackAllBundleComponentsCommand extends FacilioCommand {
 		
 		ArrayList<BundleComponentsEnum> parents = BundleComponentsEnum.getParentComponentList();
 		
-		JSONObject finalPackedObject = new JSONObject();
+		JSONObject finalBundledObject = new JSONObject();
 		for(BundleComponentsEnum parentComponent : parents) {
 			BundleComponentInterface bundleComponentObject = parentComponent.getBundleComponentClassInstance();
 			
@@ -33,10 +37,11 @@ public class PackAllBundleComponentsCommand extends FacilioCommand {
 				fillChildComponents(parentComponent, parentObject, (FacilioContext) context);
 			}
 			
-			finalPackedObject.put(parentComponent.getName(), parentObjects);
+			finalBundledObject.put(parentComponent.getName(), parentObjects);
 		}
 		
-		context.put(BundleConstants.PACKED_COMPONENTS, finalPackedObject);
+		LOGGER.info("finalBundledObject --- "+finalBundledObject);
+		context.put(BundleConstants.BUNDLED_COMPONENTS, finalBundledObject);
 		return false;
 	}
 	
@@ -45,21 +50,23 @@ public class PackAllBundleComponentsCommand extends FacilioCommand {
 		
 		ArrayList<BundleComponentsEnum> childList = BundleComponentsEnum.getParentChildMap().get(parentComponent);
 		
-		for(BundleComponentsEnum childComponent : childList) {
-			
-			BundleComponentInterface bundleComponentObject = childComponent.getBundleComponentClassInstance();
-			
-			context.put(BundleConstants.PARENT_COMPONENT_OBJECT, parentObject);
-			
-			JSONArray childObjects = bundleComponentObject.getAllFormatedObject(context);
-			for(int i=0;i<childObjects.size();i++) {
+		if(!Collections.isEmpty(childList)) {
+			for(BundleComponentsEnum childComponent : childList) {
 				
-				JSONObject childObject = (JSONObject) childObjects.get(i);
+				BundleComponentInterface bundleComponentObject = childComponent.getBundleComponentClassInstance();
 				
-				fillChildComponents(childComponent, childObject, context);
+				context.put(BundleConstants.PARENT_COMPONENT_OBJECT, parentObject);
+				
+				JSONArray childObjects = bundleComponentObject.getAllFormatedObject(context);
+				for(int i=0;i<childObjects.size();i++) {
+					
+					JSONObject childObject = (JSONObject) childObjects.get(i);
+					
+					fillChildComponents(childComponent, childObject, context);
+				}
+				
+				parentObject.put(childComponent.getName(), childObjects);
 			}
-			
-			parentObject.put(childComponent.getName(), childObjects);
 		}
 	}
 	

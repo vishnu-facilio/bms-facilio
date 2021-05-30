@@ -293,5 +293,13 @@
                 method="getModuleAndCrtieriaFromConfig">
         </action>
     </package>
+    
+    
+    <package name="bundle" namespace="/api/v3/bundle" extends="v3Api">
+        <action name="copyCustomiation"
+                class="com.facilio.bundle.action.BundleAction"
+                method="copyCustomiation">
+        </action>
+    </package>
 
 </struts>

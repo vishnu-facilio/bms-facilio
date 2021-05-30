@@ -14,6 +14,8 @@ public class WorkflowUserFunctionContext extends WorkflowContext {
 	Long nameSpaceId;
 	String name;
 	
+	String nameSpaceName;
+	
 	public Long getNameSpaceId() {
 		return nameSpaceId;
 	}
@@ -25,6 +27,12 @@ public class WorkflowUserFunctionContext extends WorkflowContext {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public String getNameSpaceName() {
+		return nameSpaceName;
+	}
+	public void setNameSpaceName(String nameSpaceName) {
+		this.nameSpaceName = nameSpaceName;
 	}
 	
 }

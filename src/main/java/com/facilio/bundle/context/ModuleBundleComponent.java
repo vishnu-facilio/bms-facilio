@@ -71,6 +71,7 @@ public class ModuleBundleComponent implements BundleComponentInterface {
 		types.add(ModuleType.LOOKUP_REL_MODULE);
 		types.add(ModuleType.ENUM_REL_MODULE);
 		types.add(ModuleType.SLA_TIME);
+		types.add(ModuleType.LARGE_TEXT_DATA_MODULE);
 		
 		return types;
 	}

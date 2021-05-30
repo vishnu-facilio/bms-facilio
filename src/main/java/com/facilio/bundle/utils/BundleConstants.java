@@ -10,5 +10,7 @@ public class BundleConstants {
 	
 	public static final String PARENT_COMPONENT_ID = "parentComponentId";
 	
-	public static final String PACKED_COMPONENTS = "packedComponents";
+	public static final String BUNDLED_COMPONENTS = "bundledComponents";
+	
+	public static final String DESTINATION_ORG = "destinationOrg";
 }
