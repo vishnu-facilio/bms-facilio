@@ -131,7 +131,7 @@ public class FacilioServerEndpoint
 				}
 			}
 			else {
-				user = AccountUtil.getUserBean().getUserInternal(id, false);
+				user = AccountUtil.getUserBean().getUserInternal(id);
 				org = IAMUtil.getOrgBean().getOrgv2(user.getOrgId());
 			}
 			

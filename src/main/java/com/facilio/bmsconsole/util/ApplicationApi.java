@@ -1073,6 +1073,7 @@ public class ApplicationApi {
         user.setAppDomain(domain);
         user.setApplicationId(app.getId());
         user.setAppType(domain.getAppType());
+        //need to handle user app role here
 
     }
 

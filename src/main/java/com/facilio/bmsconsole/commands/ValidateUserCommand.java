@@ -22,7 +22,8 @@ public class ValidateUserCommand extends FacilioCommand {
 
         User iamUser = AccountUtil.getUserBean().getUser(user.getOuid(), false);
         FacilioUtil.throwIllegalArgumentException(iamUser == null, MessageFormat.format("Invalid ouid for {0}", operation));
-        FacilioUtil.throwIllegalArgumentException(AccountConstants.DefaultRole.SUPER_ADMIN.equals(iamUser.getRole().getName()), MessageFormat.format("SuperAdmin user cannot be used for {0}", operation));
+        //to be checked
+        //  FacilioUtil.throwIllegalArgumentException(AccountConstants.DefaultRole.SUPER_ADMIN.equals(iamUser.getRole().getName()), MessageFormat.format("SuperAdmin user cannot be used for {0}", operation));
         user.setUid(iamUser.getUid());
         return false;
     }

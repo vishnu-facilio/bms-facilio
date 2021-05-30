@@ -41,7 +41,7 @@ public class PubSubManager {
 	public void subscribe(LiveSession ls, Message message) {
 		
 		try {
-			long orgId = (message.getOrgId() != null && message.getOrgId() > 0) ? message.getOrgId() : AccountUtil.getUserBean().getUserInternal(ls.getId(), false).getOrgId();
+			long orgId = (message.getOrgId() != null && message.getOrgId() > 0) ? message.getOrgId() : AccountUtil.getUserBean().getUserInternal(ls.getId()).getOrgId();
 			
 			JSONObject content = message.getContent();
 			String topic = (String) content.get("topic");
