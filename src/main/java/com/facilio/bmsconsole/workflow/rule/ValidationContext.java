@@ -5,6 +5,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.manager.NamedCriteria;
 import com.facilio.db.criteria.manager.NamedCriteriaAPI;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.json.annotations.JSON;
@@ -81,6 +82,7 @@ public class ValidationContext {
 	}
 
 	@JSON(serialize = false)
+	@JsonIgnore
 	public boolean isValid() throws Exception {
 		if (StringUtils.isEmpty(errorMessage)) {
 			return false;
