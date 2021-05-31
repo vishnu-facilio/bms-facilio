@@ -50,6 +50,7 @@ public class FormRuleAPI {
 	public static final String FORM_DATA_FOR_NEXT_ROUND = "formDataForNextRound";
 	
 	public static final String JSON_RESULT_FIELDID_STRING = "fieldId";
+	public static final String JSON_RESULT_SECTIONID_STRING = "sectionId";
 	public static final String JSON_RESULT_ACTION_STRING = "action";
 	public static final String JSON_RESULT_ACTION_NAME_STRING = "actionName";
 	public static final String JSON_RESULT_VALUE_STRING = "value";
@@ -412,10 +413,14 @@ public static List<FormRuleTriggerFieldContext> getFormRuleTriggerFields(FormRul
 		return null;
 	}
 	
-	public static JSONObject getActionJson(Long fieldId,FormActionType actionType,Object value) {
+	public static JSONObject getActionJson(Long fieldId,FormActionType actionType,Object value, String lable) {
 		JSONObject jsonObject = new JSONObject();
 		
-		jsonObject.put(JSON_RESULT_FIELDID_STRING,fieldId);
+		if (lable != null && !lable.isEmpty()) {
+			jsonObject.put(lable,fieldId);
+		}else {
+			jsonObject.put(JSON_RESULT_FIELDID_STRING,fieldId);
+		}
 		JSONObject jsonObject1 = new JSONObject();
 		jsonObject1.put(JSON_RESULT_ACTION_NAME_STRING, actionType.getName());
 		jsonObject1.put(JSON_RESULT_VALUE_STRING, value);

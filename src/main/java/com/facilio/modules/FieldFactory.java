@@ -451,6 +451,7 @@ public class FieldFactory {
         fields.add(getIdField(module));
         fields.add(getField("formRuleActionId", "FORM_RULE_ACTION_ID", module, FieldType.LOOKUP));
         fields.add(getField("formFieldId", "FORM_FIELD_ID", module, FieldType.LOOKUP));
+        fields.add(getField("formSectionId", "FORM_SECTION_ID", module, FieldType.LOOKUP));
         fields.add(getField("actionMeta", "ACTION_META_JSON", module, FieldType.STRING));
         fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.LOOKUP));
 

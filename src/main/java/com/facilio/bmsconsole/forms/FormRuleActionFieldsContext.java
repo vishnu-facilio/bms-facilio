@@ -8,6 +8,14 @@ public class FormRuleActionFieldsContext {
 	long orgId;
 	long formRuleActionId = -1;
 	long formFieldId = -1;
+	long formSectionId = -1;
+	public long getFormSectionId() {
+		return formSectionId;
+	}
+
+	public void setFormSectionId(long formSectionId) {
+		this.formSectionId = formSectionId;
+	}
 	String actionMeta;
 	long criteriaId = -1;
 	Criteria criteria;

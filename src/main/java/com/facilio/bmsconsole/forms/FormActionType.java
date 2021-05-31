@@ -39,7 +39,7 @@ public enum FormActionType {
 			
 			for(FormRuleActionFieldsContext actionField : formRuleActionContext.getFormRuleActionFieldsContext()) {
 				
-				JSONObject json = FormRuleAPI.getActionJson(actionField.getFormFieldId(), FormActionType.SHOW_FIELD, null);
+				JSONObject json = FormRuleAPI.getActionJson(actionField.getFormFieldId(), FormActionType.SHOW_FIELD, null, null);
 				resultJson.add(json);
 			}
 		}
@@ -53,7 +53,7 @@ public enum FormActionType {
 			
 			for(FormRuleActionFieldsContext actionField : formRuleActionContext.getFormRuleActionFieldsContext()) {
 				
-				JSONObject json = FormRuleAPI.getActionJson(actionField.getFormFieldId(), FormActionType.HIDE_FIELD, null);
+				JSONObject json = FormRuleAPI.getActionJson(actionField.getFormFieldId(), FormActionType.HIDE_FIELD, null, null);
 				resultJson.add(json);
 			}
 			
@@ -68,7 +68,7 @@ public enum FormActionType {
 			
 			for(FormRuleActionFieldsContext actionField : formRuleActionContext.getFormRuleActionFieldsContext()) {
 				
-				JSONObject json = FormRuleAPI.getActionJson(actionField.getFormFieldId(), FormActionType.ENABLE_FIELD, null);
+				JSONObject json = FormRuleAPI.getActionJson(actionField.getFormFieldId(), FormActionType.ENABLE_FIELD, null, null);
 				resultJson.add(json);
 			}
 		}
@@ -82,7 +82,7 @@ public enum FormActionType {
 			
 			for(FormRuleActionFieldsContext actionField : formRuleActionContext.getFormRuleActionFieldsContext()) {
 				
-				JSONObject json = FormRuleAPI.getActionJson(actionField.getFormFieldId(), FormActionType.DISABLE_FIELD, null);
+				JSONObject json = FormRuleAPI.getActionJson(actionField.getFormFieldId(), FormActionType.DISABLE_FIELD, null, null);
 				resultJson.add(json);
 			}
 		}
@@ -131,7 +131,7 @@ public enum FormActionType {
 					}
 				}
 				
-				JSONObject json = FormRuleAPI.getActionJson(actionField.getFormFieldId(), FormActionType.SET_FIELD_VALUE, value);
+				JSONObject json = FormRuleAPI.getActionJson(actionField.getFormFieldId(), FormActionType.SET_FIELD_VALUE, value, null);
 				
 				resultJson.add(json);
 				
@@ -171,7 +171,7 @@ public enum FormActionType {
 						throw new IllegalArgumentException("No Filter Found");
 					}
 					
-					JSONObject json = FormRuleAPI.getActionJson(actionField.getFormFieldId(), FormActionType.APPLY_FILTER, actionField.getActionMeta());
+					JSONObject json = FormRuleAPI.getActionJson(actionField.getFormFieldId(), FormActionType.APPLY_FILTER, actionField.getActionMeta(), null);
 					
 					resultJson.add(json);
 				}
@@ -195,7 +195,7 @@ public enum FormActionType {
 						}
 					}
 					
-					JSONObject json = FormRuleAPI.getActionJson(actionField.getFormFieldId(), FormActionType.APPLY_FILTER, criteria);
+					JSONObject json = FormRuleAPI.getActionJson(actionField.getFormFieldId(), FormActionType.APPLY_FILTER, criteria, null);
 					
 					resultJson.add(json);
 				}
@@ -211,7 +211,7 @@ public enum FormActionType {
 			
 			for(FormRuleActionFieldsContext actionField : formRuleActionContext.getFormRuleActionFieldsContext()) {
 				
-				JSONObject json = FormRuleAPI.getActionJson(actionField.getFormFieldId(), this, null);
+				JSONObject json = FormRuleAPI.getActionJson(actionField.getFormFieldId(), this, null, null);
 				JSONObject metaJson =  FacilioUtil.parseJson(actionField.getActionMeta());
 				json.put("formId", metaJson.get("formId"));
 				resultJson.add(json);
@@ -285,6 +285,64 @@ public enum FormActionType {
 			JSONObject json = new JSONObject();
 			json.putAll(fieldMap);
 			return json;
+		}
+	},
+	SHOW_SECTION(9,"showSection") {
+		@Override
+		public void performAction(FacilioContext facilioContext) throws Exception {
+
+			FormRuleActionContext formRuleActionContext = (FormRuleActionContext) facilioContext.get(FormRuleAPI.FORM_RULE_ACTION_CONTEXT);
+			JSONArray resultJson = (JSONArray) facilioContext.get(FormRuleAPI.FORM_RULE_RESULT_JSON);
+			
+			for(FormRuleActionFieldsContext actionField : formRuleActionContext.getFormRuleActionFieldsContext()) {
+				
+				JSONObject json = FormRuleAPI.getActionJson(actionField.getFormSectionId(), FormActionType.SHOW_SECTION, null, FormRuleAPI.JSON_RESULT_SECTIONID_STRING);
+				resultJson.add(json);
+			}
+		}
+	},
+	HIDE_SECTION(10,"hideSection") {
+		@Override
+		public void performAction(FacilioContext facilioContext) throws Exception {
+			
+			FormRuleActionContext formRuleActionContext = (FormRuleActionContext) facilioContext.get(FormRuleAPI.FORM_RULE_ACTION_CONTEXT);
+			JSONArray resultJson = (JSONArray) facilioContext.get(FormRuleAPI.FORM_RULE_RESULT_JSON);
+			
+			for(FormRuleActionFieldsContext actionField : formRuleActionContext.getFormRuleActionFieldsContext()) {
+				
+				JSONObject json = FormRuleAPI.getActionJson(actionField.getFormSectionId(), FormActionType.HIDE_SECTION, null, FormRuleAPI.JSON_RESULT_SECTIONID_STRING);
+				resultJson.add(json);
+			}
+			
+		}
+	},
+	SET_MANDATORY(11,"setMandatory") {
+		@Override
+		public void performAction(FacilioContext facilioContext) throws Exception {
+
+			FormRuleActionContext formRuleActionContext = (FormRuleActionContext) facilioContext.get(FormRuleAPI.FORM_RULE_ACTION_CONTEXT);
+			JSONArray resultJson = (JSONArray) facilioContext.get(FormRuleAPI.FORM_RULE_RESULT_JSON);
+			
+			for(FormRuleActionFieldsContext actionField : formRuleActionContext.getFormRuleActionFieldsContext()) {
+				
+				JSONObject json = FormRuleAPI.getActionJson(actionField.getFormFieldId(), FormActionType.SET_MANDATORY, null, null);
+				resultJson.add(json);
+			}
+		}
+	},
+	REMOVE_MANDATORY(12,"removeMandatory") {
+		@Override
+		public void performAction(FacilioContext facilioContext) throws Exception {
+			
+			FormRuleActionContext formRuleActionContext = (FormRuleActionContext) facilioContext.get(FormRuleAPI.FORM_RULE_ACTION_CONTEXT);
+			JSONArray resultJson = (JSONArray) facilioContext.get(FormRuleAPI.FORM_RULE_RESULT_JSON);
+			
+			for(FormRuleActionFieldsContext actionField : formRuleActionContext.getFormRuleActionFieldsContext()) {
+				
+				JSONObject json = FormRuleAPI.getActionJson(actionField.getFormFieldId(), FormActionType.REMOVE_MANDATORY, null, null);
+				resultJson.add(json);
+			}
+			
 		}
 	},
 	
