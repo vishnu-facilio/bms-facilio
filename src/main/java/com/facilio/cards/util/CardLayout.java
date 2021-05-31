@@ -712,10 +712,10 @@ public enum CardLayout {
 				}
 				if (cardResultMap.containsKey("value") || cardResultMap.containsKey("actualValue")) {
 					Map value;
-					if (cardResultMap.containsKey("value")) {
-						value = (Map) cardResultMap.get("value");
-					} else {
+					if (cardResultMap.containsKey("actualValue")) {
 						value = (Map) cardResultMap.get("actualValue");
+					} else {
+						value = (Map) cardResultMap.get("value");
 					}
 					variables.add(getVariable("value", "Value", value));
 				}
