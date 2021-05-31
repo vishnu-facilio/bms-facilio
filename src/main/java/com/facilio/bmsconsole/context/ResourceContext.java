@@ -6,12 +6,19 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 public class ResourceContext extends ModuleBaseWithCustomFields {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+
+	public ResourceContext (long id) {
+		super(id);
+	}
+
 	private String name;
 
 	public String getName() {

@@ -1,5 +1,8 @@
 package com.facilio.bmsconsole.context;
 
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 public class SpaceContext extends BaseSpaceContext {
 
 	/**
@@ -7,6 +10,9 @@ public class SpaceContext extends BaseSpaceContext {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	public SpaceContext (long id) {
+		super(id);
+	}
 	
 	private SpaceContext parentSpace;
 	public SpaceContext getParentSpace() {

@@ -7,13 +7,20 @@ import java.util.Map;
 import com.facilio.constants.FacilioConstants;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 public class BaseSpaceContext extends ResourceContext {
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+
+	public BaseSpaceContext (long id) {
+		super(id);
+	}
+
 	private double area = -1;
 	public double getArea() {
 		return area;

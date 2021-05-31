@@ -2,13 +2,19 @@ package com.facilio.bmsconsole.context;
 
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 public class TenantUnitSpaceContext extends SpaceContext{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+
+	public TenantUnitSpaceContext (long id) {
+		super(id);
+	}
 	
 	private TenantContext tenant;
 
