@@ -365,4 +365,13 @@ public class Constants {
     public static Object getResult(Context context) {
         return context.get(RESULT);
     }
+
+    private static final String __TAMPERING = "__tampering";
+    public static Map<String, Boolean> getTamperingContext(Context context) {
+        return (Map<String, Boolean>) context.getOrDefault(__TAMPERING, new HashMap<String, Boolean>());
+    }
+
+    public static void setTamperingContext(Context context, Map<String, Boolean> tamperingContext) {
+        context.put(__TAMPERING, tamperingContext);
+    }
 }

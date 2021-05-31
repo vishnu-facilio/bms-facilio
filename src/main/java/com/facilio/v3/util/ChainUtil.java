@@ -10,7 +10,6 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
@@ -57,14 +56,18 @@ public class ChainUtil {
         nonTransactionChain.addCommand(new AddCustomLookupInSupplementCommand(true));
         nonTransactionChain.addCommand(new FetchSysFields());
         nonTransactionChain.addCommand(new SummaryCommand(module));
+        nonTransactionChain.addCommand(new CheckContextTampering("getFetchRecordChain", "SummaryCommand", moduleName));
         if (afterFetchCommand != null) {
             nonTransactionChain.addCommand(afterFetchCommand);
+            nonTransactionChain.addCommand(new CheckContextTampering("getFetchRecordChain", "afterFetchCommand", moduleName));
         }
 
         //handling primary value for lookup fields
         nonTransactionChain.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
+        nonTransactionChain.addCommand(new CheckContextTampering("getFetchRecordChain", "LookUpPrimaryFieldHandlingCommandV3", moduleName));
         //validating field permissions in the record data being sent
         nonTransactionChain.addCommand(new ValidateFieldPermissionCommand());
+        nonTransactionChain.addCommand(new CheckContextTampering("getFetchRecordChain", "ValidateFieldPermissionCommand", moduleName));
 
         return nonTransactionChain;
     }
@@ -162,16 +165,24 @@ public class ChainUtil {
         }
 
         addIfNotNull(transactionChain, initCommand);
+        transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "initCommand", moduleName));
         addIfNotNull(transactionChain, beforeSaveCommand);
+        transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "beforeSaveCommand", moduleName));
         transactionChain.addCommand(new AddMultiSelectFieldsCommand());
+        transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "AddMultiSelectFieldsCommand", moduleName));
         transactionChain.addCommand(new SaveCommand(module));
+        transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "SaveCommand", moduleName));
         transactionChain.addCommand(new SaveSubFormCommand());
+        transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "SaveSubFormCommand", moduleName));
         transactionChain.addCommand(new SaveSubFormFromLineItemsCommand());
+        transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "SaveSubFormFromLineItemsCommand", moduleName));
 
         addIfNotNull(transactionChain, afterSaveCommand);
+        transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "afterSaveCommand", moduleName));
 
         addWorkflowChain(transactionChain);
         addIfNotNull(transactionChain, afterTransactionCommand);
+        transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "afterTransactionCommand", moduleName));
 
         return transactionChain;
     }
@@ -199,18 +210,26 @@ public class ChainUtil {
         }
 
         addIfNotNull(transactionChain, initCommand);
+        transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "initCommand", moduleName));
         addIfNotNull(transactionChain, beforeSaveCommand);
-
+        transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain","beforeSaveCommand", moduleName));
         transactionChain.addCommand(new AddMultiSelectFieldsCommand());
+        transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "AddMultiSelectFieldsCommand", moduleName));
         transactionChain.addCommand(new UpdateCommand(module));
+        transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain","UpdateCommand", moduleName));
         transactionChain.addCommand(new ChangeApprovalStatusForModuleDataCommand());
+        transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "ChangeApprovalStatusForModuleDataCommand", moduleName));
         transactionChain.addCommand(new VerifyApprovalCommand());
+        transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "VerifyApprovalCommand", moduleName));
         transactionChain.addCommand(new UpdateStateForModuleDataCommand());
+        transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain","UpdateStateForModuleDataCommand", moduleName));
 
         addIfNotNull(transactionChain, afterSaveCommand);
+        transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "UpdateStateForModuleDataCommand", moduleName));
 
         addWorkflowChain(transactionChain);
         addIfNotNull(transactionChain, afterTransactionCommand);
+        transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "afterTransactionCommand", moduleName));
 
         return transactionChain;
     }

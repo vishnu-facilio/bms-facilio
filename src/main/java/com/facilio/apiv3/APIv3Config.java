@@ -522,6 +522,7 @@ public class APIv3Config {
                     .afterFetch(new SetToolTypesUnitCommandV3())
                 .summary()
             		.beforeFetch(new LoadToolTypesLookUpCommandV3())
+                .afterFetch(new Dummy())
                 .build();
     }
     
