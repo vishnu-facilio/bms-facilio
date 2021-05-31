@@ -33,7 +33,6 @@ import lombok.extern.log4j.Log4j;
         use = JsonTypeInfo.Id.NONE
 )
 public class InspectionTemplateContext extends QAndATemplateContext <InspectionResponseContext> {
-    private SiteContext site;
 
     List<InspectionTriggerContext> triggers;
     public InspectionTemplateContext(Long id) {
@@ -53,6 +52,8 @@ public class InspectionTemplateContext extends QAndATemplateContext <InspectionR
     private InspectionPriorityContext priority;
     private Group assignmentGroup;
     private User assignedTo;
+    
+    private Boolean status;
     
     public Integer getCreationType() { // Everything is wrapper in V3 for null handling
     	if(creationType != null) {
@@ -87,8 +88,8 @@ public class InspectionTemplateContext extends QAndATemplateContext <InspectionR
 
     @Override
     protected void addDefaultPropsForResponse(InspectionResponseContext response) {
-        response.setSite(this.getSite());
-        response.setSiteId(this.getSiteId());
+
+    	response.setSiteId(this.getSiteId());
         response.setVendor(this.getVendor());
         response.setTenant(this.getTenant());
         response.setCategory(this.getCategory());

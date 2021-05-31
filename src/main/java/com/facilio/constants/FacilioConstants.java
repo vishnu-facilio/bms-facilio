@@ -2427,6 +2427,8 @@ public class FacilioConstants {
 		
 		public static final String INDUCTION_TRIGGER_INCL_EXCL = "inductionTriggerResourceInclExcl";
 		
+		public static final String MULTI_SITE_REL = "inductionMultiSiteRel";
+		
 	}
 	
 	public static class Email {

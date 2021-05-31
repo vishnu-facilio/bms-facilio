@@ -22,8 +22,8 @@ public class InductionSupplementSupplyCommand extends FacilioCommand {
 
         List<SupplementRecord> supplements = new ArrayList<>(); // Change size when new field is added
         
-        supplements.add((SupplementRecord) fieldMap.get("sysCreatedBy"));
-        supplements.add((SupplementRecord) fieldMap.get("sysModifiedBy"));
+//        supplements.add((SupplementRecord) fieldMap.get("sysCreatedBy"));
+//        supplements.add((SupplementRecord) fieldMap.get("sysModifiedBy"));
         if( Constants.getModuleName(context).equals(FacilioConstants.Induction.INDUCTION_RESPONSE)) {
         	supplements.add((SupplementRecord) fieldMap.get("parent"));
         }
@@ -32,7 +32,6 @@ public class InductionSupplementSupplyCommand extends FacilioCommand {
         	supplements.add((SupplementRecord) fieldMap.get("spaceCategory"));
         	supplements.add((SupplementRecord) fieldMap.get("baseSpace"));
         }
-        supplements.add((SupplementRecord) fieldMap.get("site"));
         supplements.add((SupplementRecord) fieldMap.get("resource"));
         supplements.add((SupplementRecord) fieldMap.get("assignmentGroup"));
         supplements.add((SupplementRecord) fieldMap.get("assignedTo"));

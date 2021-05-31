@@ -93,7 +93,7 @@ public class InspectionScheduler implements ScheduleTypeInterface {
 	private List<Long> getMultipleResource(InspectionTemplateContext template, BaseScheduleContext baseScheduleContext) throws Exception {
 		// TODO Auto-generated method stub
 		
-		Long baseSpaceId = template.getBaseSpace() != null ? template.getBaseSpace().getId() : template.getSite().getId(); 
+		Long baseSpaceId = template.getBaseSpace() != null ? template.getBaseSpace().getId() : template.getSiteId(); 
 		Long spaceCategoryId = template.getSpaceCategory() != null ? template.getSpaceCategory().getId() : null;
 		Long assetCategoryId = template.getAssetCategory() != null ? template.getAssetCategory().getId() : null;
 		

@@ -32,7 +32,6 @@ import lombok.extern.log4j.Log4j;
         use = JsonTypeInfo.Id.NONE
 )
 public class InductionTemplateContext extends QAndATemplateContext <InductionResponseContext> {
-    private SiteContext site;
 
     List<InductionTriggerContext> triggers;
     public InductionTemplateContext(Long id) {
@@ -48,6 +47,8 @@ public class InductionTemplateContext extends QAndATemplateContext <InductionRes
     private ResourceContext resource;
     private Group assignmentGroup;
     private User assignedTo;
+    
+    private Boolean status; 
     
     public Integer getCreationType() { // Everything is wrapper in V3 for null handling
     	if(creationType != null) {
@@ -82,7 +83,7 @@ public class InductionTemplateContext extends QAndATemplateContext <InductionRes
 
     @Override
     protected void addDefaultPropsForResponse(InductionResponseContext response) {
-        response.setSite(this.getSite());
+        response.setSiteId(this.getSiteId());
         response.setSiteId(this.getSiteId());
         response.setAssignedTo(this.getAssignedTo());
         response.setAssignmentGroup(this.getAssignmentGroup());

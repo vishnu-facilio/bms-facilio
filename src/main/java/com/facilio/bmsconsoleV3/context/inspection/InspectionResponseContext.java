@@ -34,7 +34,6 @@ public class InspectionResponseContext extends ResponseContext <InspectionTempla
 		super(id);
 	}
 	
-    private SiteContext site;
     private InspectionTemplateContext parent;
     private Long createdTime;
     private Status status;

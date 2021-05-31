@@ -35,7 +35,6 @@ public class InductionResponseContext extends ResponseContext <InductionTemplate
 		super(id);
 	}
 	
-    private SiteContext site;
     private InductionTemplateContext parent;
     private Long createdTime;
     private Status status;

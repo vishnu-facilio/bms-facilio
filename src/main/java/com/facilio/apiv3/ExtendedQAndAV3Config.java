@@ -45,7 +45,7 @@ public class ExtendedQAndAV3Config {
     public static Supplier<V3Config> getInspection() {
         return () -> new V3Config(InspectionTemplateContext.class, null)
                 .create()
-                .beforeSave(QAndATransactionChainFactory.commonQAndABeforeSave())
+                .beforeSave(QAndATransactionChainFactory.inspectionTemplateBeforeSaveChain())
                 .afterSave(QAndATransactionChainFactory.inspectionAfterSaveChain())
                 .update()
                 .afterSave(QAndATransactionChainFactory.inspectionAfterUpdateChain())
@@ -107,7 +107,7 @@ public class ExtendedQAndAV3Config {
     public static Supplier<V3Config> getInduction() {
         return () -> new V3Config(InductionTemplateContext.class, null)
                 .create()
-                .beforeSave(QAndATransactionChainFactory.commonQAndABeforeSave())
+                .beforeSave(QAndATransactionChainFactory.inductionTemplateBeforeSaveChain())
                 .afterSave(QAndATransactionChainFactory.inductionAfterSaveChain())
                 .update()
                 .afterSave(QAndATransactionChainFactory.inductionAfterUpdateChain())

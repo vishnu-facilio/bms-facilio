@@ -12,10 +12,23 @@ public class QAndATransactionChainFactory {
     public static FacilioChain commonQAndABeforeSave() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddDefaultQAndAPropsCommand());
-//        c.addCommand(new AddPagesAndQuestionsCommand());
         return c;
     }
-
+    
+    public static FacilioChain inspectionTemplateBeforeSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(commonQAndABeforeSave());
+        c.addCommand(new InspectionTemplateBeforeSaveCommand());
+        return c;
+    }
+    
+    public static FacilioChain inductionTemplateBeforeSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(commonQAndABeforeSave());
+        c.addCommand(new InductionTemplateBeforeSaveCommand());
+        return c;
+    }
+    
     public static FacilioChain commonBeforeQAndAResponseUpdate() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ValidateResponseSubmit());
@@ -38,6 +51,7 @@ public class QAndATransactionChainFactory {
         FacilioChain c = getDefaultChain();
         c.addCommand(new DeleteInspectionTriggersCommand());
         c.addCommand(new AddInspectionTriggersCommand());
+        c.addCommand(new InspectionCheckForActiveandInActiveStateFlowCommand());
         return c;
     }
     
@@ -45,6 +59,7 @@ public class QAndATransactionChainFactory {
         FacilioChain c = getDefaultChain();
         c.addCommand(new DeleteInductionTriggersCommand());
         c.addCommand(new AddInductionTriggersCommand());
+        c.addCommand(new InductionCheckForActiveandInActiveStateFlowCommand());
         return c;
     }
     

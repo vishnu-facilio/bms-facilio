@@ -47,6 +47,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BuildingOperator;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.db.criteria.operators.LookupOperator;
@@ -214,7 +215,7 @@ public class AddInspectionModules extends SignUpData {
       
       int seq = 0;
       fields.add(new FormField(fieldMap.get("creationType").getFieldId(), "creationType", FacilioField.FieldDisplayType.SELECTBOX, "Scope", FormField.Required.REQUIRED, ++seq, 1));
-      fields.add(new FormField(fieldMap.get("site").getFieldId(), "site", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED, ++seq, 1));
+      fields.add(new FormField(fieldMap.get("siteId").getFieldId(), "site", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED, ++seq, 1));
       fields.add(new FormField(fieldMap.get("baseSpace").getFieldId(), "baseSpace", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Building", FormField.Required.OPTIONAL, ++seq, 1,Boolean.TRUE));
       
       fields.add(new FormField(fieldMap.get("assignmentType").getFieldId(), "assignmentType", FacilioField.FieldDisplayType.SELECTBOX, "Scope Category", FormField.Required.OPTIONAL, ++seq, 1,Boolean.TRUE));
@@ -265,41 +266,37 @@ public class AddInspectionModules extends SignUpData {
       addSpaceCategoryShowRule(defaultForm, fieldMap, formFieldMap);
       addSpaceCategoryHideRule(defaultForm, fieldMap, formFieldMap);
       
-      setBuildingFilterRule(defaultForm, fieldMap, formFieldMap);
+      addOnLoadRule(defaultForm, fieldMap, formFieldMap);
 	}
 	
-	private void setBuildingFilterRule(FacilioForm defaultForm, Map<String, FacilioField> fieldMap,Map<Long, FormField> formFieldMap) throws Exception {
-
+	private void addOnLoadRule(FacilioForm defaultForm, Map<String, FacilioField> fieldMap,Map<Long, FormField> formFieldMap) throws Exception {
+		
 		FormRuleContext singleRule = new FormRuleContext();
-	      singleRule.setName("Building Filter Rule");
+	      singleRule.setName("Form On Load Rule");
 	      singleRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
-	      singleRule.setTriggerType(FormRuleContext.TriggerType.FIELD_UPDATE.getIntVal());
+	      singleRule.setTriggerType(FormRuleContext.TriggerType.FORM_ON_LOAD.getIntVal());
 	      singleRule.setFormId(defaultForm.getId());
-	      singleRule.setType(FormRuleContext.FormRuleType.FROM_FORM.getIntVal());
-	      
-	      FormRuleTriggerFieldContext triggerField = new FormRuleTriggerFieldContext();
-	      triggerField.setFieldId(formFieldMap.get(fieldMap.get("site").getId()).getId());
-	      singleRule.setTriggerFields(Collections.singletonList(triggerField));
+	      singleRule.setType(FormRuleContext.FormRuleType.FROM_RULE.getIntVal());
 	      
 	      List<FormRuleActionContext> actions = new ArrayList<FormRuleActionContext>();
 	      
-	      FormRuleActionContext showAction = new FormRuleActionContext(); 
-	      showAction.setActionType(FormActionType.APPLY_FILTER.getVal());
+	      FormRuleActionContext filterAction = new FormRuleActionContext(); 
+	      filterAction.setActionType(FormActionType.APPLY_FILTER.getVal());
 	      
 	      FormRuleActionFieldsContext actionField = new FormRuleActionFieldsContext();
 	      
-	      actionField.setFormFieldId(formFieldMap.get(fieldMap.get("baseSpace").getId()).getId());
+	      actionField.setFormFieldId(formFieldMap.get(fieldMap.get("assignmentType").getId()).getId());
 	      
-	      Criteria criteria = new Criteria();
+	      JSONObject json = new JSONObject();
 	      
-	      criteria.addAndCondition(CriteriaAPI.getCondition("SITE_ID","site", "${inspectionTemplate.site.id}", PickListOperators.IS));
-	      criteria.addAndCondition(CriteriaAPI.getCondition("SPACE_TYPE","spaceType", BaseSpaceContext.SpaceType.BUILDING.getIntVal()+"", NumberOperators.EQUALS));
+	      json.put("show", Boolean.TRUE);
+	      json.put("values", "[1,2,3,4,7]");
 	      
-	      actionField.setCriteria(criteria);
+	      actionField.setActionMeta(json.toJSONString());
 	      
-	      showAction.setFormRuleActionFieldsContext(Collections.singletonList(actionField));
+	      filterAction.setFormRuleActionFieldsContext(Collections.singletonList(actionField));
 	      
-	      actions.add(showAction);
+	      actions.add(filterAction);
 	      
 	      singleRule.setActions(actions);
 	      
@@ -309,8 +306,10 @@ public class AddInspectionModules extends SignUpData {
 		  context.put(FormRuleAPI.FORM_RULE_CONTEXT,singleRule);
 			
 		  chain.execute();
-		
+		  
 	}
+
+
 
 
 	private void addAssetCategoryShowRule(FacilioForm defaultForm, Map<String, FacilioField> fieldMap,Map<Long, FormField> formFieldMap) throws Exception {
@@ -709,14 +708,18 @@ public class AddInspectionModules extends SignUpData {
 
         List<FacilioField> fields = new ArrayList<>();
         
-        LookupField siteField = (LookupField) FieldFactory.getDefaultField("site", "Site", "SITE_ID", FieldType.LOOKUP);
-        siteField.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.SITE));
+        NumberField siteField = (NumberField) FieldFactory.getDefaultField("siteId", "Site", "SITE_ID", FieldType.NUMBER);
         fields.add(siteField);
         
         SystemEnumField creationType = (SystemEnumField) FieldFactory.getDefaultField("creationType", "Scope", "CREATION_TYPE", FieldType.SYSTEM_ENUM);
         creationType.setEnumName("InspectionCreationType");
         
         fields.add(creationType);
+        
+        BooleanField status = (BooleanField) FieldFactory.getDefaultField("status", "Active Status", "STATUS", FieldType.BOOLEAN);
+        status.setTrueVal("Active");
+        status.setFalseVal("Inactive");
+        fields.add(status);
         
         SystemEnumField assignmentType = (SystemEnumField) FieldFactory.getDefaultField("assignmentType", "Scope Category", "ASSIGNMENT_TYPE", FieldType.SYSTEM_ENUM);
         assignmentType.setEnumName("MultiResourceAssignmentType");
@@ -810,9 +813,10 @@ public class AddInspectionModules extends SignUpData {
         module.setCriteriaId(criteriaID);
 
         List<FacilioField> fields = new ArrayList<>();
-        LookupField siteField = (LookupField) FieldFactory.getDefaultField("site", "Site", "SITE_ID", FieldType.LOOKUP);
-        siteField.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.SITE));
+        
+        NumberField siteField = (NumberField) FieldFactory.getDefaultField("siteId", "Site", "SITE_ID", FieldType.NUMBER);
         fields.add(siteField);
+        
         LookupField parentField = (LookupField) FieldFactory.getDefaultField("parent", "Parent", "PARENT_ID", FieldType.LOOKUP,true);
         parentField.setLookupModule(inspection);
         fields.add(parentField);
