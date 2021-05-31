@@ -907,6 +907,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 		
 			VendorContactContext contact = (VendorContactContext) RecordAPI.getRecord(FacilioConstants.ContextNames.VENDOR_CONTACT, Long.valueOf(objects[0].toString()));
+			contact.setIsVendorPortalAccess(true);
 			FacilioChain c = TransactionChainFactory.updateVendorContactAppAccessChain();
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			
