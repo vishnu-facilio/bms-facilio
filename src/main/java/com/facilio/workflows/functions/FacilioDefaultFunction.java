@@ -10,6 +10,8 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.bmsconsoleV3.context.InviteVisitorContextV3;
+import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.cards.util.CardUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -921,11 +923,68 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			return null;
 		}
 	},
-ADD_RECORD_VIA_V3CHAIN (28, "addRecordViaV3Chain") {
+ADD_INVITE_RECORD_VIA_V3CHAIN (29, "addInviteRecordViaV3Chain") {
 		
 		@Override
 		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			List records = (List) objects[1];
+			List<InviteVisitorContextV3> inviteRecords = new ArrayList<>();
+			for(Object rec:records) {
+				HashMap record = (HashMap<String, Object>)rec;
+				InviteVisitorContextV3 invite = new InviteVisitorContextV3();
+				if(record.get("expectedCheckInTime") != null) {
+					invite.setExpectedCheckInTime((Long)record.get("expectedCheckInTime"));
+				}
+				if(record.get("formId") != null) {
+					invite.setFormId((Long)record.get("formId"));
+				}
+				if(record.get("host") != null) {
+					HashMap hostmap = (HashMap)record.get("host");
+					V3PeopleContext host = new V3PeopleContext();
+					if(hostmap.get("id") != null) {
+						host.setId((Long)hostmap.get("id"));
+						invite.setHost(host);
+					}
+				}
+				if(record.get("visitedSpace") != null) {
+					HashMap hostmap = (HashMap)record.get("visitedSpace");
+					if(hostmap.get("id") != null) {
+						BaseSpaceContext space = new BaseSpaceContext((Long)hostmap.get("id"));
+						space.setId((Long)hostmap.get("id"));
+						invite.setVisitedSpace(space);
+						
+					}
+				}
+				if(record.get("visitorEmail") != null) {
+					invite.setVisitorEmail(record.get("visitorEmail").toString());
+				}
+				if(record.get("visitorName") != null) {
+					invite.setVisitorName(record.get("visitorName").toString());
+				}
+				if(record.get("visitorPhone") != null) {
+					invite.setVisitorPhone(record.get("visitorPhone").toString());
+				}
+				if(record.get("visitorType") != null) {
+					HashMap hostmap = (HashMap)record.get("visitorType");
+					VisitorTypeContext visitor = new VisitorTypeContext();
+					if(hostmap.get("id") != null) {
+						visitor.setId((Long)hostmap.get("id"));
+						invite.setVisitorType(visitor);
+					}
+				}
+				if(record.get("purposeOfVisit") != null) {
+					invite.setPurposeOfVisit((Integer)record.get("purposeOfVisit"));
+				}
+				if(record.get("expectedCheckOutTime") != null) {
+					invite.setExpectedCheckOutTime((Long)record.get("expectedCheckOutTime"));
+				}
+				if(record.get("workorders") != null) {
+					Map woMap = new HashMap<String, Object>();
+					woMap.put("workorders",record.get("workorders"));
+					invite.setData(woMap);
+				}
+				inviteRecords.add(invite);
+			}
 			FacilioModule module = ChainUtil.getModule(objects[0].toString());
 		     V3Config v3Config = ChainUtil.getV3Config(module);
 		     FacilioChain createRecordChain = ChainUtil.getCreateRecordChain(module.getName());
@@ -938,7 +997,7 @@ ADD_RECORD_VIA_V3CHAIN (28, "addRecordViaV3Chain") {
 		     addAnswerContext.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
 		     addAnswerContext.put(Constants.BEAN_CLASS, beanClass);
 		     Map<String, List> recordMap = new HashMap<>();
-		     recordMap.put(module.getName(), records);
+		     recordMap.put(module.getName(), inviteRecords);
 		     addAnswerContext.put(Constants.RECORD_MAP, recordMap);
 
 		     createRecordChain.execute();
