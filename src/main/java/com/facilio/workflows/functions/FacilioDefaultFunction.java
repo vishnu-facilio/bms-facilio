@@ -38,6 +38,9 @@ import com.facilio.time.DateTimeUtil;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.util.FacilioUtil;
+import com.facilio.v3.V3Builder.V3Config;
+import com.facilio.v3.context.Constants;
+import com.facilio.v3.util.ChainUtil;
 import com.facilio.workflows.exceptions.FunctionParamException;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
@@ -918,6 +921,33 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			return null;
 		}
 	},
+ADD_RECORD_VIA_V3CHAIN (28, "addRecordViaV3Chain") {
+		
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			List records = (List) objects[1];
+			FacilioModule module = ChainUtil.getModule(objects[0].toString());
+		     V3Config v3Config = ChainUtil.getV3Config(module);
+		     FacilioChain createRecordChain = ChainUtil.getCreateRecordChain(module.getName());
+		     FacilioContext addAnswerContext = createRecordChain.getContext();
+		     Class beanClass = ChainUtil.getBeanClass(v3Config, module);
+
+		     Constants.setV3config(addAnswerContext, v3Config);
+		     Constants.setModuleName(addAnswerContext, module.getName());
+		     addAnswerContext.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.CREATE);
+		     addAnswerContext.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
+		     addAnswerContext.put(Constants.BEAN_CLASS, beanClass);
+		     Map<String, List> recordMap = new HashMap<>();
+		     recordMap.put(module.getName(), records);
+		     addAnswerContext.put(Constants.RECORD_MAP, recordMap);
+
+		     createRecordChain.execute();
+			
+			return null;
+		}
+	},
+
+    
 
 	;
 	private Integer value;
