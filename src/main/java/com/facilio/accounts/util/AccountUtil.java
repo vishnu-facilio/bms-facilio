@@ -467,6 +467,10 @@ public class AccountUtil {
 			moduleVsLicense = Collections.unmodifiableMap(moduleMap);
 			return typeMap;
 		}
+
+		public boolean isEnabled (long totalLicense) {
+			return (totalLicense & this.license) == this.license;
+		}
 	}
     
     /*private static Map<String, FeatureLicense> moduleVsLicense = Collections.unmodifiableMap(initializeLicenseRelation());

@@ -162,15 +162,16 @@ public class AdminAction extends ActionSupport {
 			}
 			try {
 				//temp handling for enabling people contacts license
-				if(((summodule & AccountUtil.FeatureLicense.INVENTORY.getLicense()) == AccountUtil.FeatureLicense.INVENTORY.getLicense()) ||
-						((summodule & AccountUtil.FeatureLicense.CLIENT.getLicense()) == AccountUtil.FeatureLicense.CLIENT.getLicense()) ||
-						((summodule & AccountUtil.FeatureLicense.TENANTS.getLicense()) == AccountUtil.FeatureLicense.TENANTS.getLicense()) ||
-						((summodule & AccountUtil.FeatureLicense.PEOPLE.getLicense()) == AccountUtil.FeatureLicense.PEOPLE.getLicense())
-				){
-					if((summodule & AccountUtil.FeatureLicense.PEOPLE_CONTACTS.getLicense()) == 0) {
+
+				if (	AccountUtil.FeatureLicense.INVENTORY.isEnabled(summodule)
+						||	AccountUtil.FeatureLicense.CLIENT.isEnabled(summodule)
+						||  AccountUtil.FeatureLicense.TENANTS.isEnabled(summodule)
+						||	AccountUtil.FeatureLicense.PEOPLE.isEnabled(summodule)
+				) {
+					if(!AccountUtil.FeatureLicense.PEOPLE_CONTACTS.isEnabled(summodule)) {
 						summodule += AccountUtil.FeatureLicense.PEOPLE_CONTACTS.getLicense();
 					}
-					if((summodule & AccountUtil.FeatureLicense.SCOPING.getLicense()) == 0) {
+					if(!AccountUtil.FeatureLicense.SCOPING.isEnabled(summodule)) {
 						summodule += AccountUtil.FeatureLicense.SCOPING.getLicense();
 					}
 				}
