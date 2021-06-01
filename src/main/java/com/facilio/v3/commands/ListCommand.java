@@ -72,8 +72,10 @@ public class ListCommand extends FacilioCommand {
         String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
         if (orderBy != null && !orderBy.isEmpty()) {
             JSONObject sorting = (JSONObject) context.get(FacilioConstants.ContextNames.SORTING);
-            String sortBy = (String) sorting.get("orderBy");
-            selectRecordsBuilder.orderBy(sortBy + " ASC");
+            if (sorting != null && !sorting.isEmpty()) {
+                String sortBy = (String) sorting.get("orderBy");
+                selectRecordsBuilder.orderBy(sortBy + " ASC");
+            }
         }
         List<SupplementRecord> supplementFields = (List<SupplementRecord>) context.get(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS);
         if (CollectionUtils.isNotEmpty(supplementFields)) {
