@@ -429,10 +429,6 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 				if (validation.getNamedCriteriaId() > 0) {
 					NamedCriteria namedCriteria = criteriaMap.get(validation.getNamedCriteriaId());
 					validation.setNamedCriteria(namedCriteria);
-
-					Criteria criteria = NamedCriteriaAPI.convertNamedCriteriaToCriteria(namedCriteria);
-					validation.setCriteria(criteria);
-					validation.setCriteriaId(criteria.getCriteriaId());
 				}
 			}	
 		}

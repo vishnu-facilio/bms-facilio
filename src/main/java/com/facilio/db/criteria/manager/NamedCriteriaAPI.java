@@ -157,34 +157,34 @@ public class NamedCriteriaAPI {
         }
     }
 
-    public static NamedCriteria convertCriteriaToNamedCriteria(String name, long moduleId, Criteria criteria) throws Exception {
-        NamedCriteria namedCriteria = new NamedCriteria();
-        namedCriteria.setName(name);
-        namedCriteria.setNamedCriteriaModuleId(moduleId);
-        namedCriteria.setPattern("1");
+//    public static NamedCriteria convertCriteriaToNamedCriteria(String name, long moduleId, Criteria criteria) throws Exception {
+//        NamedCriteria namedCriteria = new NamedCriteria();
+//        namedCriteria.setName(name);
+//        namedCriteria.setNamedCriteriaModuleId(moduleId);
+//        namedCriteria.setPattern("1");
+//
+//        NamedCondition namedCondition = new NamedCondition();
+//        namedCondition.setName(name);
+//        namedCondition.setType(NamedCondition.Type.CRITERIA);
+//        namedCondition.setCriteria(criteria);
+//        namedCriteria.addCondition("1", namedCondition);
+//
+//        addOrUpdateNamedCriteria(namedCriteria);
+//        return namedCriteria;
+//    }
 
-        NamedCondition namedCondition = new NamedCondition();
-        namedCondition.setName(name);
-        namedCondition.setType(NamedCondition.Type.CRITERIA);
-        namedCondition.setCriteria(criteria);
-        namedCriteria.addCondition("1", namedCondition);
-
-        addOrUpdateNamedCriteria(namedCriteria);
-        return namedCriteria;
-    }
-
-    public static Criteria convertNamedCriteriaToCriteria(NamedCriteria namedCriteria) throws Exception {
-        if (namedCriteria == null) {
-            return null;
-        }
-
-        Map<String, NamedCondition> conditions = namedCriteria.getConditions();
-        Collection<NamedCondition> namedConditions = conditions.values();
-        for (NamedCondition condition : namedConditions) {
-            if (condition.getTypeEnum() == NamedCondition.Type.CRITERIA) {
-                return condition.getCriteria();
-            }
-        }
-        return null;
-    }
+//    public static Criteria convertNamedCriteriaToCriteria(NamedCriteria namedCriteria) throws Exception {
+//        if (namedCriteria == null) {
+//            return null;
+//        }
+//
+//        Map<String, NamedCondition> conditions = namedCriteria.getConditions();
+//        Collection<NamedCondition> namedConditions = conditions.values();
+//        for (NamedCondition condition : namedConditions) {
+//            if (condition.getTypeEnum() == NamedCondition.Type.CRITERIA) {
+//                return condition.getCriteria();
+//            }
+//        }
+//        return null;
+//    }
 }

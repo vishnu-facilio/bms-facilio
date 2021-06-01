@@ -45,25 +45,25 @@ public class ValidationContext {
 		this.errorMessage = errorMessage;
 	}
 
-	private Criteria criteria;
-	@Deprecated
-	public Criteria getCriteria() {
-		return criteria;
-	}
-	@Deprecated
-	public void setCriteria(Criteria criteria) {
-		this.criteria = criteria;
-	}
+//	private Criteria criteria;
+//	@Deprecated
+//	public Criteria getCriteria() {
+//		return criteria;
+//	}
+//	@Deprecated
+//	public void setCriteria(Criteria criteria) {
+//		this.criteria = criteria;
+//	}
 
-	private long criteriaId = -1;
-	@Deprecated
-	public long getCriteriaId() {
-		return criteriaId;
-	}
-	@Deprecated
-	public void setCriteriaId(long criteriaId) {
-		this.criteriaId = criteriaId;
-	}
+//	private long criteriaId = -1;
+//	@Deprecated
+//	public long getCriteriaId() {
+//		return criteriaId;
+//	}
+//	@Deprecated
+//	public void setCriteriaId(long criteriaId) {
+//		this.criteriaId = criteriaId;
+//	}
 
 	private NamedCriteria namedCriteria;
 	public NamedCriteria getNamedCriteria() {
@@ -89,16 +89,17 @@ public class ValidationContext {
 		}
 		
 		if (namedCriteriaId < 0) {
-			if (criteria == null || criteria.isEmpty()) {
-				return false;
-			}
-
-			WorkflowRuleContext workflowRule = WorkflowRuleAPI.getWorkflowRule(ruleId);
-
-			String conditionName = StringUtils.isNotEmpty(name) ? name : errorMessage;
-
-			NamedCriteria namedCriteria = NamedCriteriaAPI.convertCriteriaToNamedCriteria(conditionName, workflowRule.getModuleId(), criteria);
-			this.namedCriteriaId = namedCriteria.getId();
+			return false;
+//			if (criteria == null || criteria.isEmpty()) {
+//				return false;
+//			}
+//
+//			WorkflowRuleContext workflowRule = WorkflowRuleAPI.getWorkflowRule(ruleId);
+//
+//			String conditionName = StringUtils.isNotEmpty(name) ? name : errorMessage;
+//
+//			NamedCriteria namedCriteria = NamedCriteriaAPI.convertCriteriaToNamedCriteria(conditionName, workflowRule.getModuleId(), criteria);
+//			this.namedCriteriaId = namedCriteria.getId();
 		}
 		return true;
 	}

@@ -31,14 +31,6 @@ public class ConfirmationDialogAPI {
                 .fields(FieldFactory.getConfirmationDialogFields());
         for (ConfirmationDialogContext confirmationDialogContext : confirmationDialogs) {
             confirmationDialogContext.setParentId(parentId);
-            if (confirmationDialogContext.getCriteria() != null) { // backward compatibility
-                WorkflowRuleContext workflowRule = WorkflowRuleAPI.getWorkflowRule(confirmationDialogContext.getParentId());
-                NamedCriteria namedCriteria = NamedCriteriaAPI.convertCriteriaToNamedCriteria(
-                        confirmationDialogContext.getName(),
-                        workflowRule.getModuleId(),
-                        confirmationDialogContext.getCriteria());
-                confirmationDialogContext.setNamedCriteriaId(namedCriteria.getId());
-            }
             builder.addRecord(FieldUtil.getAsProperties(confirmationDialogContext));
         }
         builder.save();
@@ -65,10 +57,6 @@ public class ConfirmationDialogAPI {
                     if (dialogContext.getNamedCriteriaId() > 0) {
                         NamedCriteria namedCriteria = criteriaMap.get(dialogContext.getNamedCriteriaId());
                         dialogContext.setNamedCriteria(namedCriteria);
-
-                        Criteria criteria = NamedCriteriaAPI.convertNamedCriteriaToCriteria(namedCriteria);
-                        dialogContext.setCriteria(criteria);
-                        dialogContext.setCriteriaId(criteria.getCriteriaId());
                     }
                 }
             }

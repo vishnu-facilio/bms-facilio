@@ -105,7 +105,7 @@ public class WebTabContext implements Serializable {
         CUSTOM ("Custom",false),
         APPS ("Apps",false),
         SETTINGS("Settings",true),
-        AGENT("Agent", true),
+        AGENT("Agent", true), // not used anymore, rename to something else if required
         PORTAL_OVERVIEW("Portal Overview", false),
         NOTIFICATION("Notification", false);
         ;
