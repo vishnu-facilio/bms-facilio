@@ -124,12 +124,14 @@ public class NamedCriteriaAPI {
             }
         }
 
-        Map<Long, Criteria> criteriaMap = CriteriaAPI.getCriteriaAsMap(criteriaIds);
-        for (NamedCondition namedCondition : namedConditionList) {
-            switch (namedCondition.getTypeEnum()) {
-                case CRITERIA:
-                    namedCondition.setCriteria(criteriaMap.get(namedCondition.getCriteriaId()));
-                    break;
+        if (CollectionUtils.isNotEmpty(criteriaIds)) {
+            Map<Long, Criteria> criteriaMap = CriteriaAPI.getCriteriaAsMap(criteriaIds);
+            for (NamedCondition namedCondition : namedConditionList) {
+                switch (namedCondition.getTypeEnum()) {
+                    case CRITERIA:
+                        namedCondition.setCriteria(criteriaMap.get(namedCondition.getCriteriaId()));
+                        break;
+                }
             }
         }
     }
