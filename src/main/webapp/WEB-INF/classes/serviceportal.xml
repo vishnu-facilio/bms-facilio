@@ -113,6 +113,7 @@
 		
 		<action name="account" class="com.facilio.bmsconsole.actions.LoginAction"
 				method="portalAccount">
+			<param name="auth">false</param>
 		  	<result name="success" type="json">
 				<param name="includeProperties">account.*</param>
 			</result>
