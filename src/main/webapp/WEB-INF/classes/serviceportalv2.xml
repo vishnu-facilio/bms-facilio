@@ -239,7 +239,8 @@
 		</action>
 		
 		<action name="account" class="com.facilio.bmsconsole.actions.LoginAction"
-			method="v2portalAccount"> 
+			method="v2portalAccount">
+			<param name="auth">false</param>
 		</action>
 		<action name="getFormMeta" class="com.facilio.bmsconsole.actions.FormAction"
 			method="v2fetchFormMeta">
