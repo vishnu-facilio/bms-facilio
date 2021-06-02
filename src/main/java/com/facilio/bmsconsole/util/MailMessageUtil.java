@@ -76,7 +76,7 @@ public class MailMessageUtil {
 	
 	public static Function<String,String> getFirstMessageId = (messageIDs) -> {
 	    
-    	if(messageIDs.contains("<")) {
+    	if(messageIDs != null && messageIDs.contains("<")) {
     		
     		return messageIDs.substring(messageIDs.indexOf('<')+1, messageIDs.indexOf('>'));
     	}
@@ -439,7 +439,9 @@ public class MailMessageUtil {
                     FileUtils.copyInputStreamToFile(bodyPart.getInputStream(), file);
                     attachmentObject.put("file", file);
                     attachmentObject.put("type", 1);
-                    attachmentObject.put("contentId", getFirstMessageId.apply(bodyPart.getContentID()));
+                    if(bodyPart.getContentID() != null) {
+                    	attachmentObject.put("contentId", getFirstMessageId.apply(bodyPart.getContentID()));
+                    }
                     
                     attachmentsList.add(attachmentObject);
                 }
