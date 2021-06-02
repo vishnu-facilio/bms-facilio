@@ -180,4 +180,9 @@ public interface IAMUserBean {
 	String cryptWithMD5(String pass);
 
 	void savePreviousPassword(long uid, String encryptedPassword) throws Exception;
+
+	String lookupUserDC(String username) throws Exception;
+
+	String findDCForUser(String username) throws Exception;
+
 }

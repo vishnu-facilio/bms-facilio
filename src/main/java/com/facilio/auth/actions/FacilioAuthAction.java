@@ -30,9 +30,7 @@ import com.facilio.iam.accounts.context.SecurityPolicy;
 import com.facilio.iam.accounts.exceptions.SecurityPolicyException;
 import com.facilio.iam.accounts.util.*;
 import com.google.common.base.Throwables;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.var;
+import lombok.*;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
@@ -437,6 +435,17 @@ public class FacilioAuthAction extends FacilioAction {
 		return SUCCESS;
 	}
 
+	@SneakyThrows
+	public String dclookup() {
+		String dc = IAMUserUtil.findDCForUser(getUsername());
+		Map<String, Object> result = new HashMap<>();
+		result.put("code", 1);
+		result.put("dc", dc);
+		setJsonresponse(result);
+		return SUCCESS;
+	}
+
+	@SneakyThrows
 	public String lookup() {
 		if (!StringUtils.isEmpty(getLookUpType())) {
 			if (getLookUpType().equals("service")) {
@@ -447,6 +456,16 @@ public class FacilioAuthAction extends FacilioAction {
 				return vendorlookup();
 			}
 		}
+
+		var dc = IAMUserUtil.lookupUserDC(username);
+		if (StringUtils.isNotEmpty(dc)) {
+			Map<String, Object> result = new HashMap<>();
+			result.put("code", 1);
+			result.put("dc", dc);
+			setJsonresponse(result);
+			return SUCCESS;
+		}
+
 		String username = getUsername();
 		String domain = getDomain();
 		HttpServletRequest request = ServletActionContext.getRequest();
@@ -2144,9 +2163,9 @@ public class FacilioAuthAction extends FacilioAction {
 				user.setApplicationId(applicationId);
 				AppDomain appDomainObj = ApplicationApi.getAppDomainForApplication(applicationId);
 				user.setAppDomain(appDomainObj);
-				
+
 				AccountUtil.getTransactionalUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, false, true, appDomainObj.getIdentifier(), true, true);
-				
+
 				LOGGER.info("user signup done " + user);
 			} catch (InvocationTargetException ie) {
 				Throwable e = ie.getTargetException();

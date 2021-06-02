@@ -14,6 +14,7 @@ import dev.samstevens.totp.code.DefaultCodeGenerator;
 import dev.samstevens.totp.code.DefaultCodeVerifier;
 import dev.samstevens.totp.time.SystemTimeProvider;
 import dev.samstevens.totp.time.TimeProvider;
+import lombok.SneakyThrows;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
@@ -390,6 +391,19 @@ public class IAMUserUtil {
 	public static  List<Map<String, Object>> getUserData(String username, AppDomain.GroupType groupType) throws Exception {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getUserData(username, groupType));
 	}
+
+	// IAM client
+	public static String lookupUserDC(String userName) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().lookupUserDC(userName));
+	}
+
+
+	// IAM
+	@SneakyThrows
+	public static String findDCForUser(String username) {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().findDCForUser(username));
+	}
+
 
 	public static boolean totpChecking(String code, long uid) throws Exception{
 		Map<String, Object> values = getUserMfaSettings(uid);

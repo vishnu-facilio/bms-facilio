@@ -29,6 +29,7 @@ import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.*;
 import com.facilio.util.FacilioUtil;
 import dev.samstevens.totp.recovery.RecoveryCodeGenerator;
+import lombok.SneakyThrows;
 import lombok.var;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -809,6 +810,41 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		String jwt = createJWT("id", "auth0", uid+"", System.currentTimeMillis());
 		insertTokenIntoSession(uid, null, jwt, IAMAccountConstants.SessionType.PWD_POLICY_PWD_RESET);
 		return jwt;
+	}
+
+	private boolean isUserPresentInCurrentDC(String username) throws Exception {
+		final List<Map<String, Object>> userForUsername = getUserData(username, -1, null);
+		return CollectionUtils.isNotEmpty(userForUsername);
+	}
+
+	// Assumes single user per DC
+	@SneakyThrows
+	@Override
+	public String findDCForUser(String username) {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(IAMAccountConstants.getDCFields())
+				.table("DC_LOOKUP");
+
+		selectBuilder.andCondition(CriteriaAPI.getCondition("DC_LOOKUP.USERNAME", "username", username, StringOperators.IS));
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			return (String) props.get(0).get("userName");
+		}
+		throw new IllegalArgumentException("user name is missing");
+	}
+
+	@SneakyThrows
+	@Override
+	public String lookupUserDC(String username) {
+		if (isUserPresentInCurrentDC(username)) {
+			return null;
+		}
+		var dc = IamClient.lookupUser(username);
+		if (StringUtils.isEmpty(dc)) {
+			throw new IllegalArgumentException("user name is missing");
+		}
+		return dc;
 	}
 
 	@Override

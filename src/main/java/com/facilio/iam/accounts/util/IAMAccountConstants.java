@@ -126,6 +126,34 @@ public class IAMAccountConstants {
 			return userSession;
 		}
 
+		public static FacilioModule getDCLookupModule() {
+			FacilioModule dcLookupModule = new FacilioModule();
+			dcLookupModule.setName("dclookup");
+			dcLookupModule.setTableName("DC Lookup");
+			dcLookupModule.setTableName("DC_LOOKUP");
+			return dcLookupModule;
+		}
+
+		public static List<FacilioField> getDCFields() {
+			FacilioModule module = getDCLookupModule();
+			List<FacilioField> fields = new ArrayList<>();
+
+			FacilioField userName = new FacilioField();
+			userName.setName("userName");
+			userName.setDataType(FieldType.STRING);
+			userName.setColumnName("USERNAME");
+			userName.setModule(module);
+			fields.add(userName);
+
+			FacilioField dclookup = new FacilioField();
+			userName.setName("dc");
+			userName.setDataType(FieldType.NUMBER);
+			userName.setColumnName("DC");
+			userName.setModule(module);
+			fields.add(dclookup);
+			return fields;
+		}
+
 		
 		public static List<FacilioField> getOrgFields() {
 			FacilioModule module = getOrgModule();

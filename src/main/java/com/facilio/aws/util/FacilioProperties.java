@@ -122,6 +122,7 @@ public class FacilioProperties {
     private static String mandrillApiKey;
 
     private static boolean accessLog = false;
+    private static String iamlookupurl;
 
     static {
         loadProperties();
@@ -219,6 +220,7 @@ public class FacilioProperties {
                 senderName = PROPERTIES.getProperty("sender.name");
                 mandrillUrl = PROPERTIES.getProperty("mandrill.url");
                 mandrillApiKey = PROPERTIES.getProperty("mandrill.apikey");
+                iamlookupurl = PROPERTIES.getProperty("iam.lookupurl");
 
                 accessLog = "true".equalsIgnoreCase(PROPERTIES.getProperty("facilio.access.log", "false"));
 
@@ -705,5 +707,9 @@ public class FacilioProperties {
 
     public static boolean isAccessLogEnable(){
         return accessLog;
+    }
+
+    public static String getIAMUserLookupURL() {
+        return iamlookupurl;
     }
 }
