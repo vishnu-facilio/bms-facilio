@@ -171,8 +171,13 @@ public enum FormActionType {
 						throw new IllegalArgumentException("No Filter Found");
 					}
 					
-					JSONObject json = FormRuleAPI.getActionJson(actionField.getFormFieldId(), FormActionType.APPLY_FILTER, actionField.getActionMeta(), null);
-					
+					String meta = actionField.getActionMeta();
+					JSONObject metaJson =  (JSONObject) new JSONParser().parse(meta);
+					JSONObject json = FormRuleAPI.getActionJson(actionField.getFormFieldId(), FormActionType.APPLY_FILTER, metaJson, null);
+					if (json.get("action") != null) {
+						JSONObject actionJson = (JSONObject) json.get("action");
+						actionJson.put("isEnum", true);
+					}
 					resultJson.add(json);
 				}
 				else {
