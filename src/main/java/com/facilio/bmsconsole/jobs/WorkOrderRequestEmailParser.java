@@ -71,7 +71,7 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 						createWorkOrderRequest((long) emailProp.get("id"), is);
 					}
 					catch(Exception e) {
-						LOGGER.error("Exception occurred ", e);
+						LOGGER.error("Exception occurred for id - "+s3Id, e);
 					}
 				}
 			}
