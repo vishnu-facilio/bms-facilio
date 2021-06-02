@@ -1621,9 +1621,7 @@ public class FacilioAuthAction extends FacilioAction {
 
 		setCookieProperties(cookie,true);
 
-		if (FacilioProperties.isProduction()) {
-			response.addCookie(cookie);
-		} else if (FacilioProperties.isDevelopment()) {
+		if (FacilioProperties.isDevelopment()) {
 			if (FacilioProperties.isOnpremise()) {
 				var cookieString = "fc.idToken.facilio="+authtoken+"; Max-Age=604800; Path=/; HttpOnly;";
 				response.setHeader("Set-Cookie", cookieString);
@@ -1631,9 +1629,11 @@ public class FacilioAuthAction extends FacilioAction {
 				var cookieString = "fc.idToken.facilio="+authtoken+"; Max-Age=604800; Path=/; Secure; HttpOnly; SameSite=None";
 				response.setHeader("Set-Cookie", cookieString);
 			}
+		} else {
+			response.addCookie(cookie);
 		}
 
-		//temp handling. will be removed once service portal xml files are removed.
+			//temp handling. will be removed once service portal xml files are removed.
 		if(portalUser) {
 			Cookie portalCookie = new Cookie("fc.idToken.facilio", authtoken);
 			setCookieProperties(portalCookie, true);
