@@ -1623,9 +1623,14 @@ public class FacilioAuthAction extends FacilioAction {
 
 		if (FacilioProperties.isProduction()) {
 			response.addCookie(cookie);
-		} else {
-			var cookieString = "fc.idToken.facilio="+authtoken+"; Max-Age=604800; Path=/; Secure; HttpOnly; SameSite=None";
-			response.setHeader("Set-Cookie", cookieString);
+		} else if (FacilioProperties.isDevelopment()) {
+			if (FacilioProperties.isOnpremise()) {
+				var cookieString = "fc.idToken.facilio="+authtoken+"; Max-Age=604800; Path=/; HttpOnly;";
+				response.setHeader("Set-Cookie", cookieString);
+			} else {
+				var cookieString = "fc.idToken.facilio="+authtoken+"; Max-Age=604800; Path=/; Secure; HttpOnly; SameSite=None";
+				response.setHeader("Set-Cookie", cookieString);
+			}
 		}
 
 		//temp handling. will be removed once service portal xml files are removed.
