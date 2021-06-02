@@ -14,61 +14,20 @@
   JSONObject result = null;
   List<User> users = null;
   List<Role> roles = null;
-
-  TreeMap<String,Boolean> FEATUREMAP = null;
-  Map<Long,FeatureLicense> FEATUREMAPUNORDERED  = AccountUtil.FeatureLicense.getAllFeatureLicense();
-  Map<FeatureLicense, Long> FEATUREMAPreversed = new HashMap<>();
-  Map<FeatureLicense,Boolean> FEATUREMAPenabled = new HashMap<>();
-  Map<String,Boolean>FEATUREMAPstring = new HashMap<>();
-  Map<String,Long> NEWMAP = new HashMap<String,Long>();
+  TreeMap<String,Boolean> features = new TreeMap<>();
 
   if (orgid != null) {
-	long orgId=Long.parseLong(orgid);
-	OrgBean orgBean = AccountUtil.getOrgBean();
-	org = orgBean.getOrg(Long.parseLong(orgid));
-	result = AccountUtil.getOrgBean(orgId).orgInfo();
-	users = AccountUtil.getOrgBean(orgId).getAppUsers(orgId, -1, false);
-	roles = AccountUtil.getRoleBean(orgId).getRoles();
+	  long orgId = Long.parseLong(orgid);
 
-	for(Long key :FEATUREMAPUNORDERED.keySet())
-	{
-     	long val1 = key;
-     	FeatureLicense val2 = FEATUREMAPUNORDERED.get(key);
-     	FEATUREMAPreversed.put(val2,val1);
-	}
-
-	boolean isEnabled;
-
-	for(FeatureLicense key :FEATUREMAPreversed.keySet())
-	{
-		isEnabled = isFeatureEnabled(key, org.getOrgId());
-		FEATUREMAPenabled.put(key,isEnabled);
-	}
-	for(FeatureLicense key :FEATUREMAPenabled.keySet())
-	{
-     	String val3 = (String.valueOf(key));
-     	boolean val4 = FEATUREMAPenabled.get(key);
-     	FEATUREMAPstring.put(val3,val4);
-     	
-	}
-	FEATUREMAP = new TreeMap<String,Boolean>(FEATUREMAPstring);
-
-
-	for(Long key :FEATUREMAPUNORDERED.keySet()) {
-     	FeatureLicense value = FEATUREMAPUNORDERED.get(key);
-     	NEWMAP.put(String.valueOf(value), key);
-	}
-  	  
+	  OrgBean orgBean = AccountUtil.getOrgBean();
+	  org = orgBean.getOrg(Long.parseLong(orgid));
+	  result = AccountUtil.getOrgBean(orgId).orgInfo();
+	  users = AccountUtil.getOrgBean(orgId).getAppUsers(orgId, -1, false);
+	  roles = AccountUtil.getRoleBean(orgId).getRoles();
+	  features  = AccountUtil.getFeatureLicenseMap(orgId);
   }
 %>
 
-<%!
-	public static boolean isFeatureEnabled(FeatureLicense featureLicense, long orgid) throws Exception {
-		return (AccountUtil.getOrgFeatureLicense(orgid) & featureLicense.getLicense() ) == featureLicense.getLicense();
-	}
-%>
-
- 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -140,7 +99,7 @@ function showLicense() {
 					<th> LoggerLevel</th>
 				</tr>
 
-				<tr id="id">
+				<tr>
 					<td><%=org.getOrgId() %></td>
 					<td><%=org.getName() %></td>
 					<td><%=org.getDomain() %></td>
@@ -295,12 +254,12 @@ function showLicense() {
 </div>
 
 <div class=" col-lg-12 col-md-12">
-	<% if(orgid!=null) { %>
+	<% if (orgid!=null) { %>
 		<button onclick="showLicense()">Add License</button>
 	<% } %>
 	<br>
 	<div id="newlicense" style="display:none">
-		<% if(orgid!=null ) { %>
+		<% if (orgid!=null) { %>
 			<form method="POST" ACTION="addLicense">
 				<h4>License features:</h4>
 				<div>
@@ -312,18 +271,18 @@ function showLicense() {
 						</tr>
   
 						<%
-  							for(String key  :FEATUREMAP.keySet())
-  							{
-  								boolean enabled = FEATUREMAP.get(key);
+							for(String key  :features.keySet())
+							{
   						%>
 								<tr>
-									<td><label><%=key%></label> </td>
+									<td>
+										<label><%=key%></label>
+									</td>
 									<td style="text-align:center;">
-  										<input type = "checkbox" <% if (enabled == true) { %> checked <%  }%> name="selected" value="<%=NEWMAP.get(key)%>" id="<%=orgid%>" />
+										<input type = "checkbox" <% if (features.get(key)) { %> checked <%  }%> name="selected" value="<%=key%>" />
 									</td>
 								</tr>
- 						<%  }  %>
-
+ 						<%  } %>
 					</table>
 				</div>
 
