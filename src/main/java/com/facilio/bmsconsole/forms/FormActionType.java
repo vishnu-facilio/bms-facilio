@@ -165,7 +165,7 @@ public enum FormActionType {
 				
 				FormField formField = FormsAPI.getFormFieldFromId(actionField.getFormFieldId());
 				
-				if(formField.getField() != null && formField.getField().getDataTypeEnum() == FieldType.ENUM || formField.getField().getDataTypeEnum() == FieldType.SYSTEM_ENUM) {
+				if(formField.getField() != null && formField.getField().getDataTypeEnum() == FieldType.ENUM || formField.getField().getDataTypeEnum() == FieldType.MULTI_ENUM || formField.getField().getDataTypeEnum() == FieldType.SYSTEM_ENUM) {
 					
 					if(actionField.getActionMeta() == null) {
 						throw new IllegalArgumentException("No Filter Found");
