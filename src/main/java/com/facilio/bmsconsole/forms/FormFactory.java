@@ -1733,15 +1733,12 @@ public class FormFactory {
 	private static List<FormField> getDesksFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
-		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
-		fields.add(new FormField("area", FieldDisplayType.NUMBER, "Area", Required.OPTIONAL, 3, 2));
-		fields.add(new FormField("maxOccupancy", FieldDisplayType.NUMBER, "Max Occupancy", Required.OPTIONAL, 4, 3));
+		fields.add(new FormField("employee", FieldDisplayType.LOOKUP_SIMPLE, "Employee", Required.REQUIRED, "employee", 2, 2));
+		fields.add(new FormField("department", FieldDisplayType.LOOKUP_SIMPLE, "Department", Required.REQUIRED, "department", 3, 2));
+		fields.add(new FormField("deskType", FieldDisplayType.SELECTBOX, "Desk Type", Required.REQUIRED, 4, 2));
 		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED,"site", 5, 2));
 		fields.add(new FormField("building", FieldDisplayType.LOOKUP_SIMPLE, "Building", Required.OPTIONAL,"building", 6, 3));
 		fields.add(new FormField("floor", FieldDisplayType.LOOKUP_SIMPLE, "Floor", Required.OPTIONAL,"floor", 7, 1));
-		fields.add(new FormField("employee", FieldDisplayType.LOOKUP_SIMPLE, "Employee", Required.REQUIRED, "employee", 8, 2));
-		fields.add(new FormField("deskType", FieldDisplayType.SELECTBOX, "Desk Type", Required.REQUIRED, 8, 2));
-		
 		return fields;
 	}
 	
