@@ -36,6 +36,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -429,6 +430,14 @@ public class MailMessageUtil {
                 MimeBodyPart bodyPart = (MimeBodyPart) mimeMultipart.getBodyPart(i);
                 if (Part.ATTACHMENT.equalsIgnoreCase(bodyPart.getDisposition())) {
                     String fileName = bodyPart.getFileName();
+                    
+                    if(fileName == null) {
+                    	fileName = "temp";
+                    }
+                    if(fileName.length() < 3) {
+                    	fileName = fileName + "123";
+                    }
+                    
                     MimeMessage attachmentMessage = new MimeMessage(null, bodyPart.getInputStream());
                     MimeMessageParser parser = new MimeMessageParser(attachmentMessage);
                     parser.parse();
@@ -450,6 +459,11 @@ public class MailMessageUtil {
         }
         return attachmentsList;
     }
+    
+    public static void main(String[] args) throws IOException {
+    	File file = File.createTempFile("1", "");
+    	System.out.println(file);
+	}
     
     public static List<Map<String, Object>> getInlineImages(Message message,List<Map<String, Object>> attachmentsList) throws Exception {
         attachmentsList = attachmentsList == null ? new ArrayList<>() : attachmentsList;
