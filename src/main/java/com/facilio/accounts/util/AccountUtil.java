@@ -505,8 +505,19 @@ public class AccountUtil {
 		Long license = moduleVsLicense.get(moduleName);
 		return license == null || isFeatureEnabled(FeatureLicense.getFeatureLicense(license));
 	}
-	
-	
+
+	public static TreeMap<String, Boolean> getFeatureLicenseMap(long orgId) throws Exception {
+		Map<Long,FeatureLicense> FeatureLicenses  = FeatureLicense.getAllFeatureLicense();
+		TreeMap<String,Boolean> Features = new TreeMap<>();
+
+		for (Long key : FeatureLicenses.keySet()) {
+			FeatureLicense license = FeatureLicenses.get(key);
+			boolean isEnabled = (getOrgFeatureLicense(orgId) & license.getLicense()) == license.getLicense();
+
+			Features.put(license.toString(), isEnabled);
+		}
+		return Features;
+	}
 	
 	public static PortalInfoContext getPortalInfo() throws Exception {
 		FacilioModule module = ModuleFactory.getServicePortalModule();

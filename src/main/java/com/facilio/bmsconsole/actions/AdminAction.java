@@ -150,35 +150,37 @@ public class AdminAction extends ActionSupport {
 	@SuppressWarnings("unused")
 	public String addLicense() throws SQLException {
 		HttpServletRequest request = ServletActionContext.getRequest();
-		String[] selectedfeatures = request.getParameterValues("selected");
-		if (selectedfeatures != null) {
-			long flicensevalue = 0, summodule = 0;
-			String orgidstring = request.getParameter("orgid");
-			if (selectedfeatures != null) {
-				for (int i = 0; i < selectedfeatures.length; i++) {
-					flicensevalue = Long.parseLong(selectedfeatures[i]);
-					summodule += flicensevalue;
+		String[] selectedFeatures = request.getParameterValues("selected");
+		Long orgId = Long.parseLong(request.getParameter("orgid"));
+
+		if (selectedFeatures != null) {
+			long sumOfLicenses = 0;
+
+			if (selectedFeatures != null) {
+				for (int i = 0; i < selectedFeatures.length; i++) {
+					AccountUtil.FeatureLicense license = AccountUtil.FeatureLicense.valueOf(selectedFeatures[i]);
+					sumOfLicenses += license.getLicense();
 				}
 			}
+
 			try {
 				//temp handling for enabling people contacts license
-
-				if (	AccountUtil.FeatureLicense.INVENTORY.isEnabled(summodule)
-						||	AccountUtil.FeatureLicense.CLIENT.isEnabled(summodule)
-						||  AccountUtil.FeatureLicense.TENANTS.isEnabled(summodule)
-						||	AccountUtil.FeatureLicense.PEOPLE.isEnabled(summodule)
+				if (	AccountUtil.FeatureLicense.INVENTORY.isEnabled(sumOfLicenses)
+						||	AccountUtil.FeatureLicense.CLIENT.isEnabled(sumOfLicenses)
+						||  AccountUtil.FeatureLicense.TENANTS.isEnabled(sumOfLicenses)
+						||	AccountUtil.FeatureLicense.PEOPLE.isEnabled(sumOfLicenses)
 				) {
-					if(!AccountUtil.FeatureLicense.PEOPLE_CONTACTS.isEnabled(summodule)) {
-						summodule += AccountUtil.FeatureLicense.PEOPLE_CONTACTS.getLicense();
+					if(!AccountUtil.FeatureLicense.PEOPLE_CONTACTS.isEnabled(sumOfLicenses)) {
+						sumOfLicenses += AccountUtil.FeatureLicense.PEOPLE_CONTACTS.getLicense();
 					}
-					if(!AccountUtil.FeatureLicense.SCOPING.isEnabled(summodule)) {
-						summodule += AccountUtil.FeatureLicense.SCOPING.getLicense();
+					if(!AccountUtil.FeatureLicense.SCOPING.isEnabled(sumOfLicenses)) {
+						sumOfLicenses += AccountUtil.FeatureLicense.SCOPING.getLicense();
 					}
 				}
-				long licence = AccountUtil.getTransactionalOrgBean(Long.parseLong(orgidstring)).addLicence(summodule);
+
+				long licence = AccountUtil.getTransactionalOrgBean(orgId).addLicence(sumOfLicenses);
 				System.out.println("##########@@@@@@@@@@@@@" + licence);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
