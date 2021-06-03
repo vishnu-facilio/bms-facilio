@@ -36,8 +36,14 @@ public class LoadDesksLookupCommand extends FacilioCommand {
         additionaLookups.add(buildingField);
         LookupField floorField = (LookupField) fieldsAsMap.get("floor");
         additionaLookups.add(floorField);
+        LookupField locationField = (LookupField) fieldsAsMap.get("location");
+        additionaLookups.add(locationField);
         LookupField spaceCategoryField = (LookupField) fieldsAsMap.get("spaceCategory");
         additionaLookups.add(spaceCategoryField);
+        LookupField statusField = (LookupField) fieldsAsMap.get("moduleState");
+        additionaLookups.add(statusField);
+        LookupField spaceField = (LookupField) fieldsAsMap.get("space");
+        additionaLookups.add(spaceField);
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS,additionaLookups);
         return false;
     }
