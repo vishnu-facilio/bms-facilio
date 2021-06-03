@@ -289,8 +289,8 @@ public class AddInspectionModules extends SignUpData {
 	      
 	      JSONObject json = new JSONObject();
 	      
-	      json.put("show", Boolean.TRUE);
-	      json.put("values", "[1,2,3,4,7]");
+	      json.put("show", Boolean.FALSE);
+	      json.put("values", "[5,6,8]");
 	      
 	      actionField.setActionMeta(json.toJSONString());
 	      
