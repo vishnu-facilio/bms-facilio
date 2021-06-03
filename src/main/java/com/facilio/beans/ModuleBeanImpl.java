@@ -1038,7 +1038,7 @@ public class ModuleBeanImpl implements ModuleBean {
 						fieldProps.put("relModuleId", relModuleId);
 					}
 					else {
-						throw new IllegalArgumentException("Invalid Field instance for the MULTI_ENUM data type");
+						throw new IllegalArgumentException("Invalid Field instance for the LARGE_TEXT data type");
 					}
 					addExtendedProps(ModuleFactory.getLargeTextFieldsModule(), FieldFactory.getLargeTextFieldFields(), fieldProps);
 					break;

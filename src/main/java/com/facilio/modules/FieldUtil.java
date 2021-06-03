@@ -570,6 +570,9 @@ public class FieldUtil {
 				case MULTI_LOOKUP:
 					facilioField = (MultiLookupField) FieldUtil.getAsBeanFromMap(fieldJson, MultiLookupField.class);
 					break;
+				case LARGE_TEXT:
+					facilioField = (LargeTextField) FieldUtil.getAsBeanFromMap(fieldJson, LargeTextField.class);
+					break;
 				default:
 					facilioField = (FacilioField) FieldUtil.getAsBeanFromMap(fieldJson, FacilioField.class);
 					break;
