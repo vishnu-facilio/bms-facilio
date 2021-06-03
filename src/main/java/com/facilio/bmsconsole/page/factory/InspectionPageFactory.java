@@ -1,13 +1,18 @@
 package com.facilio.bmsconsole.page.factory;
 
+import static com.facilio.bmsconsole.page.factory.AssetPageFactory.addRelatedListWidget;
+
 import java.util.Map;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsole.page.Page.Section;
+import com.facilio.bmsconsole.page.Page.Tab;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
@@ -107,8 +112,7 @@ public class InspectionPageFactory extends PageFactory {
 		
 		Page page = new Page();
 		
-		
-        Page.Tab summaryTab = page.new Tab("summary");
+        Page.Tab summaryTab = page.new Tab("Summary");
         Page.Section SummarySec = page.new Section();
         
         PageWidget secondaryDetailsWidget = new PageWidget(PageWidget.WidgetType.INSPECTION_RESPONSE_WIDGET);
@@ -118,6 +122,39 @@ public class InspectionPageFactory extends PageFactory {
         summaryTab.addSection(SummarySec);
         page.addTab(summaryTab);
         
+        
+        Tab relatedList = page.new Tab("Related Records");
+		Section relatedListSec = page.new Section();
+		addRelatedListWidget(relatedListSec, module.getName(), module.getModuleId(), module.getDisplayName());
+		relatedList.addSection(relatedListSec);
+		
+		page.addTab(relatedList);
+		
+		Page.Tab notesAndAttachmentTab = page.new Tab("Notes & Attachments");
+        Page.Section notesAndAttachmentSec = page.new Section();
+        
+        PageWidget notesWidget = new PageWidget(PageWidget.WidgetType.COMMENT);
+        notesWidget.addToLayoutParams(notesAndAttachmentSec, 24, 8);
+        notesAndAttachmentSec.addWidget(notesWidget);
+        
+        PageWidget attachmentWidget = new PageWidget(PageWidget.WidgetType.ATTACHMENT);
+        attachmentWidget.addToLayoutParams(notesAndAttachmentSec, 24, 6);
+        notesAndAttachmentSec.addWidget(attachmentWidget);
+        
+        notesAndAttachmentTab.addSection(notesAndAttachmentSec);
+        page.addTab(notesAndAttachmentTab);
+        
+        
+        Page.Tab activityTab = page.new Tab("Activity");
+        Page.Section activitySec = page.new Section();
+        
+        PageWidget activityWidget = new PageWidget(PageWidget.WidgetType.ACTIVITY);
+        activityWidget.addToLayoutParams(activitySec, 24, 3);
+        activitySec.addWidget(activityWidget);
+        
+        activityTab.addSection(activitySec);
+        
+        page.addTab(activityTab);
         
         return page;
 	}
