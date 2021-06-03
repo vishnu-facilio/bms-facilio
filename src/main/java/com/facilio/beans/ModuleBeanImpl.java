@@ -1032,6 +1032,14 @@ public class ModuleBeanImpl implements ModuleBean {
 					addExtendedProps(ModuleFactory.getScoreFieldModule(), FieldFactory.getScoreFieldFields(), fieldProps);
 					break;
 				case LARGE_TEXT:
+					LargeTextField largeTextField = (LargeTextField) field;
+					if (largeTextField.getRelModuleId() < 1) {
+						long relModuleId = addLargeTextModule(largeTextField);
+						fieldProps.put("relModuleId", relModuleId);
+					}
+					else {
+						throw new IllegalArgumentException("Invalid Field instance for the MULTI_ENUM data type");
+					}
 					addExtendedProps(ModuleFactory.getLargeTextFieldsModule(), FieldFactory.getLargeTextFieldFields(), fieldProps);
 					break;
 				case LINE_ITEM:
@@ -1074,6 +1082,9 @@ public class ModuleBeanImpl implements ModuleBean {
 	}
 
 	private static final String CUSTOM_MULTI_ENUM_TABLENAME = "Custom_Multi_Enum_Values";
+	
+	private static final String CUSTOM_LARGE_TEXT_TABLENAME = "Large_Text_Values";
+	
 	private long addMultiEnumModule(MultiEnumField field) throws Exception {
 		FacilioModule module = new FacilioModule();
 
@@ -1112,6 +1123,51 @@ public class ModuleBeanImpl implements ModuleBean {
 		valueField.setColumnName(field.valueColumnName());
 		valueField.setModule(module);
 		valueField.setEnumProps(field);
+		addField(valueField);
+
+		field.setRelModuleId(moduleId);
+		field.setRelModule(module);
+		return moduleId;
+	}
+	
+	private long addLargeTextModule(LargeTextField field) throws Exception {
+		FacilioModule module = new FacilioModule();
+
+		String relModuleName = new StringBuilder(field.getModule().getName())
+									.append("-")
+									.append(field.getName())
+									.append("-largeText")
+									.toString();
+		module.setName(relModuleName);
+		
+		String relDisplayName = new StringBuilder()
+									.append(field.getModule().getDisplayName())
+									.append(" ")
+									.append(field.getDisplayName())
+									.append(" Large Text")
+									.toString();
+		module.setDisplayName(relDisplayName);
+		module.setTableName(CUSTOM_LARGE_TEXT_TABLENAME);
+		module.setType(ModuleType.LARGE_TEXT_DATA_MODULE);
+
+		long moduleId = addModule(module);
+		module.setModuleId(moduleId);
+
+		LookupField parentField = new LookupField();
+		parentField.setDataType(FieldType.LOOKUP);
+		parentField.setName(LargeTextField.PARENT_FIELD_NAME);
+		parentField.setDisplayName(field.getModule().getDisplayName());
+		parentField.setColumnName("PARENT_ID");
+		parentField.setModule(module);
+		parentField.setLookupModule(field.getModule());
+		addField(parentField);
+
+		NumberField valueField = new NumberField();
+		valueField.setDataType(FieldType.NUMBER);
+		valueField.setName(LargeTextField.FILE_FIELD_NAME);
+		valueField.setDisplayName(field.getDisplayName());
+		valueField.setColumnName("FILE_ID");
+		valueField.setModule(module);
 		addField(valueField);
 
 		field.setRelModuleId(moduleId);

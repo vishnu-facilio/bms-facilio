@@ -12,6 +12,9 @@ public class LargeTextField extends FacilioField implements SupplementRecord {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	public static final String PARENT_FIELD_NAME = "parentId";
+    public static final String FILE_FIELD_NAME = "fileId";
 
 	private FacilioModule relModule;
 	private long relModuleId = -1;
