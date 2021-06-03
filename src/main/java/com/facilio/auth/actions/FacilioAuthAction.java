@@ -1629,6 +1629,9 @@ public class FacilioAuthAction extends FacilioAction {
 				var cookieString = "fc.idToken.facilio="+authtoken+"; Max-Age=604800; Path=/; Secure; HttpOnly; SameSite=None";
 				response.setHeader("Set-Cookie", cookieString);
 			}
+		} else if("stage".equals(FacilioProperties.getEnvironment())) {
+			var cookieString = "fc.idToken.facilio="+authtoken+"; Max-Age=604800; Path=/; Secure; HttpOnly; SameSite=None";
+			response.setHeader("Set-Cookie", cookieString);
 		} else {
 			response.addCookie(cookie);
 		}
