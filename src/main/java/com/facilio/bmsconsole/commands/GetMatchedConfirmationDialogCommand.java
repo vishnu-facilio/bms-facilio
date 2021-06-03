@@ -63,6 +63,10 @@ public class GetMatchedConfirmationDialogCommand extends FacilioCommand {
                 }
             }
 
+            for (ConfirmationDialogContext confirmationDialogContext : dialogContexts) {
+                confirmationDialogContext.setMessage(confirmationDialogContext.getResolvedMessage());
+            }
+
             context.put(FacilioConstants.ContextNames.VALID_CONFIRMATION_DIALOGS, dialogContexts);
         }
         return false;

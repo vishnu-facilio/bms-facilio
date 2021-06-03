@@ -1,13 +1,12 @@
 package com.facilio.bmsconsole.workflow.rule;
 
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
-import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.manager.NamedCriteria;
-import com.facilio.db.criteria.manager.NamedCriteriaAPI;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.workflows.context.WorkflowContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringSubstitutor;
 import org.apache.struts2.json.annotations.JSON;
 
 import java.util.Map;
@@ -45,25 +44,19 @@ public class ValidationContext {
 		this.errorMessage = errorMessage;
 	}
 
-//	private Criteria criteria;
-//	@Deprecated
-//	public Criteria getCriteria() {
-//		return criteria;
-//	}
-//	@Deprecated
-//	public void setCriteria(Criteria criteria) {
-//		this.criteria = criteria;
-//	}
-
-//	private long criteriaId = -1;
-//	@Deprecated
-//	public long getCriteriaId() {
-//		return criteriaId;
-//	}
-//	@Deprecated
-//	public void setCriteriaId(long criteriaId) {
-//		this.criteriaId = criteriaId;
-//	}
+	@JsonIgnore
+	@JSON(serialize = false)
+	public String getResolvedErrorMessage() throws Exception {
+		if (errorMessagePlaceHolderScriptId > 0) {
+			if (errorMessagePlaceHolderScript != null) {
+				Object o = errorMessagePlaceHolderScript.executeWorkflow();
+				if (o instanceof Map) {
+					return StringSubstitutor.replace(errorMessage, (Map) o);
+				}
+			}
+		}
+		return errorMessage;
+	}
 
 	private NamedCriteria namedCriteria;
 	public NamedCriteria getNamedCriteria() {
@@ -81,6 +74,22 @@ public class ValidationContext {
 		this.namedCriteriaId = namedCriteriaId;
 	}
 
+	private long errorMessagePlaceHolderScriptId = -1;
+	public long getErrorMessagePlaceHolderScriptId() {
+		return errorMessagePlaceHolderScriptId;
+	}
+	public void setErrorMessagePlaceHolderScriptId(long errorMessagePlaceHolderScriptId) {
+		this.errorMessagePlaceHolderScriptId = errorMessagePlaceHolderScriptId;
+	}
+
+	private WorkflowContext errorMessagePlaceHolderScript;
+	public WorkflowContext getErrorMessagePlaceHolderScript() {
+		return errorMessagePlaceHolderScript;
+	}
+	public void setErrorMessagePlaceHolderScript(WorkflowContext errorMessagePlaceHolderScript) {
+		this.errorMessagePlaceHolderScript = errorMessagePlaceHolderScript;
+	}
+
 	@JSON(serialize = false)
 	@JsonIgnore
 	public boolean isValid() throws Exception {
@@ -90,16 +99,6 @@ public class ValidationContext {
 		
 		if (namedCriteriaId < 0) {
 			return false;
-//			if (criteria == null || criteria.isEmpty()) {
-//				return false;
-//			}
-//
-//			WorkflowRuleContext workflowRule = WorkflowRuleAPI.getWorkflowRule(ruleId);
-//
-//			String conditionName = StringUtils.isNotEmpty(name) ? name : errorMessage;
-//
-//			NamedCriteria namedCriteria = NamedCriteriaAPI.convertCriteriaToNamedCriteria(conditionName, workflowRule.getModuleId(), criteria);
-//			this.namedCriteriaId = namedCriteria.getId();
 		}
 		return true;
 	}

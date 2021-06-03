@@ -1,7 +1,12 @@
 package com.facilio.bmsconsole.workflow.rule;
 
-import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.manager.NamedCriteria;
+import com.facilio.workflows.context.WorkflowContext;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.apache.commons.text.StringSubstitutor;
+import org.apache.struts2.json.annotations.JSON;
+
+import java.util.Map;
 
 public class ConfirmationDialogContext {
     private long id = -1;
@@ -36,26 +41,6 @@ public class ConfirmationDialogContext {
         this.message = message;
     }
 
-//    private Criteria criteria;
-//    @Deprecated
-//    public Criteria getCriteria() {
-//        return criteria;
-//    }
-//    @Deprecated
-//    public void setCriteria(Criteria criteria) {
-//        this.criteria = criteria;
-//    }
-
-//    private long criteriaId = -1;
-//    @Deprecated
-//    public long getCriteriaId() {
-//        return criteriaId;
-//    }
-//    @Deprecated
-//    public void setCriteriaId(long criteriaId) {
-//        this.criteriaId = criteriaId;
-//    }
-
     private NamedCriteria namedCriteria;
     public NamedCriteria getNamedCriteria() {
         return namedCriteria;
@@ -70,5 +55,33 @@ public class ConfirmationDialogContext {
     }
     public void setNamedCriteriaId(long namedCriteriaId) {
         this.namedCriteriaId = namedCriteriaId;
+    }
+
+    private long messagePlaceHolderScriptId = -1;
+    public long getMessagePlaceHolderScriptId() {
+        return messagePlaceHolderScriptId;
+    }
+    public void setMessagePlaceHolderScriptId(long messagePlaceHolderScriptId) {
+        this.messagePlaceHolderScriptId = messagePlaceHolderScriptId;
+    }
+
+    private WorkflowContext messagePlaceHolderScript;
+    public WorkflowContext getMessagePlaceHolderScript() {
+        return messagePlaceHolderScript;
+    }
+    public void setMessagePlaceHolderScript(WorkflowContext messagePlaceHolderScript) {
+        this.messagePlaceHolderScript = messagePlaceHolderScript;
+    }
+
+    @JsonIgnore
+    @JSON(serialize = false)
+    public String getResolvedMessage() throws Exception {
+        if (messagePlaceHolderScript != null) {
+            Object o = messagePlaceHolderScript.executeWorkflow();
+            if (o instanceof Map) {
+                return StringSubstitutor.replace(message, (Map) o);
+            }
+        }
+        return message;
     }
 }

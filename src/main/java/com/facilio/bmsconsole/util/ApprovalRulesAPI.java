@@ -14,6 +14,7 @@ import com.facilio.db.criteria.manager.NamedCondition;
 import com.facilio.db.criteria.manager.NamedCriteria;
 import com.facilio.db.criteria.manager.NamedCriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -381,6 +382,10 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 			
 			for (ValidationContext validationContext : validations) {
 				validationContext.setRuleId(parentId);
+				if (validationContext.getErrorMessagePlaceHolderScript() != null) {
+					Long workflowId = WorkflowUtil.addWorkflow(validationContext.getErrorMessagePlaceHolderScript());
+					validationContext.setErrorMessagePlaceHolderScriptId(workflowId);
+				}
 				if (!validationContext.isValid()) {
 					throw new IllegalArgumentException("Invalid validation");
 				}
@@ -404,6 +409,16 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 					.table(validationModule.getTableName())
 					.andCondition(CriteriaAPI.getIdCondition(validationIds, validationModule));
 			builder.delete();
+
+			List<Long> workflowIds = new ArrayList<>();
+			for (ValidationContext validationContext : validations) {
+				if (validationContext.getErrorMessagePlaceHolderScriptId() > 0) {
+					workflowIds.add(validationContext.getErrorMessagePlaceHolderScriptId());
+				}
+			}
+			if (CollectionUtils.isNotEmpty(workflowIds)) {
+				WorkflowUtil.deleteWorkflows(workflowIds);
+			}
 		}
 	}
 
@@ -429,6 +444,9 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 				if (validation.getNamedCriteriaId() > 0) {
 					NamedCriteria namedCriteria = criteriaMap.get(validation.getNamedCriteriaId());
 					validation.setNamedCriteria(namedCriteria);
+				}
+				if (validation.getErrorMessagePlaceHolderScriptId() > 0) {
+					validation.setErrorMessagePlaceHolderScript(WorkflowUtil.getWorkflowContext(validation.getErrorMessagePlaceHolderScriptId()));
 				}
 			}	
 		}
