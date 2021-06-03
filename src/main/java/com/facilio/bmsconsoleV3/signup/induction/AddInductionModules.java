@@ -340,7 +340,8 @@ public class AddInductionModules extends SignUpData {
                                                 "Induction Templates",
                                                 "Induction_Templates",
                                                 FacilioModule.ModuleType.Q_AND_A,
-                                                modBean.getModule(FacilioConstants.QAndA.Q_AND_A_TEMPLATE)
+                                                modBean.getModule(FacilioConstants.QAndA.Q_AND_A_TEMPLATE),
+                                    true
                                                 );
         
         module.setStateFlowEnabled(Boolean.TRUE);
@@ -449,7 +450,8 @@ public class AddInductionModules extends SignUpData {
                 "Inductions",
                 "Induction_Responses",
                 FacilioModule.ModuleType.Q_AND_A_RESPONSE,
-                modBean.getModule(FacilioConstants.QAndA.RESPONSE)
+                modBean.getModule(FacilioConstants.QAndA.RESPONSE),
+                true
         );
         
         module.setStateFlowEnabled(Boolean.TRUE);

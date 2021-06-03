@@ -19,6 +19,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
+import org.apache.commons.collections4.CollectionUtils;
 
 public class FetchRelatedItemsForInductionTemplateCommand extends FacilioCommand {
 
@@ -26,20 +27,25 @@ public class FetchRelatedItemsForInductionTemplateCommand extends FacilioCommand
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		List<InductionTemplateContext> inspections = Constants.getRecordList((FacilioContext) context);
-		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
-		List<Long> inspectionTemplateIds = inspections.stream().map(InductionTemplateContext::getId).collect(Collectors.toList());
-		
-		Map<String, FacilioField> triggerFieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.Induction.INDUCTION_TRIGGER));
-		
-		List<InductionTriggerContext> triggers = InductionAPI.getInductionTrigger(CriteriaAPI.getCondition(triggerFieldMap.get("parent"), inspectionTemplateIds, NumberOperators.EQUALS), true);
-		
-		if(triggers != null) {
-			Map<Long, List<InductionTriggerContext>> triggerMap = triggers.stream().collect(Collectors.groupingBy(InductionTriggerContext::getParentId));
-			
-			inspections.forEach((inspection)->{inspection.setTriggers(triggerMap.get(inspection.getId()));});
+		List<InductionTemplateContext> inductions = Constants.getRecordList((FacilioContext) context);
+
+		if (CollectionUtils.isNotEmpty(inductions)) {
+
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+			List<Long> inspectionTemplateIds = inductions.stream().map(InductionTemplateContext::getId).collect(Collectors.toList());
+
+			Map<String, FacilioField> triggerFieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.Induction.INDUCTION_TRIGGER));
+
+			List<InductionTriggerContext> triggers = InductionAPI.getInductionTrigger(CriteriaAPI.getCondition(triggerFieldMap.get("parent"), inspectionTemplateIds, NumberOperators.EQUALS), true);
+
+			if (triggers != null) {
+				Map<Long, List<InductionTriggerContext>> triggerMap = triggers.stream().collect(Collectors.groupingBy(InductionTriggerContext::getParentId));
+
+				inductions.forEach((inspection) -> {
+					inspection.setTriggers(triggerMap.get(inspection.getId()));
+				});
+			}
 		}
 		
 		return false;

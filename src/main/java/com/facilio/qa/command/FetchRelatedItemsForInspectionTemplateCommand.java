@@ -19,6 +19,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
+import org.apache.commons.collections4.CollectionUtils;
 
 public class FetchRelatedItemsForInspectionTemplateCommand extends FacilioCommand {
 
@@ -27,19 +28,24 @@ public class FetchRelatedItemsForInspectionTemplateCommand extends FacilioComman
 		// TODO Auto-generated method stub
 		
 		List<InspectionTemplateContext> inspections = Constants.getRecordList((FacilioContext) context);
-		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
-		List<Long> inspectionTemplateIds = inspections.stream().map(InspectionTemplateContext::getId).collect(Collectors.toList());
-		
-		Map<String, FacilioField> triggerFieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.Inspection.INSPECTION_TRIGGER));
-		
-		List<InspectionTriggerContext> triggers = InspectionAPI.getInspectionTrigger(CriteriaAPI.getCondition(triggerFieldMap.get("parent"), inspectionTemplateIds, NumberOperators.EQUALS), true);
-		
-		if(triggers != null) {
-			Map<Long, List<InspectionTriggerContext>> triggerMap = triggers.stream().collect(Collectors.groupingBy(InspectionTriggerContext::getParentId));
-			
-			inspections.forEach((inspection)->{inspection.setTriggers(triggerMap.get(inspection.getId()));});
+
+		if (CollectionUtils.isNotEmpty(inspections)) {
+
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+			List<Long> inspectionTemplateIds = inspections.stream().map(InspectionTemplateContext::getId).collect(Collectors.toList());
+
+			Map<String, FacilioField> triggerFieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.Inspection.INSPECTION_TRIGGER));
+
+			List<InspectionTriggerContext> triggers = InspectionAPI.getInspectionTrigger(CriteriaAPI.getCondition(triggerFieldMap.get("parent"), inspectionTemplateIds, NumberOperators.EQUALS), true);
+
+			if (triggers != null) {
+				Map<Long, List<InspectionTriggerContext>> triggerMap = triggers.stream().collect(Collectors.groupingBy(InspectionTriggerContext::getParentId));
+
+				inspections.forEach((inspection) -> {
+					inspection.setTriggers(triggerMap.get(inspection.getId()));
+				});
+			}
 		}
 		
 		return false;

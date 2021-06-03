@@ -1032,10 +1032,12 @@ public class ModuleBeanImpl implements ModuleBean {
 					addExtendedProps(ModuleFactory.getScoreFieldModule(), FieldFactory.getScoreFieldFields(), fieldProps);
 					break;
 				case LARGE_TEXT:
-					LargeTextField largeTextField = (LargeTextField) field;
-					if (largeTextField.getRelModuleId() < 1) {
-						long relModuleId = addLargeTextModule(largeTextField);
-						fieldProps.put("relModuleId", relModuleId);
+					if (field instanceof LargeTextField) {
+						LargeTextField largeTextField = (LargeTextField) field;
+						if (largeTextField.getRelModuleId() < 1) {
+							long relModuleId = addLargeTextModule(largeTextField);
+							fieldProps.put("relModuleId", relModuleId);
+						}
 					}
 					else {
 						throw new IllegalArgumentException("Invalid Field instance for the LARGE_TEXT data type");

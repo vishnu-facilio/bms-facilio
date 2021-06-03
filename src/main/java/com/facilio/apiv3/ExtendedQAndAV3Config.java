@@ -54,7 +54,7 @@ public class ExtendedQAndAV3Config {
 //                .delete()
                 .summary()
                 .beforeFetch(new InspectionSupplementSupplyCommand())
-                .afterFetch(QAndAReadOnlyChainFactory.commonAfterInspectionTemplateFetch())
+                .afterFetch(QAndAReadOnlyChainFactory.afterInspectionTemplateFetch())
                 .build();
     }
     
@@ -67,6 +67,7 @@ public class ExtendedQAndAV3Config {
         		.beforeFetch(new InspectionSupplementSupplyCommand())
         		.summary()
         		.beforeFetch(new InspectionSupplementSupplyCommand())
+                .afterFetch(QAndAReadOnlyChainFactory.commonAfterQAndAResponseFetch())
                 .build();
     }
 
@@ -115,7 +116,7 @@ public class ExtendedQAndAV3Config {
                 .beforeFetch(new InductionSupplementSupplyCommand())
                 .summary()
                 .beforeFetch(new InductionSupplementSupplyCommand())
-                .afterFetch(QAndAReadOnlyChainFactory.commonAfterInductionTemplateFetch())
+                .afterFetch(QAndAReadOnlyChainFactory.afterInductionTemplateFetch())
                 .build();
     }
     
@@ -128,6 +129,7 @@ public class ExtendedQAndAV3Config {
         		.beforeFetch(new InductionSupplementSupplyCommand())
         		.summary()
         		.beforeFetch(new InductionSupplementSupplyCommand())
+                .afterFetch(QAndAReadOnlyChainFactory.commonAfterQAndAResponseFetch())
                 .build();
     }
     

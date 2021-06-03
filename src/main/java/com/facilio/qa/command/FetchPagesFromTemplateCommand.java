@@ -21,14 +21,7 @@ public class FetchPagesFromTemplateCommand extends FacilioCommand {
 
         LOGGER.info("FetchPagesFromTemplateCommand is called");
         List<QAndATemplateContext> templates = Constants.getRecordList((FacilioContext) context);
-        QAndAUtil.fetchChildrenFromParent(templates,
-                                        FacilioConstants.QAndA.PAGE,
-                                        "parent",
-                                            "position",
-                                        p -> p.getParent().getId(),
-                                        PageContext::setParent,
-                                        QAndATemplateContext::setPages,
-                                        QAndAUtil::setDefaultPropsAsNullToReduceRespSize);
+        QAndAUtil.populatePagesInTemplates(templates);
         LOGGER.info(MessageFormat.format("Fetched pages from template : {0}", (CollectionUtils.isEmpty(templates) ? "null" : templates.get(0).getPages())));
 
         return false;

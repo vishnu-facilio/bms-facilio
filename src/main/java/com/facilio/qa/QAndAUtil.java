@@ -357,4 +357,15 @@ public class QAndAUtil {
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("question"), questionIds, PickListOperators.IS))
                 .andCondition(CriteriaAPI.getCondition(responseSysModifiedTime, range.toString(), DateOperators.BETWEEN));
     }
+
+    public static void populatePagesInTemplates(Collection<QAndATemplateContext> templates) throws Exception {
+            fetchChildrenFromParent(templates,
+                FacilioConstants.QAndA.PAGE,
+                "parent",
+                "position",
+                p -> p.getParent().getId(),
+                PageContext::setParent,
+                QAndATemplateContext::setPages,
+                QAndAUtil::setDefaultPropsAsNullToReduceRespSize);
+    }
 }

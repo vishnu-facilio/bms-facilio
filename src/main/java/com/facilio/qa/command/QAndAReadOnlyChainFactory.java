@@ -27,6 +27,12 @@ public class QAndAReadOnlyChainFactory {
         c.addCommand(new FetchPagesFromTemplateCommand());
         return c;
     }
+
+    public static FacilioChain commonAfterQAndAResponseFetch() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchPagesFromResponseCommand());
+        return c;
+    }
     
     public static FacilioChain commonBeforeInspectionTemplateFetch() {
         FacilioChain c = getDefaultChain();
@@ -40,14 +46,14 @@ public class QAndAReadOnlyChainFactory {
         return c;
     }
     
-    public static FacilioChain commonAfterInspectionTemplateFetch() {
+    public static FacilioChain afterInspectionTemplateFetch() {
         FacilioChain c = getDefaultChain();
         c.addCommand(commonAfterQAndATemplateFetch());
         c.addCommand(new FetchRelatedItemsForInspectionTemplateCommand());
         return c;
     }
     
-    public static FacilioChain commonAfterInductionTemplateFetch() {
+    public static FacilioChain afterInductionTemplateFetch() {
         FacilioChain c = getDefaultChain();
         c.addCommand(commonAfterQAndATemplateFetch());
         c.addCommand(new FetchRelatedItemsForInductionTemplateCommand());
