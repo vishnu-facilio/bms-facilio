@@ -516,9 +516,7 @@ public class FieldUtil {
 
 	public static boolean isSystemFieldsPresent (FacilioModule module) {
 
-		if(!FacilioProperties.isProduction() && FacilioConstants.ContextNames.ATTENDANCE.equals(module.getName())){
-			return false;
-		}
+		
 		// custom modules will have system fields by default
 		if (module.isCustom()
 				|| module.getTypeEnum() == FacilioModule.ModuleType.ENUM_REL_MODULE
@@ -526,6 +524,9 @@ public class FieldUtil {
 				|| module.getTypeEnum() == FacilioModule.ModuleType.RATING
 				|| FacilioConstants.ContextNames.RESOURCE.equals(module.getParentModule().getName())) {
 			return true;
+		}
+		if(!FacilioProperties.isProduction()){
+			return false;
 		}
 		return SYSTEM_FIELDS_ALLOWED_MODULES.contains(module.getName());
 	}
