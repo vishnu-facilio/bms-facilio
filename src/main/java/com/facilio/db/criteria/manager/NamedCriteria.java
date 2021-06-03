@@ -2,7 +2,10 @@ package com.facilio.db.criteria.manager;
 
 import com.facilio.db.criteria.FacilioModulePredicate;
 import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.modules.FieldUtil;
 import com.facilio.util.ExpressionEvaluator;
+import com.facilio.workflows.context.WorkflowContext;
+
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections.Predicate;
@@ -113,7 +116,11 @@ public class NamedCriteria extends ExpressionEvaluator<Predicate> {
                     break;
 
                 case WORKFLOW:
-                    result = condition.getWorkflowContext().executeWorkflow();
+                	WorkflowContext workflow = condition.getWorkflowContext();
+                	if(record != null) {
+                		workflow.setParams(Collections.singletonList(FieldUtil.getAsProperties(record)));
+                	}
+                    result = workflow.executeWorkflow();
                     break;
 
                 case SYSTEM_FUNCTION:
