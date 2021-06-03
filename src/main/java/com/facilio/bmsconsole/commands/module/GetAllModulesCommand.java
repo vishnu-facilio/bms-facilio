@@ -10,6 +10,7 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.fw.BeanFactory;
@@ -76,8 +77,11 @@ public class GetAllModulesCommand extends FacilioCommand {
 			ContextNames.LOCKERS,
 			ContextNames.PARKING_STALL,
 			ContextNames.Floorplan.DESKS,
-			ContextNames.Floorplan.INDOOR_FLOORPLAN
-
+			ContextNames.Floorplan.INDOOR_FLOORPLAN,
+			FacilioConstants.Inspection.INSPECTION_TEMPLATE,
+			FacilioConstants.Inspection.INSPECTION_RESPONSE,
+			FacilioConstants.Induction.INDUCTION_TEMPLATE,
+			FacilioConstants.Induction.INDUCTION_RESPONSE
     });
 
 	@Override
