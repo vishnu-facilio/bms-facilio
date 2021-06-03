@@ -122,7 +122,7 @@ public class ApproverWorkflowRuleContext extends WorkflowRuleContext {
         if (CollectionUtils.isNotEmpty(validations)) {
             for (ValidationContext validation : validations) {
                 if (!validation.validate(moduleRecord, context, placeHolders)) {
-                    throw new IllegalArgumentException(validation.getResolvedErrorMessage());
+                    throw new IllegalArgumentException(validation.getResolvedErrorMessage(moduleRecord));
                 }
             }
         }

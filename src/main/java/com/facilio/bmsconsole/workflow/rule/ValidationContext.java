@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.workflow.rule;
 
 import com.facilio.db.criteria.manager.NamedCriteria;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.workflows.context.WorkflowContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -9,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.struts2.json.annotations.JSON;
 
+import java.util.Collections;
 import java.util.Map;
 
 public class ValidationContext {
@@ -46,9 +48,12 @@ public class ValidationContext {
 
 	@JsonIgnore
 	@JSON(serialize = false)
-	public String getResolvedErrorMessage() throws Exception {
+	public String getResolvedErrorMessage(ModuleBaseWithCustomFields record) throws Exception {
 		if (errorMessagePlaceHolderScriptId > 0) {
 			if (errorMessagePlaceHolderScript != null) {
+				if(record != null) {
+					errorMessagePlaceHolderScript.setParams(Collections.singletonList(FieldUtil.getAsProperties(record)));
+				}
 				Object o = errorMessagePlaceHolderScript.executeWorkflow();
 				if (o instanceof Map) {
 					return StringSubstitutor.replace(errorMessage, (Map) o);

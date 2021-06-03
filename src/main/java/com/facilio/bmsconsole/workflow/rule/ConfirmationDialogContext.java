@@ -1,11 +1,14 @@
 package com.facilio.bmsconsole.workflow.rule;
 
 import com.facilio.db.criteria.manager.NamedCriteria;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.workflows.context.WorkflowContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.struts2.json.annotations.JSON;
 
+import java.util.Collections;
 import java.util.Map;
 
 public class ConfirmationDialogContext {
@@ -75,8 +78,11 @@ public class ConfirmationDialogContext {
 
     @JsonIgnore
     @JSON(serialize = false)
-    public String getResolvedMessage() throws Exception {
+    public String getResolvedMessage(ModuleBaseWithCustomFields moduleData) throws Exception {
         if (messagePlaceHolderScript != null) {
+            if(moduleData != null) {
+                messagePlaceHolderScript.setParams(Collections.singletonList(FieldUtil.getAsProperties(moduleData)));
+            }
             Object o = messagePlaceHolderScript.executeWorkflow();
             if (o instanceof Map) {
                 return StringSubstitutor.replace(message, (Map) o);
