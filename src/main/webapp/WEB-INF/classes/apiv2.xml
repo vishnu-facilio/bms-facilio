@@ -84,7 +84,12 @@
 			class="com.facilio.bmsconsole.actions.LoginAction"
 			method="fetchCurrentAccount">
 		</action>
-		
+
+		<action name="features"
+				class="com.facilio.bmsconsole.actions.LoginAction"
+				method="fetchFeatures">
+		</action>
+
 		<action name="v2portalaccount" class="com.facilio.bmsconsole.actions.LoginAction"
 				method="v2portalAccount">
 	   </action>

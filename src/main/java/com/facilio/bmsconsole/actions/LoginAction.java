@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.zip.Inflater;
+import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -913,6 +914,12 @@ public class LoginAction extends FacilioAction {
 		account.put("data", data);
 		
 		setResult("account", account);
+		return SUCCESS;
+	}
+
+	public String fetchFeatures() throws Exception {
+		TreeMap<String, Boolean> features = AccountUtil.getFeatureLicenseMap(AccountUtil.getCurrentOrg().getOrgId());
+		setResult("features", features);
 		return SUCCESS;
 	}
 	
