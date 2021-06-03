@@ -6,6 +6,7 @@ import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SiteContext;
@@ -45,10 +46,14 @@ public class InductionTemplateContext extends QAndATemplateContext <InductionRes
     private SpaceCategoryContext spaceCategory;
     
     private ResourceContext resource;
-    private Group assignmentGroup;
-    private User assignedTo;
     
-    private Boolean status; 
+    private Boolean status;
+    
+    private Boolean siteApplyTo; 
+    
+    private PeopleContext assignedTo;
+    
+    private List<SiteContext> sites;
     
     public Integer getCreationType() { // Everything is wrapper in V3 for null handling
     	if(creationType != null) {
@@ -85,8 +90,6 @@ public class InductionTemplateContext extends QAndATemplateContext <InductionRes
     protected void addDefaultPropsForResponse(InductionResponseContext response) {
         response.setSiteId(this.getSiteId());
         response.setSiteId(this.getSiteId());
-        response.setAssignedTo(this.getAssignedTo());
-        response.setAssignmentGroup(this.getAssignmentGroup());
 
         // Default props which will be overridden if called from Inspection scheduler
         response.setSourceType(InductionResponseContext.SourceType.MANNUAL.getIndex());

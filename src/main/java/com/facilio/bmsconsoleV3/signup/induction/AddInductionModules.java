@@ -41,6 +41,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.BuildingOperator;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.EnumOperators;
@@ -176,31 +177,6 @@ public class AddInductionModules extends SignUpData {
       
       List<FormSection> sections = new ArrayList<FormSection>();
 
-      FormSection section = new FormSection();
-      section.setName("Configuration");
-      section.setSectionType(FormSection.SectionType.FIELDS);
-      section.setShowLabel(true);
-
-      List<FormField> fields = new ArrayList<>();
-      
-      int seq = 0;
-      fields.add(new FormField(fieldMap.get("creationType").getFieldId(), "creationType", FacilioField.FieldDisplayType.SELECTBOX, "Scope", FormField.Required.REQUIRED, ++seq, 1));
-      fields.add(new FormField(fieldMap.get("siteId").getFieldId(), "site", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED, ++seq, 1));
-      fields.add(new FormField(fieldMap.get("baseSpace").getFieldId(), "baseSpace", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Building", FormField.Required.OPTIONAL, ++seq, 1,Boolean.TRUE));
-      
-      fields.add(new FormField(fieldMap.get("assignmentType").getFieldId(), "assignmentType", FacilioField.FieldDisplayType.SELECTBOX, "Scope Category", FormField.Required.OPTIONAL, ++seq, 1,Boolean.TRUE));
-      
-      fields.add(new FormField(fieldMap.get("assetCategory").getFieldId(), "assetCategory", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Asset Category", FormField.Required.OPTIONAL, ++seq, 1,Boolean.TRUE));
-      fields.add(new FormField(fieldMap.get("spaceCategory").getFieldId(), "spaceCategory", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Space Category", FormField.Required.OPTIONAL, ++seq, 1,Boolean.TRUE));
-      
-      fields.add(new FormField(fieldMap.get("resource").getFieldId(), "resource", FacilioField.FieldDisplayType.WOASSETSPACECHOOSER, "Space/Asset", FormField.Required.OPTIONAL, ++seq, 1,Boolean.TRUE));
-      
-      section.setFields(fields);
-      
-      section.setSequenceNumber(1);
-      
-      sections.add(section);
-      
       FormSection configSection = new FormSection();
       configSection.setName("Induction Details");
       configSection.setSectionType(FormSection.SectionType.FIELDS);
@@ -208,136 +184,54 @@ public class AddInductionModules extends SignUpData {
       
       List<FormField> configFields = new ArrayList<>();
       
-      seq = 0;
+      int seq = 0;
       
+      FormField field = new FormField(fieldMap.get("siteApplyTo").getFieldId(), "siteApplyTo", FacilioField.FieldDisplayType.RADIO, "Apply To", FormField.Required.REQUIRED, ++seq, 1);
+      field.setValue(Boolean.TRUE.toString());
+      configFields.add(field);
+      configFields.add(new FormField(fieldMap.get("sites").getFieldId(), "sites", FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Sites", FormField.Required.OPTIONAL, ++seq, 1,Boolean.TRUE));
       configFields.add(new FormField(fieldMap.get("name").getFieldId(), "name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, ++seq, 1));
       configFields.add(new FormField(fieldMap.get("description").getFieldId(), "description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, ++seq, 1));
-      configFields.add(new FormField(-1, "assignment", FacilioField.FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", FormField.Required.OPTIONAL, ++seq, 1));
 
       configSection.setFields(configFields);
       
-      configSection.setSequenceNumber(2);
+      configSection.setSequenceNumber(1);
       
       sections.add(configSection);
       
       defaultForm.setSections(sections);
+      
       FormsAPI.createForm(defaultForm, Induction);
       
       Map<Long, FormField> formFieldMap = defaultForm.getSections().stream().map(FormSection::getFields).flatMap(List::stream).collect(Collectors.toMap(FormField::getFieldId, Function.identity()));
       
-      addSingleAssetSelectRule(defaultForm, fieldMap, formFieldMap);
-      addMultipleAssetSelectRule(defaultForm, fieldMap, formFieldMap);
-      
-      addAssetCategoryShowRule(defaultForm, fieldMap, formFieldMap);
-      addAssetCategoryHideRule(defaultForm, fieldMap, formFieldMap);
-      addSpaceCategoryShowRule(defaultForm, fieldMap, formFieldMap);
-      addSpaceCategoryHideRule(defaultForm, fieldMap, formFieldMap);
-      
-      addOnLoadRule(defaultForm, fieldMap, formFieldMap);
+      addApplyToSiteRule(defaultForm, fieldMap, formFieldMap);
 	}
 	
-	private void addOnLoadRule(FacilioForm defaultForm, Map<String, FacilioField> fieldMap,Map<Long, FormField> formFieldMap) throws Exception {
-		
-		FormRuleContext singleRule = new FormRuleContext();
-	      singleRule.setName("Form On Load Rule");
-	      singleRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
-	      singleRule.setTriggerType(FormRuleContext.TriggerType.FORM_ON_LOAD.getIntVal());
-	      singleRule.setFormId(defaultForm.getId());
-	      singleRule.setType(FormRuleContext.FormRuleType.FROM_RULE.getIntVal());
-	      
-	      List<FormRuleActionContext> actions = new ArrayList<FormRuleActionContext>();
-	      
-	      FormRuleActionContext filterAction = new FormRuleActionContext(); 
-	      filterAction.setActionType(FormActionType.APPLY_FILTER.getVal());
-	      
-	      FormRuleActionFieldsContext actionField = new FormRuleActionFieldsContext();
-	      
-	      actionField.setFormFieldId(formFieldMap.get(fieldMap.get("assignmentType").getId()).getId());
-	      
-	      JSONObject json = new JSONObject();
-	      
-	      json.put("show", Boolean.TRUE);
-	      json.put("values", "[1,2,3,4,7]");
-	      
-	      actionField.setActionMeta(json.toJSONString());
-	      
-	      filterAction.setFormRuleActionFieldsContext(Collections.singletonList(actionField));
-	      
-	      actions.add(filterAction);
-	      
-	      singleRule.setActions(actions);
-	      
-	      FacilioChain chain = TransactionChainFactory.getAddFormRuleChain();
-		  Context context = chain.getContext();
-			
-		  context.put(FormRuleAPI.FORM_RULE_CONTEXT,singleRule);
-			
-		  chain.execute();
-		  
+	public void addApplyToSiteRule(FacilioForm defaultForm,Map<String, FacilioField> fieldMap,Map<Long, FormField> formFieldMap) throws Exception {
+		addShowSitesFieldRule(defaultForm, fieldMap, formFieldMap);
+		addHideSitesFieldRule(defaultForm, fieldMap, formFieldMap);
 	}
 	
-
-
-	private void addAssetCategoryShowRule(FacilioForm defaultForm, Map<String, FacilioField> fieldMap,Map<Long, FormField> formFieldMap) throws Exception {
+	public void addHideSitesFieldRule(FacilioForm defaultForm,Map<String, FacilioField> fieldMap,Map<Long, FormField> formFieldMap) throws Exception {
 		
-		FormRuleContext singleRule = new FormRuleContext();
-	      singleRule.setName("Asset Category Show");
-	      singleRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
-	      singleRule.setTriggerType(FormRuleContext.TriggerType.FIELD_UPDATE.getIntVal());
-	      singleRule.setFormId(defaultForm.getId());
-	      singleRule.setType(FormRuleContext.FormRuleType.FROM_RULE.getIntVal());
+		  FormRuleContext hideRule = new FormRuleContext();
+		  hideRule.setName("Multi Site Hide Rule");
+		  hideRule.setDescription("Rule To Hide Multi Site field.");
+		  hideRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
+		  hideRule.setTriggerType(FormRuleContext.TriggerType.FIELD_UPDATE.getIntVal());
+		  hideRule.setFormId(defaultForm.getId());
+		  hideRule.setType(FormRuleContext.FormRuleType.FROM_RULE.getIntVal());
 	      
 	      Criteria criteria = new Criteria();
 	      
-	      criteria.addAndCondition(CriteriaAPI.getCondition("ASSIGNMENT_TYPE","assignmentType", PreventiveMaintenance.PMAssignmentType.ASSET_CATEGORY.getVal()+"", EnumOperators.IS));
+	      criteria.addAndCondition(CriteriaAPI.getCondition("SITE_APPLY_TO","siteApplyTo", Boolean.TRUE.toString()+"", BooleanOperators.IS));
 	      
-	      singleRule.setCriteria(criteria);
-	      
-	      FormRuleTriggerFieldContext triggerField = new FormRuleTriggerFieldContext();
-	      triggerField.setFieldId(formFieldMap.get(fieldMap.get("assignmentType").getId()).getId());
-	      singleRule.setTriggerFields(Collections.singletonList(triggerField));
-	      
-	      List<FormRuleActionContext> actions = new ArrayList<FormRuleActionContext>();
-	      
-	      FormRuleActionContext showAction = new FormRuleActionContext(); 
-	      showAction.setActionType(FormActionType.SHOW_FIELD.getVal());
-	      
-	      FormRuleActionFieldsContext actionField = new FormRuleActionFieldsContext();
-	      
-	      actionField.setFormFieldId(formFieldMap.get(fieldMap.get("assetCategory").getId()).getId());
-	      
-	      showAction.setFormRuleActionFieldsContext(Collections.singletonList(actionField));
-	      
-	      actions.add(showAction);
-	      
-	      singleRule.setActions(actions);
-	      
-	      FacilioChain chain = TransactionChainFactory.getAddFormRuleChain();
-		  Context context = chain.getContext();
-			
-		  context.put(FormRuleAPI.FORM_RULE_CONTEXT,singleRule);
-			
-		  chain.execute();
-	}
-	
-	private void addAssetCategoryHideRule(FacilioForm defaultForm, Map<String, FacilioField> fieldMap,Map<Long, FormField> formFieldMap) throws Exception {
-		
-		FormRuleContext singleRule = new FormRuleContext();
-	      singleRule.setName("Asset Category Hide");
-	      singleRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
-	      singleRule.setTriggerType(FormRuleContext.TriggerType.FIELD_UPDATE.getIntVal());
-	      singleRule.setFormId(defaultForm.getId());
-	      singleRule.setType(FormRuleContext.FormRuleType.FROM_RULE.getIntVal());
-	      
-	      Criteria criteria = new Criteria();
-	      
-	      criteria.addAndCondition(CriteriaAPI.getCondition("ASSIGNMENT_TYPE","assignmentType", PreventiveMaintenance.PMAssignmentType.ASSET_CATEGORY.getVal()+"", EnumOperators.ISN_T));
-	      
-	      singleRule.setCriteria(criteria);
+	      hideRule.setCriteria(criteria);
 	      
 	      FormRuleTriggerFieldContext triggerField = new FormRuleTriggerFieldContext();
-	      triggerField.setFieldId(formFieldMap.get(fieldMap.get("assignmentType").getId()).getId());
-	      singleRule.setTriggerFields(Collections.singletonList(triggerField));
+	      triggerField.setFieldId(formFieldMap.get(fieldMap.get("siteApplyTo").getId()).getId());
+	      hideRule.setTriggerFields(Collections.singletonList(triggerField));
 	      
 	      List<FormRuleActionContext> actions = new ArrayList<FormRuleActionContext>();
 	      
@@ -346,40 +240,42 @@ public class AddInductionModules extends SignUpData {
 	      
 	      FormRuleActionFieldsContext actionField = new FormRuleActionFieldsContext();
 	      
-	      actionField.setFormFieldId(formFieldMap.get(fieldMap.get("assetCategory").getId()).getId());
+	      actionField.setFormFieldId(formFieldMap.get(fieldMap.get("sites").getId()).getId());
 	      
 	      showAction.setFormRuleActionFieldsContext(Collections.singletonList(actionField));
 	      
 	      actions.add(showAction);
 	      
-	      singleRule.setActions(actions);
+	      hideRule.setActions(actions);
 	      
 	      FacilioChain chain = TransactionChainFactory.getAddFormRuleChain();
 		  Context context = chain.getContext();
 			
-		  context.put(FormRuleAPI.FORM_RULE_CONTEXT,singleRule);
+		  context.put(FormRuleAPI.FORM_RULE_CONTEXT,hideRule);
 			
 		  chain.execute();
+		
 	}
 	
-	private void addSpaceCategoryShowRule(FacilioForm defaultForm, Map<String, FacilioField> fieldMap,Map<Long, FormField> formFieldMap) throws Exception {
+	public void addShowSitesFieldRule(FacilioForm defaultForm,Map<String, FacilioField> fieldMap,Map<Long, FormField> formFieldMap) throws Exception {
 		
-		FormRuleContext singleRule = new FormRuleContext();
-	      singleRule.setName("Space Category Show");
-	      singleRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
-	      singleRule.setTriggerType(FormRuleContext.TriggerType.FIELD_UPDATE.getIntVal());
-	      singleRule.setFormId(defaultForm.getId());
-	      singleRule.setType(FormRuleContext.FormRuleType.FROM_RULE.getIntVal());
+		  FormRuleContext showRule = new FormRuleContext();
+		  showRule.setName("Multi Site Show Rule");
+		  showRule.setDescription("Rule To Show Multi Site field.");
+		  showRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
+		  showRule.setTriggerType(FormRuleContext.TriggerType.FIELD_UPDATE.getIntVal());
+		  showRule.setFormId(defaultForm.getId());
+		  showRule.setType(FormRuleContext.FormRuleType.FROM_RULE.getIntVal());
 	      
 	      Criteria criteria = new Criteria();
 	      
-	      criteria.addAndCondition(CriteriaAPI.getCondition("ASSIGNMENT_TYPE","assignmentType", PreventiveMaintenance.PMAssignmentType.SPACE_CATEGORY.getVal()+"", EnumOperators.IS));
+	      criteria.addAndCondition(CriteriaAPI.getCondition("SITE_APPLY_TO","siteApplyTo", Boolean.FALSE.toString()+"", BooleanOperators.IS));
 	      
-	      singleRule.setCriteria(criteria);
+	      showRule.setCriteria(criteria);
 	      
 	      FormRuleTriggerFieldContext triggerField = new FormRuleTriggerFieldContext();
-	      triggerField.setFieldId(formFieldMap.get(fieldMap.get("assignmentType").getId()).getId());
-	      singleRule.setTriggerFields(Collections.singletonList(triggerField));
+	      triggerField.setFieldId(formFieldMap.get(fieldMap.get("siteApplyTo").getId()).getId());
+	      showRule.setTriggerFields(Collections.singletonList(triggerField));
 	      
 	      List<FormRuleActionContext> actions = new ArrayList<FormRuleActionContext>();
 	      
@@ -388,195 +284,23 @@ public class AddInductionModules extends SignUpData {
 	      
 	      FormRuleActionFieldsContext actionField = new FormRuleActionFieldsContext();
 	      
-	      actionField.setFormFieldId(formFieldMap.get(fieldMap.get("spaceCategory").getId()).getId());
+	      actionField.setFormFieldId(formFieldMap.get(fieldMap.get("sites").getId()).getId());
 	      
 	      showAction.setFormRuleActionFieldsContext(Collections.singletonList(actionField));
 	      
 	      actions.add(showAction);
 	      
-	      singleRule.setActions(actions);
+	      showRule.setActions(actions);
 	      
 	      FacilioChain chain = TransactionChainFactory.getAddFormRuleChain();
 		  Context context = chain.getContext();
 			
-		  context.put(FormRuleAPI.FORM_RULE_CONTEXT,singleRule);
-			
-		  chain.execute();
-	}
-	
-	private void addSpaceCategoryHideRule(FacilioForm defaultForm, Map<String, FacilioField> fieldMap,Map<Long, FormField> formFieldMap) throws Exception {
-		
-		FormRuleContext singleRule = new FormRuleContext();
-	      singleRule.setName("Space Category Hide");
-	      singleRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
-	      singleRule.setTriggerType(FormRuleContext.TriggerType.FIELD_UPDATE.getIntVal());
-	      singleRule.setFormId(defaultForm.getId());
-	      singleRule.setType(FormRuleContext.FormRuleType.FROM_RULE.getIntVal());
-	      
-	      Criteria criteria = new Criteria();
-	      
-	      criteria.addAndCondition(CriteriaAPI.getCondition("ASSIGNMENT_TYPE","assignmentType", PreventiveMaintenance.PMAssignmentType.SPACE_CATEGORY.getVal()+"", EnumOperators.ISN_T));
-	      
-	      singleRule.setCriteria(criteria);
-	      
-	      FormRuleTriggerFieldContext triggerField = new FormRuleTriggerFieldContext();
-	      triggerField.setFieldId(formFieldMap.get(fieldMap.get("assignmentType").getId()).getId());
-	      singleRule.setTriggerFields(Collections.singletonList(triggerField));
-	      
-	      List<FormRuleActionContext> actions = new ArrayList<FormRuleActionContext>();
-	      
-	      FormRuleActionContext showAction = new FormRuleActionContext(); 
-	      showAction.setActionType(FormActionType.HIDE_FIELD.getVal());
-	      
-	      FormRuleActionFieldsContext actionField = new FormRuleActionFieldsContext();
-	      
-	      actionField.setFormFieldId(formFieldMap.get(fieldMap.get("spaceCategory").getId()).getId());
-	      
-	      showAction.setFormRuleActionFieldsContext(Collections.singletonList(actionField));
-	      
-	      actions.add(showAction);
-	      
-	      singleRule.setActions(actions);
-	      
-	      FacilioChain chain = TransactionChainFactory.getAddFormRuleChain();
-		  Context context = chain.getContext();
-			
-		  context.put(FormRuleAPI.FORM_RULE_CONTEXT,singleRule);
-			
-		  chain.execute();
-	}
-	
-	public void addSingleAssetSelectRule(FacilioForm defaultForm,Map<String, FacilioField> fieldMap,Map<Long, FormField> formFieldMap) throws Exception {
-		
-		FormRuleContext singleRule = new FormRuleContext();
-	      singleRule.setName("Single Resource Show/Hide Rule");
-	      singleRule.setDescription("Rule To Show/Hide single resource's related fields.");
-	      singleRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
-	      singleRule.setTriggerType(FormRuleContext.TriggerType.FIELD_UPDATE.getIntVal());
-	      singleRule.setFormId(defaultForm.getId());
-	      singleRule.setType(FormRuleContext.FormRuleType.FROM_RULE.getIntVal());
-	      
-	      Criteria criteria = new Criteria();
-	      
-	      criteria.addAndCondition(CriteriaAPI.getCondition("CREATION_TYPE","creationType", InductionTemplateContext.CreationType.SINGLE.getVal()+"", EnumOperators.IS));
-	      
-	      singleRule.setCriteria(criteria);
-	      
-	      FormRuleTriggerFieldContext triggerField = new FormRuleTriggerFieldContext();
-	      triggerField.setFieldId(formFieldMap.get(fieldMap.get("creationType").getId()).getId());
-	      singleRule.setTriggerFields(Collections.singletonList(triggerField));
-	      
-	      List<FormRuleActionContext> actions = new ArrayList<FormRuleActionContext>();
-	      
-	      FormRuleActionContext showAction = new FormRuleActionContext(); 
-	      showAction.setActionType(FormActionType.SHOW_FIELD.getVal());
-	      
-	      FormRuleActionFieldsContext actionField = new FormRuleActionFieldsContext();
-	      
-	      actionField.setFormFieldId(formFieldMap.get(fieldMap.get("resource").getId()).getId());
-	      
-	      showAction.setFormRuleActionFieldsContext(Collections.singletonList(actionField));
-	      
-	      actions.add(showAction);
-	      
-	      
-	      FormRuleActionContext  hideAction = new FormRuleActionContext(); 
-	      hideAction.setActionType(FormActionType.HIDE_FIELD.getVal());
-	      
-	      List<FormRuleActionFieldsContext> hidefields = new ArrayList<FormRuleActionFieldsContext>();
-	      
-	      FormRuleActionFieldsContext hideField1 = new FormRuleActionFieldsContext();
-	      hideField1.setFormFieldId(formFieldMap.get(fieldMap.get("assignmentType").getId()).getId());
-	      hidefields.add(hideField1);
-	      
-	      FormRuleActionFieldsContext hideField2 = new FormRuleActionFieldsContext();
-	      hideField2.setFormFieldId(formFieldMap.get(fieldMap.get("baseSpace").getId()).getId());
-	      hidefields.add(hideField2);
-	      
-	      FormRuleActionFieldsContext hideField3 = new FormRuleActionFieldsContext();
-	      hideField3.setFormFieldId(formFieldMap.get(fieldMap.get("assetCategory").getId()).getId());
-	      hidefields.add(hideField3);
-	      
-	      FormRuleActionFieldsContext hideField4 = new FormRuleActionFieldsContext();
-	      hideField4.setFormFieldId(formFieldMap.get(fieldMap.get("spaceCategory").getId()).getId());
-	      hidefields.add(hideField4);
-	      
-	      hideAction.setFormRuleActionFieldsContext(hidefields);
-	      
-	      actions.add(hideAction);
-	      
-	      singleRule.setActions(actions);
-	      
-	      FacilioChain chain = TransactionChainFactory.getAddFormRuleChain();
-		  Context context = chain.getContext();
-			
-		  context.put(FormRuleAPI.FORM_RULE_CONTEXT,singleRule);
+		  context.put(FormRuleAPI.FORM_RULE_CONTEXT,showRule);
 			
 		  chain.execute();
 		
 	}
 	
-	public void addMultipleAssetSelectRule(FacilioForm defaultForm,Map<String, FacilioField> fieldMap,Map<Long, FormField> formFieldMap) throws Exception {
-		
-		FormRuleContext multipleRule = new FormRuleContext();
-		multipleRule.setName("Multiple Resource Show/Hide Rule");
-		multipleRule.setDescription("Rule to Show/Hide Multiple Resource's related fields.");
-		multipleRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
-	      multipleRule.setTriggerType(FormRuleContext.TriggerType.FIELD_UPDATE.getIntVal());
-	      multipleRule.setFormId(defaultForm.getId());
-	      multipleRule.setType(FormRuleContext.FormRuleType.FROM_RULE.getIntVal());
-	      
-	      Criteria criteria = new Criteria();
-	      
-	      criteria.addAndCondition(CriteriaAPI.getCondition("CREATION_TYPE","creationType", InductionTemplateContext.CreationType.MULTIPLE.getVal()+"", EnumOperators.IS));
-	      
-	      multipleRule.setCriteria(criteria);
-	      
-	      FormRuleTriggerFieldContext triggerField = new FormRuleTriggerFieldContext();
-	      triggerField.setFieldId(formFieldMap.get(fieldMap.get("creationType").getId()).getId());
-	      multipleRule.setTriggerFields(Collections.singletonList(triggerField));
-	      
-	      List<FormRuleActionContext> actions = new ArrayList<FormRuleActionContext>();
-	      
-	      FormRuleActionContext hideAction = new FormRuleActionContext(); 
-	      hideAction.setActionType(FormActionType.HIDE_FIELD.getVal());
-	      
-	      FormRuleActionFieldsContext actionField = new FormRuleActionFieldsContext();
-	      
-	      actionField.setFormFieldId(formFieldMap.get(fieldMap.get("resource").getId()).getId());
-	      
-	      hideAction.setFormRuleActionFieldsContext(Collections.singletonList(actionField));
-	      
-	      actions.add(hideAction);
-	      
-	      
-	      FormRuleActionContext  showAction = new FormRuleActionContext(); 
-	      showAction.setActionType(FormActionType.SHOW_FIELD.getVal());
-	      
-	      List<FormRuleActionFieldsContext> showfields = new ArrayList<FormRuleActionFieldsContext>();
-	      
-	      FormRuleActionFieldsContext showField1 = new FormRuleActionFieldsContext();
-	      showField1.setFormFieldId(formFieldMap.get(fieldMap.get("assignmentType").getId()).getId());
-	      showfields.add(showField1);
-	      
-	      FormRuleActionFieldsContext showField2 = new FormRuleActionFieldsContext();
-	      showField2.setFormFieldId(formFieldMap.get(fieldMap.get("baseSpace").getId()).getId());
-	      showfields.add(showField2);
-	      
-	      showAction.setFormRuleActionFieldsContext(showfields);
-	      
-	      actions.add(showAction);
-	      
-	      multipleRule.setActions(actions);
-	      
-	      FacilioChain chain = TransactionChainFactory.getAddFormRuleChain();
-		  Context context = chain.getContext();
-			
-		  context.put(FormRuleAPI.FORM_RULE_CONTEXT,multipleRule);
-			
-		  chain.execute();
-		
-	}
 
 
 	public FacilioModule constructInductionTriggersInclExcl(ModuleBean modBean) throws Exception {
@@ -635,6 +359,17 @@ public class AddInductionModules extends SignUpData {
         status.setTrueVal("Active");
         status.setFalseVal("Inactive");
         fields.add(status);
+        
+        BooleanField siteApplyTo = (BooleanField) FieldFactory.getDefaultField("siteApplyTo", "Apply To", "SITE_APPLY_TO", FieldType.BOOLEAN);
+        siteApplyTo.setTrueVal("All Sites");
+        siteApplyTo.setFalseVal("Specific Sites");
+        fields.add(siteApplyTo);
+        
+        MultiLookupField multiLookupSiteField = (MultiLookupField) FieldFactory.getDefaultField("sites", "Sites", null, FieldType.MULTI_LOOKUP);
+        multiLookupSiteField.setParentFieldPositionEnum(MultiLookupField.ParentFieldPosition.LEFT);
+        multiLookupSiteField.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.SITE));
+
+        fields.add(multiLookupSiteField);
         
         SystemEnumField assignmentType = (SystemEnumField) FieldFactory.getDefaultField("assignmentType", "Scope Category", "ASSIGNMENT_TYPE", FieldType.SYSTEM_ENUM);
         assignmentType.setEnumName("MultiResourceAssignmentType");
@@ -818,12 +553,8 @@ public class AddInductionModules extends SignUpData {
         fields.add(resource);
         
         LookupField assignedTo = (LookupField) FieldFactory.getDefaultField("assignedTo", "Assigned To", "ASSIGNED_TO", FieldType.LOOKUP);
-        assignedTo.setSpecialType("users");
+        assignedTo.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.PEOPLE));
         fields.add(assignedTo);
-        
-        LookupField assignmentGroup = (LookupField) FieldFactory.getDefaultField("assignmentGroup", "Team", "ASSIGNMENT_GROUP", FieldType.LOOKUP);
-        assignmentGroup.setSpecialType("groups");
-        fields.add(assignmentGroup);
         
         return fields;
 	}
@@ -849,10 +580,7 @@ public class AddInductionModules extends SignUpData {
          stateFlowRuleContext.setRuleType(WorkflowRuleContext.RuleType.STATE_FLOW);
          WorkflowRuleAPI.addWorkflowRule(stateFlowRuleContext);
          
-         Criteria assignmentCriteria = new Criteria();
-         assignmentCriteria.addAndCondition(CriteriaAPI.getCondition("ASSIGNED_TO", "assignedTo", null, CommonOperators.IS_NOT_EMPTY));
-         
-         addStateflowTransitionContext(inductionModule, stateFlowRuleContext, "Assign", createdStatus, assignedStatus,TransitionType.CONDITIONED,assignmentCriteria);
+         addStateflowTransitionContext(inductionModule, stateFlowRuleContext, "Assign", createdStatus, assignedStatus,TransitionType.NORMAL,null);
          addStateflowTransitionContext(inductionModule, stateFlowRuleContext, "Start Work", assignedStatus, wipStatus,TransitionType.NORMAL,null);
          addStateflowTransitionContext(inductionModule, stateFlowRuleContext, "Pause", wipStatus, onHoldStatus,TransitionType.NORMAL,null);
          addStateflowTransitionContext(inductionModule, stateFlowRuleContext, "Resume", onHoldStatus, wipStatus,TransitionType.NORMAL,null);

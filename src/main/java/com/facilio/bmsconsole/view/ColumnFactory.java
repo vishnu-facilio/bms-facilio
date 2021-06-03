@@ -730,7 +730,7 @@ public class ColumnFactory {
 	private static List<ViewField> getDefaultInspectionResponseColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
-		columns.add(new ViewField("responseStatus", "Status"));
+		columns.add(new ViewField("responseStatus", "Completion Status"));
 		
 		columns.add(new ViewField("siteId", "Site"));
 		columns.add(new ViewField("resource", "Space / Asset"));
@@ -748,7 +748,7 @@ public class ColumnFactory {
 		
 		columns.add(new ViewField("name", "Name"));
 		
-		columns.add(new ViewField("responseStatus", "Status"));
+		columns.add(new ViewField("responseStatus", "Completion Status"));
 		
 		columns.add(new ViewField("siteId", "Site"));
 		columns.add(new ViewField("resource", "Space / Asset"));
@@ -765,11 +765,7 @@ public class ColumnFactory {
 	private static List<ViewField> getDefaultInductionTemplateColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
-		columns.add(new ViewField("siteId", "Site"));
-		columns.add(new ViewField("resource", "Space / Asset"));
-		columns.add(new ViewField("assignedTo", "Assigned To"));
-		
-		
+		columns.add(new ViewField("siteApplyTo", "Apply To"));
 		columns.add(new ViewField("totalPages", "Total Pages"));
 		columns.add(new ViewField("totalQuestions", "Total Questions"));
 
@@ -779,10 +775,9 @@ public class ColumnFactory {
 	private static List<ViewField> getDefaultInductionResponseColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
-		columns.add(new ViewField("responseStatus", "Status"));
+		columns.add(new ViewField("responseStatus", "Completion Status"));
 		
 		columns.add(new ViewField("siteId", "Site"));
-		columns.add(new ViewField("resource", "Space / Asset"));
 		columns.add(new ViewField("assignedTo", "Assigned To"));
 		
 		columns.add(new ViewField("totalAnswered", "Total Answered"));
@@ -795,10 +790,9 @@ public class ColumnFactory {
 		
 		columns.add(new ViewField("name", "Name"));
 		
-		columns.add(new ViewField("responseStatus", "Status"));
+		columns.add(new ViewField("responseStatus", "Completion Status"));
 		
 		columns.add(new ViewField("siteId", "Site"));
-		columns.add(new ViewField("resource", "Space / Asset"));
 		columns.add(new ViewField("assignedTo", "Assigned To"));
 		
 		columns.add(new ViewField("totalAnswered", "Total Answered"));

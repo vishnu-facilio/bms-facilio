@@ -135,7 +135,7 @@ public class AddQAndAModules extends SignUpData {
         SystemEnumField typeField = (SystemEnumField) FieldFactory.getDefaultField("type", "Type", "Q_AND_A_TYPE", FieldType.SYSTEM_ENUM);
         typeField.setEnumName("QAndAType");
         fields.add(typeField);
-        SystemEnumField statusField = (SystemEnumField) FieldFactory.getDefaultField("responseStatus", "Response Status", "RESPONSE_STATUS", FieldType.SYSTEM_ENUM);
+        SystemEnumField statusField = (SystemEnumField) FieldFactory.getDefaultField("responseStatus", "Completion Status", "RESPONSE_STATUS", FieldType.SYSTEM_ENUM);
         statusField.setEnumName("QAndAResponseStatus");
         fields.add(statusField);
         fields.add(FieldFactory.getDefaultField("totalAnswered", "Total Answered", "TOTAL_ANSWERED", FieldType.NUMBER));

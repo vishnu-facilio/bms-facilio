@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
+import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.VendorContext;
@@ -40,12 +41,11 @@ public class InductionResponseContext extends ResponseContext <InductionTemplate
     private Status status;
     private SourceType sourceType;
     private ResourceContext resource;
-    private Group assignmentGroup;
-    private User assignedTo;
     private Long scheduledWorkStart;
     private Long scheduledWorkEnd;
     private Long actualWorkStart;
     private Long actualWorkEnd;
+    private PeopleContext assignedTo;
     
     public void setStatus(Integer status) { // Using wrapper object to avoid -1 being inserted
     	this.status = status == null ? null : Status.valueOf(status);

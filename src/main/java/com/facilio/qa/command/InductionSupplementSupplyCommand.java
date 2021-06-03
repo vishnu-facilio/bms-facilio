@@ -33,7 +33,6 @@ public class InductionSupplementSupplyCommand extends FacilioCommand {
         	supplements.add((SupplementRecord) fieldMap.get("baseSpace"));
         }
         supplements.add((SupplementRecord) fieldMap.get("resource"));
-        supplements.add((SupplementRecord) fieldMap.get("assignmentGroup"));
         supplements.add((SupplementRecord) fieldMap.get("assignedTo"));
 
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, supplements);
