@@ -1133,6 +1133,12 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static FacilioChain addDefaultSystemFields() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new AddDefaultSystemFieldsCommand());
+			return c;
+		}
+		
 		public static FacilioChain getAddCategoryReadingChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new GetCategoryModuleCommand());

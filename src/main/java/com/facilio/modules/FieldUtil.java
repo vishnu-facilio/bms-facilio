@@ -1,6 +1,7 @@
 package com.facilio.modules;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
@@ -514,6 +515,10 @@ public class FieldUtil {
 
 
 	public static boolean isSystemFieldsPresent (FacilioModule module) {
+
+		if(!FacilioProperties.isProduction() && FacilioConstants.ContextNames.ATTENDANCE.equals(module.getName())){
+			return false;
+		}
 		// custom modules will have system fields by default
 		if (module.isCustom()
 				|| module.getTypeEnum() == FacilioModule.ModuleType.ENUM_REL_MODULE
