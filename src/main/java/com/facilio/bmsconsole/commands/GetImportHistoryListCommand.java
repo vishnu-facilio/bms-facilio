@@ -2,7 +2,9 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
+import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.util.ImportAPI;
+import com.facilio.bmsconsole.util.StoreroomApi;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -15,6 +17,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang.StringUtils;
+import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,6 +62,20 @@ public class GetImportHistoryListCommand extends FacilioCommand {
 		if(props != null && !props.isEmpty()) {
 			for(Map<String, Object> prop :props) {
 				ImportProcessContext importContext = FieldUtil.getAsBeanFromMap(prop, ImportProcessContext.class);
+				JSONObject importMeta = importContext.getImportJobMetaJson();
+				if (importMeta != null) {
+					JSONObject moduleStaticFields = (JSONObject) importMeta.get(ImportAPI.ImportProcessConstants.MODULE_STATIC_FIELDS);
+					if (moduleStaticFields != null && !moduleStaticFields.isEmpty()) {
+						Long storeRoomId = (Long) moduleStaticFields.get(FacilioConstants.ContextNames.STORE_ROOM);
+						if (storeRoomId != null) {
+							StoreRoomContext storeRoom = StoreroomApi.getStoreRoom(storeRoomId);
+							if (storeRoom != null) {
+								importMeta.put("storeRoomName", storeRoom.getName());
+								importContext.setImportJobMeta(importMeta.toJSONString());
+							}
+						}
+					}
+				}
 				importContexts.add(importContext);
 			}
 		}
