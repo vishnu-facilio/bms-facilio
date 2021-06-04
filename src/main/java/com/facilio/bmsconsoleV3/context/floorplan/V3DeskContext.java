@@ -33,7 +33,7 @@ public class V3DeskContext  extends V3SpaceContext {
 
 	private String deskCode;
 	
-	private Boolean isActive;
+	private Boolean isActive = true;
 	public Boolean getIsActive() {
 		return isActive;
 	}

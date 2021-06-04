@@ -45,7 +45,9 @@ import com.facilio.bmsconsole.util.ConnectedAppAPI;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsoleV3.context.InviteVisitorContextV3;
 import com.facilio.bmsconsoleV3.context.V3DeliveriesContext;
+import com.facilio.bmsconsoleV3.context.V3DepartmentContext;
 import com.facilio.bmsconsoleV3.context.V3LockersContext;
+import com.facilio.bmsconsoleV3.context.V3MovesContext;
 import com.facilio.bmsconsoleV3.context.V3ParkingStallContext;
 import com.facilio.bmsconsoleV3.context.VisitorLogContextV3;
 import com.facilio.bmsconsoleV3.context.communityfeatures.DealsAndOffersContext;
@@ -186,6 +188,10 @@ public class PageFactory {
 				return DesksPageFactory.getDesksPage((V3DeskContext) record, module);
 			case ContextNames.DELIVERIES:
 				return CustomModulePageFactory.getCustomModulePage((V3DeliveriesContext) record, module);
+			case ContextNames.MOVES:
+				return MovesPageFactory.getMovesPage((V3MovesContext) record, module);
+			case ContextNames.DEPARTMENT:
+				return DepartmentPageFactory.getDepartmentPage((V3DepartmentContext) record, module);
 		}
 		if (module.getExtendModule() == null) {	// temp
 			// etisalat changes will be changed to standard method

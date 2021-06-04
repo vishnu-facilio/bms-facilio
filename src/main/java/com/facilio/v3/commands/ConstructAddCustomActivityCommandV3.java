@@ -31,7 +31,8 @@ public class ConstructAddCustomActivityCommandV3 extends FacilioCommand {
 
         for (var record: moduleBaseWithCustomFields) {
             long recordId = record.getId();
-            Map<Long, List<UpdateChangeSet>> changeSet = (Map<Long, List<UpdateChangeSet>>) context.get(ContextNames.CHANGE_SET);
+            Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = (Map<String, Map<Long, List<UpdateChangeSet>>>) context.get(ContextNames.CHANGE_SET_MAP);
+            Map<Long, List<UpdateChangeSet>> changeSet = (Map<Long, List<UpdateChangeSet>>) changeSetMap.get(Constants.getModuleName(context));
             if (changeSet == null) {
                 return false;
             }

@@ -119,6 +119,7 @@ import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
 import com.facilio.v3.commands.ConstructAddCustomActivityCommandV3;
+import com.facilio.v3.commands.FetchChangeSetForCustomActivityCommand;
 
 import java.util.function.Supplier;
 
@@ -1165,10 +1166,10 @@ public class APIv3Config {
     @Module("desks")
     public static Supplier<V3Config> getDesk() {
         return () -> new V3Config(V3DeskContext.class, new ModuleCustomFieldCount30())
-                .create().beforeSave(new V3ValidateSpaceCommand())
-                .afterSave(new CreateFacilityForDesksCommandV3())
-                .update()
-                .afterSave(new CreateFacilityForDesksCommandV3())
+                .create().beforeSave(new V3ValidateSpaceCommand(), new FetchChangeSetForCustomActivityCommand())
+                .afterSave(new CreateFacilityForDesksCommandV3(), new ConstructAddCustomActivityCommandV3(), new AddActivitiesCommandV3(FacilioConstants.ContextNames.CUSTOM_ACTIVITY))
+                .update().beforeSave(new FetchChangeSetForCustomActivityCommand())
+                .afterSave(new CreateFacilityForDesksCommandV3(), new ConstructAddCustomActivityCommandV3(), new AddActivitiesCommandV3(FacilioConstants.ContextNames.CUSTOM_ACTIVITY))
                 .list()
                 .beforeFetch(new LoadDesksLookupCommand())
                 .summary()
@@ -1188,8 +1189,10 @@ public class APIv3Config {
     @Module("department")
     public static Supplier<V3Config> getDepartment() {
         return () -> new V3Config(V3DepartmentContext.class, new ModuleCustomFieldCount30())
-                .create()
-                .update()
+                .create().beforeSave(new FetchChangeSetForCustomActivityCommand())
+                .afterSave(new ConstructAddCustomActivityCommandV3(), new AddActivitiesCommandV3(FacilioConstants.ContextNames.CUSTOM_ACTIVITY))
+                .update().beforeSave(new FetchChangeSetForCustomActivityCommand())
+                .afterSave(new ConstructAddCustomActivityCommandV3(), new AddActivitiesCommandV3(FacilioConstants.ContextNames.CUSTOM_ACTIVITY))
                 .list()
                 .summary()
                 .build();
@@ -1198,10 +1201,10 @@ public class APIv3Config {
     @Module("moves")
     public static Supplier<V3Config> getMoves() {
         return () -> new V3Config(V3MovesContext.class, new ModuleCustomFieldCount30())
-                .create()
-                .afterSave(new UpdateEmployeeInDesksCommandV3())
-                .update()
-                .afterSave(new UpdateEmployeeInDesksCommandV3())
+                .create().beforeSave(new FetchChangeSetForCustomActivityCommand())
+                .afterSave(new ConstructAddCustomActivityCommandV3(), new AddActivitiesCommandV3(FacilioConstants.ContextNames.CUSTOM_ACTIVITY), new UpdateEmployeeInDesksCommandV3())
+                .update().beforeSave(new FetchChangeSetForCustomActivityCommand())
+                .afterSave(new ConstructAddCustomActivityCommandV3(), new AddActivitiesCommandV3(FacilioConstants.ContextNames.CUSTOM_ACTIVITY), new UpdateEmployeeInDesksCommandV3())
                 .list()
                 .beforeFetch(new LoadMovesLookupCommand())
                 .summary()

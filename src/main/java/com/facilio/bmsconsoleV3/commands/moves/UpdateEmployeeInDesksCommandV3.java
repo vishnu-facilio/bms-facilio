@@ -11,6 +11,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.V3EmployeeContext;
 import com.facilio.bmsconsoleV3.context.V3MovesContext;
+import com.facilio.bmsconsoleV3.context.V3MovesContext.MoveType;
 import com.facilio.bmsconsoleV3.context.facilitybooking.FacilityContext;
 import com.facilio.bmsconsoleV3.context.floorplan.V3DeskContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
@@ -61,6 +62,7 @@ public class UpdateEmployeeInDesksCommandV3 extends FacilioCommand {
 											UnAssignEmployee.setEmployee(toDesk.getEmployee());
 											UnAssignEmployee.setDepartment(toDesk.getDepartment());
 											UnAssignEmployee.setFrom(toDesk);
+											UnAssignEmployee.setMoveType(MoveType.INSTANT);
 											moveprop.add(UnAssignEmployee);
 											V3RecordAPI.addRecord(false,moveprop, movesModule, movesFields);
 										}
@@ -82,6 +84,7 @@ public class UpdateEmployeeInDesksCommandV3 extends FacilioCommand {
 											UnAssignEmployee.setEmployee(toDesk.getEmployee());
 											UnAssignEmployee.setDepartment(toDesk.getDepartment());
 											UnAssignEmployee.setFrom(toDesk);
+											UnAssignEmployee.setMoveType(MoveType.INSTANT);
 											moveprop.add(UnAssignEmployee);
 											V3RecordAPI.addRecord(false,moveprop, movesModule, movesFields);
 										}
