@@ -75,7 +75,7 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 			if (module!=null && module.isStateFlowEnabled() && !AssetsAPI.isAssetsModule(importProcessContext.getModule()) && !moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER)) {
 				FacilioField moduleStateField = fieldsMap.get("moduleState");
 				if (!fieldMapping.containsKey(moduleStateField.getModule().getName() + "__moduleState")) {
-					missingColumns.add("Module State");
+					missingColumns.add(moduleStateField.getDisplayName());
 				}
 			}
 			if (module!=null && AssetsAPI.isAssetsModule(importProcessContext.getModule())) {

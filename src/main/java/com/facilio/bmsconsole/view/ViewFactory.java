@@ -1033,8 +1033,8 @@ public class ViewFactory {
 	}
 
 	private static FacilioView getAllEmailConversationThreadingViews() {
-		
-		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "Email_Conversation_Threading.ID", FieldType.NUMBER), false));
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
