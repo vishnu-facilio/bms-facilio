@@ -1691,6 +1691,12 @@ public class FormFactory {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("color", FieldDisplayType.TEXTBOX, "Color", Required.OPTIONAL, 2, 1));
+		FormField noOfDesks = new FormField("noOfDesks", FieldDisplayType.NUMBER, "No of Desks", Required.OPTIONAL, 3, 3);
+		noOfDesks.setHideField(true);
+		fields.add(noOfDesks);
+		FormField noOfEmployee = new FormField("noOfEmployee", FieldDisplayType.NUMBER, "No of Employee", Required.OPTIONAL, 4, 3);
+		noOfEmployee.setHideField(true);
+		fields.add(noOfEmployee);
 
 		return fields;
 	}
