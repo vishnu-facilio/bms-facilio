@@ -322,8 +322,8 @@ public class PageWidget {
 		BOOKING_INTERNAL_ATTENDEES("bookingInternalAttendees"),
 		BOOKING_EXTERNAL_ATTENDEES("bookingExternalAttendees"),
 		
-		INSPECTION_TEMPLATE_secondaryDetailsWidget("secondaryDetailsWidget"),
 		INSPECTION_TEMPLATE_secondaryDetailsWidget_1("secondaryDetailsWidget1"),
+		INSPECTION_TEMPLATE_secondaryDetailsWidget_2("secondaryDetailsWidget2"),
 		INSPECTION_TEMPLATE_inspectionDetails("inspectionDetails"),
 		INSPECTION_TEMPLATE_inspectionPageDetails("inspectionPageDetails"),
 		INSPECTION_TEMPLATE_inspectionTriggers("inspectionTriggers"),

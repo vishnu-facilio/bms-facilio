@@ -37,6 +37,7 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.context.induction.InductionResponseContext;
 import com.facilio.bmsconsoleV3.context.induction.InductionTemplateContext;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
+import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
@@ -77,6 +78,8 @@ public class AddInductionModules extends SignUpData {
         modules.add(induction);
         FacilioModule InductionResponseModule = constructInductionResponse(modBean, induction);
         modules.add(InductionResponseModule);
+        
+        SignupUtil.addNotesAndAttachmentModule(InductionResponseModule);
         
         
         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();

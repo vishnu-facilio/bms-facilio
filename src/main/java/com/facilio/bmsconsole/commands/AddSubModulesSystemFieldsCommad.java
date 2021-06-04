@@ -45,7 +45,7 @@ public class AddSubModulesSystemFieldsCommad extends FacilioCommand {
         context.put(FacilioConstants.ContextNames.MODULE_LIST, modules);
         return false;
     }
-    private static void addModuleBasedFields(FacilioModule parentModule, FacilioModule subModule) {
+    public static void addModuleBasedFields(FacilioModule parentModule, FacilioModule subModule) {
         List<FacilioField> fields = new ArrayList<>();
         switch (subModule.getTypeEnum()) {
             case NOTES:

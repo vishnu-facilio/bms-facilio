@@ -13,6 +13,7 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.FormRuleAction;
+import com.facilio.bmsconsole.commands.AddSubModulesSystemFieldsCommad;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.BaseScheduleContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
@@ -43,6 +44,7 @@ import com.facilio.bmsconsoleV3.context.inspection.InspectionPriorityContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
+import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
@@ -100,6 +102,8 @@ public class AddInspectionModules extends SignUpData {
         modules.add(inspectionResponseModule);
         
         
+        SignupUtil.addNotesAndAttachmentModule(inspectionResponseModule);
+        
         addModuleChain = TransactionChainFactory.addSystemModuleChain();
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
         addModuleChain.execute();
@@ -134,7 +138,7 @@ public class AddInspectionModules extends SignUpData {
     }
 
 
-    public void addDefaultInspectionCategories(FacilioModule insepctionCategoryModule,ModuleBean modBean) throws Exception {
+	public void addDefaultInspectionCategories(FacilioModule insepctionCategoryModule,ModuleBean modBean) throws Exception {
 		// TODO Auto-generated method stub
 		
 		List<InspectionCategoryContext> categories = new ArrayList<InspectionCategoryContext>();

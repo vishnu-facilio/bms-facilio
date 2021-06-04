@@ -40,16 +40,16 @@ public class InspectionPageFactory extends PageFactory {
         Page.Tab summaryTab = page.new Tab("summary");
         Page.Section SummarySec = page.new Section();
         
-        PageWidget secondaryDetailsWidget = new PageWidget(PageWidget.WidgetType.INSPECTION_TEMPLATE_secondaryDetailsWidget);
+        PageWidget secondaryDetailsWidget = new PageWidget(PageWidget.WidgetType.INSPECTION_TEMPLATE_secondaryDetailsWidget_1);
         secondaryDetailsWidget.addToLayoutParams(SummarySec, 24, 6);
         JSONObject widgetParams = getdetailsWidgetParam1(record,module);
         secondaryDetailsWidget.setWidgetParams(widgetParams);
         SummarySec.addWidget(secondaryDetailsWidget);
         
-        PageWidget secondaryDetailsWidget1 = new PageWidget(PageWidget.WidgetType.INSPECTION_TEMPLATE_secondaryDetailsWidget_1);
+        PageWidget secondaryDetailsWidget1 = new PageWidget(PageWidget.WidgetType.INSPECTION_TEMPLATE_secondaryDetailsWidget_2);
         secondaryDetailsWidget1.addToLayoutParams(SummarySec, 24, 6);
         widgetParams = getdetailsWidgetParam2(record,module);
-        secondaryDetailsWidget.setWidgetParams(widgetParams);
+        secondaryDetailsWidget1.setWidgetParams(widgetParams);
         SummarySec.addWidget(secondaryDetailsWidget1);
         
         PageWidget inspectionDetails = new PageWidget(PageWidget.WidgetType.INSPECTION_TEMPLATE_inspectionDetails);
