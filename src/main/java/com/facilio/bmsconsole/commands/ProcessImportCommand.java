@@ -187,20 +187,26 @@ public class ProcessImportCommand extends FacilioCommand {
 							continue;
 						}
 						Long id = getSpaceID(importProcessContext, sendToSpaceID, fieldMapping, row_no,true);
-						if(Ids[k].contains("space")) {
-							props.put(Ids[k], id);
+						lookupHolder = new HashMap<>();
+						lookupHolder.put("id", id);
+						if (Ids[k].equals(FacilioConstants.ContextNames.SITE)) {
+							props.put(FacilioConstants.ContextNames.SITE_ID, id);
 						}
-						else {
-							lookupHolder = new HashMap<>();
-							lookupHolder.put("id", id);
-							if(Ids[k].equals(FacilioConstants.ContextNames.SITE)) {
-								props.put(FacilioConstants.ContextNames.SITE_ID, id);
-							}
-							props.put(Ids[k],lookupHolder);
-						}
+						props.put(Ids[k], lookupHolder);
 					}
 
 					if (!module.equals(FacilioConstants.ContextNames.SPACE)) {
+						// Filling space modules Default stateflow and status for tenant unit module (remove this if tenant unit has its own stateflow and states)
+						if (ImportAPI.isInsertImport(importProcessContext) && module.equals(FacilioConstants.ContextNames.TENANT_UNIT_SPACE)) {
+							FacilioModule spaceModule = modBean.getModule(FacilioConstants.ContextNames.SPACE);
+							StateFlowRuleContext defaultStateFlow = StateFlowRulesAPI.getDefaultStateFlow(spaceModule);
+							if (defaultStateFlow != null) {
+								props.put(FacilioConstants.ContextNames.STATE_FLOW_ID, defaultStateFlow.getId());
+								lookupHolder = new HashMap<>();
+								lookupHolder.put("id", defaultStateFlow.getDefaultStateId());
+								props.put(FacilioConstants.ContextNames.MODULE_STATE, lookupHolder);
+							}
+						}
 						SpaceCategoryContext spaceCategory = SpaceAPI.getSpaceCategoryFromModule(importProcessContext.getModuleId());
 						if (spaceCategory != null) {
 							props.put(FacilioConstants.ContextNames.SPACE_CATEGORY_FIELD, spaceCategory);
@@ -388,7 +394,7 @@ public class ProcessImportCommand extends FacilioCommand {
 							if (!fieldMapping.containsKey("asset__moduleState")) {
 								lookupHolder = new HashMap<>();
 								lookupHolder.put("id", stateFlow.getDefaultStateId());
-								props.put("moduleState", lookupHolder);
+								props.put(FacilioConstants.ContextNames.MODULE_STATE, lookupHolder);
 							}
 						}
 					}
@@ -980,12 +986,9 @@ public class ProcessImportCommand extends FacilioCommand {
 		int start = 1;
 
 		if (spaceName != null ||
-				importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE)
-				|| importProcessContext.getModule().getExtendModule() != null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE)
+				ImportAPI.isBaseSpaceExtendedModule(importProcessContext.getModule())
 		) {
-			if (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE)
-					|| importProcessContext.getModule().getExtendModule() != null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE)) {
-
+			if (ImportAPI.isBaseSpaceExtendedModule(importProcessContext.getModule())) {
 				spaceName = (String) colVal.get(fieldMapping.get(moduleName + "__space1"));
 				start = 2;
 			}
