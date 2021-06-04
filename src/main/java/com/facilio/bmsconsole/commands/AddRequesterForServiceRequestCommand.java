@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.Collections;
 import java.util.List;
 
+import com.facilio.accounts.dto.Role;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -45,6 +46,9 @@ public class AddRequesterForServiceRequestCommand extends FacilioCommand {
 						c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
 						c.getContext().put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 						c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
+
+						Role occupantAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.PrevilegedRoleNames.OCCUPANT_ADMIN);
+						c.getContext().put(FacilioConstants.ContextNames.ROLE_ID, occupantAdmin.getRoleId());
 
 						c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(requester));
 						c.execute();

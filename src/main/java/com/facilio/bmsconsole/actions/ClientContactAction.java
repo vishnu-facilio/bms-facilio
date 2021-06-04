@@ -88,7 +88,17 @@ private static final long serialVersionUID = 1L;
 	public void setId(long id) {
 		this.id = id;
 	}
-	
+
+	private long roleId;
+
+	public long getRoleId() {
+		return roleId;
+	}
+
+	public void setRoleId(long roleId) {
+		this.roleId = roleId;
+	}
+
 	public String addClientContacts() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(clientContacts)) {
@@ -96,7 +106,9 @@ private static final long serialVersionUID = 1L;
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
 			c.getContext().put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
-			
+			c.getContext().put(FacilioConstants.ContextNames.ROLE_ID, roleId);
+
+
 			for(ClientContactContext cc : clientContacts) {
 				cc.parseFormData();
 				RecordAPI.handleCustomLookup(cc.getData(), FacilioConstants.ContextNames.CLIENT_CONTACT);
@@ -202,7 +214,9 @@ private static final long serialVersionUID = 1L;
 			FacilioChain c = TransactionChainFactory.updateClientContactAppAccessChain();
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, clientContacts);
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
-			
+			c.getContext().put(FacilioConstants.ContextNames.ROLE_ID, roleId);
+
+
 			c.execute();
 			setResult(FacilioConstants.ContextNames.CLIENT_CONTACT, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
 		}

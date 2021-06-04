@@ -1,20 +1,15 @@
 package com.facilio.accounts.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.logging.Logger;
 
 import com.facilio.accounts.bean.RoleBean;
-import com.facilio.accounts.dto.NewPermission;
-import com.facilio.accounts.dto.Permissions;
-import com.facilio.accounts.dto.Role;
-import com.facilio.accounts.dto.User;
+import com.facilio.accounts.dto.*;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -27,6 +22,8 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class RoleBeanImpl implements RoleBean {
 	
@@ -248,13 +245,22 @@ public class RoleBeanImpl implements RoleBean {
 	}
 
 	@Override
-	public List<Role> getRoles() throws Exception {
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(AccountConstants.getRoleFields())
-				.table(AccountConstants.getRoleModule().getTableName())
-				;
-		
-		return getRolesFromProps(selectBuilder.get(), false);
+	public List<Role> getRoles(long appId) throws Exception {
+
+		if(appId <= 0){
+			ApplicationContext app = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+			appId = app.getId();
+		}
+		List<Long> roleIds = getRolesForApp(appId);
+		if(CollectionUtils.isNotEmpty(roleIds)) {
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+					.select(AccountConstants.getRoleFields())
+					.table(AccountConstants.getRoleModule().getTableName())
+					.andCondition(CriteriaAPI.getCondition("ROLEID", "roleID", StringUtils.join(roleIds, ","), NumberOperators.EQUALS));
+
+			return getRolesFromProps(selectBuilder.get(), false);
+		}
+		return Collections.EMPTY_LIST;
 	}
 	
 	@Override
@@ -397,5 +403,67 @@ public class RoleBeanImpl implements RoleBean {
 		}
 		return null;
 	}
-	
+
+	@Override
+	public void addRolesAppsMapping(List<RoleApp> rolesApps) throws Exception {
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(AccountConstants.getRolesAppsModule().getTableName())
+				.fields(AccountConstants.getRolesAppsFields());
+
+		for (RoleApp ra : rolesApps) {
+			Map<String, Object> props = new HashMap<>();
+			props.put("roleId", ra.getRoleId());
+			props.put("applictionId", ra.getApplicationId());
+			insertBuilder.addRecord(props);
+		}
+		insertBuilder.save();
+
+	}
+
+	@Override
+	public Map<Long, List<RoleApp>> getRolesAppsMapping(List<Long> roleIds) throws Exception {
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(AccountConstants.getRolesAppsFields())
+				.table(ModuleFactory.getRollUpFieldsModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("ROLE_ID", "roleId", StringUtils.join(roleIds, ","), NumberOperators.EQUALS));
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if(props != null && !props.isEmpty()) {
+			Map<Long, List<RoleApp>> roleAppsMapping = new HashMap<>();
+			for(Map<String, Object> prop : props) {
+				List<RoleApp> roleApps;
+				if(roleAppsMapping.containsKey(prop.get("roleId"))) {
+					roleApps = roleAppsMapping.get(prop.get("roleId"));
+				}
+				else {
+					roleApps = new ArrayList<>();
+					roleApps.add(FieldUtil.getAsBeanFromMap(prop, RoleApp.class));
+				}
+				roleAppsMapping.put((Long) prop.get("roleId"), roleApps);
+			}
+			return roleAppsMapping;
+		}
+		return null;
+	}
+
+	private List<Long> getRolesForApp(Long appId) throws Exception {
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(AccountConstants.getRolesAppsFields())
+				.table(ModuleFactory.getRollUpFieldsModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("APPLICATION_ID", "applicationId", String.valueOf(appId), NumberOperators.EQUALS));
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if(props != null && !props.isEmpty()) {
+			List<Long> roleIds = new ArrayList<>();
+			for(Map<String, Object> prop : props) {
+				roleIds.add((Long)prop.get("roleId"));
+			}
+			return roleIds;
+		}
+		return null;
+	}
+
+
 }

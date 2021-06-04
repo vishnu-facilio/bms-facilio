@@ -21,11 +21,12 @@ public class UpdateClientAppPortalAccessCommand extends FacilioCommand{
 		// TODO Auto-generated method stub
 		List<ClientContactContext> clientContacts = (List<ClientContactContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		Map<Long, List<UpdateChangeSet>> changeSet = (Map<Long, List<UpdateChangeSet>>) context.get(FacilioConstants.ContextNames.CHANGE_SET);
+		Long roleId = (Long) context.get(FacilioConstants.ContextNames.ROLE_ID);
 		if(CollectionUtils.isNotEmpty(clientContacts) && MapUtils.isNotEmpty(changeSet)) {
 			for(ClientContactContext tc : clientContacts) {
 				List<UpdateChangeSet> changes = changeSet.get(tc.getId());
 				if(CollectionUtils.isNotEmpty(changes) && RecordAPI.checkChangeSet(changes, "isClientPortalAccess", FacilioConstants.ContextNames.CLIENT_CONTACT)) {
-					PeopleAPI.updateClientContactAppPortalAccess(tc, FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
+					PeopleAPI.updateClientContactAppPortalAccess(tc, FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP, roleId);
 				}
 			}
 		}

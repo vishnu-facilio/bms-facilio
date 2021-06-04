@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.util;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.facilio.accounts.dto.*;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.chain.FacilioChain;
@@ -14,11 +15,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import com.facilio.accounts.dto.AppDomain;
-import com.facilio.accounts.dto.NewPermission;
 import com.facilio.beans.ModuleBean;
-import com.facilio.accounts.dto.Organization;
-import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.dto.AppDomain.GroupType;
 import com.facilio.accounts.util.AccountConstants;
@@ -310,13 +307,18 @@ public class ApplicationApi {
         return ids;
     }
 
-    public static long addUserInApp(User user, boolean shouldThrowError) throws Exception {
+    public static long addUserInApp(User user, boolean shouldThrowError, boolean shouldUpdateRole) throws Exception {
         long userExisitsInApp = checkIfUserAlreadyPresentInApp(user.getUid(), user.getApplicationId(), user.getOrgId());
         if (userExisitsInApp <= 0) {
             return AccountUtil.getUserBean().addToORGUsersApps(user, true);
         } else {
             if (shouldThrowError) {
                 throw new IllegalArgumentException("User already exists in app");
+            }
+            else {
+                if(shouldUpdateRole) {
+                    updateRoleForUserInApp(user.getOuid(), user.getApplicationId(), user.getRoleId());
+                }
             }
         }
         return userExisitsInApp;
@@ -389,6 +391,8 @@ public class ApplicationApi {
             ApplicationLayoutContext layout = new ApplicationLayoutContext(agentApplication.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.WEB, FacilioConstants.ApplicationLinkNames.FACILIO_AGENT_APP);
             addApplicationLayout(layout);
             addAgentAppWebTabs(layout);
+            Role agentAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.PrevilegedRoleNames.AGENT_ADMIN);
+            addAppRoleMapping(agentAdmin.getRoleId(), agentApplication.getId());
         }
 
         ApplicationContext tenantPortal = getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
@@ -404,6 +408,10 @@ public class ApplicationApi {
             addTenantPortalWebTabs(tpLayout);
             addTenantPortalWebGroupsForMobileLayout(tpLayoutMobile);
 
+            Role tenantAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.PrevilegedRoleNames.TENANT_ADMIN);
+            addAppRoleMapping(tenantAdmin.getRoleId(), tenantPortal.getId());
+
+
         }
 
         ApplicationContext servicePortal = getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
@@ -418,13 +426,21 @@ public class ApplicationApi {
 
             addOccupantPortalWebTabs(spLayout);
             addOccupantPortalWebGroupsForMobileLayout(spLayout);
-         }
+
+            Role occupantAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.PrevilegedRoleNames.OCCUPANT_ADMIN);
+            addAppRoleMapping(occupantAdmin.getRoleId(), servicePortal.getId());
+
+        }
 
         ApplicationContext mainApp = getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
 
         if (mainApp.getId() > 0) {
             ApplicationLayoutContext mainLayout = new ApplicationLayoutContext(mainApp.getId(), ApplicationLayoutContext.AppLayoutType.DUAL, ApplicationLayoutContext.LayoutDeviceType.WEB, FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
             addApplicationLayout(mainLayout);
+
+            Role admin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), "Administrator");
+            addAppRoleMapping(admin.getRoleId(), mainApp.getId());
+
         }
 
         ApplicationContext vendorPortal = getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
@@ -433,6 +449,10 @@ public class ApplicationApi {
             ApplicationLayoutContext vpLayout = new ApplicationLayoutContext(vendorPortal.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.WEB, FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
             addApplicationLayout(vpLayout);
             addVendorPortalWebTabs(vpLayout);
+
+            Role vendorAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.PrevilegedRoleNames.VENDOR_ADMIN);
+            addAppRoleMapping(vendorAdmin.getRoleId(), vendorPortal.getId());
+
         }
 
         ApplicationContext clientPortal = getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
@@ -440,6 +460,10 @@ public class ApplicationApi {
         if (clientPortal.getId() > 0) {
             ApplicationLayoutContext cpLayout = new ApplicationLayoutContext(clientPortal.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.WEB, FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
             addApplicationLayout(cpLayout);
+
+            Role clientAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.PrevilegedRoleNames.CLIENT_ADMIN);
+            addAppRoleMapping(clientAdmin.getRoleId(), clientPortal.getId());
+
         }
     }
 
@@ -1068,12 +1092,42 @@ public class ApplicationApi {
         return applications;
     }
 
-    public static void setThisAppForUser(User user, ApplicationContext app) throws Exception {
+    public static void setThisAppForUser(User user, ApplicationContext app, boolean assignDefaultRole) throws Exception {
         AppDomain domain = app.getAppDomain();
         user.setAppDomain(domain);
         user.setApplicationId(app.getId());
         user.setAppType(domain.getAppType());
-        //need to handle user app role here
+
+        //need to remove assign default role when we start throwing error
+        long roleId = -1;
+        if(!assignDefaultRole) {
+            roleId = getRoleForApp(app.getId(), user.getOuid());
+        }
+        if(roleId <= 0) {
+          roleId = getPrivelegedRoleForApp(app.getId());
+        }
+        user.setRoleId(roleId);
+        Role role = AccountUtil.getRoleBean().getRole(user.getRoleId());
+        user.setRole(role);
+    }
+
+    private static long getRoleForApp(Long appId, Long ouId) throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(AccountConstants.getOrgUserAppsModule().getTableName())
+                .select(AccountConstants.getOrgUserAppsFields())
+                .andCondition(CriteriaAPI.getCondition("ORG_USERID", "ouId", String.valueOf(ouId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("APPLICATION_ID", "appId", String.valueOf(appId), NumberOperators.EQUALS));
+        List<Map<String, Object>> map = builder.get();
+        if(CollectionUtils.isNotEmpty(map)) {
+            return (Long)map.get(0).get("roleId");
+        }
+        return -1;
+
+    }
+
+    private static long getPrivelegedRoleForApp(Long appId) throws Exception {
+       //handle after handling roles and app mapping
+        return -1;
 
     }
 
@@ -1203,6 +1257,35 @@ public class ApplicationApi {
         }
         appbuilder.orCondition(CriteriaAPI.getCondition("Application.APPLICATION_NAME", "name", "Facilio", StringOperators.IS));
         return FieldUtil.getAsBeanListFromMapList(appbuilder.get(), ApplicationContext.class);
+    }
+
+    private static void addAppRoleMapping(long roleId, long appId) throws Exception {
+        RoleApp roleApp = new RoleApp();
+        roleApp.setRoleId(roleId);
+        roleApp.setApplicationId(appId);
+
+        List<FacilioField> fields = AccountConstants.getRolesAppsFields();
+        GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+                .table(AccountConstants.getRolesAppsModule().getTableName())
+                .fields(fields);
+
+        Map<String, Object> props = FieldUtil.getAsProperties(roleApp);
+
+        insertBuilder.insert(props);
+
+    }
+
+    public static void updateRoleForUserInApp(Long ouId, Long appId, Long roleId) throws Exception {
+
+        GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+                .table(AccountConstants.getRolesAppsModule().getTableName()).fields(Collections.singletonList(AccountConstants.getRoleIdField()))
+                .andCondition(CriteriaAPI.getCondition("APPLICATION_ID", "applicationId", String.valueOf(appId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("ORG_USERID", "orgUserId", String.valueOf(ouId), NumberOperators.EQUALS))
+
+                ;
+        Map<String, Object> map = new HashMap<>();
+        map.put("roleId", roleId);
+        builder.update(map);
     }
     
 }

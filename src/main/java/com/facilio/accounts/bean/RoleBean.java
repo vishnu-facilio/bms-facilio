@@ -7,6 +7,7 @@ import java.util.Map;
 import com.facilio.accounts.dto.NewPermission;
 import com.facilio.accounts.dto.Permissions;
 import com.facilio.accounts.dto.Role;
+import com.facilio.accounts.dto.RoleApp;
 import com.facilio.db.criteria.Criteria;
 
 public interface RoleBean {
@@ -33,7 +34,7 @@ public interface RoleBean {
 	
 	public List<Role> getRoles(Collection<Long> ids) throws Exception;
 	
-	public List<Role> getRoles() throws Exception;
+	public List<Role> getRoles(long appId) throws Exception;
 	
 	public Map<String, Role> getRoleMap() throws Exception;
 	
@@ -44,4 +45,9 @@ public interface RoleBean {
 	public boolean addNewPermission(long roleId, NewPermission permissions) throws Exception;
 
 	public List<NewPermission> getNewPermission(long roleId) throws Exception;
+
+	public void addRolesAppsMapping(List<RoleApp> rolesApps) throws Exception;
+
+	public Map<Long, List<RoleApp>> getRolesAppsMapping(List<Long> roleIds) throws Exception;
+
 }

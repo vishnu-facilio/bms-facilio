@@ -1329,6 +1329,15 @@ public class AccountConstants {
 
 		return orgUserAppModule;
 	}
+
+	public static FacilioModule getRolesAppsModule() {
+		FacilioModule rolesAppsModule = new FacilioModule();
+		rolesAppsModule.setName("roleApp");
+		rolesAppsModule.setDisplayName("Roles Vs Apps");
+		rolesAppsModule.setTableName("Roles_Apps");
+
+		return rolesAppsModule;
+	}
 	
 	public static FacilioField getApplicationIdField() {
 		FacilioModule module = getOrgUserAppsModule();
@@ -1379,6 +1388,44 @@ public class AccountConstants {
 		orgId.setModule(module);
 		fields.add(orgId);
 		
+		FacilioField applicationId = new FacilioField();
+		applicationId.setName("applicationId");
+		applicationId.setDataType(FieldType.NUMBER);
+		applicationId.setColumnName("APPLICATION_ID");
+		applicationId.setModule(module);
+		fields.add(applicationId);
+
+		FacilioField roleId = new FacilioField();
+		roleId.setName("roleId");
+		roleId.setDataType(FieldType.NUMBER);
+		roleId.setColumnName("ROLE_ID");
+		roleId.setModule(module);
+		fields.add(roleId);
+
+
+
+		return fields;
+	}
+
+
+	public static List<FacilioField> getRolesAppsFields() {
+		FacilioModule module = getRolesAppsModule();
+		List<FacilioField> fields = new ArrayList<>();
+
+		FacilioField id = new FacilioField();
+		id.setName("id");
+		id.setDataType(FieldType.ID);
+		id.setColumnName("ID");
+		id.setModule(module);
+		fields.add(id);
+
+		FacilioField orgId = new FacilioField();
+		orgId.setName("orgId");
+		orgId.setDataType(FieldType.NUMBER);
+		orgId.setColumnName("ORGID");
+		orgId.setModule(module);
+		fields.add(orgId);
+
 		FacilioField applicationId = new FacilioField();
 		applicationId.setName("applicationId");
 		applicationId.setDataType(FieldType.NUMBER);

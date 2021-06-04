@@ -21,15 +21,16 @@ public class UpdateEmployeePeopleAppPortalAccessCommand extends FacilioCommand{
 		// TODO Auto-generated method stub
 		List<EmployeeContext> employees = (List<EmployeeContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		Map<Long, List<UpdateChangeSet>> changeSet = (Map<Long, List<UpdateChangeSet>>) context.get(FacilioConstants.ContextNames.CHANGE_SET);
+		Long roleId = (Long)context.get(FacilioConstants.ContextNames.ROLE_ID);
 		
 		if(CollectionUtils.isNotEmpty(employees) && MapUtils.isNotEmpty(changeSet)) {
 			for(EmployeeContext emp : employees) {
 				List<UpdateChangeSet> changes = changeSet.get(emp.getId());
 				if(CollectionUtils.isNotEmpty(changes) && (RecordAPI.checkChangeSet(changes, "isAppAccess", FacilioConstants.ContextNames.EMPLOYEE) || RecordAPI.checkChangeSet(changes, "roleId", FacilioConstants.ContextNames.EMPLOYEE))) {
-					PeopleAPI.updateEmployeeAppPortalAccess(emp, FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+					PeopleAPI.updateEmployeeAppPortalAccess(emp, FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, roleId);
 				}
 				if(CollectionUtils.isNotEmpty(changes) && RecordAPI.checkChangeSet(changes, "isOccupantPortalAccess", FacilioConstants.ContextNames.EMPLOYEE)) {
-					PeopleAPI.updatePeoplePortalAccess(emp, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
+					PeopleAPI.updatePeoplePortalAccess(emp, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP, roleId);
 				}
 			}
 		}

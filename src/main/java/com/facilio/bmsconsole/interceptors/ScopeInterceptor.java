@@ -155,12 +155,12 @@ public class ScopeInterceptor extends AbstractInterceptor {
                         List<ApplicationContext> permissibleAppsForThisDomain = ApplicationApi.getApplicationsForOrgUser(user.getOuid(), request.getServerName());
                         if (CollectionUtils.isNotEmpty(permissibleAppsForThisDomain)) {
                             ApplicationContext appToBeAssigned = ApplicationApi.getDefaultOrFirstApp(permissibleAppsForThisDomain);
-                            ApplicationApi.setThisAppForUser(user, appToBeAssigned);
+                            ApplicationApi.setThisAppForUser(user, appToBeAssigned, false);
                         } else {
                             //return "usernotinapp";
                             //temp handling - need to be removed
                             LOGGER.log(Level.DEBUG, "User - id " + iamAccount.getUser().getUid() + "doesnt have access to any of the apps belonging to this domain " + request.getServerName() + " of org - id " + iamAccount.getOrg().getOrgId());
-                            ApplicationApi.setThisAppForUser(user, ApplicationApi.getApplicationIdForAppDomain(request.getServerName()));
+                            ApplicationApi.setThisAppForUser(user, ApplicationApi.getApplicationIdForAppDomain(request.getServerName()), true);
                         }
                     }
                 } else {

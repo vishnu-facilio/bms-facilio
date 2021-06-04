@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.context.*;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.StringSystemEnumField;
 import org.apache.commons.collections4.CollectionUtils;
@@ -23,11 +24,6 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agentv2.AgentApiV2;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.BusinessHoursList;
-import com.facilio.bmsconsole.context.FormulaFieldContext;
-import com.facilio.bmsconsole.context.KPICategoryContext;
-import com.facilio.bmsconsole.context.PMTriggerContext;
-import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.sensor.SensorRuleContext;
 import com.facilio.bmsconsole.context.sensor.SensorRuleUtil;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
@@ -145,7 +141,7 @@ public class LookupSpecialTypeUtil {
 			return groupList;
 		}
 		else if (FacilioConstants.ContextNames.ROLE.equals(specialType)) {
-			List<Role> roles = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getId()).getRoles();
+			List<Role> roles = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getId()).getRoles(AccountUtil.getCurrentApp().getId());
 			List<FieldOption<Long>> roleList = null;
 			if (CollectionUtils.isNotEmpty(roles)) {
 				roleList = roles.stream()
@@ -213,7 +209,7 @@ public class LookupSpecialTypeUtil {
 			return groupList;
 		}
 		else if (FacilioConstants.ContextNames.ROLE.equals(specialType)) {
-			List<Role> roles = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getId()).getRoles();
+			List<Role> roles = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getId()).getRoles(AccountUtil.getCurrentApp().getId());
 			return roles.stream().collect(Collectors.toMap(Role::getRoleId, Role::getName));
 		}
 		else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)){

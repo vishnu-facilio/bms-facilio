@@ -2,6 +2,9 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.List;
 
+import com.facilio.accounts.dto.Account;
+import com.facilio.accounts.dto.Role;
+import com.facilio.accounts.util.AccountUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -30,21 +33,6 @@ public class CheckForMandatoryTenantIdCommand extends FacilioCommand{
 				tc.setPeopleType(PeopleType.TENANT_CONTACT);
 				if(tc.getTenant() == null || tc.getTenant().getId() <=0 ) {
 					throw new IllegalArgumentException("Tenant Contact must have a tenant id associated");
-				}
-				//adding a default contact(old) when adding a new tenant contact for handling tenant portal till visitor host lookup is changed
-				//should be removed
-				if(StringUtils.isNotEmpty(tc.getEmail())) {
-					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-					FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTACT);
-					List<FacilioField> fields = modBean.getAllFields(module.getName());
-					ContactsContext contact = new ContactsContext();
-					contact.setName(tc.getName());
-					contact.setEmail(tc.getEmail());
-					contact.setPhone(tc.getPhone());
-					contact.setContactType(ContactType.TENANT);
-					contact.setTenant(tc.getTenant());
-					contact.setIsPrimaryContact(tc.isPrimaryContact());
-					RecordAPI.addRecord(true, java.util.Collections.singletonList(contact), module, fields);
 				}
 			}
 		}

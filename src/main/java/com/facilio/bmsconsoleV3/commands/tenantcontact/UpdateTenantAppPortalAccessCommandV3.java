@@ -23,16 +23,17 @@ public class UpdateTenantAppPortalAccessCommandV3 extends FacilioCommand {
         String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<V3TenantContactContext> tenantContacts = recordMap.get(moduleName);
+        Long roleId = (Long) context.get(FacilioConstants.ContextNames.ROLE_ID);
 
         Map<Long, List<UpdateChangeSet>> changeSet = Constants.getModuleChangeSets(context);
         if(CollectionUtils.isNotEmpty(tenantContacts) && MapUtils.isNotEmpty(changeSet)) {
             for(V3TenantContactContext tc : tenantContacts) {
                 List<UpdateChangeSet> changes = changeSet.get(tc.getId());
                 if (CollectionUtils.isNotEmpty(changes) && V3RecordAPI.checkChangeSet(changes, "isTenantPortalAccess", FacilioConstants.ContextNames.TENANT_CONTACT)) {
-                    V3PeopleAPI.updateTenantContactAppPortalAccess(tc, FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
+                    V3PeopleAPI.updateTenantContactAppPortalAccess(tc, FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP, roleId);
                 }
                 if (CollectionUtils.isNotEmpty(changes) && V3RecordAPI.checkChangeSet(changes, "isOccupantPortalAccess", FacilioConstants.ContextNames.TENANT_CONTACT)) {
-                    V3PeopleAPI.updatePeoplePortalAccess(tc, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
+                    V3PeopleAPI.updatePeoplePortalAccess(tc, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP, roleId);
                 }
             }
         }

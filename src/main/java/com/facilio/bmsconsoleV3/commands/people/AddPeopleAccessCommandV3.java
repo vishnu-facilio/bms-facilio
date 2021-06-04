@@ -23,6 +23,7 @@ public class AddPeopleAccessCommandV3 extends FacilioCommand {
         String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<V3PeopleContext> people = recordMap.get(moduleName);
+        Long roleId = (Long)context.get(FacilioConstants.ContextNames.ROLE_ID);
 
         Map<Long, List<UpdateChangeSet>> changeSet = Constants.getModuleChangeSets(context);
 
@@ -30,7 +31,7 @@ public class AddPeopleAccessCommandV3 extends FacilioCommand {
             for(V3PeopleContext ppl : people) {
                 List<UpdateChangeSet> changes = changeSet.get(ppl.getId());
                 if(CollectionUtils.isNotEmpty(changes) && RecordAPI.checkChangeSet(changes, "isOccupantPortalAccess", FacilioConstants.ContextNames.PEOPLE)) {
-                    V3PeopleAPI.updatePeoplePortalAccess(ppl, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
+                    V3PeopleAPI.updatePeoplePortalAccess(ppl, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP, roleId);
                 }
             }
         }

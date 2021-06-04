@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.dto.RoleApp;
+import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import org.apache.commons.chain.Command;
 
 import com.facilio.accounts.dto.NewPermission;
@@ -17,6 +20,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
+import org.apache.commons.collections4.CollectionUtils;
 
 public class RoleAction extends ActionSupport {
 
@@ -25,6 +29,33 @@ public class RoleAction extends ActionSupport {
      */
     private static final long serialVersionUID = 1L;
     private SetupLayout setup;
+    private List<RoleApp> roleApp;
+    private Map<Long, List<RoleApp>> roleAppList;
+    private long appId;
+
+    public long getAppId() {
+        return appId;
+    }
+
+    public void setAppId(long appId) {
+        this.appId = appId;
+    }
+
+    public List<RoleApp> getRoleApp() {
+        return roleApp;
+    }
+
+    public void setRoleApp(List<RoleApp> roleApp) {
+        this.roleApp = roleApp;
+    }
+
+    public Map<Long, List<RoleApp>> getRoleAppList() {
+        return roleAppList;
+    }
+
+    public void setRoleAppList(Map<Long, List<RoleApp>> roleAppList) {
+        this.roleAppList = roleAppList;
+    }
 
     public SetupLayout getSetup() {
         return this.setup;
@@ -47,9 +78,9 @@ public class RoleAction extends ActionSupport {
     public String roleList() throws Exception {
 
         setSetup(SetupLayout.getRolesListLayout());
-        setRoles(AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getOrgId()).getRoles());
+        List<Role> rolesList = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getOrgId()).getRoles(appId);
+        setRoles(rolesList);
 //	x	setGroups(AccountUtil.getGroupBean().getAllOrgGroups(AccountUtil.getCurrentOrg().getOrgId()));
-
         ActionContext.getContext().getValueStack().set("roles", getRoles());
         return SUCCESS;
     }
@@ -86,6 +117,7 @@ public class RoleAction extends ActionSupport {
         role.setCreatedTime(System.currentTimeMillis());
         context.put(FacilioConstants.ContextNames.ROLE, getRole());
         context.put(FacilioConstants.ContextNames.PERMISSIONS, getPermissions());
+        context.put(FacilioConstants.ContextNames.ROLES_APPS, getRoleApp());
 
         Command addRole = FacilioChainFactory.getAddRoleCommand();
         addRole.execute(context);
@@ -118,6 +150,8 @@ public class RoleAction extends ActionSupport {
         FacilioContext context = new FacilioContext();
         context.put(FacilioConstants.ContextNames.ROLE, getRole());
         context.put(FacilioConstants.ContextNames.PERMISSIONS, getPermissions());
+        context.put(FacilioConstants.ContextNames.ROLES_APPS, getRoleApp());
+
 
         Command updateRole = FacilioChainFactory.getUpdateRoleCommand();
         updateRole.execute(context);

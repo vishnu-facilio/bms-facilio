@@ -321,6 +321,7 @@ public class FacilioConstants {
 		
 		public static final String ROLE_ID = "roleId";
 		public static final String ROLE = "role";
+		public static final String ROLES_APPS = "rolesApps";
 		public static final String PERMISSIONS= "permissions";
 		
 		public static final String BUSINESS_HOUR_IDS = "businesshourids";
@@ -2637,6 +2638,16 @@ public class FacilioConstants {
 		public static final String OPERATIONAL_VISIBILITY_APP = "operations";
 		public static final String CAFM_APP = "cafm";
 		public static final String WORKPLACE_APP = "wokplace";
+	}
+
+	public static class PrevilegedRoleNames {
+		public static final String TENANT_ADMIN = "Tenant Admin";
+		public static final String VENDOR_ADMIN = "Vendor Admin";
+		public static final String OCCUPANT_ADMIN = "Occupant Admin";
+		public static final String CLIENT_ADMIN = "Client Admin";
+		public static final String OPERATIONS_ADMIN = "Operations Admin";
+		public static final String AGENT_ADMIN = "Agent Admin";
+
 	}
 	
 	public static class TableNames{

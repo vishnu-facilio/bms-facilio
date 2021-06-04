@@ -120,7 +120,17 @@ private static final long serialVersionUID = 1L;
 	public int getCount() {
 		return this.count;
 	}
-	
+
+	private long roleId;
+
+	public long getRoleId() {
+		return roleId;
+	}
+
+	public void setRoleId(long roleId) {
+		this.roleId = roleId;
+	}
+
 	public String addEmployees() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(employees)) {
@@ -128,7 +138,8 @@ private static final long serialVersionUID = 1L;
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
 			c.getContext().put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
-			
+			c.getContext().put(FacilioConstants.ContextNames.ROLE_ID, roleId);
+
 			for(EmployeeContext emp : employees) {
 				emp.parseFormData();
 				RecordAPI.handleCustomLookup(emp.getData(), FacilioConstants.ContextNames.EMPLOYEE);
@@ -241,7 +252,8 @@ private static final long serialVersionUID = 1L;
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, employees);
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
-			
+			c.getContext().put(FacilioConstants.ContextNames.ROLE_ID, roleId);
+
 			c.execute();
 			setResult(FacilioConstants.ContextNames.EMPLOYEES, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
 		}
@@ -254,7 +266,8 @@ private static final long serialVersionUID = 1L;
 		if(!CollectionUtils.isEmpty(employees)) {
 			FacilioChain c = TransactionChainFactory.updateEmployeeAppAccessChain();
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
-			
+			c.getContext().put(FacilioConstants.ContextNames.ROLE_ID, roleId);
+
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, employees);
 			c.execute();
 			setResult(FacilioConstants.ContextNames.EMPLOYEES, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
