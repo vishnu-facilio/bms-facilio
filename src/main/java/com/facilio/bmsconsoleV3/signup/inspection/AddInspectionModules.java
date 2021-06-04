@@ -102,11 +102,13 @@ public class AddInspectionModules extends SignUpData {
         modules.add(inspectionResponseModule);
         
         
-        SignupUtil.addNotesAndAttachmentModule(inspectionResponseModule);
         
         addModuleChain = TransactionChainFactory.addSystemModuleChain();
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
         addModuleChain.execute();
+        
+        SignupUtil.addNotesAndAttachmentModule(inspectionResponseModule);
+        
         addInspectionResponseRollUpToTemplate(Constants.getModBean(), inspectionResponseModule);
 
         List<FacilioModule> modules1 = new ArrayList<>();

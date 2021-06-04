@@ -79,13 +79,14 @@ public class AddInductionModules extends SignUpData {
         FacilioModule InductionResponseModule = constructInductionResponse(modBean, induction);
         modules.add(InductionResponseModule);
         
-        SignupUtil.addNotesAndAttachmentModule(InductionResponseModule);
-        
         
         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
         addModuleChain.execute();
         addInductionResponseRollUpToTemplate(Constants.getModBean(), InductionResponseModule);
+        
+        
+        SignupUtil.addNotesAndAttachmentModule(InductionResponseModule);
         
 //        addMultiEnumSiteLookupField(modBean, induction);
 
