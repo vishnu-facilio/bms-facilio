@@ -4,7 +4,12 @@ import static com.facilio.bmsconsole.page.factory.AssetPageFactory.addRelatedLis
 
 import java.util.Map;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
+import com.facilio.bmsconsole.context.PreventiveMaintenance.PMCreationType;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.Page.Section;
@@ -37,7 +42,15 @@ public class InspectionPageFactory extends PageFactory {
         
         PageWidget secondaryDetailsWidget = new PageWidget(PageWidget.WidgetType.INSPECTION_TEMPLATE_secondaryDetailsWidget);
         secondaryDetailsWidget.addToLayoutParams(SummarySec, 24, 6);
+        JSONObject widgetParams = getdetailsWidgetParam1(record,module);
+        secondaryDetailsWidget.setWidgetParams(widgetParams);
         SummarySec.addWidget(secondaryDetailsWidget);
+        
+        PageWidget secondaryDetailsWidget1 = new PageWidget(PageWidget.WidgetType.INSPECTION_TEMPLATE_secondaryDetailsWidget_1);
+        secondaryDetailsWidget1.addToLayoutParams(SummarySec, 24, 6);
+        widgetParams = getdetailsWidgetParam2(record,module);
+        secondaryDetailsWidget.setWidgetParams(widgetParams);
+        SummarySec.addWidget(secondaryDetailsWidget1);
         
         PageWidget inspectionDetails = new PageWidget(PageWidget.WidgetType.INSPECTION_TEMPLATE_inspectionDetails);
         inspectionDetails.addToLayoutParams(SummarySec, 24, 6);
@@ -108,6 +121,57 @@ public class InspectionPageFactory extends PageFactory {
 	}
 	
 	
+	private static JSONObject getdetailsWidgetParam2(InspectionTemplateContext record, FacilioModule module) {
+		// TODO Auto-generated method stub
+		
+		JSONObject widgetParam = new JSONObject();
+		
+		JSONArray fieldList = new JSONArray();
+		
+		fieldList.add("vendor");
+		fieldList.add("tenant");
+		fieldList.add("category");
+		fieldList.add("priority");
+		fieldList.add("assignmentGroup");
+		fieldList.add("assignedTo");
+		
+		
+		widgetParam.put("fields", fieldList);
+		
+		return widgetParam;
+		
+	}
+
+
+	private static JSONObject getdetailsWidgetParam1(InspectionTemplateContext record, FacilioModule module) {
+		// TODO Auto-generated method stub
+		
+		JSONObject widgetParam = new JSONObject();
+		
+		JSONArray fieldList = new JSONArray();
+		
+		fieldList.add("creationType");
+		fieldList.add("siteId");
+		if(record.getCreationType() == InspectionTemplateContext.CreationType.SINGLE.getIndex()) {
+			fieldList.add("resource");
+		}
+		else {
+			fieldList.add("assignmentType");
+			fieldList.add("baseSpace");
+			if(record.getAssignmentTypeEnum() == PMAssignmentType.ASSET_CATEGORY) {
+				fieldList.add("assetCategory");
+			}
+			if(record.getAssignmentTypeEnum() == PMAssignmentType.SPACE_CATEGORY) {
+				fieldList.add("spaceCategory");
+			}
+		}
+		
+		widgetParam.put("fields", fieldList);
+		
+		return widgetParam;
+	}
+
+
 	public static Page getInspectionResponsePage(InspectionResponseContext record, FacilioModule module) throws Exception {
 		
 		Page page = new Page();
