@@ -1436,7 +1436,7 @@ public class AccountConstants {
 		FacilioField roleId = new FacilioField();
 		roleId.setName("roleId");
 		roleId.setDataType(FieldType.NUMBER);
-		roleId.setColumnName("roleId");
+		roleId.setColumnName("ROLE_ID");
 		roleId.setModule(module);
 		fields.add(roleId);
 

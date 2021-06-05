@@ -247,16 +247,12 @@ public class RoleBeanImpl implements RoleBean {
 	@Override
 	public List<Role> getRoles(long appId) throws Exception {
 
-		if(appId <= 0){
-			ApplicationContext app = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
-			appId = app.getId();
-		}
 		List<Long> roleIds = getRolesForApp(appId);
 		if(CollectionUtils.isNotEmpty(roleIds)) {
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 					.select(AccountConstants.getRoleFields())
 					.table(AccountConstants.getRoleModule().getTableName())
-					.andCondition(CriteriaAPI.getCondition("ROLEID", "roleID", StringUtils.join(roleIds, ","), NumberOperators.EQUALS));
+					.andCondition(CriteriaAPI.getCondition("ROLE_ID", "roleID", StringUtils.join(roleIds, ","), NumberOperators.EQUALS));
 
 			return getRolesFromProps(selectBuilder.get(), false);
 		}
@@ -451,8 +447,11 @@ public class RoleBeanImpl implements RoleBean {
 
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(AccountConstants.getRolesAppsFields())
-				.table(ModuleFactory.getRollUpFieldsModule().getTableName())
-				.andCondition(CriteriaAPI.getCondition("APPLICATION_ID", "applicationId", String.valueOf(appId), NumberOperators.EQUALS));
+				.table(AccountConstants.getRolesAppsModule().getTableName());
+
+		if(appId > 0) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("APPLICATION_ID", "applicationId", String.valueOf(appId), NumberOperators.EQUALS));
+		}
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if(props != null && !props.isEmpty()) {
