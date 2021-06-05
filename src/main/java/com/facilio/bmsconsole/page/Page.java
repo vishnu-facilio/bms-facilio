@@ -55,6 +55,13 @@ public class Page {
 		tabs.add(tab);
 	}
 	
+	public void addTab(int index, Tab tab) {
+		if (tabs == null) {
+			tabs = new ArrayList<>();
+		}
+		tabs.add(index, tab);
+	}
+	
 	public class Tab {
 		
 		public Tab(String name) {
