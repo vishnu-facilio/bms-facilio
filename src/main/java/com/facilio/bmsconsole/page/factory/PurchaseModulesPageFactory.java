@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.page.factory;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
@@ -56,15 +57,17 @@ public class PurchaseModulesPageFactory extends PageFactory {
     public static Page getPoPage(V3PurchaseOrderContext record, FacilioModule module) throws Exception {
 
         Page page = new Page();
-
-        Page.Tab tab1 = page.new Tab("summary");
-        page.addTab(tab1);
-
-        Page.Section tab1Sec1 = page.new Section();
-        tab1.addSection(tab1Sec1);
-        PageWidget previewWidget = new PageWidget(PageWidget.WidgetType.PO_PREVIEW);
-        previewWidget.addToLayoutParams(tab1Sec1, 24, 24);
-        tab1Sec1.addWidget(previewWidget);
+        boolean isAtre = AccountUtil.getCurrentOrg().getOrgId() == 418;
+        if (!isAtre) {
+	        	Page.Tab tab1 = page.new Tab("summary");
+	        	page.addTab(tab1);
+	        	
+	        	Page.Section tab1Sec1 = page.new Section();
+	        	tab1.addSection(tab1Sec1);
+	        	PageWidget previewWidget = new PageWidget(PageWidget.WidgetType.PO_PREVIEW);
+	        	previewWidget.addToLayoutParams(tab1Sec1, 24, 24);
+	        	tab1Sec1.addWidget(previewWidget);
+        }
 
 
         Page.Tab tab2 = page.new Tab("Notes & Information");
