@@ -6,6 +6,8 @@
 <%@page import="java.util.Iterator ,org.json.simple.JSONObject,org.json.simple.JSONArray,java.util.List"%>
 <%@page import="com.facilio.accounts.dto.Organization ,org.json.simple.JSONObject,com.facilio.accounts.impl.OrgBeanImpl"%>
 <%@page import="com.facilio.bmsconsole.commands.util.CommonCommandUtil, com.facilio.accounts.util.AccountUtil.FeatureLicense"%>
+<%@ page import="com.facilio.bmsconsole.util.ApplicationApi" %>
+<%@ page import="com.facilio.constants.FacilioConstants" %>
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
   String orgid = request.getParameter("orgid");
@@ -23,7 +25,8 @@
 	  org = orgBean.getOrg(Long.parseLong(orgid));
 	  result = AccountUtil.getOrgBean(orgId).orgInfo();
 	  users = AccountUtil.getOrgBean(orgId).getAppUsers(orgId, -1, false);
-	  roles = AccountUtil.getRoleBean(orgId).getRoles();
+	  //considering main app for now here
+	  roles = AccountUtil.getRoleBean(orgId).getRoles(ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
 	  features  = AccountUtil.getFeatureLicenseMap(orgId);
   }
 %>
