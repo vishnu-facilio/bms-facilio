@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.dto.RoleApp;
 import com.facilio.accounts.util.AccountConstants;
+import com.facilio.accounts.util.AccountEmailTemplate;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -13,10 +14,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AddRoleCommand extends FacilioCommand {
 
@@ -30,15 +28,22 @@ public class AddRoleCommand extends FacilioCommand {
 			long roleId = AccountUtil.getRoleBean().createRole(AccountUtil.getCurrentOrg().getOrgId(), role);
 			role.setRoleId(roleId);
 
-			if(CollectionUtils.isNotEmpty(rolesApps)) {
-				for(RoleApp roleApp : rolesApps) {
-					roleApp.setRoleId(roleId);
-				}
-				AccountUtil.getRoleBean().addRolesAppsMapping(rolesApps);
+			if(CollectionUtils.isEmpty(rolesApps)) {
+
+				RoleApp roleApp = new RoleApp();
+				roleApp.setApplicationId(AccountUtil.getCurrentApp().getId());
+				roleApp.setRoleId(roleId);
+				rolesApps = new ArrayList<>();
+				rolesApps.add(roleApp);
+				//throw error when app based role is supported in client
+				//throw new IllegalArgumentException("Role Object should have apps associated");
 			}
-			else {
-				throw new IllegalArgumentException("Role Object should have apps associated");
+			for(RoleApp roleApp : rolesApps) {
+				roleApp.setRoleId(roleId);
 			}
+			AccountUtil.getRoleBean().addRolesAppsMapping(rolesApps);
+
+
 			context.put(FacilioConstants.ContextNames.ROLE_ID, roleId);
 		}
 		else {

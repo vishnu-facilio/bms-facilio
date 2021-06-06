@@ -409,7 +409,7 @@ public class RoleBeanImpl implements RoleBean {
 		for (RoleApp ra : rolesApps) {
 			Map<String, Object> props = new HashMap<>();
 			props.put("roleId", ra.getRoleId());
-			props.put("applictionId", ra.getApplicationId());
+			props.put("applicationId", ra.getApplicationId());
 			insertBuilder.addRecord(props);
 		}
 		insertBuilder.save();
