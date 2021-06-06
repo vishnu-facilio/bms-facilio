@@ -51,6 +51,10 @@ files:
     destination: /home/facilio/deployment-files/
   - source: /log4j-syd-scheduler.properties
     destination: /home/facilio/deployment-files/
+  - source: /log4j-ff-user.properties
+    destination: /home/facilio/deployment-files/
+  - source: /log4j-ff-scheduler.properties
+    destination: /home/facilio/deployment-files/
   - source: /agentIntegration-production.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-sp-scheduler.properties
@@ -60,6 +64,10 @@ files:
   - source: /awsprops-syd-scheduler.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-syd-user.properties
+    destination: /home/facilio/deployment-files/
+  - source: /awsprops-ff-scheduler.properties
+    destination: /home/facilio/deployment-files/
+  - source: /awsprops-ff-user.properties
     destination: /home/facilio/deployment-files/
   - source: /executors-org.xml
     destination: /home/facilio/deployment-files/

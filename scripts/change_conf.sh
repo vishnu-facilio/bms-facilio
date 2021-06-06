@@ -92,6 +92,22 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "syd-production-user" ]; then
     echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
 fi
 
+if [ "$DEPLOYMENT_GROUP_NAME" = "eu-production-scheduler" ]; then
+    echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+    cp $FACILIO_HOME/deployment-files/awsprops-ff-scheduler.properties $CONF_DIR/awsprops.properties
+    cp $FACILIO_HOME/deployment-files/log4j-ff-scheduler.properties $CLASSES_DIR/log4j.properties
+    cp $FACILIO_HOME/setenv.sh $APP_HOME/bin/setenv.sh
+    echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+fi
+
+if [ "$DEPLOYMENT_GROUP_NAME" = "eu-production-user" ]; then
+    echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+    cp $FACILIO_HOME/deployment-files/awsprops-ff-user.properties $CONF_DIR/awsprops.properties
+    cp $FACILIO_HOME/deployment-files/log4j-ff-user.properties $CLASSES_DIR/log4j.properties
+    cp $FACILIO_HOME/setenv.sh $APP_HOME/bin/setenv.sh
+    echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+fi
+
 if [ "$DEPLOYMENT_GROUP_NAME" = "production-kinesis" ]; then
     echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
     cp $FACILIO_HOME/deployment-files/log4j-kinesis.properties $CLASSES_DIR/log4j.properties
