@@ -1639,7 +1639,9 @@ public class PreventiveMaintenanceAPI {
 					if (pmCreationTypeEnum == PreventiveMaintenance.PMCreationType.SINGLE) {
 						WorkorderTemplate woTemplate = pm.getWoTemplate();
 						ResourceContext resource = woTemplate.getResource();
-						pm.setPmCategoryDescription(resource.getName());
+						if(resource != null) {
+							pm.setPmCategoryDescription(resource.getName());
+						}
 					} else {
 						switch(assignmentType) {
 							case ALL_FLOORS:
