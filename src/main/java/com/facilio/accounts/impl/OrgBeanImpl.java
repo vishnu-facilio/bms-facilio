@@ -115,6 +115,7 @@ public class OrgBeanImpl implements OrgBean {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getAppOrgUserFields());
 		fields.add(AccountConstants.getApplicationIdField());
+		fields.add(AccountConstants.getRoleIdField());
 
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 
@@ -317,6 +318,7 @@ public class OrgBeanImpl implements OrgBean {
 		List<FacilioField> fields = new ArrayList<>();
 		 fields.addAll(AccountConstants.getAppOrgUserFields());
 		fields.add(AccountConstants.getOrgIdField(AccountConstants.getAppOrgUserModule()));
+		fields.add(AccountConstants.getRoleIdField());
 
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
@@ -404,6 +406,7 @@ public class OrgBeanImpl implements OrgBean {
     public List<User> getRequesterTypeUsers(long orgId, boolean status) throws Exception {
   		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getAppOrgUserFields());
+		fields.add(AccountConstants.getRoleIdField());
 
 		String mainAppLinkNames = FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP +","+ FacilioConstants.ApplicationLinkNames.FACILIO_AGENT_APP;
 

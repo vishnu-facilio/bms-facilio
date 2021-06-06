@@ -9,6 +9,7 @@ java.sql.Timestamp,
 <%@ page import="java.util.Collections" %>
 <%@ page import="org.apache.commons.collections4.CollectionUtils" %>
 <%@ page import="com.facilio.bmsconsole.util.ApplicationApi" %>
+<%@ page import="com.facilio.constants.FacilioConstants" %>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
   
@@ -20,7 +21,8 @@ java.sql.Timestamp,
        			if (email != null) {
        		AppDomain appDomain = IAMAppUtil.getAppDomain(AccountUtil.getDefaultAppDomain());
        		try {
-       			usr = AccountUtil.getUserBean().getUser(email, appDomain.getIdentifier());//for now only main app  users
+
+       			usr = AccountUtil.getUserBean().getAppUserForUserName(email, ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP), -1);//for now only main app  users
           		sessions = AccountUtil.getUserBean().getUserSessions(usr.getUid(), null);
 
           		long orgId = usr.getOrgId();

@@ -193,7 +193,8 @@ public class GroupBeanImpl implements GroupBean {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getAppOrgUserFields());
 		fields.addAll(AccountConstants.getGroupMemberFields());
-		
+		fields.add(AccountConstants.getRoleIdField());
+
 		long applicationId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
 		
 		
