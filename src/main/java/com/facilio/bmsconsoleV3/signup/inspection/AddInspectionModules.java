@@ -941,9 +941,8 @@ public class AddInspectionModules extends SignUpData {
     	
     	FacilioStatus createdStatus = getFacilioStatus(inspectionModule, "created", "Created", StatusType.OPEN, Boolean.FALSE);
     	FacilioStatus assignedStatus = getFacilioStatus(inspectionModule, "assigned", "Assigned", StatusType.OPEN, Boolean.FALSE);
-    	FacilioStatus wipStatus = getFacilioStatus(inspectionModule, "workInProgress", "Work in Progress", StatusType.OPEN, Boolean.TRUE);
-    	FacilioStatus onHoldStatus = getFacilioStatus(inspectionModule, "onHold", "On Hold", StatusType.OPEN, Boolean.FALSE);
-    	FacilioStatus resolvedStatus = getFacilioStatus(inspectionModule, "resolved", "Resolved", StatusType.OPEN, Boolean.FALSE);
+    	FacilioStatus wipStatus = getFacilioStatus(inspectionModule, "inProgress", "In Progress", StatusType.OPEN, Boolean.TRUE);
+    	FacilioStatus resolvedStatus = getFacilioStatus(inspectionModule, "completed", "Completed", StatusType.OPEN, Boolean.FALSE);
     	FacilioStatus closed = getFacilioStatus(inspectionModule, "closed", "Closed", StatusType.CLOSED, Boolean.FALSE);
     	
     	 StateFlowRuleContext stateFlowRuleContext = new StateFlowRuleContext();
@@ -961,13 +960,17 @@ public class AddInspectionModules extends SignUpData {
          Criteria assignmentCriteria = new Criteria();
          assignmentCriteria.addAndCondition(CriteriaAPI.getCondition("ASSIGNED_TO", "assignedTo", null, CommonOperators.IS_NOT_EMPTY));
          
+         Criteria wipCtriteria = new Criteria();
+         wipCtriteria.addAndCondition(CriteriaAPI.getCondition("RESPONSE_STATUS", "responseStatus", ResponseContext.ResponseStatus.PARTIALLY_ANSWERED.getIndex()+"", EnumOperators.IS));
+         
+         
+         Criteria completionCtriteria = new Criteria();
+         completionCtriteria.addAndCondition(CriteriaAPI.getCondition("RESPONSE_STATUS", "responseStatus", ResponseContext.ResponseStatus.COMPLETED.getIndex()+"", EnumOperators.IS));
+         
          addStateflowTransitionContext(inspectionModule, stateFlowRuleContext, "Assign", createdStatus, assignedStatus,TransitionType.CONDITIONED,assignmentCriteria);
-         addStateflowTransitionContext(inspectionModule, stateFlowRuleContext, "Start Work", assignedStatus, wipStatus,TransitionType.NORMAL,null);
-         addStateflowTransitionContext(inspectionModule, stateFlowRuleContext, "Pause", wipStatus, onHoldStatus,TransitionType.NORMAL,null);
-         addStateflowTransitionContext(inspectionModule, stateFlowRuleContext, "Resume", onHoldStatus, wipStatus,TransitionType.NORMAL,null);
-         addStateflowTransitionContext(inspectionModule, stateFlowRuleContext, "Resolve", wipStatus, resolvedStatus,TransitionType.NORMAL,null);
+         addStateflowTransitionContext(inspectionModule, stateFlowRuleContext, "Start Inspection", assignedStatus, wipStatus,TransitionType.CONDITIONED,wipCtriteria);
+         addStateflowTransitionContext(inspectionModule, stateFlowRuleContext, "End Inspection", wipStatus, resolvedStatus,TransitionType.CONDITIONED,completionCtriteria);
          addStateflowTransitionContext(inspectionModule, stateFlowRuleContext, "Close", resolvedStatus, closed,TransitionType.NORMAL,null);
-         addStateflowTransitionContext(inspectionModule, stateFlowRuleContext, "Re-Open", closed, assignedStatus,TransitionType.NORMAL,null);
          
     }
     

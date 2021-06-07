@@ -120,14 +120,7 @@ Page page = new Page();
         page.addTab(summaryTab);
         
         
-        Tab relatedList = page.new Tab("Related Records");
-		Section relatedListSec = page.new Section();
-		addRelatedListWidget(relatedListSec, module.getName(), module.getModuleId(), module.getDisplayName());
-		relatedList.addSection(relatedListSec);
-		
-		page.addTab(relatedList);
-		
-		Page.Tab notesAndAttachmentTab = page.new Tab("Notes & Attachments");
+        Page.Tab notesAndAttachmentTab = page.new Tab("Notes & Attachments");
         Page.Section notesAndAttachmentSec = page.new Section();
         
         PageWidget notesWidget = new PageWidget(PageWidget.WidgetType.COMMENT);
@@ -141,6 +134,14 @@ Page page = new Page();
         notesAndAttachmentTab.addSection(notesAndAttachmentSec);
         page.addTab(notesAndAttachmentTab);
         
+        
+        Tab relatedList = page.new Tab("Related Records");
+		Section relatedListSec = page.new Section();
+		addRelatedListWidget(relatedListSec, module.getName(), module.getModuleId(), module.getDisplayName());
+		relatedList.addSection(relatedListSec);
+		
+		page.addTab(relatedList);
+		
         
         Page.Tab activityTab = page.new Tab("Activity");
         Page.Section activitySec = page.new Section();
