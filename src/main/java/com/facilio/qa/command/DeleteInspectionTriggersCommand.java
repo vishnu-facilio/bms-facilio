@@ -12,6 +12,7 @@ import com.facilio.bmsconsoleV3.context.induction.InductionResponseContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTriggerContext;
+import com.facilio.bmsconsoleV3.util.InspectionAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -49,13 +50,9 @@ public class DeleteInspectionTriggersCommand extends FacilioCommand {
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parent"), inspectionIds, NumberOperators.EQUALS));
 		deleteBuilder.delete();
 		
-		fieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.Inspection.INSPECTION_RESPONSE));
+		InspectionAPI.deleteScheduledPreOpenInspections(inspectionIds);
 		
-		DeleteRecordBuilder<InspectionResponseContext> deleteBuilder1 = new DeleteRecordBuilder<InspectionResponseContext>()
-				.module(modBean.getModule(FacilioConstants.Inspection.INSPECTION_RESPONSE))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), InspectionResponseContext.Status.PRE_OPEN.getIndex()+"", EnumOperators.IS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("sysCreatedTime"), DateTimeUtil.getCurrenTime()+"", DateOperators.IS_AFTER));
-		deleteBuilder1.delete();
+		
 		
 		return false;
 	}

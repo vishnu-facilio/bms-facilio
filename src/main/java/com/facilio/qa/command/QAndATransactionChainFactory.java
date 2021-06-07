@@ -49,9 +49,9 @@ public class QAndATransactionChainFactory {
     
     public static FacilioChain inspectionAfterUpdateChain() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new InspectionCheckForActiveandInActiveStateFlowCommand());
         c.addCommand(new DeleteInspectionTriggersCommand());
         c.addCommand(new AddInspectionTriggersCommand());
-        c.addCommand(new InspectionCheckForActiveandInActiveStateFlowCommand());
         return c;
     }
     

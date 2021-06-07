@@ -1,29 +1,47 @@
 package com.facilio.bmsconsoleV3.util;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.log4j.Priority;
+import org.apache.poi.util.StringUtil;
+import org.json.simple.JSONObject;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseScheduleContext;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.bmsconsole.util.ResourceAPI;
+import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTriggerContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTriggerIncludeExcludeResourceContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.DeleteRecordBuilder;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.tasker.FacilioTimer;
+import com.facilio.time.DateTimeUtil;
+import com.mysql.jdbc.StringUtils;
 
+import lombok.extern.log4j.Log4j;
+
+@Log4j
 public class InspectionAPI {
 
 	
@@ -36,6 +54,53 @@ public class InspectionAPI {
 		Condition condition = CriteriaAPI.getCondition(fieldMap.get("scheduleId"), ""+schedulerId,NumberOperators.EQUALS);
 		
 		return getInspectionTrigger(condition, fetchRelated);
+	}
+	
+	public static void scheduleResponseCreationJob(List<InspectionTriggerContext> triggers) {
+		
+		JSONObject props = new JSONObject();
+		props.put("saveAsV3", true);
+		triggers.stream().forEach((trigger) -> {
+			
+			if(trigger.getParent().getStatus() && trigger.getType() == InspectionTriggerContext.TriggerType.SCHEDULE.getVal()) {
+				BaseScheduleContext baseSchedule = trigger.getSchedule();
+				
+				try {
+					BmsJobUtil.deleteJobWithProps(baseSchedule.getId(), "BaseSchedulerSingleInstanceJob");
+					
+					FacilioTimer.scheduleOneTimeJobWithDelay(baseSchedule.getId(), "BaseSchedulerSingleInstanceJob", 10, "priority");
+					BmsJobUtil.addJobProps(baseSchedule.getId(), "BaseSchedulerSingleInstanceJob", props);
+					
+				} catch (Exception e) {
+					LOGGER.log(Priority.ERROR, e.getMessage(), e);
+				}
+			}
+		});
+	}
+	
+	public static void deleteScheduledPreOpenInspections(List<Long> inspectionIds) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		GenericDeleteRecordBuilder delete = new GenericDeleteRecordBuilder()
+				.table(ModuleFactory.getBaseSchedulerModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", modBean.getModule(FacilioConstants.Inspection.INSPECTION_TEMPLATE).getModuleId()+"", NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("RECORD_ID", "recordId", org.apache.commons.lang3.StringUtils.join(inspectionIds, ","), NumberOperators.EQUALS));
+		
+		
+		delete.delete();
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.Inspection.INSPECTION_RESPONSE));
+		
+		DeleteRecordBuilder<InspectionResponseContext> deleteBuilder1 = new DeleteRecordBuilder<InspectionResponseContext>()
+				.module(modBean.getModule(FacilioConstants.Inspection.INSPECTION_RESPONSE))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), InspectionResponseContext.Status.PRE_OPEN.getIndex()+"", EnumOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parent"), inspectionIds, NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), DateTimeUtil.getCurrenTime()+"", DateOperators.IS_AFTER));
+		
+		deleteBuilder1.delete();
+		
+		System.out.println(deleteBuilder1);
 	}
 	
 	public static List<InspectionTriggerContext> getInspectionTrigger(Condition condition,boolean fetchRelated) throws Exception {

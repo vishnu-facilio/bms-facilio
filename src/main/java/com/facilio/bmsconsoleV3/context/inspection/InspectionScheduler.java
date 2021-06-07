@@ -31,6 +31,10 @@ public class InspectionScheduler implements ScheduleTypeInterface {
 		
 		InspectionTemplateContext template = FieldUtil.getAsBeanFromMap(parentRecordProps.get(0), InspectionTemplateContext.class);
 		
+		if(template.getStatus().equals(Boolean.FALSE)) {
+			return null;
+		}
+		
 		long generatedUpto = baseScheduleContext.getGeneratedUptoTime() != null ? baseScheduleContext.getGeneratedUptoTime() : DateTimeUtil.getCurrenTime();
 		
 		long endDate = DateTimeUtil.getDayEndTimeOf(DateTimeUtil.addDays(DateTimeUtil.getCurrenTime(), INSPECTION_PRE_GENERATE_INTERVAL_IN_DAYS));

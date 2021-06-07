@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTriggerContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTriggerIncludeExcludeResourceContext;
+import com.facilio.bmsconsoleV3.util.InspectionAPI;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -71,10 +72,12 @@ public class AddInspectionTriggersCommand extends FacilioCommand {
 			
 			triggers.stream().forEach((trigger) -> {
 				try {
+					
 					if(trigger.getType() == InspectionTriggerContext.TriggerType.SCHEDULE.getVal()) {
 						
 						BaseScheduleContext scheduleTrigger = trigger.getSchedule();
 						
+						scheduleTrigger.setGeneratedUptoTime(null);
 						scheduleTrigger.setModuleId(modBean.getModule(FacilioConstants.Inspection.INSPECTION_TEMPLATE).getModuleId());
 						scheduleTrigger.setRecordId(trigger.getParent().getId());
 						scheduleTrigger.setScheduleType(ScheduleType.INSPECTION);
@@ -124,25 +127,7 @@ public class AddInspectionTriggersCommand extends FacilioCommand {
 				V3RecordAPI.addRecord(false, inclExclList, modBean.getModule(FacilioConstants.Inspection.INSPECTION_TRIGGER_INCL_EXCL), modBean.getAllFields(FacilioConstants.Inspection.INSPECTION_TRIGGER_INCL_EXCL));
 			}
 			
-			JSONObject props = new JSONObject();
-			props.put("saveAsV3", true);
-			
-			triggers.stream().forEach((trigger) -> {
-				
-				if(trigger.getType() == InspectionTriggerContext.TriggerType.SCHEDULE.getVal()) {
-					BaseScheduleContext baseSchedule = trigger.getSchedule();
-					
-					try {
-						BmsJobUtil.deleteJobWithProps(baseSchedule.getId(), "BaseSchedulerSingleInstanceJob");
-						
-						FacilioTimer.scheduleOneTimeJobWithDelay(baseSchedule.getId(), "BaseSchedulerSingleInstanceJob", 10, "priority");
-						BmsJobUtil.addJobProps(baseSchedule.getId(), "BaseSchedulerSingleInstanceJob", props);
-						
-					} catch (Exception e) {
-						LOGGER.log(Level.SEVERE, e.getMessage(), e);
-					}
-				}
-			});
+			InspectionAPI.scheduleResponseCreationJob(triggers);
 		}
 		return false;
 	}
