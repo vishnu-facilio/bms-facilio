@@ -61,6 +61,7 @@ import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.MultiLookupField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.modules.fields.SystemEnumField;
+import com.facilio.qa.context.ResponseContext;
 import com.facilio.qa.signup.AddQAndAModules;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
@@ -568,10 +569,8 @@ public class AddInductionModules extends SignUpData {
     public void addDefaultStateFlowForInductionResponse(FacilioModule inductionModule) throws Exception {
     	
     	FacilioStatus createdStatus = getFacilioStatus(inductionModule, "created", "Created", StatusType.OPEN, Boolean.FALSE);
-    	FacilioStatus assignedStatus = getFacilioStatus(inductionModule, "assigned", "Assigned", StatusType.OPEN, Boolean.FALSE);
-    	FacilioStatus wipStatus = getFacilioStatus(inductionModule, "workInProgress", "Work in Progress", StatusType.OPEN, Boolean.TRUE);
-    	FacilioStatus onHoldStatus = getFacilioStatus(inductionModule, "onHold", "On Hold", StatusType.OPEN, Boolean.FALSE);
-    	FacilioStatus resolvedStatus = getFacilioStatus(inductionModule, "resolved", "Resolved", StatusType.OPEN, Boolean.FALSE);
+    	FacilioStatus wipStatus = getFacilioStatus(inductionModule, "inProgress", "In Progress", StatusType.OPEN, Boolean.TRUE);
+    	FacilioStatus resolvedStatus = getFacilioStatus(inductionModule, "completed", "Completed", StatusType.OPEN, Boolean.FALSE);
     	FacilioStatus closed = getFacilioStatus(inductionModule, "closed", "Closed", StatusType.CLOSED, Boolean.FALSE);
     	
     	 StateFlowRuleContext stateFlowRuleContext = new StateFlowRuleContext();
@@ -586,13 +585,16 @@ public class AddInductionModules extends SignUpData {
          stateFlowRuleContext.setRuleType(WorkflowRuleContext.RuleType.STATE_FLOW);
          WorkflowRuleAPI.addWorkflowRule(stateFlowRuleContext);
          
-         addStateflowTransitionContext(inductionModule, stateFlowRuleContext, "Assign", createdStatus, assignedStatus,TransitionType.NORMAL,null);
-         addStateflowTransitionContext(inductionModule, stateFlowRuleContext, "Start Work", assignedStatus, wipStatus,TransitionType.NORMAL,null);
-         addStateflowTransitionContext(inductionModule, stateFlowRuleContext, "Pause", wipStatus, onHoldStatus,TransitionType.NORMAL,null);
-         addStateflowTransitionContext(inductionModule, stateFlowRuleContext, "Resume", onHoldStatus, wipStatus,TransitionType.NORMAL,null);
-         addStateflowTransitionContext(inductionModule, stateFlowRuleContext, "Resolve", wipStatus, resolvedStatus,TransitionType.NORMAL,null);
+         Criteria wipCtriteria = new Criteria();
+         wipCtriteria.addAndCondition(CriteriaAPI.getCondition("RESPONSE_STATUS", "responseStatus", ResponseContext.ResponseStatus.PARTIALLY_ANSWERED.getIndex()+"", EnumOperators.IS));
+         
+         
+         Criteria completionCtriteria = new Criteria();
+         completionCtriteria.addAndCondition(CriteriaAPI.getCondition("RESPONSE_STATUS", "responseStatus", ResponseContext.ResponseStatus.COMPLETED.getIndex()+"", EnumOperators.IS));
+         
+         addStateflowTransitionContext(inductionModule, stateFlowRuleContext, "Start Induction", createdStatus, wipStatus,TransitionType.CONDITIONED,wipCtriteria);
+         addStateflowTransitionContext(inductionModule, stateFlowRuleContext, "End Induction", wipStatus, resolvedStatus,TransitionType.CONDITIONED,completionCtriteria);
          addStateflowTransitionContext(inductionModule, stateFlowRuleContext, "Close", resolvedStatus, closed,TransitionType.NORMAL,null);
-         addStateflowTransitionContext(inductionModule, stateFlowRuleContext, "Re-Open", closed, assignedStatus,TransitionType.NORMAL,null);
          
     }
     
