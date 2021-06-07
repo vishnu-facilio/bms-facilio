@@ -122,6 +122,7 @@ private static final long serialVersionUID = 1L;
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, insurances);
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
 			c.getContext().put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
+			c.getContext().put(FacilioConstants.ContextNames.APPROVAL_TRANSITION_ID, approvalTransitionId);
 			c.execute();
 			setResult(FacilioConstants.ContextNames.INSURANCES, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
 		}
@@ -135,7 +136,14 @@ private static final long serialVersionUID = 1L;
 	public void setStateTransitionId(long stateTransitionId) {
 		this.stateTransitionId = stateTransitionId;
 	}
-
+	
+	private Long approvalTransitionId;
+	public Long getApprovalTransitionId() {
+		return approvalTransitionId;
+	}
+	public void setApprovalTransitionId(Long approvalTransitionId) {
+		this.approvalTransitionId = approvalTransitionId;
+	}
 	public String deleteInsurances() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(insuranceIds)) {
