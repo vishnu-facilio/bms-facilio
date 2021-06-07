@@ -72,7 +72,7 @@ public class PatchSubFormCommand extends FacilioCommand {
                     .fields(fields)
                     .andCondition(CriteriaAPI.getIdCondition((Long) subForm.get("id"), module));
             subForm.put(lookupField.getName(), parentObject);
-            updateRecordBuilder.updateViaMap(subForm);
+            updateRecordBuilder.update((ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromMap(subForm, contextClass));
 
             beanList.add((ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromMap(subForm, contextClass));
         }

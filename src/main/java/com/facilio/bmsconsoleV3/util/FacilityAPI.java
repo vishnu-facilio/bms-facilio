@@ -1,21 +1,15 @@
 package com.facilio.bmsconsoleV3.util;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.PMTriggerContext;
-import com.facilio.bmsconsole.context.PhotosContext;
-import com.facilio.bmsconsole.context.VisitorLoggingContext;
 import com.facilio.bmsconsole.util.RecordAPI;
-import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsoleV3.context.V3PhotosContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.*;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
@@ -26,15 +20,10 @@ import com.facilio.modules.fields.MultiLookupMeta;
 import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.context.V3Context;
-import com.facilio.v3.util.CommandUtil;
-import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 
-import java.awt.print.Book;
 import java.time.LocalTime;
 import java.util.*;
-import java.util.logging.Level;
 
 public class FacilityAPI {
 
@@ -219,8 +208,8 @@ public class FacilityAPI {
                         List<WeekDayAvailability> weekDaysForDay = weekDayMap.get(day);
                         if (CollectionUtils.isNotEmpty(weekDaysForDay)) {
                             for (WeekDayAvailability wk : weekDaysForDay) {
-                                long startDateTimeOfDay = FacilityAPI.getCalendarTime(startDay, wk.getStartTimeAsLocalTime());
-                                long endDateTimeOfDay = FacilityAPI.getCalendarTime(startDay, wk.getEndTimeAsLocalTime());
+                                long startDateTimeOfDay = FacilityAPI.getCalendarTime(startDay, wk.getActualStartTimeAsLocalTime());
+                                long endDateTimeOfDay = FacilityAPI.getCalendarTime(startDay, wk.getActualEndTimeAsLocalTime());
 
                                 while (startDateTimeOfDay < endDateTimeOfDay && DateTimeUtil.getDayStartTimeOf(startDateTimeOfDay) <= endDateTime) {
                                     SlotContext slot = new SlotContext();

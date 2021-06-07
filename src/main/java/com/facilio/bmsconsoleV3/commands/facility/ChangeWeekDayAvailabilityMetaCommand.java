@@ -58,18 +58,18 @@ public class ChangeWeekDayAvailabilityMetaCommand extends FacilioCommand {
                     List<WeekDayAvailability> weekDayList = FacilityAPI.getWeekDayAvailabilityForDay(slot.getFacilityId(), day);
                     if (CollectionUtils.isNotEmpty(weekDayList)) {
                         for (WeekDayAvailability wk : weekDayList) {
-                            if (localStartTime.isAfter(wk.getStartTimeAsLocalTime()) && localEndTime.isBefore(wk.getEndTimeAsLocalTime())) {
+                            if (localStartTime.isAfter(wk.getActualStartTimeAsLocalTime()) && localEndTime.isBefore(wk.getActualEndTimeAsLocalTime())) {
                                 //partition & delete the future slots
                                 WeekDayAvailability newWkDay = new WeekDayAvailability();
-                                newWkDay.setStartTime(localStartTime);
-                                newWkDay.setEndTime(localEndTime);
+                                newWkDay.setActualStartTime(localStartTime);
+                                newWkDay.setActualEndTime(localEndTime);
                                 newWkDay.setDayOfWeek(day);
                                 newWkDay.setCost(slot.getSlotCost());
                                 newWkDay.setFacility(facility);
 
                                 WeekDayAvailability newWkDayAfter = new WeekDayAvailability();
-                                newWkDayAfter.setStartTime(localEndTime);
-                                newWkDayAfter.setEndTime(wk.getEndTime());
+                                newWkDayAfter.setActualStartTime(localEndTime);
+                                newWkDayAfter.setActualEndTime(wk.getActualEndTimeAsLocalTime());
                                 newWkDayAfter.setDayOfWeek(day);
                                 newWkDayAfter.setCost(wk.getCost());
                                 newWkDayAfter.setFacility(facility);
@@ -79,7 +79,7 @@ public class ChangeWeekDayAvailabilityMetaCommand extends FacilioCommand {
                                 V3RecordAPI.addRecord(false, newWkList, module, fields);
 
                                 //update the first partitioned record
-                                wk.setEndTime(localStartTime);
+                                wk.setActualEndTime(localStartTime);
                                 V3RecordAPI.updateRecord(wk, module, fields);
 
                                 break;

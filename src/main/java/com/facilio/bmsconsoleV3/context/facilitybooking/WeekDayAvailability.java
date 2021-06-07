@@ -25,64 +25,74 @@ public class WeekDayAvailability extends V3Context {
         return null;
     }
 
-    private LocalTime startTime;
-
-    public LocalTime getStartTimeAsLocalTime() {
-        return startTime;
+    private LocalTime actualStartTime;
+    public LocalTime getActualStartTimeAsLocalTime() {
+        return actualStartTime;
     }
-
-    public LocalTime getStartTimeOrDefault() {
-        if (startTime != null) {
-            return startTime;
+    public LocalTime getActualStartTimeOrDefault() {
+        if (actualStartTime != null) {
+            return actualStartTime;
         }
         return LocalTime.MIN;
     }
-
+    public int getActualStartTime() {
+        if (actualStartTime != null) {
+            return actualStartTime.toSecondOfDay();
+        }
+        return -1;
+    }
+    public void setActualStartTime(LocalTime actualStartTime) {
+        this.actualStartTime = actualStartTime;
+    }
+    public void setActualStartTime(int value) {
+        actualStartTime = LocalTime.ofSecondOfDay(value);
+    }
     public String getStartTime() {
-        if (startTime != null) {
-            return startTime.toString();
+        if (actualStartTime != null) {
+            return actualStartTime.toString();
         }
         return null;
     }
-
-    public void setStartTime(LocalTime startTime) {
-        this.startTime = startTime;
-    }
-
     public void setStartTime(String value) {
-        if(value!=null&&value.trim().length()>0){
-            this.startTime = LocalTime.parse(value);
+        if (value != null && value.trim().length() > 0) {
+            this.actualStartTime = LocalTime.parse(value);
         }
     }
 
-    private LocalTime endTime;
-
-    public LocalTime getEndTimeAsLocalTime() {
-        return endTime;
+    private LocalTime actualEndTime;
+    public LocalTime getActualEndTimeAsLocalTime() {
+        return actualEndTime;
     }
-    public LocalTime getEndTimeOrDefault() {
-        if (endTime != null) {
-            return endTime;
+    public LocalTime getActualEndTimeOrDefault() {
+        if (actualEndTime != null) {
+            return actualEndTime;
         }
-        return LocalTime.MAX;
+        return LocalTime.MIN;
     }
-
+    public int getActualEndTime() {
+        if (actualEndTime != null) {
+            return actualEndTime.toSecondOfDay();
+        }
+        return -1;
+    }
+    public void setActualEndTime(LocalTime actualEndTime) {
+        this.actualEndTime = actualEndTime;
+    }
+    public void setActualEndTime(int value) {
+        actualEndTime = LocalTime.ofSecondOfDay(value);
+    }
     public String getEndTime() {
-        if (endTime != null) {
-            return endTime.toString();
+        if (actualEndTime != null) {
+            return actualEndTime.toString();
         }
         return null;
     }
-
-    public void setEndTime(LocalTime endTime) {
-        this.endTime = endTime;
-    }
-
     public void setEndTime(String value) {
-        if(value!=null&&value.trim().length()>0){
-            this.endTime = LocalTime.parse(value);
+        if (value != null && value.trim().length() > 0) {
+            this.actualEndTime = LocalTime.parse(value);
         }
     }
+
 
     private FacilityContext facility;
 
