@@ -990,7 +990,8 @@ ADD_INVITE_RECORD_VIA_V3CHAIN (29, "addInviteRecordViaV3Chain") {
 					}
 				}
 				if(record.get("purposeOfVisit") != null) {
-					invite.setPurposeOfVisit((Integer)record.get("purposeOfVisit"));
+					Long pov = (Long)record.get("purposeOfVisit");
+					invite.setPurposeOfVisit(pov.intValue());
 				}
 				if(record.get("vendor") != null) {
 					Long vendorId = (Long)record.get("vendor");
