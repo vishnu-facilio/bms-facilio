@@ -1,11 +1,17 @@
 package com.facilio.bmsconsoleV3.util;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseScheduleContext;
+import com.facilio.bmsconsole.context.PeopleContext;
+import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.bmsconsoleV3.context.induction.InductionResponseContext;
+import com.facilio.bmsconsoleV3.context.induction.InductionTemplateContext;
 import com.facilio.bmsconsoleV3.context.induction.InductionTriggerContext;
 import com.facilio.bmsconsoleV3.context.induction.InductionTriggerIncludeExcludeResourceContext;
 import com.facilio.constants.FacilioConstants;
@@ -23,7 +29,34 @@ import com.facilio.modules.fields.FacilioField;
 public class InductionAPI {
 	
 	
-public static List<InductionTriggerContext> getInductionTriggerByScheduer(Long schedulerId,boolean fetchRelated) throws Exception {
+	public static List<InductionResponseContext> getInductionResponse(InductionTemplateContext template,PeopleContext people) throws Exception {
+		
+		
+		List<SiteContext> sites = template.getSites();
+		if(template.getSiteApplyTo()) {
+			sites = SpaceAPI.getAllSites();
+		}
+		List<InductionResponseContext> responses = new ArrayList<InductionResponseContext>();
+		for(SiteContext site : sites) {
+			InductionResponseContext response = template.constructResponse();
+			
+			response.setAssignedTo(people);
+			response.setSiteId(site.getId());
+			
+			responses.add(response);
+		}
+		
+		return responses;
+	}
+	
+	public static void addInductionResponses(List<InductionResponseContext> responses) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		V3RecordAPI.addRecord(false, responses, modBean.getModule(FacilioConstants.Induction.INDUCTION_RESPONSE), modBean.getAllFields(FacilioConstants.Induction.INDUCTION_RESPONSE));
+	}
+	
+	public static List<InductionTriggerContext> getInductionTriggerByScheduer(Long schedulerId,boolean fetchRelated) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		

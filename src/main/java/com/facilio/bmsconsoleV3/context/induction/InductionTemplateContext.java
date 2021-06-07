@@ -88,8 +88,8 @@ public class InductionTemplateContext extends QAndATemplateContext <InductionRes
 
     @Override
     protected void addDefaultPropsForResponse(InductionResponseContext response) {
-        response.setSiteId(this.getSiteId());
-        response.setSiteId(this.getSiteId());
+       
+    	response.setSiteId(this.getSiteId());
 
         // Default props which will be overridden if called from Inspection scheduler
         response.setSourceType(InductionResponseContext.SourceType.MANNUAL.getIndex());

@@ -24,8 +24,6 @@ public class InspectionScheduler implements ScheduleTypeInterface {
 
 	public static int INSPECTION_PRE_GENERATE_INTERVAL_IN_DAYS = 90;
 	
-	long totalQuestions = 0;
-	
 	@Override
 	public List<? extends ModuleBaseWithCustomFields> createRecords(BaseScheduleContext baseScheduleContext,boolean isUpdate, List<Map<String, Object>> parentRecordProps, boolean isManualOrScheduleTrigger) throws Exception {
 		
@@ -43,15 +41,6 @@ public class InspectionScheduler implements ScheduleTypeInterface {
 			
 			List<InspectionResponseContext> responses = new ArrayList<InspectionResponseContext>();
 			List<DateRange> times = baseScheduleContext.getScheduleInfo().getTimeIntervals(generatedUpto, endDate);
-			
-			totalQuestions = 0;
-			
-			if(template.getPages() != null) {
-				totalQuestions = template.getPages().stream()
-						.map(PageContext::getQuestions)
-						.flatMap(List::stream)
-						.count();
-			}
 			
 			List<Long> resources = new ArrayList<Long>();
 			
