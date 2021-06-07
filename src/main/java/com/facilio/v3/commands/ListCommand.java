@@ -102,10 +102,10 @@ public class ListCommand extends FacilioCommand {
             offset = 0;
         }
 
+        selectRecordsBuilder.offset(offset);
         if (isV4) {
             selectRecordsBuilder.limit(perPage+1);
         } else {
-            selectRecordsBuilder.offset(offset);
             selectRecordsBuilder.limit(perPage);
         }
 
