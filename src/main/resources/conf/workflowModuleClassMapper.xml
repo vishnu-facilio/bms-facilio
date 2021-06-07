@@ -4,6 +4,7 @@
 	 <module name='basespace' classname='com.facilio.workflowv2.modulefunctions.FacilioBaseSpaceModuleFunctions'/>
 	 <module name='contact' classname='com.facilio.workflowv2.modulefunctions.FacilioContactModuleFunctions'/>
 	 <module name='users' classname='com.facilio.workflowv2.modulefunctions.FacilioUserModuleFunctions'/>
+	 <module name='groups' classname='com.facilio.workflowv2.modulefunctions.FacilioTeamModuleFunctions'/>
 	 <module name='visitorlogging' classname='com.facilio.workflowv2.modulefunctions.FacilioVisitorLogingModuleFunctions'/>
 	 <module name='alarmoccurrence' classname='com.facilio.workflowv2.modulefunctions.FacilioAlarmModuleFunctions'/>
 	 <module name='readingalarmoccurrence' classname='com.facilio.workflowv2.modulefunctions.FacilioReadingAlarmModuleFunctions'/>
