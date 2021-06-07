@@ -7,6 +7,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -253,8 +255,14 @@ private static final long serialVersionUID = 1L;
 public String getEmployeeOccupantPortalSummary() throws Exception {
 		
 		FacilioChain chain = ReadOnlyChainFactory.getEmployeeOccupantPortalSummary();
+		User currentUser = AccountUtil.getCurrentAccount().getUser();
+		
 		chain.getContext().put(FacilioConstants.ContextNames.COUNT, count);
 		chain.getContext().put(FacilioConstants.ContextNames.ID, recordId);
+		
+		if(recordId <= 0 && currentUser != null && currentUser.getPeopleId() > 0){
+			chain.getContext().put(FacilioConstants.ContextNames.ID, currentUser.getPeopleId());
+		}
 		
 		chain.execute();
 		
@@ -263,6 +271,7 @@ public String getEmployeeOccupantPortalSummary() throws Exception {
 		setResult(FacilioConstants.ContextNames.SERVICE_REQUEST, chain.getContext().get(FacilioConstants.ContextNames.SERVICE_REQUEST));
 		setResult(FacilioConstants.ContextNames.INVITE_VISITOR, chain.getContext().get(FacilioConstants.ContextNames.INVITE_VISITOR));
 		setResult(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING, chain.getContext().get(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING));
+		setResult(FacilioConstants.ContextNames.USER, currentUser);
 		return SUCCESS;
 	}
 
