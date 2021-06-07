@@ -105,6 +105,7 @@ public class ListCommand extends FacilioCommand {
         if (isV4) {
             selectRecordsBuilder.limit(perPage+1);
         } else {
+            selectRecordsBuilder.offset(offset);
             selectRecordsBuilder.limit(perPage);
         }
 
