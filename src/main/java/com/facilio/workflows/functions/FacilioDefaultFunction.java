@@ -992,6 +992,11 @@ ADD_INVITE_RECORD_VIA_V3CHAIN (29, "addInviteRecordViaV3Chain") {
 				if(record.get("purposeOfVisit") != null) {
 					invite.setPurposeOfVisit((Integer)record.get("purposeOfVisit"));
 				}
+				if(record.get("vendor") != null) {
+					Long vendorId = (Long)record.get("vendor");
+					VendorContext vendor = VendorsAPI.getVendors(Collections.singletonList(vendorId)).get(0);
+					invite.setVendor( vendor);
+				}
 				if(record.get("expectedCheckOutTime") != null) {
 					invite.setExpectedCheckOutTime((Long)record.get("expectedCheckOutTime"));
 				}
