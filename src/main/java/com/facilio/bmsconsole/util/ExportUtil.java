@@ -1,16 +1,27 @@
 package com.facilio.bmsconsole.util;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
+import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.TicketContext.SourceType;
+import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.fs.FileInfo.FileFormat;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.*;
+import com.facilio.modules.fields.*;
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.time.DateTimeUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.log4j.LogManager;
@@ -23,40 +34,12 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.accounts.util.AccountUtil.FeatureLicense;
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.NoteContext;
-import com.facilio.bmsconsole.context.TaskContext;
-import com.facilio.bmsconsole.context.TaskSectionContext;
-import com.facilio.bmsconsole.context.TicketContext.SourceType;
-import com.facilio.bmsconsole.context.ViewField;
-import com.facilio.bmsconsole.view.FacilioView;
-import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.constants.FacilioConstants.ContextNames;
-import com.facilio.db.criteria.Criteria;
-import com.facilio.fs.FileInfo.FileFormat;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.fields.BaseEnumField;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.LookupFieldMeta;
-import com.facilio.modules.fields.MultiEnumField;
-import com.facilio.services.factory.FacilioFactory;
-import com.facilio.services.filestore.FileStore;
-import com.facilio.time.DateTimeUtil;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ExportUtil {
 	
@@ -780,7 +763,7 @@ public class ExportUtil {
 			viewFields.add(id);
 		}
 		if (moduleName.equals("workorder")) {
-			ViewField serialNumber = new ViewField("serialNumber", "Serial Number");
+			ViewField serialNumber = new ViewField("serialNumber", "ID");
 			serialNumber.setField(modBean.getField("serialNumber", moduleName));
 			viewFields.add(serialNumber);
 		}
