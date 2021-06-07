@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.commands.form.HandleFormFieldsCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.util.RecordAPI;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -570,6 +571,9 @@ public class FacilioChainFactory {
 		c.addCommand(new ExecuteRollUpFieldCommand());
 		c.addCommand(new ExecuteStateFlowCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
+		c.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE));
+		c.addCommand(new ForkChainToInstantJobCommand(false)
+				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
 		c.addCommand(new ConstructAddCustomActivityCommand());
 		c.addCommand(new AddActivitiesCommand());
 		return c;
@@ -690,6 +694,9 @@ public class FacilioChainFactory {
 		c.addCommand(new ExecuteRollUpFieldCommand());
 		c.addCommand(new ExecuteStateFlowCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
+		c.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE));
+		c.addCommand(new ForkChainToInstantJobCommand(false)
+				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
 		c.addCommand(new ConstructAddCustomActivityCommand());
 		c.addCommand(new AddActivitiesCommand());
 		return c;
@@ -770,6 +777,9 @@ public class FacilioChainFactory {
 		c.addCommand(new ExecuteRollUpFieldCommand());
 		c.addCommand(new ExecuteStateFlowCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
+		c.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE));
+		c.addCommand(new ForkChainToInstantJobCommand(false)
+				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
 		c.addCommand(new ConstructAddCustomActivityCommand());
 		c.addCommand(new AddActivitiesCommand());
 		return c;
@@ -831,6 +841,9 @@ public class FacilioChainFactory {
 		c.addCommand(new ExecuteRollUpFieldCommand());
 		c.addCommand(new ExecuteStateFlowCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
+		c.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE));
+		c.addCommand(new ForkChainToInstantJobCommand(false)
+				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
 		c.addCommand(new AddActivitiesCommand());
 		return c;
 	}
