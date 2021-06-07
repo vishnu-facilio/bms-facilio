@@ -325,27 +325,8 @@ public class AgentUtilV2
     }
 
     static int getAgentOfflineStatus( Map<String,Object> map) throws Exception {
-        int offLineAgents =0;
-        Long lastReceivedTime = (Long)map.get(AgentConstants.LAST_DATA_RECEIVED_TIME);
         boolean connected = (boolean)map.get(AgentConstants.CONNECTED);
-        long agentId = (long)map.get("id");
-        if(connected && lastReceivedTime == null){
-            return offLineAgents;
-        }
-        if(!connected){
-           return ++offLineAgents;
-        }
-        long diffInMins =  (long)Math.floor((System.currentTimeMillis() - lastReceivedTime)/1000/60 << 0);
-        long interval = (long)map.getOrDefault(AgentConstants.DATA_INTERVAL,0L);
-        if(diffInMins > (interval * 2) ){
-            Integer agentType = (Integer)map.getOrDefault("agentType",null);
-            if(agentType !=null &&  !isConfiguredPointExist(agentId)){
-                return offLineAgents;
-            }
-            ++offLineAgents;
-            map.put(AgentConstants.CONNECTED,false);
-        }
-        return offLineAgents;
+        return connected ? 1 : 0;
     }
 
     private static boolean isConfiguredPointExist(long agentId) throws Exception {
