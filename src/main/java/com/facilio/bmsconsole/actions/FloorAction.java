@@ -4,7 +4,6 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.SetTableNamesCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.util.RollUpFieldUtil;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -48,7 +47,7 @@ public class FloorAction extends FacilioAction {
 	{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.BUILDING_ID, getBuildingId());
-		
+		context.put(FacilioConstants.ContextNames.SKIP_MODULE_CRITERIA, skipModuleCriteria);
 		FacilioChain getAllFloor = FacilioChainFactory.getAllFloorChain();
 		getAllFloor.execute(context);
 		

@@ -17,7 +17,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -95,7 +94,8 @@ public class SpaceAction extends FacilioAction {
 			}
 			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
 		}
-		
+		context.put(FacilioConstants.ContextNames.SKIP_MODULE_CRITERIA, skipModuleCriteria);
+
 		FacilioChain getAllSpace = FacilioChainFactory.getAllSpaceChain();
 		getAllSpace.execute(context);
 		

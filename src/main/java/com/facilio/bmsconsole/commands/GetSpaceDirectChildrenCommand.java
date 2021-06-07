@@ -22,7 +22,7 @@ public class GetSpaceDirectChildrenCommand extends FacilioCommand {
             BaseSpaceContext baseSpace = SpaceAPI.getBaseSpace(baseSpaceId);
             if (baseSpace != null) {
                 if (baseSpace.getSpaceType() == BaseSpaceContext.SpaceType.SITE.getIntVal()) {
-                    List<SpaceContext> spaceList = SpaceAPI.getIndependentSpaces(baseSpaceId);
+                    List<SpaceContext> spaceList = SpaceAPI.getIndependentSpaces(baseSpaceId, context);
                     List<BuildingContext> buildingsList = SpaceAPI.getSiteBuildings(baseSpaceId);
 
                     if (CollectionUtils.isNotEmpty(buildingsList)) {
@@ -32,8 +32,8 @@ public class GetSpaceDirectChildrenCommand extends FacilioCommand {
                         childrenList.addAll(spaceList);
                     }
                 } else if (baseSpace.getSpaceType() == BaseSpaceContext.SpaceType.BUILDING.getIntVal()) {
-                    List<FloorContext> floorsList = SpaceAPI.getBuildingsFloorsContext(baseSpaceId);
-                    List<SpaceContext> spaceList = SpaceAPI.getIndependentSpaces(baseSpaceId);
+                    List<FloorContext> floorsList = SpaceAPI.getBuildingsFloorsContext(baseSpaceId,context);
+                    List<SpaceContext> spaceList = SpaceAPI.getIndependentSpaces(baseSpaceId, context);
                     if (CollectionUtils.isNotEmpty(floorsList)) {
                         childrenList.addAll(floorsList);
                     }

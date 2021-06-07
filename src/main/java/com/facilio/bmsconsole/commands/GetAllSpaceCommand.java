@@ -1,10 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.context.SpaceContext;
@@ -13,6 +8,10 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
+import java.util.List;
 
 public class GetAllSpaceCommand extends FacilioCommand{
 
@@ -58,6 +57,10 @@ public class GetAllSpaceCommand extends FacilioCommand{
 		if(scopeCriteria != null)
 		{
 			builder.andCriteria(scopeCriteria);
+		}
+		boolean skipModuleCriteria = (boolean) context.getOrDefault(FacilioConstants.ContextNames.SKIP_MODULE_CRITERIA, false);
+		if (skipModuleCriteria) {
+			builder.skipModuleCriteria();
 		}
 
 		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);

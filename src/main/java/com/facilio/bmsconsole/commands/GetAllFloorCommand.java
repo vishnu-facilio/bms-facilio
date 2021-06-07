@@ -1,9 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-
-import org.apache.commons.chain.Context;
-
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.PhotosContext;
@@ -12,6 +8,9 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.chain.Context;
+
+import java.util.List;
 
 public class GetAllFloorCommand extends FacilioCommand{
 
@@ -40,6 +39,10 @@ public class GetAllFloorCommand extends FacilioCommand{
 		if(scopeCriteria != null)
 		{
 			builder.andCriteria(scopeCriteria);
+		}
+		boolean skipModuleCriteria = (boolean) context.getOrDefault(FacilioConstants.ContextNames.SKIP_MODULE_CRITERIA, false);
+		if (skipModuleCriteria) {
+			builder.skipModuleCriteria();
 		}
 
 		List<FloorContext> floors = builder.get();

@@ -1,12 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Context;
-
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.bmsconsole.context.BusinessHoursContext;
 import com.facilio.bmsconsole.context.PhotosContext;
@@ -19,6 +12,12 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import org.apache.commons.chain.Context;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class GetAllCampusCommand extends FacilioCommand {
 
@@ -40,6 +39,11 @@ public class GetAllCampusCommand extends FacilioCommand {
 		if (scopeCriteria != null) {
 			builder.andCriteria(scopeCriteria);
 		}
+		boolean skipModuleCriteria = (boolean) context.getOrDefault(FacilioConstants.ContextNames.SKIP_MODULE_CRITERIA, false);
+		if (skipModuleCriteria) {
+			builder.skipModuleCriteria();
+		}
+
 
 		List<SiteContext> campuses = builder.get();
 		List<Long> spaceId = new ArrayList<Long>();

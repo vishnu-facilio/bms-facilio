@@ -43,6 +43,7 @@ public class CampusAction extends FacilioAction {
 	public String campusList() throws Exception 
 	{
 		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.SKIP_MODULE_CRITERIA, skipModuleCriteria);
 		FacilioChain getAllCampus = FacilioChainFactory.getAllCampusChain();
 		getAllCampus.execute(context);
 		

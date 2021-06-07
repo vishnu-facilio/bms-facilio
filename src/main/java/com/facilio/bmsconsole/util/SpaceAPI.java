@@ -26,6 +26,7 @@ import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SupplementRecord;
+import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -870,7 +871,7 @@ public class SpaceAPI {
 		return floors.get(0).getId();
 	}
 
-	public static List<FloorContext> getBuildingsFloorsContext(long buildingId) throws Exception {
+	public static List<FloorContext> getBuildingsFloorsContext(long buildingId, Context context) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.FLOOR);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.FLOOR);
@@ -882,7 +883,10 @@ public class SpaceAPI {
 				.andCondition(CriteriaAPI.getCondition("SPACE_TYPE", "spaceType",String.valueOf(BaseSpaceContext.SpaceType.FLOOR.getIntVal()),NumberOperators.EQUALS))
 				.orderBy("Floor.FLOOR_LEVEL ASC,Resources.NAME ASC")
 		;
-
+		boolean skipModuleCriteria = (boolean) context.getOrDefault(FacilioConstants.ContextNames.SKIP_MODULE_CRITERIA, false);
+		if (skipModuleCriteria) {
+			selectBuilder.skipModuleCriteria();
+		}
 		List<FloorContext> floors = selectBuilder.get();
 
 		return floors;
@@ -919,8 +923,12 @@ public class SpaceAPI {
 		List<BaseSpaceContext> spaces = selectBuilder.get();
 		return spaces;
 	}
-	
+
 	public static List<BuildingContext> getSiteBuildings(long siteId) throws Exception {
+		return getSiteBuildings(siteId, null);
+	}
+
+	public static List<BuildingContext> getSiteBuildings(long siteId, Context context) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BUILDING);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BUILDING);
@@ -947,6 +955,12 @@ public class SpaceAPI {
 		Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria(module.getName(),"read");
 		if (permissionCriteria != null) {
 			selectBuilder.andCriteria(permissionCriteria);
+		}
+		if (context != null) {
+			boolean skipModuleCriteria = (boolean) context.getOrDefault(FacilioConstants.ContextNames.SKIP_MODULE_CRITERIA, false);
+			if (skipModuleCriteria) {
+				selectBuilder.skipModuleCriteria();
+			}
 		}
 		
 		List<BuildingContext> buildings = selectBuilder.get();
@@ -1814,7 +1828,7 @@ public static List<Map<String,Object>> getBuildingArea(String buildingList) thro
 		return count;
 	}
 
-	public static List<SpaceContext> getIndependentSpaces(long baseSpaceId) throws Exception {
+	public static List<SpaceContext> getIndependentSpaces(long baseSpaceId, Context context) throws Exception {
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SPACE);
@@ -1841,6 +1855,10 @@ public static List<Map<String,Object>> getBuildingArea(String buildingList) thro
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("floor"), CommonOperators.IS_EMPTY));
 		} else if (baseSpace.getSpaceTypeEnum().getIntVal() == SpaceType.FLOOR.getIntVal()) {
 			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("floor"), String.valueOf(baseSpaceId), NumberOperators.EQUALS));
+		}
+		boolean skipModuleCriteria = (boolean) context.getOrDefault(FacilioConstants.ContextNames.SKIP_MODULE_CRITERIA, false);
+		if (skipModuleCriteria) {
+			builder.skipModuleCriteria();
 		}
 
 

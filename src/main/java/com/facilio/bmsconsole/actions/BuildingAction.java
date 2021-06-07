@@ -57,7 +57,7 @@ public class BuildingAction extends FacilioAction {
 	{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.SITE_ID, getSiteId());
-		
+		context.put(FacilioConstants.ContextNames.SKIP_MODULE_CRITERIA, skipModuleCriteria);
 		FacilioChain getAllBuilding = FacilioChainFactory.getAllBuildingChain();
 		getAllBuilding.execute(context);
 		

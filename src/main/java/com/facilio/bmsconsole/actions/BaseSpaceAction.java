@@ -257,6 +257,7 @@ public class BaseSpaceAction extends FacilioAction {
 
 		FacilioChain chain = ReadOnlyChainFactory.getSpaceDirectChildrenChain();
 		chain.getContext().put(ContextNames.BASE_SPACE_ID, getBaseSpaceId());
+		chain.getContext().put(ContextNames.SKIP_MODULE_CRITERIA, skipModuleCriteria);
 		chain.execute();
 
 		setResult(ContextNames.BASE_SPACE_LIST, chain.getContext().get(ContextNames.BASE_SPACE_LIST));

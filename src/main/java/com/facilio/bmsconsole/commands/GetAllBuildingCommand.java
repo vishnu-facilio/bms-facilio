@@ -1,10 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Context;
-
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BuildingContext;
@@ -17,6 +12,10 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.chain.Context;
+
+import java.util.List;
+import java.util.Map;
 
 public class GetAllBuildingCommand extends FacilioCommand{
 
@@ -48,6 +47,11 @@ public class GetAllBuildingCommand extends FacilioCommand{
 		{
 			builder.andCriteria(scopeCriteria);
 		}
+		boolean skipModuleCriteria = (boolean) context.getOrDefault(FacilioConstants.ContextNames.SKIP_MODULE_CRITERIA, false);
+		if (skipModuleCriteria) {
+			builder.skipModuleCriteria();
+		}
+
 		List<BuildingContext> buildings = builder.get();
 		for (BuildingContext building : buildings) {
 			List<PhotosContext> photos = SpaceAPI.getBaseSpacePhotos(building.getId());

@@ -1,19 +1,18 @@
 package com.facilio.bmsconsole.actions;
 
-import java.sql.SQLException;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpServletResponse;
-
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
+import com.facilio.bmsconsole.db.ResponseCacheUtil;
 import com.facilio.bmsconsole.interceptors.AuthInterceptor;
-import com.facilio.fw.FacilioException;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.filters.MultiReadServletRequest;
 import com.facilio.util.FacilioUtil;
-import com.facilio.wmsv2.constants.Topics;
-import com.facilio.wmsv2.endpoint.SessionManager;
 import com.facilio.wmsv2.handler.AuditLogHandler;
-import com.facilio.wmsv2.message.Message;
+import com.opensymphony.xwork2.ActionSupport;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -23,14 +22,11 @@ import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.FacilioProperties;
-import com.facilio.bmsconsole.db.ResponseCacheUtil;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.constants.FacilioConstants.ContextNames;
-import com.facilio.filters.MultiReadServletRequest;
-import com.opensymphony.xwork2.ActionSupport;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
+import java.sql.SQLException;
+import java.util.List;
 
 @Log4j
 public class FacilioAction extends ActionSupport {
@@ -232,6 +228,9 @@ public class FacilioAction extends ActionSupport {
 	public int getPerPage() {
 		return this.perPage;
 	}
+
+	@Getter @Setter
+	public boolean skipModuleCriteria = false;
 	
 	@SuppressWarnings("unchecked")
 	public JSONObject getPagination () {

@@ -1,17 +1,5 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -24,7 +12,6 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.BeanFactory;
@@ -32,6 +19,13 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.util.*;
 
 public class ModuleAction extends FacilioAction {
 	
@@ -626,6 +620,7 @@ public class ModuleAction extends FacilioAction {
  		context.put(FacilioConstants.ContextNames.FILTER_IDS, filterId);
  		context.put(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA, criteria);
  		context.put(ContextNames.FETCH_LOOKUPS, shouldFetchLookup);
+		context.put(FacilioConstants.ContextNames.SKIP_MODULE_CRITERIA, skipModuleCriteria);
 		
 		if (getClientCriteria() != null) {
 			JSONParser parser = new JSONParser();

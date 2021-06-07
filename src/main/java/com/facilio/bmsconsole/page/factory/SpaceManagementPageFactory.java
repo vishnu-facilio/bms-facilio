@@ -1,11 +1,5 @@
 package com.facilio.bmsconsole.page.factory;
 
-import static com.facilio.bmsconsole.page.factory.AssetPageFactory.addRelatedListWidget;
-
-import java.util.Arrays;
-
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
@@ -23,6 +17,11 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import org.json.simple.JSONObject;
+
+import java.util.Arrays;
+
+import static com.facilio.bmsconsole.page.factory.AssetPageFactory.addRelatedListWidget;
 
 public class SpaceManagementPageFactory extends PageFactory {
 	
@@ -276,6 +275,7 @@ public class SpaceManagementPageFactory extends PageFactory {
 		relatedList.put("module", buildingModule);
 		pageWidget.setRelatedList(relatedList);
 		pageWidget.addToLayoutParams(section, 24, 10);
+		pageWidget.addToWidgetParams(ContextNames.SKIP_MODULE_CRITERIA, true);
 		section.addWidget(pageWidget);
 	}
 
@@ -287,6 +287,7 @@ public class SpaceManagementPageFactory extends PageFactory {
 		PageWidget widget = new PageWidget(WidgetType.LIST, "siteSpaces");
 		widget.setRelatedList(relatedList);
 		widget.addToLayoutParams(section, 24, 10);
+		widget.addToWidgetParams(ContextNames.SKIP_MODULE_CRITERIA, true);
 		section.addWidget(widget);
 	}
 	private static void addBuildingRelatedListWidget(Section section) throws Exception {
@@ -294,6 +295,7 @@ public class SpaceManagementPageFactory extends PageFactory {
 		JSONObject relatedList = new JSONObject();
 		pageWidget.setRelatedList(relatedList);
 		pageWidget.addToLayoutParams(section, 24, 10);
+		pageWidget.addToWidgetParams(ContextNames.SKIP_MODULE_CRITERIA, true);
 		section.addWidget(pageWidget);
 	}
 	private static void addSpaceRelatedListWidget(Section section,String widgetName , ModuleBean modBean) throws Exception {
@@ -303,6 +305,7 @@ public class SpaceManagementPageFactory extends PageFactory {
 		PageWidget pageWidget = new PageWidget(WidgetType.LIST, widgetName);
 		pageWidget.setRelatedList(relatedList);
 		pageWidget.addToLayoutParams(section, 24, 10);
+		pageWidget.addToWidgetParams(ContextNames.SKIP_MODULE_CRITERIA, true);
 		section.addWidget(pageWidget);
 	}
 
