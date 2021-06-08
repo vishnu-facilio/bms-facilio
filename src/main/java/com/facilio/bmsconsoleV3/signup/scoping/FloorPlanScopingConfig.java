@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.signup.scoping;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -25,23 +26,47 @@ public class FloorPlanScopingConfig extends SignUpData {
 
             long orgId = AccountUtil.getCurrentOrg().getOrgId();
             
-            V3FloorplanMarkersContext markerType  = new V3FloorplanMarkersContext();
+            List<V3FloorplanMarkersContext> markerTypes = new ArrayList<>();
 
-            markerType.setName("desk");
-            markerType.setModuleId(markerTypeModule.getModuleId());
-            markerType.setOrgId(orgId);
-            markerType.setRecordModuleId(desk.getModuleId());
-            markerType.setType(1);
-            markerType.setFileId((long) -1);
-            markerType.setIsAutoCreate(true);
-            markerType.setEnableNumbering(true);
+
+            V3FloorplanMarkersContext desktype  = new V3FloorplanMarkersContext();
+
+            desktype.setName("desk");
+            desktype.setModuleId(markerTypeModule.getModuleId());
+            desktype.setOrgId(orgId);
+            desktype.setRecordModuleId(desk.getModuleId());
+            desktype.setType(1);
+            desktype.setFileId((long) -1);
+            desktype.setIsAutoCreate(true);
+            desktype.setEnableNumbering(true);
+            markerTypes.add(desktype);
+            
+            
+            String markerNames[] = { "camera", "cctv", "elevator", "escalator", "femalerestroom", "fireextingus", "kitchen1", "kitchen2", "locker", "malerestroom", "parking", "restroom" };  
+
+     
+            
+            for (String markerName : markerNames) {
+            	
+            	 V3FloorplanMarkersContext markerType  = new V3FloorplanMarkersContext();
+
+            	 markerType.setName(markerName);
+            	 markerType.setModuleId(markerTypeModule.getModuleId());
+            	 markerType.setOrgId(orgId);
+            	 markerType.setType(1);
+            	 markerType.setFileId((long) -1);
+            	 markerType.setIsAutoCreate(false);
+            	 markerType.setEnableNumbering(false);
+                 markerTypes.add(markerType);
+            }
+            
 
             if(orgId < 1){
                 throw new IllegalArgumentException("Invalid orgId");
             }
             
 
-            V3RecordAPI.addRecord(false, Collections.singletonList(markerType), markerTypeModule, fields);
+            V3RecordAPI.addRecord(false, markerTypes, markerTypeModule, fields);
             
         }
         catch(Exception e){
