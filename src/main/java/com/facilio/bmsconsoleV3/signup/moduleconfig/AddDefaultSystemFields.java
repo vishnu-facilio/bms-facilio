@@ -30,7 +30,6 @@ public class AddDefaultSystemFields extends SignUpData {
             modules.add(modBean.getModule(FacilioConstants.ContextNames.GATE_PASS));
             modules.add(modBean.getModule(FacilioConstants.ContextNames.SHIPMENT));
             modules.add(modBean.getModule(FacilioConstants.ContextNames.INVENTORY_REQUEST));
-            modules.add(modBean.getModule(FacilioConstants.ContextNames.INVENTORY_REQUEST));
             modules.add(modBean.getModule(FacilioConstants.ContextNames.ATTENDANCE_TRANSACTIONS));
             modules.add(modBean.getModule(FacilioConstants.ContextNames.SERVICE));
             modules.add(modBean.getModule(FacilioConstants.ContextNames.TERMS_AND_CONDITIONS));
