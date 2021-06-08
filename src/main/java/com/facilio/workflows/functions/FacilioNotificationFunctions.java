@@ -87,6 +87,7 @@ public enum FacilioNotificationFunctions implements FacilioWorkflowFunctionInter
 			
 			FacilioContext context = new FacilioContext();
 			
+			context.put(FacilioConstants.ContextNames.USER_ID, userId);
 			context.put(FacilioConstants.ContextNames.NOTIFICATION_TYPE, ActionType.PUSH_NOTIFICATION);
 			context.put(FacilioConstants.ContextNames.NOTIFICATION_OBJECT, WorkflowV2Util.getAsJSONObject(sendMailMap));
 			
