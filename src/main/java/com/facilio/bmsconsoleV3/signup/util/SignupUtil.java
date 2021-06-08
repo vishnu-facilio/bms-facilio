@@ -19,7 +19,6 @@ public class SignupUtil {
         customNotesModule.setDisplayName(module.getDisplayName() + " Notes");
         customNotesModule.setTableName("Notes");
         customNotesModule.setType(FacilioModule.ModuleType.NOTES);
-        customNotesModule.setCustom(true);
         modules.add(customNotesModule);
 
 
@@ -27,7 +26,6 @@ public class SignupUtil {
         customAttachmentModule.setName(module.getName() + "attachments");
         customAttachmentModule.setDisplayName(module.getDisplayName() + " Attachments");
         customAttachmentModule.setTableName("Attachments");
-        customAttachmentModule.setCustom(true);
         customAttachmentModule.setType(FacilioModule.ModuleType.ATTACHMENTS);
 
         modules.add(customAttachmentModule);

@@ -91,7 +91,11 @@ public class AddSubModulesSystemFieldsCommad extends FacilioCommand {
                 fileField.setDefault(true);
                 fields.add(fileField);
 
-                LookupField attachmentParentId = (LookupField) FieldFactory.getField("parent", "PARENT Id", "PARENT_TICKET", subModule, FieldType.LOOKUP);
+                String columnName = "PARENT_ID";
+                if(subModule.getTableName().equals("CMD_Attachments")) {
+                	columnName = "PARENT_TICKET";
+                }
+                LookupField attachmentParentId = (LookupField) FieldFactory.getField("parent", "PARENT Id", columnName, subModule, FieldType.LOOKUP);
                 attachmentParentId.setDefault(true);
                 attachmentParentId.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
                 attachmentParentId.setLookupModule(parentModule);
