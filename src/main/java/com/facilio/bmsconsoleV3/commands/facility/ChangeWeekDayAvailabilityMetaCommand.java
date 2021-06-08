@@ -19,6 +19,7 @@ import org.apache.commons.collections4.MapUtils;
 
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -52,9 +53,9 @@ public class ChangeWeekDayAvailabilityMetaCommand extends FacilioCommand {
                     ZonedDateTime zdtEnd = DateTimeUtil.getZonedDateTime(slot.getSlotEndTime());
                     LocalTime localEndTime = zdtEnd.toLocalTime();
 
-                    Calendar cal = Calendar.getInstance();
-                    cal.setTimeInMillis(dateTime);
-                    int day = cal.get(Calendar.DAY_OF_WEEK) - 1;
+                    ZonedDateTime cal = DateTimeUtil.getDateTime(dateTime);
+                    int day = cal.get(ChronoField.DAY_OF_WEEK);
+
                     List<WeekDayAvailability> weekDayList = FacilityAPI.getWeekDayAvailabilityForDay(slot.getFacilityId(), day);
                     if (CollectionUtils.isNotEmpty(weekDayList)) {
                         for (WeekDayAvailability wk : weekDayList) {

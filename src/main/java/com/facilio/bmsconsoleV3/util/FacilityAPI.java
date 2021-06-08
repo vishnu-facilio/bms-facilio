@@ -23,6 +23,9 @@ import com.facilio.v3.context.V3Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.time.LocalTime;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 public class FacilityAPI {
@@ -101,20 +104,19 @@ public class FacilityAPI {
                     continue;
                 }
                 Long startTime = unavailability.getStartDate();
-                Calendar cal = Calendar.getInstance();
-                cal.setTimeInMillis(startTime);
+                ZonedDateTime cal = DateTimeUtil.getDateTime(startTime);
 
                 while (startTime <= unavailability.getEndDate()) {
 
-                    long startDateTimeOfDay = getCalendarTime(startTime, unavailability.getStartTimeAsLocalTime());
-                    long endDateTimeOfDay = getCalendarTime(startTime, unavailability.getEndTimeAsLocalTime());
+                    long startDateTimeOfDay = getZonedTime(startTime, unavailability.getStartTimeAsLocalTime());
+                    long endDateTimeOfDay = getZonedTime(startTime, unavailability.getEndTimeAsLocalTime());
 
                     if(slotStartTime > startDateTimeOfDay && slotStartTime < endDateTimeOfDay){
                         return true;
                     }
 
-                    cal.add(Calendar.DATE, 1);
-                    startTime = cal.getTimeInMillis();
+                    cal = cal.plusDays(1);
+                    startTime = DateTimeUtil.getMillis(cal, false);
                 }
 
             }
@@ -134,15 +136,13 @@ public class FacilityAPI {
         return false;
     }
 
-    public static Long getCalendarTime(Long startTime, LocalTime localTime) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(startTime);
-        int date = cal.get(Calendar.DATE);
-        int month = cal.get(Calendar.MONTH);
-        int year = cal.get(Calendar.YEAR);
+    public static Long getZonedTime(Long startTime, LocalTime localTime) {
+        ZonedDateTime cal = DateTimeUtil.getDateTime(startTime);
 
-        cal.set(year, month, date, localTime.getHour(), localTime.getMinute(), localTime.getSecond());
-        long startDateTimeOfDay = cal.getTimeInMillis();
+        cal = cal.withHour(localTime.getHour())
+                .withMinute(localTime.getMinute())
+                .withSecond(localTime.getSecond());
+        long startDateTimeOfDay = DateTimeUtil.getMillis(cal, false);
         return startDateTimeOfDay;
 
     }
@@ -157,12 +157,11 @@ public class FacilityAPI {
         if (CollectionUtils.isNotEmpty(facilityContext.getFacilitySpecialAvailabilities())) {
             for (FacilitySpecialAvailabilityContext splAvailability : facilityContext.getFacilitySpecialAvailabilities()) {
                 Long startTime = splAvailability.getStartDate();
-                Calendar cal = Calendar.getInstance();
-                cal.setTimeInMillis(startTime);
+                ZonedDateTime cal = DateTimeUtil.getDateTime(startTime);
 
                 while (startTime <= splAvailability.getEndDate()) {
-                    long startDateTimeOfDay = FacilityAPI.getCalendarTime(startTime, splAvailability.getStartTimeAsLocalTime());
-                    long endDateTimeOfDay = FacilityAPI.getCalendarTime(startTime, splAvailability.getEndTimeAsLocalTime());
+                    long startDateTimeOfDay = FacilityAPI.getZonedTime(startTime, splAvailability.getStartTimeAsLocalTime());
+                    long endDateTimeOfDay = FacilityAPI.getZonedTime(startTime, splAvailability.getEndTimeAsLocalTime());
 
                     while (startDateTimeOfDay <= endDateTimeOfDay && DateTimeUtil.getDayStartTimeOf(startDateTimeOfDay) <= endDateTime) {
                         SlotContext slot = new SlotContext();
@@ -176,8 +175,8 @@ public class FacilityAPI {
                         //need to consider the slot intervals before starting other slot
                         startDateTimeOfDay = slot.getSlotEndTime();
                     }
-                    cal.add(Calendar.DATE, 1);
-                    startTime = cal.getTimeInMillis();
+                    cal = cal.plusDays(1);
+                    startTime = DateTimeUtil.getMillis(cal, false);
                 }
             }
         }
@@ -193,23 +192,22 @@ public class FacilityAPI {
                 }
             }
             Long startDay = startDateTime;
-            Calendar cal = Calendar.getInstance();
-            cal.setTimeInMillis(startDay);
+            ZonedDateTime cal = DateTimeUtil.getDateTime(startDay);
 
             while (startDay <= endDateTime) {
-                int day = 0;
-                if(cal.get(Calendar.DAY_OF_WEEK) ==  1)  {
-                    day = 7;
-                }
-                else {
-                    day = cal.get(Calendar.DAY_OF_WEEK) - 1;
-                }
+                int day = cal.get(ChronoField.DAY_OF_WEEK);
+//                if(cal.get(ChronoField.DAY_OF_WEEK) ==  1)  {
+//                    day = 7;
+//                }
+//                else {
+//                    day = cal.get(ChronoField.DAY_OF_WEEK) - 1;
+//                }
                 if (weekDayMap.containsKey(day)) {
                         List<WeekDayAvailability> weekDaysForDay = weekDayMap.get(day);
                         if (CollectionUtils.isNotEmpty(weekDaysForDay)) {
                             for (WeekDayAvailability wk : weekDaysForDay) {
-                                long startDateTimeOfDay = FacilityAPI.getCalendarTime(startDay, wk.getActualStartTimeAsLocalTime());
-                                long endDateTimeOfDay = FacilityAPI.getCalendarTime(startDay, wk.getActualEndTimeAsLocalTime());
+                                long startDateTimeOfDay = FacilityAPI.getZonedTime(startDay, wk.getActualStartTimeAsLocalTime());
+                                long endDateTimeOfDay = FacilityAPI.getZonedTime(startDay, wk.getActualEndTimeAsLocalTime());
 
                                 while (startDateTimeOfDay < endDateTimeOfDay && DateTimeUtil.getDayStartTimeOf(startDateTimeOfDay) <= endDateTime) {
                                     SlotContext slot = new SlotContext();
@@ -228,8 +226,8 @@ public class FacilityAPI {
                         }
                     }
                // }
-                cal.add(Calendar.DAY_OF_MONTH, 1);
-                startDay = cal.getTimeInMillis();
+                cal = cal.plus(1, ChronoUnit.DAYS);
+                startDay = DateTimeUtil.getMillis(cal, false);
 
             }
         }
