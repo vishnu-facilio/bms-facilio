@@ -6,6 +6,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.qa.command.QAndAReadOnlyChainFactory;
 import com.facilio.qa.command.QAndATransactionChainFactory;
 import com.facilio.qa.context.ClientAnswerContext;
+import com.facilio.qa.context.PageContext;
 import com.facilio.qa.context.ResponseContext;
 import com.facilio.time.DateRange;
 import com.facilio.v3.RESTAPIHandler;
@@ -92,6 +93,18 @@ public class QAndAAction extends RESTAPIHandler {
 
         fetchOtherOptionsChain.execute();
         this.setData("otherResponses", context.get(FacilioConstants.QAndA.Command.OTHER_RESPONSES));
+
+        return SUCCESS;
+    }
+
+    private long pageId;
+    public String clonePage() throws Exception {
+        FacilioChain clonePage = QAndATransactionChainFactory.clonePageChain();
+        clonePage.getContext().put(FacilioConstants.QAndA.Command.PAGE_ID, pageId);
+        clonePage.execute();
+
+        PageContext clonedPage = (PageContext) clonePage.getContext().get(FacilioConstants.QAndA.PAGE);
+        this.setData(FacilioConstants.QAndA.PAGE, clonedPage);
 
         return SUCCESS;
     }

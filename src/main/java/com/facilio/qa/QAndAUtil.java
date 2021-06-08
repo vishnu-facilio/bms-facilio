@@ -368,4 +368,20 @@ public class QAndAUtil {
                 QAndATemplateContext::setPages,
                 QAndAUtil::setDefaultPropsAsNullToReduceRespSize);
     }
+
+    public static void populateQuestionsInPages(Collection<PageContext> pages) throws Exception {
+        fetchChildrenFromParent(pages,
+                FacilioConstants.QAndA.QUESTION,
+                "page",
+                "position",
+                q -> q.getPage().getId(),
+                QuestionContext::setPage,
+                PageContext::setQuestions,
+                QAndAUtil::removeDefaultQuestionProps);
+    }
+
+    private static void removeDefaultQuestionProps (QuestionContext question) {
+        setDefaultPropsAsNullToReduceRespSize(question);
+        question.setParent(null);
+    }
 }

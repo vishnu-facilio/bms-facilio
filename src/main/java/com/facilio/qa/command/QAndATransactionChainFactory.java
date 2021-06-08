@@ -148,4 +148,11 @@ public class QAndATransactionChainFactory {
         c.addCommand(new ExecuteQAndATemplateCommand());
         return c;
     }
+
+    public static FacilioChain clonePageChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchPageAndQuestionsCommand());
+        c.addCommand(new ClonePageAndQuestionsCommand());
+        return c;
+    }
 }

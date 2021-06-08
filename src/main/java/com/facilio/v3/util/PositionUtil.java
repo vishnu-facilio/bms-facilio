@@ -117,7 +117,7 @@ public class PositionUtil {
                     newArrayPos = lastAddedPosition++;
                     setPosition.accept(record, newArrayPos + 1);
                 }
-                Optional<T> oldRecordOptional = existingRecords.stream().filter(r -> r.getId() == record.getId()).findFirst(); // Not using oldrecord map because it's optional
+                Optional<T> oldRecordOptional = record.getId() == -1 ? Optional.empty() : existingRecords.stream().filter(r -> r.getId() == record.getId()).findFirst(); // Not using oldrecord map because it's optional
                 if (oldRecordOptional.isPresent()) {
                     T oldRecord = oldRecordOptional.get();
                     V3Util.throwRestException(newArrayPos >= existingRecords.size(), ErrorCode.VALIDATION_ERROR, MessageFormat.format("Out of index value ({0}) for position in record : {1}", newArrayPos + 1, record.getId()));

@@ -44,7 +44,7 @@ public class SaveCommand extends FacilioCommand {
         else {
             for (String extendedModule : extendedModules) {
                 SaveOptions saveOptions = Constants.getExtendedSaveOption(context, extendedModule);
-                Map<Long, List<UpdateChangeSet>> changeSet = insertData(extendedModule, defaultOptions, saveOptions, recordMap.get(module.getName()));
+                Map<Long, List<UpdateChangeSet>> changeSet = insertData(extendedModule, defaultOptions, saveOptions, recordMap.get(extendedModule));
                 CommonCommandUtil.appendChangeSetMapToContext(context, changeSet, extendedModule); // For automation of this module
                 CommonCommandUtil.appendChangeSetMapToContext(context, changeSet, module.getName()); // For automation of parent module
             }

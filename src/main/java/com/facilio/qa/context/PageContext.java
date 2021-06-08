@@ -1,17 +1,17 @@
 package com.facilio.qa.context;
 
 import com.facilio.v3.context.V3Context;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
 @Getter
 @Setter
 @ToString
+@Builder(toBuilder=true)
 @NoArgsConstructor
+@AllArgsConstructor
 public class PageContext extends V3Context {
 
     public PageContext(Long id) {

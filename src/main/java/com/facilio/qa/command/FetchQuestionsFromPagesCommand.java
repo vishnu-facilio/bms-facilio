@@ -17,20 +17,8 @@ public class FetchQuestionsFromPagesCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
 
         List<PageContext> pages = Constants.getRecordList((FacilioContext) context);
-        QAndAUtil.fetchChildrenFromParent(pages,
-                FacilioConstants.QAndA.QUESTION,
-                "page",
-                "position",
-                q -> q.getPage().getId(),
-                QuestionContext::setPage,
-                PageContext::setQuestions,
-                this::removeDefaultQuestionProps);
+        QAndAUtil.populateQuestionsInPages(pages);
 
         return false;
-    }
-
-    private void removeDefaultQuestionProps (QuestionContext question) {
-        QAndAUtil.setDefaultPropsAsNullToReduceRespSize(question);
-        question.setParent(null);
     }
 }
