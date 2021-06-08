@@ -28,6 +28,8 @@ import com.facilio.services.filestore.FileStore;
 public class LargeTextCRUDHandler extends BaseMultiValueCRUDHandler<String> {
 	
 	LargeTextField field;
+	
+	public static final int LARGE_TEXT_MAX_SIZE = 65536;
 
 	public LargeTextCRUDHandler(LargeTextField largeTextField) {
 		// TODO Auto-generated constructor stub
@@ -139,6 +141,10 @@ public class LargeTextCRUDHandler extends BaseMultiValueCRUDHandler<String> {
 	}
 	
 	protected Map<String, Object> createRelRecord(long parentId, String fileContent) throws Exception {
+		
+		if(fileContent.length() > LARGE_TEXT_MAX_SIZE) {
+			throw new Exception("large text content is greater that max size "+LARGE_TEXT_MAX_SIZE);
+		}
         Map<String, Object> relRecord = new HashMap<>();
         
         File newFile = File.createTempFile("largeTextFile.txt",null);
