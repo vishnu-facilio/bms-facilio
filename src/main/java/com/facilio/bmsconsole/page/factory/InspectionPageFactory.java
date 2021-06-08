@@ -43,12 +43,14 @@ public class InspectionPageFactory extends PageFactory {
         PageWidget secondaryDetailsWidget = new PageWidget(PageWidget.WidgetType.INSPECTION_TEMPLATE_secondaryDetailsWidget_1);
         secondaryDetailsWidget.addToLayoutParams(SummarySec, 24, 6);
         JSONObject widgetParams = getdetailsWidgetParam1(record,module);
+        widgetParams.put("isConfigurationWidget", true);
         secondaryDetailsWidget.setWidgetParams(widgetParams);
         SummarySec.addWidget(secondaryDetailsWidget);
         
         PageWidget secondaryDetailsWidget1 = new PageWidget(PageWidget.WidgetType.INSPECTION_TEMPLATE_secondaryDetailsWidget_2);
         secondaryDetailsWidget1.addToLayoutParams(SummarySec, 24, 6);
         widgetParams = getdetailsWidgetParam2(record,module);
+        widgetParams.put("isConfigurationWidget", false);
         secondaryDetailsWidget1.setWidgetParams(widgetParams);
         SummarySec.addWidget(secondaryDetailsWidget1);
         
