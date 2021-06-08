@@ -1,10 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Collections;
-import java.util.List;
-
-import org.apache.commons.chain.Context;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.BusinessHoursContext;
@@ -16,6 +11,10 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.chain.Context;
+
+import java.util.Collections;
+import java.util.List;
 
 public class GetBuildingCommand extends FacilioCommand {
 
@@ -45,6 +44,11 @@ public class GetBuildingCommand extends FacilioCommand {
 					.maxLevel(1)
 					.andCustomWhere(module.getTableName()+".ID = ?", buildingId)
 					.orderBy("ID");
+
+			boolean skipModuleCriteria = (boolean) context.getOrDefault(FacilioConstants.ContextNames.SKIP_MODULE_CRITERIA, false);
+			if (skipModuleCriteria) {
+				builder.skipModuleCriteria();
+			}
 			
 			List<BuildingContext> buildings = builder.get();	
 			if(buildings.size() > 0) {

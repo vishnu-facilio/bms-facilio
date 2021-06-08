@@ -332,6 +332,7 @@ public class FacilioAction extends ActionSupport {
  		}
  		context.put(FacilioConstants.ContextNames.SORTING, sorting);
  		context.put(ContextNames.OVERRIDE_SORTING, isOverrideSorting());
+ 		context.put(ContextNames.SKIP_MODULE_CRITERIA, skipModuleCriteria);
  		
  		return context;
 	}

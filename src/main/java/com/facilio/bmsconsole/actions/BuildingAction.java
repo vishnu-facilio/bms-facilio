@@ -213,6 +213,7 @@ public class BuildingAction extends FacilioAction {
 	{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getBuildingId());
+		context.put(FacilioConstants.ContextNames.SKIP_MODULE_CRITERIA, skipModuleCriteria);
 		
 		FacilioChain getBuildingChain = FacilioChainFactory.getBuildingDetailsChain();
 		getBuildingChain.execute(context);
@@ -259,6 +260,7 @@ public class BuildingAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getBuildingId());
 		context.put(FacilioConstants.ContextNames.REPORT_CARDS_META, fetchReportCardsMeta);
+		context.put(FacilioConstants.ContextNames.SKIP_MODULE_CRITERIA, skipModuleCriteria);
 		
 		FacilioChain getReportCardsChain = FacilioChainFactory.getBuildingReportCardsChain();
 		getReportCardsChain.execute(context);

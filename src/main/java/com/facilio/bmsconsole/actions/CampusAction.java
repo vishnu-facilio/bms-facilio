@@ -170,6 +170,7 @@ public class CampusAction extends FacilioAction {
 	{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getCampusId());
+		context.put(FacilioConstants.ContextNames.SKIP_MODULE_CRITERIA, skipModuleCriteria);
 		
 		FacilioChain getCampusChain = FacilioChainFactory.getCampusDetailsChain();
 		getCampusChain.execute(context);

@@ -1,10 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Context;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.constants.FacilioConstants;
@@ -14,6 +9,10 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import org.apache.commons.chain.Context;
+
+import java.util.List;
+import java.util.Map;
 
 public class GetCampusCommand extends FacilioCommand {
 
@@ -41,6 +40,11 @@ public class GetCampusCommand extends FacilioCommand {
 					.andCustomWhere(module.getTableName()+".ID = ?", campusId)
 					.fetchSupplement((LookupField) fieldMap.get("location"))
 					.orderBy("ID");
+
+			boolean skipModuleCriteria = (boolean) context.getOrDefault(FacilioConstants.ContextNames.SKIP_MODULE_CRITERIA, false);
+			if (skipModuleCriteria) {
+				builder.skipModuleCriteria();
+			}
 
 			List<SiteContext> campuses = builder.get();	
 			if(campuses.size() > 0) {

@@ -23,7 +23,7 @@ public class GetSpaceDirectChildrenCommand extends FacilioCommand {
             if (baseSpace != null) {
                 if (baseSpace.getSpaceType() == BaseSpaceContext.SpaceType.SITE.getIntVal()) {
                     List<SpaceContext> spaceList = SpaceAPI.getIndependentSpaces(baseSpaceId, context);
-                    List<BuildingContext> buildingsList = SpaceAPI.getSiteBuildings(baseSpaceId);
+                    List<BuildingContext> buildingsList = SpaceAPI.getSiteBuildings(baseSpaceId, context);
 
                     if (CollectionUtils.isNotEmpty(buildingsList)) {
                         childrenList.addAll(buildingsList);
