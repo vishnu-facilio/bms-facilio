@@ -559,7 +559,10 @@ public class ExportUtil {
 			return DateTimeUtil.getFormattedTime((long)value);
 		}
 		case NUMBER: {
-			if(value instanceof Double) {
+			 if (field.getDisplayType() == FacilioField.FieldDisplayType.DURATION) {
+					return handleDurationField(Double.parseDouble(value+""));
+				}
+			 else if(value instanceof Double) {
 				return BigDecimal.valueOf((Double)value).toPlainString();
 			}
 			return getValueFromEnum(field, value);
@@ -578,6 +581,31 @@ public class ExportUtil {
 				break;
 		}
 		return null;
+	}
+	
+	public static String handleDurationField(double time) {
+		
+				Double days = Math.floor(time / 86400);
+				time -= days * 86400;
+				
+				Double hours = Math.floor(time / 3600);
+				time -= hours * 3600;
+				
+				Double minutes = Math.floor(time / 60);
+				time -= minutes * 60;
+
+		if (days == 1 || days > 1) {
+		      if (days == 1) {
+		    	  return  hours > 0.099 ?  Math.round(days) + " Day " +  Math.round(hours) + " Hrs " :  Math.round(days) + " Day";
+		      }
+		      return  hours > 0.099 ?  Math.round(days) + " Days " +  Math.round(hours) + " Hrs " :  Math.round(days) + " Days";
+		} else if (hours > 0.99) {
+		    	 return  minutes > 0.99 ?  Math.round(hours) + " Hrs " +  Math.round(minutes) + " Mins " :  Math.round(hours) + " Hrs";
+		} else if (minutes > 0.99) {
+		      return   Math.round(minutes) + " Mins";
+		} else {
+		      return time + " Secs ";
+	    }
 	}
 
 	private static Map<String, List<Long>> getModuleVsLookupIds(List<ViewField> fields, List<? extends ModuleBaseWithCustomFields> records) throws Exception {
