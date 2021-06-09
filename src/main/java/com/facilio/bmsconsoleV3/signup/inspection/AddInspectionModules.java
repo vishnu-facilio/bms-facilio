@@ -289,6 +289,8 @@ public class AddInspectionModules extends SignUpData {
 	      FormRuleActionContext filterAction = new FormRuleActionContext(); 
 	      filterAction.setActionType(FormActionType.APPLY_FILTER.getVal());
 	      
+	      List<FormRuleActionFieldsContext> actionFields = new ArrayList<FormRuleActionFieldsContext>();
+	      
 	      FormRuleActionFieldsContext actionField = new FormRuleActionFieldsContext();
 	      
 	      actionField.setFormFieldId(formFieldMap.get(fieldMap.get("assignmentType").getId()).getId());
@@ -300,7 +302,23 @@ public class AddInspectionModules extends SignUpData {
 	      
 	      actionField.setActionMeta(json.toJSONString());
 	      
-	      filterAction.setFormRuleActionFieldsContext(Collections.singletonList(actionField));
+	      actionFields.add(actionField);
+	      
+	      FormRuleActionFieldsContext actionField1 = new FormRuleActionFieldsContext();
+	      
+	      actionField1.setFormFieldId(formFieldMap.get(fieldMap.get("baseSpace").getId()).getId());
+	      
+	      Criteria criteria = new Criteria();
+	        
+	      criteria.addAndCondition(CriteriaAPI.getCondition("SPACE_TYPE", "spaceType", BaseSpaceContext.SpaceType.BUILDING.getIntVal()+"", NumberOperators.EQUALS));
+	        
+	      Long criteriaId = CriteriaAPI.addCriteria(criteria);
+	      
+	      actionField1.setCriteriaId(criteriaId);
+	      
+	      actionFields.add(actionField1);
+	      
+	      filterAction.setFormRuleActionFieldsContext(actionFields);
 	      
 	      actions.add(filterAction);
 	      
