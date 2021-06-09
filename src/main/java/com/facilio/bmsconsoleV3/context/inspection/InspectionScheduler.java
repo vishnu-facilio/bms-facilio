@@ -39,8 +39,9 @@ public class InspectionScheduler implements ScheduleTypeInterface {
 		
 		if(generatedUpto < endDate) {
 			
-			List<InspectionResponseContext> responses = new ArrayList<InspectionResponseContext>();
 			List<DateRange> times = baseScheduleContext.getScheduleInfo().getTimeIntervals(generatedUpto, endDate);
+			
+			List<InspectionResponseContext> responses = new ArrayList<InspectionResponseContext>();
 			
 			List<Long> resources = new ArrayList<Long>();
 			
@@ -83,6 +84,44 @@ public class InspectionScheduler implements ScheduleTypeInterface {
 		return null;
 	}
 	
+	public List<InspectionResponseContext> getResponses(InspectionTemplateContext template,BaseScheduleContext baseScheduleContext,List<DateRange> times) throws Exception {
+		
+		List<InspectionResponseContext> responses = new ArrayList<InspectionResponseContext>();
+		
+		List<Long> resources = new ArrayList<Long>();
+		
+		if(template.getCreationType() == InspectionTemplateContext.CreationType.SINGLE.getIndex()) {
+			if(template.getResource() != null) {
+				resources.add(template.getResource().getId());
+			}
+			else {
+				resources.add(null);
+			}
+		}
+		else if(template.getCreationType() == InspectionTemplateContext.CreationType.MULTIPLE.getIndex())  {
+			
+			resources = getMultipleResource(template,baseScheduleContext);
+		}
+		
+		for(DateRange time :times) {
+			
+			long createdtime = time.getEndTime()+1;
+			
+			for(Long resourceId : resources) {
+				InspectionResponseContext response = template.constructResponse();
+
+				response.setResStatus(ResponseContext.ResponseStatus.DISABLED); //This will be changed when the response is opened. Until then it can't be answered
+				response.setCreatedTime(createdtime);
+				response.setStatus(InspectionResponseContext.Status.PRE_OPEN.getIndex());
+				response.setSourceType(InspectionResponseContext.SourceType.PLANNED.getIndex());
+				response.setResource(getResource.apply(resourceId));
+				responses.add(response);
+			}
+		}
+		
+		return responses;
+	}
+	
 	private List<Long> getMultipleResource(InspectionTemplateContext template, BaseScheduleContext baseScheduleContext) throws Exception {
 		// TODO Auto-generated method stub
 		
@@ -90,30 +129,34 @@ public class InspectionScheduler implements ScheduleTypeInterface {
 		Long spaceCategoryId = template.getSpaceCategory() != null ? template.getSpaceCategory().getId() : null;
 		Long assetCategoryId = template.getAssetCategory() != null ? template.getAssetCategory().getId() : null;
 		
-		InspectionTriggerContext trigger = InspectionAPI.getInspectionTriggerByScheduer(baseScheduleContext.getId(), true).get(0);
-		
-		List<InspectionTriggerIncludeExcludeResourceContext> includeExcludeRess = trigger.getResInclExclList();
-		
 		List<Long> includedIds = null;
 		List<Long> excludedIds = null;
-		if(includeExcludeRess != null && !includeExcludeRess.isEmpty()) {
-			for(InspectionTriggerIncludeExcludeResourceContext includeExcludeRes :includeExcludeRess) {
-				if(includeExcludeRes.getIsInclude()) {
-					includedIds = includedIds == null ? new ArrayList<>() : includedIds; 
-					includedIds.add(includeExcludeRes.getResource().getId());
-				}
-				else {
-					excludedIds = excludedIds == null ? new ArrayList<>() : excludedIds;
-					excludedIds.add(includeExcludeRes.getResource().getId());
-				}
-			}
-		}
-		if(includedIds != null) {
-			if(excludedIds != null) {
-				includedIds.removeAll(excludedIds);
-			}
+		
+		if(baseScheduleContext != null) {
 			
-			return includedIds;
+			InspectionTriggerContext trigger = InspectionAPI.getInspectionTriggerByScheduer(baseScheduleContext.getId(), true).get(0);
+			
+			List<InspectionTriggerIncludeExcludeResourceContext> includeExcludeRess = trigger.getResInclExclList();
+			
+			if(includeExcludeRess != null && !includeExcludeRess.isEmpty()) {
+				for(InspectionTriggerIncludeExcludeResourceContext includeExcludeRes :includeExcludeRess) {
+					if(includeExcludeRes.getIsInclude()) {
+						includedIds = includedIds == null ? new ArrayList<>() : includedIds; 
+						includedIds.add(includeExcludeRes.getResource().getId());
+					}
+					else {
+						excludedIds = excludedIds == null ? new ArrayList<>() : excludedIds;
+						excludedIds.add(includeExcludeRes.getResource().getId());
+					}
+				}
+			}
+			if(includedIds != null) {
+				if(excludedIds != null) {
+					includedIds.removeAll(excludedIds);
+				}
+				
+				return includedIds;
+			}
 		}
 		
 		List<Long> resources = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(template.getAssignmentTypeEnum(), baseSpaceId, spaceCategoryId, assetCategoryId, null, null, false);

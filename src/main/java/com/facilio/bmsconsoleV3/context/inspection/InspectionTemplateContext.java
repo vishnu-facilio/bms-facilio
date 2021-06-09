@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.context.inspection;
 
+import java.util.Collections;
 import java.util.List;
 
 import com.facilio.accounts.dto.Group;
@@ -14,7 +15,8 @@ import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.qa.context.QAndATemplateContext;
-
+import com.facilio.time.DateRange;
+import com.facilio.time.DateTimeUtil;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import lombok.AllArgsConstructor;
@@ -132,7 +134,9 @@ public class InspectionTemplateContext extends QAndATemplateContext <InspectionR
 	@Override
 	protected List<InspectionResponseContext> newResponseObjects() throws Exception{
 		// TODO Auto-generated method stub
-		return null;
+		DateRange range = new DateRange(0l, DateTimeUtil.getCurrenTime());
+		List<InspectionResponseContext> responses = new InspectionScheduler().getResponses(this, null, Collections.singletonList(range));
+		return responses;
 	}
     
 }
