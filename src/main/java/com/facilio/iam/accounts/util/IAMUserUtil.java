@@ -393,14 +393,14 @@ public class IAMUserUtil {
 	}
 
 	// IAM client
-	public static String lookupUserDC(String userName) throws Exception {
+	public static Integer lookupUserDC(String userName) throws Exception {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().lookupUserDC(userName));
 	}
 
 
 	// IAM
 	@SneakyThrows
-	public static String findDCForUser(String username) {
+	public static Integer findDCForUser(String username) {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().findDCForUser(username));
 	}
 

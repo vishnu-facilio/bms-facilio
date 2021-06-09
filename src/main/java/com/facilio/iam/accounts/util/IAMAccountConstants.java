@@ -130,7 +130,7 @@ public class IAMAccountConstants {
 			FacilioModule dcLookupModule = new FacilioModule();
 			dcLookupModule.setName("dclookup");
 			dcLookupModule.setTableName("DC Lookup");
-			dcLookupModule.setTableName("DC_LOOKUP");
+			dcLookupModule.setTableName("DC_Lookup");
 			return dcLookupModule;
 		}
 
@@ -146,11 +146,19 @@ public class IAMAccountConstants {
 			fields.add(userName);
 
 			FacilioField dclookup = new FacilioField();
-			userName.setName("dc");
-			userName.setDataType(FieldType.NUMBER);
-			userName.setColumnName("DC");
-			userName.setModule(module);
+			dclookup.setName("dc");
+			dclookup.setDataType(FieldType.NUMBER);
+			dclookup.setColumnName("DC");
+			dclookup.setModule(module);
 			fields.add(dclookup);
+			
+			FacilioField appType = new FacilioField();
+			appType.setName("appType");
+			appType.setDataType(FieldType.NUMBER);
+			appType.setColumnName("APP_TYPE");
+			appType.setModule(module);
+			fields.add(appType);
+			
 			return fields;
 		}
 

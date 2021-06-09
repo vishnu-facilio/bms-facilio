@@ -1,0 +1,17 @@
+datacenters:
+  1:
+    mainapp: app.facilio.com
+    occupantportal: facilioportal.com
+    tenantportal: faciliotenants.com
+    clientportal: facilioclients.com
+    vendorportal: faciliovendors.com
+
+  2:
+    mainapp: app-au.facilio.com
+    occupantportal: facilioportal.com.au
+    tenantportal: faciliotenants.com.au
+    clientportal: facilioclients.com.au
+    vendorportal: faciliovendors.com.au
+
+  3:
+    mainapp: app-eu.facilio.com

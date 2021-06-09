@@ -65,6 +65,7 @@ import com.facilio.fw.auth.SAMLServiceProvider;
 import com.facilio.fw.auth.SAMLServiceProvider.SAMLResponse;
 import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.modules.FieldUtil;
+import com.facilio.util.RequestUtil;
 import com.opensymphony.xwork2.ActionContext;
 
 import io.sentry.SentryClient;
@@ -437,11 +438,17 @@ public class FacilioAuthAction extends FacilioAction {
 
 	@SneakyThrows
 	public String dclookup() {
-		String dc = IAMUserUtil.findDCForUser(getUsername());
-		Map<String, Object> result = new HashMap<>();
-		result.put("code", 1);
-		result.put("dc", dc);
-		setJsonresponse(result);
+		try {
+			int dc = IAMUserUtil.findDCForUser(getUsername());
+			Map<String, Object> result = new HashMap<>();
+			result.put("code", 1);
+			result.put("dc", dc);
+			setJsonresponse(result);
+		}catch(Exception e) {
+			LOGGER.log(Level.INFO, "Exception while dc lookup ", e);
+			setJsonresponse("errorcode", "2");
+			return ERROR;
+		}
 		return SUCCESS;
 	}
 
@@ -457,13 +464,17 @@ public class FacilioAuthAction extends FacilioAction {
 			}
 		}
 
-		var dc = IAMUserUtil.lookupUserDC(username);
-		if (StringUtils.isNotEmpty(dc)) {
-			Map<String, Object> result = new HashMap<>();
-			result.put("code", 1);
-			result.put("dc", dc);
-			setJsonresponse(result);
-			return SUCCESS;
+		try {
+			String baseUrl = getBaseUrl(true);
+			if (baseUrl != null) {
+				Map<String, Object> result = new HashMap<>();
+				result.put("code", 2);
+				result.put("baseUrl", baseUrl);
+				setJsonresponse(result);
+				return SUCCESS;
+			}
+		} catch(Exception e) {
+			LOGGER.log(Level.INFO, "Error while redirecting dc", e);
 		}
 
 		String username = getUsername();
@@ -1633,6 +1644,7 @@ public class FacilioAuthAction extends FacilioAction {
 			jsonObject.put("token", authtoken);
 			jsonObject.put("homePath", "/app/mobile/login");
 			jsonObject.put("domain", getDomain());
+			jsonObject.put("baseUrl", getBaseUrl(false));
 			Cookie mobileTokenCookie = new Cookie("fc.mobile.idToken.facilio", new AESEncryption().encrypt(jsonObject.toJSONString()));
 			setTempCookieProperties(mobileTokenCookie, false);
 			response.addCookie(mobileTokenCookie);
@@ -1661,6 +1673,51 @@ public class FacilioAuthAction extends FacilioAction {
 			setCookieProperties(portalCookie, true);
 			response.addCookie(portalCookie);
 		}
+	}
+	
+	private String getBaseUrl(boolean isRedirect) {
+		try {
+			if (getUsername() == null) {	 // Needs to check if called without username
+				return null;
+			}
+			
+			Integer dc;
+			if (isRedirect) {
+				// For redirecting if its not in current dc
+				dc = IAMUserUtil.lookupUserDC(getUsername());
+				if (dc == null) {
+					return null;
+				}
+			}
+			else {
+				// For sending it always for mobile
+				dc = IAMUserUtil.findDCForUser(getUsername());
+			}
+			
+			String baseUrl = null;
+			if (!isRedirect && StringUtils.isNotEmpty(getLookUpType())) {
+				if (getLookUpType().equalsIgnoreCase("service") ) {
+					baseUrl = DCUtil.getOccupantPortalDomain(dc);
+				} else if (getLookUpType().equalsIgnoreCase("tenant")) {
+					baseUrl = DCUtil.getTenantPortalDomain(dc);
+				} else if (getLookUpType().equalsIgnoreCase("vendor")) {
+					baseUrl = DCUtil.getVendorPortalDomain(dc);
+				} 
+			}
+			if (baseUrl == null) {
+				baseUrl = DCUtil.getMainAppDomain(dc);
+			}
+			return getProtocol() + "://" + baseUrl;
+		}catch(Exception e) {
+			LOGGER.log(Level.INFO, "Error while getting dc", e);
+			// Throw exception after testing properly
+		}
+		return null;
+	}
+	
+	private String getProtocol() {
+		HttpServletRequest request = ActionContext.getContext() != null ? ServletActionContext.getRequest() : null;
+		return RequestUtil.getProtocol(request);
 	}
 
 	private void setTempCookieProperties(Cookie cookie, boolean authModel) {

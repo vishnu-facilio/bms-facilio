@@ -820,28 +820,30 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	// Assumes single user per DC
 	@SneakyThrows
 	@Override
-	public String findDCForUser(String username) {
+	public int findDCForUser(String username) {
+		List<FacilioField> fields = IAMAccountConstants.getDCFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(IAMAccountConstants.getDCFields())
-				.table("DC_LOOKUP");
+				.select(fields)
+				.table(IAMAccountConstants.getDCLookupModule().getTableName());
 
-		selectBuilder.andCondition(CriteriaAPI.getCondition("DC_LOOKUP.USERNAME", "username", username, StringOperators.IS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("userName"), username, StringOperators.IS));
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			return (String) props.get(0).get("userName");
+			return (int) props.get(0).get("dc");
 		}
-		throw new IllegalArgumentException("user name is missing");
+		return 1;
 	}
 
 	@SneakyThrows
 	@Override
-	public String lookupUserDC(String username) {
+	public Integer lookupUserDC(String username) {
 		if (isUserPresentInCurrentDC(username)) {
 			return null;
 		}
-		var dc = IamClient.lookupUser(username);
-		if (StringUtils.isEmpty(dc)) {
+		Integer dc = IamClient.lookupUserDC(username);
+		if (dc == null || dc <= 0) {
 			throw new IllegalArgumentException("user name is missing");
 		}
 		return dc;

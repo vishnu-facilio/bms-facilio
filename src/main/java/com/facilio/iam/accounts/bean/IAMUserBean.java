@@ -3,8 +3,6 @@
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.iam.accounts.context.SecurityPolicy;
-import com.facilio.iam.accounts.util.IAMAccountConstants;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.AppDomain;
@@ -14,6 +12,8 @@ import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
+import com.facilio.iam.accounts.context.SecurityPolicy;
+import com.facilio.iam.accounts.util.IAMAccountConstants;
 import com.facilio.modules.fields.FacilioField;
 
 public interface IAMUserBean {
@@ -181,8 +181,8 @@ public interface IAMUserBean {
 
 	void savePreviousPassword(long uid, String encryptedPassword) throws Exception;
 
-	String lookupUserDC(String username) throws Exception;
+	Integer lookupUserDC(String username) throws Exception;
 
-	String findDCForUser(String username) throws Exception;
+	int findDCForUser(String username) throws Exception;
 
 }

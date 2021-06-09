@@ -53,6 +53,7 @@ import com.facilio.db.util.DBConf;
 import com.facilio.db.util.SQLScriptRunner;
 import com.facilio.filters.HealthCheckFilter;
 import com.facilio.fw.BeanFactory;
+import com.facilio.iam.accounts.util.DCUtil;
 import com.facilio.jmx.FacilioQueryCounter;
 import com.facilio.jmx.FacilioQueryCounterMBean;
 import com.facilio.logging.SysOutLogger;
@@ -111,6 +112,7 @@ public class FacilioContextListener implements ServletContextListener {
 			ActivityType.getActivityType(1);
 			FieldUtil.init();
 			FacilioEnum.getEnumValues("CostType");
+			DCUtil.init();
 			AddSignupDataCommandV3.initSignUpDataClasses();
 //			migrateSchemaChanges();
 			initializeDB();
