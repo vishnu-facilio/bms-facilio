@@ -770,7 +770,7 @@ public class WorkflowRuleAPI {
 					}
 				}
 
-				long activity = (long) prop.get("activityType");
+				long activity = Long.valueOf(prop.get("activityType").toString());
 				if (EventType.FIELD_CHANGE.isPresent(activity)) {
 					fieldChangeRuleIds.add((Long) prop.get("id"));
 				}
