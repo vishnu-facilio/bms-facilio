@@ -195,8 +195,15 @@ public class VendorPageFactory extends PageFactory{
 			
 			Tab tab2 = page.new Tab("related list");
 			page.addTab(tab2);
+			
+			Section tab2Sec1 = page.new Section();
+			tab2.addSection(tab2Sec1);
+			addRelatedListWidgets(tab2Sec1, vendor.getModuleId());
+			if(CollectionUtils.isNotEmpty(tab2Sec1.getWidgets())) {
+				page.addTab(tab2);
+			}
 
-
+/*
 			Section tab2Sec1 ;
 //			addRelatedListWidget(tab2Sec1, "contact", vendor.getModuleId());
 			if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)) {
@@ -237,7 +244,7 @@ public class VendorPageFactory extends PageFactory{
 				Section tab2Sec7 = page.new Section();
 				tab2.addSection(tab2Sec7);
 				addSpecialRelatedListWidgetForDemoOrg(tab2Sec7);
-			}
+			}*/
 			
 			Page.Tab tab3 = page.new Tab("Activity");
 		    page.addTab(tab3);
