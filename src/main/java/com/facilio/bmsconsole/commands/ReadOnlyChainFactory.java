@@ -716,6 +716,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
 		c.addCommand(new LoadVendorLookUpCommand());
+		c.addCommand(new FetchCustomMultiRecordFieldsCommand());
 		c.addCommand(new GetVendorsListCommand());
 		c.addCommand(new LookupPrimaryFieldHandlingCommand());
 		c.addCommand(new GetStateflowsForModuleDataListCommand());
@@ -1950,6 +1951,7 @@ public class ReadOnlyChainFactory {
 		//chain.addCommand(new AddVendorScopeForPortalCommand());
 		chain.addCommand(new GenerateSearchConditionCommand());
 		chain.addCommand(new LoadInsuranceLookUpCommand());
+		chain.addCommand(new FetchCustomMultiRecordFieldsCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
 		return chain;
 	}
