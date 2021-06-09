@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsoleV3.util.InductionAPI;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.qa.context.QAndATemplateContext;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -85,11 +86,19 @@ public class InductionTemplateContext extends QAndATemplateContext <InductionRes
     protected InductionResponseContext newResponseObject() {
         return new InductionResponseContext();
     }
+    
+    @Override
+	protected List<InductionResponseContext> newResponseObjects() throws Exception {
+		// TODO Auto-generated method stub
+		return InductionAPI.getInductionResponse(this,null);
+	}
 
     @Override
     protected void addDefaultPropsForResponse(InductionResponseContext response) {
        
-    	response.setSiteId(this.getSiteId());
+    	if(response.getSiteId() <= 0) {
+    		response.setSiteId(this.getSiteId());
+    	}
 
         // Default props which will be overridden if called from Inspection scheduler
         response.setSourceType(InductionResponseContext.SourceType.MANNUAL.getIndex());
@@ -121,6 +130,6 @@ public class InductionTemplateContext extends QAndATemplateContext <InductionRes
 			return null;
 		}
 	}
-    
+
 }
 

@@ -53,6 +53,7 @@ public abstract class QAndATemplateContext <R extends ResponseContext> extends V
     }
 
     protected abstract R newResponseObject();
+    protected abstract List<R> newResponseObjects() throws Exception;
     protected abstract void addDefaultPropsForResponse(R response); //Having as two methods so that props can be overridden
 
     public R constructResponse() {
@@ -63,6 +64,19 @@ public abstract class QAndATemplateContext <R extends ResponseContext> extends V
         response.setTotalAnswered(0);
         addDefaultPropsForResponse(response);
         return response;
+    }
+    
+    public List<R> constructResponses() throws Exception {
+    	List<R> responses = newResponseObjects();
+    	for(R response : responses) {
+    		
+    		response.setQAndAType(this.qAndAType);
+            response.setParent(this);
+            response.setResStatus(ResponseContext.ResponseStatus.NOT_ANSWERED);
+            response.setTotalAnswered(0);
+            addDefaultPropsForResponse(response);
+    	}
+        return responses;
     }
 
     public static class QAndATypeIdResolver extends FacilioEnumClassTypeIdResolverBase<QAndATemplateContext> {

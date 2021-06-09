@@ -25,28 +25,62 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.SupplementRecord;
 
 public class InductionAPI {
 	
 	
 	public static List<InductionResponseContext> getInductionResponse(InductionTemplateContext template,PeopleContext people) throws Exception {
 		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		List<SiteContext> sites = template.getSites();
+		List<SiteContext> sites = null;
 		if(template.getSiteApplyTo()) {
 			sites = SpaceAPI.getAllSites();
 		}
+		else {
+			if(template.getSites() != null) {
+				sites = template.getSites();
+			}
+			else {
+				InductionTemplateContext template1 = getInductionTemplate(CriteriaAPI.getIdCondition(template.getId(), modBean.getModule(FacilioConstants.Induction.INDUCTION_TEMPLATE)));
+				sites = template1.getSites();
+			}
+		}
+		
 		List<InductionResponseContext> responses = new ArrayList<InductionResponseContext>();
-		for(SiteContext site : sites) {
-			InductionResponseContext response = template.constructResponse();
+		if(sites != null) {
 			
-			response.setAssignedTo(people);
-			response.setSiteId(site.getId());
-			
-			responses.add(response);
+			for(SiteContext site : sites) {
+				InductionResponseContext response = template.constructResponse();
+				
+				response.setAssignedTo(people);
+				response.setSiteId(site.getId());
+				
+				responses.add(response);
+			}
 		}
 		
 		return responses;
+	}
+	
+	public static InductionTemplateContext getInductionTemplate(Condition condition) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.Induction.INDUCTION_TEMPLATE));
+		
+		SelectRecordsBuilder<InductionTemplateContext> select = new SelectRecordsBuilder<InductionTemplateContext>()
+				.moduleName(FacilioConstants.Induction.INDUCTION_TEMPLATE)
+				.beanClass(InductionTemplateContext.class)
+				.select(modBean.getAllFields(FacilioConstants.Induction.INDUCTION_TEMPLATE))
+				.andCondition(condition)
+				.fetchSupplement((SupplementRecord)fieldMap.get("sites"))
+				;
+		
+		InductionTemplateContext template = select.fetchFirst();
+		
+		return template;
 	}
 	
 	public static void addInductionResponses(List<InductionResponseContext> responses) throws Exception {

@@ -61,8 +61,8 @@ public class QAndAAction extends RESTAPIHandler {
         Constants.setRecordId(context, this.getId());
         executeTemplateChain.execute();
 
-        ResponseContext response = (ResponseContext) context.get(FacilioConstants.QAndA.RESPONSE);
-        handleSummaryRequest(response.getQAndAType().getResponseModule(), response._getId());
+//        ResponseContext response = (ResponseContext) context.get(FacilioConstants.QAndA.RESPONSE);
+//        handleSummaryRequest(response.getQAndAType().getResponseModule(), response._getId());
 
         return SUCCESS;
     }

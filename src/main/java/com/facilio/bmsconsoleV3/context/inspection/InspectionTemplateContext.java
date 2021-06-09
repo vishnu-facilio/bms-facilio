@@ -128,5 +128,11 @@ public class InspectionTemplateContext extends QAndATemplateContext <InspectionR
 			return null;
 		}
 	}
+
+	@Override
+	protected List<InspectionResponseContext> newResponseObjects() throws Exception{
+		// TODO Auto-generated method stub
+		return null;
+	}
     
 }

@@ -10,6 +10,7 @@ import com.facilio.bmsconsoleV3.context.induction.InductionResponseContext;
 import com.facilio.bmsconsoleV3.context.induction.InductionTemplateContext;
 import com.facilio.bmsconsoleV3.util.InductionAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
@@ -33,17 +34,9 @@ public class FacilioInductionTemplateModuleFunctions extends FacilioModuleFuncti
 			throw new RuntimeException("People does not exist :: "+peopleId);
 		}
 		
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.Induction.INDUCTION_TEMPLATE));
+		Condition condition = CriteriaAPI.getNameCondition(inductionTemplateName, modBean.getModule(FacilioConstants.QAndA.Q_AND_A_TEMPLATE));
 		
-		SelectRecordsBuilder<InductionTemplateContext> select = new SelectRecordsBuilder<InductionTemplateContext>()
-				.moduleName(FacilioConstants.Induction.INDUCTION_TEMPLATE)
-				.beanClass(InductionTemplateContext.class)
-				.select(modBean.getAllFields(FacilioConstants.Induction.INDUCTION_TEMPLATE))
-				.andCondition(CriteriaAPI.getNameCondition(inductionTemplateName, modBean.getModule(FacilioConstants.QAndA.Q_AND_A_TEMPLATE)))
-				.fetchSupplement((SupplementRecord)fieldMap.get("sites"))
-				;
-		
-		InductionTemplateContext template = select.fetchFirst();
+		InductionTemplateContext template = InductionAPI.getInductionTemplate(condition);
 		
 		if(template == null) {
 			throw new RuntimeException("Template does not exist :: "+inductionTemplateName);
