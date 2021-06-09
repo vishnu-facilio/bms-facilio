@@ -17,8 +17,18 @@ import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.NewPermissionUtil;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.collections4.CollectionUtils;
+import lombok.SneakyThrows;
 
 public class GetApplicationDetails extends FacilioCommand {
+	@SneakyThrows
+	private boolean hasLicense(WebTabContext tab) {
+		AccountUtil.FeatureLicense license = AccountUtil.FeatureLicense.getFeatureLicense(tab.getFeatureLicense());
+		boolean isEnabled = true;
+		if (license != null) {
+			isEnabled = AccountUtil.isFeatureEnabled(license);
+		}
+		return isEnabled;
+	}
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -107,6 +117,9 @@ public class GetApplicationDetails extends FacilioCommand {
 									}
 								}
 							}
+							if(!fetchAllLayouts) {
+								webTabs.removeIf(t -> !hasLicense(t));
+							}
 							webTabGroup.setWebTabs(webTabs);
 							layout.setWebTabGroupList(webTabGroups);
 						}
@@ -115,14 +128,13 @@ public class GetApplicationDetails extends FacilioCommand {
 					//to be removed once new resp structure is changed in client
 					application.setWebTabGroups(webTabGroups);
 					application.setLayoutType(appLayouts.get(0).getAppLayoutType());
-					//----
 
 					application.setLayouts(appLayouts);
 					context.put(FacilioConstants.ContextNames.APPLICATION, application);
 				}
 			}
 		}
-		else{
+		else {
 			throw new IllegalArgumentException("Application Not Found");
 		}
 		return false;
