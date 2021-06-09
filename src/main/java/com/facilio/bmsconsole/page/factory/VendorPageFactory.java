@@ -194,7 +194,7 @@ public class VendorPageFactory extends PageFactory{
 			
 			
 			Tab tab2 = page.new Tab("related list");
-			page.addTab(tab2);
+			//page.addTab(tab2);
 			
 			Section tab2Sec1 = page.new Section();
 			tab2.addSection(tab2Sec1);
