@@ -105,6 +105,11 @@ public class V3RecordAPI {
     public static <T extends ModuleBaseWithCustomFields> T getRecord (String modName, Long recId) throws Exception {
         return getRecord(modName, recId, null);
     }
+    
+    public static <T extends ModuleBaseWithCustomFields> T getRecord (Long moduleId, Long recId) throws Exception {
+    	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        return getRecord(modBean.getModule(moduleId).getName(), recId, null);
+    }
 
     public static <T extends ModuleBaseWithCustomFields> T getRecord (String modName, long recId, Class<T> beanClass) throws Exception {
         List<T> records = constructBuilder(modName, Collections.singletonList(recId), beanClass).get();

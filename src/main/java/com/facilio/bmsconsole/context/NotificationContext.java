@@ -41,7 +41,7 @@ public class NotificationContext {
 	public EventType getNotificationType() {
 		return notificationType;
 	}
-	public int getNotificationTypeVal() {
+	public long getNotificationTypeVal() {
 		if (this.notificationType != null) {
 			return notificationType.getValue();
 		}

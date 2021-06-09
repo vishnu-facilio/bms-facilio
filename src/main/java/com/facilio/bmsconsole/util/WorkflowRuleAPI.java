@@ -596,7 +596,7 @@ public class WorkflowRuleAPI {
 		}
 		
 		StringBuilder activityTypeWhere = new StringBuilder();
-		List<Integer> values = new ArrayList<>();
+		List<Long> values = new ArrayList<>();
 		boolean first = true;
 		for (EventType type : activityTypes) {
 			if(first) {
@@ -770,7 +770,7 @@ public class WorkflowRuleAPI {
 					}
 				}
 
-				int activity = (int) prop.get("activityType");
+				long activity = (long) prop.get("activityType");
 				if (EventType.FIELD_CHANGE.isPresent(activity)) {
 					fieldChangeRuleIds.add((Long) prop.get("id"));
 				}

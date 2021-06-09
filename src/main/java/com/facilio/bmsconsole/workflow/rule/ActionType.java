@@ -255,7 +255,7 @@ public enum ActionType {
 
 							NotificationContext notification = new NotificationContext();
 							notification.setInfo((String) obj.get("message"));
-							int type = (int) obj.get("activityType");
+							long type = (long) obj.get("activityType");
 							notification.setNotificationType(EventType.valueOf(type));
 							NotificationAPI.sendNotification(reciepents, notification);
 						}

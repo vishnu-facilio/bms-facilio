@@ -54,7 +54,7 @@ public class TicketActivity {
 	}
 
 	private EventType activityType;
-	public int getActivityType() {
+	public long getActivityType() {
 		if(activityType != null) {
 			return activityType.getValue();
 		}

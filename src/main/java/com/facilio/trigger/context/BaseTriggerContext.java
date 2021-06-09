@@ -95,7 +95,7 @@ public class BaseTriggerContext {
 	public EventType getEventTypeEnum() {
 		return eventType;
 	}
-	public int getEventType() {
+	public long getEventType() {
 		if(eventType != null) {
 			return eventType.getValue();
 		}

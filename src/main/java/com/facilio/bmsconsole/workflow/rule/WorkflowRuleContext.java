@@ -249,11 +249,11 @@ public class WorkflowRuleContext implements Serializable {
 		this.module = module;
 	}
 
-	private int activity = -1;
-	public int getActivityType() {
+	private long activity = -1;
+	public long getActivityType() {
 		return activity;
 	}
-	public void setActivityType(int activityType) {
+	public void setActivityType(long activityType) {
 		this.activity = activityType;
 		this.activityType = EventType.valueOf(activityType);
 	}

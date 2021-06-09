@@ -45,7 +45,7 @@ public class ApprovalRuleMetaContext implements Serializable {
     }
 
     private EventType eventType;
-    public int getEventType() {
+    public long getEventType() {
         if (eventType != null) {
             return eventType.getValue();
         }

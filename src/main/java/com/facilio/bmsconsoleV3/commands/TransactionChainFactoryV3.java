@@ -918,6 +918,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new SendEmailForEmailConversationThreadingCommand());
         chain.addCommand(new AddActivityInRelatedModuleFroEmailConversationThreadingCommand());
+        chain.addCommand(new ExecuteWorkflowInRelatedModuleFroEmailConversationThreadingCommand());
         return chain;
     }
     

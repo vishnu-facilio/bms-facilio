@@ -272,17 +272,41 @@ public enum EventType {
 		public String getMessage(JSONObject json) {
 			return null;
 		}
+	},
+	EMAIL_CONVERSATION_ON_REPLY_RECIEVED(4294967296l) {
+		@Override
+		public String getMessage(JSONObject json) {
+			return null;
+		}
+	},
+	EMAIL_CONVERSATION_ON_NOTE_ADDITION(8589934592l) {
+		@Override
+		public String getMessage(JSONObject json) {
+			return null;
+		}
+	},
+	EMAIL_CONVERSATION_ON_NOTE_UPDATION(17179869184l) {
+		@Override
+		public String getMessage(JSONObject json) {
+			return null;
+		}
+	},
+	EMAIL_CONVERSATION_ON_NOTE_DELETION(34359738368l) { // 2^35
+		@Override
+		public String getMessage(JSONObject json) {
+			return null;
+		}
 	}
 	;
 
-    private int eventType;
-    EventType(int eventType) {
+    private long eventType;
+    EventType(long eventType) {
         this.eventType = eventType;
     }
-    public int getValue() {
+    public long getValue() {
         return eventType;
     }
-    public static EventType valueOf(int eventTypeVal) {
+    public static EventType valueOf(long eventTypeVal) {
     	return TYPE_MAP.get(eventTypeVal);
     }
     
@@ -295,16 +319,16 @@ public enum EventType {
    
     public abstract String getMessage(JSONObject json);
     
-    private static final Map<Integer, EventType> TYPE_MAP = Collections.unmodifiableMap(initTypeMap());
-	private static Map<Integer, EventType> initTypeMap() {
-		Map<Integer, EventType> typeMap = new HashMap<>();
+    private static final Map<Long, EventType> TYPE_MAP = Collections.unmodifiableMap(initTypeMap());
+	private static Map<Long, EventType> initTypeMap() {
+		Map<Long, EventType> typeMap = new HashMap<>();
 		
 		for(EventType type : values()) {
 			typeMap.put(type.getValue(), type);
 		}
 		return typeMap;
 	}
-	public Map<Integer, EventType> getAllTypes() {
+	public Map<Long, EventType> getAllTypes() {
 		return TYPE_MAP;
 	}
 }

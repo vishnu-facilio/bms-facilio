@@ -848,6 +848,14 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static FacilioChain getCommonExecuteWorkflowChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
+			c.addCommand(new ForkChainToInstantJobCommand(false)
+					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
+			return c;
+		}
+		
 		public static FacilioChain getUpdateAssetChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new AddCategoryOnAssetUpdateCommand());
