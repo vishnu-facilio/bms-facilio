@@ -71,8 +71,6 @@ public class FetchRelatedItemsForInspectionTemplateCommand extends FacilioComman
 		
 		Map<String, FacilioField> filedMap = FieldFactory.getAsMap(fields);
 		
-		FacilioField selectField = ReportsUtil.getField("createdTime","MAX(CREATED_TIME)",FieldType.NUMBER);
-		
 		for(InspectionTemplateContext inspection : inspections) {
 			SelectRecordsBuilder<InspectionResponseContext> select = new SelectRecordsBuilder<InspectionResponseContext>() 
 					.moduleName(FacilioConstants.Inspection.INSPECTION_RESPONSE)
