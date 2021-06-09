@@ -465,7 +465,7 @@ public class FacilioAuthAction extends FacilioAction {
 		}
 
 		try {
-			String baseUrl = getBaseUrl(true);
+			String baseUrl = getRedirectUrl();
 			if (baseUrl != null) {
 				Map<String, Object> result = new HashMap<>();
 				result.put("code", 2);
@@ -1644,7 +1644,7 @@ public class FacilioAuthAction extends FacilioAction {
 			jsonObject.put("token", authtoken);
 			jsonObject.put("homePath", "/app/mobile/login");
 			jsonObject.put("domain", getDomain());
-			jsonObject.put("baseUrl", getBaseUrl(false));
+			jsonObject.put("baseUrl", getBaseUrl());
 			Cookie mobileTokenCookie = new Cookie("fc.mobile.idToken.facilio", new AESEncryption().encrypt(jsonObject.toJSONString()));
 			setTempCookieProperties(mobileTokenCookie, false);
 			response.addCookie(mobileTokenCookie);
@@ -1660,7 +1660,7 @@ public class FacilioAuthAction extends FacilioAction {
 				var cookieString = "fc.idToken.facilio="+authtoken+"; Max-Age=604800; Path=/; Secure; HttpOnly; SameSite=None";
 				response.setHeader("Set-Cookie", cookieString);
 			}
-		} else if("stage".equals(FacilioProperties.getEnvironment())) {
+		} else if("stage".equals(FacilioProperties.getEnvironment()) && !isMobile) {
 			var cookieString = "fc.idToken.facilio="+authtoken+"; Max-Age=604800; Path=/; Secure; HttpOnly; SameSite=None";
 			response.setHeader("Set-Cookie", cookieString);
 		} else {
@@ -1675,44 +1675,36 @@ public class FacilioAuthAction extends FacilioAction {
 		}
 	}
 	
-	private String getBaseUrl(boolean isRedirect) {
-		try {
-			if (getUsername() == null) {	 // Needs to check if called without username
-				return null;
-			}
-			
-			Integer dc;
-			if (isRedirect) {
-				// For redirecting if its not in current dc
-				dc = IAMUserUtil.lookupUserDC(getUsername());
-				if (dc == null) {
-					return null;
-				}
-			}
-			else {
-				// For sending it always for mobile
-				dc = IAMUserUtil.findDCForUser(getUsername());
-			}
-			
-			String baseUrl = null;
-			if (!isRedirect && StringUtils.isNotEmpty(getLookUpType())) {
-				if (getLookUpType().equalsIgnoreCase("service") ) {
-					baseUrl = DCUtil.getOccupantPortalDomain(dc);
-				} else if (getLookUpType().equalsIgnoreCase("tenant")) {
-					baseUrl = DCUtil.getTenantPortalDomain(dc);
-				} else if (getLookUpType().equalsIgnoreCase("vendor")) {
-					baseUrl = DCUtil.getVendorPortalDomain(dc);
-				} 
-			}
-			if (baseUrl == null) {
-				baseUrl = DCUtil.getMainAppDomain(dc);
-			}
-			return getProtocol() + "://" + baseUrl;
-		}catch(Exception e) {
-			LOGGER.log(Level.INFO, "Error while getting dc", e);
-			// Throw exception after testing properly
+	private String getRedirectUrl() throws Exception {
+		if (getUsername() == null) {	 // Needs to check if called without username
+			return null;
 		}
-		return null;
+		Integer dc = IAMUserUtil.lookupUserDC(getUsername());
+		if (dc == null) {
+			return null;
+		}
+		String baseUrl = DCUtil.getMainAppDomain(dc);
+		return getProtocol() + "://" + baseUrl;
+	}
+	
+	private String getBaseUrl() {
+		if (getUsername() == null) {	 // Needs to check if called without username
+			return null;
+		}
+		String baseUrl = null;
+		if (StringUtils.isNotEmpty(getLookUpType())) {
+			if (getLookUpType().equalsIgnoreCase("service") ) {
+				baseUrl = FacilioProperties.getOccupantAppDomain();
+			} else if (getLookUpType().equalsIgnoreCase("tenant")) {
+				baseUrl = FacilioProperties.getTenantAppDomain();
+			} else if (getLookUpType().equalsIgnoreCase("vendor")) {
+				baseUrl = FacilioProperties.getVendorAppDomain();
+			} 
+		}
+		if (baseUrl == null) {
+			baseUrl = FacilioProperties.getMainAppDomain();
+		}
+		return getProtocol() + "://" + baseUrl;
 	}
 	
 	private String getProtocol() {
