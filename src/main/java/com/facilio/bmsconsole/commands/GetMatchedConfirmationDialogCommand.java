@@ -37,9 +37,9 @@ public class GetMatchedConfirmationDialogCommand extends FacilioCommand {
             Map<String, Object> data = (Map<String, Object>) context.get(FacilioConstants.ContextNames.DATA);
             Class classFromModule = FacilioConstants.ContextNames.getClassFromModule(module);
             ModuleBaseWithCustomFields sourceObject = (ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromMap(data, classFromModule);
-            handleDataComingFromV2Components(sourceObject, fieldMap, data.keySet());
 
             if (MapUtils.isNotEmpty(data)) {
+                handleDataComingFromV2Components(sourceObject, fieldMap, data.keySet());
                 for (String key : data.keySet()) {
                     FacilioField facilioField = fieldMap.get(key);
                     if (facilioField == null) {
