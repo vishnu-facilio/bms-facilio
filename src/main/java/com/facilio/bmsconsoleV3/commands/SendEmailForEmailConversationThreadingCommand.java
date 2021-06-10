@@ -78,15 +78,19 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 	}
 	
 	private void sendNoteNotifyMail(EmailConversationThreadingContext emailConversation) throws Exception {
-		
-		JSONObject mailJson = new JSONObject();
-		mailJson.put(EmailClient.TO, emailConversation.getTo());
-		mailJson.put(EmailClient.SUBJECT, "Re: "+emailConversation.getSubject());
-		mailJson.put(EmailClient.MESSAGE, emailConversation.getHtmlContent());
-		mailJson.put(EmailClient.MAIL_TYPE,EmailClient.HTML);
-		
-		Map<String,String> attachements = getAttachments(emailConversation);
-		FacilioFactory.getEmailClient().sendEmailWithActiveUserCheck(mailJson,attachements);
+		try {
+			JSONObject mailJson = new JSONObject();
+			mailJson.put(EmailClient.TO, emailConversation.getTo());
+			mailJson.put(EmailClient.SUBJECT, "Re: "+emailConversation.getSubject());
+			mailJson.put(EmailClient.MESSAGE, emailConversation.getHtmlContent());
+			mailJson.put(EmailClient.MAIL_TYPE,EmailClient.HTML);
+			
+			Map<String,String> attachements = getAttachments(emailConversation);
+			FacilioFactory.getEmailClient().sendEmailWithActiveUserCheck(mailJson,attachements);
+		}
+		catch(Exception e) {
+			LOGGER.error("Error during notify "+e.getMessage(), e);
+		}
 	}
 
 	private String sendMail(EmailConversationThreadingContext emailConversation,String messageId) throws Exception {
