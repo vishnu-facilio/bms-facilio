@@ -66,11 +66,29 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 				
 				RecordAPI.updateRecord(emailConversation, modBean.getModule(MailMessageUtil.EMAIL_CONVERSATION_THREADING_MODULE_NAME), modBean.getAllFields(MailMessageUtil.EMAIL_CONVERSATION_THREADING_MODULE_NAME));
 			}
+			else {
+				if(emailConversation.getTo() != null) {
+					
+					sendNoteNotifyMail(emailConversation);
+				}
+			}
 		}
 		
 		return false;
 	}
 	
+	private void sendNoteNotifyMail(EmailConversationThreadingContext emailConversation) throws Exception {
+		
+		JSONObject mailJson = new JSONObject();
+		mailJson.put(EmailClient.TO, emailConversation.getTo());
+		mailJson.put(EmailClient.SUBJECT, "Re: "+emailConversation.getSubject());
+		mailJson.put(EmailClient.MESSAGE, emailConversation.getHtmlContent());
+		mailJson.put(EmailClient.MAIL_TYPE,EmailClient.HTML);
+		
+		Map<String,String> attachements = getAttachments(emailConversation);
+		FacilioFactory.getEmailClient().sendEmailWithActiveUserCheck(mailJson,attachements);
+	}
+
 	private String sendMail(EmailConversationThreadingContext emailConversation,String messageId) throws Exception {
 		
 		if(!FacilioProperties.isProduction()) {
@@ -96,6 +114,19 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 			mailJson.put(EmailClient.HEADER, HeaderJSON);
 		}
 		
+		Map<String, String> files = getAttachments(emailConversation);
+		
+		LOGGER.error("emailConversation -- "+emailConversation.getId()+" mail JSON --- "+mailJson +" files -- "+files);
+		
+		String returnMessageId = AwsUtil.sendEmailViaMimeMessage(mailJson, files);
+		
+		return returnMessageId;
+		
+//		FacilioFactory.getEmailClient().sendEmail(mailJson);
+	}
+	
+	private Map<String, String> getAttachments(EmailConversationThreadingContext emailConversation) throws Exception {
+		
 		List<AttachmentV3Context> attachments = V3AttachmentAPI.getAttachments(emailConversation.getId(), MailMessageUtil.EMAIL_CONVERSATION_THREADING_ATTACHMENT_MODULE);
 		
 		Map<String, String> files = null;
@@ -112,13 +143,7 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 			}
 		}
 		
-		LOGGER.error("emailConversation -- "+emailConversation.getId()+" mail JSON --- "+mailJson +" files -- "+files);
-		
-		String returnMessageId = AwsUtil.sendEmailViaMimeMessage(mailJson, files);
-		
-		return returnMessageId;
-		
-//		FacilioFactory.getEmailClient().sendEmail(mailJson);
+		return files;
 	}
 
 }

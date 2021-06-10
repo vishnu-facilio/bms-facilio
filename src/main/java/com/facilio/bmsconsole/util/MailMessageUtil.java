@@ -75,9 +75,9 @@ public class MailMessageUtil {
 		return email.split("@")[0];
 	};
 	
-	public static Function<String,String> getFirstMessageId = (messageIDs) -> {
+	public static Function<String,String> getEmailFromPrettifiedFromAddress = (messageIDs) -> {
 	    
-    	if(messageIDs != null && messageIDs.contains("<")) {
+    	if(messageIDs != null && messageIDs.contains("<") && messageIDs.contains(">")) {
     		
     		return messageIDs.substring(messageIDs.indexOf('<')+1, messageIDs.indexOf('>'));
     	}
@@ -449,7 +449,7 @@ public class MailMessageUtil {
                     attachmentObject.put("file", file);
                     attachmentObject.put("type", 1);
                     if(bodyPart.getContentID() != null) {
-                    	attachmentObject.put("contentId", getFirstMessageId.apply(bodyPart.getContentID()));
+                    	attachmentObject.put("contentId", getEmailFromPrettifiedFromAddress.apply(bodyPart.getContentID()));
                     }
                     
                     attachmentsList.add(attachmentObject);
@@ -492,7 +492,7 @@ public class MailMessageUtil {
                 FileUtils.copyInputStreamToFile(bodyPart.getInputStream(), file);
                 attachmentObject.put("file", file);
                 attachmentObject.put("type", 2);
-                attachmentObject.put("contentId", getFirstMessageId.apply(bodyPart.getContentID()));
+                attachmentObject.put("contentId", getEmailFromPrettifiedFromAddress.apply(bodyPart.getContentID()));
                 
                 attachmentsList.add(attachmentObject);
             }

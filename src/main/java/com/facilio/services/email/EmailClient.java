@@ -5,6 +5,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.util.CommonAPI;
+import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
@@ -277,12 +278,14 @@ public abstract class EmailClient {
         if(StringUtils.isNotEmpty(emailAddressString)) {
             if (!FacilioProperties.isProduction()) {
                 for (String address : FacilioUtil.splitByComma(emailAddressString)) {
+                	address = MailMessageUtil.getEmailFromPrettifiedFromAddress.apply(address);
                     if (address.contains("@facilio.com") && (!checkActive || checkIfActiveUserFromEmail(address))) {
                         emailAddress.add(address);
                     }
                 }
             } else {
                 for (String address : FacilioUtil.splitByComma(emailAddressString)) {
+                	address = MailMessageUtil.getEmailFromPrettifiedFromAddress.apply(address);
                     if (address != null && address.contains("@") && (!checkActive || checkIfActiveUserFromEmail(address))) {
                         emailAddress.add(address);
                     }

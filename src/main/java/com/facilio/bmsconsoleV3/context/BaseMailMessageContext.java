@@ -135,14 +135,14 @@ public class BaseMailMessageContext extends V3Context {
             
             if(messageIDList != null && messageIDList[0] != null) {
             	
-            	mailContext.setMessageId(MailMessageUtil.getFirstMessageId.apply(messageIDList[0]));
+            	mailContext.setMessageId(MailMessageUtil.getEmailFromPrettifiedFromAddress.apply(messageIDList[0]));
             }
             if(referenceHeader != null && referenceHeader[0] != null) {
             	LOGGER.error("referenceHeader ----" + referenceHeader[0]);
-            	mailContext.setReferenceMessageId(MailMessageUtil.getFirstMessageId.apply(referenceHeader[0]));
+            	mailContext.setReferenceMessageId(MailMessageUtil.getEmailFromPrettifiedFromAddress.apply(referenceHeader[0]));
             }
             if(inReplyTo != null && inReplyTo[0] != null) {
-            	mailContext.setInReplyToMessageId(MailMessageUtil.getFirstMessageId.apply(inReplyTo[0]));
+            	mailContext.setInReplyToMessageId(MailMessageUtil.getEmailFromPrettifiedFromAddress.apply(inReplyTo[0]));
             }
             
         } catch (MessagingException | IOException ex) {

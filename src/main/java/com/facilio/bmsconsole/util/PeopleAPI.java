@@ -114,7 +114,7 @@ public class PeopleAPI {
 	
 	public static PeopleContext getOrAddPeople(String email) throws Exception {
 		
-		email = MailMessageUtil.getFirstMessageId.apply(email);
+		email = MailMessageUtil.getEmailFromPrettifiedFromAddress.apply(email);
 		
 		PeopleContext people = PeopleAPI.getPeople(email);
 		
