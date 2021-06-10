@@ -63,20 +63,31 @@ public class FetchOperatorsForFiltersCommand extends FacilioCommand {
         return filterOperators;
     }
 
+    private void addToOperators (Operator operator, Map<String, Operator> operators) {
+        operators.put(operator.getOperator(), operator);
+    }
+
     private Map<String, Operator> filterDateOperators() {
         Map<String, Operator> operators = new LinkedHashMap<>();
-        operators.put(DateOperators.TODAY.getOperator(), DateOperators.TODAY);
-        operators.put(DateOperators.TOMORROW.getOperator(), DateOperators.TOMORROW);
-        operators.put(DateOperators.YESTERDAY.getOperator(), DateOperators.YESTERDAY);
-        operators.put(DateOperators.TILL_YESTERDAY.getOperator(), DateOperators.TILL_YESTERDAY);
-        operators.put(DateOperators.NEXT_N_DAYS.getOperator(), DateOperators.NEXT_N_DAYS);
-        operators.put(DateOperators.CURRENT_WEEK.getOperator(), DateOperators.CURRENT_WEEK);
-        operators.put(DateOperators.LAST_WEEK.getOperator(), DateOperators.LAST_WEEK);
-        operators.put(DateOperators.LAST_N_WEEKS.getOperator(), DateOperators.LAST_N_WEEKS);
-        operators.put(DateOperators.NEXT_WEEK.getOperator(), DateOperators.NEXT_WEEK);
-        operators.put(DateOperators.CURRENT_MONTH.getOperator(), DateOperators.CURRENT_MONTH);
-        operators.put(DateOperators.LAST_MONTH.getOperator(), DateOperators.LAST_MONTH);
-        operators.put(DateOperators.BETWEEN.getOperator(), DateOperators.BETWEEN);
+        addToOperators(CommonOperators.IS_EMPTY, operators);
+        addToOperators(CommonOperators.IS_NOT_EMPTY, operators);
+        addToOperators(DateOperators.IS_BEFORE, operators);
+        addToOperators(DateOperators.IS_AFTER, operators);
+        addToOperators(DateOperators.TODAY, operators);
+        addToOperators(DateOperators.TILL_NOW, operators);
+        addToOperators(DateOperators.TOMORROW, operators);
+        addToOperators(DateOperators.STARTING_TOMORROW, operators);
+        addToOperators(DateOperators.YESTERDAY, operators);
+        addToOperators(DateOperators.TILL_YESTERDAY, operators);
+        addToOperators(DateOperators.NEXT_N_DAYS, operators);
+        addToOperators(DateOperators.CURRENT_WEEK, operators);
+        addToOperators(DateOperators.LAST_WEEK, operators);
+        addToOperators(DateOperators.LAST_N_WEEKS, operators);
+        addToOperators(DateOperators.NEXT_WEEK, operators);
+        addToOperators(DateOperators.CURRENT_MONTH, operators);
+        addToOperators(DateOperators.LAST_MONTH, operators);
+        addToOperators(DateOperators.NEXT_MONTH, operators);
+        addToOperators(DateOperators.BETWEEN, operators);
         return operators;
     }
 
