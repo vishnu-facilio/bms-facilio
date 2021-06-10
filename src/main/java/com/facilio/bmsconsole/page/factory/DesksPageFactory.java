@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.page.factory;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -13,11 +15,14 @@ import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.Page.Tab;
+import com.facilio.bmsconsoleV3.context.facilitybooking.FacilityContext;
 import com.facilio.bmsconsoleV3.context.floorplan.V3DeskContext;
+import com.facilio.bmsconsoleV3.util.FacilityAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 
@@ -26,6 +31,10 @@ public class DesksPageFactory extends PageFactory {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule baseSpaceModule = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
         FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+        FacilioModule bookingModule = modBean.getModule(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
+        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+        
         Page page = new Page();
 
         Page.Tab tab1 = page.new Tab("summary");
@@ -36,15 +45,28 @@ public class DesksPageFactory extends PageFactory {
         addSecondaryDetailsWidget(tab1Sec1);
         addCommonSubModuleWidget(tab1Sec1, module, deskContext);
 
-//        Page.Tab tab2 = page.new Tab("related records");
-//        page.addTab(tab2);
-//
-//        Page.Section tab2Sec1 = page.new Section();
-//        tab2.addSection(tab2Sec1);
-//
-//        addRelatedListWidget(tab2Sec1, FacilioConstants.ContextNames.MOVES, module.getModuleId(), "Moves");
-//        addRelatedListWidget(tab2Sec1, FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING, baseSpaceModule.getModuleId(), "Bookings");
-//        addRelatedListWidget(tab2Sec1, FacilioConstants.ContextNames.SERVICE_REQUEST, resourceModule.getModuleId(), "Service Requests");
+        Page.Tab tab2 = page.new Tab("related records");
+        page.addTab(tab2);
+
+        Page.Section tab2Sec1 = page.new Section();
+        tab2.addSection(tab2Sec1);
+
+        addCombinedRelatedListWidget(tab2Sec1, FacilioConstants.ContextNames.MOVES, module.getModuleId(), "Moves");
+        
+        // List<FacilityContext> facilities = FacilityAPI.getFacilityList(deskContext.getId(),module.getModuleId());
+        // if (CollectionUtils.isNotEmpty(facilities)) {
+        // 	List<Long> Ids = facilities.stream().map(prop -> (long) prop.getId()).collect(Collectors.toList());
+        // 	PageWidget relatedListWidget = new PageWidget(PageWidget.WidgetType.BOOKINGS_RELATED_LIST);
+        //     JSONObject relatedList = new JSONObject();
+        //     relatedList.put("module", bookingModule);
+        //     relatedList.put("field", fieldsAsMap.get(FacilioConstants.ContextNames.FacilityBooking.FACILITY));
+        //     relatedList.put("facilityIds", Ids);
+        //     relatedListWidget.setRelatedList(relatedList);
+        //     relatedListWidget.addToLayoutParams(tab2Sec1, 24, 10);
+        //     tab2Sec1.addWidget(relatedListWidget);
+        // }
+        
+        addCombinedRelatedListWidget(tab2Sec1, FacilioConstants.ContextNames.SERVICE_REQUEST, resourceModule.getModuleId(), "Service Requests");
 
 		Page.Tab tab3 = page.new Tab("Activity");
 		page.addTab(tab3);
@@ -82,6 +104,25 @@ public class DesksPageFactory extends PageFactory {
                 relatedListWidget.addToLayoutParams(section, 24, 10);
                 section.addWidget(relatedListWidget);
             }
+        }
+    }
+    
+    public static void addCombinedRelatedListWidget(Page.Section section, String moduleName, long parenModuleId, String moduleDisplayName) throws Exception {
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+        FacilioModule module = modBean.getModule(moduleName);
+        List<FacilioField> allFields = modBean.getAllFields(module.getName());
+        List<FacilioField> fields = allFields.stream().filter(field -> (field instanceof LookupField && ((LookupField) field).getLookupModuleId() == parenModuleId)).collect(Collectors.toList());
+        if (CollectionUtils.isNotEmpty(fields)) {
+                PageWidget relatedListWidget = new PageWidget(PageWidget.WidgetType.COMBINED_RELATED_LIST);
+                JSONObject relatedList = new JSONObject();
+                module.setDisplayName(moduleDisplayName);
+                relatedList.put("module", module);
+                relatedList.put("fields", fields);
+                relatedListWidget.setRelatedList(relatedList);
+                relatedListWidget.addToLayoutParams(section, 24, 10);
+                section.addWidget(relatedListWidget);
         }
     }
 }

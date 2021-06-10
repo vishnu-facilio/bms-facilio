@@ -345,9 +345,9 @@ public class PageWidget {
 
 		// Service Request Module Widgets
 		SR_EMAIL_THREAD("srEmailThread"),
-		SR_DETAILS_WIDGET("srDetailsWidget")
+		SR_DETAILS_WIDGET("srDetailsWidget"),
 
-
+		COMBINED_RELATED_LIST("combinedRelatedListWidget")
 		;
 		
 		private String name;
