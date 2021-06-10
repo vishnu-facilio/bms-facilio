@@ -73,6 +73,9 @@ public class GetMatchedConfirmationDialogCommand extends FacilioCommand {
     private void handleDataComingFromV2Components(ModuleBaseWithCustomFields data, Map<String, FacilioField> fieldMap, Set<String> keySet) throws Exception {
         for (String key : keySet) {
             FacilioField facilioField = fieldMap.get(key);
+            if (facilioField == null) {
+                continue;
+            }
             if (!facilioField.isDefault() && facilioField instanceof LookupField) {
                 Object value = FieldUtil.getValue(data, facilioField);
                 if (value == null || value instanceof Map) {
