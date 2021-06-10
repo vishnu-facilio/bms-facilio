@@ -508,7 +508,8 @@ public class FieldUtil {
 					FacilioConstants.ContextNames.FacilityBooking.FACILITY,
 					FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING,
 					FacilioConstants.ContextNames.JOB_PLAN,
-					FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME
+					FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME,
+					FacilioConstants.ContextNames.MOVES
 
 					))
 			);

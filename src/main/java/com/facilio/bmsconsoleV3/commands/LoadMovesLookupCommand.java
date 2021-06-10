@@ -34,6 +34,10 @@ public class LoadMovesLookupCommand extends FacilioCommand {
         additionaLookups.add(fromField);
         LookupField toField = (LookupField) fieldsAsMap.get("to");
         additionaLookups.add(toField);
+        LookupField sysCreatedBy = (LookupField) FieldFactory.getSystemField("sysCreatedBy", modBean.getModule(moduleName));
+        additionaLookups.add(sysCreatedBy);
+        LookupField sysModifiedBy = (LookupField) FieldFactory.getSystemField("sysModifiedBy", modBean.getModule(moduleName));
+        additionaLookups.add(sysModifiedBy);
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS,additionaLookups);
         return false;
     }
