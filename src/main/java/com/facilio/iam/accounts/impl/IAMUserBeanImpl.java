@@ -833,7 +833,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		if (props != null && !props.isEmpty()) {
 			return (int) props.get(0).get("dc");
 		}
-		return 1;
+		throw new IllegalArgumentException("username not found");
 	}
 
 	@SneakyThrows

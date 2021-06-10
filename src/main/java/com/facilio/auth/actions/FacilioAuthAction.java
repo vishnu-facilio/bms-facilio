@@ -463,9 +463,9 @@ public class FacilioAuthAction extends FacilioAction {
 				return vendorlookup();
 			}
 		}
-
+		
 		try {
-			String baseUrl = getRedirectUrl();
+			String baseUrl = checkDcAndGetRedirectUrl();
 			if (baseUrl != null) {
 				Map<String, Object> result = new HashMap<>();
 				result.put("code", 2);
@@ -473,14 +473,11 @@ public class FacilioAuthAction extends FacilioAction {
 				setJsonresponse(result);
 				return SUCCESS;
 			}
-		} catch(Exception e) {
-			LOGGER.log(Level.INFO, "Error while redirecting dc", e);
-		}
-
-		String username = getUsername();
-		String domain = getDomain();
-		HttpServletRequest request = ServletActionContext.getRequest();
-		try {
+	
+			String username = getUsername();
+			String domain = getDomain();
+			HttpServletRequest request = ServletActionContext.getRequest();
+		
 			AppDomain appdomainObj = IAMAppUtil.getAppDomain(request.getServerName());
 			Map<String, Object> loginModes = IAMUserUtil.getLoginModes(username, domain, appdomainObj);
 			setJsonresponse(loginModes);
@@ -1675,10 +1672,7 @@ public class FacilioAuthAction extends FacilioAction {
 		}
 	}
 	
-	private String getRedirectUrl() throws Exception {
-		if (getUsername() == null) {	 // Needs to check if called without username
-			return null;
-		}
+	private String checkDcAndGetRedirectUrl() throws Exception {
 		Integer dc = IAMUserUtil.lookupUserDC(getUsername());
 		if (dc == null) {
 			return null;
@@ -1688,23 +1682,21 @@ public class FacilioAuthAction extends FacilioAction {
 	}
 	
 	private String getBaseUrl() {
-		if (getUsername() == null) {	 // Needs to check if called without username
-			return null;
-		}
-		String baseUrl = null;
+		StringBuilder baseUrl = new StringBuilder(getProtocol()).append("://");
 		if (StringUtils.isNotEmpty(getLookUpType())) {
+			baseUrl.append(getDomain()).append(".");
 			if (getLookUpType().equalsIgnoreCase("service") ) {
-				baseUrl = FacilioProperties.getOccupantAppDomain();
+				baseUrl.append(FacilioProperties.getOccupantAppDomain());
 			} else if (getLookUpType().equalsIgnoreCase("tenant")) {
-				baseUrl = FacilioProperties.getTenantAppDomain();
+				baseUrl.append(FacilioProperties.getTenantAppDomain());
 			} else if (getLookUpType().equalsIgnoreCase("vendor")) {
-				baseUrl = FacilioProperties.getVendorAppDomain();
+				baseUrl.append(FacilioProperties.getVendorAppDomain());
 			} 
 		}
-		if (baseUrl == null) {
-			baseUrl = FacilioProperties.getMainAppDomain();
+		else {
+			baseUrl.append(FacilioProperties.getMainAppDomain());
 		}
-		return getProtocol() + "://" + baseUrl;
+		return baseUrl.toString();
 	}
 	
 	private String getProtocol() {
