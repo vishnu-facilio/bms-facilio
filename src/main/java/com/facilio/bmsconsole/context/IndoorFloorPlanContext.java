@@ -31,6 +31,47 @@ public class IndoorFloorPlanContext extends ModuleBaseWithCustomFields {
 	private int width;
 	private int height;
 	
+	private Float iconSize;
+	private Float fontSize;
+	private int minZoom;
+	private int maxZoom;
+
+	public Float getIconSize() {
+		return iconSize;
+	}
+
+	public void setIconSize(Float iconSize) {
+		this.iconSize = iconSize;
+	}
+
+	public Float getFontSize() {
+		return fontSize;
+	}
+
+	public void setFontSize(Float fontSize) {
+		this.fontSize = fontSize;
+	}
+
+	public int getMinZoom() {
+		return minZoom;
+	}
+
+	public void setMinZoom(int minZoom) {
+		this.minZoom = minZoom;
+	}
+
+	public int getMaxZoom() {
+		return maxZoom;
+	}
+
+	public void setMaxZoom(int maxZoom) {
+		this.maxZoom = maxZoom;
+	}
+
+	
+	
+	
+	
 	
 	
 
