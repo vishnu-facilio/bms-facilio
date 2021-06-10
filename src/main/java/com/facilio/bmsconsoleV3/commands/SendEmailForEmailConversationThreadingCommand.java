@@ -22,6 +22,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.services.email.EmailClient;
+import com.facilio.services.email.EmailFactory;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.v3.context.AttachmentV3Context;
@@ -80,6 +81,7 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 	private void sendNoteNotifyMail(EmailConversationThreadingContext emailConversation) throws Exception {
 		try {
 			JSONObject mailJson = new JSONObject();
+			mailJson.put(EmailClient.SENDER, EmailFactory.getEmailClient().getNoReplyFromEmail());
 			mailJson.put(EmailClient.TO, emailConversation.getTo());
 			mailJson.put(EmailClient.SUBJECT, "Re: "+emailConversation.getSubject());
 			mailJson.put(EmailClient.MESSAGE, emailConversation.getHtmlContent());
