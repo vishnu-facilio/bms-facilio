@@ -56,6 +56,10 @@ public class GetModuleListCommand extends FacilioCommand {
 			moduleList.add(modBean.getModule("space"));
 			moduleList.add(modBean.getModule("alarm"));
 			moduleList.add(modBean.getModule("vendors"));
+			moduleList.add(modBean.getModule(FacilioConstants.Inspection.INSPECTION_TEMPLATE));
+			moduleList.add(modBean.getModule(FacilioConstants.Inspection.INSPECTION_RESPONSE));
+			moduleList.add(modBean.getModule(FacilioConstants.Induction.INDUCTION_TEMPLATE));
+			moduleList.add(modBean.getModule(FacilioConstants.Induction.INDUCTION_RESPONSE));
 			if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.HUDSON_YARDS)) {
 				moduleList.add(modBean.getModule(ContextNames.WorkPermit.WORKPERMIT));
 			}

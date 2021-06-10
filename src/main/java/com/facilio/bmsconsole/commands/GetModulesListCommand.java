@@ -4,6 +4,8 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.constants.FacilioConstants.Induction;
+import com.facilio.constants.FacilioConstants.Inspection;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import org.apache.commons.chain.Context;
@@ -39,6 +41,10 @@ public class GetModulesListCommand extends FacilioCommand {
 			ContextNames.BUILDING,
 			ContextNames.FLOOR,
 			ContextNames.SPACE,
+			Inspection.INSPECTION_TEMPLATE,
+			Inspection.INSPECTION_RESPONSE,
+			Induction.INDUCTION_TEMPLATE,
+			Induction.INDUCTION_RESPONSE,
 	});
 	
 	@Override
