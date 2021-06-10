@@ -1951,6 +1951,7 @@ public class ReadOnlyChainFactory {
 		//chain.addCommand(new AddVendorScopeForPortalCommand());
 		chain.addCommand(new GenerateSearchConditionCommand());
 		chain.addCommand(new LoadInsuranceLookUpCommand());
+		chain.addCommand(new FetchCustomLookupFieldsCommand());
 		chain.addCommand(new FetchCustomMultiRecordFieldsCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
 		return chain;

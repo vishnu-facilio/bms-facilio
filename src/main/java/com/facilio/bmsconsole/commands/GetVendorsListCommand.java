@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.facilio.modules.fields.SupplementRecord;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
@@ -84,6 +85,11 @@ public class GetVendorsListCommand extends FacilioCommand {
 		List<LookupField>fetchLookup = (List<LookupField>) context.get(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST);
 		if (CollectionUtils.isNotEmpty(fetchLookup) && !getCount) {
 			builder.fetchSupplements(fetchLookup);
+		}
+
+		List<SupplementRecord> supplementFields = (List<SupplementRecord>) context.get(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS);
+		if (CollectionUtils.isNotEmpty(supplementFields) && !getCount) {
+			builder.fetchSupplements(supplementFields);
 		}
 
 		Criteria searchCriteria = (Criteria) context.get(FacilioConstants.ContextNames.SEARCH_CRITERIA);

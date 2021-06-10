@@ -11,11 +11,12 @@ import org.apache.commons.collections4.CollectionUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FetchCustomMultiRecordFieldsCommand extends FacilioCommand{
+public class FetchCustomLookupFieldsCommand extends FacilioCommand {
+
     @Override
     public boolean executeCommand(Context context) throws Exception {
         List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-        List<SupplementRecord> supplementRecords = (List<SupplementRecord>) context.get(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS);
+        List<LookupField> supplementRecords = (List<LookupField>) context.get(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST);
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -32,19 +33,16 @@ public class FetchCustomMultiRecordFieldsCommand extends FacilioCommand{
         if(CollectionUtils.isNotEmpty(fields)) {
             for(FacilioField f : fields) {
                 if (!f.isDefault()) {
-                    if (f instanceof MultiLookupField) {
-                        if (f instanceof MultiLookupField) {
-                            supplementRecords.add((MultiLookupField) f);
-                        }
-                    } else if (f instanceof MultiEnumField) {
-                        supplementRecords.add((MultiEnumField) f);
+                  if (f instanceof LookupField) {
+                        supplementRecords.add((LookupField) f);
                     }
                 }
             }
             if(CollectionUtils.isNotEmpty(supplementRecords)) {
-                context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, supplementRecords);
+                context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST, supplementRecords);
             }
         }
         return false;
     }
+
 }
