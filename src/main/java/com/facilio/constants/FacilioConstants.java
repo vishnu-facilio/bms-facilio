@@ -1986,6 +1986,7 @@ public class FacilioConstants {
 			public static final String MARKER = "floorplanmarker";
 			public static final String MARKED_ZONES = "floorplanmarkedzone";
 			public static final String DESKS = "desks";
+			public static final String FETCH_ONLY_DESKS = "fetchOnlydesks";
 		}
 		
 		// etisalat changes
