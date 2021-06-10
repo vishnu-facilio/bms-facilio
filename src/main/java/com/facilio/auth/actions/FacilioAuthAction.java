@@ -151,7 +151,7 @@ public class FacilioAuthAction extends FacilioAction {
 	}
 
 	public void setPassword(String password) {
-		this.password = cryptWithMD5(password);
+		this.password = PasswordHashUtil.cryptWithMD5(password);
 	}
 
 	private String appDomain;
@@ -259,7 +259,12 @@ public class FacilioAuthAction extends FacilioAction {
 	}
 
 	public void setNewPassword(String newPassword) {
-		this.newPassword = cryptWithMD5(newPassword);
+		this.newPassword = PasswordHashUtil.cryptWithMD5(newPassword);
+	}
+
+	@Override
+	public void setSkipModuleCriteria ( boolean skipModuleCriteria ) {
+		super.setSkipModuleCriteria(skipModuleCriteria);
 	}
 
 	public static MessageDigest getMd() {
@@ -2079,20 +2084,7 @@ public class FacilioAuthAction extends FacilioAction {
 	}
 
 	public static String cryptWithMD5(String pass) {
-		try {
-			md = MessageDigest.getInstance(FacilioProperties.getEncryption());
-			byte[] passBytes = pass.getBytes();
-			md.reset();
-			byte[] digested = md.digest(passBytes);
-			StringBuilder sb = new StringBuilder();
-			for (byte aDigested : digested) {
-				sb.append(Integer.toHexString(0xff & aDigested));
-			}
-			return sb.toString();
-		} catch (NoSuchAlgorithmException ex) {
-			LOGGER.log(Level.INFO, "Exception ", ex);
-		}
-		return null;
+		return PasswordHashUtil.cryptWithMD5(pass);
 	}
 
 	public String generateAuthToken() {

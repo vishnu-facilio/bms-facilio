@@ -20,6 +20,7 @@ import javax.transaction.TransactionManager;
 import com.facilio.accounts.dto.*;
 import com.facilio.accounts.sso.AccountSSO;
 import com.facilio.accounts.sso.SSOUtil;
+import com.facilio.auth.actions.PasswordHashUtil;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.operators.*;
 import com.facilio.db.util.DBConf;
@@ -173,20 +174,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	public String cryptWithMD5(String pass) {
-		try {
-			MessageDigest md = MessageDigest.getInstance(FacilioProperties.getEncryption());
-			byte[] passBytes = pass.getBytes();
-			md.reset();
-			byte[] digested = md.digest(passBytes);
-			StringBuilder sb = new StringBuilder();
-			for (byte aDigested : digested) {
-				sb.append(Integer.toHexString(0xff & aDigested));
-			}
-			return sb.toString();
-		} catch (NoSuchAlgorithmException ex) {
-			LOGGER.info("Exception ", ex);
-		}
-		return null;
+		return PasswordHashUtil.cryptWithMD5(pass);
 	}
 
 	private boolean isOneOfPreviousPasswords(long uid, int allowedPrevPassword, String password) throws Exception {
@@ -195,7 +183,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			return false;
 		}
 
-		String hashedPassord = cryptWithMD5(password);
+		String hashedPassord = PasswordHashUtil.cryptWithMD5(password);
 
 		for (String pass: userPrevPassword) {
 			if (hashedPassord.equals(pass)) {
@@ -297,7 +285,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 				orgId = defaultOrg.getOrgId();
 			}
 			validatePasswordWithSecurityPolicy(user.getUid(), password, orgId);
-			password = cryptWithMD5(password);
+			password = PasswordHashUtil.cryptWithMD5(password);
 			savePreviousPassword(user.getUid(), password);
 //			if ((System.currentTimeMillis() - user.getInvitedTime()) < INVITE_LINK_EXPIRE_TIME) {
 				try {
