@@ -44,31 +44,9 @@ public class GetEmployeeOccupantPortalSummaryCommand extends FacilioCommand {
 		long recordId = (long) context.get(FacilioConstants.ContextNames.ID);
 		int count = (int) context.get(FacilioConstants.ContextNames.COUNT);
 		DateRange range = new DateRange(DateTimeUtil.getDayStartTime(),DateTimeUtil.getDayStartTime(2));
-        
-        FacilioModule empModule = modBean.getModule(FacilioConstants.ContextNames.EMPLOYEE);
-        List<FacilioField> empFields = modBean.getAllFields(FacilioConstants.ContextNames.EMPLOYEE);
-        Map<String, FacilioField> empfieldsAsMap = FieldFactory.getAsMap(empFields);
-        List<LookupField> empLookups = new ArrayList<LookupField>();
-        LookupField departmentField = (LookupField) empfieldsAsMap.get("department");
-        empLookups.add(departmentField);
-        
-        
-        SelectRecordsBuilder<EmployeeContext> employeebuilder = new SelectRecordsBuilder<EmployeeContext>()
-                .moduleName(empModule.getName())
-                .select(empFields)
-                .beanClass(EmployeeContext.class)
-                .limit(count)
-                .fetchSupplements(empLookups);
-        
-        if(recordId > -1) {
-        	employeebuilder.andCondition(CriteriaAPI.getIdCondition(recordId, empModule));
-        }
-
-        List<EmployeeContext> emplist = employeebuilder.get();
-        context.put(FacilioConstants.ContextNames.EMPLOYEE, emplist);
-        
-        
-        FacilioModule deskModule = modBean.getModule(FacilioConstants.ContextNames.Floorplan.DESKS);
+		Boolean fetchOnlyDesk = (Boolean) context.get(FacilioConstants.ContextNames.Floorplan.FETCH_ONLY_DESKS);
+		
+		FacilioModule deskModule = modBean.getModule(FacilioConstants.ContextNames.Floorplan.DESKS);
         List<FacilioField> deskFields = modBean.getAllFields(FacilioConstants.ContextNames.Floorplan.DESKS);
         Map<String, FacilioField> deskfieldsAsMap = FieldFactory.getAsMap(deskFields);
         List<LookupField> deskLookups = new ArrayList<LookupField>();
@@ -91,6 +69,30 @@ public class GetEmployeeOccupantPortalSummaryCommand extends FacilioCommand {
 
         List<V3DeskContext> desklist = deskbuilder.get();
         context.put(FacilioConstants.ContextNames.Floorplan.DESKS, desklist);
+		
+        if(!fetchOnlyDesk) {
+        
+        FacilioModule empModule = modBean.getModule(FacilioConstants.ContextNames.EMPLOYEE);
+        List<FacilioField> empFields = modBean.getAllFields(FacilioConstants.ContextNames.EMPLOYEE);
+        Map<String, FacilioField> empfieldsAsMap = FieldFactory.getAsMap(empFields);
+        List<LookupField> empLookups = new ArrayList<LookupField>();
+        LookupField departmentField = (LookupField) empfieldsAsMap.get("department");
+        empLookups.add(departmentField);
+        
+        
+        SelectRecordsBuilder<EmployeeContext> employeebuilder = new SelectRecordsBuilder<EmployeeContext>()
+                .moduleName(empModule.getName())
+                .select(empFields)
+                .beanClass(EmployeeContext.class)
+                .limit(count)
+                .fetchSupplements(empLookups);
+        
+        if(recordId > -1) {
+        	employeebuilder.andCondition(CriteriaAPI.getIdCondition(recordId, empModule));
+        }
+
+        List<EmployeeContext> emplist = employeebuilder.get();
+        context.put(FacilioConstants.ContextNames.EMPLOYEE, emplist);
         
         
         
@@ -192,6 +194,8 @@ public class GetEmployeeOccupantPortalSummaryCommand extends FacilioCommand {
 //            }
 //        }
         context.put(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING, bookinglist);
+        
+        }
         
 
 		return false;

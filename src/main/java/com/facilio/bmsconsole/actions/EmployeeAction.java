@@ -40,6 +40,17 @@ private static final long serialVersionUID = 1L;
 	public void setFetchCount(Boolean fetchCount) {
 		this.fetchCount = fetchCount;
 	}
+	
+	private Boolean fetchOnlyDesk;
+	public Boolean getFetchOnlyDesk() {
+		if (fetchOnlyDesk == null) {
+			return false;
+		}
+		return fetchOnlyDesk;
+	}
+	public void setFetchOnlyDesk(Boolean fetchOnlyDesk) {
+		this.fetchOnlyDesk = fetchOnlyDesk;
+	}
 
 	private EmployeeContext employee;
 	private List<EmployeeContext> employees;
@@ -259,19 +270,21 @@ public String getEmployeeOccupantPortalSummary() throws Exception {
 		
 		chain.getContext().put(FacilioConstants.ContextNames.COUNT, count);
 		chain.getContext().put(FacilioConstants.ContextNames.ID, recordId);
+		chain.getContext().put(FacilioConstants.ContextNames.Floorplan.FETCH_ONLY_DESKS, fetchOnlyDesk);
 		
 		if(recordId <= 0 && currentUser != null && currentUser.getPeopleId() > 0){
 			chain.getContext().put(FacilioConstants.ContextNames.ID, currentUser.getPeopleId());
 		}
 		
 		chain.execute();
-		
+		if(!fetchOnlyDesk) {
 		setResult(FacilioConstants.ContextNames.EMPLOYEE, chain.getContext().get(FacilioConstants.ContextNames.EMPLOYEE));
-		setResult(FacilioConstants.ContextNames.Floorplan.DESKS, chain.getContext().get(FacilioConstants.ContextNames.Floorplan.DESKS));
 		setResult(FacilioConstants.ContextNames.SERVICE_REQUEST, chain.getContext().get(FacilioConstants.ContextNames.SERVICE_REQUEST));
 		setResult(FacilioConstants.ContextNames.INVITE_VISITOR, chain.getContext().get(FacilioConstants.ContextNames.INVITE_VISITOR));
 		setResult(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING, chain.getContext().get(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING));
 		setResult(FacilioConstants.ContextNames.USER, currentUser);
+		}
+		setResult(FacilioConstants.ContextNames.Floorplan.DESKS, chain.getContext().get(FacilioConstants.ContextNames.Floorplan.DESKS));
 		return SUCCESS;
 	}
 
