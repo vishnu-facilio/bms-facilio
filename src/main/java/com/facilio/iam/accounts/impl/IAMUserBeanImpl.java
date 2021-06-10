@@ -174,7 +174,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 	public String cryptWithMD5(String pass) {
 		try {
-			MessageDigest md = MessageDigest.getInstance("MD5");
+			MessageDigest md = MessageDigest.getInstance(FacilioProperties.getEncryption());
 			byte[] passBytes = pass.getBytes();
 			md.reset();
 			byte[] digested = md.digest(passBytes);

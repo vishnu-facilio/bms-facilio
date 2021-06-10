@@ -125,6 +125,9 @@ public class FacilioProperties {
     private static String iamLookupUrl;
     private static String iamUserLookupUrl;
 
+
+    private static String encryption;
+
     static {
         loadProperties();
     }
@@ -226,6 +229,7 @@ public class FacilioProperties {
 
                 accessLog = "true".equalsIgnoreCase(PROPERTIES.getProperty("facilio.access.log", "false"));
 
+                encryption = PROPERTIES.getProperty("encryption");
                 String cookieLifespanProp = PROPERTIES.getProperty("token.cookie.lifespan");
                 if (StringUtils.isNotEmpty(cookieLifespanProp)) {
                     try {
@@ -717,4 +721,13 @@ public class FacilioProperties {
     public static String getIAMUserLookupURL() {
         return iamUserLookupUrl;
     }
+
+    public static String getEncryption () {
+        return encryption;
+    }
+
+    public static void setEncryption ( String encryption ) {
+        FacilioProperties.encryption = encryption;
+    }
+
 }

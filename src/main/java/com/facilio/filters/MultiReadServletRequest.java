@@ -69,7 +69,7 @@ public class MultiReadServletRequest extends HttpServletRequestWrapper {
 	private static String cryptWithMD5(String word) {
 		if (StringUtils.isNotEmpty(word)) {
 	        try {
-	        	md = MessageDigest.getInstance("MD5");
+	        	md = MessageDigest.getInstance(FacilioProperties.getEncryption());
 	            byte[] passBytes = word.getBytes();
 	            md.reset();
 	            byte[] digested = md.digest(passBytes);

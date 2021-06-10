@@ -2080,7 +2080,7 @@ public class FacilioAuthAction extends FacilioAction {
 
 	public static String cryptWithMD5(String pass) {
 		try {
-			md = MessageDigest.getInstance("MD5");
+			md = MessageDigest.getInstance(FacilioProperties.getEncryption());
 			byte[] passBytes = pass.getBytes();
 			md.reset();
 			byte[] digested = md.digest(passBytes);
