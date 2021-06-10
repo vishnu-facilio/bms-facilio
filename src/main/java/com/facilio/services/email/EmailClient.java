@@ -70,6 +70,9 @@ public abstract class EmailClient {
 
     public void sendEmailWithActiveUserCheck (JSONObject mailJson, Map<String, String> files) throws Exception {
         if (removeInActiveUsers(mailJson)) {
+        	if(AccountUtil.getCurrentOrg().getId() == 75l) {
+        		LOGGER.error("mailJson ---- "+mailJson);
+        	}
             sendEmail(mailJson, files);
         }
     }
