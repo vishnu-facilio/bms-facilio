@@ -13,6 +13,7 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
+import com.facilio.auth.actions.PasswordHashUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 
@@ -61,28 +62,10 @@ public class MultiReadServletRequest extends HttpServletRequestWrapper {
 	public String getContentHash() {
 		if (isCachedRequest()) {
 			String string = new String(cachedRequest.toByteArray());
-			return cryptWithMD5(string);
+			return PasswordHashUtil.cryptWithMD5(string);
 		}
 		throw new IllegalAccessError("Should be cached request to get content hash");
 	}
-	
-	private static String cryptWithMD5(String word) {
-		if (StringUtils.isNotEmpty(word)) {
-	        try {
-	        	md = MessageDigest.getInstance("MD5");
-	            byte[] passBytes = word.getBytes();
-	            md.reset();
-	            byte[] digested = md.digest(passBytes);
-	            StringBuilder sb = new StringBuilder();
-	            for (byte aDigested : digested) {
-	                sb.append(Integer.toHexString(0xff & aDigested));
-	            }
-	            return sb.toString();
-	        } catch (NoSuchAlgorithmException ex) {
-	        }
-		}
-        return null;
-    }
 	
 	protected String readContentType(HttpServletRequest request) {
         String contentType = request.getHeader("Content-Type");

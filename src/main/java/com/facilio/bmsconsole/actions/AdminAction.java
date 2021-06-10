@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.websocket.EncodeException;
 
+import com.facilio.auth.actions.PasswordHashUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Level;
@@ -121,7 +122,7 @@ public class AdminAction extends ActionSupport {
 		newUser.setName(name);
 		newUser.setEmail(email);
 		newUser.setRoleId(roleId);
-		newUser.setPassword(FacilioAuthAction.cryptWithMD5(password));
+		newUser.setPassword(PasswordHashUtil.cryptWithMD5(password));
 		newUser.setUserVerified(true);
 		newUser.setInviteAcceptStatus(true);
 		newUser.setInvitedTime(System.currentTimeMillis());
