@@ -719,6 +719,8 @@ public class ExportUtil {
 		String orgLimit = orgInfo.get(FacilioConstants.OrgInfoKeys.MODULE_EXPORT_LIMIT);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
+		List<FacilioField> fieldsList = modBean.getAllFields(moduleName);
+		Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fieldsList);
 		if (moduleName.equals("asset")) {
 			FacilioChain viewDetailsChain = FacilioChainFactory.getViewDetailsChain();
 			viewDetailsChain.execute(context);
@@ -784,16 +786,20 @@ public class ExportUtil {
 		
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 
-		if (moduleName.equals("asset")) {
-			ViewField id = new ViewField("id", "Id");
-			FacilioField idField = FieldFactory.getIdField(module);
-			id.setField(idField);
-			viewFields.add(id);
-		}
 		if (moduleName.equals("workorder")) {
 			ViewField serialNumber = new ViewField("serialNumber", "ID");
 			serialNumber.setField(modBean.getField("serialNumber", moduleName));
 			viewFields.add(serialNumber);
+		} else if (!moduleName.equals("asset") // Asset module has local Id
+				&& fieldsMap.containsKey("localId")) {
+			ViewField localId = new ViewField("localId", "Id");
+			localId.setField(fieldsMap.get("localId"));
+			viewFields.add(localId);
+		} else {
+			ViewField id = new ViewField("id", "Id");
+			FacilioField idField = FieldFactory.getIdField(module);
+			id.setField(idField);
+			viewFields.add(id);
 		}
 		viewFields.addAll(view.getFields());
 		if (moduleName.equals("alarm")) {
