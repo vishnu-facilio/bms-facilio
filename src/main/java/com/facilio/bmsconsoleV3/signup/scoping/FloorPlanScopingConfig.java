@@ -42,10 +42,8 @@ public class FloorPlanScopingConfig extends SignUpData {
             markerTypes.add(desktype);
             
             
-            String markerNames[] = { "camera", "cctv", "elevator", "escalator", "femalerestroom", "fireextingus", "kitchen1", "kitchen2", "locker", "malerestroom", "parking", "restroom" };  
+            String markerNames[] = { "Camera", "CCTV", "Elevator", "Escalator", "Women’s restroom", "Fire extinguisher", "Kitchen", "Microwave", "Locker", "Men’s restroom", "Parking", "Restroom" };  
 
-     
-            
             for (String markerName : markerNames) {
             	
             	 V3FloorplanMarkersContext markerType  = new V3FloorplanMarkersContext();
