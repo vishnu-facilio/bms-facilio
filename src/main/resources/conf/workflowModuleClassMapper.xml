@@ -10,4 +10,5 @@
 	 <module name='readingalarmoccurrence' classname='com.facilio.workflowv2.modulefunctions.FacilioReadingAlarmModuleFunctions'/>
 	 <module name='assetbreakdown' classname='com.facilio.workflowv2.modulefunctions.FacilioDowntimeModuleFunctions'/>
 	 <module name='inductionTemplate' classname='com.facilio.workflowv2.modulefunctions.FacilioInductionTemplateModuleFunctions'/>
+	 <module name='moves' classname='com.facilio.workflowv2.modulefunctions.FacilioMovesModuleFunctions'/>
 </workflow>
