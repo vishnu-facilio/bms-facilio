@@ -182,15 +182,19 @@ public class InspectionPageFactory extends PageFactory {
         Page.Tab summaryTab = page.new Tab("Summary");
         Page.Section SummarySec = page.new Section();
         
-        PageWidget secondaryDetailsWidget = new PageWidget(PageWidget.WidgetType.INSPECTION_RESPONSE_WIDGET);
-        secondaryDetailsWidget.addToLayoutParams(SummarySec, 24, 24);
-        SummarySec.addWidget(secondaryDetailsWidget);
+        PageWidget summaryWidget = new PageWidget(PageWidget.WidgetType.INSPECTION_RESPONSE_WIDGET);
+        summaryWidget.addToLayoutParams(SummarySec, 24, 24);
+        SummarySec.addWidget(summaryWidget);
         
         summaryTab.addSection(SummarySec);
         page.addTab(summaryTab);
         
-        Page.Tab notesAndAttachmentTab = page.new Tab("Notes & Attachments");
+        Page.Tab notesAndAttachmentTab = page.new Tab("Notes & Information");
         Page.Section notesAndAttachmentSec = page.new Section();
+        
+        PageWidget secondaryDetailsWidget = new PageWidget(PageWidget.WidgetType.SECONDARY_DETAILS_WIDGET);
+        secondaryDetailsWidget.addToLayoutParams(notesAndAttachmentSec, 24, 4);
+        notesAndAttachmentSec.addWidget(secondaryDetailsWidget);
         
         PageWidget notesWidget = new PageWidget(PageWidget.WidgetType.COMMENT);
         notesWidget.addToLayoutParams(notesAndAttachmentSec, 24, 8);
