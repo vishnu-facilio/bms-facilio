@@ -1,5 +1,6 @@
 package com.facilio.qa.context;
 
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.util.FacilioEnumClassTypeIdResolverBase;
 import com.facilio.v3.context.V3Context;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -53,7 +54,7 @@ public abstract class QAndATemplateContext <R extends ResponseContext> extends V
     }
 
     protected abstract R newResponseObject();
-    protected abstract List<R> newResponseObjects() throws Exception;
+    protected abstract List<R> newResponseObjects(List<ResourceContext> resources) throws Exception;
     protected abstract void addDefaultPropsForResponse(R response); //Having as two methods so that props can be overridden
 
     public R constructResponse() {
@@ -66,15 +67,17 @@ public abstract class QAndATemplateContext <R extends ResponseContext> extends V
         return response;
     }
     
-    public List<R> constructResponses() throws Exception {
-    	List<R> responses = newResponseObjects();
-    	for(R response : responses) {
-    		
-    		response.setQAndAType(this.qAndAType);
-            response.setParent(this);
-            response.setResStatus(ResponseContext.ResponseStatus.NOT_ANSWERED);
-            response.setTotalAnswered(0);
-            addDefaultPropsForResponse(response);
+    public List<R> constructResponses(List<ResourceContext> resources) throws Exception {
+    	List<R> responses = newResponseObjects(resources);
+    	if(responses != null) {
+    		for(R response : responses) {
+        		
+        		response.setQAndAType(this.qAndAType);
+                response.setParent(this);
+                response.setResStatus(ResponseContext.ResponseStatus.NOT_ANSWERED);
+                response.setTotalAnswered(0);
+                addDefaultPropsForResponse(response);
+        	}
     	}
         return responses;
     }

@@ -1,6 +1,10 @@
 package com.facilio.bmsconsoleV3.context.induction;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
@@ -13,9 +17,13 @@ import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext;
+import com.facilio.bmsconsoleV3.context.inspection.InspectionScheduler;
 import com.facilio.bmsconsoleV3.util.InductionAPI;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.qa.context.QAndATemplateContext;
+import com.facilio.time.DateRange;
+import com.facilio.time.DateTimeUtil;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import lombok.AllArgsConstructor;
@@ -88,9 +96,23 @@ public class InductionTemplateContext extends QAndATemplateContext <InductionRes
     }
     
     @Override
-	protected List<InductionResponseContext> newResponseObjects() throws Exception {
+	protected List<InductionResponseContext> newResponseObjects(List<ResourceContext> resources) throws Exception {
 		// TODO Auto-generated method stub
-		return InductionAPI.getInductionResponse(this,null);
+    	
+    	List<InductionResponseContext> responses = null;
+		if(CollectionUtils.isNotEmpty(resources)) {
+			responses = new ArrayList<InductionResponseContext>();
+			for(ResourceContext resource : resources) {
+				InductionResponseContext response = newResponseObject();
+				response.setSiteId(resource.getId());
+				responses.add(response);
+			}
+		}
+		else {
+			responses = InductionAPI.getInductionResponse(this,null);
+		}
+		return responses;
+    	
 	}
 
     @Override

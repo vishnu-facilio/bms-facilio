@@ -1,7 +1,10 @@
 package com.facilio.bmsconsoleV3.context.inspection;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
@@ -13,6 +16,7 @@ import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsoleV3.context.induction.InductionTemplateContext.CreationType;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.qa.context.QAndATemplateContext;
 import com.facilio.time.DateRange;
@@ -132,10 +136,21 @@ public class InspectionTemplateContext extends QAndATemplateContext <InspectionR
 	}
 
 	@Override
-	protected List<InspectionResponseContext> newResponseObjects() throws Exception{
+	protected List<InspectionResponseContext> newResponseObjects(List<ResourceContext> resources) throws Exception{
 		// TODO Auto-generated method stub
-		DateRange range = new DateRange(0l, DateTimeUtil.getCurrenTime());
-		List<InspectionResponseContext> responses = new InspectionScheduler().getResponses(this, null, Collections.singletonList(range));
+		List<InspectionResponseContext> responses = null;
+		if(CollectionUtils.isNotEmpty(resources) && this.creationType == CreationType.MULTIPLE) {
+			responses = new ArrayList<InspectionResponseContext>();
+			for(ResourceContext resource : resources) {
+				InspectionResponseContext response = newResponseObject();
+				response.setResource(resource);
+				responses.add(response);
+			}
+		}
+		else {
+			DateRange range = new DateRange(0l, DateTimeUtil.getCurrenTime());
+			responses = new InspectionScheduler().getResponses(this, null, Collections.singletonList(range));
+		}
 		return responses;
 	}
     

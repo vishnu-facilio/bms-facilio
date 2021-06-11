@@ -1,5 +1,6 @@
 package com.facilio.qa.actions;
 
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -59,6 +60,7 @@ public class QAndAAction extends RESTAPIHandler {
         FacilioContext context = executeTemplateChain.getContext();
         Constants.setModuleName(context, this.getModuleName());
         Constants.setRecordId(context, this.getId());
+        context.put(FacilioConstants.ContextNames.RESOURCE_LIST,getResources());
         executeTemplateChain.execute();
 
 //        ResponseContext response = (ResponseContext) context.get(FacilioConstants.QAndA.RESPONSE);
@@ -108,4 +110,6 @@ public class QAndAAction extends RESTAPIHandler {
 
         return SUCCESS;
     }
+    
+    List<ResourceContext> resources;
 }

@@ -7,6 +7,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
@@ -27,7 +28,10 @@ public class ExecuteQAndATemplateCommand extends FacilioCommand {
         QAndAType type = QAndAType.getQAndATypeFromTemplateModule(moduleName);
         QAndATemplateContext template = V3RecordAPI.getRecord(moduleName, id, type.getTemplateClass());
         V3Util.throwRestException(template == null, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid id ({0}) specified while executing template", id));
-        List response = template.constructResponses();
+        
+        List<ResourceContext> resources = (List<ResourceContext>) context.get(FacilioConstants.ContextNames.RESOURCE_LIST);
+        
+        List response = template.constructResponses(resources);
         
         if(CollectionUtils.isNotEmpty(response)) {
         	QAndAUtil.addRecordViaV3Chain(type.getResponseModule(), response);
