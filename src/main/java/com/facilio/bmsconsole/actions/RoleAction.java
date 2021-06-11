@@ -21,6 +21,7 @@ import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class RoleAction extends ActionSupport {
 
@@ -75,9 +76,22 @@ public class RoleAction extends ActionSupport {
         this.roles = roles;
     }
 
+    private String linkName;
+
+    public String getLinkName() {
+        return linkName;
+    }
+
+    public void setLinkName(String linkName) {
+        this.linkName = linkName;
+    }
+
     public String roleList() throws Exception {
 
         setSetup(SetupLayout.getRolesListLayout());
+        if(appId <= 0 && StringUtils.isNotEmpty(linkName)) {
+            appId = ApplicationApi.getApplicationIdForLinkName(linkName);
+        }
         List<Role> rolesList = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getOrgId()).getRoles(appId);
         setRoles(rolesList);
 //	x	setGroups(AccountUtil.getGroupBean().getAllOrgGroups(AccountUtil.getCurrentOrg().getOrgId()));

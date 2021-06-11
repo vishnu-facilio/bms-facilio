@@ -362,15 +362,16 @@ public class V3PeopleAPI {
                     if(MapUtils.isEmpty(person.getRolesMap()) || !person.getRolesMap().containsKey(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP)){
                         throw new IllegalArgumentException("Role is mandatory");
                     }
+                    long roleId = person.getRolesMap().get(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
                     if(user != null) {
                         user.setAppDomain(appDomain);
                         user.setApplicationId(appId);
-                        user.setRoleId(person.getRolesMap().get(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP));
+                        user.setRoleId(roleId);
 
                         ApplicationApi.addUserInApp(user, false);
                     }
                     else {
-                        addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP, appDomain.getIdentifier(), person.getRoleId());
+                        addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP, appDomain.getIdentifier(), roleId);
                     }
                 }
                 else {
@@ -427,16 +428,15 @@ public class V3PeopleAPI {
                     if(MapUtils.isEmpty(person.getRolesMap()) || !person.getRolesMap().containsKey(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP)){
                         throw new IllegalArgumentException("Role is mandatory");
                     }
+                    long roleId = person.getRolesMap().get(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
                     if(user != null) {
                         user.setAppDomain(appDomain);
                         user.setApplicationId(appId);
-                        user.setRoleId(person.getRolesMap().get(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP));
-                        boolean shouldUpdateRole = existingPeople.getRoleId() == person.getRoleId() ? false : true;
-
+                        user.setRoleId(roleId);
                         ApplicationApi.addUserInApp(user, false);
                     }
                     else {
-                        addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP, appDomain.getIdentifier(), person.getRoleId());
+                        addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP, appDomain.getIdentifier(), roleId);
                     }
                 }
                 else {
@@ -468,16 +468,15 @@ public class V3PeopleAPI {
                     if(MapUtils.isEmpty(person.getRolesMap()) || !person.getRolesMap().containsKey(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP)){
                         throw new IllegalArgumentException("Role is mandatory");
                     }
+                    long roleId = person.getRolesMap().get(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
                     if(user != null) {
                         user.setAppDomain(appDomain);
-                        user.setRoleId(person.getRolesMap().get(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP));
+                        user.setRoleId(roleId);
                         user.setApplicationId(appId);
-                        boolean shouldUpdateRole = existingPeople.getRoleId() == person.getRoleId() ? false : true;
-
                         ApplicationApi.addUserInApp(user, false);
                     }
                     else {
-                        User newUser = addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP, appDomain.getIdentifier(), person.getRoleId());
+                        User newUser = addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP, appDomain.getIdentifier(), roleId);
                         newUser.setAppDomain(appDomain);
                     }
                 }
@@ -513,16 +512,16 @@ public class V3PeopleAPI {
                         throw new IllegalArgumentException("Role is mandatory");
                     }
 
+                    long roleId = person.getRolesMap().get(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
                     if(user != null) {
                         user.setApplicationId(appId);
                         user.setAppDomain(appDomain);
-                        user.setRoleId(person.getRolesMap().get(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+                        user.setRoleId(roleId);
 
-                        boolean shouldUpdateRole = existingPeople.getRoleId() == person.getRoleId() ? false : true;
                         ApplicationApi.addUserInApp(user, false);
                     }
                     else {
-                        addAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, person.getRoleId());
+                        addAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, roleId);
                     }
                 }
                 else {
@@ -563,7 +562,7 @@ public class V3PeopleAPI {
 
     }
 
-    public static void updateClientContactAppPortalAccess(V3ClientContactContext person, String linkName, Long roleId) throws Exception {
+    public static void updateClientContactAppPortalAccess(V3ClientContactContext person, String linkName) throws Exception {
 
         V3ClientContactContext existingPeople = (V3ClientContactContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.CLIENT_CONTACT, person.getId(), V3ClientContactContext.class);
 
@@ -581,10 +580,11 @@ public class V3PeopleAPI {
                         throw new IllegalArgumentException("Role is mandatory");
                     }
 
+                    long roleId = person.getRolesMap().get(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
                     if(user != null) {
                         user.setAppDomain(appDomain);
                         user.setApplicationId(appId);
-                        user.setRoleId(person.getRolesMap().get(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP));
+                        user.setRoleId(roleId);
                         ApplicationApi.addUserInApp(user, false);
                     }
                     else {

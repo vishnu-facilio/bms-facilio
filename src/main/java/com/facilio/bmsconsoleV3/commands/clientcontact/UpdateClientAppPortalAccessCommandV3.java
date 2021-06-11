@@ -23,14 +23,12 @@ public class UpdateClientAppPortalAccessCommandV3 extends FacilioCommand {
         String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<V3ClientContactContext> clientContacts = recordMap.get(moduleName);
-        Long roleId = (Long)context.get(FacilioConstants.ContextNames.ROLE_ID);
-
         Map<Long, List<UpdateChangeSet>> changeSet = Constants.getModuleChangeSets(context);
         if(CollectionUtils.isNotEmpty(clientContacts) && MapUtils.isNotEmpty(changeSet)) {
             for(V3ClientContactContext tc : clientContacts) {
                 List<UpdateChangeSet> changes = changeSet.get(tc.getId());
                 if(CollectionUtils.isNotEmpty(changes) && RecordAPI.checkChangeSet(changes, "isClientPortalAccess", FacilioConstants.ContextNames.CLIENT_CONTACT)) {
-                    V3PeopleAPI.updateClientContactAppPortalAccess(tc, FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP, roleId);
+                    V3PeopleAPI.updateClientContactAppPortalAccess(tc, FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
                 }
             }
         }
