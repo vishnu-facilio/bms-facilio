@@ -31,7 +31,7 @@ public class AddPeopleAccessCommand extends FacilioCommand{
     		for(PeopleContext ppl : people) {
     			List<UpdateChangeSet> changes = changeSet.get(ppl.getId());
 				if(CollectionUtils.isNotEmpty(changes) && RecordAPI.checkChangeSet(changes, "isOccupantPortalAccess", FacilioConstants.ContextNames.PEOPLE)) {
-					PeopleAPI.updatePeoplePortalAccess(ppl, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP, roleId);
+					PeopleAPI.updatePeoplePortalAccess(ppl, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
 				}
 			}
 	    }

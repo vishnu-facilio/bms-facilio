@@ -28,16 +28,6 @@ private static final long serialVersionUID = 1L;
 		this.moduleName = moduleName;
 	}
 
-	private long roleId;
-
-	public long getRoleId() {
-		return roleId;
-	}
-
-	public void setRoleId(long roleId) {
-		this.roleId = roleId;
-	}
-
 	private Boolean fetchCount;
 	public Boolean getFetchCount() {
 		if (fetchCount == null) {
@@ -124,7 +114,6 @@ private static final long serialVersionUID = 1L;
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
 			c.getContext().put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
-			c.getContext().put(FacilioConstants.ContextNames.ROLE_ID, roleId);
 
 			for(TenantContactContext tc : tenantContacts) {
 				tc.parseFormData();
@@ -237,7 +226,6 @@ private static final long serialVersionUID = 1L;
 			FacilioChain c = TransactionChainFactory.updateTenantContactAppAccessChain();
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, tenantContacts);
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
-			c.getContext().put(FacilioConstants.ContextNames.ROLE_ID, roleId);
 
 			c.execute();
 			setResult(FacilioConstants.ContextNames.TENANT_CONTACTS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
@@ -252,7 +240,6 @@ private static final long serialVersionUID = 1L;
 			FacilioChain c = TransactionChainFactory.updateTenantContactAppAccessChain();
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, tenantContacts);
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
-			c.getContext().put(FacilioConstants.ContextNames.ROLE_ID, roleId);
 
 			c.execute();
 			setResult(FacilioConstants.ContextNames.TENANT_CONTACTS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));

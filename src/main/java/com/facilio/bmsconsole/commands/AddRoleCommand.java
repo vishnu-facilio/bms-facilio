@@ -29,14 +29,7 @@ public class AddRoleCommand extends FacilioCommand {
 			role.setRoleId(roleId);
 
 			if(CollectionUtils.isEmpty(rolesApps)) {
-
-				RoleApp roleApp = new RoleApp();
-				roleApp.setApplicationId(AccountUtil.getCurrentApp().getId());
-				roleApp.setRoleId(roleId);
-				rolesApps = new ArrayList<>();
-				rolesApps.add(roleApp);
-				//throw error when app based role is supported in client
-				//throw new IllegalArgumentException("Role Object should have apps associated");
+				throw new IllegalArgumentException("Role Object should have apps associated");
 			}
 			for(RoleApp roleApp : rolesApps) {
 				roleApp.setRoleId(roleId);

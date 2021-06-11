@@ -22,18 +22,16 @@ public class UpdateEmployeePeopleAppPortalAccessCommandV3 extends FacilioCommand
         String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<V3EmployeeContext> employees = recordMap.get(moduleName);
-        Long roleId = (Long)context.get(FacilioConstants.ContextNames.ROLE_ID);
-
         Map<Long, List<UpdateChangeSet>> changeSet = Constants.getModuleChangeSets(context);
 
         if(CollectionUtils.isNotEmpty(employees) && MapUtils.isNotEmpty(changeSet)) {
             for(V3EmployeeContext emp : employees) {
                 List<UpdateChangeSet> changes = changeSet.get(emp.getId());
                 if(CollectionUtils.isNotEmpty(changes) && (RecordAPI.checkChangeSet(changes, "isAppAccess", FacilioConstants.ContextNames.EMPLOYEE) || RecordAPI.checkChangeSet(changes, "roleId", FacilioConstants.ContextNames.EMPLOYEE))) {
-                    V3PeopleAPI.updateEmployeeAppPortalAccess(emp, FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, roleId);
+                    V3PeopleAPI.updateEmployeeAppPortalAccess(emp, FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
                 }
                 if(CollectionUtils.isNotEmpty(changes) && RecordAPI.checkChangeSet(changes, "isOccupantPortalAccess", FacilioConstants.ContextNames.EMPLOYEE)) {
-                    V3PeopleAPI.updatePeoplePortalAccess(emp, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP, roleId);
+                    V3PeopleAPI.updatePeoplePortalAccess(emp, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
                 }
             }
         }

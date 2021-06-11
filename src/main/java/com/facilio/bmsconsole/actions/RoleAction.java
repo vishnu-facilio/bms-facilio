@@ -206,6 +206,8 @@ public class RoleAction extends ActionSupport {
         role.setCreatedTime(System.currentTimeMillis());
         context.put(FacilioConstants.ContextNames.ROLE, getRole());
         context.put(FacilioConstants.ContextNames.PERMISSIONS, getNewPermissions());
+        context.put(FacilioConstants.ContextNames.ROLES_APPS, getRoleApp());
+
 
         Command addRole = FacilioChainFactory.getAddWebTabRoleCommmand();
         addRole.execute(context);

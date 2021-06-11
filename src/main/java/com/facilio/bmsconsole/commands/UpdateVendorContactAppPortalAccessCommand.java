@@ -20,12 +20,11 @@ public class UpdateVendorContactAppPortalAccessCommand extends FacilioCommand{
 		// TODO Auto-generated method stub
 		List<VendorContactContext> vendorContacts = (List<VendorContactContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		Map<Long, List<UpdateChangeSet>> changeSet = (Map<Long, List<UpdateChangeSet>>) context.get(FacilioConstants.ContextNames.CHANGE_SET);
-		Long roleId = (Long)context.get(FacilioConstants.ContextNames.ROLE_ID);
 		if(CollectionUtils.isNotEmpty(vendorContacts) && MapUtils.isNotEmpty(changeSet)) {
 			for(VendorContactContext vc : vendorContacts) {
 				List<UpdateChangeSet> changes = changeSet.get(vc.getId());
 				if(CollectionUtils.isNotEmpty(changes) && RecordAPI.checkChangeSet(changes, "isVendorPortalAccess", FacilioConstants.ContextNames.VENDOR_CONTACT)) {
-					PeopleAPI.updateVendorContactAppPortalAccess(vc, FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP, roleId);
+					PeopleAPI.updateVendorContactAppPortalAccess(vc, FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
 				}
 			}
 		}
