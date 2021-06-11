@@ -146,7 +146,7 @@ public class AddInductionModules extends SignUpData {
          stateFlowRuleContext.setRuleType(WorkflowRuleContext.RuleType.STATE_FLOW);
          WorkflowRuleAPI.addWorkflowRule(stateFlowRuleContext);
          
-         addStateflowTransitionContext(inductionModule, stateFlowRuleContext, "Inactivate", activeStatus, inActiveStatus,TransitionType.NORMAL,null);
+         addStateflowTransitionContext(inductionModule, stateFlowRuleContext, "Deactivate", activeStatus, inActiveStatus,TransitionType.NORMAL,null);
          addStateflowTransitionContext(inductionModule, stateFlowRuleContext, "Activate", inActiveStatus, activeStatus,TransitionType.NORMAL,null);
     }
 

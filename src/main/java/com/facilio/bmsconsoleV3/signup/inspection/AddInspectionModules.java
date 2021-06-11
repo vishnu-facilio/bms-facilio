@@ -1009,7 +1009,7 @@ public class AddInspectionModules extends SignUpData {
          stateFlowRuleContext.setRuleType(WorkflowRuleContext.RuleType.STATE_FLOW);
          WorkflowRuleAPI.addWorkflowRule(stateFlowRuleContext);
          
-         addStateflowTransitionContext(inspectionModule, stateFlowRuleContext, "Inactivate", activeStatus, inActiveStatus,TransitionType.NORMAL,null);
+         addStateflowTransitionContext(inspectionModule, stateFlowRuleContext, "Deactivate", activeStatus, inActiveStatus,TransitionType.NORMAL,null);
          addStateflowTransitionContext(inspectionModule, stateFlowRuleContext, "Activate", inActiveStatus, activeStatus,TransitionType.NORMAL,null);
     }
     
