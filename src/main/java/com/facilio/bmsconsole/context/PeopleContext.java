@@ -1,7 +1,10 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.accounts.dto.RoleApp;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+
+import java.util.Map;
 
 public class PeopleContext extends ModuleBaseWithCustomFields{
 
@@ -120,4 +123,15 @@ public class PeopleContext extends ModuleBaseWithCustomFields{
 		}
 		return false;
 	}
+
+	private Map<String, Long> rolesMap;
+
+	public Map<String, Long> getRolesMap() {
+		return rolesMap;
+	}
+
+	public void setRolesMap(Map<String, Long> rolesMap) {
+		this.rolesMap = rolesMap;
+	}
+
 }

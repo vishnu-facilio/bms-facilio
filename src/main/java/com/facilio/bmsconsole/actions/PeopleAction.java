@@ -103,16 +103,6 @@ public class PeopleAction extends FacilioAction{
 		this.peopleIds = peopleIds;
 	}
 
-	private long roleId;
-
-	public long getRoleId() {
-		return roleId;
-	}
-
-	public void setRoleId(long roleId) {
-		this.roleId = roleId;
-	}
-
 	public String addPeople() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(peopleList)) {
@@ -127,8 +117,6 @@ public class PeopleAction extends FacilioAction{
 		c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
 		c.getContext().put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 		c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
-		c.getContext().put(FacilioConstants.ContextNames.ROLE_ID, roleId);
-
 
 		for(PeopleContext ppl : peopleList) {
 			ppl.parseFormData();
@@ -241,8 +229,6 @@ public class PeopleAction extends FacilioAction{
 		if(!CollectionUtils.isEmpty(peopleList)) {
 			FacilioChain c = TransactionChainFactory.updatePeopleAppAccessChain();
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
-			c.getContext().put(FacilioConstants.ContextNames.ROLE_ID, roleId);
-
 
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, peopleList);
 			c.execute();

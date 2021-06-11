@@ -1,8 +1,11 @@
 package com.facilio.bmsconsoleV3.context;
 
+import com.facilio.accounts.dto.RoleApp;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
+
+import java.util.Map;
 
 public class V3PeopleContext extends V3Context {
     private static final long serialVersionUID = 1L;
@@ -118,5 +121,15 @@ public class V3PeopleContext extends V3Context {
             return isOccupantPortalAccess.booleanValue();
         }
         return false;
+    }
+
+    private Map<String, Long> rolesMap;
+
+    public Map<String, Long> getRolesMap() {
+        return rolesMap;
+    }
+
+    public void setRolesMap(Map<String, Long> rolesMap) {
+        this.rolesMap = rolesMap;
     }
 }

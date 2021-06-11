@@ -307,21 +307,20 @@ public class ApplicationApi {
         return ids;
     }
 
-    public static long addUserInApp(User user, boolean shouldThrowError, boolean shouldUpdateRole) throws Exception {
-        long userExisitsInApp = checkIfUserAlreadyPresentInApp(user.getUid(), user.getApplicationId(), user.getOrgId());
-        if (userExisitsInApp <= 0) {
-            return AccountUtil.getUserBean().addToORGUsersApps(user, true);
+    public static void addUserInApp(User user, boolean shouldThrowError) throws Exception {
+        OrgUserApp userExisitsInApp = checkIfUserAlreadyPresentInApp(user.getUid(), user.getApplicationId(), user.getOrgId());
+        if (userExisitsInApp == null) {
+            AccountUtil.getUserBean().addToORGUsersApps(user, true);
         } else {
             if (shouldThrowError) {
                 throw new IllegalArgumentException("User already exists in app");
             }
             else {
-                if(shouldUpdateRole) {
+                if(user.getRoleId() != userExisitsInApp.getRoleId()) {
                     updateRoleForUserInApp(user.getOuid(), user.getApplicationId(), user.getRoleId());
                 }
             }
         }
-        return userExisitsInApp;
     }
 
     public static int deleteUserFromApp(User user, long appId) throws Exception {
@@ -926,7 +925,7 @@ public class ApplicationApi {
         IAMAppUtil.addAppDomains(appDomains);
     }
 
-    public static long checkIfUserAlreadyPresentInApp(long userId, long applicationId, long orgId) throws Exception {
+    public static OrgUserApp checkIfUserAlreadyPresentInApp(long userId, long applicationId, long orgId) throws Exception {
 
         List<FacilioField> fields = new ArrayList<>();
         fields.addAll(AccountConstants.getOrgUserAppsFields());
@@ -946,10 +945,10 @@ public class ApplicationApi {
             IAMUserUtil.setIAMUserPropsv3(props, orgId, false);
             if (CollectionUtils.isNotEmpty(props)) {
                 Map<String, Object> map = props.get(0);
-                return (long) map.get("id");
+                return FieldUtil.getAsBeanFromMap(map, OrgUserApp.class);
             }
         }
-        return -1;
+        return null;
 
     }
 

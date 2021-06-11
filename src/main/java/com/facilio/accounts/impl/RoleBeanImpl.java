@@ -421,7 +421,7 @@ public class RoleBeanImpl implements RoleBean {
 
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(AccountConstants.getRolesAppsFields())
-				.table(ModuleFactory.getRollUpFieldsModule().getTableName())
+				.table(AccountConstants.getRolesAppsModule().getTableName())
 				.andCondition(CriteriaAPI.getCondition("ROLE_ID", "roleId", StringUtils.join(roleIds, ","), NumberOperators.EQUALS));
 
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -460,6 +460,20 @@ public class RoleBeanImpl implements RoleBean {
 				roleIds.add((Long)prop.get("roleId"));
 			}
 			return roleIds;
+		}
+		return null;
+	}
+
+	@Override
+	public List<OrgUserApp> getRolesAppsMappingForUser(Long ouId) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(AccountConstants.getOrgUserAppsFields())
+				.table(AccountConstants.getOrgUserAppsModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("ORG_USERID", "orgUserid", String.valueOf(ouId), NumberOperators.EQUALS));
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if(props != null && !props.isEmpty()) {
+			return FieldUtil.getAsBeanListFromMapList(props, OrgUserApp.class);
 		}
 		return null;
 	}

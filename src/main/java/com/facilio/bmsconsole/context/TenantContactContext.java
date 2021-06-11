@@ -1,6 +1,10 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.accounts.dto.RoleApp;
 import com.facilio.bmsconsole.tenant.TenantContext;
+
+import java.util.List;
+import java.util.Map;
 
 public class TenantContactContext extends PeopleContext{
 
@@ -52,5 +56,5 @@ public class TenantContactContext extends PeopleContext{
 		}
 		return false;
 	}
-	
+
 }

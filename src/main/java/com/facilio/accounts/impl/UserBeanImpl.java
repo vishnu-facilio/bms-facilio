@@ -153,7 +153,7 @@ public class UserBeanImpl implements UserBean {
 			user.setUserStatus(true);
 		
 			if(IAMUserUtil.addUser(user, orgId, identifier) > 0) {
-				if(ApplicationApi.checkIfUserAlreadyPresentInApp(user.getUid(), user.getApplicationId(), orgId) <= 0) {
+				if(ApplicationApi.checkIfUserAlreadyPresentInApp(user.getUid(), user.getApplicationId(), orgId) == null) {
 					createUserEntry(orgId, user, isSelfSignup, isEmailVerificationNeeded);
 				}
 				else {

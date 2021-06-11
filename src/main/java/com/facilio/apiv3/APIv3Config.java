@@ -738,8 +738,10 @@ public class APIv3Config {
 		            .afterSave(TransactionChainFactoryV3.getTenantContactAfterSaveChain())
                 .list()
                     .beforeFetch(new LoadTenantcontactLookupsCommandV3())
+                    .afterFetch(new FetchRolesForPeopleCommandV3())
                 .summary()
                     .beforeFetch(new LoadTenantcontactLookupsCommandV3())
+                    .afterFetch(new FetchRolesForPeopleCommandV3())
                 .build();
     }
 
@@ -754,8 +756,11 @@ public class APIv3Config {
                     .afterSave(TransactionChainFactoryV3.getVendorContactAfterSaveChain())
                 .list()
                     .beforeFetch(new LoadVendorContactLookupCommandV3())
+                    .afterFetch(new FetchRolesForPeopleCommandV3())
                 .summary()
                     .beforeFetch(new LoadVendorContactLookupCommandV3())
+                    .afterFetch(new FetchRolesForPeopleCommandV3())
+
                 .build();
     }
 
@@ -769,7 +774,10 @@ public class APIv3Config {
                     .beforeSave(new CheckforPeopleDuplicationCommandV3())
                     .afterSave(TransactionChainFactoryV3.getUpdateEmployeeAfterUpdateChain())
                 .list()
+                    .afterFetch(new FetchRolesForPeopleCommandV3())
                 .summary()
+                    .afterFetch(new FetchRolesForPeopleCommandV3())
+
                 .build();
     }
 
@@ -784,8 +792,10 @@ public class APIv3Config {
                     .afterSave(TransactionChainFactoryV3.getClientContactAfterSaveChain())
                 .list()
                     .beforeFetch(new LoadClientContactLookupCommandV3())
+                    .afterFetch(new FetchRolesForPeopleCommandV3())
                 .summary()
                     .beforeFetch(new LoadClientContactLookupCommandV3())
+                    .afterFetch(new FetchRolesForPeopleCommandV3())
                 .build();
     }
     @Module("workpermit")
