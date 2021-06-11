@@ -63,4 +63,13 @@ public class V3EmployeeContext extends V3PeopleContext{
 	public void setDepartment(V3DepartmentContext department) {
 		this.department = department;
 	}
+
+    private V3SpaceContext space;
+	
+	public V3SpaceContext getSpace() {
+		return space;
+	}
+	public void setSpace(V3SpaceContext space) {
+		this.space = space;
+	}
 }
