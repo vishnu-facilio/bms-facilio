@@ -45,6 +45,7 @@ import com.facilio.bmsconsoleV3.commands.itemtypes.SetItemTypesUnitCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobplan.AddJobPlanTasksCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.FillJobPlanDetailsCommand;
 import com.facilio.bmsconsoleV3.commands.moves.UpdateEmployeeInDesksCommandV3;
+import com.facilio.bmsconsoleV3.commands.moves.ValidateMovesCommand;
 import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.DeleteReceivableByPOIdV3;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.FetchPODetailsCommandV3;
@@ -119,6 +120,7 @@ import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
 import com.facilio.v3.commands.ConstructAddCustomActivityCommandV3;
+import com.facilio.v3.commands.ConstructUpdateCustomActivityCommandV3;
 import com.facilio.v3.commands.FetchChangeSetForCustomActivityCommand;
 
 import java.util.function.Supplier;
@@ -1171,7 +1173,7 @@ public class APIv3Config {
                 .create().beforeSave(new V3ValidateSpaceCommand(), new FetchChangeSetForCustomActivityCommand())
                 .afterSave(new CreateFacilityForDesksCommandV3(), new ConstructAddCustomActivityCommandV3(), new AddActivitiesCommandV3(FacilioConstants.ContextNames.CUSTOM_ACTIVITY))
                 .update().beforeSave(new FetchChangeSetForCustomActivityCommand())
-                .afterSave(new CreateFacilityForDesksCommandV3(), new ConstructAddCustomActivityCommandV3(), new AddActivitiesCommandV3(FacilioConstants.ContextNames.CUSTOM_ACTIVITY))
+                .afterSave(new CreateFacilityForDesksCommandV3(), new ConstructUpdateCustomActivityCommandV3(), new AddActivitiesCommandV3(FacilioConstants.ContextNames.CUSTOM_ACTIVITY))
                 .list()
                 .beforeFetch(new LoadDesksLookupCommand())
                 .summary()
@@ -1194,7 +1196,7 @@ public class APIv3Config {
                 .create().beforeSave(new FetchChangeSetForCustomActivityCommand())
                 .afterSave(new ConstructAddCustomActivityCommandV3(), new AddActivitiesCommandV3(FacilioConstants.ContextNames.CUSTOM_ACTIVITY))
                 .update().beforeSave(new FetchChangeSetForCustomActivityCommand())
-                .afterSave(new ConstructAddCustomActivityCommandV3(), new AddActivitiesCommandV3(FacilioConstants.ContextNames.CUSTOM_ACTIVITY))
+                .afterSave(new ConstructUpdateCustomActivityCommandV3(), new AddActivitiesCommandV3(FacilioConstants.ContextNames.CUSTOM_ACTIVITY))
                 .list()
                 .summary()
                 .build();
@@ -1203,10 +1205,10 @@ public class APIv3Config {
     @Module("moves")
     public static Supplier<V3Config> getMoves() {
         return () -> new V3Config(V3MovesContext.class, new ModuleCustomFieldCount30())
-                .create().beforeSave(new FetchChangeSetForCustomActivityCommand())
+                .create().beforeSave(new FetchChangeSetForCustomActivityCommand(), new ValidateMovesCommand())
                 .afterSave(new ConstructAddCustomActivityCommandV3(), new AddActivitiesCommandV3(FacilioConstants.ContextNames.CUSTOM_ACTIVITY), new UpdateEmployeeInDesksCommandV3())
                 .update().beforeSave(new FetchChangeSetForCustomActivityCommand())
-                .afterSave(new ConstructAddCustomActivityCommandV3(), new AddActivitiesCommandV3(FacilioConstants.ContextNames.CUSTOM_ACTIVITY), new UpdateEmployeeInDesksCommandV3())
+                .afterSave(new ConstructUpdateCustomActivityCommandV3(), new AddActivitiesCommandV3(FacilioConstants.ContextNames.CUSTOM_ACTIVITY), new UpdateEmployeeInDesksCommandV3())
                 .list()
                 .beforeFetch(new LoadMovesLookupCommand())
                 .summary()

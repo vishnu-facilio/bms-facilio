@@ -44,6 +44,9 @@ public interface ActivityType {
 		for (ActivityType type: EmailConversationThreadingActivityType.values()) {
 			activityMap.put(type.getValue(), type);
 		}
+		for (ActivityType type: DeskActivityType.values()) {
+			activityMap.put(type.getValue(), type);
+		}
 		// Max number = 83
 
 		return activityMap;

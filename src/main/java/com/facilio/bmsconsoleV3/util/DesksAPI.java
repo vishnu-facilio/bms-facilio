@@ -1,5 +1,8 @@
 package com.facilio.bmsconsoleV3.util;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.activity.ActivityContext;
+import com.facilio.activity.ActivityType;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.SpaceContext;
@@ -8,12 +11,16 @@ import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsoleV3.context.facilitybooking.*;
 import com.facilio.bmsconsoleV3.context.floorplan.V3DeskContext;
 import com.facilio.bmsconsoleV3.context.floorplan.V3MarkerdZonesContext;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import java.util.*;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONObject;
 
 public class DesksAPI {
 
@@ -225,5 +232,33 @@ public static void AddorDeleteFacilityForSpace(V3MarkerdZonesContext zone) throw
         
 		}
     }
-    
+public static void addDeskActivity(long parentId, long ttime, ActivityType type, JSONObject info) throws Exception {
+	ActivityContext activity = new ActivityContext();
+	activity.setParentId(parentId);
+
+	if (ttime == -1) {
+		activity.setTtime(System.currentTimeMillis());
+	}
+	else {
+		activity.setTtime(ttime);
+	}
+	activity.setType(type);
+	activity.setInfo(info);
+	activity.setDoneBy(AccountUtil.getCurrentUser());
+	List<ActivityContext> activities = new ArrayList<>();
+	activities.add(activity);
+	if (CollectionUtils.isNotEmpty(activities)) {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule activityModule = modBean.getModule(FacilioConstants.ContextNames.CUSTOM_ACTIVITY);
+        if (activityModule != null) {
+            InsertRecordBuilder<ActivityContext> insertBuilder = new InsertRecordBuilder<ActivityContext>()
+                    .fields(modBean.getAllFields(activityModule.getName()))
+                    .module(activityModule)
+                    .addRecords(activities)
+                    ;
+            insertBuilder.save();
+        }
+    }
+}
+
 }
