@@ -4,6 +4,7 @@ import static com.facilio.bmsconsole.page.factory.AssetPageFactory.addRelatedLis
 
 import java.util.Map;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -207,7 +208,9 @@ public class InspectionPageFactory extends PageFactory {
 		addRelatedListWidget(relatedListSec, module.getName(), module.getModuleId(), module.getDisplayName());
 		relatedList.addSection(relatedListSec);
 		
-		page.addTab(relatedList);
+		if(CollectionUtils.isNotEmpty(relatedListSec.getWidgets())) {
+			page.addTab(relatedList);
+		}
 		
         
         Page.Tab activityTab = page.new Tab("Activity");

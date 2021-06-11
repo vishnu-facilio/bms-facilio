@@ -4,6 +4,8 @@ import static com.facilio.bmsconsole.page.factory.AssetPageFactory.addRelatedLis
 
 import java.util.Map;
 
+import org.apache.commons.collections4.CollectionUtils;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
@@ -21,6 +23,8 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.qa.context.ResponseContext;
+
+import io.jsonwebtoken.lang.Collections;
 
 public class InductionPageFactory extends PageFactory {
 
@@ -107,7 +111,7 @@ public class InductionPageFactory extends PageFactory {
 	
 	public static Page getInductionResponsePage(InductionResponseContext record, FacilioModule module) throws Exception {
 		
-Page page = new Page();
+		Page page = new Page();
 		
         Page.Tab summaryTab = page.new Tab("Summary");
         Page.Section SummarySec = page.new Section();
@@ -139,8 +143,9 @@ Page page = new Page();
 		Section relatedListSec = page.new Section();
 		addRelatedListWidget(relatedListSec, module.getName(), module.getModuleId(), module.getDisplayName());
 		relatedList.addSection(relatedListSec);
-		
-		page.addTab(relatedList);
+		if(CollectionUtils.isNotEmpty(relatedListSec.getWidgets())) {
+			page.addTab(relatedList);
+		}
 		
         
         Page.Tab activityTab = page.new Tab("Activity");
