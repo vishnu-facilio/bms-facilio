@@ -3752,6 +3752,8 @@ public class FieldFactory {
         moduleName.setColumnName("MODULENAME");
         moduleName.setModule(module);
         fields.add(moduleName);
+        
+        fields.add(getField("appId", "APP_ID", module, FieldType.NUMBER));
 
         fields.add(getField("primary", "ISPRIMARY", module, FieldType.BOOLEAN));
 

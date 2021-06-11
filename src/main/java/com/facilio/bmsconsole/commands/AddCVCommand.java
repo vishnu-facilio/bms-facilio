@@ -8,7 +8,6 @@ import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.FacilioView.ViewType;
-import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
@@ -72,9 +71,6 @@ public class AddCVCommand extends FacilioCommand {
 					if(view.getName() == null)
 					{
 						view.setName(view.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
-					}
-					if (ViewFactory.getView(moduleObj, view.getName(), modBean) != null) {
-						throw new IllegalArgumentException("Name already taken");
 					}
 					view.setDefault(false);
 				}

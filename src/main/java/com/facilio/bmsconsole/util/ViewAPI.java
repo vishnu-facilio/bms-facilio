@@ -287,6 +287,9 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 	public static long addView(FacilioView view, long orgId) throws Exception {
 		view.setOrgId(orgId);
 		view.setId(-1);
+		if (view.getAppId() < 0) {
+			view.setAppId(ApplicationApi.getApplicationForLinkName(ApplicationLinkNames.FACILIO_MAIN_APP).getId());
+		}
 		try {
 			Criteria criteria = view.getCriteria();
 			if(criteria != null) {
@@ -331,7 +334,11 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			log.info("Exception occurred ", e);
-			throw e;
+			 if (e.getMessage().contains("Duplicate entry")) {
+				 throw new IllegalArgumentException("Name already taken");
+             } else {
+                 throw e;
+             }
 		}
 	}
 	

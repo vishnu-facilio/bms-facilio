@@ -47,6 +47,18 @@ public class FacilioView {
 		this.isHidden = view.isHidden;
 		this.primary = view.primary;
 		this.fieldDisplayNames = view.fieldDisplayNames;
+		this.appId = view.appId;
+	}
+	
+	private long appId = -1;
+	
+	
+	public long getAppId() {
+		return appId;
+	}
+
+	public void setAppId(long appId) {
+		this.appId = appId;
 	}
 
 	private long orgId = -1;
