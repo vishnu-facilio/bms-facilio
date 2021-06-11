@@ -359,7 +359,7 @@ public class V3PeopleAPI {
                 User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), appDomain.getIdentifier());
                 if((appLinkName.equals(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP) && existingPeople.isTenantPortalAccess())) {
                     if(person.getRoleId() <= 0){
-                        throw new IllegalArgumentException("Role is mandatory");
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Role is mandatory");
                     }
                     if(user != null) {
                         user.setAppDomain(appDomain);
@@ -425,7 +425,7 @@ public class V3PeopleAPI {
                 User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), appDomain.getIdentifier());
                 if((linkName.equals(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP) && existingPeople.isOccupantPortalAccess())) {
                     if(person.getRoleId() <= 0){
-                        throw new IllegalArgumentException("Role is mandatory");
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Role is mandatory");
                     }
                     if(user != null) {
                         user.setAppDomain(appDomain);
@@ -466,7 +466,7 @@ public class V3PeopleAPI {
                 User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), appDomain.getIdentifier());
                 if((linkName.equals(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP) && existingPeople.isVendorPortalAccess())) {
                     if(person.getRoleId() <= 0){
-                        throw new IllegalArgumentException("Role is mandatory");
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Role is mandatory");
                     }
                     if(user != null) {
                         user.setAppDomain(appDomain);
@@ -510,7 +510,7 @@ public class V3PeopleAPI {
                 User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), appDomain.getIdentifier());
                 if((linkname.equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP) && existingPeople.isAppAccess())) {
                     if(person.getRoleId() <= 0){
-                        throw new IllegalArgumentException("Role is mandatory");
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Role is mandatory");
                     }
                     if(user != null) {
                         user.setApplicationId(appId);
@@ -577,7 +577,7 @@ public class V3PeopleAPI {
                 User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), appDomain.getIdentifier());
                 if((linkName.equals(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP) && existingPeople.isClientPortalAccess())) {
                     if(roleId == null || roleId <= 0){
-                        throw new IllegalArgumentException("Role is mandatory");
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Role is mandatory");
                     }
                     if(user != null) {
                         user.setAppDomain(appDomain);
