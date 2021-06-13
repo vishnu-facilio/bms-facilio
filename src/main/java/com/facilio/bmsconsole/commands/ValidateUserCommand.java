@@ -1,5 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.accounts.bean.RoleBean;
+import com.facilio.accounts.dto.OrgUserApp;
+import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
@@ -7,8 +10,11 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ValidateUserCommand extends FacilioCommand {
     @Override
@@ -22,8 +28,18 @@ public class ValidateUserCommand extends FacilioCommand {
 
         User iamUser = AccountUtil.getUserBean().getUser(user.getOuid(), false);
         FacilioUtil.throwIllegalArgumentException(iamUser == null, MessageFormat.format("Invalid ouid for {0}", operation));
+
         //to be checked
-        //  FacilioUtil.throwIllegalArgumentException(AccountConstants.DefaultRole.SUPER_ADMIN.equals(iamUser.getRole().getName()), MessageFormat.format("SuperAdmin user cannot be used for {0}", operation));
+        RoleBean roleBean = AccountUtil.getRoleBean();
+        Role superAdminRole = roleBean.getRole(AccountUtil.getCurrentOrg().getOrgId(), AccountConstants.DefaultSuperAdmin.SUPER_ADMIN);
+        List<OrgUserApp> orgUserApps = roleBean.getRolesAppsMappingForUser(user.getOuid());
+        if(CollectionUtils.isEmpty(orgUserApps))  {
+            for(OrgUserApp orgUserApp : orgUserApps) {
+                if(orgUserApp.getRoleId() == superAdminRole.getRoleId()) {
+                    FacilioUtil.throwIllegalArgumentException(AccountConstants.DefaultRole.SUPER_ADMIN.equals(iamUser.getRole().getName()), MessageFormat.format("SuperAdmin user cannot be used for {0}", operation));
+                }
+            }
+        }
         user.setUid(iamUser.getUid());
         return false;
     }
