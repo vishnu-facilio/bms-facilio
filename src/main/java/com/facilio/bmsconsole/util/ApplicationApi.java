@@ -438,10 +438,10 @@ public class ApplicationApi {
             addApplicationLayout(mainLayout);
 
             Role admin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.PrevilegedRoleNames.ADMIN);
-            Role superAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.PrevilegedRoleNames.SUPER_ADMIN);
-
             addAppRoleMapping(admin.getRoleId(), mainApp.getId());
-            addAppRoleMapping(superAdmin.getRoleId(), mainApp.getId());
+
+            Role superAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.PrevilegedRoleNames.SUPER_ADMIN);
+            ApplicationApi.addAppRoleMapping(superAdmin.getRoleId(), mainApp.getId());
 
 
         }
@@ -1262,7 +1262,7 @@ public class ApplicationApi {
         return FieldUtil.getAsBeanListFromMapList(appbuilder.get(), ApplicationContext.class);
     }
 
-    private static void addAppRoleMapping(long roleId, long appId) throws Exception {
+    public static void addAppRoleMapping(long roleId, long appId) throws Exception {
         RoleApp roleApp = new RoleApp();
         roleApp.setRoleId(roleId);
         roleApp.setApplicationId(appId);
