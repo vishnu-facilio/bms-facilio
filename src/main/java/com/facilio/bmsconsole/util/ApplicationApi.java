@@ -437,8 +437,12 @@ public class ApplicationApi {
             ApplicationLayoutContext mainLayout = new ApplicationLayoutContext(mainApp.getId(), ApplicationLayoutContext.AppLayoutType.DUAL, ApplicationLayoutContext.LayoutDeviceType.WEB, FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
             addApplicationLayout(mainLayout);
 
-            Role admin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), "Administrator");
+            Role admin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.PrevilegedRoleNames.ADMIN);
+            Role superAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.PrevilegedRoleNames.SUPER_ADMIN);
+
             addAppRoleMapping(admin.getRoleId(), mainApp.getId());
+            addAppRoleMapping(superAdmin.getRoleId(), mainApp.getId());
+
 
         }
 

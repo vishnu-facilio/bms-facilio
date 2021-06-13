@@ -2647,7 +2647,8 @@ public class FacilioConstants {
 		public static final String CLIENT_ADMIN = "Client Admin";
 		public static final String OPERATIONS_ADMIN = "Operations Admin";
 		public static final String AGENT_ADMIN = "Agent Admin";
-
+		public static final String SUPER_ADMIN = "Super Administrator";
+		public static final String ADMIN = "=Administrator";
 	}
 	
 	public static class TableNames{
