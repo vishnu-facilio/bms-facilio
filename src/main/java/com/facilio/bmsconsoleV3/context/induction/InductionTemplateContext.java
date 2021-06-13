@@ -125,6 +125,7 @@ public class InductionTemplateContext extends QAndATemplateContext <InductionRes
         // Default props which will be overridden if called from Inspection scheduler
         response.setSourceType(InductionResponseContext.SourceType.MANNUAL.getIndex());
         response.setCreatedTime(System.currentTimeMillis());
+        response.setScheduledWorkStart(response.getCreatedTime());
         response.setStatus(InductionResponseContext.Status.OPEN.getIndex());
     }
 

@@ -106,6 +106,7 @@ public class InspectionTemplateContext extends QAndATemplateContext <InspectionR
         // Default props which will be overridden if called from Inspection scheduler
         response.setSourceType(InspectionResponseContext.SourceType.MANNUAL.getIndex());
         response.setCreatedTime(System.currentTimeMillis());
+        response.setScheduledWorkStart(response.getCreatedTime());
         response.setStatus(InspectionResponseContext.Status.OPEN.getIndex());
     }
 

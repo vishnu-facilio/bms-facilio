@@ -23,12 +23,17 @@ import com.facilio.bmsconsole.forms.FormRuleActionFieldsContext;
 import com.facilio.bmsconsole.forms.FormRuleContext;
 import com.facilio.bmsconsole.forms.FormRuleTriggerFieldContext;
 import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.templates.JSONTemplate;
+import com.facilio.bmsconsole.templates.Template.Type;
+import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.util.FormRuleAPI;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsole.util.RollUpFieldUtil;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.AbstractStateTransitionRuleContext;
+import com.facilio.bmsconsole.workflow.rule.ActionContext;
+import com.facilio.bmsconsole.workflow.rule.ActionType;
 import com.facilio.bmsconsole.workflow.rule.AbstractStateTransitionRuleContext.TransitionType;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
@@ -146,8 +151,8 @@ public class AddInductionModules extends SignUpData {
          stateFlowRuleContext.setRuleType(WorkflowRuleContext.RuleType.STATE_FLOW);
          WorkflowRuleAPI.addWorkflowRule(stateFlowRuleContext);
          
-         addStateflowTransitionContext(inductionModule, stateFlowRuleContext, "Deactivate", activeStatus, inActiveStatus,TransitionType.NORMAL,null);
-         addStateflowTransitionContext(inductionModule, stateFlowRuleContext, "Activate", inActiveStatus, activeStatus,TransitionType.NORMAL,null);
+         addStateflowTransitionContext(inductionModule, stateFlowRuleContext, "Deactivate", activeStatus, inActiveStatus,TransitionType.NORMAL,null,null);
+         addStateflowTransitionContext(inductionModule, stateFlowRuleContext, "Activate", inActiveStatus, activeStatus,TransitionType.NORMAL,null,null);
     }
 
 //	public void addDefaultScheduleJobs() throws Exception {
@@ -592,14 +597,17 @@ public class AddInductionModules extends SignUpData {
          Criteria completionCtriteria = new Criteria();
          completionCtriteria.addAndCondition(CriteriaAPI.getCondition("RESPONSE_STATUS", "responseStatus", ResponseContext.ResponseStatus.COMPLETED.getIndex()+"", EnumOperators.IS));
          
-         addStateflowTransitionContext(inductionModule, stateFlowRuleContext, "Start Induction", createdStatus, wipStatus,TransitionType.CONDITIONED,wipCtriteria);
-         addStateflowTransitionContext(inductionModule, stateFlowRuleContext, "End Induction", wipStatus, resolvedStatus,TransitionType.CONDITIONED,completionCtriteria);
-         addStateflowTransitionContext(inductionModule, stateFlowRuleContext, "Close", resolvedStatus, closed,TransitionType.NORMAL,null);
+         ActionContext startTimeaction = getUpdateActualStartTimeField();
+         ActionContext endTimeaction = getUpdateActualEndTimeField();
+         
+         addStateflowTransitionContext(inductionModule, stateFlowRuleContext, "Start Induction", createdStatus, wipStatus,TransitionType.CONDITIONED,wipCtriteria,Collections.singletonList(startTimeaction));
+         addStateflowTransitionContext(inductionModule, stateFlowRuleContext, "End Induction", wipStatus, resolvedStatus,TransitionType.CONDITIONED,completionCtriteria,Collections.singletonList(endTimeaction));
+         addStateflowTransitionContext(inductionModule, stateFlowRuleContext, "Close", resolvedStatus, closed,TransitionType.NORMAL,null,null);
          
     }
     
     
-    private StateflowTransitionContext addStateflowTransitionContext(FacilioModule module,StateFlowRuleContext parentStateFlow,String name,FacilioStatus fromStatus,FacilioStatus toStatus,AbstractStateTransitionRuleContext.TransitionType transitionType,Criteria criteria) throws Exception {
+    private StateflowTransitionContext addStateflowTransitionContext(FacilioModule module,StateFlowRuleContext parentStateFlow,String name,FacilioStatus fromStatus,FacilioStatus toStatus,AbstractStateTransitionRuleContext.TransitionType transitionType,Criteria criteria,List<ActionContext> actions) throws Exception {
     	
     	StateflowTransitionContext stateFlowTransitionContext = new StateflowTransitionContext();
     	stateFlowTransitionContext.setName(name);
@@ -617,6 +625,14 @@ public class AddInductionModules extends SignUpData {
         WorkflowRuleAPI.addWorkflowRule(stateFlowTransitionContext);
         
         
+        if (actions != null && !actions.isEmpty()) {
+			actions = ActionAPI.addActions(actions, stateFlowTransitionContext);
+			if(stateFlowTransitionContext != null) {
+				ActionAPI.addWorkflowRuleActionRel(stateFlowTransitionContext.getId(), actions);
+				stateFlowTransitionContext.setActions(actions);
+			}
+		}
+        
         return stateFlowTransitionContext;
     }
     
@@ -632,4 +648,62 @@ public class AddInductionModules extends SignUpData {
         return statusObj;
     }
     
+    private ActionContext getUpdateActualStartTimeField() {
+		// TODO Auto-generated method stub
+    	ActionContext action = new ActionContext();
+    	
+    	action.setActionType(ActionType.FIELD_CHANGE);
+    	
+    	JSONObject templateJson = new JSONObject();
+    	JSONObject fieldUpdateObject = new JSONObject();
+    	
+    	fieldUpdateObject.put("columnName", "Induction_Responses.ACTUAL_WORK_START");
+    	fieldUpdateObject.put("field", "actualWorkStart");
+    	fieldUpdateObject.put("isSpacePicker", false);
+    	fieldUpdateObject.put("value", 0);
+    	
+    	templateJson.put("fieldMatcher", FacilioUtil.getSingleTonJsonArray(fieldUpdateObject));
+    	
+    	action.setTemplateJson(templateJson);
+    	
+    	JSONTemplate template = new JSONTemplate();
+    	
+    	template.setContent("{\"actualWorkStart\":0}");
+    	template.setName("actualWorkStart Update");
+    	template.setType(Type.JSON);
+    	
+    	action.setTemplate(template);
+    	
+		return action;
+	}
+
+
+	private ActionContext getUpdateActualEndTimeField() {
+		// TODO Auto-generated method stub
+		ActionContext action = new ActionContext();
+    	
+    	action.setActionType(ActionType.FIELD_CHANGE);
+    	
+    	JSONObject templateJson = new JSONObject();
+    	JSONObject fieldUpdateObject = new JSONObject();
+    	
+    	fieldUpdateObject.put("columnName", "Induction_Responses.ACTUAL_WORK_END");
+    	fieldUpdateObject.put("field", "actualWorkEnd");
+    	fieldUpdateObject.put("isSpacePicker", false);
+    	fieldUpdateObject.put("value", 0);
+    	
+    	templateJson.put("fieldMatcher", FacilioUtil.getSingleTonJsonArray(fieldUpdateObject));
+    	
+    	action.setTemplateJson(templateJson);
+    	
+    	JSONTemplate template = new JSONTemplate();
+    	
+    	template.setContent("{\"actualWorkEnd\":0}");
+    	template.setName("actualWorkEnd Update");
+    	template.setType(Type.JSON);
+    	
+    	action.setTemplate(template);
+    	
+		return action;
+	}
 }
