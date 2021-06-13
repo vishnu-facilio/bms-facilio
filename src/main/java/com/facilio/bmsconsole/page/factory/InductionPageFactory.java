@@ -5,6 +5,8 @@ import static com.facilio.bmsconsole.page.factory.AssetPageFactory.addRelatedLis
 import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.page.Page;
@@ -38,6 +40,7 @@ public class InductionPageFactory extends PageFactory {
         
         PageWidget secondaryDetailsWidget = new PageWidget(PageWidget.WidgetType.INDUCTION_TEMPLATE_inductionsecondaryDetailsWidget);
         secondaryDetailsWidget.addToLayoutParams(SummarySec, 24, 6);
+        secondaryDetailsWidget.setWidgetParams(getInductionTemplateSummaryParams());
         SummarySec.addWidget(secondaryDetailsWidget);
         
         PageWidget InductionDetails = new PageWidget(PageWidget.WidgetType.INDUCTION_TEMPLATE_inductionDetails);
@@ -108,7 +111,53 @@ public class InductionPageFactory extends PageFactory {
         return page;
 	}
 	
+	private static JSONObject getInductionResponseSummaryParams() {
+		
+		JSONObject returnObj = new JSONObject();
+		
+		JSONArray fieldList = new JSONArray();
+		fieldList.add("description");
+		fieldList.add("siteId");
+		fieldList.add("responseStatus");
+		fieldList.add("moduleState");
+		fieldList.add("totalAnswered");
+		
+		fieldList.add("parent");
+		fieldList.add("assignedTo");
+		fieldList.add("scheduledWorkStart");
+		fieldList.add("scheduledWorkEnd");
+		fieldList.add("actualWorkStart");
+		fieldList.add("actualWorkEnd");
+		
+		fieldList.add("sysCreatedTime");
+		fieldList.add("sysCreatedBy");
+		fieldList.add("sysModifiedTime");
+		fieldList.add("sysModifiedBy");
+		
+		returnObj.put("fields", fieldList);
+		return returnObj;
+	}
 	
+	
+	private static JSONObject getInductionTemplateSummaryParams() {
+		JSONObject returnObj = new JSONObject();
+		
+		JSONArray fieldList = new JSONArray();
+		fieldList.add("description");
+		fieldList.add("siteApplyTo");
+		fieldList.add("sites");
+		fieldList.add("totalPages");
+		fieldList.add("totalQuestions");
+		fieldList.add("moduleState");
+		fieldList.add("sysCreatedTime");
+		fieldList.add("sysCreatedBy");
+		fieldList.add("sysModifiedTime");
+		fieldList.add("sysModifiedBy");
+		returnObj.put("fields", fieldList);
+		return returnObj;
+	}
+
+
 	public static Page getInductionResponsePage(InductionResponseContext record, FacilioModule module) throws Exception {
 		
 		Page page = new Page();
@@ -129,13 +178,14 @@ public class InductionPageFactory extends PageFactory {
         
         PageWidget secondaryDetailsWidget = new PageWidget(PageWidget.WidgetType.SECONDARY_DETAILS_WIDGET);
         secondaryDetailsWidget.addToLayoutParams(notesAndAttachmentSec, 24, 4);
+        secondaryDetailsWidget.setWidgetParams(getInductionResponseSummaryParams());
         notesAndAttachmentSec.addWidget(secondaryDetailsWidget);
         
-        PageWidget notesWidget = new PageWidget(PageWidget.WidgetType.COMMENT);
+        PageWidget notesWidget = new PageWidget(PageWidget.WidgetType.COMMENT,"Notes");
         notesWidget.addToLayoutParams(notesAndAttachmentSec, 24, 8);
         notesAndAttachmentSec.addWidget(notesWidget);
         
-        PageWidget attachmentWidget = new PageWidget(PageWidget.WidgetType.ATTACHMENT);
+        PageWidget attachmentWidget = new PageWidget(PageWidget.WidgetType.ATTACHMENT,"Documents");
         attachmentWidget.addToLayoutParams(notesAndAttachmentSec, 24, 6);
         notesAndAttachmentSec.addWidget(attachmentWidget);
         
@@ -165,5 +215,7 @@ public class InductionPageFactory extends PageFactory {
         
         return page;
 	}
+
+
 
 }

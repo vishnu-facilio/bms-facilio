@@ -196,11 +196,11 @@ public class InspectionPageFactory extends PageFactory {
         secondaryDetailsWidget.addToLayoutParams(notesAndAttachmentSec, 24, 4);
         notesAndAttachmentSec.addWidget(secondaryDetailsWidget);
         
-        PageWidget notesWidget = new PageWidget(PageWidget.WidgetType.COMMENT);
+        PageWidget notesWidget = new PageWidget(PageWidget.WidgetType.COMMENT,"Notes");
         notesWidget.addToLayoutParams(notesAndAttachmentSec, 24, 8);
         notesAndAttachmentSec.addWidget(notesWidget);
         
-        PageWidget attachmentWidget = new PageWidget(PageWidget.WidgetType.ATTACHMENT);
+        PageWidget attachmentWidget = new PageWidget(PageWidget.WidgetType.ATTACHMENT,"Documents");
         attachmentWidget.addToLayoutParams(notesAndAttachmentSec, 24, 6);
         notesAndAttachmentSec.addWidget(attachmentWidget);
         

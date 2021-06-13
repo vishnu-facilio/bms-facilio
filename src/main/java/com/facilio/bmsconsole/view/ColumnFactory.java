@@ -766,8 +766,10 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
 		columns.add(new ViewField("siteApplyTo", "Apply To"));
+		columns.add(new ViewField("sites", "Sites"));
 		columns.add(new ViewField("totalPages", "Total Pages"));
 		columns.add(new ViewField("totalQuestions", "Total Questions"));
+		columns.add(new ViewField("moduleState", "Status"));
 
 		return columns;
 	}
@@ -775,12 +777,17 @@ public class ColumnFactory {
 	private static List<ViewField> getDefaultInductionResponseColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
-		columns.add(new ViewField("responseStatus", "Completion Status"));
-		
 		columns.add(new ViewField("siteId", "Site"));
+		columns.add(new ViewField("responseStatus", "Completion Status"));
+		columns.add(new ViewField("moduleState", "Status"));
+		columns.add(new ViewField("totalAnswered", "Total Answered"));
+		columns.add(new ViewField("parent", "Induction Template"));
 		columns.add(new ViewField("assignedTo", "Assigned To"));
 		
-		columns.add(new ViewField("totalAnswered", "Total Answered"));
+		columns.add(new ViewField("scheduledWorkStart", "Scheduled Start"));
+		columns.add(new ViewField("scheduledWorkEnd", "Estimated End"));
+		columns.add(new ViewField("actualWorkStart", "Actual Start"));
+		columns.add(new ViewField("actualWorkEnd", "Actual End"));
 
 		return columns;
 	}
