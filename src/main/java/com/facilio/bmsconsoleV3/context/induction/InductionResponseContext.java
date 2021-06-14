@@ -46,7 +46,7 @@ public class InductionResponseContext extends ResponseContext <InductionTemplate
     private Long scheduledWorkEnd;
     private Long actualWorkStart;
     private Long actualWorkEnd;
-    private PeopleContext assignedTo;
+    private PeopleContext people;
     
     public void setStatus(Integer status) { // Using wrapper object to avoid -1 being inserted
     	this.status = status == null ? null : Status.valueOf(status);

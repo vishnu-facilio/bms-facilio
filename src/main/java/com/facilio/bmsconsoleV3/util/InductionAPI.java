@@ -54,7 +54,7 @@ public class InductionAPI {
 			for(SiteContext site : sites) {
 				InductionResponseContext response = template.constructResponse();
 				
-				response.setAssignedTo(people);
+				response.setPeople(people);
 				response.setSiteId(site.getId());
 				
 				responses.add(response);

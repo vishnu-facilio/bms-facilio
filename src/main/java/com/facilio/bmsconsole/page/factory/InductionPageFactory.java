@@ -124,7 +124,7 @@ public class InductionPageFactory extends PageFactory {
 		
 		fieldList.add("parent");
 		fieldList.add("vendor");
-		fieldList.add("assignedTo");
+		fieldList.add("people");
 		fieldList.add("scheduledWorkStart");
 		fieldList.add("scheduledWorkEnd");
 		fieldList.add("actualWorkStart");

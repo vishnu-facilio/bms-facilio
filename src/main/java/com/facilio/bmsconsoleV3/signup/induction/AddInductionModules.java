@@ -566,7 +566,7 @@ public class AddInductionModules extends SignUpData {
         resource.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.RESOURCE));
         fields.add(resource);
         
-        LookupField assignedTo = (LookupField) FieldFactory.getDefaultField("assignedTo", "Assigned To", "ASSIGNED_TO", FieldType.LOOKUP);
+        LookupField assignedTo = (LookupField) FieldFactory.getDefaultField("people", "People", "ASSIGNED_TO", FieldType.LOOKUP);
         assignedTo.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.PEOPLE));
         fields.add(assignedTo);
         

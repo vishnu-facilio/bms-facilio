@@ -42,8 +42,8 @@ public class InductionSupplementSupplyCommand extends FacilioCommand {
         if(fieldMap.containsKey("resource")) {
         	supplements.add((SupplementRecord) fieldMap.get("resource"));
         }
-        if(fieldMap.containsKey("assignedTo")) {
-        	supplements.add((SupplementRecord) fieldMap.get("assignedTo"));
+        if(fieldMap.containsKey("people")) {
+        	supplements.add((SupplementRecord) fieldMap.get("people"));
         }
         
 
