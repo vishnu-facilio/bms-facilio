@@ -144,6 +144,39 @@ public class InspectionPageFactory extends PageFactory {
 		return widgetParam;
 		
 	}
+	
+	private static JSONObject getInspectionResponseWidgetParams() {
+		JSONObject widgetParam = new JSONObject();
+		
+		JSONArray fieldList = new JSONArray();
+		
+		fieldList.add("description");
+		fieldList.add("siteId");
+		fieldList.add("responseStatus");
+		fieldList.add("moduleState");
+		fieldList.add("totalAnswered");
+		
+		fieldList.add("vendor");
+		fieldList.add("tenant");
+		fieldList.add("category");
+		fieldList.add("priority");
+		fieldList.add("assignmentGroup");
+		fieldList.add("assignedTo");
+		
+		fieldList.add("scheduledWorkStart");
+		fieldList.add("scheduledWorkEnd");
+		fieldList.add("actualWorkStart");
+		fieldList.add("actualWorkEnd");
+		
+		fieldList.add("sysCreatedTime");
+		fieldList.add("sysCreatedBy");
+		fieldList.add("sysModifiedTime");
+		fieldList.add("sysModifiedBy");
+		
+		widgetParam.put("fields", fieldList);
+		
+		return widgetParam;
+	}
 
 
 	private static JSONObject getdetailsWidgetParam1(InspectionTemplateContext record, FacilioModule module) {
@@ -194,7 +227,7 @@ public class InspectionPageFactory extends PageFactory {
         
         PageWidget secondaryDetailsWidget = new PageWidget(PageWidget.WidgetType.Q_AND_A_SECONDARY_DETAILS_WIDGET);
         secondaryDetailsWidget.addToLayoutParams(notesAndAttachmentSec, 24, 7);
-//        secondaryDetailsWidget.setWidgetParams(widgetParams);
+        secondaryDetailsWidget.setWidgetParams(getInspectionResponseWidgetParams());
         notesAndAttachmentSec.addWidget(secondaryDetailsWidget);
         
         PageWidget notesWidget = new PageWidget(PageWidget.WidgetType.COMMENT,"Notes");
@@ -231,5 +264,6 @@ public class InspectionPageFactory extends PageFactory {
         
         return page;
 	}
+
 
 }
