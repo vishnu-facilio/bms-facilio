@@ -2379,7 +2379,9 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
 		chain.addCommand(new GenerateSearchConditionCommand());
 		chain.addCommand(new AddVendorContactLookUpCommand());
-		chain.addCommand(new GenericGetModuleDataListCommand());
+        chain.addCommand(new FetchCustomLookupFieldsCommand());
+        chain.addCommand(new FetchCustomMultiRecordFieldsCommand());
+        chain.addCommand(new GenericGetModuleDataListCommand());
 		return chain;
 	}
 
