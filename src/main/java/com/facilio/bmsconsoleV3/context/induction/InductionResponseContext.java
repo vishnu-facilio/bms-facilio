@@ -67,7 +67,7 @@ public class InductionResponseContext extends ResponseContext <InductionTemplate
     public static enum SourceType implements FacilioIntEnum {
 		
 		PLANNED("Planned"),
-		MANNUAL("Mannual"),
+		MANNUAL("Manual"),
 		;
     	String name;
 		@Override

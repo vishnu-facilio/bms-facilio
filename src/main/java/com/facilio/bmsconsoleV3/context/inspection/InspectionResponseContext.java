@@ -68,7 +68,7 @@ public class InspectionResponseContext extends ResponseContext <InspectionTempla
     public static enum SourceType implements FacilioIntEnum {
 		
 		PLANNED("Planned"),
-		MANNUAL("Mannual"),
+		MANNUAL("Manual"),
 		;
     	String name;
 		@Override
