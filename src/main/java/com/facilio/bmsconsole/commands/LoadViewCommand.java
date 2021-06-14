@@ -366,7 +366,7 @@ public class LoadViewCommand extends FacilioCommand {
 				
 			}
 		}
-		else if(module.getName().equals("safetyPlan") || module.getName().equals("hazard") || module.getName().equals("precaution")) {
+		else if(module.getName().equals("safetyPlan") || module.getName().equals("hazard") || module.getName().equals("precaution")|| module.getName().equals("vendors")|| module.getName().equals("insurance")) {
 			List<FacilioField> systemFields = FieldFactory.getSystemPointFields(module);
 			for(FacilioField systemField : systemFields) {
 				fieldNames.put(systemField.getName(), systemField.getDisplayName());
