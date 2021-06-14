@@ -283,6 +283,11 @@ public class PageWidget {
 		
 		BILL_SITE_DETAILS("billSiteDetails"),
 		
+		INVENTORY_REQUEST_CARD1("inventoryrequestcard1"),
+		INVENTORY_REQUEST_CARD2("inventoryrequestcard2"),
+		INVENTORY_REQUEST_CARD3("inventoryrequestcard3"),
+
+		
 
 		
 		CONNNECTED_APP("connectedApp"),

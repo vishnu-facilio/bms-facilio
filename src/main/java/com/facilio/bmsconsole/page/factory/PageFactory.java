@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.HazardContext;
 import com.facilio.bmsconsole.context.InsuranceContext;
+import com.facilio.bmsconsole.context.InventoryRequestContext;
 import com.facilio.bmsconsole.context.MultiVariateAnomalyAlarm;
 import com.facilio.bmsconsole.context.OperationAlarmContext;
 import com.facilio.bmsconsole.context.PrecautionContext;
@@ -192,6 +193,8 @@ public class PageFactory {
 				return MovesPageFactory.getMovesPage((V3MovesContext) record, module);
 			case ContextNames.DEPARTMENT:
 				return DepartmentPageFactory.getDepartmentPage((V3DepartmentContext) record, module);
+			case ContextNames.INVENTORY_REQUEST:
+				return InventoryRequestPageFactory.getInventoryRequestPage((InventoryRequestContext) record, module);
 		}
 		if (module.getExtendModule() == null) {	// temp
 			// etisalat changes will be changed to standard method
