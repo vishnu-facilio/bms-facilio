@@ -322,8 +322,6 @@ public class PageWidget {
 		BOOKING_INTERNAL_ATTENDEES("bookingInternalAttendees"),
 		BOOKING_EXTERNAL_ATTENDEES("bookingExternalAttendees"),
 		
-		INSPECTION_TEMPLATE_secondaryDetailsWidget_1("secondaryDetailsWidget1"),
-		INSPECTION_TEMPLATE_secondaryDetailsWidget_2("secondaryDetailsWidget2"),
 		INSPECTION_TEMPLATE_inspectionDetails("inspectionDetails"),
 		INSPECTION_TEMPLATE_inspectionPageDetails("inspectionPageDetails"),
 		INSPECTION_TEMPLATE_inspectionTriggers("inspectionTriggers"),
@@ -333,7 +331,6 @@ public class PageWidget {
 		
 		INSPECTION_RESPONSE_WIDGET("inspectionResponseWidget"),
 		
-		INDUCTION_TEMPLATE_inductionsecondaryDetailsWidget("inductionSecondaryDetailsWidget"),
 		INDUCTION_TEMPLATE_inductionDetails("inductionDetails"),
 		INDUCTION_TEMPLATE_inductionPageDetails("inductionPageDetails"),
 		INDUCTION_TEMPLATE_inductionTriggers("inductionTriggers"),
@@ -342,6 +339,7 @@ public class PageWidget {
 		INDUCTION_TEMPLATE_history("inductionHistory"),
 		
 		INDUCTION_RESPONSE_WIDGET("inductionResponseWidget"),
+		Q_AND_A_SECONDARY_DETAILS_WIDGET("qandASecondaryDetailsWidget"),
 
 		// Service Request Module Widgets
 		SR_EMAIL_THREAD("srEmailThread"),

@@ -38,7 +38,7 @@ public class InductionPageFactory extends PageFactory {
         Page.Tab summaryTab = page.new Tab("summary");
         Page.Section SummarySec = page.new Section();
         
-        PageWidget secondaryDetailsWidget = new PageWidget(PageWidget.WidgetType.INDUCTION_TEMPLATE_inductionsecondaryDetailsWidget);
+        PageWidget secondaryDetailsWidget = new PageWidget(PageWidget.WidgetType.Q_AND_A_SECONDARY_DETAILS_WIDGET);
         secondaryDetailsWidget.addToLayoutParams(SummarySec, 24, 7);
         secondaryDetailsWidget.setWidgetParams(getInductionTemplateSummaryParams());
         SummarySec.addWidget(secondaryDetailsWidget);
@@ -177,7 +177,7 @@ public class InductionPageFactory extends PageFactory {
         Page.Tab notesAndAttachmentTab = page.new Tab("Notes & Information");
         Page.Section notesAndAttachmentSec = page.new Section();
         
-        PageWidget secondaryDetailsWidget = new PageWidget(PageWidget.WidgetType.SECONDARY_DETAILS_WIDGET);
+        PageWidget secondaryDetailsWidget = new PageWidget(PageWidget.WidgetType.Q_AND_A_SECONDARY_DETAILS_WIDGET);
         secondaryDetailsWidget.addToLayoutParams(notesAndAttachmentSec, 24, 7);
         secondaryDetailsWidget.setWidgetParams(getInductionResponseSummaryParams());
         notesAndAttachmentSec.addWidget(secondaryDetailsWidget);

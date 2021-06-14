@@ -41,14 +41,14 @@ public class InspectionPageFactory extends PageFactory {
         Page.Tab summaryTab = page.new Tab("summary");
         Page.Section SummarySec = page.new Section();
         
-        PageWidget secondaryDetailsWidget = new PageWidget(PageWidget.WidgetType.INSPECTION_TEMPLATE_secondaryDetailsWidget_1);
+        PageWidget secondaryDetailsWidget = new PageWidget(PageWidget.WidgetType.Q_AND_A_SECONDARY_DETAILS_WIDGET);
         secondaryDetailsWidget.addToLayoutParams(SummarySec, 24, 7);
         JSONObject widgetParams = getdetailsWidgetParam1(record,module);
         widgetParams.put("isConfigurationWidget", true);
         secondaryDetailsWidget.setWidgetParams(widgetParams);
         SummarySec.addWidget(secondaryDetailsWidget);
         
-        PageWidget secondaryDetailsWidget1 = new PageWidget(PageWidget.WidgetType.INSPECTION_TEMPLATE_secondaryDetailsWidget_2);
+        PageWidget secondaryDetailsWidget1 = new PageWidget(PageWidget.WidgetType.Q_AND_A_SECONDARY_DETAILS_WIDGET);
         secondaryDetailsWidget1.addToLayoutParams(SummarySec, 24, 7);
         widgetParams = getdetailsWidgetParam2(record,module);
         widgetParams.put("isConfigurationWidget", false);
@@ -192,8 +192,9 @@ public class InspectionPageFactory extends PageFactory {
         Page.Tab notesAndAttachmentTab = page.new Tab("Notes & Information");
         Page.Section notesAndAttachmentSec = page.new Section();
         
-        PageWidget secondaryDetailsWidget = new PageWidget(PageWidget.WidgetType.SECONDARY_DETAILS_WIDGET);
+        PageWidget secondaryDetailsWidget = new PageWidget(PageWidget.WidgetType.Q_AND_A_SECONDARY_DETAILS_WIDGET);
         secondaryDetailsWidget.addToLayoutParams(notesAndAttachmentSec, 24, 7);
+//        secondaryDetailsWidget.setWidgetParams(widgetParams);
         notesAndAttachmentSec.addWidget(secondaryDetailsWidget);
         
         PageWidget notesWidget = new PageWidget(PageWidget.WidgetType.COMMENT,"Notes");
