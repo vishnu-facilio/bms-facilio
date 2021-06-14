@@ -486,7 +486,9 @@ public class AddInductionModules extends SignUpData {
         FacilioField createdTime = (FacilioField) FieldFactory.getDefaultField("createdTime", "Created Time", "CREATED_TIME", FieldType.DATE_TIME);
         fields.add(createdTime);
         
-        
+        LookupField vendor = (LookupField) FieldFactory.getDefaultField("vendor", "Vendor", "VENDOR_ID", FieldType.LOOKUP);
+        vendor.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.VENDORS));
+        fields.add(vendor);
         
         FacilioField scheduledWorkStart = (FacilioField) FieldFactory.getDefaultField("scheduledWorkStart", "Scheduled Work Start", "SCHEDULED_WORK_START", FieldType.DATE_TIME);
         fields.add(scheduledWorkStart);

@@ -782,7 +782,9 @@ public class ColumnFactory {
 		columns.add(new ViewField("moduleState", "Status"));
 		columns.add(new ViewField("totalAnswered", "Total Answered"));
 		columns.add(new ViewField("parent", "Induction Template"));
-		columns.add(new ViewField("assignedTo", "Assigned To"));
+		
+		columns.add(new ViewField("vendor", "Vendor"));
+		columns.add(new ViewField("assignedTo", "People"));
 		
 		columns.add(new ViewField("scheduledWorkStart", "Scheduled Start"));
 		columns.add(new ViewField("scheduledWorkEnd", "Estimated End"));

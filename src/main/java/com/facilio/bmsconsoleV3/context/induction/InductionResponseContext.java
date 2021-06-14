@@ -37,6 +37,7 @@ public class InductionResponseContext extends ResponseContext <InductionTemplate
 	}
 	
     private InductionTemplateContext parent;
+    private VendorContext vendor;
     private Long createdTime;
     private Status status;
     private SourceType sourceType;

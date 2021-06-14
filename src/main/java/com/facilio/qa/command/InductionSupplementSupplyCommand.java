@@ -26,6 +26,7 @@ public class InductionSupplementSupplyCommand extends FacilioCommand {
 //        supplements.add((SupplementRecord) fieldMap.get("sysModifiedBy"));
         if( Constants.getModuleName(context).equals(FacilioConstants.Induction.INDUCTION_RESPONSE)) {
         	supplements.add((SupplementRecord) fieldMap.get("parent"));
+        	supplements.add((SupplementRecord) fieldMap.get("vendor"));
         }
         if( Constants.getModuleName(context).equals(FacilioConstants.Induction.INDUCTION_TEMPLATE)) {
         	if(fieldMap.containsKey("assetCategory")) {

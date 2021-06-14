@@ -123,6 +123,7 @@ public class InductionPageFactory extends PageFactory {
 		fieldList.add("totalAnswered");
 		
 		fieldList.add("parent");
+		fieldList.add("vendor");
 		fieldList.add("assignedTo");
 		fieldList.add("scheduledWorkStart");
 		fieldList.add("scheduledWorkEnd");
