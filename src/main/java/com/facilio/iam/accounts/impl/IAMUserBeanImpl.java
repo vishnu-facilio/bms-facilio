@@ -51,6 +51,7 @@ import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.facilio.accounts.dto.AppDomain.AppDomainType;
+import com.facilio.accounts.dto.AppDomain.GroupType;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.util.EncryptionUtil;
@@ -799,23 +800,29 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		insertTokenIntoSession(uid, null, jwt, IAMAccountConstants.SessionType.PWD_POLICY_PWD_RESET);
 		return jwt;
 	}
-
-	private boolean isUserPresentInCurrentDC(String username) throws Exception {
-		final List<Map<String, Object>> userForUsername = getUserData(username, -1, null);
-		return CollectionUtils.isNotEmpty(userForUsername);
+	
+	private boolean isUserPresentInCurrentDC(String username, GroupType groupType) throws Exception {
+		final List<Map<String, Object>> userInfo;
+		if (groupType == null || groupType == GroupType.FACILIO) {
+			userInfo = getUserData(username, -1, null);
+		}
+		else {
+			userInfo = getUserData(username, groupType);
+		}
+		return CollectionUtils.isNotEmpty(userInfo);
 	}
 
 	// Assumes single user per DC
-	@SneakyThrows
 	@Override
-	public int findDCForUser(String username) {
+	public int findDCForUser(String username, GroupType groupType) throws Exception {
 		List<FacilioField> fields = IAMAccountConstants.getDCFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
-				.table(IAMAccountConstants.getDCLookupModule().getTableName());
-
-		selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("userName"), username, StringOperators.IS));
+				.table(IAMAccountConstants.getDCLookupModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("userName"), username, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("groupType"), String.valueOf(groupType.getIndex()) , StringOperators.IS))
+				;
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -823,14 +830,27 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		}
 		throw new IllegalArgumentException("username not found");
 	}
+	
+	@Override
+	public long addDCLookup(Map<String, Object> props) throws Exception {
+		
+		List<FacilioField> fields = IAMAccountConstants.getDCFields();
+
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(IAMAccountConstants.getDCLookupModule().getTableName())
+				.fields(fields);
+		
+		return insertBuilder.insert(props);
+	}
 
 	@SneakyThrows
 	@Override
-	public Integer lookupUserDC(String username) {
-		if (isUserPresentInCurrentDC(username)) {
+	public Integer lookupUserDC(String username, GroupType groupType) {
+		if (isUserPresentInCurrentDC(username, groupType)) {
 			return null;
 		}
-		Integer dc = IamClient.lookupUserDC(username);
+		
+		Integer dc = IamClient.lookupUserDC(username, groupType);
 		if (dc == null || dc <= 0) {
 			throw new IllegalArgumentException("user name is missing");
 		}
@@ -1453,6 +1473,8 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		}
 		else {
 			addUserEntryV3(user, orgId);
+			// Get group type from AppDomain obj
+			IamClient.addUserToDC(user.getUserName(), null);
 		}
 		IAMUser userExistsForAnyOrg = getFacilioUserFromUserIdv3(user.getUid(), null);
 		if(userExistsForAnyOrg != null) {

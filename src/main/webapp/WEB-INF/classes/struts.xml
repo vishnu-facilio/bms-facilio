@@ -36,6 +36,7 @@
 	<include file="agent.xml"/>
 	<include file="apiv3.xml"/>
 	<include file="agentv3.xml"/>
+	<include file="internalv3.xml"/>
 	<include file="apiv4.xml"/>
 	<!-- Add packages here -->
 

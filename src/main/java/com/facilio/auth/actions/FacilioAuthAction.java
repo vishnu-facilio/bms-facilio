@@ -41,6 +41,7 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.AppDomain.AppDomainType;
+import com.facilio.accounts.dto.AppDomain.GroupType;
 import com.facilio.accounts.sso.AccountSSO;
 import com.facilio.accounts.sso.SSOUtil;
 import com.facilio.accounts.sso.SamlSSOConfig;
@@ -442,41 +443,33 @@ public class FacilioAuthAction extends FacilioAction {
 	}
 
 	@SneakyThrows
-	public String dclookup() {
-		try {
-			int dc = IAMUserUtil.findDCForUser(getUsername());
-			Map<String, Object> result = new HashMap<>();
-			result.put("code", 1);
-			result.put("dc", dc);
-			setJsonresponse(result);
-		}catch(Exception e) {
-			LOGGER.log(Level.INFO, "Exception while dc lookup ", e);
-			setJsonresponse("errorcode", "2");
-			return ERROR;
-		}
-		return SUCCESS;
-	}
-
-	@SneakyThrows
 	public String lookup() {
-		if (!StringUtils.isEmpty(getLookUpType())) {
-			if (getLookUpType().equals("service")) {
-				return servicelookup();
-			} else if (getLookUpType().equals("tenant")) {
-				return servicelookup();
-			} else if (getLookUpType().equals("vendor")) {
-				return vendorlookup();
-			}
-		}
-		
 		try {
-			String baseUrl = checkDcAndGetRedirectUrl();
+			
+			GroupType groupType = null;
+			if (!StringUtils.isEmpty(getLookUpType())) {
+				if (getLookUpType().equals("service") || getLookUpType().equals("tenant")) {
+					groupType = GroupType.TENANT_OCCUPANT_PORTAL;
+				} else if (getLookUpType().equals("vendor")) {
+					groupType = GroupType.VENDOR_PORTAL;
+				}
+			}
+			
+			String baseUrl = checkDcAndGetRedirectUrl(groupType);
 			if (baseUrl != null) {
 				Map<String, Object> result = new HashMap<>();
 				result.put("code", 2);
 				result.put("baseUrl", baseUrl);
 				setJsonresponse(result);
 				return SUCCESS;
+			}
+			
+			if (groupType != null) {
+				if (groupType == GroupType.TENANT_OCCUPANT_PORTAL) {
+					return servicelookup();
+				} else if (groupType == GroupType.VENDOR_PORTAL) {
+					return vendorlookup();
+				}
 			}
 	
 			String username = getUsername();
@@ -1674,8 +1667,8 @@ public class FacilioAuthAction extends FacilioAction {
 		}
 	}
 	
-	private String checkDcAndGetRedirectUrl() throws Exception {
-		Integer dc = IAMUserUtil.lookupUserDC(getUsername());
+	private String checkDcAndGetRedirectUrl(GroupType groupType) throws Exception {
+		Integer dc = IAMUserUtil.lookupUserDC(getUsername(), groupType);
 		if (dc == null) {
 			return null;
 		}

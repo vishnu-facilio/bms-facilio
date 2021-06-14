@@ -153,7 +153,7 @@ public class IAMAccountConstants {
 			fields.add(dclookup);
 			
 			FacilioField appType = new FacilioField();
-			appType.setName("appType");
+			appType.setName("groupType");
 			appType.setDataType(FieldType.NUMBER);
 			appType.setColumnName("APP_TYPE");
 			appType.setModule(module);

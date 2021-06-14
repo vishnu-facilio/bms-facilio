@@ -29,6 +29,7 @@ import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
+import com.facilio.accounts.dto.AppDomain.GroupType;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
@@ -393,17 +394,18 @@ public class IAMUserUtil {
 	}
 
 	// IAM client
-	public static Integer lookupUserDC(String userName) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().lookupUserDC(userName));
+	public static Integer lookupUserDC(String userName, GroupType groupType) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().lookupUserDC(userName, groupType));
 	}
-
 
 	// IAM
-	@SneakyThrows
-	public static Integer findDCForUser(String username) {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().findDCForUser(username));
+	public static Integer findDCForUser(String username, GroupType groupType) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().findDCForUser(username, groupType));
 	}
-
+	
+	public static long addDCLookup(Map<String, Object> props) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getTransactionalUserBean().addDCLookup(props));
+	}
 
 	public static boolean totpChecking(String code, long uid) throws Exception{
 		Map<String, Object> values = getUserMfaSettings(uid);
