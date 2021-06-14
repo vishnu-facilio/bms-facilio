@@ -30,6 +30,8 @@ public class AddVendorContactLookUpCommand extends FacilioCommand{
 		List<LookupField> additionaLookups = new ArrayList<LookupField>();
 		LookupField vendorField = (LookupField) fieldsAsMap.get("vendor");
 		additionaLookups.add(vendorField);
+		LookupField moduleStateField = (LookupField) fieldsAsMap.get("moduleState");
+		additionaLookups.add(moduleStateField);
 		context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST,additionaLookups);
 		return false;
 	}
