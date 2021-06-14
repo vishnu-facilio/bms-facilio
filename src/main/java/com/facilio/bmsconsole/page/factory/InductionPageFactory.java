@@ -96,16 +96,16 @@ public class InductionPageFactory extends PageFactory {
         insightTab.addSection(insightTabSec);
         page.addTab(insightTab);
 
-        Page.Tab historyTab = page.new Tab("History");
-        Page.Section historyTabSec = page.new Section();
+//        Page.Tab historyTab = page.new Tab("History");
+//        Page.Section historyTabSec = page.new Section();
         
-        PageWidget history = new PageWidget(PageWidget.WidgetType.INDUCTION_TEMPLATE_history);
-        history.addToLayoutParams(historyTabSec, 24, 3);
-        
-        historyTabSec.addWidget(history);
-        
-        historyTab.addSection(historyTabSec);
-        page.addTab(historyTab);
+//        PageWidget history = new PageWidget(PageWidget.WidgetType.INDUCTION_TEMPLATE_history);
+//        history.addToLayoutParams(historyTabSec, 24, 3);
+//        
+//        historyTabSec.addWidget(history);
+//        
+//        historyTab.addSection(historyTabSec);
+//        page.addTab(historyTab);
         
 
         return page;

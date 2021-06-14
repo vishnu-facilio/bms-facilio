@@ -857,22 +857,22 @@ public class AddInspectionModules extends SignUpData {
         
         
         
-        FacilioField scheduledWorkStart = (FacilioField) FieldFactory.getDefaultField("scheduledWorkStart", "Scheduled Work Start", "SCHEDULED_WORK_START", FieldType.DATE_TIME);
+        FacilioField scheduledWorkStart = (FacilioField) FieldFactory.getDefaultField("scheduledWorkStart", "Scheduled Start", "SCHEDULED_WORK_START", FieldType.DATE_TIME);
         fields.add(scheduledWorkStart);
         
-        FacilioField scheduledWorkEnd = (FacilioField) FieldFactory.getDefaultField("scheduledWorkEnd", "Scheduled Work End", "SCHDULED_WORK_END", FieldType.DATE_TIME);
+        FacilioField scheduledWorkEnd = (FacilioField) FieldFactory.getDefaultField("scheduledWorkEnd", "Scheduled End", "SCHDULED_WORK_END", FieldType.DATE_TIME);
         fields.add(scheduledWorkEnd);
         
-        FacilioField actualWorkStart = (FacilioField) FieldFactory.getDefaultField("actualWorkStart", "Actual Work Start", "ACTUAL_WORK_START", FieldType.DATE_TIME);
+        FacilioField actualWorkStart = (FacilioField) FieldFactory.getDefaultField("actualWorkStart", "Actual Start", "ACTUAL_WORK_START", FieldType.DATE_TIME);
         fields.add(actualWorkStart);
         
-        FacilioField actualWorkEnd = (FacilioField) FieldFactory.getDefaultField("actualWorkEnd", "Actual Work End", "ACTUAL_WORK_END", FieldType.DATE_TIME);
+        FacilioField actualWorkEnd = (FacilioField) FieldFactory.getDefaultField("actualWorkEnd", "Actual End", "ACTUAL_WORK_END", FieldType.DATE_TIME);
         fields.add(actualWorkEnd);
         
-        FacilioField resumedWorkStart = (FacilioField) FieldFactory.getDefaultField("resumedWorkStart", "Resumed Work Start", "RESUMED_WORK_START", FieldType.DATE_TIME);
+        FacilioField resumedWorkStart = (FacilioField) FieldFactory.getDefaultField("resumedWorkStart", "Resumed Start", "RESUMED_WORK_START", FieldType.DATE_TIME);
         fields.add(resumedWorkStart);
         
-        FacilioField  actualWorkDuration = (FacilioField) FieldFactory.getDefaultField("actualWorkDuration", "Actual Work Duration", "ACTUAL_WORK_DURATION", FieldType.NUMBER);
+        FacilioField  actualWorkDuration = (FacilioField) FieldFactory.getDefaultField("actualWorkDuration", "Actual Duration", "ACTUAL_WORK_DURATION", FieldType.NUMBER);
         fields.add(actualWorkDuration);
         
         LookupField moduleStateField = (LookupField) FieldFactory.getField("moduleState", "Status", "MODULE_STATE", module, FieldType.LOOKUP);
