@@ -443,6 +443,11 @@ public class ApplicationApi {
             Role superAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.PrevilegedRoleNames.SUPER_ADMIN);
             ApplicationApi.addAppRoleMapping(superAdmin.getRoleId(), mainApp.getId());
 
+            Role tech = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), "Technician");
+            ApplicationApi.addAppRoleMapping(tech.getRoleId(), mainApp.getId());
+
+            Role manager = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), "Manager");
+            ApplicationApi.addAppRoleMapping(manager.getRoleId(), mainApp.getId());
 
         }
 
