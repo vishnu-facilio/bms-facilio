@@ -563,6 +563,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("primaryContactEmail", "Primary Contact E-Mail"));
 		columns.add(new ViewField("primaryContactPhone", "Primary Contact Phone"));
 		columns.add(new ViewField("registeredBy", "Registered By"));
+		columns.add(new ViewField("moduleState", "Status"));
 		
 		return columns;
 	}
@@ -1433,6 +1434,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("vendor", "Vendor"));
 		//columns.add(new ViewField("isPortalAccessNeeded", "Portal Access"));
 		columns.add(new ViewField("isPrimaryContact", "Primary Contact"));
+		columns.add(new ViewField("moduleState", "Status"));
 		return columns;
 	}
 
