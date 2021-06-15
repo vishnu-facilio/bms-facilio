@@ -8,6 +8,10 @@ import lombok.Setter;
 public class ScoringRuleCondition extends RuleCondition {
     private Integer score;
 
+    public int scoreWithZeroOnNull() {
+        return score == null ? 0 : score;
+    }
+
     @Override
     public boolean hasAction() {
         return score != null;

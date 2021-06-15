@@ -14,6 +14,8 @@ import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.client.answers.MCQMultiAnswerContext;
 import com.facilio.qa.context.questions.MCQMultiContext;
 import com.facilio.qa.context.questions.MCQOptionContext;
+import com.facilio.qa.rules.pojo.ScoringRule;
+import com.facilio.qa.rules.pojo.ScoringRuleCondition;
 import com.facilio.time.DateRange;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
@@ -111,5 +113,10 @@ public class MCQMultiAnswerHandler extends AnswerHandler<MCQMultiAnswerContext> 
                                             .getAsProps();
 
         QAndAUtil.populateMCQSummary(props, questionMap, questionField, enumField, idField);
+    }
+
+    @Override
+    public int computeFullScore(List<ScoringRuleCondition> conditions) {
+        return ScoringRule.computeSumScore(conditions);
     }
 }

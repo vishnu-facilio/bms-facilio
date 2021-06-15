@@ -1,5 +1,7 @@
 package com.facilio.qa.rules.pojo;
 
+import com.facilio.qa.context.QuestionContext;
+import com.facilio.util.FacilioUtil;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
@@ -28,4 +30,13 @@ public abstract class QAndARule<Condition extends RuleCondition> {
     private String question;
     private List<Map<String, Object>> conditions;
 
+    public void beforeSaveHook(QuestionContext question) {
+
+    }
+
+    public final void beforeSave (QuestionContext question) {
+        FacilioUtil.throwIllegalArgumentException(questionId == null, "Question id cannot be null while calling before save");
+        FacilioUtil.throwIllegalArgumentException(question == null || question.getId() < 0 || question.getId() != questionId, "Invalid question passed to hook");
+        beforeSaveHook(question);
+    }
 }

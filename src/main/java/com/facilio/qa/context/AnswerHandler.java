@@ -1,8 +1,11 @@
 package com.facilio.qa.context;
 
+import com.facilio.qa.rules.pojo.ScoringRule;
+import com.facilio.qa.rules.pojo.ScoringRuleCondition;
 import com.facilio.time.DateRange;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.io.Serializable;
 import java.util.List;
@@ -27,6 +30,10 @@ public abstract class AnswerHandler<A extends ClientAnswerContext> implements Se
 
     public void setSummaryOfResponses(Long parentId, List<QuestionContext> questions, DateRange range) throws Exception {
 
+    }
+
+    public int computeFullScore (List<ScoringRuleCondition> conditions) {
+        return ScoringRule.computeMaxScore(conditions);
     }
 
 }
