@@ -551,6 +551,8 @@
 				class="com.facilio.bmsconsole.actions.ApprovalAction" method="getApprovalModuleDataList" />
 		<action name="activityList"
 				class="com.facilio.bmsconsole.actions.ApprovalAction" method="getApprovalModuleActivityList" />
+		<action name="modules"
+				class="com.facilio.bmsconsole.actions.ApprovalAction" method="getApprovalModules"/>
 	</package>
 
 	<package name="slaEntity" namespace="/api/v2/slaEntity" extends="v2Api">

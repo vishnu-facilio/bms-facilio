@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ApprovalRuleMetaContext;
@@ -7,8 +9,13 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ApprovalAction extends FacilioAction {
@@ -159,6 +166,16 @@ public class ApprovalAction extends FacilioAction {
 			setResult(FacilioConstants.ContextNames.PICKLIST, context.get(FacilioConstants.ContextNames.PICKLIST));
 			setResult(FacilioConstants.ContextNames.WORKFLOW_RULE, context.get(FacilioConstants.ContextNames.WORKFLOW_RULE));
 		}
+
+		return SUCCESS;
+	}
+
+	public String getApprovalModules() throws Exception {
+		FacilioChain chain = ReadOnlyChainFactory.getApprovalModules();
+		Context context = chain.getContext();
+		chain.execute();
+
+		setResult("modules", chain.getContext().get("modules"));
 
 		return SUCCESS;
 	}
