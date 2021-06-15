@@ -58,5 +58,16 @@ public class EmployeeContext extends PeopleContext{
 		return false;
 	}
 	
+    private SpaceContext space;
+
+	public SpaceContext getSpace() {
+		return space;
+	}
+
+	public void setSpace(SpaceContext space) {
+		this.space = space;
+	}
+	
+	
 	
 }
