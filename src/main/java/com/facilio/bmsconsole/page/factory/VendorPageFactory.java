@@ -1,35 +1,29 @@
 package com.facilio.bmsconsole.page.factory;
 
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
-
-import com.facilio.modules.FieldFactory;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
-import com.facilio.accounts.util.AccountConstants.UserType;
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.VendorContext;
-import com.facilio.bmsconsole.context.WorkPermitContext;
 import com.facilio.bmsconsole.page.Page;
-import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.Page.Tab;
+import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.PageWidget.WidgetType;
 import com.facilio.bmsconsole.page.WidgetGroup.WidgetGroupType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class VendorPageFactory extends PageFactory{
 	private static final Logger LOGGER = LogManager.getLogger(VendorPageFactory.class.getName());
@@ -199,6 +193,7 @@ public class VendorPageFactory extends PageFactory{
 			Section tab2Sec1 = page.new Section();
 			tab2.addSection(tab2Sec1);
 			addRelatedListWidgets(tab2Sec1, vendor.getModuleId());
+			addRelatedListWidget(tab2Sec1, "vendorDocuments", vendor.getModuleId());
 			if(CollectionUtils.isNotEmpty(tab2Sec1.getWidgets())) {
 				page.addTab(tab2);
 			}
@@ -216,9 +211,6 @@ public class VendorPageFactory extends PageFactory{
 				addRelatedListWidget(tab2Sec1, "contact", vendor.getModuleId());
 			}
 
-			Section tab2Sec2 = page.new Section();
-			tab2.addSection(tab2Sec2);
-			addRelatedListWidget(tab2Sec2, "vendorDocuments", vendor.getModuleId());
 
 			Section tab2Sec3 = page.new Section();
 			tab2.addSection(tab2Sec3);
