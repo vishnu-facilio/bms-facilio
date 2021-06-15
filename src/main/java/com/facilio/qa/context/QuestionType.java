@@ -3,7 +3,6 @@ package com.facilio.qa.context;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioStringEnum;
 import com.facilio.modules.FieldType;
-import com.facilio.qa.context.answers.*;
 import com.facilio.qa.context.client.answers.*;
 import com.facilio.qa.context.client.answers.handler.*;
 import com.facilio.qa.context.questions.*;
@@ -26,7 +25,7 @@ public enum QuestionType implements FacilioStringEnum {
             FacilioConstants.QAndA.Questions.HEADING_QUESTION,
             HeadingQuestionContext.class,
             null, // If Answer handler is null, it's assumed no answer is required for this question type
-            new HeadingQuestionHandler(),
+            HeadingQuestionHandler.INSTANCE,
             null,
             null
     ),

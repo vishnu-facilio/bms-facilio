@@ -10,7 +10,9 @@ import com.facilio.v3.context.Constants;
 import java.util.Collections;
 import java.util.List;
 
-public class HeadingQuestionHandler implements QuestionHandler<HeadingQuestionContext> {
+public enum HeadingQuestionHandler implements QuestionHandler<HeadingQuestionContext> {
+    INSTANCE;
+
     @Override
     public SaveOptions defaultSaveOption() throws Exception {
         SaveOptions options = new SaveOptions();
