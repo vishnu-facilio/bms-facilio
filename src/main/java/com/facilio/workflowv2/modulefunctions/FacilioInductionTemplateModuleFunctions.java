@@ -22,7 +22,7 @@ import com.facilio.modules.fields.SupplementRecord;
 public class FacilioInductionTemplateModuleFunctions extends FacilioModuleFunctionImpl {
 
 	
-	public void addInductions(Map<String,Object> globalParams,List<Object> objects) throws Exception {
+	public Object addInductions(Map<String,Object> globalParams,List<Object> objects) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -67,5 +67,7 @@ public class FacilioInductionTemplateModuleFunctions extends FacilioModuleFuncti
 		}
 		
 		InductionAPI.addInductionResponses(responses);
+		
+		return FieldUtil.getAsMapList(responses, InductionResponseContext.class);
 	}
 }
