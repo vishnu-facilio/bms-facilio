@@ -109,7 +109,7 @@ public class InductionTemplateContext extends QAndATemplateContext <InductionRes
 			}
 		}
 		else {
-			responses = InductionAPI.getInductionResponse(this,null);
+			responses = InductionAPI.getInductionResponse(this);
 		}
 		return responses;
     	

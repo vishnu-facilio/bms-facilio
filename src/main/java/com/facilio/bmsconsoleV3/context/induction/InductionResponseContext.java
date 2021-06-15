@@ -68,6 +68,7 @@ public class InductionResponseContext extends ResponseContext <InductionTemplate
 		
 		PLANNED("Planned"),
 		MANNUAL("Manual"),
+		WORKFLOW("Workflow"),
 		;
     	String name;
 		@Override

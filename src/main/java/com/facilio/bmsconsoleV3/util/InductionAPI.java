@@ -26,11 +26,12 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.SupplementRecord;
+import com.facilio.qa.QAndAUtil;
 
 public class InductionAPI {
 	
 	
-	public static List<InductionResponseContext> getInductionResponse(InductionTemplateContext template,PeopleContext people) throws Exception {
+	public static List<InductionResponseContext> getInductionResponse(InductionTemplateContext template) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -54,7 +55,6 @@ public class InductionAPI {
 			for(SiteContext site : sites) {
 				InductionResponseContext response = template.constructResponse();
 				
-				response.setPeople(people);
 				response.setSiteId(site.getId());
 				
 				responses.add(response);
@@ -85,9 +85,7 @@ public class InductionAPI {
 	
 	public static void addInductionResponses(List<InductionResponseContext> responses) throws Exception {
 		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
-		V3RecordAPI.addRecord(false, responses, modBean.getModule(FacilioConstants.Induction.INDUCTION_RESPONSE), modBean.getAllFields(FacilioConstants.Induction.INDUCTION_RESPONSE));
+		QAndAUtil.addRecordViaV3Chain(FacilioConstants.Induction.INDUCTION_RESPONSE, responses);
 	}
 	
 	public static List<InductionTriggerContext> getInductionTriggerByScheduer(Long schedulerId,boolean fetchRelated) throws Exception {
