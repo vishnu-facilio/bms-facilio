@@ -108,16 +108,16 @@ public class InspectionPageFactory extends PageFactory {
         insightTab.addSection(insightTabSec);
         page.addTab(insightTab);
 
-//        Page.Tab historyTab = page.new Tab("History");
-//        Page.Section historyTabSec = page.new Section();
-//        
-//        PageWidget history = new PageWidget(PageWidget.WidgetType.INSPECTION_TEMPLATE_history);
-//        history.addToLayoutParams(historyTabSec, 24, 3);
-//        
-//        historyTabSec.addWidget(history);
-//        
-//        historyTab.addSection(historyTabSec);
-//        page.addTab(historyTab);
+        Page.Tab historyTab = page.new Tab("History");
+        Page.Section historyTabSec = page.new Section();
+        
+        PageWidget history = new PageWidget(PageWidget.WidgetType.INSPECTION_TEMPLATE_history);
+        history.addToLayoutParams(historyTabSec, 24, 3);
+        
+        historyTabSec.addWidget(history);
+        
+        historyTab.addSection(historyTabSec);
+        page.addTab(historyTab);
         
 
         return page;
@@ -251,16 +251,16 @@ public class InspectionPageFactory extends PageFactory {
 		}
 		
         
-        Page.Tab activityTab = page.new Tab("Activity");
-        Page.Section activitySec = page.new Section();
-        
-        PageWidget activityWidget = new PageWidget(PageWidget.WidgetType.ACTIVITY);
-        activityWidget.addToLayoutParams(activitySec, 24, 3);
-        activitySec.addWidget(activityWidget);
-        
-        activityTab.addSection(activitySec);
-        
-        page.addTab(activityTab);
+//        Page.Tab activityTab = page.new Tab("Activity");
+//        Page.Section activitySec = page.new Section();
+//        
+//        PageWidget activityWidget = new PageWidget(PageWidget.WidgetType.ACTIVITY);
+//        activityWidget.addToLayoutParams(activitySec, 24, 3);
+//        activitySec.addWidget(activityWidget);
+//        
+//        activityTab.addSection(activitySec);
+//        
+//        page.addTab(activityTab);
         
         return page;
 	}
