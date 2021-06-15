@@ -1663,8 +1663,13 @@ public class FacilioAuthAction extends FacilioAction {
 				response.setHeader("Set-Cookie", cookieString);
 			}
 		} else if("stage".equals(FacilioProperties.getEnvironment()) && !isMobile) {
-			var cookieString = "fc.idToken.facilio="+authtoken+"; Max-Age=604800; Path=/; Secure; HttpOnly; SameSite=None";
-			response.setHeader("Set-Cookie", cookieString);
+			if (portalUser) {
+				var cookieString = "fc.idToken.facilioportal="+authtoken+"; Max-Age=604800; Path=/; Secure; HttpOnly; SameSite=None";
+				response.setHeader("Set-Cookie", cookieString);
+			} else {
+				var cookieString = "fc.idToken.facilio="+authtoken+"; Max-Age=604800; Path=/; Secure; HttpOnly; SameSite=None";
+				response.setHeader("Set-Cookie", cookieString);
+			}
 		} else {
 			response.addCookie(cookie);
 		}
