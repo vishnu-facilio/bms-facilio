@@ -33,7 +33,7 @@ public class AddOrUpdateApplicationCommand extends FacilioCommand {
 				add(FieldUtil.getAsProperties(application), ModuleFactory.getApplicationModule(), FieldFactory.getApplicationFields());
 				if(addLayout != null && addLayout) {
 					ApplicationContext app = ApplicationApi.getApplicationForLinkName(application.getLinkName());
-					ApplicationLayoutContext layout = new ApplicationLayoutContext(app.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.WEB, app.getLinkName());
+					ApplicationLayoutContext layout = new ApplicationLayoutContext(app.getId(), ApplicationLayoutContext.AppLayoutType.DUAL, ApplicationLayoutContext.LayoutDeviceType.WEB, app.getLinkName());
 					ApplicationApi.addApplicationLayout(layout);
 				}
 			}
