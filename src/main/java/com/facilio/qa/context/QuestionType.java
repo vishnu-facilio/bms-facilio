@@ -2,11 +2,14 @@ package com.facilio.qa.context;
 
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioStringEnum;
+import com.facilio.modules.FieldType;
 import com.facilio.qa.context.answers.*;
 import com.facilio.qa.context.client.answers.*;
 import com.facilio.qa.context.client.answers.handler.*;
 import com.facilio.qa.context.questions.*;
 import com.facilio.qa.context.questions.handler.*;
+import com.facilio.qa.rules.pojo.DefaultRuleHandler;
+import com.facilio.qa.rules.pojo.MCQRuleHandler;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
@@ -19,20 +22,90 @@ import java.util.Map;
 @Getter
 @Log4j
 public enum QuestionType implements FacilioStringEnum {
-    HEADING (FacilioConstants.QAndA.Questions.HEADING_QUESTION, HeadingQuestionContext.class, null, new HeadingQuestionHandler()), // If Answer handler is null, it's assumed no answer is required for this question type
-    NUMBER ( FacilioConstants.QAndA.Questions.NUMBER_QUESTION, NumberQuestionContext.class, new NumberAnswerHandler(NumberAnswerContext.class), new CommonNumberQuestionHandler<>(NumberQuestionContext::getMinValue, NumberQuestionContext::getMaxValue)),
-    DECIMAL (FacilioConstants.QAndA.Questions.DECIMAL_QUESTION, DecimalQuestionContext.class, new DecimalAnswerHandler(DecimalAnswerContext.class), new CommonNumberQuestionHandler<>(DecimalQuestionContext::getMinValue, DecimalQuestionContext::getMaxValue)),
+    HEADING (
+            FacilioConstants.QAndA.Questions.HEADING_QUESTION,
+            HeadingQuestionContext.class,
+            null, // If Answer handler is null, it's assumed no answer is required for this question type
+            new HeadingQuestionHandler(),
+            null,
+            null
+    ),
+    NUMBER (
+            FacilioConstants.QAndA.Questions.NUMBER_QUESTION,
+            NumberQuestionContext.class,
+            new NumberAnswerHandler(NumberAnswerContext.class),
+            new CommonNumberQuestionHandler<>(NumberQuestionContext::getMinValue, NumberQuestionContext::getMaxValue),
+            DefaultRuleHandler.INSTANCE,
+            FieldType.NUMBER
+    ),
+    DECIMAL (
+            FacilioConstants.QAndA.Questions.DECIMAL_QUESTION,
+            DecimalQuestionContext.class,
+            new DecimalAnswerHandler(DecimalAnswerContext.class),
+            new CommonNumberQuestionHandler<>(DecimalQuestionContext::getMinValue, DecimalQuestionContext::getMaxValue),
+            DefaultRuleHandler.INSTANCE,
+            FieldType.DECIMAL
+    ),
 
-    SHORT_ANSWER (FacilioConstants.QAndA.Questions.SHORT_STRING_QUESTION, ShortStringQuestionContext.class, new StringAnswerHandler(StringAnswerContext.class, false), new CommonStringQuestionHandler<>(ShortStringQuestionContext::getMaxLength, CommonStringQuestionHandler.SHORT_STRING_MAX_LENGTH)),
-    LONG_ANSWER (FacilioConstants.QAndA.Questions.LONG_STRING_QUESTION, LongStringQuestionContext.class, new StringAnswerHandler(StringAnswerContext.class, true ), new CommonStringQuestionHandler<>(LongStringQuestionContext::getMaxLength, CommonStringQuestionHandler.BIG_STRING_MAX_LENGTH)),
-    DATE_TIME (FacilioConstants.QAndA.Questions.DATE_TIME_QUESTION, DateTimeQuestionContext.class, new DateTimeAnswerHandler(DateTimeAnswerContext.class)),
+    SHORT_ANSWER (
+            FacilioConstants.QAndA.Questions.SHORT_STRING_QUESTION,
+            ShortStringQuestionContext.class,
+            new StringAnswerHandler(StringAnswerContext.class, false),
+            new CommonStringQuestionHandler<>(ShortStringQuestionContext::getMaxLength, CommonStringQuestionHandler.SHORT_STRING_MAX_LENGTH),
+            DefaultRuleHandler.INSTANCE,
+            FieldType.STRING
+    ),
+    LONG_ANSWER (
+            FacilioConstants.QAndA.Questions.LONG_STRING_QUESTION,
+            LongStringQuestionContext.class,
+            new StringAnswerHandler(StringAnswerContext.class, true ),
+            new CommonStringQuestionHandler<>(LongStringQuestionContext::getMaxLength, CommonStringQuestionHandler.BIG_STRING_MAX_LENGTH),
+            DefaultRuleHandler.INSTANCE,
+            FieldType.BIG_STRING
+    ),
+    DATE_TIME (
+            FacilioConstants.QAndA.Questions.DATE_TIME_QUESTION,
+            DateTimeQuestionContext.class,
+            new DateTimeAnswerHandler(DateTimeAnswerContext.class),
+            DefaultRuleHandler.INSTANCE,
+            FieldType.DATE_TIME
+    ),
 
-    MULTIPLE_CHOICE_ONE (FacilioConstants.QAndA.Questions.MCQ_SINGLE, MCQSingleContext.class, new MCQSingleAnswerHandler(MCQSingleAnswerContext.class), new MCQHandler<MCQSingleContext>(FacilioConstants.QAndA.Questions.MCQ_SINGLE_OPTIONS)),
-    MULTIPLE_CHOICE_MANY (FacilioConstants.QAndA.Questions.MCQ_MULTI, MCQMultiContext.class, new MCQMultiAnswerHandler(MCQMultiAnswerContext.class), new MCQHandler<MCQMultiContext>(FacilioConstants.QAndA.Questions.MCQ_MULTI_OPTIONS)),
-    FILE_UPLOAD (FacilioConstants.QAndA.Questions.FILE_UPLOAD_QUESTION, FileUploadQuestionContext.class, new FileUploadAnswerHandler(FileUploadAnswerContext.class)),
+    MULTIPLE_CHOICE_ONE (
+            FacilioConstants.QAndA.Questions.MCQ_SINGLE,
+            MCQSingleContext.class,
+            new MCQSingleAnswerHandler(MCQSingleAnswerContext.class),
+            new MCQHandler<MCQSingleContext>(FacilioConstants.QAndA.Questions.MCQ_SINGLE_OPTIONS),
+            MCQRuleHandler.INSTANCE
+    ),
+    MULTIPLE_CHOICE_MANY (
+            FacilioConstants.QAndA.Questions.MCQ_MULTI,
+            MCQMultiContext.class,
+            new MCQMultiAnswerHandler(MCQMultiAnswerContext.class),
+            new MCQHandler<MCQMultiContext>(FacilioConstants.QAndA.Questions.MCQ_MULTI_OPTIONS),
+            MCQRuleHandler.INSTANCE
+    ),
+    FILE_UPLOAD (
+            FacilioConstants.QAndA.Questions.FILE_UPLOAD_QUESTION,
+            FileUploadQuestionContext.class,
+            new FileUploadAnswerHandler(FileUploadAnswerContext.class),
+            null
+    ),
 
-    MULTI_FILE_UPLOAD (FacilioConstants.QAndA.Questions.MULTI_FILE_UPLOAD_QUESTION, MultiFileUploadQuestionContext.class, new MultiFileUploadHandler(MultiFileUploadAnswerContext.class)),
-    BOOLEAN (FacilioConstants.QAndA.Questions.BOOLEAN_QUESTION, BooleanQuestionContext.class, new BooleanAnswerHandler(BooleanAnswerContext.class), new BooleanQuestionHandler())
+    MULTI_FILE_UPLOAD (
+            FacilioConstants.QAndA.Questions.MULTI_FILE_UPLOAD_QUESTION,
+            MultiFileUploadQuestionContext.class,
+            new MultiFileUploadHandler(MultiFileUploadAnswerContext.class),
+            null
+    ),
+    BOOLEAN (
+            FacilioConstants.QAndA.Questions.BOOLEAN_QUESTION,
+            BooleanQuestionContext.class,
+            new BooleanAnswerHandler(BooleanAnswerContext.class),
+            new BooleanQuestionHandler(),
+            DefaultRuleHandler.INSTANCE,
+            FieldType.BOOLEAN
+    )
     ;
 
     private static final Map<String, QuestionType> MODULE_VS_TYPE = initModuleVsTypeMap();
@@ -40,16 +113,28 @@ public enum QuestionType implements FacilioStringEnum {
     private final Class<? extends QuestionContext> subClass;
     private final AnswerHandler answerHandler;
     private final QuestionHandler questionHandler;
+    private final RuleHandler ruleHandler;
+    private final FieldType answerFieldType;
 
-    private <Q extends QuestionContext, A extends ClientAnswerContext> QuestionType (String subModuleName, Class<Q> subClass, AnswerHandler<A> answerHandler) {
-        this (subModuleName, subClass, answerHandler, null);
+    private <Q extends QuestionContext, A extends ClientAnswerContext> QuestionType (String subModuleName, Class<Q> subClass, AnswerHandler<A> answerHandler, RuleHandler ruleHandler) {
+        this (subModuleName, subClass, answerHandler, ruleHandler, null);
     }
 
-    private <Q extends QuestionContext, A extends ClientAnswerContext> QuestionType (@NonNull String subModuleName, @NonNull Class<Q> subClass, AnswerHandler<A> answerHandler, QuestionHandler<Q> questionHandler) {
+    private <Q extends QuestionContext, A extends ClientAnswerContext> QuestionType (String subModuleName, Class<Q> subClass, AnswerHandler<A> answerHandler, RuleHandler ruleHandler, FieldType answerFieldType) {
+        this (subModuleName, subClass, answerHandler, null, ruleHandler, answerFieldType);
+    }
+
+    private <Q extends QuestionContext, A extends ClientAnswerContext> QuestionType (@NonNull String subModuleName, @NonNull Class<Q> subClass, AnswerHandler<A> answerHandler, QuestionHandler<Q> questionHandler, RuleHandler ruleHandler) {
+        this (subModuleName, subClass, answerHandler, questionHandler, ruleHandler, null);
+    }
+
+    private <Q extends QuestionContext, A extends ClientAnswerContext> QuestionType (@NonNull String subModuleName, @NonNull Class<Q> subClass, AnswerHandler<A> answerHandler, QuestionHandler<Q> questionHandler, RuleHandler ruleHandler, FieldType answerFieldType) {
         this.subClass = subClass;
         this.subModuleName = subModuleName;
         this.answerHandler = answerHandler;
         this.questionHandler = questionHandler;
+        this.ruleHandler = ruleHandler;
+        this.answerFieldType = answerFieldType;
     }
 
     public static QuestionType valueOf(int value) {
@@ -71,5 +156,13 @@ public enum QuestionType implements FacilioStringEnum {
         }
         LOGGER.info(MessageFormat.format("Init module vs type called. Time taken : {0}", (System.currentTimeMillis() - time)));
         return Collections.unmodifiableMap(moduleVsType);
+    }
+
+    public boolean isOperatorSupportedForRules() {
+        return isRuleSupported() && getAnswerFieldType() != null && !getAnswerFieldType().isMultiRecord();
+    }
+
+    public boolean isRuleSupported() {
+        return ruleHandler != null;
     }
 }

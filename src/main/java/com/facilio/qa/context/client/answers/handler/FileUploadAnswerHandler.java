@@ -1,5 +1,6 @@
 package com.facilio.qa.context.client.answers.handler;
 
+import com.facilio.modules.FieldType;
 import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.AnswerHandler;
 import com.facilio.qa.context.QuestionContext;
@@ -32,10 +33,5 @@ public class FileUploadAnswerHandler extends AnswerHandler<FileUploadAnswerConte
     @Override
     public boolean checkIfAnswerIsNull (AnswerContext answer) throws Exception {
         return answer.getFileAnswerId() == null;
-    }
-
-    @Override
-    public boolean checkIfAnswerIsNull (FileUploadAnswerContext answer, QuestionContext question) throws Exception {
-        return answer.getAnswer().getId() == null;
     }
 }

@@ -78,4 +78,8 @@ public class QuestionContext extends V3Context {
             return typeEnum.getSubClass();
         }
     }
+
+    public boolean isRuleSupported() {
+        return questionType == null ? false : questionType.isRuleSupported();
+    }
 }

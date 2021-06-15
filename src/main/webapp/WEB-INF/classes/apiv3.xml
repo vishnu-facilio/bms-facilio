@@ -287,6 +287,29 @@
                 method="validateAnswers">
         </action>
     </package>
+
+    <package name="qandaRules" namespace="/api/v3/qandarules" extends="v3Api">
+        <action name="operators"
+                class="com.facilio.qa.rules.actions.QAndARuleAction"
+                method="fetchOperators">
+        </action>
+    </package>
+
+    <package name="scoringRulesAdd" namespace="/api/v3/scoringrules/add" extends="v3Api">
+        <action name="*"
+                class="com.facilio.qa.rules.actions.QAndARuleAction"
+                method="addScoringRules">
+            <param name="pageId">{1}</param>
+        </action>
+    </package>
+
+    <package name="scoringRulesFetch" namespace="/api/v3/scoringrules/list" extends="v3Api">
+        <action name="*"
+                class="com.facilio.qa.rules.actions.QAndARuleAction"
+                method="fetchScoringRules">
+            <param name="pageId">{1}</param>
+        </action>
+    </package>
     
     <package name="floorplan" namespace="/api/v3/floorplan" extends="v3Api">
         <action name="getFacilityDetails"

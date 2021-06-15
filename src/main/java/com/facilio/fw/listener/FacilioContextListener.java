@@ -25,6 +25,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import com.facilio.bmsconsoleV3.commands.AddSignupDataCommandV3;
 import com.facilio.modules.FacilioEnum;
+import com.facilio.qa.rules.pojo.QAndARuleType;
 import com.facilio.tasker.FacilioInstantJobScheduler;
 import com.facilio.v3.util.ChainUtil;
 import lombok.SneakyThrows;
@@ -109,6 +110,7 @@ public class FacilioContextListener implements ServletContextListener {
 			Operator.getOperator(1);
 			registerMBeans();
 			TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACTION,1);
+			QAndARuleType type = QAndARuleType.WORKFLOW;
 			ActivityType.getActivityType(1);
 			FieldUtil.init();
 			FacilioEnum.getEnumValues("CostType");

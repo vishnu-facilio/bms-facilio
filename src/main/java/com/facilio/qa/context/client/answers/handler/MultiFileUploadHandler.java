@@ -1,5 +1,6 @@
 package com.facilio.qa.context.client.answers.handler;
 
+import com.facilio.modules.FieldType;
 import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.AnswerHandler;
 import com.facilio.qa.context.answers.MultiFileAnswerContext;

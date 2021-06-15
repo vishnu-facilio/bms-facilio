@@ -10,6 +10,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.text.MessageFormat;
 import java.util.*;
@@ -18,14 +19,15 @@ public class FetchOperatorsForFiltersCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         String dataTypeStr = (String) context.get(FacilioConstants.Filters.FILTER_DATA_TYPE);
-        FieldType[] types = null;
-        if (StringUtils.isEmpty(dataTypeStr)) {
-            types = FieldType.values();
-        }
-        else {
+        FieldType[] types = (FieldType[]) context.get(FacilioConstants.Filters.FILTER_DATA_TYPES);
+
+        if (StringUtils.isNotEmpty(dataTypeStr)) {
             FieldType type = FieldType.valueOf(dataTypeStr);
             FacilioUtil.throwIllegalArgumentException(type == null, "Invalid Field Data Type to fetch operators");
             types = new FieldType[] {type};
+        }
+        else if (ArrayUtils.isEmpty(types)) {
+            types = FieldType.values();
         }
 
         Map<String, List<FilterOperator>> filterOperatorsMap = new HashMap<>();

@@ -17,9 +17,14 @@ public class FetchPagesFromResponseCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         List<ResponseContext> responses = Constants.getRecordList((FacilioContext) context);
         if (CollectionUtils.isNotEmpty(responses)) {
-            List<QAndATemplateContext> templates = responses.stream().map(ResponseContext::getParent).collect(Collectors.toList());
+            List<QAndATemplateContext> templates = responses.stream().map(this::removeUnnecessaryPropsAndReturnTemplate).collect(Collectors.toList());
             QAndAUtil.populatePagesInTemplates(templates);
         }
         return false;
+    }
+
+    private QAndATemplateContext removeUnnecessaryPropsAndReturnTemplate(ResponseContext response) {
+        response.setTemplate(null); // Not needed in client
+        return response.getParent();
     }
 }

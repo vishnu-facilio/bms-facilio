@@ -168,7 +168,7 @@ public class AddQAndAModules extends SignUpData {
         fields.add(FieldFactory.getDefaultField("decimalAnswer", "Decimal Answer", "DECIMAL_ANSWER", FieldType.DECIMAL));
         fields.add(FieldFactory.getDefaultField("booleanAnswer", "Boolean Answer", "BOOLEAN_ANSWER", FieldType.BOOLEAN));
         fields.add(FieldFactory.getDefaultField("shortAnswer", "Short Answer", "SHORT_ANSWER", FieldType.STRING));
-        fields.add(FieldFactory.getDefaultField("longAnswer", "Long Answer", "LONG_ANSWER", FieldType.STRING));
+        fields.add(FieldFactory.getDefaultField("longAnswer", "Long Answer", "LONG_ANSWER", FieldType.BIG_STRING));
         fields.add(FieldFactory.getDefaultField("dateTimeAnswer", "Date/Time Answer", "DATE_TIME_ANSWER", FieldType.DATE_TIME));
         fields.add(FieldFactory.getDefaultField("fileAnswer", "File Answer", "FILE_ANSWER", FieldType.FILE));
 

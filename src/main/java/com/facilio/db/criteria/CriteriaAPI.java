@@ -1,12 +1,10 @@
 package com.facilio.db.criteria;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.util.AccountConstants;
@@ -131,6 +129,18 @@ public class CriteriaAPI extends BaseCriteriaAPI {
 														.andCondition(CriteriaAPI.getCondition("CRITERIAID", "criteriaId", String.valueOf(id), NumberOperators.EQUALS))
 														;
 		deleteBuilder.delete();
+	}
+
+	public static void batchDeleteCriteria (List<Long> ids) throws Exception {
+		if (CollectionUtils.isEmpty(ids)) {
+			return;
+		}
+		FacilioModule module = ModuleFactory.getCriteriaModule();
+		FacilioField criteriaId = FieldFactory.getAsMap(FieldFactory.getCriteriaFields()).get("criteriaId");
+		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+													.table(module.getTableName())
+													;
+		deleteBuilder.batchDelete(Collections.singletonList(criteriaId), ids.stream().map(i -> Collections.singletonMap(criteriaId.getName(), (Object) i)).collect(Collectors.toList()));
 	}
 	
 	public static Criteria getCriteria(long id) throws Exception {
