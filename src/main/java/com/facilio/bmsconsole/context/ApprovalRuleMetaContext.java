@@ -51,8 +51,8 @@ public class ApprovalRuleMetaContext implements Serializable {
         }
         return -1;
     }
-    public void setEventType(int eventType) {
-        this.eventType = EventType.valueOf(eventType);;
+    public void setEventType(long eventType) {
+        this.eventType = EventType.valueOf(eventType);
     }
     public EventType getEventTypeEnum() {
         return eventType;

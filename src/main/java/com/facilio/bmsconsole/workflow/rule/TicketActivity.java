@@ -60,7 +60,7 @@ public class TicketActivity {
 		}
 		return -1;
 	}
-	public void setActivityType(int activityType) {
+	public void setActivityType(long activityType) {
 		this.activityType = EventType.valueOf(activityType);
 	}
 	public void setActivityType(EventType activityType) {

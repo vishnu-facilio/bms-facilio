@@ -101,7 +101,7 @@ public class BaseTriggerContext {
 		}
 		return -1;
 	}
-	public void setEventType(int eventType) {
+	public void setEventType(long eventType) {
 		this.eventType = EventType.valueOf(eventType);
 	}
 	public void setEventType(EventType eventType) {

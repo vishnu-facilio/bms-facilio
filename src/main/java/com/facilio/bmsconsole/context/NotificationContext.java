@@ -47,13 +47,13 @@ public class NotificationContext {
 		}
 		return -1;
 	}
-	public void setNotificationTypeVal(int notificationTypeVal) {
+	public void setNotificationTypeVal(long notificationTypeVal) {
 		this.notificationType = EventType.valueOf(notificationTypeVal);
 	}
 	public void setNotificationType(EventType notificationType) {
 		this.notificationType = notificationType;
 	}
-	public void setNotificationType(int notificationType) {
+	public void setNotificationType(long notificationType) {
 		this.notificationType = EventType.valueOf(notificationType);
 	}
 	public long getActorId() {
