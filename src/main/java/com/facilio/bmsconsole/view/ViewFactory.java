@@ -471,7 +471,12 @@ public class ViewFactory {
 		views = new LinkedHashMap<>();
 		views.put("all", getAllAttendanceView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.ATTENDANCE, views);
-		
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllInventoryRequestLineItemsView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS, views);
+
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllAttendanceTransactionView().setOrder(order++));
@@ -3991,7 +3996,7 @@ public class ViewFactory {
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("sysCreatedTime");
 		createdTime.setDataType(FieldType.NUMBER);
-		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setColumnName("SYS_CREATED_TIME");
 		createdTime.setModule(itemsModule);
 
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
@@ -4015,7 +4020,7 @@ public class ViewFactory {
 			FacilioField createdTime = new FacilioField();
 			createdTime.setName("sysCreatedTime");
 			createdTime.setDataType(FieldType.NUMBER);
-			createdTime.setColumnName("CREATED_TIME");
+			createdTime.setColumnName("SYS_CREATED_TIME");
 			createdTime.setModule(vendorModule);
 
 			List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
@@ -4056,7 +4061,7 @@ public class ViewFactory {
 			FacilioField createdTime = new FacilioField();
 			createdTime.setName("sysCreatedTime");
 			createdTime.setDataType(FieldType.NUMBER);
-			createdTime.setColumnName("CREATED_TIME");
+			createdTime.setColumnName("SYS_CREATED_TIME");
 			createdTime.setModule(vendorModule);
 
 			List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
@@ -4084,7 +4089,7 @@ public class ViewFactory {
 			FacilioField createdTime = new FacilioField();
 			createdTime.setName("sysCreatedTime");
 			createdTime.setDataType(FieldType.NUMBER);
-			createdTime.setColumnName("CREATED_TIME");
+			createdTime.setColumnName("SYS_CREATED_TIME");
 			createdTime.setModule(vendorModule);
 
 			List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
@@ -4110,7 +4115,7 @@ public class ViewFactory {
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("sysCreatedTime");
 		createdTime.setDataType(FieldType.NUMBER);
-		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setColumnName("SYS_CREATED_TIME");
 		createdTime.setModule(vendorModule);
 
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
@@ -4136,7 +4141,7 @@ public class ViewFactory {
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("sysCreatedTime");
 		createdTime.setDataType(FieldType.NUMBER);
-		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setColumnName("SYS_CREATED_TIME");
 		createdTime.setModule(vendorModule);
 
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
@@ -4165,7 +4170,7 @@ public class ViewFactory {
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("sysCreatedTime");
 		createdTime.setDataType(FieldType.NUMBER);
-		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setColumnName("SYS_CREATED_TIME");
 		createdTime.setModule(vendorModule);
 
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
@@ -4193,7 +4198,7 @@ public class ViewFactory {
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("sysCreatedTime");
 		createdTime.setDataType(FieldType.NUMBER);
-		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setColumnName("SYS_CREATED_TIME");
 		createdTime.setModule(vendorModule);
 
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
@@ -4221,7 +4226,7 @@ public class ViewFactory {
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("sysCreatedTime");
 		createdTime.setDataType(FieldType.NUMBER);
-		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setColumnName("SYS_CREATED_TIME");
 		createdTime.setModule(vendorModule);
 
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
@@ -4246,7 +4251,7 @@ public class ViewFactory {
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("sysCreatedTime");
 		createdTime.setDataType(FieldType.NUMBER);
-		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setColumnName("SYS_CREATED_TIME");
 		createdTime.setModule(vendorModule);
 
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
@@ -5597,6 +5602,24 @@ public class ViewFactory {
 		allView.setDisplayName("All");
 		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
 		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return allView;
+	}
+
+	private static FacilioView getAllInventoryRequestLineItemsView() {
+		FacilioModule invReqLineItems = ModuleFactory.getInventoryRequestLineItemsModule();
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Inventory Request Line Items");
+		allView.setModuleName(invReqLineItems.getName());
+		allView.setSortFields(sortFields);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+
 
 		return allView;
 	}

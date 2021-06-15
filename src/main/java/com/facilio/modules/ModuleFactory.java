@@ -3053,6 +3053,14 @@ public class ModuleFactory {
 		return invReq;
 	}
 
+	public static FacilioModule getInventoryRequestLineItemsModule() {
+		FacilioModule invReqLineItems = new FacilioModule();
+		invReqLineItems.setName("inventoryrequestlineitems");
+		invReqLineItems.setDisplayName("Inventory Request Line Items");
+		invReqLineItems.setTableName("InventoryRequestLineItems");
+		return invReqLineItems;
+	}
+
 	public static FacilioModule getPageModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("page");

@@ -138,6 +138,8 @@ public class ColumnFactory {
 		columnMap.put("visitorinvite-invite_myInvites", getTenantPortalVisitorInvitesColumns());
 		columnMap.put("visitorinvite-invite_myExpired", getTenantPortalVisitorInvitesColumns());
 
+		columnMap.put("inventoryrequestlineitems-default", getDefaultInventoryRequestLineItemsColumns());
+
 		// visitor logging
 		columnMap.put("visitorlogging-default", getDefaultVisitorLoggingColumns());
 		// vl tenant portal
@@ -998,6 +1000,19 @@ public class ColumnFactory {
 		columns.add(new ViewField("requestedTime", "Requested Time"));
 		columns.add(new ViewField("requiredTime", "Required Time"));
 		columns.add(new ViewField("status", "Status"));
+		return columns;
+	}
+
+	private static List<ViewField> getDefaultInventoryRequestLineItemsColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("id", "ID"));
+		columns.add(new ViewField("inventoryType", "Inventory Type"));
+		columns.add(new ViewField("itemType", "Item Type"));
+		columns.add(new ViewField("toolType", "Tool type"));
+		columns.add(new ViewField("storeRoom", "Storeroom"));
+		columns.add(new ViewField("quantity", "Quantity"));
+		columns.add(new ViewField("issuedQuantity", "Issued Quantity"));
+
 		return columns;
 	}
 	
