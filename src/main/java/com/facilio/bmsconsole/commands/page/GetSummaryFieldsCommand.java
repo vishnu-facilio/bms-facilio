@@ -9,96 +9,118 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.FormsAPI;
+import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
+import com.google.common.collect.ImmutableMap;
 
+import lombok.extern.log4j.Log4j;
+
+@Log4j
 public class GetSummaryFieldsCommand extends FacilioCommand {
-	
+
 	String moduleName;
 	FacilioModule module;
+	ModuleBaseWithCustomFields record;
+	List<FacilioField> allFields;
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		
+
 		moduleName = (String) context.get(ContextNames.MODULE_NAME);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		module = modBean.getModule(moduleName);
-				
+
 		long recordId = (long) context.get(ContextNames.ID);
-		
+		allFields = modBean.getAllFields(moduleName);
+		record = RecordAPI.getRecord(moduleName, recordId);
+
 		long formId = (long) context.get(ContextNames.FORM_ID);
 		long widgetId = (long) context.get(ContextNames.WIDGET_ID);
-		
+
 		if (widgetId != -1) {
 			// TODO check if fields for the widget/record and return if any
 		}
-		
-		
+
+
 		ApplicationContext currentApp = AccountUtil.getCurrentApp();
-		List<FormField> fields = null;
+		List<FormField> formFields = null;
 		if (currentApp.getLinkName().equals(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP)) {
 			long orgId = AccountUtil.getCurrentOrg().getOrgId();
 			if (orgId == 407 || orgId == 418) {
-				fields = getFieldsForAtre(modBean);
+				formFields = getFieldsForAtre(modBean);
 			}
 		}
-		
-		if (fields == null) {
+
+		if (formFields == null) {
 			boolean isAtg = AccountUtil.getCurrentOrg().getOrgId() == 406;
-			
+
 			FacilioForm form = fetchForm(formId);
 			if (form == null) {
-				fields = getAllFields(modBean);
+				formFields = getFieldsAsFormFields(modBean);
 			}
 			else {
-				fields = form.getFields().stream().filter(formField -> formField.getField() != null && !formField.getField().isMainField() &&
-						(formField.getHideField() == null || !isAtg || !formField.getHideField()))
+				formFields = form.getFields().stream().filter(formField -> ( formField.getField() != null  && 
+						!formField.getField().isMainField()  &&
+						(formField.getHideField() == null || !isAtg || !formField.getHideField())))
 						.collect(Collectors.toList());
 			}
-			
-			if (!isAtg) {	// Sort based on form
-				int count = Collections.max(fields, Comparator.comparing(s -> s.getSequenceNumber())).getSequenceNumber();
-				addModuleAndSystemFields(modBean, fields, count);
-				sort(fields);
+
+			if (!isAtg) {	
+				int count = Collections.max(formFields, Comparator.comparing(s -> s.getSequenceNumber())).getSequenceNumber();
+				List<String> existingFieldNames = formFields.stream().map(FormField::getName).collect(Collectors.toList());
+				count = addModuleAndSystemFields(modBean, formFields, existingFieldNames, count);
+				sort(formFields);	// Sort based on alpha order
+				addFieldsonBottom(modBean, formFields, existingFieldNames, count);
 			}
 		}
-		
-		context.put("fields", fields);
-		
+
+		context.put("fields", formFields);
+
 		return false;
 	}
-	
+
 	private FacilioForm fetchForm(long formId) throws Exception {
 		FacilioChain chain = FacilioChainFactory.getFormMetaChain();
 		Context formContext = chain.getContext();
-		
+
 		formContext.put(FacilioConstants.ContextNames.FORM_ID, formId);
 		formContext.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		chain.execute();
-		
+
 		return (FacilioForm) formContext.get(FacilioConstants.ContextNames.FORM);
 	}
-	
-	private List<FormField> getAllFields(ModuleBean modBean) throws Exception {
+
+	private List<FormField> getFieldsAsFormFields(ModuleBean modBean) throws Exception {
 		List<FormField> fields = new ArrayList<>();
-		List<FacilioField> allFields = modBean.getAllFields(moduleName);
 		int count = 0;
 		for(FacilioField field: allFields) {
 			if (!field.isMainField()) {
@@ -107,7 +129,7 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 		}
 		return fields;
 	}
-	
+
 	private void sort(List<FormField> fields) {
 		fields.sort(new Comparator<FormField>() {
 			@Override
@@ -120,19 +142,64 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 			}
 		});
 	}
-	
-	private void addModuleAndSystemFields(ModuleBean modBean, List<FormField> fields, int count) throws Exception {
-		List<String> additionalFields = null;
-		switch(moduleName) {
-			case ContextNames.TENANT_UNIT_SPACE:
-				additionalFields = tenantUnit;
-				break;
+
+	private int addModuleAndSystemFields(ModuleBean modBean, List<FormField> formFields,List<String> existingFieldNames, int count) throws Exception {
+		List<String> additionalFields = new ArrayList<>();
+		if (moduleVsFields.containsKey(moduleName)) {
+			additionalFields.addAll(moduleVsFields.get(moduleName));
+		}
+		if (record != null && record.getStateFlowId() != -1 ) {
+			List<String> transitionFields = getTransitionFormFields(modBean, record.getStateFlowId());
+			if (transitionFields != null) {
+				additionalFields.addAll(transitionFields);
+			}
 		}
 		
-		if (additionalFields != null) {
-			List<String> fieldNames = fields.stream().map(FormField::getName).collect(Collectors.toList());
-			
-			List<FacilioField> allFields = modBean.getAllFields(moduleName);
+		boolean isSystemFieldsPresent = FieldUtil.isSystemFieldsPresent(module);
+		if (!isSystemFieldsPresent) { // For system fields in db
+			additionalFields.addAll(FieldFactory.getSystemFieldNames());
+		}
+
+		addAdditionalFields(additionalFields, formFields, existingFieldNames, count);
+
+		if (isSystemFieldsPresent) {
+			for(String name: FieldFactory.getSystemFieldNames()) {
+				FacilioField systemField = FieldFactory.getSystemField(name, module);
+				formFields.add(FormsAPI.getFormFieldFromFacilioField(systemField, ++count));
+			}
+		}
+		return count;
+	}
+	
+	private void addFieldsonBottom(ModuleBean modBean, List<FormField> formFields,List<String> existingFieldNames, int count) throws Exception {
+		List<String> additionalFields = new ArrayList<>();
+		boolean isAssetModule = AssetsAPI.isAssetsModule(module);
+		if (isAssetModule)  {
+			AssetContext asset = (AssetContext)record;
+			if (asset instanceof EnergyMeterContext) {
+				boolean removed = formFields.removeIf(field -> field.getName().equals("childMeterExpression"));
+				if (removed) {
+					--count;
+					existingFieldNames.removeIf(name -> name.equals("childMeterExpression"));
+				}
+				if (((EnergyMeterContext)asset).getChildMeterExpression() != null) {
+					additionalFields.add("childMeterExpression");
+				}
+			}
+			if (asset.getGeoLocationEnabled() != null && asset.getGeoLocationEnabled()) {
+				additionalFields.addAll(bottomFields.get(ContextNames.ASSET));
+			}
+		}
+		else {
+			if (bottomFields.containsKey(moduleName)) {
+				additionalFields.addAll(bottomFields.get(moduleName));
+			}
+		}
+		addAdditionalFields(additionalFields, formFields, existingFieldNames, count);
+	}
+	
+	private void addAdditionalFields(List<String> additionalFields, List<FormField> formFields,List<String> existingFieldNames, int count) {
+		if (!additionalFields.isEmpty()) {
 			for(FacilioField field: allFields) {
 				String name = field.getName();
 				if (name.equals("site")) { // Temp...needs to have common name for site field in fields and forms
@@ -140,45 +207,83 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 					field = field.clone();
 					field.setName(name);
 				}
-				if (additionalFields.contains(name) && !fieldNames.contains(name)) {
-					fields.add(FormsAPI.getFormFieldFromFacilioField(field, ++count));
+				if (additionalFields.contains(name) && !existingFieldNames.contains(name)) {
+					formFields.add(FormsAPI.getFormFieldFromFacilioField(field, ++count));
 				}
 			}
 		}
-		
-		if (FieldUtil.isSystemFieldsPresent(module)) {
-			for(String name: FieldFactory.getSystemFieldNames()) {
-				FacilioField systemField = FieldFactory.getSystemField(name, module);
-				fields.add(FormsAPI.getFormFieldFromFacilioField(systemField, ++count));
+	}
+
+	// To fetch the fields of transition forms
+	private List<String> getTransitionFormFields(ModuleBean modBean, long stateflowId) throws Exception {
+		if (stateflowId <= 0) {
+			return null;
+		}
+		FacilioModule module = ModuleFactory.getStateRuleTransitionModule();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getStateRuleTransitionFields());
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(module.getTableName())
+				.select(Collections.singletonList(fieldMap.get("formId")))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("stateFlowId"), String.valueOf(stateflowId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("formId"), CommonOperators.IS_NOT_EMPTY))
+				;
+		List<Map<String, Object>> props = builder.get();
+		if (CollectionUtils.isNotEmpty(props)) {
+			List<Long> formIds = props.stream().map(prop -> (long)prop.get("formId")).collect(Collectors.toList());
+			module = ModuleFactory.getFormFieldsModule();
+			fieldMap = FieldFactory.getAsMap(FieldFactory.getFormFieldsFields());
+			builder = new GenericSelectRecordBuilder()
+					.table(module.getTableName())
+					.select(Collections.singletonList(fieldMap.get("fieldId")))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("formId"), formIds, NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("fieldId"), CommonOperators.IS_NOT_EMPTY));
+			props = builder.get();
+			if (CollectionUtils.isNotEmpty(props)) {
+				List<Long> fieldIds = props.stream().map(prop -> (long)prop.get("fieldId")).collect(Collectors.toList());
+				List<FacilioField> fields = modBean.getFields(fieldIds);
+				return fields.stream().filter(field -> {
+					Object value = null;
+					if (field.isDefault()) {
+                        try {
+							value = PropertyUtils.getProperty(record, field.getName());
+						} catch (Exception e) {
+							LOGGER.error("Exception while getting record data", e);
+						}
+                    } else {
+                        value = record.getDatum(field.getName());
+                    }
+					return value != null;
+				}).map(prop -> prop.getName()).collect(Collectors.toList());
 			}
 		}
+		return null;
 	}
-	
-	
+
+
 	// To be removed once page db support is there
 	private List<FormField> getFieldsForAtre (ModuleBean modBean) throws Exception {
 		List<FormField> fields = new ArrayList<FormField>();
-		
-		List<FacilioField> allFields = modBean.getAllFields(moduleName);
-		
+
+		List<FacilioField> moduleFields = new ArrayList<>(allFields);
 		for(String name: FieldFactory.getSystemFieldNames()) {
-			allFields.add(FieldFactory.getSystemField(name, module));
+			moduleFields.add(FieldFactory.getSystemField(name, module));
 		}
-		
+
 		List<String> atreFields = getAtreFieldMap().get(moduleName);
 		if (atreFields == null) {
 			return null;
 		}
 		int count = 0;
-		for(FacilioField field: allFields) {
+		for(FacilioField field: moduleFields) {
 			if (atreFields.contains(field.getName())) {
 				fields.add(FormsAPI.getFormFieldFromFacilioField(field, ++count));
 			}
 		}
-		
+
 		return fields;
 	}
-	
+
+	// To be removed once page db support is there
 	private static Map<String, List<String>> getAtreFieldMap() {
 		Map<String, List<String>> fieldMap = new HashMap<>();
 		fieldMap.put("tenantunit", tenantUnitAtre);
@@ -191,39 +296,61 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 
 		return fieldMap;
 	}
-	
-	
+
+
 	/******* Module Based Fields **********/
+
+	Map<String, List<String>> moduleVsFields = ImmutableMap.<String, List<String>>builder()
+			.put(ContextNames.WORK_ORDER, Arrays.asList(new String[] {
+					"createdTime",
+					"actualWorkEnd"
+			}))
+			.put(ContextNames.TENANT_UNIT_SPACE, Arrays.asList(new String[] {
+					"siteId",
+					"building",
+					"floor"
+			}))
+			.put(ContextNames.TENANT, Arrays.asList(new String[] {
+					"siteId",
+			}))
+			.put(ContextNames.WorkPermit.WORKPERMIT,  Arrays.asList(new String[] {
+					"requestedBy",
+			}))
+			.build();
 	
-	private static final List<String> tenantUnit = Collections.unmodifiableList(Arrays.asList(new String[] {
-            "siteId",
-            "building",
-            "floor"
-    }));
-	
+	Map<String, List<String>> bottomFields = ImmutableMap.<String, List<String>>builder()
+			.put(ContextNames.ASSET,  Arrays.asList(new String[] {
+					"geoLocation",
+					"currentLocation",
+					"designatedLocation",
+					"distanceMoved",
+					"boundaryRadius",
+			}))
+			.build();
+
 	/************** Module Based End *********/
-	
-	
-	
-	
-	
+
+
+
+
+
 	/******* ATRE Fields.. TODO Remove *****************/
 	private static final List<String> tenantUnitAtre = Collections.unmodifiableList(Arrays.asList(new String[] {
-            "description",
-            "area",
-            "maxOccupancy",
-            "singleline_1",
-            "site",
-            "building",
-            "space"
-    }));
-	
+			"description",
+			"area",
+			"maxOccupancy",
+			"singleline_1",
+			"site",
+			"building",
+			"space"
+	}));
+
 	private static final List<String> tenantContact = Collections.unmodifiableList(Arrays.asList(new String[] {
 			"email",
 			"phone",
 			"isPrimaryContact"
-    }));
-	
+	}));
+
 	private static final List<String> customContracts = Collections.unmodifiableList(Arrays.asList(new String[] {
 			"number",
 			"date_1",
@@ -240,7 +367,7 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 			"sysCreatedBy",
 			"sysModifiedTime",
 			"sysModifiedBy"
-    }));
+	}));
 
 	private static final List<String> customContractunits = Collections.unmodifiableList(Arrays.asList(new String[] {
 			"contractid",
@@ -249,8 +376,8 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 			"sysCreatedBy",
 			"sysModifiedTime",
 			"sysModifiedBy"
-    }));
-	
+	}));
+
 	private static final List<String> customPayment = Collections.unmodifiableList(Arrays.asList(new String[] {
 			"number",
 			"date_1",
@@ -266,8 +393,8 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 			"sysCreatedBy",
 			"number_2",
 			"number_1"
-    }));
-	
+	}));
+
 	private static final List<String> customReceipts = Collections.unmodifiableList(Arrays.asList(new String[] {
 			"singleline_2",
 			"singleline_1",
@@ -281,7 +408,7 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 			"sysCreatedTime",
 			"sysModifiedTime",
 			"sysCreatedBy"
-    }));
+	}));
 
 
 	private static final List<String> peopleAnnouncement = Collections.unmodifiableList(Arrays.asList(new String[] {

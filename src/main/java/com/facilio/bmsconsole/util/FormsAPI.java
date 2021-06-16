@@ -198,7 +198,7 @@ public class FormsAPI {
 			}
 			else if (f.getDisplayTypeEnum() == FieldDisplayType.LOOKUP_SIMPLE && f.getDisplayName().equals("Site")) {
 				f.setName("siteId");
-				f.setLookupModuleName("site");
+				f.setField(FieldFactory.getSiteField(module));
 			}
 			else if (f.getDisplayTypeEnum() == FieldDisplayType.TEAM) {
 				f.setName("groups");
@@ -975,7 +975,8 @@ public class FormsAPI {
 		FacilioForm form = new FacilioForm();
 		form.setAppLinkName(appLinkName);
 		List<FormField> allFields = new ArrayList<>();
-		FacilioForm defaultForm = FormFactory.getDefaultForm(moduleName, form, true);
+		FacilioForm defaultForm = getDefaultForm(moduleName, appLinkName, true);
+		List<Long> defaultCustomFields = new ArrayList<>();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		if (defaultForm != null) {
 			List<FormField> defaultFields = new ArrayList<>(defaultForm.getFields());
@@ -985,15 +986,25 @@ public class FormsAPI {
 			if (moduleName.equals(ContextNames.WORK_ORDER)) {
 				defaultFields.add(new FormField("comment", FieldDisplayType.TICKETNOTES, "Comment", Required.OPTIONAL, "ticketnotes", defaultFields.size()+1, 1));
 			}
-			setFieldDetails(modBean, defaultFields, moduleName);
+			if (defaultForm.getId() == -1) {
+				setFieldDetails(modBean, defaultFields, moduleName);
+			}
+			else {
+				defaultCustomFields = defaultFields.stream().filter(field -> field.getField() != null && !field.getField().isDefault())
+						.map(field -> field.getId()).collect(Collectors.toList());
+			}
 			allFields.addAll(defaultFields);
 			addUnusedWebSystemFields(defaultForm, allFields);
 		}
 		
 		List<FacilioField> customFields = modBean.getAllCustomFields(moduleName);
 		if (CollectionUtils.isNotEmpty(customFields)) {
-			List<FormField> customFormFields = getFormFieldsFromFacilioFields(customFields, 0);
-			allFields.addAll(customFormFields);
+			for(FacilioField field: customFields) {
+				if (!defaultCustomFields.contains(field.getFieldId())) {
+					FormField formField = getFormFieldFromFacilioField(field, 1);
+					allFields.add(formField);
+				}
+			}
 		}
 		return allFields;
 	}
