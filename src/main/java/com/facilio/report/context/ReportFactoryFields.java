@@ -59,7 +59,7 @@ public class ReportFactoryFields {
 				selectedFields.add(fields.get(fieldName));
 			}
 	}
-		if(facilioModule.isCustom() || moduleName.equalsIgnoreCase("quote")) {
+		if(facilioModule.isCustom() || moduleName.equalsIgnoreCase("quote") || moduleName.equalsIgnoreCase(FacilioConstants.ContextNames.SERVICE_REQUEST)) {
 			selectedFields.addAll(FieldFactory.getSystemPointFields(facilioModule));
 		}
 		
