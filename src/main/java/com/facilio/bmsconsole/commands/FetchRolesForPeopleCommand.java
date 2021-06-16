@@ -38,15 +38,17 @@ public class FetchRolesForPeopleCommand extends FacilioCommand{
           RoleBean roleBean = AccountUtil.getRoleBean();
           Map<String, Long> roleAppForPeople = new HashMap<>();
           for(PeopleContext ppl : pplList) {
-              long ouId = PeopleAPI.getUserIdForPeople(ppl.getId());
-              if(ouId > 0) {
-                  List<OrgUserApp> rolesApps = roleBean.getRolesAppsMappingForUser(ouId);
-                  if (CollectionUtils.isNotEmpty(rolesApps)) {
-                      for (OrgUserApp userApp : rolesApps) {
-                          roleAppForPeople.put(appLinkNames.get(userApp.getApplicationId()), userApp.getRoleId());
+              List<Long> ouIds = PeopleAPI.getUserIdForPeople(ppl.getId());
+              if(CollectionUtils.isNotEmpty(ouIds)) {
+                  for(Long ouId : ouIds) {
+                      List<OrgUserApp> rolesApps = roleBean.getRolesAppsMappingForUser(ouId);
+                      if (CollectionUtils.isNotEmpty(rolesApps)) {
+                          for (OrgUserApp userApp : rolesApps) {
+                              roleAppForPeople.put(appLinkNames.get(userApp.getApplicationId()), userApp.getRoleId());
+                          }
                       }
-                      ppl.setRolesMap(roleAppForPeople);
                   }
+                  ppl.setRolesMap(roleAppForPeople);
               }
           }
       }

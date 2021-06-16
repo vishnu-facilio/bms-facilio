@@ -28,6 +28,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import org.apache.commons.collections4.CollectionUtils;
 
 public class SharingContext<E extends SingleSharingContext> extends ArrayList<E> {
 
@@ -269,9 +270,11 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 						} else {
 							FacilioModule peopleModule = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
 							if (lookupModule.getExtendedModuleIds().contains(peopleModule.getModuleId())) {
-								long userIdForPeople = PeopleAPI.getUserIdForPeople(objId);
-								map.put("permissionId", userIdForPeople);
-								ouIds.add(userIdForPeople);
+								List<Long> userIdForPeople = PeopleAPI.getUserIdForPeople(objId);
+								if (CollectionUtils.isNotEmpty(userIdForPeople)) {
+									map.put("permissionId", userIdForPeople.get(0));
+									ouIds.add(userIdForPeople.get(0));
+								}
 							}
 						}
 					}

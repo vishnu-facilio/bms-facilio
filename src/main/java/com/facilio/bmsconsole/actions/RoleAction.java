@@ -169,6 +169,7 @@ public class RoleAction extends ActionSupport {
 
         Command updateRole = FacilioChainFactory.getUpdateRoleCommand();
         updateRole.execute(context);
+        setRoleId(role.getRoleId());
 
         return SUCCESS;
     }
@@ -234,11 +235,13 @@ public class RoleAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ROLE, getRole());
 		context.put(FacilioConstants.ContextNames.PERMISSIONS, getNewPermissions());
+        context.put(FacilioConstants.ContextNames.ROLES_APPS, getRoleApp());
 
 		Command updateRole = FacilioChainFactory.getUpdateWebTabRoleCommand();
 		updateRole.execute(context);
 
-		return SUCCESS;
+        setRoleId(role.getRoleId());
+        return SUCCESS;
 	}
 
 }
