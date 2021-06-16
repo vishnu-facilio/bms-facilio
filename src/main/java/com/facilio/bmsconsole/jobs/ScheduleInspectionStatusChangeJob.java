@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -15,6 +16,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
@@ -50,15 +52,19 @@ public class ScheduleInspectionStatusChangeJob extends FacilioJob {
                 return;
             }
             
+            
 
             for (InspectionResponseContext inspectionResponse : inspectionResponses) {
-				try {
-					FacilioTimer.scheduleOneTimeJobWithTimestampInSec(inspectionResponse.getId(), "OpenScheduledInspection", inspectionResponse.getCreatedTime() / 1000, "priority");
-				}
-				catch (Exception e) { 
-					FacilioTimer.deleteJob(inspectionResponse.getId(), "OpenScheduledInspection");
-					FacilioTimer.scheduleOneTimeJobWithTimestampInSec(inspectionResponse.getId(), "OpenScheduledInspection", inspectionResponse.getCreatedTime() / 1000, "priority");
-				}
+            	ModuleBaseWithCustomFields record = RecordAPI.getRecord(FacilioConstants.Inspection.INSPECTION_TEMPLATE, inspectionResponse.getTemplate().getId());
+            	if(record != null) {
+            		try {
+    					FacilioTimer.scheduleOneTimeJobWithTimestampInSec(inspectionResponse.getId(), "OpenScheduledInspection", inspectionResponse.getCreatedTime() / 1000, "priority");
+    				}
+    				catch (Exception e) { 
+    					FacilioTimer.deleteJob(inspectionResponse.getId(), "OpenScheduledInspection");
+    					FacilioTimer.scheduleOneTimeJobWithTimestampInSec(inspectionResponse.getId(), "OpenScheduledInspection", inspectionResponse.getCreatedTime() / 1000, "priority");
+    				}
+            	}
             }
 
         } catch (Exception e) {

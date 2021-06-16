@@ -1,15 +1,14 @@
 package com.facilio.bmsconsole.jobs;
 
-import java.util.List;
-
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.qa.context.ResponseContext;
 import com.facilio.tasker.job.FacilioJob;
@@ -35,6 +34,13 @@ public class OpenScheduledInspection extends FacilioJob {
                 .skipModuleCriteria();
         
         InspectionResponseContext inspectionResponse = selectRecordsBuilder.fetchFirst();
+        
+     // check for inspection Template delete and proceed
+        
+        ModuleBaseWithCustomFields record = RecordAPI.getRecord(FacilioConstants.Inspection.INSPECTION_TEMPLATE, inspectionResponse.getTemplate().getId());
+    	if(record == null) {
+    		return;
+    	}
         
         if(inspectionResponse != null) {
         	inspectionResponse.setStatus(InspectionResponseContext.Status.OPEN.getIndex());
