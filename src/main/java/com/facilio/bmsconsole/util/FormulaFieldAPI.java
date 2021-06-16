@@ -563,6 +563,10 @@ public class FormulaFieldAPI {
 														.andCondition(CriteriaAPI.getCondition(active, String.valueOf(true), BooleanOperators.IS))
 														;
 		
+		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339) {
+			LOGGER.info(" getActiveScheduledFormulasOfFrequencyType: " + selectBuilder.get() + " types: "+ types);
+		}
+		
 		return getFormulaFieldsFromProps(selectBuilder.get(), false);
 		
 	}
