@@ -55,6 +55,16 @@ public class GetAutomationModulesCommand extends FacilioCommand {
             modules.add(modBean.getModule(FacilioConstants.ContextNames.QUOTE));
         }
 
+        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INSPECTION)) {
+            modules.add(modBean.getModule(FacilioConstants.Inspection.INSPECTION_TEMPLATE));
+            modules.add(modBean.getModule(FacilioConstants.Inspection.INSPECTION_RESPONSE));
+        }
+        
+        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INDUCTION)) {
+            modules.add(modBean.getModule(FacilioConstants.Induction.INDUCTION_TEMPLATE));
+            modules.add(modBean.getModule(FacilioConstants.Induction.INDUCTION_RESPONSE));
+        }
+        
         if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.FACILITY_BOOKING)) {
             modules.add(modBean.getModule(FacilioConstants.ContextNames.FacilityBooking.FACILITY));
             modules.add(modBean.getModule(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING));
