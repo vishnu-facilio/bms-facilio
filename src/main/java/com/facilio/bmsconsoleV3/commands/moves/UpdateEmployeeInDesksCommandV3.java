@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsoleV3.context.V3EmployeeContext;
 import com.facilio.bmsconsoleV3.context.V3MovesContext;
 import com.facilio.bmsconsoleV3.context.V3MovesContext.MoveType;
+import com.facilio.bmsconsoleV3.context.V3SpaceContext;
 import com.facilio.bmsconsoleV3.context.floorplan.V3DeskContext;
 import com.facilio.bmsconsoleV3.util.DesksAPI;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
@@ -58,6 +59,7 @@ public class UpdateEmployeeInDesksCommandV3 extends FacilioCommand {
                                     if(move.getFrom() != null && move.getTo() != null) {
                                         V3DeskContext toDesk = (V3DeskContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.Floorplan.DESKS, move.getTo().getId(), V3DeskContext.class);
                                         V3DeskContext fromDesk = (V3DeskContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.Floorplan.DESKS, move.getFrom().getId(), V3DeskContext.class);
+                                        UpdateDeskInEmployee(toDesk, true); // to update the desk in employee
                                         fromDesk.setEmployee(null);
                                         fromDesk.setDepartment(null);
                                         if(toDesk.getEmployee() != null) {
@@ -122,8 +124,11 @@ public class UpdateEmployeeInDesksCommandV3 extends FacilioCommand {
                                         toinfo.put("deskName",toDesk.getName());
                                         
                                         DesksAPI.addDeskActivity(toDesk.getId(), -1, DeskActivityType.ASSIGN_EMPLOYEE, toinfo);
+                                        UpdateDeskInEmployee(toDesk, false); // to update the desk in employee
                                     } else if( move.getFrom() != null) {
                                         V3DeskContext fromDesk = (V3DeskContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.Floorplan.DESKS, move.getFrom().getId(), V3DeskContext.class);
+                                        UpdateDeskInEmployee(fromDesk, true);
+                                        
                                         fromDesk.setEmployee(null);
                                         fromDesk.setDepartment(null);
                                         Map<Long, List<UpdateChangeSet>> fromDeskChangeSet = V3RecordAPI.updateRecord(fromDesk, deskModule, deskFields, true);
@@ -162,9 +167,12 @@ public class UpdateEmployeeInDesksCommandV3 extends FacilioCommand {
                                             UnAssignEmployee.setMoveType(MoveType.INSTANT);
                                             moveprop.add(UnAssignEmployee);
                                             V3RecordAPI.addRecord(false,moveprop, movesModule, movesFields);
+                                            UpdateDeskInEmployee(toDesk, true);
+
                                         }
                                         toDesk.setEmployee(emp);
                                         toDesk.setDepartment(emp.getDepartment());
+                                        UpdateDeskInEmployee(toDesk, false);
                                         Map<Long, List<UpdateChangeSet>> toDeskChangeSet = V3RecordAPI.updateRecord(toDesk, deskModule, deskFields,true);
                                         
                                         JSONObject toinfo = new JSONObject();
@@ -198,6 +206,41 @@ public class UpdateEmployeeInDesksCommandV3 extends FacilioCommand {
         }
 
         return false;
+    }
+    
+    private boolean UpdateDeskInEmployee(V3DeskContext desk, boolean unassign) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+        FacilioModule employeeModule = modBean.getModule("employee");
+        List<FacilioField> employeeFields = modBean.getAllFields(employeeModule.getName());
+    	
+    	V3EmployeeContext employeeDesk = desk.getEmployee();
+       
+        
+    	 if (employeeDesk != null) {
+    		V3EmployeeContext employee = (V3EmployeeContext) V3RecordAPI.getRecord("employee", employeeDesk.getId(), V3EmployeeContext.class);
+
+            if (unassign == true) {
+        		V3SpaceContext space = new V3SpaceContext();
+        		space.setId(-99);
+                employee.setSpace(space);
+                V3RecordAPI.updateRecord(employee, employeeModule, employeeFields, true);
+            }
+            else {
+    		V3SpaceContext space = new V3SpaceContext();
+    		space.setId(desk.getId());
+    		employee.setSpace(space);
+    		V3RecordAPI.updateRecord(employee, employeeModule, employeeFields, true);
+            }
+
+
+    		
+    	}
+    	
+
+    	
+    	return true;
+    	
     }
 
 }
