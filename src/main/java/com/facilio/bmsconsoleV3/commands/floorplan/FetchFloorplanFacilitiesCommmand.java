@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.facilitybooking.FacilityContext;
+import com.facilio.bmsconsoleV3.context.facilitybooking.SlotContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.V3FacilityBookingContext;
 import com.facilio.bmsconsoleV3.util.FacilityAPI;
 import com.facilio.constants.FacilioConstants;
@@ -69,7 +70,13 @@ public class FetchFloorplanFacilitiesCommmand extends FacilioCommand {
 	        Map<Long, List<V3FacilityBookingContext>> BookingsMap = new HashMap<>();
 	        for (FacilityContext facility : list) {
 	        	FacilitiesMap.put(facility.getParentId(), facility);
-	        	BookingsMap.put(facility.getParentId(), FacilityAPI.getFacilityBookingListWithSlots(facility.getId(),startTime,endTime));
+	        	List<SlotContext> slotList = FacilityAPI.getAvailabilitySlots(facility, startTime, endTime);
+	        	if (CollectionUtils.isNotEmpty(slotList)) {
+	        		facility.setSlots(slotList);
+	        		List<Long> slotIds = new ArrayList<>();
+	        		slotList.forEach(i -> slotIds.add(i.getId()));
+	        		BookingsMap.put(facility.getParentId(), FacilityAPI.getFacilityBookingListWithSlots(slotIds));
+                }
 	        }
 	        
 	        context.put(FacilioConstants.ContextNames.FacilityBooking.FACILITY, FacilitiesMap);

@@ -21,6 +21,7 @@ import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.context.V3Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
@@ -298,7 +299,7 @@ public class FacilityAPI {
         return  list;
     }
     
-    public static List<V3FacilityBookingContext> getFacilityBookingListWithSlots(Long facilityId, long startTime, long endTime) throws Exception {
+    public static List<V3FacilityBookingContext> getFacilityBookingListWithSlots(List<Long> slotIds) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         String bookingModule = FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING;
         List<FacilioField> fields = modBean.getAllFields(bookingModule);
@@ -332,12 +333,8 @@ public class FacilityAPI {
                 .select(fields)
                 .beanClass(V3FacilityBookingContext.class)
                 .fetchSupplements(fetchLookupsList);
-        if(facilityId != null) {
-        	builder.andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("facility"), String.valueOf(facilityId), NumberOperators.EQUALS));
-        }
-        
-        if(startTime > 0 && endTime > 0) {
-        	builder.andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("bookingDate"), startTime + "," + endTime, DateOperators.BETWEEN));
+        if(CollectionUtils.isNotEmpty(slotIds)) {
+        	builder.andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("slot"), StringUtils.join(slotIds,","), NumberOperators.EQUALS));
         }
 
         List<V3FacilityBookingContext> list = builder.get();
