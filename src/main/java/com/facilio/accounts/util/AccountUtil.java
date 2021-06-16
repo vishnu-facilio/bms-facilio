@@ -424,7 +424,7 @@ public class AccountUtil {
 		MULTISITEPM(2251799813685248l), // 2 ^ 51
 		FACILITY_BOOKING(4503599627370496l, new String[] {ContextNames.FacilityBooking.FACILITY, ContextNames.FacilityBooking.FACILITY_BOOKING, ContextNames.FacilityBooking.AMENITY}),
 		INSPECTION(9007199254740992l),
-
+		INDUCTION(18014398509481984l),
 		;
     		// Add Module name if license is added for specific module
 		
