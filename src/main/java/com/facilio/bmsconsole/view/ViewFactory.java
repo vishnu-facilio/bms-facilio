@@ -9037,7 +9037,7 @@ public class ViewFactory {
 	}
 
 	private static FacilioView getAllInspectionTemplateViews() {
-		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "Inspection_Templates.ID", FieldType.NUMBER), true));
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
@@ -9053,7 +9053,7 @@ public class ViewFactory {
 	}
 	
 	private static FacilioView getAllInspectionResponseViews() {
-		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "Inspection_Responses.ID", FieldType.NUMBER), true));
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
@@ -9070,7 +9070,7 @@ public class ViewFactory {
 	
 	
 	private static FacilioView getAllInductionTemplateViews() {
-		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "Induction_Templates.ID", FieldType.NUMBER), true));
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
@@ -9086,7 +9086,7 @@ public class ViewFactory {
 	}
 	
 	private static FacilioView getAllInductionResponseViews() {
-		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "Induction_Responses.ID", FieldType.NUMBER), true));
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
