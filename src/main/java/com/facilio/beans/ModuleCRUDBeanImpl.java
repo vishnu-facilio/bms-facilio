@@ -3,13 +3,7 @@ package com.facilio.beans;
 import java.io.File;
 import java.sql.BatchUpdateException;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.facilio.accounts.bean.OrgBean;
@@ -225,8 +219,14 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				}
 				resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),resourceId,pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts(), false);
 			} else if (pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTI_SITE) {
-				List<Long> pmSites = PreventiveMaintenanceAPI.getPMSites(pm.getId());
-				resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),pmSites,pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts(), true);
+				Long baseSpaceId = pm.getBaseSpaceId();
+				List<Long> scope;
+				if (baseSpaceId == null || baseSpaceId < 0) {
+					scope = PreventiveMaintenanceAPI.getPMSites(pm.getId());
+				} else {
+					scope = Collections.singletonList(baseSpaceId);
+				}
+				resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),scope,pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts(), true);
 			}
 			else {
 				resourceIds = Collections.singletonList(workorderTemplate.getResourceIdVal());
