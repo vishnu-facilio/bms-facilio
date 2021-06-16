@@ -67,6 +67,7 @@ public class InspectionScheduler implements ScheduleTypeInterface {
 
 					response.setResStatus(ResponseContext.ResponseStatus.DISABLED); //This will be changed when the response is opened. Until then it can't be answered
 					response.setCreatedTime(createdtime);
+					response.setScheduledWorkStart(createdtime);
 					response.setStatus(InspectionResponseContext.Status.PRE_OPEN.getIndex());
 					response.setSourceType(InspectionResponseContext.SourceType.PLANNED.getIndex());
 					response.setResource(getResource.apply(resourceId));
