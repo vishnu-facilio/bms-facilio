@@ -424,6 +424,11 @@ public class PermissionUtil {
 		if(role.getName().equals(AccountConstants.DefaultSuperAdmin.SUPER_ADMIN) || role.getName().equals(AccountConstants.DefaultSuperAdmin.ADMINISTRATOR)) {
 			return true;
 		}
+		//allowing all access to privileged roles of all apps
+		if(AccountUtil.getCurrentApp() != null && !AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP) && role.isPrevileged()){
+			return true;
+		}
+
 		FacilioModule module = null;
 //		if(!isSpecialModule(moduleName)) {
 //			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
