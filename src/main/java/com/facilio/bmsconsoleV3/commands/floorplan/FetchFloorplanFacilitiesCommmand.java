@@ -69,7 +69,6 @@ public class FetchFloorplanFacilitiesCommmand extends FacilioCommand {
 	        Map<Long, FacilityContext> FacilitiesMap = new HashMap<>();
 	        Map<Long, List<BookingSlotsContext>> BookingsMap = new HashMap<>();
 	        for (FacilityContext facility : list) {
-	        	FacilitiesMap.put(facility.getParentId(), facility);
 	        	List<SlotContext> slotList = FacilityAPI.getAvailabilitySlots(facility, startTime, endTime);
 	        	if (CollectionUtils.isNotEmpty(slotList)) {
 	        		facility.setSlots(slotList);
@@ -77,6 +76,7 @@ public class FetchFloorplanFacilitiesCommmand extends FacilioCommand {
 	        		slotList.forEach(i -> slotIds.add(i.getId()));
 	        		BookingsMap.put(facility.getParentId(), FacilityAPI.getFacilityBookingListWithSlots(slotIds));
                 }
+	        	FacilitiesMap.put(facility.getParentId(), facility);
 	        }
 	        
 	        context.put(FacilioConstants.ContextNames.FacilityBooking.FACILITY, FacilitiesMap);
