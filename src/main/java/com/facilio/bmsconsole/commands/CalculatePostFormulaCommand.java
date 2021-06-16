@@ -48,6 +48,10 @@ public class CalculatePostFormulaCommand extends FacilioCommand {
 			List<FormulaFieldContext> formulaFields = FormulaFieldAPI.getActiveFormulasDependingOnFields(TriggerType.POST_LIVE_READING, fieldIds);
 			LOGGER.debug("Post Formulas of modules : "+readingMap.keySet());
 			LOGGER.debug(formulaFields);
+			if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339) {
+				LOGGER.info("Post Formulas of modules : " + readingMap.keySet());
+				LOGGER.info("Post live fields " + fieldIds + " live Formulas " + formulaFields);
+			}
 			if (formulaFields != null && !formulaFields.isEmpty()) {
 				Set<String> completedFormulas = new HashSet<>();
 				Long controllerTime = (Long) context.get(FacilioConstants.ContextNames.CONTROLLER_TIME);
@@ -83,6 +87,10 @@ public class CalculatePostFormulaCommand extends FacilioCommand {
 		if (reading.getReadings() != null && !reading.getReadings().isEmpty()) {
 			for (FormulaFieldContext formula : formulas) {
 				try {
+					if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339
+							&& formula.getName() != null && formula.getName().contains("pproach")) {
+						LOGGER.info("Live Post Formulas of modules : " + formula + " live reading: " + reading);
+					}
 					boolean isCurrentResourceAssociatedFormula = formula.getMatchedResourcesIds().contains(reading.getParentId());
 					if (AccountUtil.getCurrentOrg().getOrgId() == 343l && (formula.getId() == 1271l || formula.getId() == 1272l || formula.getId() == 1273l)) {
 						isCurrentResourceAssociatedFormula = true;
