@@ -299,52 +299,69 @@ public class FacilityAPI {
         return  list;
     }
     
-    public static List<V3FacilityBookingContext> getFacilityBookingListWithSlots(List<Long> slotIds) throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        String bookingModule = FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING;
-        List<FacilioField> fields = modBean.getAllFields(bookingModule);
-        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
-        
-        FacilioModule pplModule = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
+    public static List<BookingSlotsContext> getFacilityBookingListWithSlots(List<Long> slotIds) throws Exception {
+    	
+    	List<BookingSlotsContext> list = new ArrayList<>();
+    	
+    	if(CollectionUtils.isNotEmpty(slotIds)) {
+    		
+    		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        	String bookingSlots = FacilioConstants.ContextNames.FacilityBooking.BOOKING_SLOTS;
+            List<FacilioField> slotfields = modBean.getAllFields(bookingSlots);
+            Map<String, FacilioField> slotfieldsAsMap = FieldFactory.getAsMap(slotfields);
+            SelectRecordsBuilder<BookingSlotsContext> slotbuilder = new SelectRecordsBuilder<BookingSlotsContext>()
+                    .moduleName(bookingSlots)
+                    .select(slotfields)
+                    .beanClass(BookingSlotsContext.class)
+                    .andCondition(CriteriaAPI.getCondition(slotfieldsAsMap.get("slot"), StringUtils.join(slotIds,","), NumberOperators.EQUALS))
+                    .fetchSupplement((LookupField) slotfieldsAsMap.get("booking"));
 
-        List<SupplementRecord> fetchLookupsList = new ArrayList<>();
-        LookupFieldMeta facilityField = new LookupFieldMeta((LookupField) fieldsAsMap.get("facility"));
-        LookupField facilityLocationField = (LookupField) modBean.getField("location", FacilioConstants.ContextNames.FacilityBooking.FACILITY);
-        facilityField.addChildLookupField(facilityLocationField);
-
-        SupplementRecord reservedFor = (SupplementRecord) fieldsAsMap.get("reservedFor");
-
-        MultiLookupMeta internalAttendees = new MultiLookupMeta((MultiLookupField) fieldsAsMap.get("internalAttendees"));
-        FacilioField emailField = FieldFactory.getField("email", "EMAIL", pplModule, FieldType.STRING);
-        FacilioField phoneField = FieldFactory.getField("phone", "PHONE", pplModule, FieldType.STRING);
-
-        List<FacilioField> selectFieldsList = new ArrayList<>();
-        selectFieldsList.add(emailField);
-        selectFieldsList.add(phoneField);
-
-        internalAttendees.setSelectFields(selectFieldsList);
-
-        fetchLookupsList.add(facilityField);
-        fetchLookupsList.add(reservedFor);
-        fetchLookupsList.add(internalAttendees);
-
-        SelectRecordsBuilder<V3FacilityBookingContext> builder = new SelectRecordsBuilder<V3FacilityBookingContext>()
-                .moduleName(bookingModule)
-                .select(fields)
-                .beanClass(V3FacilityBookingContext.class)
-                .fetchSupplements(fetchLookupsList);
-        if(CollectionUtils.isNotEmpty(slotIds)) {
-        	builder.andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("slot"), StringUtils.join(slotIds,","), NumberOperators.EQUALS));
+            list = slotbuilder.get();
         }
-
-        List<V3FacilityBookingContext> list = builder.get();
-        if(CollectionUtils.isNotEmpty(list)) {
-            for(V3FacilityBookingContext booking : list) {
-                if (booking != null) {
-                    booking.setSlotList(FacilityAPI.getBookingSlots(booking.getId()));
-                }
-            }
-        }
+    	
+//        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+//        String bookingModule = FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING;
+//        List<FacilioField> fields = modBean.getAllFields(bookingModule);
+//        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+//        
+//        FacilioModule pplModule = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
+//
+//        List<SupplementRecord> fetchLookupsList = new ArrayList<>();
+//        LookupFieldMeta facilityField = new LookupFieldMeta((LookupField) fieldsAsMap.get("facility"));
+//        LookupField facilityLocationField = (LookupField) modBean.getField("location", FacilioConstants.ContextNames.FacilityBooking.FACILITY);
+//        facilityField.addChildLookupField(facilityLocationField);
+//
+//        SupplementRecord reservedFor = (SupplementRecord) fieldsAsMap.get("reservedFor");
+//
+//        MultiLookupMeta internalAttendees = new MultiLookupMeta((MultiLookupField) fieldsAsMap.get("internalAttendees"));
+//        FacilioField emailField = FieldFactory.getField("email", "EMAIL", pplModule, FieldType.STRING);
+//        FacilioField phoneField = FieldFactory.getField("phone", "PHONE", pplModule, FieldType.STRING);
+//
+//        List<FacilioField> selectFieldsList = new ArrayList<>();
+//        selectFieldsList.add(emailField);
+//        selectFieldsList.add(phoneField);
+//
+//        internalAttendees.setSelectFields(selectFieldsList);
+//
+//        fetchLookupsList.add(facilityField);
+//        fetchLookupsList.add(reservedFor);
+//        fetchLookupsList.add(internalAttendees);
+//
+//        SelectRecordsBuilder<V3FacilityBookingContext> builder = new SelectRecordsBuilder<V3FacilityBookingContext>()
+//                .moduleName(bookingModule)
+//                .select(fields)
+//                .beanClass(V3FacilityBookingContext.class)
+//                .fetchSupplements(fetchLookupsList);
+//        
+//
+//        List<V3FacilityBookingContext> list = builder.get();
+//        if(CollectionUtils.isNotEmpty(list)) {
+//            for(V3FacilityBookingContext booking : list) {
+//                if (booking != null) {
+//                    booking.setSlotList(FacilityAPI.getBookingSlots(booking.getId()));
+//                }
+//            }
+//        }
         return  list;
     }
 

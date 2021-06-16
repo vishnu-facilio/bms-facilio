@@ -10,9 +10,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.bmsconsoleV3.context.facilitybooking.BookingSlotsContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.FacilityContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.SlotContext;
-import com.facilio.bmsconsoleV3.context.facilitybooking.V3FacilityBookingContext;
 import com.facilio.bmsconsoleV3.util.FacilityAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -67,7 +67,7 @@ public class FetchFloorplanFacilitiesCommmand extends FacilioCommand {
 	
 	        List<FacilityContext> list = builder.get();
 	        Map<Long, FacilityContext> FacilitiesMap = new HashMap<>();
-	        Map<Long, List<V3FacilityBookingContext>> BookingsMap = new HashMap<>();
+	        Map<Long, List<BookingSlotsContext>> BookingsMap = new HashMap<>();
 	        for (FacilityContext facility : list) {
 	        	FacilitiesMap.put(facility.getParentId(), facility);
 	        	List<SlotContext> slotList = FacilityAPI.getAvailabilitySlots(facility, startTime, endTime);
