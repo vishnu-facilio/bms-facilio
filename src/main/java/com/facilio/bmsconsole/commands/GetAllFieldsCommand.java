@@ -5,6 +5,8 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.constants.FacilioConstants.Induction;
+import com.facilio.constants.FacilioConstants.Inspection;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
@@ -146,12 +148,27 @@ public class GetAllFieldsCommand extends FacilioCommand {
 						fields.add(fieldObject);
 					}
 				}
+				else if ( moduleName.equals(Inspection.INSPECTION_RESPONSE) || moduleName.equals(Induction.INDUCTION_RESPONSE) ) {
+					if(!fieldObject.getName().equals("template") && !fieldObject.getName().equals("sysCreatedTime")) {
+						fields.add(fieldObject);
+					}
+				}
 				else {
 					fields.add(fieldObject);
 				}
 			}
 		} else {
-			fields = allFields;
+			
+			for(FacilioField fieldObject:allFields) {
+				if ( moduleName.equals(Inspection.INSPECTION_RESPONSE) || moduleName.equals(Induction.INDUCTION_RESPONSE) ) {
+					if(!fieldObject.getName().equals("template") && !fieldObject.getName().equals("sysCreatedTime")) {
+						fields.add(fieldObject);
+					}
+				}
+				else {
+					fields.add(fieldObject);
+				}
+			}
 		}
 		
 		if (mod.isCustom() ) {
