@@ -28,8 +28,13 @@ public class AddCVCommand extends FacilioCommand {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			long viewId = view.getId();
 			Criteria viewCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
-			if (view.getCriteria() != null) {
+			if (viewCriteria != null && view.getCriteria() != null) {
+				viewCriteria.andCriteria(view.getCriteria());
+			}
+			else {
 				viewCriteria = view.getCriteria();
+			}
+			if (viewCriteria != null) {
 				for (String key : viewCriteria.getConditions().keySet()) {
 					Condition condition = viewCriteria.getConditions().get(key);
 					FacilioField field = modBean.getField(condition.getFieldName(), moduleName);
