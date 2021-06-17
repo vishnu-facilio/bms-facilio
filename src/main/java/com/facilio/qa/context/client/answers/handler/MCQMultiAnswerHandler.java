@@ -119,4 +119,26 @@ public class MCQMultiAnswerHandler extends AnswerHandler<MCQMultiAnswerContext> 
     public int computeFullScore(List<ScoringRuleCondition> conditions) {
         return ScoringRule.computeSumScore(conditions);
     }
+
+	@Override
+	public String getAnswerStringValue(AnswerContext answer, QuestionContext question) throws Exception {
+		// TODO Auto-generated method stub
+		List<MCQOptionContext> multiEnumAnswers = answer.getMultiEnumAnswer();
+		
+		MCQMultiContext mcqQuestion = (MCQMultiContext) question;
+		
+		Map<Long, MCQOptionContext> optionMap = mcqQuestion.getOptions().stream().collect(Collectors.toMap(MCQOptionContext::getId, Function.identity()));
+		
+		StringBuilder result = new StringBuilder();
+		
+		for(MCQOptionContext multiEnumAnswer : multiEnumAnswers) {
+			
+			if(!result.isEmpty()) {
+				result.append(", ");
+			}
+			result.append(optionMap.get(multiEnumAnswer.getId()).getLabel());
+		}
+		
+		return result.toString();
+	}
 }

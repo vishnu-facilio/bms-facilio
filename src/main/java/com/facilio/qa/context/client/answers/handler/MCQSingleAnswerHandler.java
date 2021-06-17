@@ -18,6 +18,8 @@ import com.facilio.time.DateRange;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
+import com.google.common.base.Functions;
+
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.MessageFormat;
@@ -89,4 +91,15 @@ public class MCQSingleAnswerHandler extends AnswerHandler<MCQSingleAnswerContext
 
         QAndAUtil.populateMCQSummary(props, questionMap, questionField, enumAnswerField, idField);
     }
+
+	@Override
+	public String getAnswerStringValue(AnswerContext answer, QuestionContext question) throws Exception {
+		// TODO Auto-generated method stub
+		MCQSingleContext mcqQuestion = (MCQSingleContext) question;
+		Long enumAnswer = answer.getEnumAnswer();
+		
+		 Map<Long, MCQOptionContext> posMap = mcqQuestion.getOptions().stream().collect(Collectors.toMap(MCQOptionContext::getId, Function.identity()));
+		
+		return posMap.get(enumAnswer).getLabel();
+	}
 }

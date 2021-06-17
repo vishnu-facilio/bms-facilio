@@ -39,4 +39,10 @@ public class DecimalAnswerHandler extends AnswerHandler<DecimalAnswerContext> {
     public boolean checkIfAnswerIsNull (AnswerContext answer) throws Exception {
         return answer.getDecimalAnswer() == null;
     }
+    
+    @Override
+	public String getAnswerStringValue(AnswerContext answer, QuestionContext question) throws Exception {
+		// TODO Auto-generated method stub
+        return answer.getDecimalAnswer().toString();
+	}
 }

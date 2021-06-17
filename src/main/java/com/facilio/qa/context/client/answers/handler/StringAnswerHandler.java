@@ -61,4 +61,15 @@ public class StringAnswerHandler extends AnswerHandler<StringAnswerContext> {
     public boolean checkIfAnswerIsNull (StringAnswerContext answer, QuestionContext question) throws Exception {
         return StringUtils.isEmpty(answer.getAnswer());
     }
+
+	@Override
+	public String getAnswerStringValue(AnswerContext answer, QuestionContext question) throws Exception {
+		// TODO Auto-generated method stub
+		if (isBigString) {
+            return null;
+        }
+        else {
+            return answer.getShortAnswer();
+        }
+	}
 }

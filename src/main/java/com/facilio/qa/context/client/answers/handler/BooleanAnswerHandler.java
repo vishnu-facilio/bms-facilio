@@ -5,6 +5,7 @@ import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.AnswerHandler;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.client.answers.BooleanAnswerContext;
+import com.facilio.qa.context.questions.BooleanQuestionContext;
 
 public class BooleanAnswerHandler extends AnswerHandler<BooleanAnswerContext> {
     public BooleanAnswerHandler(Class<BooleanAnswerContext> answerClass) {
@@ -29,4 +30,16 @@ public class BooleanAnswerHandler extends AnswerHandler<BooleanAnswerContext> {
     public boolean checkIfAnswerIsNull (AnswerContext answer) throws Exception {
         return answer.getBooleanAnswer() == null;
     }
+    
+    @Override
+	public String getAnswerStringValue(AnswerContext answer, QuestionContext question) throws Exception {
+		// TODO Auto-generated method stub
+    	BooleanQuestionContext booleanQuestion = (BooleanQuestionContext) question;
+    	if(answer.getBooleanAnswer()) {
+    		return booleanQuestion.getTrueLabel();
+    	}
+    	else {
+    		return booleanQuestion.getFalseLabel();
+    	}
+	}
 }

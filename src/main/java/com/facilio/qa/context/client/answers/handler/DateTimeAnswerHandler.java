@@ -5,6 +5,7 @@ import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.AnswerHandler;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.client.answers.DateTimeAnswerContext;
+import com.facilio.time.DateTimeUtil;
 
 public class DateTimeAnswerHandler extends AnswerHandler<DateTimeAnswerContext> {
     public DateTimeAnswerHandler(Class<DateTimeAnswerContext> answerClass) {
@@ -29,4 +30,10 @@ public class DateTimeAnswerHandler extends AnswerHandler<DateTimeAnswerContext> 
     public boolean checkIfAnswerIsNull (AnswerContext answer) throws Exception {
         return answer.getDateTimeAnswer() == null;
     }
+    
+    @Override
+	public String getAnswerStringValue(AnswerContext answer, QuestionContext question) throws Exception {
+		// TODO Auto-generated method stub
+        return DateTimeUtil.getFormattedTime(answer.getDateTimeAnswer());
+	}
 }

@@ -1,10 +1,11 @@
 package com.facilio.qa.context.client.answers.handler;
 
-import com.facilio.modules.FieldType;
 import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.AnswerHandler;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.client.answers.FileUploadAnswerContext;
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
 
@@ -34,4 +35,11 @@ public class FileUploadAnswerHandler extends AnswerHandler<FileUploadAnswerConte
     public boolean checkIfAnswerIsNull (AnswerContext answer) throws Exception {
         return answer.getFileAnswerId() == null;
     }
+
+	@Override
+	public String getAnswerStringValue(AnswerContext answer, QuestionContext question) throws Exception {
+		// TODO Auto-generated method stub
+		FileStore fs = FacilioFactory.getFileStore();
+		return fs.getFileInfo(answer.getFileAnswerId()).getFileName();
+	}
 }

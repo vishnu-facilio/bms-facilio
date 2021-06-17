@@ -69,9 +69,9 @@ public class ConstructActivityForAddOrUpdateAnswerCommand extends FacilioCommand
 		info.put("question", question.getQuestion());
 		
 		AnswerHandler handler = question.getQuestionType().getAnswerHandler();
-		ClientAnswerContext clientAnswer = handler.serialize(addedAnswer);
+		String answerString = handler.getAnswerStringValue(addedAnswer, question);
 		
-		info.put("answer", clientAnswer.getAnswer());
+		info.put("answer", answerString);
 		
 		return info;
 	}

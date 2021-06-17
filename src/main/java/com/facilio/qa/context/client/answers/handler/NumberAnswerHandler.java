@@ -39,4 +39,10 @@ public class NumberAnswerHandler extends AnswerHandler<NumberAnswerContext> {
     public boolean checkIfAnswerIsNull (AnswerContext answer) throws Exception {
         return answer.getNumberAnswer() == null;
     }
+    
+    @Override
+	public String getAnswerStringValue(AnswerContext answer, QuestionContext question) throws Exception {
+		// TODO Auto-generated method stub
+        return answer.getNumberAnswer().toString();
+	}
 }

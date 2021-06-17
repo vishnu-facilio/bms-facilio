@@ -7,6 +7,8 @@ import com.facilio.qa.context.answers.MultiFileAnswerContext;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.client.answers.MultiFileUploadAnswerContext;
 import com.facilio.qa.context.questions.MultiFileUploadQuestionContext;
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
 import lombok.SneakyThrows;
@@ -68,4 +70,23 @@ public class MultiFileUploadHandler extends AnswerHandler<MultiFileUploadAnswerC
     private boolean checkEachAnswerIsNull (List<MultiFileUploadAnswerContext.MultiFileAnswer> files) {
         return files.stream().anyMatch(f -> f.getId() == null);
     }
+
+	@Override
+	public String getAnswerStringValue(AnswerContext answer, QuestionContext question) throws Exception {
+		// TODO Auto-generated method stub
+		FileStore fs = FacilioFactory.getFileStore();
+		List<MultiFileAnswerContext> fileAnswers = answer.getMultiFileAnswer();
+		
+		StringBuilder result = new StringBuilder();
+		
+		for(MultiFileAnswerContext fileAnswer : fileAnswers) {
+			
+			if(!result.isEmpty()) {
+				result.append(", ");
+			}
+			
+			result.append(fs.getFileInfo(fileAnswer.getFileAnswerId()).getFileName());
+		}
+		return result.toString();
+	}
 }
