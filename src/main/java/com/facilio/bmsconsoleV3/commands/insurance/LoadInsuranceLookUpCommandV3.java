@@ -29,14 +29,15 @@ public class LoadInsuranceLookUpCommandV3 extends FacilioCommand {
         LookupField contactField = (LookupField) fieldsAsMap.get("vendor");
         LookupField addedByField = (LookupField) fieldsAsMap.get("addedBy");
         LookupField moduleStateField = (LookupField) fieldsAsMap.get("moduleState");
-        LookupField sysCreatedByField = (LookupField) fieldsAsMap.get("sysCreatedBy");
-        LookupField sysModifiedByField = (LookupField) fieldsAsMap.get("sysModifiedBy");
+       	
+		LookupField sysCreatedBy = (LookupField) FieldFactory.getSystemField("sysCreatedBy", modBean.getModule(moduleName));
+		additionaLookups.add(sysCreatedBy);
+		LookupField sysModifiedBy = (LookupField) FieldFactory.getSystemField("sysModifiedBy", modBean.getModule(moduleName));
+		additionaLookups.add(sysModifiedBy);
 
         additionaLookups.add(contactField);
         additionaLookups.add(addedByField);
         additionaLookups.add(moduleStateField);
-        additionaLookups.add(sysCreatedByField);
-        additionaLookups.add(sysModifiedByField);
 
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS,additionaLookups);
         return false;
