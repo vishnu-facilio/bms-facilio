@@ -251,16 +251,16 @@ public class InspectionPageFactory extends PageFactory {
 		}
 		
         
-//        Page.Tab activityTab = page.new Tab("Activity");
-//        Page.Section activitySec = page.new Section();
-//        
-//        PageWidget activityWidget = new PageWidget(PageWidget.WidgetType.ACTIVITY);
-//        activityWidget.addToLayoutParams(activitySec, 24, 3);
-//        activitySec.addWidget(activityWidget);
-//        
-//        activityTab.addSection(activitySec);
-//        
-//        page.addTab(activityTab);
+        Page.Tab activityTab = page.new Tab("Activity");
+        Page.Section activitySec = page.new Section();
+        
+        PageWidget activityWidget = new PageWidget(PageWidget.WidgetType.ACTIVITY);
+        activityWidget.addToLayoutParams(activitySec, 24, 3);
+        activitySec.addWidget(activityWidget);
+        
+        activityTab.addSection(activitySec);
+        
+        page.addTab(activityTab);
         
         return page;
 	}
