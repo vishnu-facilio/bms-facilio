@@ -142,7 +142,52 @@ public class AddInspectionModules extends SignUpData {
         
         addDefaultInspectionPriorities(insepctionPriorityModule,modBean);
         addDefaultInspectionCategories(insepctionCategoryModule,modBean);
+        
+        
+        addActivityModuleForInspectionResponse(inspectionResponseModule);
     }
+
+
+	public void addActivityModuleForInspectionResponse(FacilioModule inspectionResponseModule) throws Exception {
+		// TODO Auto-generated method stub
+		
+		FacilioModule module = new FacilioModule(FacilioConstants.Inspection.INSPECTION_RESPONSE_ACTIVITY,
+                "Inspection Response Activity",
+                "Q_And_A_Response_Activity",
+                FacilioModule.ModuleType.ACTIVITY
+                );
+
+				
+		List<FacilioField> fields = new ArrayList<>();
+		
+		LookupField baseSpace = (LookupField) FieldFactory.getDefaultField("parentId", "Parent", "PARENT_ID", FieldType.LOOKUP);
+		baseSpace.setLookupModule(inspectionResponseModule);
+		fields.add(baseSpace);
+		
+		FacilioField timefield = FieldFactory.getDefaultField("ttime", "Timestamp", "TTIME", FieldType.DATE_TIME);
+		
+		fields.add(timefield);
+		
+		NumberField type = (NumberField) FieldFactory.getDefaultField("type", "Type", "ACTIVITY_TYPE", FieldType.NUMBER);
+		fields.add(type);
+		
+		LookupField doneBy = (LookupField) FieldFactory.getDefaultField("doneBy", "Done By", "DONE_BY_ID", FieldType.LOOKUP);
+		doneBy.setSpecialType("users");
+		fields.add(doneBy);
+		
+		FacilioField info = FieldFactory.getDefaultField("infoJsonStr", "Info", "INFO", FieldType.STRING);
+		
+		fields.add(info);
+		
+		
+		module.setFields(fields);	
+        
+        FacilioChain addModuleChain1 = TransactionChainFactory.addSystemModuleChain();
+        addModuleChain1.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(module));
+        addModuleChain1.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
+        addModuleChain1.execute();
+		
+	}
 
 
 	public void addDefaultInspectionCategories(FacilioModule insepctionCategoryModule,ModuleBean modBean) throws Exception {

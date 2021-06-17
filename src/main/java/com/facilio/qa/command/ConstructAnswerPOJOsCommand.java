@@ -89,6 +89,7 @@ public class ConstructAnswerPOJOsCommand extends FacilioCommand {
         }
         context.put(FacilioConstants.QAndA.Command.ANSWER_LIST, answerContextList);
         context.put(FacilioConstants.QAndA.Command.QUESTION_VS_ANSWER, questionVsAnswer);
+        context.put(FacilioConstants.QAndA.Command.QUESTION_MAP, questions);
 
         return false;
     }

@@ -118,20 +118,50 @@ public class AddInductionModules extends SignUpData {
         
         addDefaultFormForInductionTemplate(induction);
         
+        addActivityModuleForInductionResponse(InductionResponseModule);
+        
 //        addDefaultScheduleJobs();
     }
 
-	private void addMultiEnumSiteLookupField(ModuleBean modBean, FacilioModule induction) throws Exception {
+	public void addActivityModuleForInductionResponse(FacilioModule inductionResponseModule) throws Exception {
 		// TODO Auto-generated method stub
 		
-		FacilioModule site = modBean.getModule(FacilioConstants.ContextNames.SITE);
+		
+		FacilioModule module = new FacilioModule(FacilioConstants.Induction.INDUCTION_RESPONSE_ACTIVITY,
+                "Induction Response Activity",
+                "Q_And_A_Response_Activity",
+                FacilioModule.ModuleType.ACTIVITY
+                );
 
-        MultiLookupField multiSiteField = (MultiLookupField) FieldFactory.getDefaultField("sites", "Sites", null, FieldType.MULTI_LOOKUP);
-        multiSiteField.setModule(induction);
-        multiSiteField.setParentFieldPositionEnum(MultiLookupField.ParentFieldPosition.LEFT);
-        multiSiteField.setLookupModule(site);
-
-        modBean.addField(multiSiteField);
+				
+		List<FacilioField> fields = new ArrayList<>();
+		
+		LookupField baseSpace = (LookupField) FieldFactory.getDefaultField("parentId", "Parent", "PARENT_ID", FieldType.LOOKUP);
+		baseSpace.setLookupModule(inductionResponseModule);
+		fields.add(baseSpace);
+		
+		FacilioField timefield = FieldFactory.getDefaultField("ttime", "Timestamp", "TTIME", FieldType.DATE_TIME);
+		
+		fields.add(timefield);
+		
+		NumberField type = (NumberField) FieldFactory.getDefaultField("type", "Type", "ACTIVITY_TYPE", FieldType.NUMBER);
+		fields.add(type);
+		
+		LookupField doneBy = (LookupField) FieldFactory.getDefaultField("doneBy", "Done By", "DONE_BY_ID", FieldType.LOOKUP);
+		doneBy.setSpecialType("users");
+		fields.add(doneBy);
+		
+		FacilioField info = FieldFactory.getDefaultField("infoJsonStr", "Info", "INFO", FieldType.STRING);
+		
+		fields.add(info);
+		
+		
+		module.setFields(fields);	
+        
+        FacilioChain addModuleChain1 = TransactionChainFactory.addSystemModuleChain();
+        addModuleChain1.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(module));
+        addModuleChain1.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
+        addModuleChain1.execute();
 	}
 
 	public void addDefaultStateFlowForInductionTemplate(FacilioModule inductionModule) throws Exception {
@@ -351,7 +381,7 @@ public class AddInductionModules extends SignUpData {
                                                 "Induction_Templates",
                                                 FacilioModule.ModuleType.Q_AND_A,
                                                 modBean.getModule(FacilioConstants.QAndA.Q_AND_A_TEMPLATE),
-                                    true
+                                                true
                                                 );
         
         module.setStateFlowEnabled(Boolean.TRUE);

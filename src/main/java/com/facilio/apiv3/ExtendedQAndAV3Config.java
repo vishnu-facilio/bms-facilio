@@ -1,5 +1,6 @@
 package com.facilio.apiv3;
 
+import com.facilio.bmsconsoleV3.commands.AddActivitiesCommandV3;
 import com.facilio.bmsconsoleV3.context.induction.InductionResponseContext;
 import com.facilio.bmsconsoleV3.context.induction.InductionTemplateContext;
 import com.facilio.bmsconsoleV3.context.induction.InductionTriggerIncludeExcludeResourceContext;
@@ -17,6 +18,7 @@ import com.facilio.qa.command.QAndATransactionChainFactory;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
+import com.facilio.v3.commands.ConstructAddCustomActivityCommandV3;
 
 import java.util.function.Supplier;
 
@@ -61,8 +63,12 @@ public class ExtendedQAndAV3Config {
     @Module(FacilioConstants.Inspection.INSPECTION_RESPONSE)
     public static Supplier<V3Config> getInspectionResponse() {
         return () -> new V3Config(InspectionResponseContext.class, null)
+        		.create()
+        		.afterSave(new ConstructAddCustomActivityCommandV3())
+        		.afterTransaction(new AddActivitiesCommandV3())
                 .update()
                 .beforeSave(QAndATransactionChainFactory.commonBeforeQAndAResponseUpdate())
+                .afterTransaction(new AddActivitiesCommandV3())
         		.list()
         		.beforeFetch(new InspectionSupplementSupplyCommand())
         		.summary()
@@ -123,8 +129,12 @@ public class ExtendedQAndAV3Config {
     @Module(FacilioConstants.Induction.INDUCTION_RESPONSE)
     public static Supplier<V3Config> getInductionResponse() {
         return () -> new V3Config(InductionResponseContext.class, null)
+        		.create()
+        		.afterSave(new ConstructAddCustomActivityCommandV3())
+        		.afterTransaction(new AddActivitiesCommandV3())
                 .update()
                 .beforeSave(QAndATransactionChainFactory.commonBeforeQAndAResponseUpdate())
+                .afterTransaction(new AddActivitiesCommandV3())
         		.list()
         		.beforeFetch(new InductionSupplementSupplyCommand())
         		.summary()

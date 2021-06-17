@@ -2416,6 +2416,8 @@ public class FacilioConstants {
 		public static final String INSPECTION_RESPONSE = "inspectionResponse";
 		public static final String INSPECTION_TRIGGER = "inspectionTrigger";
 		
+		public static final String INSPECTION_RESPONSE_ACTIVITY = "inspectionResponseActivity";
+		
 		public static final String INSPECTION_TRIGGER_INCL_EXCL = "inspectionTriggerResourceInclExcl";
 		
 		public static final String INSPECTION_CATEGORY = "inspectionCategory";
@@ -2425,6 +2427,8 @@ public class FacilioConstants {
 	public static class Induction {
 		public static final String INDUCTION_TEMPLATE = "inductionTemplate";
 		public static final String INDUCTION_RESPONSE = "inductionResponse";
+		
+		public static final String INDUCTION_RESPONSE_ACTIVITY = "inductionResponseActivity";
 		public static final String INDUCTION_TRIGGER = "inductionTrigger";
 		
 		public static final String INDUCTION_TRIGGER_INCL_EXCL = "inductionTriggerResourceInclExcl";

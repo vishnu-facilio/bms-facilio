@@ -47,7 +47,10 @@ public interface ActivityType {
 		for (ActivityType type: DeskActivityType.values()) {
 			activityMap.put(type.getValue(), type);
 		}
-		// Max number = 83
+		for (ActivityType type: QAndAActivityType.values()) {
+			activityMap.put(type.getValue(), type);
+		}
+		// Max number = 111
 
 		return activityMap;
 	}

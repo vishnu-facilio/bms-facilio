@@ -1,7 +1,7 @@
 package com.facilio.qa.command;
 
 import com.facilio.bmsconsole.commands.VerifyApprovalCommand;
-
+import com.facilio.bmsconsoleV3.commands.AddActivitiesCommandV3;
 import com.facilio.chain.FacilioChain;
 
 public class QAndATransactionChainFactory {
@@ -140,6 +140,8 @@ public class QAndATransactionChainFactory {
         c.addCommand(new UpdateAnswersCommand());
         c.addCommand(new ConstructAnswerResponseCommand());
         c.addCommand(new UpdateResponseStateCommand());
+        c.addCommand(new ConstructActivityForAddOrUpdateAnswerCommand());
+        c.addCommand(new AddActivitiesCommandV3());
         return c;
     }
 
