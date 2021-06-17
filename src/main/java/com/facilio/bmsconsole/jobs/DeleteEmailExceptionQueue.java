@@ -5,8 +5,8 @@ import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.queue.FacilioQueueException;
-import com.facilio.tasker.job.FacilioJob;
-import com.facilio.tasker.job.JobContext;
+import com.facilio.taskengine.job.FacilioJob;
+import com.facilio.taskengine.job.JobContext;
 
 public class DeleteEmailExceptionQueue extends FacilioJob {
 

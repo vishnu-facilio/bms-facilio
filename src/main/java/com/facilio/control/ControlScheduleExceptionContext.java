@@ -7,7 +7,7 @@ import org.json.simple.parser.ParseException;
 
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FieldUtil;
-import com.facilio.tasker.ScheduleInfo;
+import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.V3Context;
 

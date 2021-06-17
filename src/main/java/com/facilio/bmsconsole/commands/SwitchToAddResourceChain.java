@@ -61,7 +61,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.tasker.ScheduleInfo;
+import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.ParameterContext;

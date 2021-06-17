@@ -9,7 +9,7 @@ import java.util.Map;
 import org.json.simple.JSONObject;
 
 import com.facilio.modules.FieldUtil;
-import com.facilio.tasker.ScheduleInfo;
+import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.exceptions.FunctionParamException;
 

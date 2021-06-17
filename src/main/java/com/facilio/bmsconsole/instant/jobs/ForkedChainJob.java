@@ -10,7 +10,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.tasker.job.InstantJob;
+import com.facilio.taskengine.job.InstantJob;
 
 public class ForkedChainJob extends InstantJob {
 

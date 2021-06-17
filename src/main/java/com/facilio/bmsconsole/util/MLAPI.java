@@ -40,7 +40,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
-import com.facilio.tasker.ScheduleInfo;
+import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.time.DateRange;
 
 public class MLAPI {

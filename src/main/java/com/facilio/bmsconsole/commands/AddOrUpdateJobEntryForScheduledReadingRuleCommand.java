@@ -7,7 +7,7 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.FacilioTimer;
-import com.facilio.tasker.job.JobContext;
+import com.facilio.taskengine.job.JobContext;
 import com.facilio.time.DateTimeUtil;
 
 public class AddOrUpdateJobEntryForScheduledReadingRuleCommand extends FacilioCommand {

@@ -26,7 +26,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.report.context.ReportContext;
 import com.facilio.tasker.FacilioTimer;
-import com.facilio.tasker.job.JobContext;
+import com.facilio.taskengine.job.JobContext;
 
 ;
 

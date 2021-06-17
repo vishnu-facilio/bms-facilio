@@ -4,7 +4,7 @@ import java.time.LocalTime;
 
 import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
-import com.facilio.tasker.ScheduleInfo;
+import com.facilio.taskengine.ScheduleInfo;
 
 public class ScheduledActionContext {
 

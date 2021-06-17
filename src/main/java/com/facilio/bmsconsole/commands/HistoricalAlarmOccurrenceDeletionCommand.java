@@ -1,54 +1,34 @@
-package com.facilio.bmsconsole.commands;	
+package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-
-import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.util.*;
-import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.PostTransactionCommand;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.enums.RuleJobType;
+import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
-import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
+import com.facilio.command.PostTransactionCommand;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.transaction.NewTransactionService;
-import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.DeleteRecordBuilder;
-import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.UpdateRecordBuilder;
-import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
-import com.facilio.tasker.job.FacilioJob;
-import com.facilio.tasker.job.JobContext;
 import com.facilio.time.DateRange;
-import com.facilio.time.DateTimeUtil;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.logging.Logger;
 
 public class HistoricalAlarmOccurrenceDeletionCommand extends FacilioCommand implements PostTransactionCommand{
 	

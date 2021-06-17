@@ -22,8 +22,8 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.tasker.ScheduleInfo;
-import com.facilio.tasker.job.JobContext;
+import com.facilio.taskengine.ScheduleInfo;
+import com.facilio.taskengine.job.JobContext;
 
 public class DigestConfigAPI {
 

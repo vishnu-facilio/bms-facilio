@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.bmsconsole.context.OperationAlarmHistoricalLogsContext;
 import com.facilio.bmsconsole.util.OperationAlarmApi;
+import com.facilio.command.PostTransactionCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateTimeUtil;

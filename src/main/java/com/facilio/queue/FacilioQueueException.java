@@ -22,7 +22,7 @@ public class FacilioQueueException {
 
 	public static List<QueueMessage> pull(int limit) throws Exception{
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.INSTANT_JOB_SERVICE,() ->getInstance().pull(limit));
-	}		
+	}
 
 	public static void deleteQueue(String messageId) throws Exception {
 		FacilioService.runAsService(FacilioConstants.Services.INSTANT_JOB_SERVICE,() ->getInstance().delete(messageId));
@@ -31,8 +31,9 @@ public class FacilioQueueException {
 	public static boolean changeVisibilityTimeout(String receiptHandle, int visibilityTimeout) throws Exception {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.INSTANT_JOB_SERVICE,() ->getInstance().changeVisibilityTimeout(receiptHandle, visibilityTimeout));
 	}
-	
+
 	public static void deleteExceptionQueue(long deleteTime) throws Exception {
 		getInstance().deleteQueue(deleteTime);
 	}
 }
+

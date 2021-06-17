@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.chain.FacilioChain;
+import com.facilio.command.PostTransactionCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
@@ -22,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-public class HistoricalOperationalAlarmProcessingCommand extends FacilioCommand implements PostTransactionCommand{
+public class HistoricalOperationalAlarmProcessingCommand extends FacilioCommand implements PostTransactionCommand {
     private static final Logger LOGGER = Logger.getLogger(HistoricalOperationalAlarmProcessingCommand.class.getName());
     private OperationAlarmHistoricalLogsContext parentResourceLoggerContext = null;
     private Long parentLoggerId = null;

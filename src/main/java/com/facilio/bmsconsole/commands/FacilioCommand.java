@@ -2,7 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.text.MessageFormat;
 
-import org.apache.commons.chain.Command;
+import com.facilio.command.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.chain.Filter;
 import org.apache.log4j.LogManager;
@@ -10,7 +10,7 @@ import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 
-public abstract class FacilioCommand implements Command, Filter {
+public abstract class FacilioCommand extends Command implements Filter {
 	
 	private static final Logger LOGGER = LogManager.getLogger(FacilioCommand.class.getName());
 	

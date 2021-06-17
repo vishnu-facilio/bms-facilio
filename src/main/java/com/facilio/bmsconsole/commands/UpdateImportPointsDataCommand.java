@@ -1,36 +1,18 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
+import com.facilio.chain.FacilioContext;
+import com.facilio.command.PostTransactionCommand;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.tasker.FacilioTimer;
+import com.facilio.timeseries.TimeSeriesAPI;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.bacnet.BACNetUtil.InstanceType;
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ReadingDataMeta;
-import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
-import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingType;
-import com.facilio.bmsconsole.util.ReadingsAPI;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericUpdateRecordBuilder;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.db.transaction.FacilioTransactionManager;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.tasker.FacilioTimer;
-import com.facilio.timeseries.TimeSeriesAPI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class UpdateImportPointsDataCommand extends FacilioCommand implements PostTransactionCommand {
 

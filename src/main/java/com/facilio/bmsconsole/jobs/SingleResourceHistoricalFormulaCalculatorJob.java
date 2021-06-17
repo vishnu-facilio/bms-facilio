@@ -13,8 +13,8 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.transaction.FacilioTransactionManager;
 import com.facilio.fw.BeanFactory;
 
-import com.facilio.tasker.job.FacilioJob;
-import com.facilio.tasker.job.JobContext;
+import com.facilio.taskengine.job.FacilioJob;
+import com.facilio.taskengine.job.JobContext;
 
 public class SingleResourceHistoricalFormulaCalculatorJob extends FacilioJob {
 	

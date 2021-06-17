@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.io.File;
 import java.util.List;
 
+import com.facilio.command.PostTransactionCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -12,7 +13,7 @@ import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.pdf.PdfUtil;
 
-public class VisitorNDAPostTransactionCommand extends FacilioCommand implements PostTransactionCommand{
+public class VisitorNDAPostTransactionCommand extends FacilioCommand implements PostTransactionCommand {
 
 	Context context = null;
 	@Override

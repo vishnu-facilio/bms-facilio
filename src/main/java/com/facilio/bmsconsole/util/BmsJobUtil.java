@@ -22,7 +22,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
-import com.facilio.tasker.ScheduleInfo;
+import com.facilio.taskengine.ScheduleInfo;
 
 public class BmsJobUtil {
 	public static void scheduleCalendarJobWithProps(long jobId, String jobName, long startTime, ScheduleInfo schedule, String executorName, JSONObject props) throws Exception {

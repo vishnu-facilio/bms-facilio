@@ -4,7 +4,7 @@ import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.Announcem
 import com.facilio.bmsconsoleV3.util.CommunityFeaturesAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.tasker.job.InstantJob;
+import com.facilio.taskengine.job.InstantJob;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;

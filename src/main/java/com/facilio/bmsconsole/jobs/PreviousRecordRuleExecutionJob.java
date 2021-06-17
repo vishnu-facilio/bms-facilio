@@ -7,8 +7,8 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.tasker.job.FacilioJob;
-import com.facilio.tasker.job.JobContext;
+import com.facilio.taskengine.job.FacilioJob;
+import com.facilio.taskengine.job.JobContext;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 

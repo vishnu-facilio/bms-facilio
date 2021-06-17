@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.util.AttachmentsAPI;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
+import com.facilio.command.PostTransactionCommand;
 import com.facilio.constants.FacilioConstants;
 
 public class BulkAddAttachmentRelationshipCommand extends FacilioCommand implements PostTransactionCommand {

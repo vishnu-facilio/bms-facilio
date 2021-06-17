@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.tasker.ScheduleInfo;
+import com.facilio.taskengine.ScheduleInfo;
 
 public class ContractsContext extends ModuleBaseWithCustomFields{
 

@@ -4,7 +4,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.tasker.FacilioTimer;
-import com.facilio.tasker.ScheduleInfo;
+import com.facilio.taskengine.ScheduleInfo;
 
 import java.time.LocalTime;
 

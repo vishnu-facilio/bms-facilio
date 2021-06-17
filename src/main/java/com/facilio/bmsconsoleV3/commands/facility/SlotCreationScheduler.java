@@ -2,8 +2,8 @@ package com.facilio.bmsconsoleV3.commands.facility;
 
 import com.facilio.bmsconsoleV3.context.facilitybooking.FacilityContext;
 import com.facilio.bmsconsoleV3.util.FacilityAPI;
-import com.facilio.tasker.job.FacilioJob;
-import com.facilio.tasker.job.JobContext;
+import com.facilio.taskengine.job.FacilioJob;
+import com.facilio.taskengine.job.JobContext;
 import com.facilio.time.DateTimeUtil;
 import org.apache.commons.collections4.CollectionUtils;
 

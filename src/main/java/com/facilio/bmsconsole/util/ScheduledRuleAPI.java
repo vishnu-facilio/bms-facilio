@@ -7,8 +7,8 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
-import com.facilio.tasker.ScheduleInfo;
-import com.facilio.tasker.ScheduleInfo.FrequencyType;
+import com.facilio.taskengine.ScheduleInfo;
+import com.facilio.taskengine.ScheduleInfo.FrequencyType;
 import com.facilio.time.SecondsChronoUnit;
 
 public class ScheduledRuleAPI extends WorkflowRuleAPI {

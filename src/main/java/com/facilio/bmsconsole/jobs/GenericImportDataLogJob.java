@@ -12,7 +12,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.FacilioTimer;
-import com.facilio.tasker.job.InstantJob;
+import com.facilio.taskengine.job.InstantJob;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
 

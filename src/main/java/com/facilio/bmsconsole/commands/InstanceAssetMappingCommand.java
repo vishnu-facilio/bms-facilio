@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.facilio.command.PostTransactionCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 

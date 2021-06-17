@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.command.PostTransactionCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
@@ -53,7 +54,7 @@ import com.facilio.time.DateTimeUtil;
 import com.facilio.workflows.context.WorkflowFieldContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
-public class HistoricalRunForReadingRuleCommand extends FacilioCommand implements PostTransactionCommand{
+public class HistoricalRunForReadingRuleCommand extends FacilioCommand implements PostTransactionCommand {
 
 private static final Logger LOGGER = Logger.getLogger(HistoricalRunForReadingRuleCommand.class.getName());
 	

@@ -20,7 +20,7 @@ import com.facilio.bmsconsole.context.ConnectedDeviceContext;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.opensymphony.xwork2.ActionContext;
 
-public class Account implements AccountsInterface<User>, Serializable{
+public class Account implements AccountsInterface<User>, AccountStats, Serializable{
 
 	/**
 	 *
@@ -731,6 +731,11 @@ public class Account implements AccountsInterface<User>, Serializable{
 
 	public void setApp(ApplicationContext app) {
 		this.app = app;
+	}
+
+	@Override
+	public AccountStats getAccountStats() {
+		return this;
 	}
 }
 

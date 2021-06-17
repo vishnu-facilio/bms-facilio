@@ -11,8 +11,8 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.control.ControlGroupContext;
 import com.facilio.control.util.ControlScheduleUtil;
-import com.facilio.tasker.job.FacilioJob;
-import com.facilio.tasker.job.JobContext;
+import com.facilio.taskengine.job.FacilioJob;
+import com.facilio.taskengine.job.JobContext;
 import com.facilio.time.DateTimeUtil;
 
 public class ControlScheduleSlotCreationJob extends FacilioJob {

@@ -730,6 +730,8 @@ public class FacilioProperties {
 		FacilioProperties.passwordHasingFunction = passwordHasingFunction;
 	}
 
-   
+	public static boolean isInstantJobServer(){
+        return Boolean.parseBoolean(getConfig("instantJobServer"));
+    }
 
 }

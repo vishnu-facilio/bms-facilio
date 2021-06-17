@@ -12,7 +12,7 @@ import com.facilio.bmsconsole.workflow.rule.ActionType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.services.factory.FacilioFactory;
-import com.facilio.tasker.job.InstantJob;
+import com.facilio.taskengine.job.InstantJob;
 
 public class SendNotificationJob extends InstantJob {
 

@@ -56,6 +56,7 @@ import com.facilio.mv.context.MVAdjustment;
 import com.facilio.mv.context.MVBaseline;
 import com.facilio.mv.context.MVProjectContext;
 import com.facilio.qa.context.*;
+import com.facilio.taskengine.common.JobConstants;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.AttachmentV3Context;
 import com.facilio.v3.util.ChainUtil;
@@ -321,7 +322,6 @@ public class FacilioConstants {
 		
 		public static final String ROLE_ID = "roleId";
 		public static final String ROLE = "role";
-		public static final String ROLES_APPS = "rolesApps";
 		public static final String PERMISSIONS= "permissions";
 		
 		public static final String BUSINESS_HOUR_IDS = "businesshourids";
@@ -2418,7 +2418,7 @@ public class FacilioConstants {
 		public static final String INSPECTION_TRIGGER = "inspectionTrigger";
 		
 		public static final String INSPECTION_RESPONSE_ACTIVITY = "inspectionResponseActivity";
-		
+
 		public static final String INSPECTION_TRIGGER_INCL_EXCL = "inspectionTriggerResourceInclExcl";
 		
 		public static final String INSPECTION_CATEGORY = "inspectionCategory";
@@ -2428,7 +2428,7 @@ public class FacilioConstants {
 	public static class Induction {
 		public static final String INDUCTION_TEMPLATE = "inductionTemplate";
 		public static final String INDUCTION_RESPONSE = "inductionResponse";
-		
+
 		public static final String INDUCTION_RESPONSE_ACTIVITY = "inductionResponseActivity";
 		public static final String INDUCTION_TRIGGER = "inductionTrigger";
 		
@@ -2510,10 +2510,10 @@ public class FacilioConstants {
 	public static class Services{
 		public static final String APP_SERVICE = "app";
 		public static final String IAM_SERVICE = "iam";
-		public static final String JOB_SERVICE = "jobs";
+		public static final String JOB_SERVICE = JobConstants.JOB_SERVICE;
 		public static final String AGENT_SERVICE = "agent";
 		public static final String DEFAULT_SERVICE = "default";
-		public static final String INSTANT_JOB_SERVICE = "instantJob";
+		public static final String INSTANT_JOB_SERVICE = JobConstants.INSTANT_JOB_SERVICE;
 		public static final String WMS_SERVICE = "wms";
 		public static final String TEMP_JOBS = "tempjobs";
 		public static final String AUDIT_SERVICE = "auditlogs";
@@ -2650,7 +2650,7 @@ public class FacilioConstants {
 		public static final String SUPER_ADMIN = "Super Administrator";
 		public static final String ADMIN = "Administrator";
 	}
-	
+
 	public static class TableNames{
 		public static final String WORK_ORDER = "Workorders";
 		public static final String TICKET_STATUS = "TicketStatus";

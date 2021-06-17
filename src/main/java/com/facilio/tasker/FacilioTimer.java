@@ -2,23 +2,23 @@ package com.facilio.tasker;
 
 import java.util.List;
 
+import com.facilio.chain.FacilioContext;
+import com.facilio.taskengine.ScheduleInfo;
+import com.facilio.taskengine.job.JobContext;
+import com.facilio.taskengine.job.JobStore;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.service.FacilioService;
-import com.facilio.tasker.ScheduleInfo.FrequencyType;
-import com.facilio.tasker.job.JobContext;
-import com.facilio.tasker.job.JobStore;
 
 public class FacilioTimer {
-	
+
 	private static final Logger LOGGER = LogManager.getLogger(FacilioTimer.class.getName());
-	
+
 	private FacilioTimer() {
 		// TODO Auto-generated constructor stub
 	}
@@ -27,27 +27,27 @@ public class FacilioTimer {
 		long nextExecutionTime = schedule.nextExecutionTime(getStartTimeInSecond(startTime));
 		scheduleJob(jobId, jobName, nextExecutionTime, -1, schedule, executorName, -1, -1);
 	}
-	
+
 	public static void scheduleCalendarJob(long jobId, String jobName, long startTime, ScheduleInfo schedule, String executorName, int maxExecution) throws Exception {
 		long nextExecutionTime = schedule.nextExecutionTime(getStartTimeInSecond(startTime));
 		scheduleJob(jobId, jobName, nextExecutionTime, -1, schedule, executorName, maxExecution, -1);
 	}
-	
+
 	public static void scheduleCalendarJob(long jobId, String jobName, long startTime, ScheduleInfo schedule, String executorName, long endTime) throws Exception {
 		long nextExecutionTime = schedule.nextExecutionTime(getStartTimeInSecond(startTime));
 		scheduleJob(jobId, jobName, nextExecutionTime, -1, schedule, executorName, -1, endTime);
 	}
-	
+
 	public static void schedulePeriodicJob(long jobId, String jobName, long delay, int period, String executorName) throws Exception {
 		long nextExecutionTime = (System.currentTimeMillis()/1000)+delay;
 		scheduleJob(jobId, jobName, nextExecutionTime, period, null, executorName, -1, -1);
 	}
-	
+
 	public static void schedulePeriodicJob(long jobId, String jobName, long delay, int period, String executorName, int maxExecution) throws Exception {
 		long nextExecutionTime = (System.currentTimeMillis()/1000)+delay;
 		scheduleJob(jobId, jobName, nextExecutionTime, period, null, executorName, maxExecution, -1);
 	}
-	
+
 	public static void schedulePeriodicJob(long jobId, String jobName, long delay, int period, String executorName, long endTime) throws Exception {
 		long nextExecutionTime = (System.currentTimeMillis()/1000)+delay;
 		scheduleJob(jobId, jobName, nextExecutionTime, period, null, executorName, -1, endTime);
@@ -68,7 +68,7 @@ public class FacilioTimer {
 		}
 		else if (schedule != null) {
 			jc.setSchedule(schedule);
-			if(schedule.getFrequencyTypeEnum() != FrequencyType.DO_NOT_REPEAT) {
+			if(schedule.getFrequencyTypeEnum() != ScheduleInfo.FrequencyType.DO_NOT_REPEAT) {
 				jc.setIsPeriodic(true);
 			}
 		}
@@ -104,9 +104,9 @@ public class FacilioTimer {
 		long nextExecutionTime = (System.currentTimeMillis()/1000)+delayInSec;
 		scheduleOneTimeJobWithTimestampInSec(jobId, jobName, nextExecutionTime, executorName);
 	}
-	
+
 	public static void scheduleOneTimeJobWithTimestampInSec(long jobId, String jobName, long nextExecutionTime, String executorName) throws Exception {
-		
+
 		JobContext jc = new JobContext();
 		jc.setJobId(jobId);
 		jc.setOrgId(getCurrentOrgId());
@@ -121,7 +121,7 @@ public class FacilioTimer {
 		}
 		FacilioService.runAsService(FacilioConstants.Services.JOB_SERVICE,() -> JobStore.addJob(jc));
 	}
-	
+
 	public static void deleteJob(long jobId, String jobName) throws Exception {
 		long orgId = getCurrentOrgId();
 		FacilioService.runAsService(FacilioConstants.Services.JOB_SERVICE,() -> JobStore.deleteJob(orgId, jobId, jobName));
@@ -131,7 +131,7 @@ public class FacilioTimer {
 		long orgId = getCurrentOrgId();
 		FacilioService.runAsService(FacilioConstants.Services.JOB_SERVICE,() -> JobStore.deleteJobs(orgId,jobIds,jobName));
 	}
-	
+
 	public static JobContext getJob(long jobId, String jobName) throws Exception {
 		long orgId = getCurrentOrgId();
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,() -> JobStore.getJob(orgId, jobId, jobName));
@@ -141,7 +141,7 @@ public class FacilioTimer {
 		long orgId = getCurrentOrgId();
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,() -> JobStore.getJobs(orgId,jobIds,jobName));
 	}
-	
+
 	public static List<JobContext> getActiveJobs ( List<Long> jobIds,String jobName ) throws Exception {
 		long orgId = getCurrentOrgId();
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,() -> JobStore.getJobs(orgId,jobIds,jobName, true));
@@ -162,14 +162,14 @@ public class FacilioTimer {
 		if(AccountUtil.getCurrentOrg() != null) {
 			orgId = AccountUtil.getCurrentOrg().getOrgId();
 		}
-		
+
 		return orgId;
 	}
-	
+
 	private static long getStartTimeInSecond(long startTime) {
 		long startTimeInSecond = startTime/1000;
 		startTimeInSecond = startTimeInSecond - 300; //for calculating next execution time
-		
+
 		return startTimeInSecond;
 	}
 

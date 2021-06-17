@@ -14,7 +14,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.tasker.job.JobContext;
+import com.facilio.taskengine.job.JobContext;
 
 public class FetchRuleMatchingSpecificRecordCommand extends FacilioCommand{
 

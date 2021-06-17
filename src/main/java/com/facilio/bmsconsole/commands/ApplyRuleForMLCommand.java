@@ -1,16 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.bmsconsole.context.MLContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.taskengine.job.JobContext;
+import com.facilio.tasker.FacilioTimer;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
-
-import com.facilio.bmsconsole.context.MLContext;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.tasker.FacilioTimer;
-import com.facilio.tasker.job.JobContext;
-import com.facilio.util.FacilioUtil;
 
 public class ApplyRuleForMLCommand extends FacilioCommand {
 

@@ -7,8 +7,8 @@ import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.util.DeviceAPI;
-import com.facilio.tasker.job.FacilioJob;
-import com.facilio.tasker.job.JobContext;
+import com.facilio.taskengine.job.FacilioJob;
+import com.facilio.taskengine.job.JobContext;
 
 public class DummyVMCalculator extends FacilioJob {
 

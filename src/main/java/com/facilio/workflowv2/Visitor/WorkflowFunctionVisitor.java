@@ -23,7 +23,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.tasker.ScheduleInfo;
+import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.time.DateRange;
 import com.facilio.util.ArithmeticUtil;
 import com.facilio.workflows.context.ParameterContext;

@@ -3,11 +3,12 @@ package com.facilio.events.commands;
 import java.util.*;
 
 import com.facilio.activity.AlarmActivityType;
-import com.facilio.bmsconsole.commands.PostTransactionCommand;
+import com.facilio.command.PostTransactionCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.command.PostTransactionCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;

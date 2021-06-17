@@ -1,40 +1,29 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
-import com.facilio.bmsconsole.context.HistoricalLoggerContext;
 import com.facilio.bmsconsole.context.LoggerContext;
-import com.facilio.bmsconsole.jobs.HistoricalVMEnergyDataCalculatorJob;
 import com.facilio.bmsconsole.jobs.SingleResourceHistoricalFormulaCalculatorJob;
 import com.facilio.bmsconsole.util.BmsJobUtil;
-import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
-import com.facilio.bmsconsole.util.HistoricalLoggerUtil;
 import com.facilio.bmsconsole.util.LoggerAPI;
-import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.command.PostTransactionCommand;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.services.factory.FacilioFactory;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
-public class HistoricalFormulaFieldCalculationCommand extends FacilioCommand implements PostTransactionCommand{
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class HistoricalFormulaFieldCalculationCommand extends FacilioCommand implements PostTransactionCommand {
 
 private static final Logger LOGGER = Logger.getLogger(SingleResourceHistoricalFormulaCalculatorJob.class.getName());
 	

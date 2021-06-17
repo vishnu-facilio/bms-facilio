@@ -5,7 +5,6 @@ import com.facilio.bmsconsole.context.AggregationColumnMetaContext;
 import com.facilio.bmsconsole.context.AggregationMetaContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.util.AggregationAPI;
-import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.DateOperators;
@@ -14,13 +13,12 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.report.util.FilterUtil;
-import com.facilio.tasker.job.FacilioJob;
-import com.facilio.tasker.job.JobContext;
+import com.facilio.taskengine.job.FacilioJob;
+import com.facilio.taskengine.job.JobContext;
 import com.facilio.time.DateRange;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.sql.SQLException;
 import java.util.*;
 
 public class AggregationJob extends FacilioJob {

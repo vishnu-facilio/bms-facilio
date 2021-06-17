@@ -24,7 +24,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.tasker.job.InstantJob;
+import com.facilio.taskengine.job.InstantJob;
 
 public class PublishedDataCheckerJob extends InstantJob {
 	

@@ -37,6 +37,8 @@ import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.util.FacilioUtil;
 
+import com.facilio.chain.FacilioChain;
+
 public class BmsDBConf extends DBConf {
     private static final Logger LOGGER = LogManager.getLogger(BmsDBConf.class.getName());
 
@@ -155,14 +157,14 @@ public class BmsDBConf extends DBConf {
     @Override
     public ZoneId getCurrentZoneId() {
         //TODO TimeZone related changes to be done.
-    	
+
     		Account currentAccount = AccountUtil.getCurrentAccount();
     		if(currentAccount != null) {
     			String zone = currentAccount.getTimeZone();
     		 	if(StringUtils.isNotEmpty(zone)) {
     		 		return ZoneId.of(zone.trim());
     		 	}
-    		}    	
+    		}
     	return DBConf.getInstance().isDevelopment() ? ZoneId.systemDefault() : ZoneId.of("Z");
     }
 
@@ -449,12 +451,12 @@ public class BmsDBConf extends DBConf {
     public void incrementDeleteQueryTime(long duration) {
         AccountUtil.incrementDeleteQueryTime(duration);
     }
-    
+
     @Override
     public void incrementInstantJobCount(int count) {
     	AccountUtil.incrementInstantJobCount(count);
     }
-    
+
     @Override
     public void incrementInstantJobFileAddTime(long duration) {
         AccountUtil.incrementInstantJobFileAddTime(duration);
@@ -514,7 +516,22 @@ public class BmsDBConf extends DBConf {
         return super.logQueries();
     }
 
-	@Override
+    @Override
+	public void cleanCurrentAccount() throws Exception {
+        AccountUtil.cleanCurrentAccount();
+	}
+
+    @Override
+    public void setCurrentAccount(long l) throws Exception {
+        AccountUtil.setCurrentAccount(l);
+    }
+
+    @Override
+    public void setReqUri(String s) {
+        AccountUtil.setReqUri(s);
+    }
+
+    @Override
 	public Account getCurrentAccount() throws Exception {
 		return AccountUtil.getCurrentAccount();
 	}
@@ -528,15 +545,14 @@ public class BmsDBConf extends DBConf {
     public void setNewAccount(AccountsInterface account) throws Exception {
         AccountUtil.setCurrentAccount((Account)account);
     }
-	
+
 	@Override
 	public void removeOrgCache(long currentOrgId) {
-		ResponseCacheUtil.removeOrgCache(DBConf.getInstance().getCurrentOrgId());		
+		ResponseCacheUtil.removeOrgCache(DBConf.getInstance().getCurrentOrgId());
 	}
 
 	@Override
 	public long addFile(String msg, String fileName,String contentType) throws Exception {
-		// TODO Auto-generated method stub
 		return FacilioFactory.getFileStore().addFile(fileName, msg,contentType );
 	}
 
@@ -547,7 +563,6 @@ public class BmsDBConf extends DBConf {
 
     @Override
 	public InputStream getFileContent(long fileId) throws Exception {
-		// TODO Auto-generated method stub
 		return FacilioFactory.getFileStore().readFile(fileId);
 	}
 
@@ -558,7 +573,6 @@ public class BmsDBConf extends DBConf {
 
     @Override
 	public boolean deleteFileContent(List<Long> fileIds) throws Exception {
-		// TODO Auto-generated method stub
 		return FacilioFactory.getFileStore().deleteFiles(fileIds);
 	}
 
@@ -575,7 +589,6 @@ public class BmsDBConf extends DBConf {
     private static final String TRANSACTION_ROOT_CHAIN = "transactionRootChain";
     @Override
     public Map<String, Object> getOtherTransactionThreadLocalProps() {
-        FacilioChain rootChain = FacilioChain.getRootchain();
 //        LOGGER.debug(MessageFormat.format("Prev Root chain before new transaction : {0}", rootChain));
         return Collections.singletonMap(TRANSACTION_ROOT_CHAIN, FacilioChain.getRootchain());
     }

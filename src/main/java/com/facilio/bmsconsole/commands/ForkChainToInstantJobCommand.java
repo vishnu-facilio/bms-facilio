@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.facilio.command.PostTransactionCommand;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 

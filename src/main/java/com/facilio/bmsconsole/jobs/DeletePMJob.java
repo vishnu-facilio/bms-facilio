@@ -4,8 +4,8 @@ import java.util.Collections;
 import java.util.List;
 
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
-import com.facilio.tasker.job.FacilioJob;
-import com.facilio.tasker.job.JobContext;
+import com.facilio.taskengine.job.FacilioJob;
+import com.facilio.taskengine.job.JobContext;
 
 public class DeletePMJob extends FacilioJob {
     @Override

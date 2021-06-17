@@ -13,8 +13,8 @@ import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.tasker.job.FacilioJob;
-import com.facilio.tasker.job.JobContext;
+import com.facilio.taskengine.job.FacilioJob;
+import com.facilio.taskengine.job.JobContext;
 
 public class ShiftStartJob extends FacilioJob{
 	private static final Logger logger = Logger.getLogger(ShiftStartJob.class.getName());

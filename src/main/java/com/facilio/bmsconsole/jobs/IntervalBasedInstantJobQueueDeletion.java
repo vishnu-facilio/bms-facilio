@@ -28,8 +28,8 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.modules.fields.SystemEnumField;
 import com.facilio.service.FacilioService;
-import com.facilio.tasker.job.FacilioJob;
-import com.facilio.tasker.job.JobContext;
+import com.facilio.taskengine.job.FacilioJob;
+import com.facilio.taskengine.job.JobContext;
 
 public class IntervalBasedInstantJobQueueDeletion extends FacilioJob {
 	

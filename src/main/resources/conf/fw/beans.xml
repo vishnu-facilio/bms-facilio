@@ -1,5 +1,4 @@
 <beans>
-	<bean name="Tasker" class="com.facilio.tasker.TaskerImpl"></bean>
 	<bean name="ModuleBean" class="com.facilio.beans.ModuleBeanCacheImpl"></bean>
 	<bean name="ModuleCRUD" class="com.facilio.beans.ModuleCRUDBeanImpl"></bean>
 	

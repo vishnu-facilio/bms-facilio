@@ -6,8 +6,8 @@ import com.facilio.bmsconsole.context.AssetDepreciationContext;
 import com.facilio.bmsconsole.context.AssetDepreciationRelContext;
 import com.facilio.bmsconsole.util.AssetDepreciationAPI;
 import com.facilio.bmsconsole.util.AssetsAPI;
-import com.facilio.tasker.job.FacilioJob;
-import com.facilio.tasker.job.JobContext;
+import com.facilio.taskengine.job.FacilioJob;
+import com.facilio.taskengine.job.JobContext;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;

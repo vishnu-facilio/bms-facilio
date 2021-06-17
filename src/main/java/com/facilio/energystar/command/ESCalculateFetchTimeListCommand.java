@@ -13,7 +13,7 @@ import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.energystar.util.EnergyStarUtil;
-import com.facilio.tasker.ScheduleInfo;
+import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 

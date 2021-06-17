@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import com.facilio.bmsconsole.util.BimAPI;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.chain.FacilioChain;
+import com.facilio.command.PostTransactionCommand;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.FacilioModule;

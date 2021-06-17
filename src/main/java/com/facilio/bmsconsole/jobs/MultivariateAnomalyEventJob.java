@@ -21,8 +21,8 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.tasker.job.FacilioJob;
-import com.facilio.tasker.job.JobContext;
+import com.facilio.taskengine.job.FacilioJob;
+import com.facilio.taskengine.job.JobContext;
 import org.json.simple.parser.JSONParser;
 
 public class MultivariateAnomalyEventJob extends FacilioJob

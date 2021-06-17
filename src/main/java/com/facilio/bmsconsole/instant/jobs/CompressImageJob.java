@@ -8,7 +8,7 @@ import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fs.FileInfo;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
-import com.facilio.tasker.job.InstantJob;
+import com.facilio.taskengine.job.InstantJob;
 
 public class CompressImageJob extends InstantJob {
 	private static final Logger LOGGER = LogManager.getLogger(CompressImageJob.class.getName());

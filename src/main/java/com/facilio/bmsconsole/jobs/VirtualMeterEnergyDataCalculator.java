@@ -1,44 +1,26 @@
 package com.facilio.bmsconsole.jobs;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.context.MarkedReadingContext;
+import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.util.DeviceAPI;
+import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.taskengine.job.FacilioJob;
+import com.facilio.taskengine.job.JobContext;
+import com.facilio.time.DateTimeUtil;
+import com.facilio.time.SecondsChronoUnit;
 import org.apache.commons.collections.MapUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.EnergyMeterContext;
-import com.facilio.bmsconsole.context.HistoricalLoggerContext;
-import com.facilio.bmsconsole.context.MarkedReadingContext;
-import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.context.ReadingDataMeta;
-import com.facilio.bmsconsole.context.MarkedReadingContext.MarkType;
-import com.facilio.bmsconsole.enums.SourceType;
-import com.facilio.bmsconsole.util.DeviceAPI;
-import com.facilio.bmsconsole.util.HistoricalLoggerUtil;
-import com.facilio.bmsconsole.util.MarkingUtil;
-import com.facilio.bmsconsole.util.ReadingsAPI;
-import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.tasker.job.FacilioJob;
-import com.facilio.tasker.job.JobContext;
-import com.facilio.time.DateRange;
-import com.facilio.time.DateTimeUtil;
-import com.facilio.time.SecondsChronoUnit;
+import java.util.*;
 
 public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 

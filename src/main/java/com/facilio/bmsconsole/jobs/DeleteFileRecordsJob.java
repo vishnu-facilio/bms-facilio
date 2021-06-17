@@ -22,8 +22,8 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.service.FacilioService;
 import com.facilio.service.FacilioServiceUtil;
 import com.facilio.services.factory.FacilioFactory;
-import com.facilio.tasker.job.FacilioJob;
-import com.facilio.tasker.job.JobContext;
+import com.facilio.taskengine.job.FacilioJob;
+import com.facilio.taskengine.job.JobContext;
 import com.facilio.time.DateTimeUtil;
 
 public class DeleteFileRecordsJob extends FacilioJob {

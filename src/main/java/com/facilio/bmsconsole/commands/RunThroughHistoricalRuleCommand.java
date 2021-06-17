@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.facilio.command.PostTransactionCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.StringUtils;
@@ -44,7 +45,7 @@ import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 
-public class RunThroughHistoricalRuleCommand extends FacilioCommand  implements PostTransactionCommand{
+public class RunThroughHistoricalRuleCommand extends FacilioCommand  implements PostTransactionCommand {
 	private static final Logger LOGGER = Logger.getLogger(RunThroughHistoricalRuleCommand.class.getName());
 	private List<Long> workflowRuleResourceParentLoggerIds = new ArrayList<Long>();
 	

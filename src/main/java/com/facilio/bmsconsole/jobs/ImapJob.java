@@ -8,8 +8,8 @@ import com.facilio.db.transaction.FTransactionManager;
 import com.facilio.db.transaction.FacilioTransactionManager;
 import com.facilio.service.FacilioService;
 import com.facilio.services.email.ImapsClient;
-import com.facilio.tasker.job.FacilioJob;
-import com.facilio.tasker.job.JobContext;
+import com.facilio.taskengine.job.FacilioJob;
+import com.facilio.taskengine.job.JobContext;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;

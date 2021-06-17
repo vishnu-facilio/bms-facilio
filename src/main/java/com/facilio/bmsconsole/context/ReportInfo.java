@@ -6,8 +6,8 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.tasker.ScheduleInfo;
-import com.facilio.tasker.job.JobContext;
+import com.facilio.taskengine.ScheduleInfo;
+import com.facilio.taskengine.job.JobContext;
 
 public class ReportInfo {
 	

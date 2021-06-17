@@ -1,48 +1,33 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-
-
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang3.tuple.Pair;
-
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.MarkedReadingContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.util.AggregatedEnergyConsumptionUtil;
 import com.facilio.bmsconsole.util.ReadingsAPI;
-import com.facilio.bmsconsole.util.RollUpFieldUtil;
 import com.facilio.chain.FacilioContext;
+import com.facilio.command.PostTransactionCommand;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.Criteria;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.CommonOperators;
-import com.facilio.db.criteria.operators.DateOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.transaction.NewTransactionService;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.AggregateOperator;
-import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
-import com.facilio.time.DateTimeUtil;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
-public class CalculateAggregatedEnergyConsumptionCommand extends FacilioCommand implements PostTransactionCommand{
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class CalculateAggregatedEnergyConsumptionCommand extends FacilioCommand implements PostTransactionCommand {
 
 	private static final Logger LOGGER = Logger.getLogger(CalculateAggregatedEnergyConsumptionCommand.class.getName());
 	private LinkedHashMap<Long,DateRange> meterIdVsMaxDateRange = new LinkedHashMap<Long,DateRange>();

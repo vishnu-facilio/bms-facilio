@@ -34,7 +34,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.tasker.ScheduleInfo.FrequencyType;
+import com.facilio.taskengine.ScheduleInfo.FrequencyType;
 import com.facilio.time.DateTimeUtil;
 
 ;

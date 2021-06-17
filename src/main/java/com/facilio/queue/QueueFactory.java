@@ -1,5 +1,7 @@
 package com.facilio.queue;
 
+import com.facilio.taskengine.queue.FacilioQueue;
+
 public class QueueFactory {
 
 //    private static FacilioQueue getInMemoryQueue(){

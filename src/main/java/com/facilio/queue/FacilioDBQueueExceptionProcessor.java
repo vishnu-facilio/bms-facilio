@@ -21,12 +21,12 @@ public class FacilioDBQueueExceptionProcessor extends TimerTask {
     private static final HashMap<String, String> EXCEPTION_MESSAGES = new HashMap<>();
     private static final List<String> RECEIPT_HANDLE_LIST = new ArrayList<>();
     private static final Logger LOGGER = LogManager.getLogger(FacilioDBQueueExceptionProcessor.class.getName());
-	
+
 	@Override
 	public void run() {
-		
+
         List<QueueMessage> messageList = new ArrayList<>();
-        try {				
+        try {
             messageList = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.INSTANT_JOB_SERVICE,() -> FacilioQueueException.pull(20));
         } catch (Exception e1) {
             LOGGER.info("Exception Occurred in  FacilioQueue  : ",e1);
@@ -48,12 +48,12 @@ public class FacilioDBQueueExceptionProcessor extends TimerTask {
 
             json.put("sender", "error@facilio.com");
             json.put("to", "error@facilio.com");
-           
+
             for(String orgWithClass : EXCEPTION_COUNT.keySet()) {
             	StringBuilder builder = new StringBuilder();
                 builder.append(orgWithClass).append("  :   ").append(EXCEPTION_COUNT.get(orgWithClass)).append(System.lineSeparator())
                         .append(EXCEPTION_MESSAGES.get(orgWithClass)).append(System.lineSeparator());
-                
+
                 json.put("subject", orgWithClass+" - Exception Mail");
                 json.put("message", builder.toString());
                 try {
@@ -69,7 +69,7 @@ public class FacilioDBQueueExceptionProcessor extends TimerTask {
             resetFields();
         }
 	}
-	
+
 	 private void resetFields() {
 	        EXCEPTION_MESSAGES.clear();
 	        EXCEPTION_COUNT.clear();

@@ -1,46 +1,33 @@
 package com.facilio.bmsconsole.jobs;
 
 import com.amazonaws.services.s3.model.S3Object;
-import com.facilio.accounts.dto.Group;
-import com.facilio.accounts.dto.User;
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
-import com.facilio.bmsconsole.context.ServiceRequestContext;
 import com.facilio.bmsconsole.context.SupportEmailContext;
-import com.facilio.bmsconsole.context.TicketContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.util.MailMessageUtil;
-import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.SupportEmailAPI;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.transaction.NewTransactionService;
-import com.facilio.fw.BeanFactory;
 import com.facilio.fw.TransactionBeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
-import com.facilio.service.FacilioService;
-import com.facilio.tasker.job.FacilioJob;
-import com.facilio.tasker.job.JobContext;
+import com.facilio.taskengine.job.FacilioJob;
+import com.facilio.taskengine.job.JobContext;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.mail.util.MimeMessageParser;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import javax.activation.DataSource;
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import java.io.File;
 import java.io.InputStream;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.StringJoiner;
 
 public class WorkOrderRequestEmailParser extends FacilioJob {
 

@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.util.NotesAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
+import com.facilio.command.PostTransactionCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;

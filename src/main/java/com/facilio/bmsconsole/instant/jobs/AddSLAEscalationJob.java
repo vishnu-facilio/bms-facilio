@@ -12,7 +12,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.tasker.job.InstantJob;
+import com.facilio.taskengine.job.InstantJob;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;

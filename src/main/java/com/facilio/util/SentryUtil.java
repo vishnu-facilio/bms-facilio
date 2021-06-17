@@ -2,7 +2,7 @@ package com.facilio.util;
 
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.server.ServerInfo;
-import com.facilio.tasker.job.JobContext;
+import com.facilio.taskengine.job.JobContext;
 import io.sentry.SentryClient;
 import io.sentry.SentryClientFactory;
 import io.sentry.context.Context;

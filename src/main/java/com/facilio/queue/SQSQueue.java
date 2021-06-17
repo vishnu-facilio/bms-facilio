@@ -1,20 +1,17 @@
 package com.facilio.queue;
 
+import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.services.sqs.model.*;
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.taskengine.config.InstantJobConf;
+import com.facilio.taskengine.queue.FacilioQueue;
+import com.facilio.taskengine.queue.QueueMessage;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.model.ChangeMessageVisibilityResult;
-import com.amazonaws.services.sqs.model.GetQueueUrlResult;
-import com.amazonaws.services.sqs.model.Message;
-import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
-import com.amazonaws.services.sqs.model.ReceiveMessageResult;
-import com.amazonaws.services.sqs.model.SendMessageResult;
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.tasker.config.InstantJobConf;
-
-public class SQSQueue  implements FacilioQueue {
+public class SQSQueue implements FacilioQueue {
 
     private static final ConcurrentHashMap<String, String> nameVsURL = new ConcurrentHashMap<>();
     private static final FacilioQueue INSTANCE = new SQSQueue();
@@ -26,7 +23,7 @@ public class SQSQueue  implements FacilioQueue {
     public boolean push(String queueName, String message) {
         String url = nameVsURL.get(queueName);
         AmazonSQS sqs = AwsUtil.getSQSClient();
-        if(url == null) {
+        if (url == null) {
             GetQueueUrlResult result = sqs.getQueueUrl(queueName);
             url = result.getQueueUrl();
             nameVsURL.put(queueName, url);
@@ -37,7 +34,7 @@ public class SQSQueue  implements FacilioQueue {
 
     public QueueMessage pull(String queueName) {
         List<QueueMessage> messages = pull(queueName, 1);
-        if(messages.size() > 0) {
+        if (messages.size() > 0) {
             return messages.get(0);
         }
         return null;
@@ -46,7 +43,7 @@ public class SQSQueue  implements FacilioQueue {
     public void delete(String queueName, String receiptHandle) {
         String url = nameVsURL.get(queueName);
         AmazonSQS sqs = AwsUtil.getSQSClient();
-        if(url == null) {
+        if (url == null) {
             GetQueueUrlResult result = sqs.getQueueUrl(queueName);
             url = result.getQueueUrl();
             nameVsURL.put(queueName, url);
@@ -55,13 +52,13 @@ public class SQSQueue  implements FacilioQueue {
     }
 
     public List<QueueMessage> pull(String queueName, int limit) {
-        if(limit > 20) {
+        if (limit > 20) {
             limit = 20;
         }
 
         String url = nameVsURL.get(queueName);
         AmazonSQS sqs = AwsUtil.getSQSClient();
-        if(url == null) {
+        if (url == null) {
             GetQueueUrlResult result = sqs.getQueueUrl(queueName);
             url = result.getQueueUrl();
             nameVsURL.put(queueName, url);
@@ -71,23 +68,23 @@ public class SQSQueue  implements FacilioQueue {
         while (messageList.size() < limit) {
             ReceiveMessageRequest request = new ReceiveMessageRequest().withMaxNumberOfMessages(10).withVisibilityTimeout(InstantJobConf.getDefaultTimeOut()).withQueueUrl(url);
             ReceiveMessageResult result = sqs.receiveMessage(request);
-            if(result.getMessages().size() == 0) {
+            if (result.getMessages().size() == 0) {
                 break;
             }
             messageList.addAll(result.getMessages());
         }
 
-        for(Message msg : messageList ) {
-         QueueMessage qMsg = new QueueMessage(msg.getMessageId(), msg.getBody());
-         qMsg.setReceiptHandle(msg.getReceiptHandle());
-         queueMessages.add(qMsg);
+        for (Message msg : messageList) {
+            QueueMessage qMsg = new QueueMessage(msg.getMessageId(), msg.getBody());
+            qMsg.setReceiptHandle(msg.getReceiptHandle());
+            queueMessages.add(qMsg);
         }
         return queueMessages;
     }
 
     public boolean changeVisibilityTimeout(String queueName, String receiptHandle, int visibilityTimeout) {
         String url = nameVsURL.get(queueName);
-        if(url != null) {
+        if (url != null) {
             AmazonSQS sqs = AwsUtil.getSQSClient();
             ChangeMessageVisibilityResult result = sqs.changeMessageVisibility(url, receiptHandle, visibilityTimeout);
             return (result.getSdkHttpMetadata().getHttpStatusCode() == 200);

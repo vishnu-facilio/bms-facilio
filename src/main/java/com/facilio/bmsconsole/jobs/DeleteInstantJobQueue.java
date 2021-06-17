@@ -7,8 +7,8 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.DeleteMessageQueueJobsCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.tasker.FacilioInstantJobScheduler;
-import com.facilio.tasker.job.FacilioJob;
-import com.facilio.tasker.job.JobContext;
+import com.facilio.taskengine.job.FacilioJob;
+import com.facilio.taskengine.job.JobContext;
 
 public class DeleteInstantJobQueue extends FacilioJob {
 

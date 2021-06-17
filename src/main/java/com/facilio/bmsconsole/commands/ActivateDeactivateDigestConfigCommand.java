@@ -1,16 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.util.DigestConfigAPI;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.FacilioTimer;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.util.DigestConfigAPI;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.tasker.job.JobStore;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ActivateDeactivateDigestConfigCommand extends FacilioCommand{
 

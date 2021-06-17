@@ -5,8 +5,8 @@ import java.util.logging.Logger;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.chain.FacilioChain;
-import com.facilio.tasker.job.FacilioJob;
-import com.facilio.tasker.job.JobContext;
+import com.facilio.taskengine.job.FacilioJob;
+import com.facilio.taskengine.job.JobContext;
 
 public class PMImportDataJob extends FacilioJob {
 

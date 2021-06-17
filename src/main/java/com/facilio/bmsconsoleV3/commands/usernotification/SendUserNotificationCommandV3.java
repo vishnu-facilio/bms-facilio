@@ -4,7 +4,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.FacilioCommand;
-import com.facilio.bmsconsole.commands.PostTransactionCommand;
+import com.facilio.command.PostTransactionCommand;
 import com.facilio.bmsconsole.util.NotificationAPI;
 import com.facilio.bmsconsoleV3.context.UserNotificationContext;
 import com.facilio.constants.FacilioConstants;

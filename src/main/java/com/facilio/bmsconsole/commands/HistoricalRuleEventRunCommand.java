@@ -1,76 +1,35 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
+import com.facilio.bmsconsole.enums.RuleJobType;
+import com.facilio.bmsconsole.util.AlarmAPI;
+import com.facilio.bmsconsole.util.NewEventAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleHistoricalLogsAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleResourceLoggerAPI;
+import com.facilio.command.PostTransactionCommand;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.transaction.NewTransactionService;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.InsertRecordBuilder;
+import com.facilio.tasker.FacilioTimer;
+import com.facilio.time.DateRange;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.MapUtils;
+import org.json.simple.JSONObject;
+
 import java.sql.SQLException;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.facilio.bmsconsole.context.*;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
-import org.json.simple.JSONObject;
-
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
-import com.facilio.bmsconsole.enums.RuleJobType;
-import com.facilio.bmsconsole.jobs.SingleResourceHistoricalFormulaCalculatorJob;
-import com.facilio.bmsconsole.util.AlarmAPI;
-import com.facilio.bmsconsole.util.BmsJobUtil;
-import com.facilio.bmsconsole.util.LoggerAPI;
-import com.facilio.bmsconsole.util.NewEventAPI;
-import com.facilio.bmsconsole.util.ReadingRuleAPI;
-import com.facilio.bmsconsole.util.ReadingsAPI;
-import com.facilio.bmsconsole.util.ResourceAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleHistoricalLoggerUtil;
-import com.facilio.bmsconsole.util.WorkflowRuleHistoricalLogsAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleLoggerAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleResourceLoggerAPI;
-import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleAlarmMeta;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
-import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.Criteria;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.db.criteria.operators.CommonOperators;
-import com.facilio.db.criteria.operators.DateOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.Operator;
-import com.facilio.db.criteria.operators.PickListOperators;
-import com.facilio.db.transaction.NewTransactionService;
-import com.facilio.events.constants.EventConstants;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.BmsAggregateOperators;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.InsertRecordBuilder;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.NumberField;
-import com.facilio.tasker.FacilioTimer;
-import com.facilio.time.DateRange;
-import com.facilio.time.DateTimeUtil;
-import com.facilio.unitconversion.Unit;
-import com.facilio.unitconversion.UnitsUtil;
-import com.facilio.workflows.context.WorkflowFieldContext;
-import com.facilio.workflows.util.WorkflowUtil;
-
-public class HistoricalRuleEventRunCommand extends FacilioCommand implements PostTransactionCommand{
+public class HistoricalRuleEventRunCommand extends FacilioCommand implements PostTransactionCommand {
 
 	private static final Logger LOGGER = Logger.getLogger(HistoricalRuleEventRunCommand.class.getName());
 	

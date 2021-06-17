@@ -21,8 +21,8 @@ import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.tasker.ScheduleInfo;
-import com.facilio.tasker.ScheduleInfo.FrequencyType;
+import com.facilio.taskengine.ScheduleInfo;
+import com.facilio.taskengine.ScheduleInfo.FrequencyType;
 
 public class AddLoadPredictionCommand extends FacilioCommand {
 	

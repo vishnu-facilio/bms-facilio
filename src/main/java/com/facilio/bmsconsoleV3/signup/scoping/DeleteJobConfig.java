@@ -6,7 +6,7 @@ import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.service.FacilioService;
 import com.facilio.tasker.FacilioTimer;
-import com.facilio.tasker.ScheduleInfo;
+import com.facilio.taskengine.ScheduleInfo;
 import lombok.extern.log4j.Log4j;
 import org.json.simple.JSONObject;
 

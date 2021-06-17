@@ -11,8 +11,8 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.transaction.FacilioTransactionManager;
-import com.facilio.tasker.job.FacilioJob;
-import com.facilio.tasker.job.JobContext;
+import com.facilio.taskengine.job.FacilioJob;
+import com.facilio.taskengine.job.JobContext;
 import com.facilio.time.DateTimeUtil;
 
 public class DemoAlarmPropagationJob extends FacilioJob{

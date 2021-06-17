@@ -17,7 +17,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.tasker.job.InstantJob;
+import com.facilio.taskengine.job.InstantJob;
 import com.facilio.timeseries.TimeSeriesAPI;
 
 public class ProcessUnmodelledHistoricalDataJob extends InstantJob {

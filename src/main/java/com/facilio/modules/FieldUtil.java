@@ -101,7 +101,7 @@ public class FieldUtil {
 		return NON_DEFAULT_MAPPER;
 	}
 	
-	public static <E> E getAsBeanFromJson(JSONObject content, Class<E> classObj) throws JsonParseException, JsonMappingException, IOException
+	public static <E> E getAsBeanFromJson(JSONObject content, Class<E> classObj) throws IOException
 	{
 		ObjectMapper mapper = getMapper(classObj);
 		return mapper.readValue(content.toJSONString(), classObj);

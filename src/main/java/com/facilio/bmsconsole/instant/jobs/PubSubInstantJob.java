@@ -6,7 +6,7 @@ import org.apache.log4j.Logger;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.tasker.job.InstantJob;
+import com.facilio.taskengine.job.InstantJob;
 import com.facilio.wms.endpoints.PubSubManager;
 
 public class PubSubInstantJob extends InstantJob {

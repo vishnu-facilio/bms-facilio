@@ -10,8 +10,8 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.transaction.FacilioTransactionManager;
-import com.facilio.tasker.job.FacilioJob;
-import com.facilio.tasker.job.JobContext;
+import com.facilio.taskengine.job.FacilioJob;
+import com.facilio.taskengine.job.JobContext;
 
 public class OperationAlarmJob extends FacilioJob {
     private static final Logger LOGGER = LogManager.getLogger(OperationAlarmJob.class.getName());

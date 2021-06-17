@@ -1,22 +1,20 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.util.NotesAPI;
+import com.facilio.command.PostTransactionCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import org.apache.commons.chain.Context;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class DeleteNoteCommand extends FacilioCommand implements PostTransactionCommand {
 	

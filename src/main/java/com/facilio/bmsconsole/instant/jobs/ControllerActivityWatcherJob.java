@@ -26,7 +26,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
-import com.facilio.tasker.job.InstantJob;
+import com.facilio.taskengine.job.InstantJob;
 import com.facilio.time.DateTimeUtil;
 
 public class ControllerActivityWatcherJob extends InstantJob {

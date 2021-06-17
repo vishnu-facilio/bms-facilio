@@ -10,8 +10,8 @@ import org.json.JSONObject;
 import com.facilio.bmsconsole.context.HistoricalJobContext;
 import com.facilio.bmsconsole.context.HistoricalJobMLContext;
 import com.facilio.bmsconsole.util.BmsJobUtil;
-import com.facilio.tasker.job.FacilioJob;
-import com.facilio.tasker.job.JobContext;
+import com.facilio.taskengine.job.FacilioJob;
+import com.facilio.taskengine.job.JobContext;
 
 public class HistoricalJob extends FacilioJob {
 

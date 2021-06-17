@@ -1,10 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.command.PostTransactionCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 
-public class ExecuteWorkFlowsBusinessLogicInPostTransactionCommand extends FacilioCommand implements PostTransactionCommand{
+public class ExecuteWorkFlowsBusinessLogicInPostTransactionCommand extends FacilioCommand implements PostTransactionCommand {
 	
 	private Context context;
 	

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 
+import com.facilio.command.PostTransactionCommand;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;

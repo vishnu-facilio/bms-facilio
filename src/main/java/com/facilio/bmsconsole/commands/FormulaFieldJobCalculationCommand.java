@@ -1,64 +1,32 @@
 package com.facilio.bmsconsole.commands;
 
-import java.time.Month;
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Level;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
-import com.facilio.bmsconsole.context.FormulaFieldDependenciesContext;
 import com.facilio.bmsconsole.context.FormulaFieldResourceStatusContext;
-import com.facilio.bmsconsole.context.LoggerContext;
-import com.facilio.bmsconsole.context.MarkedReadingContext;
-import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
-import com.facilio.bmsconsole.context.FormulaFieldResourceStatusContext.Status;
-import com.facilio.bmsconsole.context.MarkedReadingContext.MarkType;
-import com.facilio.bmsconsole.jobs.ScheduledFormulaCalculatorJob;
 import com.facilio.bmsconsole.jobs.SingleResourceHistoricalFormulaCalculatorJob;
-import com.facilio.bmsconsole.util.DeviceAPI;
-import com.facilio.bmsconsole.util.FacilioFrequency;
-import com.facilio.bmsconsole.util.FormulaFieldAPI;
-import com.facilio.bmsconsole.util.FormulaFieldDependenciesAPI;
-import com.facilio.bmsconsole.util.FormulaFieldResourceStatusAPI;
-import com.facilio.bmsconsole.util.LoggerAPI;
-import com.facilio.bmsconsole.util.MarkingUtil;
-import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.bmsconsole.util.*;
 import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
+import com.facilio.command.PostTransactionCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.transaction.NewTransactionService;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.tasker.FacilioTimer;
-import com.facilio.tasker.ScheduleInfo;
-import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.time.SecondsChronoUnit;
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
-public class FormulaFieldJobCalculationCommand extends FacilioCommand implements PostTransactionCommand{
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+
+public class FormulaFieldJobCalculationCommand extends FacilioCommand implements PostTransactionCommand {
 
 	private static final Logger LOGGER = LogManager.getLogger(FormulaFieldJobCalculationCommand.class.getName());
 	

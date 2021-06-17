@@ -12,7 +12,7 @@ import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.tasker.ScheduleInfo;
+import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.trigger.command.AddOrUpdateTriggerCommand;
 import com.facilio.trigger.context.*;

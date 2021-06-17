@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.jobs;
+package com.facilio.tasker;
 
 import org.apache.log4j.Appender;
 import org.apache.log4j.Level;
@@ -10,7 +10,7 @@ import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.tasker.job.JobContext;
+import com.facilio.taskengine.job.JobContext;
 
 public class JobLogger {
 
@@ -24,7 +24,7 @@ public class JobLogger {
     private static final String APPENDER_NAME = "graylog2";
     private static final String DEFAULT_ORG_USER_ID = "-1";
     private static final String JOB_STATUS = "status";
-    private static final Appender APPENDER = LOGGER.getAppender(APPENDER_NAME);;
+    private static final Appender APPENDER = LOGGER.getAppender(APPENDER_NAME);
 
 
     public static void log(JobContext jobContext, long timeTaken, int status) {

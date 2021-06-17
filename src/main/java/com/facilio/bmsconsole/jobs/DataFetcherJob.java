@@ -6,8 +6,8 @@ import com.facilio.agentv2.FacilioAgent;
 import com.facilio.dataFetchers.DataFetcher;
 import com.facilio.dataFetchers.Wateruos;
 import com.facilio.dataFetchers.WattsenseDataFetcher;
-import com.facilio.tasker.job.FacilioJob;
-import com.facilio.tasker.job.JobContext;
+import com.facilio.taskengine.job.FacilioJob;
+import com.facilio.taskengine.job.JobContext;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
