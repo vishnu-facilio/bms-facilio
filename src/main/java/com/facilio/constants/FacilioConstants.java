@@ -322,6 +322,7 @@ public class FacilioConstants {
 		
 		public static final String ROLE_ID = "roleId";
 		public static final String ROLE = "role";
+		public static final String ROLES_APPS = "rolesApps";
 		public static final String PERMISSIONS= "permissions";
 		
 		public static final String BUSINESS_HOUR_IDS = "businesshourids";
