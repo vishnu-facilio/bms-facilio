@@ -1663,23 +1663,22 @@ public class FacilioAuthAction extends FacilioAction {
 				response.setHeader("Set-Cookie", cookieString);
 			}
 		} else if("stage".equals(FacilioProperties.getEnvironment()) && !isMobile) {
-			var cookieString = "fc.idToken.facilio="+authtoken+"; Max-Age=604800; Path=/; Secure; HttpOnly; SameSite=None";
-			response.setHeader("Set-Cookie", cookieString);
-
-			// temp handling. Remove once file download urls are fixed.
 			if (portalUser) {
-				var portalCookie = "fc.idToken.facilioportal="+authtoken+"; Max-Age=604800; Path=/; Secure; HttpOnly; SameSite=None";
-				response.setHeader("Set-Cookie", portalCookie);
+				var cookieString = "fc.idToken.facilioportal="+authtoken+"; Max-Age=604800; Path=/; Secure; HttpOnly; SameSite=None";
+				response.setHeader("Set-Cookie", cookieString);
+			} else {
+				var cookieString = "fc.idToken.facilio="+authtoken+"; Max-Age=604800; Path=/; Secure; HttpOnly; SameSite=None";
+				response.setHeader("Set-Cookie", cookieString);
 			}
 		} else {
 			response.addCookie(cookie);
+		}
 
-			// temp handling. Remove once file download urls are fixed.
-			if(portalUser) {
-				Cookie portalCookie = new Cookie("fc.idToken.facilio", authtoken);
-				setCookieProperties(portalCookie, true);
-				response.addCookie(portalCookie);
-			}
+			//temp handling. will be removed once service portal xml files are removed.
+		if(portalUser) {
+			Cookie portalCookie = new Cookie("fc.idToken.facilio", authtoken);
+			setCookieProperties(portalCookie, true);
+			response.addCookie(portalCookie);
 		}
 	}
 	
