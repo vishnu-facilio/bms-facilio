@@ -1268,9 +1268,7 @@ public class ApplicationApi {
     }
 
     public static void addAppRoleMapping(long roleId, long appId) throws Exception {
-        RoleApp roleApp = new RoleApp();
-        roleApp.setRoleId(roleId);
-        roleApp.setApplicationId(appId);
+        RoleApp roleApp = new RoleApp(appId, roleId);
 
         List<FacilioField> fields = AccountConstants.getRolesAppsFields();
         GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
