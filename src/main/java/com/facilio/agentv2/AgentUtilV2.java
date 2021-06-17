@@ -326,7 +326,7 @@ public class AgentUtilV2
 
     static int getAgentOfflineStatus( Map<String,Object> map) throws Exception {
         boolean connected = (boolean)map.get(AgentConstants.CONNECTED);
-        return connected ? 1 : 0;
+        return connected ? 0 : 1;
     }
 
     private static boolean isConfiguredPointExist(long agentId) throws Exception {
