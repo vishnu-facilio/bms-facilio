@@ -1937,7 +1937,7 @@ public class FacilioConstants {
 			public static final String AMENITY = "amenity";
 			public static final String BOOKING_SLOTS = "bookingslot";
 			public static final String FACILITY_BOOKING_PAYMENTS = "bookingpayment";
-
+			public static final String RESERVED_FOR = "reservedFor";
 			public static final String FACILITY_PHOTOS = "facilityphotos";
 
 			public static final String END_DATE_TIME = "endDateTime";
