@@ -38,6 +38,8 @@ public class InductionSupplementSupplyCommand extends FacilioCommand {
         	if(fieldMap.containsKey("baseSpace")) {
         		supplements.add((SupplementRecord) fieldMap.get("baseSpace"));
         	}
+        	
+        	supplements.add((SupplementRecord) fieldMap.get("sites"));
         }
         if(fieldMap.containsKey("resource")) {
         	supplements.add((SupplementRecord) fieldMap.get("resource"));
