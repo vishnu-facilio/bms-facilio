@@ -1,5 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.accounts.bean.RoleBean;
+import com.facilio.accounts.dto.Role;
+import com.facilio.accounts.dto.RoleApp;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ApplicationLayoutContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.modules.FacilioModule;
@@ -15,6 +19,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -31,11 +36,12 @@ public class AddOrUpdateApplicationCommand extends FacilioCommand {
 				update(FieldUtil.getAsProperties(application), ModuleFactory.getApplicationModule(), FieldFactory.getApplicationFields(), application.getId());
 			} else {
 				add(FieldUtil.getAsProperties(application), ModuleFactory.getApplicationModule(), FieldFactory.getApplicationFields());
+				ApplicationContext app = ApplicationApi.getApplicationForLinkName(application.getLinkName());
 				if(addLayout != null && addLayout) {
-					ApplicationContext app = ApplicationApi.getApplicationForLinkName(application.getLinkName());
 					ApplicationLayoutContext layout = new ApplicationLayoutContext(app.getId(), ApplicationLayoutContext.AppLayoutType.DUAL, ApplicationLayoutContext.LayoutDeviceType.WEB, app.getLinkName());
 					ApplicationApi.addApplicationLayout(layout);
 				}
+				addAdminRoleForApp(app);
 			}
 
 		}
@@ -47,6 +53,19 @@ public class AddOrUpdateApplicationCommand extends FacilioCommand {
 				.table(module.getTableName())
 				.fields(fields);
 		builder.insert(map);
+	}
+
+	private void addAdminRoleForApp(ApplicationContext app) throws Exception {
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
+
+		RoleBean roleBean = AccountUtil.getRoleBean();
+		Role role = new Role();
+		role.setName(app.getName() + " Admin");
+		role.setIsPrevileged(true);
+		long roleId = roleBean.createRole(orgId, role);
+		List<RoleApp> roleApps = new ArrayList<>();
+		roleApps.add(new RoleApp(app.getId(), roleId));
+		roleBean.addRolesAppsMapping(roleApps);
 	}
 
 	private void update(Map<String, Object> map, FacilioModule module, List<FacilioField> fields, long id) throws Exception {
