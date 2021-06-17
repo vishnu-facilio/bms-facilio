@@ -1005,7 +1005,6 @@ public class ColumnFactory {
 
 	private static List<ViewField> getDefaultInventoryRequestLineItemsColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
-		columns.add(new ViewField("id", "ID"));
 		columns.add(new ViewField("inventoryType", "Inventory Type"));
 		columns.add(new ViewField("itemType", "Item Type"));
 		columns.add(new ViewField("toolType", "Tool type"));
