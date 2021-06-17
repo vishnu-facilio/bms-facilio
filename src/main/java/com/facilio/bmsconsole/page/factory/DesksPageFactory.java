@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.page.factory;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -8,18 +7,13 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
-import com.facilio.bmsconsole.page.Page.Section;
-import com.facilio.bmsconsole.page.Page.Tab;
 import com.facilio.bmsconsoleV3.context.facilitybooking.FacilityContext;
 import com.facilio.bmsconsoleV3.context.floorplan.V3DeskContext;
 import com.facilio.bmsconsoleV3.util.FacilityAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -53,18 +47,25 @@ public class DesksPageFactory extends PageFactory {
 
         addCombinedRelatedListWidget(tab2Sec1, FacilioConstants.ContextNames.MOVES, module.getModuleId(), "Moves");
         
-        // List<FacilityContext> facilities = FacilityAPI.getFacilityList(deskContext.getId(),module.getModuleId());
-        // if (CollectionUtils.isNotEmpty(facilities)) {
-        // 	List<Long> Ids = facilities.stream().map(prop -> (long) prop.getId()).collect(Collectors.toList());
-        // 	PageWidget relatedListWidget = new PageWidget(PageWidget.WidgetType.BOOKINGS_RELATED_LIST);
-        //     JSONObject relatedList = new JSONObject();
-        //     relatedList.put("module", bookingModule);
-        //     relatedList.put("field", fieldsAsMap.get(FacilioConstants.ContextNames.FacilityBooking.FACILITY));
-        //     relatedList.put("facilityIds", Ids);
-        //     relatedListWidget.setRelatedList(relatedList);
-        //     relatedListWidget.addToLayoutParams(tab2Sec1, 24, 10);
-        //     tab2Sec1.addWidget(relatedListWidget);
-        // }
+        if(deskContext.getDeskType() != 1) {
+        
+         List<FacilityContext> facilities = FacilityAPI.getFacilityList(deskContext.getId(),module.getModuleId());
+         
+         if (CollectionUtils.isNotEmpty(facilities)) {
+        	 
+         	List<Long> Ids = facilities.stream().map(prop -> (long) prop.getId()).collect(Collectors.toList());
+         	PageWidget relatedListWidget = new PageWidget(PageWidget.WidgetType.BOOKINGS_RELATED_LIST);
+            JSONObject relatedList = new JSONObject();
+            relatedList.put("module", bookingModule);
+            relatedList.put("field", fieldsAsMap.get(FacilioConstants.ContextNames.FacilityBooking.FACILITY));
+            relatedList.put("values", Ids);
+            relatedListWidget.setRelatedList(relatedList);
+            relatedListWidget.addToLayoutParams(tab2Sec1, 24, 10);
+            tab2Sec1.addWidget(relatedListWidget);
+             
+         }
+        
+        }
         
         addCombinedRelatedListWidget(tab2Sec1, FacilioConstants.ContextNames.SERVICE_REQUEST, resourceModule.getModuleId(), "Service Requests");
 

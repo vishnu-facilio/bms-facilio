@@ -350,7 +350,8 @@ public class PageWidget {
 		SR_EMAIL_THREAD("srEmailThread"),
 		SR_DETAILS_WIDGET("srDetailsWidget"),
 
-		COMBINED_RELATED_LIST("combinedRelatedListWidget")
+		COMBINED_RELATED_LIST("combinedRelatedListWidget"),
+		BOOKINGS_RELATED_LIST("bookingRelatedListWidget")
 		;
 		
 		private String name;

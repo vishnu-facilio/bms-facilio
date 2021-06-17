@@ -1,7 +1,7 @@
 package com.facilio.bmsconsole.page.factory;
 
-import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.Page.Section;
@@ -10,11 +10,19 @@ import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.PageWidget.WidgetType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
-import org.apache.commons.collections4.CollectionUtils;
+import com.facilio.modules.fields.FacilioField;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class CustomModulePageFactory extends PageFactory {
 	
@@ -38,6 +46,26 @@ public class CustomModulePageFactory extends PageFactory {
 		Section tab2Sec1 = page.new Section();
 		tab2.addSection(tab2Sec1);
 		addRelatedListWidgets(tab2Sec1, record.getModuleId());
+		
+		// Temp - to add seperate pagefactory for employee module
+		if( module != null && "people".equalsIgnoreCase(module.getName())) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule bookingModule = modBean.getModule(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
+	        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
+	        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+         	List<Long> Ids = new ArrayList<>();
+         	Ids.add(record.getId());
+         	PageWidget relatedListWidget = new PageWidget(PageWidget.WidgetType.BOOKINGS_RELATED_LIST);
+            JSONObject relatedList = new JSONObject();
+            relatedList.put("module", bookingModule);
+            relatedList.put("field", fieldsAsMap.get(FacilioConstants.ContextNames.FacilityBooking.RESERVED_FOR));
+            relatedList.put("values", Ids);
+            relatedListWidget.setRelatedList(relatedList);
+            relatedListWidget.addToLayoutParams(tab2Sec1, 24, 10);
+            tab2Sec1.addWidget(relatedListWidget);
+        
+        }
+		
 		if(CollectionUtils.isNotEmpty(tab2Sec1.getWidgets())) {
 			page.addTab(tab2);
 		}
