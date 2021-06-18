@@ -85,7 +85,7 @@ public class InductionPageFactory extends PageFactory {
         criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("responseStatus"), ResponseContext.ResponseStatus.DISABLED.getIndex()+"", NumberOperators.NOT_EQUALS));
         criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("parent"), record.getId()+"", NumberOperators.EQUALS));
         
-		addChartParams(InductionCountInsight, "donut",null, "responseStatus", null,  null , null, DateOperators.CURRENT_YEAR, null, criteria, "sysCreatedTime", FacilioConstants.Induction.INDUCTION_RESPONSE);
+		addChartParams(InductionCountInsight, "donut",null, "responseStatus", null,  null , null, DateOperators.CURRENT_YEAR, null, criteria, "createdTime", FacilioConstants.Induction.INDUCTION_RESPONSE);
 		InductionCountInsight.addToWidgetParams("type", "inductionChart");
 		insightTabSec.addWidget(InductionCountInsight);
 		
@@ -130,7 +130,7 @@ public class InductionPageFactory extends PageFactory {
 		fieldList.add("actualWorkStart");
 		fieldList.add("actualWorkEnd");
 		
-		fieldList.add("sysCreatedTime");
+		fieldList.add("createdTime");
 		fieldList.add("sysCreatedBy");
 		fieldList.add("sysModifiedTime");
 		fieldList.add("sysModifiedBy");

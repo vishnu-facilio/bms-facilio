@@ -168,7 +168,7 @@ public class InspectionPageFactory extends PageFactory {
 		fieldList.add("actualWorkStart");
 		fieldList.add("actualWorkEnd");
 		
-		fieldList.add("sysCreatedTime");
+		fieldList.add("createdTime");
 		fieldList.add("sysCreatedBy");
 		fieldList.add("sysModifiedTime");
 		fieldList.add("sysModifiedBy");
