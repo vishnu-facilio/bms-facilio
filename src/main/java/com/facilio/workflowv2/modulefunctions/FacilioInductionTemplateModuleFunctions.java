@@ -1,11 +1,14 @@
 package com.facilio.workflowv2.modulefunctions;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PeopleContext;
+import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.PeopleAPI;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsoleV3.context.induction.InductionResponseContext;
 import com.facilio.bmsconsoleV3.context.induction.InductionTemplateContext;
 import com.facilio.bmsconsoleV3.util.InductionAPI;
@@ -29,13 +32,22 @@ public class FacilioInductionTemplateModuleFunctions extends FacilioModuleFuncti
 		String inductionTemplateName = (String) objects.get(1);
 		
 		InductionResponseContext responseProps = null;
+		List<SiteContext> sites = null;
 		if(objects.size() >=3) {
 			Map<String,Object> props = (Map<String, Object>) objects.get(2);
 			
 			if(props != null) {
 				responseProps = FieldUtil.getAsBeanFromMap(props, InductionResponseContext.class);
+				if(responseProps.getSiteId() > 0) {
+					SiteContext site = SpaceAPI.getSiteSpace(responseProps.getSiteId());
+					if(site == null) {
+						throw new Exception("specified site does not exist");
+					}
+					sites = Collections.singletonList(site);
+				}
 			}
 		}
+		
 		
 		Condition condition = CriteriaAPI.getNameCondition(inductionTemplateName, modBean.getModule(FacilioConstants.QAndA.Q_AND_A_TEMPLATE));
 		
@@ -45,7 +57,7 @@ public class FacilioInductionTemplateModuleFunctions extends FacilioModuleFuncti
 			throw new RuntimeException("Template does not exist :: "+inductionTemplateName);
 		}
 		
-		List<InductionResponseContext> responses = InductionAPI.getInductionResponse(template);
+		List<InductionResponseContext> responses = InductionAPI.getInductionResponse(template,sites);
 		
 		for(InductionResponseContext response :responses) {
 			

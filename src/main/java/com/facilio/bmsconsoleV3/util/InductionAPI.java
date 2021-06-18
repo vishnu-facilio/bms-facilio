@@ -31,21 +31,22 @@ import com.facilio.qa.QAndAUtil;
 public class InductionAPI {
 	
 	
-	public static List<InductionResponseContext> getInductionResponse(InductionTemplateContext template) throws Exception {
+	public static List<InductionResponseContext> getInductionResponse(InductionTemplateContext template,List<SiteContext> sites) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		List<SiteContext> sites = null;
-		if(template.getSiteApplyTo()) {
-			sites = SpaceAPI.getAllSites();
-		}
-		else {
-			if(template.getSites() != null) {
-				sites = template.getSites();
+		if(sites == null) {
+			if(template.getSiteApplyTo()) {
+				sites = SpaceAPI.getAllSites();
 			}
 			else {
-				InductionTemplateContext template1 = getInductionTemplate(CriteriaAPI.getIdCondition(template.getId(), modBean.getModule(FacilioConstants.Induction.INDUCTION_TEMPLATE)));
-				sites = template1.getSites();
+				if(template.getSites() != null) {
+					sites = template.getSites();
+				}
+				else {
+					InductionTemplateContext template1 = getInductionTemplate(CriteriaAPI.getIdCondition(template.getId(), modBean.getModule(FacilioConstants.Induction.INDUCTION_TEMPLATE)));
+					sites = template1.getSites();
+				}
 			}
 		}
 		
