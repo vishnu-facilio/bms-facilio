@@ -31,7 +31,7 @@ public class AddCVCommand extends FacilioCommand {
 			if (viewCriteria != null && view.getCriteria() != null) {
 				viewCriteria.andCriteria(view.getCriteria());
 			}
-			else {
+			else if (viewCriteria == null) {
 				viewCriteria = view.getCriteria();
 			}
 			if (viewCriteria != null) {
