@@ -34,6 +34,7 @@ public class RoleApp implements Serializable {
         this.roleId = roleId;
     }
 
+    public RoleApp() {}
 
     public RoleApp(long applicationId, long roleId) {
         this.applicationId = applicationId;
