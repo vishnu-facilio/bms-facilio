@@ -18,6 +18,7 @@ import com.facilio.modules.fields.LookupFieldMeta;
 import com.facilio.modules.fields.MultiLookupField;
 import com.facilio.modules.fields.MultiLookupMeta;
 import com.facilio.modules.fields.SupplementRecord;
+import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.context.V3Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -262,6 +263,27 @@ public class FacilityAPI {
                 .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("facilityId"), String.valueOf(facility.getId()), NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("slotStartTime"), String.valueOf(startTime), NumberOperators.GREATER_THAN_EQUAL))
                 .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("slotStartTime"), String.valueOf(endTime), NumberOperators.LESS_THAN_EQUAL));
+
+        List<SlotContext> list = builder.get();
+        return  list;
+    }
+    
+    public static List<SlotContext> getFacilitySlotsForTimeRange(FacilityContext facility, Long startTime, Long endTime) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        String slots = FacilioConstants.ContextNames.FacilityBooking.SLOTS;
+        List<FacilioField> fields = modBean.getAllFields(slots);
+        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+
+        SelectRecordsBuilder<SlotContext> builder = new SelectRecordsBuilder<SlotContext>()
+                .moduleName(slots)
+                .select(fields)
+                .beanClass(SlotContext.class)
+                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("facilityId"), String.valueOf(facility.getId()), NumberOperators.EQUALS));
+        if(startTime != null && endTime != null) {
+        	DateRange range = new DateRange(startTime,endTime);
+        	builder.andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("slotStartTime"), range.toString(), DateOperators.BETWEEN))
+                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("slotEndTime"), range.toString(), DateOperators.BETWEEN));
+        }
 
         List<SlotContext> list = builder.get();
         return  list;

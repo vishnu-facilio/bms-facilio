@@ -69,7 +69,7 @@ public class FetchFloorplanFacilitiesCommmand extends FacilioCommand {
 	        Map<Long, FacilityContext> FacilitiesMap = new HashMap<>();
 	        Map<Long, List<BookingSlotsContext>> BookingsMap = new HashMap<>();
 	        for (FacilityContext facility : list) {
-	        	List<SlotContext> slotList = FacilityAPI.getAvailabilitySlots(facility, startTime, endTime);
+	        	List<SlotContext> slotList = FacilityAPI.getFacilitySlotsForTimeRange(facility, startTime, endTime);
 	        	if (CollectionUtils.isNotEmpty(slotList)) {
 	        		facility.setSlots(slotList);
 	        		List<Long> slotIds = new ArrayList<>();
