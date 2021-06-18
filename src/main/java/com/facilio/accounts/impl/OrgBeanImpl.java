@@ -308,7 +308,7 @@ public class OrgBeanImpl implements OrgBean {
 	@Override
 	public User getSuperAdmin(long orgId) throws Exception {
 
-		Role superAdminRole = AccountUtil.getRoleBean().getRole(orgId, AccountConstants.DefaultRole.SUPER_ADMIN, false);
+		Role superAdminRole = AccountUtil.getRoleBean(orgId).getRole(orgId, AccountConstants.DefaultRole.SUPER_ADMIN, false);
 		long applicationId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
 
 		if(superAdminRole == null) {
@@ -324,9 +324,7 @@ public class OrgBeanImpl implements OrgBean {
 				.select(fields)
 				.table("ORG_Users")
 				.innerJoin("ORG_User_Apps")
-				.on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID")
-				.innerJoin("Role")
-				.on("ORG_User_Apps.ROLE_ID = Role.ROLE_ID");
+				.on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID");
 
 		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.ROLE_ID", "roleId", String.valueOf(superAdminRole.getRoleId()), NumberOperators.EQUALS));
