@@ -212,6 +212,12 @@ public class InductionPageFactory extends PageFactory {
         Page.Section activitySec = page.new Section();
         
         PageWidget activityWidget = new PageWidget(PageWidget.WidgetType.ACTIVITY);
+        
+        JSONObject widgetParams = new JSONObject();
+        
+        widgetParams.put("activityModuleName", FacilioConstants.Induction.INDUCTION_RESPONSE_ACTIVITY);
+        
+        activityWidget.setWidgetParams(widgetParams);
         activityWidget.addToLayoutParams(activitySec, 24, 3);
         activitySec.addWidget(activityWidget);
         
