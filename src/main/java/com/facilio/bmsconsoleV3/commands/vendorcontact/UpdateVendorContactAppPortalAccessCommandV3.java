@@ -28,7 +28,7 @@ public class UpdateVendorContactAppPortalAccessCommandV3 extends FacilioCommand 
         if(CollectionUtils.isNotEmpty(vendorContacts) && MapUtils.isNotEmpty(changeSet)) {
             for (V3VendorContactContext vc : vendorContacts) {
                 List<UpdateChangeSet> changes = changeSet.get(vc.getId());
-                if (CollectionUtils.isNotEmpty(changes) && RecordAPI.checkChangeSet(changes, "isVendorPortalAccess", FacilioConstants.ContextNames.VENDOR_CONTACT)) {
+                if ((CollectionUtils.isNotEmpty(changes) && RecordAPI.checkChangeSet(changes, "isVendorPortalAccess", FacilioConstants.ContextNames.VENDOR_CONTACT)) || MapUtils.isNotEmpty(vc.getRolesMap())) {
                     V3PeopleAPI.updateVendorContactAppPortalAccess(vc, FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
                 }
             }

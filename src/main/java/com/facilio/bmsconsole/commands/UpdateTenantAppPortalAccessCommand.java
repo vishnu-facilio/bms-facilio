@@ -24,7 +24,7 @@ public class UpdateTenantAppPortalAccessCommand extends FacilioCommand{
 		if(CollectionUtils.isNotEmpty(tenantContacts) && MapUtils.isNotEmpty(changeSet)) {
 			for(TenantContactContext tc : tenantContacts) {
 				List<UpdateChangeSet> changes = changeSet.get(tc.getId());
-				if(CollectionUtils.isNotEmpty(changes) && RecordAPI.checkChangeSet(changes, "isTenantPortalAccess", FacilioConstants.ContextNames.TENANT_CONTACT)) {
+				if((CollectionUtils.isNotEmpty(changes) && RecordAPI.checkChangeSet(changes, "isTenantPortalAccess", FacilioConstants.ContextNames.TENANT_CONTACT)) || MapUtils.isNotEmpty(tc.getRolesMap())) {
 					PeopleAPI.updateTenantContactAppPortalAccess(tc, FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
 				}
 				if(CollectionUtils.isNotEmpty(changes) && RecordAPI.checkChangeSet(changes, "isOccupantPortalAccess", FacilioConstants.ContextNames.TENANT_CONTACT)) {

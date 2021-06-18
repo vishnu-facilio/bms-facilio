@@ -5,15 +5,13 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.facilio.accounts.dto.*;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 
-import com.facilio.accounts.dto.Group;
-import com.facilio.accounts.dto.Permissions;
-import com.facilio.accounts.dto.Role;
-import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants.ModulePermission;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.bmsconsole.context.Permission;
@@ -424,8 +422,8 @@ public class PermissionUtil {
 		if(role.getName().equals(AccountConstants.DefaultSuperAdmin.SUPER_ADMIN) || role.getName().equals(AccountConstants.DefaultSuperAdmin.ADMINISTRATOR)) {
 			return true;
 		}
-		//allowing all access to privileged roles of all apps
-		if(AccountUtil.getCurrentApp() != null && !AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP) && role.isPrevileged()){
+		//allowing all access to privileged roles
+		if(AccountUtil.getCurrentApp() != null && role.isPrevileged()){
 			return true;
 		}
 
@@ -460,6 +458,11 @@ public class PermissionUtil {
 		if (role.getName().equals(AccountConstants.DefaultSuperAdmin.SUPER_ADMIN) || role.getName().equals(AccountConstants.DefaultSuperAdmin.ADMINISTRATOR)) {
 			return true;
 		}
+		//allowing all access to privileged roles of all apps
+		if(AccountUtil.getCurrentApp() != null && role.isPrevileged()){
+			return true;
+		}
+
 		try {
 			if (moduleName.equalsIgnoreCase("planned"))
 				moduleName = ContextNames.PREVENTIVE_MAINTENANCE;
@@ -467,7 +470,13 @@ public class PermissionUtil {
 			List<String> moduleNames = ApplicationApi.getModulesForTab(tabId);
 			if (!moduleNames.isEmpty()) {
 				if (moduleNames.contains(moduleName) || moduleName.equalsIgnoreCase("setup")) {
-					return hasPermission(rolePermissionVal, action, tabId);
+					boolean hasPerm =  hasPermission(rolePermissionVal, action, tabId);
+					if(!hasPerm) {
+						//temp handling - need to be removed
+						log.log(Level.DEBUG, "Permission denied for role - "+ role.getName() +" for action - " + action + " in tab - " + tabId);
+						//return false;
+					}
+					return true;
 				}
 			}
 		} catch (Exception e) {

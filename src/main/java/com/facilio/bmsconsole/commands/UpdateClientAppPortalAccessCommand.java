@@ -24,7 +24,7 @@ public class UpdateClientAppPortalAccessCommand extends FacilioCommand{
 		if(CollectionUtils.isNotEmpty(clientContacts) && MapUtils.isNotEmpty(changeSet)) {
 			for(ClientContactContext tc : clientContacts) {
 				List<UpdateChangeSet> changes = changeSet.get(tc.getId());
-				if(CollectionUtils.isNotEmpty(changes) && RecordAPI.checkChangeSet(changes, "isClientPortalAccess", FacilioConstants.ContextNames.CLIENT_CONTACT)) {
+				if((CollectionUtils.isNotEmpty(changes) && RecordAPI.checkChangeSet(changes, "isClientPortalAccess", FacilioConstants.ContextNames.CLIENT_CONTACT)) || MapUtils.isNotEmpty(tc.getRolesMap())) {
 					PeopleAPI.updateClientContactAppPortalAccess(tc, FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
 				}
 			}

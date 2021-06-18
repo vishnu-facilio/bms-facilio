@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.util.DBConf;
 import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;
@@ -385,7 +386,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
         if (AccountUtil.getCurrentUser() == null) {
             return false;
         }
-        if (AccountUtil.isFeatureEnabled(FeatureLicense.WEB_TAB)) {
+        if (AccountUtil.getCurrentApp() != null && !AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
             HttpServletRequest request = ServletActionContext.getRequest();
             String currentTab = request.getHeader("X-Tab-Id");
             if (currentTab != null && !currentTab.isEmpty()) {

@@ -30,7 +30,7 @@ public class AddPeopleAccessCommand extends FacilioCommand{
 		if(CollectionUtils.isNotEmpty(people)  && MapUtils.isNotEmpty(changeSet)) {
     		for(PeopleContext ppl : people) {
     			List<UpdateChangeSet> changes = changeSet.get(ppl.getId());
-				if(CollectionUtils.isNotEmpty(changes) && RecordAPI.checkChangeSet(changes, "isOccupantPortalAccess", FacilioConstants.ContextNames.PEOPLE)) {
+				if((CollectionUtils.isNotEmpty(changes) && RecordAPI.checkChangeSet(changes, "isOccupantPortalAccess", FacilioConstants.ContextNames.PEOPLE)) || MapUtils.isNotEmpty(ppl.getRolesMap())) {
 					PeopleAPI.updatePeoplePortalAccess(ppl, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
 				}
 			}
