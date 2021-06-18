@@ -1284,7 +1284,7 @@ public class ApplicationApi {
     public static void updateRoleForUserInApp(Long ouId, Long appId, Long roleId) throws Exception {
 
         GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
-                .table(AccountConstants.getRolesAppsModule().getTableName()).fields(Collections.singletonList(AccountConstants.getRoleIdField()))
+                .table(AccountConstants.getOrgUserAppsModule().getTableName()).fields(Collections.singletonList(AccountConstants.getRoleIdField()))
                 .andCondition(CriteriaAPI.getCondition("APPLICATION_ID", "applicationId", String.valueOf(appId), NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition("ORG_USERID", "orgUserId", String.valueOf(ouId), NumberOperators.EQUALS))
 
