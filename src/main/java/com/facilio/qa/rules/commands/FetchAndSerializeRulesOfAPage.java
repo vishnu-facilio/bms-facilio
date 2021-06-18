@@ -30,7 +30,7 @@ public class FetchAndSerializeRulesOfAPage extends FacilioCommand {
                 List<QAndARule> rules = Constants.getRuleBean().getRulesOfQuestionsOfType(templateId, getQuestionIds(ruleQuestions), type);
                 Map<Long, QAndARule> ruleMap = rules == null ? Collections.EMPTY_MAP : questionVsRules(rules);
                 for (QuestionContext question : ruleQuestions) {
-                    QAndARule serializedRule = serializeConditions(type, question, ruleMap.get(question._getId()));
+                    QAndARule serializedRule = serializeConditions(type, question, templateId, ruleMap.get(question._getId()));
                     if (serializedRule != null) {
                         getSerializedRules().add(serializedRule);
                     }
@@ -61,7 +61,7 @@ public class FetchAndSerializeRulesOfAPage extends FacilioCommand {
                 .collect(Collectors.toList());
     }
 
-    private QAndARule serializeConditions (QAndARuleType type, QuestionContext question, QAndARule rule) throws Exception {
+    private QAndARule serializeConditions(QAndARuleType type, QuestionContext question, Long templateId, QAndARule rule) throws Exception {
         RuleHandler handler = Objects.requireNonNull(question.getQuestionType().getRuleHandler(), "Rule handler cannot be null when rule is supported for a question");
 
         if (rule == null) {
@@ -77,10 +77,16 @@ public class FetchAndSerializeRulesOfAPage extends FacilioCommand {
             else {
                 rule.setConditions(handler.emptyRuleConditions(type, question));
             }
+        }
+
+        if (rule != null) {
+            rule.setQuestionId(question._getId());
+            rule.setQuestion(question.getQuestion());
             rule.setRuleConditions(null);
             rule.setTemplateId(null);
             rule.setType(null);
         }
+
         return rule;
     }
 

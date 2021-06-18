@@ -7,6 +7,7 @@ import com.facilio.qa.context.client.answers.*;
 import com.facilio.qa.context.client.answers.handler.*;
 import com.facilio.qa.context.questions.*;
 import com.facilio.qa.context.questions.handler.*;
+import com.facilio.qa.rules.pojo.BooleanRuleHandler;
 import com.facilio.qa.rules.pojo.DefaultRuleHandler;
 import com.facilio.qa.rules.pojo.MCQRuleHandler;
 import lombok.Getter;
@@ -102,7 +103,7 @@ public enum QuestionType implements FacilioStringEnum {
             BooleanQuestionContext.class,
             new BooleanAnswerHandler(BooleanAnswerContext.class),
             new BooleanQuestionHandler(),
-            DefaultRuleHandler.INSTANCE,
+            BooleanRuleHandler.INSTANCE,
             FieldType.BOOLEAN
     )
     ;

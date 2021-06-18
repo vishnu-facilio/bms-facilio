@@ -38,8 +38,6 @@ public enum MCQRuleHandler implements RuleHandler {
 
     @Override
     public List<Map<String, Object>> serializeConditions(QAndARuleType type, QuestionContext question, List<RuleCondition> conditions) throws Exception {
-//        List<Map<String, Object>> props = FieldUtil.getAsMapList(conditions, type.getRuleConditionClass());
-//        Map<String, Map<String, Object>> conditionMap = props.stream().collect(Collectors.toMap(, Function.identity()));
         BaseMCQContext mcq = (BaseMCQContext) question;
         Map<String, RuleCondition> conditionMap = conditions.stream().collect(Collectors.toMap(RuleCondition::getValue, Function.identity()));
         List<Map<String, Object>> props = new ArrayList<>();
