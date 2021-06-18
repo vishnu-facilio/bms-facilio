@@ -8,13 +8,16 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMCreationType;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.Page.Tab;
+import com.facilio.bmsconsoleV3.context.EmailConversationThreadingContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext;
 import com.facilio.constants.FacilioConstants;
@@ -222,34 +225,39 @@ public class InspectionPageFactory extends PageFactory {
         summaryTab.addSection(SummarySec);
         page.addTab(summaryTab);
         
-        Page.Tab notesAndAttachmentTab = page.new Tab("Notes & Information");
-        Page.Section notesAndAttachmentSec = page.new Section();
         
-        PageWidget secondaryDetailsWidget = new PageWidget(PageWidget.WidgetType.Q_AND_A_SECONDARY_DETAILS_WIDGET);
-        secondaryDetailsWidget.addToLayoutParams(notesAndAttachmentSec, 24, 7);
-        secondaryDetailsWidget.setWidgetParams(getInspectionResponseWidgetParams());
-        notesAndAttachmentSec.addWidget(secondaryDetailsWidget);
-        
-        PageWidget notesWidget = new PageWidget(PageWidget.WidgetType.COMMENT,"Notes");
-        notesWidget.addToLayoutParams(notesAndAttachmentSec, 24, 8);
-        notesAndAttachmentSec.addWidget(notesWidget);
-        
-        PageWidget attachmentWidget = new PageWidget(PageWidget.WidgetType.ATTACHMENT,"Documents");
-        attachmentWidget.addToLayoutParams(notesAndAttachmentSec, 24, 6);
-        notesAndAttachmentSec.addWidget(attachmentWidget);
-        
-        notesAndAttachmentTab.addSection(notesAndAttachmentSec);
-        page.addTab(notesAndAttachmentTab);
-        
-        Tab relatedList = page.new Tab("Related Records");
-		Section relatedListSec = page.new Section();
-		addRelatedListWidget(relatedListSec, module.getName(), module.getModuleId(), module.getDisplayName());
-		relatedList.addSection(relatedListSec);
-		
-		if(CollectionUtils.isNotEmpty(relatedListSec.getWidgets())) {
-			page.addTab(relatedList);
-		}
-		
+        ApplicationContext currentApp = AccountUtil.getCurrentApp();
+        if(currentApp == null || currentApp.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
+        	
+        	Page.Tab notesAndAttachmentTab = page.new Tab("Notes & Information");
+            Page.Section notesAndAttachmentSec = page.new Section();
+            
+            PageWidget secondaryDetailsWidget = new PageWidget(PageWidget.WidgetType.Q_AND_A_SECONDARY_DETAILS_WIDGET);
+            secondaryDetailsWidget.addToLayoutParams(notesAndAttachmentSec, 24, 7);
+            secondaryDetailsWidget.setWidgetParams(getInspectionResponseWidgetParams());
+            notesAndAttachmentSec.addWidget(secondaryDetailsWidget);
+            
+            PageWidget notesWidget = new PageWidget(PageWidget.WidgetType.COMMENT,"Notes");
+            notesWidget.setTitle("Notes");
+            notesWidget.addToLayoutParams(notesAndAttachmentSec, 24, 8);
+            notesAndAttachmentSec.addWidget(notesWidget);
+            
+            PageWidget attachmentWidget = new PageWidget(PageWidget.WidgetType.ATTACHMENT,"Documents");
+            attachmentWidget.addToLayoutParams(notesAndAttachmentSec, 24, 6);
+            notesAndAttachmentSec.addWidget(attachmentWidget);
+            
+            notesAndAttachmentTab.addSection(notesAndAttachmentSec);
+            page.addTab(notesAndAttachmentTab);
+            
+            Tab relatedList = page.new Tab("Related Records");
+    		Section relatedListSec = page.new Section();
+    		addRelatedListWidget(relatedListSec, module.getName(), module.getModuleId(), module.getDisplayName());
+    		relatedList.addSection(relatedListSec);
+    		
+    		if(CollectionUtils.isNotEmpty(relatedListSec.getWidgets())) {
+    			page.addTab(relatedList);
+    		}
+        }
         
         Page.Tab activityTab = page.new Tab("Activity");
         Page.Section activitySec = page.new Section();

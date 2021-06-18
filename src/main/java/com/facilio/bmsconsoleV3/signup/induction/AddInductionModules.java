@@ -419,7 +419,7 @@ public class AddInductionModules extends SignUpData {
         
         fields.add(assignmentType);
         
-        LookupField baseSpace = (LookupField) FieldFactory.getDefaultField("baseSpace", "Base Space", "BASE_SPACE", FieldType.LOOKUP);
+        LookupField baseSpace = (LookupField) FieldFactory.getDefaultField("baseSpace", "Building", "BASE_SPACE", FieldType.LOOKUP);
         baseSpace.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE));
         fields.add(baseSpace);
         
@@ -534,9 +534,6 @@ public class AddInductionModules extends SignUpData {
         FacilioField actualWorkEnd = (FacilioField) FieldFactory.getDefaultField("actualWorkEnd", "Actual End", "ACTUAL_WORK_END", FieldType.DATE_TIME);
         fields.add(actualWorkEnd);
         
-        FacilioField resumedWorkStart = (FacilioField) FieldFactory.getDefaultField("resumedWorkStart", "Resumed Start", "RESUMED_WORK_START", FieldType.DATE_TIME);
-        fields.add(resumedWorkStart);
-        
         FacilioField  actualWorkDuration = (FacilioField) FieldFactory.getDefaultField("actualWorkDuration", "Actual Duration", "ACTUAL_WORK_DURATION", FieldType.NUMBER);
         fields.add(actualWorkDuration);
         
@@ -594,7 +591,7 @@ public class AddInductionModules extends SignUpData {
 		
 		List<FacilioField> fields = new ArrayList<>();
 		
-        LookupField resource = (LookupField) FieldFactory.getDefaultField("resource", "Resource", "RESOURCE", FieldType.LOOKUP);
+        LookupField resource = (LookupField) FieldFactory.getDefaultField("resource", "Space/Asset", "RESOURCE", FieldType.LOOKUP);
         resource.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.RESOURCE));
         fields.add(resource);
         
