@@ -126,6 +126,7 @@ public class AddInductionModules extends SignUpData {
 	public void addActivityModuleForInductionResponse(FacilioModule inductionResponseModule) throws Exception {
 		// TODO Auto-generated method stub
 		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		FacilioModule module = new FacilioModule(FacilioConstants.Induction.INDUCTION_RESPONSE_ACTIVITY,
                 "Induction Response Activity",
@@ -136,9 +137,8 @@ public class AddInductionModules extends SignUpData {
 				
 		List<FacilioField> fields = new ArrayList<>();
 		
-		LookupField baseSpace = (LookupField) FieldFactory.getDefaultField("parentId", "Parent", "PARENT_ID", FieldType.LOOKUP);
-		baseSpace.setLookupModule(inductionResponseModule);
-		fields.add(baseSpace);
+		NumberField parentId = (NumberField) FieldFactory.getDefaultField("parentId", "Parent", "PARENT_ID", FieldType.NUMBER);
+		fields.add(parentId);
 		
 		FacilioField timefield = FieldFactory.getDefaultField("ttime", "Timestamp", "TTIME", FieldType.DATE_TIME);
 		
@@ -162,6 +162,8 @@ public class AddInductionModules extends SignUpData {
         addModuleChain1.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(module));
         addModuleChain1.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
         addModuleChain1.execute();
+        
+        modBean.addSubModule(inductionResponseModule.getModuleId(), module.getModuleId());
 	}
 
 	public void addDefaultStateFlowForInductionTemplate(FacilioModule inductionModule) throws Exception {

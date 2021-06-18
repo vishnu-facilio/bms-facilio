@@ -8,6 +8,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.CommonActivityType;
 import com.facilio.bmsconsole.activity.QAndAActivityType;
@@ -72,6 +73,7 @@ public class ConstructActivityForAddOrUpdateAnswerCommand extends FacilioCommand
 		String answerString = handler.getAnswerStringValue(addedAnswer, question);
 		
 		info.put("answer", answerString);
+		info.put("doneBy", AccountUtil.getCurrentUser().getName());
 		
 		return info;
 	}

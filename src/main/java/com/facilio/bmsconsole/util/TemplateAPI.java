@@ -1749,7 +1749,11 @@ public class TemplateAPI {
 	private static long addJsonTemplate(long orgId, JSONTemplate template, Template.Type type) throws Exception {
 		addDefaultProps(template);
 		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
-		template.setContentId((FacilioFactory.getFileStore(superAdmin.getId()).addFile("JSON_Template_"+template.getName(), template.getContent(), "text/plain")));
+		FileStore fs =  FacilioFactory.getFileStore();
+		if(superAdmin != null) {
+			fs = FacilioFactory.getFileStore(superAdmin.getId());
+		}
+		template.setContentId((fs.addFile("JSON_Template_"+template.getName(), template.getContent(), "text/plain")));
 		template.setType(type);
 		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
 		

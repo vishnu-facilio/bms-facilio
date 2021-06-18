@@ -2363,6 +2363,9 @@ public class FacilioConstants {
 			classMap.put(Inspection.INSPECTION_CATEGORY, InspectionCategoryContext.class);
 			classMap.put(Inspection.INSPECTION_PRIORITY, InspectionPriorityContext.class);
 			classMap.put(Inspection.INSPECTION_TRIGGER, InspectionTriggerContext.class);
+			
+			classMap.put(Inspection.INSPECTION_RESPONSE_ACTIVITY, ActivityContext.class);
+			classMap.put(Induction.INDUCTION_RESPONSE_ACTIVITY, ActivityContext.class);
 
 			for (QuestionType type : QuestionType.values()) {
 				classMap.put(type.getSubModuleName(), type.getSubClass());

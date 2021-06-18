@@ -151,6 +151,8 @@ public class AddInspectionModules extends SignUpData {
 	public void addActivityModuleForInspectionResponse(FacilioModule inspectionResponseModule) throws Exception {
 		// TODO Auto-generated method stub
 		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
 		FacilioModule module = new FacilioModule(FacilioConstants.Inspection.INSPECTION_RESPONSE_ACTIVITY,
                 "Inspection Response Activity",
                 "Q_And_A_Response_Activity",
@@ -160,9 +162,8 @@ public class AddInspectionModules extends SignUpData {
 				
 		List<FacilioField> fields = new ArrayList<>();
 		
-		LookupField baseSpace = (LookupField) FieldFactory.getDefaultField("parentId", "Parent", "PARENT_ID", FieldType.LOOKUP);
-		baseSpace.setLookupModule(inspectionResponseModule);
-		fields.add(baseSpace);
+		NumberField parentId = (NumberField) FieldFactory.getDefaultField("parentId", "Parent", "PARENT_ID", FieldType.NUMBER);
+		fields.add(parentId);
 		
 		FacilioField timefield = FieldFactory.getDefaultField("ttime", "Timestamp", "TTIME", FieldType.DATE_TIME);
 		
@@ -187,6 +188,7 @@ public class AddInspectionModules extends SignUpData {
         addModuleChain1.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
         addModuleChain1.execute();
 		
+        modBean.addSubModule(inspectionResponseModule.getModuleId(), module.getModuleId());
 	}
 
 
