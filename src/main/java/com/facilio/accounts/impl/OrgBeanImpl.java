@@ -326,10 +326,10 @@ public class OrgBeanImpl implements OrgBean {
 				.innerJoin("ORG_User_Apps")
 				.on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID")
 				.innerJoin("Role")
-				.on("ORG_Users.ROLE_ID = Role.ROLE_ID");
+				.on("ORG_User_Apps.ROLE_ID = Role.ROLE_ID");
 
 		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.ROLE_ID", "roleId", String.valueOf(superAdminRole.getRoleId()), NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.ROLE_ID", "roleId", String.valueOf(superAdminRole.getRoleId()), NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.APPLICATION_ID", "applicationId", String.valueOf(applicationId), NumberOperators.EQUALS));
 
 		List<Map<String, Object>> props = selectBuilder.get();
