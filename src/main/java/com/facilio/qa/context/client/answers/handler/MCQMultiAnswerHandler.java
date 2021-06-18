@@ -133,7 +133,7 @@ public class MCQMultiAnswerHandler extends AnswerHandler<MCQMultiAnswerContext> 
 		
 		for(MCQOptionContext multiEnumAnswer : multiEnumAnswers) {
 			
-			if(!result.toString().isEmpty()) {
+			if(result.length() > 0) {
 				result.append(", ");
 			}
 			result.append(optionMap.get(multiEnumAnswer.getId()).getLabel());
