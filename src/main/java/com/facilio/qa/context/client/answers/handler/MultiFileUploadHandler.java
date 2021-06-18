@@ -81,7 +81,7 @@ public class MultiFileUploadHandler extends AnswerHandler<MultiFileUploadAnswerC
 		
 		for(MultiFileAnswerContext fileAnswer : fileAnswers) {
 			
-			if(!result.isEmpty()) {
+			if(!result.toString().isEmpty()) {
 				result.append(", ");
 			}
 			
