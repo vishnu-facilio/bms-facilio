@@ -913,17 +913,9 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 		
 			VendorContactContext contact = (VendorContactContext) RecordAPI.getRecord(FacilioConstants.ContextNames.VENDOR_CONTACT, Long.valueOf(objects[0].toString()));
 			contact.setIsVendorPortalAccess(true);
-			if(AccountUtil.getCurrentOrg().getOrgId() == 17l) {
-				Map<String, Long> rolesMap = new HashMap<String, Long>();
-				if(contact.getData().get("picklist").toString() == "1"){
-					rolesMap.put("vendor", 43l);
-				}else {
-					rolesMap.put("vendor", 62l);
-				}
-				
-				contact.setRolesMap(rolesMap);
-			}
-			
+			Map<String, Long> rolesMap = new HashMap<String, Long>();
+			rolesMap.put("vendor", Long.valueOf(objects[1].toString()));
+			contact.setRolesMap(rolesMap);
 			FacilioChain c = TransactionChainFactory.updateVendorContactAppAccessChain();
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			
@@ -939,18 +931,12 @@ REVOKE_VENDOR_PORTAL_ACCESS (30, "revokeVendorPortalAccess") {
 		@Override
 		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 		
+			
 			VendorContactContext contact = (VendorContactContext) RecordAPI.getRecord(FacilioConstants.ContextNames.VENDOR_CONTACT, Long.valueOf(objects[0].toString()));
 			contact.setIsVendorPortalAccess(false);
-			if(AccountUtil.getCurrentOrg().getOrgId() == 17l) {
-				Map<String, Long> rolesMap = new HashMap<String, Long>();
-				if(contact.getData().get("picklist").toString() == "1"){
-					rolesMap.put("vendor", 43l);
-				}else {
-					rolesMap.put("vendor", 62l);
-				}
-				
-				contact.setRolesMap(rolesMap);
-			}
+			Map<String, Long> rolesMap = new HashMap<String, Long>();
+			rolesMap.put("vendor", Long.valueOf(objects[1].toString()));
+			contact.setRolesMap(rolesMap);
 			FacilioChain c = TransactionChainFactory.updateVendorContactAppAccessChain();
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			
