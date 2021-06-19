@@ -124,6 +124,34 @@ public class InsuranceContext extends ModuleBaseWithCustomFields{
 		this.insuranceContentType = insuranceContentType;
 	}
 
+	private String insuranceDownloadUrl;
+	private long insuranceUploadedTime;
+	private User insuranceUploadedBy;
+
+	public String getInsuranceDownloadUrl() {
+		return insuranceDownloadUrl;
+	}
+
+	public void setInsuranceDownloadUrl(String insuranceDownloadUrl) {
+		this.insuranceDownloadUrl = insuranceDownloadUrl;
+	}
+
+	public long getInsuranceUploadedTime() {
+		return insuranceUploadedTime;
+	}
+
+	public void setInsuranceUploadedTime(long insuranceUploadedTime) {
+		this.insuranceUploadedTime = insuranceUploadedTime;
+	}
+
+	public User getInsuranceUploadedBy() {
+		return insuranceUploadedBy;
+	}
+
+	public void setInsuranceUploadedBy(User insuranceUploadedBy) {
+		this.insuranceUploadedBy = insuranceUploadedBy;
+	}
+
 	private User addedBy;
 	public User getAddedBy() {
 		return addedBy;
