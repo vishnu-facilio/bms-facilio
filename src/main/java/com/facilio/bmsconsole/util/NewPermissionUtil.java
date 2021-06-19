@@ -436,25 +436,25 @@ public class NewPermissionUtil {
     public static long getPermissionValue(int tabType, String action) {
         switch (tabType) {
             case 1:
-                return moduleTabType.get(action);
+                return moduleTabType.getOrDefault(action, -1);
             case 2:
-                return approvalTabType.get(action);
+                return approvalTabType.getOrDefault(action, -1);
             case 3:
-                return calendarTabType.get(action);
+                return calendarTabType.getOrDefault(action, -1);
             case 4:
-                return reportTabType.get(action);
+                return reportTabType.getOrDefault(action, -1);
             case 5:
-                return analyticsTabType.get(action);
+                return analyticsTabType.getOrDefault(action, -1);
             case 6:
-                return kpiTabType.get(action);
+                return kpiTabType.getOrDefault(action, -1);
             case 7:
-                return dashboardTabType.get(action);
+                return dashboardTabType.getOrDefault(action, -1);
             case 8:
-                return customTabType.get(action);
+                return customTabType.getOrDefault(action, -1);
             case 9:
-                return appTabType.get(action);
+                return appTabType.getOrDefault(action, -1);
             case 10:
-                return settingsTabType.containsKey(action) ? settingsTabType.get(action) : -1;
+                return settingsTabType.containsKey(action) ? settingsTabType.getOrDefault(action,  -1L) : -1;
             case 12:
                 return portalOverviewType.getOrDefault(action, -1);
             default:
