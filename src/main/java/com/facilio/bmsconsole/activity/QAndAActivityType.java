@@ -11,10 +11,10 @@ public enum QAndAActivityType implements ActivityType {
 		public String constructMessage(JSONObject json) {
 			// TODO Auto-generated method stub
 			StringBuilder returnString = new StringBuilder();
-			returnString.append(json.get("doneBy") +" answered question");
+			returnString.append(" answered question");
 			returnString.append("("+json.get("question")+")");
 			if(json.get("answer") != null) {
-				returnString.append("as "+json.get("answer"));
+				returnString.append(" as "+json.get("answer"));
 			}
 			return returnString.toString();
 		}
@@ -25,10 +25,10 @@ public enum QAndAActivityType implements ActivityType {
 		public String constructMessage(JSONObject json) {
 			// TODO Auto-generated method stub
 			StringBuilder returnString = new StringBuilder();
-			returnString.append(json.get("doneBy") +" updated answer for question");
+			returnString.append(" updated answer for question");
 			returnString.append("("+json.get("question")+")");
 			if(json.get("answer") != null) {
-				returnString.append("as "+json.get("answer"));
+				returnString.append(" as "+json.get("answer"));
 			}
 			return returnString.toString();
 		}
