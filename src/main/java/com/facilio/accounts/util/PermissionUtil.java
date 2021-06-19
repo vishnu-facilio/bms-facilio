@@ -417,15 +417,7 @@ public class PermissionUtil {
 		return SPECIAL_MODULES.contains(moduleName);
 	}
 
-	public static boolean currentUserHasPermission(String moduleName, String action) throws Exception {
-		Role role = AccountUtil.getCurrentUser().getRole();
-		if(role.getName().equals(AccountConstants.DefaultSuperAdmin.SUPER_ADMIN) || role.getName().equals(AccountConstants.DefaultSuperAdmin.ADMINISTRATOR)) {
-			return true;
-		}
-		//allowing all access to privileged roles
-		if(AccountUtil.getCurrentApp() != null && role.isPrevileged()){
-			return true;
-		}
+	public static boolean currentUserHasPermission(String moduleName, String action, Role role) throws Exception {
 
 		FacilioModule module = null;
 //		if(!isSpecialModule(moduleName)) {
@@ -453,15 +445,7 @@ public class PermissionUtil {
 		return false;
 	}
 
-	public static boolean currentUserHasPermission(long tabId, String moduleName, String action) {
-		Role role = AccountUtil.getCurrentUser().getRole();
-		if (role.getName().equals(AccountConstants.DefaultSuperAdmin.SUPER_ADMIN) || role.getName().equals(AccountConstants.DefaultSuperAdmin.ADMINISTRATOR)) {
-			return true;
-		}
-		//allowing all access to privileged roles of all apps
-		if(AccountUtil.getCurrentApp() != null && role.isPrevileged()){
-			return true;
-		}
+	public static boolean currentUserHasPermission(long tabId, String moduleName, String action, Role role) {
 
 		try {
 			if (moduleName.equalsIgnoreCase("planned"))

@@ -2,6 +2,7 @@
 package com.facilio.bmsconsole.interceptors;
 
 import com.facilio.accounts.dto.*;
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.accounts.util.PermissionUtil;
@@ -386,18 +387,25 @@ public class ScopeInterceptor extends AbstractInterceptor {
         if (AccountUtil.getCurrentUser() == null) {
             return false;
         }
+        Role role = AccountUtil.getCurrentUser().getRole();
+
+        //allowing all access to privileged roles of all apps
+        if(role.isPrevileged()){
+            return true;
+        }
+
         if (AccountUtil.getCurrentApp() != null && !AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
             HttpServletRequest request = ServletActionContext.getRequest();
             String currentTab = request.getHeader("X-Tab-Id");
             if (currentTab != null && !currentTab.isEmpty()) {
                 long tabId = Long.parseLong(currentTab);
-                return PermissionUtil.currentUserHasPermission(tabId, moduleName, action);
+                return PermissionUtil.currentUserHasPermission(tabId, moduleName, action, role);
             }
         } else {
             if (isNewPermission) {
                 return true;
             }
-            return PermissionUtil.currentUserHasPermission(moduleName, action);
+            return PermissionUtil.currentUserHasPermission(moduleName, action, role);
         }
         return false;
     }
