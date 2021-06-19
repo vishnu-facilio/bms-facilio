@@ -380,13 +380,18 @@ public class ScopeInterceptor extends AbstractInterceptor {
 
     private boolean isAuthorizedAccess(String moduleName, String action, boolean isNewPermission) throws Exception {
 
-        if (action == null || "".equals(action.trim()) || AccountUtil.getCurrentUser().getRoleId() <= 0) {
+        if (action == null || "".equals(action.trim())) {
             return true;
         }
 
         if (AccountUtil.getCurrentUser() == null) {
             return false;
         }
+
+        if(AccountUtil.getCurrentUser().getRoleId() <= 0 || AccountUtil.getCurrentUser().getRole() == null) {
+            return true;
+        }
+        
         Role role = AccountUtil.getCurrentUser().getRole();
 
         //allowing all access to privileged roles of all apps
