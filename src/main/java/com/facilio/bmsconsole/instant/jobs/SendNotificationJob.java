@@ -11,8 +11,11 @@ import com.facilio.bmsconsole.util.SMSUtil;
 import com.facilio.bmsconsole.workflow.rule.ActionType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FieldUtil;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.taskengine.job.InstantJob;
+import com.facilio.wms.message.WmsNotification;
+import com.facilio.wms.util.WmsApi;
 
 public class SendNotificationJob extends InstantJob {
 
@@ -46,7 +49,7 @@ public class SendNotificationJob extends InstantJob {
 			
 			JSONObject pushnotiJson = (JSONObject) context.get(FacilioConstants.ContextNames.NOTIFICATION_OBJECT);
 			
-			NotificationAPI.sendPushNotification(Collections.singletonList(userId), pushnotiJson);
+			WmsApi.sendNotification(Collections.singletonList(userId), new WmsNotification().setNotification(pushnotiJson));
 			break;
 		}
 		
