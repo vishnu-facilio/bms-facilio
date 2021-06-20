@@ -49,7 +49,7 @@ public class SendNotificationJob extends InstantJob {
 			
 			JSONObject pushnotiJson = (JSONObject) context.get(FacilioConstants.ContextNames.NOTIFICATION_OBJECT);
 			
-			WmsApi.sendNotification(Collections.singletonList(userId), new WmsNotification().setNotification(pushnotiJson));
+			NotificationAPI.sendPushNotification(Collections.singletonList(userId), pushnotiJson);
 			break;
 		}
 		
