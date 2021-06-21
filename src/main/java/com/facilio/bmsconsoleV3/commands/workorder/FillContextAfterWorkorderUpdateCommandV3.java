@@ -70,27 +70,29 @@ public class FillContextAfterWorkorderUpdateCommandV3 extends FacilioCommand {
     }
 
     private void addActivity(V3WorkOrderContext workOrder, List<V3WorkOrderContext> oldWos, Map<Long, List<UpdateChangeSet>> changeSets, List<Long> recordIds, ModuleBean modBean, String moduleName, Context context) throws Exception {
-        if (workOrder.getSiteId() != -1) {
-            JSONObject info = new JSONObject();
-            JSONObject woupdate = new JSONObject();
-            List<Object> wolist = new ArrayList<Object>();
-            info.put("field", "site");
-            info.put("displayName", "Site");
-            info.put("newValue", workOrder.getSiteId());
-            wolist.add(info);
-            woupdate.put("woupdate", wolist);
-            CommonCommandUtil.addActivityToContext(recordIds.get(0), workOrder.getCurrentTime(), WorkOrderActivityType.UPDATE, woupdate, (FacilioContext) context);
-        }
-        if ( (workOrder.getAssignedTo() != null && workOrder.getAssignedTo().getId() != -1) || (workOrder.getAssignmentGroup() != null && workOrder.getAssignmentGroup().getId() != -1) ) {
-            for (V3WorkOrderContext oldWo: oldWos) {
-                addAssignmentActivity(workOrder, oldWo.getId(), oldWo, context);
-            }
-        } else if (workOrder.getVendor() != null && workOrder.getVendor().getId() != -1) {
-            for (V3WorkOrderContext oldWo : oldWos) {
-                addVendorAssignmentActivity(workOrder, oldWo.getId(), oldWo, context);
-            }
-        }
-        else if (!changeSets.isEmpty() && workOrder.getApprovalStateEnum() == null && workOrder.getStatus() == null) {
+//        if (workOrder.getSiteId() != -1) {
+//            JSONObject info = new JSONObject();
+//            JSONObject woupdate = new JSONObject();
+//            List<Object> wolist = new ArrayList<Object>();
+//            info.put("field", "site");
+//            info.put("displayName", "Site");
+//            info.put("newValue", workOrder.getSiteId());
+//            wolist.add(info);
+//            woupdate.put("woupdate", wolist);
+//            CommonCommandUtil.addActivityToContext(recordIds.get(0), workOrder.getCurrentTime(), WorkOrderActivityType.UPDATE, woupdate, (FacilioContext) context);
+//        }
+//        if ( (workOrder.getAssignedTo() != null && workOrder.getAssignedTo().getId() != -1) || (workOrder.getAssignmentGroup() != null && workOrder.getAssignmentGroup().getId() != -1) ) {
+//            for (V3WorkOrderContext oldWo: oldWos) {
+//                addAssignmentActivity(workOrder, oldWo.getId(), oldWo, context);
+//            }
+//        } else if (workOrder.getVendor() != null && workOrder.getVendor().getId() != -1) {
+//            for (V3WorkOrderContext oldWo : oldWos) {
+//                addVendorAssignmentActivity(workOrder, oldWo.getId(), oldWo, context);
+//            }
+//        }
+//        else if (!changeSets.isEmpty() && workOrder.getApprovalStateEnum() == null && workOrder.getStatus() == null) {
+
+            if (!changeSets.isEmpty()) {
 
             Iterator it = recordIds.iterator();
             List<UpdateChangeSet> changeSetList = null;
