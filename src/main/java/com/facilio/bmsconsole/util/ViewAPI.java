@@ -187,12 +187,21 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 		return new ArrayList<>(viewMap.values());
 	}
 	
-	public static FacilioView getView(String name, String moduleName, long orgId) throws Exception {
+	public static FacilioView getView(String name, String moduleName, long orgId, long appId) throws Exception {
 		try {
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 													.select(FieldFactory.getViewFields())
 													.table("Views")
 													.andCustomWhere("ORGID = ? AND MODULENAME = ? AND NAME = ?", orgId, moduleName, name);
+			
+			ApplicationContext app = appId <= 0 ? AccountUtil.getCurrentApp() : ApplicationApi.getApplicationForId(appId);
+			if (app == null) {
+				app = ApplicationApi.getApplicationForLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+			}
+			
+			if (app != null) {
+				builder.andCustomWhere("APP_ID = ?", app.getId());
+			}
 			
 			List<Map<String, Object>> viewProps = builder.get();
 			if(viewProps != null && !viewProps.isEmpty()) {
@@ -216,12 +225,21 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 		return null;
 	}
 	
-	public static FacilioView getView(String name, long moduleId, long orgId) throws Exception {
+	public static FacilioView getView(String name, long moduleId, long orgId, long appId) throws Exception {
 		try {
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 													.select(FieldFactory.getViewFields())
 													.table("Views")
 													.andCustomWhere("ORGID = ? AND MODULEID = ? AND NAME = ?", orgId, moduleId, name);
+			
+			ApplicationContext app = appId <= 0 ? AccountUtil.getCurrentApp() : ApplicationApi.getApplicationForId(appId);
+			if (app == null) {
+				app = ApplicationApi.getApplicationForLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+			}
+			
+			if (app != null) {
+				builder.andCustomWhere("APP_ID = ?", app.getId());
+			}
 			
 			List<Map<String, Object>> viewProps = builder.get();
 			if(viewProps != null && !viewProps.isEmpty()) {
@@ -288,7 +306,12 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 		view.setOrgId(orgId);
 		view.setId(-1);
 		if (view.getAppId() < 0) {
-			view.setAppId(ApplicationApi.getApplicationForLinkName(ApplicationLinkNames.FACILIO_MAIN_APP).getId());
+			ApplicationContext app = view.getAppId() <= 0 ? AccountUtil.getCurrentApp() : ApplicationApi.getApplicationForId(view.getAppId());
+			if (app == null) {
+				app = ApplicationApi.getApplicationForLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+			}
+			
+			view.setAppId(app.getId());
 		}
 		try {
 			Criteria criteria = view.getCriteria();
@@ -567,7 +590,7 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 		FacilioModule module= modBean.getModule(moduleName);
 		long moduleId = module.getModuleId();
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
-		FacilioView view = getView(viewName, moduleId, orgId);
+		FacilioView view = getView(viewName, moduleId, orgId, -1);
 		if(view == null) {
 			view = ViewFactory.getView(module, viewName, modBean);
 			if(view != null) {

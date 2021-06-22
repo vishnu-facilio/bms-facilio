@@ -207,6 +207,7 @@ public class ViewAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+		context.put(FacilioConstants.ContextNames.APP_ID, appId);
 		context.put(FacilioConstants.ContextNames.PARENT_VIEW, parentView);
 		context.put(FacilioConstants.ContextNames.FETCH_FIELD_DISPLAY_NAMES, true);
 		

@@ -29,7 +29,7 @@ public class SaveSortFieldsCommand extends FacilioCommand {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
 		long moduleId = module.getModuleId();
-		FacilioView view = ViewAPI.getView(viewName, moduleId, AccountUtil.getCurrentOrg().getOrgId());
+		FacilioView view = ViewAPI.getView(viewName, moduleId, AccountUtil.getCurrentOrg().getOrgId(), -1);
 		if (view == null) {
 			view = ViewFactory.getView(module, viewName, modBean);
 		}
