@@ -187,17 +187,12 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 		return new ArrayList<>(viewMap.values());
 	}
 	
-	public static FacilioView getView(String name, String moduleName, long orgId, long groupId) throws Exception {
+	public static FacilioView getView(String name, String moduleName, long orgId) throws Exception {
 		try {
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 													.select(FieldFactory.getViewFields())
 													.table("Views")
 													.andCustomWhere("ORGID = ? AND MODULENAME = ? AND NAME = ?", orgId, moduleName, name);
-			
-			
-			if (groupId > 0) {
-				builder.andCustomWhere("GROUPID = ?", groupId);
-			}
 			
 			List<Map<String, Object>> viewProps = builder.get();
 			if(viewProps != null && !viewProps.isEmpty()) {
@@ -221,16 +216,12 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 		return null;
 	}
 	
-	public static FacilioView getView(String name, long moduleId, long orgId, long groupId) throws Exception {
+	public static FacilioView getView(String name, long moduleId, long orgId) throws Exception {
 		try {
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 													.select(FieldFactory.getViewFields())
 													.table("Views")
 													.andCustomWhere("ORGID = ? AND MODULEID = ? AND NAME = ?", orgId, moduleId, name);
-			
-			if (groupId > 0) {
-				builder.andCustomWhere("GROUPID = ?", groupId);
-			}
 			
 			List<Map<String, Object>> viewProps = builder.get();
 			if(viewProps != null && !viewProps.isEmpty()) {
@@ -576,7 +567,7 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 		FacilioModule module= modBean.getModule(moduleName);
 		long moduleId = module.getModuleId();
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
-		FacilioView view = getView(viewName, moduleId, orgId, groupId);
+		FacilioView view = getView(viewName, moduleId, orgId);
 		if(view == null) {
 			view = ViewFactory.getView(module, viewName, modBean);
 			if(view != null) {

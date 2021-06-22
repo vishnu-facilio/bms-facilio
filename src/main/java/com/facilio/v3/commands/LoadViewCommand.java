@@ -42,7 +42,6 @@ public class LoadViewCommand extends FacilioCommand {
         long startTime = System.currentTimeMillis();
         String viewName = (String) context.get(FacilioConstants.ContextNames.CV_NAME);
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-        Long groupId = (Long) context.getOrDefault(FacilioConstants.ContextNames.GROUP_ID, -1l);
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         if(viewName != null && !viewName.isEmpty()) {
             String parentViewName = (String) context.get(FacilioConstants.ContextNames.PARENT_VIEW);	// eg: to get default report columns
@@ -50,9 +49,9 @@ public class LoadViewCommand extends FacilioCommand {
             FacilioModule module = modBean.getModule(moduleName);
             long moduleId = module.getModuleId();
             if (LookupSpecialTypeUtil.isSpecialType(moduleName)) {
-                view = ViewAPI.getView(viewName, moduleName, AccountUtil.getCurrentOrg().getOrgId(), groupId);
+                view = ViewAPI.getView(viewName, moduleName, AccountUtil.getCurrentOrg().getOrgId());
             } else {
-                view = ViewAPI.getView(viewName, moduleId, AccountUtil.getCurrentOrg().getOrgId(), groupId);
+                view = ViewAPI.getView(viewName, moduleId, AccountUtil.getCurrentOrg().getOrgId());
             }
 
             if(view == null) {
