@@ -383,7 +383,7 @@ public class AccountUtil {
 		APPROVAL (1024),
 		MOBILE_DASHBOARD (2048),
 		CONTROL_ACTIONS (4096),
-		INVENTORY (8192, new String[] {ContextNames.PURCHASE_REQUEST, ContextNames.PURCHASE_ORDER}),
+		INVENTORY (8192, new String[] {ContextNames.PURCHASE_REQUEST, ContextNames.PURCHASE_ORDER, ContextNames.VENDORS, ContextNames.VENDOR_CONTACT, ContextNames.INSURANCE}),
 		SCHEDULED_WO (16384),
 		TENANTS (32768, new String[] {ContextNames.TENANT, ContextNames.TENANT_UNIT_SPACE}),
 		HUDSON_YARDS (65536, new String[] {ContextNames.WorkPermit.WORKPERMIT}), // TEMP

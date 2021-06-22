@@ -20,6 +20,7 @@ public class GetModulesListCommand extends FacilioCommand {
 			ContextNames.WORK_ORDER,
 			ContextNames.ASSET,
 			ContextNames.VENDORS,
+			ContextNames.INSURANCE,
 			ContextNames.BASE_VISIT,
 			ContextNames.VISITOR_LOG,
 			ContextNames.INVITE_VISITOR,
