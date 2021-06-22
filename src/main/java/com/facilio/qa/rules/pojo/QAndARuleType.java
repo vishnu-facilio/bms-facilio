@@ -24,7 +24,9 @@ public enum QAndARuleType implements FacilioStringEnum {
             Constants.ModuleFactory.scoringRuleModule(),
             Constants.FieldFactory.scoringRuleFields(),
             Constants.ModuleFactory.scoringRuleConditionModule(),
-            Constants.FieldFactory.scoringRuleConditionFields()
+            Constants.FieldFactory.scoringRuleConditionFields(),
+            true,
+            "score"
     ),
     WORKFLOW(
             ActionRule.class,
@@ -34,7 +36,9 @@ public enum QAndARuleType implements FacilioStringEnum {
             Constants.ModuleFactory.qandaRuleModule(),
             Constants.FieldFactory.qandaRuleFields(),
             Constants.ModuleFactory.ruleConditionModule(),
-            Constants.FieldFactory.ruleConditionFields()
+            Constants.FieldFactory.ruleConditionFields(),
+            false,
+            null
     )
     ;
 
@@ -70,4 +74,8 @@ public enum QAndARuleType implements FacilioStringEnum {
     private FacilioModule ruleConditionsModule;
     @NonNull
     private List<FacilioField> ruleConditionFields;
+
+    @NonNull
+    private boolean actionMandatory;
+    private String emptyActionErrorValue;
 }

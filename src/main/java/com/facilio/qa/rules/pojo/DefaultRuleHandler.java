@@ -4,6 +4,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.RuleHandler;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -11,13 +12,8 @@ public enum DefaultRuleHandler implements RuleHandler {
     INSTANCE; // Making it singleton since only one instance is needed
 
     @Override
-    public QAndARule emptyRule(QAndARuleType type, QuestionContext question) throws Exception {
-        return null;
-    }
-
-    @Override
     public List<Map<String, Object>> emptyRuleConditions(QAndARuleType type, QuestionContext question) throws Exception {
-        return null;
+        return Collections.EMPTY_LIST;
     }
 
     @Override

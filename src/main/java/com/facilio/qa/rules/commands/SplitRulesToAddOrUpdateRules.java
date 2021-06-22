@@ -31,7 +31,9 @@ public class SplitRulesToAddOrUpdateRules extends FacilioCommand {
             for (QAndARule rule : rules) {
                 QAndARule oldRule = oldRuleMap.get(rule.getQuestionId());
                 if (oldRule == null) {
-                    getRulesToBeAdded().add(rule);
+                    if (CollectionUtils.isNotEmpty(rule.getRuleConditions())) { // Preventing empty rules getting added
+                        getRulesToBeAdded().add(rule);
+                    }
                 }
                 else {
                     if (CollectionUtils.isNotEmpty(oldRule.getRuleConditions())) {

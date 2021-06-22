@@ -32,8 +32,8 @@ public enum BooleanRuleHandler implements RuleHandler {
     @Override
     public List<Map<String, Object>> emptyRuleConditions(QAndARuleType type, QuestionContext question) throws Exception {
         List<Map<String, Object>> props = new ArrayList<>();
-        props.add(emptyCondition(TRUE));
-        props.add(emptyCondition(FALSE));
+        props.add(emptyCondition(TRUE, ((BooleanQuestionContext) question).getTrueLabel()));
+        props.add(emptyCondition(FALSE, ((BooleanQuestionContext) question).getFalseLabel()));
         return props;
     }
 
@@ -41,8 +41,8 @@ public enum BooleanRuleHandler implements RuleHandler {
     public List<Map<String, Object>> serializeConditions(QAndARuleType type, QuestionContext question, List<RuleCondition> conditions) throws Exception {
         Map<String, RuleCondition> conditionMap = conditions.stream().collect(Collectors.toMap(RuleCondition::getValue, Function.identity()));
         List<Map<String, Object>> props = new ArrayList<>();
-        props.add(serialize(conditionMap, TRUE));
-        props.add(serialize(conditionMap, FALSE));
+        props.add(serialize(conditionMap, TRUE, ((BooleanQuestionContext) question).getTrueLabel()));
+        props.add(serialize(conditionMap, FALSE, ((BooleanQuestionContext) question).getFalseLabel()));
         return props;
     }
 
@@ -69,21 +69,28 @@ public enum BooleanRuleHandler implements RuleHandler {
         return conditions;
     }
 
-    private Map<String, Object> serialize (Map<String, RuleCondition> conditionMap, String value) throws Exception {
+    private Map<String, Object> serialize (Map<String, RuleCondition> conditionMap, String value, String label) throws Exception {
         RuleCondition condition = conditionMap.get(value); //ID cannot be null
         if (condition == null) {
-            return emptyCondition(value);
+            return emptyCondition(value, label);
         }
         else {
             Map<String, Object> prop = FieldUtil.getAsProperties(condition);
             prop.remove("operator");
             prop.remove("value");
-            prop.put("option", value);
+            addOptionProps(prop, value, label);
             return prop;
         }
     }
 
-    private Map<String, Object> emptyCondition(String value) {
-        return Collections.singletonMap("option", value);
+    private void addOptionProps (Map<String, Object> props, String value, String label) {
+        props.put("option", value);
+        props.put("label", label);
+    }
+
+    private Map<String, Object> emptyCondition(String value, String label) {
+        Map<String, Object> props = new HashMap<>(2);
+        addOptionProps(props, value, label);
+        return props;
     }
 }

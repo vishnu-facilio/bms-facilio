@@ -18,18 +18,24 @@ public class AddConditionsCommand extends FacilioCommand {
         List<QAndARule> rules = (List<QAndARule>) context.get(Constants.Command.RULES);
         if (CollectionUtils.isNotEmpty(rules)) {
             QAndARuleType type = (QAndARuleType) context.get(Constants.Command.RULE_TYPE);
-            List<RuleCondition> conditions = new ArrayList<>();
             for (QAndARule rule : rules) {
                 IntStream.range(0, rule.getRuleConditions().size()).forEach(i -> setDefaultPropsForCondition(i, rule));
-                conditions.addAll(rule.getRuleConditions());
+                getConditionsToBeAdded().addAll(rule.getRuleConditions());
 
                 rule.setRuleConditions(null); // To remove from client response
             }
-            Constants.getRuleBean().addConditions(conditions, type);
 
+            if (CollectionUtils.isNotEmpty(conditionsToBeAdded)) {
+                Constants.getRuleBean().addConditions(conditionsToBeAdded, type);
+            }
             // Handle other additions if needed
         }
         return false;
+    }
+
+    private List<RuleCondition> conditionsToBeAdded;
+    private List<RuleCondition> getConditionsToBeAdded() {
+        return conditionsToBeAdded = conditionsToBeAdded == null ? new ArrayList<>() : conditionsToBeAdded;
     }
 
     private <C extends RuleCondition> C setDefaultPropsForCondition (int i, QAndARule<C> rule) {

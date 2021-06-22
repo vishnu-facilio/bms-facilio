@@ -9,22 +9,12 @@ import com.facilio.qa.context.questions.MCQOptionContext;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public enum MCQRuleHandler implements RuleHandler {
     INSTANCE; // Making it singleton since only one instance is needed
-
-    @Override
-    public QAndARule emptyRule(QAndARuleType type, QuestionContext question) throws Exception {
-        QAndARule rule = type.constructRule();
-        rule.setConditions(emptyRuleConditions(type, question));
-        return rule;
-    }
 
     @Override
     public List<Map<String, Object>> emptyRuleConditions(QAndARuleType type, QuestionContext question) throws Exception {
@@ -50,7 +40,7 @@ public enum MCQRuleHandler implements RuleHandler {
                 Map<String, Object> prop = FieldUtil.getAsProperties(condition);
                 prop.remove("operator");
                 prop.remove("value");
-                prop.put("option", option._getId());
+                addOptionProps(prop, option);
                 props.add(prop);
             }
         }
@@ -75,7 +65,14 @@ public enum MCQRuleHandler implements RuleHandler {
         return conditions;
     }
 
+    private void addOptionProps (Map<String, Object> props, MCQOptionContext option) {
+        props.put("option", option._getId());
+        props.put("label", option.getLabel());
+    }
+
     private Map<String, Object> emptyCondition(MCQOptionContext option) {
-        return Collections.singletonMap("option", option._getId());
+        Map<String, Object> props = new HashMap<>(2);
+        addOptionProps(props, option);
+        return props;
     }
 }

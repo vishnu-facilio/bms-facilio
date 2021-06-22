@@ -8,7 +8,11 @@ import java.util.List;
 import java.util.Map;
 
 public interface RuleHandler {
-    public QAndARule emptyRule(QAndARuleType type, QuestionContext question) throws Exception;
+    public default QAndARule emptyRule(QAndARuleType type, QuestionContext question) throws Exception {
+        QAndARule rule = type.constructRule();
+        rule.setConditions(emptyRuleConditions(type, question));
+        return rule;
+    }
 
     public List<Map<String, Object>> emptyRuleConditions (QAndARuleType type, QuestionContext question) throws Exception;
 

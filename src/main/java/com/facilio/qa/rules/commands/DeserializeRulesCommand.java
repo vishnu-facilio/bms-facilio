@@ -13,6 +13,7 @@ import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -40,10 +41,14 @@ public class DeserializeRulesCommand extends FacilioCommand {
                 List<RuleCondition> conditionList = CollectionUtils.isEmpty(conditions) ? Collections.EMPTY_LIST : // So this means we'll delete existing conditions for this rule
                                                     question.getQuestionType().getRuleHandler().deserializeConditions(type, question, conditions);
 //                V3Util.throwRestException(CollectionUtils.isEmpty(conditionList), ErrorCode.VALIDATION_ERROR, "Invalid conditions during addition");
-//                V3Util.throwRestException(conditionList.stream().anyMatch(RuleCondition::actionIsEmpty), ErrorCode.VALIDATION_ERROR, "Condition action value cannot be empty");
 //                List<RuleCondition> conditionsWithActionValue = conditionList == null ? null : conditionList.stream().filter(RuleCondition::hasAction).collect(Collectors.toList());
 //                if (CollectionUtils.isNotEmpty(conditionsWithActionValue)) {
                 QAndARule rule = FieldUtil.getAsBeanFromMap(prop, type.getRuleClass());
+
+                if (type.isActionMandatory()) {
+                    V3Util.throwRestException(conditionList.stream().anyMatch(RuleCondition::actionIsEmpty), ErrorCode.VALIDATION_ERROR, MessageFormat.format("Condition {0} cannot be empty", type.getEmptyActionErrorValue()));
+                }
+
                 rule.setRuleConditions(conditionList);
                 rule.setType(type);
                 rule.setQuestionId(questionId);
