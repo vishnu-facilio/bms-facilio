@@ -41,6 +41,15 @@ public class ViewAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	private long groupId = -1;
+	
+	
+	public long getGroupId() {
+		return groupId;
+	}
+	public void setGroupId(long groupId) {
+		this.groupId = groupId;
+	}
 
 	private int type=1;
 	public int getType() {
@@ -206,6 +215,7 @@ public class ViewAction extends FacilioAction {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.GROUP_ID, groupId);
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
 		context.put(FacilioConstants.ContextNames.PARENT_VIEW, parentView);
 		context.put(FacilioConstants.ContextNames.FETCH_FIELD_DISPLAY_NAMES, true);
@@ -387,6 +397,7 @@ public String v2customizeView() throws Exception {
 		
 		context.put(FacilioConstants.ContextNames.VIEWID, viewId);
 		context.put(FacilioConstants.ContextNames.SORTING, sortObject);
+		context.put(FacilioConstants.ContextNames.GROUP_ID, groupId);
 		
 		FacilioChain customizeSortColumnsChain = FacilioChainFactory.getViewCustomizeSortColumnsChain();
 		customizeSortColumnsChain.execute(context);
