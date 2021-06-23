@@ -31,11 +31,13 @@ public class LockersPageFactory extends PageFactory {
         addSecondaryDetailsWidget(tab1Sec1);
         addCommonSubModuleWidget(tab1Sec1, module, lockersContext);
 
-//        Page.Tab tab2 = page.new Tab("related records");
-//        page.addTab(tab2);
-//
-//        Page.Section tab2Sec1 = page.new Section();
-//        tab2.addSection(tab2Sec1);
+        Tab tab2 = page.new Tab("related list");
+		Section tab2Sec1 = page.new Section();
+		tab2.addSection(tab2Sec1);
+		addRelatedListWidgets(tab2Sec1, module.getModuleId());
+		if(CollectionUtils.isNotEmpty(tab2Sec1.getWidgets())) {
+			page.addTab(tab2);
+		}
         
         Page.Tab tab3 = page.new Tab("Activity");
 		page.addTab(tab3);
