@@ -40,9 +40,7 @@ public class AltayerVendorMappingValueGenerator extends ValueGenerator{
                 if(CollectionUtils.isNotEmpty(baseSpaceIds)) {
                     List<Long> ids = getVendorMappingData(baseSpaceIds);
                     if (CollectionUtils.isNotEmpty(ids)) {
-                        Criteria criteria = new Criteria();
-                        criteria.addAndCondition(CriteriaAPI.getCondition("ID", "id", StringUtils.join(ids, ","), NumberOperators.EQUALS));
-                        return criteria;
+                        return StringUtils.join(ids, ",");
                     }
                 }
             }
