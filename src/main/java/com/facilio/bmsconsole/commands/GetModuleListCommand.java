@@ -88,6 +88,15 @@ public class GetModuleListCommand extends FacilioCommand {
 				moduleList.add(modBean.getModule(ContextNames.TOOL));
 				moduleList.add(modBean.getModule(ContextNames.ITEM));
 			}
+			if(AccountUtil.getCurrentOrg().getOrgId() == 429l) { //temp
+				moduleList.add(modBean.getModule(ContextNames.DEPARTMENT));
+				moduleList.add(modBean.getModule(ContextNames.EMPLOYEE));
+				moduleList.add(modBean.getModule(ContextNames.Floorplan.DESKS));
+				moduleList.add(modBean.getModule(ContextNames.MOVES));
+				moduleList.add(modBean.getModule(ContextNames.DELIVERIES));
+				moduleList.add(modBean.getModule(ContextNames.LOCKERS));
+				moduleList.add(modBean.getModule(ContextNames.PARKING_STALL));
+			}
 		}
 		context.put(FacilioConstants.ContextNames.MODULE_LIST, moduleList);
 		return false;

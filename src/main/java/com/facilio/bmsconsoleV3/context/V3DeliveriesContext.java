@@ -8,6 +8,16 @@ public class V3DeliveriesContext extends V3Context{
 
     private static final long serialVersionUID = 1L;
     
+    private String name;
+    
+    public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+    
     private String trackingNumber;
     
     public String getTrackingNumber() {
@@ -148,5 +158,15 @@ public class V3DeliveriesContext extends V3Context{
 
     public void setSignatureContentType(String signatureContentType) {
         this.signatureContentType = signatureContentType;
+    }
+    
+    private Integer carrier;
+	
+	public Integer getCarrier() {
+        return carrier;
+    }
+
+    public void setCarrier(Integer carrier) {
+        this.carrier = carrier;
     }
 }

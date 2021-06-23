@@ -1726,13 +1726,16 @@ public class FormFactory {
 	
 	private static List<FormField> getDeliveriesFormField() {
 		List<FormField> fields = new ArrayList<>();
-		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		FormField nameField = new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.OPTIONAL, 1, 1);
+		nameField.setHideField(true);
+		fields.add(nameField);
 		fields.add(new FormField("trackingNumber", FieldDisplayType.TEXTBOX, "Tracking Number", Required.OPTIONAL, 2, 2));
-		fields.add(new FormField("employee", FieldDisplayType.LOOKUP_SIMPLE, "Recipient", Required.REQUIRED, "employee", 3, 2));
+		fields.add(new FormField("employee", FieldDisplayType.LOOKUP_SIMPLE, "Recipient", Required.OPTIONAL, "employee", 3, 2));
 		fields.add(new FormField("receivedTime", FieldDisplayType.DATETIME, "Received Time", Required.REQUIRED, 4, 2));
 		fields.add(new FormField("avatar",FieldDisplayType.IMAGE,"Photo",Required.OPTIONAL,5,2));
 		fields.add(new FormField("deliveryArea", FieldDisplayType.LOOKUP_SIMPLE, "Delivery Area", Required.OPTIONAL, "deliveryArea", 6, 2));
-		fields.add(new FormField("signature", FieldDisplayType.SIGNATURE, "Signature", Required.OPTIONAL, 7, 1));
+		fields.add(new FormField("carrier", FieldDisplayType.SELECTBOX, "Carrier", Required.REQUIRED, 7, 2));
+		fields.add(new FormField("signature", FieldDisplayType.SIGNATURE, "Signature", Required.OPTIONAL, 8, 1));
 		return fields;
 	}
 	
@@ -1751,13 +1754,10 @@ public class FormFactory {
 	private static List<FormField> getLockersFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
-		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
-		fields.add(new FormField("area", FieldDisplayType.NUMBER, "Area", Required.OPTIONAL, 3, 2));
-		fields.add(new FormField("maxOccupancy", FieldDisplayType.NUMBER, "Max Occupancy", Required.OPTIONAL, 4, 3));
+		fields.add(new FormField("employee", FieldDisplayType.LOOKUP_SIMPLE, "Employee", Required.REQUIRED, "employee", 2, 2));
 		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED,"site", 5, 2));
 		fields.add(new FormField("building", FieldDisplayType.LOOKUP_SIMPLE, "Building", Required.OPTIONAL,"building", 6, 3));
 		fields.add(new FormField("floor", FieldDisplayType.LOOKUP_SIMPLE, "Floor", Required.OPTIONAL,"floor", 7, 1));
-		fields.add(new FormField("employee", FieldDisplayType.LOOKUP_SIMPLE, "Employee", Required.REQUIRED, "employee", 8, 2));
 		
 		return fields;
 	}
@@ -1765,13 +1765,10 @@ public class FormFactory {
 	private static List<FormField> getParkingStallFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
-		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
-		fields.add(new FormField("area", FieldDisplayType.NUMBER, "Area", Required.OPTIONAL, 3, 2));
-		fields.add(new FormField("maxOccupancy", FieldDisplayType.NUMBER, "Max Occupancy", Required.OPTIONAL, 4, 3));
-		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED,"site", 5, 2));
-		fields.add(new FormField("building", FieldDisplayType.LOOKUP_SIMPLE, "Building", Required.OPTIONAL,"building", 6, 3));
-		fields.add(new FormField("floor", FieldDisplayType.LOOKUP_SIMPLE, "Floor", Required.OPTIONAL,"floor", 7, 1));
-		fields.add(new FormField("parkingType", FieldDisplayType.SELECTBOX, "Parking Type", Required.REQUIRED, 8, 2));
+		fields.add(new FormField("parkingType", FieldDisplayType.SELECTBOX, "Parking Type", Required.REQUIRED, 2, 2));
+		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED,"site", 3, 2));
+		fields.add(new FormField("building", FieldDisplayType.LOOKUP_SIMPLE, "Building", Required.OPTIONAL,"building", 4, 2));
+		fields.add(new FormField("floor", FieldDisplayType.LOOKUP_SIMPLE, "Floor", Required.OPTIONAL,"floor", 5, 2));
 		return fields;
 	}
 	
