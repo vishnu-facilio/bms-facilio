@@ -391,7 +391,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
         if(AccountUtil.getCurrentUser().getRoleId() <= 0 || AccountUtil.getCurrentUser().getRole() == null) {
             return true;
         }
-        
+
         Role role = AccountUtil.getCurrentUser().getRole();
 
         //allowing all access to privileged roles of all apps
