@@ -64,7 +64,8 @@ public class AltayerVendorContactValueGenerator extends ValueGenerator{
         List<Map<String, Object>> props = builder.getAsProps();
         if(CollectionUtils.isNotEmpty(props)) {
             for(Map<String, Object> prop : props) {
-                Long contactId = (Long)prop.get("contacts");
+                Map<String, Object> vendor = (Map<String, Object>) prop.get("contacts");
+                Long contactId = (Long)vendor.get("id");
                 if(!contactIds.contains(contactId)) {
                     contactIds.add(contactId);
                 }
