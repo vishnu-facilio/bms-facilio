@@ -9,7 +9,10 @@ import org.json.simple.JSONObject;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsole.page.Page.Section;
+import com.facilio.bmsconsole.page.Page.Tab;
 import com.facilio.bmsconsoleV3.context.V3LockersContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
@@ -33,6 +36,15 @@ public class LockersPageFactory extends PageFactory {
 //
 //        Page.Section tab2Sec1 = page.new Section();
 //        tab2.addSection(tab2Sec1);
+        
+        Page.Tab tab3 = page.new Tab("Activity");
+		page.addTab(tab3);
+		Page.Section tab4Sec1 = page.new Section();
+		tab3.addSection(tab4Sec1);
+		PageWidget activityWidget = new PageWidget(PageWidget.WidgetType.ACTIVITY);
+		activityWidget.addToLayoutParams(tab4Sec1, 24, 3);
+		activityWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.CUSTOM_ACTIVITY);
+		tab4Sec1.addWidget(activityWidget);
 
         
 

@@ -34,7 +34,9 @@ public class V3SpaceContext extends V3BaseSpaceContext{
 		if (spaceCategory == null) {
 			this.spaceCategory = new SpaceCategoryContext();
 		}
-		this.spaceCategory.setId(spaceCategoryId);
+		if(spaceCategoryId !=null) {
+			this.spaceCategory.setId(spaceCategoryId);
+		}
 	}
 
 	private SpaceCategoryContext spaceCategory;
