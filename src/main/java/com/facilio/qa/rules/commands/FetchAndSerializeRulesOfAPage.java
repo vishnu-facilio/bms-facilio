@@ -82,6 +82,7 @@ public class FetchAndSerializeRulesOfAPage extends FacilioCommand {
         if (rule != null) {
             rule.setQuestionId(question._getId());
             rule.setQuestion(question.getQuestion());
+            rule.setQuestionType(question.getQuestionType());
             rule.setRuleConditions(null);
             rule.setTemplateId(null);
             rule.setType(null);

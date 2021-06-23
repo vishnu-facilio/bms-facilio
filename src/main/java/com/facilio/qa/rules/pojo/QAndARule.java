@@ -1,6 +1,7 @@
 package com.facilio.qa.rules.pojo;
 
 import com.facilio.qa.context.QuestionContext;
+import com.facilio.qa.context.QuestionType;
 import com.facilio.util.FacilioUtil;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,6 +29,7 @@ public abstract class QAndARule<Condition extends RuleCondition> {
 
     // Following props are just for client response
     private String question;
+    private QuestionType questionType;
     private List<Map<String, Object>> conditions;
 
     public void beforeSaveHook(QuestionContext question) {

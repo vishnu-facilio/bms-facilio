@@ -52,9 +52,12 @@ public class DeserializeRulesCommand extends FacilioCommand {
                 rule.setRuleConditions(conditionList);
                 rule.setType(type);
                 rule.setQuestionId(questionId);
-                rule.setQuestion(question.getQuestion()); // For client response
                 rule.setTemplateId(templateId);
                 ruleList.add(rule);
+
+                // For client response
+                rule.setQuestion(question.getQuestion());
+                rule.setQuestionType(question.getQuestionType());
 
                 rule.beforeSave(question);
 //                }
