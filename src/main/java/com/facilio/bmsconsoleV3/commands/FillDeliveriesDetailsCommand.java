@@ -31,7 +31,7 @@ public class FillDeliveriesDetailsCommand extends FacilioCommand {
         if(CollectionUtils.isNotEmpty(deliveries)) {
         	
         for(V3DeliveriesContext delivery : deliveries){
-        	if(delivery.getEmployee() != null) {
+        	if(delivery.getEmployee() != null && delivery.getEmployee().getId() > 0) {
         		V3EmployeeContext employee = (V3EmployeeContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.EMPLOYEE, delivery.getEmployee().getId(), V3EmployeeContext.class);
         		delivery.setName(employee.getName());
 			} else {
