@@ -1,16 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
-import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
-import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-
-import java.util.List;
 
 public class CreateStateFlowDraftCommand extends FacilioCommand {
 

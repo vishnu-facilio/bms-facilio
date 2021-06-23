@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -29,7 +30,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.time.DateRange;
 
-public class GetAlarmRcaDetailCommand extends  FacilioCommand {
+public class GetAlarmRcaDetailCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         long alarmId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);

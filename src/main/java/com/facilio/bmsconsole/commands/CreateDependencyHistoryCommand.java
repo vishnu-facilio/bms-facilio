@@ -1,10 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.fields.relations.BaseRelationContext;
 import com.facilio.modules.fields.relations.RelationFieldUtil;
 import com.facilio.tasker.FacilioTimer;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import java.util.HashMap;

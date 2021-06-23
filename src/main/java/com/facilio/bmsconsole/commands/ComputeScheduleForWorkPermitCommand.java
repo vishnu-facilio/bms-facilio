@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.*;
@@ -11,11 +12,10 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
 
-public class ComputeScheduleForWorkPermitCommand extends FacilioCommand{
+public class ComputeScheduleForWorkPermitCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

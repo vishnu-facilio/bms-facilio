@@ -1,6 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.site;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.V3BaseSpaceContext;
 import com.facilio.bmsconsoleV3.context.V3SiteContext;
 import com.facilio.modules.ModuleBaseWithCustomFields;

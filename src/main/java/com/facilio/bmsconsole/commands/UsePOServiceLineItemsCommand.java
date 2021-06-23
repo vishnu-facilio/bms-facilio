@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.InventoryType;
@@ -10,7 +11,7 @@ import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
 import com.facilio.bmsconsole.context.WorkOrderServiceContext;
 import com.facilio.constants.FacilioConstants;
 
-public class UsePOServiceLineItemsCommand extends FacilioCommand{
+public class UsePOServiceLineItemsCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

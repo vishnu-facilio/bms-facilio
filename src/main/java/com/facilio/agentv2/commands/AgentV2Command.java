@@ -1,6 +1,6 @@
 package com.facilio.agentv2.commands;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 
 import java.util.Map;
 

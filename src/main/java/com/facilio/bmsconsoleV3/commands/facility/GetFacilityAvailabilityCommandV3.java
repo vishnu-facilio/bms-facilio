@@ -1,6 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.facility;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.facilitybooking.FacilityContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.SlotContext;
 import com.facilio.bmsconsoleV3.util.FacilityAPI;

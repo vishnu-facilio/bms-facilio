@@ -3,7 +3,7 @@ package com.facilio.energystar.command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.energystar.context.EnergyStarCustomerContext;
 import com.facilio.energystar.context.EnergyStarPropertyContext;

@@ -1,7 +1,7 @@
 package com.facilio.agent.integration;
 
 import com.facilio.agent.commands.AddLogChainCommand;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;

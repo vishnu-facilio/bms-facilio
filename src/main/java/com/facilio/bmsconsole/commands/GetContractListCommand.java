@@ -1,14 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.ContractsContext;
-import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 
 import com.facilio.constants.FacilioConstants;

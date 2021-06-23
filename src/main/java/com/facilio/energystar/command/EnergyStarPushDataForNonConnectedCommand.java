@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.energystar.context.EnergyStarMeterContext;
 import com.facilio.energystar.context.EnergyStarMeterDataContext;
 import com.facilio.energystar.util.EnergyStarSDK;

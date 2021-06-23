@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.PermissionUtil;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
@@ -13,7 +14,7 @@ import org.json.simple.JSONObject;
 
 import java.util.List;
 
-public class GetAllSpaceCommand extends FacilioCommand{
+public class GetAllSpaceCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

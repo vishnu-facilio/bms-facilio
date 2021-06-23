@@ -1,12 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.util.AttachmentsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import org.apache.commons.chain.Context;
-import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONObject;
 
 import java.io.File;

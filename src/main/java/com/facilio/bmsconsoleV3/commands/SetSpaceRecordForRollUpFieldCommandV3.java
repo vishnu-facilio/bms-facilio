@@ -2,7 +2,7 @@ package com.facilio.bmsconsoleV3.commands;
 
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.V3TenantUnitSpaceContext;
 import com.facilio.constants.FacilioConstants;
 

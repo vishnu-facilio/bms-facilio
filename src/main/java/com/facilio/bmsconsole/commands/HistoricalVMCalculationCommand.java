@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.command.FacilioCommand;
 import com.facilio.command.PostTransactionCommand;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
@@ -14,7 +15,6 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.HistoricalLoggerContext;
-import com.facilio.bmsconsole.jobs.HistoricalVMEnergyDataCalculatorJob;
 import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.HistoricalLoggerUtil;

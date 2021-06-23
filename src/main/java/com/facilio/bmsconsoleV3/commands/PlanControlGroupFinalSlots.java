@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.control.ControlGroupContext;
 import com.facilio.control.ControlScheduleContext.Mode;
 import com.facilio.control.ControlScheduleGroupedSlot;

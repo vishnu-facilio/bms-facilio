@@ -7,7 +7,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.EmailFromAddress;
 import com.facilio.chain.FacilioContext;
 import com.facilio.v3.context.Constants;

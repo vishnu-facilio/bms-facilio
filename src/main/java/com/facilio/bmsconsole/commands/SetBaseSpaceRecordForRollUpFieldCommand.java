@@ -1,13 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
-import org.apache.commons.chain.Command;
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.constants.FacilioConstants;
 
-public class SetBaseSpaceRecordForRollUpFieldCommand extends FacilioCommand{
+public class SetBaseSpaceRecordForRollUpFieldCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

@@ -15,7 +15,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.trigger.context.TriggerType;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;

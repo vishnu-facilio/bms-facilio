@@ -8,7 +8,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.util.MailMessageUtil;

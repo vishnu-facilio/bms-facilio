@@ -1,9 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
-import org.apache.commons.chain.Command;
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.constants.FacilioConstants;
 

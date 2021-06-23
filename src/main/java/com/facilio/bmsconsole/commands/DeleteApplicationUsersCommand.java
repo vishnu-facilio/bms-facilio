@@ -1,12 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.constants.FacilioConstants;
 
-public class DeleteApplicationUsersCommand extends FacilioCommand{
+public class DeleteApplicationUsersCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

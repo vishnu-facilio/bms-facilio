@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ControlActionMode;
 import com.facilio.chain.FacilioChain;

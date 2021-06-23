@@ -7,7 +7,7 @@ import java.util.Map;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.MLAlarmOccurenceContext;
 import com.facilio.bmsconsole.util.NewAlarmAPI;

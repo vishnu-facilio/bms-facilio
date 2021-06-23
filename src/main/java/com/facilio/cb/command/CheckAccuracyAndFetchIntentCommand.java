@@ -2,7 +2,7 @@ package com.facilio.cb.command;
 
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.cb.context.ChatBotIntent;
 import com.facilio.cb.context.ChatBotMLResponse;
 import com.facilio.cb.context.ChatBotModel;

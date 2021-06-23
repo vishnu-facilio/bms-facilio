@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.command.FacilioCommand;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -25,7 +26,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import org.apache.commons.collections4.CollectionUtils;
 
-public class UpdatePreventiveMaintenanceCommand extends FacilioCommand{
+public class UpdatePreventiveMaintenanceCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = Logger.getLogger(UpdatePreventiveMaintenanceCommand.class.getName());
 	@Override

@@ -9,7 +9,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsoleV3.context.floorplan.V3FloorplanMarkersContext;
 import com.facilio.bmsconsoleV3.context.floorplan.V3IndoorFloorPlanContext;

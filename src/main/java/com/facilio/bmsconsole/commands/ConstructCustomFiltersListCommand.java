@@ -1,21 +1,17 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
-import org.apache.commons.chain.Command;
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.CustomFilterContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 
-public class ConstructCustomFiltersListCommand extends FacilioCommand  {
+public class ConstructCustomFiltersListCommand extends FacilioCommand {
 	
 
 	@Override

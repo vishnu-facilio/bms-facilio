@@ -1,6 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.facility;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsoleV3.context.V3PhotosContext;

@@ -2,7 +2,7 @@ package com.facilio.energystar.command;
 
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 
 public class ValidateEnergyStarUtilityData extends FacilioCommand {
 

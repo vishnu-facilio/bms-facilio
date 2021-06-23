@@ -2,7 +2,7 @@ package com.facilio.bmsconsoleV3.commands.workorder;
 
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsoleV3.context.V3TicketContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;

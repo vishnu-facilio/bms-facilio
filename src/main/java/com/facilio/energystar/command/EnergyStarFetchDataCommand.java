@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.energystar.context.EnergyStarPropertyContext;
 import com.facilio.energystar.util.EnergyStarSDK;

@@ -2,7 +2,7 @@ package com.facilio.v3.commands;
 
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.workflow.rule.AbstractStateTransitionRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;

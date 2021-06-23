@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.command.FacilioCommand;
 import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
@@ -10,7 +11,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.constants.FacilioConstants;

@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.AssetDepreciationCalculationContext;
 import com.facilio.bmsconsole.context.AssetDepreciationContext;

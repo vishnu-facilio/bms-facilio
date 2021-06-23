@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.List;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -15,7 +16,7 @@ import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 
-public class AddOrUpdateRentalLeaseContractLineItemCommand extends FacilioCommand{
+public class AddOrUpdateRentalLeaseContractLineItemCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

@@ -6,7 +6,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.billing.util.TenantBillingAPI;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.leed.constants.LeedConstants;
 import com.facilio.leed.context.LeedConfigurationContext;
 import com.facilio.leed.util.LeedAPI;

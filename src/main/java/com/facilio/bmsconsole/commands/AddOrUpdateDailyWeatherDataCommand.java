@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -13,11 +14,8 @@ import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.WeatherUtil;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.time.DateTimeUtil;
-import com.facilio.weather.context.WeatherStationContext;
 
 public class AddOrUpdateDailyWeatherDataCommand extends FacilioCommand {
 	private static final Logger LOGGER = LogManager.getLogger(AddOrUpdateDailyWeatherDataCommand.class.getName());

@@ -1,6 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.jobplan;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 import com.facilio.bmsconsoleV3.util.JobPlanAPI;
 import com.facilio.v3.context.Constants;

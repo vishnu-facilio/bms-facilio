@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -31,7 +32,6 @@ import com.facilio.report.context.ReportPivotFieldContext;
 import com.facilio.report.context.ReportPivotTableRowsContext;
 import com.facilio.report.context.ReportYAxisContext;
 import com.facilio.report.context.ReportContext.ReportType;
-import com.facilio.report.context.ReportDataPointContext.DataPointType;
 import com.facilio.report.context.ReportDataPointContext.OrderByFunction;
 import com.facilio.report.util.ReportUtil;
 import com.facilio.report.context.ReportPivotTableDataContext;

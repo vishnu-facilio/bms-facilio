@@ -8,12 +8,13 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.constants.FacilioConstants;
 
-public class GetAvgResponseResolutionBySiteCommand extends FacilioCommand{
+public class GetAvgResponseResolutionBySiteCommand extends FacilioCommand {
 	private static final Logger LOGGER = Logger.getLogger(GetAvgResponseResolutionBySiteCommand.class.getName());
 
 	@SuppressWarnings("unchecked")

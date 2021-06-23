@@ -1,7 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.visitorlog;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.WatchListContext;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;

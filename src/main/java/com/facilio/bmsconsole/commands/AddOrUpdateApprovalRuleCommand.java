@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.ApprovalRuleMetaContext;
 import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.forms.FacilioForm;

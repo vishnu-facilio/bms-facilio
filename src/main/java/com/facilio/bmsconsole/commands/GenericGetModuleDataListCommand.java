@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.InventoryApi;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;

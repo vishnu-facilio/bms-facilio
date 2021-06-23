@@ -1,12 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.InventoryRequestContext;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Context;
 
-public class ValidateInventoryRequestUpdateCommand extends FacilioCommand{
+public class ValidateInventoryRequestUpdateCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
 

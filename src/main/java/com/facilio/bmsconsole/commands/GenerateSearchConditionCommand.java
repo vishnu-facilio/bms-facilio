@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
 
+import com.facilio.command.FacilioCommand;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.StringOperators;
@@ -11,7 +12,6 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;

@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -13,7 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DisAssociateTabGroupCommand extends FacilioCommand{
+public class DisAssociateTabGroupCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         List<WebTabContext> tabs = (List<WebTabContext>) context.get(FacilioConstants.ContextNames.WEB_TABS);

@@ -1,6 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.workpermit;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistCategoryContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;

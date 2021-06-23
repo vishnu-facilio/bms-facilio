@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
@@ -17,7 +18,7 @@ import org.apache.commons.chain.Context;
 import java.util.List;
 import java.util.Map;
 
-public class GetAllBuildingCommand extends FacilioCommand{
+public class GetAllBuildingCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

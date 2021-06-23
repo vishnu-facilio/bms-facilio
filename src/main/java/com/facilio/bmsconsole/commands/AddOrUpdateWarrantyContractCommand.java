@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.modules.fields.SupplementRecord;
 import org.apache.commons.chain.Context;
@@ -28,7 +29,7 @@ import com.facilio.modules.DeleteRecordBuilder;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 
-public class AddOrUpdateWarrantyContractCommand extends FacilioCommand{
+public class AddOrUpdateWarrantyContractCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

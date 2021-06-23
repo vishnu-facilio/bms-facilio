@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.InventoryType;
@@ -13,7 +14,7 @@ import com.facilio.bmsconsole.context.ToolTransactionContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
 
-public class LoadTransactionInputForShipmentCommand extends FacilioCommand{
+public class LoadTransactionInputForShipmentCommand extends FacilioCommand {
 
 	@Override 
     public boolean executeCommand(Context context) throws Exception { 

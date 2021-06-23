@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -20,7 +21,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 
-public class GetConnectedAppsListCommand extends FacilioCommand{
+public class GetConnectedAppsListCommand extends FacilioCommand {
 	private static Logger log = LogManager.getLogger(GetConnectedAppsListCommand.class.getName());
 	
 	@Override

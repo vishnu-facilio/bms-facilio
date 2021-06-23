@@ -1,28 +1,20 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.chain.Command;
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
-import com.facilio.agent.controller.FacilioDataType;
-import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.sensor.SensorAlarmContext;
 import com.facilio.bmsconsole.context.sensor.SensorRollUpAlarmContext;
 import com.facilio.bmsconsole.context.sensor.SensorRuleUtil;
 import com.facilio.bmsconsole.util.AlarmAPI;
-import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.operators.DateOperators;
-import com.facilio.report.context.ReportContext;
 import com.facilio.time.DateRange;
-import com.facilio.workflows.functions.FacilioDateFunction;
-import com.facilio.workflows.functions.FacilioDateRangeFunctions;
 
 public class FetchRelatedAlarmsCommand extends FacilioCommand {
 

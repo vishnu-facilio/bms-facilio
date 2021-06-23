@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.v3.context.Constants;

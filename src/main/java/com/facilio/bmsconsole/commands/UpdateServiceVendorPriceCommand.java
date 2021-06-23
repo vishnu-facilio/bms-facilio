@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.InventoryType;
 import com.facilio.bmsconsole.context.ServiceVendorContext;
 import com.facilio.bmsconsole.util.PurchaseOrderAPI;
@@ -19,7 +20,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
 
-public class UpdateServiceVendorPriceCommand extends FacilioCommand{
+public class UpdateServiceVendorPriceCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

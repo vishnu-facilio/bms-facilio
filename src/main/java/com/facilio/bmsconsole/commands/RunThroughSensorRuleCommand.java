@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.List;
 import java.util.logging.Logger;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -10,7 +11,7 @@ import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.time.DateRange;
 
-public class RunThroughSensorRuleCommand extends FacilioCommand{
+public class RunThroughSensorRuleCommand extends FacilioCommand {
 	private static final Logger LOGGER = Logger.getLogger(RunThroughSensorRuleCommand.class.getName());
 	
 	@SuppressWarnings("null")

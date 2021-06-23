@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.List;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -10,7 +11,6 @@ import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ContactsContext;
 import com.facilio.bmsconsole.context.ContactsContext.ContactType;
-import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.ContactsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.iam.accounts.util.IAMAppUtil;

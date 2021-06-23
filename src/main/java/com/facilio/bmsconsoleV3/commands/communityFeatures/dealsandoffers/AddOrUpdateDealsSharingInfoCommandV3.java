@@ -1,7 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.communityFeatures.dealsandoffers;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.communityfeatures.ContactDirectoryContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.DealsAndOffersContext;
 import com.facilio.bmsconsoleV3.util.CommunityFeaturesAPI;

@@ -20,6 +20,7 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import com.facilio.command.FacilioCommand;
 
 import java.util.ArrayList;
 import java.util.List;

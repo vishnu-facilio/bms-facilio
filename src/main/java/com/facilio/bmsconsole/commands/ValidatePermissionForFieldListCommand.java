@@ -1,9 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -18,7 +17,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 
-public class ValidatePermissionForFieldListCommand extends FacilioCommand{
+public class ValidatePermissionForFieldListCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

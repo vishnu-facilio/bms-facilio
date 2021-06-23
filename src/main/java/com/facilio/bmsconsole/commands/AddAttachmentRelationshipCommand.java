@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.activity.CommonActivityType;
 import com.facilio.bmsconsole.activity.ItemActivityType;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.TaskContext;

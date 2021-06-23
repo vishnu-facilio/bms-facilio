@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.Map;
 import java.util.Set;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.constants.FacilioConstants;

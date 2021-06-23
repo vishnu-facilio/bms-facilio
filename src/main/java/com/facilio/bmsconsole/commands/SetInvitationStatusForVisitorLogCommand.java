@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -17,7 +18,7 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
 
-public class SetInvitationStatusForVisitorLogCommand extends FacilioCommand{
+public class SetInvitationStatusForVisitorLogCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

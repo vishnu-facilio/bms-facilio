@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.io.File;
 import java.util.List;
 
+import com.facilio.command.FacilioCommand;
 import com.facilio.command.PostTransactionCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;

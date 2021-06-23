@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;

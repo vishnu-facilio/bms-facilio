@@ -4,7 +4,7 @@ package com.facilio.urjanet.command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.urjanet.UrjanetConnection;
 import com.facilio.urjanet.contants.UrjanetConstants;
 import com.facilio.urjanet.context.UtilityProviderCredentials;

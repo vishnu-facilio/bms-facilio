@@ -1,8 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
-public class GetShiftRotationListCommand extends FacilioCommand{
+public class GetShiftRotationListCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

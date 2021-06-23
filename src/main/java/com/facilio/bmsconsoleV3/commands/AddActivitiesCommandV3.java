@@ -2,7 +2,7 @@ package com.facilio.bmsconsoleV3.commands;
 
 import com.facilio.activity.ActivityContext;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;

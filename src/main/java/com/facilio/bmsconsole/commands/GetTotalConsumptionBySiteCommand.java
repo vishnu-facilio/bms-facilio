@@ -8,12 +8,13 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.util.ConsumptionAPI;
 import com.facilio.constants.FacilioConstants;
 
-public class GetTotalConsumptionBySiteCommand extends FacilioCommand{
+public class GetTotalConsumptionBySiteCommand extends FacilioCommand {
 	
 	private static final Logger LOGGER = Logger.getLogger(GetTotalConsumptionBySiteCommand.class.getName());
 	@SuppressWarnings("unchecked")

@@ -7,7 +7,7 @@ import java.util.function.Function;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.util.MailMessageUtil;

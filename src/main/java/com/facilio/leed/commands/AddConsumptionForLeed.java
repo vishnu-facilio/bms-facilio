@@ -8,7 +8,7 @@ import java.util.List;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.leed.context.ArcContext;
 import com.facilio.leed.context.ConsumptionInfoContext;

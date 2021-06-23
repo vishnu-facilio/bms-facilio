@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsoleV3.context.purchaserequest.PrAssociatedTermsContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
@@ -13,7 +14,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
 
-public class AssociateTermsToPRCommand extends FacilioCommand{
+public class AssociateTermsToPRCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {

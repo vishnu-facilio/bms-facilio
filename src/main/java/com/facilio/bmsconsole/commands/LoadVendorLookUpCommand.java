@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.command.FacilioCommand;
 import com.facilio.modules.FieldType;
 import org.apache.commons.chain.Context;
 
@@ -14,7 +15,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 
-public class LoadVendorLookUpCommand extends FacilioCommand{
+public class LoadVendorLookUpCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

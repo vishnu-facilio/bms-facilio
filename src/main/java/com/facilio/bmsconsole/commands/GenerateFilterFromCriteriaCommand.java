@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -21,7 +22,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.LookupOperator;
 
-public class GenerateFilterFromCriteriaCommand extends FacilioCommand{
+public class GenerateFilterFromCriteriaCommand extends FacilioCommand {
 
 	private static Logger log = LogManager.getLogger(GenerateFilterFromCriteriaCommand.class.getName());
 

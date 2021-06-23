@@ -1,26 +1,21 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.FormulaContext;
 import com.facilio.bmsconsole.context.VisitorSettingsContext;
 import com.facilio.bmsconsole.context.VisitorTypeContext;
 import com.facilio.bmsconsole.context.VisitorTypeFormsContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
-import com.facilio.bmsconsole.forms.FormFactory;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.FormsAPI;
-import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;

@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -7,7 +8,6 @@ import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardFilterContext;
 import com.facilio.bmsconsole.context.DashboardTabContext;
 import com.facilio.bmsconsole.util.DashboardFilterUtil;
-import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.constants.FacilioConstants.ContextNames;
 
 public class FetchDashboardFilterCommand extends FacilioCommand implements Command {

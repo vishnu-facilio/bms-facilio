@@ -6,7 +6,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.bean.UserBean;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsoleV3.context.EmailConversationThreadingContext;
 import com.facilio.chain.FacilioContext;

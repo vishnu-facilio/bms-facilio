@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -12,8 +13,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
-import com.facilio.report.context.ReportFieldContext;
-import com.facilio.report.context.ReportYAxisContext;
 
 public class FormatForTimeDuration extends FacilioCommand {
 

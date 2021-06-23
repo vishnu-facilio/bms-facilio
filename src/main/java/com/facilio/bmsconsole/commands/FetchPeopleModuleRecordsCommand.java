@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.TenantContactContext;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.constants.FacilioConstants;

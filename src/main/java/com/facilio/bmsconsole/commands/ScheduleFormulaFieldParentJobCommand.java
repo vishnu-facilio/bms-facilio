@@ -2,7 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.List;
 
-import org.apache.commons.chain.Command;
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -12,7 +12,6 @@ import com.facilio.bmsconsole.util.FormulaFieldDependenciesAPI;
 import com.facilio.bmsconsole.util.FormulaFieldResourceStatusAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.transaction.NewTransactionService;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateTimeUtil;
 

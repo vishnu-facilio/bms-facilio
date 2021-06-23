@@ -1,7 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.communityFeatures.announcement;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;

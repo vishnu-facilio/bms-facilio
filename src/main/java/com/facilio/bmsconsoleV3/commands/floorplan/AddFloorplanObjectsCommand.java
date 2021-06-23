@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.HashMap;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 
 import com.facilio.bmsconsoleV3.context.floorplan.V3IndoorFloorPlanObjectContext;
 import com.facilio.bmsconsoleV3.context.floorplan.V3MarkerContext;

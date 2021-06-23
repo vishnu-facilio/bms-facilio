@@ -2,9 +2,9 @@ package com.facilio.bmsconsole.commands;
 
 
 import com.facilio.accounts.dto.Role;
+import com.facilio.command.FacilioCommand;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.User;
@@ -12,8 +12,6 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.iam.accounts.util.IAMAppUtil;
-import com.facilio.iam.accounts.util.IAMUserUtil;
 
 public class AddUserCommand extends FacilioCommand {
 

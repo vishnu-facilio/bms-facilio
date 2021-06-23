@@ -1,7 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.workorder;
 
 import com.facilio.accounts.dto.User;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.TicketAPI;

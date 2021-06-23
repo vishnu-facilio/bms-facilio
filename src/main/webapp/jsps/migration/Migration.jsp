@@ -1,7 +1,7 @@
 <%@page import="com.facilio.accounts.dto.Organization"%>
 <%@ page import="com.facilio.accounts.util.AccountUtil" %>
 <%@ page import="com.facilio.bmsconsole.util.AggregatedEnergyConsumptionUtil" %>
-<%@ page import="com.facilio.bmsconsole.commands.FacilioCommand" %>
+<%@ page import="com.facilio.bmsconsole.commands.tmp.FacilioCommand" %>
 <%@ page import="com.facilio.chain.FacilioChain" %>
 <%@ page import="org.apache.commons.chain.Context" %>
 <%@ page import="org.apache.log4j.LogManager" %>

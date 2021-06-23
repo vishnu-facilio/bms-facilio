@@ -1,6 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.tenant;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.V3TenantContext;
 import com.facilio.bmsconsoleV3.util.V3TenantsAPI;
 import com.facilio.v3.context.Constants;

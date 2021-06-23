@@ -1,18 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.actions.PickListAction;
-import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
-import com.facilio.bmsconsole.util.RecordAPI;
-import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FieldOption;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
@@ -21,7 +16,6 @@ import org.apache.commons.collections4.MapUtils;
 
 import java.text.MessageFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class FetchLookupLabelsCommand extends FacilioCommand {
     @Override

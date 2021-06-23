@@ -2,7 +2,7 @@ package com.facilio.bmsconsoleV3.commands.quotation;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.QuotationActivityType;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationAssociatedTermsContext;
 import com.facilio.chain.FacilioContext;

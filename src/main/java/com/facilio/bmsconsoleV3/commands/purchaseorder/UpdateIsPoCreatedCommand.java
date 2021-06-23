@@ -1,7 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.purchaseorder;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
 import com.facilio.bmsconsole.util.PurchaseOrderAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;

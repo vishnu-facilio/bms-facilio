@@ -1,6 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.CommunitySharingInfoContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.NewsAndInformationContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.NewsAndInformationSharingContext;

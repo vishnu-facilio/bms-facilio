@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.purchaserequest.PrAssociatedTermsContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -11,7 +12,7 @@ import org.apache.commons.chain.Context;
 
 import java.util.List;
 
-public class DisAssociateTermsFromPrCommand extends FacilioCommand{
+public class DisAssociateTermsFromPrCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {

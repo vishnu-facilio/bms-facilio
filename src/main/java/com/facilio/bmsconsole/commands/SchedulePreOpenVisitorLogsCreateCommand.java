@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
@@ -15,9 +16,8 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
-import com.facilio.tasker.FacilioTimer;
 
-public class SchedulePreOpenVisitorLogsCreateCommand extends FacilioCommand{
+public class SchedulePreOpenVisitorLogsCreateCommand extends FacilioCommand {
 
 	private boolean isEdit = false;
 

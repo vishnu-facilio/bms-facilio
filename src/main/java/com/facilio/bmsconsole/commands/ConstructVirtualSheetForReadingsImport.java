@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.actions.ImportTemplateAction;
 import com.facilio.bmsconsole.actions.ImportTemplateContext;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.ImportRowContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.enums.SourceType;
@@ -25,7 +26,7 @@ import java.util.*;
 import java.util.logging.Logger;
 
 
-public class ConstructVirtualSheetForReadingsImport extends FacilioCommand{
+public class ConstructVirtualSheetForReadingsImport extends FacilioCommand {
 
 	
 	private static final Logger LOGGER = Logger.getLogger(ConstructVirtualSheetForReadingsImport.class.getName());

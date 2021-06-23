@@ -4,18 +4,15 @@ import java.util.Collections;
 import java.util.List;
 
 import com.facilio.accounts.dto.Role;
-import org.apache.commons.chain.Command;
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.dto.Account;
-import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.context.ServiceRequestContext;
-import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.PeopleAPI;
-import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;

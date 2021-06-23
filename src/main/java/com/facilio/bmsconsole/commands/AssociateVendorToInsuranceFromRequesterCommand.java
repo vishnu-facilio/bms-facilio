@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.ContactsContext;
 import com.facilio.bmsconsole.context.InsuranceContext;
 import com.facilio.bmsconsole.context.VendorContactContext;
@@ -14,7 +15,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
 
-public class AssociateVendorToInsuranceFromRequesterCommand extends FacilioCommand{
+public class AssociateVendorToInsuranceFromRequesterCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
@@ -9,7 +10,7 @@ import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
 
-public class SetSpaceCategoryModuleDetailsCommand extends FacilioCommand{
+public class SetSpaceCategoryModuleDetailsCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

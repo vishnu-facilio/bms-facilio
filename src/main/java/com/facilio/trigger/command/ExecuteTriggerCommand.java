@@ -12,7 +12,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.chain.FacilioContext;
 import com.facilio.trigger.context.BaseTriggerContext;
 import com.facilio.trigger.util.TriggerUtil;

@@ -1,6 +1,6 @@
 package com.facilio.qa.command;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.QuestionHandler;

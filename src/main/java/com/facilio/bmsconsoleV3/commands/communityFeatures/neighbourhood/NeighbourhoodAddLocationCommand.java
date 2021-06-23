@@ -1,6 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.bmsconsoleV3.context.communityfeatures.NeighbourhoodContext;
 import com.facilio.v3.context.Constants;

@@ -1,7 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.visitorlogging;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.VisitorContext;
 import com.facilio.bmsconsole.util.VisitorFaceAPI;

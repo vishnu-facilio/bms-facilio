@@ -9,7 +9,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.map.HashedMap;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.control.ControlGroupContext;
 import com.facilio.control.ControlScheduleExceptionContext;

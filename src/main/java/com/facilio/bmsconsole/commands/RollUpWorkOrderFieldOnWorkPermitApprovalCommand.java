@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -11,7 +12,7 @@ import com.facilio.bmsconsole.context.WorkPermitContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 
-public class RollUpWorkOrderFieldOnWorkPermitApprovalCommand extends FacilioCommand{
+public class RollUpWorkOrderFieldOnWorkPermitApprovalCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

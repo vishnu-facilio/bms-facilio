@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.beans.ModuleBean;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMAppUtil;

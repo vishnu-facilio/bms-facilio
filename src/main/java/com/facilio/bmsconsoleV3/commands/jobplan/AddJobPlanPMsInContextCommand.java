@@ -1,6 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.jobplan;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;

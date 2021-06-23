@@ -6,7 +6,7 @@ import java.util.Map;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.events.constants.EventConstants;

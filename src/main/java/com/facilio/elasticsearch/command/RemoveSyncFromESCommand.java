@@ -1,7 +1,7 @@
 package com.facilio.elasticsearch.command;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.elasticsearch.context.SyncContext;
 import com.facilio.elasticsearch.util.ESUtil;

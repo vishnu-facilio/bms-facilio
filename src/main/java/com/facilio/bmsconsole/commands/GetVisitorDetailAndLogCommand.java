@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Date;
 import java.util.List;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -15,7 +15,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.time.DateTimeUtil;
 
-public class GetVisitorDetailAndLogCommand extends FacilioCommand{
+public class GetVisitorDetailAndLogCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

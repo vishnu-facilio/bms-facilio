@@ -4,7 +4,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.billing.context.BillContext;
 import com.facilio.billing.context.ExcelTemplate;
 import com.facilio.billing.util.TenantBillingAPI;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import org.apache.commons.chain.Context;

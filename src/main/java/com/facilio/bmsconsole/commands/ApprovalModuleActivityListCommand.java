@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.activity.ActivityContext;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.CommonActivityType;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;

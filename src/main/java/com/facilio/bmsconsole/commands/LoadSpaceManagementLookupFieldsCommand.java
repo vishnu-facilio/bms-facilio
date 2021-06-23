@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class LoadSpaceManagementLookupFieldsCommand extends FacilioCommand{
+public class LoadSpaceManagementLookupFieldsCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {

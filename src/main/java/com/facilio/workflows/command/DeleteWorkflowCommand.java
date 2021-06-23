@@ -2,7 +2,7 @@ package com.facilio.workflows.command;
 
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowUserFunctionContext;
 import com.facilio.workflows.util.WorkflowUtil;

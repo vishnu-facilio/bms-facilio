@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.OperationAlarmHistoricalLogsContext;
 import com.facilio.bmsconsole.util.OperationAlarmApi;
 import com.facilio.command.PostTransactionCommand;

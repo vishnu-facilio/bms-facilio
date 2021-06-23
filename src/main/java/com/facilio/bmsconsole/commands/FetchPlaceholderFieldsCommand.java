@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -23,7 +24,7 @@ import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 
-public class FetchPlaceholderFieldsCommand extends FacilioCommand{
+public class FetchPlaceholderFieldsCommand extends FacilioCommand {
 	
 	private Map<String, Object> placeHolders = new HashMap<>();
 	private Map<String, Object> moduleMap = new HashMap<>();

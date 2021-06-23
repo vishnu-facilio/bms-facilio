@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.mv.context.MVAdjustment;
 import com.facilio.mv.context.MVBaseline;
 import com.facilio.mv.context.MVProjectContext;

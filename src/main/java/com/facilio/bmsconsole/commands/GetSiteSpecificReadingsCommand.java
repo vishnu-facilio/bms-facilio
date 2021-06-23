@@ -3,13 +3,14 @@ package com.facilio.bmsconsole.commands;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 
-public class GetSiteSpecificReadingsCommand extends FacilioCommand{
+public class GetSiteSpecificReadingsCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = Logger.getLogger(GetSiteSpecificReadingsCommand.class.getName());
 	@SuppressWarnings("unchecked")

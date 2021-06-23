@@ -11,9 +11,9 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.sensor.SensorAlarmContext;
-import com.facilio.bmsconsole.context.sensor.SensorAlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.sensor.SensorRollUpAlarmContext;
 
 import org.apache.commons.chain.Context;

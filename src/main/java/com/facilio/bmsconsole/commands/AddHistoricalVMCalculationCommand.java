@@ -6,6 +6,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.command.FacilioCommand;
 
 public class AddHistoricalVMCalculationCommand extends FacilioCommand {
 

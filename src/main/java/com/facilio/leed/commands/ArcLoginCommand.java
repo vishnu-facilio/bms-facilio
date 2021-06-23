@@ -2,7 +2,7 @@ package com.facilio.leed.commands;
 
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.leed.constants.LeedConstants;
 import com.facilio.leed.context.ArcContext;
 import com.facilio.leed.util.LeedAPI;

@@ -1,10 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.util.SupportEmailAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.service.FacilioService;
 
 public class DeleteSupportEmailCommand extends FacilioCommand {

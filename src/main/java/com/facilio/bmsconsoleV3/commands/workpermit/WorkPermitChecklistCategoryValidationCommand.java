@@ -1,6 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.workpermit;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistCategoryContext;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;

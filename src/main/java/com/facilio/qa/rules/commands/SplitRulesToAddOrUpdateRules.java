@@ -1,6 +1,6 @@
 package com.facilio.qa.rules.commands;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.qa.rules.Constants;
 import com.facilio.qa.rules.bean.QAndARuleBean;
 import com.facilio.qa.rules.pojo.QAndARule;

@@ -1,6 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.facility;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.facilitybooking.V3FacilityBookingContext;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;

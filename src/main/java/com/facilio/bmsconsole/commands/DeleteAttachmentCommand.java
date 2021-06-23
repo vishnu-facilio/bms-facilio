@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.facilio.command.FacilioCommand;
 import com.facilio.command.PostTransactionCommand;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;

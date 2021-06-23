@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -8,7 +9,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 
-public class GetVirtualMeterChildrenCommand extends FacilioCommand{
+public class GetVirtualMeterChildrenCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

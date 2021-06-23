@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.command.FacilioCommand;
 import com.facilio.db.criteria.operators.*;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
@@ -16,7 +17,6 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
@@ -26,7 +26,6 @@ import com.facilio.report.context.ReportDrilldownParamsContext;
 import com.facilio.report.context.ReportDrilldownParamsContext.DrilldownCriteria;
 import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.util.ReportUtil;
-import com.facilio.time.DateRange;
 
 public class ReportDrilldownCommand extends FacilioCommand {
 

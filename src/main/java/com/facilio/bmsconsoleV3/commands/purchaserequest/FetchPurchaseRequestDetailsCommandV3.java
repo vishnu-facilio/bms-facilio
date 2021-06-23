@@ -1,7 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.purchaserequest;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.PurchaseOrderAPI;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestLineItemContext;

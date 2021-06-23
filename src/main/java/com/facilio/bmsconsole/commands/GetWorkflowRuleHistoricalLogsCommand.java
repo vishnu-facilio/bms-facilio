@@ -1,16 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLogsContext;
-import com.facilio.bmsconsole.context.WorkflowRuleResourceLoggerContext;
-import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;

@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -9,11 +10,9 @@ import com.facilio.bmsconsole.context.VisitorSettingsContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.chain.FacilioChain;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
-import com.facilio.modules.fields.FacilioField;
 
-public class SyncVisitorSettingsWithFormCommand extends FacilioCommand{
+public class SyncVisitorSettingsWithFormCommand extends FacilioCommand {
 	private static final Logger LOGGER = LogManager.getLogger(GetPMCalendarResouceJobsCommand.class.getName());
 
 	@Override

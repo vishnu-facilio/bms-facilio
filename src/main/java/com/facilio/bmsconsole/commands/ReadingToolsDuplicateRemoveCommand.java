@@ -6,6 +6,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;

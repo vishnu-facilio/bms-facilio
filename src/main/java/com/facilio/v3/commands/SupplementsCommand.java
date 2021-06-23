@@ -1,7 +1,7 @@
 package com.facilio.v3.commands;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;

@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.util.AccountConstants;
+import com.facilio.command.FacilioCommand;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 

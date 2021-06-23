@@ -1,6 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.quotation;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
 import com.facilio.bmsconsoleV3.util.QuotationAPI;
 import com.facilio.constants.FacilioConstants;

@@ -1,7 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AggregationMetaContext;
 import com.facilio.bmsconsole.util.AggregationAPI;

@@ -2,7 +2,7 @@ package com.facilio.agentv2.commands;
 
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;

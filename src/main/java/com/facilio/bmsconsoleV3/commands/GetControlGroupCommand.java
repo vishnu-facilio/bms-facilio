@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.control.ControlGroupContext;
 import com.facilio.control.util.ControlScheduleUtil;

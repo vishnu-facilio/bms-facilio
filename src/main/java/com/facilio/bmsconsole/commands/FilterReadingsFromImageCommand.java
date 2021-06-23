@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.Iterator;
 import java.util.List;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.amazonaws.services.rekognition.model.TextDetection;

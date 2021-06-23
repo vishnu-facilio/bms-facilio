@@ -1,4 +1,5 @@
 package com.facilio.bmsconsole.commands;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.constants.FacilioConstants;

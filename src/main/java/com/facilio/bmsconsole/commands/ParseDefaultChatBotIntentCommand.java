@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -12,11 +13,9 @@ import org.yaml.snakeyaml.Yaml;
 
 import com.facilio.cb.context.ChatBotIntent;
 import com.facilio.cb.util.ChatBotConstants;
-import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
 import com.facilio.modules.FieldUtil;
 
-public class ParseDefaultChatBotIntentCommand extends FacilioCommand{
+public class ParseDefaultChatBotIntentCommand extends FacilioCommand {
 	
 	private static final Logger LOGGER = LogManager.getLogger(PopulateDefaultConnectionsCommand.class.getName());
 

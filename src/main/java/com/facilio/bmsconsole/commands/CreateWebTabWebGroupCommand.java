@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.context.WebtabWebgroupContext;
 import com.facilio.constants.FacilioConstants;
@@ -18,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class CreateWebTabWebGroupCommand extends FacilioCommand{
+public class CreateWebTabWebGroupCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         Long groupId = (Long) context.get(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID);

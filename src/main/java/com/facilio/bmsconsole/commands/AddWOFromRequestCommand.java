@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;

@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -11,7 +12,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
 
-public class DeleteTabForGroupCommand extends FacilioCommand{
+public class DeleteTabForGroupCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
 

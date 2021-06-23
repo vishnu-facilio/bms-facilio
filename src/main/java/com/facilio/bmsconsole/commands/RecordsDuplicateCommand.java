@@ -2,28 +2,19 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.util.AccountConstants;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
-import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.FacilioField;
 
 public class RecordsDuplicateCommand extends FacilioCommand {

@@ -1,6 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.communityFeatures.contactdirectory;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.CommunitySharingInfoContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.ContactDirectoryContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.ContactDirectorySharingContext;

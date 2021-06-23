@@ -3,23 +3,20 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.chargebee.models.Contact;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.communityfeatures.ContactDirectoryContext;
 import com.facilio.bmsconsoleV3.util.CommunityFeaturesAPI;
-import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.bmsconsole.context.ClientContactContext;
 import com.facilio.bmsconsole.context.PeopleContext;
-import com.facilio.bmsconsole.context.PeopleContext.PeopleType;
 import com.facilio.bmsconsole.context.TenantContactContext;
 import com.facilio.bmsconsole.context.VendorContactContext;
-import com.facilio.bmsconsole.util.ContactsAPI;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.constants.FacilioConstants;
 
-public class UpdatePeoplePrimaryContactCommand extends FacilioCommand{
+public class UpdatePeoplePrimaryContactCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

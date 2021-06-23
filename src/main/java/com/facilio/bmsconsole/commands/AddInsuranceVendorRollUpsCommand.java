@@ -1,28 +1,20 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.command.FacilioCommand;
 import com.facilio.modules.*;
 import org.apache.commons.chain.Context;
 
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.InsuranceContext;
-import com.facilio.bmsconsole.context.InviteVisitorRelContext;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.util.InsuranceAPI;
-import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
-public class AddInsuranceVendorRollUpsCommand extends FacilioCommand{
+public class AddInsuranceVendorRollUpsCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

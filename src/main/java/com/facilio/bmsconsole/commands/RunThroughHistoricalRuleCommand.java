@@ -1,12 +1,11 @@
 package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.facilio.command.FacilioCommand;
 import com.facilio.command.PostTransactionCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.MapUtils;
@@ -20,32 +19,25 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ExecuteHistoricalRule;
-import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLoggerContext;
 import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLogsContext;
 import com.facilio.bmsconsole.context.WorkflowRuleLoggerContext;
 import com.facilio.bmsconsole.context.WorkflowRuleResourceLoggerContext;
 import com.facilio.bmsconsole.context.sensor.SensorRuleContext;
 import com.facilio.bmsconsole.context.sensor.SensorRuleUtil;
 import com.facilio.bmsconsole.enums.RuleJobType;
-import com.facilio.bmsconsole.util.BmsJobUtil;
-import com.facilio.bmsconsole.util.NewEventAPI;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleHistoricalAlarmsAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleHistoricalLoggerUtil;
 import com.facilio.bmsconsole.util.WorkflowRuleHistoricalLogsAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleLoggerAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleResourceLoggerAPI;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 
-public class RunThroughHistoricalRuleCommand extends FacilioCommand  implements PostTransactionCommand {
+public class RunThroughHistoricalRuleCommand extends FacilioCommand implements PostTransactionCommand {
 	private static final Logger LOGGER = Logger.getLogger(RunThroughHistoricalRuleCommand.class.getName());
 	private List<Long> workflowRuleResourceParentLoggerIds = new ArrayList<Long>();
 	

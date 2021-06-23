@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BulkWorkOrderContext;
 import com.facilio.bmsconsole.context.TicketPriorityContext;
@@ -30,7 +31,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-public class BulkAddWorkOrderCommand extends FacilioCommand{
+public class BulkAddWorkOrderCommand extends FacilioCommand {
     private static final Logger LOGGER = Logger.getLogger(BulkAddWorkOrderCommand.class.getName());
 
     public boolean executeCommand(Context context) throws Exception {

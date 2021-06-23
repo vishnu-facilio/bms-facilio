@@ -1,21 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Map;
-
-import org.apache.commons.chain.Command;
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.CustomFilterContext;
 import com.facilio.bmsconsole.util.FiltersAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericUpdateRecordBuilder;
-import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
 
 public class UpdateCustomFilterCommand extends FacilioCommand {
 

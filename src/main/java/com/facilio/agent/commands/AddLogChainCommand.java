@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 
 import com.facilio.agent.AgentKeys;
 import com.facilio.beans.ModuleCRUDBean;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 

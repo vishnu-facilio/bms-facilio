@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.math3.distribution.TDistribution;
 import org.apache.commons.math3.exception.MathIllegalArgumentException;
@@ -34,7 +35,7 @@ import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportYAxisContext;
 
-public class AddRegressionPointsCommand extends FacilioCommand{
+public class AddRegressionPointsCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = Logger.getLogger(AddRegressionPointsCommand.class.getName());
 	@Override

@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.accounts.bean.RoleBean;
 import com.facilio.accounts.dto.OrgUserApp;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
@@ -16,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class FetchRolesForPeopleCommand extends FacilioCommand{
+public class FetchRolesForPeopleCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
       List<PeopleContext> pplList = (List<PeopleContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST);

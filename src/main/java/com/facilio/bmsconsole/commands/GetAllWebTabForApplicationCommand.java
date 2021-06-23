@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.TabIdAppIdMappingContext;
 import com.facilio.bmsconsole.context.WebTabContext;
@@ -16,7 +17,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetAllWebTabForApplicationCommand extends FacilioCommand{
+public class GetAllWebTabForApplicationCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         long appId = (long) context.get(FacilioConstants.ContextNames.APPLICATION_ID);

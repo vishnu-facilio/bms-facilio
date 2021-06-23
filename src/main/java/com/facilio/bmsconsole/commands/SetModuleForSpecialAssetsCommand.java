@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -14,7 +15,7 @@ import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.constants.FacilioConstants;
 
-public class SetModuleForSpecialAssetsCommand extends FacilioCommand{
+public class SetModuleForSpecialAssetsCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = LogManager.getLogger(SetModuleForSpecialAssetsCommand.class.getName());
 	

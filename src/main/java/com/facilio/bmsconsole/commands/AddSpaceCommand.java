@@ -4,14 +4,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.FloorContext;
-import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
@@ -19,8 +17,6 @@ import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
 

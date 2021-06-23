@@ -1,6 +1,6 @@
 package com.facilio.qa.rules.commands;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.RuleHandler;

@@ -2,7 +2,7 @@ package com.facilio.energystar.command;
 
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.cb.util.ChatBotUtil;
 import com.facilio.energystar.context.EnergyStarCustomerContext;
 import com.facilio.energystar.util.EnergyStarSDK;

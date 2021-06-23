@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.bmsconsole.actions.ImportProcessContext;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.ImportRowContext;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.db.builder.GenericInsertRecordBuilder;

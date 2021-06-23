@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -14,7 +15,7 @@ import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.util.StoreroomApi;
 import com.facilio.constants.FacilioConstants;
 
-public class UpdateShipmentRecordForDirecttransferCommand  extends FacilioCommand{
+public class UpdateShipmentRecordForDirecttransferCommand  extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

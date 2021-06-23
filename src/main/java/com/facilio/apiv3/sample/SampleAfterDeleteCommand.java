@@ -1,6 +1,6 @@
 package com.facilio.apiv3.sample;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 public class SampleAfterDeleteCommand extends FacilioCommand {

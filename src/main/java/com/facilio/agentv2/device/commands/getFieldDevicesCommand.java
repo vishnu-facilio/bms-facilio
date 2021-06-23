@@ -3,7 +3,7 @@ package com.facilio.agentv2.device.commands;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.device.Device;
 import com.facilio.agentv2.device.FieldDeviceApi;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.modules.FieldUtil;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;

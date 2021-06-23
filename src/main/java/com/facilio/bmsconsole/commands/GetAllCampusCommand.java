@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.PermissionUtil;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.BusinessHoursContext;
 import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.context.SiteContext;

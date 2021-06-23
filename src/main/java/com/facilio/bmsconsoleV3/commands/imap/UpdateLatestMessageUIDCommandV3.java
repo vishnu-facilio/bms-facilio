@@ -1,6 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.imap;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.command.PostTransactionCommand;

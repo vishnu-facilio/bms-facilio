@@ -1,7 +1,7 @@
 package com.facilio.agentv2.iotmessage;
 
 import com.facilio.agentv2.AgentConstants;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 

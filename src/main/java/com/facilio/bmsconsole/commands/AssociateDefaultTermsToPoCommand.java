@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -10,10 +11,9 @@ import com.facilio.bmsconsole.context.PoAssociatedTermsContext;
 import com.facilio.bmsconsole.context.PurchaseOrderContext;
 import com.facilio.bmsconsole.context.TermsAndConditionContext;
 import com.facilio.bmsconsole.util.PurchaseOrderAPI;
-import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
 
-public class AssociateDefaultTermsToPoCommand extends FacilioCommand{
+public class AssociateDefaultTermsToPoCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

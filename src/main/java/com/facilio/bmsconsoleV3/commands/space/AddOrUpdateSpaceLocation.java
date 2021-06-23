@@ -1,7 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.space;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsoleV3.context.V3BuildingContext;
 import com.facilio.bmsconsoleV3.context.V3SpaceContext;

@@ -1,6 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.communityFeatures.announcement;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.FacilioTimer;

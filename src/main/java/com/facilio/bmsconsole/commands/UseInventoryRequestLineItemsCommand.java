@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.chargebee.internal.StringJoiner;
@@ -12,7 +13,7 @@ import com.facilio.bmsconsole.context.WorkorderItemContext;
 import com.facilio.bmsconsole.context.WorkorderToolsContext;
 import com.facilio.constants.FacilioConstants;
 
-public class UseInventoryRequestLineItemsCommand extends FacilioCommand{
+public class UseInventoryRequestLineItemsCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

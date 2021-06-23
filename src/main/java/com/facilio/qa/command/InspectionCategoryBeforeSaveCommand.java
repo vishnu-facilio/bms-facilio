@@ -5,7 +5,7 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionCategoryContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext;

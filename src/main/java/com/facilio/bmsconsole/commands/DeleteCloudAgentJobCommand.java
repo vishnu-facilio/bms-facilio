@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.agent.AgentType;
 import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.command.FacilioCommand;
 import com.facilio.tasker.FacilioTimer;
 import org.apache.commons.chain.Context;
 

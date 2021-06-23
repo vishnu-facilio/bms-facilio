@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Collections;
 import java.util.Map;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -12,7 +12,7 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 
-public class ExecuteAutomatedRuleHistoryWorkflowsCommand extends FacilioCommand{
+public class ExecuteAutomatedRuleHistoryWorkflowsCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

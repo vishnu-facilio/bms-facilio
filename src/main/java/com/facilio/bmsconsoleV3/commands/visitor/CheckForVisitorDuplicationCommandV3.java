@@ -1,6 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.visitor;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.VisitorContext;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.bmsconsoleV3.context.V3VisitorContext;

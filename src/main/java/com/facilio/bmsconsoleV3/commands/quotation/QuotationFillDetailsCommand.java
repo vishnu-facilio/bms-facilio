@@ -1,7 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.quotation;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.V3ClientContactContext;
 import com.facilio.bmsconsoleV3.util.QuotationAPI;
 import com.facilio.bmsconsoleV3.context.V3TenantContactContext;

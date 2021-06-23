@@ -2,12 +2,8 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.fields.FacilioField;
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 

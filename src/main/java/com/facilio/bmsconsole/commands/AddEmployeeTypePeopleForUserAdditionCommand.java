@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.dto.Role;
@@ -9,7 +10,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.constants.FacilioConstants;
 
-public class AddEmployeeTypePeopleForUserAdditionCommand extends FacilioCommand{
+public class AddEmployeeTypePeopleForUserAdditionCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

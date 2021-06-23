@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.List;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -16,7 +17,7 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.taskengine.job.JobContext;
 
-public class FetchRuleMatchingSpecificRecordCommand extends FacilioCommand{
+public class FetchRuleMatchingSpecificRecordCommand extends FacilioCommand {
 
 private static final Logger LOGGER = LogManager.getLogger(FetchRuleMatchingSpecificRecordCommand.class.getName());
 	

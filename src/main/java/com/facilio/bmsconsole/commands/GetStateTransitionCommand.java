@@ -1,11 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.workflow.rule.AbstractStateTransitionRuleContext;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
-import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
 import com.facilio.constants.FacilioConstants;
 
 public class GetStateTransitionCommand extends FacilioCommand {

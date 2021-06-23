@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.actions.ImportProcessContext;
@@ -13,7 +14,7 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import com.facilio.bmsconsole.util.ImportAPI;
 
-public class SeperateToCategoriesCommand extends FacilioCommand{
+public class SeperateToCategoriesCommand extends FacilioCommand {
 	
 	private static Logger LOGGER = Logger.getLogger(SeperateToCategoriesCommand.class.getName());
 	@Override

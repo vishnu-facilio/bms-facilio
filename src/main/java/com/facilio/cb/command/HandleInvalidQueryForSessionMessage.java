@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.cb.context.ChatBotIntent;
 import com.facilio.cb.context.ChatBotSession;
 import com.facilio.cb.util.ChatBotConstants;

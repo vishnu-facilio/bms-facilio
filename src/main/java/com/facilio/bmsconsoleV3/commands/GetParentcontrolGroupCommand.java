@@ -3,7 +3,7 @@ package com.facilio.bmsconsoleV3.commands;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.control.ControlGroupContext;

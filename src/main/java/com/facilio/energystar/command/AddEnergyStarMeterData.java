@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.chain.FacilioChain;

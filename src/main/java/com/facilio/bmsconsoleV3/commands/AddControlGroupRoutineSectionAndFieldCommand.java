@@ -7,7 +7,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.control.ControlGroupFieldContext;
 import com.facilio.control.ControlGroupRoutineContext;
 import com.facilio.control.ControlGroupRoutineSectionContext;

@@ -1,19 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.BmsJobUtil;
-import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 import java.util.List;
-import java.util.Map;
 
 public class AddFieldMigrationJobCommand extends FacilioCommand {
     @Override

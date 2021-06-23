@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.Map;
+
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -13,7 +15,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.time.DateTimeUtil;
 
 
-public class AddFloorPlanCommand extends FacilioCommand{
+public class AddFloorPlanCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub		

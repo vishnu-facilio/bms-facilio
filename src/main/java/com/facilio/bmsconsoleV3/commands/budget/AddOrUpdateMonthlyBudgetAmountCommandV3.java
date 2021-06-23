@@ -1,7 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.budget;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
 import com.facilio.bmsconsoleV3.context.budget.BudgetAmountContext;
 import com.facilio.bmsconsoleV3.context.budget.BudgetContext;

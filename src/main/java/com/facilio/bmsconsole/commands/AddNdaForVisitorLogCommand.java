@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.List;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 

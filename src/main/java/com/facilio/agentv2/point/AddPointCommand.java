@@ -1,7 +1,7 @@
 package com.facilio.agentv2.point;
 
 import com.facilio.agentv2.AgentConstants;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.FacilioModule;

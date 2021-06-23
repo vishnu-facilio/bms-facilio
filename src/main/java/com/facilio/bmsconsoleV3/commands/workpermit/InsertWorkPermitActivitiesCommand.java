@@ -3,7 +3,7 @@ package com.facilio.bmsconsoleV3.commands.workpermit;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.CommonActivityType;
 import com.facilio.bmsconsole.activity.WorkPermitActivityType;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsoleV3.context.workpermit.V3WorkPermitContext;
 import com.facilio.chain.FacilioContext;

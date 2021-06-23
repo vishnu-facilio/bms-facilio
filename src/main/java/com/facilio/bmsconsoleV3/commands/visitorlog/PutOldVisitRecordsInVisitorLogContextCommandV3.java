@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.V3VisitorLoggingContext;
 import com.facilio.bmsconsoleV3.context.VisitorLogContextV3;
 import com.facilio.constants.FacilioConstants;

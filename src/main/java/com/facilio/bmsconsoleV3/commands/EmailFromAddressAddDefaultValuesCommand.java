@@ -6,7 +6,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.EmailFromAddress;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;

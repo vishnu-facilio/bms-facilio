@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.List;
 
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.ResourceContext;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;

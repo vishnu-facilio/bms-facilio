@@ -2,7 +2,7 @@ package com.facilio.bmsconsoleV3.commands.purchaseorder;
 
 import com.chargebee.internal.StringJoiner;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3ReceivableContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;

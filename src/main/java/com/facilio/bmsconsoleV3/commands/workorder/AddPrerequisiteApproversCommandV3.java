@@ -1,6 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.workorder;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.util.SharingAPI;

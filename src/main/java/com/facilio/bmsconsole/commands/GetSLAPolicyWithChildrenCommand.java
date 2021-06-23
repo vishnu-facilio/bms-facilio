@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.util.SLAWorkflowAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;

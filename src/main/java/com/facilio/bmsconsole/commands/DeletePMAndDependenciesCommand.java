@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.PMReminder;
@@ -12,11 +13,10 @@ import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.Logger;
 
 
-public class DeletePMAndDependenciesCommand extends FacilioCommand{
+public class DeletePMAndDependenciesCommand extends FacilioCommand {
 	private static final Logger LOGGER = Logger.getLogger(DeletePMAndDependenciesCommand.class.getName());
 	private boolean isPMDelete;
 	private boolean isStatusUpdate = false;

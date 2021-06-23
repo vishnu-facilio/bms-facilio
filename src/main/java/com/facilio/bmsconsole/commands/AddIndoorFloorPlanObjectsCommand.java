@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -18,7 +19,7 @@ import com.facilio.modules.ModuleFactory;
 
 
 
-public class AddIndoorFloorPlanObjectsCommand extends FacilioCommand{
+public class AddIndoorFloorPlanObjectsCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub		

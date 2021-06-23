@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import org.apache.commons.chain.Context;
@@ -13,7 +14,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ContactsContext.ContactType;
-import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.ContactsAPI;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;

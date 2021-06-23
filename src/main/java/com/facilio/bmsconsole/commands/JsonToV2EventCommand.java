@@ -1,9 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
-import com.facilio.agentv2.FacilioAgent;
-import com.facilio.bmsconsole.context.BMSEventContext;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.bmsconsole.context.BaseEventContext;
@@ -13,10 +11,8 @@ import com.facilio.events.util.EventAPI;
 import com.facilio.modules.FieldUtil;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

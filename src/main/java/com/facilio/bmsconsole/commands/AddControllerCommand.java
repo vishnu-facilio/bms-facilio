@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.util.ControllerAPI;

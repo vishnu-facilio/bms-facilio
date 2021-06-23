@@ -5,7 +5,7 @@ import java.util.Collections;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.chain.FacilioChain;

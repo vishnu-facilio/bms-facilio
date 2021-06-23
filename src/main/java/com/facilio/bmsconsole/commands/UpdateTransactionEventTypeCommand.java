@@ -1,7 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.workflow.rule.EventType;
-import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Context;
 

@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.List;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -16,7 +17,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 
-public class AddOrUpdateVisitorLogTriggerCommand extends FacilioCommand{
+public class AddOrUpdateVisitorLogTriggerCommand extends FacilioCommand {
 
 	public AddOrUpdateVisitorLogTriggerCommand() {}
 	

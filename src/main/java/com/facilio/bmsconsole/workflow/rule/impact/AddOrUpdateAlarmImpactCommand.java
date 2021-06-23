@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.workflow.rule.impact;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.workflow.rule.impact.util.AlarmImpactAPI;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Context;

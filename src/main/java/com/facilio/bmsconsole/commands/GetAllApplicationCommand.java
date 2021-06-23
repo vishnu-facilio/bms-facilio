@@ -6,20 +6,17 @@ import java.util.Map;
 
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.iam.accounts.util.IAMAppUtil;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-public class GetAllApplicationCommand extends FacilioCommand{
+public class GetAllApplicationCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

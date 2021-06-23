@@ -1,7 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.visitor;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsoleV3.context.V3VisitorContext;
 import com.facilio.chain.FacilioChain;

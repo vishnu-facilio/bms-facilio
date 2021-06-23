@@ -1,6 +1,6 @@
 package com.facilio.bmsconsoleV3.commands;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.ModuleFieldPermission;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;

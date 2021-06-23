@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.commands.filters;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.filters.FilterOperator;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.operators.*;

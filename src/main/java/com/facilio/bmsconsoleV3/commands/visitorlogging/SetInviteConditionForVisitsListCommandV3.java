@@ -1,6 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.visitorlogging;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.operators.BooleanOperators;

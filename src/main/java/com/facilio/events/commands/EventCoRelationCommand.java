@@ -2,7 +2,7 @@ package com.facilio.events.commands;
 
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;

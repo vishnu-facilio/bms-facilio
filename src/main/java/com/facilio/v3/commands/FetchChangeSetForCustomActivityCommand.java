@@ -2,7 +2,7 @@ package com.facilio.v3.commands;
 
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 
 public class FetchChangeSetForCustomActivityCommand extends FacilioCommand {

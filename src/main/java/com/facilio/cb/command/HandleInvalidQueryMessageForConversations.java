@@ -2,7 +2,7 @@ package com.facilio.cb.command;
 
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.cb.util.ChatBotUtil;
 import com.facilio.chain.FacilioChain;

@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.Collections;
 import java.util.Map;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -19,7 +20,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 
-public class AddEnabledPreferenceMetaCommand extends FacilioCommand{
+public class AddEnabledPreferenceMetaCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.agentv2.point.PointEnum;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.PublishData;
 import com.facilio.bmsconsole.util.ControllerAPI;
 import com.facilio.bmsconsole.util.IoTMessageAPI;

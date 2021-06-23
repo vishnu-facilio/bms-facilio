@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.logging.Logger;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -36,7 +37,7 @@ import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.time.DateRange;
 
 
-public class FormatHeatMapDataCommand extends FacilioCommand{
+public class FormatHeatMapDataCommand extends FacilioCommand {
 	
 	private static final Logger LOGGER = Logger.getLogger(FormatHeatMapDataCommand.class.getName());
 	@Override

@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.DigestConfigAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.FacilioTimer;
@@ -9,7 +10,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ActivateDeactivateDigestConfigCommand extends FacilioCommand{
+public class ActivateDeactivateDigestConfigCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

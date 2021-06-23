@@ -1,12 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.context.ApplicationContext;
-import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.command.FacilioCommand;
 import com.facilio.modules.FieldUtil;
-import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 
-import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
@@ -15,14 +12,8 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.iam.accounts.util.IAMAppUtil;
-import com.facilio.services.procon.consumer.FacilioConsumer;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-public class CreateAppSuperAdminCommand extends FacilioCommand{
+public class CreateAppSuperAdminCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

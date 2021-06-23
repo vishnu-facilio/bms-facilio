@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.MLContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.taskengine.job.JobContext;

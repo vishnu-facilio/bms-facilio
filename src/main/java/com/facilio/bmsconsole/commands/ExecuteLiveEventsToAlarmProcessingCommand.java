@@ -6,25 +6,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.AlarmSeverityContext;
 import com.facilio.bmsconsole.context.BaseEventContext;
-import com.facilio.bmsconsole.context.PreEventContext;
 import com.facilio.bmsconsole.context.BaseEventContext.EventProcessingStatus;
-import com.facilio.bmsconsole.context.WorkflowRuleResourceLoggerContext;
-import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.NewEventAPI;
-import com.facilio.bmsconsole.util.ReadingRuleAPI;
-import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
@@ -34,7 +29,7 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 
-public class ExecuteLiveEventsToAlarmProcessingCommand extends FacilioCommand{
+public class ExecuteLiveEventsToAlarmProcessingCommand extends FacilioCommand {
 	
 	private static final Logger LOGGER = Logger.getLogger(ExecuteLiveEventsToAlarmProcessingCommand.class.getName());
 	

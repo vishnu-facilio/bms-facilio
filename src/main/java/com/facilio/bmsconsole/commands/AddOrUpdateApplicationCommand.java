@@ -4,6 +4,7 @@ import com.facilio.accounts.bean.RoleBean;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.RoleApp;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.ApplicationLayoutContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.modules.FacilioModule;

@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;

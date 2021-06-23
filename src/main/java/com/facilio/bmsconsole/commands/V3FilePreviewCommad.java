@@ -8,10 +8,10 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.struts2.ServletActionContext;
 
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.facilio.bmsconsole.util.FileJWTUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo;

@@ -4,7 +4,7 @@ import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.cb.context.ChatBotIntentParam;
 import com.facilio.cb.context.ChatBotIntentParam.ML_Type;
 import com.facilio.cb.context.ChatBotMLResponse;

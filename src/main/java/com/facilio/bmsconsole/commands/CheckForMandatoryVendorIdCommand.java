@@ -2,8 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.List;
 
-import com.facilio.accounts.dto.Role;
-import com.facilio.accounts.util.AccountUtil;
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -11,7 +10,7 @@ import com.facilio.bmsconsole.context.VendorContactContext;
 import com.facilio.bmsconsole.context.PeopleContext.PeopleType;
 import com.facilio.constants.FacilioConstants;
 
-public class CheckForMandatoryVendorIdCommand extends FacilioCommand{
+public class CheckForMandatoryVendorIdCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

@@ -5,7 +5,7 @@ import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.misc.MiscPoint;
 import com.facilio.agentv2.point.Point;
 import com.facilio.agentv2.point.PointsAPI;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;

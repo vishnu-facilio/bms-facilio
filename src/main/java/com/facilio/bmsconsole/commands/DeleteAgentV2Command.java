@@ -1,12 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.command.FacilioCommand;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import java.util.HashMap;

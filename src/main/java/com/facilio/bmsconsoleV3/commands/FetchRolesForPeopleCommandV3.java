@@ -3,7 +3,7 @@ package com.facilio.bmsconsoleV3.commands;
 import com.facilio.accounts.bean.RoleBean;
 import com.facilio.accounts.dto.OrgUserApp;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.util.ApplicationApi;

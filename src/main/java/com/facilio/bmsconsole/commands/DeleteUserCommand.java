@@ -2,8 +2,8 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 public class DeleteUserCommand extends FacilioCommand {

@@ -1,6 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.people;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.util.RecordAPI;

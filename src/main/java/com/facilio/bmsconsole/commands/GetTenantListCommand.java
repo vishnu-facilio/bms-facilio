@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
@@ -27,7 +28,7 @@ import com.facilio.modules.fields.LookupField;
 
 
 
-public class GetTenantListCommand extends FacilioCommand{
+public class GetTenantListCommand extends FacilioCommand {
 
 	/**
 	 * 

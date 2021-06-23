@@ -2,7 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.Map;
 
-import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 

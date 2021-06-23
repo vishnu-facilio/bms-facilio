@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.List;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
@@ -11,7 +12,7 @@ import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.unitconversion.Unit;
 
-public class GetToolTypesListCommand extends FacilioCommand{
+public class GetToolTypesListCommand extends FacilioCommand {
 	private static Logger log = LogManager.getLogger(GetToolTypesListCommand.class.getName());
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

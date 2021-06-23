@@ -7,12 +7,13 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.constants.FacilioConstants;
 
-public class GetWorkOrderStatusPecentageCommand extends FacilioCommand{
+public class GetWorkOrderStatusPecentageCommand extends FacilioCommand {
 	
 	private static final Logger LOGGER = Logger.getLogger(GetWorkOrderStatusPecentageCommand.class.getName());
 	@SuppressWarnings("unchecked")

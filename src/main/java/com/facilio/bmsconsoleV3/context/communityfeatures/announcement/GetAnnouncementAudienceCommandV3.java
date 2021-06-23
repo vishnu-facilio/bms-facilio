@@ -1,6 +1,6 @@
 package com.facilio.bmsconsoleV3.context.communityfeatures.announcement;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 

@@ -5,27 +5,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
-import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.util.AggregatedEnergyConsumptionUtil;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleBaseWithCustomFields;
 
-public class AutomatedAggregatedEnergyConsumptionHistoricalRunBasedOnMF extends FacilioCommand{
+public class AutomatedAggregatedEnergyConsumptionHistoricalRunBasedOnMF extends FacilioCommand {
 
 	private static final Logger LOGGER = LogManager.getLogger(AutomatedAggregatedEnergyConsumptionHistoricalRunBasedOnMF.class.getName());
 	@Override

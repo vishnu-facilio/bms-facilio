@@ -1,13 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.agent.integration.queue.AgentIntegrationQueue;
 import com.facilio.beans.ModuleBean;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.enums.SourceType;
-import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;

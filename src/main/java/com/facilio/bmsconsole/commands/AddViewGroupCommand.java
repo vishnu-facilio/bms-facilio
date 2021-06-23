@@ -1,19 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Map;
-
-import org.apache.commons.chain.Command;
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ViewGroups;
 import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericInsertRecordBuilder;
-import com.facilio.db.criteria.Criteria;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
 
 public class AddViewGroupCommand extends FacilioCommand {
 

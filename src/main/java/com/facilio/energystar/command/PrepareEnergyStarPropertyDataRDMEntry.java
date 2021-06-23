@@ -5,7 +5,7 @@ import java.util.Collections;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.energystar.context.EnergyStarPropertyContext;
 import com.facilio.energystar.util.EnergyStarUtil;

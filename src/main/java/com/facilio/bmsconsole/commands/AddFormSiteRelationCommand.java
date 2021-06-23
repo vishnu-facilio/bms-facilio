@@ -2,14 +2,11 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.commons.chain.Command;
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
-import com.facilio.agentv2.device.Device;
 import com.facilio.bmsconsole.context.FormSiteRelationContext;
-import com.facilio.bmsconsole.context.ToolTransactionContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;

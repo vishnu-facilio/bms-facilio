@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -7,7 +8,7 @@ import org.apache.log4j.Logger;
 import com.facilio.bmsconsole.context.ConnectionContext;
 import com.facilio.constants.FacilioConstants;
 
-public class GetAccessTokenForConnectionCommand extends FacilioCommand  {
+public class GetAccessTokenForConnectionCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = LogManager.getLogger(GetAccessTokenForConnectionCommand.class.getName());
 	@Override

@@ -1,19 +1,16 @@
  package com.facilio.bmsconsole.commands;
 
+ import com.facilio.command.FacilioCommand;
  import com.facilio.util.FacilioUtil;
  import org.apache.commons.chain.Context;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
+ import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
  import org.apache.commons.lang3.StringUtils;
 
  import java.text.MessageFormat;
- import java.util.ArrayList;
- import java.util.Collections;
- import java.util.List;
 
  public class LoadMainFieldCommand extends FacilioCommand {
 

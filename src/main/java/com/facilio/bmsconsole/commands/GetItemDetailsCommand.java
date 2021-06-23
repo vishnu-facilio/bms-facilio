@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.Map;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.ItemContext;
@@ -12,7 +13,7 @@ import com.facilio.bmsconsole.util.ItemsApi;
 import com.facilio.bmsconsole.util.StoreroomApi;
 import com.facilio.constants.FacilioConstants;
 
-public class GetItemDetailsCommand extends FacilioCommand{
+public class GetItemDetailsCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

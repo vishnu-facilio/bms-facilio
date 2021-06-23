@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -19,7 +20,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 
-public class DeleteMessageQueueJobsCommand extends FacilioCommand{
+public class DeleteMessageQueueJobsCommand extends FacilioCommand {
 
     private static final Logger LOGGER = LogManager.getLogger(DeleteMessageQueueJobsCommand.class.getName());
     private static final List<FacilioField> FIELDS = getFileds();

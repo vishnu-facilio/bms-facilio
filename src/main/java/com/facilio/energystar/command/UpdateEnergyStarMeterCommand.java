@@ -12,7 +12,7 @@ import com.facilio.energystar.context.EnergyStarPropertyContext;
 import com.facilio.energystar.util.EnergyStarUtil;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 
 public class UpdateEnergyStarMeterCommand extends FacilioCommand {
 

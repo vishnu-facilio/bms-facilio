@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -8,7 +9,7 @@ import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 
-public class GetAllAreaCommand extends FacilioCommand{
+public class GetAllAreaCommand extends FacilioCommand {
 
 	@SuppressWarnings("unchecked")
 	@Override

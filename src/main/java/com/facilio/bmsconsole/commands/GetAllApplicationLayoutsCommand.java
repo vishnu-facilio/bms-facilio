@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.ApplicationLayoutContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -12,7 +13,7 @@ import org.apache.commons.chain.Context;
 
 import java.util.List;
 
-public class GetAllApplicationLayoutsCommand extends FacilioCommand{
+public class GetAllApplicationLayoutsCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         Long appId = (Long) context.get(FacilioConstants.ContextNames.APP_ID);

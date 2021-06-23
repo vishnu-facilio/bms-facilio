@@ -1,6 +1,6 @@
 package com.facilio.agent.commands;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.IoTMessageAPI;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import org.apache.commons.chain.Context;

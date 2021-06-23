@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ApproverWorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ConfirmationDialogContext;

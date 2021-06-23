@@ -3,7 +3,7 @@ package com.facilio.agent;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 
 public class ConfigureControllerCommand extends FacilioCommand
 {

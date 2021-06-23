@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -11,7 +12,7 @@ import com.facilio.constants.FacilioConstants;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetSafetyPlanHazardsCommand extends FacilioCommand{
+public class GetSafetyPlanHazardsCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

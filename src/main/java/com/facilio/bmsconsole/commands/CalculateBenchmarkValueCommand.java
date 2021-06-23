@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -17,7 +18,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.BmsAggregateOperators.DateAggregateOperator;
 import com.facilio.unitconversion.Metric;
 import com.facilio.unitconversion.Unit;
-import com.facilio.unitconversion.UnitsUtil;
 
 public class CalculateBenchmarkValueCommand extends FacilioCommand {
 

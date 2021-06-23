@@ -2,9 +2,9 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.Map;
 
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 

@@ -2,7 +2,7 @@ package com.facilio.bmsconsoleV3.commands.visitorlogging;
 
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.bmsconsoleV3.context.V3VisitorLoggingContext;

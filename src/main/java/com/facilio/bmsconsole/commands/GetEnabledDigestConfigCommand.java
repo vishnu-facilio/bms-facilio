@@ -2,13 +2,14 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.List;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.DigestConfigContext;
 import com.facilio.bmsconsole.util.DigestConfigAPI;
 import com.facilio.constants.FacilioConstants;
 
-public class GetEnabledDigestConfigCommand extends FacilioCommand{
+public class GetEnabledDigestConfigCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

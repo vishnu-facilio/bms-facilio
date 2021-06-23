@@ -5,7 +5,7 @@ import java.util.List;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;

@@ -22,8 +22,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.facilio.activity.AddActivitiesCommand;
-import com.facilio.bmsconsole.actions.BuildingAction;
 import com.facilio.bmsconsole.commands.*;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.jobs.FailedPMNewScheduler;
 import com.facilio.bmsconsole.jobs.PMNewScheduler;
@@ -36,7 +36,6 @@ import com.facilio.taskengine.job.JobContext;
 import lombok.var;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -86,7 +85,6 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import org.json.simple.parser.ParseException;
 
-import static com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType.ALL_FLOORS;
 import static com.facilio.bmsconsole.templates.Template.Type.PM_PRE_REQUEST_SECTION;
 
 public class PreventiveMaintenanceAPI {

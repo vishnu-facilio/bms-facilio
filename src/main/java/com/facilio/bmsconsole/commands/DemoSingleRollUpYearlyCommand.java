@@ -1,11 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.time.ZonedDateTime;
-import java.time.temporal.IsoFields;
-import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -14,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
@@ -22,15 +19,9 @@ import org.json.simple.JSONObject;
 import org.yaml.snakeyaml.Yaml;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
-import com.facilio.bmsconsole.context.BaseAlarmContext;
-import com.facilio.bmsconsole.context.HistoricalLoggerContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.util.BmsJobUtil;
-import com.facilio.bmsconsole.util.NewAlarmAPI;
-import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants.ContextNames;
-import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.DeleteRecordBuilder;
@@ -40,14 +31,12 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.db.criteria.operators.DateOperators;
-import com.facilio.db.transaction.FacilioConnectionPool;
-import com.facilio.db.util.DBConf;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 
-public class DemoSingleRollUpYearlyCommand extends FacilioCommand{
+public class DemoSingleRollUpYearlyCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = LogManager.getLogger(DemoSingleRollUpYearlyCommand.class.getName());
 	private static final String DEFAULT_DB_CONF_PATH = "conf/demorolluptables.yml"; 

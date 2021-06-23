@@ -8,7 +8,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.jobs.ControlCommandExecutionCreateScheduleJob;
 import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.constants.FacilioConstants;

@@ -1,10 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
-import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
@@ -18,7 +18,6 @@ import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.util.*;
 import java.util.stream.Collectors;
 

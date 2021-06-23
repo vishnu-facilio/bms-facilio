@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.beans.ModuleBean;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.fw.BeanFactory;

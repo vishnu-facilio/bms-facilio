@@ -1,7 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.workpermit;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.EventType;

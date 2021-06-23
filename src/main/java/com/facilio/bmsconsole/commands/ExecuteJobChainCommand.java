@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
@@ -9,7 +10,7 @@ import com.facilio.taskengine.job.JobContext;
 import com.facilio.tasker.FacilioTimer;
 import org.apache.commons.chain.Context;
 
-public class ExecuteJobChainCommand extends FacilioCommand{
+public class ExecuteJobChainCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

@@ -1,16 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.beans.ModuleBean;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
 import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 

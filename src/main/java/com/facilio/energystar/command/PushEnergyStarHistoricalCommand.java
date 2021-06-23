@@ -4,7 +4,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.energystar.util.EnergyStarUtil;

@@ -1,51 +1,36 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
+import com.facilio.bmsconsole.context.BaseAlarmContext;
+import com.facilio.bmsconsole.util.AlarmAPI;
+import com.facilio.bmsconsole.util.NewAlarmAPI;
+import com.facilio.bmsconsole.util.NewEventAPI;
+import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.db.transaction.FacilioConnectionPool;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.time.DateTimeUtil;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections.MapUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.yaml.snakeyaml.Yaml;
+
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.time.ZonedDateTime;
 import java.time.temporal.IsoFields;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections.MapUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-import org.yaml.snakeyaml.Yaml;
-
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.activity.AlarmActivityType;
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
-import com.facilio.bmsconsole.context.BaseAlarmContext;
-import com.facilio.bmsconsole.context.ReadingDataMeta;
-import com.facilio.bmsconsole.util.AlarmAPI;
-import com.facilio.bmsconsole.util.NewAlarmAPI;
-import com.facilio.bmsconsole.util.NewEventAPI;
-import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.constants.FacilioConstants.ContextNames;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.DateOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.transaction.FacilioConnectionPool;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.time.DateTimeUtil;
 
 public class DemoRollUpYearlyCommand extends FacilioCommand {
 

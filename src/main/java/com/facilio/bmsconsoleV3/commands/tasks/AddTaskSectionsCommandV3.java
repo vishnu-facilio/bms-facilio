@@ -1,6 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.tasks;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsoleV3.context.V3TaskContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;

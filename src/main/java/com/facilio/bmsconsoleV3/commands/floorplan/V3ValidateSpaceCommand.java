@@ -7,7 +7,7 @@ import com.facilio.bmsconsoleV3.context.V3FloorContext;
 import com.facilio.bmsconsoleV3.context.V3SpaceContext;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.SpaceContext;

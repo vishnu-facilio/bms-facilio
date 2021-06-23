@@ -1,10 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
-import com.facilio.accounts.bean.RoleBean;
 import com.facilio.accounts.dto.AppDomain;
-import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ApplicationContext;
@@ -15,7 +14,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
 
-public class AddApplicationUsersCommand extends FacilioCommand{
+public class AddApplicationUsersCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

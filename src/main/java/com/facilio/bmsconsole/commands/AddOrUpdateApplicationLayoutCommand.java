@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.ApplicationLayoutContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -15,7 +16,7 @@ import org.apache.commons.chain.Context;
 import java.util.List;
 import java.util.Map;
 
-public class AddOrUpdateApplicationLayoutCommand extends FacilioCommand{
+public class AddOrUpdateApplicationLayoutCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         ApplicationLayoutContext applicationLayout = (ApplicationLayoutContext) context.get(FacilioConstants.ContextNames.APPLICATION_LAYOUT);

@@ -2,13 +2,14 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.List;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
 import com.facilio.bmsconsole.util.PurchaseOrderAPI;
 import com.facilio.constants.FacilioConstants;
 
-public class GetAvailableReceivedPoLineItemsCommand extends FacilioCommand{
+public class GetAvailableReceivedPoLineItemsCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

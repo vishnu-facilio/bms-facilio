@@ -8,7 +8,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.bmsconsoleV3.util.V3VisitorManagementAPI;
 import com.facilio.constants.FacilioConstants;

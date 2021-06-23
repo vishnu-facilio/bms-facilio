@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.command.FacilioCommand;
 import com.facilio.modules.*;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
@@ -23,7 +24,7 @@ import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 
-public class HistoricalRunOperationalAlarmLog extends FacilioCommand{
+public class HistoricalRunOperationalAlarmLog extends FacilioCommand {
 	private static final Logger LOGGER = LogManager.getLogger(HistoricalRunOperationalAlarmLog.class.getName());
 
 	@Override

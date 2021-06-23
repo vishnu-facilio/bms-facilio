@@ -3,7 +3,7 @@ package com.facilio.trigger.command;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.ModuleFactory;

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -17,7 +18,7 @@ import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 
-public class AddBulkRotatingToolShipmentTransactionCommand extends FacilioCommand{
+public class AddBulkRotatingToolShipmentTransactionCommand extends FacilioCommand {
 
 
 		@Override

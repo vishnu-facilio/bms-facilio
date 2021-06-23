@@ -1,6 +1,6 @@
 package com.facilio.qa.rules.commands;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 public class EvaluateQAndARulesCommand extends FacilioCommand {

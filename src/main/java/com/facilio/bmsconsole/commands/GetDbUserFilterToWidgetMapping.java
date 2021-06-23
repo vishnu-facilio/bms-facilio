@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -21,9 +21,7 @@ import com.facilio.bmsconsole.util.DashboardFilterUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
 
 public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
     private static final Logger LOGGER = Logger.getLogger(GetDbTimeLineFilterToWidgetMapping.class.getName());

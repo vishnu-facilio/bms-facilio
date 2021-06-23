@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -13,10 +14,9 @@ import com.facilio.bmsconsole.context.ConnectionContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FieldUtil;
 
-public class PopulateDefaultConnectionsCommand extends FacilioCommand{
+public class PopulateDefaultConnectionsCommand extends FacilioCommand {
 	
 	private static final Logger LOGGER = LogManager.getLogger(PopulateDefaultConnectionsCommand.class.getName());
 

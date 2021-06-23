@@ -7,21 +7,17 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
-import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
-import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.util.DashboardFilterUtil;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.report.context.ReportContext;
-import com.facilio.report.context.ReportContext.ReportType;
-import com.facilio.report.util.ReportUtil;
 
-public class FetchModulesInDashboardCommand extends FacilioCommand{
+public class FetchModulesInDashboardCommand extends FacilioCommand {
     private static final Logger LOGGER = Logger.getLogger(FetchModulesInDashboardCommand.class.getName());
 
 	@Override

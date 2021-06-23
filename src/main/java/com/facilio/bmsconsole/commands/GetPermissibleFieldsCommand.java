@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
@@ -9,7 +10,7 @@ import org.apache.commons.chain.Context;
 import java.util.Collection;
 import java.util.List;
 
-public class GetPermissibleFieldsCommand extends FacilioCommand{
+public class GetPermissibleFieldsCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);

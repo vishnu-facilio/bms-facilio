@@ -1,21 +1,18 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
-import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.User;
-import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.iam.accounts.util.IAMAppUtil;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
-public class GetPermaLinkTokenCommand extends FacilioCommand{
+public class GetPermaLinkTokenCommand extends FacilioCommand {
 	
 	private static final Logger LOGGER = Logger.getLogger(GetPermaLinkTokenCommand.class.getName());
 	@SuppressWarnings("unchecked")

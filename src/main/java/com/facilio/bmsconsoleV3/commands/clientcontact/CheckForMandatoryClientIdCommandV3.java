@@ -1,6 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.clientcontact;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.ClientContactContext;
 import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsoleV3.context.V3ClientContactContext;

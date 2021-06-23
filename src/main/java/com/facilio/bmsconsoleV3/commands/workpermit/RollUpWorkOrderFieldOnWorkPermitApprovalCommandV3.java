@@ -1,6 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.workpermit;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsoleV3.context.workpermit.V3WorkPermitContext;

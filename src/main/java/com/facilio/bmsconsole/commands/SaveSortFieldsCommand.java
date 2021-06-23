@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.Arrays;
 import java.util.List;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 

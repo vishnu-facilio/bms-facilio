@@ -8,7 +8,7 @@ import java.util.Map;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;

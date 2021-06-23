@@ -1,6 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.space;
 
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsoleV3.context.V3BuildingContext;
 import com.facilio.bmsconsoleV3.context.V3SpaceContext;

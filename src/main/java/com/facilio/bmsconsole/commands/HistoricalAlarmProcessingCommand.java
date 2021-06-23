@@ -1,28 +1,21 @@
 package com.facilio.bmsconsole.commands;	
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.command.PostTransactionCommand;
 import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Level;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.RuleRollupCommand.RollupType;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.bmsconsole.enums.RuleJobType;
 import com.facilio.chain.FacilioChain;

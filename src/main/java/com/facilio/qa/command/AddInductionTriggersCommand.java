@@ -11,7 +11,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.BaseScheduleContext;
 import com.facilio.bmsconsole.context.BaseScheduleContext.ScheduleType;
 import com.facilio.bmsconsoleV3.context.induction.InductionTemplateContext;

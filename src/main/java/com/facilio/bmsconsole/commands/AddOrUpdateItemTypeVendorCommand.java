@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.ItemTypesVendorsContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -20,7 +21,7 @@ import com.facilio.modules.fields.FacilioField;
 
 ;
 
-public class AddOrUpdateItemTypeVendorCommand extends FacilioCommand{
+public class AddOrUpdateItemTypeVendorCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(org.apache.commons.chain.Context context) throws Exception {

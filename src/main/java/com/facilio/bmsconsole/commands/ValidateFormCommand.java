@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.Map;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
 

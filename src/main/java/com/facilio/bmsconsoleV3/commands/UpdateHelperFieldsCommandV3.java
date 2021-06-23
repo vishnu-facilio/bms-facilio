@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsoleV3.context.V3TenantUnitSpaceContext;
 import com.facilio.constants.FacilioConstants;

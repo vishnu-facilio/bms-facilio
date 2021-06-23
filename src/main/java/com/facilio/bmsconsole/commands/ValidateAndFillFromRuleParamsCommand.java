@@ -6,20 +6,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.command.FacilioCommand;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import org.apache.commons.chain.Context;
 
-import com.facilio.agent.commands.UpdateAgentMessageCommand;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormRuleContext;
-import com.facilio.bmsconsole.forms.FormRuleTriggerFieldContext;
 import com.facilio.bmsconsole.forms.FormRuleContext.TriggerType;
 import com.facilio.bmsconsole.util.FormRuleAPI;
 import com.facilio.bmsconsole.util.FormsAPI;
-import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;

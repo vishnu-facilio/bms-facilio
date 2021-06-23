@@ -3,7 +3,7 @@ package com.facilio.bmsconsole.commands.filters;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.filters.FilterFieldContext;
 import com.facilio.bmsconsole.context.filters.FilterOperator;
 import com.facilio.bmsconsole.util.AssetsAPI;

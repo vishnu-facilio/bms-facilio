@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -18,7 +19,7 @@ import java.util.Map;
 
 ;
 
-public class GetPendingPoLineItemsCommand extends FacilioCommand{
+public class GetPendingPoLineItemsCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

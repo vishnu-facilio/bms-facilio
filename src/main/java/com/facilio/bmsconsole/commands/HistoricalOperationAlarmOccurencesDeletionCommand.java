@@ -10,7 +10,7 @@ import com.facilio.bmsconsole.context.OperationAlarmContext;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext.Type;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
