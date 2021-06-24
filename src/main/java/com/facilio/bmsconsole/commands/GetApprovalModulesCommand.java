@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.commands.module;
+package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
 import java.util.Arrays;

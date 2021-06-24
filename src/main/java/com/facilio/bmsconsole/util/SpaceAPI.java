@@ -2052,16 +2052,19 @@ public static List<Map<String,Object>> getBuildingArea(String buildingList) thro
 	}
 	
 	public static void updateSiteAndBuildingId(SpaceContext space) throws Exception {
+		boolean parentAvailable = false;
 		if(space.getBuilding() != null && space.getBuilding().getId() > 0) {
 			long buildingId = space.getBuilding().getId();
 			BuildingContext building = SpaceAPI.getBuildingSpace(buildingId);
 			space.setSiteId(building.getSiteId());
+			parentAvailable = true;
 		}
 		if(space.getFloor().getId() > 0) {
 			long floorId = space.getFloor().getId();
 			FloorContext floor = SpaceAPI.getFloorSpace(floorId);
 			space.setSiteId(floor.getSiteId());
 			space.setBuilding(floor.getBuilding());
+			parentAvailable = true;
 		}
 		if (space.getParentSpace() != null && space.getParentSpace().getId() > 0) {
 			long spaceId = space.getParentSpace().getId();
@@ -2087,6 +2090,14 @@ public static List<Map<String,Object>> getBuildingArea(String buildingList) thro
 			else {
 				space.setSpaceId1(spaceId);
 			}
+			parentAvailable = true;
+		}
+		if (!parentAvailable) {
+			if (space.getSite() != null && space.getSite().getId() > 0) {
+				space.setSiteId(space.getSite().getId());
+				return;
+			}
+			throw new IllegalArgumentException("Parent Space not available. Please select parent space");
 		}
 	}
 	

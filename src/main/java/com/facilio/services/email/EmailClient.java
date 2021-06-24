@@ -59,6 +59,9 @@ public abstract class EmailClient {
     private static boolean checkIfActiveUserFromEmail(String email) throws Exception { //TODO Have to handle this in bulk. For now all emails are not sent in user thread and so okay I guess
         UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
         User user = userBean.getUserFromEmail(email, null, AccountUtil.getCurrentOrg().getOrgId(), true);
+        if (user == null) {
+        		LOGGER.info("Sending email to user who is not in the org  - " + email);
+        }
         return (user == null || user.getUserStatus());
     }
 

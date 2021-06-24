@@ -67,6 +67,7 @@ public class GenerateCriteriaForV4Command extends FacilioCommand {
 
             switch (dataTypeEnum) {
                 case STRING:
+                case BIG_STRING:
                     criteria = getStringFieldCriteria((String) v4Filters.get(key).get(0), operatorStr, field);
                     break;
                 case DECIMAL:

@@ -39,6 +39,8 @@ import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 
 public class IAMOrgBeanImpl implements IAMOrgBean {
+	
+    private static final String DOMAIN_PATTERN = "[a-z0-9]+";
 
 	@Override
 	public boolean updateOrgv2(long orgId, Organization org) throws Exception {
@@ -267,6 +269,9 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 	private Organization addOrg(org.json.simple.JSONObject signupInfo, Locale locale) throws Exception{
     	String companyName = (String) signupInfo.get("companyname");
 		String orgDomain = (String) signupInfo.get("domainname");
+		if(!orgDomain.matches(DOMAIN_PATTERN)) {
+			throw new AccountException(ErrorCode.INVALID_ORG_DOMAIN, "Org domain cannot contain capital letters,space or any special characters");
+		}
 		 
         Organization orgObj = IAMUtil.getOrgBean().getOrgv2(orgDomain);
         if(orgObj != null) {
