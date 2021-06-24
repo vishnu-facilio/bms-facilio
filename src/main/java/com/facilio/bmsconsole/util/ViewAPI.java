@@ -112,7 +112,7 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 				selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"),String.valueOf(moduleId), NumberOperators.EQUALS));
 			}
 			
-			if (moduleId < 0 && moduleName != null) {
+			else if (moduleName != null) {
 				selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleName"), moduleName, StringOperators.IS));
 			}
 	
