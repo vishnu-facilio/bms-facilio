@@ -1,8 +1,10 @@
 package com.facilio.bmsconsole.context.filters;
 
 import com.facilio.db.criteria.operators.Operator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import org.apache.commons.lang.StringUtils;
+import org.apache.struts2.json.annotations.JSON;
 
 public class FilterOperator {
 
@@ -11,6 +13,12 @@ public class FilterOperator {
     }
 
     private Operator operator;
+
+    @JsonIgnore @JSON (serialize = false)
+    public Operator getOperator() {
+        return operator;
+    }
+
     public FilterOperator(Operator operator) {
         this(operator, null);
     }
