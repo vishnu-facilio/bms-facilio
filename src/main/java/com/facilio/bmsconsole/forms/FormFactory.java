@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.forms;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.WorkOrderContext.WOUrgency;
 import com.facilio.bmsconsole.forms.FacilioForm.LabelPosition;
 import com.facilio.bmsconsole.forms.FormField.Required;
@@ -9,6 +10,7 @@ import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
@@ -435,6 +437,9 @@ public class FormFactory {
 		List<FacilioForm> spaceFormList = Arrays.asList(getSpaceFormFromSite(),getSpaceFormFromBuilding(),getSpaceFormFromFloor(),getSpaceFormFromSpace());
 		List<FacilioForm> floorFormList = Arrays.asList(getFloorForm());
 		
+		List<FacilioForm> inspectionFormList = Arrays.asList(getInspectionForm());
+		List<FacilioForm> inductionFormList = Arrays.asList(getInductionForm());
+		
 		List<FacilioForm> warrantyContractFormsList = Arrays.asList(getWarrantyContractForm());
 
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
@@ -500,6 +505,8 @@ public class FormFactory {
 				.put(ContextNames.BUILDING, getFormMap(buildingFormList))
 				.put(ContextNames.SPACE, getFormMap(spaceFormList))
 				.put(ContextNames.FLOOR, getFormMap(floorFormList))
+				.put(FacilioConstants.Inspection.INSPECTION_RESPONSE, getFormMap(inspectionFormList))
+				.put(FacilioConstants.Induction.INDUCTION_RESPONSE, getFormMap(inductionFormList))
 				.put(ContextNames.WARRANTY_CONTRACTS, getFormMap(warrantyContractFormsList))
 				.build();
 	}
@@ -650,6 +657,94 @@ public class FormFactory {
 		fields.add(new FormField("area", FacilioField.FieldDisplayType.DECIMAL, "Area", FormField.Required.OPTIONAL, 4, 2));
 		fields.add(new FormField("maxOccupancy", FacilioField.FieldDisplayType.NUMBER, "Max Occupancy", FormField.Required.OPTIONAL, 4, 3));
 		fields.add(new FormField("floorlevel", FacilioField.FieldDisplayType.NUMBER, "Floor Level", FormField.Required.OPTIONAL, 5, 2));
+
+		defaultForm.setFields(fields);
+		return defaultForm;
+	}
+	
+	public static FacilioForm getInspectionForm() {
+		FacilioModule inspectionResponse = null;
+		
+		try {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			inspectionResponse = modBean.getModule(FacilioConstants.Inspection.INSPECTION_RESPONSE);
+		}
+		catch (Exception e) {
+		}	
+
+		FacilioForm defaultForm = new FacilioForm();
+		defaultForm.setName("default_"+FacilioConstants.Inspection.INSPECTION_RESPONSE+"_web");
+		defaultForm.setModule(inspectionResponse);
+		defaultForm.setDisplayName("Standard");
+		defaultForm.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+		defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+		defaultForm.setShowInWeb(true);
+
+		List<FormField> fields = new ArrayList<>();
+		int i = 1;
+		fields.add(new FormField("siteId", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.OPTIONAL, i++, 1));
+		fields.add(new FormField("parent", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Parent", FormField.Required.OPTIONAL, i++, 1));
+		
+		fields.add(new FormField("createdTime", FacilioField.FieldDisplayType.DATETIME, "Created Time", Required.REQUIRED,  "building",i++, 2));
+		fields.add(new FormField("scheduledWorkStart", FacilioField.FieldDisplayType.DATETIME, "Scheduled Start", FormField.Required.OPTIONAL, "site",i++, 3));
+		fields.add(new FormField("scheduledWorkEnd", FacilioField.FieldDisplayType.DATETIME, "Scheduled End", FormField.Required.OPTIONAL, i++, 2));
+		fields.add(new FormField("actualWorkStart", FacilioField.FieldDisplayType.DATETIME, "Actual Start", FormField.Required.OPTIONAL, i++, 3));
+		fields.add(new FormField("actualWorkEnd", FacilioField.FieldDisplayType.DATETIME, "Actual End", FormField.Required.OPTIONAL, i++, 2));
+		fields.add(new FormField("actualWorkDuration", FacilioField.FieldDisplayType.DATETIME, "Actual Duration", FormField.Required.OPTIONAL, i++, 2));
+		
+		fields.add(new FormField("status", FacilioField.FieldDisplayType.DECISION_BOX, "Response Status", FormField.Required.OPTIONAL, i++, 2));
+		fields.add(new FormField("sourceType", FacilioField.FieldDisplayType.DECISION_BOX, "Source", FormField.Required.OPTIONAL, i++, 2));
+		
+		fields.add(new FormField("resource", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Space/Asset", FormField.Required.OPTIONAL, i++, 2));
+		fields.add(new FormField("vendor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Vendor", FormField.Required.OPTIONAL, i++, 2));
+		fields.add(new FormField("tenant", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Tenant", FormField.Required.OPTIONAL, i++, 2));
+		fields.add(new FormField("category", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Category", FormField.Required.OPTIONAL, i++, 2));
+		fields.add(new FormField("priority", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Priority", FormField.Required.OPTIONAL, i++, 2));
+		fields.add(new FormField("assignedTo", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Assigned To", FormField.Required.OPTIONAL, i++, 2));
+		fields.add(new FormField("assignmentGroup", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Team", FormField.Required.OPTIONAL, i++, 2));
+		
+
+		defaultForm.setFields(fields);
+		return defaultForm;
+	}
+	
+	public static FacilioForm getInductionForm() {
+		FacilioModule inductionResponse = null;
+		
+		try {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			inductionResponse = modBean.getModule(FacilioConstants.Induction.INDUCTION_RESPONSE);
+		}
+		catch (Exception e) {
+		}	
+
+		FacilioForm defaultForm = new FacilioForm();
+		defaultForm.setName("default_"+FacilioConstants.Induction.INDUCTION_RESPONSE+"_web");
+		defaultForm.setModule(inductionResponse);
+		defaultForm.setDisplayName("Standard");
+		defaultForm.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+		defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+		defaultForm.setShowInWeb(true);
+
+		List<FormField> fields = new ArrayList<>();
+		int i = 1;
+		fields.add(new FormField("siteId", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.OPTIONAL, i++, 1));
+		fields.add(new FormField("parent", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Parent", FormField.Required.OPTIONAL, i++, 1));
+		
+		fields.add(new FormField("createdTime", FacilioField.FieldDisplayType.DATETIME, "Created Time", Required.REQUIRED,  "building",i++, 2));
+		fields.add(new FormField("scheduledWorkStart", FacilioField.FieldDisplayType.DATETIME, "Scheduled Start", FormField.Required.OPTIONAL, "site",i++, 3));
+		fields.add(new FormField("scheduledWorkEnd", FacilioField.FieldDisplayType.DATETIME, "Scheduled End", FormField.Required.OPTIONAL, i++, 2));
+		fields.add(new FormField("actualWorkStart", FacilioField.FieldDisplayType.DATETIME, "Actual Start", FormField.Required.OPTIONAL, i++, 3));
+		fields.add(new FormField("actualWorkEnd", FacilioField.FieldDisplayType.DATETIME, "Actual End", FormField.Required.OPTIONAL, i++, 2));
+		fields.add(new FormField("actualWorkDuration", FacilioField.FieldDisplayType.DATETIME, "Actual Duration", FormField.Required.OPTIONAL, i++, 2));
+		
+		fields.add(new FormField("status", FacilioField.FieldDisplayType.DECISION_BOX, "Response Status", FormField.Required.OPTIONAL, i++, 2));
+		fields.add(new FormField("sourceType", FacilioField.FieldDisplayType.DECISION_BOX, "Source", FormField.Required.OPTIONAL, i++, 2));
+		
+		fields.add(new FormField("resource", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Space/Asset", FormField.Required.OPTIONAL, i++, 2));
+		fields.add(new FormField("vendor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Vendor", FormField.Required.OPTIONAL, i++, 2));
+		fields.add(new FormField("people", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Assigned To", FormField.Required.OPTIONAL, i++, 2));
+		
 
 		defaultForm.setFields(fields);
 		return defaultForm;
