@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -127,7 +128,7 @@ public enum MultiFieldOperators implements Operator<String> {
 
 	private static String containValues(String fieldName, String value, boolean contains) {
 		try {
-			if(fieldName != null && !fieldName.isEmpty() && value != null) {
+			if(fieldName != null && !fieldName.isEmpty() && StringUtils.isNotEmpty(value)) {
 				String[] module = fieldName.split("\\.");
 				if(module.length > 1) {
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
