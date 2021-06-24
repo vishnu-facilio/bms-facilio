@@ -946,6 +946,46 @@ REVOKE_VENDOR_PORTAL_ACCESS (30, "revokeVendorPortalAccess") {
 			
 			return null;
 		}
+	},UPDATE_TENANT_PORTAL_ACCESS (31, "updateTenantPortalAccess") {
+		
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+		
+			TenantContactContext contact = (TenantContactContext) RecordAPI.getRecord(FacilioConstants.ContextNames.TENANT_CONTACT, Long.valueOf(objects[0].toString()));
+			contact.setIsTenantPortalAccess(true);
+			Map<String, Long> rolesMap = new HashMap<String, Long>();
+			rolesMap.put("tenant", Long.valueOf(objects[1].toString()));
+			contact.setRolesMap(rolesMap);
+			FacilioChain c = TransactionChainFactory.updateTenantContactAppAccessChain();
+			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
+			
+			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(contact));
+			
+			c.execute();
+			
+			return null;
+		}
+	},
+REVOKE_TENANT_PORTAL_ACCESS (32, "revokeTenantPortalAccess") {
+		
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+		
+			
+			TenantContactContext contact = (TenantContactContext) RecordAPI.getRecord(FacilioConstants.ContextNames.TENANT_CONTACT, Long.valueOf(objects[0].toString()));
+			contact.setIsTenantPortalAccess(false);
+			Map<String, Long> rolesMap = new HashMap<String, Long>();
+			rolesMap.put("tenant", Long.valueOf(objects[1].toString()));
+			contact.setRolesMap(rolesMap);
+			FacilioChain c = TransactionChainFactory.updateTenantContactAppAccessChain();
+			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
+			
+			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(contact));
+			
+			c.execute();
+			
+			return null;
+		}
 	},
 ADD_INVITE_RECORD_VIA_V3CHAIN (29, "addInviteRecordViaV3Chain") {
 		
