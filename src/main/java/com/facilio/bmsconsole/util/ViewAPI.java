@@ -676,21 +676,11 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 	public static void addViewSharing(FacilioView view) throws Exception {
 		SharingContext<SingleSharingContext> viewSharing = view.getViewSharing();
 		SharingAPI.deleteSharingForParent(Collections.singletonList(view.getId()), ModuleFactory.getViewSharingModule());
-
-		//temp handling for apptype sharing for custom views..can be removed after supporting apptype sharing in ui
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		long modId = -1;
-		if(view.getId() > 0) {
-			FacilioView existingView = ViewAPI.getView(view.getId());
-			modId = existingView.getModuleId();
-		}
+		
 		if(viewSharing == null) {
 			viewSharing = new SharingContext<>();
 		}
 		
-
-			FacilioView defaultView = ViewFactory.getView(modBean.getModule(modId > 0 ? modId : view.getModuleId()), view.getName(), modBean);
-			
 			List<Long> orgUsersId = viewSharing.stream().filter(value -> value.getTypeEnum() == SharingType.USER)
 					.map(val -> val.getUserId()).collect(Collectors.toList());
 			if (CollectionUtils.isNotEmpty(orgUsersId) && !orgUsersId.contains(AccountUtil.getCurrentUser().getId())) {

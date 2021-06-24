@@ -63,6 +63,7 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -4627,5 +4628,17 @@ public class PreventiveMaintenanceAPI {
 			return pmJobPlans;
 		}
 		return null;
+	}
+	
+	public static List<String> getTemplateFields() {
+		return LookupSpecialTypeUtil.getAllFields(ContextNames.WORK_ORDER_TEMPLATE)
+				.stream().map(field -> field.getName()).collect(Collectors.toList());
+	}
+	
+	public static String getPmModule(List<String> templateFields, String fieldName) {
+		if (templateFields.contains(fieldName)) {
+			return FacilioConstants.ContextNames.WORK_ORDER_TEMPLATE;
+		}
+		return FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE;
 	}
 }

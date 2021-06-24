@@ -5,9 +5,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import com.facilio.command.FacilioCommand;
-import com.facilio.modules.FieldUtil;
-import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -15,6 +12,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -28,12 +27,16 @@ import com.facilio.db.criteria.operators.RelatedModuleOperator;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.v3.context.Constants;
 
 public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = LogManager.getLogger(GenerateCriteriaFromFilterCommand.class.getName());
+	private List<String> templateFields;
+	boolean isPm;
 	
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -47,6 +50,12 @@ public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 			
 			Iterator<String> filterIterator = filters.keySet().iterator();
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+			
+			isPm = moduleName.equals(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
+			if (isPm) {
+				templateFields = PreventiveMaintenanceAPI.getTemplateFields();
+			}
+			
 			Criteria criteria = new Criteria();
 			while(filterIterator.hasNext())
 			{
@@ -87,8 +96,8 @@ public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 	private void setConditions(String moduleName, String fieldName, JSONObject fieldJson,List<Condition> conditionList) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		if(moduleName.equals(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE)) {
-			moduleName = gePreventiveMaintenanceModule(fieldName);
+		if(isPm) {
+			moduleName = PreventiveMaintenanceAPI.getPmModule(templateFields, fieldName);
 		}
 		
 		int operatorId;
@@ -189,7 +198,7 @@ public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 					relatedField = modBean.getField((String)fieldJson.get("filterFieldName"), fieldName);
 				}
 				else {
-					relatedField = FieldFactory.getIdField();
+					relatedField = FieldFactory.getIdField(modBean.getModule(fieldName));
 				}
 				criteriaVal.addAndCondition(CriteriaAPI.getCondition(relatedField, valuesString, relatedOperator));
 				condition.setCriteriaValue(criteriaVal);
@@ -220,14 +229,8 @@ public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 		conditionList.add(condition);
 	}
 	
-	private static final List<String> TEMPLATE_FIELDS = Arrays.asList("priorityId", "statusId", "categoryId", "typeId", "assignmentGroupId", "assignedToId", "resourceId", "tenantId", "additionInfo", "vendorId");
 	private static final List<String> OLD_FIELDS = Arrays.asList("siteId", "spaceId", "buildingId", "floorId", "spaceId1", "spaceId2", "spaceId3", "spaceId4");
 	private static final List<String> OLD_FIELDS_MODULE = Arrays.asList(FacilioConstants.ContextNames.BASE_SPACE, FacilioConstants.ContextNames.RESOURCE, FacilioConstants.ContextNames.SPACE, FacilioConstants.ContextNames.ASSET, FacilioConstants.ContextNames.BUILDING, FacilioConstants.ContextNames.FLOOR);
-	private String gePreventiveMaintenanceModule(String fieldName) {
-		if (TEMPLATE_FIELDS.contains(fieldName)) {
-			return FacilioConstants.ContextNames.WORK_ORDER_TEMPLATE;
-		}
-		return FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE;
-	}
+	
 
 }

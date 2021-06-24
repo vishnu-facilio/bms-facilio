@@ -1,16 +1,20 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.command.FacilioCommand;
+import java.util.List;
+
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.FacilioView.ViewType;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.BeanFactory;
@@ -28,30 +32,41 @@ public class AddCVCommand extends FacilioCommand {
 		if(view != null) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			long viewId = view.getId();
-			Criteria viewCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
-			if (viewCriteria != null && view.getCriteria() != null) {
-				viewCriteria.andCriteria(view.getCriteria());
-			}
-			else if (viewCriteria == null) {
-				viewCriteria = view.getCriteria();
-			}
-			if (viewCriteria != null) {
+			Criteria criteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
+			if (view.getCriteria() != null) {
+				Criteria viewCriteria = view.getCriteria();
+				boolean isPm = moduleName.equals(ContextNames.PREVENTIVE_MAINTENANCE);
+				List<String> templateFields = null;
+				if (isPm) {
+					templateFields = PreventiveMaintenanceAPI.getTemplateFields();
+				}
 				for (String key : viewCriteria.getConditions().keySet()) {
 					Condition condition = viewCriteria.getConditions().get(key);
-					FacilioField field = modBean.getField(condition.getFieldName(), moduleName);
+					String fieldModuleName = moduleName;
+					if(isPm) {
+						fieldModuleName = PreventiveMaintenanceAPI.getPmModule(templateFields, condition.getFieldName());
+					}
+					FacilioField field = modBean.getField(condition.getFieldName(), fieldModuleName);
 					condition.setField(field);
 				}
+				if (criteria != null) {
+					criteria.andCriteria(viewCriteria);
+				}
+				else {
+					criteria = viewCriteria;
+				}
 			}
+			
 			if(view.getIncludeParentCriteria()) {
 				FacilioView parentView = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
-				if (viewCriteria == null && parentView != null) {
-					viewCriteria = parentView.getCriteria();
+				if (criteria == null && parentView != null) {
+					criteria = parentView.getCriteria();
 				}
 				else if (parentView != null && parentView.getCriteria() != null) {
-					viewCriteria.andCriteria(parentView.getCriteria());
+					criteria.andCriteria(parentView.getCriteria());
 				}				
 			}
-			view.setCriteria(viewCriteria);
+			view.setCriteria(criteria);
 			if(viewId == -1) {
 				if(view.getTypeEnum() == null)
 				{
