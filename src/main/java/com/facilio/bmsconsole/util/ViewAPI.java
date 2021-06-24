@@ -58,7 +58,12 @@ public class ViewAPI {
 		FacilioModule module= modBean.getModule(moduleName);
 		long moduleId = module.getModuleId();
 		
-		viewGroup.setModuleId(moduleId);
+		if (moduleId > 0) {
+			viewGroup.setModuleId(moduleId);
+		}
+	    if (moduleName != null) {
+			viewGroup.setModuleName(moduleName);
+		}
 		viewGroup.setOrgId(orgId);
 		viewGroup.setId(-1);
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
@@ -91,17 +96,25 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 		
 	}
 	
-	public static List<ViewGroups> getAllGroups(long moduleId,long appId) throws Exception {
+	public static List<ViewGroups> getAllGroups(long moduleId,long appId, String moduleName) throws Exception {
 	
 		List<ViewGroups> viewGroups = new ArrayList<>();
-		if (moduleId > -1) {
+		if (moduleId > -1 || moduleName != null) {
 			List<FacilioField> fields = FieldFactory.getViewGroupFields();
 			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 	
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 					.select(fields)
 					.table(ModuleFactory.getViewGroupsModule().getTableName())
-					.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"),String.valueOf(moduleId), NumberOperators.EQUALS));
+					;
+			
+			if (moduleId > 0) {
+				selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"),String.valueOf(moduleId), NumberOperators.EQUALS));
+			}
+			
+			if (moduleId < 0 && moduleName != null) {
+				selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleName"), moduleName, StringOperators.IS));
+			}
 	
 			ApplicationContext app = appId <= 0 ? AccountUtil.getCurrentApp() : ApplicationApi.getApplicationForId(appId);
 			if (app == null) {

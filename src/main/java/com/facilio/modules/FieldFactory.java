@@ -3633,6 +3633,13 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getModuleIdField(module));
         fields.add(getField("appId", "APP_ID", module, FieldType.NUMBER));
         
+        FacilioField moduleName = new FacilioField();
+        moduleName.setName("moduleName");
+        moduleName.setDataType(FieldType.STRING);
+        moduleName.setColumnName("MODULENAME");
+        moduleName.setModule(module);
+        fields.add(moduleName);
+        
         FacilioField groupOrder = new FacilioField();
         groupOrder.setName("sequenceNumber");
         groupOrder.setDataType(FieldType.NUMBER);

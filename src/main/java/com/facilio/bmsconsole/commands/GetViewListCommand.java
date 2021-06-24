@@ -59,7 +59,7 @@ public class GetViewListCommand extends FacilioCommand {
 		//db group views
 		List<ViewGroups> viewGroups = new ArrayList<>();
 		if (moduleObj != null) {
-			viewGroups = ViewAPI.getAllGroups(moduleObj.getModuleId(), appId);
+			viewGroups = ViewAPI.getAllGroups(moduleObj.getModuleId(), appId, moduleName);
 		}
 		
 		//db views
@@ -384,7 +384,7 @@ public class GetViewListCommand extends FacilioCommand {
 			
 			viewMap.putAll(ViewFactory.getModuleViews(moduleName, alarmModule));
 			
-			viewGroups.addAll(ViewAPI.getAllGroups(alarmModule.getModuleId(), -1));
+			viewGroups.addAll(ViewAPI.getAllGroups(alarmModule.getModuleId(), -1, moduleName));
 		}
 		
 	}

@@ -12,8 +12,18 @@ public class ViewGroups {
 			
 	private List<FacilioView> views;
 	
+	private String moduleName = "";
+	
 	private int sequenceNumber = -1;
 	
+	public String getModuleName() {
+		return moduleName;
+	}
+
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
+
 	public long getId() {
 		return id;
 	}
