@@ -6,10 +6,9 @@ import java.util.Map;
 
 import org.apache.commons.collections4.map.HashedMap;
 
-public class ModuleCustomFieldCount30 implements ModuleCustomFieldsCount {
+public class ModuleCustomFieldCount30_BS2 implements ModuleCustomFieldsCount {
 
-
-    static final Map<Integer, String[]> typeVsCustomColumns = Collections.unmodifiableMap(initCustomFieldsMap());
+	static final Map<Integer, String[]> typeVsCustomColumns = Collections.unmodifiableMap(initCustomFieldsMap());
 
     static Map<Integer, String[]> initCustomFieldsMap() {
         Map<Integer, String[]> customFieldsMap = new HashedMap<>();
@@ -23,7 +22,7 @@ public class ModuleCustomFieldCount30 implements ModuleCustomFieldsCount {
         customFieldsMap.put(8, new String[]{"ENUM_CF1", "ENUM_CF2", "ENUM_CF3", "ENUM_CF4", "ENUM_CF5", "ENUM_CF6", "ENUM_CF7", "ENUM_CF8", "ENUM_CF9", "ENUM_CF10", "ENUM_CF11", "ENUM_CF12", "ENUM_CF13", "ENUM_CF14", "ENUM_CF15", "ENUM_CF16", "ENUM_CF17", "ENUM_CF18", "ENUM_CF19", "ENUM_CF20", "ENUM_CF21", "ENUM_CF22", "ENUM_CF23", "ENUM_CF24", "ENUM_CF25", "ENUM_CF26", "ENUM_CF27", "ENUM_CF28", "ENUM_CF29", "ENUM_CF30"});
         customFieldsMap.put(9, new String[]{"FILE_CF1", "FILE_CF2", "FILE_CF3", "FILE_CF4", "FILE_CF5", "FILE_CF6", "FILE_CF7", "FILE_CF8", "FILE_CF9", "FILE_CF10", "FILE_CF11", "FILE_CF12", "FILE_CF13", "FILE_CF14", "FILE_CF15", "FILE_CF16", "FILE_CF17", "FILE_CF18", "FILE_CF19", "FILE_CF20", "FILE_CF21", "FILE_CF22", "FILE_CF23", "FILE_CF24", "FILE_CF25", "FILE_CF26", "FILE_CF27", "FILE_CF28", "FILE_CF29", "FILE_CF30"});
         customFieldsMap.put(15, new String[]{"SCORE_CF1", "SCORE_CF2", "SCORE_CF3", "SCORE_CF4", "SCORE_CF5", "SCORE_CF6", "SCORE_CF7", "SCORE_CF8", "SCORE_CF9", "SCORE_CF10", "SCORE_CF11", "SCORE_CF12", "SCORE_CF13", "SCORE_CF14", "SCORE_CF15", "SCORE_CF16", "SCORE_CF17", "SCORE_CF18", "SCORE_CF19", "SCORE_CF20", "SCORE_CF21", "SCORE_CF22", "SCORE_CF23", "SCORE_CF24", "SCORE_CF25", "SCORE_CF26", "SCORE_CF27", "SCORE_CF28", "SCORE_CF29", "SCORE_CF30"});
-        customFieldsMap.put(18, new String[]{"BIGSTRING_CF1","BIGSTRING_CF2","BIGSTRING_CF3"});
+        customFieldsMap.put(18, new String[]{"BIGSTRING_CF1","BIGSTRING_CF2"});
 
         return customFieldsMap;
     }
@@ -35,4 +34,5 @@ public class ModuleCustomFieldCount30 implements ModuleCustomFieldsCount {
         }
         return null;
     }
+
 }

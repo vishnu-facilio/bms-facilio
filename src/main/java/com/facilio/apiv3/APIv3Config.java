@@ -111,6 +111,7 @@ import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistCatego
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistContext;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount10;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount30;
+import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount30_BS2;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount50;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.control.*;
@@ -179,7 +180,7 @@ public class APIv3Config {
 
     @Module("quote")
     public static Supplier<V3Config> getQuotation() {
-        return () -> new V3Config(QuotationContext.class, new ModuleCustomFieldCount30())
+        return () -> new V3Config(QuotationContext.class, new ModuleCustomFieldCount30_BS2())
 
                 .create()
                 .beforeSave(TransactionChainFactoryV3.getQuotationBeforeSaveChain())
@@ -643,7 +644,7 @@ public class APIv3Config {
 
     @Module("visitorlogging")
     public static Supplier<V3Config> getVisitorLogging() {
-        return () -> new V3Config(V3VisitorLoggingContext.class, new ModuleCustomFieldCount30())
+        return () -> new V3Config(V3VisitorLoggingContext.class, new ModuleCustomFieldCount30_BS2())
                 .create()
                     .beforeSave(TransactionChainFactoryV3.getVisitorLoggingBeforeSaveOnCreateChain())
                     .afterTransaction(TransactionChainFactoryV3.getVisitorLoggingAfterSaveOnCreateChain())
@@ -1051,7 +1052,7 @@ public class APIv3Config {
 
     @Module("facility")
     public static Supplier<V3Config> getFacility() {
-        return () -> new V3Config(FacilityContext.class, new ModuleCustomFieldCount30())
+        return () -> new V3Config(FacilityContext.class, new ModuleCustomFieldCount30_BS2())
                 .create().beforeSave(new SetLocalIdCommandV3())
                     .afterSave(new ScheduleSlotCreationCommand())
                 .update()
