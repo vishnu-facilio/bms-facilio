@@ -3,6 +3,7 @@ package com.facilio.qa.rules.pojo;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.modules.FieldUtil;
+import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.RuleHandler;
 import com.facilio.qa.context.questions.BooleanQuestionContext;
@@ -67,6 +68,11 @@ public enum BooleanRuleHandler implements RuleHandler {
             conditions.add(condition);
         }
         return conditions;
+    }
+
+    @Override
+    public List<Map<String, Object>> constructAnswersForEval(QAndARuleType type, QuestionContext question, AnswerContext answer) throws Exception {
+        return RuleHandler.constructSingletonAnswerProp(question, answer.getBooleanAnswer());
     }
 
     private Map<String, Object> serialize (Map<String, RuleCondition> conditionMap, String value, String label) throws Exception {

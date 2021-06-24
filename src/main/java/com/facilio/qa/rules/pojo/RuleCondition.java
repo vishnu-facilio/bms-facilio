@@ -1,10 +1,16 @@
 package com.facilio.qa.rules.pojo;
 
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.Operator;
+import com.facilio.qa.context.AnswerContext;
+import com.facilio.qa.context.QuestionContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.Map;
 
 @Getter
 @Setter
@@ -29,9 +35,30 @@ public abstract class RuleCondition {
 
     @JsonIgnore
     private Operator operatorEnum;
+    public static final String ANSWER_FIELD_NAME = "answer";
 
     public abstract boolean hasAction();
     public boolean actionIsEmpty() {
         return !hasAction();
     }
+
+    public boolean evaluate (Map<String, Object> answerProp) {
+        return evaluateOperatorValue(answerProp) && evaluateCriteria(answerProp);
+    }
+
+    private boolean evaluateOperatorValue(Map<String, Object> answerProp) {
+        if (operatorEnum == null) {
+            return true;
+        }
+        Condition condition = CriteriaAPI.getCondition(ANSWER_FIELD_NAME, value, operatorEnum);
+        return condition.computePredicate().evaluate(answerProp);
+    }
+
+    private boolean evaluateCriteria (Map<String, Object> answerProp) {
+        return criteria == null ? true : criteria.computePredicate().evaluate(answerProp);
+    }
+
+    public abstract void executeTrueAction (QuestionContext question, AnswerContext answer) throws Exception;
+
+    // Add false action if needed later. Mostly shouldn't be needed
 }

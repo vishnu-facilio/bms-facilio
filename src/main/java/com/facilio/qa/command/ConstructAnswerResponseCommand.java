@@ -17,7 +17,7 @@ public class ConstructAnswerResponseCommand extends FacilioCommand {
         // For now not fetching/ deserializing and re using the already created client answer POJOs. If there's some issue we can fetch/ deserializs from answer context if needed
         Map<Long, AnswerContext> questionVsAnswer = (Map<Long, AnswerContext>) context.get(FacilioConstants.QAndA.Command.QUESTION_VS_ANSWER);
         Objects.requireNonNull(questionVsAnswer, "Question Vs Answer cannot be null");
-        List<ClientAnswerContext> answers = (List<ClientAnswerContext>) context.get(FacilioConstants.QAndA.Command.ANSWER_LIST);
+        List<ClientAnswerContext> answers = (List<ClientAnswerContext>) context.get(FacilioConstants.QAndA.Command.CLIENT_ANSWER_LIST);
         Objects.requireNonNull(answers, "Client Answer list cannot be null");
 
         for (ClientAnswerContext answer : answers) {

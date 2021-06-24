@@ -2,7 +2,6 @@ package com.facilio.qa.command;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
-import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -12,7 +11,6 @@ import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.qa.QAndAUtil;
-import com.facilio.qa.context.QAndATemplateContext;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.time.DateRange;
 import com.facilio.v3.context.Constants;
@@ -34,7 +32,7 @@ public class FetchAnswersOfAQuestionCommand extends FacilioCommand {
         V3Util.throwRestException(question == null, ErrorCode.VALIDATION_ERROR, "Invalid question id for fetching answers");
 
         QAndAUtil.populateAnswersForQuestions(Collections.singletonMap(questionId, question), getCriteria(question.getParent()._getId(), range), false);
-        context.put(FacilioConstants.QAndA.Command.ANSWER_LIST, question.getAnswers());
+        context.put(FacilioConstants.QAndA.Command.CLIENT_ANSWER_LIST, question.getAnswers());
 
         return false;
     }

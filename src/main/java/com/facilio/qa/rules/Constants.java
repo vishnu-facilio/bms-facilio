@@ -73,7 +73,7 @@ public class Constants {
             FacilioModule module = ModuleFactory.scoringRuleModule();
 
             fields.add(getIdField(module));
-            fields.add(getField("fullScore", "FULL_SCORE", module, FieldType.NUMBER));
+            fields.add(getField("fullScore", "FULL_SCORE", module, FieldType.DECIMAL));
             fields.addAll(qandaRuleFields());
 
             return Collections.unmodifiableList(fields);
@@ -84,7 +84,7 @@ public class Constants {
             FacilioModule module = ModuleFactory.scoringRuleConditionModule();
 
             fields.add(getIdField(module));
-            fields.add(getField("score", "SCORE", module, FieldType.NUMBER));
+            fields.add(getField("score", "SCORE", module, FieldType.DECIMAL));
             fields.addAll(ruleConditionFields());
 
             return Collections.unmodifiableList(fields);

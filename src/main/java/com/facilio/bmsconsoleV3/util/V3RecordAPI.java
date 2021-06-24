@@ -3,6 +3,8 @@ package com.facilio.bmsconsoleV3.util;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.DBUtil;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.*;
@@ -10,17 +12,18 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.SupplementRecord;
+import com.facilio.util.FacilioUtil;
+import com.facilio.v3.context.Constants;
 import com.facilio.v3.context.V3Context;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
+import lombok.SneakyThrows;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class V3RecordAPI {
 
@@ -229,6 +232,39 @@ public class V3RecordAPI {
         return new DeleteRecordBuilder<ModuleBaseWithCustomFields>()
                     .moduleName(moduleName)
                     .batchDeleteById(ids);
+    }
+
+    public static <T extends ModuleBaseWithCustomFields> int batchUpdateRecords (String moduleName, Collection<T> records, List<FacilioField> updateFields) throws Exception {
+        // Use with caution. Should be used only for system update. Default system fields and all aren't updated here
+        FacilioUtil.throwRunTimeException(CollectionUtils.isEmpty(records), "Records cannot be empty for batch update");
+        FacilioUtil.throwRunTimeException(CollectionUtils.isEmpty(updateFields), "Update fields cannot be empty for batch update");
+        ModuleBean modBean = Constants.getModBean();
+        FacilioModule module = Objects.requireNonNull(modBean.getModule(moduleName), "Invalid module specified for batch update of records");
+        FacilioField moduleIdField = FieldFactory.getModuleIdField(module);
+        FacilioField idField = FieldFactory.getIdField(module);
+
+        List<FacilioField> whereFields = new ArrayList<>(2);
+        whereFields.add(moduleIdField);
+        whereFields.add(idField);
+
+        List<GenericUpdateRecordBuilder.BatchUpdateContext> batchUpdateRecords = records.stream()
+                                                                                    .map(r -> constructBatchUpdateRec(module, moduleIdField, idField, r))
+                                                                                    .collect(Collectors.toList());
+
+        return DBUtil.getUpdateBuilderWithJoin(module, updateFields)
+                .batchUpdate(whereFields, batchUpdateRecords);
+    }
+
+    @SneakyThrows
+    private static <T extends ModuleBaseWithCustomFields> GenericUpdateRecordBuilder.BatchUpdateContext constructBatchUpdateRec (FacilioModule module, FacilioField moduleIdField, FacilioField idField, T record) {
+        GenericUpdateRecordBuilder.BatchUpdateContext batchUpdateRec = new GenericUpdateRecordBuilder.BatchUpdateContext();
+        batchUpdateRec.setUpdateValue(FieldUtil.getAsProperties(
+                Objects.requireNonNull(record, "Record cannot be null for batch update")
+        ));
+        batchUpdateRec.addWhereValue(moduleIdField.getName(), module.getModuleId());
+        batchUpdateRec.addWhereValue(idField.getName(), record.getId());
+
+        return batchUpdateRec;
     }
 
 }

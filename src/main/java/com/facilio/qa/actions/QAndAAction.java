@@ -8,7 +8,6 @@ import com.facilio.qa.command.QAndAReadOnlyChainFactory;
 import com.facilio.qa.command.QAndATransactionChainFactory;
 import com.facilio.qa.context.ClientAnswerContext;
 import com.facilio.qa.context.PageContext;
-import com.facilio.qa.context.ResponseContext;
 import com.facilio.time.DateRange;
 import com.facilio.v3.RESTAPIHandler;
 import com.facilio.v3.context.Constants;
@@ -29,7 +28,7 @@ public class QAndAAction extends RESTAPIHandler {
         context.put(FacilioConstants.QAndA.Command.ANSWER_DATA, this.getData());
         addOrUpdateAnswersChain.execute();
 
-        List<ClientAnswerContext> answers = (List<ClientAnswerContext>) context.get(FacilioConstants.QAndA.Command.ANSWER_LIST);
+        List<ClientAnswerContext> answers = (List<ClientAnswerContext>) context.get(FacilioConstants.QAndA.Command.CLIENT_ANSWER_LIST);
         this.setData("answers", answers);
         List<Map<String, Object>> errors = (List<Map<String, Object>>) context.get(FacilioConstants.QAndA.Command.ANSWER_ERRORS);
         if (CollectionUtils.isNotEmpty(errors)) {
@@ -80,7 +79,7 @@ public class QAndAAction extends RESTAPIHandler {
         context.put(FacilioConstants.QAndA.Command.ANSWER_RANGE, new DateRange(startTime ,endTime));
 
         fetchAnswersChain.execute();
-        List<ClientAnswerContext> answers = (List<ClientAnswerContext>) context.get(FacilioConstants.QAndA.Command.ANSWER_LIST);
+        List<ClientAnswerContext> answers = (List<ClientAnswerContext>) context.get(FacilioConstants.QAndA.Command.CLIENT_ANSWER_LIST);
         this.setData("answers", answers);
 
         return SUCCESS;

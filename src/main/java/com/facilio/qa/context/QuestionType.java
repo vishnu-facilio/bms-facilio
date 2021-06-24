@@ -35,7 +35,7 @@ public enum QuestionType implements FacilioStringEnum {
             NumberQuestionContext.class,
             new NumberAnswerHandler(NumberAnswerContext.class),
             new CommonNumberQuestionHandler<>(NumberQuestionContext::getMinValue, NumberQuestionContext::getMaxValue),
-            DefaultRuleHandler.INSTANCE,
+            DefaultRuleHandler.NUMBER,
             FieldType.NUMBER
     ),
     DECIMAL (
@@ -43,7 +43,7 @@ public enum QuestionType implements FacilioStringEnum {
             DecimalQuestionContext.class,
             new DecimalAnswerHandler(DecimalAnswerContext.class),
             new CommonNumberQuestionHandler<>(DecimalQuestionContext::getMinValue, DecimalQuestionContext::getMaxValue),
-            DefaultRuleHandler.INSTANCE,
+            DefaultRuleHandler.DECIMAL,
             FieldType.DECIMAL
     ),
 
@@ -52,7 +52,7 @@ public enum QuestionType implements FacilioStringEnum {
             ShortStringQuestionContext.class,
             new StringAnswerHandler(StringAnswerContext.class, false),
             new CommonStringQuestionHandler<>(ShortStringQuestionContext::getMaxLength, CommonStringQuestionHandler.SHORT_STRING_MAX_LENGTH),
-            DefaultRuleHandler.INSTANCE,
+            DefaultRuleHandler.SHORT_ANSWER,
             FieldType.STRING
     ),
     LONG_ANSWER (
@@ -60,14 +60,14 @@ public enum QuestionType implements FacilioStringEnum {
             LongStringQuestionContext.class,
             new StringAnswerHandler(StringAnswerContext.class, true ),
             new CommonStringQuestionHandler<>(LongStringQuestionContext::getMaxLength, CommonStringQuestionHandler.BIG_STRING_MAX_LENGTH),
-            DefaultRuleHandler.INSTANCE,
+            DefaultRuleHandler.LONG_ANSWER,
             FieldType.BIG_STRING
     ),
     DATE_TIME (
             FacilioConstants.QAndA.Questions.DATE_TIME_QUESTION,
             DateTimeQuestionContext.class,
             new DateTimeAnswerHandler(DateTimeAnswerContext.class),
-            DefaultRuleHandler.INSTANCE,
+            DefaultRuleHandler.DATE_TIME,
             FieldType.DATE_TIME
     ),
 
@@ -76,14 +76,14 @@ public enum QuestionType implements FacilioStringEnum {
             MCQSingleContext.class,
             new MCQSingleAnswerHandler(MCQSingleAnswerContext.class),
             new MCQHandler<MCQSingleContext>(FacilioConstants.QAndA.Questions.MCQ_SINGLE_OPTIONS),
-            MCQRuleHandler.INSTANCE
+            MCQRuleHandler.SINGLE
     ),
     MULTIPLE_CHOICE_MANY (
             FacilioConstants.QAndA.Questions.MCQ_MULTI,
             MCQMultiContext.class,
             new MCQMultiAnswerHandler(MCQMultiAnswerContext.class),
             new MCQHandler<MCQMultiContext>(FacilioConstants.QAndA.Questions.MCQ_MULTI_OPTIONS),
-            MCQRuleHandler.INSTANCE
+            MCQRuleHandler.MULTI
     ),
     FILE_UPLOAD (
             FacilioConstants.QAndA.Questions.FILE_UPLOAD_QUESTION,

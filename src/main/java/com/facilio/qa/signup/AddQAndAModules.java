@@ -139,6 +139,8 @@ public class AddQAndAModules extends SignUpData {
         statusField.setEnumName("QAndAResponseStatus");
         fields.add(statusField);
         fields.add(FieldFactory.getDefaultField("totalAnswered", "Total Answered", "TOTAL_ANSWERED", FieldType.NUMBER));
+        fields.add(FieldFactory.getDefaultField("fullScore", "Full Score", "FULL_SCORE", FieldType.DECIMAL));
+        fields.add(FieldFactory.getDefaultField("totalScore", "Total Score", "TOTAL_SCORE", FieldType.DECIMAL));
 
         module.setFields(fields);
         return module;
@@ -171,6 +173,9 @@ public class AddQAndAModules extends SignUpData {
         fields.add(FieldFactory.getDefaultField("longAnswer", "Long Answer", "LONG_ANSWER", FieldType.BIG_STRING));
         fields.add(FieldFactory.getDefaultField("dateTimeAnswer", "Date/Time Answer", "DATE_TIME_ANSWER", FieldType.DATE_TIME));
         fields.add(FieldFactory.getDefaultField("fileAnswer", "File Answer", "FILE_ANSWER", FieldType.FILE));
+
+        fields.add(FieldFactory.getDefaultField("fullScore", "Full Score", "FULL_SCORE", FieldType.DECIMAL));
+        fields.add(FieldFactory.getDefaultField("score", "Score", "SCORE", FieldType.DECIMAL));
 
         module.setFields(fields);
         return module;

@@ -28,9 +28,9 @@ public class FetchAndSerializeRulesOfAPage extends FacilioCommand {
             List<QuestionContext> ruleQuestions = questions.stream().filter(QuestionContext::isRuleSupported).collect(Collectors.toList());
             if (CollectionUtils.isNotEmpty(ruleQuestions)) {
                 List<QAndARule> rules = Constants.getRuleBean().getRulesOfQuestionsOfType(templateId, getQuestionIds(ruleQuestions), type);
-                Map<Long, QAndARule> ruleMap = rules == null ? Collections.EMPTY_MAP : questionVsRules(rules);
+                Map<Long, QAndARule> questionVsRules = rules == null ? Collections.EMPTY_MAP : questionVsRules(rules);
                 for (QuestionContext question : ruleQuestions) {
-                    QAndARule serializedRule = serializeConditions(type, question, templateId, ruleMap.get(question._getId()));
+                    QAndARule serializedRule = serializeConditions(type, question, templateId, questionVsRules.get(question._getId()));
                     if (serializedRule != null) {
                         getSerializedRules().add(serializedRule);
                     }

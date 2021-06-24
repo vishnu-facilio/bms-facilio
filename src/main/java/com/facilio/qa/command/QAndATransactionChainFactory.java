@@ -3,6 +3,7 @@ package com.facilio.qa.command;
 import com.facilio.bmsconsole.commands.VerifyApprovalCommand;
 import com.facilio.bmsconsoleV3.commands.AddActivitiesCommandV3;
 import com.facilio.chain.FacilioChain;
+import com.facilio.qa.rules.commands.ExecuteQAndAScoringRules;
 
 public class QAndATransactionChainFactory {
     private static FacilioChain getDefaultChain() {
@@ -31,7 +32,21 @@ public class QAndATransactionChainFactory {
     
     public static FacilioChain commonBeforeQAndAResponseUpdate() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new ValidateResponseSubmit());
+        c.addCommand(new ExecuteOnSubmitProcessOfResponse());
+        return c;
+    }
+
+    public static FacilioChain onSubmitProcessOfResponse() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchQuestionsAndAnswersOfResponse());
+        c.addCommand(new ValidateMandatoryQuestions());
+
+        // For now doing this before update because total score and full score can be updated in the current update flow. Also therefore can be used in stateflows too
+        // So not adding roll-up field entry for total score and full score. We should add when we execute scoring rules while saving answer itself
+        // Also when we implement action rules, that should be executed in post transaction
+        c.addCommand(new ExecuteQAndAScoringRules());
+        c.addCommand(new UpdateAnswerScoreCommand());
+
         return c;
     }
     

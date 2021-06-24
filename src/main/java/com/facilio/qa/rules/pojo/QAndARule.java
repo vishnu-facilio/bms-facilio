@@ -1,5 +1,6 @@
 package com.facilio.qa.rules.pojo;
 
+import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.QuestionType;
 import com.facilio.util.FacilioUtil;
@@ -41,4 +42,6 @@ public abstract class QAndARule<Condition extends RuleCondition> {
         FacilioUtil.throwIllegalArgumentException(question == null || question.getId() < 0 || question.getId() != questionId, "Invalid question passed to hook");
         beforeSaveHook(question);
     }
+
+    public abstract void manipulateAnswer(QuestionContext question, AnswerContext answer);
 }

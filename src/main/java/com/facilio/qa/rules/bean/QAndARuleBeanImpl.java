@@ -86,7 +86,7 @@ public class QAndARuleBeanImpl implements QAndARuleBean {
 
         GenericSelectRecordBuilder selectBuilder = DBUtil.getSelectBuilderWithJoin(module, fields)
                 .andCondition(CriteriaAPI.getCondition(ruleIdField, ruleMap.keySet(), PickListOperators.IS))
-                .orderBy(Stream.of(ruleIdField.getColumnName(), sequenceField.getCompleteColumnName()).collect(Collectors.joining(",")))
+                .orderBy(Stream.of(ruleIdField.getCompleteColumnName(), sequenceField.getCompleteColumnName()).collect(Collectors.joining(",")))
                 ;
 
         List<Map<String, Object>> props = selectBuilder.get();

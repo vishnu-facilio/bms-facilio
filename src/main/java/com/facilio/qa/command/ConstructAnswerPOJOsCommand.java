@@ -8,7 +8,6 @@ import com.facilio.qa.context.*;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
-import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -87,9 +86,10 @@ public class ConstructAnswerPOJOsCommand extends FacilioCommand {
         if (CollectionUtils.isNotEmpty(errors)) {
             context.put(FacilioConstants.QAndA.Command.ANSWER_ERRORS, errors);
         }
-        context.put(FacilioConstants.QAndA.Command.ANSWER_LIST, answerContextList);
+        context.put(FacilioConstants.QAndA.Command.CLIENT_ANSWER_LIST, answerContextList);
         context.put(FacilioConstants.QAndA.Command.QUESTION_VS_ANSWER, questionVsAnswer);
         context.put(FacilioConstants.QAndA.Command.QUESTION_MAP, questions);
+        context.put(FacilioConstants.QAndA.Command.ANSWER_LIST, questionVsAnswer.values());
 
         return false;
     }

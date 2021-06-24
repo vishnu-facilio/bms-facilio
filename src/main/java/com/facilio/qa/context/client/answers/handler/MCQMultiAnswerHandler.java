@@ -2,9 +2,6 @@ package com.facilio.qa.context.client.answers.handler;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.DateOperators;
-import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.qa.QAndAUtil;
@@ -116,7 +113,7 @@ public class MCQMultiAnswerHandler extends AnswerHandler<MCQMultiAnswerContext> 
     }
 
     @Override
-    public int computeFullScore(List<ScoringRuleCondition> conditions) {
+    public double computeFullScore(List<ScoringRuleCondition> conditions) {
         return ScoringRule.computeSumScore(conditions);
     }
 

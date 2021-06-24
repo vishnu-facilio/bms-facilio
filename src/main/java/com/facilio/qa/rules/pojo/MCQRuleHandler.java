@@ -2,19 +2,25 @@ package com.facilio.qa.rules.pojo;
 
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.modules.FieldUtil;
+import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.RuleHandler;
 import com.facilio.qa.context.questions.BaseMCQContext;
 import com.facilio.qa.context.questions.MCQOptionContext;
+import com.facilio.util.FacilioUtil;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
+import org.apache.commons.collections4.CollectionUtils;
 
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public enum MCQRuleHandler implements RuleHandler {
-    INSTANCE; // Making it singleton since only one instance is needed
+    // Making it singleton since only one instance is needed
+    SINGLE,
+    MULTI;
 
     @Override
     public List<Map<String, Object>> emptyRuleConditions(QAndARuleType type, QuestionContext question) throws Exception {
@@ -63,6 +69,23 @@ public enum MCQRuleHandler implements RuleHandler {
             conditions.add(condition);
         }
         return conditions;
+    }
+
+    @Override
+    public List<Map<String, Object>> constructAnswersForEval(QAndARuleType type, QuestionContext question, AnswerContext answer) throws Exception {
+        switch (this) {
+            case SINGLE:
+                return RuleHandler.constructSingletonAnswerProp(question, answer.getEnumAnswer());
+            case MULTI:
+                FacilioUtil.throwIllegalArgumentException(CollectionUtils.isEmpty(answer.getMultiEnumAnswer()), MessageFormat.format("At least one option needs to be present for rule evaluation of question : {0}. This is not supposed to happen", question._getId()));
+                List<Map<String, Object>> answerProps = new ArrayList<>();
+                for (MCQOptionContext option : answer.getMultiEnumAnswer()) {
+                    answerProps.add(Collections.singletonMap(RuleCondition.ANSWER_FIELD_NAME, option._getId()));
+                }
+                return answerProps;
+            default:
+                throw new RuntimeException("This is not supposed to happen");
+        }
     }
 
     private void addOptionProps (Map<String, Object> props, MCQOptionContext option) {

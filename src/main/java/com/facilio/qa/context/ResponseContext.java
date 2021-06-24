@@ -69,6 +69,9 @@ public abstract class ResponseContext <T extends QAndATemplateContext> extends V
     public abstract T getParent();
     public abstract void setParent(T template);
 
+    // Scoring fields
+    private Double fullScore, totalScore;
+
     @AllArgsConstructor
     public enum ResponseStatus implements FacilioIntEnum {
         DISABLED("Disabled"),
