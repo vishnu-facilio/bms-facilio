@@ -455,12 +455,7 @@ public class PermissionUtil {
 			if (!moduleNames.isEmpty()) {
 				if (moduleNames.contains(moduleName) || moduleName.equalsIgnoreCase("setup")) {
 					boolean hasPerm =  hasPermission(rolePermissionVal, action, tabId);
-					if(!hasPerm) {
-						//temp handling - need to be removed
-						log.log(Level.DEBUG, "Permission denied for role - "+ role.getName() +" for action - " + action + " in tab - " + tabId);
-						//return false;
-					}
-					return true;
+					return hasPerm;
 				}
 			}
 		} catch (Exception e) {

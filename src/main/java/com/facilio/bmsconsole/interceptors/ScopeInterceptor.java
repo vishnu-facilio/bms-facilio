@@ -404,7 +404,12 @@ public class ScopeInterceptor extends AbstractInterceptor {
             String currentTab = request.getHeader("X-Tab-Id");
             if (currentTab != null && !currentTab.isEmpty()) {
                 long tabId = Long.parseLong(currentTab);
-                return PermissionUtil.currentUserHasPermission(tabId, moduleName, action, role);
+                boolean hasPerm = PermissionUtil.currentUserHasPermission(tabId, moduleName, action, role);
+                if (!hasPerm) {
+                    //temp handling - need to be removed
+                    LOGGER.log(Level.DEBUG, "Permission denied for role - " + role.getName() + " for action - " + action + " in tab - " + tabId);
+                }
+                return true;
             }
         } else {
             if (isNewPermission) {
