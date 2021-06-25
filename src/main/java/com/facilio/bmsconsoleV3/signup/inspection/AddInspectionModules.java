@@ -1041,8 +1041,8 @@ public class AddInspectionModules extends SignUpData {
          ActionContext endTimeaction = getUpdateActualEndTimeField();
          
          addStateflowTransitionContext(inspectionModule, stateFlowRuleContext, "Assign", createdStatus, assignedStatus,TransitionType.CONDITIONED,assignmentCriteria,null);
-         addStateflowTransitionContext(inspectionModule, stateFlowRuleContext, "Start Inspection", assignedStatus, wipStatus,TransitionType.CONDITIONED,wipCtriteria,Collections.singletonList(startTimeaction));
-         addStateflowTransitionContext(inspectionModule, stateFlowRuleContext, "End Inspection", wipStatus, resolvedStatus,TransitionType.CONDITIONED,completionCtriteria,Collections.singletonList(endTimeaction));
+         addStateflowTransitionContext(inspectionModule, stateFlowRuleContext, "Start Inspection", assignedStatus, wipStatus,TransitionType.CONDITIONED,wipCtriteria,null);
+         addStateflowTransitionContext(inspectionModule, stateFlowRuleContext, "End Inspection", wipStatus, resolvedStatus,TransitionType.CONDITIONED,completionCtriteria,null);
          addStateflowTransitionContext(inspectionModule, stateFlowRuleContext, "Close", resolvedStatus, closed,TransitionType.NORMAL,null,null);
          
     }

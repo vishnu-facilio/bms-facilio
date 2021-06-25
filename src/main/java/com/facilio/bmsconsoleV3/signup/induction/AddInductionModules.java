@@ -537,6 +537,9 @@ public class AddInductionModules extends SignUpData {
         FacilioField  actualWorkDuration = (FacilioField) FieldFactory.getDefaultField("actualWorkDuration", "Actual Duration", "ACTUAL_WORK_DURATION", FieldType.NUMBER);
         fields.add(actualWorkDuration);
         
+        FacilioField resumedWorkStart = (FacilioField) FieldFactory.getDefaultField("resumedWorkStart", "Resumed Work Start", "RESUMED_WORK_START", FieldType.DATE_TIME);
+        fields.add(resumedWorkStart);
+        
         LookupField moduleStateField = (LookupField) FieldFactory.getField("moduleState", "Status", "MODULE_STATE", module, FieldType.LOOKUP);
 		moduleStateField.setDefault(true);
 		moduleStateField.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
@@ -631,8 +634,8 @@ public class AddInductionModules extends SignUpData {
          ActionContext startTimeaction = getUpdateActualStartTimeField();
          ActionContext endTimeaction = getUpdateActualEndTimeField();
          
-         addStateflowTransitionContext(inductionModule, stateFlowRuleContext, "Start Induction", createdStatus, wipStatus,TransitionType.CONDITIONED,wipCtriteria,Collections.singletonList(startTimeaction));
-         addStateflowTransitionContext(inductionModule, stateFlowRuleContext, "End Induction", wipStatus, resolvedStatus,TransitionType.CONDITIONED,completionCtriteria,Collections.singletonList(endTimeaction));
+         addStateflowTransitionContext(inductionModule, stateFlowRuleContext, "Start Induction", createdStatus, wipStatus,TransitionType.CONDITIONED,wipCtriteria,null);
+         addStateflowTransitionContext(inductionModule, stateFlowRuleContext, "End Induction", wipStatus, resolvedStatus,TransitionType.CONDITIONED,completionCtriteria,null);
          addStateflowTransitionContext(inductionModule, stateFlowRuleContext, "Close", resolvedStatus, closed,TransitionType.NORMAL,null,null);
          
     }

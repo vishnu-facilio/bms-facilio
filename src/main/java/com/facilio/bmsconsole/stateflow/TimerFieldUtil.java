@@ -22,6 +22,7 @@ public class TimerFieldUtil {
 		
 		map.put(FacilioConstants.ContextNames.WORK_ORDER, new TimerField("actualWorkDuration", "resumedWorkStart", "actualWorkStart", "actualWorkEnd"));
 		map.put(FacilioConstants.Inspection.INSPECTION_RESPONSE, new TimerField("actualWorkDuration", "resumedWorkStart", "actualWorkStart", "actualWorkEnd"));
+		map.put(FacilioConstants.Induction.INDUCTION_RESPONSE, new TimerField("actualWorkDuration", "resumedWorkStart", "actualWorkStart", "actualWorkEnd"));
 		return map;
 	}
 	
