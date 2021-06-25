@@ -35,6 +35,7 @@ public class AnswerContext extends V3Context {
 
     // Score fields
     private Double fullScore, score;
+    private Float scorePercent;
 
     public double scoreWithZeroOnNull() {
         return score == null ? 0 : score;

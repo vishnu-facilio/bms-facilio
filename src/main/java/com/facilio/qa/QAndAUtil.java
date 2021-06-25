@@ -22,6 +22,7 @@ import com.facilio.qa.context.questions.MCQOptionContext;
 import com.facilio.time.DateRange;
 import com.facilio.util.FacilioStreamUtil;
 import com.facilio.util.FacilioUtil;
+import com.facilio.util.MathUtil;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.context.V3Context;
@@ -271,7 +272,7 @@ public class QAndAUtil {
                 double total = mcq.getAnswered() == null ? 0 : mcq.getAnswered().doubleValue();
                 V3Util.throwRestException(total < count, ErrorCode.UNHANDLED_EXCEPTION, "Total answered cannot be less than individual mcq answer count. This is not supposed to happen");
 
-                BaseMCQContext.OptionSummary summary = new BaseMCQContext.OptionSummary(enumAnswer, FacilioUtil.roundOff(count / total * 100, 2), (int) count);
+                BaseMCQContext.OptionSummary summary = new BaseMCQContext.OptionSummary(enumAnswer, MathUtil.calculatePercentage(count, total), (int) count);
                 summaryMap.computeIfAbsent(questionId, k -> new HashMap<>()).put(enumAnswer, summary);
             }
 
@@ -285,7 +286,7 @@ public class QAndAUtil {
             List<BaseMCQContext.OptionSummary> summaryList = new ArrayList<>();
             for (MCQOptionContext option : question.getOptions()) {
                 BaseMCQContext.OptionSummary summary = questionSummary.get(option._getId());
-                summaryList.add(summary == null ? new BaseMCQContext.OptionSummary(option._getId(), 0d, 0) : summary);
+                summaryList.add(summary == null ? new BaseMCQContext.OptionSummary(option._getId(), 0f, 0) : summary);
             }
             question.setSummary(summaryList);
         }

@@ -2,6 +2,7 @@ package com.facilio.qa.rules.pojo;
 
 import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.QuestionContext;
+import com.facilio.util.MathUtil;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,5 +23,6 @@ public class ScoringRuleCondition extends RuleCondition {
     @Override
     public void executeTrueAction(QuestionContext question, AnswerContext answer) throws Exception {
         answer.setScore(answer.scoreWithZeroOnNull() + scoreWithZeroOnNull()); // Adding score in case of multi answer questions
+        answer.setScorePercent(MathUtil.calculatePercentage(answer.getScore(), answer.getFullScore()));
     }
 }

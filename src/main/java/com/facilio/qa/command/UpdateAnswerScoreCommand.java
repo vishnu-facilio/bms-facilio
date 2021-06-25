@@ -6,6 +6,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.ResponseContext;
+import com.facilio.util.MathUtil;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -26,11 +27,12 @@ public class UpdateAnswerScoreCommand extends FacilioCommand {
             ResponseContext response = (ResponseContext) context.get(FacilioConstants.QAndA.RESPONSE);
             double totalScore = answers.stream().mapToDouble(AnswerContext::scoreWithZeroOnNull).sum();
             response.setTotalScore(totalScore);
+            response.setScorePercent(MathUtil.calculatePercentage(response.getTotalScore(), response.getFullScore()));
         }
         return false;
     }
 
     private boolean isScoreField (FacilioField field) {
-        return "fullScore".equals(field.getName()) || "score".equals(field.getName());
+        return "fullScore".equals(field.getName()) || "score".equals(field.getName()) || "scorePercent".equals(field.getName());
     }
 }

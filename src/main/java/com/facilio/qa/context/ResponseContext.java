@@ -71,6 +71,7 @@ public abstract class ResponseContext <T extends QAndATemplateContext> extends V
 
     // Scoring fields
     private Double fullScore, totalScore;
+    private Float scorePercent;
 
     @AllArgsConstructor
     public enum ResponseStatus implements FacilioIntEnum {

@@ -21,7 +21,7 @@ public abstract class BaseMCQContext extends QuestionContext {
     @AllArgsConstructor
     public static class OptionSummary {
         private Long option;
-        private Double percent;
+        private Float percent;
         private Integer count;
     }
 }
