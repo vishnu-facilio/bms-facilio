@@ -30,5 +30,8 @@ public class PageContext extends V3Context {
     }
     private Integer position;
 
+    // For client purposes
     private List<QuestionContext> questions;
+    private Double fullScore, totalScore;
+    private Float scorePercent;
 }

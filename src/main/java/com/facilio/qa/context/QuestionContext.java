@@ -57,6 +57,8 @@ public class QuestionContext extends V3Context {
     private Boolean showResponses;
     private Integer answered;
     private Object summary;
+    private Double fullScore, score;
+    private Float scorePercent;
 
     public boolean mandatory() {
         return mandatory == null ? false : mandatory.booleanValue();

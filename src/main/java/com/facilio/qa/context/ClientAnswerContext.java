@@ -11,6 +11,9 @@ public abstract class ClientAnswerContext<A> {
     private String comments;
     private Long responseId;
 
+    private Double fullScore, score;
+    private Float scorePercent;
+
     public void addQuestionId (QuestionContext question) {
         this.question = question == null ? null : question._getId();
     }
