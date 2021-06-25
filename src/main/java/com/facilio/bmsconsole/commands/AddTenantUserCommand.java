@@ -63,13 +63,15 @@ public class AddTenantUserCommand extends FacilioCommand {
 			}
 		}
 		if(AccountUtil.isFeatureEnabled(FeatureLicense.PEOPLE_CONTACTS) && !spaceUpdate) {
-			TenantContactContext tc = getDefaultTenantContact(tenant);
-			List<TenantContactContext> primarycontatsIfAny = PeopleAPI.getTenantContacts(tc.getTenant().getId(), true);
-			TenantContactContext tenantPrimaryContact = null;
-			if(CollectionUtils.isNotEmpty(primarycontatsIfAny)) {
-				tenantPrimaryContact = primarycontatsIfAny.get(0);
+			if(StringUtils.isNotEmpty(tenant.getPrimaryContactName())) {
+				TenantContactContext tc = getDefaultTenantContact(tenant);
+				List<TenantContactContext> primarycontatsIfAny = PeopleAPI.getTenantContacts(tc.getTenant().getId(), true);
+				TenantContactContext tenantPrimaryContact = null;
+				if (CollectionUtils.isNotEmpty(primarycontatsIfAny)) {
+					tenantPrimaryContact = primarycontatsIfAny.get(0);
+				}
+				PeopleAPI.addParentPrimaryContactAsPeople(tc, tcModule, tcFields, tc.getTenant().getId(), tenantPrimaryContact);
 			}
-			PeopleAPI.addParentPrimaryContactAsPeople(tc, tcModule, tcFields, tc.getTenant().getId(), tenantPrimaryContact);
 		}
 		
 		
