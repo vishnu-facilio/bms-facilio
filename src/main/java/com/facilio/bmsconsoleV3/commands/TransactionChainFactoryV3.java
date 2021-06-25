@@ -978,4 +978,11 @@ public class TransactionChainFactoryV3 {
 	     return chain;
 	}
 
+	public static Command getFacilityBeforeSaveChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new SetLocalIdCommandV3());
+        chain.addCommand(new ValidateFacilityCommand());
+        return chain;
+    }
+
 }

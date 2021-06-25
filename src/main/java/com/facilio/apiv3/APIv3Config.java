@@ -1053,9 +1053,10 @@ public class APIv3Config {
     @Module("facility")
     public static Supplier<V3Config> getFacility() {
         return () -> new V3Config(FacilityContext.class, new ModuleCustomFieldCount30_BS2())
-                .create().beforeSave(new SetLocalIdCommandV3())
+                .create().beforeSave(TransactionChainFactoryV3.getFacilityBeforeSaveChain())
                     .afterSave(new ScheduleSlotCreationCommand())
                 .update()
+                   .beforeSave(new ValidateFacilityCommand())
                 .delete()
                 .list()
                     .beforeFetch(new LoadFacilityLookupCommandV3())
