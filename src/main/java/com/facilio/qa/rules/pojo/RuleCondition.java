@@ -9,6 +9,7 @@ import com.facilio.qa.context.QuestionContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.collections.Predicate;
 
 import java.util.Map;
 
@@ -51,7 +52,8 @@ public abstract class RuleCondition {
             return true;
         }
         Condition condition = CriteriaAPI.getCondition(ANSWER_FIELD_NAME, value, operatorEnum);
-        return condition.computePredicate().evaluate(answerProp);
+        Predicate predicate = condition.computePredicate();
+        return predicate == null ? false : predicate.evaluate(answerProp);
     }
 
     private boolean evaluateCriteria (Map<String, Object> answerProp) {
