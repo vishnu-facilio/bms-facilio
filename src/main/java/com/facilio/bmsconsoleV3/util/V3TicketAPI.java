@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsoleV3.context.V3TaskContext;
 import com.facilio.bmsconsoleV3.context.V3TenantContext;
 import com.facilio.bmsconsoleV3.context.V3TicketContext;
+import com.facilio.bmsconsoleV3.context.V3VendorContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -415,7 +416,7 @@ public class V3TicketAPI {
         loadTicketGroups(workOrders);
         loadTicketResources(workOrders);
         loadTicketTenants(workOrders);
-
+        loadTicketVendors(workOrders);
     }
 
     public static List<FacilioStatus> getAllStatus(FacilioModule module, boolean ignorePreOpen) throws Exception
@@ -653,6 +654,32 @@ public class V3TicketAPI {
                         if(tenant != null) {
                             V3TenantContext tenantDetail = tenants.get(tenant.getId());
                             ticket.setTenant(tenantDetail);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    private static void loadTicketVendors(Collection<? extends V3TicketContext> tickets) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VENDORS);
+
+        if(tickets != null && !tickets.isEmpty()) {
+            SelectRecordsBuilder<V3VendorContext> builder = new SelectRecordsBuilder<V3VendorContext>()
+                    .module(module)
+                    .beanClass(V3VendorContext.class)
+                    .select(modBean.getAllFields(FacilioConstants.ContextNames.VENDORS))
+                    ;
+            List<V3VendorContext> vendorList = builder.get();
+            if(vendorList.size() > 0) {
+                Map<Long, V3VendorContext> vendors = FieldUtil.getAsMap(vendorList);
+                for(V3TicketContext ticket : tickets) {
+                    if (ticket != null) {
+                    	V3VendorContext vendor = ticket.getVendor();
+                        if(vendor != null) {
+                        	V3VendorContext tenantDetail = vendors.get(vendor.getId());
+                            ticket.setVendor(tenantDetail);
                         }
                     }
                 }
