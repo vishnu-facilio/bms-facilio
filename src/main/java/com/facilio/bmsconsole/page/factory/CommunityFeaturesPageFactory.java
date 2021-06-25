@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.page.factory;
 
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsoleV3.context.communityfeatures.DealsAndOffersContext;
@@ -122,7 +123,9 @@ public class CommunityFeaturesPageFactory extends PageFactory {
         if(AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomain.AppDomainType.FACILIO) {
             notesWidget.addToWidgetParams("canShowNotifyRequestor", true);
         }
-        tab1Sec1.addWidget(notesWidget);
+        if(AccountUtil.getCurrentApp() != null && AccountUtil.getCurrentApp().getAppCategoryEnum() != ApplicationContext.AppCategory.PORTALS){
+            tab1Sec1.addWidget(notesWidget);
+        }
 
         return page;
     }

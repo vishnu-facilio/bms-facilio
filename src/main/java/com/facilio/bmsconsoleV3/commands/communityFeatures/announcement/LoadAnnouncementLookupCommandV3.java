@@ -28,7 +28,11 @@ public class LoadAnnouncementLookupCommandV3 extends FacilioCommand {
         List<LookupField> additionaLookups = new ArrayList<LookupField>();
         LookupField sysCreatedBy = (LookupField) FieldFactory.getSystemField("sysCreatedBy", modBean.getModule(moduleName));
         additionaLookups.add(sysCreatedBy);
+        LookupField sysModifiedBy = (LookupField) FieldFactory.getSystemField("sysModifiedBy", modBean.getModule(moduleName));
+        additionaLookups.add(sysModifiedBy);
+
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS,additionaLookups);
+
         return false;
     }
 }
