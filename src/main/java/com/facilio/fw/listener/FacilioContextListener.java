@@ -27,6 +27,7 @@ import com.facilio.bmsconsoleV3.commands.AddSignupDataCommandV3;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.qa.rules.pojo.QAndARuleType;
 import com.facilio.tasker.FacilioInstantJobScheduler;
+import com.facilio.translation.TranslationConf;
 import com.facilio.v3.util.ChainUtil;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
@@ -106,6 +107,7 @@ public class FacilioContextListener implements ServletContextListener {
 			}
 
 
+			//All these init should be moved to config
 			initDBConnectionPool();
 			Operator.getOperator(1);
 			registerMBeans();
@@ -115,8 +117,8 @@ public class FacilioContextListener implements ServletContextListener {
 			FieldUtil.init();
 			FacilioEnum.getEnumValues("CostType");
 			DCUtil.init();
+			TranslationConf.getTranslationImpl("test");
 			AddSignupDataCommandV3.initSignUpDataClasses();
-//			migrateSchemaChanges();
 			initializeDB();
 			ServerInfo.registerServer();
 
