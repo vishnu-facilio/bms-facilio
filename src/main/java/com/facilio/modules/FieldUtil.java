@@ -248,6 +248,10 @@ public class FieldUtil {
 						lookupBeanFields = modBean.getAllFields(field.getLookupModule().getName());
 					}
 					lookupBeanBuilder.select(lookupBeanFields);
+					FacilioField mainField = lookupBeanFields.stream().filter(FacilioField::isMainField).findFirst().orElse(null);
+					if (mainField != null && mainField instanceof LookupField) { // Adding main field as supplement if it's lookup. Doing only one level
+						lookupBeanBuilder.fetchSupplement((SupplementRecord) mainField);
+					}
 
 					if (isMap || !field.isDefault()) {
 						return lookupBeanBuilder.getAsMapProps();

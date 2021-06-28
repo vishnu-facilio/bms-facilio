@@ -64,14 +64,9 @@ public class LookupPrimaryFieldHandlingCommand extends FacilioCommand {
 					else {
 						lookupRecord = (ModuleBaseWithCustomFields) record.getDatum(lookupField.getName());
 					}
-					if (lookupRecord == null) {
+					Object property = getMainFieldProperty(lookupRecord, primaryFieldMap.get(field.getName()), modBean);
+					if (property == null) {
 						continue;
-					}
-					Object property;
-					try {
-						property = PropertyUtils.getProperty(lookupRecord, primaryFieldMap.get(field.getName()).getName());
-					} catch (Exception e) {
-						property = lookupRecord.getId();
 					}
 					PropertyUtils.setProperty(lookupRecord, "primaryValue", property);
 				}
@@ -81,6 +76,25 @@ public class LookupPrimaryFieldHandlingCommand extends FacilioCommand {
 		
 		
 		return false;
+	}
+
+	public static Object getMainFieldProperty(ModuleBaseWithCustomFields lookupRecord, FacilioField primaryField, ModuleBean modBean) {
+		if (lookupRecord == null) {
+			return null;
+		}
+		Object property;
+		try {
+			property = PropertyUtils.getProperty(lookupRecord, primaryField.getName());
+			if (primaryField instanceof LookupField && ((LookupField) primaryField).getSpecialType() == null) {
+				FacilioField childMainField = modBean.getPrimaryField(((LookupField) primaryField).getLookupModule().getName());
+				if (childMainField != null) {
+					property = getMainFieldProperty((ModuleBaseWithCustomFields) property, childMainField, modBean);
+				}
+			}
+		} catch (Exception e) {
+			property = lookupRecord.getId();
+		}
+		return property;
 	}
 
 }

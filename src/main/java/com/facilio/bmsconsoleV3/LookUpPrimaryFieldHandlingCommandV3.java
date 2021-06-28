@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.LookupPrimaryFieldHandlingCommand;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -72,11 +73,9 @@ public class LookUpPrimaryFieldHandlingCommandV3 extends FacilioCommand {
                         if (lookupRecord == null) {
                             continue;
                         }
-                        Object property;
-                        try {
-                            property = PropertyUtils.getProperty(lookupRecord, primaryFieldMap.get(field.getName()).getName());
-                        } catch (Exception e) {
-                            property = lookupRecord.getId();
+                        Object property = LookupPrimaryFieldHandlingCommand.getMainFieldProperty(lookupRecord, primaryFieldMap.get(field.getName()), modBean);
+                        if (property == null) {
+                            continue;
                         }
                         PropertyUtils.setProperty(lookupRecord, "primaryValue", property);
                     }
