@@ -19,15 +19,17 @@ public class UpdateAnswerScoreCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         Collection<AnswerContext> answers = (Collection<AnswerContext>) context.get(FacilioConstants.QAndA.Command.ANSWER_LIST);
+        ResponseContext response = (ResponseContext) context.get(FacilioConstants.QAndA.RESPONSE);
         if (CollectionUtils.isNotEmpty(answers)) {
             List<FacilioField> updateFields = Constants.getModBean().getAllFields(FacilioConstants.QAndA.ANSWER);
             List<FacilioField> scoreFields = updateFields.stream().filter(this::isScoreField).collect(Collectors.toList());
             V3RecordAPI.batchUpdateRecords(FacilioConstants.QAndA.ANSWER, answers, scoreFields);
 
-            ResponseContext response = (ResponseContext) context.get(FacilioConstants.QAndA.RESPONSE);
-            double totalScore = answers.stream().mapToDouble(AnswerContext::scoreWithZeroOnNull).sum();
-            response.setTotalScore(totalScore);
-            response.setScorePercent(MathUtil.calculatePercentage(response.getTotalScore(), response.getFullScore()));
+            if (response.getFullScore() != null) { // If full score is null, it means there are no rules at all
+                double totalScore = answers.stream().mapToDouble(AnswerContext::scoreWithZeroOnNull).sum();
+                response.setTotalScore(totalScore);
+                response.setScorePercent(MathUtil.calculatePercentage(response.getTotalScore(), response.getFullScore()));
+            }
         }
         return false;
     }
