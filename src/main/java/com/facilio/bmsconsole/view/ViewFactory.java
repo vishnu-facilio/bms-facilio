@@ -6731,13 +6731,9 @@ public class ViewFactory {
 		allView.setDisplayName("All Visits");
 		
 		FacilioModule visitorLogging = ModuleFactory.getVisitorLogCheckInModule();
-		FacilioField createdTime = new FacilioField();
-		createdTime.setName("sysCreatedTime");
-		createdTime.setDataType(FieldType.DATE_TIME);
-		createdTime.setColumnName("SYS_CREATED_TIME");
-		createdTime.setModule(visitorLogging);
-
-		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		
+		FacilioField checkInTime = FieldFactory.getField("checkInTime", "CHECKIN_TIME", visitorLogging,FieldType.DATE_TIME);
+		List<SortField> sortFields = Arrays.asList(new SortField(checkInTime, false));
 		allView.setSortFields(sortFields);
 
 		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
@@ -6774,9 +6770,9 @@ public class ViewFactory {
 
 		FacilioModule visitorLogModule = ModuleFactory.getVisitorLogCheckInModule();
 		FacilioField createdTime = new FacilioField();
-		createdTime.setName("sysCreatedTime");
+		createdTime.setName("checkInTime");
 		createdTime.setDataType(FieldType.DATE_TIME);
-		createdTime.setColumnName("SYS_CREATED_TIME");
+		createdTime.setColumnName("CHECKIN_TIME");
 		createdTime.setModule(visitorLogModule);
 
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
@@ -7265,15 +7261,8 @@ public class ViewFactory {
 		FacilioField checkInTime = FieldFactory.getField("checkInTime", "CHECKIN_TIME", visitorLoggingModule,FieldType.DATE_TIME);
 		criteria.addAndCondition(CriteriaAPI.getCondition(checkInTime, CommonOperators.IS_EMPTY));
 		view.setCriteria(criteria);
-		
-		FacilioModule visitorLogging = ModuleFactory.getVisitorLogCheckInModule();
-		FacilioField createdTime = new FacilioField();
-		createdTime.setName("sysCreatedtime");
-		createdTime.setDataType(FieldType.DATE_TIME);
-		createdTime.setColumnName("SYS_CREATED_TIME");
-		createdTime.setModule(visitorLogging);
 
-		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		List<SortField> sortFields = Arrays.asList(new SortField(checkInTime, false));
 		view.setSortFields(sortFields);
 		view.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
