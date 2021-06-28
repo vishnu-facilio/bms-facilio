@@ -25,6 +25,7 @@ import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
 import com.facilio.bmsconsole.commands.reservation.CreateExternalAttendeesCommand;
 import com.facilio.bmsconsole.commands.reservation.CreateInternalAttendeesCommand;
 import com.facilio.bmsconsole.commands.reservation.ValidateAndSetReservationPropCommand;
+import com.facilio.bmsconsole.commands.translation.AddOrUpdateTranslationCommand;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsole.workflow.rule.impact.AddOrUpdateAlarmImpactCommand;
@@ -6069,8 +6070,12 @@ public class TransactionChainFactory {
 		c.addCommand(new deleteIndoorFloorPlanCommand());
 		return c;
 	}
-	
-	
+
+	public static FacilioChain addOrUpdateTranslationChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddOrUpdateTranslationCommand());
+		return chain;
+	}
 	
 }
 

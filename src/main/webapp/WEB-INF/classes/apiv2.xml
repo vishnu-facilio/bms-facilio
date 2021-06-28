@@ -6568,7 +6568,11 @@
 
 	</package>
 
-
+	<package name="translation" namespace="/api/v2/translation" extends="v2Api">
+		<action name="add" class="com.facilio.lang.i18n.translation.TranslationAction" method="addLanguage"></action>
+		<action name="list" class="com.facilio.lang.i18n.translation.TranslationAction" method="getTranslationList"></action>
+		<action name="update" class="com.facilio.lang.i18n.translation.TranslationAction" method="save"></action>
+	</package>
 
 
 </struts>

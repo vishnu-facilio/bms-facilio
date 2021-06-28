@@ -13,4 +13,7 @@
 
 	<!-- Q And A Rules -->
 	<bean name="QAndARuleBean" class="com.facilio.qa.rules.bean.QAndARuleBeanImpl" />
+
+	<!-- i18n Translation-->
+	<bean name="TranslationBean" class="com.facilio.lang.i18n.translation.TranslationBeanImpl" />
 </beans>
