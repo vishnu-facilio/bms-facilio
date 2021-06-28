@@ -4703,6 +4703,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("parentFolderId", "PARENT_FOLDER_ID", module, FieldType.LOOKUP));
         fields.add(getField("name", "NAME", module, FieldType.STRING));
         fields.add(getField("displayOrder", "DISPLAY_ORDER", module, FieldType.NUMBER));
+        fields.add(getField("appId", "APP_ID", module, FieldType.NUMBER));
 
         return fields;
     }

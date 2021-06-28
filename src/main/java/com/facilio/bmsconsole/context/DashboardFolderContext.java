@@ -58,6 +58,17 @@ public class DashboardFolderContext {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+	public long getAppId() {
+		return appId;
+	}
+
+	public void setAppId(long appId) {
+		this.appId = appId;
+	}
+
+	long appId = -1;
+	
 	public List<DashboardContext> getDashboards() {
 		return dashboards;
 	}

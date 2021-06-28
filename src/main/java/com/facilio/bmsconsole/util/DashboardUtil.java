@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.context.ReportContext.ReportChartType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -52,6 +53,7 @@ import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class DashboardUtil {
 	
@@ -1095,6 +1097,113 @@ public class DashboardUtil {
 		return null;
 	}
 	
+	public static List<DashboardContext> getDashboardFromFolders(List<Long> folderIds, String moduleName, boolean getOnlyMobileDashboard) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getDashboardFields());
+		StringJoiner ids = new StringJoiner(",");
+		folderIds.stream().forEach(f -> ids.add(String.valueOf(f)));
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getDashboardFields())
+				.table(ModuleFactory.getDashboardModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("dashboardFolderId"), ids.toString(), NumberOperators.EQUALS))
+				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
+				.andCustomWhere("BASE_SPACE_ID IS NULL");
+		
+		if(moduleName != null) {
+			FacilioModule module = modBean.getModule(moduleName);
+			selectBuilder.andCustomWhere("MODULEID = ?", module.getModuleId());
+		}
+		
+		if(getOnlyMobileDashboard) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("SHOW_HIDE_MOBILE", "mobileEnabled", "true", BooleanOperators.IS));
+		}
+		else if(AccountUtil.getCurrentOrg().getOrgId() == 169l) {	// temp fix for emrill
+			selectBuilder.andCustomWhere(ModuleFactory.getDashboardModule().getTableName()+".ID != ?", 1058);
+		}
+		
+		if(getOnlyMobileDashboard) {
+			selectBuilder.orderBy("DISPLAY_ORDER asc");
+		}
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		if(props != null) {
+			return FieldUtil.getAsBeanListFromMapList(props, DashboardContext.class);
+		}
+		return null;
+	}
+	
+	public static List<DashboardFolderContext> getDashboardList(String moduleName,boolean getOnlyMobileDashboard, long appId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<DashboardFolderContext> folders = getDashboardFolder(moduleName, appId);
+		
+		if (folders != null && !folders.isEmpty()) {
+		List<Long> folderIds = folders.stream().map(a -> a.getId()).collect(Collectors.toList());
+		List<DashboardContext> dashboards = getDashboardFromFolders(folderIds, moduleName, getOnlyMobileDashboard);
+		
+		Map<Long, DashboardContext> dashboardMap = new HashMap<Long, DashboardContext>();
+		ApplicationContext app = appId <= 0 ? AccountUtil.getCurrentApp() : ApplicationApi.getApplicationForId(appId);
+		if (dashboards != null && !dashboards.isEmpty()) {
+			for (DashboardContext dashboard : dashboards) {
+				dashboard.setDashboardSharingContext(getDashboardSharing(dashboard.getId()));
+				if(!app.getLinkName().equals(ApplicationLinkNames.FACILIO_MAIN_APP)) {
+					dashboard.setSpaceFilteredDashboardSettings(getSpaceFilteredDashboardSettings(dashboard.getId()));
+					dashboard.setReportSpaceFilterContext(getDashboardSpaceFilter(dashboard.getId()));
+				}
+				if(dashboard.getModuleId() > 0) {
+					dashboard.setModuleName(modBean.getModule(dashboard.getModuleId()).getName());
+				}
+				
+				if(dashboard.isTabEnabled()) {
+					dashboard.setDashboardTabContexts(getDashboardTabs(dashboard.getId()));
+				}
+				
+				FacilioChain getDashboardFilterChain=ReadOnlyChainFactory.getFetchDashboardFilterChain();
+				FacilioContext getDashboardFilterContext=getDashboardFilterChain.getContext();
+				getDashboardFilterContext.put(FacilioConstants.ContextNames.DASHBOARD,dashboard);		
+				getDashboardFilterChain.execute();
+				dashboardMap.put(dashboard.getId(), dashboard);
+			}
+		}
+		List<DashboardContext> dashboardsFinalList = new ArrayList<>();
+
+		if (getOnlyMobileDashboard) 
+		{
+			dashboardsFinalList = sortDashboardByOrder(getFilteredDashboards(dashboardMap));
+
+		}
+		else {
+			dashboardsFinalList = getFilteredDashboards(dashboardMap);
+		}
+					
+		if(AccountUtil.isFeatureEnabled(FeatureLicense.NEW_LAYOUT))  {
+			getAllBuildingsForDashboard(dashboardsFinalList);
+			
+		}
+		if(getOnlyMobileDashboard) {
+			splitBuildingDashboardForMobile(dashboardsFinalList);
+		}
+
+		for(DashboardFolderContext folder :folders) {		
+			for(DashboardContext dashboard :dashboardsFinalList) {
+				if(dashboard.getDashboardFolderId() == folder.getId()) {
+					folder.addDashboard(dashboard);
+				}
+			}
+		}
+
+		if (getOnlyMobileDashboard) {
+			return sortDashboardFolderByOrder(folders);
+		}
+		else {
+			return folders;
+		}
+		}
+		return null;
+	}
+	
 	public static List<DashboardFolderContext> getDashboardListWithFolder(String moduleName,boolean getOnlyMobileDashboard) throws Exception {
 		
 //		Criteria criteria = PermissionUtil.getCurrentUserPermissionCriteria("dashboard", "read");
@@ -1163,7 +1272,7 @@ public class DashboardUtil {
 				splitBuildingDashboardForMobile(dashboards);
 			}
 			
-			List<DashboardFolderContext> folders = getDashboardFolder(moduleName);
+			List<DashboardFolderContext> folders = getDashboardFolder(moduleName, -1);
 			for(DashboardFolderContext folder :folders) {
 				for(DashboardContext dashboard :dashboards) {
 					if(dashboard.getDashboardFolderId() == folder.getId()) {
@@ -2898,7 +3007,7 @@ public class DashboardUtil {
 		
 	}
 	
-	public static List<DashboardFolderContext> getDashboardFolder(String moduleName) throws Exception {
+	public static List<DashboardFolderContext> getDashboardFolder(String moduleName, long appId) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -2913,6 +3022,17 @@ public class DashboardUtil {
 			 FacilioModule module = modBean.getModule(moduleName);
 			 selectBuilder.andCustomWhere(ModuleFactory.getDashboardFolderModule().getTableName()+".MODULEID = ?", module.getModuleId());
 		 }
+		 
+		 Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getDashboardFolderFields());
+		 ApplicationContext app = appId <= 0 ? AccountUtil.getCurrentApp() : ApplicationApi.getApplicationForId(appId);
+
+	
+			Criteria appCriteria = new Criteria();
+			appCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("appId"), String.valueOf(app.getId()), NumberOperators.EQUALS));
+			if(app.getLinkName().equals(ApplicationLinkNames.FACILIO_MAIN_APP)) {
+				appCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("appId"), CommonOperators.IS_EMPTY));
+			}
+		selectBuilder.andCriteria(appCriteria);
 			
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {

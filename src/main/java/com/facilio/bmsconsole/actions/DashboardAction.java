@@ -15,11 +15,9 @@ import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.ReportContext.LegendMode;
 import com.facilio.bmsconsole.context.ReportContext.ReportChartType;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext.WORUrgency;
-import com.facilio.bmsconsole.reports.ReportExportUtil;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.util.*;
-import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -30,14 +28,12 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.*;
-import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.BmsAggregateOperators.*;
 import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
-import com.facilio.pdf.PdfUtil;
 import com.facilio.report.customreport.CustomReport;
 import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.time.DateRange;
@@ -6740,7 +6736,7 @@ public class DashboardAction extends FacilioAction {
 	
 	public String getDashboardFolder() throws Exception {
 		
-		dashboardFolders = DashboardUtil.getDashboardFolder(moduleName);
+		dashboardFolders = DashboardUtil.getDashboardFolder(moduleName, -1);
 		return SUCCESS;
 	}
 	public String getPortalDashboardFolder() throws Exception {
@@ -6754,13 +6750,17 @@ public class DashboardAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	private long appId = -1;
+	
+	public long getAppId() {
+		return appId;
+	}
+	public void setAppId(long appId) {
+		this.appId = appId;
+	}
+	
 	public String getDashboardListWithFolder() throws Exception {
-		if(AccountUtil.getCurrentUser().isPortalUser()) {
-			getPortalDashboardFolder();
-		}
-		else {
-			dashboardFolders = DashboardUtil.getDashboardListWithFolder(moduleName, getOnlyMobileDashboard);
-		}
+		dashboardFolders = DashboardUtil.getDashboardList(moduleName, getOnlyMobileDashboard, appId);
 		return SUCCESS;
 	}
 	
