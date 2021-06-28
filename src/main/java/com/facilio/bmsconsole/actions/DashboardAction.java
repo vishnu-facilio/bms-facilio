@@ -6736,7 +6736,7 @@ public class DashboardAction extends FacilioAction {
 	
 	public String getDashboardFolder() throws Exception {
 		
-		dashboardFolders = DashboardUtil.getDashboardFolder(moduleName, -1);
+		dashboardFolders = DashboardUtil.getDashboardFolder(moduleName, appId);
 		return SUCCESS;
 	}
 	public String getPortalDashboardFolder() throws Exception {
@@ -6760,7 +6760,12 @@ public class DashboardAction extends FacilioAction {
 	}
 	
 	public String getDashboardListWithFolder() throws Exception {
-		dashboardFolders = DashboardUtil.getDashboardList(moduleName, getOnlyMobileDashboard, appId);
+		if(AccountUtil.getCurrentUser().isPortalUser()) {
+			getPortalDashboardFolder();
+		}
+		else {
+			dashboardFolders = DashboardUtil.getDashboardList(moduleName, getOnlyMobileDashboard, appId);
+		}
 		return SUCCESS;
 	}
 	

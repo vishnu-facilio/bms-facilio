@@ -1148,10 +1148,10 @@ public class DashboardUtil {
 		if (dashboards != null && !dashboards.isEmpty()) {
 			for (DashboardContext dashboard : dashboards) {
 				dashboard.setDashboardSharingContext(getDashboardSharing(dashboard.getId()));
-				if(!app.getLinkName().equals(ApplicationLinkNames.FACILIO_MAIN_APP)) {
-					dashboard.setSpaceFilteredDashboardSettings(getSpaceFilteredDashboardSettings(dashboard.getId()));
-					dashboard.setReportSpaceFilterContext(getDashboardSpaceFilter(dashboard.getId()));
-				}
+//				if(!app.getLinkName().equals(ApplicationLinkNames.FACILIO_MAIN_APP)) {
+//					dashboard.setSpaceFilteredDashboardSettings(getSpaceFilteredDashboardSettings(dashboard.getId()));
+//					dashboard.setReportSpaceFilterContext(getDashboardSpaceFilter(dashboard.getId()));
+//				}
 				if(dashboard.getModuleId() > 0) {
 					dashboard.setModuleName(modBean.getModule(dashboard.getModuleId()).getName());
 				}
