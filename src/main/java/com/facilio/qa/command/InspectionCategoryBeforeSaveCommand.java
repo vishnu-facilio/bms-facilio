@@ -28,7 +28,7 @@ public class InspectionCategoryBeforeSaveCommand extends FacilioCommand {
 			
 			String linkName = DisplayNameToLinkNameUtil.getLinkName(category.getDisplayName(), FacilioConstants.Inspection.INSPECTION_CATEGORY, "name");
 			
-			category.setName(linkName);
+			category.setCategoryName(linkName);
 		}
 		return false;
 	}
