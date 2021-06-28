@@ -12,6 +12,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountConstants;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.FacilioModulePredicate;
@@ -99,15 +100,18 @@ public enum UserOperators implements Operator<String> {
 	private static Logger log = LogManager.getLogger(UserOperators.class.getName());
 	
 	private static GenericSelectRecordBuilder fetchOrgUserBuilder (String roles, long currentUserId) throws Exception {
-		List<FacilioField> fields = AccountConstants.getAppOrgUserFields();
+		List<FacilioField> fields = AccountConstants.getOrgUserAppsFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		FacilioModule userModule = AccountConstants.getAppOrgUserModule();
+		FacilioModule userModule = AccountConstants.getOrgUserAppsModule();
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(Collections.singletonList(fieldMap.get("ouid")))
 				.table(userModule.getTableName())
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("roleId"), roles, NumberOperators.EQUALS))
 				;
+		if (AccountUtil.getCurrentApp() != null) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("applicationId"), String.valueOf(AccountUtil.getCurrentApp().getId()), NumberOperators.EQUALS));
+		}
 		if (currentUserId != -1) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("ouid"), String.valueOf(currentUserId), NumberOperators.EQUALS));
 		}
