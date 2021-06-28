@@ -20,14 +20,11 @@ import java.util.Properties;
 @Log4j
 public class TranslationUtils {
 
-    static JSONObject constructJSONObject ( List<FacilioField> fields,FacilioModule module,String langCode ) throws Exception {
-        long fileId = getFileId(langCode);
-        FileStore fs = FacilioFactory.getFileStore();
-        String name = fs.getFileInfo(fileId).getFilePath();
+    static JSONObject constructJSONObject ( List<FacilioField> fields,FacilioModule module,String filePath ) {
         JSONObject prop = new JSONObject();
         Properties properties = new Properties();
-        if(fileId > -1L) {
-            try (InputStream stream = new FileInputStream(name)) {
+        if(filePath != null && !filePath.trim().isEmpty()) {
+            try (InputStream stream = new FileInputStream(filePath)) {
                 properties.load(stream);
                 properties.forEach(( k,v ) -> properties.put(k.toString().trim(),v.toString().trim()));
                 JSONObject moduleProps = new JSONObject();
