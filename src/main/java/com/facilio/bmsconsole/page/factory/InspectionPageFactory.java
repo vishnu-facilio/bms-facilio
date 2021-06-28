@@ -227,7 +227,7 @@ public class InspectionPageFactory extends PageFactory {
         
         
         ApplicationContext currentApp = AccountUtil.getCurrentApp();
-        if(currentApp == null || currentApp.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
+        if(currentApp == null || currentApp.getAppCategoryEnum() != ApplicationContext.AppCategory.PORTALS) {
         	
         	Page.Tab notesAndAttachmentTab = page.new Tab("Notes & Information");
             Page.Section notesAndAttachmentSec = page.new Section();
@@ -251,7 +251,7 @@ public class InspectionPageFactory extends PageFactory {
             
             Tab relatedList = page.new Tab("Related Records");
     		Section relatedListSec = page.new Section();
-    		addRelatedListWidget(relatedListSec, module.getName(), module.getModuleId(), module.getDisplayName());
+    		addRelatedListWidgets(relatedListSec, module.getModuleId());
     		relatedList.addSection(relatedListSec);
     		
     		if(CollectionUtils.isNotEmpty(relatedListSec.getWidgets())) {

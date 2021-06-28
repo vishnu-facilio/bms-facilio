@@ -760,7 +760,7 @@ public class AddInspectionModules extends SignUpData {
 
 		List<FacilioField> fields = new ArrayList<>();
 		
-		FacilioField nameField = (FacilioField) FieldFactory.getDefaultField("name", "Name", "NAME", FieldType.STRING);
+		FacilioField nameField = (FacilioField) FieldFactory.getDefaultField("categoryName", "Name", "NAME", FieldType.STRING);
 		fields.add(nameField);
 		
 		fields.add((FacilioField) FieldFactory.getDefaultField("displayName", "Display Name", "DISPLAY_NAME", FieldType.STRING,true));

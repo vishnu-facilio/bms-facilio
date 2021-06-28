@@ -15,7 +15,7 @@ public class InspectionCategoryContext extends V3Context {
 	 */
 	private static final long serialVersionUID = 1L;
 	private String displayName;
-	private String name;
+	private String categoryName;
 	private String description;
 	
 	
