@@ -35,7 +35,7 @@ public class GetTransactionRuleModulesCommand extends FacilioCommand {
 
         subModules.put(FacilioConstants.ContextNames.WORK_ORDER, woSubModules);
 
-        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY)) {
+        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PURCHASE)) {
             modules.add(modBean.getModule(FacilioConstants.ContextNames.PURCHASE_REQUEST));
             List<FacilioModule> otherPrSubMod = modBean.getSubModules(FacilioConstants.ContextNames.PURCHASE_REQUEST);
             if(CollectionUtils.isNotEmpty(otherPrSubMod)) {

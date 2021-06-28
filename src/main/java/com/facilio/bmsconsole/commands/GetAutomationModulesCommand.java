@@ -19,7 +19,6 @@ public class GetAutomationModulesCommand extends FacilioCommand {
         List<FacilioModule> modules = new ArrayList<>();
         modules.add(modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER));
         modules.add(modBean.getModule(FacilioConstants.ContextNames.ASSET));
-        modules.add(modBean.getModule(FacilioConstants.ContextNames.VENDORS));
         modules.add(modBean.getModule(FacilioConstants.ContextNames.SITE));
         modules.add(modBean.getModule(FacilioConstants.ContextNames.FLOOR));
         modules.add(modBean.getModule(FacilioConstants.ContextNames.BUILDING));
@@ -40,13 +39,17 @@ public class GetAutomationModulesCommand extends FacilioCommand {
     	   modules.add(modBean.getModule(FacilioConstants.ContextNames.WorkPermit.WORKPERMIT));
        }
        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY)) {
-    	   modules.add(modBean.getModule(FacilioConstants.ContextNames.PURCHASE_REQUEST));
-    	   modules.add(modBean.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER));
            modules.add(modBean.getModule(FacilioConstants.ContextNames.INVENTORY_REQUEST));
-           modules.add(modBean.getModule(FacilioConstants.ContextNames.INSURANCE));
-           modules.add(modBean.getModule(FacilioConstants.ContextNames.VENDOR_CONTACT));
-
        }
+       if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PURCHASE)) {
+	    	   modules.add(modBean.getModule(FacilioConstants.ContextNames.PURCHASE_REQUEST));
+	    	   modules.add(modBean.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER));
+	   }
+	   if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.VENDOR)) {
+		   modules.add(modBean.getModule(FacilioConstants.ContextNames.VENDORS));
+		   modules.add(modBean.getModule(FacilioConstants.ContextNames.INSURANCE));
+           modules.add(modBean.getModule(FacilioConstants.ContextNames.VENDOR_CONTACT));
+	   }
 
         if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SERVICE_REQUEST)) {
             modules.add(modBean.getModule(FacilioConstants.ContextNames.SERVICE_REQUEST));

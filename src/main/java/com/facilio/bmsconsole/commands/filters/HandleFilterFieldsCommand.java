@@ -165,7 +165,7 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
                     if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) {
                         splLicenseBasedFields.add(WORKORDER_TENANT_FIELD);
                     }
-                    if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY)) {
+                    if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.VENDOR)) {
                         splLicenseBasedFields.add(WORKORDER_VENDOR_FIELD);
                     }
                     return FieldFactory.Fields.filterOutFields(filteredFields, splLicenseBasedFields, FieldFactory.Fields.FilterType.EXCLUDE);

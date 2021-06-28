@@ -12,7 +12,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountConstants;
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.FacilioModulePredicate;
@@ -109,9 +108,6 @@ public enum UserOperators implements Operator<String> {
 				.table(userModule.getTableName())
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("roleId"), roles, NumberOperators.EQUALS))
 				;
-		if (AccountUtil.getCurrentApp() != null) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("applicationId"), String.valueOf(AccountUtil.getCurrentApp().getId()), NumberOperators.EQUALS));
-		}
 		if (currentUserId != -1) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("ouid"), String.valueOf(currentUserId), NumberOperators.EQUALS));
 		}

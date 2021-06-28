@@ -383,7 +383,7 @@ public class AccountUtil {
 		APPROVAL (1024),
 		MOBILE_DASHBOARD (2048),
 		CONTROL_ACTIONS (4096),
-		INVENTORY (8192, new String[] {ContextNames.PURCHASE_REQUEST, ContextNames.PURCHASE_ORDER, ContextNames.VENDORS, ContextNames.VENDOR_CONTACT, ContextNames.INSURANCE}),
+		INVENTORY (8192),
 		SCHEDULED_WO (16384),
 		TENANTS (32768, new String[] {ContextNames.TENANT, ContextNames.TENANT_UNIT_SPACE}),
 		HUDSON_YARDS (65536, new String[] {ContextNames.WorkPermit.WORKPERMIT}), // TEMP
@@ -424,8 +424,11 @@ public class AccountUtil {
 		MULTISITEPM(2251799813685248l), // 2 ^ 51
 		FACILITY_BOOKING(4503599627370496l, new String[] {ContextNames.FacilityBooking.FACILITY, ContextNames.FacilityBooking.FACILITY_BOOKING, ContextNames.FacilityBooking.AMENITY}),
 		INSPECTION(9007199254740992l),
-		INDUCTION(18014398509481984l),
+		INDUCTION(18014398509481984l),// 2 ^ 54
+		PURCHASE(36028797018963968l, new String[] {ContextNames.PURCHASE_REQUEST, ContextNames.PURCHASE_ORDER}),
+		VENDOR(72057594037927936l, new String[] {ContextNames.VENDORS, ContextNames.VENDOR_CONTACT, ContextNames.INSURANCE}),	// 2 ^ 56
 		;
+    		// Last license - 2 ^ 56
     		// Add Module name if license is added for specific module
 		
 		private long license;	

@@ -897,7 +897,7 @@ public class FormsAPI {
 				fields.add(FormFactory.getWoResourceField());
 				fields.add(new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL, 10, 1));
 				break;
-			// Add fields here if it has to be shown in unused list and not there in the default form
+			// DO NOT add any more modules here
 		}
 		
 		
@@ -927,7 +927,11 @@ public class FormsAPI {
 			addUnusedSystemFields(form, systemFields);
 		}
 		else {
-			if (form.getAppLinkName() == null && form.getAppId() > 0) {
+			// Temp handling
+			if (!moduleName.equals(ContextNames.WORK_ORDER)) {
+				form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+			}
+			else if (form.getAppLinkName() == null && form.getAppId() > 0) {
 				form.setAppLinkName(ApplicationApi.getApplicationForId(form.getAppId()).getLinkName());
 			}
 			FacilioForm defaultForm = getDefaultForm(moduleName, form.getAppLinkName(), true);

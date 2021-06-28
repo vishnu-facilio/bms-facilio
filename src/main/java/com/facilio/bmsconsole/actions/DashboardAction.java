@@ -22,6 +22,7 @@ import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
@@ -6163,10 +6164,14 @@ public class DashboardAction extends FacilioAction {
 			supportedModules.add(modBean.getModule(mod));
 		}
 		if(AccountUtil.isFeatureEnabled(FeatureLicense.INVENTORY)) {
-			String[] inventorySupportedModules = new String[] {"item", "inventoryrequest", "purchaseorder", "purchaserequest"};
+			String[] inventorySupportedModules = new String[] {"item", "inventoryrequest"};
 			for (String mod : inventorySupportedModules) {
 				supportedModules.add(modBean.getModule(mod));
 			}
+		}
+		if(AccountUtil.isFeatureEnabled(FeatureLicense.PURCHASE)) {
+			supportedModules.add(modBean.getModule(ContextNames.PURCHASE_ORDER));
+			supportedModules.add(modBean.getModule(ContextNames.PURCHASE_REQUEST));
 		}
 		if(AccountUtil.isFeatureEnabled(FeatureLicense.CONTRACT)) {
 			supportedModules.add(modBean.getModule("contracts"));

@@ -121,7 +121,7 @@ public class ReportFactoryFields {
 		if(AccountUtil.isFeatureEnabled(FeatureLicense.TENANTS)) {
 			selectedFields.add(fields.get("tenant"));
 		}
-		if(AccountUtil.isFeatureEnabled(FeatureLicense.INVENTORY)) {
+		if(AccountUtil.isFeatureEnabled(FeatureLicense.VENDOR)) {
 			selectedFields.add(fields.get("vendor"));
 		}
 		
