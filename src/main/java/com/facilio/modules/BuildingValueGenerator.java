@@ -3,6 +3,7 @@ package com.facilio.modules;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +28,7 @@ public class BuildingValueGenerator extends ValueGenerator {
                         baseSpaceIds.add(bsId);
                     }
                 }
-                return baseSpaceIds;
+                return StringUtils.join(baseSpaceIds, ",");
             }
         }
         catch(Exception e) {
