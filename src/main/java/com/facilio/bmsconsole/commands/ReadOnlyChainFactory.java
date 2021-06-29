@@ -1973,7 +1973,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(SetTableNamesCommand.getForInsurance());
 		c.addCommand(new LoadInsuranceLookUpCommand());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
-		
+		c.addCommand(new LookupPrimaryFieldHandlingCommand());
 		return c;
 	}
 	
