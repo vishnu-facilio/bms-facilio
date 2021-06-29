@@ -39,7 +39,7 @@ public class SplitRulesToAddOrUpdateRules extends FacilioCommand {
                     if (CollectionUtils.isNotEmpty(oldRule.getRuleConditions())) {
                         getConditionsToBeDeleted().addAll(oldRule.getRuleConditions());
                     }
-                    rule.setId(oldRule.getId());
+                    oldRule.copyDefaultProps(rule);
                     getRulesToBeUpdated().add(rule);
                 }
             }

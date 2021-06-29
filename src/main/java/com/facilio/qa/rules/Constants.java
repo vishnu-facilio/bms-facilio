@@ -42,6 +42,14 @@ public class Constants {
     }
 
     public static class FieldFactory extends BaseFieldFactory {
+
+        private static void addSysFields (FacilioModule module, List<FacilioField> fields) {
+            fields.add(getField("sysCreatedTime", "SYS_CREATED_TIME", module, FieldType.DATE_TIME));
+            fields.add(getField("sysCreatedBy", "SYS_CREATED_BY", module, FieldType.NUMBER));
+            fields.add(getField("sysModifiedTime", "SYS_MODIFIED_TIME", module, FieldType.DATE_TIME));
+            fields.add(getField("sysModifiedBy", "SYS_MODIFIED_BY", module, FieldType.NUMBER));
+        }
+
         public static final List<FacilioField> qandaRuleFields() {
             List<FacilioField> fields = new ArrayList<>();
             FacilioModule module = ModuleFactory.qandaRuleModule();
@@ -50,6 +58,7 @@ public class Constants {
             fields.add(getField("templateId", "TEMPLATE_ID", module, FieldType.NUMBER));
             fields.add(getField("questionId", "QUESTION_ID", module, FieldType.NUMBER));
             fields.add(getField("type", "RULE_TYPE", module, FieldType.STRING));
+            addSysFields(module, fields);
 
             return Collections.unmodifiableList(fields);
         }
@@ -64,6 +73,7 @@ public class Constants {
             fields.add(getField("sequence", "SEQUENCE_VAL", module, FieldType.NUMBER));
             fields.add(getField("operator", "OPERATOR_ID", module, FieldType.NUMBER));
             fields.add(getField("value", "VAL", module, FieldType.STRING));
+            addSysFields(module, fields);
 
             return Collections.unmodifiableList(fields);
         }

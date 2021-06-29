@@ -21,6 +21,10 @@ public abstract class RuleCondition {
     private Long criteriaId;
     private Criteria criteria;
     private Integer sequence;
+    private Long sysCreatedTime;
+    private Long sysCreatedBy;
+    private Long sysModifiedTime;
+    private Long sysModifiedBy;
 
     public Integer getOperator() {
         return operatorEnum == null ? null : operatorEnum.getOperatorId();
@@ -58,6 +62,14 @@ public abstract class RuleCondition {
 
     private boolean evaluateCriteria (Map<String, Object> answerProp) {
         return criteria == null ? true : criteria.computePredicate().evaluate(answerProp);
+    }
+
+    public void copyDefaultProps (RuleCondition newCondition) {
+        newCondition.id = this.id;
+        newCondition.sysCreatedTime = this.sysCreatedTime;
+        newCondition.sysCreatedBy = this.sysCreatedBy;
+        newCondition.sysModifiedTime = this.sysModifiedTime;
+        newCondition.sysModifiedBy = this.sysModifiedBy;
     }
 
     public abstract void executeTrueAction (QuestionContext question, AnswerContext answer) throws Exception;

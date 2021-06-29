@@ -1,5 +1,6 @@
 package com.facilio.qa.rules.bean;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -116,10 +117,20 @@ public class QAndARuleBeanImpl implements QAndARuleBean {
     @Override
     public <T extends QAndARule> void addRules(List<T> rules, QAndARuleType type) throws Exception {
         FacilioUtil.throwIllegalArgumentException(CollectionUtils.isEmpty(rules), "Rules cannot be empty while adding");
-        rules.stream().forEach(r -> r.setType(type));
+        rules.stream().forEach(r -> setDefaultProps(r, type, true));
         List<Map<String, Object>> props = FieldUtil.getAsMapList(rules, type.getRuleClass());
         DBUtil.insertValuesWithJoin(type.getRuleModule(), type.getRuleFields(), props);
         DBUtil.populateIdsInPojoAfterInsert(rules, props, QAndARule::setId);
+    }
+
+    private void setDefaultProps (QAndARule rule, QAndARuleType type, boolean isAdd) {
+        rule.setSysModifiedTime(System.currentTimeMillis());
+        rule.setSysModifiedBy(AccountUtil.getCurrentUser().getId());
+        if (isAdd) {
+            rule.setType(type);
+            rule.setSysCreatedTime(rule.getSysModifiedTime());
+            rule.setSysCreatedBy(rule.getSysModifiedBy());
+        }
     }
 
     @SneakyThrows
@@ -134,7 +145,6 @@ public class QAndARuleBeanImpl implements QAndARuleBean {
 
     private <T> int updateRecords (FacilioModule module, List<FacilioField> fields, List<T> records) throws Exception {
         List<FacilioField> updateFields = new ArrayList<>(fields);
-        FacilioField idField = updateFields.remove(0); // Assuming first field is id field
         updateFields.removeIf(f -> f.getDataTypeEnum() == FieldType.ID); // Removing other id fields;
         List<GenericUpdateRecordBuilder.BatchUpdateByIdContext> batchUpdate = records.stream().map(this::constructBatchUpdateObject).collect(Collectors.toList());
         return DBUtil.getUpdateBuilderWithJoin(module, updateFields).batchUpdateById(batchUpdate);
@@ -143,6 +153,7 @@ public class QAndARuleBeanImpl implements QAndARuleBean {
     @Override
     public <T extends QAndARule> int updateRules(List<T> rules, QAndARuleType type) throws Exception {
         FacilioUtil.throwIllegalArgumentException(CollectionUtils.isEmpty(rules), "Rules cannot be empty while updating");
+        rules.stream().forEach(r -> setDefaultProps(r, type, false));
         return updateRecords(type.getRuleModule(), type.getRuleFields(), rules);
     }
 
@@ -155,6 +166,7 @@ public class QAndARuleBeanImpl implements QAndARuleBean {
     @Override
     public <C extends RuleCondition> void addConditions(List<C> conditions, QAndARuleType type) throws Exception {
         FacilioUtil.throwIllegalArgumentException(CollectionUtils.isEmpty(conditions), "Rule Conditions cannot be empty while adding");
+        conditions.stream().forEach(c -> setDefaultProps(c, true));
         List<Map<String, Object>> props = FieldUtil.getAsMapList(conditions, type.getRuleClass());
         DBUtil.insertValuesWithJoin(type.getRuleConditionsModule(), type.getRuleConditionFields(), props);
         DBUtil.populateIdsInPojoAfterInsert(conditions, props, RuleCondition::setId);
@@ -163,7 +175,17 @@ public class QAndARuleBeanImpl implements QAndARuleBean {
     @Override
     public <C extends RuleCondition> int updateCondition(List<C> conditions, QAndARuleType type) throws Exception {
         FacilioUtil.throwIllegalArgumentException(CollectionUtils.isEmpty(conditions), "Conditions cannot be empty while updating");
+        conditions.stream().forEach(c -> setDefaultProps(c, false));
         return updateRecords(type.getRuleConditionsModule(), type.getRuleConditionFields(), conditions);
+    }
+
+    private void setDefaultProps (RuleCondition condition, boolean isAdd) {
+        condition.setSysModifiedTime(System.currentTimeMillis());
+        condition.setSysModifiedBy(AccountUtil.getCurrentUser().getId());
+        if (isAdd) {
+            condition.setSysCreatedTime(condition.getSysModifiedTime());
+            condition.setSysCreatedBy(condition.getSysModifiedBy());
+        }
     }
 
     @Override

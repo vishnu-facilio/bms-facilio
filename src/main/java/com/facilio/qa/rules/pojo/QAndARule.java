@@ -19,6 +19,10 @@ public abstract class QAndARule<Condition extends RuleCondition> {
     private Long templateId;
     private Long questionId;
     private QAndARuleType type;
+    private Long sysCreatedTime;
+    private Long sysCreatedBy;
+    private Long sysModifiedTime;
+    private Long sysModifiedBy;
 
     private List<Condition> ruleConditions; // For internal purpose
     public void setRuleConditions(List<Condition> ruleConditions) {
@@ -42,6 +46,15 @@ public abstract class QAndARule<Condition extends RuleCondition> {
         FacilioUtil.throwIllegalArgumentException(question == null || question.getId() < 0 || question.getId() != questionId, "Invalid question passed to hook");
         beforeSaveHook(question);
     }
+
+    public void copyDefaultProps (QAndARule newRule) {
+        newRule.id = this.id;
+        newRule.sysCreatedTime = this.sysCreatedTime;
+        newRule.sysCreatedBy = this.sysCreatedBy;
+        newRule.sysModifiedTime = this.sysModifiedTime;
+        newRule.sysModifiedBy = this.sysModifiedBy;
+    }
+
 
     public abstract void manipulateAnswer(QuestionContext question, AnswerContext answer);
 }
