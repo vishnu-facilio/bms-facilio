@@ -9,6 +9,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
@@ -67,7 +68,7 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 				
 				RecordAPI.updateRecord(emailConversation, modBean.getModule(MailMessageUtil.EMAIL_CONVERSATION_THREADING_MODULE_NAME), modBean.getAllFields(MailMessageUtil.EMAIL_CONVERSATION_THREADING_MODULE_NAME));
 			}
-			else {
+			else if (emailConversation.getMessageType() == EmailConversationThreadingContext.Message_Type.PUBLIC_NOTE.getIndex() || emailConversation.getMessageType() == EmailConversationThreadingContext.Message_Type.PRIVATE_NOTE.getIndex()) {
 				if(emailConversation.getTo() != null) {
 					
 					sendNoteNotifyMail(emailConversation);
@@ -80,11 +81,18 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 	
 	private void sendNoteNotifyMail(EmailConversationThreadingContext emailConversation) throws Exception {
 		try {
+			String message = emailConversation.getHtmlContent();
+			String subject = emailConversation.getSubject();
+			if(AccountUtil.getCurrentOrg().getOrgId() == 75l || AccountUtil.getCurrentOrg().getOrgId() == 5l) {
+				
+				subject = getSubjectForAddNote(emailConversation,message);
+				message = getMessageForAddNote(emailConversation,message);
+			}
 			JSONObject mailJson = new JSONObject();
 			mailJson.put(EmailClient.SENDER, EmailFactory.getEmailClient().getNoReplyFromEmail());
 			mailJson.put(EmailClient.TO, emailConversation.getTo());
-			mailJson.put(EmailClient.SUBJECT, "Re: "+emailConversation.getSubject());
-			mailJson.put(EmailClient.MESSAGE, emailConversation.getHtmlContent());
+			mailJson.put(EmailClient.SUBJECT, subject);
+			mailJson.put(EmailClient.MESSAGE, message);
 			mailJson.put(EmailClient.MAIL_TYPE,EmailClient.HTML);
 			
 			Map<String,String> attachements = getAttachments(emailConversation);
@@ -95,6 +103,50 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 		}
 	}
 
+	private String getSubjectForAddNote(EmailConversationThreadingContext emailConversation, String message) {
+		// TODO Auto-generated method stub
+		
+		String subject = "Note Added - [#"+emailConversation.getRecordId()+"] "+emailConversation.getSubject();
+		return subject;
+	}
+
+	private String getMessageForAddNote(EmailConversationThreadingContext emailConversation, String message) throws Exception {
+		
+		// TODO Auto-generated method stub
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		if(modBean.getModule(emailConversation.getDataModuleId()).getName().equals(FacilioConstants.ContextNames.SERVICE_REQUEST)) {
+			
+			String serviceRequestLink = "https://"+FacilioProperties.getAppDomain()+"/app/sr/serviceRequest/all/"+emailConversation.getRecordId()+"/overview";
+			
+			String hrefTag = "<a href=\""+serviceRequestLink+"\">[#"+emailConversation.getRecordId()+"]</a>";
+			
+			String newMessage = "Hi,<br><br>"+AccountUtil.getCurrentUser().getName() +" added a "+emailConversation.getMessageTypeEnum().getName()+" note to "+hrefTag+" and wants you to have a look<br><br>";
+			
+			newMessage = newMessage + "Note Content:<br> "+message;
+			
+			return newMessage;
+		}
+		
+		return message;
+	}
+	
+	private String getMessageForReply(EmailConversationThreadingContext emailConversation, String message) throws Exception {
+		// TODO Auto-generated method stub
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		if(modBean.getModule(emailConversation.getDataModuleId()).getName().equals(FacilioConstants.ContextNames.SERVICE_REQUEST)) {
+			
+			String serviceRequestLink = "https://"+FacilioProperties.getAppDomain()+"/app/sr/serviceRequest/all/"+emailConversation.getRecordId()+"/overview";
+			
+			String hrefTag = "<a href=\""+serviceRequestLink+"\">[#"+emailConversation.getRecordId()+"]</a>";
+			
+			String newMessage = "Hi,<br><br>"+AccountUtil.getCurrentUser().getName() +" added a "+emailConversation.getMessageTypeEnum().getName()+" to "+hrefTag+"<br><br>"+message;
+			
+			return newMessage;
+		}
+		
+		return message;
+	}
+
 	private String sendMail(EmailConversationThreadingContext emailConversation,String messageId) throws Exception {
 		
 		if(!FacilioProperties.isProduction()) {
@@ -103,12 +155,18 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 		
 		JSONObject mailJson = new JSONObject();
 		
+		String message = emailConversation.getHtmlContent();
+		if(AccountUtil.getCurrentOrg().getOrgId() == 75l || AccountUtil.getCurrentOrg().getOrgId() == 5l) {
+			
+			message = getMessageForReply(emailConversation,message);
+		}
+		
 		mailJson.put(EmailClient.SENDER, emailConversation.getFrom());
 		mailJson.put(EmailClient.TO, emailConversation.getTo());
 		mailJson.put(EmailClient.CC, emailConversation.getCc());
 		mailJson.put(EmailClient.BCC, emailConversation.getBcc());
 		mailJson.put(EmailClient.SUBJECT, "Re: "+emailConversation.getSubject());
-		mailJson.put(EmailClient.MESSAGE, emailConversation.getHtmlContent());
+		mailJson.put(EmailClient.MESSAGE, message);
 		mailJson.put(EmailClient.MAIL_TYPE,EmailClient.HTML);
 		
 		if(messageId != null) {

@@ -40,19 +40,24 @@ public class EmailConversationThreadingContext extends BaseMailMessageContext {
 	}
 	
 	public enum Message_Type implements FacilioIntEnum {
-		REPLY(EmailConversationThreadingActivityType.REPLIED),
-		PUBLIC_NOTE(EmailConversationThreadingActivityType.ADDED_PUBLIC_NOTE),
-		PRIVATE_NOTE(EmailConversationThreadingActivityType.ADDED_PRIVATE_NOTE)
+		REPLY(EmailConversationThreadingActivityType.REPLIED,"reply"),
+		PUBLIC_NOTE(EmailConversationThreadingActivityType.ADDED_PUBLIC_NOTE,"public"),
+		PRIVATE_NOTE(EmailConversationThreadingActivityType.ADDED_PRIVATE_NOTE,"private")
 		;
 		
 		EmailConversationThreadingActivityType activityType;
+		String name;
 		
-		Message_Type(EmailConversationThreadingActivityType activityType) {
+		Message_Type(EmailConversationThreadingActivityType activityType,String name) {
 			this.activityType = activityType;
+			this.name = name;
 		}
 		
 		public EmailConversationThreadingActivityType getActivityType() {
 			return activityType;
+		}
+		public String getName() {
+			return name;
 		}
 				
 		public static Message_Type valueOf (int value) {
