@@ -219,3 +219,6 @@ enums:
 
   - name: SiteType
     enumClassName: com.facilio.bmsconsoleV3.context.V3SiteContext$SiteType
+
+  - name: InsuranceType
+    enumClassName: com.facilio.bmsconsole.context.InsuranceContext$InsuranceType

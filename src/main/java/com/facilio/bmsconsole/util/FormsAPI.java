@@ -856,14 +856,17 @@ public class FormsAPI {
 			case ContextNames.VISITOR_LOG:
 				fields.add(new FormField("isVip", FieldDisplayType.DECISION_BOX, "VIP", Required.OPTIONAL, 1, 1));
 				break;
-			// Add fields here if it has to be shown in unused list and not there in the default form
+			case ContextNames.INSURANCE:
+				fields.add(new FormField("insuranceType", FieldDisplayType.SELECTBOX, "Insurance Type", FormField.Required.OPTIONAL, 1, 1));
+				break;
+				// Add fields here if it has to be shown in unused list and not there in the default form
+			}
 		}
-		}
-		
+
 		addToDefaultFields(form.getFields(), defaultFields, fields);
 
 		if (form.getModule().isCustom()) {
-			
+
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			boolean hasPhoto = false;
 			boolean hasSite = false;
