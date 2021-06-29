@@ -27,10 +27,15 @@ public class AddOrUpdateTranslationCommand extends FacilioCommand {
         try (FileInputStream input = new FileInputStream(filePath); FileOutputStream outputStream = new FileOutputStream(filePath);) {
             properties.load(input);
             properties.forEach(( k,v ) -> properties.put(k.toString().trim(),v.toString().trim()));
-            Map<String, Object> props = contents.stream().flatMap(m -> m.entrySet().stream()).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
-            props.forEach((key,value)->{
-                properties.setProperty(key.trim(),value.toString().trim());
-            });
+            for (Map<String,Object> prop : contents){
+                String prefix = (String)prop.get("prefix");
+                String suffix = (String)prop.get("suffix");
+                if(!TranslationUtils.validatePrefixSuffix(prefix,suffix)){
+                    throw new RuntimeException("Exception occurred while validating prefix/suffix for field ");
+                }
+                String key = prefix+prop.get("key")+suffix;
+                properties.setProperty(key.trim(),(String)prop.getOrDefault("value",""));
+            }
             properties.store(outputStream,"Translation Properties");
         } catch (Exception e) {
             LOGGER.error("Exception occurred while writing translation file",e);

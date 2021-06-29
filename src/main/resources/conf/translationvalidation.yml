@@ -1,0 +1,6 @@
+
+#Translation validation
+  - validation:
+      perfix : module
+      suffix :
+        - displayName
