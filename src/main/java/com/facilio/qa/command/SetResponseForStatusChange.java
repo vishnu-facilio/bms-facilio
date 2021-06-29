@@ -10,20 +10,19 @@ import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
-public class UpdateResponseStateCommand extends FacilioCommand {
+public class SetResponseForStatusChange extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         List<AnswerContext> toBeAdded = (List<AnswerContext>) context.get(FacilioConstants.QAndA.Command.ANSWERS_TO_BE_ADDED);
         List<AnswerContext> toBeUpdated = (List<AnswerContext>) context.get(FacilioConstants.QAndA.Command.ANSWERS_TO_BE_UPDATED);
-        ResponseContext response = (ResponseContext) context.get(FacilioConstants.QAndA.RESPONSE);
+        ResponseContext response = Objects.requireNonNull((ResponseContext) context.get(FacilioConstants.QAndA.RESPONSE), "Response cannot be null here");
 
         if (CollectionUtils.isNotEmpty(toBeAdded) || CollectionUtils.isNotEmpty(toBeUpdated)) {
-            ResponseContext oldResponse = (ResponseContext) context.get(FacilioConstants.QAndA.RESPONSE);
-            ResponseContext updatedResponse = FieldUtil.cloneBean(oldResponse, ResponseContext.class);
-            updatedResponse.setResStatus(ResponseContext.ResponseStatus.PARTIALLY_ANSWERED);
-            int rowsUpdated = QAndAUtil.updateRecordViaV3Chain(response.getQAndAType().getResponseModule(), updatedResponse, oldResponse);
+            context.put(FacilioConstants.QAndA.Command.RESPONSE_LIST, Collections.singletonList(response));
         }
         return false;
     }

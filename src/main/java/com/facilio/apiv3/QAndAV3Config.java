@@ -59,6 +59,9 @@ public class QAndAV3Config {
                     .afterFetch(QAndAReadOnlyChainFactory.afterAnswerFetchChain())
                 .summary()
                     .afterFetch(QAndAReadOnlyChainFactory.afterAnswerFetchChain())
+                .delete()
+                    .beforeDelete(QAndATransactionChainFactory.beforeAnswerDeleteChain())
+                    .afterDelete(QAndATransactionChainFactory.afterAnswerDeleteChain())
                 .build();
     }
 

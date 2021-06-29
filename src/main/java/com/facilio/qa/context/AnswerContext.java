@@ -3,8 +3,10 @@ package com.facilio.qa.context;
 import com.facilio.qa.context.answers.MultiFileAnswerContext;
 import com.facilio.qa.context.questions.MCQOptionContext;
 import com.facilio.v3.context.V3Context;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.struts2.json.annotations.JSON;
 
 import java.io.File;
 import java.util.List;
@@ -39,5 +41,10 @@ public class AnswerContext extends V3Context {
 
     public double scoreWithZeroOnNull() {
         return score == null ? 0 : score;
+    }
+
+    @JsonIgnore @JSON(serialize = false)
+    public Long getResponseId() {
+        return response == null ? null : response._getId();
     }
 }

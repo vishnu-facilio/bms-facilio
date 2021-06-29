@@ -154,9 +154,22 @@ public class QAndATransactionChainFactory {
         c.addCommand(new AddAnswersCommand());
         c.addCommand(new UpdateAnswersCommand());
         c.addCommand(new ConstructAnswerResponseCommand());
-        c.addCommand(new UpdateResponseStateCommand());
+        c.addCommand(new SetResponseForStatusChange());
+        c.addCommand(new UpdateResponseStateToPartialAnswered());
         c.addCommand(new ConstructActivityForAddOrUpdateAnswerCommand());
         c.addCommand(new AddActivitiesCommandV3());
+        return c;
+    }
+
+    public static FacilioChain beforeAnswerDeleteChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchResponsesForStatusUpdateOnAnswerDelete());
+        return c;
+    }
+
+    public static FacilioChain afterAnswerDeleteChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new UpdateResponseStateToPartialAnswered());
         return c;
     }
 
