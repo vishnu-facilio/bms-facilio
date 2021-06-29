@@ -778,6 +778,14 @@ public class ModuleFactory {
 
 		return scheduledRule;
 	}
+	
+	public static FacilioModule getScheduledRuleJobsMetaModule() {
+		FacilioModule scheduledRule = new FacilioModule();
+		scheduledRule.setName("ScheduledRuleJobsMeta");
+		scheduledRule.setDisplayName("Scheduled Rule Jobs Meta");
+		scheduledRule.setTableName("Scheduled_Rule_Jobs_Meta");
+		return scheduledRule;
+	}
 
 	public static FacilioModule getSchedulerActionRelModule() {
 		FacilioModule module = new FacilioModule();

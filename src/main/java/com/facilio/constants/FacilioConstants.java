@@ -1030,6 +1030,7 @@ public class FacilioConstants {
 		public static final String WORKFLOW_RULE_MODULE = "workflowrule";
 		public static final String WORKFLOW_RULE_ID = "workflowRuleID";
 		public static final String WORKFLOW_RULE_ID_LIST = "workflowRuleIDList";
+		public static final String SCHEDULE_RULE_META = "scheduleRuleMeta";
 		public static final String WORKFLOW_RULE_PARENT_LOGGER_ID = "workflowRuleParentLoggerId";
 		public static final String WORKFLOW_RULE_RESOURCE_ID = "workflowRuleResourceId";
 		public static final String WORKFLOW_RULE_LOGGERS = "workflowRuleLoggers";
@@ -2506,6 +2507,7 @@ public class FacilioConstants {
 		public static final String EXECUTE_READING_RULE_COMMAND= "executeReadingRuleCommand";
 		public static final String EXECUTE_READING_RULE_THROUGH_AUTOMATED_HISTORY= "executeReadingRuleThroughAutomatedHistory";
 		public static final String HISTORICAL_READING_RULE_JOBS_THRESHOLD = "historicalReadingRuleJobsThreshold";
+		public static final String IS_NEW_SCHEDULE_RULE_EXECUTION= "isNewScheduleRuleExecution";
 		public static final String FORK_READING_POST_PROCESSING = "forkReadingPostProcessing";
 		public static final String IS_PARALLEL_FORMULA_EXECUTION= "isParallelFormulaExecution";
 		public static final String CALCULATE_VM_THROUGH_FORMULA = "calculateVmThroughFormula";

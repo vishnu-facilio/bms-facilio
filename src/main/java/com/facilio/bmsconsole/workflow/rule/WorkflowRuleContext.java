@@ -776,4 +776,10 @@ public class WorkflowRuleContext implements Serializable {
 	public String getSchedulerJobName() {
 		return "ScheduledRuleExecution";
 	}
+	
+	@JsonIgnore
+	@JSON(serialize = false)
+	public String getScheduleRuleJobName() {
+		return "ScheduleRuleCreateJob";
+	}
 }

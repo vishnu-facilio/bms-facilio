@@ -963,6 +963,21 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteSingleWorkflowRuleCommand());
 			return c;
 		}
+		
+		public static FacilioChain getScheduledRuleJobsExecutionChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new FetchScheduledRuleMatchingRecordsCommand());
+			c.addCommand(new CreateScheduleRuleJobsCommand());
+			return c;
+		}
+		
+		public static FacilioChain executeScheduledRuleJobChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new FetchSingleMatchingRecordScheduledRuleCommand());
+			c.addCommand(new ExecuteSingleWorkflowRuleCommand());
+			c.addCommand(new UpdateScheduleRuleJobMetaCommand());
+			return c;
+		}
 
 		public static FacilioChain previousRecordRuleExecutionChain() {
 			FacilioChain c = getDefaultChain();

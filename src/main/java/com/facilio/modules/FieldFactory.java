@@ -2349,6 +2349,20 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("actionId", "ACTION_ID", module, FieldType.NUMBER));
         return fields;
     }
+    
+    public static List<FacilioField> getScheduledRuleJobsMetaFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getScheduledRuleJobsMetaModule();
+
+		fields.add(getIdField(module));
+		fields.add(getModuleIdField(module));
+		fields.add(getField("ruleId", "RULE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("recordId", "RECORD_ID", module, FieldType.NUMBER));
+		fields.add(getField("executionTime", "EXECUTION_TIME", module, FieldType.DATE_TIME));
+		fields.add(getField("isActive", "IS_ACTIVE", module, FieldType.BOOLEAN));
+		
+		return fields;
+	}
 
     public static List<FacilioField> getApprovalRuleFields() {
         List<FacilioField> fields = new ArrayList<>();

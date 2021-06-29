@@ -1,10 +1,28 @@
 package com.facilio.bmsconsole.util;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.StringUtils;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.ScheduledRuleJobsMetaContext;
+import com.facilio.bmsconsole.context.VisitorLoggingContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.taskengine.ScheduleInfo;
@@ -64,6 +82,9 @@ public class ScheduledRuleAPI extends WorkflowRuleAPI {
 		long startTime = ZonedDateTime.now().truncatedTo(new SecondsChronoUnit(ScheduledRuleAPI.DATE_TIME_RULE_INTERVAL * 60)).toInstant().toEpochMilli() - 1;
 
 		String jobName = rule.getSchedulerJobName();
+		if(ScheduledRuleJobsMetaUtil.checkNewOrOldScheduleRuleExecution()) {
+			jobName = rule.getScheduleRuleJobName();
+		}
 
 		if (rule.getTimeObj() != null) {
 			FacilioTimer.scheduleCalendarJob(rule.getId(), jobName, startTime, getDateSchedule(rule), "facilio");
@@ -73,13 +94,28 @@ public class ScheduledRuleAPI extends WorkflowRuleAPI {
 		}
 	}
 	
+	protected static void deleteScheduledRuleJob(WorkflowRuleContext rule) throws Exception {
+		
+		String jobName = rule.getSchedulerJobName();
+		if(ScheduledRuleJobsMetaUtil.checkNewOrOldScheduleRuleExecution()) {
+			jobName = rule.getScheduleRuleJobName();
+		}
+		
+		FacilioTimer.deleteJob(rule.getId(), jobName);
+	}
+	
 	protected static void updateScheduledRuleJob(WorkflowRuleContext rule) throws Exception {
+		   	
+    	if(ScheduledRuleJobsMetaUtil.checkNewOrOldScheduleRuleExecution()) {
+    		updateScheduleRuleJobsMeta(rule);
+		}
+		
 		deleteScheduledRuleJob(rule);
 		addScheduledRuleJob(rule);
 	}
 	
-	protected static void deleteScheduledRuleJob(WorkflowRuleContext rule) throws Exception {
-		FacilioTimer.deleteJob(rule.getId(), rule.getSchedulerJobName());
+	protected static void updateScheduleRuleJobsMeta(WorkflowRuleContext rule) throws Exception {
+		ScheduledRuleJobsMetaUtil.disableScheduledRuleJobsMetaFromRuleId(rule.getId());
 	}
 	
 	private static final int DATE_TIME_RULE_INTERVAL = 30; //In Minutes //Only 5, 10, 15, 20, 30
