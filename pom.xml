@@ -688,29 +688,6 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Premain-Class>com.facilio.instrumentation.SizeOf</Premain-Class>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.tomcat.maven</groupId>
-                <artifactId>tomcat7-maven-plugin</artifactId>
-                <version>2.2</version>
-                <configuration>
-                    <url>http://localhost:8080</url>
-                    <server>localhost</server>
-                    <path>/${project.build.finalName}</path>
-                </configuration>
-            </plugin>
-        </plugins>
     </build>
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
