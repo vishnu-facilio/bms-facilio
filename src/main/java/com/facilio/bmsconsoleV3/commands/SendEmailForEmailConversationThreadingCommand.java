@@ -134,7 +134,8 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		if(modBean.getModule(emailConversation.getDataModuleId()).getName().equals(FacilioConstants.ContextNames.SERVICE_REQUEST)) {
 			
-			String serviceRequestLink = "https://"+FacilioProperties.getAppDomain()+"/app/sr/serviceRequest/all/"+emailConversation.getRecordId()+"/overview";
+			;
+			String serviceRequestLink = "https://"+AccountUtil.getCurrentOrg().getDomain()+".facilioportal.com/service/my-requests/service-request/all/"+emailConversation.getRecordId()+"/overview";
 			
 			String hrefTag = "<a href=\""+serviceRequestLink+"\">[#"+emailConversation.getRecordId()+"]</a>";
 			
