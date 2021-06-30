@@ -1344,8 +1344,13 @@ public class TemplateAPI {
 
 	private static JSONTemplate getJSONTemplateFromMap(Map<String, Object> templateMap) throws Exception {
 		JSONTemplate template = FieldUtil.getAsBeanFromMap(templateMap, JSONTemplate.class);
+		
 		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
-		try(InputStream body = FacilioFactory.getFileStore(superAdmin.getId()).readFile(template.getContentId())) {
+		FileStore fs =  FacilioFactory.getFileStore();
+		if(superAdmin != null) {
+			fs = FacilioFactory.getFileStore(superAdmin.getId());
+		}
+		try(InputStream body = fs.readFile(template.getContentId())) {
 			if(body != null) {
 				template.setContent(IOUtils.toString(body));
 			}else {
