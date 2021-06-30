@@ -40,6 +40,14 @@ public class FloorplanAction extends V3Action {
 		this.endTime = endTime;
 	}
 	
+	private long floorId = -1;
+	public long getFloorId() {
+		return floorId;
+	}
+	public void setFloorId(long floorId) {
+		this.floorId = floorId;
+	}
+	
 	public String getFacilityDetails() throws Exception {
 		
 		FacilioChain chain = ReadOnlyChainFactoryV3.getFloorplanFacilitiesChain();
@@ -56,6 +64,20 @@ public class FloorplanAction extends V3Action {
 		
 		setData(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING, context.get(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING));
 		
+		return SUCCESS;
+	}
+	
+	public String getFloorplanDetailsByType() throws Exception {
+		if(floorId > 0) {
+			FacilioChain chain = ReadOnlyChainFactoryV3.getFloorplanMapByTypeChain();
+			
+			FacilioContext context = chain.getContext();
+			
+			context.put(FacilioConstants.ContextNames.FLOOR, floorId);
+			
+			chain.execute();
+			setData(FacilioConstants.ContextNames.INDOOR_FLOOR_PLANS, context.get(FacilioConstants.ContextNames.INDOOR_FLOOR_PLANS));
+		}
 		return SUCCESS;
 	}
 }

@@ -34,19 +34,20 @@ public class DesksAPI {
 		List<FacilioField> fwkFields = modBean.getAllFields(fwkModule.getName());
     	List<FacilityContext> existingFacilities = FacilityAPI.getFacilityList(desk.getId(),deskModule.getModuleId());
     	
-		if(existingFacilities != null && !existingFacilities.isEmpty()) {
-			List<Long> ids = new ArrayList<>();
-            for (FacilityContext ef : existingFacilities) {
-                ids.add(ef.getId());
-            }
-			if(desk.getDeskType() != 3) {
-				DeleteRecordBuilder<FacilityContext> deleteBuilder = new DeleteRecordBuilder<FacilityContext>()
-                        .module(facilityModule)
-                        .andCondition(CriteriaAPI.getIdCondition(ids, facilityModule));
-                deleteBuilder.delete();
-			}
-			
-		} else if(desk.getDeskType() == 3) {
+//		if(existingFacilities != null && !existingFacilities.isEmpty()) {
+//			List<Long> ids = new ArrayList<>();
+//            for (FacilityContext ef : existingFacilities) {
+//                ids.add(ef.getId());
+//            }
+//			if(desk.getDeskType() != 3) {
+//				DeleteRecordBuilder<FacilityContext> deleteBuilder = new DeleteRecordBuilder<FacilityContext>()
+//                        .module(facilityModule)
+//                        .andCondition(CriteriaAPI.getIdCondition(ids, facilityModule));
+//                deleteBuilder.delete();
+//			}
+//			
+//		} else 
+		if(desk.getDeskType() == 3 && CollectionUtils.isEmpty(existingFacilities)) {
 			List<FacilityContext> facilityprop = new ArrayList<FacilityContext>();
 			FacilityContext facility = new FacilityContext();
 			
@@ -139,19 +140,20 @@ public static void AddorDeleteFacilityForSpace(V3MarkerdZonesContext zone) throw
 		List<FacilioField> fwkFields = modBean.getAllFields(fwkModule.getName());
     	List<FacilityContext> existingFacilities = FacilityAPI.getFacilityList(space.getId(),spaceModule.getModuleId());
     	
-		if(existingFacilities != null && !existingFacilities.isEmpty()) {
-			List<Long> ids = new ArrayList<>();
-            for (FacilityContext ef : existingFacilities) {
-                ids.add(ef.getId());
-            }
-			if(!zone.isIsReservable()) {
-				DeleteRecordBuilder<FacilityContext> deleteBuilder = new DeleteRecordBuilder<FacilityContext>()
-                        .module(facilityModule)
-                        .andCondition(CriteriaAPI.getIdCondition(ids, facilityModule));
-                deleteBuilder.delete();
-			}
-			
-		} else if(zone.isIsReservable()) {
+//		if(existingFacilities != null && !existingFacilities.isEmpty()) {
+//			List<Long> ids = new ArrayList<>();
+//            for (FacilityContext ef : existingFacilities) {
+//                ids.add(ef.getId());
+//            }
+//			if(!zone.isIsReservable()) {
+//				DeleteRecordBuilder<FacilityContext> deleteBuilder = new DeleteRecordBuilder<FacilityContext>()
+//                        .module(facilityModule)
+//                        .andCondition(CriteriaAPI.getIdCondition(ids, facilityModule));
+//                deleteBuilder.delete();
+//			}
+//			
+//		} else 
+		if(zone.isIsReservable() && CollectionUtils.isEmpty(existingFacilities)) {
 			List<FacilityContext> facilityprop = new ArrayList<FacilityContext>();
 			FacilityContext facility = new FacilityContext();
 			
@@ -232,7 +234,9 @@ public static void AddorDeleteFacilityForSpace(V3MarkerdZonesContext zone) throw
         
 		}
     }
+
 public static void addDeskActivity(long parentId, long ttime, ActivityType type, JSONObject info) throws Exception {
+	
 	ActivityContext activity = new ActivityContext();
 	activity.setParentId(parentId);
 

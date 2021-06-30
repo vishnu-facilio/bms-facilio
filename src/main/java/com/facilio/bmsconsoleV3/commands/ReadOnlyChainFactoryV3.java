@@ -4,6 +4,7 @@ import com.facilio.bmsconsole.commands.page.GetSummaryFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.facility.GetFacilityAvailabilityCommandV3;
 import com.facilio.bmsconsoleV3.commands.facility.GetFacilityPhotosCommand;
 import com.facilio.bmsconsoleV3.commands.floorplan.FetchFloorplanFacilitiesCommmand;
+import com.facilio.bmsconsoleV3.commands.floorplan.FetchFloorplanMapByTypeCommmand;
 import com.facilio.bmsconsoleV3.commands.quotation.AddDefaultCriteriaForQuoteFetchCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.QuotationFillLookupFields;
 import com.facilio.bmsconsoleV3.commands.tenant.LoadTenantLookUpsCommandV3;
@@ -126,6 +127,12 @@ public class ReadOnlyChainFactoryV3 {
     public static FacilioChain getFloorplanFacilitiesChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new FetchFloorplanFacilitiesCommmand());
+        return c;
+    }
+    
+    public static FacilioChain getFloorplanMapByTypeChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchFloorplanMapByTypeCommmand());
         return c;
     }
 }

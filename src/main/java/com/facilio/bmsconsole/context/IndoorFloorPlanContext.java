@@ -1,5 +1,8 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.bmsconsoleV3.context.facilitybooking.FacilityContext.FacilityType;
+import com.facilio.bmsconsoleV3.context.floorplan.V3IndoorFloorPlanContext.FloorPlanType;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 import java.util.Collections;
@@ -206,6 +209,64 @@ public class IndoorFloorPlanContext extends ModuleBaseWithCustomFields {
 			return typeMap;
 		}
 	}
+	
+	private FloorPlanType floorPlanType;
+	public Integer getFloorPlanType() {
+        if (floorPlanType != null) {
+            return floorPlanType.getIndex();
+        }
+        return null;
+    }
+    public void setFloorPlanType(Integer floorPlanType) {
+        if(floorPlanType != null) {
+            this.floorPlanType = FloorPlanType.valueOf(floorPlanType);
+        }
+    }
+    public FloorPlanType getFloorPlanTypeEnum() {
+        return floorPlanType;
+    }
+
+    public static enum FloorPlanType implements FacilioIntEnum {
+        WORKSTATION("Workstation"),
+        LOCKERS("Lockers"),
+        PARKING("Parking");
+
+        private String name;
+
+        FloorPlanType(String name) {
+            this.name = name;
+        }
+
+        public static FloorPlanType valueOf(int value) {
+            if (value > 0 && value <= values().length) {
+                return values()[value - 1];
+            }
+            return null;
+        }
+
+        @Override
+        public Integer getIndex() {
+            return ordinal() + 1;
+        }
+
+        @Override
+        public String getValue() {
+            return name;
+        }
+        
+        private static final Map<Integer, FloorPlanType> typeMap = Collections.unmodifiableMap(initTypeMap());
+		private static Map<Integer, FloorPlanType> initTypeMap() {
+			Map<Integer, FloorPlanType> typeMap = new HashMap<>();
+			
+			for(FloorPlanType type : values()) {
+				typeMap.put(type.getIndex(), type);
+			}
+			return typeMap;
+		}
+		public Map<Integer, FloorPlanType> getAllTypes() {
+			return typeMap;
+		}
+    }
 
 
 }

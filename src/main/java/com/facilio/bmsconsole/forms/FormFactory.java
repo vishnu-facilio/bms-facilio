@@ -1812,9 +1812,11 @@ public class FormFactory {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
-		fields.add(new FormField("floor", FieldDisplayType.LOOKUP_SIMPLE, "Floor", Required.REQUIRED,"floor", 3, 2));
-		fields.add(new FormField("site", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED,"site", 4, 2));
-		fields.add(new FormField("file", FieldDisplayType.FILE, "FloorPlan Image", Required.REQUIRED, 5, 1));
+		fields.add(new FormField("site", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED,"site", 3, 2));
+		fields.add(new FormField("building", FieldDisplayType.LOOKUP_SIMPLE, "Building", Required.REQUIRED,"building", 4, 2));
+		fields.add(new FormField("floor", FieldDisplayType.LOOKUP_SIMPLE, "Floor", Required.REQUIRED,"floor", 5, 2));
+		fields.add(new FormField("floorPlanType", FieldDisplayType.SELECTBOX, "Floor Plan Type", Required.REQUIRED,6, 2));
+		fields.add(new FormField("file", FieldDisplayType.FILE, "FloorPlan Image", Required.REQUIRED, 7, 1));
 		
 		return fields;
 	}

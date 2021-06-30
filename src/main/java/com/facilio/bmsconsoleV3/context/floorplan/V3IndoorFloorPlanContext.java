@@ -5,8 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.context.IndoorFloorPlanContext.FloorPlanType;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
 
 public class V3IndoorFloorPlanContext extends V3Context {
@@ -19,6 +22,15 @@ public class V3IndoorFloorPlanContext extends V3Context {
 	}
 	
 	private FloorContext floor;
+	
+	private BuildingContext building;
+	
+	public BuildingContext getBuilding() {
+		return building;
+	}
+	public void setBuilding(BuildingContext building) {
+		this.building = building;
+	}
 	
 
 	public SiteContext getSite() {
@@ -210,6 +222,64 @@ public class V3IndoorFloorPlanContext extends V3Context {
 	public void setProperties(String properties) {
 		this.properties = properties;
 	}
+	
+	private FloorPlanType floorPlanType;
+	public Integer getFloorPlanType() {
+        if (floorPlanType != null) {
+            return floorPlanType.getIndex();
+        }
+        return null;
+    }
+    public void setFloorPlanType(Integer floorPlanType) {
+        if(floorPlanType != null) {
+            this.floorPlanType = FloorPlanType.valueOf(floorPlanType);
+        }
+    }
+    public FloorPlanType getFloorPlanTypeEnum() {
+        return floorPlanType;
+    }
+
+    public static enum FloorPlanType implements FacilioIntEnum {
+        WORKSTATION("Workstation"),
+        LOCKERS("Lockers"),
+        PARKING("Parking");
+
+        private String name;
+
+        FloorPlanType(String name) {
+            this.name = name;
+        }
+
+        public static FloorPlanType valueOf(int value) {
+            if (value > 0 && value <= values().length) {
+                return values()[value - 1];
+            }
+            return null;
+        }
+
+        @Override
+        public Integer getIndex() {
+            return ordinal() + 1;
+        }
+
+        @Override
+        public String getValue() {
+            return name;
+        }
+        
+        private static final Map<Integer, FloorPlanType> typeMap = Collections.unmodifiableMap(initTypeMap());
+		private static Map<Integer, FloorPlanType> initTypeMap() {
+			Map<Integer, FloorPlanType> typeMap = new HashMap<>();
+			
+			for(FloorPlanType type : values()) {
+				typeMap.put(type.getIndex(), type);
+			}
+			return typeMap;
+		}
+		public Map<Integer, FloorPlanType> getAllTypes() {
+			return typeMap;
+		}
+    }
 
 
 }

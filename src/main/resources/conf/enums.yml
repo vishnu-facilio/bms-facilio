@@ -222,3 +222,6 @@ enums:
 
   - name: InsuranceType
     enumClassName: com.facilio.bmsconsole.context.InsuranceContext$InsuranceType
+    
+  - name: FloorPlanType
+    enumClassName: com.facilio.bmsconsoleV3.context.floorplan.V3IndoorFloorPlanContext$FloorPlanType

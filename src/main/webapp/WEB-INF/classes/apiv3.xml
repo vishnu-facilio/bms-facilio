@@ -316,6 +316,10 @@
                 class="com.facilio.bmsconsoleV3.actions.FloorplanAction"
                 method="getFacilityDetails">
         </action>
+        <action name="getFloorplanDetailsByType"
+                class="com.facilio.bmsconsoleV3.actions.FloorplanAction"
+                method="getFloorplanDetailsByType">
+        </action>
     </package>
     
     <package name="bulkResourceAllocation" namespace="/api/v3/resourceAllocation" extends="v3Api">

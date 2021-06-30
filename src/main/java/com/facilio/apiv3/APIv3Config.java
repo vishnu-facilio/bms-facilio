@@ -37,6 +37,7 @@ import com.facilio.bmsconsoleV3.commands.floor.CreateFloorAfterSave;
 import com.facilio.bmsconsoleV3.commands.floor.SetFloorRelatedContextCommand;
 import com.facilio.bmsconsoleV3.commands.floorplan.CreateFacilityForDesksCommandV3;
 import com.facilio.bmsconsoleV3.commands.floorplan.FetchFloorPlanMarkerCommand;
+import com.facilio.bmsconsoleV3.commands.floorplan.V3ValidateFloorPlanCommand;
 import com.facilio.bmsconsoleV3.commands.imap.UpdateLatestMessageUIDCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
@@ -1152,7 +1153,9 @@ public class APIv3Config {
     @Module("indoorfloorplan")
     public static Supplier<V3Config> getIndoorFloorPlan() {
         return () -> new V3Config(V3IndoorFloorPlanContext.class, new ModuleCustomFieldCount30())
-                .create().afterSave(TransactionChainFactoryV3.addfloorplanObjectsChain())
+                .create()
+                .beforeSave(new V3ValidateFloorPlanCommand())
+                .afterSave(TransactionChainFactoryV3.addfloorplanObjectsChain())
                 .update().afterSave(TransactionChainFactoryV3.AddORUpdateMarkersAndModulesCommand())
                 .list().afterFetch(TransactionChainFactoryV3.getFloorPlanObjectsChain())
                 .summary().afterFetch(TransactionChainFactoryV3.getFloorPlanObjectsChain())
