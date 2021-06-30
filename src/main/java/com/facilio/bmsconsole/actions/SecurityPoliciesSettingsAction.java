@@ -4,9 +4,11 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.SecurityPolicyAPI;
 import com.facilio.iam.accounts.context.SecurityPolicy;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Objects;
 
 public class SecurityPoliciesSettingsAction extends FacilioAction {
 
@@ -23,7 +25,7 @@ public class SecurityPoliciesSettingsAction extends FacilioAction {
     private List<SecurityPolicy> securityPolicyList;
 
     public String createSecurityPolicy() throws Exception {
-        securityPolicy.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+        Objects.requireNonNull(securityPolicy, "Security policy should not be empty").setOrgId(AccountUtil.getCurrentOrg().getOrgId());
         SecurityPolicyAPI.createSecurityPolicy(securityPolicy);
         this.setResult("securityPolicy", securityPolicy);
         return SUCCESS;

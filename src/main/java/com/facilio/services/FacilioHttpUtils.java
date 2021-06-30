@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,13 +18,13 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 
 public class FacilioHttpUtils {
     private static final Logger LOGGER = LogManager.getLogger(FacilioHttpUtils.class.getName());
@@ -145,6 +146,15 @@ public class FacilioHttpUtils {
             client.close();
         }
         return result.toString();
+    }
+    
+    public static String doHttpPost(String url, Map<String, String> headers, Map<String, String> params, JSONObject bodyJson) throws IOException
+    {
+    		if (headers == null) {
+    			headers = new HashMap<String, String>();
+    		}
+    		headers.put("content-type", "application/json");
+        return doHttpPost(url, headers, params, bodyJson.toJSONString(),-1);
     }
     
     public static String doHttpPost(String url, Map<String, String> headers, Map<String, String> params, String bodyContent) throws IOException

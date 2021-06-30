@@ -58,6 +58,14 @@
                                result="exception" />
         </global-exception-mappings>
     </package>
+    <package name="internalExV3" namespace="/v3/exception"
+			 extends="v3BaseApi">
+		<action name="handleException"
+				class="com.facilio.v3.V3Action"
+				method="handleException">
+			<interceptor-ref name="defaultStack" />
+		</action>
+	</package>
 
     <package name="v3Api" namespace="/api/v3/modules/data" extends="v3BaseApi">
         <interceptors>
