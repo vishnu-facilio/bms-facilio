@@ -4,18 +4,24 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.sso.AccountSSO;
 import com.facilio.accounts.sso.DomainSSO;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.services.filestore.FileStore;
-import com.facilio.services.factory.FacilioFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.service.FacilioService;
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
 
 public class IAMOrgUtil {
+	
+	private static final Logger LOGGER = LogManager.getLogger(IAMOrgUtil.class.getName());
+
 
 	public static IAMAccount signUpOrg(org.json.simple.JSONObject jObj, Locale locale) throws Exception {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getOrgBean().signUpOrg(jObj, locale));
@@ -59,7 +65,12 @@ public class IAMOrgUtil {
 		if (org.getLogoId() > 0) {
 			FileStore fs = FacilioFactory.getFileStore();
 			org.setLogoUrl(fs.newPreviewFileUrl("organization", org.getLogoId(), System.currentTimeMillis() + DEFAULT_URL_TIMEOUT));
-			org.setOriginalUrl(fs.orginalFileUrl(org.getLogoId()));
+			try {
+				org.setOriginalUrl(fs.orginalFileUrl(org.getLogoId()));
+			}
+			catch(Exception e) {
+				LOGGER.error("Exception on org url fetch", e);
+			}
 		}
 		return org;
 	}

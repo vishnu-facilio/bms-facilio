@@ -2,11 +2,9 @@ package com.facilio.services.procon.processor;
 
 import java.util.List;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.services.procon.consumer.FacilioConsumer;
 import com.facilio.services.procon.message.FacilioRecord;
@@ -91,21 +89,6 @@ public abstract class FacilioProcessor implements  Runnable {
     public void run() {
         try {
         		AccountUtil.setCurrentAccount(orgId);
-            if (orgId == 393l) {
-            		if (AccountUtil.getCurrentOrg() != null) {
-            			LOGGER.info("Current org set for steb - " + AccountUtil.getCurrentOrg());
-            			if (AccountUtil.getCurrentAccount() != null) {
-            				Level oldLevel = AccountUtil.getCurrentAccount().getLevel();
-            				AccountUtil.getCurrentAccount().setLevel(Level.TRACE);
-            				User user = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getId());
-            				if (user != null) {
-            					LOGGER.info("super admin for steb - " + user.getOuid());
-            				}
-            				AccountUtil.getCurrentAccount().setLevel(oldLevel);
-            			}
-            		}
-            }
-            
             initialize();
             while (isRunning) {
                 try {
