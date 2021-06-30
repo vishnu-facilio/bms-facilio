@@ -88,12 +88,7 @@ public abstract class FacilioProcessor implements  Runnable {
 
     public void run() {
         try {
-        		if(orgId == 405l) {
-        			AccountUtil.setCurrentAccount(orgId, true);
-        		}
-        		else {
-        			AccountUtil.setCurrentAccount(orgId);
-        		}
+        		AccountUtil.setCurrentAccount(orgId);
             initialize();
             while (isRunning) {
                 try {
