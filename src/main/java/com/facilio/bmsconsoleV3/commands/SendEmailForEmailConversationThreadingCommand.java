@@ -83,11 +83,10 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 		try {
 			String message = emailConversation.getHtmlContent();
 			String subject = emailConversation.getSubject();
-			if(AccountUtil.getCurrentOrg().getOrgId() == 75l || AccountUtil.getCurrentOrg().getOrgId() == 5l) {
 				
-				subject = getSubjectForAddNote(emailConversation,message);
-				message = getMessageForAddNote(emailConversation,message);
-			}
+			subject = getSubjectForAddNote(emailConversation,message);
+			message = getMessageForAddNote(emailConversation,message);
+			
 			JSONObject mailJson = new JSONObject();
 			mailJson.put(EmailClient.SENDER, EmailFactory.getEmailClient().getNoReplyFromEmail());
 			mailJson.put(EmailClient.TO, emailConversation.getTo());
@@ -156,10 +155,8 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 		JSONObject mailJson = new JSONObject();
 		
 		String message = emailConversation.getHtmlContent();
-		if(AccountUtil.getCurrentOrg().getOrgId() == 75l || AccountUtil.getCurrentOrg().getOrgId() == 5l) {
 			
-			message = getMessageForReply(emailConversation,message);
-		}
+	    message = getMessageForReply(emailConversation,message);
 		
 		mailJson.put(EmailClient.SENDER, emailConversation.getFrom());
 		mailJson.put(EmailClient.TO, emailConversation.getTo());
