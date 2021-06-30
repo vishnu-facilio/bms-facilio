@@ -30,7 +30,6 @@ import com.facilio.constants.FacilioConstants.ContextNames;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Level;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -52,27 +51,6 @@ public class AccountUtil {
 			}
 			FacilioServiceUtil.setCurrentService(FacilioConstants.Services.APP_SERVICE);
 			account.setPrevService(prevService);
-		}
-	}
-	
-	// temp
-	public static void setCurrentAccount(long orgId, boolean isProcessor) throws Exception {
-		Organization org = null;
-		org = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() ->IAMUtil.getOrgBean().getOrgv2(orgId));
-		
-		if (org != null) {
-			LOGGER.info("Current org set for starwood - " + org);
-			Account account = new Account(org, null);
-			setCurrentAccount(account);
-			Level oldLevel = getCurrentAccount().getLevel();
-			getCurrentAccount().setLevel(Level.TRACE);
-			User user = AccountUtil.getOrgBean().getSuperAdmin(org.getId());
-			if (user != null) {
-				LOGGER.info("super admin for starwood - " + user.getOuid());
-			}
-			AccountUtil.getCurrentAccount().setLevel(oldLevel);
-			account.setUser(user);
-			setScopingMap(account);
 		}
 	}
 	
