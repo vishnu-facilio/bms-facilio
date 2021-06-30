@@ -56,7 +56,9 @@ public class AddDeskCommand extends FacilioCommand {
 						
 						if (desk != null) {
 							System.out.println("desksprop" + desk.getDeskCode());
-							desksprop.add(desk);
+							if (desk.getId() < 0) {
+								desksprop.add(desk);
+							}
 
 						}
 
