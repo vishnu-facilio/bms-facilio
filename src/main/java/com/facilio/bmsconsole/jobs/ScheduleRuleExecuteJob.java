@@ -39,7 +39,7 @@ public class ScheduleRuleExecuteJob extends FacilioJob {
 			List<Map<String, Object>> props = selectBuilder.get();
 			if (props != null && !props.isEmpty()) {			
 				ScheduledRuleJobsMetaContext scheduledRuleJobsMetaContext = FieldUtil.getAsBeanFromMap(props.get(0), ScheduledRuleJobsMetaContext.class);
-				if(scheduledRuleJobsMetaContext != null) {
+				if(scheduledRuleJobsMetaContext != null && scheduledRuleJobsMetaContext.isActive()) {
 					FacilioContext context = new FacilioContext();
 					context.put(FacilioConstants.ContextNames.SCHEDULE_RULE_META, scheduledRuleJobsMetaContext);
 					context.put(FacilioConstants.Job.JOB_CONTEXT, jc);

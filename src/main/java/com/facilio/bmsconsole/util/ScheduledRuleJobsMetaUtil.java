@@ -11,10 +11,14 @@ import org.apache.commons.lang.StringUtils;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ScheduledRuleJobsMetaContext;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -22,6 +26,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.time.DateRange;
 
 public class ScheduledRuleJobsMetaUtil {
 	
@@ -37,13 +42,46 @@ public class ScheduledRuleJobsMetaUtil {
 		return false;
 	}
 	
-	public static List<ScheduledRuleJobsMetaContext> fetchScheduledRuleJobsMetaFromRuleId(long ruleId) throws Exception{
+	public static void addScheduledRuleJobsMeta(ScheduledRuleJobsMetaContext scheduledRuleJobsMetaContext) throws Exception{
+		
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getScheduledRuleJobsMetaModule().getTableName())
+				.fields(FieldFactory.getScheduledRuleJobsMetaFields());
+		Map<String, Object> props = FieldUtil.getAsProperties(scheduledRuleJobsMetaContext);
+		insertBuilder.addRecord(props);
+		
+		insertBuilder.save();
+		scheduledRuleJobsMetaContext.setId((Long) props.get("id"));
+	}
+	
+	public static List<WorkflowRuleContext> fetchMatchedScheduledRulesFromModule(long moduleId) throws Exception{
+		
+		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
+		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
+		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
+													.select(fields)
+													.table(module.getTableName())
+													.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", ""+moduleId, NumberOperators.EQUALS))
+													.andCondition(CriteriaAPI.getCondition("SCHEDULE_TYPE","scheduleType", "", CommonOperators.IS_NOT_EMPTY))
+													.andCondition(CriteriaAPI.getCondition("DATE_FIELD_ID", "dateFieldId", "", CommonOperators.IS_NOT_EMPTY));
+
+		List<WorkflowRuleContext> rules = WorkflowRuleAPI.getWorkFlowsFromMapList(ruleBuilder.get(), true, true);
+		if(rules != null && !rules.isEmpty()) {
+			return rules;
+		}
+		return null;
+	}
+	
+	public static List<ScheduledRuleJobsMetaContext> fetchAlreadyPresentScheduledRuleJobsMeta(long ruleId, long moduleId, long recordId) throws Exception{
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getScheduledRuleJobsMetaFields())
 				.table(ModuleFactory.getScheduledRuleJobsMetaModule().getTableName())
-				.andCondition(CriteriaAPI.getCondition("RULE_ID", "ruleId", ""+ruleId, NumberOperators.EQUALS));
-					
+				.andCondition(CriteriaAPI.getCondition("IS_ACTIVE", "isActive", ""+true, NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("RULE_ID", "ruleId", ""+ruleId, NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", ""+moduleId, NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("RECORD_ID", "recordId", ""+recordId, NumberOperators.EQUALS));
+
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {			
 			List<ScheduledRuleJobsMetaContext> scheduledRuleJobsMetaContextList = FieldUtil.getAsBeanListFromMapList(props, ScheduledRuleJobsMetaContext.class);
@@ -54,7 +92,7 @@ public class ScheduledRuleJobsMetaUtil {
 		return null;
 	}
 	
-	public static void disableScheduledRuleJobsMetaFromRuleId(long ruleId) throws Exception{
+	public static void disableScheduledRuleJobsMetaFromRuleId(long ruleId, DateRange dateRange) throws Exception{
 		
 		FacilioModule module = ModuleFactory.getScheduledRuleJobsMetaModule();
 		List<FacilioField> fields = FieldFactory.getScheduledRuleJobsMetaFields();
@@ -70,7 +108,10 @@ public class ScheduledRuleJobsMetaUtil {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(ModuleFactory.getScheduledRuleJobsMetaModule().getTableName())
 				.fields(updatedfields)
-				.andCondition(CriteriaAPI.getCondition("RULE_ID", "ruleId", ""+ruleId, NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition("RULE_ID", "ruleId", ""+ruleId, NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("IS_ACTIVE", "isActive", ""+true, NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("EXECUTION_TIME", "executionTime", dateRange.toString(), DateOperators.BETWEEN));
+
 
 		Map<String, Object> props = FieldUtil.getAsProperties(updateMap);
 		updateBuilder.update(props);

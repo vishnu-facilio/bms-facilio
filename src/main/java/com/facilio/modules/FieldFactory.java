@@ -1913,6 +1913,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("modifiedTime", "MODIFIED_TIME", module, FieldType.NUMBER));
         fields.add(getField("time", "JOB_TIME", module, FieldType.STRING));
         fields.add(getField("parentId", "PARENT_ID", module, FieldType.NUMBER));
+        fields.add(getField("lastScheduleRuleExecutedTime", "LAST_SCHEDULE_RULE_EXECUTED_TIME", module, FieldType.NUMBER));
 
         fields.add(getModuleIdField(module));
 

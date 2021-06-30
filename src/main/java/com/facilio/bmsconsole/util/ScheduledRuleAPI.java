@@ -105,17 +105,8 @@ public class ScheduledRuleAPI extends WorkflowRuleAPI {
 	}
 	
 	protected static void updateScheduledRuleJob(WorkflowRuleContext rule) throws Exception {
-		   	
-    	if(ScheduledRuleJobsMetaUtil.checkNewOrOldScheduleRuleExecution()) {
-    		updateScheduleRuleJobsMeta(rule);
-		}
-		
 		deleteScheduledRuleJob(rule);
 		addScheduledRuleJob(rule);
-	}
-	
-	protected static void updateScheduleRuleJobsMeta(WorkflowRuleContext rule) throws Exception {
-		ScheduledRuleJobsMetaUtil.disableScheduledRuleJobsMetaFromRuleId(rule.getId());
 	}
 	
 	private static final int DATE_TIME_RULE_INTERVAL = 30; //In Minutes //Only 5, 10, 15, 20, 30

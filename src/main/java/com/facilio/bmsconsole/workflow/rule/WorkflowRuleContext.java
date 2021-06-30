@@ -134,6 +134,14 @@ public class WorkflowRuleContext implements Serializable {
 		this.scheduleType = ScheduledRuleType.valueOf (scheduleType);
 	}
 
+	private long lastScheduleRuleExecutedTime = -1;
+	public long getLastScheduleRuleExecutedTime() {
+		return lastScheduleRuleExecutedTime;
+	}
+	public void setLastScheduleRuleExecutedTime(long lastScheduleRuleExecutedTime) {
+		this.lastScheduleRuleExecutedTime = lastScheduleRuleExecutedTime;
+	}
+	
 	private long interval = -1; //In Seconds
 	public long getInterval() {
 		return interval;

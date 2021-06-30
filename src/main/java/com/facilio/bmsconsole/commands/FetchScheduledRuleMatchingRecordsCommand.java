@@ -34,6 +34,7 @@ public class FetchScheduledRuleMatchingRecordsCommand extends FacilioCommand {
 		
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, rule.getModule().getName());
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, records);
+		context.put(FacilioConstants.ContextNames.DATE_RANGE, getRange(rule, (JobContext) context.get(FacilioConstants.Job.JOB_CONTEXT)));
 		
 		return false;
 	}

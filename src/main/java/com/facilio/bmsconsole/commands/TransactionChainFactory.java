@@ -966,6 +966,7 @@ public class TransactionChainFactory {
 		
 		public static FacilioChain getScheduledRuleJobsExecutionChain() {
 			FacilioChain c = getDefaultChain();
+			c.addCommand(new DisableActiveScheduledRuleMetaJobsCommand());
 			c.addCommand(new FetchScheduledRuleMatchingRecordsCommand());
 			c.addCommand(new CreateScheduleRuleJobsCommand());
 			return c;

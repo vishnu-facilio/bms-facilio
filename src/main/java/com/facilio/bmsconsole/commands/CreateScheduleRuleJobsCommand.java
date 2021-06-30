@@ -13,6 +13,8 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.HistoricalLoggerContext;
 import com.facilio.bmsconsole.context.ScheduledRuleJobsMetaContext;
+import com.facilio.bmsconsole.util.ScheduledRuleJobsMetaUtil;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
@@ -26,7 +28,9 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.taskengine.job.JobContext;
 import com.facilio.tasker.FacilioTimer;
+import com.facilio.time.DateRange;
 
 public class CreateScheduleRuleJobsCommand extends FacilioCommand implements PostTransactionCommand{
 
@@ -74,18 +78,19 @@ public class CreateScheduleRuleJobsCommand extends FacilioCommand implements Pos
 			if(scheduledRuleJobsMetaContextList != null && !scheduledRuleJobsMetaContextList.isEmpty()) {
 				for(ScheduledRuleJobsMetaContext scheduledRuleJobsMetaContext:scheduledRuleJobsMetaContextList)
 				{
-					GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-							.table(ModuleFactory.getScheduledRuleJobsMetaModule().getTableName())
-							.fields(FieldFactory.getScheduledRuleJobsMetaFields());
-					Map<String, Object> props = FieldUtil.getAsProperties(scheduledRuleJobsMetaContext);
-					insertBuilder.addRecord(props);
-					
-					insertBuilder.save();
-					scheduledRuleJobsMetaContext.setId((Long) props.get("id"));
+					ScheduledRuleJobsMetaUtil.addScheduledRuleJobsMeta(scheduledRuleJobsMetaContext);										
 				}
 				
 			}
-					
+			
+			DateRange dateRange = (DateRange)context.get(FacilioConstants.ContextNames.DATE_RANGE);
+			if(dateRange != null && dateRange.getEndTime() != -1) {
+				long lastExecutedTime = dateRange.getEndTime();
+				WorkflowRuleContext workflowRuleContext = new WorkflowRuleContext();
+				workflowRuleContext.setId(rule.getId());
+				workflowRuleContext.setLastScheduleRuleExecutedTime(lastExecutedTime);
+				WorkflowRuleAPI.updateWorkflowRule(workflowRuleContext);
+			}			
 		}
 			
 		return false;
