@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
@@ -20,6 +21,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.util.V3Util;
 
 public class UpdateDeskCommand extends FacilioCommand {
 
@@ -43,6 +45,16 @@ public class UpdateDeskCommand extends FacilioCommand {
 						V3DeskContext desk = marker.getDesk();
 						if (desk != null) {
                             if (desk.getId() > 0) {
+                            	if(desk.getDeskType() != 1 && desk.getEmployee() != null) {
+									JSONObject moveObj = new JSONObject();
+									moveObj.put("employee", desk.getEmployee());
+									moveObj.put("from", desk);
+									moveObj.put("moveType", 1);
+									moveObj.put("siteId", desk.getSiteId());
+									moveObj.put("timeOfMove", System.currentTimeMillis());
+									FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.MOVES);
+									V3Util.createRecord(module, (JSONObject) moveObj);
+								}
                             	Map<Long, List<UpdateChangeSet>> changes = V3RecordAPI.updateRecord(desk, deskModule, fields, true);
                             	if(changes != null && !changes.isEmpty()) {
                             		deskChangeSet.putAll(changes);

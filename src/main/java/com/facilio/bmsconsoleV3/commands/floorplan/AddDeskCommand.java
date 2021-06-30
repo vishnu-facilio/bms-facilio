@@ -1,6 +1,8 @@
 package com.facilio.bmsconsoleV3.commands.floorplan;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONObject;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.floorplan.V3DeskContext;
@@ -15,6 +17,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.util.V3Util;
 
 import org.apache.commons.chain.Context;
 
@@ -61,12 +64,23 @@ public class AddDeskCommand extends FacilioCommand {
 								desksprop.add(desk);
 							}
 							else if (desk.getId() > 0){
-								V3RecordAPI.updateRecord(desk, deskModule, fields, true);;
-
-								
-								//V3DeskContext updatedesk = (V3DeskContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.Floorplan.DESKS, desk, V3DeskContext.class);
-								
-								DesksAPI.AddorDeleteFacilityForDesks(desk);
+								if(desk.getDeskType() != 1 && desk.getEmployee() != null) {
+									JSONObject moveObj = new JSONObject();
+									moveObj.put("employee", desk.getEmployee());
+									moveObj.put("from", desk);
+									moveObj.put("moveType", 1);
+									moveObj.put("siteId", desk.getSiteId());
+									moveObj.put("timeOfMove", System.currentTimeMillis());
+									FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.MOVES);
+									V3Util.createRecord(module, (JSONObject) moveObj);
+								}
+								Map<Long, List<UpdateChangeSet>> deskChangeSet = V3RecordAPI.updateRecord(desk, deskModule, fields, true);
+								if(deskChangeSet != null && !deskChangeSet.isEmpty()) {
+								for(Long deskId : deskChangeSet.keySet()) {
+									V3DeskContext updatedDesk = (V3DeskContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.Floorplan.DESKS, deskId, V3DeskContext.class);
+									DesksAPI.AddorDeleteFacilityForDesks(updatedDesk);
+								}
+								}
 							}
 
 						}
@@ -81,7 +95,7 @@ public class AddDeskCommand extends FacilioCommand {
 						
 						DesksAPI.AddorDeleteFacilityForDesks(desk);
 					}
-				}
+					}
 											
 				}
 				}
