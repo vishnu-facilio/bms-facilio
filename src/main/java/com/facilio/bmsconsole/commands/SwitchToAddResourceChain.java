@@ -1,10 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -76,8 +72,10 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		ImportProcessContext importProcessContext = (ImportProcessContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
-		HashMap<String, List<ReadingContext>>groupedContext = (HashMap<String, List<ReadingContext>>) context.get(ImportAPI.ImportProcessConstants.GROUPED_READING_CONTEXT);
-		List<ReadingContext>readingsContext = new ArrayList<ReadingContext>();
+		HashMap<String, List<ReadingContext>>groupedContext = (HashMap<String, List<ReadingContext>>)
+				context.get(ImportAPI.ImportProcessConstants.GROUPED_READING_CONTEXT);
+
+		List<ReadingContext> readingsContext = new ArrayList<ReadingContext>();
 		if(groupedContext != null) {
 			for(List<ReadingContext> rContext: groupedContext.values()) {
 				readingsContext.addAll(rContext);
@@ -186,34 +184,42 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 
 		}
 		else if(facilioModule.getName().equals(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE)) {
+
+			LOGGER.info("Import handling for PM");
 			
 			for(ReadingContext reading :readingsContext) {
+
 				Map<String, Object> props = FieldUtil.getAsProperties(reading);
-				
 				props = removeNullNodes.apply(props);
+
+				LOGGER.info("Mapped WO props: " + props);
 				
 				if(reading.getId() <= 0) {
-					
+					// TODO: use constants from FieldFactory instead of magic strings
+
 					Long statusId = -1l;
 					Long priorityId = -1l;
-					Long categoryId = -1l;
-					Long typeId = -1l;
-					Long assignmentGroupId = -1l;
-					Long assignedToId = -1l;
-					Long tenantId = -1l;
-					Long vendorId = -1l;
-					Long safetyPlanId = -1l;
+					Long categoryId = -1L;
+					Long typeId = -1L;
+					Long assignmentGroupId = -1L;
+					Long assignedToId = -1L;
+					Long tenantId = -1L;
+					Long vendorId = -1L;
+					Long safetyPlanId = -1L;
+					Long baseSpaceId = -1L;
+					Long assetCategoryId = null;
+					Long spaceCategoryId = null;
 					Integer triggerFrequency = -1;
-					Long baseSpaceId = -1l;
-					Long assetCategoryId = null,spaceCategoryId = null;
 					ResourceContext resource = null;
-					
+
 					if(props.get("statusId") != null) {
 						statusId = (Long) ((Map<String,Object>)props.remove("statusId")).get("id");
 					}
+
 					if(props.get("priorityId") != null) {
 						priorityId = (Long) ((Map<String,Object>)props.remove("priorityId")).get("id");
 					}
+
 					if(props.get("categoryId") != null) {
 						categoryId = (Long) ((Map<String,Object>)props.remove("categoryId")).get("id");
 					}
@@ -258,25 +264,23 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 					
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					
-					List<FacilioField> workorderCustomFields = modBean.getAllCustomFields(FacilioConstants.ContextNames.WORK_ORDER);
+					List<FacilioField> woCustomFields = modBean.getAllCustomFields(FacilioConstants.ContextNames.WORK_ORDER);
 					
-					JSONObject additionalInfoJSON = new JSONObject();
-					
-					if(workorderCustomFields != null && !workorderCustomFields.isEmpty()) {
-						
-						for(FacilioField workorderCustomField : workorderCustomFields) {
-							if(props.get(workorderCustomField.getName()) != null) {
-								additionalInfoJSON.put(workorderCustomField.getName(), props.remove(workorderCustomField.getName()));
+					JSONObject addonInfo = new JSONObject();
+					if(woCustomFields != null && !woCustomFields.isEmpty()) {
+						for(FacilioField field : woCustomFields) {
+							if(props.get(field.getName()) != null) {
+								addonInfo.put(field.getName(), props.remove(field.getName()));
 							}
 						}
 					}
-					
-					
-					LOGGER.error("wo props -> "+props);
-					
+
 					WorkorderTemplate woTemplate = FieldUtil.getAsBeanFromMap(props, WorkorderTemplate.class);
-					
 					PreventiveMaintenance pm = FieldUtil.getAsBeanFromMap(props, PreventiveMaintenance.class);
+
+					LOGGER.error("constructed woTemplate -> " + woTemplate);
+					LOGGER.error("constructed PM -> " + pm);
+
 					if(props.get("triggerName") != null) {
 						PMTriggerContext trigger = FieldUtil.getAsBeanFromMap(props, PMTriggerContext.class);
 						
@@ -294,9 +298,7 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 					}
 					
 					pm.setModifiedById(-1);
-					
 					pm.setBaseSpaceId(baseSpaceId);
-					
 					pm.setAssetCategoryId(assetCategoryId);
 					pm.setSpaceCategoryId(spaceCategoryId);
 					
@@ -309,8 +311,7 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 					woTemplate.setTenantId(tenantId);
 					woTemplate.setVendorId(vendorId);
 					woTemplate.setSafetyPlanId(safetyPlanId);
-					
-					woTemplate.setAdditionInfo(additionalInfoJSON);
+					woTemplate.setAdditionInfo(addonInfo);
 					
 					if(resource != null) {
 						woTemplate.setResource(resource);
@@ -318,17 +319,37 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 					}
 					pm.setName(woTemplate.getSubject());
 					pm.setTitle(woTemplate.getSubject());
-					
-					FacilioChain addPM = FacilioChainFactory.getAddNewPreventiveMaintenanceChain();
-					
-					FacilioContext contextNew = addPM.getContext();
-					
-					contextNew.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
-					contextNew.put(FacilioConstants.ContextNames.WORK_ORDER, woTemplate.getWorkorder());
-					contextNew.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
-					contextNew.put(FacilioConstants.ContextNames.SKIP_WO_CREATION,true);
-			 		
-					addPM.execute();
+
+					long pmID = ((Double) props.getOrDefault("pmId", -1)).longValue();
+					if (pmID <= 0){
+						LOGGER.info("ID prop not found, adding as new PM");
+						FacilioChain newPMChain = FacilioChainFactory.getAddNewPreventiveMaintenanceChain();
+						FacilioContext ctx = newPMChain.getContext();
+						ctx.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
+						ctx.put(FacilioConstants.ContextNames.WORK_ORDER, woTemplate.getWorkorder());
+						ctx.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
+						ctx.put(FacilioConstants.ContextNames.SKIP_WO_CREATION,true);
+						newPMChain.execute();
+					}else{
+						LOGGER.info("ID prop: " + pmID + " found, updating existing PM");
+						/* children wont' be needed as update is done on ID basis */
+						PreventiveMaintenance existingPM = PreventiveMaintenanceAPI.getPM(pmID, false);
+
+						FacilioChain updatePMChain = FacilioChainFactory.getUpdateNewPreventiveMaintenanceChain();
+						FacilioContext ctx = updatePMChain.getContext();
+						ctx.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
+						ctx.put(FacilioConstants.ContextNames.WORK_ORDER, woTemplate.getWorkorder());
+						ctx.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
+						List<Long> idList = new ArrayList<>();
+						idList.add(pmID);
+						ctx.put(FacilioConstants.ContextNames.RECORD_ID_LIST, idList);
+
+//						ctx.put(FacilioConstants.ContextNames.TASK_SECTION_TEMPLATES, existingPM.getWoTemplate().getTaskTemplates());
+//						ctx.put(FacilioConstants.ContextNames.PREREQUISITE_APPROVER_TEMPLATES, existingPM.getWoTemplate().getPrerequisiteApproverTemplates());
+
+						/* skipped attachment context info; not relevant here */
+						updatePMChain.execute();
+					}
 				}
 			}
 		}
