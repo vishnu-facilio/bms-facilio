@@ -48,6 +48,8 @@ public class ReplacePlaceHoldersCommand extends FacilioCommand {
             String replacedString = StringSubstitutor.replace(formattedString, params);
 
             context.put(FacilioConstants.ContextNames.REPLACED_STRING, replacedString);
+            context.put(FacilioConstants.ContextNames.WORK_FLOW_PARAMS, params);
+            context.put(FacilioConstants.ContextNames.MODULE_DATA, moduleData);
         }
         return false;
     }
