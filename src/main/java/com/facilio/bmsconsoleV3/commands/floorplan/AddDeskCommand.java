@@ -44,7 +44,8 @@ public class AddDeskCommand extends FacilioCommand {
 				List<V3MarkerContext> markers = floorplan.getMarkers();
 
 				if (CollectionUtils.isNotEmpty(markers)) {
-       			 List<V3DeskContext> desksprop = new ArrayList<V3DeskContext>();
+       			List<V3DeskContext> desksprop = new ArrayList<V3DeskContext>();
+				
 					for (V3MarkerContext marker : markers) {
 						Map<String, Object> floorObject = new HashMap<>();
 						floorObject.put("id", floorplan.getId());
@@ -58,6 +59,14 @@ public class AddDeskCommand extends FacilioCommand {
 							System.out.println("desksprop" + desk.getDeskCode());
 							if (desk.getId() < 0) {
 								desksprop.add(desk);
+							}
+							else if (desk.getId() > 0){
+								V3RecordAPI.updateRecord(desk, deskModule, fields, true);;
+
+								
+								//V3DeskContext updatedesk = (V3DeskContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.Floorplan.DESKS, desk, V3DeskContext.class);
+								
+								DesksAPI.AddorDeleteFacilityForDesks(desk);
 							}
 
 						}
@@ -73,15 +82,16 @@ public class AddDeskCommand extends FacilioCommand {
 						DesksAPI.AddorDeleteFacilityForDesks(desk);
 					}
 				}
-					
+											
 				}
 				}
 
 				}
 
-			}
+		}
 
 
 		return false;
 	}
+	
 }
