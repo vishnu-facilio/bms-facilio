@@ -21,6 +21,8 @@ import com.facilio.tasker.FacilioTimer;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringSubstitutor;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -74,7 +76,6 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
             slaEntities = SLAWorkflowAPI.getSLAEntitiesForCommitment(getId());
         }
 
-        log("Sla entities: " + slaEntities);
         if (CollectionUtils.isNotEmpty(slaEntities)) {
             SLAPolicyContext slaPolicy = (SLAPolicyContext) WorkflowRuleAPI.getWorkflowRule(getParentRuleId());
             List<SLAPolicyContext.SLAPolicyEntityEscalationContext> escalations = slaPolicy.getEscalations();
@@ -93,19 +94,23 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
                 FacilioField baseField = modBean.getField(slaEntity.getBaseFieldId());
                 FacilioField dueField = modBean.getField(slaEntity.getDueFieldId());
 
-                log("base field: " + baseField.getName() + "; due field: " + dueField.getName());
                 Long timeValue = (Long) FieldUtil.getValue(moduleRecord, baseField);
-                log("Time value: " + timeValue);
                 if (timeValue == null) {
                     continue;
                 }
+
+                long slaDurationInSeconds = getSlaEntityDuration(slaEntityDuration, moduleRecord);
+                if (slaDurationInSeconds < 0) {
+                    continue;
+                }
+
                 if (slaEntityDuration.getTypeOrDefault() == 1) {
-                    timeValue += slaEntityDuration.getAddDuration() * 1000;
+                    timeValue += slaDurationInSeconds * 1000;
                 }
                 else {
                     // retrieve from business hour
                     BusinessHoursList businessHours = BusinessHoursAPI.getCorrespondingBusinessHours(moduleRecord.getSiteId());
-                    timeValue = businessHours.getNextPossibleTime(timeValue, (int) slaEntityDuration.getAddDuration());
+                    timeValue = businessHours.getNextPossibleTime(timeValue, (int) slaDurationInSeconds);
                 }
                 log("Updated Time value: " + timeValue);
 
@@ -137,6 +142,19 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
         }
 
         super.executeTrueActions(record, context, placeHolders);
+    }
+
+    private long getSlaEntityDuration(SLAEntityDuration slaEntityDuration, ModuleBaseWithCustomFields moduleRecord) throws Exception {
+        if (StringUtils.isNotEmpty(slaEntityDuration.getDurationPlaceHolder())) {
+            Map<String, Object> placeHolders = WorkflowRuleAPI.getRecordPlaceHolders(getModuleName(), moduleRecord, null);
+            String replace = StringSubstitutor.replace(slaEntityDuration.getDurationPlaceHolder(), placeHolders);
+            try {
+                return Integer.parseInt(replace);
+            } catch (NumberFormatException ex) {
+                return -1;
+            }
+        }
+        return slaEntityDuration.getAddDuration();
     }
 
     public static void addEscalationJobs(Long parentRuleId, List<SLAWorkflowEscalationContext> escalations,
@@ -181,14 +199,32 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
             this.slaCommitmentId = slaCommitmentId;
         }
 
+        @Deprecated
         private long addDuration = -1;
+        @Deprecated
         public long getAddDuration() {
             return addDuration;
         }
+        @Deprecated
         public void setAddDuration(long addDuration) {
             this.addDuration = addDuration;
         }
 
+        private String durationPlaceHolder;
+        public String getDurationPlaceHolder() {
+            if (StringUtils.isNotEmpty(durationPlaceHolder)) {
+                return durationPlaceHolder;
+            }
+            if (addDuration > 0) {
+                return String.valueOf(addDuration);
+            }
+            return null;
+        }
+        public void setDurationPlaceHolder(String durationPlaceHolder) {
+            this.durationPlaceHolder = durationPlaceHolder;
+        }
+
+        // 1 is calendar hours, 2 is business hours
         private int type = -1;
         public int getType() {
             return type;
