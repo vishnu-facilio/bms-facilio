@@ -1564,7 +1564,7 @@
 		</action>
 		<action name="meta" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="metadata">
-<!--			<param name="translationImpl">TestTranslation</param>-->
+			 <param name="translationImpl">TestTranslation</param>
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
 				<param name="includeProperties">meta.*</param>

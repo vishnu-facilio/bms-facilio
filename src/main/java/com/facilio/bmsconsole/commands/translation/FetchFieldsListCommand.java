@@ -3,59 +3,49 @@ package com.facilio.bmsconsole.commands.translation;
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.util.DBConf;
 import com.facilio.fw.BeanFactory;
 import com.facilio.lang.i18n.translation.TranslationConstants;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.services.factory.FacilioFactory;
-import com.facilio.services.filestore.FileStore;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 @Log4j
 public class FetchFieldsListCommand extends FacilioCommand {
     @Override
     public boolean executeCommand ( Context context ) throws Exception {
         Map<String, List<FacilioModule>> modules = (Map<String, List<FacilioModule>>)context.get(FacilioConstants.ContextNames.MODULE_LIST);
-        String langCode = (String)context.get(TranslationConstants.LANG_CODE);
-        JSONArray array = new JSONArray();
+        Properties translationFile = (Properties)context.get("propertyFile");
+        JSONArray array = (JSONArray)context.get(TranslationConstants.TRANSLATION_LIST);
         JSONObject metaData = new JSONObject();
-        metaData.put("systemModules",constructMetaData(modules.get("systemModules"),langCode));
-        metaData.put("customModules",constructMetaData(modules.get("customModules"),langCode));
+        metaData.put("systemModules",constructMetaData(modules.get("systemModules"),translationFile));
+        metaData.put("customModules",constructMetaData(modules.get("customModules"),translationFile));
         array.add(metaData);
-        context.put("translationList",array);
+        context.put(TranslationConstants.TRANSLATION_LIST,array);
         return false;
     }
 
-    private JSONArray constructMetaData ( List<FacilioModule> modules,String langCode ) throws Exception {
+    private JSONArray constructMetaData ( List<FacilioModule> modules,Properties translationFile ) throws Exception {
         JSONArray array = new JSONArray();
         if(CollectionUtils.isEmpty(modules)) {
             return array;
         }
         ModuleBean bean = (ModuleBean)BeanFactory.lookup("ModuleBean");
-        long fileId = TranslationUtils.getFileId(langCode);
-        FileStore fs = FacilioFactory.getFileStore();
-        try (InputStream stream = DBConf.getInstance().getFileContent(fileId)) {
-            IOUtils.toString(stream, StandardCharsets.UTF_8);
-            modules.forEach(module -> {
-                try {
-                    List<FacilioField> fields = bean.getModuleFields(module.getName());
-                    array.add(TranslationUtils.constructJSONObject(fields,module,stream));
-                } catch (Exception e) {
-                    throw new RuntimeException("Exception occurred while adding fields in Translation",e);
-                }
-            });
-        }
+        modules.forEach(module -> {
+            try {
+                List<FacilioField> fields = bean.getModuleFields(module.getName());
+                array.add(ModuleTranslationUtils.constructJSONObject(fields,module,translationFile));
+            } catch (Exception e) {
+                throw new RuntimeException("Exception occurred while adding fields in Translation",e);
+            }
+        });
         return array;
     }
 
