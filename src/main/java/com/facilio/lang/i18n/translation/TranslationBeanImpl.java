@@ -83,7 +83,7 @@ public class TranslationBeanImpl implements TranslationBean {
     public void saveTranslationFile ( String langCode,Properties translationFile ) throws Exception {
         long existingFileId = TranslationsUtil.getTranslationFileId(langCode);
         DBConf.getInstance().deleteFileContent(Collections.singletonList(existingFileId));
-        String fileContent = convertObjectToFile(translationFile);
+        String fileContent = convertObjectToString(translationFile);
         FacilioUtil.throwIllegalArgumentException(StringUtils.isEmpty(fileContent),"Invalid content to store in Property file");
         long newFileId = DBConf.getInstance().addFile(fileContent,TranslationConstants.TRANSLATION_DATA + ".properties","text/plain");
         Map<String, Object> props = new HashMap<>();
@@ -91,10 +91,12 @@ public class TranslationBeanImpl implements TranslationBean {
         updateFileId(existingFileId,props);
     }
 
-    private String convertObjectToFile ( Properties prop )throws Exception {
+    private String convertObjectToString ( Properties prop )throws Exception {
         StringWriter writer = new StringWriter();
         try {
-            prop.store(writer, "Translation Properties");
+            if(prop != null && !prop.isEmpty()){
+                prop.store(writer, "Translation Properties");
+            }
         } catch (Exception e) {
             throw e;
         }
