@@ -1265,19 +1265,19 @@ public class ReadingsAPI {
 		
 		
 		for (ReadingContext reading : readings) {
+			int interval = defaultInterval;
 			Long controllerId = assetVsControllerIdMap.get(reading.getParentId());
-			if (controllerId == null) {
-				LOGGER.error("controller missing for asset - " + reading.getParentId());
-				continue;
-			}
-			Map<String, Object> controller = controllers.get(controllerId);
-			com.facilio.agentv2.FacilioAgent agent = agentMap.get((long)controller.get("agentId"));
-			if (agent.getInterval() > 0l) {
-				setInterval(reading, (int)agent.getInterval());
+			if (controllerId != null) {
+				Map<String, Object> controller = controllers.get(controllerId);
+				com.facilio.agentv2.FacilioAgent agent = agentMap.get((long)controller.get("agentId"));
+				if (agent.getInterval() > 0l) {
+					interval =  (int)agent.getInterval();
+				}
 			}
 			else {
-				setInterval(reading, defaultInterval);
+				LOGGER.error("controller missing for asset - " + reading.getParentId());
 			}
+			setInterval(reading, interval);
 		}
 	}
 	
