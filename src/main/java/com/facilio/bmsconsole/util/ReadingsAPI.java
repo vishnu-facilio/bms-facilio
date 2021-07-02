@@ -1265,7 +1265,11 @@ public class ReadingsAPI {
 		
 		
 		for (ReadingContext reading : readings) {
-			long controllerId = assetVsControllerIdMap.get(reading.getParentId());
+			Long controllerId = assetVsControllerIdMap.get(reading.getParentId());
+			if (controllerId == null) {
+				LOGGER.error("controller missing for asset - " + reading.getParentId());
+				continue;
+			}
 			Map<String, Object> controller = controllers.get(controllerId);
 			com.facilio.agentv2.FacilioAgent agent = agentMap.get((long)controller.get("agentId"));
 			if (agent.getInterval() > 0l) {
