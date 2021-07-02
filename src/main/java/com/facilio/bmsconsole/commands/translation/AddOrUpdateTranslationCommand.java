@@ -28,6 +28,7 @@ public class AddOrUpdateTranslationCommand extends FacilioCommand {
                 }
                 String key = prefix + "." + prop.get("key") + "." + suffix;
                 String value = (String)prop.getOrDefault("value","");
+                LOGGER.info("Translation kye "+key+" "+"value : "+value);
                 translationFile.setProperty(key.trim(),value);
             }
             TranslationBean bean = (TranslationBean)BeanFactory.lookup("TranslationBean");
