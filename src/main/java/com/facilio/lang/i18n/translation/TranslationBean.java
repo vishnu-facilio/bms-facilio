@@ -18,4 +18,5 @@ public interface TranslationBean extends RootBean {
 
     Properties getTranslationFile(@NonNull String langCode) throws Exception;
 
+    void saveTranslationFile(String langCode, Properties translationFile) throws Exception;
 }

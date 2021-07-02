@@ -5,5 +5,5 @@ version: 1.0
 # Also to make them single ton classes and so not state should be present in the impl class
 
 translations:
-  - name : TestTranslation
+  - name : ModuleTranslation
     translationImplClass : com.facilio.bmsconsole.TranslationImpl.ModuleTranslationImpl

@@ -1,46 +1,85 @@
 package com.facilio.bmsconsole.commands.translation;
 
+import com.amazonaws.services.dynamodbv2.xspec.L;
+import com.facilio.collections.UniqueMap;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.lang.i18n.translation.TranslationConstants;
+import com.facilio.modules.FacilioEnum;
+import com.facilio.service.FacilioServiceUtil;
+import com.facilio.translation.TranslationIfc;
 import com.facilio.util.FacilioUtil;
+import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+@Log4j
 public class TranslationsUtil {
 
     private static final String TRANSLATION_VALIDATION_FILE = "conf/translationvalidation.yml";
+    private static final Map<String, TranslationConfFile> TRANSLATION_CONF_FILE_MAP = Collections.unmodifiableMap(initTranslationConfFile());
+
+    @SneakyThrows
+    private static Map<String, TranslationConfFile> initTranslationConfFile ()  {
+        try {
+            Map<String, Object> confFile = loadYaml();
+            List<Map<String, Object>> list = (List<Map<String, Object>>)confFile.get("translation");
+            Map<String, TranslationConfFile> translationsFile = new UniqueMap<>();
+            if (CollectionUtils.isNotEmpty(list)) {
+                for (Map<String, Object> translation : list) {
+                    String prefix = (String) translation.get(TranslationConstants.PREFIX);
+                    FacilioUtil.throwIllegalArgumentException(StringUtils.isEmpty(prefix), "Prefix cannot be empty for translation config file");
+                    List<String> suffix = (List<String>)translation.get(TranslationConstants.SUFFIX);
+                    FacilioUtil.throwIllegalArgumentException(CollectionUtils.isEmpty(suffix), "Suffix cannot be empty for translation config file");
+                    TranslationConfFile confInstance = new TranslationConfFile();
+                    confInstance.setPrefix(prefix);
+                    confInstance.setSuffix(suffix);
+                    translationsFile.put(prefix, confInstance);
+                }
+            }
+            return translationsFile;
+        }catch (Exception e){
+            LOGGER.error("Exception occurrend while loading translation conf file",e);
+            throw e;
+        }
+    }
+
+    private static Map<String, Object> loadYaml () throws IOException {
+        Yaml yaml = new Yaml();
+        try (InputStream inputStream = FacilioServiceUtil.class.getClassLoader().getResourceAsStream(TRANSLATION_VALIDATION_FILE)) {
+            return yaml.load(inputStream);
+        }catch (Exception e){
+            throw e;
+        }
+    }
 
     public static long getTranslationFileId ( String langCode ) throws Exception {
         GenericSelectRecordBuilder select = new GenericSelectRecordBuilder().select(TranslationConstants.getTranslationFields())
                 .table(TranslationConstants.getTranslationModule().getTableName())
                 .andCondition(CriteriaAPI.getCondition("LANG_CODE",TranslationConstants.LANG_CODE,langCode,StringOperators.IS))
                 .andCondition(CriteriaAPI.getCondition("STATUS","status","1",StringOperators.IS));
-        return (long)select.fetchFirst().getOrDefault(TranslationConstants.FILE_ID,-1L);
+        Map<String,Object> props = select.fetchFirst();
+        long fileId = -1L;
+        if(props !=null && !props.isEmpty()){
+            fileId = (long)props.get(TranslationConstants.FILE_ID);
+        }
+        return fileId;
     }
 
-    public static boolean prefixSuffixValidation ( String prefix,String suffix ) throws IOException {
-        Map<String, Object> tanslationConf = FacilioUtil.loadYaml(TRANSLATION_VALIDATION_FILE);
-        List<Map<String, Object>> validation = (List<Map<String, Object>>)tanslationConf.get("translation");
-        boolean case1 = false;
-        boolean case2 = false;
-        for (Map<String, Object> prop : validation) {
-            if(prefix.equals(prop.get("prefix"))) {
-                case1 = true;
-            } else {
-                continue;
-            }
-            List<String> siffixVal = (List<String>)prop.get("suffix");
-            for (String suffix1 : siffixVal) {
-                if(suffix.equals(suffix1)) {
-                    case2 = true;
-                    break;
-                }
-            }
+    public static boolean confFileValidation ( String prefix,String suffix ) {
+        try{
+          return  TRANSLATION_CONF_FILE_MAP.get(prefix).getSuffix().contains(suffix);
+        }catch (Exception e){
+            throw e;
         }
-        return (case1 && case2) ? true : false;
     }
 }

@@ -1,14 +1,13 @@
 package com.facilio.bmsconsole.commands.translation;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.db.util.DBConf;
+import com.facilio.fw.BeanFactory;
+import com.facilio.lang.i18n.translation.TranslationBean;
 import com.facilio.lang.i18n.translation.TranslationConstants;
-import com.facilio.services.factory.FacilioFactory;
-import com.facilio.services.filestore.FileStore;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -19,29 +18,23 @@ public class AddOrUpdateTranslationCommand extends FacilioCommand {
     public boolean executeCommand ( Context context ) throws Exception {
         String langCode = (String)context.get(TranslationConstants.LANG_CODE);
         List<Map<String, Object>> contents = (List<Map<String, Object>>)context.get("translations");
-        long fileId = TranslationsUtil.getTranslationFileId(langCode);
-        FileStore fs = FacilioFactory.getFileStore();
-        String filePath = fs.getFileInfo(fileId).getFilePath();
-        Properties properties = new Properties();
+        Properties translationFile = DBConf.getInstance().getTranslationFile();
         try {
-            try (FileInputStream inputStream = new FileInputStream(filePath);) {
-                properties.load(inputStream);
-            }
-            try (FileOutputStream outputStream = new FileOutputStream(filePath);) {
-                for (Map<String, Object> prop : contents) {
-                    String prefix = (String)prop.get("prefix");
-                    String suffix = (String)prop.get("suffix");
-                    if(!TranslationsUtil.prefixSuffixValidation(prefix,suffix)) {
-                        throw new IllegalArgumentException("Exception occurred while validating prefix/suffix in Add or Update Translation ");
-                    }
-                    String key = prefix + "." + prop.get("key") + "." + suffix;
-                    String value = (String)prop.getOrDefault("value","");
-                    properties.setProperty(key.trim(),value);
+            for (Map<String, Object> prop : contents) {
+                String prefix = (String)prop.get("prefix");
+                String suffix = (String)prop.get("suffix");
+                if(!TranslationsUtil.confFileValidation(prefix,suffix)) {
+                    throw new IllegalArgumentException("Invalid prefix/ suffix set while adding translation props");
                 }
-                properties.store(outputStream,"Translation Properties");
+                String key = prefix + "." + prop.get("key") + "." + suffix;
+                String value = (String)prop.getOrDefault("value","");
+                translationFile.setProperty(key.trim(),value);
             }
+            TranslationBean bean = (TranslationBean)BeanFactory.lookup("TranslationBean");
+            bean.saveTranslationFile(langCode,translationFile);
         } catch (Exception e) {
             LOGGER.error("Exception occurred while writing translation file",e);
+            throw e;
         }
         return false;
     }

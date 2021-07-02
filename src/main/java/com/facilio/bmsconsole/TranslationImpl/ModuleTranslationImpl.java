@@ -24,7 +24,7 @@ public class ModuleTranslationImpl implements TranslationIfc {
                 String moduleKey = ModuleTranslationUtils.getTranslationKey((Long)moduleObject.get(MODULE_ID));
                 moduleObject.put(DISPLAY_NAME,getTranslation(properties,moduleKey,(String)moduleObject.get(DISPLAY_NAME)));
             }
-            if(obj.equals(FIELDS)) {
+            else if(obj.equals(FIELDS)) {
                 JSONArray fieldJson = (JSONArray)object.get(FIELDS);
                 for (int i = 0; i < fieldJson.size(); i++) {
                     JSONObject fieldObject = (JSONObject)fieldJson.get(i);
