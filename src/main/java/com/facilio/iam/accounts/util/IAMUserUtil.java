@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.facilio.constants.FacilioConstants;
-import com.facilio.iam.accounts.context.DCInfo;
 import com.facilio.iam.accounts.context.SecurityPolicy;
 import com.facilio.modules.FieldFactory;
 import dev.samstevens.totp.code.CodeGenerator;
@@ -395,12 +394,12 @@ public class IAMUserUtil {
 	}
 
 	// IAM client
-	public static DCInfo lookupUserDC(String userName, GroupType groupType) throws Exception {
+	public static Integer lookupUserDC(String userName, GroupType groupType) throws Exception {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().lookupUserDC(userName, groupType));
 	}
 
 	// IAM
-	public static DCInfo findDCForUser(String username, GroupType groupType) throws Exception {
+	public static Integer findDCForUser(String username, GroupType groupType) throws Exception {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().findDCForUser(username, groupType));
 	}
 	
