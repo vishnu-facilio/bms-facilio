@@ -5,13 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 import com.facilio.util.FacilioUtil;
 import com.facilio.util.RequestUtil;
@@ -121,16 +115,16 @@ public class FacilioProperties {
     private static List<String> thresholdWhiteListedUrls = null;
 
     private static boolean userAccessLog = false;
-    private static boolean accessLog = false;
 
     private static String senderEmail;
     private static String senderName;
     private static String mandrillUrl;
     private static String mandrillApiKey;
-    
-    private static String iamUrl;
-    private static String iamDCLookupUrl;
-    private static String iamAddDCUserUrl;
+
+    private static boolean accessLog = false;
+    private static String iamLookupUrl;
+    private static String iamUserLookupUrl;
+
 
     private static String passwordHasingFunction;
 
@@ -230,10 +224,8 @@ public class FacilioProperties {
                 senderName = PROPERTIES.getProperty("sender.name");
                 mandrillUrl = PROPERTIES.getProperty("mandrill.url");
                 mandrillApiKey = PROPERTIES.getProperty("mandrill.apikey");
-                
-                iamUrl = PROPERTIES.getProperty("iam.url", "app.facilio.com");
-                iamDCLookupUrl = getIAMURL() + PROPERTIES.getProperty("iam.dc.lookupurl", "/api/v3/internal/dc/lookup");
-                iamAddDCUserUrl = getIAMURL() + PROPERTIES.getProperty("iam.dc.addurl", "/api/v3/internal/dc/add");
+                iamLookupUrl = PROPERTIES.getProperty("iam.lookupurl", getAppDomain());
+                iamUserLookupUrl = getIAMLookupURL() + PROPERTIES.getProperty("iam.userlookupurl", "/auth/api/dclookup");
 
                 accessLog = "true".equalsIgnoreCase(PROPERTIES.getProperty("facilio.access.log", "false"));
 
@@ -723,17 +715,11 @@ public class FacilioProperties {
         return accessLog;
     }
 
-    public static String getIAMURL() {
-    		if (developmentEnvironment) {
-    			return getAppDomain();
-    		}
-        return iamUrl;
+    public static String getIAMLookupURL() {
+        return iamLookupUrl;
     }
-    public static String getIAMDCLookupURL() {
-        return iamDCLookupUrl;
-    }
-    public static String getIAMAddUserURL() {
-        return iamAddDCUserUrl;
+    public static String getIAMUserLookupURL() {
+        return iamUserLookupUrl;
     }
 
 	public static String getPasswordHasingFunction() {

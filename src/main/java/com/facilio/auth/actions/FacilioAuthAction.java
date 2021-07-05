@@ -11,7 +11,6 @@ import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
-import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,7 +26,6 @@ import com.facilio.bmsconsole.actions.SettingsMfa;
 import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.util.AESEncryption;
 import com.facilio.bmsconsole.util.PeopleAPI;
-import com.facilio.iam.accounts.context.DCInfo;
 import com.facilio.iam.accounts.context.SecurityPolicy;
 import com.facilio.iam.accounts.exceptions.SecurityPolicyException;
 import com.facilio.iam.accounts.util.*;
@@ -43,7 +41,6 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.AppDomain.AppDomainType;
-import com.facilio.accounts.dto.AppDomain.GroupType;
 import com.facilio.accounts.sso.AccountSSO;
 import com.facilio.accounts.sso.SSOUtil;
 import com.facilio.accounts.sso.SamlSSOConfig;
@@ -445,33 +442,41 @@ public class FacilioAuthAction extends FacilioAction {
 	}
 
 	@SneakyThrows
-	public String lookup() {
+	public String dclookup() {
 		try {
-			
-			GroupType groupType = null;
-			if (!StringUtils.isEmpty(getLookUpType())) {
-				if (getLookUpType().equals("service") || getLookUpType().equals("tenant")) {
-					groupType = GroupType.TENANT_OCCUPANT_PORTAL;
-				} else if (getLookUpType().equals("vendor")) {
-					groupType = GroupType.VENDOR_PORTAL;
-				}
+			int dc = IAMUserUtil.findDCForUser(getUsername());
+			Map<String, Object> result = new HashMap<>();
+			result.put("code", 1);
+			result.put("dc", dc);
+			setJsonresponse(result);
+		}catch(Exception e) {
+			LOGGER.log(Level.INFO, "Exception while dc lookup ", e);
+			setJsonresponse("errorcode", "2");
+			return ERROR;
+		}
+		return SUCCESS;
+	}
+
+	@SneakyThrows
+	public String lookup() {
+		if (!StringUtils.isEmpty(getLookUpType())) {
+			if (getLookUpType().equals("service")) {
+				return servicelookup();
+			} else if (getLookUpType().equals("tenant")) {
+				return servicelookup();
+			} else if (getLookUpType().equals("vendor")) {
+				return vendorlookup();
 			}
-			
-			String baseUrl = checkDcAndGetRedirectUrl(groupType, getUsername(), getLookUpType());
+		}
+		
+		try {
+			String baseUrl = checkDcAndGetRedirectUrl();
 			if (baseUrl != null) {
 				Map<String, Object> result = new HashMap<>();
 				result.put("code", 2);
 				result.put("baseUrl", baseUrl);
 				setJsonresponse(result);
 				return SUCCESS;
-			}
-			
-			if (groupType != null) {
-				if (groupType == GroupType.TENANT_OCCUPANT_PORTAL) {
-					return servicelookup();
-				} else if (groupType == GroupType.VENDOR_PORTAL) {
-					return vendorlookup();
-				}
 			}
 	
 			String username = getUsername();
@@ -584,7 +589,7 @@ public class FacilioAuthAction extends FacilioAction {
 			FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.facilio","facilio.com");
 			FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.facilio","facilio.in");
 
-			addAuthCookies(authtoken, false, false, request, true, getBaseUrl(DCUtil.getCurrentDC(), org.getDomain(), "vendor"));
+			addAuthCookies(authtoken, false, false, request, true);
 		} catch (Exception e) {
 			LOGGER.log(Level.INFO, "Exception while validating password, ", e);
 			Exception ex = e;
@@ -671,7 +676,7 @@ public class FacilioAuthAction extends FacilioAction {
 			FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.facilio","facilio.com");
 			FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.facilio","facilio.in");
 
-			addAuthCookies(authtoken, false, false, request, true, getBaseUrl(DCUtil.getCurrentDC(), org.getDomain(), getLookUpType()));
+			addAuthCookies(authtoken, false, false, request, true);
 		} catch (Exception e) {
 			LOGGER.log(Level.INFO, "Exception while validating password, ", e);
 			Exception ex = e;
@@ -796,11 +801,7 @@ public class FacilioAuthAction extends FacilioAction {
 			FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.facilio","facilio.com");
 			FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.facilio","facilio.in");
 
-			StringBuilder baseUrl = new StringBuilder(getProtocol())
-					.append("://")
-					.append(appdomainObj.getDomain());
-
-			addAuthCookies(authtoken, false, false, request, "mobile".equals(userType), baseUrl.toString());
+			addAuthCookies(authtoken, false, false, request, "mobile".equals(userType));
 		}
 		catch (Exception e) {
 			LOGGER.log(Level.INFO, "Exception while validating password, ", e);
@@ -967,11 +968,7 @@ public class FacilioAuthAction extends FacilioAction {
 						FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.facilio","facilio.com");
 						FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.facilio","facilio.in");
 
-						StringBuilder baseUrl = new StringBuilder(getProtocol())
-								.append("://")
-								.append(appdomainObj.getDomain());
-
-						addAuthCookies(authtoken, portalUser, false, request, "mobile".equals(userType), baseUrl.toString());
+						addAuthCookies(authtoken, portalUser, false, request, "mobile".equals(userType));
 					}
 				} else {
 					Map<String, Object> userMfaSettings = IAMUserUtil.getUserMfaSettings(getUsername(), AppDomain.GroupType.FACILIO);
@@ -1632,12 +1629,8 @@ public class FacilioAuthAction extends FacilioAction {
 	private void addAuthCookies(String authtoken, boolean portalUser, boolean isDeviceUser, HttpServletRequest request) throws Exception {
 		addAuthCookies(authtoken, portalUser, isDeviceUser, request, false);
 	}
-
-	private void addAuthCookies(String authtoken, boolean portalUser, boolean isDeviceUser, HttpServletRequest request, boolean isMobile) throws Exception {
-		addAuthCookies(authtoken, portalUser, isDeviceUser, request, isMobile, null);
-	}
 	
-	private void addAuthCookies(String authtoken, boolean portalUser, boolean isDeviceUser, HttpServletRequest request, boolean isMobile, String baseUrl) throws Exception {
+	private void addAuthCookies(String authtoken, boolean portalUser, boolean isDeviceUser, HttpServletRequest request, boolean isMobile) throws Exception {
 		HttpServletResponse response = ServletActionContext.getResponse();
 		Cookie cookie = new Cookie("fc.idToken.facilio", authtoken);
 
@@ -1652,7 +1645,7 @@ public class FacilioAuthAction extends FacilioAction {
 			jsonObject.put("token", authtoken);
 			jsonObject.put("homePath", "/app/mobile/login");
 			jsonObject.put("domain", getDomain());
-			jsonObject.put("baseUrl", baseUrl);
+			jsonObject.put("baseUrl", getBaseUrl());
 			Cookie mobileTokenCookie = new Cookie("fc.mobile.idToken.facilio", new AESEncryption().encrypt(jsonObject.toJSONString()));
 			setTempCookieProperties(mobileTokenCookie, false);
 			response.addCookie(mobileTokenCookie);
@@ -1681,28 +1674,29 @@ public class FacilioAuthAction extends FacilioAction {
 		}
 	}
 	
-	private String checkDcAndGetRedirectUrl(GroupType groupType, String username, String lookUpType) throws Exception {
-		DCInfo dcInfo = IAMUserUtil.lookupUserDC(username, groupType);
-		if (dcInfo == null) {
+	private String checkDcAndGetRedirectUrl() throws Exception {
+		Integer dc = IAMUserUtil.lookupUserDC(getUsername());
+		if (dc == null) {
 			return null;
 		}
-		return getBaseUrl(dcInfo.getDc(), dcInfo.getDomain(), lookUpType);
+		String baseUrl = DCUtil.getMainAppDomain(dc);
+		return getProtocol() + "://" + baseUrl;
 	}
 	
-	private String getBaseUrl(int dc, String orgDomain, String lookUpType) {
+	private String getBaseUrl() {
 		StringBuilder baseUrl = new StringBuilder(getProtocol()).append("://");
-		if (StringUtils.isNotEmpty(lookUpType)) {
-			baseUrl.append(orgDomain).append(".");
-			if (lookUpType.equalsIgnoreCase("service") ) {
-				baseUrl.append(DCUtil.getClientPortalDomain(dc));
-			} else if (lookUpType.equalsIgnoreCase("tenant")) {
-				baseUrl.append(DCUtil.getTenantPortalDomain(dc));
-			} else if (lookUpType.equalsIgnoreCase("vendor")) {
-				baseUrl.append(DCUtil.getVendorPortalDomain(dc));
-			}
+		if (StringUtils.isNotEmpty(getLookUpType())) {
+			baseUrl.append(getDomain()).append(".");
+			if (getLookUpType().equalsIgnoreCase("service") ) {
+				baseUrl.append(FacilioProperties.getOccupantAppDomain());
+			} else if (getLookUpType().equalsIgnoreCase("tenant")) {
+				baseUrl.append(FacilioProperties.getTenantAppDomain());
+			} else if (getLookUpType().equalsIgnoreCase("vendor")) {
+				baseUrl.append(FacilioProperties.getVendorAppDomain());
+			} 
 		}
 		else {
-			baseUrl.append(DCUtil.getMainAppDomain(dc));
+			baseUrl.append(FacilioProperties.getMainAppDomain());
 		}
 		return baseUrl.toString();
 	}

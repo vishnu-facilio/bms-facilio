@@ -4,27 +4,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Collections;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.facilio.iam.accounts.context.DCInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.struts2.ServletActionContext;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.facilio.accounts.dto.AppDomain.GroupType;
 import com.facilio.aws.util.FacilioProperties;
-import com.facilio.iam.accounts.util.DCUtil;
 import com.facilio.services.FacilioHttpUtils;
 import com.facilio.util.FacilioUtil;
 import com.facilio.util.RequestUtil;
@@ -39,65 +34,28 @@ public class IamClient {
     private static HttpClient httpclient = HttpClientBuilder.create().build(); // TODO Check if any specific use case for this httpclient. Else remove
 
     @SneakyThrows
-    public static DCInfo lookupUserDC(String name, GroupType groupType) throws Exception {
-        var url = FacilioProperties.getIAMDCLookupURL();
-        Map<String, String> params = new HashMap<>();
-        params.put("userName", name);
-        if (groupType == null) {
-        		groupType = GroupType.FACILIO;
-        }
-        params.put("groupType", groupType.getIndex().toString());
+    public static Integer lookupUserDC(String name) throws Exception {
+        var url = FacilioProperties.getIAMUserLookupURL();
+        Map<String, String> params = Collections.singletonMap("username", name);
         
-        String response = FacilioHttpUtils.doHttpGet(getUrl(url), getSecretKeyHeader(), params);
+        String response = FacilioHttpUtils.doHttpGet(getProtocol() + "://" + url, null, params);
         if (StringUtils.isNotEmpty(response)) {
         		JSONObject obj = FacilioUtil.parseJson(response);
-        		if (obj.containsKey("code")) {
-        			int code = FacilioUtil.parseInt(obj.get("code").toString());
-        			if (code == 0) {
-        				JSONObject data = (JSONObject) obj.get("data");
-                        JSONObject dcInfoObj = (JSONObject) data.get("dcInfo");
-                        DCInfo dcInfo = new DCInfo(FacilioUtil.parseInt(dcInfoObj.get("dc").toString()), dcInfoObj.get("domain").toString(), FacilioUtil.parseInt(dcInfoObj.get("appType").toString()));
-        				return dcInfo;
+        		JSONObject responseObj = (JSONObject) obj.get("jsonresponse");
+        		if (responseObj.containsKey("code")) {
+        			int code = FacilioUtil.parseInt(responseObj.get("code").toString());
+        			if (code == 1) {
+        				return FacilioUtil.parseInt(responseObj.get("dc").toString());
         			}
         		}
         }
         return null;
     }
     
-    public static void addUserToDC(String name, GroupType groupType) throws Exception {
-        var url = FacilioProperties.getIAMAddUserURL();
-        JSONObject params = new JSONObject();
-        params.put("userName", name);
-        if (groupType == null) {
-        		groupType = GroupType.FACILIO;
-        }
-        params.put("groupType", groupType.getIndex().toString());
-        params.put("dc", DCUtil.getCurrentDC().toString());
-        
-        JSONObject body = new JSONObject();
-        body.put("user", params);
-        
-        String response = FacilioHttpUtils.doHttpPost(getUrl(url), getSecretKeyHeader(), null, body);
-        if (StringUtils.isNotEmpty(response)) {
-        		JSONObject obj = FacilioUtil.parseJson(response);
-        		if (obj.containsKey("code")) {
-        			int code = FacilioUtil.parseInt(obj.get("code").toString());
-        			if (code != 0) {
-        				// Throw proper AccountException
-        			}
-        		}
-        }
-    }
-    
-    private static String getUrl(String url) {
+    private static String getProtocol() {
 		HttpServletRequest request = ActionContext.getContext() != null ? ServletActionContext.getRequest() : null;
-		return RequestUtil.getProtocol(request) + "://" + url;
+		return RequestUtil.getProtocol(request);
 	}
-    
-    private static Map<String, String> getSecretKeyHeader() {
-    		// TODO
-    		return null;
-    }
 
     private static JSONObject getJsonFromResponse(HttpResponse response) throws ParseException {
         int responseCode = response.getStatusLine().getStatusCode();

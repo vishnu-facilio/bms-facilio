@@ -1,18 +1,11 @@
 package com.facilio.v3;
 
 import com.facilio.aws.util.FacilioProperties;
-import com.facilio.util.FacilioUtil;
-import com.facilio.v3.exception.ErrorCode;
-import com.facilio.v3.exception.RESTException;
-
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.log4j.Log4j;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.LogManager;
-import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
 import com.opensymphony.xwork2.ActionSupport;
@@ -20,9 +13,6 @@ import com.opensymphony.xwork2.ActionSupport;
 import java.io.File;
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
-
-@Log4j
 public class V3Action extends ActionSupport {
 
 	protected enum api {
@@ -255,38 +245,5 @@ public class V3Action extends ActionSupport {
 				this.stackTrace = StringUtils.abbreviate(ExceptionUtils.getStackTrace(e), MAX_LENGTH_OF_TRACE) ;
 			}
 		}
-	}
-	
-	private Exception exception;
-	public Exception getException() {
-		return exception;
-	}
-	public void setException(Exception exception) {
-		this.exception = exception;
-	}
-	
-	public String handleException() {
-		try {
-			HttpServletResponse response = ServletActionContext.getResponse();
-			if (exception instanceof RESTException) {
-				RESTException ex = (RESTException)exception;
-				setMessage(ex.getMessage());
-				setCode(ex.getErrorCode().getCode());
-				setData(ex.getData());
-				response.setStatus(ex.getErrorCode().getHttpStatus());
-				setStackTrace(ex);
-	            LOGGER.error("Rest Exception on v3 api", ex);
-			}
-			else {
-				setCode(ErrorCode.UNHANDLED_EXCEPTION.getCode());
-	            setMessage(FacilioUtil.constructMessageFromException(exception));
-	            response.setStatus(ErrorCode.UNHANDLED_EXCEPTION.getHttpStatus());
-	            setStackTrace(exception);
-	            LOGGER.error("Exception on v3 api", exception);
-			}
-		} catch (Exception e) {
-            LOGGER.error("Exception occurred inside handle V3 Exception", e);
-		}
-		return "failure"; // Move this to ERROR after changing error structure in v3 xml
 	}
 }

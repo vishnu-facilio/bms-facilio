@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.util.FacilioUtil;
 
 import lombok.extern.log4j.Log4j;
@@ -48,17 +47,4 @@ public class DCUtil {
 		return getDc(id).get("vendorportal");
     }
 
-    public static Integer getCurrentDC() {
-    		String appDomain = FacilioProperties.getMainAppDomain();
-    		for (Integer dc : dataCenters.keySet()) {
-    			String mainAppDomain = getMainAppDomain(dc);
-    			if (mainAppDomain.equals(appDomain)) {
-    				return dc;
-    			}
-    		}
-    		if (FacilioProperties.isDevelopment()) {
-    			return 1;
-    		}
-    		return null;
-    }
 }

@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.facilio.constants.FacilioConstants;
-import com.facilio.iam.accounts.context.DCInfo;
 import com.facilio.iam.accounts.context.SecurityPolicy;
 import com.facilio.modules.FieldFactory;
 import dev.samstevens.totp.code.CodeGenerator;
@@ -30,7 +29,6 @@ import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
-import com.facilio.accounts.dto.AppDomain.GroupType;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
@@ -395,18 +393,17 @@ public class IAMUserUtil {
 	}
 
 	// IAM client
-	public static DCInfo lookupUserDC(String userName, GroupType groupType) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().lookupUserDC(userName, groupType));
+	public static Integer lookupUserDC(String userName) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().lookupUserDC(userName));
 	}
 
+
 	// IAM
-	public static DCInfo findDCForUser(String username, GroupType groupType) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().findDCForUser(username, groupType));
+	@SneakyThrows
+	public static Integer findDCForUser(String username) {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().findDCForUser(username));
 	}
-	
-	public static long addDCLookup(Map<String, Object> props) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getTransactionalUserBean().addDCLookup(props));
-	}
+
 
 	public static boolean totpChecking(String code, long uid) throws Exception{
 		Map<String, Object> values = getUserMfaSettings(uid);
