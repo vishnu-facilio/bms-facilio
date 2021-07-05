@@ -16,8 +16,12 @@ public class TranslationConstants {
     public static final String LANG_CODE = "langCode";
     public static final String FILE_ID = "fileId";
     public static final String TRANSLATION_DATA = "Translation_Data";
-    public static final String ORGID = "orgId";
-    public static final String NAME_SPACE = "Translation";
+    public static final String TRANSLATION_LIST="translationFinalList";
+    public static final String LABEL = "label";
+    public static final String PREFIX = "prefix";
+    public static final String SUFFIX = "suffix";
+    public static final String VALUE = "value";
+
 
     public static final FacilioModule getTranslationModule () {
         return new FacilioModule("translationData","Translation Data",TRANSLATION_DATA);
@@ -28,7 +32,7 @@ public class TranslationConstants {
         fields.add(FieldFactory.getIdField(module));
         fields.add(FieldFactory.getField(LANG_CODE, "LANG_CODE", module, FieldType.STRING));
         fields.add(FieldFactory.getField(FILE_ID, "FILE_ID", module, FieldType.NUMBER));
-
+        fields.add(FieldFactory.getField("status","STATUS",module,FieldType.BOOLEAN));
         return fields;
     }
 

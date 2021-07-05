@@ -1634,12 +1634,11 @@ public class FacilioAuthAction extends FacilioAction {
 		HttpServletResponse response = ServletActionContext.getResponse();
 		Cookie cookie = new Cookie("fc.idToken.facilio", authtoken);
 
-		if (portalUser) {
-			cookie = new Cookie("fc.idToken.facilioportal", authtoken);
-		}
 		if (isDeviceUser) {
 			cookie = new Cookie("fc.deviceTokenNew", authtoken);
 		}
+
+		setCookieProperties(cookie,true);
 
 		if (isMobile) {
 			JSONObject jsonObject = new JSONObject();
@@ -1652,8 +1651,6 @@ public class FacilioAuthAction extends FacilioAction {
 			response.addCookie(mobileTokenCookie);
 		}
 
-		setCookieProperties(cookie,true);
-
 		if (FacilioProperties.isDevelopment()) {
 			if (FacilioProperties.isOnpremise()) {
 				var cookieString = "fc.idToken.facilio="+authtoken+"; Max-Age=604800; Path=/; HttpOnly;";
@@ -1663,22 +1660,17 @@ public class FacilioAuthAction extends FacilioAction {
 				response.setHeader("Set-Cookie", cookieString);
 			}
 		} else if("stage".equals(FacilioProperties.getEnvironment()) && !isMobile) {
-			if (portalUser) {
-				var cookieString = "fc.idToken.facilioportal="+authtoken+"; Max-Age=604800; Path=/; Secure; HttpOnly; SameSite=None";
-				response.setHeader("Set-Cookie", cookieString);
-			} else {
-				var cookieString = "fc.idToken.facilio="+authtoken+"; Max-Age=604800; Path=/; Secure; HttpOnly; SameSite=None";
-				response.setHeader("Set-Cookie", cookieString);
-			}
+			var cookieString = "fc.idToken.facilio="+authtoken+"; Max-Age=604800; Path=/; Secure; HttpOnly; SameSite=None";
+			response.setHeader("Set-Cookie", cookieString);
 		} else {
 			response.addCookie(cookie);
-		}
 
-			//temp handling. will be removed once service portal xml files are removed.
-		if(portalUser) {
-			Cookie portalCookie = new Cookie("fc.idToken.facilio", authtoken);
-			setCookieProperties(portalCookie, true);
-			response.addCookie(portalCookie);
+			//Can be removed once service portal file api is not used.
+			if(portalUser) {
+				Cookie portalCookie = new Cookie("fc.idToken.facilioportal", authtoken);
+				setCookieProperties(portalCookie, true);
+				response.addCookie(portalCookie);
+			}
 		}
 	}
 	

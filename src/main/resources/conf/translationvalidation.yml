@@ -1,6 +1,7 @@
-
 #Translation validation
-  - validation:
-      perfix : module
-      suffix :
-        - displayName
+translation:
+  - prefix: module
+    suffix: [displayName]
+
+  - prefix: field
+    suffix: [displayName]

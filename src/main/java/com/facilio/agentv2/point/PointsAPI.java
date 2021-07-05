@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import com.facilio.agentv2.rdm.RdmPointContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
@@ -38,6 +37,7 @@ import com.facilio.agentv2.modbustcp.ModbusTcpPointContext;
 import com.facilio.agentv2.niagara.NiagaraPointContext;
 import com.facilio.agentv2.opcua.OpcUaPointContext;
 import com.facilio.agentv2.opcxmlda.OpcXmlDaPointContext;
+import com.facilio.agentv2.rdm.RdmPointContext;
 import com.facilio.agentv2.system.SystemPointContext;
 import com.facilio.bacnet.BACNetUtil;
 import com.facilio.beans.ModuleCRUDBean;
@@ -997,7 +997,8 @@ public class PointsAPI {
 			criteriaList.orCriteria(criteria);
 		}
 		GetPointRequest getPointRequest = new GetPointRequest()
-				.withCriteria(criteriaList);
+				.withCriteria(criteriaList)
+				.limit(-1);
 		return getPointRequest.getPoints();
 	}
 }

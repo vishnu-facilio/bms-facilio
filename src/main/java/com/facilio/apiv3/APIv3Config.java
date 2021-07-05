@@ -1157,8 +1157,8 @@ public class APIv3Config {
                 .beforeSave(new V3ValidateFloorPlanCommand())
                 .afterSave(TransactionChainFactoryV3.addfloorplanObjectsChain())
                 .update().afterSave(TransactionChainFactoryV3.AddORUpdateMarkersAndModulesCommand())
-                .list().afterFetch(TransactionChainFactoryV3.getFloorPlanObjectsChain())
-                .summary().afterFetch(TransactionChainFactoryV3.getFloorPlanObjectsChain())
+                .list().beforeFetch(new LoadFloorplanLookupCommand()).afterFetch(TransactionChainFactoryV3.getFloorPlanObjectsChain())
+                .summary().beforeFetch(new LoadFloorplanLookupCommand()).afterFetch(TransactionChainFactoryV3.getFloorPlanObjectsChain())
                 .build();
     }
 

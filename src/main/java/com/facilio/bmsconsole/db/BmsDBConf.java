@@ -1,29 +1,15 @@
 package com.facilio.bmsconsole.db;
 
-import java.io.File;
-import java.io.InputStream;
-import java.sql.Connection;
-import java.text.MessageFormat;
-import java.time.ZoneId;
-import java.util.*;
-
-import com.facilio.chain.FacilioChain;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import com.facilio.accounts.dto.Account;
-import com.facilio.accounts.dto.AccountsInterface;
-import com.facilio.accounts.dto.Organization;
-import com.facilio.accounts.dto.User;
+import com.facilio.accounts.dto.*;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.chain.FacilioChain;
 import com.facilio.db.util.DBConf;
 import com.facilio.fs.FileInfo;
+import com.facilio.fw.BeanFactory;
 import com.facilio.fw.LRUCache;
+import com.facilio.lang.i18n.translation.TranslationBean;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FieldType;
@@ -36,8 +22,18 @@ import com.facilio.services.filestore.FileStore;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.util.FacilioUtil;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
-import com.facilio.chain.FacilioChain;
+import java.io.File;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.text.MessageFormat;
+import java.time.ZoneId;
+import java.util.*;
 
 public class BmsDBConf extends DBConf {
     private static final Logger LOGGER = LogManager.getLogger(BmsDBConf.class.getName());
@@ -529,6 +525,14 @@ public class BmsDBConf extends DBConf {
     @Override
     public void setReqUri(String s) {
         AccountUtil.setReqUri(s);
+    }
+
+    @Override
+    public Properties getTranslationFile () throws Exception {
+        IAMUser user = AccountUtil.getCurrentUser();
+        TranslationBean bean = (TranslationBean)BeanFactory.lookup("TranslationBean");
+        String userLang = user.getLanguage();
+        return (userLang == null || userLang.trim().isEmpty()) ? null : bean.getTranslationFile(user.getLanguage());
     }
 
     @Override

@@ -612,20 +612,13 @@ public abstract class FileStore {
 	// Namespaces are handled in V3 file url
 	private String getUrl (long fileId, boolean isDownload, boolean isPortal, int width, int height) throws Exception {
 		StringBuilder url = new StringBuilder();
-//		if (AccountUtil.getCurrentAccount() != null && AccountUtil.getCurrentAccount().isFromMobile()) {
-//			FileStore fs = FacilioFactory.getFileStore();
-//			if (isDownload) {
-//				return fs.getOrgiDownloadUrl(fileId);
-//			} else {
-//				return fs.getOrgiFileUrl(fileId);
-//			}
-//		}
+
 		if (FacilioProperties.isDevelopment()) {
 			url.append(FacilioProperties.getClientAppUrl());
 		}
 		url.append("/api/v2/");
 
-		if (isPortal) {
+		if (isPortal && (FacilioProperties.isProduction() || FacilioProperties.isOnpremise())) {
 			url.append("service/");
 		}
 

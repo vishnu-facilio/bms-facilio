@@ -456,6 +456,11 @@ public class ApplicationApi {
         if (vendorPortal.getId() > 0) {
             ApplicationLayoutContext vpLayout = new ApplicationLayoutContext(vendorPortal.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.WEB, FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
             addApplicationLayout(vpLayout);
+
+            //mobile layout for occupant portal
+            ApplicationLayoutContext opLayoutMobile = new ApplicationLayoutContext(vendorPortal.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.MOBILE, FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
+            addApplicationLayout(opLayoutMobile);
+
             addVendorPortalWebTabs(vpLayout);
 
             Role vendorAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.PrevilegedRoleNames.VENDOR_ADMIN);
