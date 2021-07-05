@@ -1185,6 +1185,8 @@ public class ModuleBeanImpl implements ModuleBean {
 			String relModuleName = new StringBuilder(field.getModule().getName())
 					.append("-")
 					.append(field.getLookupModule().getName())
+					.append("-")
+					.append(field.getName())
 					.append("-rel")
 					.toString();
 			module.setName(relModuleName);
