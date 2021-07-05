@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.templates.*;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
@@ -29,13 +30,7 @@ import com.facilio.bmsconsole.context.PurchasedItemContext;
 import com.facilio.bmsconsole.context.PurchasedToolContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.templates.EMailTemplate;
-import com.facilio.bmsconsole.templates.PushNotificationTemplate;
-import com.facilio.bmsconsole.templates.SMSTemplate;
-import com.facilio.bmsconsole.templates.TaskSectionTemplate;
-import com.facilio.bmsconsole.templates.TaskTemplate;
 import com.facilio.bmsconsole.templates.Template.Type;
-import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.BimAPI;
 import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.bmsconsole.util.ImportAPI;
@@ -332,22 +327,24 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 						newPMChain.execute();
 					}else{
 						LOGGER.info("ID prop: " + pmID + " found, updating existing PM");
-						/* children wont' be needed as update is done on ID basis */
+
 						PreventiveMaintenance existingPM = PreventiveMaintenanceAPI.getPM(pmID, false);
+						WorkorderTemplate existingWOT = (WorkorderTemplate)
+								TemplateAPI.getTemplate(existingPM.getTemplateId());
 
 						FacilioChain updatePMChain = FacilioChainFactory.getUpdateNewPreventiveMaintenanceChain();
 						FacilioContext ctx = updatePMChain.getContext();
-						ctx.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
-						ctx.put(FacilioConstants.ContextNames.WORK_ORDER, woTemplate.getWorkorder());
-						ctx.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
+
 						List<Long> idList = new ArrayList<>();
 						idList.add(pmID);
-						ctx.put(FacilioConstants.ContextNames.RECORD_ID_LIST, idList);
+						ctx.put(FacilioConstants.ContextNames.RECORD_ID_LIST, idList); // old PM ID list
+						ctx.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm); // new PM
+						ctx.put(FacilioConstants.ContextNames.WORK_ORDER, woTemplate.getWorkorder()); // new WO
+						ctx.put(FacilioConstants.ContextNames.TASK_SECTION_TEMPLATES, existingWOT.getSectionTemplates());
+						ctx.put(FacilioConstants.ContextNames.PREREQUISITE_APPROVER_TEMPLATES, existingWOT.getPrerequisiteApproverTemplates());
+						ctx.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
+						ctx.put(FacilioConstants.ContextNames.IS_UPDATE_PM, true);
 
-//						ctx.put(FacilioConstants.ContextNames.TASK_SECTION_TEMPLATES, existingPM.getWoTemplate().getTaskTemplates());
-//						ctx.put(FacilioConstants.ContextNames.PREREQUISITE_APPROVER_TEMPLATES, existingPM.getWoTemplate().getPrerequisiteApproverTemplates());
-
-						/* skipped attachment context info; not relevant here */
 						updatePMChain.execute();
 					}
 				}
