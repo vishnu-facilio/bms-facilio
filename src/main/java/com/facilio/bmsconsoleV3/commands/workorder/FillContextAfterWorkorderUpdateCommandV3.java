@@ -117,7 +117,7 @@ public class FillContextAfterWorkorderUpdateCommandV3 extends FacilioCommand {
                     ResourceContext resource = ResourceAPI.getResource((long) newValue);
                     info.put("newValue", resource.getName());
                 }
-                else if(field.getName().contains("vendor") && workOrder.getVendor().getId() > 0) {
+                else if(field.getName().contains("vendor") && workOrder.getVendor() != null && workOrder.getVendor().getId() > 0) {
                     V3VendorContext vendor = V3InventoryAPI.getVendor(workOrder.getVendor().getId());
                     info.put("newValue", vendor.getName());
                 }
