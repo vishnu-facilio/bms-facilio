@@ -48,7 +48,8 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 															.select(FieldFactory.getWorkorderEmailFields())
 															.table("WorkOrderRequest_EMail")
-															.andCustomWhere("IS_PROCESSED IS NULL OR IS_PROCESSED = false");
+															.andCustomWhere("IS_PROCESSED IS NULL OR IS_PROCESSED = false")
+															.limit(100);
 			List<Map<String, Object>> emailProps = selectBuilder.get();
 			LOGGER.info("EMail Props : "+emailProps);
 			if(emailProps != null) {
