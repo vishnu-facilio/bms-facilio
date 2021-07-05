@@ -3,6 +3,7 @@
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.iam.accounts.context.DCInfo;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.AppDomain;
@@ -182,9 +183,9 @@ public interface IAMUserBean {
 
 	void savePreviousPassword(long uid, String encryptedPassword) throws Exception;
 
-	Integer lookupUserDC(String username, GroupType groupType) throws Exception;
+	DCInfo lookupUserDC(String username, GroupType groupType) throws Exception;
 
-	int findDCForUser(String username, GroupType groupType) throws Exception;
+	DCInfo findDCForUser(String username, GroupType groupType) throws Exception;
 	
 	long addDCLookup(Map<String, Object> props) throws Exception;
 

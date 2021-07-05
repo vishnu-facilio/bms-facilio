@@ -158,6 +158,13 @@ public class IAMAccountConstants {
 			appType.setColumnName("APP_TYPE");
 			appType.setModule(module);
 			fields.add(appType);
+
+			FacilioField domain = new FacilioField();
+			domain.setName("domain");
+			domain.setDataType(FieldType.NUMBER);
+			domain.setColumnName("FACILIODOMAINNAME");
+			domain.setModule(module);
+			fields.add(domain);
 			
 			return fields;
 		}

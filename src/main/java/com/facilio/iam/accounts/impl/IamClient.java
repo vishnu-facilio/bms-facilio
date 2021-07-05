@@ -5,16 +5,19 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.facilio.iam.accounts.context.DCInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.struts2.ServletActionContext;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -36,7 +39,7 @@ public class IamClient {
     private static HttpClient httpclient = HttpClientBuilder.create().build(); // TODO Check if any specific use case for this httpclient. Else remove
 
     @SneakyThrows
-    public static Integer lookupUserDC(String name, GroupType groupType) throws Exception {
+    public static DCInfo lookupUserDC(String name, GroupType groupType) throws Exception {
         var url = FacilioProperties.getIAMDCLookupURL();
         Map<String, String> params = new HashMap<>();
         params.put("userName", name);
@@ -52,7 +55,9 @@ public class IamClient {
         			int code = FacilioUtil.parseInt(obj.get("code").toString());
         			if (code == 0) {
         				JSONObject data = (JSONObject) obj.get("data");
-        				return FacilioUtil.parseInt(data.get("dc").toString());
+                        JSONObject dcInfoObj = (JSONObject) data.get("dcInfo");
+                        DCInfo dcInfo = new DCInfo(FacilioUtil.parseInt(dcInfoObj.get("dc").toString()), dcInfoObj.get("domain").toString(), FacilioUtil.parseInt(dcInfoObj.get("appType").toString()));
+        				return dcInfo;
         			}
         		}
         }

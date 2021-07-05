@@ -24,6 +24,7 @@ import com.facilio.auth.actions.PasswordHashUtil;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.operators.*;
 import com.facilio.db.util.DBConf;
+import com.facilio.iam.accounts.context.DCInfo;
 import com.facilio.iam.accounts.context.SecurityPolicy;
 import com.facilio.iam.accounts.exceptions.SecurityPolicyException;
 import com.facilio.iam.accounts.util.IAMUserUtil;
@@ -814,7 +815,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 	// Assumes single user per DC
 	@Override
-	public int findDCForUser(String username, GroupType groupType) throws Exception {
+	public DCInfo findDCForUser(String username, GroupType groupType) throws Exception {
 		List<FacilioField> fields = IAMAccountConstants.getDCFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -826,7 +827,8 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			return (int) props.get(0).get("dc");
+			DCInfo dcInfo = new DCInfo((int) props.get(0).get("dc"), (String) props.get(0).get("domain"), (int) props.get(0).get("groupType"));
+			return dcInfo;
 		}
 		throw new IllegalArgumentException("username not found");
 	}
@@ -845,16 +847,16 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 	@SneakyThrows
 	@Override
-	public Integer lookupUserDC(String username, GroupType groupType) {
+	public DCInfo lookupUserDC(String username, GroupType groupType) {
 		if (isUserPresentInCurrentDC(username, groupType)) {
 			return null;
 		}
 		
-		Integer dc = IamClient.lookupUserDC(username, groupType);
-		if (dc == null || dc <= 0) {
+		DCInfo dcInfo = IamClient.lookupUserDC(username, groupType);
+		if (dcInfo == null) {
 			throw new IllegalArgumentException("user name is missing");
 		}
-		return dc;
+		return dcInfo;
 	}
 
 	@Override
