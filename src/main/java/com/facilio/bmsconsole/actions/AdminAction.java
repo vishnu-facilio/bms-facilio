@@ -364,8 +364,8 @@ public class AdminAction extends ActionSupport {
 		todateendTtime = todateendTtime.replace('T', ' ');
 		String email = request.getParameter("email");
 
-		long startTtime = convertDatetoTTime(fromdateTtime);
-		long endTtime = convertDatetoTTime(todateendTtime);
+		long startTtime = convertDatetoTTimeZone(fromdateTtime);
+		long endTtime = convertDatetoTTimeZone(todateendTtime);
 
 		long TtimeLimit = TimeUnit.DAYS.convert(endTtime - startTtime, TimeUnit.MILLISECONDS);
 
@@ -490,7 +490,7 @@ public class AdminAction extends ActionSupport {
 	public long convertDatetoTTimeZone (String time) {
 		ZoneId timeZone = ZoneId.of(AccountUtil.getCurrentOrg().getTimezone());
 		LocalDateTime localDateTime = LocalDateTime.parse(time, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-		long millis = localDateTime.atZone(timeZone.systemDefault()).toInstant().toEpochMilli();
+		long millis = localDateTime.atZone(timeZone).toInstant().toEpochMilli();
 		return millis;
 	}
 

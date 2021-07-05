@@ -298,7 +298,7 @@
 <%--        <br>--%>
 
         <label for="fromTtime">
-            <h5>Start TTIME:</h5>
+            <h5>Start TTIME (Org Time):</h5>
         </label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&emsp;&emsp;&emsp;&nbsp;&nbsp;
 
         <input type="datetime-local" id="fromTtime"
@@ -309,7 +309,7 @@
         <br>
 
         <label for="toTtime">
-            <h5>End TTIME:</h5>
+            <h5>End TTIME (Org Time):</h5>
         </label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&emsp;&emsp;&emsp;
 
         <input type="datetime-local" id="toTtime"

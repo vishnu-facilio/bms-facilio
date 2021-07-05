@@ -253,7 +253,7 @@ function changeReadingPage() {
 			<br>
 			
 			<label for="fromTtime">
-				<h5>Start TTIME:</h5>
+				<h5>Start TTIME (Org time):</h5>
 			</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&emsp;&emsp;&emsp;&nbsp;&nbsp;
 			 
 				<input type="datetime-local" id="fromTtime" value="<%=request.getParameter("fromTtime")==null?"": request.getParameter("fromTtime") %>" name="fromTtime" onChange="changestartTTimePage()"> 
@@ -262,7 +262,7 @@ function changeReadingPage() {
 			<br>
 			
 			<label for="toTtime">
-			<h5>End TTIME:</h5>
+			<h5>End TTIME (Org time):</h5>
 			</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&emsp;&emsp;&emsp;
 			
 				<input type="datetime-local" id="toTtime" value="<%=request.getParameter("toTtime")==null?"": request.getParameter("toTtime")%>" name="toTtime">
