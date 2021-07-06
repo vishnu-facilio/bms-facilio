@@ -97,6 +97,8 @@ public class FetchPlaceholderFieldsCommand extends FacilioCommand {
 		Map<String, Object> placeHolder = new HashMap<>();
 		placeHolder.put("name", filterField.getName());
 		placeHolder.put("displayName", filterField.getDisplayName());
+		placeHolder.put("dataType", filterField.getDataType());
+		placeHolder.put("displayType", filterField.getDisplayType());
 		if(primaryField != null) {
 			placeHolder.put("primaryField", primaryField);
 		}
