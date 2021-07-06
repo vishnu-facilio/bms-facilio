@@ -30,11 +30,9 @@ public class LoadWorkorderToolLookupCommand extends FacilioCommand {
         }
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
         LookupFieldMeta tool = new LookupFieldMeta((LookupField) fieldsAsMap.get("tool"));
-        LookupField toolType = (LookupField) modBean.getField("toolType", FacilioConstants.ContextNames.TOOL);
-        tool.addChildLookupField(toolType);
 
         List<LookupField>fetchLookup = Arrays.asList(tool,(LookupField) fieldsAsMap.get("workorder"));
-        context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST,fetchLookup);
+        context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS,fetchLookup);
         Long parentId = (Long)context.get(FacilioConstants.ContextNames.PARENT_ID);
         if(parentId != null && parentId > 0) {
             Criteria criteria = new Criteria();

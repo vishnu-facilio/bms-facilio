@@ -113,6 +113,7 @@ public class GetItemTransactionsListCommand extends FacilioCommand {
 		builder.fetchSupplement((LookupField) itemTransactionsFieldsMap.get("purchasedItem"));
 		builder.fetchSupplement((LookupField) itemTransactionsFieldsMap.get("asset"));
 		builder.fetchSupplement((LookupField) itemTransactionsFieldsMap.get("itemType"));
+		builder.fetchSupplement((LookupField) itemTransactionsFieldsMap.get("issuedTo"));
 
 		Boolean getShowItemsForReturn = (Boolean) context.get(FacilioConstants.ContextNames.SHOW_ITEMS_FOR_RETURN);
 		Boolean getShowItemsForIssue = (Boolean) context.get(FacilioConstants.ContextNames.SHOW_ITEMS_FOR_ISSUE);

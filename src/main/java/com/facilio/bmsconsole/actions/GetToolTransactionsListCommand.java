@@ -107,6 +107,7 @@ public class GetToolTransactionsListCommand extends FacilioCommand {
 		builder.fetchSupplement((LookupField) toolTransactionsFieldsMap.get("purchasedTool"));
 		builder.fetchSupplement((LookupField) toolTransactionsFieldsMap.get("asset"));
 		builder.fetchSupplement((LookupField) toolTransactionsFieldsMap.get("toolType"));
+		builder.fetchSupplement((LookupField) toolTransactionsFieldsMap.get("issuedTo"));
 
 
 		Boolean getShowToolsForReturn = (Boolean) context.get(FacilioConstants.ContextNames.SHOW_TOOLS_FOR_RETURN);
