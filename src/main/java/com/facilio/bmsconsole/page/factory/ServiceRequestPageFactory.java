@@ -32,7 +32,8 @@ public class ServiceRequestPageFactory extends PageFactory {
             } else {
                 addCommonSubModuleWidget(tab2sec1, module, record, titleMap, false);
             }
-            if (!AccountUtil.getCurrentUser().isPortalUser()) {
+            // Showing Related list for Main app and in portal for nmdp org
+            if (AccountUtil.getCurrentOrg().getOrgId() == 429l || !AccountUtil.getCurrentUser().isPortalUser()) {
                 Page.Tab tab3 = page.new Tab("related list");
                 Page.Section tab3Sec1 = page.new Section();
                 tab3.addSection(tab3Sec1);
@@ -40,6 +41,9 @@ public class ServiceRequestPageFactory extends PageFactory {
                 if (CollectionUtils.isNotEmpty(tab3Sec1.getWidgets())) {
                     page.addTab(tab3);
                 }
+            }
+            
+            if (!AccountUtil.getCurrentUser().isPortalUser()) {
                 Page.Tab tab4 = page.new Tab("Activity");
                 page.addTab(tab4);
                 Page.Section tab4Sec1 = page.new Section();
