@@ -1340,17 +1340,9 @@ public class FacilioAuthAction extends FacilioAction {
 					setResult("url", relayState);
 				}
 				else {
-					if (relayState != null && relayState.startsWith("mobile")) {
+					if ("mobile".equals(relayState)) {
 						isWebView = true;
-						if ("mobile-facilio".equals(relayState)) {
-							setPortalWebViewCookies("facilio");
-						} else if ("mobile-serviceportal".equals(relayState)) {
-							setPortalWebViewCookies("service");
-						} else if ("mobile-tenantportal".equals(relayState)) {
-							setPortalWebViewCookies("tenant");
-						} else if ("mobile-vendorportal".equals(relayState)) {
-							setPortalWebViewCookies("vendor");
-						}
+						setWebViewCookies();
 						setResult("url", SSOUtil.getLoginSuccessURL(true));
 					} else {
 						setResult("url", SSOUtil.getLoginSuccessURL(false));
@@ -1524,9 +1516,17 @@ public class FacilioAuthAction extends FacilioAction {
 					setResult("url", relayState);
 				}
 				else {
-					if (relayState != null && "mobile".equals(relayState)) {
+					if (relayState != null && "mobile".startsWith(relayState)) {
 						isWebView = true;
-						setWebViewCookies();
+						if ("mobile-facilio".equals(relayState)) {
+							setPortalWebViewCookies("facilio");
+						} else if ("mobile-serviceportal".equals(relayState)) {
+							setPortalWebViewCookies("service");
+						} else if ("mobile-tenantportal".equals(relayState)) {
+							setPortalWebViewCookies("tenant");
+						} else if ("mobile-vendorportal".equals(relayState)) {
+							setPortalWebViewCookies("vendor");
+						}
 						setResult("url", SSOUtil.getLoginSuccessURL(true));
 					} else {
 						setResult("url", SSOUtil.getLoginSuccessURL(false));
