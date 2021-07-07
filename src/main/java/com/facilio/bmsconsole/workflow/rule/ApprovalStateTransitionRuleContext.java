@@ -58,6 +58,10 @@ public class ApprovalStateTransitionRuleContext extends AbstractStateTransitionR
 
 
         ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) record;
+        addActivity(moduleRecord, context, false);
+    }
+
+    public void addActivity(ModuleBaseWithCustomFields moduleRecord, Context context, boolean autoApprove) throws Exception {
         // add activities
         FacilioStatus facilioStatus = TicketAPI.getStatus(getToStateId());
         ActivityType activityType = CommonActivityType.APPROVAL;
@@ -68,6 +72,9 @@ public class ApprovalStateTransitionRuleContext extends AbstractStateTransitionR
         info.put("toStateId", getToStateId());
         info.put("user", AccountUtil.getCurrentUser().getId());
         info.put("ruleId", getStateFlowId());
+        if (autoApprove) {
+            info.put("auto_approve", autoApprove);
+        }
         CommonCommandUtil.addActivityToContext(moduleRecord.getId(), moduleRecord.getCurrentTime(), activityType, info, (FacilioContext) context);
     }
 

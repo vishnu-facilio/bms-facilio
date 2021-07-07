@@ -6,10 +6,16 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.SupplementRecord;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GetApprovalDetailsCommand extends FacilioCommand {
 
@@ -24,10 +30,19 @@ public class GetApprovalDetailsCommand extends FacilioCommand {
                 throw new IllegalArgumentException("Invalid module name");
             }
 
+            List<FacilioField> fields = modBean.getAllFields(moduleName);
+            List<SupplementRecord> lookupFields = new ArrayList<>();
+            for (FacilioField field : fields) {
+                if (field.getDataTypeEnum() == FieldType.LOOKUP || field.getDataTypeEnum() == FieldType.MULTI_LOOKUP) {
+                    lookupFields.add((SupplementRecord) field);
+                }
+            }
+
             SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<>()
                     .module(module)
                     .beanClass(FacilioConstants.ContextNames.getClassFromModule(module))
-                    .select(modBean.getAllFields(moduleName))
+                    .select(fields)
+                    .fetchSupplements(lookupFields)
                     .andCondition(CriteriaAPI.getIdCondition(recordId, module));
             ModuleBaseWithCustomFields moduleRecord = builder.fetchFirst();
             if (moduleRecord == null) {

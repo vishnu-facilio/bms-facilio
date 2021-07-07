@@ -2924,6 +2924,7 @@ public class TransactionChainFactory {
 
 		public static FacilioChain getAvailableState() {
 			FacilioChain c = getDefaultChain();
+			c.addCommand(new AddFieldsAndLookupFieldsInContextCommand());
 			c.addCommand(new GenericGetModuleDataDetailCommand());
 			c.addCommand(new GetAvailableStateCommand());
 			return c;

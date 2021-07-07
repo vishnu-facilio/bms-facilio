@@ -39,7 +39,8 @@ public class GetApproversListCommand extends FacilioCommand {
                     Map<Long, Map<String, Object>> previousStepMap = previousSteps.stream().collect(Collectors.toMap(t -> (Long) t.get("approverGroup"), Function.identity()));
 
                     if (CollectionUtils.isNotEmpty(workflowRule.getApprovers())) {
-                        List<Map<String, Object>> sharingDetails = SharingContext.getSharingDetails((List) workflowRule.getApprovers(), moduleRecord);
+                        SharingContext sharingContext = new SharingContext(workflowRule.getApprovers());
+                        List<Map<String, Object>> sharingDetails = sharingContext.getSharingDetails(moduleRecord);
                         for (Map<String, Object> details : sharingDetails) {
                             Object id = details.get("approverGroup");
                             if (previousStepMap.containsKey(id)) {
