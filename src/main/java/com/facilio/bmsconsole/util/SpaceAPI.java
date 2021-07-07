@@ -2018,7 +2018,7 @@ public static List<Map<String,Object>> getBuildingArea(String buildingList) thro
 			BuildingContext building = SpaceAPI.getBuildingSpace(buildingId);
 			space.setSiteId(building.getSiteId());
 		}
-		if(space.getFloor().getId() > 0) {
+		if(space.getFloor() != null && space.getFloor().getId() > 0) {
 			long floorId = space.getFloor().getId();
 			V3FloorContext floor = SpaceAPI.getV3FloorSpace(floorId);
 			space.setSiteId(floor.getSiteId());
