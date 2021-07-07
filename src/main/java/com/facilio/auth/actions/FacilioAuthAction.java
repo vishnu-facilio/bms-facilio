@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
@@ -77,7 +76,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.var;
 
-import static com.facilio.iam.accounts.exceptions.AccountException.ErrorCode.ORG_DOMAIN_ALREADY_EXISTS;
 import static com.facilio.iam.accounts.exceptions.AccountException.ErrorCode.USER_DEACTIVATED_FROM_THE_ORG;
 
 public class FacilioAuthAction extends FacilioAction {
@@ -724,14 +722,20 @@ public class FacilioAuthAction extends FacilioAction {
 	}
 
 	private void setServicePortalWebViewCookies() throws Exception {
+		setPortalWebViewCookies(getLookUpType());
+	}
+
+	private void setPortalWebViewCookies(String mobileAppType) throws Exception {
 		HttpServletResponse response = ServletActionContext.getResponse();
 		Cookie schemeCookie = null;
-		if (getLookUpType().equalsIgnoreCase("service")) {
+		if (mobileAppType.equalsIgnoreCase("service")) {
 			schemeCookie = new Cookie("fc.mobile.scheme", FacilioProperties.getMobileServiceportalAppScheme());
-		} else if (getLookUpType().equalsIgnoreCase("tenant")) {
+		} else if (mobileAppType.equalsIgnoreCase("tenant")) {
 			schemeCookie = new Cookie("fc.mobile.scheme", FacilioProperties.getMobileTenantportalAppScheme());
-		} else if (getLookUpType().equalsIgnoreCase("vendor")) {
+		} else if (mobileAppType.equalsIgnoreCase("vendor")) {
 			schemeCookie = new Cookie("fc.mobile.scheme", FacilioProperties.getMobileVendorportalAppScheme());
+		} else if (mobileAppType.equalsIgnoreCase("facilio")) {
+			schemeCookie = new Cookie("fc.mobile.scheme", FacilioProperties.getMobileMainAppScheme());
 		}
 
 		setTempCookieProperties(schemeCookie, false);
@@ -740,9 +744,12 @@ public class FacilioAuthAction extends FacilioAction {
 
 	public void setWebViewCookies() throws Exception {
 		HttpServletRequest request = ServletActionContext.getRequest();
-		HttpServletResponse response = ServletActionContext.getResponse();
-
 		AppDomain appDomainObj = IAMAppUtil.getAppDomain(request.getServerName());
+		setWebViewCookies(appDomainObj);
+	}
+
+	private void setWebViewCookies(AppDomain appDomainObj) throws Exception {
+		HttpServletResponse response = ServletActionContext.getResponse();
 		String scheme = "";
 		if (appDomainObj.getAppDomainTypeEnum() == AppDomainType.FACILIO) {
 			String mainAppscheme = FacilioProperties.getMobileMainAppScheme();
@@ -1333,9 +1340,17 @@ public class FacilioAuthAction extends FacilioAction {
 					setResult("url", relayState);
 				}
 				else {
-					if (relayState != null && "mobile".equals(relayState)) {
+					if (relayState != null) {
 						isWebView = true;
-						setWebViewCookies();
+						if ("mobile-facilio".equals(relayState)) {
+							setPortalWebViewCookies("facilio");
+						} else if ("mobile-serviceportal".equals(relayState)) {
+							setPortalWebViewCookies("service");
+						} else if ("mobile-tenantportal".equals(relayState)) {
+							setPortalWebViewCookies("tenant");
+						} else if ("mobile-vendorportal".equals(relayState)) {
+							setPortalWebViewCookies("vendor");
+						}
 						setResult("url", SSOUtil.getLoginSuccessURL(true));
 					} else {
 						setResult("url", SSOUtil.getLoginSuccessURL(false));
