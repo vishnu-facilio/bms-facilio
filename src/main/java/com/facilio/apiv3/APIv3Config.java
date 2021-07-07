@@ -8,6 +8,7 @@ import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.*;
 import com.facilio.bmsconsoleV3.commands.budget.*;
 import com.facilio.bmsconsoleV3.commands.building.AddOrUpdateBuildingLocation;
+import com.facilio.bmsconsoleV3.commands.building.BuildingFillLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.building.CreateBuildingAfterSave;
 import com.facilio.bmsconsoleV3.commands.building.SetBuildingRelatedContextCommand;
 import com.facilio.bmsconsoleV3.commands.client.AddAddressForClientLocationCommandV3;
@@ -34,10 +35,12 @@ import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.Lo
 import com.facilio.bmsconsoleV3.commands.employee.UpdateEmployeePeopleAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.facility.*;
 import com.facilio.bmsconsoleV3.commands.floor.CreateFloorAfterSave;
+import com.facilio.bmsconsoleV3.commands.floor.FloorFillLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.floor.SetFloorRelatedContextCommand;
 import com.facilio.bmsconsoleV3.commands.floorplan.CreateFacilityForDesksCommandV3;
 import com.facilio.bmsconsoleV3.commands.floorplan.FetchFloorPlanMarkerCommand;
 import com.facilio.bmsconsoleV3.commands.floorplan.V3ValidateFloorPlanCommand;
+import com.facilio.bmsconsoleV3.commands.floorplan.V3ValidateSpaceCommand;
 import com.facilio.bmsconsoleV3.commands.imap.UpdateLatestMessageUIDCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
@@ -61,16 +64,17 @@ import com.facilio.bmsconsoleV3.commands.servicerequest.LoadServiceRequestLookup
 import com.facilio.bmsconsoleV3.commands.site.AddOrUpdateSiteLocationCommand;
 import com.facilio.bmsconsoleV3.commands.site.CreateSiteAfterSave;
 import com.facilio.bmsconsoleV3.commands.site.SetSiteRelatedContextCommand;
+import com.facilio.bmsconsoleV3.commands.site.SiteFillLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.space.AddOrUpdateSpaceLocation;
 import com.facilio.bmsconsoleV3.commands.space.CreateSpaceAfterSave;
 import com.facilio.bmsconsoleV3.commands.space.SetSpaceRelatedContextCommand;
+import com.facilio.bmsconsoleV3.commands.space.SpaceFillLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.storeroom.LoadStoreRoomLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.storeroom.UpdateServingSitesinStoreRoomCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenant.FillTenantsLookupCommand;
 import com.facilio.bmsconsoleV3.commands.tenant.ValidateTenantSpaceCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantcontact.LoadTenantcontactLookupsCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantunit.AddSpaceCommandV3;
-import com.facilio.bmsconsoleV3.commands.floorplan.V3ValidateSpaceCommand;
 import com.facilio.bmsconsoleV3.commands.tooltypes.LoadToolTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.tooltypes.SetToolTypesUnitCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendor.AddOrUpdateLocationForVendorCommandV3;
@@ -94,16 +98,10 @@ import com.facilio.bmsconsoleV3.context.budget.ChartOfAccountContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.*;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnnouncementContext;
+import com.facilio.bmsconsoleV3.context.facilitybooking.*;
+import com.facilio.bmsconsoleV3.context.floorplan.*;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
-import com.facilio.bmsconsoleV3.context.facilitybooking.AmenitiesContext;
-import com.facilio.bmsconsoleV3.context.facilitybooking.FacilityContext;
-import com.facilio.bmsconsoleV3.context.floorplan.V3DeskContext;
-import com.facilio.bmsconsoleV3.context.floorplan.V3FloorPlanMarkerTypeContext;
-import com.facilio.bmsconsoleV3.context.floorplan.V3FloorplanMarkersContext;
-import com.facilio.bmsconsoleV3.context.floorplan.V3IndoorFloorPlanContext;
-import com.facilio.bmsconsoleV3.context.floorplan.V3MarkerContext;
-import com.facilio.bmsconsoleV3.context.facilitybooking.*;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
@@ -1301,8 +1299,8 @@ public class APIv3Config {
                     .beforeSave(new AddOrUpdateSiteLocationCommand())
                     .afterSave(new ConstructAddCustomActivityCommand(), new AddActivitiesCommand(FacilioConstants.ContextNames.SITE_ACTIVITY))
                 .delete()
-                .summary()
-                .list()
+                .summary().beforeFetch(new SiteFillLookupFieldsCommand())
+                .list().beforeFetch(new SiteFillLookupFieldsCommand())
                 .build();
     }
 
@@ -1316,8 +1314,8 @@ public class APIv3Config {
                     .beforeSave(new AddOrUpdateBuildingLocation(), new SetBuildingRelatedContextCommand())
                     .afterSave(new ConstructAddCustomActivityCommand(), new AddActivitiesCommand(FacilioConstants.ContextNames.BUILDING_ACTIVITY))
                 .delete()
-                .summary()
-                .list()
+                .summary().beforeFetch(new BuildingFillLookupFieldsCommand())
+                .list().beforeFetch(new BuildingFillLookupFieldsCommand())
                 .build();
     }
 
@@ -1331,8 +1329,8 @@ public class APIv3Config {
                     .beforeSave(new SetFloorRelatedContextCommand())
                     .afterSave(new ConstructAddCustomActivityCommand(), new AddActivitiesCommand(FacilioConstants.ContextNames.FLOOR_ACTIVITY))
                 .delete()
-                .summary()
-                .list()
+                .summary().beforeFetch(new FloorFillLookupFieldsCommand())
+                .list().beforeFetch(new FloorFillLookupFieldsCommand())
                 .build();
     }
 
@@ -1346,8 +1344,8 @@ public class APIv3Config {
                     .beforeSave(new AddOrUpdateSpaceLocation(), new SetSpaceRelatedContextCommand())
                     .afterSave(new ConstructAddCustomActivityCommand(), new AddActivitiesCommand(FacilioConstants.ContextNames.SPACE_ACTIVITY))
                 .delete()
-                .summary()
-                .list()
+                .summary().beforeFetch(new SpaceFillLookupFieldsCommand())
+                .list().beforeFetch(new SpaceFillLookupFieldsCommand())
                 .build();
     }
 }

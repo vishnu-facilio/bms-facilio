@@ -1,10 +1,9 @@
 package com.facilio.bmsconsoleV3.commands.site;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.SpaceAPI;
-import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.context.V3SiteContext;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;

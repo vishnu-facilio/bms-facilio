@@ -1,15 +1,13 @@
 package com.facilio.bmsconsoleV3.context;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.FloorContext;
-import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.constants.FacilioConstants;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class V3BaseSpaceContext extends V3ResourceContext {
 
@@ -111,13 +109,10 @@ public class V3BaseSpaceContext extends V3ResourceContext {
 		super.setLocalId(localId);
 	}
 
-	private long siteId;
-	public long getSiteId() {
-		return siteId;
-	}
-	public void setSiteId(Long siteId) {
-		this.siteId = siteId;
-		if (siteId > -1) {
+	@JsonProperty("siteId")
+	public void _setSiteId(Long siteId) {
+		if (siteId != null && siteId > -1) {
+			super.setSiteId(siteId);
 			if (site == null) {
 				site = new V3SiteContext();
 			}
@@ -134,7 +129,7 @@ public class V3BaseSpaceContext extends V3ResourceContext {
 	}
 	public void setSite(V3SiteContext site) {
 		this.site = site;
-		this.siteId = site != null ? site.getId() : -1;
+		super.setSiteId(site != null ? site.getId() : -1);
 	}
 
 	private Long buildingId;

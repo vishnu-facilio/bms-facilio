@@ -139,15 +139,6 @@ public class V3ResourceContext extends V3Context {
 		this.controllerId = controllerId;
 	}
 
-	private Long siteId;
-
-	public void setSiteId(Long siteId) {
-		this.siteId = siteId;
-	}
-
-	public long getSiteId() {
-		return this.siteId;
-	}
 
 	private String qrVal;
 

@@ -2030,18 +2030,18 @@ public static List<Map<String,Object>> getBuildingArea(String buildingList) thro
 			space.setSiteId(spaces.getSiteId());
 			space.setBuilding(spaces.getBuilding());
 			space.setFloorId(spaces.getFloorId());
-			if (spaces.getSpaceId3() > 0) {
+			if (spaces.getSpaceId3() != null && spaces.getSpaceId3() > 0) {
 				space.setSpaceId4(spaceId);
 				space.setSpaceId3(spaces.getSpaceId3());
 				space.setSpaceId2(spaces.getSpaceId2());
 				space.setSpaceId1(spaces.getSpaceId1());
 			}
-			else if (spaces.getSpaceId2() > 0) {
+			else if (spaces.getSpace2() != null && spaces.getSpaceId2() > 0) {
 				space.setSpaceId3(spaceId);
 				space.setSpaceId2(spaces.getSpaceId2());
 				space.setSpaceId1(spaces.getSpaceId1());
 			}
-			else if (spaces.getSpaceId1() > 0) {
+			else if (spaces.getSpaceId1() != null && spaces.getSpaceId1() > 0) {
 				space.setSpaceId2(spaceId);
 				space.setSpaceId1(spaces.getSpaceId1());
 			}
