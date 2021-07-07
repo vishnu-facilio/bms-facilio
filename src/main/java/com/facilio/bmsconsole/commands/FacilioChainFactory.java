@@ -684,7 +684,6 @@ public class FacilioChainFactory {
 
 	public static FacilioChain getAddBuildingChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
-		c.addCommand(new ValidateBuildingFieldsCommand());
 		c.addCommand(SetTableNamesCommand.getForBuilding());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddBuildingCommand());
