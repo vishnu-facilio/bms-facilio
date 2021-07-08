@@ -1,18 +1,17 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class GetApprovalModulesCommand extends FacilioCommand {
     @Override
@@ -21,6 +20,10 @@ public class GetApprovalModulesCommand extends FacilioCommand {
                 FacilioConstants.ContextNames.WORK_ORDER,
                 FacilioConstants.ContextNames.WorkPermit.WORKPERMIT,
                 FacilioConstants.ContextNames.INVENTORY_REQUEST,
+                FacilioConstants.ContextNames.SITE,
+                FacilioConstants.ContextNames.BUILDING,
+                FacilioConstants.ContextNames.FLOOR,
+                FacilioConstants.ContextNames.SPACE
         });
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
