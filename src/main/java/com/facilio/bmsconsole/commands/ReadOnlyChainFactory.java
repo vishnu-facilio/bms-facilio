@@ -2609,7 +2609,7 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getApprovalModuleDataListChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetApprovalModuleDataListCommand());
-		chain.addCommand(new AddFieldsAndLookupFieldsInContextCommand());
+//		chain.addCommand(new AddFieldsAndLookupFieldsInContextCommand()); 	// commenting out till we fix the issue in select builder
 		chain.addCommand(new LoadViewCommand());
 		chain.addCommand(new GetLookupFieldsFromViewCommand());
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
