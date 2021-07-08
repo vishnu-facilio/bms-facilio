@@ -18,12 +18,11 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FileField;
 import com.facilio.v3.V3Builder.V3Config;
-import com.facilio.v3.commands.*;
+import com.facilio.v3.commands.AttachmentCommand;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import com.facilio.v3.util.ChainUtil;
-import lombok.var;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -34,7 +33,6 @@ import org.json.simple.parser.JSONParser;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -202,6 +200,10 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
                 sorting.put("orderType", orderByType);
                 context.put(FacilioConstants.ContextNames.SORTING, sorting);
                 context.put(FacilioConstants.ContextNames.OVERRIDE_SORTING, true);
+            }
+
+            if (getSearch() != null) {
+                context.put(FacilioConstants.ContextNames.SEARCH, getSearch());
             }
 
             JSONObject pagination = new JSONObject();
