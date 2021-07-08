@@ -51,6 +51,7 @@ import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.MultiLookupField;
 import com.facilio.modules.fields.SupplementRecord;
 
 public class UpdateWorkOrderCommand extends FacilioCommand {
@@ -361,7 +362,6 @@ public class UpdateWorkOrderCommand extends FacilioCommand {
 				if (oldValue == null && (newValue == null || (newValue instanceof Long && ((long)newValue) == -99)) ) {
 					continue;
 				}
-				
 				if (field.getName().contains("resource")) {
 					long resourceId = (long) newValue;
 					newValue = ResourceAPI.getResourceMapFromIds(Collections.singletonList(resourceId), false).get(resourceId).get("name");
@@ -370,6 +370,9 @@ public class UpdateWorkOrderCommand extends FacilioCommand {
 					long recId = (long) newValue;
 					newValue = RecordAPI.getPrimaryValue(((LookupField)field).getLookupModule().getName(), recId);
 					info.put("recordId", recId);
+				}
+				else if (!field.isDefault() && field instanceof MultiLookupField && newValue instanceof ArrayList) {
+					newValue = CommonCommandUtil.getMultiLookupValues(newValue, field);
 				}
 				else {
 					if (field.getName().contains("preRequisiteApproved")) {

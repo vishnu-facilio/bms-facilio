@@ -17,6 +17,7 @@ import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.MultiLookupField;
 
 public class ConstructUpdateCustomActivityCommand extends FacilioCommand {
 
@@ -49,6 +50,9 @@ public class ConstructUpdateCustomActivityCommand extends FacilioCommand {
 				changeObj.put("field", field.getName());
 				changeObj.put("displayName", field.getDisplayName());
 				changeObj.put("oldValue", oldValue);
+				if (!field.isDefault() && field instanceof MultiLookupField && newValue instanceof ArrayList) {
+					newValue = CommonCommandUtil.getMultiLookupValues(newValue, field);
+				}
 				changeObj.put("newValue", newValue);
 				changeList.add(changeObj);	
 			}

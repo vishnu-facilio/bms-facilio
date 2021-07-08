@@ -1086,5 +1086,19 @@ public class CommonCommandUtil {
 		}
 		return null;
 	}
-
+	
+	public static Object getMultiLookupValues(Object newValue, FacilioField field) throws Exception {
+		ArrayList newValuesArray = (ArrayList) newValue;
+		List<String> primaryValArr = new ArrayList<String>();
+		for(Object obj : newValuesArray) {
+			if (((HashMap) obj).get("id") != null) {
+				long recId = (long) ((HashMap) obj).get("id");
+				String primaryVal = (String) RecordAPI.getPrimaryValue(((MultiLookupField)field).getLookupModule().getName(), recId);
+				primaryValArr.add(primaryVal);
+			}
+		}
+		newValuesArray = (ArrayList) primaryValArr;
+		newValue = newValuesArray;
+		return null;
+	}
 }
