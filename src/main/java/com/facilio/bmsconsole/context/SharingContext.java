@@ -189,8 +189,10 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 		}
 		else if (field instanceof LookupField) {
 			Map<String, Object> obj = (Map<String, Object>) moduleDataMap.get(field.getName());
-			Long objId = (Long) obj.get("id");
-			objIds.add(objId);
+			if (obj != null) {
+				Long objId = (Long) obj.get("id");
+				objIds.add(objId);
+			}
 		}
 		return objIds;
 	}
