@@ -264,13 +264,9 @@ public class VendorAction extends FacilioAction{
 	
 	public String v2deleteVendors() throws Exception {
 		FacilioContext context = new FacilioContext();
-		
-		VendorContext vendor = new VendorContext();
-		vendor.setDeleted(true);
-		
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
-		context.put(FacilioConstants.ContextNames.RECORD, vendor);
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, vendorsId);
+		context.put(FacilioConstants.ContextNames.IS_MARK_AS_DELETE, true);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(vendorsId));
 		
 		FacilioChain deleteVendorChain = TransactionChainFactory.getDeleteVendorsChain();
 		deleteVendorChain.execute(context);

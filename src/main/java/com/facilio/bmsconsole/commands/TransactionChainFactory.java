@@ -2025,7 +2025,7 @@ public class TransactionChainFactory {
 		public static FacilioChain getDeleteVendorsChain(){
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForVendors());
-			c.addCommand(new GenericUpdateModuleDataCommand());
+			c.addCommand(new GenericDeleteModuleDataCommand());
 			return c;
 		}
 		
