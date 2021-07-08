@@ -26,8 +26,10 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.fields.BaseLookupField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.MultiLookupField;
 import org.apache.commons.collections4.CollectionUtils;
 
 public class SharingContext<E extends SingleSharingContext> extends ArrayList<E> {
@@ -98,7 +100,7 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 		return isAppSharingMatched && havePermission;
 	}
 
-	private boolean isMatching (SingleSharingContext permission, User user, Object object) throws Exception {
+	public boolean isMatching (SingleSharingContext permission, User user, Object object) throws Exception {
 		switch (permission.getTypeEnum()) {
 			case USER:
 				if (permission.getUserId() == user.getOuid()) {
@@ -129,21 +131,22 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 					if (object != null) {
 						ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 						FacilioField field = modBean.getField(permission.getFieldId());
-						// todo check here
-						if (field instanceof LookupField) {
-							FacilioModule lookupModule = ((LookupField) field).getLookupModule();
-							Map<String, Object> obj = (Map<String, Object>) FieldUtil.getAsProperties(object).get(field.getName());
-							if (obj != null) {
-								Long objId = (Long) obj.get("id");
-								if ("users".equals(lookupModule.getName())) {
-									if (objId != null && objId == user.getOuid()) {
-										return true;
-									}
-								} else {
-									FacilioModule peopleModule = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
-									if (lookupModule.getExtendedModuleIds().contains(peopleModule.getModuleId())) {
-										if (objId != null && objId.equals(user.getPeopleId())) {
+						if (field instanceof BaseLookupField) {
+							FacilioModule lookupModule = ((BaseLookupField) field).getLookupModule();
+							Map<String, Object> moduleDataMap = FieldUtil.getAsProperties(object);
+							if (moduleDataMap.containsKey(field.getName())) {
+								List<Long> objIds = getUserIdsForField(moduleDataMap, field);
+								if (CollectionUtils.isNotEmpty(objIds)) {
+									if ("users".equals(lookupModule.getName())) {
+										if (objIds.contains(user.getOuid())) {
 											return true;
+										}
+									} else {
+										FacilioModule peopleModule = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
+										if (lookupModule.getExtendedModuleIds().contains(peopleModule.getModuleId())) {
+											if (objIds.contains(user.getPeopleId())) {
+												return true;
+											}
 										}
 									}
 								}
@@ -172,6 +175,24 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 				}
 		}
 		return false;
+	}
+
+	private List<Long> getUserIdsForField(Map<String, Object> moduleDataMap, FacilioField field) {
+		List<Long> objIds = new ArrayList<>();
+		if (field instanceof MultiLookupField) {
+			List<Map<String, Object>> list = (List<Map<String, Object>>) moduleDataMap.get(field.getName());
+			if (CollectionUtils.isNotEmpty(list)) {
+				for (Map<String, Object> map : list) {
+					objIds.add((Long) map.get("id"));
+				}
+			}
+		}
+		else if (field instanceof LookupField) {
+			Map<String, Object> obj = (Map<String, Object>) moduleDataMap.get(field.getName());
+			Long objId = (Long) obj.get("id");
+			objIds.add(objId);
+		}
+		return objIds;
 	}
 
 	private boolean isMatchingPeopleField(SingleSharingContext permission, Object object, User user, String moduleName) throws Exception {
@@ -225,7 +246,7 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 		return matchingPermissions;
 	}
 
-	public static List<Map<String, Object>> getSharingDetails(List<SingleSharingContext> list, Object object) throws Exception {
+	public List<Map<String, Object>> getSharingDetails(Object object) throws Exception {
 		List<Map<String, Object>> permissionList = new ArrayList<>();
 		List<Long> ouIds = new ArrayList<>();
 		List<Long> roleIds = new ArrayList<>();
@@ -233,7 +254,7 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 		List<Long> tenantIds = new ArrayList<>();
 		List<Long> vendorIds = new ArrayList<>();
 		List<Integer> appTypes = new ArrayList<>();
-		for (SingleSharingContext sharingContext : list) {
+		for (SingleSharingContext sharingContext : this) {
 			Map<String, Object> map = new HashMap<>();
 			permissionList.add(map);
 			SingleSharingContext.SharingType sharingType = sharingContext.getTypeEnum();
@@ -259,23 +280,31 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					FacilioField field = modBean.getField(sharingContext.getFieldId());
 					map.put("field", field);
-					// todo check here
-					Map<String, Object> userObj = (Map<String, Object>) FieldUtil.getAsProperties(object).get(field.getName());
-					if (userObj != null) {
-						FacilioModule lookupModule = ((LookupField) field).getLookupModule();
-						Long objId = (Long) userObj.get("id");
-						if ("users".equals(lookupModule.getName())) {
-							map.put("permissionId", objId);
-							ouIds.add(objId);
-						} else {
+					Map<String, Object> moduleDataMap = FieldUtil.getAsProperties(object);
+					if (moduleDataMap.containsKey(field.getName())) {
+						FacilioModule lookupModule = ((BaseLookupField) field).getLookupModule();
+						List<Long> objIds = getUserIdsForField(moduleDataMap, field);
+						if (!"users".equals(lookupModule.getName())) { // if not user, then it is people
 							FacilioModule peopleModule = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
 							if (lookupModule.getExtendedModuleIds().contains(peopleModule.getModuleId())) {
-								List<Long> userIdForPeople = PeopleAPI.getUserIdForPeople(objId);
-								if (CollectionUtils.isNotEmpty(userIdForPeople)) {
-									map.put("permissionId", userIdForPeople.get(0));
-									ouIds.add(userIdForPeople.get(0));
+								List<Long> peopleUserId = new ArrayList<>();
+								for (Long userId : objIds) {
+									List<Long> userIdForPeople = PeopleAPI.getUserIdForPeople(userId);
+									if (CollectionUtils.isNotEmpty(userIdForPeople)) {
+										peopleUserId.add(userIdForPeople.get(0));
+									}
 								}
+								objIds = peopleUserId; // change people ids to user ids
 							}
+						}
+						ouIds.addAll(objIds);
+
+						if (field instanceof LookupField) {
+							map.put("permissionId", objIds.get(0));
+							ouIds.add(objIds.get(0));
+						} else if (field instanceof MultiLookupField) {
+							map.put("permissionIds", objIds);
+							objIds.addAll(objIds);
 						}
 					}
 					break;
@@ -314,8 +343,26 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 			Long permissionId = (Long) map.get("permissionId");
 			switch (sharingType) {
 				case USER:
-				case FIELD:
 					map.put("value", userMap.get(permissionId));
+					break;
+				case FIELD:
+					if (map.containsKey("field")) {
+						FacilioField field = (FacilioField) map.get("field");
+						if (field instanceof LookupField) {
+							map.put("value", userMap.get(permissionId));
+						} else if (field instanceof MultiLookupField) {
+							List<Long> permissionIds = (List<Long>) map.get("permissionIds");
+							if (CollectionUtils.isNotEmpty(permissionIds)) {
+								List<User> userList = new ArrayList<>();
+								for (Long perId : permissionIds) {
+									if (userMap.containsKey(perId)) {
+										userList.add(userMap.get(perId));
+									}
+								}
+								map.put("value", userList);
+							}
+						}
+					}
 					break;
 				case GROUP:
 					map.put("value", groupMap.get(permissionId));

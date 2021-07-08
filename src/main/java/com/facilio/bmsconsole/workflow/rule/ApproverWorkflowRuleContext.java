@@ -170,10 +170,13 @@ public class ApproverWorkflowRuleContext extends WorkflowRuleContext {
         return shouldExecuteTrueActions;
     }
 
-    public void skipAnyPendingApprovals(ModuleBaseWithCustomFields record) throws Exception {
-        if (isAllApprovalRequired()) {
+    public boolean handleSkippablePendingApprovers(ModuleBaseWithCustomFields record) throws Exception {
+        try {
             List<SingleSharingContext> checkAnyPendingApprovers = checkAnyPendingApprovers(record, null);
             removeAnySkippedPendingApprovals(checkAnyPendingApprovers, record);
+            return false;
+        } catch (IllegalArgumentException ex) {
+            return true; // no valid approvers found
         }
     }
 

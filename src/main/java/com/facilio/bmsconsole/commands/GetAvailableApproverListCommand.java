@@ -44,7 +44,8 @@ public class GetAvailableApproverListCommand extends FacilioCommand {
                             list = Collections.singletonList(list.get(0));
                         }
                         if (CollectionUtils.isNotEmpty(list)) {
-                            context.put(FacilioConstants.ContextNames.PENDING_APPROVAL_LIST, SharingContext.getSharingDetails(list, moduleData));
+                            SharingContext sharingContext = new SharingContext(list);
+                            context.put(FacilioConstants.ContextNames.PENDING_APPROVAL_LIST, sharingContext.getSharingDetails(moduleData));
                         }
                     }
                 }

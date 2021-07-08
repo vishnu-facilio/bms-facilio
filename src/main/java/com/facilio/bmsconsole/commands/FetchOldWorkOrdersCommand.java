@@ -1,9 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.SupplementRecord;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -30,10 +35,18 @@ public class FetchOldWorkOrdersCommand extends FacilioCommand {
 			FacilioModule module = modBean.getModule(moduleName);
 			
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+			List<SupplementRecord> lookupFields = new ArrayList<>();
+			for (FacilioField field : fields) {
+				if (field.getDataTypeEnum() == FieldType.LOOKUP || field.getDataTypeEnum() == FieldType.MULTI_LOOKUP) {
+					lookupFields.add((SupplementRecord) field);
+				}
+			}
+
 			SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
 					.moduleName(FacilioConstants.ContextNames.WORK_ORDER)
 					.beanClass(WorkOrderContext.class)
 					.select(fields)
+					.fetchSupplements(lookupFields)
 					.andCondition(CriteriaAPI.getIdCondition(recordIds, module))
 					.orderBy("ID");
 

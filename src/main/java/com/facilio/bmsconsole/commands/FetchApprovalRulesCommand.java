@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.LookupField;
@@ -127,58 +128,8 @@ public class FetchApprovalRulesCommand extends FacilioCommand {
 								wo.setWaitingApprovals(rule.getApprovers());
 							}
 							User currentUser = AccountUtil.getCurrentUser();
-							for(ApproverContext approverContext: wo.getWaitingApprovals()) {
-								switch(approverContext.getTypeEnum()) {
-									case USER:
-										if (currentUser.getOuid() == approverContext.getUserId()) {
-											wo.setCanCurrentUserApprove(true);
-										}
-										break;
-									case ROLE:
-										if (currentUser.getRoleId() == approverContext.getRoleId()) {
-											wo.setCanCurrentUserApprove(true);
-										}
-										break;
-									case GROUP:
-										if (groupIds == null) {
-											List<Group> myGroups = AccountUtil.getGroupBean().getMyGroups(currentUser.getOuid());
-											if (myGroups != null && !myGroups.isEmpty()) {
-												groupIds = myGroups.stream().map(gp -> gp.getGroupId()).collect(Collectors.toList());
-											}
-											else {
-												groupIds = new ArrayList<>();
-											}
-										}
-										if (groupIds.contains(approverContext.getGroupId())) {
-											wo.setCanCurrentUserApprove(true);
-										}
-										break;
-									case FIELD:
-										if (approverContext.getFieldId() > 0) {
-											FacilioField field = modBean.getField(approverContext.getFieldId());
-											if (field instanceof LookupField) {
-												FacilioModule lookupModule = ((LookupField) field).getLookupModule();
-												Map<String, Object> userObj = (Map<String, Object>) FieldUtil.getAsProperties(wo).get(field.getName());
-												if (userObj != null) {
-													Long objId = (Long) userObj.get("id");
-													if ("users".equals(lookupModule.getName())) {
-														if (objId != null && objId == currentUser.getOuid()) {
-															return true;
-														}
-													} else {
-														FacilioModule peopleModule = modBean.getModule(ContextNames.PEOPLE);
-														if (lookupModule.getExtendedModuleIds().contains(peopleModule.getModuleId())) {
-															if (objId != null && objId.equals(currentUser.getPeopleId())) {
-																return true;
-															}
-														}
-													}
-												}
-											}
-										}
-										break;
-								}
-							}
+							SharingContext sharingContext = new SharingContext(wo.getWaitingApprovals());
+							wo.setCanCurrentUserApprove(sharingContext.isAllowed(wo));
 						}
 					}
 				}

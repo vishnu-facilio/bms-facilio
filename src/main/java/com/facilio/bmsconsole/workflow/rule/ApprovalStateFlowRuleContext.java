@@ -41,14 +41,11 @@ public class ApprovalStateFlowRuleContext extends AbstractStateFlowRuleContext {
         FacilioModule module = getModule();
 
         List<FacilioField> fields = new ArrayList<>();
-        fields.add(modBean.getField("approvalFlowId", module.getName()));
-        fields.add(modBean.getField("approvalStatus", module.getName()));
-        UpdateRecordBuilder<ModuleBaseWithCustomFields> updateBuilder = new UpdateRecordBuilder<>()
-                .module(module)
-                .fields(fields)
-                .andCondition(CriteriaAPI.getIdCondition(moduleRecord.getId(), module));
-        updateBuilder.update(moduleRecord);
-        super.executeTrueActions(record, context, placeHolders);
+        FacilioField approvalFlowIdField = modBean.getField("approvalFlowId", module.getName());
+        FacilioField approvalStatusField = modBean.getField("approvalStatus", module.getName());
+        fields.add(approvalFlowIdField);
+        fields.add(approvalStatusField);
+        updateModuleRecordApprovalFields(module, fields, moduleRecord);
 
         // add activities
         ActivityType activityType = CommonActivityType.APPROVAL_ENTRY;
@@ -69,11 +66,32 @@ public class ApprovalStateFlowRuleContext extends AbstractStateFlowRuleContext {
         if (CollectionUtils.isNotEmpty(allStateTransitionList)) {
             for (WorkflowRuleContext rule : allStateTransitionList) {
                 if (rule instanceof ApproverWorkflowRuleContext) {
-                    ((ApproverWorkflowRuleContext) rule).skipAnyPendingApprovals(moduleRecord);
+                    boolean noValidApproversFound = ((ApproverWorkflowRuleContext) rule).handleSkippablePendingApprovers(moduleRecord);
+                    if (noValidApproversFound && rule instanceof ApprovalStateTransitionRuleContext) {
+                        FacilioStatus toStatus = TicketAPI.getStatus(((ApprovalStateTransitionRuleContext) rule).getToStateId());
+                        if (toStatus.getType() == FacilioStatus.StatusType.EXIT) {
+                            // there is no valid approvers. so auto-approve this approval
+                            moduleRecord.setApprovalFlowId(-99);
+                            FacilioStatus facilioStatus = new FacilioStatus();
+                            facilioStatus.setId(-99);
+                            moduleRecord.setApprovalStatus(facilioStatus);
+                            updateModuleRecordApprovalFields(module, fields, moduleRecord);
+
+                            ((ApprovalStateTransitionRuleContext) rule).addActivity(moduleRecord, context, true);
+                        }
+                    }
                 }
             }
         }
 
         super.executeTrueActions(record, context, placeHolders);
+    }
+
+    private void updateModuleRecordApprovalFields(FacilioModule module, List<FacilioField> fields, ModuleBaseWithCustomFields moduleRecord) throws Exception {
+        UpdateRecordBuilder<ModuleBaseWithCustomFields> updateBuilder = new UpdateRecordBuilder<>()
+                .module(module)
+                .fields(fields)
+                .andCondition(CriteriaAPI.getIdCondition(moduleRecord.getId(), module));
+        updateBuilder.update(moduleRecord);
     }
 }
