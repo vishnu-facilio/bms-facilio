@@ -18,6 +18,9 @@ import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.xml.builder.XMLBuilder;
 
 public class SSOUtil {
+	public static void main(String[] args) {
+		SSOUtil.getDomainSSOEndpoint("bm1kcC5mYXppbGlvLmNvbQ");
+	}
 
 	public static String base64EncodeUrlSafe(String str) {
 		return Base64.encodeBase64URLSafeString(str.getBytes());
