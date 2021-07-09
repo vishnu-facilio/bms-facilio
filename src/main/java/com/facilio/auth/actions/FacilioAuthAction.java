@@ -1340,7 +1340,7 @@ public class FacilioAuthAction extends FacilioAction {
 					setResult("url", relayState);
 				}
 				else {
-					if ("mobile".equals(relayState)) {
+					if ("mobile".startsWith(relayState)) {
 						isWebView = true;
 						if ("mobile-facilio".equals(relayState)) {
 							setPortalWebViewCookies("facilio");
