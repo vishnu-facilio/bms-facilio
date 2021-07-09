@@ -151,8 +151,23 @@ public class InventoryRequestContext extends ModuleBaseWithCustomFields {
 	public void setWorkOrderLocalId(long workOrderLocalId) {
 		this.workOrderLocalId = workOrderLocalId;
 	}
-	
-	
+
+	private Boolean isIssued;
+
+	public Boolean getIsIssued() {
+		return isIssued;
+	}
+
+	public void setIsIssued(Boolean isIssued) {
+		this.isIssued = isIssued;
+	}
+
+	public boolean isIssued() {
+		if (isIssued != null) {
+			return isIssued.booleanValue();
+		}
+		return false;
+	}
 	
 	
 }
