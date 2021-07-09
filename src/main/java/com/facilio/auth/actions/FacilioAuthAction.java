@@ -416,7 +416,7 @@ public class FacilioAuthAction extends FacilioAction {
 		String username = getUsername();
 		AppDomain.GroupType groupType = AppDomain.GroupType.VENDOR_PORTAL;
 		try {
-			Map<String, Object> loginModes = IAMUserUtil.getLoginModes(username, groupType);
+			Map<String, Object> loginModes = IAMUserUtil.getLoginModes(username, AppDomainType.VENDOR_PORTAL, groupType);
 			setJsonresponse(loginModes);
 		} catch (Exception e) {
 			LOGGER.log(Level.INFO, "Exception while user lookup ", e);
@@ -430,7 +430,7 @@ public class FacilioAuthAction extends FacilioAction {
 		String username = getUsername();
 		AppDomain.GroupType groupType = AppDomain.GroupType.TENANT_OCCUPANT_PORTAL;
 		try {
-			Map<String, Object> loginModes = IAMUserUtil.getLoginModes(username, groupType);
+			Map<String, Object> loginModes = IAMUserUtil.getLoginModes(username, AppDomainType.CLIENT_PORTAL, groupType);
 			setJsonresponse(loginModes);
 		} catch (Exception e) {
 			LOGGER.log(Level.INFO, "Exception while user lookup ", e);

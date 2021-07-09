@@ -291,8 +291,8 @@ public class IAMUserUtil {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getLoginModes(userName, domain, appDomain));
 	}
 
-	public static Map<String, Object> getLoginModes(String userName, AppDomain.GroupType groupType) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getLoginModes(userName, groupType));
+	public static Map<String, Object> getLoginModes(String userName, AppDomain.AppDomainType appDomainType, AppDomain.GroupType groupType) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getLoginModes(userName, appDomainType, groupType));
 	}
 
 	public static String generateTotpSessionToken(String userName) throws Exception {

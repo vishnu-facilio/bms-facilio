@@ -695,7 +695,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
-	public Map<String, Object> getLoginModes(String userName, AppDomain.GroupType groupType) throws Exception {
+	public Map<String, Object> getLoginModes(String userName, AppDomainType appDomainType, AppDomain.GroupType groupType) throws Exception {
 		if (StringUtils.isEmpty(userName)) {
 			throw new IllegalArgumentException("user name is missing");
 		}
@@ -733,7 +733,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		}
 
 		List<AccountSSO> accountSSODetails = IAMOrgUtil.getAccountSSO(orgIds);
-		DomainSSO domainSSO = IAMOrgUtil.getDomainSSODetails(AppDomainType.FACILIO, groupType, AppDomain.DomainType.DEFAULT);
+		DomainSSO domainSSO = IAMOrgUtil.getDomainSSODetails(appDomainType, groupType, AppDomain.DomainType.DEFAULT);
 
 		if (CollectionUtils.isNotEmpty(accountSSODetails) || domainSSO != null) {
 			loginModes.add("SAML");

@@ -152,7 +152,7 @@ public interface IAMUserBean {
 
 	public Map<String, Object> getLoginModes(String userName, String domain, AppDomain appDomain) throws Exception;
 
-	public Map<String, Object> getLoginModes(String userName, AppDomain.GroupType groupType) throws Exception;
+	public Map<String, Object> getLoginModes(String userName, AppDomain.AppDomainType appDomainType, AppDomain.GroupType groupType) throws Exception;
 
 	public String generateTotpSessionToken(String userName) throws Exception;
 
