@@ -1340,7 +1340,7 @@ public class FacilioAuthAction extends FacilioAction {
 					setResult("url", relayState);
 				}
 				else {
-					if ("mobile".startsWith(relayState)) {
+					if (relayState != null && relayState.startsWith("mobile")) {
 						isWebView = true;
 						if ("mobile-facilio".equals(relayState)) {
 							setPortalWebViewCookies("facilio");
@@ -1524,7 +1524,7 @@ public class FacilioAuthAction extends FacilioAction {
 					setResult("url", relayState);
 				}
 				else {
-					if (relayState != null && "mobile".startsWith(relayState)) {
+					if (relayState != null && relayState.startsWith("mobile")) {
 						isWebView = true;
 						if ("mobile-facilio".equals(relayState)) {
 							setPortalWebViewCookies("facilio");
