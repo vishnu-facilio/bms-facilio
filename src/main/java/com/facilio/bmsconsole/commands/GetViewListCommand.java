@@ -110,15 +110,17 @@ public class GetViewListCommand extends FacilioCommand {
 							view.setViewSharing(sharingMap.get(view.getId()));
 						}
 				}
-				groupBasedViews.removeIf(view -> {
-					try {
-						return view.isHidden() || (view.getViewSharing() != null && !view.getViewSharing().isAllowed());
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					return false;
-				});
+				if (!restrictPermissions) {
+					groupBasedViews.removeIf(view -> {
+						try {
+							return view.isHidden() || (view.getViewSharing() != null && !view.getViewSharing().isAllowed());
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						return false;
+					});
+				}
 				groupBasedViews.sort(Comparator.comparing(FacilioView::getSequenceNumber, (s1, s2) -> {
 					if(s1 == s2){
 						return 0;
