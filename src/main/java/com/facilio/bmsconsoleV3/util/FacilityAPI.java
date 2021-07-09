@@ -14,10 +14,6 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.LookupFieldMeta;
-import com.facilio.modules.fields.MultiLookupField;
-import com.facilio.modules.fields.MultiLookupMeta;
-import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.context.V3Context;
@@ -268,7 +264,7 @@ public class FacilityAPI {
         return  list;
     }
     
-    public static List<SlotContext> getFacilitySlotsForTimeRange(FacilityContext facility, Long startTime, Long endTime) throws Exception {
+    public static List<SlotContext> getFacilitySlotsForTimeRange(List<Long> facilityIds, Long startTime, Long endTime) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         String slots = FacilioConstants.ContextNames.FacilityBooking.SLOTS;
         List<FacilioField> fields = modBean.getAllFields(slots);
@@ -278,15 +274,15 @@ public class FacilityAPI {
                 .moduleName(slots)
                 .select(fields)
                 .beanClass(SlotContext.class)
-                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("facilityId"), String.valueOf(facility.getId()), NumberOperators.EQUALS));
+                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("facilityId"), StringUtils.join(facilityIds,","), NumberOperators.EQUALS));
         if(startTime != null && endTime != null) {
         	DateRange range = new DateRange(startTime,endTime);
         	builder.andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("slotStartTime"), range.toString(), DateOperators.BETWEEN))
                 .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("slotEndTime"), range.toString(), DateOperators.BETWEEN));
         }
 
-        List<SlotContext> list = builder.get();
-        return  list;
+        List<SlotContext> slotList = builder.get();
+        return  slotList;
     }
 
     public static List<FacilityContext> getFacilityList(Long parentId, Long parentModuleId) throws Exception {
@@ -341,49 +337,6 @@ public class FacilityAPI {
             list = slotbuilder.get();
         }
     	
-//        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-//        String bookingModule = FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING;
-//        List<FacilioField> fields = modBean.getAllFields(bookingModule);
-//        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
-//        
-//        FacilioModule pplModule = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
-//
-//        List<SupplementRecord> fetchLookupsList = new ArrayList<>();
-//        LookupFieldMeta facilityField = new LookupFieldMeta((LookupField) fieldsAsMap.get("facility"));
-//        LookupField facilityLocationField = (LookupField) modBean.getField("location", FacilioConstants.ContextNames.FacilityBooking.FACILITY);
-//        facilityField.addChildLookupField(facilityLocationField);
-//
-//        SupplementRecord reservedFor = (SupplementRecord) fieldsAsMap.get("reservedFor");
-//
-//        MultiLookupMeta internalAttendees = new MultiLookupMeta((MultiLookupField) fieldsAsMap.get("internalAttendees"));
-//        FacilioField emailField = FieldFactory.getField("email", "EMAIL", pplModule, FieldType.STRING);
-//        FacilioField phoneField = FieldFactory.getField("phone", "PHONE", pplModule, FieldType.STRING);
-//
-//        List<FacilioField> selectFieldsList = new ArrayList<>();
-//        selectFieldsList.add(emailField);
-//        selectFieldsList.add(phoneField);
-//
-//        internalAttendees.setSelectFields(selectFieldsList);
-//
-//        fetchLookupsList.add(facilityField);
-//        fetchLookupsList.add(reservedFor);
-//        fetchLookupsList.add(internalAttendees);
-//
-//        SelectRecordsBuilder<V3FacilityBookingContext> builder = new SelectRecordsBuilder<V3FacilityBookingContext>()
-//                .moduleName(bookingModule)
-//                .select(fields)
-//                .beanClass(V3FacilityBookingContext.class)
-//                .fetchSupplements(fetchLookupsList);
-//        
-//
-//        List<V3FacilityBookingContext> list = builder.get();
-//        if(CollectionUtils.isNotEmpty(list)) {
-//            for(V3FacilityBookingContext booking : list) {
-//                if (booking != null) {
-//                    booking.setSlotList(FacilityAPI.getBookingSlots(booking.getId()));
-//                }
-//            }
-//        }
         return  list;
     }
 

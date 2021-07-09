@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
@@ -66,19 +69,54 @@ public class FetchFloorplanFacilitiesCommmand extends FacilioCommand {
 	                .fetchSupplements(fetchLookupsList);
 	
 	        List<FacilityContext> list = builder.get();
+	        
 	        Map<Long, FacilityContext> FacilitiesMap = new HashMap<>();
 	        Map<Long, List<BookingSlotsContext>> BookingsMap = new HashMap<>();
-	        for (FacilityContext facility : list) {
-	        	List<SlotContext> slotList = FacilityAPI.getFacilitySlotsForTimeRange(facility, startTime, endTime);
-	        	if (CollectionUtils.isNotEmpty(slotList)) {
-	        		facility.setSlots(slotList);
-	        		List<Long> slotIds = new ArrayList<>();
-	        		slotList.forEach(i -> slotIds.add(i.getId()));
-	        		BookingsMap.put(facility.getParentId(), FacilityAPI.getFacilityBookingListWithSlots(slotIds));
-                }
-	        	FacilitiesMap.put(facility.getParentId(), facility);
+	        Map<Long,List<BookingSlotsContext>> bookedSlotMap = new HashMap<>();
+	        
+	        List<Long> facilityIds = new ArrayList<>();
+	        list.forEach(i -> facilityIds.add(i.getId()));
+	        
+	        List<SlotContext> slotList = FacilityAPI.getFacilitySlotsForTimeRange(facilityIds, startTime, endTime);
+	        
+	        if (CollectionUtils.isNotEmpty(slotList)) {
+	    		List<Long> slotIds = new ArrayList<>();
+	    		slotList.forEach(i -> slotIds.add(i.getId()));
+	    		List<BookingSlotsContext> bookingSlots = FacilityAPI.getFacilityBookingListWithSlots(slotIds);
+	    		Map<Long,BookingSlotsContext> bookingSlotsAsMap =  bookingSlots.stream()
+	            .collect(Collectors.toMap(b -> b.getSlot().getId(), Function.identity()));
+	        
+	        
+	        Map<Long,List<SlotContext>> slotMap = new HashMap<>();
+	        for (SlotContext slot : slotList) {
+	        	if(slot.getFacilityId() != null) {
+	        		if(slotMap.get(slot.getFacilityId()) != null) {
+	        			slotMap.get(slot.getFacilityId()).add(slot);
+	        		} else {
+	        			List<SlotContext> slotArray = new ArrayList<>();
+	        			slotArray.add(slot);
+	        			slotMap.put(slot.getFacilityId(),slotArray);
+	        		}
+	        		if(bookingSlotsAsMap.get(slot.getId()) != null) {
+	        			if(bookedSlotMap.get(slot.getFacilityId()) != null) {
+	        			bookedSlotMap.get(slot.getFacilityId()).add(bookingSlotsAsMap.get(slot.getId()));
+	        			} else {
+		        			List<BookingSlotsContext> bookingslotArray = new ArrayList<>();
+		        			bookingslotArray.add(bookingSlotsAsMap.get(slot.getId()));
+		        			bookedSlotMap.put(slot.getFacilityId(),bookingslotArray);
+		        		}
+	        		}
+	        	}
 	        }
 	        
+	        for (FacilityContext facility : list) {
+	        	if (slotMap.get(facility.getId()) != null) {
+	        		facility.setSlots(slotMap.get(facility.getId()));
+                }
+	        	FacilitiesMap.put(facility.getParentId(), facility);
+	        	BookingsMap.put(facility.getParentId(), bookedSlotMap.get(facility.getId()));
+	        }
+	        }
 	        context.put(FacilioConstants.ContextNames.FacilityBooking.FACILITY, FacilitiesMap);
 			
 	        context.put(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING, BookingsMap);
