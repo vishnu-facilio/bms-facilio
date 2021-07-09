@@ -219,6 +219,7 @@ public class FacilioConstants {
 		public static final String FETCH_NON_APP_USERS = "fetchNonAppUsers";
 
 		public static final String APP_ID = "appId";
+		public static final String RESTRICT_PERMISSIONS = "restrictPermissions";
 		public static final String TENANT_PORTAL_APP_ID = "tenantPortalappId";
 		public static final String SERVICE_PORTAL_APP_ID = "servicePortalappId";
 		public static final String VENDOR_PORTAL_APP_ID = "vendorPortalappId";

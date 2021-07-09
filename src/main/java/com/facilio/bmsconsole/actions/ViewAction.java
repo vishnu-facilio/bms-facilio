@@ -169,6 +169,17 @@ public class ViewAction extends FacilioAction {
 	public void setAppId(long appId) {
 		this.appId = appId;
 	}
+	
+	private Boolean restrictPermissions;
+	public Boolean getRestrictPermissions() {
+		if (restrictPermissions == null) {
+			return false;
+		}
+		return restrictPermissions;
+	}
+	public void setRestrictPermissions(Boolean restrictPermissions) {
+		this.restrictPermissions = restrictPermissions;
+	}
 	public String v2viewlist() throws Exception{
 		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS) && moduleName.equals("alarm")) {
 			setModuleName(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
@@ -177,6 +188,7 @@ public class ViewAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.GROUP_STATUS, getGroupStatus());
 		context.put(FacilioConstants.ContextNames.APP_ID, appId);
+		context.put(FacilioConstants.ContextNames.RESTRICT_PERMISSIONS, getRestrictPermissions());
 
 		FacilioChain getViewListsChain = FacilioChainFactory.getViewListChain();
 		getViewListsChain.execute(context);
@@ -279,6 +291,7 @@ public class ViewAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.GROUP_VIEWS, viewGroupsList);
+		context.put(FacilioConstants.ContextNames.RESTRICT_PERMISSIONS, true);
 		
 		FacilioChain addView = FacilioChainFactory.getViewGroupsCustomizeChain();
 		addView.execute(context);
@@ -294,6 +307,7 @@ public String v2customizeView() throws Exception {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.VIEW_LIST, views);
 		context.put(FacilioConstants.ContextNames.GROUP_STATUS, getGroupStatus());
+		context.put(FacilioConstants.ContextNames.RESTRICT_PERMISSIONS, true);
 		
 		FacilioChain addView = FacilioChainFactory.getViewsListCustomizeChain();
 		addView.execute(context);

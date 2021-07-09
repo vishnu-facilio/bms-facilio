@@ -696,7 +696,7 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 		
 			List<Long> orgUsersId = viewSharing.stream().filter(value -> value.getTypeEnum() == SharingType.USER)
 					.map(val -> val.getUserId()).collect(Collectors.toList());
-			if (CollectionUtils.isNotEmpty(orgUsersId) && !orgUsersId.contains(AccountUtil.getCurrentUser().getId())) {
+			if (CollectionUtils.isEmpty(orgUsersId) || !orgUsersId.contains(AccountUtil.getCurrentUser().getId())) {
 				SingleSharingContext newViewSharing = new SingleSharingContext(); 
 				newViewSharing.setUserId(AccountUtil.getCurrentUser().getId());
 				newViewSharing.setType(SharingType.USER);

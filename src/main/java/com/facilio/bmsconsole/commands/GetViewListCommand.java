@@ -39,6 +39,7 @@ public class GetViewListCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
         Long appId = (Long) context.getOrDefault(FacilioConstants.ContextNames.APP_ID, -1l);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+		boolean restrictPermissions = (boolean) context.getOrDefault(FacilioConstants.ContextNames.RESTRICT_PERMISSIONS, false);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule moduleObj = modBean.getModule(moduleName);
 		ApplicationContext currentApp = AccountUtil.getCurrentApp();
@@ -87,16 +88,18 @@ public class GetViewListCommand extends FacilioCommand {
 					}
 			}
 		}
-		viewMap.entrySet().removeIf(enrty -> {
-			try {
-				return enrty.getValue().isHidden() || (enrty.getValue().getViewSharing() != null && !enrty.getValue().getViewSharing().isAllowed());
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return false;
-		});
 		
+		if (!restrictPermissions) {
+			viewMap.entrySet().removeIf(enrty -> {
+				try {
+					return enrty.getValue().isHidden() || (enrty.getValue().getViewSharing() != null && !enrty.getValue().getViewSharing().isAllowed());
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				return false;
+			});
+		}
 		
 		if (!dbViews.isEmpty() && !viewGroups.isEmpty() && dbViews != null && viewGroups != null) {
 			for(ViewGroups viewGroup : viewGroups) {
