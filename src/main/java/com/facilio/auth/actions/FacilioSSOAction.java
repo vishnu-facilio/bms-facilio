@@ -84,6 +84,7 @@ public class FacilioSSOAction extends FacilioAction {
 		DomainSSO domainSSO = IAMOrgUtil.getDomainSSODetails(SSOUtil.base64Decode(getDomain()));
 		if (domainSSO == null || domainSSO.getIsActive() == null || !domainSSO.getIsActive()) {
 			setResponseCode(1);
+			LOGGER.log(Level.SEVERE, "Invalid domain or Single Sign-On is not enabled for this domain. " + (getDomain() == null ? " empty domain " : getDomain()));
 			String message = "Invalid domain or Single Sign-On is not enabled for this domain.";
 			resultStream = new ByteArrayInputStream(message.getBytes());
 			return ERROR;
