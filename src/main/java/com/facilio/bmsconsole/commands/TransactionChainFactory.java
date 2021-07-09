@@ -2012,7 +2012,9 @@ public class TransactionChainFactory {
 			c.addCommand(new AddInsuranceVendorRollUpsCommand());
 			c.addCommand(new LoadVendorLookUpCommand());
 			c.addCommand(new GenericGetModuleDataListCommand());
+			c.addCommand(new ChangeApprovalStatusForModuleDataCommand());
 			c.addCommand(new UpdateStateForModuleDataCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new ForkChainToInstantJobCommand()
 					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
@@ -5384,7 +5386,9 @@ public class TransactionChainFactory {
 		c.addCommand(new UpdatePeoplePrimaryContactCommand());
 		c.addCommand(new UpdateVendorContactAppPortalAccessCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
+		c.addCommand(new ChangeApprovalStatusForModuleDataCommand());
 		c.addCommand(new UpdateStateForModuleDataCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.MODULE_RULE));
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 

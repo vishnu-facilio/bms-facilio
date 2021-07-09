@@ -76,6 +76,14 @@ public class VendorAction extends FacilioAction{
 		this.stateTransitionId = stateTransitionId;
 	}
 	
+	private Long approvalTransitionId;
+	public Long getApprovalTransitionId() {
+		return approvalTransitionId;
+	}
+	public void setApprovalTransitionId(Long approvalTransitionId) {
+		this.approvalTransitionId = approvalTransitionId;
+	}
+	
 	private String vendorString;
 	public String getVendorString() {
 		return vendorString;
@@ -182,6 +190,7 @@ public class VendorAction extends FacilioAction{
 		context1.put(FacilioConstants.ContextNames.ID, vendor.getId());
 		context1.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		context1.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
+		context1.put(FacilioConstants.ContextNames.APPROVAL_TRANSITION_ID, approvalTransitionId);
 		
 		context1.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(vendor.getId()));
 		context1.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
