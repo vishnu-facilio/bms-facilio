@@ -1099,6 +1099,6 @@ public class CommonCommandUtil {
 		}
 		newValuesArray = (ArrayList) primaryValArr;
 		newValue = newValuesArray;
-		return null;
+		return newValue;
 	}
 }
