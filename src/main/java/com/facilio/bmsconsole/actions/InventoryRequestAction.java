@@ -341,6 +341,7 @@ public class InventoryRequestAction extends FacilioAction {
 	}
 	public String issueInventoryRequests() throws Exception {
 		FacilioContext context = new FacilioContext();
+		inventoryRequest.setIsIssued(true);
 		context.put(FacilioConstants.ContextNames.RECORD, inventoryRequest);
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
 		FacilioChain issueRequestListChain = TransactionChainFactory.getIssueInventoryRequestChain();
