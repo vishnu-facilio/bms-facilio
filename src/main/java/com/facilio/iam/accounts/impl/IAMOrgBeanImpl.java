@@ -545,7 +545,7 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.APP_DOMAIN_TYPE", "appDomainType", appDomainType.getIndex()+"", StringOperators.IS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.APP_GROUP_TYPE", "appGroupType", groupType.getIndex()+"", StringOperators.IS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.DOMAIN_TYPE", "appGroupType", domainType.getIndex()+"", StringOperators.IS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("APP_Domain.ORGID", "orgId", orgId+"", NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.ORGID", "orgId", orgId+"", NumberOperators.EQUALS));
 		var maps = selectBuilder.get();
 		if (CollectionUtils.isEmpty(maps)) {
 			return null;
