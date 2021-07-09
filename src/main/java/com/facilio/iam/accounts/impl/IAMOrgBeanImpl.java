@@ -535,7 +535,7 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		return sso;
 	}
 
-	public DomainSSO getDomainSSODetails(AppDomain.AppDomainType appDomainType, AppDomain.GroupType groupType, AppDomain.DomainType domainType) throws Exception {
+	public DomainSSO getDomainSSODetails(long orgId, AppDomain.AppDomainType appDomainType, AppDomain.GroupType groupType, AppDomain.DomainType domainType) throws Exception {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(IAMAccountConstants.getDomainSSOFields())
 				.table(IAMAccountConstants.getDomainSSOModule().getTableName())
@@ -545,6 +545,7 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.APP_DOMAIN_TYPE", "appDomainType", appDomainType.getIndex()+"", StringOperators.IS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.APP_GROUP_TYPE", "appGroupType", groupType.getIndex()+"", StringOperators.IS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.DOMAIN_TYPE", "appGroupType", domainType.getIndex()+"", StringOperators.IS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("APP_Domain.ORGID", "orgId", orgId+"", NumberOperators.EQUALS));
 		var maps = selectBuilder.get();
 		if (CollectionUtils.isEmpty(maps)) {
 			return null;

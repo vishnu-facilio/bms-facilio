@@ -84,8 +84,8 @@ public class IAMOrgUtil {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getOrgBean().getDomainSSODetails(domainSSOId));
 	}
 
-	public static DomainSSO getDomainSSODetails(AppDomain.AppDomainType appDomainType, AppDomain.GroupType groupType, AppDomain.DomainType domainType) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getOrgBean().getDomainSSODetails(appDomainType, groupType, domainType));
+	public static DomainSSO getDomainSSODetails(long orgId, AppDomain.AppDomainType appDomainType, AppDomain.GroupType groupType, AppDomain.DomainType domainType) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getOrgBean().getDomainSSODetails(orgId, appDomainType, groupType, domainType));
 	}
 	
 	public static AccountSSO getAccountSSO(long orgId) throws Exception {

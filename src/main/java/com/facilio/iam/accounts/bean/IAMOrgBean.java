@@ -50,7 +50,7 @@ public interface IAMOrgBean {
 
 	public DomainSSO getDomainSSODetails(String domain) throws Exception;
 
-	public DomainSSO getDomainSSODetails(AppDomain.AppDomainType appDomainType, AppDomain.GroupType groupType, AppDomain.DomainType domainType) throws Exception;
+	public DomainSSO getDomainSSODetails(long orgId, AppDomain.AppDomainType appDomainType, AppDomain.GroupType groupType, AppDomain.DomainType domainType) throws Exception;
 	
 	public AccountSSO getAccountSSO(String orgDomain) throws Exception;
 

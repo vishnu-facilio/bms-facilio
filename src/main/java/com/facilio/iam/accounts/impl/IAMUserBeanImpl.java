@@ -733,7 +733,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		}
 
 		List<AccountSSO> accountSSODetails = IAMOrgUtil.getAccountSSO(orgIds);
-		DomainSSO domainSSO = IAMOrgUtil.getDomainSSODetails(appDomainType, groupType, AppDomain.DomainType.DEFAULT);
+		DomainSSO domainSSO = IAMOrgUtil.getDomainSSODetails(orgIds.get(0), appDomainType, groupType, AppDomain.DomainType.DEFAULT);
 
 		if (CollectionUtils.isNotEmpty(accountSSODetails) || domainSSO != null) {
 			loginModes.add("SAML");
