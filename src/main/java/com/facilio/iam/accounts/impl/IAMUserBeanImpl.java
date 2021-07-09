@@ -19,6 +19,7 @@ import javax.transaction.TransactionManager;
 
 import com.facilio.accounts.dto.*;
 import com.facilio.accounts.sso.AccountSSO;
+import com.facilio.accounts.sso.DomainSSO;
 import com.facilio.accounts.sso.SSOUtil;
 import com.facilio.auth.actions.PasswordHashUtil;
 import com.facilio.db.criteria.Condition;
@@ -26,7 +27,7 @@ import com.facilio.db.criteria.operators.*;
 import com.facilio.db.util.DBConf;
 import com.facilio.iam.accounts.context.SecurityPolicy;
 import com.facilio.iam.accounts.exceptions.SecurityPolicyException;
-import com.facilio.iam.accounts.util.IAMUserUtil;
+import com.facilio.iam.accounts.util.*;
 import com.facilio.modules.*;
 import com.facilio.util.FacilioUtil;
 import dev.samstevens.totp.recovery.RecoveryCodeGenerator;
@@ -66,9 +67,6 @@ import com.facilio.fw.LRUCache;
 import com.facilio.iam.accounts.bean.IAMUserBean;
 import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;
-import com.facilio.iam.accounts.util.IAMAccountConstants;
-import com.facilio.iam.accounts.util.IAMOrgUtil;
-import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
@@ -735,14 +733,20 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		}
 
 		List<AccountSSO> accountSSODetails = IAMOrgUtil.getAccountSSO(orgIds);
-		if (CollectionUtils.isNotEmpty(accountSSODetails)) {
-			loginModes.add("SAML");
-			AccountSSO accountSSO = accountSSODetails.get(0);
+		DomainSSO domainSSO = IAMOrgUtil.getDomainSSODetails(AppDomainType.FACILIO, groupType, AppDomain.DomainType.DEFAULT);
 
-			// should handle for multiple saml
-			long orgId = accountSSO.getOrgId();
-			String domainLoginURL = SSOUtil.getSSOEndpoint(IAMOrgUtil.getOrg(orgId).getDomain());
-			result.put("SSOURL", domainLoginURL);
+		if (CollectionUtils.isNotEmpty(accountSSODetails) || domainSSO != null) {
+			loginModes.add("SAML");
+			if (domainSSO != null) {
+				AppDomain appDomain = IAMAppUtil.getAppDomain(domainSSO.getAppDomainId());
+				String domainLoginURL = SSOUtil.getDomainSSOEndpoint(appDomain.getDomain());
+				result.put("SSOURL", domainLoginURL);
+			} else {
+				AccountSSO accountSSO = accountSSODetails.get(0);
+				long orgId = accountSSO.getOrgId();
+				String domainLoginURL = SSOUtil.getSSOEndpoint(IAMOrgUtil.getOrg(orgId).getDomain());
+				result.put("SSOURL", domainLoginURL);
+			}
 		}
 
 		List<String> domains = new ArrayList<>();
@@ -907,14 +911,18 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		}
 
 		List<AccountSSO> accountSSODetails = IAMOrgUtil.getAccountSSO(orgIds);
-		if (CollectionUtils.isNotEmpty(accountSSODetails)) {
+		DomainSSO domainSSO = IAMOrgUtil.getDomainSSODetails(appDomain.getDomain());
+		if (CollectionUtils.isNotEmpty(accountSSODetails) || domainSSO != null) {
 			loginModes.add("SAML");
-			AccountSSO accountSSO = accountSSODetails.get(0);
-
-			// should handle for multiple saml
-			orgId = accountSSO.getOrgId();
-			String domainLoginURL = SSOUtil.getSSOEndpoint(IAMOrgUtil.getOrg(orgId).getDomain());
-			result.put("SSOURL", domainLoginURL);
+			if (domainSSO != null) {
+				String domainLoginURL = SSOUtil.getDomainSSOEndpoint(appDomain.getDomain());
+				result.put("SSOURL", domainLoginURL);
+			} else {
+				AccountSSO accountSSO = accountSSODetails.get(0);
+				orgId = accountSSO.getOrgId();
+				String domainLoginURL = SSOUtil.getSSOEndpoint(IAMOrgUtil.getOrg(orgId).getDomain());
+				result.put("SSOURL", domainLoginURL);
+			}
 		}
 
 		result.put("loginModes", loginModes);
