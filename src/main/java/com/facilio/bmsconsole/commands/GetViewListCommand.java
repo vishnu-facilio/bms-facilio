@@ -89,17 +89,17 @@ public class GetViewListCommand extends FacilioCommand {
 			}
 		}
 		
-		if (!restrictPermissions) {
 			viewMap.entrySet().removeIf(enrty -> {
 				try {
-					return enrty.getValue().isHidden() || (enrty.getValue().getViewSharing() != null && !enrty.getValue().getViewSharing().isAllowed());
+					return (enrty.getValue().isHidden() || 
+							(enrty.getValue().getViewSharing() != null && !enrty.getValue().getViewSharing().isAllowed() && !restrictPermissions));
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				return false;
 			});
-		}
+		
 		
 		if (!dbViews.isEmpty() && !viewGroups.isEmpty() && dbViews != null && viewGroups != null) {
 			for(ViewGroups viewGroup : viewGroups) {
@@ -110,17 +110,16 @@ public class GetViewListCommand extends FacilioCommand {
 							view.setViewSharing(sharingMap.get(view.getId()));
 						}
 				}
-				if (!restrictPermissions) {
 					groupBasedViews.removeIf(view -> {
 						try {
-							return view.isHidden() || (view.getViewSharing() != null && !view.getViewSharing().isAllowed());
+							return (view.isHidden() || 
+									(view.getViewSharing() != null && !view.getViewSharing().isAllowed() && !restrictPermissions));
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 						return false;
 					});
-				}
 				groupBasedViews.sort(Comparator.comparing(FacilioView::getSequenceNumber, (s1, s2) -> {
 					if(s1 == s2){
 						return 0;
