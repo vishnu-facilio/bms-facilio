@@ -91,7 +91,7 @@ class KinesisMessageQueue extends MessageQueue {
     }
 
 
-    public void initiateProcessFactory(long orgId, String orgDomainName, String type) {
+    public void initiateProcessFactory(long orgId, String orgDomainName, String type, int partition) {
         try {
             new Thread(() -> KinesisStreamProcessor.run(orgId, orgDomainName, type, getProcessorFactory(orgId, orgDomainName, type))).start();
         } catch (Exception e) {

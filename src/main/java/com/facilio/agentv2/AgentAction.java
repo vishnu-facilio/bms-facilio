@@ -476,7 +476,7 @@ public class AgentAction extends AgentActionV2 {
     			.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(AgentFieldFactory.getMessageTopicFields()).get("orgId"), String.valueOf(orgId), StringOperators.IS));
     	Map<String,Object> prop =	builder.fetchFirst();
     	if(MapUtils.isEmpty(prop)) {
-    		return 	FacilioService.runAsServiceWihReturn(FacilioConstants.Services.AGENT_SERVICE,()->MessageQueueTopic.addMsgTopic(domain, orgId)) ? domain:null;
+            return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.AGENT_SERVICE, () -> MessageQueueTopic.addMsgTopic(domain, orgId, 0)) ? domain : null;
     	}
     	return prop.get("topic").toString();
     }

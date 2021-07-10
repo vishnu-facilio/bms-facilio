@@ -34,11 +34,12 @@ public class MessageQueueTopic {
 	private static final List<FacilioField> MESSAGE_TOPIC_FIELDS = AgentFieldFactory.getMessageTopicFields();
 	private static final FacilioModule MESSAGE_TOIPC_MODULE = AgentModuleFactory.getMessageToipcModule();
 
-	public static boolean addMsgTopic(String topicName,long orgId) throws Exception {
+	public static boolean addMsgTopic(String topicName, long orgId, int partitionId) throws Exception {
 		Map<String, Object> prop = new HashedMap<>();
 		prop.put(AgentConstants.MESSAGE_TOPIC, topicName);
 		prop.put(AgentConstants.CREATED_TIME, System.currentTimeMillis());
 		prop.put(AgentConstants.ORGID,orgId);
+		prop.put(AgentConstants.PARTITION_ID, partitionId);
 		long count = new GenericInsertRecordBuilder().fields(MESSAGE_TOPIC_FIELDS)
 				.table(MESSAGE_TOIPC_MODULE.getTableName())
 				.insert(prop);

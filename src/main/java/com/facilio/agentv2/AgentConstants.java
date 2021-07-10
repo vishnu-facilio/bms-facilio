@@ -260,4 +260,5 @@ public class AgentConstants
 
     public static final String RDM_POINT_CLASS = "rdmPointClass";
     public static final String DETAILS = "details";
+    public static final String PARTITION_ID = "partitionId";
 }

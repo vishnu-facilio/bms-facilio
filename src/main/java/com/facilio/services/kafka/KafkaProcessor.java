@@ -36,21 +36,28 @@ public class KafkaProcessor extends FacilioProcessor {
 	private static final FacilioModule MESSAGE_TOIPC_MODULE = AgentModuleFactory.getMessageToipcModule();
 
 	private DataProcessorUtil dataProcessorUtil;
+	private int partitionId;
 
-    public KafkaProcessor(long orgId, String topic) {
+	public KafkaProcessor(long orgId, String topic, int partition) {
         super(orgId, topic);
+		partitionId = partition;
         String clientName = topic + "-processor-";
         String environment = FacilioProperties.getConfig("environment");
         String consumerGroup = clientName + environment;
-        setConsumer(new FacilioKafkaConsumer(ServerInfo.getHostname(), consumerGroup, getTopic()));
+		setConsumer(new FacilioKafkaConsumer(ServerInfo.getHostname(), consumerGroup, getTopic(), partition));
 		setProducer(new FacilioKafkaProducer());
         setEventType("processor");
         dataProcessorUtil = new DataProcessorUtil(orgId, topic);
-        LOGGER.info("Initializing processor " + topic);
+		LOGGER.info("Initializing processor " + topic + " - " + partition);
     }
 
 
-    @Override
+	@Override
+	protected String getThreadName() {
+		return "kafka-" + getOrgDomainName() + "-" + partitionId + "-" + getEventType();
+	}
+
+	@Override
 	public void processRecords(List<FacilioRecord> records) {
 		try {
 			if (!FacilioService.runAsServiceWihReturn(FacilioConstants.Services.AGENT_SERVICE,()->isTopicEnabled())) {

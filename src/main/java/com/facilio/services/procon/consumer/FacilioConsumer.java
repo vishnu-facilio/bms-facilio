@@ -12,7 +12,7 @@ public interface FacilioConsumer {
 
     void commit(FacilioRecord record);
 
-    void subscribe(String topic);
+    void subscribe(String topic, int partition);
     
     void seek(String topic,long offset);
     

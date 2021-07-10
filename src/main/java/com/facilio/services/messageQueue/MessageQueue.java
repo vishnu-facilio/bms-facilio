@@ -13,7 +13,7 @@ public abstract class MessageQueue {
 
     private static final Logger LOGGER = LogManager.getLogger(MessageQueue.class.getName());
     private static final HashSet<String> STREAMS = new HashSet<>();
-    private static final HashSet<String> EXISTING_ORGS = new HashSet<>();
+    private static final Map<String, Integer> EXISTING_ORG_PARTITION = new HashMap<>();
 
     private static final List<Long> EMPTY_LIST = Collections.emptyList();
 
@@ -71,15 +71,16 @@ public abstract class MessageQueue {
             if (CollectionUtils.isNotEmpty(orgMessageTopics)) {
                 for (Map<String, Object> org : orgMessageTopics) {
                     Long orgId = (Long) org.get(AgentConstants.ORGID);
+                    int partition = (Integer) org.get(AgentConstants.PARTITION_ID);
                     String orgDomainName = (String) org.get(AgentConstants.MESSAGE_TOPIC);
-                    if ((!EXISTING_ORGS.contains(orgDomainName))) {
+                    if (!(EXISTING_ORG_PARTITION.containsKey(orgDomainName) && EXISTING_ORG_PARTITION.get(orgDomainName) == partition)) {
                         try {
-                            startProcessor(orgId, orgDomainName);
+                            startProcessor(orgId, orgDomainName, partition);
                         } catch (Exception e) {
                             try {
                                 CommonCommandUtil.emailException("KafkaProcessor", "Exception while starting stream " + orgDomainName, new Exception("Exception while starting stream will retry after 10 sec"));
                                 Thread.sleep(10000L);
-                                startProcessor(orgId, orgDomainName);
+                                startProcessor(orgId, orgDomainName, partition);
                             } catch (InterruptedException interrupted) {
                                 LOGGER.info("Exception occurred ", interrupted);
                                 CommonCommandUtil.emailException("KafkaProcessor", "Exception while starting stream " + orgDomainName, interrupted);
@@ -93,22 +94,22 @@ public abstract class MessageQueue {
         }
     }
 
-    private void startProcessor(long orgId, String orgDomainName) {
+    private void startProcessor(long orgId, String orgDomainName, int partition) {
         try {
             if (orgDomainName != null && STREAMS.contains(orgDomainName)) {
                 LOGGER.info("Starting kafka processor for org : " + orgDomainName + " id " + orgId);
-                initiateProcessFactory(orgId, orgDomainName, "processor");
+                initiateProcessFactory(orgId, orgDomainName, "processor", partition);
                 /*initiateProcessFactory(orgId, orgDomainName, "event");
                 initiateProcessFactory(orgId, orgDomainName, "timeSeries");
                 initiateProcessFactory(orgId,orgDomainName,"agent");*/
-                EXISTING_ORGS.add(orgDomainName);
+                EXISTING_ORG_PARTITION.put(orgDomainName, partition);
             }
         } catch (Exception e) {
             LOGGER.info("Exception occurred ", e);
         }
     }
 
-    public abstract void initiateProcessFactory(long orgId, String orgDomainName, String type) ;
+    public abstract void initiateProcessFactory(long orgId, String orgDomainName, String type, int partition);
 
     private void updateStream() {
         try {

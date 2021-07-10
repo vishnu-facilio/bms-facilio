@@ -56,7 +56,7 @@ public class AgentControl extends AgentActionV2 {
 	private void constructData() throws Exception{
 		try {
 			String topicName = getTopic();
-			KafkaProcessor processor = new KafkaProcessor(orgId, topicName);
+            KafkaProcessor processor = new KafkaProcessor(orgId, topicName, 0);
 			long recordId =processor.sendMsgToKafka(agentName,createRecord());
 			LOGGER.info("Agent control action recordId :"+recordId + " topic name is "+topicName);
 		}catch(Exception e) {

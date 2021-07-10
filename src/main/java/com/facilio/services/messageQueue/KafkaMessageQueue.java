@@ -97,13 +97,13 @@ class KafkaMessageQueue extends MessageQueue {
     }
 
 
-    private static FacilioProcessor getProcessor(long orgId, String orgDomainName, String type) {
-        return new KafkaProcessor(orgId,orgDomainName);
+    private static FacilioProcessor getProcessor(long orgId, String orgDomainName, String type, int partition) {
+        return new KafkaProcessor(orgId, orgDomainName, partition);
     }
 
-    public void initiateProcessFactory(long orgId, String orgDomainName, String type) {
+    public void initiateProcessFactory(long orgId, String orgDomainName, String type, int partition) {
         try {
-            new Thread(getProcessor(orgId, orgDomainName, type)).start();
+            new Thread(getProcessor(orgId, orgDomainName, type, partition)).start();
         } catch (Exception e) {
             LOGGER.info("Exception occurred ", e);
         }

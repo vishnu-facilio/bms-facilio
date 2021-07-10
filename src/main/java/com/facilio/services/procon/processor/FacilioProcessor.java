@@ -31,10 +31,12 @@ public abstract class FacilioProcessor implements  Runnable {
 
     private void initialize() {
         Thread thread = Thread.currentThread();
-        String threadName = "kafka-"+orgDomainName + "-" + eventType;
+        String threadName = getThreadName();
         thread.setName(threadName);
         LOGGER.info("Initialized processor");
     }
+
+    protected abstract String getThreadName();
 
     public long getOrgId() {
         return orgId;

@@ -18,10 +18,7 @@ import org.json.simple.parser.JSONParser;
 
 import java.io.StringReader;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 public class FacilioKafkaConsumer implements FacilioConsumer {
 
@@ -30,9 +27,9 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
     private JSONParser parser = new JSONParser();
     private static final Logger LOGGER = LogManager.getLogger(FacilioKafkaConsumer.class.getName());
 
-    public FacilioKafkaConsumer(String client, String consumerGroup, String topic) {
+    public FacilioKafkaConsumer(String client, String consumerGroup, String topic, int partition) {
         consumer = new KafkaConsumer<>(getConsumerProperties(client, consumerGroup));
-        subscribe(topic);
+        subscribe(topic, partition);
     }
 
     private Properties getConsumerProperties(String client, String consumerGroup) {
@@ -93,10 +90,11 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
         }
     }
 
-    public void subscribe(String topic) {
+    public void subscribe(String topic, int partition) {
         if(topicPartition == null) {
-            topicPartition = new TopicPartition(topic, 0);
-            consumer.subscribe(Collections.singletonList(topic));
+            topicPartition = new TopicPartition(topic, partition);
+            consumer.assign(Collections.singletonList(topicPartition));
+            //consumer.subscribe(Collections.singletonList(topic));
         }
     }
     
