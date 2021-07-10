@@ -343,12 +343,21 @@ public class PageFactory {
 	}
 	
 	protected static void addRelatedListWidgets(Section section, long moduleId) throws Exception {
+		addRelatedListWidgets(section, moduleId, null, false);
+	}
+	
+	protected static void addRelatedListWidgets(Section section, long moduleId, List<String> relatedModules, boolean include) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioModule> subModules =
 				modBean.getSubModules(moduleId, FacilioModule.ModuleType.BASE_ENTITY);
 
 		if (CollectionUtils.isNotEmpty(subModules)) {
 			for (FacilioModule subModule : subModules) {
+				if (CollectionUtils.isNotEmpty(relatedModules)) {
+					if (relatedModules.contains(subModule.getName()) && !include) {
+						continue;
+					}
+				}
 				List<FacilioField> allFields = modBean.getAllFields(subModule.getName());
 				List<FacilioField> fields = allFields.stream().filter(field -> (field instanceof LookupField && ((LookupField) field).getLookupModuleId() == moduleId)).collect(Collectors.toList());
 				if (CollectionUtils.isNotEmpty(fields)) {

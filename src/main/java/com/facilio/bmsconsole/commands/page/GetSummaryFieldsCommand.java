@@ -16,7 +16,6 @@ import org.apache.commons.collections.CollectionUtils;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
@@ -26,6 +25,7 @@ import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.chain.FacilioChain;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -69,6 +69,8 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 		if (widgetId != -1) {
 			// TODO check if fields for the widget/record and return if any
 		}
+		// TODO remove once page db support..get params from db
+		Map<String, Object> widgetParams = (Map<String, Object>) context.get(ContextNames.WIDGET_PARAMJSON);
 
 
 		ApplicationContext currentApp = AccountUtil.getCurrentApp();
@@ -81,20 +83,21 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 		}
 
 		if (formFields == null) {
-			boolean isAtg = AccountUtil.getCurrentOrg().getOrgId() == 406;
-
+			Long formSectionId = widgetParams != null ? (Long) widgetParams.get("formSectionId") : null;
+			
 			FacilioForm form = fetchForm(formId);
 			if (form == null) {
 				formFields = getFieldsAsFormFields(modBean);
 			}
 			else {
-				formFields = form.getFields().stream().filter(formField -> ( formField.getField() != null  && 
-						!formField.getField().isMainField()  &&
-						(formField.getHideField() == null || !isAtg || !formField.getHideField())))
+				formFields = form.getFields().stream().filter(formField -> ( 
+						(formSectionId == null || formField.getSectionId() == formSectionId) &&
+						formField.getField() != null  && !formField.getField().isMainField()  &&
+						(formField.getHideField() == null || formSectionId == null || !formField.getHideField())))
 						.collect(Collectors.toList());
 			}
 
-			if (!isAtg) {	
+			if (formSectionId == null) {	
 				int count = Collections.max(formFields, Comparator.comparing(s -> s.getSequenceNumber())).getSequenceNumber();
 				List<String> existingFieldNames = formFields.stream().map(FormField::getName).collect(Collectors.toList());
 				count = addModuleAndSystemFields(modBean, formFields, existingFieldNames, count);
