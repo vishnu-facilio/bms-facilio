@@ -1342,13 +1342,18 @@ public class FacilioAuthAction extends FacilioAction {
 				else {
 					if (relayState != null && relayState.startsWith("mobile")) {
 						isWebView = true;
+						Organization org = IAMOrgUtil.getOrg(appdomainObj.getOrgId());
+						setDomain(org.getDomain());
 						if ("mobile-facilio".equals(relayState)) {
 							setPortalWebViewCookies("facilio");
 						} else if ("mobile-serviceportal".equals(relayState)) {
+							setLookUpType("service");
 							setPortalWebViewCookies("service");
 						} else if ("mobile-tenantportal".equals(relayState)) {
+							setLookUpType("tenant");
 							setPortalWebViewCookies("tenant");
 						} else if ("mobile-vendorportal".equals(relayState)) {
+							setLookUpType("vendor");
 							setPortalWebViewCookies("vendor");
 						}
 						setResult("url", SSOUtil.getLoginSuccessURL(true));
