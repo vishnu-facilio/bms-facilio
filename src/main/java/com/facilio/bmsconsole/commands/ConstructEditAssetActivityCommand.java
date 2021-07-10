@@ -11,12 +11,14 @@ import org.json.simple.JSONObject;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.MultiLookupField;
 
 public class ConstructEditAssetActivityCommand extends FacilioCommand {
@@ -47,7 +49,12 @@ public class ConstructEditAssetActivityCommand extends FacilioCommand {
 			changeObj.put("field", field.getName());
 			changeObj.put("displayName", field.getDisplayName());
 			changeObj.put("oldValue", oldValue);
-			if (!field.isDefault() && field instanceof MultiLookupField && newValue instanceof ArrayList) {
+			if (field instanceof LookupField) {
+				long recId = (long) newValue;
+				newValue = RecordAPI.getPrimaryValue(((LookupField)field).getLookupModule().getName(), recId);
+				info.put("recordId", recId);
+			}
+			else if (!field.isDefault() && field instanceof MultiLookupField && newValue instanceof ArrayList) {
 				newValue = CommonCommandUtil.getMultiLookupValues(newValue, field);
 			}
 			changeObj.put("newValue", newValue);
