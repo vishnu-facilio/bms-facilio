@@ -111,27 +111,25 @@ public class CustomModulePageFactory extends PageFactory {
 
 	private static void addSecondaryDetailsWidget(Section section, ModuleBaseWithCustomFields record, FacilioModule module, List<String> formRelModules) throws Exception {
 		
-		if (AccountUtil.getCurrentOrg().getOrgId() == 406) {
-			if (record.getFormId() != -1) {
-				long moduleId = module.getModuleId();
-				FacilioForm form = fetchForm(record.getFormId(), module.getName());
-				List<FormSection> sections = form.getSections();
-				for (FormSection formSection: sections) {
+		if (AccountUtil.getCurrentOrg().getOrgId() == 406 && record.getFormId() != -1) {
+			long moduleId = module.getModuleId();
+			FacilioForm form = fetchForm(record.getFormId(), module.getName());
+			List<FormSection> sections = form.getSections();
+			for (FormSection formSection: sections) {
+				if (formSection.getSectionTypeEnum() == SectionType.SUB_FORM) {
+					String moduleName = formSection.getSubForm().getModule().getName();
+					formRelModules.add(moduleName);
+					addRelatedListWidgets(section, moduleId, Collections.singletonList(moduleName), true);
+				}
+				else {
 					if (formSection.getName() == null || 
 						formSection.getFields().stream().filter(field -> field.getHideField() == null || !field.getHideField()).count() == 0l) {
 						continue;
 					}
-					if (formSection.getSectionTypeEnum() == SectionType.SUB_FORM) {
-						String moduleName = formSection.getSubForm().getModule().getName();
-						formRelModules.add(moduleName);
-						addRelatedListWidgets(section, moduleId, Collections.singletonList(moduleName), true);
-					}
-					else {
-						PageWidget detailsWidget = new PageWidget(WidgetType.SECONDARY_DETAILS_WIDGET);
-						detailsWidget.addToLayoutParams(section, 24, 7);
-						detailsWidget.addToWidgetParams("formSectionId", formSection.getId());
-						section.addWidget(detailsWidget);
-					}
+					PageWidget detailsWidget = new PageWidget(WidgetType.SECONDARY_DETAILS_WIDGET);
+					detailsWidget.addToLayoutParams(section, 24, 7);
+					detailsWidget.addToWidgetParams("formSectionId", formSection.getId());
+					section.addWidget(detailsWidget);
 				}
 			}
 		}
