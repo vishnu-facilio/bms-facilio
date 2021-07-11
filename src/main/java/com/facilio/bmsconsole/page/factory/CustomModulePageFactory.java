@@ -1,5 +1,15 @@
 package com.facilio.bmsconsole.page.factory;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -20,16 +30,6 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
-
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-import org.json.simple.JSONObject;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class CustomModulePageFactory extends PageFactory {
 	
@@ -117,7 +117,8 @@ public class CustomModulePageFactory extends PageFactory {
 				FacilioForm form = fetchForm(record.getFormId(), module.getName());
 				List<FormSection> sections = form.getSections();
 				for (FormSection formSection: sections) {
-					if (formSection.getName() == null) {
+					if (formSection.getName() == null || 
+						formSection.getFields().stream().filter(field -> field.getHideField() == null || !field.getHideField()).count() == 0l) {
 						continue;
 					}
 					if (formSection.getSectionTypeEnum() == SectionType.SUB_FORM) {
