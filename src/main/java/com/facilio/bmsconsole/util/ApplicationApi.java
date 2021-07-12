@@ -8,9 +8,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
-import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.modules.*;
-import com.twilio.rest.api.v2010.account.Application;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -390,7 +388,7 @@ public class ApplicationApi {
             ApplicationLayoutContext layout = new ApplicationLayoutContext(agentApplication.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.WEB, FacilioConstants.ApplicationLinkNames.FACILIO_AGENT_APP);
             addApplicationLayout(layout);
             addAgentAppWebTabs(layout);
-            Role agentAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.PrevilegedRoleNames.AGENT_ADMIN);
+            Role agentAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.DefaultRoleNames.AGENT_ADMIN);
             addAppRoleMapping(agentAdmin.getRoleId(), agentApplication.getId());
         }
 
@@ -407,7 +405,7 @@ public class ApplicationApi {
             addTenantPortalWebTabs(tpLayout);
             addTenantPortalWebGroupsForMobileLayout(tpLayoutMobile);
 
-            Role tenantAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.PrevilegedRoleNames.TENANT_ADMIN);
+            Role tenantAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.DefaultRoleNames.TENANT_USER);
             addAppRoleMapping(tenantAdmin.getRoleId(), tenantPortal.getId());
 
 
@@ -426,7 +424,7 @@ public class ApplicationApi {
             addOccupantPortalWebTabs(spLayout);
             addOccupantPortalWebGroupsForMobileLayout(spLayout);
 
-            Role occupantAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.PrevilegedRoleNames.OCCUPANT_ADMIN);
+            Role occupantAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.DefaultRoleNames.OCCUPANT_USER);
             addAppRoleMapping(occupantAdmin.getRoleId(), servicePortal.getId());
 
         }
@@ -437,10 +435,10 @@ public class ApplicationApi {
             ApplicationLayoutContext mainLayout = new ApplicationLayoutContext(mainApp.getId(), ApplicationLayoutContext.AppLayoutType.DUAL, ApplicationLayoutContext.LayoutDeviceType.WEB, FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
             addApplicationLayout(mainLayout);
 
-            Role admin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.PrevilegedRoleNames.ADMIN);
+            Role admin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.DefaultRoleNames.ADMIN);
             addAppRoleMapping(admin.getRoleId(), mainApp.getId());
 
-            Role superAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.PrevilegedRoleNames.SUPER_ADMIN);
+            Role superAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.DefaultRoleNames.SUPER_ADMIN);
             ApplicationApi.addAppRoleMapping(superAdmin.getRoleId(), mainApp.getId());
 
             Role tech = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), "Technician");
@@ -463,7 +461,7 @@ public class ApplicationApi {
 
             addVendorPortalWebTabs(vpLayout);
 
-            Role vendorAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.PrevilegedRoleNames.VENDOR_ADMIN);
+            Role vendorAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.DefaultRoleNames.VENDOR_USER);
             addAppRoleMapping(vendorAdmin.getRoleId(), vendorPortal.getId());
 
         }
@@ -474,7 +472,7 @@ public class ApplicationApi {
             ApplicationLayoutContext cpLayout = new ApplicationLayoutContext(clientPortal.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.WEB, FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
             addApplicationLayout(cpLayout);
 
-            Role clientAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.PrevilegedRoleNames.CLIENT_ADMIN);
+            Role clientAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.DefaultRoleNames.CLIENT_ADMIN);
             addAppRoleMapping(clientAdmin.getRoleId(), clientPortal.getId());
 
         }

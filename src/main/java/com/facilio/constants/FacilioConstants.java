@@ -2649,16 +2649,17 @@ public class FacilioConstants {
 		public static final String WORKPLACE_APP = "wokplace";
 	}
 
-	public static class PrevilegedRoleNames {
-		public static final String TENANT_ADMIN = "Tenant Admin";
-		public static final String VENDOR_ADMIN = "Vendor Admin";
-		public static final String OCCUPANT_ADMIN = "Occupant Admin";
-		public static final String CLIENT_ADMIN = "Client Admin";
+	public static class DefaultRoleNames {
+		public static final String TENANT_USER = "Tenant User";
+		public static final String VENDOR_USER = "Vendor User";
+		public static final String OCCUPANT_USER = "Occupant User";
+		public static final String CLIENT_USER = "Client User";
 		public static final String OPERATIONS_ADMIN = "Operations Admin";
 		public static final String AGENT_ADMIN = "Agent Admin";
 		public static final String SUPER_ADMIN = "Super Administrator";
 		public static final String ADMIN = "Administrator";
 	}
+
 
 	public static class TableNames{
 		public static final String WORK_ORDER = "Workorders";
