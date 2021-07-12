@@ -1009,23 +1009,42 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return status;
 	}
 
+	@SneakyThrows
+	private List<Map<String, Object>> getUserWebSessions(long uid) {
+		List<Map<String, Object>> sessions = (List<Map<String, Object>>) LRUCache.getUserSessionCache().get(uid+"");
+		if (sessions != null) {
+			return sessions;
+		} else {
+			sessions = new ArrayList<>();
+		}
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(IAMAccountConstants.getUserSessionFields())
+				.table("Account_Users")
+				.innerJoin("UserSessions")
+				.on("Account_Users.USERID = UserSessions.USERID");
+
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.USERID", "userId", uid+"", StringOperators.IS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("UserSessions.IS_ACTIVE", "isActive", "1", NumberOperators.EQUALS));
+
+		Map<String, Object> props = selectBuilder.fetchFirst();
+		if (MapUtils.isNotEmpty(props)) {
+			sessions.add(props);
+			LRUCache.getUserSessionCache().put(uid+"", sessions);
+		}
+		return sessions;
+	}
+
 	@Override
 	public boolean isSessionExpired(long uid, long orgId, long sessionId) throws Exception {
 		Map<String, Object> prop = null;
-		List<Map<String, Object>> sessions = (List<Map<String, Object>>) LRUCache.getUserSessionCache().get(uid+"");
-		if (sessions == null) {
-			return false;
-		}
+		List<Map<String, Object>> sessions = getUserWebSessions(uid);
 		for (Map<String, Object> session: sessions) {
 			long s = (long) session.get("id");
 			if (s == sessionId) {
 				prop = session;
 				break;
 			}
-		}
-
-		if (prop == null) {
-			return false; // temp
 		}
 
 		SecurityPolicy userSecurityPolicy = getUserSecurityPolicy(uid, orgId);
