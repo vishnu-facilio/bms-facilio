@@ -1994,6 +1994,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddVendorContactsCommand());
 			c.addCommand(new AddInsuranceVendorRollUpsCommand());
 			c.addCommand(new ExecuteStateFlowCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new ConstructAddCustomActivityCommand());
 			c.addCommand(new ForkChainToInstantJobCommand()
@@ -5338,6 +5339,7 @@ public class TransactionChainFactory {
 		c.addCommand(new UpdateVendorContactAppPortalAccessCommand());
 		c.addCommand(new ExecuteStateFlowCommand());
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.MODULE_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 
 		return c;
@@ -5388,8 +5390,8 @@ public class TransactionChainFactory {
 		c.addCommand(new GenericGetModuleDataListCommand());
 		c.addCommand(new ChangeApprovalStatusForModuleDataCommand());
 		c.addCommand(new UpdateStateForModuleDataCommand());
-		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.MODULE_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 
 
