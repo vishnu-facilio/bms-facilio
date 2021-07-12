@@ -32,7 +32,7 @@ public class AddOrUpdateBuildingLocation extends FacilioCommand {
                 Constants.setRecord(locationContext, location);
 
                 if (location.getId() > 0) {
-                    context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, java.util.Collections.singletonList(location.getId()));
+                    locationContext.put(FacilioConstants.ContextNames.RECORD_ID_LIST, java.util.Collections.singletonList(location.getId()));
                     FacilioChain updateLocation = FacilioChainFactory.updateLocationChain();
                     updateLocation.execute(locationContext);
                 } else {

@@ -1,12 +1,11 @@
 package com.facilio.bmsconsoleV3.commands.space;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.LocationContext;
-import com.facilio.bmsconsoleV3.context.V3BuildingContext;
 import com.facilio.bmsconsoleV3.context.V3SpaceContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.v3.context.Constants;
@@ -33,7 +32,7 @@ public class AddOrUpdateSpaceLocation extends FacilioCommand {
                 Constants.setRecord(locationContext, location);
 
                 if (location.getId() > 0) {
-                    context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, java.util.Collections.singletonList(location.getId()));
+                    locationContext.put(FacilioConstants.ContextNames.RECORD_ID_LIST, java.util.Collections.singletonList(location.getId()));
                     FacilioChain updateLocation = FacilioChainFactory.updateLocationChain();
                     updateLocation.execute(locationContext);
                 } else {
