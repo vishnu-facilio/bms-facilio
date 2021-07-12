@@ -20,7 +20,7 @@ public class LoadItemTransactionEntryInputCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		InventoryRequestContext request = (InventoryRequestContext)context.get(FacilioConstants.ContextNames.RECORD);
-		if(request.getStatusEnum() == InventoryRequestContext.Status.ISSUED ) {
+		if(request.getApprovalFlowId() <= 0) {
 			List<ItemTransactionsContext> itemTransactions = new ArrayList<ItemTransactionsContext>();
 			List<ToolTransactionContext> toolTransactions = new ArrayList<ToolTransactionContext>();
 			
