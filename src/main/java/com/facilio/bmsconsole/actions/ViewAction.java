@@ -244,7 +244,11 @@ public class ViewAction extends FacilioAction {
 		FacilioChain addView = FacilioChainFactory.getAddViewChain();
 		addView.execute(context);
 		
-		this.viewId = view.getId();
+		this.viewId = view.getId();	
+		if (orderBy != null) {
+			viewName = view.getName();
+			customizeSortColumns();
+		}
 		
 		return SUCCESS;
 	}
@@ -334,7 +338,9 @@ public String v2customizeView() throws Exception {
 		
 		setViewName(view.getName());
 		getViewDetail();
-		
+		if (orderBy != null) {
+			customizeSortColumns();
+		}
 		setResult("view", view);
 		return SUCCESS;
 	}
