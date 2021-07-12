@@ -119,6 +119,15 @@ public class ApplicationAction extends FacilioAction {
 		this.addLayout = addLayout;
 	}
 
+	private Boolean considerRole;
+	public Boolean getConsiderRole() {
+		return considerRole;
+	}
+	public void setConsiderRole(Boolean considerRole) {
+		this.considerRole = considerRole;
+	}
+
+
 
 	public String addOrUpdateApplication() throws Exception {
 		FacilioChain chain = TransactionChainFactory.getAddOrUpdateApplication();
@@ -183,6 +192,7 @@ public class ApplicationAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.APPLICATION_ID, appId);
 		context.put(FacilioConstants.ContextNames.LAYOUT_APP_TYPE, appName);
 		context.put(FacilioConstants.ContextNames.FETCH_ALL_LAYOUTS, fetchAllLayouts);
+		context.put(FacilioConstants.ContextNames.CONSIDER_ROLE, considerRole);
 
 		HttpServletRequest request = ServletActionContext.getRequest();
 		if(request.getAttribute("facilio.app.name") != null) {

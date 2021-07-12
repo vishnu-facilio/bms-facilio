@@ -215,6 +215,7 @@ public class FacilioConstants {
 		public static final String FETCH_ALL_LAYOUTS = "fetchAllLayouts";
 		public static final String ADD_APPLICATION_LAYOUT = "addApplicationLayout";
 		public static final String LAYOUT_ID = "layoutId";
+		public static final String CONSIDER_ROLE = "considerRole";
 
 		public static final String FETCH_NON_APP_USERS = "fetchNonAppUsers";
 

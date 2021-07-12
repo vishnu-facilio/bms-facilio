@@ -36,6 +36,7 @@ public class GetApplicationDetails extends FacilioCommand {
 		long appId = (long) context.get(FacilioConstants.ContextNames.APPLICATION_ID);
 		String  appName  = (String)context.get(FacilioConstants.ContextNames.LAYOUT_APP_TYPE);
 		Boolean fetchAllLayouts  = (Boolean)context.get(FacilioConstants.ContextNames.FETCH_ALL_LAYOUTS);
+		Boolean considerRole  = (Boolean)context.get(FacilioConstants.ContextNames.CONSIDER_ROLE);
 
 		ApplicationContext application = null;
 		if (appId <= 0) {
@@ -120,6 +121,9 @@ public class GetApplicationDetails extends FacilioCommand {
 							}
 							if(!fetchAllLayouts) {
 								webTabs.removeIf(t -> !hasLicense(t));
+							}
+							if(CollectionUtils.isNotEmpty(webTabs) && considerRole != null && considerRole) {
+								webTabs.removeIf(t -> t.getPermissionVal() <= 0);
 							}
 							webTabGroup.setWebTabs(webTabs);
 							layout.setWebTabGroupList(webTabGroups);
