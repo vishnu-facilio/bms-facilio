@@ -1047,6 +1047,10 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			}
 		}
 
+		if (prop == null) {
+			return false;
+		}
+
 		SecurityPolicy userSecurityPolicy = getUserSecurityPolicy(uid, orgId);
 
 		if (userSecurityPolicy != null && userSecurityPolicy.getIsWebSessManagementEnabled() && userSecurityPolicy.getWebSessLifeTime() != null) {
