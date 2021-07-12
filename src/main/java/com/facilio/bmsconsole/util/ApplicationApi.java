@@ -472,7 +472,7 @@ public class ApplicationApi {
             ApplicationLayoutContext cpLayout = new ApplicationLayoutContext(clientPortal.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.WEB, FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
             addApplicationLayout(cpLayout);
 
-            Role clientAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.DefaultRoleNames.CLIENT_ADMIN);
+            Role clientAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.DefaultRoleNames.CLIENT_USER);
             addAppRoleMapping(clientAdmin.getRoleId(), clientPortal.getId());
 
         }
