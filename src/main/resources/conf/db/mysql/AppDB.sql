@@ -5555,6 +5555,7 @@ CREATE TABLE IF NOT EXISTS Agent (
         NAME varchar(250) NOT NULL,
         AGENT_TYPE TINYINT,
         TYPE varchar(100) ,
+        PARTITION_ID INT DEFAULT 0 NOT NULL,
         CONNECTED tinyint(1) ,
         DISPLAY_NAME varchar(250) ,
         DATA_INTERVAL bigint(20) DEFAULT 10 not null,

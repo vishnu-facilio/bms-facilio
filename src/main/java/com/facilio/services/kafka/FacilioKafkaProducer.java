@@ -26,6 +26,10 @@ public class FacilioKafkaProducer implements FacilioProducer {
         producer = new KafkaProducer<>(getProducerProperties());
     }
 
+    public FacilioKafkaProducer(Properties props) {
+        producer = new KafkaProducer<String, String>(props);
+    }
+
     public RecordMetadata putRecord(String topic, FacilioRecord record) throws Exception {
         RecordMetadata recordMetadata = null;
         String data = record.getData().toJSONString();

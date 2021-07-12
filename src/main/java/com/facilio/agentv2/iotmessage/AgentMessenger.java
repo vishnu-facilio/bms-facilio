@@ -36,10 +36,10 @@ public class AgentMessenger {
     private static IotData constructNewIotAgentMessage(long agentId, FacilioCommand command, FacilioContext extraMsgContent, FacilioControllerType type) throws Exception {
         FacilioAgent agent = AgentApiV2.getAgent(agentId);
         Objects.requireNonNull(agent, "Agent can't be null");
-        return constructNewIotAgentMessage(agent, command, extraMsgContent, type);
+        return constructNewIotAgentMessage(command, agent, extraMsgContent, type);
     }
 
-    private static IotData constructNewIotAgentMessage(FacilioAgent agent, FacilioCommand command, FacilioContext extraMsgContent, FacilioControllerType type) throws Exception {
+    private static IotData constructNewIotAgentMessage(FacilioCommand command, FacilioAgent agent, FacilioContext extraMsgContent, FacilioControllerType type) throws Exception {
         if ((command != FacilioCommand.PING) && (!agent.getConnected())) {
             throw new Exception("Agent is not connected");
         }
@@ -90,6 +90,7 @@ public class AgentMessenger {
             List<IotMessage> messages = new ArrayList<>();
             messages.add(MessengerUtil.getMessageObject(messageBody, command));
             iotData.setMessages(messages);
+        iotData.setAgent(agent);
             return iotData;
     }
 
@@ -259,7 +260,7 @@ public class AgentMessenger {
             context.put(AgentConstants.CONFIGURE, AgentConstants.CONTROLLER);
         }
         context.put(AgentConstants.DATA, controllerArray);
-        return constructNewIotAgentMessage(agent, FacilioCommand.ADD_CONTROLLER, context, FacilioControllerType.valueOf(controllerList.get(0).getControllerType()));
+        return constructNewIotAgentMessage(FacilioCommand.ADD_CONTROLLER, agent, context, FacilioControllerType.valueOf(controllerList.get(0).getControllerType()));
     }
 
     public static boolean sendAddModbusRtuControllerCommand(ModbusRtuControllerContext controllerContext) throws Exception {

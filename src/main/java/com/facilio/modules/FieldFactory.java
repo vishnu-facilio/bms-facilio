@@ -622,6 +622,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getNumberField(AgentConstants.INBOUND_CONNECTION_ID,"INBOUND_CONNECTION_ID",module));
         fields.add(getNumberField(AgentConstants.AGENT_CONNECTION_LOST_WORKFLOW_ID,"CONNECTION_LOST_WORKFLOW_ID",module));
         fields.add(getNumberField(AgentConstants.AGENT_CONNECTION_REGAIN_WORKFLOW_ID,"CONNECTION_REGAIN_WORKFLOW_ID",module));
+        fields.add(getNumberField(AgentConstants.PARTITION_ID, "PARTITION_ID", module));
         return fields;
     }
 

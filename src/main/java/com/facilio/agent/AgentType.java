@@ -10,7 +10,8 @@ public enum AgentType {
 	NIAGARA(2, "niagara"),
     CLOUD(3,"cloud"),
     REST(4,"rest"),
-	WATTSENSE(5,"wattsense");
+    WATTSENSE(5, "wattsense"),
+    AGENT_SERVICE(6, "agent-service");
 
 
 	private int key;

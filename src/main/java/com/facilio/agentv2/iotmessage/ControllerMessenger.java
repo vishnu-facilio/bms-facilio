@@ -84,6 +84,7 @@ public class ControllerMessenger {
                 throw new Exception("Agent is not connected");
             }
             iotData.setAgentId(agentId);
+            iotData.setAgent(agent);
             iotData.setCommand(command.asInt());
             JSONObject object = new JSONObject();
             if (command == FacilioCommand.SET) {

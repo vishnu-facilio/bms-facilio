@@ -1,11 +1,13 @@
 package com.facilio.agentv2.iotmessage;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.facilio.agent.AgentType;
+import com.facilio.agentv2.FacilioAgent;
+import com.facilio.services.kafka.FacilioKafkaProducer;
+import com.facilio.services.procon.message.FacilioRecord;
+import com.facilio.services.procon.producer.FacilioProducer;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -47,6 +49,14 @@ public class IotMessageApiV2 {
     private static final Logger LOGGER = LogManager.getLogger(IotMessageApiV2.class.getName());
 
     private static final int MAX_BUFFER = 45000; //45000 fix for db insert 112640  110KiB;  AWS IOT limits max publish message size to 128KiB
+
+    private static Map<String, FacilioKafkaProducer> producerMap = new HashMap<>();
+
+    private static void closeProducers() {
+        producerMap.forEach((k, v) -> {
+            v.close();
+        });
+    }
 
     public static boolean acknowdledgeMessage(long id, Status status) throws Exception {
         IotMessage iotMessage = getIotMessage(id);
@@ -241,23 +251,61 @@ public class IotMessageApiV2 {
 
     public static void publishIotMessage(IotData data) throws Exception {
         long agentId = data.getAgentId();
+        FacilioAgent agent = data.getAgent();
         for (IotMessage message : data.getMessages()) {
             LogsApi.logIotCommand(agentId,message.getId(),data.getFacilioCommand(),Status.MESSAGE_SENT);
             message.getMessageData().put("msgid", message.getId());
             List<Map<String,Object>> topic = MessageQueueTopic.getTopics(Collections.singletonList(AccountUtil.getCurrentOrg().getOrgId()));
-            publishIotMessage(topic.get(0).get(AgentConstants.MESSAGE_TOPIC).toString(), message.getMessageData());
+            publishIotMessage(agent, topic.get(0).get(AgentConstants.MESSAGE_TOPIC).toString(), message.getMessageData());
             //FacilioContext context = new FacilioContext();
             //context.put(FacilioConstants.ContextNames.PUBLISH_DATA, data);
             //FacilioTimer.scheduleInstantJob("PublishedDataChecker", context);
         }
     }
 
-    private static void publishIotMessage(String client, JSONObject object) throws Exception {
-        if (FacilioProperties.isOnpremise()) {
+    private static void publishIotMessage(FacilioAgent agent, String client, JSONObject object) throws Exception {
+
+
+        if (FacilioProperties.isOnpremise() && agent.getAgentType() != AgentType.AGENT_SERVICE.getKey()) {
             publishToRabbitMQ(client, object);
+        } else if (agent.getAgentType() == AgentType.AGENT_SERVICE.getKey()) {
+            publishToKafka(agent, client, object);
         } else {
             publishToAwsIot(client, object);
         }
+    }
+
+    private static void publishToKafka(FacilioAgent agent, String client, JSONObject payload) {
+
+        FacilioKafkaProducer producer = producerMap.get(agent.getName());
+        if (producer == null) {
+            producer = new FacilioKafkaProducer(getProducerProperties());
+            producerMap.put(agent.getName(), producer);
+        }
+        String topic = client + "-cmds";
+        JSONObject data = new JSONObject();
+        data.put("data", payload.toJSONString());
+        FacilioRecord record = new FacilioRecord(agent.getName(), data);
+        try {
+            producer.putRecord(topic, record);
+        } catch (Exception e) {
+            LOGGER.info("Exception while put record ", e);
+        }
+
+    }
+
+    private static Properties getProducerProperties() {
+        Properties props = new Properties();
+        props.put("bootstrap.servers", FacilioProperties.getKafkaProducer());
+        props.put("acks", "all");
+        props.put("retries", 0);
+        props.put("batch.size", 16384);
+        props.put("linger.ms", 1);
+        props.put("buffer.memory", 33554432);
+        props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        props.put("partitioner.class", "com.facilio.services.kafka.CustomPartitioner");
+        return props;
     }
 
     public static void publishToRabbitMQ(String client, JSONObject object) throws Exception {

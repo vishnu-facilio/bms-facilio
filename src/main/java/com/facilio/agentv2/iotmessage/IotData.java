@@ -1,6 +1,7 @@
 package com.facilio.agentv2.iotmessage;
 
 import com.facilio.agent.fw.constants.FacilioCommand;
+import com.facilio.agentv2.FacilioAgent;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.List;
@@ -20,6 +21,19 @@ public class IotData {
     FacilioCommand facilioCommand;
     private long createdTime = -1;
     private List<IotMessage> messages;
+
+    @JsonIgnore
+    private FacilioAgent agent;
+
+    @JsonIgnore
+    public FacilioAgent getAgent() {
+        return agent;
+    }
+
+    @JsonIgnore
+    public void setAgent(FacilioAgent agent) {
+        this.agent = agent;
+    }
 
     public long getOrgId() { return orgId; }
     public void setOrgId(long orgId) { this.orgId = orgId; }
