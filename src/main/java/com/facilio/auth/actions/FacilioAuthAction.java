@@ -19,6 +19,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.facilio.accounts.bean.RoleBean;
+import com.facilio.accounts.dto.*;
 import com.facilio.accounts.sso.DomainSSO;
 import com.facilio.bmsconsole.actions.PeopleAction;
 import com.facilio.bmsconsole.actions.SettingsMfa;
@@ -37,17 +39,11 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.facilio.accounts.dto.Account;
-import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.dto.AppDomain.GroupType;
 import com.facilio.accounts.sso.AccountSSO;
 import com.facilio.accounts.sso.SSOUtil;
 import com.facilio.accounts.sso.SamlSSOConfig;
-import com.facilio.accounts.dto.IAMAccount;
-import com.facilio.accounts.dto.IAMUser;
-import com.facilio.accounts.dto.Organization;
-import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.aws.util.FacilioProperties;
@@ -1293,13 +1289,13 @@ public class FacilioAuthAction extends FacilioAction {
 				name = email;
 			}
 
-
+			String appDomain = request.getServerName();
+			AppDomain appdomainObj = IAMAppUtil.getAppDomain(appDomain);
+			var orgId = appdomainObj.getOrgId();
 			try {
 				LOGGER.info("validateSSOSignIn()");
 				String authtoken = null;
 				boolean portalUser = false;
-				String appDomain = request.getServerName();
-				AppDomain appdomainObj = IAMAppUtil.getAppDomain(appDomain);
 				if(appdomainObj != null && appdomainObj.getAppDomainTypeEnum() != AppDomainType.FACILIO) {
 					portalUser = true;
 				}
@@ -1370,7 +1366,7 @@ public class FacilioAuthAction extends FacilioAction {
 						&& (Throwables.getRootCause(e) instanceof AccountException)
 						&& ((AccountException) Throwables.getRootCause(e)).getErrorCode() == USER_DEACTIVATED_FROM_THE_ORG) {
 					LOGGER.log(Level.SEVERE, "Creating portal user");
-					return createPortalUserAndLogin(email, name);
+					return createPortalUserAndLogin(email, name, orgId);
 				}
 				LOGGER.log(Level.INFO, "Exception while validating sso signin, ", e);
 				setResponseCode(1);
@@ -1427,13 +1423,13 @@ public class FacilioAuthAction extends FacilioAction {
 		return name;
 	}
 
-	private String createPortalUserAndLogin(String email, String name) throws Exception {
-		createPortalUser(email, name);
+	private String createPortalUserAndLogin(String email, String name, long orgId) throws Exception {
+		createPortalUser(email, name, orgId);
 		LOGGER.log(Level.SEVERE, "Created portal user");
 		return domainSSOSignIn();
 	}
 
-	private void createPortalUser(String emailaddress, String name) throws Exception {
+	private void createPortalUser(String emailaddress, String name, long orgId) throws Exception {
 		PeopleAction peopleAction = new PeopleAction();
 		PeopleContext pplContext = PeopleAPI.getPeople(emailaddress);
 		if (pplContext == null) {
@@ -1442,6 +1438,11 @@ public class FacilioAuthAction extends FacilioAction {
 			pplContext.setName(name);
 			pplContext.setPeopleType(5);
 			pplContext.setIsOccupantPortalAccess(true);
+			HashMap<String, Long> roleMap = new HashMap<>();
+			RoleBean roleBean = AccountUtil.getRoleBean();
+			Role role = roleBean.getRole(orgId, FacilioConstants.DefaultRoleNames.OCCUPANT_USER);
+			roleMap.put(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP, role.getId());
+			pplContext.setRolesMap(roleMap);
 			peopleAction.setPeopleList(Arrays.asList(pplContext));
 			peopleAction.addPeople(true);
 		} else {
