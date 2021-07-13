@@ -66,6 +66,11 @@ public class PageRecordHandlingCommand extends FacilioCommand {
 				DefaultTemplate templatejson=TemplateAPI.getDefaultTemplate(DefaultTemplate.DefaultTemplateType.RULE,(int) recordId);
 				context.put(ContextNames.RECORD,templatejson);
 				break;
+			case ContextNames.INVITE_VISITOR:
+				FacilioChain inviteVisitorChain = ReadOnlyChainFactory.getVisitorInvitesDetailsChain();
+				inviteVisitorChain.execute(context);
+				context.put(ContextNames.RECORD, context.get(ContextNames.RECORD));
+				break;
 				
 		}
 		
