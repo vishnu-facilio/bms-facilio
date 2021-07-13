@@ -62,18 +62,13 @@ public class ModuleBundleComponent implements BundleComponentInterface {
 		
 		for(FacilioModule module :modulesByHirarchy) {
 			
-			System.out.println("module Level ::: "+module.getName());
-			
-//			if(module.getName().equals("agentAlarm") || module.getName().equals("controller")) {
 			context.put(BundleConstants.COMPONENT_OBJECT, module);
 			context.put(BundleConstants.COMPONENT_ID, module.getModuleId());
 			
 			JSONObject formattedObject = getFormatedObject(context);
 			
-			
 			returnList.add(formattedObject);
 			
-//			}
 		}
 		
 		return returnList;
