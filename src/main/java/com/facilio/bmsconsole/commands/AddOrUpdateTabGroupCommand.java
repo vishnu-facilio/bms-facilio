@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.WebTabGroupContext;
 import com.facilio.constants.FacilioConstants;
@@ -60,6 +61,8 @@ public class AddOrUpdateTabGroupCommand extends FacilioCommand {
                 context.put(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID, id);
             }
             context.put(FacilioConstants.ContextNames.WEB_TAB_GROUP, tabGroup);
+
+            ApplicationApi.incrementLayoutVersionByIds(Collections.singletonList(tabGroup.getLayoutId()));
         }
         return false;
     }

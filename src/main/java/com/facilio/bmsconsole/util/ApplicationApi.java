@@ -141,6 +141,15 @@ public class ApplicationApi {
         return webTabGroups;
     }
 
+    public static WebTabGroupContext getWebTabGroup(long webTabGroupId) throws Exception {
+        FacilioModule module = ModuleFactory.getWebTabGroupModule();
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(module.getTableName())
+                .select(FieldFactory.getWebTabGroupFields())
+                .andCondition(CriteriaAPI.getIdCondition(webTabGroupId, module));
+        return FieldUtil.getAsBeanFromMap(builder.fetchFirst(), WebTabGroupContext.class);
+    }
+
     public static void updateWebTabGroups(WebTabGroupContext webTabGroup) throws Exception {
         GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
                 .table(ModuleFactory.getWebTabGroupModule().getTableName()).fields(FieldFactory.getWebTabGroupFields())
@@ -162,6 +171,21 @@ public class ApplicationApi {
                 .table(ModuleFactory.getApplicationLayoutModule().getTableName()).select(FieldFactory.getApplicationLayoutFields())
                 .andCondition(CriteriaAPI.getCondition("APPLICATION_ID", "applicationId", String.valueOf(appId), NumberOperators.EQUALS));
 
+        List<ApplicationLayoutContext> applicationLayouts = FieldUtil.getAsBeanListFromMapList(builder.get(),
+                ApplicationLayoutContext.class);
+        return applicationLayouts;
+    }
+
+    public static List<ApplicationLayoutContext> getLayouts(Collection<Long> layoutIds) throws Exception {
+        if (CollectionUtils.isEmpty(layoutIds)) {
+            return null;
+        }
+
+        FacilioModule module = ModuleFactory.getApplicationLayoutModule();
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(module.getTableName())
+                .select(FieldFactory.getApplicationLayoutFields())
+                .andCondition(CriteriaAPI.getIdCondition(layoutIds, module));
         List<ApplicationLayoutContext> applicationLayouts = FieldUtil.getAsBeanListFromMapList(builder.get(),
                 ApplicationLayoutContext.class);
         return applicationLayouts;
@@ -1296,5 +1320,26 @@ public class ApplicationApi {
         map.put("roleId", roleId);
         builder.update(map);
     }
-    
+
+    public static void incrementLayoutVersionByIds(Collection<Long> layoutIds) throws Exception {
+        List<ApplicationLayoutContext> layouts = getLayouts(layoutIds);
+        incrementLayoutVersion(layouts);
+    }
+
+    public static void incrementLayoutVersion(List<ApplicationLayoutContext> layouts) throws Exception {
+        if (CollectionUtils.isEmpty(layouts)) {
+            return;
+        }
+
+        FacilioModule module = ModuleFactory.getApplicationLayoutModule();
+        for (ApplicationLayoutContext layout : layouts) {
+            GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+                    .table(module.getTableName())
+                    .fields(Collections.singletonList(FieldFactory.getField("versionNumber", "VERSION_NUMBER", module, FieldType.NUMBER)))
+                    .andCondition(CriteriaAPI.getIdCondition(layout.getId(), module));
+            Map<String, Object> map = new HashMap<>();
+            map.put("versionNumber", layout.getVersionNumber() + 1);
+            builder.update(map);
+        }
+    }
 }

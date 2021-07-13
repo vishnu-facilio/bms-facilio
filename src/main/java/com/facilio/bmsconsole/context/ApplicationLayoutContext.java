@@ -162,4 +162,12 @@ public class ApplicationLayoutContext implements Serializable {
     public void setWebTabGroupList(List<WebTabGroupContext> webTabGroupList) {
         this.webTabGroupList = webTabGroupList;
     }
+
+    private int versionNumber = 0;
+    public int getVersionNumber() {
+        return versionNumber;
+    }
+    public void setVersionNumber(int versionNumber) {
+        this.versionNumber = versionNumber;
+    }
 }

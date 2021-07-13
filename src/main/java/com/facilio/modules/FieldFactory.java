@@ -8760,6 +8760,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("applicationId", "APPLICATION_ID", module, FieldType.NUMBER));
         fields.add(getField("appLayoutType", "LAYOUT_TYPE", module, FieldType.SYSTEM_ENUM));
         fields.add(getField("appType", "APP_TYPE", module, FieldType.STRING));
+        fields.add(getField("versionNumber", "VERSION_NUMBER", module, FieldType.NUMBER));
 
         return fields;
     }

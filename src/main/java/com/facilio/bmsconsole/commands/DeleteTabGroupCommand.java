@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.bmsconsole.context.WebTabGroupContext;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -9,6 +11,8 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import org.apache.commons.chain.Context;
+
+import java.util.Collections;
 
 public class DeleteTabGroupCommand extends FacilioCommand {
 
@@ -24,6 +28,12 @@ public class DeleteTabGroupCommand extends FacilioCommand {
                     .table(ModuleFactory.getWebTabGroupModule().getTableName())
                     .andCondition(CriteriaAPI.getIdCondition(id, ModuleFactory.getWebTabGroupModule()));
             builder.delete();
+
+            WebTabGroupContext webTabGroup = ApplicationApi.getWebTabGroup(id);
+            if (webTabGroup == null) {
+                throw new IllegalArgumentException("Invalid web group");
+            }
+            ApplicationApi.incrementLayoutVersionByIds(Collections.singletonList(webTabGroup.getLayoutId()));
         }
         return false;
     }

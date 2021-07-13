@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.bmsconsole.context.WebTabGroupContext;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.constants.FacilioConstants;
@@ -12,6 +14,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class DisAssociateTabGroupCommand extends FacilioCommand {
@@ -21,6 +24,11 @@ public class DisAssociateTabGroupCommand extends FacilioCommand {
         Long groupId = (Long) context.get(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID);
 
         if(CollectionUtils.isNotEmpty(tabs) && groupId != null && groupId > 0){
+            WebTabGroupContext webTabGroup = ApplicationApi.getWebTabGroup(groupId);
+            if (webTabGroup == null) {
+                throw new IllegalArgumentException("Invalid web group");
+            }
+
             List<Long> ids = new ArrayList<>();
             for(WebTabContext wt : tabs){
                 ids.add(wt.getId());
@@ -31,6 +39,8 @@ public class DisAssociateTabGroupCommand extends FacilioCommand {
                     .andCondition(CriteriaAPI.getCondition("WEBTAB_GROUP_ID", "webTabGroupId", String.valueOf(groupId), NumberOperators.EQUALS));
 
             builder.delete();
+
+            ApplicationApi.incrementLayoutVersionByIds(Collections.singletonList(webTabGroup.getLayoutId()));
         }
 
         return false;

@@ -1,7 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
 import java.util.List;
 
+import com.facilio.bmsconsole.context.WebTabGroupContext;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
@@ -20,7 +23,7 @@ public class ReorderTabCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		List<WebtabWebgroupContext> tabsGroupsList = (List<WebtabWebgroupContext>) context.get(FacilioConstants.ContextNames.WEB_TAB_WEB_GROUP);
 		if (!tabsGroupsList.isEmpty()) {
-			
+			long tabGroupId = tabsGroupsList.get(0).getWebTabGroupId();
 			for(WebtabWebgroupContext tabGroup:tabsGroupsList) {
 				GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
 						.table(ModuleFactory.getWebTabWebGroupModule().getTableName())
@@ -30,6 +33,12 @@ public class ReorderTabCommand extends FacilioCommand {
 				builder.update(FieldUtil.getAsProperties(tabGroup));
 			}
 
+			// increment layout version
+			WebTabGroupContext webTabGroup = ApplicationApi.getWebTabGroup(tabGroupId);
+			if (webTabGroup == null) {
+				throw new IllegalArgumentException("Invalid web group");
+			}
+			ApplicationApi.incrementLayoutVersionByIds(Collections.singletonList(webTabGroup.getLayoutId()));
 		}
         return false;
     }
