@@ -1014,8 +1014,6 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		List<Map<String, Object>> sessions = (List<Map<String, Object>>) LRUCache.getUserSessionCache().get(uid+"");
 		if (sessions != null) {
 			return sessions;
-		} else {
-			sessions = new ArrayList<>();
 		}
 
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -1027,9 +1025,9 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.USERID", "userId", uid+"", StringOperators.IS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("UserSessions.IS_ACTIVE", "isActive", "1", NumberOperators.EQUALS));
 
-		Map<String, Object> props = selectBuilder.fetchFirst();
-		if (MapUtils.isNotEmpty(props)) {
-			sessions.add(props);
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (CollectionUtils.isNotEmpty(props)) {
+			sessions = props;
 			LRUCache.getUserSessionCache().put(uid+"", sessions);
 		}
 		return sessions;
