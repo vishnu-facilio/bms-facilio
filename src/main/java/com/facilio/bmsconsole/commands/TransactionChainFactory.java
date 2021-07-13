@@ -62,15 +62,28 @@ public class TransactionChainFactory {
 
 		public static FacilioChain getOrgSignupChain() {
 			FacilioChain c = getDefaultChain();
-
 			c.addCommand(new AddDefaultModulesCommand());
 			c.addCommand(new AddDefaultUnitsCommand());
 			c.addCommand(new AddDefaultGraphicsCommand());
 			c.addCommand(new AddDefaultWoStateflowCommand());
-			c.addCommand(new AddEventModuleCommand());
+			c.addCommand(new AddEventModuleCommand());					//eventModule.sql
 			c.addCommand(new AddOrgInfoCommand());
 			c.addCommand(new CreateAppSuperAdminCommand());
 			c.addCommand(new AddSignupDataCommandV3());
+			c.addCommand(new AddEmployeeTypePeopleForUserAdditionCommand());
+			
+			return c;
+		}
+		
+		
+		
+		public static FacilioChain getOrgCreateOnCopyCustomizationAfterSaveChain() {
+			FacilioChain c = getDefaultChain();
+
+			c.addCommand(new AddDefaultDataCommand());
+			c.addCommand(new AddDefaultUnitsCommand());
+			c.addCommand(new AddOrgInfoCommand());
+			c.addCommand(new CreateAppSuperAdminCommand());
 			c.addCommand(new AddEmployeeTypePeopleForUserAdditionCommand());
 			
 			return c;

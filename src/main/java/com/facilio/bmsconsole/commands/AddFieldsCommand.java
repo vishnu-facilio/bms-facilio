@@ -46,6 +46,8 @@ public class AddFieldsCommand extends FacilioCommand {
 			boolean allowSameName = (Boolean) context.getOrDefault(ContextNames.ALLOW_SAME_FIELD_DISPLAY_NAME, false);
 			boolean isNewModules = (Boolean) context.getOrDefault(FacilioConstants.ContextNames.IS_NEW_MODULES, false);
 			
+			boolean isSkipCounterfieldAdd = (Boolean) context.getOrDefault(FacilioConstants.ContextNames.IS_SKIP_COUNTER_FIELD_ADD, false);
+			
 			for (FacilioModule module : modules) {
 				FacilioModule cloneMod = new FacilioModule(module);
 				if(module != null && CollectionUtils.isNotEmpty(module.getFields())) {
@@ -65,7 +67,7 @@ public class AddFieldsCommand extends FacilioCommand {
 							fieldIds.add(fieldId);
 							if (field instanceof NumberField) {
 								NumberField numberField = (NumberField) field;
-								if (numberField.isCounterField()) {
+								if (numberField.isCounterField() && !isSkipCounterfieldAdd) {
 									NumberField deltaField = numberField.clone();
 									deltaField.setCounterField(null);
 									deltaField.setId(-1);

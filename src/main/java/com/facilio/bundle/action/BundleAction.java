@@ -1,5 +1,7 @@
 package com.facilio.bundle.action;
 
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.dto.Organization;
 import com.facilio.bundle.command.BundleTransactionChainFactory;
 import com.facilio.bundle.utils.BundleConstants;
@@ -19,7 +21,7 @@ public class BundleAction extends V3Action{
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	Organization organization;
+	JSONObject organization;
 	
 	public String copyCustomiation() throws Exception {
 		

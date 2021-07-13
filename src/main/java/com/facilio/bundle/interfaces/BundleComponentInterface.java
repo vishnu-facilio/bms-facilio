@@ -11,4 +11,5 @@ public interface BundleComponentInterface {
 	JSONArray getAllFormatedObject(FacilioContext context) throws Exception;
 	
 	void install(FacilioContext context) throws Exception;
+	void postInstall(FacilioContext context) throws Exception;
 }

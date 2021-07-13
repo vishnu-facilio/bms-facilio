@@ -12,6 +12,14 @@ public class BundleTransactionChainFactory {
     public static FacilioChain getCopyCustomizationChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new PackAllBundleComponentsCommand());
+        c.addCommand(new CreateNewOrgAndPopulateBundleCommand());
+        return c;
+    }
+    
+    public static FacilioChain getPopulateBundleChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new PopulateBundleToNewOrgCommand());
+        c.addCommand(new PopulateExtrasToNewOrgCommand());
         return c;
     }
 }

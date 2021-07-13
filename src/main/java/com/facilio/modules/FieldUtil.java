@@ -579,6 +579,15 @@ public class FieldUtil {
 				case LARGE_TEXT:
 					facilioField = (LargeTextField) FieldUtil.getAsBeanFromMap(fieldJson, LargeTextField.class);
 					break;
+				case SYSTEM_ENUM:
+					facilioField = (SystemEnumField) FieldUtil.getAsBeanFromMap(fieldJson, SystemEnumField.class);
+					break;
+				case STRING_SYSTEM_ENUM:
+					facilioField = (StringSystemEnumField) FieldUtil.getAsBeanFromMap(fieldJson, StringSystemEnumField.class);
+					break;
+				case LINE_ITEM:
+					facilioField = (LineItemField) FieldUtil.getAsBeanFromMap(fieldJson, LineItemField.class);
+					break;
 				default:
 					facilioField = (FacilioField) FieldUtil.getAsBeanFromMap(fieldJson, FacilioField.class);
 					break;

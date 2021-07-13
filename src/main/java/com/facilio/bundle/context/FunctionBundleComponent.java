@@ -41,4 +41,10 @@ public class FunctionBundleComponent implements BundleComponentInterface {
 		
 	}
 
+	@Override
+	public void postInstall(FacilioContext context) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
