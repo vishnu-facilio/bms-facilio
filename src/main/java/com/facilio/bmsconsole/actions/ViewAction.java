@@ -339,6 +339,8 @@ public String v2customizeView() throws Exception {
 		setViewName(view.getName());
 		getViewDetail();
 		if (orderBy != null) {
+			this.viewId = view.getId();	
+			viewName = view.getName();
 			customizeSortColumns();
 		}
 		setResult("view", view);
