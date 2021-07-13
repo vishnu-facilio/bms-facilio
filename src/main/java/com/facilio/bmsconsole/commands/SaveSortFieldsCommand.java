@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -34,7 +35,10 @@ public class SaveSortFieldsCommand extends FacilioCommand {
 		if (view == null) {
 			view = ViewFactory.getView(module, viewName, modBean);
 		}
-		List<SortField> sortField = view.getSortFields();
+		List<SortField> sortField = new ArrayList<>(); 
+		if (view.getSortFields() != null && !view.getSortFields().isEmpty()) {
+			 sortField = view.getSortFields();
+		}	
 
 		// TODO Handle for multiple sort columns when implemented
 		if (sortObj != null && !sortObj.isEmpty()) {
