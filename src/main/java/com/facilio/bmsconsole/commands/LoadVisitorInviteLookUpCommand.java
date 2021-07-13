@@ -31,7 +31,7 @@ public class LoadVisitorInviteLookUpCommand extends FacilioCommand {
 		List<LookupField> additionaLookups = new ArrayList<LookupField>();
 		LookupField contactField = (LookupField) fieldsAsMap.get("requestedBy");
 		additionaLookups.add(contactField);
-		LookupField visitedSpaceField = (LookupField) fieldsAsMap.get("visitedSpace");
+		LookupField visitedSpaceField = (LookupField) modBean.getField("visitedSpace",FacilioConstants.ContextNames.BASE_VISIT);
 		additionaLookups.add(visitedSpaceField);
 		context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST,additionaLookups);
 		return false;
