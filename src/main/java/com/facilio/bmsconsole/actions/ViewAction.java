@@ -241,6 +241,10 @@ public class ViewAction extends FacilioAction {
 		if (view.getIncludeParentCriteria()) {
 			context.put(FacilioConstants.ContextNames.CV_NAME, parentView);
 		}
+		if (view.getAppId() > 0) {
+			appId = view.getAppId();
+			context.put(FacilioConstants.ContextNames.APP_ID, appId);
+		}
 		FacilioChain addView = FacilioChainFactory.getAddViewChain();
 		addView.execute(context);
 		
@@ -332,16 +336,19 @@ public String v2customizeView() throws Exception {
 		if (view.getIncludeParentCriteria()) {
 			context.put(FacilioConstants.ContextNames.CV_NAME, parentView);
 		}
-		
+		if (view.getAppId() > 0) {
+			appId = view.getAppId();
+			context.put(FacilioConstants.ContextNames.APP_ID, appId);
+		}
 		FacilioChain editView = TransactionChainFactory.editViewChain();
 		editView.execute(context);
 		
 		setViewName(view.getName());
-		getViewDetail();
 		if (orderBy != null) {
 			viewName = view.getName();
 			customizeSortColumns();
 		}
+		getViewDetail();
 		setResult("view", view);
 		return SUCCESS;
 	}
@@ -409,6 +416,9 @@ public String v2customizeView() throws Exception {
 		
 		context.put(FacilioConstants.ContextNames.VIEWID, viewId);
 		context.put(FacilioConstants.ContextNames.SORTING, sortObject);
+		if (appId > 0) {
+			context.put(FacilioConstants.ContextNames.APP_ID, appId);
+		}
 		
 		FacilioChain customizeSortColumnsChain = FacilioChainFactory.getViewCustomizeSortColumnsChain();
 		customizeSortColumnsChain.execute(context);

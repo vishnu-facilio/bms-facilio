@@ -27,11 +27,11 @@ public class SaveSortFieldsCommand extends FacilioCommand {
 		JSONObject sortObj = (JSONObject) context.get(FacilioConstants.ContextNames.SORTING);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		String viewName = (String) context.get(FacilioConstants.ContextNames.CV_NAME);
-		
+		Long appId = (Long) context.getOrDefault(FacilioConstants.ContextNames.APP_ID, -1l);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
 		long moduleId = module.getModuleId();
-		FacilioView view = ViewAPI.getView(viewName, moduleId, AccountUtil.getCurrentOrg().getOrgId(), -1);
+		FacilioView view = ViewAPI.getView(viewName, moduleId, AccountUtil.getCurrentOrg().getOrgId(), appId);
 		if (view == null) {
 			view = ViewFactory.getView(module, viewName, modBean);
 		}
