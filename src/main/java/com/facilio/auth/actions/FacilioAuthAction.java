@@ -1365,7 +1365,7 @@ public class FacilioAuthAction extends FacilioAction {
 				if (isCreateUser
 						&& (Throwables.getRootCause(e) instanceof AccountException)
 						&& ((AccountException) Throwables.getRootCause(e)).getErrorCode() == USER_DEACTIVATED_FROM_THE_ORG) {
-					LOGGER.log(Level.SEVERE, "Creating portal user");
+					LOGGER.log(Level.INFO, "Creating portal user");
 					return createPortalUserAndLogin(email, name, orgId);
 				}
 				LOGGER.log(Level.INFO, "Exception while validating sso signin, ", e);
@@ -1424,8 +1424,13 @@ public class FacilioAuthAction extends FacilioAction {
 	}
 
 	private String createPortalUserAndLogin(String email, String name, long orgId) throws Exception {
-		createPortalUser(email, name, orgId);
-		LOGGER.log(Level.SEVERE, "Created portal user");
+		try {
+			createPortalUser(email, name, orgId);
+		} catch (Exception ex) {
+			LOGGER.log(Level.SEVERE, "Exception while creating portal user.");
+			throw ex;
+		}
+		LOGGER.log(Level.INFO, "Created portal user");
 		return domainSSOSignIn();
 	}
 
