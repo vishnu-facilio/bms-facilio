@@ -27,7 +27,7 @@ public class SetUserAndPeopleForEmailConversationThreadingCommand extends Facili
 				
 				if(emailConversation.getFromPeople() != null) {
 					List<Long> userID = PeopleAPI.getUserIdForPeople(emailConversation.getFromPeople().getId());
-					if(userID.size() > 0) {
+					if(userID != null && userID.size() > 0) {
 						emailConversation.setDatum("fromUser", userBean.getUser(userID.get(0), false));
 					}
 				}
