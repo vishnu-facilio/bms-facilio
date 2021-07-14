@@ -16,6 +16,7 @@ public enum BundleComponentsEnum {
 	MODULE(1,"Module",ModuleBundleComponent.class),
 	FIELD(2,"Field",FieldBundleComponent.class,BundleComponentsEnum.MODULE),
 	FUNCTION(3,"Function",FunctionBundleComponent.class),
+	WORKFLOW_RULE(4,"Workflow_Rule",WorkflowRuleBundleComponent.class,BundleComponentsEnum.MODULE),
 	;
 	
 	int value;

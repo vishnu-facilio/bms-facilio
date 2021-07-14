@@ -66,8 +66,6 @@ public class FieldBundleComponent implements BundleComponentInterface {
 		JSONObject parentObject = (JSONObject)context.get(BundleConstants.PARENT_COMPONENT_OBJECT);
 		String moduleName = (String) parentObject.get("name");
 		
-		LOGGER.log(Priority.ERROR, "moduleName --- "+moduleName);
-		
 		List<FacilioField> fields = Constants.getModBean().getAllFields(moduleName).stream().filter((field) -> { if(field.getModule().getName().equals(moduleName)) {return true;} return false;}).collect(Collectors.toList());
 		
 		JSONArray returnList = new JSONArray();

@@ -58,14 +58,16 @@ public class PackAllBundleComponentsCommand extends FacilioCommand {
 				context.put(BundleConstants.PARENT_COMPONENT_OBJECT, parentObject);
 				
 				JSONArray childObjects = bundleComponentObject.getAllFormatedObject(context);
-				for(int i=0;i<childObjects.size();i++) {
+				if(childObjects != null) {
+					for(int i=0;i<childObjects.size();i++) {
+						
+						JSONObject childObject = (JSONObject) childObjects.get(i);
+						
+						fillChildComponents(childComponent, childObject, context);
+					}
 					
-					JSONObject childObject = (JSONObject) childObjects.get(i);
-					
-					fillChildComponents(childComponent, childObject, context);
+					parentObject.put(childComponent.getName(), childObjects);
 				}
-				
-				parentObject.put(childComponent.getName(), childObjects);
 			}
 		}
 	}
