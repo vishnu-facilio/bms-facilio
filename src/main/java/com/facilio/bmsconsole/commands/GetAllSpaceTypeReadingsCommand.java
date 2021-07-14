@@ -1,21 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.facilio.command.FacilioCommand;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang.StringUtils;
-
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
-import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.FloorContext;
-import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -25,6 +14,13 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang.StringUtils;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class GetAllSpaceTypeReadingsCommand extends FacilioCommand {
 
@@ -107,8 +103,16 @@ public class GetAllSpaceTypeReadingsCommand extends FacilioCommand {
 				spaces.put(floor.getId(), floor);
 			}
 			spaceType = SpaceType.FLOOR;
-		} 
-		
+		} else if ("spaces".equalsIgnoreCase(type) || (typeEnum != null && typeEnum == SpaceType.SPACE)) {
+			List<SpaceContext> spaceList = SpaceAPI.getAllSpaces();
+			for (int i = 0; i < spaceList.size(); i++) {
+				SpaceContext space = spaceList.get(i);
+				ids.add(space.getId());
+				spaces.put(space.getId(), space);
+			}
+			spaceType = SpaceType.SPACE;
+		}
+
 		List<FacilioField> fields = FieldFactory.getResourceReadingsFields();
 		FacilioField resourceField = FieldFactory.getAsMap(fields).get("resourceId");
 		FacilioModule module = ModuleFactory.getResourceReadingsModule();
