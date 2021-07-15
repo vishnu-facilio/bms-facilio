@@ -74,15 +74,15 @@ public class UpdateBaseAndResourceCommand extends FacilioCommand implements Seri
 							tempList = readingsList.subList(done, done+ remaining);
 						}
 						for(int temp1=0; temp1 < tempList.size() ; temp1++) {
-							updateResourceQuery = updateResourceQuery + " WHEN " + readingsList.get(temp1) + " THEN " + readingsList.get(temp1);
-							updateBaseSpaceQuery = updateBaseSpaceQuery + " WHEN " + readingsList.get(temp1) + " THEN " + readingsList.get(temp1);
+							updateResourceQuery = updateResourceQuery + " WHEN " + tempList.get(temp1) + " THEN " + tempList.get(temp1);
+							updateBaseSpaceQuery = updateBaseSpaceQuery + " WHEN " + tempList.get(temp1) + " THEN " + tempList.get(temp1);
 						}
 						
-						updateResourceQuery = updateResourceQuery + " else SPACE_ID end WHERE ORGID = " + org.getId() + " AND ID IN (" + StringUtils.arrayToCommaDelimitedString(readingsList.toArray()) +");";
+						updateResourceQuery = updateResourceQuery + " else SPACE_ID end WHERE ORGID = " + org.getId() + " AND ID IN (" + StringUtils.arrayToCommaDelimitedString(tempList.toArray()) +");";
 						PreparedStatement pstmt = con.prepareStatement(updateResourceQuery);
 						pstmt.executeUpdate();
 						if(updateBaseQueryColumn != null) {
-							updateBaseSpaceQuery = updateBaseSpaceQuery + " else " + updateBaseQueryColumn + " end WHERE ORGID = " + org.getId() + " AND ID IN (" + StringUtils.arrayToCommaDelimitedString(readingsList.toArray()) +");";
+							updateBaseSpaceQuery = updateBaseSpaceQuery + " else " + updateBaseQueryColumn + " end WHERE ORGID = " + org.getId() + " AND ID IN (" + StringUtils.arrayToCommaDelimitedString(tempList.toArray()) +");";
 							PreparedStatement basepstmt = con.prepareStatement(updateBaseSpaceQuery);
 							basepstmt.executeUpdate();
 						}		
