@@ -71,14 +71,16 @@ public class ValidateAndFillFromRuleParamsCommand extends FacilioCommand {
 		}
 		
 		Map<String,Object> cloneFormData = new HashMap<String, Object>();
-		if (triggerType.equals(TriggerType.FORM_ON_LOAD) && formData != null && !formData.isEmpty()) {
-		 cloneFormData = new HashMap<String, Object>(formData);
+		 if (formData != null && !formData.isEmpty()) {	
+			 cloneFormData = new HashMap<String, Object>(formData);
 			if (formData.containsKey("data")) {
 				Map<String,Object> customData = (Map<String, Object>) formData.get("data");
 				cloneFormData.putAll(customData);
-				cloneFormData.remove("data");
+				formData = cloneFormData;
+				//cloneFormData.remove("data");
 			}
-			
+		 }
+		if (triggerType.equals(TriggerType.FORM_ON_LOAD)) {		
 			List<Long> triggerFieldIds = new ArrayList<>();
 			for (FormField fieldObj : form.getFields()) {				
 				boolean hasValue = false;
@@ -123,6 +125,7 @@ public class ValidateAndFillFromRuleParamsCommand extends FacilioCommand {
 		
 		LOGGER.info("ruleInfoObject - formRuleContexts"+ formRuleContexts);
 		LOGGER.info("ruleInfoObject - formData"+ formData + triggerType);
+		context.put(FormRuleAPI.FORM_DATA, formData);
 		context.put(ContextNames.FORM, form);
 		
 		return false;
