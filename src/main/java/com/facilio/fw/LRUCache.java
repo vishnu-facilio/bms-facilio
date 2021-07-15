@@ -44,14 +44,6 @@ public class LRUCache<K, V> implements FacilioCache<K, V> {
 
 	private static final Logger LOGGER = LogManager.getLogger(LRUCache.class.getName());
 
-	private static FacilioCache<String, Object> fieldCache = new LRUCache<>("fieldCache", 2000);
-	private static FacilioCache<String, Object> fieldNameCache = new LRUCache<>("fieldNameCache", 2000);
-	private static FacilioCache<String, Object> modulefieldCache = new LRUCache<>("moduleFieldCache", 2000);
-	private static FacilioCache<String, Object> userSessionCache = new LRUCache<>("userSessionCache", 300);
-	private static FacilioCache<String, Object> moduleCache = new LRUCache<>("moduleCache", 2000);
-	private static FacilioCache<String, Long> queryCache = new LRUCache<>("queryCache", 500);
-	private static FacilioCache<String, Object> responseCache = new LRUCache<>("responseCache", 5000);
-
 	private static FacilioCache<String, Object> fieldCachePS = new PubSubLRUCache<>("fieldCache", 2000);
 	private static FacilioCache<String, Object> fieldNameCachePS = new PubSubLRUCache<>("fieldNameCache", 2000);
 	private static FacilioCache<String, Object> moduleFieldCachePS = new PubSubLRUCache<>("moduleFieldCache", 2000);
@@ -73,7 +65,6 @@ public class LRUCache<K, V> implements FacilioCache<K, V> {
 		cacheList.add(fieldCachePS);
 		cacheList.add(fieldNameCachePS);
 		cacheList.add(moduleFieldCachePS);
-		cacheList.add(userSessionCache);
 		cacheList.add(moduleCachePS);
 		cacheList.add(queryCachePS);
 		cacheList.add(responseCachePS);
@@ -82,6 +73,7 @@ public class LRUCache<K, V> implements FacilioCache<K, V> {
 		cacheList.add(roleIdCachePs);
 		cacheList.add(roleNameCachePs);
 		cacheList.add(userSecurityPolicyPS);
+		cacheList.add(userSessionCachePS);
 		return Collections.unmodifiableList(cacheList);
 	}
 
