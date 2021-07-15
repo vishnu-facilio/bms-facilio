@@ -215,6 +215,8 @@ public class DownloadCertFile {
                 .append("privateKeyName=facilio-private.key").append(System.lineSeparator())
                 .append("certName=facilio.crt").append(System.lineSeparator())
                 .append("endpoint=").append(FacilioProperties.getIotEndPoint()).append(System.lineSeparator())
+                .append("isBacnetIpEnabled=true").append(System.lineSeparator())
+                .append("isValidateJsonSchemaEnabled=false").append(System.lineSeparator())
                 .append("topic=").append(domainName);
         return builder.toString();
     }

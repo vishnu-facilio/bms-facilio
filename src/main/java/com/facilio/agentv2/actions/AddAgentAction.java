@@ -13,6 +13,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.service.FacilioService;
 import com.facilio.workflows.context.WorkflowContext;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.log4j.LogManager;
@@ -50,6 +51,9 @@ public class AddAgentAction extends AgentActionV2
     private String displayName;
     private WorkflowContext workflow;
     private int agentType=-1;
+
+    private int partitionId = 0;
+
 	public String createAgent() {
         try {
             FacilioChain addAgentChain = TransactionChainFactory.createAgentChain();
@@ -61,7 +65,7 @@ public class AddAgentAction extends AgentActionV2
             agent.setAgentType(getAgentType());
             agent.setDisplayName(getDisplayName());
             agent.setWorkflow(getWorkflow());
-
+            agent.setPartitionId(partitionId);
             if (agentType != AgentType.CUSTOM.getKey()) {
                 agent.setProcessorVersion(2);
             }
