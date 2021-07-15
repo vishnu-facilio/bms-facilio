@@ -6,7 +6,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.v3.context.V3Context;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class V3ResourceContext extends V3Context {
 	/**
@@ -116,7 +115,6 @@ public class V3ResourceContext extends V3Context {
 
 	private String avatarUrl;
 
-	@JsonIgnore
 	public String getAvatarUrl() throws Exception {
 		if (avatarUrl == null && (this.photoId != null && this.photoId > 0)) {
 			FileStore fs = FacilioFactory.getFileStore();
