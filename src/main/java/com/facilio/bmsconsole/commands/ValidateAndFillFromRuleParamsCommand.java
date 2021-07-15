@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.facilio.command.FacilioCommand;
 import org.apache.log4j.LogManager;
@@ -70,51 +72,66 @@ public class ValidateAndFillFromRuleParamsCommand extends FacilioCommand {
 			break;
 		}
 		
-		Map<String,Object> cloneFormData = new HashMap<String, Object>();
-		 if (formData != null && !formData.isEmpty()) {	
-			 cloneFormData = new HashMap<String, Object>(formData);
-			if (formData.containsKey("data")) {
-				Map<String,Object> customData = (Map<String, Object>) formData.get("data");
-				cloneFormData.putAll(customData);
-				formData = cloneFormData;
-				//cloneFormData.remove("data");
-			}
-		 }
-		if (triggerType.equals(TriggerType.FORM_ON_LOAD)) {		
-			List<Long> triggerFieldIds = new ArrayList<>();
-			for (FormField fieldObj : form.getFields()) {				
-				boolean hasValue = false;
-				if (fieldObj.getField() != null && fieldObj.getField().getName() != null && cloneFormData.containsKey(fieldObj.getField().getName())) {
-					if (fieldObj.getDisplayTypeEnum() == FieldDisplayType.LOOKUP_SIMPLE) {
-						long id = -1;
-						if (cloneFormData.get(fieldObj.getField().getName()) instanceof Long) {
-							id = (long) cloneFormData.get(fieldObj.getField().getName());	
-						}
-						else if (cloneFormData.get(fieldObj.getField().getName()) instanceof HashMap) {
-							 HashMap lookupData = (HashMap) cloneFormData.get(fieldObj.getField().getName());
-							 id = (long) lookupData.get("id");
-						}
-						if (id > 0) {
-							hasValue = true;
-						}
-					}
+		List<Long> triggerFieldIds = new ArrayList<>();
+		List<FormField> fields = form.getFields();
+		Map<String, FormField> fieldMap = fields.stream().collect
+				  (Collectors.toMap
+				  (field -> ((field.getField() != null && field.getField().getName() != null) ? field.getField().getName():field.getName()),
+				   Function.identity()));
+		
+		if (formData != null && !formData.isEmpty()) {	
 					
-					else if (fieldObj.getDisplayTypeEnum() == FieldDisplayType.NUMBER || fieldObj.getDisplayTypeEnum() == FieldDisplayType.DECIMAL) {	
-						if (!cloneFormData.get(fieldObj.getField().getName()).equals((long) -99)) {
-							hasValue = true;
-						}
+					if (formData.containsKey("data")) {
+						Map<String,Object> customData = (Map<String, Object>) formData.get("data");
+						formData.putAll(customData);
+						//formData.remove("data");
 					}
-					
-					else if (cloneFormData.containsKey(fieldObj.getField().getName())) {
-						hasValue = true;
-					}
-					
-				}
-				if (hasValue) {
-					triggerFieldIds.add(fieldObj.getId());
-				}	
 				
-			}
+				Map<String, Object> lookupFormData = new HashMap<>();			
+				for (String eachKey : formData.keySet()) {
+					FormField respectiveFormField = fieldMap.get(eachKey);
+					boolean hasValue = false;
+					if (respectiveFormField != null && respectiveFormField.getField() != null && respectiveFormField.getField().getName() != null) {
+						
+						if (respectiveFormField.getDisplayTypeEnum() == FieldDisplayType.LOOKUP_SIMPLE) {
+							long id = -1;
+							if (formData.get(respectiveFormField.getField().getName()) instanceof Long) {
+								id = (long) formData.get(respectiveFormField.getField().getName());	
+								HashMap lookupData = new HashMap();
+								lookupData.put("id", id);
+								lookupFormData.put(eachKey, lookupData);
+							}
+							else if (formData.get(respectiveFormField.getField().getName()) instanceof HashMap) {
+								 HashMap lookupData = (HashMap) formData.get(respectiveFormField.getField().getName());
+								 id = (long) lookupData.get("id");
+							}
+							if (id > 0) {
+								hasValue = true;
+							}
+						}
+						
+						else if (respectiveFormField.getDisplayTypeEnum() == FieldDisplayType.NUMBER || respectiveFormField.getDisplayTypeEnum() == FieldDisplayType.DECIMAL) {	
+							if (!formData.get(respectiveFormField.getField().getName()).equals((long) -99)) {
+								hasValue = true;
+							}
+						}
+						
+						else if (formData.containsKey(respectiveFormField.getField().getName())) {
+							hasValue = true;
+						}
+						
+					}
+					if (hasValue) {
+						triggerFieldIds.add(respectiveFormField.getId());
+					}	
+				}
+				if (lookupFormData != null && !lookupFormData.isEmpty()) {
+					formData.putAll(lookupFormData);
+				}
+			 
+		}
+			
+		if (triggerType.equals(TriggerType.FORM_ON_LOAD)) {		
 			if (triggerFieldIds != null && !triggerFieldIds.isEmpty()) {
 				List<FormRuleContext> updateFormRuleContexts = FormRuleAPI.getFormRuleContext(formId, triggerFieldIds, TriggerType.FIELD_UPDATE);
 				if (updateFormRuleContexts != null && !updateFormRuleContexts.isEmpty()) {
