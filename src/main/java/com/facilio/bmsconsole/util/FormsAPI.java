@@ -645,7 +645,12 @@ public class FormsAPI {
 		if(props != null && !props.isEmpty()) {
 			FormField field = FieldUtil.getAsBeanFromMap(props.get(0), FormField.class);
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			field.setField(modBean.getField(field.getFieldId()));
+			if (field.getFieldId() > 0) {
+				FacilioField dbField = modBean.getField(field.getFieldId());
+				field.setField(dbField);
+				field.setName(dbField.getName());
+				field.setFieldId(dbField.getFieldId());
+			}
 			return field;
 		}
 		return null;

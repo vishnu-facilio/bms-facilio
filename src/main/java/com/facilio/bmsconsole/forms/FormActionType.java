@@ -135,8 +135,9 @@ public enum FormActionType {
 				
 				resultJson.add(json);
 				
+				//TODO get the field from the form object itself
 				FormField field = FormsAPI.getFormFieldFromId(actionField.getFormFieldId());
-				formDataToBeAddedforNextRound.put(field.getField().getName(), value);
+				formDataToBeAddedforNextRound.put(field.getName(), value);
 				
 				valueFilledFields.add(actionField.getFormFieldId());
 			}
@@ -163,6 +164,7 @@ public enum FormActionType {
 			
 			for(FormRuleActionFieldsContext actionField : formRuleActionContext.getFormRuleActionFieldsContext()) {
 				
+				//TODO get the field from the form object itself
 				FormField formField = FormsAPI.getFormFieldFromId(actionField.getFormFieldId());
 				
 				if(formField.getField() != null && formField.getField().getDataTypeEnum() == FieldType.ENUM || formField.getField().getDataTypeEnum() == FieldType.MULTI_ENUM || formField.getField().getDataTypeEnum() == FieldType.SYSTEM_ENUM) {
@@ -274,8 +276,9 @@ public enum FormActionType {
 						
 						valueFilledFields.add(fieldId);
 						
+						//TODO get the field from the form object itself
 						FormField field = FormsAPI.getFormFieldFromId(fieldId);
-						formDataToBeAddedforNextRound.put(field.getField().getName(), actionJSON.get(FormRuleAPI.JSON_RESULT_VALUE_STRING));
+						formDataToBeAddedforNextRound.put(field.getName(), actionJSON.get(FormRuleAPI.JSON_RESULT_VALUE_STRING));
 					}
 					
 					jsonArray.add(fieldJSON);
