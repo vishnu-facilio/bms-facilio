@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.context;
 
 import java.io.File;
 
-import com.facilio.accounts.dto.User;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class VisitorContext extends ModuleBaseWithCustomFields{
@@ -141,6 +140,16 @@ public class VisitorContext extends ModuleBaseWithCustomFields{
 		this.lastVisitedHost = lastVisitedHost;
 	}
 
+	private PeopleContext lastVisitedPeople;  
+   
+	public PeopleContext getLastVisitedPeople() {
+		return lastVisitedPeople;
+	}
+
+	public void setLastVisitedPeople(PeopleContext lastVisitedPeople) {
+		this.lastVisitedPeople = lastVisitedPeople;
+	}
+	
 	public BaseSpaceContext getLastVisitedSpace() {
 		return lastVisitedSpace;
 	}
