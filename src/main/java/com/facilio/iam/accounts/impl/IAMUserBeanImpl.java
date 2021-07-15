@@ -89,11 +89,17 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(IAMAccountConstants.getAccountsUserModule().getTableName())
 				.fields(fields);
-		
+
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
 		updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(user.getUid()), NumberOperators.EQUALS));
 		
 		Map<String, Object> props = FieldUtil.getAsProperties(user);
 		int updatedRows = updateBuilder.update(props);
+
+		if (fieldMap.containsKey("securityPolicyId")) {
+			IAMUtil.dropUserSecurityPolicyCache(Collections.singletonList(user.getId()));
+		}
 		
 		return (updatedRows > 0);
 	}

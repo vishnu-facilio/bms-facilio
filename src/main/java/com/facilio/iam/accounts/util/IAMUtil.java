@@ -9,6 +9,7 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.fw.BeanFactory;
+import com.facilio.fw.LRUCache;
 import com.facilio.fw.TransactionBeanFactory;
 import com.facilio.iam.accounts.bean.IAMOrgBean;
 import com.facilio.iam.accounts.bean.IAMUserBean;
@@ -32,6 +33,10 @@ public class IAMUtil {
 		Object ob = BeanFactory.lookup("IAMOrgBean");
 		IAMOrgBean orgBean = (IAMOrgBean) ob;
 		return orgBean;
+	}
+
+	public static void dropUserSecurityPolicyCache(List<Long> userIds) {
+		userIds.forEach(i -> LRUCache.getUserSecurityPolicyCache().remove(i+""));
 	}
 
 	/* Removing as there's no usage of the method
