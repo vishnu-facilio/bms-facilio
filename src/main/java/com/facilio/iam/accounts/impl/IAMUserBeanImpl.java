@@ -89,11 +89,17 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(IAMAccountConstants.getAccountsUserModule().getTableName())
 				.fields(fields);
-		
+
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
 		updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(user.getUid()), NumberOperators.EQUALS));
 		
 		Map<String, Object> props = FieldUtil.getAsProperties(user);
 		int updatedRows = updateBuilder.update(props);
+
+		if (fieldMap.containsKey("securityPolicyId")) {
+			IAMUtil.dropUserSecurityPolicyCache(Collections.singletonList(user.getId()));
+		}
 		
 		return (updatedRows > 0);
 	}
@@ -1009,13 +1015,34 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return status;
 	}
 
+	@SneakyThrows
+	private List<Map<String, Object>> getUserWebSessions(long uid) {
+		List<Map<String, Object>> sessions = (List<Map<String, Object>>) LRUCache.getUserSessionCache().get(uid+"");
+		if (sessions != null) {
+			return sessions;
+		}
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(IAMAccountConstants.getUserSessionFields())
+				.table("Account_Users")
+				.innerJoin("UserSessions")
+				.on("Account_Users.USERID = UserSessions.USERID");
+
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.USERID", "userId", uid+"", StringOperators.IS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("UserSessions.IS_ACTIVE", "isActive", "1", NumberOperators.EQUALS));
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (CollectionUtils.isNotEmpty(props)) {
+			sessions = props;
+			LRUCache.getUserSessionCache().put(uid+"", sessions);
+		}
+		return sessions;
+	}
+
 	@Override
 	public boolean isSessionExpired(long uid, long orgId, long sessionId) throws Exception {
 		Map<String, Object> prop = null;
-		List<Map<String, Object>> sessions = (List<Map<String, Object>>) LRUCache.getUserSessionCache().get(uid+"");
-		if (sessions == null) {
-			return false;
-		}
+		List<Map<String, Object>> sessions = getUserWebSessions(uid);
 		for (Map<String, Object> session: sessions) {
 			long s = (long) session.get("id");
 			if (s == sessionId) {
@@ -1025,7 +1052,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		}
 
 		if (prop == null) {
-			return false; // temp
+			return false;
 		}
 
 		SecurityPolicy userSecurityPolicy = getUserSecurityPolicy(uid, orgId);

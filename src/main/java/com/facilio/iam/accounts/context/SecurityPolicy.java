@@ -24,6 +24,5 @@ public class SecurityPolicy implements Serializable {
     private Boolean isWebSessManagementEnabled;
     private Integer webSessLifeTime;
     private Integer idleSessionTimeOut;
-    private List<Long> users;
     private long orgId = -1L;
 }

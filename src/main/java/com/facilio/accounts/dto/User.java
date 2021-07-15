@@ -32,7 +32,7 @@ public class User extends IAMUser {
 		setUserName(user.getUserName());
 		setUserVerified(user.isUserVerified());
 		setUserStatus(user.isActive());
-	
+		setSecurityPolicyId(user.getSecurityPolicyId());
 	}
 
 	private Boolean inviteAcceptStatus;
