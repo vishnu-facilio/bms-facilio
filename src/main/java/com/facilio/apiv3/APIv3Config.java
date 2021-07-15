@@ -93,6 +93,7 @@ import com.facilio.bmsconsoleV3.commands.watchlist.GetLogsForWatchListCommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.LoadWorkorderLookupsAfterFetchcommandV3;
 import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.bmsconsoleV3.context.*;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.context.budget.AccountTypeContext;
 import com.facilio.bmsconsoleV3.context.budget.BudgetContext;
 import com.facilio.bmsconsoleV3.context.budget.ChartOfAccountContext;
@@ -1370,6 +1371,15 @@ public class APIv3Config {
                 .list()
                 .summary()
                   .afterFetch(new GetServiceVendorListCommandV3())
+    }
+    @Module("asset")
+    public static Supplier<V3Config> getAsset() {
+        return () -> new V3Config(V3AssetContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .update()
+                .delete()
+                .summary()
+                .list()
                 .build();
     }
 }
