@@ -2007,6 +2007,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddVendorContactsCommand());
 			c.addCommand(new AddInsuranceVendorRollUpsCommand());
 			c.addCommand(new ExecuteStateFlowCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new ConstructAddCustomActivityCommand());
@@ -2028,6 +2029,7 @@ public class TransactionChainFactory {
 			c.addCommand(new GenericGetModuleDataListCommand());
 			c.addCommand(new ChangeApprovalStatusForModuleDataCommand());
 			c.addCommand(new UpdateStateForModuleDataCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new ForkChainToInstantJobCommand()
