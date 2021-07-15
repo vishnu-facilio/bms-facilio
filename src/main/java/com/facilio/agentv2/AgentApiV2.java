@@ -83,7 +83,7 @@ public class AgentApiV2 {
                 return null;
             }
         } else {
-            throw new Exception("agentId cane be null or less than 1 "+agentId);
+            throw new Exception("agentId can't be null or less than 1 " + agentId);
         }
     }
 

@@ -80,7 +80,7 @@ public class DownloadCertFile {
             try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(file))) {
                 addToZip(out, directoryName + "facilio.crt", certificateResult.getCertificatePem());
                 addToZip(out, directoryName + "facilio-private.key", certificateResult.getKeyPair().getPrivateKey());
-                addToZip(out, directoryName + "facilio.config", getFacilioConfig(orgDomainName, orgDomainName));
+                // addToZip(out, directoryName + "facilio.config", getFacilioConfig(orgDomainName, orgDomainName));
                 out.finish();
                 out.flush();
                 FileStore fs = FacilioFactory.getFileStore();
@@ -110,7 +110,7 @@ public class DownloadCertFile {
 		try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(file))) {
 			addToZip(out, directoryName + "facilio.crt", certificateResult.getCertificatePem());
 			addToZip(out, directoryName + "facilio-private.key", certificateResult.getKeyPair().getPrivateKey());
-            addToZip(out, directoryName + "facilio.config", getFacilioConfig(policyName, agent.getName()));
+            //addToZip(out, directoryName + "facilio.config", getFacilioConfig(policyName, agent.getName()));
 			out.finish();
 			out.flush();
 			FileStore fs = FacilioFactory.getFileStore();
@@ -208,18 +208,6 @@ public class DownloadCertFile {
         }
     }
 
-    private static String getFacilioConfig(String domainName, String clientId) {
-        StringBuilder builder = new StringBuilder("clientId=").append(clientId).append(System.lineSeparator())
-                .append("privateKeyFile=facilio-private.key").append(System.lineSeparator())
-                .append("certificateFile=facilio.crt").append(System.lineSeparator())
-                .append("privateKeyName=facilio-private.key").append(System.lineSeparator())
-                .append("certName=facilio.crt").append(System.lineSeparator())
-                .append("endpoint=").append(FacilioProperties.getIotEndPoint()).append(System.lineSeparator())
-                .append("isBacnetIpEnabled=true").append(System.lineSeparator())
-                .append("isValidateJsonSchemaEnabled=false").append(System.lineSeparator())
-                .append("topic=").append(domainName);
-        return builder.toString();
-    }
 
 
     public static Map<String, InputStream> getCertAndKeyFileAsInputStream(String policyName, String type) {

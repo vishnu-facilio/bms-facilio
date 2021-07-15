@@ -1,7 +1,12 @@
 package com.facilio.agentv2;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,10 +17,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import com.facilio.agent.AgentType;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.services.filestore.FacilioFileStore;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.collections4.MapUtils;
@@ -412,6 +420,7 @@ public class AgentAction extends AgentActionV2 {
 		this.downloadStream = downloadStream;
 	}
 
+
 	public String downloadCertificate() {
 		try {
 			Organization currentOrg = AccountUtil.getCurrentOrg();
@@ -468,6 +477,46 @@ public class AgentAction extends AgentActionV2 {
 		}
 		return SUCCESS;
 	}
+
+    public String downloadConfig() throws Exception {
+        com.facilio.agentv2.FacilioAgent agent = AgentApiV2.getAgent(agentId);
+        String dirPath = System.getProperties().getProperty("java.io.tmpdir") + File.separator + AccountUtil.getCurrentOrg().getOrgId() + File.separator + "agentconfig";
+        String path = dirPath + File.separator + agent.getName() + ".config";
+        File file = new File(path);
+        File dir = new File(dirPath);
+        boolean directoryExits = (dir.exists() && dir.isDirectory());
+        if (!directoryExits) {
+            dir.mkdirs();
+        }
+        file.createNewFile();
+        FileOutputStream fos = new FileOutputStream(file);
+        String content = getFacilioConfig(AccountUtil.getCurrentOrg().getDomain(), agent);
+        // Files.write( Paths.get(path), content.getBytes());
+        fos.write(content.getBytes());
+        fos.close();
+        downloadStream = new FileInputStream(path);
+        setFilename("facilio.config");
+        return SUCCESS;
+
+    }
+
+    private static String getFacilioConfig(String domainName, com.facilio.agentv2.FacilioAgent agent) {
+        StringBuilder builder = new StringBuilder("clientId=").append(agent.getName()).append(System.lineSeparator())
+                .append("privateKeyFile=facilio-private.key").append(System.lineSeparator())
+                .append("certificateFile=facilio.crt").append(System.lineSeparator())
+                .append("privateKeyName=facilio-private.key").append(System.lineSeparator())
+                .append("certName=facilio.crt").append(System.lineSeparator())
+                .append("endpoint=").append(FacilioProperties.getIotEndPoint()).append(System.lineSeparator())
+                .append("topic=").append(domainName);
+        AgentType type = AgentType.valueOf(agent.getAgentType());
+        if (type == AgentType.FACILIO) {
+            builder.append(System.lineSeparator())
+                    .append("isBacnetIpEnabled=true").append(System.lineSeparator())
+                    .append("isValidateJsonSchemaEnabled=false");
+        }
+        return builder.toString();
+    }
+
 
     public static String getMessageTopic(String domain, long orgId) throws Exception {
     	LOGGER.info("Downld current org :"+domain+" orgid "+orgId);
@@ -736,4 +785,6 @@ public class AgentAction extends AgentActionV2 {
 
 	    return SUCCESS;
     }
+
+
 }
