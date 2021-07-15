@@ -75,8 +75,13 @@ public class PlaceHoldersUtil {
                                 lookupVal = FieldUtil.getLookupVal(lookupField, lookupId);
                                 props = FieldUtil.getAsProperties(lookupVal);
                                 fieldPlaceHolders = constructPlaceholders(childModuleName, null, props, level + 1);
-                                addToFieldPlaceHoldersCache(childModuleName, lookupId, new PlaceHoldersBeanPair(lookupVal, fieldPlaceHolders));
-                                LOGGER.debug(MessageFormat.format("Adding to cache for {0}", constructCacheKey(childModuleName, lookupId)));
+                                if (fieldPlaceHolders == null) {
+                                    fieldPlaceHolders = props;
+                                }
+                                else {
+                                    addToFieldPlaceHoldersCache(childModuleName, lookupId, new PlaceHoldersBeanPair(lookupVal, fieldPlaceHolders));
+                                    LOGGER.debug(MessageFormat.format("Adding to cache for {0}", constructCacheKey(childModuleName, lookupId)));
+                                }
                             }
                             else {
                                 LOGGER.debug(MessageFormat.format("Getting from cache for {0}", constructCacheKey(childModuleName, lookupId)));
