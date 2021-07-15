@@ -299,14 +299,13 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 								objIds = peopleUserId; // change people ids to user ids
 							}
 						}
-						ouIds.addAll(objIds);
 
 						if (field instanceof LookupField) {
 							map.put("permissionId", objIds.get(0));
 							ouIds.add(objIds.get(0));
 						} else if (field instanceof MultiLookupField) {
 							map.put("permissionIds", objIds);
-							objIds.addAll(objIds);
+							ouIds.addAll(objIds);
 						}
 					}
 					break;
