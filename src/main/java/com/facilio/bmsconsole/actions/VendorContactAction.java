@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -47,6 +48,16 @@ public class VendorContactAction extends FacilioAction{
 	public void setVendorContact(VendorContactContext vendorContact) {
 		this.vendorContact = vendorContact;
 	}
+	
+	private VendorContactContext vendorcontact;
+
+	public VendorContactContext getVendorcontact() {
+		return vendorcontact;
+	}
+	public void setVendorcontact(VendorContactContext vendorcontact) {
+		this.vendorcontact = vendorcontact;
+	}
+	
 	public List<VendorContactContext> getVendorContacts() {
 		return vendorContacts;
 	}
@@ -117,6 +128,11 @@ public class VendorContactAction extends FacilioAction{
 	}
 	
 	public String updateVendorContacts() throws Exception {
+		
+		if (vendorcontact != null && vendorContacts == null) {
+			vendorContacts = new ArrayList<>();
+			vendorContacts.add(vendorcontact);
+		}
 		
 		if(!CollectionUtils.isEmpty(vendorContacts)) {
 			FacilioChain c = TransactionChainFactory.updateVendorContactChain();
