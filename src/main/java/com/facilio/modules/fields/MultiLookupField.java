@@ -95,6 +95,11 @@ public class MultiLookupField extends BaseLookupField implements SupplementRecor
     }
 
     @Override
+    public String linkName() {
+        return super.getName();
+    }
+
+    @Override
     public FacilioField selectField() {
         return null;
     }

@@ -29,7 +29,12 @@ public class LargeTextField extends FacilioField implements SupplementRecord {
         this.relModule = field.relModule;
         this.relModuleId = field.relModuleId;
     }
-	
+
+	@Override
+	public String linkName() {
+		return super.getName();
+	}
+
 	@Override
 	public FacilioField selectField() {
 		return null;

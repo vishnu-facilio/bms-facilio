@@ -19,6 +19,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FetchSupplementHandler;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SupplementRecord;
+import com.facilio.util.FacilioStreamUtil;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -29,6 +30,7 @@ import org.apache.log4j.Logger;
 import java.sql.Connection;
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implements SelectBuilderIfc<E> {
@@ -357,7 +359,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	
 	@Override
 	public List<E> get() throws Exception {
-		checkForNull(false);
+		checkForNullAndSanitize(false);
 		try {
 			long getStartTime = System.currentTimeMillis();
 			List<Map<String, Object>> propList = getAsJustProps(false);
@@ -373,13 +375,13 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 
 	@Override
 	public BatchResult<E> getInBatches(String orderBy, int batchSize) throws Exception {
-		checkForNull(false);
+		checkForNullAndSanitize(false);
 		constructBuilderProps(false);
 		return new BatchResult<>(this, builder.getInBatches(orderBy, batchSize), false);
 	}
 
 	public BatchResult<Map<String, Object>> getAsPropsInBatches(String orderBy, int batchSize) throws Exception {
-		checkForNull(true);
+		checkForNullAndSanitize(true);
 		constructBuilderProps(false);
 		return new BatchResult<>(this, builder.getInBatches(orderBy, batchSize), true);
 	}
@@ -396,7 +398,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	}
 
 	public Map<Long, E> getAsMap() throws Exception {
-		checkForNull(false);
+		checkForNullAndSanitize(false);
 		try {
 			List<Map<String, Object>> propList = getAsJustProps(false);
 			return convertPropsToBeanMap(propList);
@@ -418,7 +420,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	}
 
 	public Map<Long, Map<String, Object>> getAsMapProps() throws Exception {
-		checkForNull(true);
+		checkForNullAndSanitize(true);
 		try {
 			List<Map<String, Object>> propList = getAsJustProps(true);
 			return convertPropsToMapProps(propList);
@@ -430,7 +432,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	}
 	
 	public List<Map<String, Object>> getAsProps() throws Exception {
-		checkForNull(true);
+		checkForNullAndSanitize(true);
 		try {
 			List<Map<String, Object>> propList = getAsJustProps(true);
 			return propList;
@@ -710,7 +712,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		ids.add(recordId);
 	}
 	
-	private void checkForNull(boolean isProps) throws Exception {
+	private void checkForNullAndSanitize(boolean isProps) throws Exception {
 		if(!isProps) {
 			if(beanClass == null) {
 				throw new IllegalArgumentException("Bean class object cannot be null");
@@ -727,6 +729,10 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			}
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			module = modBean.getModule(moduleName);
+		}
+
+		if (fetchSupplements != null) {
+			fetchSupplements = fetchSupplements.stream().filter(SupplementRecord.distinctSupplementRecord()).collect(Collectors.toList());
 		}
 	}
 	

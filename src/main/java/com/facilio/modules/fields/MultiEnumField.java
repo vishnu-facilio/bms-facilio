@@ -50,6 +50,11 @@ public class MultiEnumField extends BaseEnumField implements SupplementRecord {
     }
 
     @Override
+    public String linkName() {
+        return super.getName();
+    }
+
+    @Override
     public FacilioField selectField() {
         return null;
     }

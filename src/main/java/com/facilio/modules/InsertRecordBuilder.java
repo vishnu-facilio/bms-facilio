@@ -19,6 +19,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implements InsertBuilderIfc<E> {
 	
@@ -171,7 +172,7 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		return this;
 	}
 	
-	private void checkForNull() throws Exception {
+	private void checkForNullAndSanitize() throws Exception {
 		
 		if(CollectionUtils.isEmpty(fields)) {
 			throw new IllegalArgumentException("Fields cannot be null or empty");
@@ -184,6 +185,10 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			module = modBean.getModule(moduleName);
 		}
+
+		if (insertSupplements != null) {
+			insertSupplements = insertSupplements.stream().filter(SupplementRecord.distinctSupplementRecord()).collect(Collectors.toList());
+		}
 	}
 	
 	@Override
@@ -193,7 +198,7 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			return;
 		}
 
-		checkForNull();
+		checkForNullAndSanitize();
 
 		List<Pair<FacilioModule, Long>> modules = splitModules();
 		Map<Long, List<FacilioField>> fieldMap = splitFields();

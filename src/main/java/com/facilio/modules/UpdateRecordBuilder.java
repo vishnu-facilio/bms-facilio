@@ -243,7 +243,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	public int updateViaMap(Map<String, Object> props) throws Exception {
 		int rowsUpdated = 0;
 		if(MapUtils.isNotEmpty(props)) {
-			checkForNull();
+			checkForNullAndSanitize();
 			Map<String, Object> moduleProps = new HashMap<>(props);
 			removeSystemProps(moduleProps);
 			scopeFieldsAndCriteria = ScopeHandler.getInstance().updateValuesForUpdateAndGetFieldsAndCriteria(module, joinModules, moduleProps);
@@ -491,7 +491,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		}
 	}
 
-	private void checkForNull() throws Exception {
+	private void checkForNullAndSanitize() throws Exception {
 		if(fields == null || fields.size() < 1) {
 			throw new IllegalArgumentException("Fields cannot be null or empty");
 		}
@@ -502,6 +502,10 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			}
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			module = modBean.getModule(moduleName);
+		}
+
+		if (updateSupplements != null) {
+			updateSupplements = updateSupplements.stream().filter(SupplementRecord.distinctSupplementRecord()).collect(Collectors.toList());
 		}
 	}
 

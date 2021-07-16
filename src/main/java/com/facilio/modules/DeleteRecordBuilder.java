@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 
 import com.facilio.modules.fields.DeleteSupplementHandler;
 import com.facilio.modules.fields.SupplementRecord;
-import com.facilio.modules.fields.UpdateSupplementHandler;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -166,14 +165,14 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	@Override
 	public int delete() throws Exception {
 		// TODO Auto-generated method stub
-		checkForNull();
+		checkForNullAndSanitize();
 		List<Long> ids = getIds();
 		return commonDeleteByIds(ids);
 	}
 
 	@Override
 	public int batchDeleteById(Collection<Long> ids) throws Exception {
-		checkForNull();
+		checkForNullAndSanitize();
 		return commonDeleteByIds(ids);
 	}
 
@@ -222,7 +221,7 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	}
 	
 	public int markAsDelete() throws Exception {
-		checkForNull();
+		checkForNullAndSanitize();
 		
 		if (!module.isTrashEnabled()) {
 			throw new IllegalArgumentException("Trash is not enabled for this module and so cannot be marked as delete");
@@ -284,13 +283,17 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		return level;
 	}
 	
-	private void checkForNull() throws Exception {
+	private void checkForNullAndSanitize() throws Exception {
 		if(module == null) {
 			if(moduleName == null || moduleName.isEmpty()) {
 				throw new IllegalArgumentException("Both Module and Module Name cannot be empty");
 			}
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			module = modBean.getModule(moduleName);
+		}
+
+		if (deleteSupplements != null) {
+			deleteSupplements = deleteSupplements.stream().filter(SupplementRecord.distinctSupplementRecord()).collect(Collectors.toList());
 		}
 	}
 	

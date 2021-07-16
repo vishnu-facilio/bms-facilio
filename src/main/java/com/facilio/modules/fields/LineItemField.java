@@ -35,6 +35,11 @@ public class LineItemField extends FacilioField implements SupplementRecord {
     private LookupField childLookupField;
 
     @Override
+    public String linkName() {
+        return super.getName();
+    }
+
+    @Override
     public FacilioField selectField() {
         return null;
     }
