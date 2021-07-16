@@ -18,9 +18,8 @@ public class RdmControllerAction extends AgentIdAction {
 
     private static final Logger LOGGER = LogManager.getLogger(RdmControllerContext.class.getName());
 
-    @NotNull
-    @URL
     private String name;
+    @URL
     private String url;
     private String username;
     private String password;
