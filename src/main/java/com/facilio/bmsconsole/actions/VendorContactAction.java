@@ -87,6 +87,14 @@ public class VendorContactAction extends FacilioAction{
 	public void setId(long id) {
 		this.id = id;
 	}
+	
+	private Long approvalTransitionId;
+	public Long getApprovalTransitionId() {
+		return approvalTransitionId;
+	}
+	public void setApprovalTransitionId(Long approvalTransitionId) {
+		this.approvalTransitionId = approvalTransitionId;
+	}
 
 	public String addVendorContacts() throws Exception {
 		
@@ -114,6 +122,7 @@ public class VendorContactAction extends FacilioAction{
 			FacilioChain c = TransactionChainFactory.updateVendorContactChain();
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
+			c.getContext().put(FacilioConstants.ContextNames.APPROVAL_TRANSITION_ID, approvalTransitionId);
 			
 			for(VendorContactContext vc : vendorContacts) {
 				vc.parseFormData();
