@@ -33,6 +33,7 @@ public class TranslationAction extends FacilioAction {
     private List<Map<String, Object>> translations;
     private Long tabId;
     private long applicationId = -1L;
+    private String translationType;
 
     public String addLanguage () throws Exception {
         addNewLanguage();
@@ -45,8 +46,10 @@ public class TranslationAction extends FacilioAction {
     }
 
     private JSONObject getTranslationList () throws Exception {
-        WebTabContext webTab = ApplicationApi.getWebTab(getTabId());
-        TranslationTypeEnum type = TranslationTypeEnum.getTranslationTypeModule(webTab.getName());
+        WebTabContext webTab= ApplicationApi.getWebTab(getTabId());
+        List<Long> moduleIds = ApplicationApi.getModuleIdsForTab(getTabId());
+        webTab.setModuleIds(moduleIds);
+        TranslationTypeEnum type = TranslationTypeEnum.getTranslationTypeModule(getTranslationType());
         Objects.requireNonNull(type,"Invalid module type for Translation");
         return type.getHandler().constructTranslationObject(webTab);
     }

@@ -15,7 +15,7 @@ import org.json.simple.JSONObject;
 public class GetFieldTranslationFileds implements TranslationTypeInterface{
     @Override
     public JSONObject constructTranslationObject ( @NonNull WebTabContext webTabContext ) throws Exception {
-        FacilioUtil.throwIllegalArgumentException(!WebTabContext.Type.MODULE.equals(webTabContext.getTypeEnum()),"Invalid webTab Type for fetch Module Fields");
+        FacilioUtil.throwIllegalArgumentException(!WebTabContext.Type.MODULE.equals(WebTabContext.Type.valueOf(webTabContext.getType())),"Invalid webTab Type for fetch Module Fields");
         JSONObject fieldObject = new JSONObject();
         ModuleBean moduleBean = (ModuleBean)BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(webTabContext.getModuleIds().get(0));
