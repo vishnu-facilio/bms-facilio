@@ -51,10 +51,13 @@ import com.facilio.mv.command.*;
 import com.facilio.trigger.context.TriggerType;
 import com.facilio.workflows.command.*;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.Logger;
 
 import java.util.Collections;
 
 public class TransactionChainFactory {
+
+	private static final Logger LOGGER = Logger.getLogger(TransactionChainFactory.class.getName());
 
 	private static FacilioChain getDefaultChain() {
 		return FacilioChain.getTransactionChain();
@@ -3533,6 +3536,9 @@ public class TransactionChainFactory {
 		}
 		
 		public static FacilioChain getV2AddEventChain(boolean isHistorical) {
+			if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 393l){
+					LOGGER.info("V2AddEventChain : isHistorical?? " + isHistorical);
+				}
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new NewExecuteEventRulesCommand());
 			c.addCommand(new InsertNewEventsCommand());

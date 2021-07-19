@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.*;
@@ -115,11 +116,14 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 		HashMap<String, AlarmOccurrenceContext> lastOccurrenceOfPreviousBatchMap = new HashMap<String, AlarmOccurrenceContext>();
 		List<BaseEventContext> baseEvents = new ArrayList<BaseEventContext>();
 		SelectRecordsBuilder.BatchResult<BaseEventContext> batchSelect = selectEventbuilder.getInBatches("CREATED_TIME, EVENT_TYPE", EVENTS_FETCH_LIMIT_COUNT);
-		
+
 		while(batchSelect.hasNext()) 
 		{
 			if (baseEvents != null && !baseEvents.isEmpty())
 			{
+				if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 393l){
+					LOGGER.info("Alarm processing command init");
+				}
 				FacilioChain addEvent = TransactionChainFactory.getV2AddEventChain(true);
 				addEvent.getContext().put(EventConstants.EventContextNames.EVENT_LIST, baseEvents);
 				addEvent.getContext().put(EventConstants.EventContextNames.IS_HISTORICAL_EVENT, true);

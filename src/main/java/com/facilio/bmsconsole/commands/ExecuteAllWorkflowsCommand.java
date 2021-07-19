@@ -67,12 +67,20 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 		try {
 			long startTime = System.currentTimeMillis();
 			Boolean historyReading = (Boolean) context.get(FacilioConstants.ContextNames.HISTORY_READINGS);
+			if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 393l){
+				LOGGER.info("ExecuteAllWorkflowsCommand executing ... historyReading : "+historyReading+", rule types : " + getPrintDebug());
+			}
+
 			if (historyReading != null && historyReading==true) {
 				return false;
 			}
 
 			recordMap = CommonCommandUtil.getRecordMap((FacilioContext) context);
 			changeSetMap = CommonCommandUtil.getChangeSetMap((FacilioContext) context);
+
+			if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 393l){
+				LOGGER.info("ExecuteAllWorkflowsCommand executing ... recordmap : " + recordMap + "  changesetmap : " + changeSetMap);
+			}
 
 			if(recordMap != null && !recordMap.isEmpty()) {
 				postRules = new HashMap<>();
@@ -139,7 +147,9 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 				}
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioModule module = modBean.getModule(moduleName);
-
+				if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 393l){
+					LOGGER.info("ExecuteAllWorkflowsCommand, activities :: " + activities + " , isPostExecute " + isPostExecute + " entry :: " + entry);
+				}
 				long currentTime = System.currentTimeMillis();
 				List<WorkflowRuleContext> workflowRules;
 				if (isPostExecute ) {
@@ -152,8 +162,8 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 				}
 				else {
 					workflowRules = getWorkflowRules(module, activities, entry.getValue(), context);
-					if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 393l && workflowRules != null) {
-						LOGGER.info("Executing workflow rules: size : " + workflowRules.size() + "  " + getPrintDebug());
+					if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 393l) {
+						LOGGER.info("Executing workflow rules: size : " + workflowRules + "  " + getPrintDebug());
 					}
 					if (workflowRules != null) {
 						List<WorkflowRuleContext> postRulesList = new ArrayList<>();
