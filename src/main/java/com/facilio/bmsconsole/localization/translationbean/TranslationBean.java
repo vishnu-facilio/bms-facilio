@@ -1,4 +1,4 @@
-package com.facilio.lang.i18n.translation;
+package com.facilio.bmsconsole.localization.translationbean;
 
 import com.facilio.beans.RootBean;
 import lombok.NonNull;

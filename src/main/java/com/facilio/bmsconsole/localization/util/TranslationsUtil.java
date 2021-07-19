@@ -1,14 +1,11 @@
-package com.facilio.bmsconsole.commands.translation;
+package com.facilio.bmsconsole.localization.util;
 
-import com.amazonaws.services.dynamodbv2.xspec.L;
+import com.facilio.bmsconsole.localization.translation.TranslationConfFile;
 import com.facilio.collections.UniqueMap;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.lang.i18n.translation.TranslationConstants;
-import com.facilio.modules.FacilioEnum;
 import com.facilio.service.FacilioServiceUtil;
-import com.facilio.translation.TranslationIfc;
 import com.facilio.util.FacilioUtil;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j;
@@ -75,11 +72,7 @@ public class TranslationsUtil {
         return fileId;
     }
 
-    public static boolean confFileValidation ( String prefix,String suffix ) {
-        try{
-          return  TRANSLATION_CONF_FILE_MAP.get(prefix).getSuffix().contains(suffix);
-        }catch (Exception e){
-            throw e;
-        }
+    public static boolean prefixSuffixValidation ( String prefix,String suffix ) {
+        return TRANSLATION_CONF_FILE_MAP.get(prefix).getSuffix().contains(suffix);
     }
 }

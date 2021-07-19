@@ -6,4 +6,31 @@ version: 1.0
 
 translations:
   - name : ModuleTranslation
-    translationImplClass : com.facilio.bmsconsole.TranslationImpl.ModuleTranslationImpl
+    translationImplClass : com.facilio.bmsconsole.localization.translationImpl.ModuleTranslationImpl
+
+  - name : FormTranslation
+    translationImplClass : com.facilio.bmsconsole.localization.translationImpl.FormTranslationImpl
+
+  - name : ViewTranslation
+    translationImplClass : com.facilio.bmsconsole.localization.translationImpl.ViewTranslationImpl
+
+  - name : WebTabTranslation
+    translationImplClass : com.facilio.bmsconsole.localization.translationImpl.WebTabTranslationImpl
+
+  - name : FormFieldTranslation
+    translationImplClass : com.facilio.bmsconsole.localization.translationImpl.FormFieldTranslationImpl
+
+  - name: FieldTranslation
+    translationImplClass : com.facilio.bmsconsole.localization.translationImpl.ModuleTranslationImpl
+
+  - name: DashboardTranslation
+    translationImplClass : com.facilio.bmsconsole.localization.translationImpl.DashboardTranslationImpl
+
+  - name: FieldOptionTranslation
+    translationImplClass : com.facilio.bmsconsole.localization.translationImpl.FieldOptionTranslationImpl
+
+  - name: ViewColumnTranslation
+    translationImplClass : com.facilio.bmsconsole.localization.translationImpl.ViewColumnTranslationImpl
+
+  - name: ButtonTranslation
+    translationImplClass : com.facilio.bmsconsole.localization.translationImpl.ButtonTranslationImpl

@@ -1,10 +1,10 @@
-package com.facilio.bmsconsole.commands.translation;
+package com.facilio.bmsconsole.localization.translation;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.lang.i18n.translation.TranslationConstants;
+import com.facilio.bmsconsole.localization.util.TranslationConstants;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import lombok.extern.log4j.Log4j;

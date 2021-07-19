@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.context;
 import com.facilio.accounts.dto.NewPermission;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FacilioModule;
+import lombok.Getter;
+import lombok.Setter;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -238,4 +240,8 @@ public class WebTabContext implements Serializable {
     public void setOrder(int order) {
         this.order = order;
     }
+
+    @Setter@Getter
+    private List<String> translationColumns;
+
 }

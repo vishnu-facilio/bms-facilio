@@ -1,8 +1,8 @@
-package com.facilio.bmsconsole.commands.translation;
+package com.facilio.bmsconsole.localization.translation;
 
 import com.facilio.command.FacilioCommand;
 import com.facilio.db.util.DBConf;
-import com.facilio.lang.i18n.translation.TranslationConstants;
+import com.facilio.bmsconsole.localization.util.TranslationConstants;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
 

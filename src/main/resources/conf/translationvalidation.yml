@@ -5,3 +5,15 @@ translation:
 
   - prefix: field
     suffix: [displayName]
+
+  - prefix: formField
+    suffix: [displayName]
+
+  - prefix: webTab
+    suffix: [displayName]
+
+  - prefix: views
+    suffix: [displayName]
+
+  - prefix: form
+    suffix: [displayName]

@@ -25,7 +25,7 @@ import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
 import com.facilio.bmsconsole.commands.reservation.CreateExternalAttendeesCommand;
 import com.facilio.bmsconsole.commands.reservation.CreateInternalAttendeesCommand;
 import com.facilio.bmsconsole.commands.reservation.ValidateAndSetReservationPropCommand;
-import com.facilio.bmsconsole.commands.translation.AddOrUpdateTranslationCommand;
+import com.facilio.bmsconsole.localization.translation.AddOrUpdateTranslationCommand;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsole.workflow.rule.impact.AddOrUpdateAlarmImpactCommand;

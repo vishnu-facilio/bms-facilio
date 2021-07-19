@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.commands.translation;
+package com.facilio.bmsconsole.localization.translation;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,15 +1,12 @@
-package com.facilio.lang.i18n.translation;
+package com.facilio.bmsconsole.localization.util;
 
-import com.facilio.accounts.util.AccountConstants;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 public class TranslationConstants {
 
@@ -21,6 +18,10 @@ public class TranslationConstants {
     public static final String PREFIX = "prefix";
     public static final String SUFFIX = "suffix";
     public static final String VALUE = "value";
+    public static final String MODULE = "module";
+    public static final String FIELDS = "fields";
+    public static final String DISPLAY_NAME = "displayName";
+    public static final String NAME = "name";
 
 
     public static final FacilioModule getTranslationModule () {

@@ -399,7 +399,9 @@
 				class="com.facilio.bmsconsole.actions.CustomButtonAction" method="reorderCustomButtons" />
 
 		<action name="getAvailableButtons"
-				class="com.facilio.bmsconsole.actions.CustomButtonAction" method="getAvailableButtons" />
+				class="com.facilio.bmsconsole.actions.CustomButtonAction" method="getAvailableButtons" >
+<!--			<param name="translationImpl">ButtonTranslation</param>-->
+		</action>
 	</package>
 
 	<package name="fieldRelation" namespace="/api/v2/fieldRelation" extends="v2Api">
@@ -973,6 +975,7 @@
 		extends="v2Api">
 		<action name="viewList"
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2viewlist">
+<!--			<param name="translationImpl">ViewTranslation</param>-->
 		</action>
 		<action name="edit"
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2editView">
@@ -982,6 +985,7 @@
 		</action>
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2getViewDetail">
+<!--			<param name="translationImpl">ViewColumnTranslation</param>-->
 			<param name="viewName">{1}</param>
 		</action>
 		
@@ -2042,11 +2046,13 @@
 			class="com.facilio.bmsconsole.actions.FormAction" method="deleteForm">
 		</action>
 		<action name="fields" class="com.facilio.bmsconsole.actions.FormAction" method="formFieldList">
+<!--			<param name="translationImpl">FormFieldTranslation</param>-->
 		</action>
 		<action name="executeFormActionRules" class="com.facilio.bmsconsole.actions.FormAction" method="executeFormActionRules">
 		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.FormAction" method="formDetails">
 			<param name="moduleName">{1}</param>
+<!--			<param name="translationImpl">FormTranslation</param>-->
 		</action>
 	</package>
 	<package name="formFieldApiv2" namespace="/api/v2/forms/fields"
@@ -4725,6 +4731,7 @@
 		</action>
 		<action name="fields" class="com.facilio.bmsconsole.actions.ModuleAction" 
 			method="v2getFieldsList">
+<!--			<param name="translationImpl">FieldOptionTranslation</param>-->
 			<result name="success" type="json">
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">responseCode, ^result.*</param>
@@ -5991,7 +5998,9 @@
 		<action name="disassociate"
 				class="com.facilio.bmsconsole.actions.WebTabAction" method="disAssociateTabToGroupTab" />
 		<action name="listForApp"
-				class="com.facilio.bmsconsole.actions.WebTabAction" method="getTabListForApplication" />
+				class="com.facilio.bmsconsole.actions.WebTabAction" method="getTabListForApplication">
+<!--			<param name="translationImpl">WebTabTranslation</param>-->
+		</action>
 		<action name="reorder"
 				class="com.facilio.bmsconsole.actions.WebTabAction" method="reorderTab" />
 	</package>
@@ -6569,9 +6578,11 @@
 	</package>
 
 	<package name="translation" namespace="/api/v2/translation" extends="v2Api">
-		<action name="add" class="com.facilio.lang.i18n.translation.TranslationAction" method="addLanguage"></action>
-		<action name="list" class="com.facilio.lang.i18n.translation.TranslationAction" method="getTranslationList"></action>
-		<action name="update" class="com.facilio.lang.i18n.translation.TranslationAction" method="save"></action>
+		<action name="add" class="com.facilio.bmsconsole.localization.TranslationAction" method="addLanguage"></action>
+		<action name="list" class="com.facilio.bmsconsole.localization.TranslationAction" method="getTranslationList"></action>
+		<action name="update" class="com.facilio.bmsconsole.localization.TranslationAction" method="save"></action>
+		<action name="getFields" class="com.facilio.bmsconsole.localization.TranslationAction" method="getTranslationFields"></action>
+		<action name="fetchDetail" class="com.facilio.bmsconsole.localization.TranslationAction" method="fetchDetail"></action>
 	</package>
 
 

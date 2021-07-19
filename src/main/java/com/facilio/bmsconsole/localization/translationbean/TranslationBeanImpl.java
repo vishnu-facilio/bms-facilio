@@ -1,8 +1,9 @@
-package com.facilio.lang.i18n.translation;
+package com.facilio.bmsconsole.localization.translationbean;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.commands.translation.TranslationsUtil;
+import com.facilio.bmsconsole.localization.util.TranslationConstants;
+import com.facilio.bmsconsole.localization.util.TranslationsUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -10,8 +11,6 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.util.DBConf;
-import com.facilio.services.factory.FacilioFactory;
-import com.facilio.services.filestore.FileStore;
 import com.facilio.util.FacilioUtil;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.io.IOUtils;

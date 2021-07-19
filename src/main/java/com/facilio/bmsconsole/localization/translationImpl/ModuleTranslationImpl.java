@@ -1,6 +1,6 @@
-package com.facilio.bmsconsole.TranslationImpl;
+package com.facilio.bmsconsole.localization.translationImpl;
 
-import com.facilio.bmsconsole.commands.translation.ModuleTranslationUtils;
+import com.facilio.bmsconsole.localization.translation.ModuleTranslationUtils;
 import com.facilio.translation.TranslationIfc;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -21,14 +21,14 @@ public class ModuleTranslationImpl implements TranslationIfc {
         object.keySet().forEach(obj -> {
             if(obj.equals(MODULE)) {
                 JSONObject moduleObject = (JSONObject)object.get(MODULE);
-                String moduleKey = ModuleTranslationUtils.getTranslationKey((Long)moduleObject.get(MODULE_ID));
+                String moduleKey = ModuleTranslationUtils.getTranslationKey((String)moduleObject.get("name"));
                 moduleObject.put(DISPLAY_NAME,getTranslation(properties,moduleKey,(String)moduleObject.get(DISPLAY_NAME)));
             }
             else if(obj.equals(FIELDS)) {
                 JSONArray fieldJson = (JSONArray)object.get(FIELDS);
                 for (int i = 0; i < fieldJson.size(); i++) {
                     JSONObject fieldObject = (JSONObject)fieldJson.get(i);
-                    String fieldKey = ModuleTranslationUtils.getFieldTranslationKey((Long)fieldObject.get(FIELD_ID));
+                    String fieldKey = ModuleTranslationUtils.getFieldTranslationKey((String)fieldObject.get("name"));
                     fieldObject.put(DISPLAY_NAME,getTranslation(properties,fieldKey,(String)fieldObject.get(DISPLAY_NAME)));
                 }
             }

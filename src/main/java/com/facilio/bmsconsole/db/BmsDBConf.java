@@ -9,7 +9,7 @@ import com.facilio.db.util.DBConf;
 import com.facilio.fs.FileInfo;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.LRUCache;
-import com.facilio.lang.i18n.translation.TranslationBean;
+import com.facilio.bmsconsole.localization.translationbean.TranslationBean;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FieldType;
