@@ -515,6 +515,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getAgentMessageStatusField(module));
         fields.add(getAgentMessageStartTimeField(module));
         fields.add(getNumberField(AgentConstants.AGENT_ID, "AGENT_ID", module));
+        fields.add(getNumberField(AgentConstants.PARTITION_ID, "PARTITION_ID", module));
         fields.add(getField(AgentKeys.FINISH_TIME, "FINISH_TIME", module, FieldType.NUMBER));
         fields.add(getNumberField(AgentConstants.SELECT_QUERIES, "SELECT_QUERIES", module));
         fields.add(getNumberField(AgentConstants.INSERT_QUERIES, "INSERT_QUERIES", module));

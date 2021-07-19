@@ -62,7 +62,7 @@ public class KinesisProcessor implements IRecordProcessor {
             FacilioRecord facilioRecord = toFacilioRecord(record);
             if( facilioRecord != null){
                 try{
-                    if( dataProcessorUtil.processRecord(facilioRecord)) {
+                    if (dataProcessorUtil.processRecord(facilioRecord, 0)) {
                         try {
                             processRecordsInput.getCheckpointer().checkpoint(DataProcessorUtil.getLastRecordChecked());
                         } catch (Exception e) {

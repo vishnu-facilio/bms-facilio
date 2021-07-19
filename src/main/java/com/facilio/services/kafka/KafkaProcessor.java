@@ -66,7 +66,7 @@ public class KafkaProcessor extends FacilioProcessor {
 			}
 			for (FacilioRecord record : records) {
 				LOGGER.debug("Getting Kafka recordId : "+record.getId());
-				if (!dataProcessorUtil.processRecord(record)) {
+                if (!dataProcessorUtil.processRecord(record, partitionId)) {
 					LOGGER.error("Exception while processing ->" + record.getData());
 				}
 				getConsumer().commit(record);

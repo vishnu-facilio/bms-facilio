@@ -120,7 +120,7 @@ public class DataProcessorUtil {
      * @param record
      * @return
      */
-    public boolean processRecord(FacilioRecord record) {
+    public boolean processRecord(FacilioRecord record, int partitionId) {
         long recordId = record.getId();
         long agentMsgId = -1L;
         long start = System.currentTimeMillis();
@@ -138,7 +138,7 @@ public class DataProcessorUtil {
                 LOGGER.info(MessageFormat.format("Error occurred while setting logger level for data processing. Logger Level prop = {0}. Exception msg => {1}", loggerLevel, e.getMessage()));
             }
 
-            if (checkIfDuplicate(recordId)) {
+            if (checkIfDuplicate(recordId, partitionId)) {
                 LOGGER.info(" skipping record "+recordId);
                 return false;
             }
@@ -146,7 +146,7 @@ public class DataProcessorUtil {
 
             if ((payLoad != null) && (payLoad.isEmpty())) {
                 LOGGER.info(" Empty or null message received " + recordId);
-                updateAgentMessage(recordId,MessageStatus.DATA_EMPTY);
+                updateAgentMessage(recordId, partitionId, MessageStatus.DATA_EMPTY);
                 return false;
             }
             ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
@@ -188,19 +188,19 @@ public class DataProcessorUtil {
                     boolean isEveryMessageProcessed = true;
                     for (JSONObject msg :
                             messages) {
-                        isEveryMessageProcessed = isEveryMessageProcessed && sendToProcessorV2(msg, recordId, record.getPartitionKey());
+                        isEveryMessageProcessed = isEveryMessageProcessed && sendToProcessorV2(msg, recordId, record.getPartitionKey(), partitionId);
                     }
                     return isEveryMessageProcessed;
                 case 2:
 //                    LOGGER.info(" new processor data ");
-                    return sendToProcessorV2(payLoad, recordId, record.getPartitionKey());
+                    return sendToProcessorV2(payLoad, recordId, record.getPartitionKey(), partitionId);
                 case 3:
                     AgentMessagePreProcessor wattSensePreProcessor = new WattsenseToV2();
                     List<JSONObject> msgs = wattSensePreProcessor.preProcess(payLoad);
                     isEveryMessageProcessed = true;
                     for (JSONObject msg :
                             msgs) {
-                        isEveryMessageProcessed = isEveryMessageProcessed && sendToProcessorV2(msg, recordId, record.getPartitionKey());
+                        isEveryMessageProcessed = isEveryMessageProcessed && sendToProcessorV2(msg, recordId, record.getPartitionKey(), partitionId);
                     }
                     return isEveryMessageProcessed;
                 default:
@@ -438,13 +438,13 @@ public class DataProcessorUtil {
 		}
     }
 
-    private boolean sendToProcessorV2(JSONObject payLoad, long recordId, String partitionKey) {
+    private boolean sendToProcessorV2(JSONObject payLoad, long recordId, String partitionKey, int partitionId) {
         if (dataProcessorV2 != null) {
             try {
                 if (!dataProcessorV2.processRecord(payLoad, partitionKey, eventUtil)) {
                     return false;
                 }
-                updateAgentMessage(recordId, MessageStatus.PROCESSED);
+                updateAgentMessage(recordId, partitionId, MessageStatus.PROCESSED);
                 return true;
             } catch (Exception newProcessorException) {
                 LOGGER.info("Exception occurred ", newProcessorException);
@@ -456,11 +456,11 @@ public class DataProcessorUtil {
         }
     }
 
-    public static boolean checkIfDuplicate(long recordId) {
+    public static boolean checkIfDuplicate(long recordId, int partitionId) {
         try {
-        	Map<String,Object> prop = getRecord(recordId);
+            Map<String, Object> prop = getRecord(recordId, partitionId);
             if(prop == null) {
-                addAgentMessage(recordId);
+                addAgentMessage(recordId, partitionId);
             } else {
                 Long statusValue =  (Long) prop.getOrDefault(AgentKeys.MSG_STATUS, 0L);
                 if(statusValue == 1L) {
@@ -654,12 +654,13 @@ public class DataProcessorUtil {
      * @return true if not present and false if present
      * @throws Exception
      */
-    public static Map<String,Object> getRecord(long recordId) {
+    public static Map<String, Object> getRecord(long recordId, int partitionId) {
         try {
             Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getAgentMessageFields());
             FacilioModule messageModule = ModuleFactory.getAgentMessageModule();
             Criteria criteria = new Criteria();
             criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentKeys.RECORD_ID), String.valueOf(recordId), NumberOperators.EQUALS));
+            criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.PARTITION_ID), String.valueOf(partitionId), NumberOperators.EQUALS));
             GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                     .table(messageModule.getTableName())
                     .select(fieldMap.values())
@@ -676,29 +677,30 @@ public class DataProcessorUtil {
 
     public static boolean markMessageProcessed(long recordId) {
         try {
-            return updateAgentMessage(recordId, MessageStatus.PROCESSED);
+            //old processor so default partition 0
+            return updateAgentMessage(recordId, 0, MessageStatus.PROCESSED);
         } catch (Exception e) {
             LOGGER.info("Exception occurred while marking message processed ", e);
         }
         return false;
     }
 
-    public static boolean addAgentMessage(long recordId) throws Exception {
-        return addOrUpdateAgentMessage(recordId, MessageStatus.RECIEVED);
+    public static boolean addAgentMessage(long recordId, int partitionId) throws Exception {
+        return addOrUpdateAgentMessage(recordId, partitionId, MessageStatus.RECIEVED);
     }
 
-    public static boolean updateAgentMessage(long recordId, MessageStatus messageStatus) throws Exception {
-        return addOrUpdateAgentMessage(recordId, messageStatus);
+    public static boolean updateAgentMessage(long recordId, int partitionId, MessageStatus messageStatus) throws Exception {
+        return addOrUpdateAgentMessage(recordId, partitionId, messageStatus);
     }
 
-    private static boolean addOrUpdateAgentMessage(long recordId, MessageStatus messageStatus) throws Exception {
+    private static boolean addOrUpdateAgentMessage(long recordId, int partitionId, MessageStatus messageStatus) throws Exception {
         boolean status = false;
 
         Map<String, Object> map = new HashMap<>();
         map.put(AgentKeys.RECORD_ID, recordId);
         map.put(AgentKeys.MSG_STATUS, messageStatus.getStatusKey());
         map.put(AgentKeys.START_TIME, System.currentTimeMillis());
-
+        map.put(AgentConstants.PARTITION_ID, partitionId);
         FacilioChain updateAgentMessageChain = TransactionChainFactory.getUpdateAgentMessageChain();
         FacilioChain addAgentMessageChain = TransactionChainFactory.getAddAgentMessageChain();
 
