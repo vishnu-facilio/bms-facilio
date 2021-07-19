@@ -14,6 +14,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import org.apache.struts2.ServletActionContext;
+import org.json.simple.JSONObject;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -127,6 +128,26 @@ public class ApplicationAction extends FacilioAction {
 		this.considerRole = considerRole;
 	}
 
+	private Boolean fetchCount;
+
+	public Boolean getFetchCount() {
+		if (fetchCount == null) {
+			return false;
+		}
+		return fetchCount;
+	}
+
+	public void setFetchCount(Boolean fetchCount) {
+		this.fetchCount = fetchCount;
+	}
+
+	private Long vendorsCount;
+	public Long getVendorsCount() {
+		return vendorsCount;
+	}
+	public void setVendorsCount(Long vendorsCount) {
+		this.vendorsCount = vendorsCount;
+	}
 
 
 	public String addOrUpdateApplication() throws Exception {
@@ -231,8 +252,24 @@ public class ApplicationAction extends FacilioAction {
 		if (fetchNonAppUsers != null) {
 			context.put(FacilioConstants.ContextNames.FETCH_NON_APP_USERS, fetchNonAppUsers);
 		}
+		if (getFetchCount()) { // only count
+			context.put(FacilioConstants.ContextNames.FETCH_COUNT, true);
+		} else {
+			JSONObject pagination = new JSONObject();
+			pagination.put("page", getPage());
+			pagination.put("perPage", getPerPage());
+			if (getPerPage() < 0) {
+				pagination.put("perPage", 5000);
+			}
+			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+		}
 		chain.execute();
-		setResult(FacilioConstants.ContextNames.USERS, context.get(FacilioConstants.ContextNames.USERS));
+		if(!getFetchCount()) {
+			setResult(FacilioConstants.ContextNames.USERS, context.get(FacilioConstants.ContextNames.USERS));
+		}
+		else {
+			setResult(FacilioConstants.ContextNames.COUNT, context.get(FacilioConstants.ContextNames.COUNT));
+		}
 
 		return SUCCESS;
 

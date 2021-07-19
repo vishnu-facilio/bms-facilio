@@ -97,11 +97,11 @@ public class OrgBeanImpl implements OrgBean {
 	@Override
 	public List<User> getAppUsers(long orgId, long appId, boolean checkAccessibleSites)
 			throws Exception {
-		return getAppUsers(orgId, appId, checkAccessibleSites, false);
+		return getAppUsers(orgId, appId, checkAccessibleSites, false, -1, -1);
 	}
 
-    @Override
-	public List<User> getAppUsers(long orgId, long appId, boolean checkAccessibleSites, boolean fetchNonAppUsers) throws Exception {
+	@Override
+	public List<User> getAppUsers(long orgId, long appId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage) throws Exception {
 
 		User currentUser = AccountUtil.getCurrentAccount().getUser();
 		if(currentUser == null){
@@ -171,8 +171,13 @@ public class OrgBeanImpl implements OrgBean {
 
 			if(!whereCondition.isEmpty()) {
 				selectBuilder
-					.andCustomWhere(whereCondition);
+						.andCustomWhere(whereCondition);
 			}
+		}
+
+		if(perPage > 0 && offset >= 0) {
+			selectBuilder.offset(offset);
+			selectBuilder.limit(perPage);
 		}
 
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -212,6 +217,54 @@ public class OrgBeanImpl implements OrgBean {
 			return users;
 		}
 		return null;
+	}
+
+    @Override
+	public Long getAppUsersCount(long orgId, long appId, boolean fetchNonAppUsers) throws Exception {
+
+		User currentUser = AccountUtil.getCurrentAccount().getUser();
+		if(currentUser == null){
+			return null;
+		}
+
+		if(appId <= 0) {
+			appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+		}
+
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.addAll(AccountConstants.getAppOrgUserFields());
+		fields.add(AccountConstants.getApplicationIdField());
+
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		List<FacilioField> selectedFields = new ArrayList<>();
+		selectedFields.addAll(FieldFactory.getCountField(AccountConstants.getAppOrgUserModule(), fieldMap.get("ouid")));
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(selectedFields)
+				.table("ORG_Users")
+				.innerJoin("ORG_User_Apps")
+				.on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID")
+				.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS))
+				;
+
+		if (fetchNonAppUsers) {
+			List<Long> appUserIds = getAppUserIds(appId, selectBuilder, fieldMap);
+			if (appUserIds != null) {
+				selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("ouid"), appUserIds, NumberOperators.NOT_EQUALS));
+			}
+		}
+		else {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("applicationId"), String.valueOf(appId), NumberOperators.EQUALS));
+		}
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if(CollectionUtils.isNotEmpty(props)) {
+			return (Long)props.get(0).get("count");
+		}
+
+		return null;
+
 	}
 
     private List<Long> getAppUserIds(long appId, GenericSelectRecordBuilder builder, Map<String, FacilioField> fieldMap) throws Exception {

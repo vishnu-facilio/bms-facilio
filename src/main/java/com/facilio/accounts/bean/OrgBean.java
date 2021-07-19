@@ -33,8 +33,10 @@ public interface OrgBean {
 	public List<User> getRequesterTypeUsers(long orgId, boolean status) throws Exception;
 	 
 	public List<User> getAppUsers(long orgId, long appId, boolean checkAccessibleSites) throws Exception;
-	
-	public List<User> getAppUsers(long orgId, long appId, boolean checkAccessibleSites, boolean fetchNonAppUsers) throws Exception;
+
+	public Long getAppUsersCount(long orgId, long appId, boolean fetchNonAppUsers) throws Exception;
+
+	public List<User> getAppUsers(long orgId, long appId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage) throws Exception;
 	
 	public List<User> getOrgUsers(long orgId, boolean status) throws Exception;
 	
