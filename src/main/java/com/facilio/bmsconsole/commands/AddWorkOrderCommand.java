@@ -96,7 +96,7 @@ public class AddWorkOrderCommand extends FacilioCommand {
 				builder.level(insertLevel);
 			}
 
-			if ((AccountUtil.getCurrentOrg().getId() == 146 || AccountUtil.getCurrentOrg().getId() == 155) && workOrder != null) {
+			if ((AccountUtil.getCurrentOrg().getId() == 146 || AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 393) && workOrder != null) {
 				LOGGER.info("Workorder subject : "+ workOrder.getSubject()+"\n Description : "+workOrder.getDescription());
 			}
 			
