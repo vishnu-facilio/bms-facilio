@@ -39,29 +39,29 @@ import com.facilio.modules.fields.FacilioField;
 public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTransactionCommand,Serializable
 {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = LogManager.getLogger(ExecuteAllWorkflowsCommand.class.getName());
 	protected RuleType[] ruleTypes;
 	protected boolean propagateError = true;
-	
+
 	protected Map<String, List> recordMap;
 	protected Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap;
 	private Context context;
 	protected Map<String,List<WorkflowRuleContext>> postRules;
-	
+
 	public ExecuteAllWorkflowsCommand(RuleType... ruleTypes) {
 		// TODO Auto-generated constructor stub
 		this.ruleTypes = ruleTypes;
 	}
-	
+
 	public ExecuteAllWorkflowsCommand(boolean propogateError, RuleType... ruleTypes) {
 		// TODO Auto-generated constructor stub
 		this.propagateError = propogateError;
 		this.ruleTypes = ruleTypes;
 	}
-	
+
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		try {
@@ -70,9 +70,10 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 			if (historyReading != null && historyReading==true) {
 				return false;
 			}
-					
+
 			recordMap = CommonCommandUtil.getRecordMap((FacilioContext) context);
 			changeSetMap = CommonCommandUtil.getChangeSetMap((FacilioContext) context);
+
 			if(recordMap != null && !recordMap.isEmpty()) {
 				postRules = new HashMap<>();
 				this.context = context;
@@ -135,10 +136,10 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 				Map<Long, List<UpdateChangeSet>> currentChangeSet = changeSetMap == null ? null : changeSetMap.get(moduleName);
 				if (currentChangeSet != null && !currentChangeSet.isEmpty()) {
 					activities.add(EventType.FIELD_CHANGE);
-				}	
+				}
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioModule module = modBean.getModule(moduleName);
-				
+
 				long currentTime = System.currentTimeMillis();
 				List<WorkflowRuleContext> workflowRules;
 				if (isPostExecute ) {
@@ -151,6 +152,9 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 				}
 				else {
 					workflowRules = getWorkflowRules(module, activities, entry.getValue(), context);
+					if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 393l && workflowRules != null) {
+						LOGGER.info("Executing workflow rules: size : " + workflowRules.size() + "  " + getPrintDebug());
+					}
 					if (workflowRules != null) {
 						List<WorkflowRuleContext> postRulesList = new ArrayList<>();
 						handlePostRules(workflowRules, postRulesList);
@@ -161,25 +165,33 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 					if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
 						LOGGER.info("Time taken to fetch workflow: " + (System.currentTimeMillis() - currentTime) + " : " + getPrintDebug());
 					}
+
 				}
+
+				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 393l) {
+						LOGGER.info("execute all workflow command: rules count : " + workflowRules.size() + " Rules : " + getPrintDebug());
+					}
 
 				Map<String, List<WorkflowRuleContext>> workflowRuleCacheMap = new HashMap<String, List<WorkflowRuleContext>>();
 				if (workflowRules != null && !workflowRules.isEmpty()) {
-					
+
 					List records = new LinkedList<>(entry.getValue());
 					Iterator it = records.iterator();
 
 					while (it.hasNext()) {
-						Object record = it.next();			
+						Object record = it.next();
 						List<UpdateChangeSet> changeSet = currentChangeSet == null ? null : currentChangeSet.get( ((ModuleBaseWithCustomFields)record).getId() );
 						Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(module.getName(), record, getOrgPlaceHolders());
 						WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(workflowRules, module, record, changeSet, recordPlaceHolders, context,propagateError, workflowRuleCacheMap, false, activities);
-								
+
 					}
 				}
 				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
 					LOGGER.info("Time taken to execute workflow: " + (System.currentTimeMillis() - currentTime) + " : " + getPrintDebug());
-				}	
+				}
+				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 393) {
+					LOGGER.info("Time taken to execute workflow: " + (System.currentTimeMillis() - currentTime) + " : " + getPrintDebug());
+				}
 			}
 		}
 	}
@@ -201,7 +213,7 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 		}
 		return sb.toString();
 	}
-	
+
 	private void handlePostRules(List<WorkflowRuleContext> workflowRules, List<WorkflowRuleContext> postRules) {
 		for (Iterator<WorkflowRuleContext> iterator = workflowRules.iterator(); iterator.hasNext(); ) {
 			WorkflowRuleContext workflowRule = iterator.next();
@@ -236,5 +248,5 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 
 		return false;
 	}
-	
+
 }
