@@ -21,10 +21,11 @@ public class GetFieldTranslationFileds implements TranslationTypeInterface{
         FacilioModule module = moduleBean.getModule(webTabContext.getModuleIds().get(0));
         FacilioContext context = new FacilioContext();
         context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
+        context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID,-1L);
         context.put(FacilioConstants.ContextNames.IS_FILTER, true);
         FacilioChain metaField = FacilioChainFactory.getAllFieldsChain();
         metaField.execute(context);
         fieldObject.put("fields",context.get(FacilioConstants.ContextNames.META));
-        return null;
+        return fieldObject;
     }
 }
