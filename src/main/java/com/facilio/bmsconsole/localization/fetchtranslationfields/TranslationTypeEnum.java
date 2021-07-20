@@ -16,7 +16,7 @@ public enum TranslationTypeEnum {
 
     DETAILS(WebTabContext.Type.MODULE,new GetDetailsTranslationsFields()),
     VIEWS(WebTabContext.Type.MODULE,new GetViewTranslationFields()),
-    VIEW_COLUMN(WebTabContext.Type.MODULE,new GetViewColumnTranslationFields()),
+    VIEW_COLUMNS(WebTabContext.Type.MODULE,new GetViewColumnTranslationFields()),
     BUTTONS(WebTabContext.Type.MODULE, new GetButtonTranslationFields()),
     STATE_FLOWS(WebTabContext.Type.MODULE,new GetStateFlowTranslationFields()),
     FORMS(WebTabContext.Type.MODULE,new GetFormTranslationFields()),
