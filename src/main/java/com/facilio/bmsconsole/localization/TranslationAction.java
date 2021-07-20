@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.localization;
 import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.bmsconsole.context.ApplicationLayoutContext;
 import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.context.WebTabGroupContext;
 import com.facilio.bmsconsole.localization.fetchtranslationfields.TranslationTypeEnum;
@@ -16,13 +17,11 @@ import com.facilio.fw.TransactionBeanFactory;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Log4j
 @Getter
@@ -64,35 +63,50 @@ public class TranslationAction extends FacilioAction {
         return SUCCESS;
     }
 
-    private ApplicationContext fetchTranslationDetails () throws Exception {
+    private JSONObject fetchTranslationDetails () throws Exception {
         FacilioChain chain = ReadOnlyChainFactory.getApplicationDetails();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.APPLICATION_ID,applicationId);
         context.put(FacilioConstants.ContextNames.FETCH_ALL_LAYOUTS,true);
         chain.execute();
         ApplicationContext props = (ApplicationContext)context.get(FacilioConstants.ContextNames.APPLICATION);
-        List<WebTabGroupContext> webTabGroups = props.getWebTabGroups();
-        for (WebTabGroupContext prop : webTabGroups) {
-            for (WebTabContext webtab : prop.getWebTabs()) {
-                List<String> columns = new ArrayList<>();
-                switch (webtab.getTypeEnum()) {
-                    case MODULE:
-                        columns.add("VIEWS");
-                        columns.add("VIEW COLUMNS");
-                        columns.add("FORMS");
-                        columns.add("FIELDS");
-                        columns.add("FORM FIELDS");
-                        columns.add("DETAILS");
-                        columns.add("BUTTONS");
-                        columns.add("STATE FLOWS");
-                        webtab.setTranslationColumns(columns);
-                        break;
-                    case DASHBOARD:
-                        columns.add("FOLDER&DASHBOARDS");
+        JSONObject jsonObject = new JSONObject();
+        if(props != null) {
+            List<ApplicationLayoutContext> layout = props.getLayouts();
+            if(CollectionUtils.isNotEmpty(layout)){
+                for (ApplicationLayoutContext prop : layout) {
+                    for (WebTabGroupContext webtabGroup : prop.getWebTabGroupList()) {
+                        for (WebTabContext webTab : webtabGroup.getWebTabs()) {
+                            List<String> columns = new ArrayList<>();
+                            switch (webTab.getTypeEnum()) {
+                                case MODULE:
+                                    columns.add("VIEWS");
+                                    columns.add("VIEW COLUMNS");
+                                    columns.add("FORMS");
+                                    columns.add("FIELDS");
+                                    columns.add("FORM FIELDS");
+                                    columns.add("DETAILS");
+                                    columns.add("BUTTONS");
+                                    columns.add("STATE FLOWS");
+                                    webTab.setTranslationColumns(columns);
+                                    break;
+                                case DASHBOARD:
+                                    columns.add("FOLDER&DASHBOARDS");
+                                    webTab.setTranslationColumns(columns);
+                                    break;
+                            }
+
+                        }
+                    }
                 }
             }
+            jsonObject.put("appCategory",props.getAppCategory());
+            jsonObject.put("appCategoryEnum",props.getAppCategoryEnum());
+            jsonObject.put("id",props.getId());
+            jsonObject.put("layouts",props.getLayouts());
+            jsonObject.put("linkName",props.getLinkName());
         }
-        return props;
+        return jsonObject;
     }
 
     private void addNewLanguage () throws Exception {
