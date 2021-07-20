@@ -617,6 +617,10 @@ public class WorkflowRuleAPI {
 			LOGGER.info(MessageFormat.format("Rule query : {0}", ruleBuilder.toString()));
 		}
 
+		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 393) {
+			LOGGER.info(MessageFormat.format("Rule query : {0}", ruleBuilder.toString()));
+		}
+
 		return getWorkFlowsFromMapList(props, fetchChildren, fetchExtended);
 	}
 	
@@ -843,6 +847,15 @@ public class WorkflowRuleAPI {
 							rule = FieldUtil.getAsBeanFromMap(prop, CustomButtonRuleContext.class);
 							break;
 						case ALARM_WORKFLOW_RULE:
+							if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 393l){
+
+								StringBuilder sb = new StringBuilder()
+										.append("Alarm workflow rule : fetchExtended ? ").append(fetchExtended).append(", ")
+										.append("  typeWiseExtendedProps.get(ruleType) : ").append(typeWiseExtendedProps).append(", ")
+										.append(" rule type : ").append(ruleType).append(", ")
+										.append(" prop : ").append(prop);
+								LOGGER.info(sb);
+							}
 							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
 							rule = FieldUtil.getAsBeanFromMap(prop, AlarmWorkflowRuleContext.class);
 							break;
