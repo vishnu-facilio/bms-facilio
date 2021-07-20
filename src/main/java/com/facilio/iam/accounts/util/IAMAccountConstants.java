@@ -390,6 +390,13 @@ public class IAMAccountConstants {
 			id.setModule(module);
 			fields.add(id);
 
+			FacilioField description = new FacilioField();
+			description.setName("description");
+			description.setDataType(FieldType.STRING);
+			description.setColumnName("DESCRIPTION");
+			description.setModule(module);
+			fields.add(description);
+
 			FacilioField name = new FacilioField();
 			name.setName("name");
 			name.setDataType(FieldType.STRING);
@@ -417,6 +424,13 @@ public class IAMAccountConstants {
 			isMotpEnabled.setColumnName("IS_MOTP_ENABLED");
 			isMotpEnabled.setModule(module);
 			fields.add(isMotpEnabled);
+
+			FacilioField isMFAEnabled = new FacilioField();
+			isMFAEnabled.setName("isMFAEnabled");
+			isMFAEnabled.setDataType(FieldType.BOOLEAN);
+			isMFAEnabled.setColumnName("IS_MFA_ENABLED");
+			isMFAEnabled.setModule(module);
+			fields.add(isMFAEnabled);
 
 			FacilioField isPwdPolicyEnabled = new FacilioField();
 			isPwdPolicyEnabled.setName("isPwdPolicyEnabled");

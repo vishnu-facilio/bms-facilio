@@ -10,11 +10,13 @@ import java.util.List;
 @NoArgsConstructor
 public class SecurityPolicy implements Serializable {
     private String name;
+    private String description;
     private long id = -1L;
     private Boolean isDefault;
     private Boolean isTOTPEnabled;
     private Boolean isMOTPEnabled;
     private Boolean isPwdPolicyEnabled;
+    private Boolean isMFAEnabled;
     private Integer pwdMinLength;
     private Boolean pwdIsMixed;
     private Integer pwdMinSplChars;

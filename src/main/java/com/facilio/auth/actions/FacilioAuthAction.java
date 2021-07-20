@@ -937,10 +937,10 @@ public class FacilioAuthAction extends FacilioAction {
 					List<Map<String, Object>> userData = IAMUserUtil.getUserData(getUsername(), AppDomain.GroupType.FACILIO);
 					Map<String, Object> userMap = userData.get(0);
 					Organization defaultOrg = IAMUserUtil.getDefaultOrg((long) userMap.get("uid"));
-					LOGGER.log(Level.SEVERE, "validateLogin() : default org id : " + defaultOrg.getOrgId());
+					LOGGER.log(Level.INFO,"validateLogin() : default org id : " + defaultOrg.getOrgId());
 					securityPolicy = IAMUserUtil.getUserSecurityPolicy(getUsername(), AppDomain.GroupType.FACILIO, defaultOrg.getOrgId());
-					LOGGER.log(Level.SEVERE,"validateLogin() : security policy is null : " + (securityPolicy == null));
-					LOGGER.log(Level.SEVERE,"validateLogin() : security policy id : " + (securityPolicy != null ? securityPolicy.getId(): -1L));
+					LOGGER.log(Level.INFO,"validateLogin() : security policy is null : " + (securityPolicy == null));
+					LOGGER.log(Level.INFO,"validateLogin() : security policy id : " + (securityPolicy != null ? securityPolicy.getId(): -1L));
 				}
 
 				boolean hasMfaSettings;
@@ -967,6 +967,7 @@ public class FacilioAuthAction extends FacilioAction {
 						addAuthCookies(authtoken, portalUser, false, request, "mobile".equals(userType));
 					}
 				} else {
+					IAMUserUtil.validateLoginv3(getUsername(), getPassword(), request.getServerName(), userAgent, userType, ipAddress, false);
 					Map<String, Object> userMfaSettings = IAMUserUtil.getUserMfaSettings(getUsername(), AppDomain.GroupType.FACILIO);
 					Boolean totpStatus = (Boolean) userMfaSettings.get("totpStatus");
 					boolean isTotpEnabled = totpStatus != null && totpStatus;
@@ -1156,7 +1157,6 @@ public class FacilioAuthAction extends FacilioAction {
 		
 		JSONObject payload = FederatedIdentityUtil.verifyGooogeIdToken(idToken);
 		HttpServletRequest request = ServletActionContext.getRequest();
-		HttpServletResponse response = ServletActionContext.getResponse();
 
 		String isWebView = FacilioCookie.getUserCookie(request, "fc.isWebView");
 		

@@ -251,6 +251,10 @@ public class IAMUserUtil {
 		
 	}
 
+	public static long verifyPasswordv3(String username, String password, String appDomainName, String userType) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().verifyPasswordv3(username, password, appDomainName, userType));
+	}
+
 	public static String getEmailFromDigest(String digest) throws Exception {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getEmailFromDigest(digest));
 	}

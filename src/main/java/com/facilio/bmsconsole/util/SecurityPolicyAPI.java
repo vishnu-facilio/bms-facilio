@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.util;
 
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -8,7 +9,6 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.iam.accounts.context.SecurityPolicy;
 import com.facilio.iam.accounts.util.IAMAccountConstants;
-import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
@@ -68,4 +68,23 @@ public class SecurityPolicyAPI {
     public static List<SecurityPolicy> fetchAllSecurityPolicies(long orgId) throws Exception {
         return securityPolicyList(CriteriaAPI.getCondition("SecurityPolicies.ORGID", "orgId", orgId+"", NumberOperators.EQUALS));
     }
+
+
+    public static void deleteSecurityPolicy(long id) throws Exception {
+        new GenericDeleteRecordBuilder()
+                .table(IAMAccountConstants.getSecurityPolicyModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition("SecurityPolicies.SECURITY_POLICY_ID", "secPolId", id + "", NumberOperators.EQUALS));
+
+        List<Long> userIds = new GenericSelectRecordBuilder()
+                .select(IAMAccountConstants.getAccountsUserFields())
+                .table(IAMAccountConstants.getAccountsUserModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition("SECURITY_POLICY_ID", "securityPolicyId", id + "", NumberOperators.EQUALS))
+                .get()
+                .stream()
+                .map(i -> (long) i.get("uid"))
+                .collect(Collectors.toList());
+
+        IAMUtil.dropUserSecurityPolicyCache(userIds);
+    }
+
 }
