@@ -39,7 +39,7 @@ public class GetViewColumnTranslationFields implements TranslationTypeInterface 
         if(CollectionUtils.isNotEmpty(fields)) {
             fields.forEach(field -> {
                 String key = ViewColumnTranslationImpl.getTranslationKey(field.getName());
-                TranslationsUtil.constructJSON(field.getDisplayName(),ViewColumnTranslationImpl.VIEWS_COLUMNS,TranslationConstants.DISPLAY_NAME,key,properties);
+                viewColumnsArray.add(TranslationsUtil.constructJSON(field.getDisplayName(),ViewColumnTranslationImpl.VIEWS_COLUMNS,TranslationConstants.DISPLAY_NAME,field.getName(),key,properties));
             });
         }
         return viewColumnsArray;

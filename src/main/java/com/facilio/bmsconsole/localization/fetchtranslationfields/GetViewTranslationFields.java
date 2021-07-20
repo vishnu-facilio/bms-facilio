@@ -9,7 +9,6 @@ import com.facilio.bmsconsole.localization.util.TranslationConstants;
 import com.facilio.bmsconsole.localization.util.TranslationsUtil;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -38,20 +37,16 @@ public class GetViewTranslationFields implements TranslationTypeInterface {
         chain.execute();
         JSONArray outerArray = new JSONArray();
         List<ViewGroups> groupViews = (List<ViewGroups>)chain.getContext().get(FacilioConstants.ContextNames.GROUP_VIEWS);
-        try {
-            if(CollectionUtils.isNotEmpty(groupViews)) {
-                groupViews.forEach(groupView -> {
-                    String outerKey = ViewTranslationImpl.getTranslationKey(groupView.getName());
-                    List<FacilioView> views = groupView.getViews();
-                    outerArray.add(TranslationsUtil.constructJSON(groupView.getDisplayName(),VIEWS,TranslationConstants.DISPLAY_NAME,outerKey,properties));
-                    views.forEach(view -> {
-                        String innerKey = ViewTranslationImpl.getTranslationKey(view.getName());
-                        outerArray.add(TranslationsUtil.constructJSON(view.getDisplayName(),VIEWS,TranslationConstants.DISPLAY_NAME,innerKey,properties));
-                    });
+        if(CollectionUtils.isNotEmpty(groupViews)) {
+            groupViews.forEach(groupView -> {
+                String outerKey = ViewTranslationImpl.getTranslationKey(groupView.getName());
+                List<FacilioView> views = groupView.getViews();
+                outerArray.add(TranslationsUtil.constructJSON(groupView.getDisplayName(),VIEWS,TranslationConstants.DISPLAY_NAME,groupView.getName(),outerKey,properties));
+                views.forEach(view -> {
+                    String innerKey = ViewTranslationImpl.getTranslationKey(view.getName());
+                    outerArray.add(TranslationsUtil.constructJSON(view.getDisplayName(),VIEWS,TranslationConstants.DISPLAY_NAME,view.getName(),innerKey,properties));
                 });
-            }
-        } catch (Exception e) {
-            LOGGER.error("Exception occurred while fetching View List  for Translation. ",e);
+            });
         }
         return outerArray;
     }

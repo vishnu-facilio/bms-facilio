@@ -33,7 +33,7 @@ public class GetButtonTranslationFields implements TranslationTypeInterface {
         if(CollectionUtils.isNotEmpty(customButtons)) {
             customButtons.forEach(button -> {
                 String key = ButtonTranslationImpl.getTranslationKey(button.getId());
-                buttonArray.add(TranslationsUtil.constructJSON(button.getName(),ButtonTranslationImpl.BUTTON,TranslationConstants.DISPLAY_NAME,key,properties));
+                buttonArray.add(TranslationsUtil.constructJSON(button.getName(),ButtonTranslationImpl.BUTTON,TranslationConstants.DISPLAY_NAME,String.valueOf(button.getId()),key,properties));
             });
         }
         return buttonArray;

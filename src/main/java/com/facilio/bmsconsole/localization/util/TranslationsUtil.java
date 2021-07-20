@@ -78,12 +78,12 @@ public class TranslationsUtil {
         return TRANSLATION_CONF_FILE_MAP.get(prefix).getSuffix().contains(suffix);
     }
 
-    public static JSONObject constructJSON ( String label,String prefix,String suffix,String key,Properties properties ) {
+    public static JSONObject constructJSON ( String label,String prefix,String suffix,String uniqueId,String key,Properties properties ) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put(TranslationConstants.LABEL,label);
         jsonObject.put(TranslationConstants.PREFIX,prefix);
         jsonObject.put(TranslationConstants.SUFFIX,suffix);
-        jsonObject.put(TranslationConstants.KEY,key);
+        jsonObject.put(TranslationConstants.KEY,uniqueId);
         jsonObject.put(TranslationConstants.VALUE,properties.getProperty(key,null));
         return jsonObject;
     }

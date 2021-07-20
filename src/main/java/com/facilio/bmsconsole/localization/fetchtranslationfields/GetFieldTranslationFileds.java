@@ -40,7 +40,7 @@ public class GetFieldTranslationFileds implements TranslationTypeInterface{
         if(CollectionUtils.isNotEmpty(fields)) {
             fields.forEach(field -> {
                 String key = ModuleTranslationUtils.getFieldTranslationKey(field.getName());
-                jsonArray.add(TranslationsUtil.constructJSON(field.getDisplayName(),ModuleTranslationImpl.FIELDS,TranslationConstants.DISPLAY_NAME,key,properties));
+                jsonArray.add(TranslationsUtil.constructJSON(field.getDisplayName(),ModuleTranslationImpl.FIELDS,TranslationConstants.DISPLAY_NAME,field.getName(),key,properties));
             });
         }
         return jsonArray;

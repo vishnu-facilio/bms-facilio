@@ -29,7 +29,7 @@ public class GetFormFieldTranslationFields implements TranslationTypeInterface {
         if(CollectionUtils.isNotEmpty(fields)) {
             fields.forEach(field -> {
                 String key = FormFieldTranslationImpl.getTranslationKey(field.getName());
-                jsonArray.add(TranslationsUtil.constructJSON(field.getDisplayName(),FormFieldTranslationImpl.FORM_FIELD,TranslationConstants.DISPLAY_NAME,key,properties));
+                jsonArray.add(TranslationsUtil.constructJSON(field.getDisplayName(),FormFieldTranslationImpl.FORM_FIELD,TranslationConstants.DISPLAY_NAME,field.getName(),key,properties));
             });
         }
         return jsonArray;

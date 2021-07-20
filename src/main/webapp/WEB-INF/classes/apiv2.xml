@@ -197,6 +197,7 @@
 
 		<action name="forms"
 			class="com.facilio.bmsconsole.actions.FormAction" method="formList">
+			<param name="translationImpl">FormTranslation</param>
 		</action>
 		
 		<action name="operators" class="com.facilio.bmsconsole.actions.ModuleAction" method="fetchOperators">
@@ -2052,7 +2053,7 @@
 		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.FormAction" method="formDetails">
 			<param name="moduleName">{1}</param>
-<!--			<param name="translationImpl">FormTranslation</param>-->
+			<param name="translationImpl">FormFieldTranslation</param>
 		</action>
 	</package>
 	<package name="formFieldApiv2" namespace="/api/v2/forms/fields"
