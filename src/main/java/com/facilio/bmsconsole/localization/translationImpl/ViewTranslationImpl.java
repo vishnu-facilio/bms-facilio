@@ -22,14 +22,14 @@ public class ViewTranslationImpl implements TranslationIfc {
             JSONArray jsonArray = (JSONArray)groupViews.get("views");
             for (int j=0;j< jsonArray.size();j++){
                 JSONObject viewObject = (JSONObject)jsonArray.get(j);
-                String innerKey = ModuleTranslationUtils.getTranslationKey((String)viewObject.get(TranslationConstants.NAME));
+                String innerKey = getTranslationKey((String)viewObject.get(TranslationConstants.NAME));
                 viewObject.put(TranslationConstants.DISPLAY_NAME,getTranslation(translationFile,innerKey,(String)viewObject.get(TranslationConstants.DISPLAY_NAME)));
             }
         }
         return json;
     }
 
-    private String getTranslationKey ( String key ) {
+    public static String getTranslationKey ( String key ) {
         return VIEWS+"."+key+"."+TranslationConstants.DISPLAY_NAME;
     }
 }

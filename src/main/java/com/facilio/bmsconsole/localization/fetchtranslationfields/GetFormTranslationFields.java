@@ -11,10 +11,11 @@ import lombok.NonNull;
 import org.json.simple.JSONObject;
 
 import java.util.List;
+import java.util.Properties;
 
 public class GetFormTranslationFields implements TranslationTypeInterface{
     @Override
-    public JSONObject constructTranslationObject ( @NonNull WebTabContext context ) throws Exception {
+    public JSONObject constructTranslationObject ( @NonNull WebTabContext context,Properties properties ) throws Exception {
         FacilioUtil.throwIllegalArgumentException(!WebTabContext.Type.MODULE.equals(WebTabContext.Type.valueOf(context.getType())),"Invalid webTab Type for fetch Module Fields");
         JSONObject formFieldObject = new JSONObject();
         ModuleBean moduleBean = (ModuleBean)BeanFactory.lookup("ModuleBean");

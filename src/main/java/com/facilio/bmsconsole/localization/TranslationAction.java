@@ -14,6 +14,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.TransactionBeanFactory;
+import com.facilio.util.FacilioUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
@@ -44,13 +45,16 @@ public class TranslationAction extends FacilioAction {
         return SUCCESS;
     }
 
-    private JSONObject getTranslationList () throws Exception {
+    private JSONArray getTranslationList () throws Exception {
+        TranslationBean bean = (TranslationBean)TransactionBeanFactory.lookup("TranslationBean");
+        Properties properties= bean.getTranslationFile(getLangCode());
+        FacilioUtil.throwIllegalArgumentException(properties ==null,"Translation file is an empty");
         WebTabContext webTab= ApplicationApi.getWebTab(getTabId());
         List<Long> moduleIds = ApplicationApi.getModuleIdsForTab(getTabId());
         webTab.setModuleIds(moduleIds);
         TranslationTypeEnum type = TranslationTypeEnum.getTranslationTypeModule(getTranslationType());
         Objects.requireNonNull(type,"Invalid module type for Translation");
-        return type.getHandler().constructTranslationObject(webTab);
+        return type.getHandler().constructTranslationObject(webTab,properties);
     }
 
     public String save () throws Exception {

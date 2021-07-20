@@ -12,7 +12,7 @@ import java.util.Properties;
 
 public class ViewColumnTranslationImpl implements TranslationIfc {
 
-    private static final String VIEWS_COLUMNS ="viewColumn";
+    public static final String VIEWS_COLUMNS ="viewColumn";
 
     @Override
     public JSONObject translate ( @NonNull JSONObject json,@NonNull Properties translationFile ) throws Exception {
@@ -36,7 +36,7 @@ public class ViewColumnTranslationImpl implements TranslationIfc {
         return json;
     }
 
-    private String getTranslationKey ( String key ) {
+    public static String getTranslationKey ( String key ) {
         return VIEWS_COLUMNS+"."+key+"."+TranslationConstants.DISPLAY_NAME;
     }
 }

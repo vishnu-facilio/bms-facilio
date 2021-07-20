@@ -2,7 +2,12 @@ package com.facilio.bmsconsole.localization.fetchtranslationfields;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.context.ViewGroups;
 import com.facilio.bmsconsole.context.WebTabContext;
+import com.facilio.bmsconsole.localization.translationImpl.ViewTranslationImpl;
+import com.facilio.bmsconsole.localization.util.TranslationConstants;
+import com.facilio.bmsconsole.localization.util.TranslationsUtil;
+import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -10,22 +15,44 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.util.FacilioUtil;
 import lombok.NonNull;
-import org.json.simple.JSONObject;
+import lombok.extern.log4j.Log4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONArray;
 
+import java.util.List;
+import java.util.Properties;
+
+@Log4j
 public class GetViewTranslationFields implements TranslationTypeInterface {
 
+    private static final String VIEWS = "views";
+
     @Override
-    public JSONObject constructTranslationObject (@NonNull WebTabContext context) throws Exception {
+    public JSONArray constructTranslationObject ( @NonNull WebTabContext context,Properties properties ) throws Exception {
         FacilioUtil.throwIllegalArgumentException(!WebTabContext.Type.MODULE.equals(WebTabContext.Type.valueOf(context.getType())),"Invalid webTab Type for fetch Module Fields");
         ModuleBean moduleBean = (ModuleBean)BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(context.getModuleIds().get(0));
-        FacilioContext viewContext = new FacilioContext();
-        JSONObject viewObject = new JSONObject();
-        viewContext.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
-        viewContext.put(FacilioConstants.ContextNames.GROUP_STATUS, true);
-        FacilioChain getViewListsChain = FacilioChainFactory.getViewListChain();
-        getViewListsChain.execute(viewContext);
-        viewObject.put("viewFields",viewContext.get(FacilioConstants.ContextNames.GROUP_VIEWS));
-        return viewObject;
+        FacilioChain chain = FacilioChainFactory.getViewListChain();
+        chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME,module.getName());
+        chain.getContext().put(FacilioConstants.ContextNames.GROUP_STATUS,true);
+        chain.execute();
+        JSONArray outerArray = new JSONArray();
+        List<ViewGroups> groupViews = (List<ViewGroups>)chain.getContext().get(FacilioConstants.ContextNames.GROUP_VIEWS);
+        try {
+            if(CollectionUtils.isNotEmpty(groupViews)) {
+                groupViews.forEach(groupView -> {
+                    String outerKey = ViewTranslationImpl.getTranslationKey(groupView.getName());
+                    List<FacilioView> views = groupView.getViews();
+                    outerArray.add(TranslationsUtil.constructJSON(groupView.getDisplayName(),VIEWS,TranslationConstants.DISPLAY_NAME,outerKey,properties));
+                    views.forEach(view -> {
+                        String innerKey = ViewTranslationImpl.getTranslationKey(view.getName());
+                        outerArray.add(TranslationsUtil.constructJSON(view.getDisplayName(),VIEWS,TranslationConstants.DISPLAY_NAME,innerKey,properties));
+                    });
+                });
+            }
+        } catch (Exception e) {
+            LOGGER.error("Exception occurred while fetching View List  for Translation. ",e);
+        }
+        return outerArray;
     }
 }

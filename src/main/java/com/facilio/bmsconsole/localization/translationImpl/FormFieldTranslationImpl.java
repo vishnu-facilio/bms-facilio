@@ -7,7 +7,7 @@ import org.json.simple.JSONObject;
 import java.util.Properties;
 
 public class FormFieldTranslationImpl implements TranslationIfc {
-    private static final String FORM_FIELD = "formField";
+    public static final String FORM_FIELD = "formField";
     @Override
     public JSONObject translate ( JSONObject json,Properties translationFile ) throws Exception {
         JSONObject jsonObject = (JSONObject)json.get("result");
@@ -22,7 +22,7 @@ public class FormFieldTranslationImpl implements TranslationIfc {
         return json;
     }
 
-    private String getTranslationKey ( String value ) {
+    public static String getTranslationKey ( String value ) {
         return  FORM_FIELD+"."+value+"."+TranslationConstants.DISPLAY_NAME;
     }
 }

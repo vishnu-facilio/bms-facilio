@@ -22,6 +22,7 @@ public class TranslationConstants {
     public static final String FIELDS = "fields";
     public static final String DISPLAY_NAME = "displayName";
     public static final String NAME = "name";
+    public static final String KEY ="key";
 
 
     public static final FacilioModule getTranslationModule () {

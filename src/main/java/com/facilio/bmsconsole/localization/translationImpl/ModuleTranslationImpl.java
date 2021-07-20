@@ -9,10 +9,8 @@ import java.util.Properties;
 
 public class ModuleTranslationImpl implements TranslationIfc {
     private static final String MODULE = "module";
-    private static final String FIELDS = "fields";
+    public static final String FIELDS = "fields";
     private static final String DISPLAY_NAME = "displayName";
-    private static final String MODULE_ID = "moduleId";
-    private static final String FIELD_ID = "fieldId";
 
     @Override
     public JSONObject translate ( JSONObject json,Properties properties ) throws Exception {

@@ -11,6 +11,7 @@ import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
@@ -18,6 +19,7 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 @Log4j
 public class TranslationsUtil {
@@ -26,25 +28,25 @@ public class TranslationsUtil {
     private static final Map<String, TranslationConfFile> TRANSLATION_CONF_FILE_MAP = Collections.unmodifiableMap(initTranslationConfFile());
 
     @SneakyThrows
-    private static Map<String, TranslationConfFile> initTranslationConfFile ()  {
+    private static Map<String, TranslationConfFile> initTranslationConfFile () {
         try {
             Map<String, Object> confFile = loadYaml();
             List<Map<String, Object>> list = (List<Map<String, Object>>)confFile.get("translation");
             Map<String, TranslationConfFile> translationsFile = new UniqueMap<>();
-            if (CollectionUtils.isNotEmpty(list)) {
+            if(CollectionUtils.isNotEmpty(list)) {
                 for (Map<String, Object> translation : list) {
-                    String prefix = (String) translation.get(TranslationConstants.PREFIX);
-                    FacilioUtil.throwIllegalArgumentException(StringUtils.isEmpty(prefix), "Prefix cannot be empty for translation config file");
+                    String prefix = (String)translation.get(TranslationConstants.PREFIX);
+                    FacilioUtil.throwIllegalArgumentException(StringUtils.isEmpty(prefix),"Prefix cannot be empty for translation config file");
                     List<String> suffix = (List<String>)translation.get(TranslationConstants.SUFFIX);
-                    FacilioUtil.throwIllegalArgumentException(CollectionUtils.isEmpty(suffix), "Suffix cannot be empty for translation config file");
+                    FacilioUtil.throwIllegalArgumentException(CollectionUtils.isEmpty(suffix),"Suffix cannot be empty for translation config file");
                     TranslationConfFile confInstance = new TranslationConfFile();
                     confInstance.setPrefix(prefix);
                     confInstance.setSuffix(suffix);
-                    translationsFile.put(prefix, confInstance);
+                    translationsFile.put(prefix,confInstance);
                 }
             }
             return translationsFile;
-        }catch (Exception e){
+        } catch (Exception e) {
             LOGGER.error("Exception occurrend while loading translation conf file",e);
             throw e;
         }
@@ -54,7 +56,7 @@ public class TranslationsUtil {
         Yaml yaml = new Yaml();
         try (InputStream inputStream = FacilioServiceUtil.class.getClassLoader().getResourceAsStream(TRANSLATION_VALIDATION_FILE)) {
             return yaml.load(inputStream);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw e;
         }
     }
@@ -64,9 +66,9 @@ public class TranslationsUtil {
                 .table(TranslationConstants.getTranslationModule().getTableName())
                 .andCondition(CriteriaAPI.getCondition("LANG_CODE",TranslationConstants.LANG_CODE,langCode,StringOperators.IS))
                 .andCondition(CriteriaAPI.getCondition("STATUS","status","1",StringOperators.IS));
-        Map<String,Object> props = select.fetchFirst();
+        Map<String, Object> props = select.fetchFirst();
         long fileId = -1L;
-        if(props !=null && !props.isEmpty()){
+        if(props != null && !props.isEmpty()) {
             fileId = (long)props.get(TranslationConstants.FILE_ID);
         }
         return fileId;
@@ -74,5 +76,15 @@ public class TranslationsUtil {
 
     public static boolean prefixSuffixValidation ( String prefix,String suffix ) {
         return TRANSLATION_CONF_FILE_MAP.get(prefix).getSuffix().contains(suffix);
+    }
+
+    public static JSONObject constructJSON ( String label,String prefix,String suffix,String key,Properties properties ) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put(TranslationConstants.LABEL,label);
+        jsonObject.put(TranslationConstants.PREFIX,prefix);
+        jsonObject.put(TranslationConstants.SUFFIX,suffix);
+        jsonObject.put(TranslationConstants.KEY,key);
+        jsonObject.put(TranslationConstants.VALUE,properties.getProperty(key,null));
+        return jsonObject;
     }
 }

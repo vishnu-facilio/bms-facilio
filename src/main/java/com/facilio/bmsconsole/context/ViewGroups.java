@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.context;
 import java.util.List;
 
 import com.facilio.bmsconsole.view.FacilioView;
+import lombok.Getter;
+import lombok.Setter;
 
 public class ViewGroups {
 	
@@ -15,7 +17,10 @@ public class ViewGroups {
 	private String moduleName = "";
 	
 	private int sequenceNumber = -1;
-	
+
+	@Setter @Getter
+	private String translatedDisplayName;
+
 	public String getModuleName() {
 		return moduleName;
 	}

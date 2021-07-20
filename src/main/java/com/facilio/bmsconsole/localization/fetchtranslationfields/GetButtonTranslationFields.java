@@ -3,27 +3,39 @@ package com.facilio.bmsconsole.localization.fetchtranslationfields;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.WebTabContext;
+import com.facilio.bmsconsole.localization.translationImpl.ButtonTranslationImpl;
+import com.facilio.bmsconsole.localization.util.TranslationConstants;
+import com.facilio.bmsconsole.localization.util.TranslationsUtil;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.util.FacilioUtil;
 import lombok.NonNull;
-import org.json.simple.JSONObject;
+import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONArray;
 
-public class GetButtonTranslationFields implements TranslationTypeInterface{
+import java.util.List;
+import java.util.Properties;
+
+public class GetButtonTranslationFields implements TranslationTypeInterface {
     @Override
-    public JSONObject constructTranslationObject ( @NonNull WebTabContext context ) throws Exception {
+    public JSONArray constructTranslationObject ( @NonNull WebTabContext context,Properties properties ) throws Exception {
         FacilioUtil.throwIllegalArgumentException(!WebTabContext.Type.MODULE.equals(WebTabContext.Type.valueOf(context.getType())),"Invalid webTab Type for fetch Module Fields");
         ModuleBean moduleBean = (ModuleBean)BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(context.getModuleIds().get(0));
-        JSONObject buttonObject = new JSONObject();
+        JSONArray buttonArray = new JSONArray();
         FacilioChain chain = ReadOnlyChainFactory.getAllCustomButtonChain();
-        FacilioContext context1 = chain.getContext();
-        context1.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
+        chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
         chain.execute();
-        buttonObject.put("fields", context1.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST));
-        return buttonObject;
+        List<WorkflowRuleContext> customButtons = (List<WorkflowRuleContext>)chain.getContext().get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST);
+        if(CollectionUtils.isNotEmpty(customButtons)) {
+            customButtons.forEach(button -> {
+                String key = ButtonTranslationImpl.getTranslationKey(button.getId());
+                buttonArray.add(TranslationsUtil.constructJSON(button.getName(),ButtonTranslationImpl.BUTTON,TranslationConstants.DISPLAY_NAME,key,properties));
+            });
+        }
+        return buttonArray;
     }
 }

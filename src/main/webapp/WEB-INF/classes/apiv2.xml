@@ -975,7 +975,7 @@
 		extends="v2Api">
 		<action name="viewList"
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2viewlist">
-<!--			<param name="translationImpl">ViewTranslation</param>-->
+			<param name="translationImpl">ViewTranslation</param>
 		</action>
 		<action name="edit"
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2editView">
@@ -985,7 +985,7 @@
 		</action>
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2getViewDetail">
-<!--			<param name="translationImpl">ViewColumnTranslation</param>-->
+			<param name="translationImpl">ViewColumnTranslation</param>
 			<param name="viewName">{1}</param>
 		</action>
 		

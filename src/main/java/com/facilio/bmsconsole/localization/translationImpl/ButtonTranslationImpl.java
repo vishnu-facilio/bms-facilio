@@ -9,7 +9,7 @@ import org.json.simple.JSONObject;
 import java.util.Properties;
 
 public class ButtonTranslationImpl implements TranslationIfc {
-    private static final String BUTTON="button";
+    public static final String BUTTON="button";
     @Override
     public JSONObject translate ( @NonNull JSONObject json,@NonNull Properties translationFile ) throws Exception {
         JSONObject jsonObject = (JSONObject)json.get("result");
@@ -25,7 +25,7 @@ public class ButtonTranslationImpl implements TranslationIfc {
         return json;
     }
 
-    private String getTranslationKey ( long id ) {
+    public static String getTranslationKey ( long id ) {
         return BUTTON+"."+id+"."+TranslationConstants.DISPLAY_NAME;
     }
 }
