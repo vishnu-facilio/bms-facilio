@@ -24,12 +24,13 @@ public class DeleteTabGroupCommand extends FacilioCommand {
                 throw new IllegalArgumentException("Web Tab are found inside group");
             }
 
+            WebTabGroupContext webTabGroup = ApplicationApi.getWebTabGroup(id);
+
             GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
                     .table(ModuleFactory.getWebTabGroupModule().getTableName())
                     .andCondition(CriteriaAPI.getIdCondition(id, ModuleFactory.getWebTabGroupModule()));
             builder.delete();
 
-            WebTabGroupContext webTabGroup = ApplicationApi.getWebTabGroup(id);
             if (webTabGroup == null) {
                 throw new IllegalArgumentException("Invalid web group");
             }
