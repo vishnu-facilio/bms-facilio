@@ -1083,21 +1083,6 @@ ADD_INVITE_RECORD_VIA_V3CHAIN (29, "addInviteRecordViaV3Chain") {
 
 
 			AssetContext asset = (AssetContext) RecordAPI.getRecord(FacilioConstants.ContextNames.ASSET, Long.valueOf(objects[0].toString()));
-			if(objects[1].toString().equals("item")){
-				ItemContext item = (ItemContext) RecordAPI.getRecord(FacilioConstants.ContextNames.ITEM, Long.valueOf(objects[2].toString()));
-				if(item != null) {
-					asset.setRotatingItem(item);
-				}
-			}
-			else {
-				ToolContext tool = (ToolContext) RecordAPI.getRecord(FacilioConstants.ContextNames.TOOL, Long.valueOf(objects[2].toString()));
-				if(tool != null) {
-					asset.setRotatingTool(tool);
-				}
-			}
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			RecordAPI.updateRecord(asset, modBean.getModule(FacilioConstants.ContextNames.ASSET), modBean.getAllFields(FacilioConstants.ContextNames.ASSET));
-
 			FacilioChain c = TransactionChainFactory.getTagAssetASRotatingChain();
 			c.getContext().put(FacilioConstants.ContextNames.RECORD, asset);
 			c.execute();
