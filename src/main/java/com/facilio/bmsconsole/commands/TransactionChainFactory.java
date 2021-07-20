@@ -861,7 +861,13 @@ public class TransactionChainFactory {
 			c.addCommand(new PushDataToESCommand());
 			return c;
 		}
-		
+
+		public static FacilioChain getTagAssetASRotatingChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new AddRotatingItemToolCommand());
+			return c;
+		}
+
 		public static FacilioChain getCommonExecuteWorkflowChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
