@@ -11,4 +11,5 @@
 	 <module name='assetbreakdown' classname='com.facilio.workflowv2.modulefunctions.FacilioDowntimeModuleFunctions'/>
 	 <module name='inductionTemplate' classname='com.facilio.workflowv2.modulefunctions.FacilioInductionTemplateModuleFunctions'/>
 	 <module name='moves' classname='com.facilio.workflowv2.modulefunctions.FacilioMovesModuleFunctions'/>
+	 <module name='itemTransactions' classname='com.facilio.workflowv2.modulefunctions.FacilioItemTransactionFunctions'/>
 </workflow>
