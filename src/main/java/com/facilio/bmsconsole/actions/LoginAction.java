@@ -908,20 +908,20 @@ public class LoginAction extends FacilioAction {
 		account.put("org", AccountUtil.getCurrentOrg());
 		account.put("user", AccountUtil.getCurrentUser());
 
-		if (AccountUtil.getCurrentUser() != null) {
-			long securityPolicyId = AccountUtil.getCurrentUser().getSecurityPolicyId();
-			if (securityPolicyId > 0) {
-				SecurityPolicy securityPolicy = SecurityPolicyAPI.fetchSecurityPolicy(securityPolicyId);
-				account.put("isMFAEnabled", securityPolicy.getIsTOTPEnabled());
-				if (securityPolicy.getIsWebSessManagementEnabled()) {
-					Long userSessionId = AccountUtil.getCurrentAccount().getUserSessionId();
-					if (userSessionId != null && userSessionId > 0) {
-						long sessionExpiry = IAMUserUtil.getSessionExpiry(AccountUtil.getCurrentUser().getUid(), AccountUtil.getCurrentOrg().getOrgId(), userSessionId);
-						account.put("sessionExpiry", sessionExpiry);
-					}
-				}
-			}
-		}
+//		if (AccountUtil.getCurrentUser() != null) {
+//			long securityPolicyId = AccountUtil.getCurrentUser().getSecurityPolicyId();
+//			if (securityPolicyId > 0) {
+//				SecurityPolicy securityPolicy = SecurityPolicyAPI.fetchSecurityPolicy(securityPolicyId);
+//				account.put("isMFAEnabled", securityPolicy.getIsTOTPEnabled());
+//				if (securityPolicy.getIsWebSessManagementEnabled()) {
+//					Long userSessionId = AccountUtil.getCurrentAccount().getUserSessionId();
+//					if (userSessionId != null && userSessionId > 0) {
+//						long sessionExpiry = IAMUserUtil.getSessionExpiry(AccountUtil.getCurrentUser().getUid(), AccountUtil.getCurrentOrg().getOrgId(), userSessionId);
+//						account.put("sessionExpiry", sessionExpiry);
+//					}
+//				}
+//			}
+//		}
 
 		account.put("timezone",AccountUtil.getCurrentAccount().getTimeZone()); 
 		account.put("License", AccountUtil.getFeatureLicense());
