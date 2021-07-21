@@ -15,8 +15,10 @@ import com.facilio.db.criteria.operators.UserOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.ScopeHandler;
 import com.facilio.modules.fields.FacilioField;
+import lombok.NonNull;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -62,6 +64,9 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
 
     private List<FacilioField> filterFields (FacilioModule module, List<FacilioField> fields) throws Exception {
         fields = filterModuleFields(module, fields);
+        if (module.getModuleId() > 1) { // Ignoring spl modules if at all this is used for those things
+            fields.add(FieldFactory.getIdField(module));
+        }
         return filterScopeFields(module, fields);
     }
 
@@ -77,11 +82,19 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
         return fields;
     }
 
+    private FilterFieldContext getIdFilterField (@NonNull FacilioField field) {
+        if (field.getDataTypeEnum() == FieldType.ID) {
+            return new FilterFieldContext(field, isRecordIdIsIdField(field.getModule()) ? "ID" : "Record ID");
+        }
+        else {
+            return new FilterFieldContext(field);
+        }
+    }
+
     private FilterFieldContext createFilterField(FacilioModule module, FacilioField field) throws Exception { // We can do special handling here also maybe
 
         switch (field.getDataTypeEnum()) {
             case FILE:
-            case ID:
             case MISC:
             case LINE_ITEM:
                 return null;
@@ -89,6 +102,9 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
 
         FilterFieldContext filterField = null;
         switch (field.getName()) {
+            case "id" :
+                filterField = getIdFilterField(field); // Handling here just in case advanced filter is used for non modules which has ID field already
+                break;
             case "stateFlowId" :
             case "slaPolicyId" :
             case "approvalFlowId" :
@@ -177,5 +193,12 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
                     return fields;
             }
         }
+    }
+
+    private static final List<String> RECORD_ID_AS_ID_MODULES = Collections.unmodifiableList(Arrays.asList(new String[] {
+       ContextNames.ASSET
+    }));
+    private boolean isRecordIdIsIdField (@NonNull FacilioModule module) {
+        return RECORD_ID_AS_ID_MODULES.contains(module.getName());
     }
 }

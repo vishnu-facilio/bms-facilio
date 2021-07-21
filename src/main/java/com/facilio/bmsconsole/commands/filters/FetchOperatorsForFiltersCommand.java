@@ -45,7 +45,6 @@ public class FetchOperatorsForFiltersCommand extends FacilioCommand {
     private List<FilterOperator> createFilterOperators (FieldType fieldType) {
 
         switch (fieldType) {
-            case ID:
             case FILE:
             case COUNTER:
                 return null;
@@ -111,6 +110,7 @@ public class FetchOperatorsForFiltersCommand extends FacilioCommand {
                 || operator instanceof LookupOperator
                 || operator == EnumOperators.VALUE_IS
                 || operator == EnumOperators.VALUE_ISN_T
+                || operator instanceof RelatedModuleOperator
         ) {
             return null;
         }

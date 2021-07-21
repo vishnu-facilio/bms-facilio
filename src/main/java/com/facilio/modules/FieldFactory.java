@@ -217,7 +217,9 @@ public class FieldFactory extends BaseFieldFactory {
                 "modifiedTime",
                 "condition",
                 "autoClear",
-                "noOfAttachments"
+                "noOfAttachments",
+                "id",
+                "localId"
         }));
 
         public static final List<String> NEW_ALARMS_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[] {
@@ -232,7 +234,9 @@ public class FieldFactory extends BaseFieldFactory {
                 "resource",
                 "rule",
                 "readingAlarmCategory",
-                "faultType"
+                "faultType",
+                "id",
+                "localId"
         }));
 
         public static final List<String> NEW_OP_ALARMS_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[] {
@@ -241,7 +245,9 @@ public class FieldFactory extends BaseFieldFactory {
                 "lastClearedTime",
                 "lastCreatedTime",
                 "lastOccurredTime",
-                "resource"
+                "resource",
+                "id",
+                "localId"
         }));
 
         public static final List<String> WORK_ORDER_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[] {
@@ -278,7 +284,8 @@ public class FieldFactory extends BaseFieldFactory {
                 "responseDueDate",
                 "siteId",
                 "serialNumber",
-                "isQuotationNeeded"	
+                "isQuotationNeeded",
+                "id"
         }));
 
         public static final List<String> ASSET_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[] {
@@ -305,7 +312,8 @@ public class FieldFactory extends BaseFieldFactory {
                 "sysModifiedTime",
                 "sysModifiedBy",
                 "moduleState",
-                "siteId"
+                "siteId",
+                "id"
         }));
 
         public static final List<String> QUOTE_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[] {
@@ -326,8 +334,10 @@ public class FieldFactory extends BaseFieldFactory {
                 "sysCreatedTime",
                 "sysCreatedBy",
                 "sysModifiedTime",
-                "sysModifiedBy"
-                                                                        }));
+                "sysModifiedBy",
+                "id",
+                "localId"
+        }));
 
         public static final List<String> APPROVAL_FORM_FIELDS = Collections.unmodifiableList(Arrays.asList(new String[] {
                 "assignmentGroup",

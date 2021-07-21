@@ -23,19 +23,24 @@ public class FilterFieldContext {
     private FacilioField field;
     private JSONObject lookupFilters;
     public FilterFieldContext(FacilioField field) {
-        this (field, null, null);
+        this (field, null, null, null);
+    }
+
+    public FilterFieldContext(FacilioField field, String displayName) {
+        this (field, displayName, null, null);
     }
 
     public FilterFieldContext(FacilioField field, boolean showLookupPopup) {
-        this (field, null, showLookupPopup);
+        this (field, null, null, showLookupPopup);
     }
 
     public FilterFieldContext(FacilioField field, JSONObject lookupFilters) {
-        this (field, lookupFilters, null);
+        this (field, null, lookupFilters, null);
     }
 
-    public FilterFieldContext(FacilioField field, JSONObject lookupFilters, Boolean showLookupPopup) {
+    public FilterFieldContext(FacilioField field, String displayName, JSONObject lookupFilters, Boolean showLookupPopup) {
         this.field = field;
+        this.displayName = displayName;
         this.lookupFilters = lookupFilters;
 
         if (field instanceof BaseEnumField) {
@@ -95,8 +100,9 @@ public class FilterFieldContext {
         return field == null ? false : field.isDefault();
     }
 
+    private String displayName;
     public String getDisplayName() {
-        return field == null ? null : field.getDisplayName();
+        return StringUtils.isNotEmpty(displayName) ? displayName : field == null ? null : field.getDisplayName();
     }
 
     public String getDataType() {
