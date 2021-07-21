@@ -46,4 +46,9 @@ public class SecurityPoliciesSettingsAction extends FacilioAction {
         this.setResult("securityPolicies", this.securityPolicyList);
         return SUCCESS;
     }
+
+    public String deleteSecurityPolicy() throws Exception {
+        SecurityPolicyAPI.deleteSecurityPolicy(getId());
+        return SUCCESS;
+    }
 }

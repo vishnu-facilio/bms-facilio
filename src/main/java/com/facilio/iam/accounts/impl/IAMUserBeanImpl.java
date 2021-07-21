@@ -6,6 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -1040,12 +1041,42 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
+	public long getSessionExpiry(long uid, long orgId, long sessionId) throws Exception {
+		Map<String, Object> prop = null;
+		List<Map<String, Object>> sessions = getUserWebSessions(uid);
+		for (Map<String, Object> session: sessions) {
+			long s = (long) session.get("id");
+			if (s == sessionId && "web".equalsIgnoreCase((String) session.get("userType"))) {
+				prop = session;
+				break;
+			}
+		}
+
+		if (prop == null) {
+			return -1L;
+		}
+
+		SecurityPolicy userSecurityPolicy = getUserSecurityPolicy(uid, orgId);
+
+		if (userSecurityPolicy != null && userSecurityPolicy.getIsWebSessManagementEnabled() && userSecurityPolicy.getWebSessLifeTime() != null) {
+			Integer webSessLifeTime = userSecurityPolicy.getWebSessLifeTime();
+			Long startTime = (Long) prop.get("startTime");
+			if (startTime != null) {
+				Instant startInstant = Instant.ofEpochMilli(startTime);
+				return startInstant.plus(webSessLifeTime, ChronoUnit.DAYS).toEpochMilli();
+			}
+		}
+
+		return -1L;
+	}
+
+	@Override
 	public boolean isSessionExpired(long uid, long orgId, long sessionId) throws Exception {
 		Map<String, Object> prop = null;
 		List<Map<String, Object>> sessions = getUserWebSessions(uid);
 		for (Map<String, Object> session: sessions) {
 			long s = (long) session.get("id");
-			if (s == sessionId) {
+			if (s == sessionId && "web".equalsIgnoreCase((String) session.get("userType"))) {
 				prop = session;
 				break;
 			}

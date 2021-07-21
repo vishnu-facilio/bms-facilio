@@ -80,6 +80,10 @@ public class IAMUserUtil {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().isSessionExpired(uid, orgId, sessionId));
 	}
 
+	public static long getSessionExpiry(long uid, long orgId, long sessionId) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().getSessionExpiry(uid, orgId, sessionId));
+	}
+
 	public static boolean changePassword(String password, String newPassword, long uId, long orgId, String userType) throws Exception {
 		
 		Boolean verifyOldPassword = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getTransactionalUserBean().verifyPassword(orgId, uId, password));

@@ -71,10 +71,6 @@ public class SecurityPolicyAPI {
 
 
     public static void deleteSecurityPolicy(long id) throws Exception {
-        new GenericDeleteRecordBuilder()
-                .table(IAMAccountConstants.getSecurityPolicyModule().getTableName())
-                .andCondition(CriteriaAPI.getCondition("SecurityPolicies.SECURITY_POLICY_ID", "secPolId", id + "", NumberOperators.EQUALS));
-
         List<Long> userIds = new GenericSelectRecordBuilder()
                 .select(IAMAccountConstants.getAccountsUserFields())
                 .table(IAMAccountConstants.getAccountsUserModule().getTableName())
@@ -83,6 +79,11 @@ public class SecurityPolicyAPI {
                 .stream()
                 .map(i -> (long) i.get("uid"))
                 .collect(Collectors.toList());
+
+        new GenericDeleteRecordBuilder()
+                .table(IAMAccountConstants.getSecurityPolicyModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition("SecurityPolicies.SECURITY_POLICY_ID", "secPolId", id + "", NumberOperators.EQUALS))
+                .delete();
 
         IAMUtil.dropUserSecurityPolicyCache(userIds);
     }

@@ -48,6 +48,7 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
 import com.facilio.fw.BeanFactory;
+import com.facilio.iam.accounts.context.SecurityPolicy;
 import com.facilio.modules.FacilioModule;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -906,6 +907,22 @@ public class LoginAction extends FacilioAction {
 		
 		account.put("org", AccountUtil.getCurrentOrg());
 		account.put("user", AccountUtil.getCurrentUser());
+
+		if (AccountUtil.getCurrentUser() != null) {
+			long securityPolicyId = AccountUtil.getCurrentUser().getSecurityPolicyId();
+			if (securityPolicyId > 0) {
+				SecurityPolicy securityPolicy = SecurityPolicyAPI.fetchSecurityPolicy(securityPolicyId);
+				account.put("isMFAEnabled", securityPolicy.getIsTOTPEnabled());
+				if (securityPolicy.getIsWebSessManagementEnabled()) {
+					Long userSessionId = AccountUtil.getCurrentAccount().getUserSessionId();
+					if (userSessionId != null && userSessionId > 0) {
+						long sessionExpiry = IAMUserUtil.getSessionExpiry(AccountUtil.getCurrentUser().getUid(), AccountUtil.getCurrentOrg().getOrgId(), userSessionId);
+						account.put("sessionExpiry", sessionExpiry);
+					}
+				}
+			}
+		}
+
 		account.put("timezone",AccountUtil.getCurrentAccount().getTimeZone()); 
 		account.put("License", AccountUtil.getFeatureLicense());
 		

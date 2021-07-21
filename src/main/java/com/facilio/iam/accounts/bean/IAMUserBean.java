@@ -96,6 +96,8 @@ public interface IAMUserBean {
     public IAMAccount verifyUserSessionv3(String uId, String token, String userType) throws Exception;
 
 	public boolean isSessionExpired(long uid, long orgId, long sessionId) throws Exception;
+
+	public long getSessionExpiry(long uid, long orgId, long sessionId) throws Exception;
     
     public IAMAccount getAccountv3(long userId) throws Exception;
     

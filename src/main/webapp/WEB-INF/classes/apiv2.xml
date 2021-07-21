@@ -151,6 +151,10 @@
 		<action name="getAllSecurityPolicies" class="com.facilio.bmsconsole.actions.SecurityPoliciesSettingsAction"
 				method="getAllSecurityPolicy">
 		</action>
+
+		<action name="deleteSecurityPolicy" class="com.facilio.bmsconsole.actions.SecurityPoliciesSettingsAction"
+				method="deleteSecurityPolicy">
+		</action>
 		
 		<action name="validateInviteLink" class="com.facilio.auth.actions.FacilioAuthAction"
 			method="validateInviteLink">
