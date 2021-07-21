@@ -405,7 +405,7 @@
 
 		<action name="getAvailableButtons"
 				class="com.facilio.bmsconsole.actions.CustomButtonAction" method="getAvailableButtons" >
-<!--			<param name="translationImpl">ButtonTranslation</param>-->
+			<param name="translationImpl">ButtonTranslation</param>
 		</action>
 	</package>
 
@@ -2051,7 +2051,6 @@
 			class="com.facilio.bmsconsole.actions.FormAction" method="deleteForm">
 		</action>
 		<action name="fields" class="com.facilio.bmsconsole.actions.FormAction" method="formFieldList">
-<!--			<param name="translationImpl">FormFieldTranslation</param>-->
 		</action>
 		<action name="executeFormActionRules" class="com.facilio.bmsconsole.actions.FormAction" method="executeFormActionRules">
 		</action>

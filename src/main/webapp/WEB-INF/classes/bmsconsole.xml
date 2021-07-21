@@ -1565,7 +1565,7 @@
 		</action>
 		<action name="meta" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="metadata">
-<!--			 <param name="translationImpl">ModuleTranslation</param>-->
+			 <param name="translationImpl">ModuleTranslation</param>
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
 				<param name="includeProperties">meta.*</param>
@@ -1573,7 +1573,7 @@
 		</action>
 		<action name="metafields" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="metaFilterFields">
-<!--			<param name="translationImpl">FieldTranslation</param>-->
+			<param name="translationImpl">FieldTranslation</param>
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
 				<param name="includeProperties">meta.*</param>

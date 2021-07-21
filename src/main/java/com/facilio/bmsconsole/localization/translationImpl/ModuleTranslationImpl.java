@@ -16,6 +16,8 @@ public class ModuleTranslationImpl implements TranslationIfc {
     public JSONObject translate ( JSONObject json,Properties properties ) throws Exception {
 
         JSONObject object = (JSONObject)json.get("meta");
+        String key =  ModuleTranslationUtils.getTranslationKey((String)object.get("name"));
+        object.put(DISPLAY_NAME,getTranslation(properties,key,(String)object.get(DISPLAY_NAME)));
         object.keySet().forEach(obj -> {
             if(obj.equals(MODULE)) {
                 JSONObject moduleObject = (JSONObject)object.get(MODULE);
