@@ -436,5 +436,19 @@ public class FacilityAPI {
         return photos;
 
     }
+	
+
+	public static List<V3FacilityBookingContext> getFacilityBooking(List<Long> facilityIds) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		String facilitybooking = FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING;
+		List<FacilioField> fields = modBean.getAllFields(facilitybooking);
+		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+
+		SelectRecordsBuilder<V3FacilityBookingContext> builder = new SelectRecordsBuilder<V3FacilityBookingContext>().moduleName(facilitybooking)
+				.select(fields).beanClass(V3FacilityBookingContext.class).andCondition(CriteriaAPI.getCondition(
+						fieldsAsMap.get("facility"), StringUtils.join(facilityIds, ","), NumberOperators.EQUALS));
+		List<V3FacilityBookingContext> booking = builder.get();
+		return booking;
+	}
 
 }

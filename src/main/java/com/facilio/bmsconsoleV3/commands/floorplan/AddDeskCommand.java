@@ -64,6 +64,14 @@ public class AddDeskCommand extends FacilioCommand {
 								desksprop.add(desk);
 							}
 							else if (desk.getId() > 0){
+								
+								Map<Long, List<UpdateChangeSet>> deskChangeSet = V3RecordAPI.updateRecord(desk, deskModule, fields, true);
+								if(deskChangeSet != null && !deskChangeSet.isEmpty()) {
+								for(Long deskId : deskChangeSet.keySet()) {
+									V3DeskContext updatedDesk = (V3DeskContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.Floorplan.DESKS, deskId, V3DeskContext.class);
+									DesksAPI.AddorDeleteFacilityForDesks(updatedDesk);
+								}
+								}
 								if(desk.getDeskType() != 1 && desk.getEmployee() != null) {
 									JSONObject moveObj = new JSONObject();
 									moveObj.put("employee", desk.getEmployee());
@@ -73,13 +81,6 @@ public class AddDeskCommand extends FacilioCommand {
 									moveObj.put("timeOfMove", System.currentTimeMillis());
 									FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.MOVES);
 									V3Util.createRecord(module, (JSONObject) moveObj);
-								}
-								Map<Long, List<UpdateChangeSet>> deskChangeSet = V3RecordAPI.updateRecord(desk, deskModule, fields, true);
-								if(deskChangeSet != null && !deskChangeSet.isEmpty()) {
-								for(Long deskId : deskChangeSet.keySet()) {
-									V3DeskContext updatedDesk = (V3DeskContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.Floorplan.DESKS, deskId, V3DeskContext.class);
-									DesksAPI.AddorDeleteFacilityForDesks(updatedDesk);
-								}
 								}
 							}
 

@@ -45,6 +45,11 @@ public class UpdateDeskCommand extends FacilioCommand {
 						V3DeskContext desk = marker.getDesk();
 						if (desk != null) {
                             if (desk.getId() > 0) {
+                            	Map<Long, List<UpdateChangeSet>> changes = V3RecordAPI.updateRecord(desk, deskModule, fields, true);
+                            	if(changes != null && !changes.isEmpty()) {
+                            		deskChangeSet.putAll(changes);
+                            		
+                            	}
                             	if(desk.getDeskType() != 1 && desk.getEmployee() != null) {
 									JSONObject moveObj = new JSONObject();
 									moveObj.put("employee", desk.getEmployee());
@@ -55,10 +60,6 @@ public class UpdateDeskCommand extends FacilioCommand {
 									FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.MOVES);
 									V3Util.createRecord(module, (JSONObject) moveObj);
 								}
-                            	Map<Long, List<UpdateChangeSet>> changes = V3RecordAPI.updateRecord(desk, deskModule, fields, true);
-                            	if(changes != null && !changes.isEmpty()) {
-                            		deskChangeSet.putAll(changes);
-                            	}
                             } else if (desk.getId() < 0 || desk != null) {
                                 addDeskList.add(desk);
                             }
