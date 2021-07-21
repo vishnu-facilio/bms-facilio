@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.commands.picklist.ConstructFieldOptionForPicklist;
 import com.facilio.bmsconsole.commands.picklist.HandleDefaultIdAndOrderByForPicklist;
 import com.facilio.bmsconsole.commands.picklist.SpecialPickListFieldsCommand;
 import com.facilio.bmsconsole.commands.reservation.FetchAttendeesCommand;
+import com.facilio.bmsconsole.localization.fetchtranslationfields.GetTranslationDetailFieldsCommand;
 import com.facilio.bmsconsole.localization.translation.CreateTranslationJSONCommand;
 import com.facilio.bmsconsole.localization.translation.FetchFieldsListCommand;
 import com.facilio.bmsconsole.localization.translation.FetchModulesListCommand;
@@ -2826,6 +2827,18 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getEmployeeOccupantPortalSummary() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetEmployeeOccupantPortalSummaryCommand());
+		return chain;
+	}
+
+	public static FacilioChain getTranslationFields(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetTranslationFieldsCommand());
+		return chain;
+	}
+
+	public static FacilioChain getTranslationDetailFields(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetTranslationDetailFieldsCommand());
 		return chain;
 	}
 }

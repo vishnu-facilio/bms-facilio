@@ -14,7 +14,7 @@ import java.util.Map;
 @AllArgsConstructor
 public enum TranslationTypeEnum {
 
-    DETAILS(WebTabContext.Type.MODULE,new GetDetailsTranslationsFields()),
+    DETAILS(WebTabContext.Type.MODULE,new GetTranslationDetailFieldsCommand()),
     VIEWS(WebTabContext.Type.MODULE,new GetViewTranslationFields()),
     VIEW_COLUMNS(WebTabContext.Type.MODULE,new GetViewColumnTranslationFields()),
     BUTTONS(WebTabContext.Type.MODULE, new GetButtonTranslationFields()),

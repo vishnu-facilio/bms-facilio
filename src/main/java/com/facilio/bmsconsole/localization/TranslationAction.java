@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.context.WebTabGroupContext;
 import com.facilio.bmsconsole.localization.fetchtranslationfields.TranslationTypeEnum;
 import com.facilio.bmsconsole.localization.translationbean.TranslationBean;
+import com.facilio.bmsconsole.localization.util.TranslationConstants;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -31,9 +32,11 @@ public class TranslationAction extends FacilioAction {
 
     private String langCode;
     private List<Map<String, Object>> translations;
-    private Long tabId;
+    private long tabId = -1L;
     private long applicationId = -1L;
     private String translationType;
+    private long webTabGroupId = -1L;
+
 
     public String addLanguage () throws Exception {
         addNewLanguage();
@@ -41,20 +44,33 @@ public class TranslationAction extends FacilioAction {
     }
 
     public String getTranslationFields () throws Exception {
-        setResult("fieldList",getTranslationList());
+
+        FacilioChain chain = ReadOnlyChainFactory.getTranslationFields();
+        FacilioContext context = chain.getContext();
+
+        context.put(TranslationConstants.LANG_CODE,getLangCode());
+        context.put(TranslationConstants.TAB_ID,getTabId());
+        context.put(TranslationConstants.TRANSLATION_TYPE,getTranslationType());
+        chain.execute();
+
+        setResult("fieldList",context.get(TranslationConstants.TRANSLATION_FIELDS));
+
         return SUCCESS;
     }
 
-    private JSONArray getTranslationList () throws Exception {
-        TranslationBean bean = (TranslationBean)TransactionBeanFactory.lookup("TranslationBean");
-        Properties properties= bean.getTranslationFile(getLangCode());
-        FacilioUtil.throwIllegalArgumentException(properties ==null,"Translation file is an empty");
-        WebTabContext webTab= ApplicationApi.getWebTab(getTabId());
-        List<Long> moduleIds = ApplicationApi.getModuleIdsForTab(getTabId());
-        webTab.setModuleIds(moduleIds);
-        TranslationTypeEnum type = TranslationTypeEnum.getTranslationTypeModule(getTranslationType());
-        Objects.requireNonNull(type,"Invalid module type for Translation");
-        return type.getHandler().constructTranslationObject(webTab,properties);
+    public String getDetailFields()throws Exception{
+
+        FacilioChain chain = ReadOnlyChainFactory.getTranslationDetailFields();
+        FacilioContext context = chain.getContext();
+
+        context.put(TranslationConstants.LANG_CODE,getLangCode());
+        context.put(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID,getWebTabGroupId());
+        context.put(TranslationConstants.TRANSLATION_TYPE,getTranslationType());
+        chain.execute();
+
+        setResult("fieldList", context.get(TranslationConstants.TRANSLATION_FIELDS));
+
+        return SUCCESS;
     }
 
     public String save () throws Exception {

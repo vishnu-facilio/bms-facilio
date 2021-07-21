@@ -23,7 +23,9 @@ public class TranslationConstants {
     public static final String DISPLAY_NAME = "displayName";
     public static final String NAME = "name";
     public static final String KEY ="key";
-
+    public static final String TAB_ID="tabId";
+    public static final String TRANSLATION_FIELDS="translationFields";
+    public static final String TRANSLATION_TYPE="translationType";
 
     public static final FacilioModule getTranslationModule () {
         return new FacilioModule("translationData","Translation Data",TRANSLATION_DATA);
