@@ -207,6 +207,9 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 		
 		List records = isPicklist ? builder.getAsProps() : builder.get();
 		context.put("query",builder.toString());
+		if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 393l){
+			LOGGER.info("- - - - select controllers - - - - "+builder.toString());
+		}
 		/*LOGGER.info("- - - - select controllers - - - - "+builder.toString());*/
 		if (fetchCount) {
 			if (CollectionUtils.isNotEmpty(records)) {

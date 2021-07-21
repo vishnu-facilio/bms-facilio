@@ -40,15 +40,20 @@ public class HandleV2AlarmListLookupCommand extends FacilioCommand {
 			if (moduleName.equals(FacilioConstants.ContextNames.AGENT_ALARM)) {
 				NewAlarmAPI.updateAgentData(alarms);
 			}
+
 //			Map<Long, AlarmOccurrenceContext> occurencesMap = NewAlarmAPI.getLatestAlarmOccuranceMap(alarms);
 //			for (AlarmOccurrenceContext occurrence : occurencesMap.values()) {
 //				occurrence.setAlarm(null);
 //				occurrence.setResource(null);
 //			}
+
 			for(BaseAlarmContext alarm: alarms) {
 				if (alarm instanceof ReadingAlarm) {
 					ReadingAlarm readingAlarm = (ReadingAlarm) alarm;
 					readingAlarms.add(readingAlarm);
+					if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 393l){
+						LOGGER.info("HandleV2AlarmListLookupCommand : " + readingAlarm);
+					}
 					ruleIds.add(readingAlarm.getRule().getId());
 //					readingAlarm.setRule(null);
 					readingAlarm.setSubRule(null);
