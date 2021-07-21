@@ -19,14 +19,11 @@ public class FacilioItemTransactionFunctions extends FacilioModuleFunctionImpl {
 		
 		List<ItemTransactionsContext> itemTransaction = FieldUtil.getAsBeanListFromMapList(itemsRaw, ItemTransactionsContext.class);
 		
-		List<Long> purchasedItems = (List<Long>) objects.get(2);
-		
 		FacilioChain addWorkorderPartChain = TransactionChainFactory.getAddOrUpdateItemTransactionsChain();
 		
 		FacilioContext context = addWorkorderPartChain.getContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, itemTransaction);
-		context.put(FacilioConstants.ContextNames.PURCHASED_ITEM, purchasedItems);
 		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ASSET_ACTIVITY);
 		
 		addWorkorderPartChain.execute();
