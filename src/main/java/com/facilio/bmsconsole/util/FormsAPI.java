@@ -1,26 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.StringJoiner;
-import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
@@ -56,10 +35,24 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.BaseLookupField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class FormsAPI {
+
+	private static final Logger LOGGER = LogManager.getLogger(FormsAPI.class.getName());
 	
 	public static Map<String, Collection<FacilioForm>> getMobileForms() throws Exception {
 		Map<String, Collection<FacilioForm>> forms = new HashMap<> ();
@@ -258,13 +251,40 @@ public class FormsAPI {
 						long subFormId = section.getSubFormId();
 						FacilioForm subForm = getFormFromDB(subFormId);
 						section.setSubForm(subForm);
+
+						fillSubFormLookupField(section, subForm, form.getModuleId());
 					}
 				}
 			}
 			form.setSections(sections);
 		}
 	}
-	
+
+	private static void fillSubFormLookupField(FormSection section, FacilioForm subForm, long parentModuleId) throws Exception {
+		try {
+			long lookupFieldId = section.getLookupFieldId();
+			if (lookupFieldId == -1 && subForm != null) {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule module = subForm.getModule();
+				if (module == null) {
+					module = modBean.getModule(subForm.getModuleId());
+				}
+
+				if (module != null) {
+					List<FacilioField> allFields = modBean.getAllFields(module.getName());
+					Optional<FacilioField> first = allFields.stream().filter(f -> f instanceof LookupField &&
+							((LookupField) f).getLookupModule() != null &&
+							((LookupField) f).getLookupModule().getModuleId() == parentModuleId).findFirst();
+					if (first.isPresent()) {
+						section.setLookupFieldId(first.get().getFieldId());
+					}
+				}
+			}
+		} catch (Exception ex) {
+			LOGGER.warn("Error in getting lookupFieldId in subform", ex);
+		}
+	}
+
 	public static long createForm(FacilioForm form, FacilioModule module) throws Exception {
 		long orgId = AccountUtil.getCurrentOrg().getId();
 		form.setOrgId(orgId);

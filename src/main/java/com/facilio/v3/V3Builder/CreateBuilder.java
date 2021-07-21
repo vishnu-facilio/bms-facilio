@@ -11,6 +11,8 @@ public interface CreateBuilder {
 
     CreateBuilder afterTransaction(Command... afterTransactionCommand);
 
+    CreateBuilder activitySaveCommand(Command... activitySaveCommand);
+
     UpdateBuilder update();
 
     DeleteBuilder delete();

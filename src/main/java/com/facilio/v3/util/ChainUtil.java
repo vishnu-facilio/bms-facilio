@@ -1,10 +1,12 @@
 package com.facilio.v3.util;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.activity.CommonActivityType;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.commands.LoadViewCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
+import com.facilio.bmsconsoleV3.commands.AddActivitiesCommandV3;
 import com.facilio.bmsconsoleV3.commands.ExecutePostTransactionWorkFlowsCommandV3;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
@@ -150,6 +152,7 @@ public class ChainUtil {
         Command beforeSaveCommand = null;
         Command afterSaveCommand = null;
         Command afterTransactionCommand = null;
+        Command activityCommand = new AddActivityForModuleDataCommand(CommonActivityType.ADD_RECORD);
 
         FacilioChain transactionChain = FacilioChain.getTransactionChain();
 
@@ -162,6 +165,9 @@ public class ChainUtil {
                 beforeSaveCommand = createHandler.getBeforeSaveCommand();
                 afterSaveCommand = createHandler.getAfterSaveCommand();
                 afterTransactionCommand = createHandler.getAfterTransactionCommand();
+                if (createHandler.getActivitySaveCommand() != null) {
+                    activityCommand = createHandler.getActivitySaveCommand();
+                }
             }
         }
 
@@ -173,6 +179,8 @@ public class ChainUtil {
         transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "AddMultiSelectFieldsCommand", moduleName));
         transactionChain.addCommand(new SaveCommand(module));
         transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "SaveCommand", moduleName));
+        addIfNotNull(transactionChain, activityCommand);
+        transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "activityCommand", moduleName));
         transactionChain.addCommand(new SaveSubFormCommand());
         transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "SaveSubFormCommand", moduleName));
         transactionChain.addCommand(new SaveSubFormFromLineItemsCommand());
@@ -184,6 +192,8 @@ public class ChainUtil {
         addWorkflowChain(transactionChain);
         addIfNotNull(transactionChain, afterTransactionCommand);
         transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "afterTransactionCommand", moduleName));
+
+        transactionChain.addCommand(new AddActivitiesCommandV3());
 
         return transactionChain;
     }
@@ -293,6 +303,7 @@ public class ChainUtil {
         Command beforeSaveCommand = null;
         Command afterSaveCommand = null;
         Command afterTransactionCommand = null;
+        Command activityCommand = new AddActivityForModuleDataCommand(CommonActivityType.UPDATE_RECORD);
 
         FacilioChain transactionChain = FacilioChain.getTransactionChain();
 
@@ -305,6 +316,9 @@ public class ChainUtil {
                 beforeSaveCommand = updateHandler.getBeforeSaveCommand();
                 afterSaveCommand = updateHandler.getAfterSaveCommand();
                 afterTransactionCommand = updateHandler.getAfterTransactionCommand();
+                if (updateHandler.getActivitySaveCommand() != null) {
+                    activityCommand = updateHandler.getActivitySaveCommand();
+                }
             }
         }
 
@@ -313,6 +327,7 @@ public class ChainUtil {
 
         transactionChain.addCommand(new AddMultiSelectFieldsCommand());
         transactionChain.addCommand(new UpdateCommand(module));
+        transactionChain.addCommand(activityCommand);
         transactionChain.addCommand(new DeleteSubModuleRecordCommand());
         transactionChain.addCommand(new DeleteSubFormLineItems());
         transactionChain.addCommand(new PatchSubFormCommand());
@@ -329,6 +344,8 @@ public class ChainUtil {
         transactionChain.addCommand(new ExecuteSpecificWorkflowsCommand(WorkflowRuleContext.RuleType.CUSTOM_BUTTON));
 
         addIfNotNull(transactionChain, afterTransactionCommand);
+
+        transactionChain.addCommand(new AddActivitiesCommandV3());
         return transactionChain;
     }
 

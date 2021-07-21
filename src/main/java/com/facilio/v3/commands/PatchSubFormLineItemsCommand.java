@@ -15,6 +15,8 @@ import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.context.SubFormContext;
 import com.facilio.v3.context.V3Context;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -24,7 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PatchSubFormLineItemsCommand extends FacilioCommand {
+public class PatchSubFormLineItemsCommand extends ProcessSubFormLineItemsCommand {
     private List<ModuleBaseWithCustomFields> getRecord(Context context) {
         Map<String, List<ModuleBaseWithCustomFields>> recordMap = (Map<String, List<ModuleBaseWithCustomFields>>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
@@ -77,8 +79,10 @@ public class PatchSubFormLineItemsCommand extends FacilioCommand {
                 continue;
             }
 
-            long fieldId = subFormContext.getFieldId();
-            FacilioField lookup = fieldMap.get(fieldId);
+            FacilioField lookup = getLookupField(subFormContext, fieldMap, mainModuleName);
+            if (lookup == null) {
+                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid field id in relations");
+            }
 
             for (V3Context record: recordList) {
                 if (record.getId() <= 0) {

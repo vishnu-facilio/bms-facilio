@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SaveSubFormFromLineItemsCommand extends FacilioCommand {
+public class SaveSubFormFromLineItemsCommand extends ProcessSubFormLineItemsCommand {
     private List<ModuleBaseWithCustomFields> getRecord(Context context) {
         Map<String, List<ModuleBaseWithCustomFields>> recordMap = (Map<String, List<ModuleBaseWithCustomFields>>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
@@ -122,9 +122,7 @@ public class SaveSubFormFromLineItemsCommand extends FacilioCommand {
                 continue;
             }
 
-            long fieldId = subFormContext.getFieldId();
-            FacilioField lookup = fieldMap.get(fieldId);
-
+            FacilioField lookup = getLookupField(subFormContext, fieldMap, mainModuleName);
             if (lookup == null) {
                 throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid field id in relations");
             }

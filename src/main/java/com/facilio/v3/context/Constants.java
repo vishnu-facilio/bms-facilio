@@ -425,4 +425,11 @@ public class Constants {
     public static void setRecord(Context context, ModuleBaseWithCustomFields record) {
         context.put(RECORD, record);
     }
+
+    public static void setActivityContext(Context context, String activityContext) {
+        context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, activityContext);
+    }
+    public static String getActivityContext(Context context) {
+        return (String) context.get(FacilioConstants.ContextNames.CURRENT_ACTIVITY);
+    }
 }

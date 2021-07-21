@@ -135,6 +135,7 @@ public class V3Config implements V3Builder {
         private Command beforeSaveCommand;
         private Command afterSaveCommand;
         private Command afterTransactionCommand;
+        private Command activitySaveCommand;
         private V3Builder parent;
 
         private CreateHandler(V3Builder parent) {
@@ -162,6 +163,12 @@ public class V3Config implements V3Builder {
         @Override
         public CreateBuilder afterTransaction(Command... afterTransactionCommand) {
             this.afterTransactionCommand = buildTransactionChain(afterTransactionCommand);
+            return this;
+        }
+
+        @Override
+        public CreateBuilder activitySaveCommand(Command... activitySaveCommand) {
+            this.activitySaveCommand = buildTransactionChain(activitySaveCommand);
             return this;
         }
 
@@ -221,6 +228,10 @@ public class V3Config implements V3Builder {
         public void setAfterTransactionCommand(Command afterTransactionCommand) {
             this.afterTransactionCommand = afterTransactionCommand;
         }
+
+        public Command getActivitySaveCommand() {
+            return activitySaveCommand;
+        }
     }
 
     public class UpdateHandler implements UpdateBuilder {
@@ -228,6 +239,7 @@ public class V3Config implements V3Builder {
         private Command beforeSaveCommand;
         private Command afterSaveCommand;
         private Command afterTransactionCommand;
+        private Command activitySaveCommand;
 
         private V3Builder parent;
 
@@ -256,6 +268,12 @@ public class V3Config implements V3Builder {
         @Override
         public UpdateBuilder afterTransaction(Command... afterTransactionCommand) {
             this.afterTransactionCommand = buildTransactionChain(afterTransactionCommand);
+            return this;
+        }
+
+        @Override
+        public UpdateBuilder activitySaveCommand(Command... activitySaveCommand) {
+            this.activitySaveCommand = buildTransactionChain(activitySaveCommand);
             return this;
         }
 
@@ -315,6 +333,13 @@ public class V3Config implements V3Builder {
 
         public void setAfterTransactionCommand(Command afterTransactionCommand) {
             this.afterTransactionCommand = afterTransactionCommand;
+        }
+
+        public Command getActivitySaveCommand() {
+            return activitySaveCommand;
+        }
+        public void setActivitySaveCommand(Command activitySaveCommand) {
+            this.activitySaveCommand = activitySaveCommand;
         }
     }
 
