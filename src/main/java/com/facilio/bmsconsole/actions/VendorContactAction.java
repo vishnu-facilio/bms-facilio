@@ -107,6 +107,14 @@ public class VendorContactAction extends FacilioAction{
 		this.approvalTransitionId = approvalTransitionId;
 	}
 
+	private Long stateTransitionId;
+	public Long getStateTransitionId() {
+		return stateTransitionId;
+	}
+	public void setStateTransitionId(Long stateTransitionId) {
+		this.stateTransitionId = stateTransitionId;
+	}
+
 	public String addVendorContacts() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(vendorContacts)) {
@@ -139,7 +147,8 @@ public class VendorContactAction extends FacilioAction{
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			c.getContext().put(FacilioConstants.ContextNames.APPROVAL_TRANSITION_ID, approvalTransitionId);
-			
+			c.getContext().put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
+
 			for(VendorContactContext vc : vendorContacts) {
 				vc.parseFormData();
 				RecordAPI.handleCustomLookup(vc.getData(), FacilioConstants.ContextNames.VENDOR_CONTACT);
