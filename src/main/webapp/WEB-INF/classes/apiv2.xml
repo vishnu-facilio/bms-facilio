@@ -5948,6 +5948,7 @@
 			method="markApplicationAsDefault" />
 		<action name="fetchDetails" class="com.facilio.bmsconsole.actions.ApplicationAction"
 			method="getApplicationDetails">
+			<param name="translationImpl">WebTabTranslation</param>
 			</action>
 	</package>
 	<package name="applicationUsers" namespace="/api/v2/application/users"
@@ -5968,6 +5969,7 @@
 		<action name="*" class="com.facilio.bmsconsole.actions.ApplicationAction"
 			method="getApplicationDetails">
 			<param name="appId">{1}</param>
+
 		</action>
 	</package>
 	<package name="webtabGroup" namespace="/api/v2/tabGroup"
