@@ -7,6 +7,8 @@ import com.facilio.bmsconsoleV3.context.AssetDepartmentContext;
 import com.facilio.bmsconsoleV3.context.V3BaseSpaceContext;
 import com.facilio.bmsconsoleV3.context.V3ResourceContext;
 import com.facilio.bmsconsoleV3.context.V3SiteContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3ToolContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -57,10 +59,8 @@ public class V3AssetContext extends V3ResourceContext {
     private User lastIssuedToUser;
     private Long lastIssuedToWo;
     private List<Long> hazardIds;
-
-    // Change to V3 Context once done
-    private ToolContext rotatingTool;
-    private ItemContext rotatingItem;
+    private V3ToolContext rotatingTool;
+    private V3ItemContext rotatingItem;
 
     public Boolean getDowntimeStatus() {
         return downtimeStatus;
@@ -368,19 +368,19 @@ public class V3AssetContext extends V3ResourceContext {
         this.hazardIds = hazardIds;
     }
 
-    public ToolContext getRotatingTool() {
+    public V3ToolContext getRotatingTool() {
         return rotatingTool;
     }
 
-    public void setRotatingTool(ToolContext rotatingTool) {
+    public void setRotatingTool(V3ToolContext rotatingTool) {
         this.rotatingTool = rotatingTool;
     }
 
-    public ItemContext getRotatingItem() {
+    public V3ItemContext getRotatingItem() {
         return rotatingItem;
     }
 
-    public void setRotatingItem(ItemContext rotatingItem) {
+    public void setRotatingItem(V3ItemContext rotatingItem) {
         this.rotatingItem = rotatingItem;
     }
 
