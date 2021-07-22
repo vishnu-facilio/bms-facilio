@@ -13,28 +13,25 @@ import lombok.Getter;
 @Getter
 public enum BundleComponentsEnum {
 
-	MODULE(1,"Module",ModuleBundleComponent.class),
-	FIELD(2,"Field",FieldBundleComponent.class,BundleComponentsEnum.MODULE),
-	FUNCTION(3,"Function",FunctionBundleComponent.class),
-	WORKFLOW_RULE(4,"Workflow_Rule",WorkflowRuleBundleComponent.class,BundleComponentsEnum.MODULE),
+	MODULE(1,"Module",ModuleBundleComponent.class,null,true),
+	FIELD(2,"Field",FieldBundleComponent.class,BundleComponentsEnum.MODULE,false),
+	FUNCTION(3,"Function",FunctionBundleComponent.class,null,true),
+	WORKFLOW_RULE(4,"Workflow_Rule",WorkflowRuleBundleComponent.class,BundleComponentsEnum.MODULE,true),
+	NOTIFICATION_RULE(5,"Notification_Rule",NotificationRuleBundleComponent.class,BundleComponentsEnum.MODULE,true),
 	;
 	
 	int value;
 	String name;
 	BundleComponentsEnum parent;
 	Class<? extends BundleComponentInterface> componentClass;
+	Boolean asSeperateFolder;
 	
-	BundleComponentsEnum(int value, String name,Class<? extends BundleComponentInterface> componentClass,BundleComponentsEnum parent) {
+	BundleComponentsEnum(int value, String name,Class<? extends BundleComponentInterface> componentClass,BundleComponentsEnum parent,Boolean asSeperateFolder) {
 		this.value = value;
 		this.name = name;
 		this.parent = parent;
 		this.componentClass = componentClass;
-	}
-	
-	BundleComponentsEnum(int value, String name,Class<? extends BundleComponentInterface> componentClass) {
-		this.value = value;
-		this.name = name;
-		this.componentClass = componentClass;
+		this.asSeperateFolder = asSeperateFolder;
 	}
 	
 	public BundleComponentInterface getBundleComponentClassInstance() throws Exception {
