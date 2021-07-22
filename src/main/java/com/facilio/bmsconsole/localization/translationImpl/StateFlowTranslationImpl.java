@@ -10,15 +10,15 @@ import java.util.Properties;
 
 public class StateFlowTranslationImpl implements TranslationIfc {
 
-    public static final String STATE_FLOW = "stateFlow";
-
+    public static final String STATE = "state";
+    public static final String STATE_TRANSITION = "stateTransition";
     @Override
     public JSONObject translate ( @NonNull JSONObject json,@NonNull Properties translationFile ) throws Exception {
 
         JSONObject jsonObject = (JSONObject)json.get("result");
         JSONObject currentState = (JSONObject)jsonObject.get("currentState");
         if(currentState != null && !currentState.isEmpty()) {
-            String currentStateKey = getTranslationKey(String.valueOf(currentState.get("id")));
+            String currentStateKey = getTranslationKey(STATE,String.valueOf(currentState.get("id")));
             currentState.put(TranslationConstants.DISPLAY_NAME,getTranslation(translationFile,currentStateKey,(String)currentState.get(TranslationConstants.DISPLAY_NAME)));
         }
 
@@ -26,15 +26,15 @@ public class StateFlowTranslationImpl implements TranslationIfc {
         if(states != null && !states.isEmpty()) {
             for (int i = 0; i < states.size(); i++) {
                 JSONObject state = (JSONObject)states.get(i);
-                String key = getTranslationKey(String.valueOf(currentState.get("id")));
+                String key = getTranslationKey(STATE_TRANSITION,String.valueOf(currentState.get("id")));
                 currentState.put(TranslationConstants.NAME,getTranslation(translationFile,key,(String)state.get(TranslationConstants.NAME)));
             }
         }
         return json;
     }
 
-    private String getTranslationKey ( String key ) {
-        return STATE_FLOW + "." + key + "." + TranslationConstants.DISPLAY_NAME;
+    public static String getTranslationKey ( String prefix , String key ) {
+        return prefix + "." + key + "." + TranslationConstants.DISPLAY_NAME;
     }
 
 }
