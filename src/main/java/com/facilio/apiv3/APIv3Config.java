@@ -104,6 +104,7 @@ import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.Announcem
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnnouncementContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.*;
 import com.facilio.bmsconsoleV3.context.floorplan.*;
+import com.facilio.bmsconsoleV3.context.inventory.*;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
