@@ -15,17 +15,27 @@ public class ViewTranslationImpl implements TranslationIfc {
 
         JSONObject jsonObject = (JSONObject)json.get("result");
         JSONArray gorups = (JSONArray)jsonObject.get("groupViews");
-        for (int i=0;i< gorups.size();i++){
-            JSONObject groupViews = (JSONObject)gorups.get(i);
-            String outerKey = getTranslationKey((String)groupViews.get(TranslationConstants.NAME));
-            groupViews.put(TranslationConstants.DISPLAY_NAME,getTranslation(translationFile,outerKey,(String)groupViews.get(TranslationConstants.DISPLAY_NAME)));
-            JSONArray jsonArray = (JSONArray)groupViews.get("views");
-            for (int j=0;j< jsonArray.size();j++){
-                JSONObject viewObject = (JSONObject)jsonArray.get(j);
-                String innerKey = getTranslationKey((String)viewObject.get(TranslationConstants.NAME));
-                viewObject.put(TranslationConstants.DISPLAY_NAME,getTranslation(translationFile,innerKey,(String)viewObject.get(TranslationConstants.DISPLAY_NAME)));
+        JSONArray views = (JSONArray)jsonObject.get("views");
+        if(gorups != null && !gorups.isEmpty()) {
+            for (int i=0;i< gorups.size();i++){
+                JSONObject groupViews = (JSONObject)gorups.get(i);
+                String outerKey = getTranslationKey((String)groupViews.get(TranslationConstants.NAME));
+                groupViews.put(TranslationConstants.DISPLAY_NAME,getTranslation(translationFile,outerKey,(String)groupViews.get(TranslationConstants.DISPLAY_NAME)));
+                JSONArray jsonArray = (JSONArray)groupViews.get("views");
+                for (int j=0;j< jsonArray.size();j++){
+                    JSONObject viewObject = (JSONObject)jsonArray.get(j);
+                    String innerKey = getTranslationKey((String)viewObject.get(TranslationConstants.NAME));
+                    viewObject.put(TranslationConstants.DISPLAY_NAME,getTranslation(translationFile,innerKey,(String)viewObject.get(TranslationConstants.DISPLAY_NAME)));
+                }
+            }
+        }else if(views != null && !views.isEmpty()){
+            for (int i=0;i< views.size();i++){
+                JSONObject groupViews = (JSONObject)views.get(i);
+                String outerKey = getTranslationKey((String)groupViews.get(TranslationConstants.NAME));
+                groupViews.put(TranslationConstants.DISPLAY_NAME,getTranslation(translationFile,outerKey,(String)groupViews.get(TranslationConstants.DISPLAY_NAME)));
             }
         }
+
         return json;
     }
 

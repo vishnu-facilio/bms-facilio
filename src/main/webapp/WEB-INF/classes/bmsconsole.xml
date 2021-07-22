@@ -1112,6 +1112,7 @@
 		<action name="*" class="com.facilio.bmsconsole.actions.ViewAction"
 			method="getViewDetail">
 			<param name="viewName">{1}</param>
+			<param name="translationImpl">ViewColumnTranslation</param>
 			<result name="success" type="json">
 				<param name="root">view</param>
 				<param name="excludeProperties">criteria.conditions.*\.computedWhereClause</param>

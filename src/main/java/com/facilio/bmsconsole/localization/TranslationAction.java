@@ -6,10 +6,8 @@ import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.ApplicationLayoutContext;
 import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.context.WebTabGroupContext;
-import com.facilio.bmsconsole.localization.fetchtranslationfields.TranslationTypeEnum;
 import com.facilio.bmsconsole.localization.translationbean.TranslationBean;
 import com.facilio.bmsconsole.localization.util.TranslationConstants;
-import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -20,11 +18,14 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Log4j
 @Getter
@@ -57,6 +58,22 @@ public class TranslationAction extends FacilioAction {
 
         setResult("fieldList",context.get(TranslationConstants.TRANSLATION_FIELDS));
 
+        return SUCCESS;
+    }
+
+    public String getAllWebTabFields () throws Exception {
+
+        String linkName = ServletActionContext.getRequest().getParameter("linkName");
+
+        FacilioUtil.throwIllegalArgumentException(StringUtils.isEmpty(linkName),"Application linkName shouldn't be null");
+
+        FacilioChain chain = ReadOnlyChainFactory.getAllWebTabTranlsationFields();
+        FacilioContext context = chain.getContext();
+        context.put(TranslationConstants.LANG_CODE,getLangCode());
+        context.put("linkName",linkName);
+        chain.execute();
+
+        setResult("fields",context.get(TranslationConstants.TRANSLATION_FIELDS));
         return SUCCESS;
     }
 

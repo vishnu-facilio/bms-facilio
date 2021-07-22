@@ -8,7 +8,7 @@ import java.util.Properties;
 
 public class WebTabTranslationImpl implements TranslationIfc {
 
-    private static final String WEB_TAB = "webTab";
+    public static final String WEB_TAB = "webTab";
 
     @Override
     public JSONObject translate ( JSONObject json,Properties translationFile ) throws Exception {
@@ -22,7 +22,7 @@ public class WebTabTranslationImpl implements TranslationIfc {
         return json;
     }
 
-    private String getTranslationKey ( String value ) {
+    public static  String getTranslationKey ( String value ) {
         return WEB_TAB + "." + value + "." + TranslationConstants.DISPLAY_NAME;
     }
 }

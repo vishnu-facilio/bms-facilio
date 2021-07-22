@@ -13,7 +13,7 @@ import java.util.Properties;
 @Log4j
 public class ModuleTranslationUtils {
 
-    private static final String PREFIX_MODULE = "module";
+    public static final String PREFIX_MODULE = "module";
     private static final String SUFFIX = "displayName";
     private static final String PREFIX_FIELD ="field";
 

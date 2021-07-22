@@ -1,10 +1,8 @@
 package com.facilio.bmsconsole.localization.translationImpl;
 
-import com.facilio.bmsconsole.localization.translation.ModuleTranslationUtils;
 import com.facilio.bmsconsole.localization.util.TranslationConstants;
 import com.facilio.translation.TranslationIfc;
 import lombok.NonNull;
-import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -21,16 +19,11 @@ public class ViewColumnTranslationImpl implements TranslationIfc {
         String outerKey = getTranslationKey((String)viewDetail.get(TranslationConstants.NAME));
         viewDetail.put(TranslationConstants.DISPLAY_NAME,getTranslation(translationFile,outerKey,(String)viewDetail.get(TranslationConstants.DISPLAY_NAME)));
         JSONArray jsonArray = (JSONArray)viewDetail.get("fields");
-        for (int i=0;i<jsonArray.size();i++){
+        for (int i = 0; i < jsonArray.size(); i++) {
             JSONObject obj = (JSONObject)jsonArray.get(i);
-            String fieldName = (String)obj.get("fieldName");
-            if(StringUtils.isEmpty(fieldName)){
-                fieldName = (String)obj.get("name");
-            }
-            if(StringUtils.isNotEmpty(fieldName)){
-                String viewKey = ModuleTranslationUtils.getFieldTranslationKey(fieldName);
-                obj.put("columnDisplayName",getTranslation(translationFile,viewKey,(String)obj.get("columnDisplayName")));
-            }
+            long id = (long)obj.get("id");
+            String viewKey = getTranslationKey(String.valueOf(id));
+            obj.put("columnDisplayName",getTranslation(translationFile,viewKey,(String)obj.get("columnDisplayName")));
         }
 
         return json;

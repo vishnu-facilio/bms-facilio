@@ -20,7 +20,8 @@ public enum TranslationTypeEnum {
     STATE_FLOWS(WebTabContext.Type.MODULE,new GetStateFlowTranslationFields()),
     FORMS(WebTabContext.Type.MODULE,new GetFormTranslationFields()),
     FORM_FIELDS(WebTabContext.Type.MODULE, new GetFormFieldTranslationFields()),
-    FIELDS(WebTabContext.Type.MODULE,new GetFieldTranslationFileds())
+    FIELDS(WebTabContext.Type.MODULE,new GetFieldTranslationFileds()),
+    WEB_TAB(WebTabContext.Type.MODULE,new GetWebTabTranslationFields())
     ;
 
     private static final Map<String, TranslationTypeEnum> TRANSLATION_TYPE_ENUM_MAP = initTranslationWiseType();
