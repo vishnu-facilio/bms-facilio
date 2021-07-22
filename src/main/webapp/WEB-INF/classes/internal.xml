@@ -37,6 +37,14 @@
 				<param name="statusCode">200</param>
 			</result>
 		</action>
-	</package>
 
+		<action name="updateClientBuild" class="com.facilio.bmsconsole.actions.ClientBuildAction" method="updateVersion">
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+			</result>
+			<result name="success" type="json">
+				<param name="statusCode">200</param>
+			</result>
+		</action>
+	</package>
 </struts>
