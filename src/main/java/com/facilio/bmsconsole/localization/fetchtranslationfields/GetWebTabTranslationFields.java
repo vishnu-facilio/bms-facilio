@@ -26,7 +26,7 @@ public class GetWebTabTranslationFields implements TranslationTypeInterface{
         JSONArray jsonArray = new JSONArray();
 
         List<Long> moduleIds = context.getModuleIds();
-        String webTabKey = WebTabTranslationImpl.getTranslationKey(context.getRoute());
+        String webTabKey = WebTabTranslationImpl.getTranslationKey(WebTabTranslationImpl.WEB_TAB,context.getRoute());
         jsonArray.add(TranslationsUtil.constructJSON(context.getName(),WebTabTranslationImpl.WEB_TAB,TranslationConstants.DISPLAY_NAME,context.getRoute(),webTabKey,properties));
 
         if(CollectionUtils.isNotEmpty(moduleIds)){

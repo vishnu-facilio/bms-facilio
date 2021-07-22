@@ -495,7 +495,9 @@
 			method="updateStateTransition" />
 		<action name="getAvailableState"
 			class="com.facilio.bmsconsole.actions.StateFlowAction"
-			method="getAvailableState" />
+			method="getAvailableState" >
+			<param name="translationImpl">StateFlowTranslation</param>
+		</action>
 		<action name="confirmationDialogs"
 				class="com.facilio.bmsconsole.actions.StateFlowAction"
 				method="getConfirmationDialogs" />

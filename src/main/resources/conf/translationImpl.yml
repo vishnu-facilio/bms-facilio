@@ -34,3 +34,6 @@ translations:
 
   - name: ButtonTranslation
     translationImplClass : com.facilio.bmsconsole.localization.translationImpl.ButtonTranslationImpl
+
+  - name: StateFlowTranslation
+    translationImplClass : com.facilio.bmsconsole.localization.translationImpl.StateFlowTranslationImpl
