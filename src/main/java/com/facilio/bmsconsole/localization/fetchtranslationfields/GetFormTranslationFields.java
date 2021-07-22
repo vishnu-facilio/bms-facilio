@@ -5,20 +5,15 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
-import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.localization.translationImpl.FormTranslationImpl;
-import com.facilio.bmsconsole.localization.translationImpl.ViewColumnTranslationImpl;
 import com.facilio.bmsconsole.localization.util.TranslationConstants;
 import com.facilio.bmsconsole.localization.util.TranslationsUtil;
-import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.util.FacilioUtil;
 import lombok.NonNull;
-import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONArray;
 
@@ -27,7 +22,7 @@ import java.util.Properties;
 
 public class GetFormTranslationFields implements TranslationTypeInterface{
     @Override
-    public JSONArray constructTranslationObject ( @NonNull WebTabContext context,Properties properties ) throws Exception {
+    public JSONArray constructTranslationObject ( @NonNull WebTabContext context,String queryString,Properties properties ) throws Exception {
         FacilioUtil.throwIllegalArgumentException(!WebTabContext.Type.MODULE.equals(WebTabContext.Type.valueOf(context.getType())),"Invalid webTab Type for fetch Module Fields");
         JSONArray jsonArray = new JSONArray();
         ModuleBean moduleBean = (ModuleBean)BeanFactory.lookup("ModuleBean");

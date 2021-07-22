@@ -20,6 +20,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -35,7 +36,6 @@ public class TranslationAction extends FacilioAction {
     private long tabId = -1L;
     private long applicationId = -1L;
     private String translationType;
-    private long webTabGroupId = -1L;
 
 
     public String addLanguage () throws Exception {
@@ -45,30 +45,17 @@ public class TranslationAction extends FacilioAction {
 
     public String getTranslationFields () throws Exception {
 
+        String param = ServletActionContext.getRequest().getParameter("queryString");
         FacilioChain chain = ReadOnlyChainFactory.getTranslationFields();
         FacilioContext context = chain.getContext();
 
         context.put(TranslationConstants.LANG_CODE,getLangCode());
         context.put(TranslationConstants.TAB_ID,getTabId());
         context.put(TranslationConstants.TRANSLATION_TYPE,getTranslationType());
+        context.put(TranslationConstants.QUERY_STRING,param);
         chain.execute();
 
         setResult("fieldList",context.get(TranslationConstants.TRANSLATION_FIELDS));
-
-        return SUCCESS;
-    }
-
-    public String getDetailFields()throws Exception{
-
-        FacilioChain chain = ReadOnlyChainFactory.getTranslationDetailFields();
-        FacilioContext context = chain.getContext();
-
-        context.put(TranslationConstants.LANG_CODE,getLangCode());
-        context.put(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID,getWebTabGroupId());
-        context.put(TranslationConstants.TRANSLATION_TYPE,getTranslationType());
-        chain.execute();
-
-        setResult("fieldList", context.get(TranslationConstants.TRANSLATION_FIELDS));
 
         return SUCCESS;
     }

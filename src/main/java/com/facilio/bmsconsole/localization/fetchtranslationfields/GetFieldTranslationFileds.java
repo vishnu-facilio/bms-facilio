@@ -5,11 +5,9 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.localization.translation.ModuleTranslationUtils;
 import com.facilio.bmsconsole.localization.translationImpl.ModuleTranslationImpl;
-import com.facilio.bmsconsole.localization.translationImpl.ViewColumnTranslationImpl;
 import com.facilio.bmsconsole.localization.util.TranslationConstants;
 import com.facilio.bmsconsole.localization.util.TranslationsUtil;
 import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -25,7 +23,7 @@ import java.util.Properties;
 
 public class GetFieldTranslationFileds implements TranslationTypeInterface{
     @Override
-    public JSONArray constructTranslationObject ( @NonNull WebTabContext webTabContext,Properties properties ) throws Exception {
+    public JSONArray constructTranslationObject ( @NonNull WebTabContext webTabContext,String queryString,Properties properties ) throws Exception {
         FacilioUtil.throwIllegalArgumentException(!WebTabContext.Type.MODULE.equals(WebTabContext.Type.valueOf(webTabContext.getType())),"Invalid webTab Type for fetch Module Fields");
         JSONArray jsonArray = new JSONArray();
         ModuleBean moduleBean = (ModuleBean)BeanFactory.lookup("ModuleBean");

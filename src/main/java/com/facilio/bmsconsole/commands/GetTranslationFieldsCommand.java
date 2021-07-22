@@ -21,6 +21,7 @@ public class GetTranslationFieldsCommand extends FacilioCommand {
         long tabId = (long)context.get(TranslationConstants.TAB_ID);
         String langCode = (String)context.get(TranslationConstants.LANG_CODE);
         String translationType = (String)context.get(TranslationConstants.TRANSLATION_TYPE);
+        String queryString = (String)context.getOrDefault(TranslationConstants.QUERY_STRING,null);
 
         TranslationBean bean = (TranslationBean)TransactionBeanFactory.lookup("TranslationBean");
         Properties properties = bean.getTranslationFile(langCode);
@@ -32,7 +33,7 @@ public class GetTranslationFieldsCommand extends FacilioCommand {
 
         TranslationTypeEnum type = TranslationTypeEnum.getTranslationTypeModule(translationType);
         Objects.requireNonNull(type,"Invalid module type for Translation");
-        context.put(TranslationConstants.TRANSLATION_FIELDS,type.getHandler().constructTranslationObject(webTab,properties));
+        context.put(TranslationConstants.TRANSLATION_FIELDS,type.getHandler().constructTranslationObject(webTab,queryString,properties));
 
         return false;
     }

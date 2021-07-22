@@ -27,7 +27,7 @@ public class GetViewTranslationFields implements TranslationTypeInterface {
     private static final String VIEWS = "views";
 
     @Override
-    public JSONArray constructTranslationObject ( @NonNull WebTabContext context,Properties properties ) throws Exception {
+    public JSONArray constructTranslationObject ( @NonNull WebTabContext context,String queryString,Properties properties ) throws Exception {
         FacilioUtil.throwIllegalArgumentException(!WebTabContext.Type.MODULE.equals(WebTabContext.Type.valueOf(context.getType())),"Invalid webTab Type for fetch Module Fields");
         ModuleBean moduleBean = (ModuleBean)BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(context.getModuleIds().get(0));

@@ -21,7 +21,7 @@ import java.util.Properties;
 
 public class GetButtonTranslationFields implements TranslationTypeInterface {
     @Override
-    public JSONArray constructTranslationObject ( @NonNull WebTabContext context,Properties properties ) throws Exception {
+    public JSONArray constructTranslationObject ( @NonNull WebTabContext context,String queryString,Properties properties ) throws Exception {
         FacilioUtil.throwIllegalArgumentException(!WebTabContext.Type.MODULE.equals(WebTabContext.Type.valueOf(context.getType())),"Invalid webTab Type for fetch Module Fields");
         ModuleBean moduleBean = (ModuleBean)BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(context.getModuleIds().get(0));

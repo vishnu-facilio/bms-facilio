@@ -6587,7 +6587,6 @@
 		<action name="update" class="com.facilio.bmsconsole.localization.TranslationAction" method="save"></action>
 		<action name="getFields" class="com.facilio.bmsconsole.localization.TranslationAction" method="getTranslationFields"></action>
 		<action name="fetchDetail" class="com.facilio.bmsconsole.localization.TranslationAction" method="fetchDetail"></action>
-		<action name="getDetailFields" class="com.facilio.bmsconsole.localization.TranslationAction" method="getDetailFields"/>
 	</package>
 
 

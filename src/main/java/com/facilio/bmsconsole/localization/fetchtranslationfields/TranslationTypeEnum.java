@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 
-import javax.swing.*;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +13,7 @@ import java.util.Map;
 @AllArgsConstructor
 public enum TranslationTypeEnum {
 
-    DETAILS(WebTabContext.Type.MODULE,new GetTranslationDetailFieldsCommand()),
+    DETAILS(WebTabContext.Type.MODULE,new GetTranslationDetailFields()),
     VIEWS(WebTabContext.Type.MODULE,new GetViewTranslationFields()),
     VIEW_COLUMNS(WebTabContext.Type.MODULE,new GetViewColumnTranslationFields()),
     BUTTONS(WebTabContext.Type.MODULE, new GetButtonTranslationFields()),

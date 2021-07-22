@@ -9,7 +9,7 @@ import java.util.Properties;
 
 public class GetDashboardTranslationFields implements TranslationTypeInterface{
     @Override
-    public JSONArray constructTranslationObject ( @NonNull WebTabContext context,Properties properties ) throws Exception {
+    public JSONArray constructTranslationObject ( @NonNull WebTabContext context,String queryString,Properties properties ) throws Exception {
         FacilioUtil.throwIllegalArgumentException(!WebTabContext.Type.DASHBOARD.equals(context.getType()),"Invalid webTab Type for fetch Dashboard Fields");
         context.getModules();
         return null;

@@ -7,7 +7,6 @@ import com.facilio.bmsconsole.localization.translationImpl.ViewColumnTranslation
 import com.facilio.bmsconsole.localization.util.TranslationConstants;
 import com.facilio.bmsconsole.localization.util.TranslationsUtil;
 import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -24,7 +23,7 @@ import java.util.Properties;
 public class GetViewColumnTranslationFields implements TranslationTypeInterface {
 
     @Override
-    public JSONArray constructTranslationObject ( @NonNull WebTabContext context,Properties properties ) throws Exception {
+    public JSONArray constructTranslationObject ( @NonNull WebTabContext context,String queryString,Properties properties ) throws Exception {
         FacilioUtil.throwIllegalArgumentException(!WebTabContext.Type.MODULE.equals(WebTabContext.Type.valueOf(context.getType())),"Invalid webTab Type for fetch Module Fields");
         JSONArray viewColumnsArray = new JSONArray();
         ModuleBean moduleBean = (ModuleBean)BeanFactory.lookup("ModuleBean");

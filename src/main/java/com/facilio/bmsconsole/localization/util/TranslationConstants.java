@@ -26,6 +26,7 @@ public class TranslationConstants {
     public static final String TAB_ID="tabId";
     public static final String TRANSLATION_FIELDS="translationFields";
     public static final String TRANSLATION_TYPE="translationType";
+    public static final String QUERY_STRING = "queryString";
 
     public static final FacilioModule getTranslationModule () {
         return new FacilioModule("translationData","Translation Data",TRANSLATION_DATA);
