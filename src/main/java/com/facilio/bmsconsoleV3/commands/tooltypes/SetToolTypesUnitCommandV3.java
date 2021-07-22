@@ -7,9 +7,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections.MapUtils;
 
 import com.facilio.command.FacilioCommand;
-import com.facilio.bmsconsoleV3.context.V3ItemTypesContext;
-import com.facilio.bmsconsoleV3.context.V3ToolTypesContext;
-import com.facilio.constants.FacilioConstants;
+import com.facilio.bmsconsoleV3.context.inventory.V3ToolTypesContext;
 import com.facilio.unitconversion.Unit;
 import com.facilio.v3.context.Constants;
 

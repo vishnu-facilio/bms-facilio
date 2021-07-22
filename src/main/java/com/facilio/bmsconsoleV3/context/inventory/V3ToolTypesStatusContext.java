@@ -1,12 +1,12 @@
-package com.facilio.bmsconsoleV3.context;
+package com.facilio.bmsconsoleV3.context.inventory;
 
 import com.facilio.v3.context.V3Context;
 
-public class V3ItemTypesCategoryContext extends V3Context {
+public class V3ToolTypesStatusContext extends V3Context {
 
     private static final long serialVersionUID = 1L;
-    
-    private String name;
+	
+	private String name;
 	private String displayName;
 	private String description;
 	private Long ttime;
@@ -18,7 +18,7 @@ public class V3ItemTypesCategoryContext extends V3Context {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	public String getDisplayName() {
 		return displayName;
 	}
@@ -45,5 +45,4 @@ public class V3ItemTypesCategoryContext extends V3Context {
 	public void setModifiedTime(Long modifiedTime) {
 		this.modifiedTime = modifiedTime;
 	}
-
 }
