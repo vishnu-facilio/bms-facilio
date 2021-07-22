@@ -911,9 +911,9 @@ public class LoginAction extends FacilioAction {
 		if (AccountUtil.getCurrentUser() != null) {
 			long securityPolicyId = AccountUtil.getCurrentUser().getSecurityPolicyId();
 			if (securityPolicyId > 0) {
-				SecurityPolicy securityPolicy = SecurityPolicyAPI.fetchSecurityPolicy(securityPolicyId);
-				account.put("isMFAEnabled", securityPolicy.getIsTOTPEnabled());
-				if (securityPolicy.getIsWebSessManagementEnabled()) {
+				SecurityPolicy securityPolicy = IAMUserUtil.getUserSecurityPolicy(AccountUtil.getCurrentUser().getUid());
+				account.put("isMFAEnabled", securityPolicy.getIsMFAEnabled());
+				if (securityPolicy.getIsWebSessManagementEnabled() != null && securityPolicy.getIsWebSessManagementEnabled()) {
 					Long userSessionId = AccountUtil.getCurrentAccount().getUserSessionId();
 					if (userSessionId != null && userSessionId > 0) {
 						long sessionExpiry = IAMUserUtil.getSessionExpiry(AccountUtil.getCurrentUser().getUid(), userSessionId);

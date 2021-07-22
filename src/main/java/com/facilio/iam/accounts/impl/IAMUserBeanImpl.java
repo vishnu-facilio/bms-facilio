@@ -237,11 +237,11 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			throw new SecurityPolicyException(SecurityPolicyException.ErrorCode.MIN_SPL_CHARS_VIOLATION, "Password should have atleast " + pwdMinSplChars + " special characters.");
 		}
 
-		if (userSecurityPolicy.getPwdIsMixed() && upperCase < 1) {
+		if (userSecurityPolicy.getPwdIsMixed() != null && userSecurityPolicy.getPwdIsMixed() && upperCase < 1) {
 			throw new SecurityPolicyException(SecurityPolicyException.ErrorCode.MIN_UPPER_CASE_VIOLATION, "Password should have atleast 1 upper case character.");
 		}
 
-		if (isOneOfPreviousPasswords(uid, userSecurityPolicy.getPwdPrevPassRefusal(), password)) {
+		if (userSecurityPolicy.getPwdPrevPassRefusal() != null && isOneOfPreviousPasswords(uid, userSecurityPolicy.getPwdPrevPassRefusal(), password)) {
 			throw new SecurityPolicyException(SecurityPolicyException.ErrorCode.PREV_PWD_VIOLATION, "Should not be one of previous passwords.");
 		}
 
@@ -1047,7 +1047,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 		SecurityPolicy userSecurityPolicy = getUserSecurityPolicy(uid);
 
-		if (userSecurityPolicy != null && userSecurityPolicy.getIsWebSessManagementEnabled() && userSecurityPolicy.getWebSessLifeTime() != null) {
+		if (userSecurityPolicy != null && userSecurityPolicy.getIsWebSessManagementEnabled() != null && userSecurityPolicy.getIsWebSessManagementEnabled() && userSecurityPolicy.getWebSessLifeTime() != null) {
 			Integer webSessLifeTime = userSecurityPolicy.getWebSessLifeTime();
 			Long startTime = (Long) prop.get("startTime");
 			if (startTime != null) {
@@ -1077,7 +1077,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 		SecurityPolicy userSecurityPolicy = getUserSecurityPolicy(uid);
 
-		if (userSecurityPolicy != null && userSecurityPolicy.getIsWebSessManagementEnabled() && userSecurityPolicy.getWebSessLifeTime() != null) {
+		if (userSecurityPolicy != null && userSecurityPolicy.getIsWebSessManagementEnabled() != null && userSecurityPolicy.getIsWebSessManagementEnabled() && userSecurityPolicy.getWebSessLifeTime() != null) {
 			Integer webSessLifeTime = userSecurityPolicy.getWebSessLifeTime();
 			Long startTime = (Long) prop.get("startTime");
 			if (startTime != null) {
