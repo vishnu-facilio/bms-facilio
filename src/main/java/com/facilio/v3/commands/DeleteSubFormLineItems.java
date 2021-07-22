@@ -14,13 +14,15 @@ import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.context.SubFormContext;
 import com.facilio.v3.context.V3Context;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
 
-public class DeleteSubFormLineItems extends FacilioCommand {
+public class DeleteSubFormLineItems extends ProcessSubFormLineItemsCommand {
     private List<ModuleBaseWithCustomFields> getRecord(Context context) {
         Map<String, List<ModuleBaseWithCustomFields>> recordMap = (Map<String, List<ModuleBaseWithCustomFields>>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
@@ -54,18 +56,28 @@ public class DeleteSubFormLineItems extends FacilioCommand {
                         fieldMap.put(lookupField.getId(), lookupField);
                     }
 
-                    if (module.getTypeEnum() != FacilioModule.ModuleType.BASE_ENTITY) {
-                        DeleteRecordBuilder<ModuleBaseWithCustomFields> builder = new DeleteRecordBuilder<>()
-                                .module(module)
-                                .andCondition(CriteriaAPI.getIdCondition(subFormContext.getDeleteIds(), module))
-                                .andCondition(CriteriaAPI.getCondition(fieldMap.get(subFormContext.getFieldId()), record.getId()+"", NumberOperators.EQUALS));
-                        builder.delete();
+                    FacilioField lookupField = getLookupField(subFormContext, fieldMap, mainModuleName);
+                    if (lookupField == null) {
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid field id in relations");
                     }
-                    //TODO call delete chain for base entity
+                    deleteRows(module, subFormContext.getDeleteIds(), lookupField, record);
                 }
             }
         }
         return false;
+    }
+
+    private int deleteRows(FacilioModule module, List<Long> rowIds, FacilioField lookupField, ModuleBaseWithCustomFields record) throws Exception {
+        DeleteRecordBuilder builder = new DeleteRecordBuilder()
+                .module(module)
+                .andCondition(CriteriaAPI.getIdCondition(rowIds, module))
+                .andCondition(CriteriaAPI.getCondition(lookupField, record.getId()+"", NumberOperators.EQUALS));
+        if (module.isTrashEnabled()) {
+            return builder.markAsDelete();
+        }
+        else {
+            return builder.delete();
+        }
     }
 
     private Map<String, List<LookupField>> getAllLookupFields(ModuleBean modBean, FacilioModule module) throws Exception {
