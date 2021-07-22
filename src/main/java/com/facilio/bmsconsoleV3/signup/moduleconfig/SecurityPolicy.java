@@ -22,8 +22,9 @@ public class SecurityPolicy extends SignUpData {
         User currentUser = AccountUtil.getCurrentUser();
 
         var prop = new HashMap<String, Object>();
-        prop.put("name", "Default");
+        prop.put("name", "Default Policy");
         prop.put("isDefault", true);
+        prop.put("isMFAEnabled", false);
         prop.put("isTOTPEnabled", false);
         prop.put("isMOTPEnabled", false);
         prop.put("isPwdPolicyEnabled", true);
