@@ -1,6 +1,5 @@
 package com.facilio.bmsconsoleV3.context.inventory;
 
-import com.facilio.bmsconsoleV3.context.V3ItemTypesContext;
 import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.unitconversion.Unit;

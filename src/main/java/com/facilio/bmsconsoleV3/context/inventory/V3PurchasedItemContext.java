@@ -1,6 +1,5 @@
 package com.facilio.bmsconsoleV3.context.inventory;
 
-import com.facilio.bmsconsoleV3.context.V3ItemTypesContext;
 import com.facilio.v3.context.V3Context;
 
 public class V3PurchasedItemContext extends V3Context {

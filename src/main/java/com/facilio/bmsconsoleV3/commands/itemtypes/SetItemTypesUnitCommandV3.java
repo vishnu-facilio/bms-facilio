@@ -5,17 +5,9 @@ import java.util.Map;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.MapUtils;
-import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.command.FacilioCommand;
-import com.facilio.bmsconsole.context.ItemTypesContext;
-import com.facilio.bmsconsoleV3.context.V3ItemTypesContext;
-import com.facilio.bmsconsoleV3.context.V3VisitorContext;
-import com.facilio.bmsconsoleV3.context.V3VisitorLoggingContext;
-import com.facilio.bmsconsoleV3.context.V3WatchListContext;
-import com.facilio.bmsconsoleV3.util.V3VisitorManagementAPI;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.modules.fields.NumberField;
+import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
 import com.facilio.unitconversion.Unit;
 import com.facilio.v3.context.Constants;
 
