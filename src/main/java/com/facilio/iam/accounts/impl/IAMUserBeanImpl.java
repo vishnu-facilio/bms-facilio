@@ -1,8 +1,6 @@
 package com.facilio.iam.accounts.impl;
 
 import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
@@ -14,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
@@ -23,7 +22,6 @@ import com.facilio.accounts.sso.AccountSSO;
 import com.facilio.accounts.sso.DomainSSO;
 import com.facilio.accounts.sso.SSOUtil;
 import com.facilio.auth.actions.PasswordHashUtil;
-import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.operators.*;
 import com.facilio.db.util.DBConf;
 import com.facilio.iam.accounts.context.SecurityPolicy;
@@ -71,8 +69,6 @@ import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
-
-import static com.facilio.iam.accounts.exceptions.SecurityPolicyException.ErrorCode.WEB_SESSION_EXPIRY;
 
 
 public class IAMUserBeanImpl implements IAMUserBean {
@@ -171,8 +167,8 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
-	public void validatePasswordWithSecurityPolicy(long uid, String password, long orgId) throws Exception {
-		SecurityPolicy userSecurityPolicy = getUserSecurityPolicy(uid, orgId);
+	public void validatePasswordWithSecurityPolicy(long uid, String password) throws Exception {
+		SecurityPolicy userSecurityPolicy = getUserSecurityPolicy(uid);
 		if (userSecurityPolicy == null) {
 			return;
 		}
@@ -214,37 +210,35 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			}
 		}
 
-		if (userSecurityPolicy.getPwdIsMixed()) {
-			Integer pwdMinNumDigits = userSecurityPolicy.getPwdMinNumDigits();
-			Integer pwdMinSplChars = userSecurityPolicy.getPwdMinSplChars();
-			int numChars = 0;
-			int splChars = 0;
-			int upperCase = 0;
-			for (int i = 0; i < password.length(); i++) {
-				if (StringUtils.isNumeric(password.charAt(i) + "")) {
-					numChars++;
-				}
-
-				if (!StringUtils.isAlphanumeric(password.charAt(i) + "")) {
-					splChars++;
-				}
-
-				if (StringUtils.isAllUpperCase(password.charAt(i) + "")) {
-					upperCase++;
-				}
+		Integer pwdMinNumDigits = userSecurityPolicy.getPwdMinNumDigits();
+		Integer pwdMinSplChars = userSecurityPolicy.getPwdMinSplChars();
+		int numChars = 0;
+		int splChars = 0;
+		int upperCase = 0;
+		for (int i = 0; i < password.length(); i++) {
+			if (StringUtils.isNumeric(password.charAt(i) + "")) {
+				numChars++;
 			}
 
-			if (numChars < pwdMinNumDigits) {
-				throw new SecurityPolicyException(SecurityPolicyException.ErrorCode.MIN_NUM_DIGIT_VIOLATION, "Password should have atleast " + pwdMinNumDigits + " numeric digits.");
+			if (!StringUtils.isAlphanumeric(password.charAt(i) + "")) {
+				splChars++;
 			}
 
-			if (splChars < pwdMinSplChars) {
-				throw new SecurityPolicyException(SecurityPolicyException.ErrorCode.MIN_SPL_CHARS_VIOLATION, "Password should have atleast " + pwdMinSplChars + " special characters.");
+			if (StringUtils.isAllUpperCase(password.charAt(i) + "")) {
+				upperCase++;
 			}
+		}
 
-			if (upperCase < 1) {
-				throw new SecurityPolicyException(SecurityPolicyException.ErrorCode.MIN_UPPER_CASE_VIOLATION, "Password should have atleast 1 upper case character.");
-			}
+		if (pwdMinNumDigits != null && (numChars < pwdMinNumDigits)) {
+			throw new SecurityPolicyException(SecurityPolicyException.ErrorCode.MIN_NUM_DIGIT_VIOLATION, "Password should have atleast " + pwdMinNumDigits + " numeric digits.");
+		}
+
+		if (pwdMinSplChars != null && (splChars < pwdMinSplChars)) {
+			throw new SecurityPolicyException(SecurityPolicyException.ErrorCode.MIN_SPL_CHARS_VIOLATION, "Password should have atleast " + pwdMinSplChars + " special characters.");
+		}
+
+		if (userSecurityPolicy.getPwdIsMixed() && upperCase < 1) {
+			throw new SecurityPolicyException(SecurityPolicyException.ErrorCode.MIN_UPPER_CASE_VIOLATION, "Password should have atleast 1 upper case character.");
 		}
 
 		if (isOneOfPreviousPasswords(uid, userSecurityPolicy.getPwdPrevPassRefusal(), password)) {
@@ -285,12 +279,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 	private IAMUser resetUserPassword(String password, IAMUser user) throws Exception {
 		if(user != null) {
-			long orgId= user.getOrgId();
-			if (orgId <= 0) {
-				Organization defaultOrg = IAMUserUtil.getDefaultOrg(user.getUid());
-				orgId = defaultOrg.getOrgId();
-			}
-			validatePasswordWithSecurityPolicy(user.getUid(), password, orgId);
+			validatePasswordWithSecurityPolicy(user.getUid(), password);
 			password = PasswordHashUtil.cryptWithMD5(password);
 			savePreviousPassword(user.getUid(), password);
 //			if ((System.currentTimeMillis() - user.getInvitedTime()) < INVITE_LINK_EXPIRE_TIME) {
@@ -1041,7 +1030,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
-	public long getSessionExpiry(long uid, long orgId, long sessionId) throws Exception {
+	public long getSessionExpiry(long uid, long sessionId) throws Exception {
 		Map<String, Object> prop = null;
 		List<Map<String, Object>> sessions = getUserWebSessions(uid);
 		for (Map<String, Object> session: sessions) {
@@ -1056,7 +1045,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			return -1L;
 		}
 
-		SecurityPolicy userSecurityPolicy = getUserSecurityPolicy(uid, orgId);
+		SecurityPolicy userSecurityPolicy = getUserSecurityPolicy(uid);
 
 		if (userSecurityPolicy != null && userSecurityPolicy.getIsWebSessManagementEnabled() && userSecurityPolicy.getWebSessLifeTime() != null) {
 			Integer webSessLifeTime = userSecurityPolicy.getWebSessLifeTime();
@@ -1071,7 +1060,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
-	public boolean isSessionExpired(long uid, long orgId, long sessionId) throws Exception {
+	public boolean isSessionExpired(long uid, long sessionId) throws Exception {
 		Map<String, Object> prop = null;
 		List<Map<String, Object>> sessions = getUserWebSessions(uid);
 		for (Map<String, Object> session: sessions) {
@@ -1086,7 +1075,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			return false;
 		}
 
-		SecurityPolicy userSecurityPolicy = getUserSecurityPolicy(uid, orgId);
+		SecurityPolicy userSecurityPolicy = getUserSecurityPolicy(uid);
 
 		if (userSecurityPolicy != null && userSecurityPolicy.getIsWebSessManagementEnabled() && userSecurityPolicy.getWebSessLifeTime() != null) {
 			Integer webSessLifeTime = userSecurityPolicy.getWebSessLifeTime();
@@ -1638,14 +1627,14 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
-	public SecurityPolicy getUserSecurityPolicy(String email, AppDomain.GroupType groupType, long orgId) throws Exception {
+	public SecurityPolicy getUserSecurityPolicy(String email, AppDomain.GroupType groupType) throws Exception {
 		List<Map<String, Object>> userData = getUserData(email, groupType);
 		if (CollectionUtils.isEmpty(userData)) {
 			return null;
 		}
 
 		var uid = (long) userData.get(0).get("uid");
-		return getUserSecurityPolicy(uid, orgId);
+		return getUserSecurityPolicy(uid);
 	}
 
 	@Override
@@ -2041,7 +2030,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
-	public SecurityPolicy getUserSecurityPolicy(long uid, long orgId) throws Exception {
+	public SecurityPolicy getUserSecurityPolicy(long uid) throws Exception {
 		var prop = (Map<String, Object>) LRUCache.getUserSecurityPolicyCache().get(uid+"");
 		if (MapUtils.isNotEmpty(prop)) {
 			return FieldUtil.getAsBeanFromMap(prop, SecurityPolicy.class);
@@ -2057,8 +2046,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 				.table("Account_Users")
 				.innerJoin("SecurityPolicies")
 				.on("SecurityPolicies.SECURITY_POLICY_ID = Account_Users.SECURITY_POLICY_ID")
-				.andCondition(CriteriaAPI.getCondition(accountUserFieldMap.get("uid"), uid+"", NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("SecurityPolicies.ORGID", "orgId", orgId+"", NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition(accountUserFieldMap.get("uid"), uid+"", NumberOperators.EQUALS));
 
 		Map<String, Object> map = selectBuilder.fetchFirst();
 		LRUCache.getUserSecurityPolicyCache().put(uid+"", map);
@@ -2574,6 +2562,88 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public long createSecurityPolicy(SecurityPolicy securityPolicy) throws Exception {
+		GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder();
+		List<FacilioField> securityPolicyFields = IAMAccountConstants.getSecurityPolicyFields();
+		insertRecordBuilder
+				.fields(securityPolicyFields)
+				.table("SecurityPolicies");
+		Map<String, Object> prop = FieldUtil.getAsProperties(securityPolicy);
+		return insertRecordBuilder.insert(prop);
+	}
+
+	@Override
+	public void updateSecurityPolicy(SecurityPolicy securityPolicy) throws Exception {
+		List<FacilioField> securityPolicyFields = IAMAccountConstants.getSecurityPolicyFields();
+		GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder();
+		updateRecordBuilder
+				.fields(securityPolicyFields)
+				.table("SecurityPolicies")
+				.andCondition(CriteriaAPI.getCondition("SecurityPolicies.SECURITY_POLICY_ID", "securityPolicyId", securityPolicy.getId()+"", NumberOperators.EQUALS));
+
+
+		updateRecordBuilder.update(securityPolicy.getAsMap());
+
+		List<Long> userIds = new GenericSelectRecordBuilder()
+				.select(IAMAccountConstants.getAccountsUserFields())
+				.table(IAMAccountConstants.getAccountsUserModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("SECURITY_POLICY_ID", "securityPolicyId", securityPolicy.getId() + "", NumberOperators.EQUALS))
+				.get()
+				.stream()
+				.map(i -> (long) i.get("uid"))
+				.collect(Collectors.toList());
+
+		IAMUtil.dropUserSecurityPolicyCache(userIds);
+	}
+
+	@Override
+	public SecurityPolicy fetchSecurityPolicy(long id, long orgId) throws Exception {
+		Criteria cr = new Criteria();
+		cr.addAndCondition(CriteriaAPI.getCondition("SecurityPolicies.SECURITY_POLICY_ID", "secPolId", id + "", NumberOperators.EQUALS));
+		cr.addAndCondition(CriteriaAPI.getCondition("SecurityPolicies.ORGID", "orgId", orgId+"", NumberOperators.EQUALS));
+		List<SecurityPolicy> securityPolicies = securityPolicyList(cr);
+		return securityPolicies.get(0);
+	}
+
+	private List<SecurityPolicy> securityPolicyList(Criteria criteria) throws Exception {
+		return new GenericSelectRecordBuilder()
+				.select(IAMAccountConstants.getSecurityPolicyFields())
+				.table("SecurityPolicies")
+				.andCriteria(criteria)
+				.get()
+				.stream()
+				.map(i -> FieldUtil.getAsBeanFromMap(i, SecurityPolicy.class))
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<SecurityPolicy> fetchAllSecurityPolicies(long orgId) throws Exception {
+		Criteria cr = new Criteria();
+		cr.addAndCondition(CriteriaAPI.getCondition("SecurityPolicies.ORGID", "orgId", orgId+"", NumberOperators.EQUALS));
+		return securityPolicyList(cr);
+	}
+
+	@Override
+	public void deleteSecurityPolicy(long id, long orgId) throws Exception {
+		List<Long> userIds = new GenericSelectRecordBuilder()
+				.select(IAMAccountConstants.getAccountsUserFields())
+				.table(IAMAccountConstants.getAccountsUserModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("SECURITY_POLICY_ID", "securityPolicyId", id + "", NumberOperators.EQUALS))
+				.get()
+				.stream()
+				.map(i -> (long) i.get("uid"))
+				.collect(Collectors.toList());
+
+		new GenericDeleteRecordBuilder()
+				.table(IAMAccountConstants.getSecurityPolicyModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("SecurityPolicies.SECURITY_POLICY_ID", "secPolId", id + "", NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("SecurityPolicies.ORGID", "orgId", orgId+"", NumberOperators.EQUALS))
+				.delete();
+
+		IAMUtil.dropUserSecurityPolicyCache(userIds);
 	}
 		
 }

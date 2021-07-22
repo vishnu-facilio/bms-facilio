@@ -60,16 +60,16 @@ public class IAMUserUtil {
 
 	}
 
-	public static SecurityPolicy getUserSecurityPolicy(String email, AppDomain.GroupType groupType, long orgId) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().getUserSecurityPolicy(email, groupType, orgId));
+	public static SecurityPolicy getUserSecurityPolicy(String email, AppDomain.GroupType groupType) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().getUserSecurityPolicy(email, groupType));
 	}
 
-	public static SecurityPolicy getUserSecurityPolicy(long uid, long orgId) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().getUserSecurityPolicy(uid, orgId));
+	public static SecurityPolicy getUserSecurityPolicy(long uid) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().getUserSecurityPolicy(uid));
 	}
 
-	public static void validatePasswordWithSecurityPolicy(long uid, String password, long orgId) throws Exception {
-		FacilioService.runAsService(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().validatePasswordWithSecurityPolicy(uid, password, orgId));
+	public static void validatePasswordWithSecurityPolicy(long uid, String password) throws Exception {
+		FacilioService.runAsService(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().validatePasswordWithSecurityPolicy(uid, password));
 	}
 
 	public static String cryptWithMD5(String password) throws Exception {
@@ -77,11 +77,11 @@ public class IAMUserUtil {
 	}
 
 	public static boolean isSessionExpired(long uid, long orgId, long sessionId) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().isSessionExpired(uid, orgId, sessionId));
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().isSessionExpired(uid, sessionId));
 	}
 
-	public static long getSessionExpiry(long uid, long orgId, long sessionId) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().getSessionExpiry(uid, orgId, sessionId));
+	public static long getSessionExpiry(long uid, long sessionId) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().getSessionExpiry(uid, sessionId));
 	}
 
 	public static boolean changePassword(String password, String newPassword, long uId, long orgId, String userType) throws Exception {
@@ -92,7 +92,7 @@ public class IAMUserUtil {
 			IAMUser userToBeUpdated = new IAMUser();
 			userToBeUpdated.setUid(uId);
 			userToBeUpdated.setPwdLastUpdatedTime(System.currentTimeMillis());
-			validatePasswordWithSecurityPolicy(uId, newPassword, orgId);
+			validatePasswordWithSecurityPolicy(uId, newPassword);
 			String encryptedPassword = cryptWithMD5(newPassword);
 			userToBeUpdated.setPassword(encryptedPassword);
 

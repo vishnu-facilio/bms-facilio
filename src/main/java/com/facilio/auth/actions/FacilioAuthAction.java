@@ -857,7 +857,7 @@ public class FacilioAuthAction extends FacilioAction {
 			return SUCCESS;
 		} else {
 			Organization defaultOrg = IAMUserUtil.getDefaultOrg((long) userInfo.get("uid"));
-			var securityPolicy = IAMUserUtil.getUserSecurityPolicy(emailFromDigest, AppDomain.GroupType.FACILIO, defaultOrg.getOrgId());
+			var securityPolicy = IAMUserUtil.getUserSecurityPolicy(emailFromDigest, AppDomain.GroupType.FACILIO);
 			var resetRequired = false;
 			if (securityPolicy != null && securityPolicy.getIsPwdPolicyEnabled() && securityPolicy.getPwdMinAge() != null) {
 				resetRequired = handlePasswordPolicy(securityPolicy, emailFromDigest);
@@ -938,7 +938,7 @@ public class FacilioAuthAction extends FacilioAction {
 					Map<String, Object> userMap = userData.get(0);
 					Organization defaultOrg = IAMUserUtil.getDefaultOrg((long) userMap.get("uid"));
 					LOGGER.log(Level.INFO,"validateLogin() : default org id : " + defaultOrg.getOrgId());
-					securityPolicy = IAMUserUtil.getUserSecurityPolicy(getUsername(), AppDomain.GroupType.FACILIO, defaultOrg.getOrgId());
+					securityPolicy = IAMUserUtil.getUserSecurityPolicy(getUsername(), AppDomain.GroupType.FACILIO);
 					LOGGER.log(Level.INFO,"validateLogin() : security policy is null : " + (securityPolicy == null));
 					LOGGER.log(Level.INFO,"validateLogin() : security policy id : " + (securityPolicy != null ? securityPolicy.getId(): -1L));
 				}
@@ -1094,7 +1094,7 @@ public class FacilioAuthAction extends FacilioAction {
 		if(IAMUserUtil.totpChecking(totp, (long) userMfaSettings.get("userId"))){
 			IAMUserUtil.updateUserMfaSettingsStatus((long) userMfaSettings.get("userId"),true);
 			Organization org = IAMUserUtil.getDefaultOrg((long) userMfaSettings.get("userId"));
-			var securityPolicy = IAMUserUtil.getUserSecurityPolicy(emailFromDigest, AppDomain.GroupType.FACILIO, org.getOrgId());
+			var securityPolicy = IAMUserUtil.getUserSecurityPolicy(emailFromDigest, AppDomain.GroupType.FACILIO);
 			var resetRequired = false;
 			if (securityPolicy != null && securityPolicy.getIsPwdPolicyEnabled() && securityPolicy.getPwdMinAge() != null) {
 				resetRequired = handlePasswordPolicy(securityPolicy, emailFromDigest);

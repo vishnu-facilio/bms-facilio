@@ -95,9 +95,9 @@ public interface IAMUserBean {
 	
     public IAMAccount verifyUserSessionv3(String uId, String token, String userType) throws Exception;
 
-	public boolean isSessionExpired(long uid, long orgId, long sessionId) throws Exception;
+	public boolean isSessionExpired(long uid, long sessionId) throws Exception;
 
-	public long getSessionExpiry(long uid, long orgId, long sessionId) throws Exception;
+	public long getSessionExpiry(long uid, long sessionId) throws Exception;
     
     public IAMAccount getAccountv3(long userId) throws Exception;
     
@@ -164,7 +164,7 @@ public interface IAMUserBean {
 
 	public Map<String, Object> getUserMfaSettings(long userId) throws Exception;
 
-	SecurityPolicy getUserSecurityPolicy(String email, AppDomain.GroupType groupType, long orgId) throws Exception;
+	SecurityPolicy getUserSecurityPolicy(String email, AppDomain.GroupType groupType) throws Exception;
 
 	public Map<String, Object> getUserMfaSettings(String email, AppDomain.GroupType groupType) throws Exception;
 
@@ -176,9 +176,9 @@ public interface IAMUserBean {
 
 	List<Map<String, Object>> getUserData(String username, AppDomain.GroupType groupType) throws Exception;
 
-	SecurityPolicy getUserSecurityPolicy(long uid, long orgId) throws Exception;
+	SecurityPolicy getUserSecurityPolicy(long uid) throws Exception;
 
-	void validatePasswordWithSecurityPolicy(long uid, String password, long orgId) throws Exception;
+	void validatePasswordWithSecurityPolicy(long uid, String password) throws Exception;
 
 	String cryptWithMD5(String pass);
 
@@ -189,5 +189,15 @@ public interface IAMUserBean {
 	int findDCForUser(String username, GroupType groupType) throws Exception;
 	
 	long addDCLookup(Map<String, Object> props) throws Exception;
+
+	long createSecurityPolicy(SecurityPolicy securityPolicy) throws Exception;
+
+	void updateSecurityPolicy(SecurityPolicy securityPolicy) throws Exception;
+
+	SecurityPolicy fetchSecurityPolicy(long id, long orgId) throws Exception;
+
+	List<SecurityPolicy> fetchAllSecurityPolicies(long orgId) throws Exception;
+
+	void deleteSecurityPolicy(long id, long orgId) throws Exception;
 
 }
