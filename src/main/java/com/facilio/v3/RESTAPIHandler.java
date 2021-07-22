@@ -491,8 +491,15 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         handleSummaryRequest(moduleName, id);
     }
 
-
-
+    /**
+     * The support to update the entire object is not supported.
+     *
+     * Refer to {@link RESTAPIHandler#patch()} and {@link RESTAPIHandler#patchHandler(String, long, Map, Map)}
+     *
+     * @return
+     * @throws Exception
+     */
+    @Deprecated
     private void updateHandler(String moduleName, long id, Map<String, Object> updateObj, Map<String, Object> bodyParams) throws Exception {
         FacilioModule module = ChainUtil.getModule(moduleName);
         V3Config v3Config = ChainUtil.getV3Config(moduleName);
@@ -634,6 +641,13 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         return SUCCESS;
     }
 
+    /**
+     * This API is deprecated. Refer to {@link RESTAPIHandler#patch()}
+     *
+     * @return
+     * @throws Exception
+     */
+    @Deprecated
     public String update() throws Exception {
         try {
             updateHandler(this.getModuleName(), this.getId(), this.getData(), this.getParams());

@@ -27,11 +27,8 @@ import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
+import com.facilio.modules.*;
 import com.facilio.modules.FacilioModule.ModuleType;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.BaseLookupField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
@@ -263,13 +260,14 @@ public class FormsAPI {
 	private static void fillSubFormLookupField(FormSection section, FacilioForm subForm, long parentModuleId) throws Exception {
 		try {
 			long lookupFieldId = section.getLookupFieldId();
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			if (lookupFieldId == -1 && subForm != null) {
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioModule module = subForm.getModule();
 				if (module == null) {
 					module = modBean.getModule(subForm.getModuleId());
 				}
 
+				// taking first lookup field, assuming that each module will have only one lookup field from a module
 				if (module != null) {
 					List<FacilioField> allFields = modBean.getAllFields(module.getName());
 					Optional<FacilioField> first = allFields.stream().filter(f -> f instanceof LookupField &&
@@ -277,7 +275,23 @@ public class FormsAPI {
 							((LookupField) f).getLookupModule().getModuleId() == parentModuleId).findFirst();
 					if (first.isPresent()) {
 						section.setLookupFieldId(first.get().getFieldId());
+
+						FacilioModule formSectionModule = ModuleFactory.getFormSectionModule();
+						GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+								.table(formSectionModule.getTableName())
+								.fields(Collections.singletonList(FieldFactory.getField("lookupFieldId", "LOOKUP_FIELDID", formSectionModule, FieldType.NUMBER)))
+								.andCondition(CriteriaAPI.getIdCondition(section.getId(), formSectionModule));
+						Map map = new HashMap();
+						map.put("lookupFieldId", section.getLookupFieldId());
+						builder.update(map);
 					}
+				}
+			}
+
+			if (section.getLookupFieldId() > 0) {
+				FacilioField field = modBean.getField(section.getLookupFieldId(), subForm.getModuleId());
+				if (field != null) {
+					section.setLookupFieldName(field.getName());
 				}
 			}
 		} catch (Exception ex) {

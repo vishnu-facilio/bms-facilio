@@ -155,6 +155,14 @@ public class FormSection {
 		this.lookupFieldId = lookupFieldId;
 	}
 
+	private String lookupFieldName;
+	public String getLookupFieldName() {
+		return lookupFieldName;
+	}
+	public void setLookupFieldName(String lookupFieldName) {
+		this.lookupFieldName = lookupFieldName;
+	}
+
 	private int numberOfSubFormRecords = -1;
 	public int getNumberOfSubFormRecords() {
 		return numberOfSubFormRecords;

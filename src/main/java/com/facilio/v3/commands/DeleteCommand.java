@@ -58,7 +58,16 @@ public class DeleteCommand extends FacilioCommand {
         }
 
         if (!throwErrorModules.isEmpty()) {
-            throw new RESTException(ErrorCode.VALIDATION_ERROR);
+            for (FacilioModule restrictModule : throwErrorModules) {
+                List<FacilioField> fields = relatedLookupFields.get(restrictModule);
+                if (CollectionUtils.isEmpty(fields)) {
+                    continue;
+                }
+                List<Long> childRecordIds = checkLookupData(module, restrictModule, fields, recordIds);
+                if (CollectionUtils.isNotEmpty(childRecordIds)) {
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "The sub-module " + restrictModule.getDisplayName() + " has data associated. Please delete them manually before deleting");
+                }
+            }
         }
 
         for (FacilioModule cascadeModule: cascadeModules) {
@@ -73,25 +82,6 @@ public class DeleteCommand extends FacilioCommand {
             deleteModuleRecords(rowIds, cascadeModule.getName(), deleteCount);
         }
         deleteCount.put(moduleName, count);
-
-        //deleting multiselectfield value
-        // No need to delete any of the multi record values here because we are only marking as deleted
-        // They should be handled when we are deleting things from trash
-
-        // Commenting the below lines since nothing is done here. deleteBuilder.delete will only delete records
-
-//        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-//        List<FacilioField> fields = modBean.getAllFields(moduleName);
-//        List<MultiLookupField> multiLookups = new ArrayList<MultiLookupField>();
-//
-//            for(FacilioField field : fields) {
-//                if (field.getDataTypeEnum() == FieldType.MULTI_LOOKUP) {
-//                    multiLookups.add((MultiLookupField) field);
-//                }
-//            }
-//            if(CollectionUtils.isNotEmpty(multiLookups)){
-//                new DeleteRecordBuilder().deleteSupplements(multiLookups);
-//            }
      }
 
     private int deleteRows(FacilioModule module, List<Long> rowIds) throws Exception {
@@ -111,9 +101,8 @@ public class DeleteCommand extends FacilioCommand {
     private List<Long> checkLookupData(FacilioModule parentModule, FacilioModule childModule, List<FacilioField> relatedLookupFields, List<Long> recordIds) throws Exception {
         List<Long> rowIds = new ArrayList<>();
         if (!LookupSpecialTypeUtil.isSpecialType(parentModule.getName()) && CollectionUtils.isNotEmpty(recordIds)) {
-            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             String idString = StringUtils.join(recordIds, ",");
-                if (CollectionUtils.isNotEmpty(relatedLookupFields)) {
+            if (CollectionUtils.isNotEmpty(relatedLookupFields)) {
                 List<FacilioField> fields = new ArrayList<>();
                 fields.add(FieldFactory.getIdField(childModule));
                 for (FacilioField f : relatedLookupFields) {
