@@ -390,6 +390,13 @@ public class IAMAccountConstants {
 			id.setModule(module);
 			fields.add(id);
 
+			FacilioField orgId = new FacilioField();
+			orgId.setName("orgId");
+			orgId.setDataType(FieldType.NUMBER);
+			orgId.setColumnName("ORGID");
+			orgId.setModule(module);
+			fields.add(orgId);
+
 			FacilioField description = new FacilioField();
 			description.setName("description");
 			description.setDataType(FieldType.STRING);
