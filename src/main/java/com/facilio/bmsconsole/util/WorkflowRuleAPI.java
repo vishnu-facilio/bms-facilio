@@ -618,7 +618,7 @@ public class WorkflowRuleAPI {
 		}
 
 		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 393) {
-			LOGGER.info(MessageFormat.format("Rule query : {0}", ruleBuilder.toString()));
+				LOGGER.info(MessageFormat.format("Rule query : {0}", ruleBuilder.toString()) + "  result : " + props);
 		}
 
 		return getWorkFlowsFromMapList(props, fetchChildren, fetchExtended);
@@ -1035,8 +1035,8 @@ public class WorkflowRuleAPI {
 		long startTime = System.currentTimeMillis();
 		Map<String, Object> rulePlaceHolders = workflowRule.constructPlaceHolders(moduleName, record, recordPlaceHolders, context);
 		boolean fieldChangeFlag = false, miscFlag = false, criteriaFlag = false, workflowFlag = false , siteId = false;
-		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
-//			LOGGER.info("Time taken to construct rulePlaceholders: "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for record : "+record+" is "+(System.currentTimeMillis() - startTime));			
+		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 393l) {
+			LOGGER.info("Time taken to construct rulePlaceholders: "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for record : "+record+" is "+(System.currentTimeMillis() - startTime)+" , PLACEHOLDERS  : " + rulePlaceHolders);
 		}
 		long criteriaCheckStartTime = System.currentTimeMillis();
 		siteId = workflowRule.evaluateSite(moduleName, record, rulePlaceHolders, context);

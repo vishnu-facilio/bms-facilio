@@ -691,7 +691,7 @@ public enum ActionType {
 
 					if (lastOccurrence != null) {
 						if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 393l){
-							LOGGER.info("Create work order: Last occurences : " + lastOccurrence + " , lastWOID : " + lastWoId);
+							LOGGER.info("Create work order: Last occurences : " + lastOccurrence + " , lastWOID : " + lastWoId +" base alarm : " + baseAlarm);
 						}
 						boolean createNewWO = false;
 						WorkOrderContext workOrder = null;
