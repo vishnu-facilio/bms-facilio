@@ -11,6 +11,9 @@ import com.facilio.bmsconsole.localization.util.TranslationConstants;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.TransactionBeanFactory;
 import com.facilio.util.FacilioUtil;
@@ -24,8 +27,10 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Log4j
 @Getter
@@ -83,8 +88,21 @@ public class TranslationAction extends FacilioAction {
     }
 
     public String fetchDetail () throws Exception {
-        setResult("result",fetchTranslationDetails());
+        setResult("webTabDetails",fetchTranslationDetails());
         return SUCCESS;
+    }
+
+    public String getTranslatedLang()throws Exception {
+        setResult("translatedLang",getLang());
+        return SUCCESS;
+    }
+
+    private List<String> getLang () throws Exception {
+        GenericSelectRecordBuilder select = new GenericSelectRecordBuilder().select(TranslationConstants.getTranslationFields())
+                .table(TranslationConstants.getTranslationModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition("STATUS","status","1",StringOperators.IS));
+        List<Map<String, Object>> props = select.get();
+        return props.stream().map(p -> (String)p.get("langCode")).collect(Collectors.toList());
     }
 
     private JSONObject fetchTranslationDetails () throws Exception {
@@ -124,11 +142,13 @@ public class TranslationAction extends FacilioAction {
                     }
                 }
             }
+            List<String> translationTypeEnum = Arrays.asList("DETAILS","VIEWS","VIEW_COLUMNS","BUTTONS","STATE_FLOWS","FORMS","FORM_FIELDS","FIELDS","WEB_TAB");
             jsonObject.put("appCategory",props.getAppCategory());
             jsonObject.put("appCategoryEnum",props.getAppCategoryEnum());
             jsonObject.put("id",props.getId());
             jsonObject.put("layouts",props.getLayouts());
             jsonObject.put("linkName",props.getLinkName());
+            jsonObject.put("translationTypeEnum",translationTypeEnum);
         }
         return jsonObject;
     }

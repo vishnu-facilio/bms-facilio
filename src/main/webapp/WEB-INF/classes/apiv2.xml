@@ -6592,6 +6592,7 @@
 		<action name="getFields" class="com.facilio.bmsconsole.localization.TranslationAction" method="getTranslationFields"></action>
 		<action name="fetchDetail" class="com.facilio.bmsconsole.localization.TranslationAction" method="fetchDetail"></action>
 		<action name="getAllWebTabFields" class="com.facilio.bmsconsole.localization.TranslationAction" method="getAllWebTabFields"/>
+		<action name="listLang" class="com.facilio.bmsconsole.localization.TranslationAction" method="getTranslatedLang"/>
 	</package>
 
 
