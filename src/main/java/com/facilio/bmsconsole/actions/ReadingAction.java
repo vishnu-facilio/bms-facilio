@@ -1112,16 +1112,24 @@ public class ReadingAction extends FacilioAction {
 			throw new Exception("Start time should be less than the Endtime");
 		}
 		
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.FORMULA_FIELD, id);
-		context.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(startTime, endTime));
-		context.put(FacilioConstants.ContextNames.RESOURCE_LIST, historicalLoggerAssetIds);
-		context.put(FacilioConstants.ContextNames.IS_INCLUDE,isInclude);
-		context.put(FacilioConstants.OrgInfoKeys.CALCULATE_VM_THROUGH_FORMULA,calculateVmThroughFormula);
-		context.put(FacilioConstants.ContextNames.SKIP_OPTIMISED_WF, skipOptimisedWorkflow);
-		
-		FacilioChain historicalCalculation = TransactionChainFactory.historicalFormulaCalculationChain();
-		historicalCalculation.execute(context);
+		try {
+			
+			FacilioChain historicalCalculation = TransactionChainFactory.historicalFormulaCalculationChain();
+			FacilioContext context = historicalCalculation.getContext();
+			context.put(FacilioConstants.ContextNames.FORMULA_FIELD, id);
+			context.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(startTime, endTime));
+			context.put(FacilioConstants.ContextNames.RESOURCE_LIST, historicalLoggerAssetIds);
+			context.put(FacilioConstants.ContextNames.IS_INCLUDE,isInclude);
+			context.put(FacilioConstants.OrgInfoKeys.CALCULATE_VM_THROUGH_FORMULA,calculateVmThroughFormula);
+			context.put(FacilioConstants.ContextNames.SKIP_OPTIMISED_WF, skipOptimisedWorkflow);
+			
+			historicalCalculation.execute();
+		}
+		catch (Exception e) {
+			// TODO: handle exception
+			LOGGER.error("Error occured during formula field historical calculation", e);
+			throw e;
+		}
 		
 		setResult("success", "Historical Formula Calculation is started and will be notified when done");
 		
