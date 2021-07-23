@@ -121,9 +121,6 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 		{
 			if (baseEvents != null && !baseEvents.isEmpty())
 			{
-				if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 393l){
-					LOGGER.info("Alarm processing command init");
-				}
 				FacilioChain addEvent = TransactionChainFactory.getV2AddEventChain(true);
 				addEvent.getContext().put(EventConstants.EventContextNames.EVENT_LIST, baseEvents);
 				addEvent.getContext().put(EventConstants.EventContextNames.IS_HISTORICAL_EVENT, true);

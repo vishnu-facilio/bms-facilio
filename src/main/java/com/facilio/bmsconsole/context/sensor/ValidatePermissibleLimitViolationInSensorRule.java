@@ -1,21 +1,19 @@
 package com.facilio.bmsconsole.context.sensor;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.json.simple.JSONObject;
-
-import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.util.FacilioUtil;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 public class ValidatePermissibleLimitViolationInSensorRule implements SensorRuleTypeValidationInterface{
-
+	private static Logger LOGGER = Logger.getLogger(ValidatePermissibleLimitViolationInSensorRule.class.getName());
 	@Override
 	public List<String> getSensorRuleProps() {
 		List<String> validatorProps = new ArrayList<String>();
@@ -45,16 +43,21 @@ public class ValidatePermissibleLimitViolationInSensorRule implements SensorRule
 		{
 			NumberField numberField = (NumberField) readingField;	
 			Object currentReadingValue = FacilioUtil.castOrParseValueAsPerType(readingField, reading.getReading(readingField.getName()));
-			currentReadingValue = (Double) currentReadingValue;
 			if(currentReadingValue == null || !SensorRuleUtil.isAllowedSensorMetric(numberField) || fieldConfig == null){
 				return false;
 			}
-			
-			Double lowerLimit = Double.valueOf(String.valueOf(fieldConfig.get("lowerLimit")));
-			Double upperLimit = Double.valueOf(String.valueOf(fieldConfig.get("upperLimit")));
-			if(lowerLimit == null || upperLimit == null) {
+
+			Object lowerLim = fieldConfig.get("lowerLimit");
+			Object upperLim = fieldConfig.get("upperLimit");
+			if (lowerLim == null || upperLim == null) {
+				//TODO: Need to track invalid input values to separate db entry.
+				LOGGER.error("Upper limit and lower limit cannot be empty. Upperlimit : " + upperLim + ", Lowerlimit : " + lowerLim);
 				return false;
 			}
+
+			Double lowerLimit = Double.valueOf(String.valueOf(lowerLim));
+			Double upperLimit = Double.valueOf(String.valueOf(lowerLim));
+
 			if((double)currentReadingValue < lowerLimit || (double)currentReadingValue > upperLimit) { 
 				return true;
 			}			

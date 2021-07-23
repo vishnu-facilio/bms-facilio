@@ -847,15 +847,6 @@ public class WorkflowRuleAPI {
 							rule = FieldUtil.getAsBeanFromMap(prop, CustomButtonRuleContext.class);
 							break;
 						case ALARM_WORKFLOW_RULE:
-							if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 393l){
-
-								StringBuilder sb = new StringBuilder()
-										.append("Alarm workflow rule : fetchExtended ? ").append(fetchExtended).append(", ")
-										.append("  typeWiseExtendedProps.get(ruleType) : ").append(typeWiseExtendedProps).append(", ")
-										.append(" rule type : ").append(ruleType).append(", ")
-										.append(" prop : ").append(prop);
-								LOGGER.info(sb);
-							}
 							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
 							rule = FieldUtil.getAsBeanFromMap(prop, AlarmWorkflowRuleContext.class);
 							break;
@@ -1102,9 +1093,9 @@ public class WorkflowRuleAPI {
 				workflowRule.executeFalseActions(record, context, rulePlaceHolders);
 			}
 		}
-		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 393l) {
-			LOGGER.info("Time taken to execute readingRule actions: "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for record : "+record+" is "+(System.currentTimeMillis() - actionExecutionStartTime));
-		}
+//		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 393l) {
+//			LOGGER.info("Time taken to execute readingRule actions: "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for record : "+record+" is "+(System.currentTimeMillis() - actionExecutionStartTime));
+//		}
 		return result;
 	}
 	

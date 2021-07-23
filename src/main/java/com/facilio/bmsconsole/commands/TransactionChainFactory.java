@@ -3542,9 +3542,6 @@ public class TransactionChainFactory {
 		}
 		
 		public static FacilioChain getV2AddEventChain(boolean isHistorical) {
-			if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 393l){
-					LOGGER.info("V2AddEventChain : isHistorical?? " + isHistorical);
-				}
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new NewExecuteEventRulesCommand());
 			c.addCommand(new InsertNewEventsCommand());

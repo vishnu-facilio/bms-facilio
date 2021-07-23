@@ -708,9 +708,6 @@ public enum ActionType {
 						}
 
 						if (createNewWO) {
-							if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 393L){
-								LOGGER.info("Creating a new workorder. rule : " + currentRule.getId());
-							}
 							FacilioChain c = TransactionChainFactory.getV2AlarmOccurrenceCreateWO();
 							Context woContext = c.getContext();
 							if (obj != null) {

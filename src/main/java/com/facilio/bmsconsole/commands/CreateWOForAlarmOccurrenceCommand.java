@@ -35,9 +35,6 @@ public class CreateWOForAlarmOccurrenceCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		long recordId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
-		if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 393L){
-			LOGGER.info("Creating a workorder for alarm occurrences. recordId : " + recordId);
-		}
 		if (recordId > 0) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			

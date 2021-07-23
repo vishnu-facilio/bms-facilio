@@ -514,7 +514,7 @@ public class WorkflowRuleContext implements Serializable {
 		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
 //			LOGGER.info("Time taken to fetch actions for workflowrule id : "+ruleId+" with actions : "+actions+" is "+(System.currentTimeMillis() - startTime));			
 		}
-		if (AccountUtil.getCurrentOrg().getId() == 151 || AccountUtil.getCurrentOrg().getId() == 393l) {
+		if (AccountUtil.getCurrentOrg().getId() == 151) {
 			LOGGER.info("List of actions for "+this.getId()+" : "+actions);
 		}
 		if(actions != null) {
@@ -714,9 +714,7 @@ public class WorkflowRuleContext implements Serializable {
 			boolean result = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(workflowRule, module.getName(), record, changeSet, recordPlaceHolders, context);
 			LOGGER.debug(MessageFormat.format("Time take to execute workflow {0} and actions: is {1} ",this.getId(), (System.currentTimeMillis() - workflowStartTime)));
 			LOGGER.debug(MessageFormat.format("Result of rule : {0} for record : {1} is {2}",workflowRule.getId(),record,result));
-			if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 393l) {
-//				LOGGER.info("Time taken to execute workflow and actions: "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for module : "+module.getName()+" is "+(System.currentTimeMillis() - workflowStartTime));			
-			}
+
 //			if((AccountUtil.getCurrentOrg().getId() == 231l && (workflowRule.getId() == 36242l || workflowRule.getId() == 36243l)) || (AccountUtil.getCurrentOrg().getId() == 78l)) {
 //				LOGGER.info("Time take to execute workflow and actions: " + (System.currentTimeMillis() - workflowStartTime));
 //				LOGGER.info("Select Query Count till execution of workflow and actions" + AccountUtil.getCurrentAccount().getSelectQueries() + " Timetaken "+AccountUtil.getCurrentAccount().getSelectQueriesTime());
