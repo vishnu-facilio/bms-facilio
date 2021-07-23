@@ -121,7 +121,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 		
 		if (fields != null && !fields.isEmpty()) {
 			supportFieldsRDM = getSupportingData(fields, startTime, endTime, -1, jobStatesMap, executeReadingRuleThroughAutomatedHistory);
-		}	
+		}
 		Map<String, List<ReadingDataMeta>> currentRDMList = null;
 		if (fields != null) {
 			currentRDMList = getSupportingData(fields, startTime, endTime, resourceId, jobStatesMap, executeReadingRuleThroughAutomatedHistory);
@@ -675,6 +675,9 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 			long resourceId = reading.getParentId();
 			if(workflowField.getResourceId() != -1) {
 				resourceId = workflowField.getResourceId();
+			}
+			if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 343l){
+				LOGGER.info("check for null reading: fields : " + fields + " , rdmcache : " + rdmCache + "  , resource id : " + resourceId + " workflow field : " + workflowField);
 			}
 			ReadingDataMeta currentFieldRDM = rdmCache.get(ReadingsAPI.getRDMKey(resourceId, workflowField.getField()));
 			if(currentFieldRDM == null) {
