@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.context.WebTabGroupContext;
 import com.facilio.bmsconsole.localization.translationbean.TranslationBean;
 import com.facilio.bmsconsole.localization.util.TranslationConstants;
+import com.facilio.bmsconsole.localization.util.TranslationsUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -119,22 +120,9 @@ public class TranslationAction extends FacilioAction {
                 for (ApplicationLayoutContext prop : layout) {
                     for (WebTabGroupContext webtabGroup : prop.getWebTabGroupList()) {
                         for (WebTabContext webTab : webtabGroup.getWebTabs()) {
-                            List<String> columns = new ArrayList<>();
                             switch (webTab.getTypeEnum()) {
                                 case MODULE:
-                                    columns.add("VIEWS");
-                                    columns.add("VIEW COLUMNS");
-                                    columns.add("FORMS");
-                                    columns.add("FIELDS");
-                                    columns.add("FORM FIELDS");
-                                    columns.add("DETAILS");
-                                    columns.add("BUTTONS");
-                                    columns.add("STATE FLOWS");
-                                    webTab.setTranslationColumns(columns);
-                                    break;
-                                case DASHBOARD:
-                                    columns.add("FOLDER&DASHBOARDS");
-                                    webTab.setTranslationColumns(columns);
+                                    webTab.setTypeVsColumns(TranslationsUtil.COLUMN_VS_TRANSLATION_TYPE);
                                     break;
                             }
 
@@ -142,13 +130,11 @@ public class TranslationAction extends FacilioAction {
                     }
                 }
             }
-            List<String> translationTypeEnum = Arrays.asList("DETAILS","VIEWS","VIEW_COLUMNS","BUTTONS","STATE_FLOWS","FORMS","FORM_FIELDS","FIELDS","WEB_TAB");
             jsonObject.put("appCategory",props.getAppCategory());
             jsonObject.put("appCategoryEnum",props.getAppCategoryEnum());
             jsonObject.put("id",props.getId());
             jsonObject.put("layouts",props.getLayouts());
             jsonObject.put("linkName",props.getLinkName());
-            jsonObject.put("translationTypeEnum",translationTypeEnum);
         }
         return jsonObject;
     }

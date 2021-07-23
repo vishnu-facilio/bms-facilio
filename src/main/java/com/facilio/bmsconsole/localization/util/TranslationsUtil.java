@@ -16,16 +16,14 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 @Log4j
 public class TranslationsUtil {
 
     private static final String TRANSLATION_VALIDATION_FILE = "conf/translationvalidation.yml";
     private static final Map<String, TranslationConfFile> TRANSLATION_CONF_FILE_MAP = Collections.unmodifiableMap(initTranslationConfFile());
+    public static final Map<String,String> COLUMN_VS_TRANSLATION_TYPE = getColumnVsType();
 
     @SneakyThrows
     private static Map<String, TranslationConfFile> initTranslationConfFile () {
@@ -86,5 +84,18 @@ public class TranslationsUtil {
         jsonObject.put(TranslationConstants.KEY,key);
         jsonObject.put(TranslationConstants.VALUE,properties.getProperty(value,null));
         return jsonObject;
+    }
+
+    private static Map<String, String> getColumnVsType () {
+        Map<String, String> columnVsType = new HashMap<>();
+        columnVsType.put("VIEWS","VIEWS");
+        columnVsType.put("VIEW_COLUMNS","VIEW COLUMNS");
+        columnVsType.put("FORMS","FORMS");
+        columnVsType.put("FIELDS","FIELDS");
+        columnVsType.put("FORM_FIELDS","FORM FIELDS");
+        columnVsType.put("STATE_FLOWS","STATE FLOWS");
+        columnVsType.put("BUTTONS","BUTTONS");
+        columnVsType.put("DETAILS","DETAILS");
+        return columnVsType;
     }
 }

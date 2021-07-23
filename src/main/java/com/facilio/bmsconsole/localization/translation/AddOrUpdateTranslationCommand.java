@@ -20,7 +20,8 @@ public class AddOrUpdateTranslationCommand extends FacilioCommand {
     public boolean executeCommand ( Context context ) throws Exception {
         String langCode = (String)context.get(TranslationConstants.LANG_CODE);
         List<Map<String, Object>> contents = (List<Map<String, Object>>)context.get("translations");
-        Properties translationFile = DBConf.getInstance().getTranslationFile();
+        TranslationBean bean = (TranslationBean)BeanFactory.lookup("TranslationBean");
+        Properties translationFile = bean.getTranslationFile(langCode);
         FacilioUtil.throwIllegalArgumentException((translationFile ==null),"Invalid Translation File");
         for (Map<String, Object> prop : contents) {
             String prefix = (String)prop.get("prefix");
@@ -33,7 +34,6 @@ public class AddOrUpdateTranslationCommand extends FacilioCommand {
             LOGGER.info("Translation kye " + key + " " + "value : " + value);
             translationFile.setProperty(key.trim(),value);
         }
-        TranslationBean bean = (TranslationBean)BeanFactory.lookup("TranslationBean");
         bean.saveTranslationFile(langCode,translationFile);
         return false;
     }

@@ -5,11 +5,13 @@ import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FacilioModule;
 import lombok.Getter;
 import lombok.Setter;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 public class WebTabContext implements Serializable {
 
@@ -241,7 +243,7 @@ public class WebTabContext implements Serializable {
         this.order = order;
     }
 
-    @Setter@Getter
-    private List<String> translationColumns;
+    @Setter @Getter
+    private Map<String,String> typeVsColumns;
 
 }
