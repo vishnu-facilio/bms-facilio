@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
@@ -10,6 +12,7 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -26,10 +29,19 @@ public class ExecuteStateFlowCommand extends ExecuteAllWorkflowsCommand {
 
         // Re-arrange execution order
         if (CollectionUtils.isNotEmpty(workflowRules)) {
+            List<Long> formStateFlowIds = new ArrayList<>();
+            if (CollectionUtils.isNotEmpty(records)) {
+                List<Long> allFormIds = records.stream().filter(record -> record.getFormId() > 0).map(ModuleBaseWithCustomFields::getFormId).collect(Collectors.toList());
+                List<FacilioForm> formsFromDB = FormsAPI.getFormsFromDB(allFormIds);
+                if (CollectionUtils.isNotEmpty(formsFromDB)) {
+                    formStateFlowIds = formsFromDB.stream().filter(form -> form.getStateFlowId() > 0).map(FacilioForm::getStateFlowId).collect(Collectors.toList());
+                }
+            }
+
         	newWorkflowRules = new ArrayList<>();
 	        for (WorkflowRuleContext workflowRuleContext : workflowRules) {
 	            StateFlowRuleContext stateFlowRuleContext = (StateFlowRuleContext) workflowRuleContext;
-	            if (stateFlowRuleContext.isFormLevel()) {
+	            if (formStateFlowIds.contains(stateFlowRuleContext.getId())) {
                     StateFlowRuleContext cloned = FieldUtil.cloneBean(stateFlowRuleContext, StateFlowRuleContext.class);
                     cloned.setShouldCheckOnlyFormBased(true);
 	                newWorkflowRules.add(0, cloned);
