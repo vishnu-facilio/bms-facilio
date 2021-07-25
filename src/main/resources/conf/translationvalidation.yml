@@ -17,3 +17,18 @@ translation:
 
   - prefix: form
     suffix: [displayName]
+
+  - prefix: viewColumn
+    suffix: [displayName]
+
+  - prefix: state
+    suffix: [displayName]
+
+  - prefix: stateTransition
+    suffix: [displayName]
+
+  - prefix: webTabGroup
+    suffix: [displayName]
+
+  - prefix: button
+    suffix: [displayName]

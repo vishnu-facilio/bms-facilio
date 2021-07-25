@@ -37,3 +37,6 @@ translations:
 
   - name: StateFlowTranslation
     translationImplClass : com.facilio.bmsconsole.localization.translationImpl.StateFlowTranslationImpl
+
+  - name: ViewColumnTranslationV1
+    translationImplClass : com.facilio.bmsconsole.localization.translationImpl.ViewColumnTransImplV1
