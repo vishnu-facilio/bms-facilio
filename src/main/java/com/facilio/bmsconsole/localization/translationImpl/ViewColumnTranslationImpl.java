@@ -26,15 +26,8 @@ public class ViewColumnTranslationImpl implements TranslationIfc {
 
         for (int i = 0; i < jsonArray.size(); i++) {
             JSONObject obj = (JSONObject)jsonArray.get(i);
-            String name = (String)obj.get("name");
-            if(name == null) {
-                name = (String)obj.get("fieldName");
-            } 
-            if(name == null) {
-                continue;
-            }
-
-            String viewKey = getTranslationKey(name);
+            long id = (long)obj.get("id");
+            String viewKey = getTranslationKey(String.valueOf(id));
             obj.put("columnDisplayName",getTranslation(translationFile,viewKey,(String)obj.get("columnDisplayName")));
         }
 
