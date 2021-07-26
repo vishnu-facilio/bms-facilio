@@ -676,6 +676,7 @@ public class V3TicketAPI {
                     ;
             
             List<V3VendorContext> vendorList = builder.get();
+            LOGGER.info("Vendor List Query -->"+builder.constructQueryString());
             if(AccountUtil.getCurrentOrg().getOrgId() == 418l) {
         		LOGGER.info("Vendor List size -->"+vendorList.size());
             }
