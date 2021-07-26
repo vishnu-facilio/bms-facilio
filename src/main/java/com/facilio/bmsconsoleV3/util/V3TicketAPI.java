@@ -662,6 +662,9 @@ public class V3TicketAPI {
     }
     
     private static void loadTicketVendors(Collection<? extends V3TicketContext> tickets) throws Exception {
+    	if(AccountUtil.getCurrentOrg().getOrgId() == 418l) {
+    		LOGGER.info("Load Ticket Vendors Method Calling"+tickets);
+        }
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VENDORS);
 
@@ -671,15 +674,27 @@ public class V3TicketAPI {
                     .beanClass(V3VendorContext.class)
                     .select(modBean.getAllFields(FacilioConstants.ContextNames.VENDORS))
                     ;
+            
             List<V3VendorContext> vendorList = builder.get();
+            if(AccountUtil.getCurrentOrg().getOrgId() == 418l) {
+        		LOGGER.info("Vendor List size -->"+vendorList.size());
+            }
             if(vendorList.size() > 0) {
                 Map<Long, V3VendorContext> vendors = FieldUtil.getAsMap(vendorList);
                 for(V3TicketContext ticket : tickets) {
+                	if(AccountUtil.getCurrentOrg().getOrgId() == 418l) {
+                		LOGGER.info("ticket id -->"+ticket.getId());
+                		LOGGER.info("ticket vendor -->"+ticket.getVendor());
+                    }
                     if (ticket != null) {
                     	V3VendorContext vendor = ticket.getVendor();
                         if(vendor != null) {
                         	V3VendorContext tenantDetail = vendors.get(vendor.getId());
                             ticket.setVendor(tenantDetail);
+                            if(AccountUtil.getCurrentOrg().getOrgId() == 418l) {
+                            	LOGGER.info("ticket id -->"+ticket.getId());
+                        		LOGGER.info("after setting vendor -->"+ticket.getVendor());
+                            }
                         }
                     }
                 }
