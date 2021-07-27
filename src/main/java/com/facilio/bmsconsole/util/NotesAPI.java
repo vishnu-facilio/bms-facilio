@@ -3,7 +3,9 @@ package com.facilio.bmsconsole.util;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.NoteContext;
+import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -94,7 +96,8 @@ public class NotesAPI {
 			}
 		}
 		
-		if (AccountUtil.getCurrentUser().isPortalUser()) {
+		ApplicationContext currentApp = AccountUtil.getCurrentApp();
+		if (AccountUtil.getCurrentUser().isPortalUser() && currentApp != null && !currentApp.getLinkName().equals(ApplicationLinkNames.VENDOR_PORTAL_APP)) {
 			Criteria cri = new Criteria();
 			cri.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("createdBy"), AccountUtil.getCurrentUser().getId() + "", NumberOperators.EQUALS));
 			if(!moduleName.equalsIgnoreCase("insurancenotes"))
