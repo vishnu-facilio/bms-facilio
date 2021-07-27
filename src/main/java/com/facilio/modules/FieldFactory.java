@@ -1225,6 +1225,8 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("createdBy", "CREATED_BY", module, FieldType.LOOKUP));
         fields.add(getField("stateFlowEnabled", "STATE_FLOW_ENABLED", module, FieldType.BOOLEAN));
         fields.add(getField("custom", "IS_CUSTOM", module, FieldType.BOOLEAN));
+        fields.add(getField("status", "STATUS", module, FieldType.BOOLEAN));
+
         return fields;
     }
 
