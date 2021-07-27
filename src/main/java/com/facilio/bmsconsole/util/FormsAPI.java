@@ -908,11 +908,16 @@ public class FormsAPI {
 
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			boolean hasPhoto = false;
+			FacilioField nameField = modBean.getField("name", form.getModule().getName());
+			boolean hasName = (nameField == null);	// if module doesn't have name, we should treat it as `true`
 			boolean hasSite = false;
 			for (FormField field : form.getFields()) {
 				if (field.getField() != null) {
 					if (field.getField().getName().equals("photo")) {
 						hasPhoto = true;
+					}
+					if (!hasName && field.getField().getName().equals("name")) {
+						hasName = true;
 					}
 				}
 				else if (field.getName().equals("siteId")) {
@@ -924,6 +929,9 @@ public class FormsAPI {
 				if (photoField != null) {
 					defaultFields.add(getFormFieldFromFacilioField(photoField, 1));					
 				}
+			}
+			if (!hasName) {
+				defaultFields.add(getFormFieldFromFacilioField(nameField, 1));
 			}
 			if (!hasSite) {
 				defaultFields.add(FormFactory.getSiteField());
