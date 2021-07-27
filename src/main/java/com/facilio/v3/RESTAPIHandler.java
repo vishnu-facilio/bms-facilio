@@ -633,6 +633,16 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
             this.httpServletResponse.setStatus(ex.getErrorCode().getHttpStatus());
             this.setStackTrace(ex);
             LOGGER.log(Level.SEVERE, "exception handling create request moduleName: " + this.getModuleName(), ex);
+        } else if (exception instanceof IllegalArgumentException) {
+            this.setCode(ErrorCode.VALIDATION_ERROR.getCode());
+            String message = exception.getMessage();
+            if (StringUtils.isEmpty(message)) {
+                message = "Error occurred due to some validation";
+            }
+            this.setMessage(message);
+            this.setData(null);
+            this.httpServletResponse.setStatus(ErrorCode.VALIDATION_ERROR.getHttpStatus());
+            LOGGER.log(Level.SEVERE, "exception handling create request moduleName: " + this.getModuleName(), exception);
         } else {
             this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getCode());
             this.setMessage("Internal Server Error");
