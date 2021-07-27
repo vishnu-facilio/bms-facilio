@@ -23,7 +23,7 @@ public class DefaultBulkInit extends FacilioCommand {
 
         List<ModuleBaseWithCustomFields> records = new ArrayList<>();
 
-        for (JSONObject rawObj: bulkRawInput) {
+        for (Map<String, Object> rawObj: bulkRawInput) {
             records.add((ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromMap(rawObj, beanClass));
         }
 

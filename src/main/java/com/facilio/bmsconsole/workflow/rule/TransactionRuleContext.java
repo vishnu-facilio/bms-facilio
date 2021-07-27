@@ -125,7 +125,7 @@ public class TransactionRuleContext extends WorkflowRuleContext{
         }
         else {
             if (CollectionUtils.isEmpty(list)) {//creation
-                chain = ChainUtil.getCreateRecordChain(moduleName);
+                chain = ChainUtil.getCreateChain(moduleName);
                 recordContext = chain.getContext();
                 Constants.setRecordMap(recordContext, recordMap);
                 recordContext.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);

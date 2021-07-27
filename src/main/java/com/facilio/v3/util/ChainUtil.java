@@ -144,11 +144,15 @@ public class ChainUtil {
         return nonTransactionChain;
     }
 
-    public static FacilioChain getCreateRecordChain(String moduleName) throws Exception {
+    public static FacilioChain getCreateChain(String moduleName) throws Exception {
+        return getCreateChain(moduleName, false);
+    }
+
+    public static FacilioChain getCreateChain(String moduleName, boolean bulkOp) throws Exception {
         FacilioModule module = ChainUtil.getModule(moduleName);
         V3Config v3Config = ChainUtil.getV3Config(module);
 
-        Command initCommand = new DefaultInit();
+        Command initCommand = bulkOp ? new DefaultBulkInit() : new DefaultInit();
         Command beforeSaveCommand = null;
         Command afterSaveCommand = null;
         Command afterTransactionCommand = null;

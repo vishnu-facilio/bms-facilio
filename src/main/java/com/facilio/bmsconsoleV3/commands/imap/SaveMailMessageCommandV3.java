@@ -23,7 +23,7 @@ public class SaveMailMessageCommandV3 extends FacilioCommand {
         List<ModuleBaseWithCustomFields> messages = (List<ModuleBaseWithCustomFields>) context.get(FacilioConstants.ContextNames.MESSAGES);
         if(CollectionUtils.isNotEmpty(messages)) {
             Map<String, List<ModuleBaseWithCustomFields>> recordMap = new HashMap<>();
-            FacilioChain createRecordChain = ChainUtil.getCreateRecordChain(FacilioConstants.ContextNames.BASE_MAIL_MESSAGE);
+            FacilioChain createRecordChain = ChainUtil.getCreateChain(FacilioConstants.ContextNames.BASE_MAIL_MESSAGE);
             FacilioContext createContext = createRecordChain.getContext();
             recordMap.put(FacilioConstants.ContextNames.BASE_MAIL_MESSAGE, messages);
             Constants.setRecordMap(createContext, recordMap);

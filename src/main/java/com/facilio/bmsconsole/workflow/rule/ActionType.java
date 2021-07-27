@@ -80,7 +80,6 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
-import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
@@ -1598,7 +1597,7 @@ public enum ActionType {
 				obj.put("sourceType", 2);
 				ModuleBaseWithCustomFields record = (ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromJson(obj, beanClassName);
 				Map<String, List<ModuleBaseWithCustomFields>> recordMap = new HashMap<>();
-				FacilioChain createRecordChain = ChainUtil.getCreateRecordChain(moduleName);
+				FacilioChain createRecordChain = ChainUtil.getCreateChain(moduleName);
 				FacilioContext createContext = createRecordChain.getContext();
 				Constants.setRecordMap(createContext, recordMap);
 				Constants.setModuleName(createContext, moduleName);
@@ -1943,7 +1942,7 @@ public enum ActionType {
 	private static void addWorkOrder (V3WorkOrderContext v3WorkOrderContext) throws Exception {
 		ModuleBaseWithCustomFields woContext = v3WorkOrderContext;
 		Map<String, List<ModuleBaseWithCustomFields>> recordMap = new HashMap<>();
-		FacilioChain createRecordChain = ChainUtil.getCreateRecordChain(FacilioConstants.ContextNames.WORK_ORDER);
+		FacilioChain createRecordChain = ChainUtil.getCreateChain(FacilioConstants.ContextNames.WORK_ORDER);
 		FacilioContext createContext = createRecordChain.getContext();
 		createContext.put(FacilioConstants.ContextNames.REQUESTER, v3WorkOrderContext.getRequester());
 		createContext.put(FacilioConstants.ApprovalRule.APPROVAL_REQUESTER, v3WorkOrderContext.getRequester());

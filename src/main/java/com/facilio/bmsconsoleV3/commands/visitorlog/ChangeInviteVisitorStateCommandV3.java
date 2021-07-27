@@ -8,12 +8,9 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.StringUtils;
-import org.json.simple.JSONObject;
 
-import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
-import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsoleV3.context.BaseVisitContextV3;
 import com.facilio.bmsconsoleV3.context.InviteVisitorContextV3;
 import com.facilio.bmsconsoleV3.context.VisitorLogContextV3;
@@ -21,11 +18,8 @@ import com.facilio.bmsconsoleV3.util.V3VisitorManagementAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.UpdateChangeSet;
-import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.ChainUtil;
 
@@ -73,7 +67,7 @@ public class ChangeInviteVisitorStateCommandV3 extends FacilioCommand {
 						vLogToBeAdded.setInvite(record);
 
 						FacilioChain addVisitorLogChain = ChainUtil
-								.getCreateRecordChain(FacilioConstants.ContextNames.VISITOR_LOG);
+								.getCreateChain(FacilioConstants.ContextNames.VISITOR_LOG);
 						FacilioContext addVisitorLogChainContext = addVisitorLogChain.getContext();
 						Constants.setModuleName(addVisitorLogChainContext, FacilioConstants.ContextNames.VISITOR_LOG);
 						Constants.setRawInput(addVisitorLogChainContext, FieldUtil.getAsJSON(vLogToBeAdded));

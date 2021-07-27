@@ -21,7 +21,6 @@ import com.facilio.qa.context.questions.BaseMCQContext;
 import com.facilio.qa.context.questions.MCQOptionContext;
 import com.facilio.time.DateRange;
 import com.facilio.util.FacilioStreamUtil;
-import com.facilio.util.FacilioUtil;
 import com.facilio.util.MathUtil;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.Constants;
@@ -178,7 +177,7 @@ public class QAndAUtil {
     public static <T extends V3Context> void addRecordViaV3Chain(String moduleName, List<T> records) throws Exception {
         FacilioModule module = ChainUtil.getModule(moduleName);
         V3Config v3Config = ChainUtil.getV3Config(module);
-        FacilioChain createRecordChain = ChainUtil.getCreateRecordChain(module.getName());
+        FacilioChain createRecordChain = ChainUtil.getCreateChain(module.getName());
         FacilioContext addAnswerContext = createRecordChain.getContext();
         Class beanClass = ChainUtil.getBeanClass(v3Config, module);
 

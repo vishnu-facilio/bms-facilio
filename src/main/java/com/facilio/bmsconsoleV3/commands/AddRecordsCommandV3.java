@@ -23,7 +23,7 @@ public class AddRecordsCommandV3 extends FacilioCommand {
         String moduleName = (String) context.getOrDefault(FacilioConstants.ContextNames.MODULE_NAME, null);
         if(CollectionUtils.isNotEmpty(records) && moduleName != null) {
             Map<String, List<ModuleBaseWithCustomFields>> recordMap = new HashMap<>();
-            FacilioChain createRecordChain = ChainUtil.getCreateRecordChain(moduleName);
+            FacilioChain createRecordChain = ChainUtil.getCreateChain(moduleName);
             FacilioContext createContext = createRecordChain.getContext();
             recordMap.put(moduleName, records);
             Constants.setRecordMap(createContext, recordMap);

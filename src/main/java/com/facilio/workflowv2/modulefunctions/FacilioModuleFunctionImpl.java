@@ -178,7 +178,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 					module = ChainUtil.getModule(module.getName());
 
 			        V3Config v3Config = ChainUtil.getV3Config(module.getName());
-			        FacilioChain createRecordChain = ChainUtil.getCreateRecordChain(module.getName());
+			        FacilioChain createRecordChain = ChainUtil.getCreateChain(module.getName());
 			        FacilioContext context = createRecordChain.getContext();
 
 			        if (module.isCustom()) {

@@ -47,11 +47,9 @@ import com.facilio.workflows.exceptions.FunctionParamException;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 
-import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
-import javax.tools.Tool;
 import java.net.URLEncoder;
 import java.util.*;
 import java.util.logging.Level;
@@ -1058,7 +1056,7 @@ ADD_INVITE_RECORD_VIA_V3CHAIN (29, "addInviteRecordViaV3Chain") {
 			}
 			FacilioModule module = ChainUtil.getModule(objects[0].toString());
 		     V3Config v3Config = ChainUtil.getV3Config(module);
-		     FacilioChain createRecordChain = ChainUtil.getCreateRecordChain(module.getName());
+		     FacilioChain createRecordChain = ChainUtil.getCreateChain(module.getName());
 		     FacilioContext addAnswerContext = createRecordChain.getContext();
 		     Class beanClass = ChainUtil.getBeanClass(v3Config, module);
 

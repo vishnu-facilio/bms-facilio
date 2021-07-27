@@ -97,6 +97,11 @@
                 method="create">
         </action>
 
+        <action name="bulkCreate"
+                class="com.facilio.v3.RESTAPIHandler"
+                method="bulkCreate">
+        </action>
+
         <action name="update"
                 class="com.facilio.v3.RESTAPIHandler"
                 method="update">

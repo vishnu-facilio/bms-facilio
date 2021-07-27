@@ -23,6 +23,7 @@ import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import com.facilio.v3.util.ChainUtil;
+import com.facilio.v3.util.V3Util;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -325,42 +326,6 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         }
     }
 
-
-    private void createHandler(String moduleName, Map<String, Object> createObj, Map<String, Object> bodyParams) throws Exception {
-        FacilioModule module = ChainUtil.getModule(moduleName);
-
-        V3Config v3Config = ChainUtil.getV3Config(moduleName);
-        FacilioChain createRecordChain = ChainUtil.getCreateRecordChain(moduleName);
-        FacilioContext context = createRecordChain.getContext();
-
-        if (module.isCustom()) {
-            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            FacilioField localIdField = modBean.getField("localId", moduleName);
-            if (localIdField != null) {
-                context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
-            }
-        }
-
-        Constants.setV3config(context, v3Config);
-        context.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.CREATE);
-        Constants.setModuleName(context, moduleName);
-        context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
-
-        Constants.setRawInput(context, createObj);
-        Constants.setBodyParams(context, bodyParams);
-        context.put(Constants.QUERY_PARAMS, getQueryParameters());
-
-        Class beanClass = ChainUtil.getBeanClass(v3Config, module);
-        context.put(Constants.BEAN_CLASS, beanClass);
-
-        createRecordChain.execute();
-
-        Map<String, List<ModuleBaseWithCustomFields>> recordMap = (Map<String, List<ModuleBaseWithCustomFields>>) context.get(Constants.RECORD_MAP);
-        long id = recordMap.get(moduleName).get(0).getId();
-        this.setId(id);
-        handleSummaryRequest(moduleName, id);
-    }
-
     private void bulkPatchHandler(Map<String, Object> dataMap, String moduleName, Map<String, Object> bodyParams) throws Exception{
         List<Map<String, Object>> rawRecords = (List<Map<String, Object>>) dataMap.get(moduleName);
         List<Long> ids = new ArrayList<>();
@@ -619,26 +584,64 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
             //removing permission restricted fields
             removeRestrictedFields(this.getData(), this.getModuleName(), true);
 
-            createHandler(this.getModuleName(), this.getData(), this.getParams());
-        } catch (RESTException ex) {
+            String moduleName = getModuleName();
+            FacilioModule module = ChainUtil.getModule(moduleName);
+            FacilioContext context = V3Util.createRecord(module, getData(), getParams(), getQueryParameters());
+
+            Map<String, List<ModuleBaseWithCustomFields>> recordMap = (Map<String, List<ModuleBaseWithCustomFields>>) context.get(Constants.RECORD_MAP);
+            ModuleBaseWithCustomFields record = recordMap.get(moduleName).get(0);
+            JSONObject result = new JSONObject();
+            result.put(moduleName, FieldUtil.getAsJSON(record));
+            this.setData(result);
+
+            this.httpServletResponse.setStatus(HttpServletResponse.SC_CREATED);
+            return SUCCESS;
+        } catch (Exception ex) {
+            return handleException(ex);
+        }
+    }
+
+    public String bulkCreate() throws Exception {
+        try {
+            String moduleName = getModuleName();
+            List<Map<String, Object>> recordList = (List<Map<String, Object>>) getData().get(moduleName);
+
+            // remove restricted fields
+            removeRestrictedFields(recordList, moduleName, true);
+
+            FacilioModule module = ChainUtil.getModule(moduleName);
+            FacilioContext context = V3Util.createRecordList(module, recordList, getParams(), getQueryParameters());
+            List<ModuleBaseWithCustomFields> addedRecords = Constants.getRecordList(context);
+            JSONObject result = new JSONObject();
+
+            V3Config v3Config = ChainUtil.getV3Config(module.getName());
+            result.put(moduleName, FieldUtil.getAsMapList(addedRecords, ChainUtil.getBeanClass(v3Config, module)));
+            setData(result);
+
+            return SUCCESS;
+        } catch (Exception ex) {
+            return handleException(ex);
+        }
+    }
+
+    private String handleException(Exception exception) {
+        if (exception instanceof RESTException) {
+            RESTException ex = (RESTException) exception;
             this.setMessage(ex.getMessage());
             this.setCode(ex.getErrorCode().getCode());
             this.setData(ex.getData());
             this.httpServletResponse.setStatus(ex.getErrorCode().getHttpStatus());
             this.setStackTrace(ex);
             LOGGER.log(Level.SEVERE, "exception handling create request moduleName: " + this.getModuleName(), ex);
-            return "failure";
-        } catch (Exception ex) {
+        } else {
             this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getCode());
             this.setMessage("Internal Server Error");
             this.setData(null);
             this.httpServletResponse.setStatus(ErrorCode.UNHANDLED_EXCEPTION.getHttpStatus());
-            this.setStackTrace(ex);
-            LOGGER.log(Level.SEVERE, "exception handling create request moduleName: " + this.getModuleName(), ex);
-            return "failure";
+            this.setStackTrace(exception);
+            LOGGER.log(Level.SEVERE, "exception handling create request moduleName: " + this.getModuleName(), exception);
         }
-        this.httpServletResponse.setStatus(HttpServletResponse.SC_CREATED);
-        return SUCCESS;
+        return "failure";
     }
 
     /**
@@ -651,47 +654,20 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
     public String update() throws Exception {
         try {
             updateHandler(this.getModuleName(), this.getId(), this.getData(), this.getParams());
-        } catch (RESTException ex) {
-            this.setMessage(ex.getMessage());
-            this.setCode(ex.getErrorCode().getCode());
-            this.setData(ex.getData());
-            this.httpServletResponse.setStatus(ex.getErrorCode().getHttpStatus());
-            this.setStackTrace(ex);
-            LOGGER.log(Level.SEVERE, "exception handling update request moduleName: " + this.getModuleName() + " id: " + this.getId(), ex);
-            return "failure";
+            return SUCCESS;
         } catch (Exception ex) {
-            this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getCode());
-            this.setMessage("Internal Server Error");
-            this.setData(null);
-            this.httpServletResponse.setStatus(ErrorCode.UNHANDLED_EXCEPTION.getHttpStatus());
-            this.setStackTrace(ex);
-            LOGGER.log(Level.SEVERE, "exception handling update request moduleName: " + this.getModuleName() + " id: " + this.getId(), ex);
-            return "failure";
+            return handleException(ex);
         }
-        return SUCCESS;
     }
 
     public String bulkPatch() throws Exception {
         try {
           bulkPatchHandler(this.getData(), this.getModuleName(), this.getParams());
-        } catch (RESTException ex) {
-            this.setMessage(ex.getMessage());
-            this.setCode(ex.getErrorCode().getCode());
-            this.setData(ex.getData());
-            this.httpServletResponse.setStatus(ex.getErrorCode().getHttpStatus());
-            this.setStackTrace(ex);
-            LOGGER.log(Level.SEVERE, "exception handling update request moduleName: " + this.getModuleName() + " id: " + this.getId(), ex);
-            return "failure";
+
+            return SUCCESS;
         } catch (Exception ex) {
-            this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getCode());
-            this.setMessage("Internal Server Error");
-            this.setData(null);
-            this.httpServletResponse.setStatus(ErrorCode.UNHANDLED_EXCEPTION.getHttpStatus());
-            this.setStackTrace(ex);
-            LOGGER.log(Level.SEVERE, "exception handling update request moduleName: " + this.getModuleName() + " id: " + this.getId(), ex);
-            return "failure";
+            return handleException(ex);
         }
-        return SUCCESS;
     }
 
     public String patch() throws Exception {
@@ -699,47 +675,19 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
             //removing permission restricted fields
             removeRestrictedFields(this.getData(), this.getModuleName(), true);
             patchHandler(this.getModuleName(), this.getId(), this.getData(), this.getParams());
-        } catch (RESTException ex) {
-            this.setMessage(ex.getMessage());
-            this.setCode(ex.getErrorCode().getCode());
-            this.setData(ex.getData());
-            this.httpServletResponse.setStatus(ex.getErrorCode().getHttpStatus());
-            this.setStackTrace(ex);
-            LOGGER.log(Level.SEVERE, "exception handling update request moduleName: " + this.getModuleName() + " id: " + this.getId(), ex);
-            return "failure";
+            return SUCCESS;
         } catch (Exception ex) {
-            this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getCode());
-            this.setMessage("Internal Server Error");
-            this.setData(null);
-            this.httpServletResponse.setStatus(ErrorCode.UNHANDLED_EXCEPTION.getHttpStatus());
-            this.setStackTrace(ex);
-            LOGGER.log(Level.SEVERE, "exception handling update request moduleName: " + this.getModuleName() + " id: " + this.getId(), ex);
-            return "failure";
+            return handleException(ex);
         }
-        return SUCCESS;
     }
 
     public String delete() {
         try {
             deleteHandler(this.getModuleName(), this.getData(), this.getParams());
-        } catch (RESTException ex) {
-            this.setMessage(ex.getMessage());
-            this.setCode(ex.getErrorCode().getCode());
-            this.setData(ex.getData());
-            this.httpServletResponse.setStatus(ex.getErrorCode().getHttpStatus());
-            this.setStackTrace(ex);
-            LOGGER.log(Level.SEVERE, "exception handling update request moduleName: " + this.getModuleName() + " id: " + this.getId(), ex);
-            return "failure";
+            return SUCCESS;
         } catch (Exception ex) {
-            this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getCode());
-            this.setMessage("Internal Server Error");
-            this.setData(null);
-            this.httpServletResponse.setStatus(ErrorCode.UNHANDLED_EXCEPTION.getHttpStatus());
-            this.setStackTrace(ex);
-            LOGGER.log(Level.SEVERE, "exception handling update request moduleName: " + this.getModuleName() + " id: " + this.getId(), ex);
-            return "failure";
+            return handleException(ex);
         }
-        return SUCCESS;
     }
 
     public String files() throws Exception {
@@ -795,17 +743,30 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
     }
 
     private HttpServletRequest httpServletRequest;
-
     @Override
     public void setServletRequest(HttpServletRequest httpServletRequest) {
         this.httpServletRequest = httpServletRequest;
     }
-
+    public HttpServletRequest getHttpServletRequest() {
+        return httpServletRequest;
+    }
     private HttpServletResponse httpServletResponse;
-
     @Override
     public void setServletResponse(HttpServletResponse httpServletResponse) {
         this.httpServletResponse = httpServletResponse;
+    }
+    public HttpServletResponse getHttpServletResponse() {
+        return httpServletResponse;
+    }
+
+    private void removeRestrictedFields(List<Map<String, Object>> dataList, String moduleName, Boolean validatePermissions) throws Exception{
+        if (CollectionUtils.isEmpty(dataList)) {
+            return;
+        }
+
+        for (Map<String, Object> dataMap : dataList) {
+            removeRestrictedFields(dataMap, moduleName, validatePermissions);
+        }
     }
 
     private void removeRestrictedFields(Map<String, Object> dataMap, String moduleName, Boolean validatePermissions) throws Exception{
@@ -822,14 +783,5 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
             }
         }
     }
-
-
-	public HttpServletRequest getHttpServletRequest() {
-		return httpServletRequest;
-	}
-
-	public HttpServletResponse getHttpServletResponse() {
-		return httpServletResponse;
-	}
 
 }

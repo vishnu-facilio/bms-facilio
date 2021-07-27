@@ -257,36 +257,36 @@ public class V3Action extends ActionSupport {
 		}
 	}
 	
-	private Exception exception;
-	public Exception getException() {
-		return exception;
-	}
-	public void setException(Exception exception) {
-		this.exception = exception;
-	}
-	
-	public String handleException() {
-		try {
-			HttpServletResponse response = ServletActionContext.getResponse();
-			if (exception instanceof RESTException) {
-				RESTException ex = (RESTException)exception;
-				setMessage(ex.getMessage());
-				setCode(ex.getErrorCode().getCode());
-				setData(ex.getData());
-				response.setStatus(ex.getErrorCode().getHttpStatus());
-				setStackTrace(ex);
-	            LOGGER.error("Rest Exception on v3 api", ex);
-			}
-			else {
-				setCode(ErrorCode.UNHANDLED_EXCEPTION.getCode());
-	            setMessage(FacilioUtil.constructMessageFromException(exception));
-	            response.setStatus(ErrorCode.UNHANDLED_EXCEPTION.getHttpStatus());
-	            setStackTrace(exception);
-	            LOGGER.error("Exception on v3 api", exception);
-			}
-		} catch (Exception e) {
-            LOGGER.error("Exception occurred inside handle V3 Exception", e);
-		}
-		return "failure"; // Move this to ERROR after changing error structure in v3 xml
-	}
+//	private Exception exception;
+//	public Exception getException() {
+//		return exception;
+//	}
+//	public void setException(Exception exception) {
+//		this.exception = exception;
+//	}
+//
+//	public String handleException() {
+//		try {
+//			HttpServletResponse response = ServletActionContext.getResponse();
+//			if (exception instanceof RESTException) {
+//				RESTException ex = (RESTException)exception;
+//				setMessage(ex.getMessage());
+//				setCode(ex.getErrorCode().getCode());
+//				setData(ex.getData());
+//				response.setStatus(ex.getErrorCode().getHttpStatus());
+//				setStackTrace(ex);
+//	            LOGGER.error("Rest Exception on v3 api", ex);
+//			}
+//			else {
+//				setCode(ErrorCode.UNHANDLED_EXCEPTION.getCode());
+//	            setMessage(FacilioUtil.constructMessageFromException(exception));
+//	            response.setStatus(ErrorCode.UNHANDLED_EXCEPTION.getHttpStatus());
+//	            setStackTrace(exception);
+//	            LOGGER.error("Exception on v3 api", exception);
+//			}
+//		} catch (Exception e) {
+//            LOGGER.error("Exception occurred inside handle V3 Exception", e);
+//		}
+//		return "failure"; // Move this to ERROR after changing error structure in v3 xml
+//	}
 }
