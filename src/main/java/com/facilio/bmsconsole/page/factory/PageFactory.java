@@ -353,6 +353,9 @@ public class PageFactory {
 
 		if (CollectionUtils.isNotEmpty(subModules)) {
 			for (FacilioModule subModule : subModules) {
+				if(subModule.isModuleHidden()) {
+					continue;
+				}
 				if (CollectionUtils.isNotEmpty(relatedModules)) {
 					if (relatedModules.contains(subModule.getName()) && !include) {
 						continue;
