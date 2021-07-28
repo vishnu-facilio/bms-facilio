@@ -92,7 +92,7 @@ public class ValidateFacilityBookingCommandV3 extends FacilioCommand {
                             V3RecordAPI.updateRecord(slot, module, modBean.getAllFields(FacilioConstants.ContextNames.FacilityBooking.SLOTS));
                         }
                     }
-                    if (facility.isAttendeeListNeeded() && (CollectionUtils.isEmpty(booking.getInternalAttendees()) && CollectionUtils.isEmpty(booking.getFacilityBookingExternalAttendee()))) {
+                    if (facility.isAttendeeListNeeded() && (CollectionUtils.isEmpty(booking.getInternalAttendees()) && (MapUtils.isEmpty(subformMap) || !subformMap.containsKey(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING_EXTERNAL_ATTENDEE)))) {
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Attendee List is mandatory for this facility");
                     }
                     if (facility.getMaxAttendeeCountPerBooking() != null && booking.getNoOfAttendees() > facility.getMaxAttendeeCountPerBooking()) {
