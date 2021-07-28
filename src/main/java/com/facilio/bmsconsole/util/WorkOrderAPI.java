@@ -11,7 +11,6 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.facilio.bmsconsole.tenant.TenantSpaceContext;
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -41,6 +40,7 @@ import com.facilio.bmsconsole.context.WorkOrderContext.PreRequisiteStatus;
 import com.facilio.bmsconsole.context.WorkorderItemContext;
 import com.facilio.bmsconsole.context.WorkorderToolsContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsole.tenant.TenantSpaceContext;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -233,16 +233,19 @@ public class WorkOrderAPI {
    public static List<WorkOrderContext> getOpenWorkOrderForUser(Long ouid) throws Exception {
       
       ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-      modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
-      FacilioStatus status = TicketAPI.getStatus("Closed");
+      FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+      FacilioStatus status = TicketAPI.getStatus(module, "Closed");
+      
+      List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
+      Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
       
       SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
                                           .table("WorkOrders")
                                           .moduleName(FacilioConstants.ContextNames.WORK_ORDER)
                                           .beanClass(WorkOrderContext.class)
-                                          .select(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER))
-                                          .andCondition(CriteriaAPI.getCondition("STATUS_ID", "status", status.getId()+"", NumberOperators.NOT_EQUALS))
-                                          .andCondition(CriteriaAPI.getCondition("ASSIGNED_TO_ID", "assignedTo", ouid+"", NumberOperators.EQUALS));
+                                          .select(fields)
+                                          .andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleState"), status.getId()+"", NumberOperators.NOT_EQUALS))
+                                          .andCondition(CriteriaAPI.getCondition(fieldMap.get("assignedTo"), ouid+"", NumberOperators.EQUALS));
       
       List<WorkOrderContext> workOrders = builder.get();
 
