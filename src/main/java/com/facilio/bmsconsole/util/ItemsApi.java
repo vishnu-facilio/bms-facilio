@@ -275,7 +275,7 @@ public class ItemsApi {
         if(!CollectionUtils.isEmpty(items)) {
             return items.get(0);
         }
-     throw new IllegalArgumentException("No appropriate item found");
+     throw new IllegalArgumentException("Item(s) not available in selected store");
     }
 
 

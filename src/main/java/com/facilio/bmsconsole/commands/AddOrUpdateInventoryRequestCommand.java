@@ -83,7 +83,9 @@ public class AddOrUpdateInventoryRequestCommand extends FacilioCommand {
 
 		for (InventoryRequestLineItemContext lineItemContext : inventoryRequestContext.getLineItems()) {
 			lineItemContext.setInventoryRequestId(invReq);
-			lineItemContext.setIssuedQuantity(lineItemContext.getQuantity());
+			if(inventoryRequestContext.isIssued()) {
+				lineItemContext.setIssuedQuantity(lineItemContext.getQuantity());
+			}
 			if(inventoryRequestContext.getParentId() > 0) {
 				lineItemContext.setParentId(inventoryRequestContext.getParentId());
 			}
@@ -95,7 +97,9 @@ public class AddOrUpdateInventoryRequestCommand extends FacilioCommand {
 				lineItemAsset.setId(lineItemContext.getAssetIds().get(0));
 				lineItemContext.setAsset(lineItemAsset);
 				lineItemContext.setQuantity(1);
-				lineItemContext.setIssuedQuantity(1);
+				if(inventoryRequestContext.isIssued()) {
+					lineItemContext.setIssuedQuantity(1);
+				}
 				for(int i=1; i<lineItemContext.getAssetIds().size(); i++) {
 					 InventoryRequestLineItemContext lineItem = new InventoryRequestLineItemContext();
 					 AssetContext asset = new AssetContext();
@@ -110,7 +114,9 @@ public class AddOrUpdateInventoryRequestCommand extends FacilioCommand {
 					 }
 					 
 					 lineItem.setQuantity(1);
-					 lineItem.setIssuedQuantity(1);
+					if(inventoryRequestContext.isIssued()) {
+						lineItem.setIssuedQuantity(1);
+					}
 
 					 lineItem.setInventoryRequestId(invReq);
 					 if(inventoryRequestContext.getParentId() > 0) {

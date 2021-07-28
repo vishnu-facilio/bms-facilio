@@ -276,7 +276,7 @@ public class ToolsApi {
         if(!CollectionUtils.isEmpty(tools)) {
             return tools.get(0);
         }
-     throw new IllegalArgumentException("No appropriate Tool found");
+     throw new IllegalArgumentException("Tool(s) not available in selected store");
     }
 
 }
