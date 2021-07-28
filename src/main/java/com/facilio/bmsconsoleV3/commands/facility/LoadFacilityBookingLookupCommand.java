@@ -30,6 +30,8 @@ public class LoadFacilityBookingLookupCommand extends FacilioCommand {
         LookupField facilityLocationField = (LookupField) modBean.getField("location", FacilioConstants.ContextNames.FacilityBooking.FACILITY);
         facilityField.addChildLookupField(facilityLocationField);
 
+        LookupFieldMeta tenantField = new LookupFieldMeta((LookupField) fieldsAsMap.get("tenant"));
+
         SupplementRecord reservedFor = (SupplementRecord) fieldsAsMap.get("reservedFor");
 
         MultiLookupMeta internalAttendees = new MultiLookupMeta((MultiLookupField) fieldsAsMap.get("internalAttendees"));
@@ -44,6 +46,7 @@ public class LoadFacilityBookingLookupCommand extends FacilioCommand {
 
         fetchLookupsList.add(facilityField);
         fetchLookupsList.add(reservedFor);
+        fetchLookupsList.add(tenantField);
         fetchLookupsList.add(internalAttendees);
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchLookupsList);
         return false;

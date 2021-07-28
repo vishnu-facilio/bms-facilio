@@ -103,10 +103,12 @@ public class ValidateFacilityBookingCommandV3 extends FacilioCommand {
                         if (CollectionUtils.isNotEmpty(booking.getInternalAttendees())) {
                             bookingAttendeesCount += booking.getInternalAttendees().size();
                         }
-                        if (CollectionUtils.isNotEmpty(booking.getFacilityBookingExternalAttendee())) {
-                            bookingAttendeesCount += booking.getFacilityBookingExternalAttendee().size();
+                        if (!MapUtils.isEmpty(subformMap) && subformMap.containsKey(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING_EXTERNAL_ATTENDEE)) {
+                            List<V3ExternalAttendeeContext> externalattendees = FieldUtil.getAsBeanListFromMapList(subformMap.get(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING_EXTERNAL_ATTENDEE), V3ExternalAttendeeContext.class);
+                            if(CollectionUtils.isNotEmpty(externalattendees)) {
+                                bookingAttendeesCount += externalattendees.size();
+                            }
                         }
-
                         if (bookingAttendeesCount != booking.getNoOfAttendees()) {
                             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Attendee List is not matching the booking count");
                         }
