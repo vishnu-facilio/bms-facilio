@@ -15,6 +15,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.context.SubFormContext;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
@@ -28,16 +29,20 @@ public class ValidateFacilityBookingCommandV3 extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         String moduleName = Constants.getModuleName(context);
+
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<V3FacilityBookingContext> bookings = recordMap.get(moduleName);
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.FacilityBooking.SLOTS);
         if(CollectionUtils.isNotEmpty(bookings)) {
+
             Map<String, Object> bodyParams = Constants.getBodyParams(context);
             if (MapUtils.isEmpty(bodyParams) || (!bodyParams.containsKey("cancel") && !bodyParams.containsKey("cancelBooking"))) {
 
                 for (V3FacilityBookingContext booking : bookings) {
+                    Map<String, List<SubFormContext>> relations = booking.getRelations();
+
                     if(booking.getId() <= 0) {
                         booking.setBookingRequestedBy(AccountUtil.getCurrentUser());
                     }
@@ -92,7 +97,7 @@ public class ValidateFacilityBookingCommandV3 extends FacilioCommand {
                             V3RecordAPI.updateRecord(slot, module, modBean.getAllFields(FacilioConstants.ContextNames.FacilityBooking.SLOTS));
                         }
                     }
-                    if (facility.isAttendeeListNeeded() && (CollectionUtils.isEmpty(booking.getInternalAttendees()) && (MapUtils.isEmpty(subformMap) || !subformMap.containsKey(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING_EXTERNAL_ATTENDEE)))) {
+                    if (facility.isAttendeeListNeeded() && (CollectionUtils.isEmpty(booking.getInternalAttendees()) && (MapUtils.isEmpty(relations) || !relations.containsKey(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING_EXTERNAL_ATTENDEE) || CollectionUtils.isEmpty(relations.get(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING_EXTERNAL_ATTENDEE).get(0).getData())))) {
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Attendee List is mandatory for this facility");
                     }
                     if (facility.getMaxAttendeeCountPerBooking() != null && booking.getNoOfAttendees() > facility.getMaxAttendeeCountPerBooking()) {
@@ -103,10 +108,10 @@ public class ValidateFacilityBookingCommandV3 extends FacilioCommand {
                         if (CollectionUtils.isNotEmpty(booking.getInternalAttendees())) {
                             bookingAttendeesCount += booking.getInternalAttendees().size();
                         }
-                        if (!MapUtils.isEmpty(subformMap) && subformMap.containsKey(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING_EXTERNAL_ATTENDEE)) {
-                            List<V3ExternalAttendeeContext> externalattendees = FieldUtil.getAsBeanListFromMapList(subformMap.get(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING_EXTERNAL_ATTENDEE), V3ExternalAttendeeContext.class);
+                        if (!MapUtils.isEmpty(relations) && relations.containsKey(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING_EXTERNAL_ATTENDEE)) {
+                            List<SubFormContext> externalattendees = relations.get(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING_EXTERNAL_ATTENDEE);
                             if(CollectionUtils.isNotEmpty(externalattendees)) {
-                                bookingAttendeesCount += externalattendees.size();
+                                bookingAttendeesCount += externalattendees.get(0).getData().size();
                             }
                         }
                         if (bookingAttendeesCount != booking.getNoOfAttendees()) {
