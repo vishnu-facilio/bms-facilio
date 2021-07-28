@@ -4,6 +4,8 @@ import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.fw.constants.FacilioCommand;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.point.PointsAPI;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -53,11 +55,15 @@ public class controllerTypeIdsAction extends IdsAction {
 		this.logical = logical;
 	}
 
+    @Getter
+    @Setter
+    private int interval = -1;
+
 	public String configurePointsAndMakeController() {
         try {
             List<Long> pointIds = getRecordIds();
             if (!pointIds.isEmpty()) {
-                PointsAPI.configurePointsAndMakeController(pointIds, FacilioControllerType.valueOf(getControllerType()),getLogical());
+                PointsAPI.configurePointsAndMakeController(pointIds, FacilioControllerType.valueOf(getControllerType()), getLogical(), getInterval());
                 setResponseCode(HttpURLConnection.HTTP_OK);
                 setResult(AgentConstants.RESULT, SUCCESS);
                 ok();

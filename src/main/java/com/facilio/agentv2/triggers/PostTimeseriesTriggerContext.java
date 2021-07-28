@@ -43,7 +43,7 @@ public class PostTimeseriesTriggerContext extends BaseTriggerContext {
     }
 
     @Override
-    public int getEventType() {
+    public long getEventType() {
         return EventType.TIMESERIES_COMPLETE.getValue();
     }
 

@@ -52,6 +52,14 @@ public class ControllerMessenger {
         return constructNewIotMessage(ControllerApiV2.getControllerFromDb(controllerId), command, points, null);
     }
 
+    private static IotData constructNewIotMessage(List<Point> points, FacilioCommand command, Controller controller, int interval) throws Exception {
+        if ((points == null) || (points.isEmpty())) {
+            throw new Exception("Exception occurred, points map is empty");
+        }
+        FacilioContext context = new FacilioContext();
+        context.put(AgentConstants.DATA_INTERVAL, interval);
+        return constructNewIotMessage(controller, command, points, context);
+    }
     private static IotData constructNewIotMessage(List<Point> points, FacilioCommand command,Controller controller) throws Exception {
         if ((points == null) || (points.isEmpty())) {
             throw new Exception("Exception occurred, points map is empty");
@@ -127,7 +135,10 @@ public class ControllerMessenger {
 	            	case UNSUBSCRIBE:
 	            	case GET:
 	            		JSONArray pointsArray = MessengerUtil.getPointsData(points);
-	            		LOGGER.info("Subscribe point JsonArray : "+pointsArray);
+                        LOGGER.info("JSON Array: " + pointsArray);
+                        if (context != null && context.containsKey(AgentConstants.DATA_INTERVAL)) {
+                            object.put(AgentConstants.DATA_INTERVAL, Integer.parseInt(context.get(AgentConstants.DATA_INTERVAL).toString()));
+                        }
 	            		object.put(AgentConstants.POINTS, pointsArray);
 	            		break;
 	            		//
@@ -233,8 +244,13 @@ public static boolean discoverPoints(long controllerId) throws Exception {
         return false;
     }
 
-    public static void configurePoints(List<Point> points, Controller controller) throws Exception {
-        IotData iotData = constructNewIotMessage(points, FacilioCommand.CONFIGURE,controller);
+    public static void configurePoints(List<Point> points, Controller controller, int interval) throws Exception {
+        IotData iotData;
+        if (interval > 0) {
+            iotData = constructNewIotMessage(points, FacilioCommand.CONFIGURE, controller, interval);
+        } else {
+            iotData = constructNewIotMessage(points, FacilioCommand.CONFIGURE, controller);
+        }
         MessengerUtil.addAndPublishNewAgentData(iotData);
 
     }

@@ -19,6 +19,10 @@ public class ConfigurePointCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         if (containsAndNotNull(context, AgentConstants.POINTS) && containsAndNotNull(context, AgentConstants.CONTROLLER)) {
             Controller controller = (Controller) context.get(AgentConstants.CONTROLLER);
+            int interval = -1;
+            if (context.containsKey(AgentConstants.DATA_INTERVAL)) {
+                interval = Integer.parseInt((context.get(AgentConstants.DATA_INTERVAL).toString()));
+            }
             if (containsAndNotNull(context, AgentConstants.POINTS)) {
                 List<Point> points = (List<Point>) context.get(AgentConstants.POINTS);
                 Objects.requireNonNull(points,"points can't be null");
@@ -34,7 +38,7 @@ public class ConfigurePointCommand extends FacilioCommand {
                     }
                 }
                 boolean isLogical = (boolean) context.getOrDefault(AgentConstants.LOGICAL, false);
-                PointsAPI.configurePoints(pointsToConfigure, controller,isLogical);
+                PointsAPI.configurePoints(pointsToConfigure, controller, isLogical, interval);
             }
         } else {
             throw new Exception(AgentConstants.RECORD_IDS + ", " + AgentConstants.CONTROLLER_TYPE + " missing from context->" + context);

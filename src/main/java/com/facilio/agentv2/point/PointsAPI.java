@@ -386,7 +386,7 @@ public class PointsAPI {
     }
 
 
-    public static void configurePointsAndMakeController(List<Long> pointIds, FacilioControllerType controllerType,boolean logical) throws Exception {
+    public static void configurePointsAndMakeController(List<Long> pointIds, FacilioControllerType controllerType, boolean logical, int interval) throws Exception {
         if ((pointIds != null) && (!pointIds.isEmpty())) {
             List<Point> points = new GetPointRequest().ofType(controllerType).fromIds(pointIds).getPoints();
             if (points != null && (!points.isEmpty())) {
@@ -400,6 +400,7 @@ public class PointsAPI {
                 context.put(AgentConstants.POINTS, points);
                 context.put(AgentConstants.RECORD_IDS, pointIds);
                 context.put(AgentConstants.CONTROLLER_TYPE, controllerType);
+                context.put(AgentConstants.DATA_INTERVAL, interval);
                 context.put(AgentConstants.LOGICAL, logical);
                 chain.execute();
                 //sendConfigurePointCommand(points,controllerType);
@@ -412,7 +413,7 @@ public class PointsAPI {
     }
 
     private static void sendConfigurePointCommand(List<Point> points, Controller controller) throws Exception {
-        ControllerMessenger.configurePoints(points, controller);
+        ControllerMessenger.configurePoints(points, controller, -1);
     }
 
     public static void handlePointConfigurationAndSubscription(FacilioCommand command,List<Long> pointIds) throws Exception {
@@ -436,8 +437,8 @@ public class PointsAPI {
             }
     }
 
-    public static boolean configurePoints(List<Point> points, Controller controller,boolean isLogical) throws Exception {
-        ControllerMessenger.configurePoints(points, controller);
+    public static boolean configurePoints(List<Point> points, Controller controller, boolean isLogical, int interval) throws Exception {
+        ControllerMessenger.configurePoints(points, controller, interval);
         if ((points != null) && (!points.isEmpty())) {
             List<Long> pointIds = new ArrayList<>();
             for (Point point : points) {
