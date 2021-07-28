@@ -614,6 +614,9 @@ public class WorkflowUtil {
 														.andCondition(CriteriaAPI.getCondition(workflowIdField, String.valueOf(workflowId), PickListOperators.IS))
 														;
 		List<Map<String, Object>> props = selectBuilder.get();
+		if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 343l && workflowId ==  50471l){
+			LOGGER.info("get workflow ids : qry : " + selectBuilder + " props : " + props);
+		}
 		if (props != null && !props.isEmpty()) {
 			List<WorkflowFieldContext> workflowFields = new ArrayList<>();
 			for (Map<String, Object> prop : props) {

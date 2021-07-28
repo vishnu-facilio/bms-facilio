@@ -117,7 +117,11 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 					fields.addAll(workflowFields);
 				}
 			}
-		}				
+		}
+
+		if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 343){
+			LOGGER.info("fields : " + fields + " , reading rule : "  + readingRule.getId() + " , " + readingRule);
+		}
 		
 		if (fields != null && !fields.isEmpty()) {
 			supportFieldsRDM = getSupportingData(fields, startTime, endTime, -1, jobStatesMap, executeReadingRuleThroughAutomatedHistory);
