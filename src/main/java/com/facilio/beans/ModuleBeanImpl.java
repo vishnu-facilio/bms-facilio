@@ -63,6 +63,8 @@ public class ModuleBeanImpl implements ModuleBean {
 			currentModule.setDescription(rs.getString("DESCRIPTION"));
 			currentModule.setCreatedTime(rs.getLong("CREATED_TIME"));
 			currentModule.setHideFromParents(rs.getBoolean("HIDE_FROM_PARENTS"));
+			currentModule.setStatus(rs.getBoolean("STATUS"));
+
 			long createdById = rs.getLong("CREATED_BY");
 			if (createdById > 0) {
 				IAMUser user = new IAMUser();
