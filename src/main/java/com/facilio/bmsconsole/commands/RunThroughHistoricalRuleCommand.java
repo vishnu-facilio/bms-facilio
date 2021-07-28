@@ -51,7 +51,7 @@ public class RunThroughHistoricalRuleCommand extends FacilioCommand implements P
     	if (orgInfoMap != null && MapUtils.isNotEmpty(orgInfoMap)) {
     		String historicalReadingRuleJobsThresholdProp = orgInfoMap.get(FacilioConstants.OrgInfoKeys.HISTORICAL_READING_RULE_JOBS_THRESHOLD);
 			if (historicalReadingRuleJobsThresholdProp != null && !historicalReadingRuleJobsThresholdProp.isEmpty() && StringUtils.isNotEmpty(historicalReadingRuleJobsThresholdProp)) {
-				maximumDailyEventRuleJobsPerOrg = Long.valueOf(String.valueOf(historicalReadingRuleJobsThresholdProp));
+				maximumDailyEventRuleJobsPerOrg = Long.valueOf(historicalReadingRuleJobsThresholdProp);
 			}
     	}
 		
@@ -129,6 +129,10 @@ public class RunThroughHistoricalRuleCommand extends FacilioCommand implements P
 		if(requestedDailyJobsCount > noOfJobsCanbeCreatedAtPresent) {
 			long assetCountLimitAtPresent = (noOfJobsCanbeCreatedAtPresent/intervals.size()) - 1;
 			long intervalLimitAtPresent = (noOfJobsCanbeCreatedAtPresent/secondaryIds.size()) - 2;
+			LOGGER.severe("Daily job count exceeded. requested job count : " + requestedDailyJobsCount
+					+ ", created present count : " + noOfJobsCanbeCreatedAtPresent
+					+ ", assetCountLimitAtPresent : " + assetCountLimitAtPresent
+					+ ", intervalLimitAtPresent : " + intervalLimitAtPresent);
 			if(assetCountLimitAtPresent <= 0) {
 				throw new Exception("Please reduce the specified time range to stay within a period of " +intervalLimitAtPresent+ " days.");
 			}

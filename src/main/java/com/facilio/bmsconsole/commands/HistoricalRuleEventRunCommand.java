@@ -20,6 +20,7 @@ import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateRange;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
 
 import java.sql.SQLException;
@@ -109,7 +110,7 @@ public class HistoricalRuleEventRunCommand extends FacilioCommand implements Pos
 		}
 				
 		if(!isManualFailed) {
-			LOGGER.severe("HISTORICAL RULE RESOURCE EVENT JOB COMMAND FAILED, JOB ID -- : "+ jobId +" ExceptionMessage -- " + exceptionMessage + " StackTrace -- " + String.valueOf(stack));
+			LOGGER.severe("HISTORICAL RULE RESOURCE EVENT JOB COMMAND FAILED, JOB ID -- : "+ jobId +" ExceptionMessage -- " + exceptionMessage + " StackTrace -- " + ExceptionUtils.getStackTrace(historicalRuleException));
 		}
 		
 		throw historicalRuleException;
@@ -125,7 +126,7 @@ public class HistoricalRuleEventRunCommand extends FacilioCommand implements Pos
 		if(activeRuleResourceGroupedLoggerIds == 0)
 		{
 			WorkflowRuleResourceLoggerContext parentRuleResourceLoggerContext = WorkflowRuleResourceLoggerAPI.getWorkflowRuleResourceLoggerById(parentRuleResourceLoggerId);
-			Boolean isManualFailed = (Boolean)jobStatesMap.get("isManualFailed");
+			Boolean isManualFailed = jobStatesMap.get("isManualFailed");
 			if(isFailed && !isManualFailed) {
 				parentRuleResourceLoggerContext.setStatus(WorkflowRuleResourceLoggerContext.Status.PARTIALLY_PROCESSED_STATE.getIntVal());
 			}
