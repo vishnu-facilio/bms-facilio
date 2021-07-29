@@ -54,8 +54,7 @@ public class ApprovalPageFactory extends PageFactory {
         if (CollectionUtils.isNotEmpty(approvers) && approvers.size() > 1) {
         		addApproversWidget(tab1Sec1);
         }
-        //Removing more details section from approvals page
-        //addSecondaryDetailsWidget(tab1Sec1);
+        addSecondaryDetailsWidget(tab1Sec1);
         
         HashMap<String, String> titles = new HashMap<>();
         titles.put("notes", "Comment");
