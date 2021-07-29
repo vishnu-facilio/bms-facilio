@@ -16,15 +16,28 @@ import java.util.List;
 public class GetApprovalModulesCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        List<String> MODULES = Arrays.asList(new String[] {
-                FacilioConstants.ContextNames.WORK_ORDER,
-                FacilioConstants.ContextNames.WorkPermit.WORKPERMIT,
-                FacilioConstants.ContextNames.INVENTORY_REQUEST,
-                FacilioConstants.ContextNames.SITE,
-                FacilioConstants.ContextNames.BUILDING,
-                FacilioConstants.ContextNames.FLOOR,
-                FacilioConstants.ContextNames.SPACE
-        });
+    	
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
+    	//approval modules handling for ATG
+    	if(orgId == 406l)
+    	{
+    		 List<String> MODULES = Arrays.asList(new String[] {
+    	                FacilioConstants.ContextNames.WORK_ORDER,
+    	                "custom_supplierselectionform"
+    	     });
+    	}
+    	else
+    	{
+    		 List<String> MODULES = Arrays.asList(new String[] {
+    	                FacilioConstants.ContextNames.WORK_ORDER,
+    	                FacilioConstants.ContextNames.WorkPermit.WORKPERMIT,
+    	                FacilioConstants.ContextNames.INVENTORY_REQUEST,
+    	                FacilioConstants.ContextNames.SITE,
+    	                FacilioConstants.ContextNames.BUILDING,
+    	                FacilioConstants.ContextNames.FLOOR,
+    	                FacilioConstants.ContextNames.SPACE
+    	     });
+    	}
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<JSONObject> moduleList = new ArrayList<JSONObject>();
