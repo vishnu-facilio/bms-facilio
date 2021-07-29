@@ -311,16 +311,6 @@ public class ViewFactory {
 		views = new LinkedHashMap<>();
 		views.put("all", getAllVendors().setOrder(order++));
 
-		//views.put("myVendors", getMyVendors().setOrder(order++));
-		//views.put("myNonInsuredVendors", getMyNonInsuredVendors().setOrder(order++));
-
-		views.put("tenantRequestedVendors", getTenantRequestedVendors().setOrder(order++));
-		views.put("tenantAll", getTenantAllVendors().setOrder(order++));
-
-		//to be removed when app based tenant portal is release
-		views.put("myRequestedVendors", getMyRequestedVendors().setOrder(order++));
-		views.put("myAll", getMyAllVendors().setOrder(order++));
-
 		viewsMap.put(FacilioConstants.ContextNames.VENDORS, views);
 		
 		order = 1;
@@ -677,21 +667,6 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllWorkPermitView().setOrder(order++));
-		views.put("vendorActiveWorkpermits", getVendorActiveWorkPermitView().setOrder(order++));
-		views.put("vendorExpiredWorkpermits", getVendorExpiredWorkPermitView().setOrder(order++));
-
-		//to be removed when app based tenant portal is release
-		views.put("myWorkpermits", getMyWorkPermits().setOrder(order++));
-		views.put("myActive", getActiveWorkPermitView().setOrder(order++));
-		views.put("myExpired", getMyExpiredWorkPermitView().setOrder(order++));
-		views.put("myRequested", getMyRequestedWorkPermitView().setOrder(order++));
-
-		views.put("tenantWorkpermits", getTenantWorkPermits().setOrder(order++));
-		views.put("tenantActive", getTenantActiveWorkPermitView().setOrder(order++));
-		views.put("tenantExpired", getTenantExpiredWorkPermitView().setOrder(order++));
-		views.put("tenantRequested", getTenantRequestedWorkPermitView().setOrder(order++));
-
-
 		viewsMap.put(FacilioConstants.ContextNames.WorkPermit.WORKPERMIT, views);
 
 		order = 1;
@@ -4006,31 +3981,7 @@ public class ViewFactory {
 		return allView;
 	}
 		
-		private static FacilioView getMyVendors() {
-			
-			Criteria criteria = new Criteria();
-			criteria.addAndCondition(getMyVendorsCondition());
 
-			FacilioModule vendorModule = ModuleFactory.getVendorsModule();
-
-			FacilioField createdTime = new FacilioField();
-			createdTime.setName("sysCreatedTime");
-			createdTime.setDataType(FieldType.NUMBER);
-			createdTime.setColumnName("SYS_CREATED_TIME");
-			createdTime.setModule(vendorModule);
-
-			List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
-
-			FacilioView myVendorView = new FacilioView();
-			myVendorView.setName("myVendors");
-			myVendorView.setDisplayName("My Vendors");
-			myVendorView.setCriteria(criteria);
-			myVendorView.setSortFields(sortFields);
-			myVendorView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
-
-			return myVendorView;
-		}
-		
 		public static Condition getMyNonInsuredVendorsCondition() {
 			FacilioField hasInsuranceField = new LookupField();
 			hasInsuranceField.setName("hasInsurance");
@@ -4046,34 +3997,6 @@ public class ViewFactory {
 			return hasInsuranceCondition;
 		}
 		
-		private static FacilioView getMyNonInsuredVendors() {
-			
-			Criteria criteria = new Criteria();
-			criteria.addAndCondition(getMyVendorsCondition());
-			criteria.addAndCondition(getMyNonInsuredVendorsCondition());
-
-			FacilioModule vendorModule = ModuleFactory.getVendorsModule();
-
-			FacilioField createdTime = new FacilioField();
-			createdTime.setName("sysCreatedTime");
-			createdTime.setDataType(FieldType.NUMBER);
-			createdTime.setColumnName("SYS_CREATED_TIME");
-			createdTime.setModule(vendorModule);
-
-			List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
-
-			FacilioView myVendorView = new FacilioView();
-			myVendorView.setName("getMyNonInsuredVendors");
-			myVendorView.setDisplayName("My Non-Insured Vendors");
-			myVendorView.setCriteria(criteria);
-			myVendorView.setSortFields(sortFields);
-
-			myVendorView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
-
-
-			return myVendorView;
-		}
-
 		private static FacilioView getMyRequestedVendors() {
 
 			FacilioModule vendorModule = ModuleFactory.getVendorsModule();
@@ -4126,92 +4049,7 @@ public class ViewFactory {
 		return myVendorView;
 	}
 
-	private static FacilioView getMyInsuredVendors() {
 
-		FacilioModule vendorModule = ModuleFactory.getVendorsModule();
-
-		Criteria criteria = new Criteria();
-		criteria.addAndCondition(getMyVendorsCondition());
-		criteria.addAndCondition(getModuleTicketStatusCriteria("Registered", vendorModule));
-		
-		FacilioField createdTime = new FacilioField();
-		createdTime.setName("sysCreatedTime");
-		createdTime.setDataType(FieldType.NUMBER);
-		createdTime.setColumnName("SYS_CREATED_TIME");
-		createdTime.setModule(vendorModule);
-
-		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
-
-		FacilioView myVendorView = new FacilioView();
-		myVendorView.setName("myRegisteredVendors");
-		myVendorView.setDisplayName("My Registered Vendors");
-		myVendorView.setCriteria(criteria);
-		myVendorView.setSortFields(sortFields);
-		myVendorView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
-
-
-		return myVendorView;
-	}
-
-	private static FacilioView getMyApprovedVendors() {
-
-		FacilioModule vendorModule = ModuleFactory.getVendorsModule();
-
-		Criteria criteria = new Criteria();
-		criteria.addAndCondition(getMyVendorsCondition());
-//		FacilioField insuranceField = FieldFactory.getField("hasInsurance", "HAS_INSURANCE",FieldType.BOOLEAN);
-//		criteria.addAndCondition(CriteriaAPI.getCondition(insuranceField, CommonOperators.IS_EMPTY));
-		criteria.addAndCondition(getModuleTicketStatusCriteria("Approved", vendorModule));
-
-		FacilioField createdTime = new FacilioField();
-		createdTime.setName("sysCreatedTime");
-		createdTime.setDataType(FieldType.NUMBER);
-		createdTime.setColumnName("SYS_CREATED_TIME");
-		createdTime.setModule(vendorModule);
-
-		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
-
-		FacilioView myVendorView = new FacilioView();
-		myVendorView.setName("myApproved");
-		myVendorView.setDisplayName("My Approved Vendors");
-		myVendorView.setCriteria(criteria);
-		myVendorView.setSortFields(sortFields);
-
-		myVendorView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
-
-
-		return myVendorView;
-	}
-
-	private static FacilioView getMyInactiveVendors() {
-
-		FacilioModule vendorModule = ModuleFactory.getVendorsModule();
-
-		Criteria criteria = new Criteria();
-		criteria.addAndCondition(getMyVendorsCondition());
-		criteria.addAndCondition(getModuleTicketStatusCriteria("InActive", vendorModule));
-
-		FacilioField createdTime = new FacilioField();
-		createdTime.setName("sysCreatedTime");
-		createdTime.setDataType(FieldType.NUMBER);
-		createdTime.setColumnName("SYS_CREATED_TIME");
-		createdTime.setModule(vendorModule);
-
-		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
-
-		FacilioView myVendorView = new FacilioView();
-		myVendorView.setName("myInactive");
-		myVendorView.setDisplayName("My InActive Vendors");
-		myVendorView.setCriteria(criteria);
-		myVendorView.setSortFields(sortFields);
-		myVendorView.setHidden(true);
-
-		myVendorView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
-
-
-		return myVendorView;
-	}
-	
 	private static FacilioView getMyAllVendors() {
 
 		FacilioModule vendorModule = ModuleFactory.getVendorsModule();
@@ -4588,53 +4426,7 @@ public class ViewFactory {
 			return myVisitorInvitesView;
 		}
 		
-		private static FacilioView getMyWorkPermits() {
-			
-			Criteria criteria = new Criteria();
-			criteria.addAndCondition(getMyWorkPermitsCondition());
 
-			FacilioModule visitorInvitesModule = ModuleFactory.getWorkPermitModule();
-
-			FacilioField createdTime = new FacilioField();
-			createdTime.setName("sysCreatedTime");
-			createdTime.setDataType(FieldType.NUMBER);
-			createdTime.setColumnName("SYS_CREATED_TIME");
-			createdTime.setModule(visitorInvitesModule);
-
-			List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
-
-			FacilioView myWorkPermitsView = new FacilioView();
-			myWorkPermitsView.setName("myWorkpermits");
-			myWorkPermitsView.setDisplayName("All");
-			myWorkPermitsView.setCriteria(criteria);
-			myWorkPermitsView.setSortFields(sortFields);
-			myWorkPermitsView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
-			myWorkPermitsView.setHidden(true);
-
-			return myWorkPermitsView;
-		}
-
-	private static FacilioView getTenantWorkPermits() {
-
-		FacilioModule visitorInvitesModule = ModuleFactory.getWorkPermitModule();
-
-		FacilioField createdTime = new FacilioField();
-		createdTime.setName("sysCreatedTime");
-		createdTime.setDataType(FieldType.NUMBER);
-		createdTime.setColumnName("SYS_CREATED_TIME");
-		createdTime.setModule(visitorInvitesModule);
-
-		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
-
-		FacilioView myWorkPermitsView = new FacilioView();
-		myWorkPermitsView.setName("tenantWorkpermits");
-		myWorkPermitsView.setDisplayName("All");
-		myWorkPermitsView.setSortFields(sortFields);
-		myWorkPermitsView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
-
-		return myWorkPermitsView;
-	}
-	
 	private static FacilioView getAllInventry() {
 
 		FacilioModule itemsModule = ModuleFactory.getInventryModule();
@@ -7004,171 +6796,6 @@ public class ViewFactory {
 		return allView;
 	}
 	
-	private static Condition getExpiredWorkPermitCondition(){
-		
-		FacilioField expectedStartTimeField = new LookupField();
-		expectedStartTimeField.setName("expectedEndTime");
-		expectedStartTimeField.setColumnName("EXPECTED_END_TIME");
-		expectedStartTimeField.setDataType(FieldType.DATE_TIME);
-		expectedStartTimeField.setModule(ModuleFactory.getWorkPermitModule());
-
-		Condition expiredCondition = new Condition();
-		expiredCondition.setField(expectedStartTimeField);
-		expiredCondition.setOperator(DateOperators.TILL_NOW);
-		
-		return expiredCondition;
-	}
-	
-	private static Criteria getActiveWorkPermitCriteria(){
-		
-//		FacilioField expectedStartTimeField = new LookupField();
-//		expectedStartTimeField.setName("expectedStartTime");
-//		expectedStartTimeField.setColumnName("EXPECTED_START_TIME");
-//		expectedStartTimeField.setDataType(FieldType.DATE_TIME);
-//		expectedStartTimeField.setModule(ModuleFactory.getWorkPermitModule());
-//
-//		Condition activeCondition = new Condition();
-//		activeCondition.setField(expectedStartTimeField);
-//		activeCondition.setOperator(DateOperators.TILL_NOW);
-//		
-		FacilioField expectedEndTimeField = new LookupField();
-		expectedEndTimeField.setName("expectedEndTime");
-		expectedEndTimeField.setColumnName("EXPECTED_END_TIME");
-		expectedEndTimeField.setDataType(FieldType.DATE_TIME);
-		expectedEndTimeField.setModule(ModuleFactory.getWorkPermitModule());
-
-		Condition expiredCondition = new Condition();
-		expiredCondition.setField(expectedEndTimeField);
-		expiredCondition.setOperator(DateOperators.UPCOMING);
-		
-		Criteria activeCriteria = new Criteria();
-//		activeCriteria.addAndCondition(activeCondition);
-		activeCriteria.addAndCondition(expiredCondition);
-		
-		return activeCriteria;
-	}
-	
-	private static FacilioView getActiveWorkPermitView() {
-		Criteria activeCriteria = new Criteria();
-		activeCriteria.addAndCondition(getMyWorkPermitsCondition());
-		activeCriteria.addAndCondition(getWorkPermitStatusCriteria("Active"));
-		FacilioView allView = new FacilioView();
-		allView.setName("myActive");
-		allView.setDisplayName("Active");
-		allView.setCriteria(activeCriteria);
-		allView.setHidden(true);
-
-		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
-
-		return allView;
-	}
-
-	private static FacilioView getTenantActiveWorkPermitView() {
-		Criteria activeCriteria = new Criteria();
-		activeCriteria.addAndCondition(getWorkPermitStatusCriteria("Active"));
-		FacilioView allView = new FacilioView();
-		allView.setName("tenantActive");
-		allView.setDisplayName("Active");
-		allView.setCriteria(activeCriteria);
-
-		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
-
-		return allView;
-	}
-	
-	private static FacilioView getMyExpiredWorkPermitView() {
-		Criteria expiredCriteria = new Criteria();
-		expiredCriteria.addAndCondition(getMyWorkPermitsCondition());
-		expiredCriteria.addAndCondition(getWorkPermitStatusCriteria("Expired"));
-		FacilioView allView = new FacilioView();
-		allView.setName("myExpired");
-		allView.setDisplayName("Expired");
-		allView.setCriteria(expiredCriteria);
-		allView.setHidden(true);
-		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
-
-		return allView;
-	}
-
-	private static FacilioView getTenantExpiredWorkPermitView() {
-		Criteria expiredCriteria = new Criteria();
-		expiredCriteria.addAndCondition(getWorkPermitStatusCriteria("Expired"));
-		FacilioView allView = new FacilioView();
-		allView.setName("tenantExpired");
-		allView.setDisplayName("Expired");
-		allView.setCriteria(expiredCriteria);
-		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
-
-		return allView;
-	}
-	
-	private static FacilioView getMyRequestedWorkPermitView() {
-		Criteria requestedWorkPermitCriteria = new Criteria();
-		requestedWorkPermitCriteria.addAndCondition(getMyWorkPermitsCondition());
-		requestedWorkPermitCriteria.addAndCondition(getWorkPermitStatusCriteria("Requested"));
-		FacilioView requestedView = new FacilioView();
-		requestedView.setName("myRequested");
-		requestedView.setDisplayName("Requested");
-		requestedView.setCriteria(requestedWorkPermitCriteria);
-		requestedView.setHidden(true);
-
-		requestedView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
-
-		return requestedView;
-	}
-
-	private static FacilioView getTenantRequestedWorkPermitView() {
-		Criteria requestedWorkPermitCriteria = new Criteria();
-		requestedWorkPermitCriteria.addAndCondition(getWorkPermitStatusCriteria("Requested"));
-		FacilioView requestedView = new FacilioView();
-		requestedView.setName("tenantRequested");
-		requestedView.setDisplayName("Requested");
-		requestedView.setCriteria(requestedWorkPermitCriteria);
-
-		requestedView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
-
-		return requestedView;
-	}
-	
-	
-	private static FacilioView getRequestedWorkPermitView() {
-		Criteria requestedWorkPermitCriteria = new Criteria();
-		requestedWorkPermitCriteria.addAndCondition(getWorkPermitStatusCriteria("Requested"));
-		FacilioView requestedView = new FacilioView();
-		requestedView.setName("requested");
-		requestedView.setDisplayName("Requested Work Permits");
-		requestedView.setCriteria(requestedWorkPermitCriteria);
-
-		requestedView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
-
-		return requestedView;
-	}
-	
-	private static FacilioView getVendorExpiredWorkPermitView() {
-		Criteria expiredCriteria = new Criteria();
-		expiredCriteria.addAndCondition(getWorkPermitStatusCriteria("Expired"));
-		FacilioView allView = new FacilioView();
-		allView.setName("vendorExpiredWorkpermits");
-		allView.setDisplayName("Expired");
-		allView.setCriteria(expiredCriteria);
-
-		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.VENDOR_PORTAL)));
-
-
-		return allView;
-	}
-	
-	private static FacilioView getVendorActiveWorkPermitView() {
-		Criteria activeCriteria = new Criteria();
-		activeCriteria.addAndCondition(getWorkPermitStatusCriteria("Active"));
-		FacilioView allView = new FacilioView();
-		allView.setName("all");
-		allView.setDisplayName("Active");
-		allView.setCriteria(activeCriteria);
-
-		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.VENDOR_PORTAL)));
-		return allView;
-	}
 
 	private static FacilioView getAssetKPIView(String name, Map<String, FacilioField> fieldMap) {
 		
