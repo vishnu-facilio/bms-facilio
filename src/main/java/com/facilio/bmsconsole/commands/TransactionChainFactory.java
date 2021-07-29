@@ -3035,6 +3035,10 @@ public class TransactionChainFactory {
 			FacilioChain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForInventoryRequest());
 			chain.addCommand(new AddOrUpdateInventoryRequestCommand());
+			chain.addCommand(new GenericGetModuleDataListCommand());
+			chain.addCommand(new ExecuteStateFlowCommand());
+			chain.addCommand(new UpdateStateForModuleDataCommand());
+			chain.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			chain.addCommand(new ExecuteAllWorkflowsCommand());
 			chain.addCommand(new LoadItemTransactionEntryInputCommand());
 			chain.addCommand(getAddOrUpdateItemTransactionsChain());
