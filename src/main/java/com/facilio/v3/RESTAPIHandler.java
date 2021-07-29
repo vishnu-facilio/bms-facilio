@@ -418,42 +418,17 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
             summaryRecord.put(key, patchObj.get(key));
         }
 
-        FacilioChain patchChain = ChainUtil.getPatchChain(moduleName);
-
-        FacilioContext context = patchChain.getContext();
-        Constants.setV3config(context, v3Config);
-        
         if(record != null) {
-
-        	id = ((ModuleBaseWithCustomFields)record).getId();
-        }
-        context.put(Constants.RECORD_ID, id);
-        Constants.setModuleName(context, moduleName);
-        Constants.setRawInput(context, summaryRecord);
-        Constants.setBodyParams(context, bodyParams);
-        Constants.addToOldRecordMap(context, moduleName, (ModuleBaseWithCustomFields) record);
-        context.put(Constants.BEAN_CLASS, beanClass);
-        context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
-        context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
-        context.put(FacilioConstants.ContextNames.TRANSITION_ID, this.getStateTransitionId());
-        context.put(FacilioConstants.ContextNames.APPROVAL_TRANSITION_ID, this.getApprovalTransitionId());
-
-        if (getCustomButtonId() != null && getCustomButtonId() > 0) {
-            context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_ID_LIST, Collections.singletonList(getCustomButtonId()));
-            CommonCommandUtil.addEventType(EventType.CUSTOM_BUTTON, context);
+            id = ((ModuleBaseWithCustomFields)record).getId();
         }
 
-        context.put(Constants.QUERY_PARAMS, getQueryParameters());
+        FacilioContext context = V3Util.updateSingleRecord(module, v3Config, (ModuleBaseWithCustomFields) record, summaryRecord, id, bodyParams, getQueryParameters(),
+                getStateTransitionId(), getCustomButtonId(), getApprovalTransitionId());
 
-        patchChain.execute();
-
-        Integer count = (Integer) context.get(Constants.ROWS_UPDATED);
-
-        if (count == null || count <= 0) {
-            throw new RESTException(ErrorCode.RESOURCE_NOT_FOUND, module.getDisplayName() + " with id: " + id + " does not exist.");
-        }
-
-        handleSummaryRequest(moduleName, id);
+        ModuleBaseWithCustomFields updatedRecord = Constants.getRecord(context, moduleName, id);
+        JSONObject result = new JSONObject();
+        result.put(moduleName, FieldUtil.getAsJSON(updatedRecord));
+        this.setData(result);
     }
 
     /**
