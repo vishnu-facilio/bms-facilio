@@ -4110,10 +4110,12 @@ public class ViewFactory {
 			//criteria.addAndCondition(getMyVistorInvitesCondition());
 			criteria.addAndCondition(getActiveInvitesCondition());
 			criteria.addAndCondition(getPreregisteredCondition());
+		FacilioModule inviteVisitorModule = ModuleFactory.getInviteVisitorLogModule();
 
-		FacilioField expectedCheckin = FieldFactory.getField("checkInTime","CHECKIN_TIME", FieldType.DATE_TIME);
 
-			List<SortField> sortFields = Arrays.asList(new SortField(expectedCheckin, false));
+		FacilioField expCheckInTime = FieldFactory.getField("expectedCheckInTime", "EXPECTED_CHECKIN_TIME", inviteVisitorModule,FieldType.DATE_TIME);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(expCheckInTime, false));
 
 			FacilioView myVisitorInvitesView = new FacilioView();
 			myVisitorInvitesView.setName("invite_myInvites");
@@ -4133,9 +4135,9 @@ public class ViewFactory {
 		criteria.addAndCondition(getActiveInviteVisitorInvitesCondition());
 
 		FacilioModule inviteVisitorModule = ModuleFactory.getInviteVisitorLogModule();
-		FacilioField expectedCheckin = FieldFactory.getField("checkInTime","CHECKIN_TIME",inviteVisitorModule, FieldType.DATE_TIME);
+		FacilioField expCheckInTime = FieldFactory.getField("expectedCheckInTime", "EXPECTED_CHECKIN_TIME", inviteVisitorModule,FieldType.DATE_TIME);
 
-		List<SortField> sortFields = Arrays.asList(new SortField(expectedCheckin, false));
+		List<SortField> sortFields = Arrays.asList(new SortField(expCheckInTime, false));
 
 		FacilioView myVisitorInvitesView = new FacilioView();
 		myVisitorInvitesView.setName("invite_myInvites");
