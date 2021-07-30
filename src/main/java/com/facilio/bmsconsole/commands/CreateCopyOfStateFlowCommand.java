@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.bmsconsole.util.ActionAPI;
+import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
@@ -49,6 +51,11 @@ public class CreateCopyOfStateFlowCommand extends FacilioCommand {
                     ruleChain = TransactionChainFactory.addWorkflowRuleChain();
                     ruleContext = ruleChain.getContext();
                     ruleContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, stateflowTransitionContext);
+                    List<ActionContext> actions = stateflowTransitionContext.getActions();
+                    if (actions == null) {
+                        actions = ActionAPI.getActiveActionsFromWorkflowRule(stateflowTransitionContext.getId());
+                    }
+                    ruleContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, actions);
                     ruleChain.execute();
 
                     oldVsNewTransitionIds.put(oldTransitionId, stateflowTransitionContext.getId());
