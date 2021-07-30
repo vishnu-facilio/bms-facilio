@@ -65,10 +65,7 @@ import com.facilio.bmsconsoleV3.commands.site.AddOrUpdateSiteLocationCommand;
 import com.facilio.bmsconsoleV3.commands.site.CreateSiteAfterSave;
 import com.facilio.bmsconsoleV3.commands.site.SetSiteRelatedContextCommand;
 import com.facilio.bmsconsoleV3.commands.site.SiteFillLookupFieldsCommand;
-import com.facilio.bmsconsoleV3.commands.space.AddOrUpdateSpaceLocation;
-import com.facilio.bmsconsoleV3.commands.space.CreateSpaceAfterSave;
-import com.facilio.bmsconsoleV3.commands.space.SetSpaceRelatedContextCommand;
-import com.facilio.bmsconsoleV3.commands.space.SpaceFillLookupFieldsCommand;
+import com.facilio.bmsconsoleV3.commands.space.*;
 import com.facilio.bmsconsoleV3.commands.storeroom.LoadStoreRoomLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.storeroom.UpdateServingSitesinStoreRoomCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenant.FillTenantsLookupCommand;
@@ -1338,10 +1335,10 @@ public class APIv3Config {
     public static Supplier<V3Config> getSpace() {
         return () -> new V3Config(V3SpaceContext.class, new ModuleCustomFieldCount30())
                 .create()
-                    .beforeSave(new AddOrUpdateSpaceLocation(), new SetSpaceRelatedContextCommand())
+                    .beforeSave(new AddOrUpdateSpaceLocation(), new SetSpaceRelatedContextCommand(), new AddSpaceCategoryExtendedModuleCommandV3())
                     .afterSave(new CreateSpaceAfterSave(), getSpaceReadingsChain(), new InsertReadingDataMetaForNewResourceCommand(), new ConstructAddCustomActivityCommandV3(), new AddActivitiesCommand(FacilioConstants.ContextNames.SPACE_ACTIVITY))
                 .update()
-                    .beforeSave(new AddOrUpdateSpaceLocation(), new SetSpaceRelatedContextCommand())
+                    .beforeSave(new AddOrUpdateSpaceLocation(), new SetSpaceRelatedContextCommand(), new AddSpaceCategoryExtendedModuleCommandV3())
                     .afterSave(new ConstructAddCustomActivityCommand(), new AddActivitiesCommand(FacilioConstants.ContextNames.SPACE_ACTIVITY))
                 .delete()
                 .summary().beforeFetch(new SpaceFillLookupFieldsCommand())
