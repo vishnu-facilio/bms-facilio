@@ -29,30 +29,30 @@ public class AddSpaceCategoryExtendedModuleCommandV3 extends FacilioCommand {
         Map<Long, FacilioModule> spaceCategoryModuleIds = new HashMap<>();
             for (ModuleBaseWithCustomFields record : records) {
                 V3SpaceContext spaceContext = (V3SpaceContext) record;
-                SpaceCategoryContext category = null;
-                if(!spaceCategories.containsKey(spaceContext.getSpaceCategoryId())) {
-                    category = (SpaceCategoryContext) RecordAPI.getRecord(FacilioConstants.ContextNames.SPACE_CATEGORY, spaceContext.getSpaceCategoryId());
-                    if (category != null && !spaceCategories.containsKey(category.getId())) {
-                        spaceCategories.put(category.getId(), category);
+                if(spaceContext.getSpaceCategory() != null) {
+                    SpaceCategoryContext category = null;
+                    if (!spaceCategories.containsKey(spaceContext.getSpaceCategoryId())) {
+                        category = (SpaceCategoryContext) RecordAPI.getRecord(FacilioConstants.ContextNames.SPACE_CATEGORY, spaceContext.getSpaceCategoryId());
+                        if (category != null && !spaceCategories.containsKey(category.getId())) {
+                            spaceCategories.put(category.getId(), category);
+                        }
+                    } else {
+                        category = spaceCategories.get(spaceContext.getSpaceCategoryId());
+                    }
+                    if (category.getSpaceModuleId() > 0) {
+                        FacilioModule module = null;
+                        if (spaceCategoryModuleIds.containsKey(category.getSpaceModuleId())) {
+                            module = spaceCategoryModuleIds.get(category.getSpaceModuleId());
+                        } else {
+                            module = modBean.getModule(category.getSpaceModuleId());
+                        }
+                        Set<String> extendedModules = new HashSet<>();
+                        extendedModules.add(module.getName());
+                        recordMap.put(module.getName(), Collections.singletonList(spaceContext));
+                        Constants.setRecordMap(context, recordMap);
+                        Constants.setExtendedModules(context, extendedModules);
                     }
                 }
-                else {
-                    category = spaceCategories.get(spaceContext.getSpaceCategoryId());
-                }
-                if (category.getSpaceModuleId() > 0) {
-                    FacilioModule module = null;
-                    if(spaceCategoryModuleIds.containsKey(category.getSpaceModuleId())) {
-                        module = spaceCategoryModuleIds.get(category.getSpaceModuleId());
-                    }
-                    else {
-                        module = modBean.getModule(category.getSpaceModuleId());
-                    }
-                    Set<String> extendedModules = new HashSet<>();
-                    extendedModules.add(module.getName());
-                    recordMap.put(module.getName(), Collections.singletonList(spaceContext));
-                    Constants.setRecordMap(context, recordMap);
-                    Constants.setExtendedModules(context, extendedModules);
-                 }
             }
         return false;
     }
