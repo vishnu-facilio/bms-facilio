@@ -474,6 +474,9 @@ private Map<String, Double> readingData;
 	         context.put(FacilioConstants.ContextNames.SITE_ID, tenant.getSiteId());
 	         context.put(FacilioConstants.ContextNames.CONTACTS, tenantContacts);
 	         
+	         context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
+	         context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.TENANT_ACTIVITY);
+	         
 	         context.put(FacilioConstants.ContextNames.MODULE_NAME, "tenant");
 	         if(tenantLogo != null) {
 	            tenant.setTenantLogo(tenantLogo);
@@ -542,6 +545,13 @@ private Map<String, Double> readingData;
 	         context.put(FacilioConstants.ContextNames.MODULE_NAME, "tenant");
 	         context.put(FacilioConstants.ContextNames.SPACE_UPDATE, spacesUpdate);
 	         context.put(FacilioConstants.ContextNames.RECORD, tenant);
+	         
+	         context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
+	         context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.TENANT_ACTIVITY);
+	         if (tenant.getId() > 0) {
+	        	 context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(tenant.getId()));
+	         }
+	         
 	         if(tenantLogo != null) {
 	            tenant.setTenantLogo(tenantLogo);
 	         }

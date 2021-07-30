@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.tenant.*;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -618,7 +619,7 @@ public class TenantsAPI {
 	}
 	
 	
-	public static int updateTenant (TenantContext tenant, List<Long> spaceIds) throws Exception {
+	public static int updateTenant (TenantContext tenant, List<Long> spaceIds, Boolean withChangeSet, FacilioContext context) throws Exception {
 		if (tenant.getId() == -1) {
 			throw new IllegalArgumentException("Invalid ID during updation of tenant");
 		}
@@ -645,7 +646,25 @@ public class TenantsAPI {
 														   .fields(fields)
 //														   .andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														   .andCondition(CriteriaAPI.getIdCondition(tenant.getId(), module));
+		
+		if (withChangeSet != null && withChangeSet) {
+			updateBuilder.withChangeSet(TenantContext.class);
+		}
+		
 		int count = updateBuilder.update(tenant);
+		
+		Map<Long, List<UpdateChangeSet>> changes = new HashMap<Long, List<UpdateChangeSet>>();
+		if (withChangeSet != null && withChangeSet) {
+			Map<Long, List<UpdateChangeSet>> recordChanges = updateBuilder.getChangeSet();
+			if (MapUtils.isNotEmpty(recordChanges)) {
+				changes.put(tenant.getId(), recordChanges.get(tenant.getId()));
+			}
+		}
+		
+		if (MapUtils.isNotEmpty(changes)) {
+			context.put(FacilioConstants.ContextNames.CHANGE_SET, changes);
+		}
+		
 		return count;
 	}
 	

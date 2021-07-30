@@ -907,6 +907,7 @@ public class FacilioConstants {
 		public static final String STORE_ROOM_ATTACHMENTS = "storeRoomAttachments";
 		public static final String VISITOR_LOGGING_ATTACHMENTS = "visitorloggingattachments";
 		public static final String VENDOR_ATTACHMENTS = "vendorsAttachments";
+		public static final String TENANT_ATTACHMENTS = "tenantattachments";
 
 		public static final String MV_PROJECT_MODULE = "mvproject";
 		public static final String MV_BASELINE_MODULE = "mvbaseline";
@@ -1408,6 +1409,9 @@ public class FacilioConstants {
 		public static final String TENANT_SPACES = "tenantspaces";
 		public static final String TENANT_UTILITY_IDS = "utilityIds";
 		public static final String TENANT_CONTEXT = "tenantContext";
+        public static final String TENANT_ACTIVITY = "tenantactivity";
+        public static final String TENANT_NOTES = "tenantnotes";
+
 
 		public static final String SHOW_TOOLS_FOR_RETURN = "showToolsForReturn";
 		public static final String SHOW_ITEMS_FOR_RETURN = "showItemsForReturn";
@@ -2060,6 +2064,7 @@ public class FacilioConstants {
 			classMap.put(FLOOR_ACTIVITY, ActivityContext.class);
 			classMap.put(SPACE_ACTIVITY, ActivityContext.class);
 			classMap.put(VENDOR_ACTIVITY, ActivityContext.class);
+			classMap.put(TENANT_ACTIVITY, ActivityContext.class);
 			classMap.put(SERVICE_REQUEST_ACTIVITY, ActivityContext.class);
 			
 			classMap.put(MODBUS_TCP_CONTROLLER_MODULE_NAME, ModbusTcpControllerContext.class);

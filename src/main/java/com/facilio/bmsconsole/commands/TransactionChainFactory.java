@@ -273,6 +273,8 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteStateFlowCommand());
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.MODULE_RULE));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+			c.addCommand(new ConstructAddCustomActivityCommand());
+			c.addCommand(new AddActivitiesCommand());
 			return c;
 		}
 		
@@ -288,6 +290,8 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateStateForModuleDataCommand());
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.MODULE_RULE));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+			c.addCommand(new ConstructUpdateCustomActivityCommand());
+			c.addCommand(new AddActivitiesCommand());
 			return c;
 		}
 		

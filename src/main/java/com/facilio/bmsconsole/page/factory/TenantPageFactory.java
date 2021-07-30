@@ -53,6 +53,15 @@ public class TenantPageFactory extends PageFactory{
 			addSpecialRelatedListWidgetForDemoOrg(tab2Sec1, record.getModuleId());
 		}
 		addRelatedList(tab2Sec1, record.getModuleId());
+		
+		Page.Tab tab3 = page.new Tab("Activity");
+	    page.addTab(tab3);
+	    Page.Section tab3Sec1 = page.new Section();
+		tab3.addSection(tab3Sec1);
+		PageWidget activityWidget = new PageWidget(PageWidget.WidgetType.ACTIVITY);
+		activityWidget.addToLayoutParams(tab3Sec1, 24, 3);
+		activityWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.TENANT_ACTIVITY);
+		tab3Sec1.addWidget(activityWidget);
 
 		return page;
 	}
