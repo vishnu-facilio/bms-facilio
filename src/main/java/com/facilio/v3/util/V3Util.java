@@ -77,24 +77,47 @@ public class V3Util {
         return createRecord(module, recordList, true, bodyParams, queryParams);
     }
 
-    public static FacilioContext updateSingleRecord(FacilioModule module, V3Config v3Config,
-                                           ModuleBaseWithCustomFields oldRecord,
-                                           Map<String, Object> record, long id,
-                                           Map<String, Object> bodyParams, Map<String, List<Object>> queryParams,
-                                           Long stateTransitionId, Long customButtonId, Long approvalTransitionId
-                                           ) throws Exception {
-        FacilioChain patchChain = ChainUtil.getPatchChain(module.getName());
+    public static FacilioContext updateBulkRecords(FacilioModule module, V3Config v3Config,
+                                                   List<ModuleBaseWithCustomFields> oldRecords,
+                                                   List<JSONObject> recordList, List<Long> ids,
+                                                   Map<String, Object> bodyParams, Map<String, List<Object>> queryParams,
+                                                   Long stateTransitionId, Long customButtonId, Long approvalTransitionId
+    ) throws Exception {
+        return updateRecords(module, v3Config, true, oldRecords, recordList, ids,
+                bodyParams, queryParams, stateTransitionId, customButtonId, approvalTransitionId);
+    }
+
+    private static FacilioContext updateRecords(FacilioModule module, V3Config v3Config, boolean bulkOp,
+                                                List<ModuleBaseWithCustomFields> oldRecords,
+                                                List<JSONObject> recordList, List<Long> ids,
+                                                Map<String, Object> bodyParams, Map<String, List<Object>> queryParams,
+                                                Long stateTransitionId, Long customButtonId, Long approvalTransitionId
+    ) throws Exception {
+        FacilioChain patchChain = bulkOp ? ChainUtil.getBulkPatchChain(module.getName()) : ChainUtil.getPatchChain(module.getName());
 
         FacilioContext context = patchChain.getContext();
         Constants.setV3config(context, v3Config);
 
         Class beanClass = ChainUtil.getBeanClass(v3Config, module);
 
-        context.put(Constants.RECORD_ID, id);
+        if (!bulkOp) {
+            if (ids.size() > 1) {   // assuming we will have at least one id
+                context.put(Constants.RECORD_ID, ids.get(0));
+            }
+        }
+        Constants.setRecordIds(context, ids);
+
         Constants.setModuleName(context, module.getName());
-        Constants.setRawInput(context, record);
+
+        if (!bulkOp) {
+            if (recordList.size() > 0) {    // assuming we will have at least one record
+                Constants.setRawInput(context, recordList.get(0));
+            }
+        }
+        Constants.setBulkRawInput(context, recordList);
+
         Constants.setBodyParams(context, bodyParams);
-        Constants.addToOldRecordMap(context, module.getName(), (ModuleBaseWithCustomFields) oldRecord);
+        Constants.addToOldRecordMap(context, module.getName(), oldRecords);
         context.put(Constants.BEAN_CLASS, beanClass);
 
         context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
@@ -111,6 +134,17 @@ public class V3Util {
 
         patchChain.execute();
         return context;
+    }
+
+    public static FacilioContext updateSingleRecord(FacilioModule module, V3Config v3Config,
+                                           ModuleBaseWithCustomFields oldRecord,
+                                           JSONObject record, long id,
+                                           Map<String, Object> bodyParams, Map<String, List<Object>> queryParams,
+                                           Long stateTransitionId, Long customButtonId, Long approvalTransitionId
+    ) throws Exception {
+        return updateRecords(module, v3Config, false, Collections.singletonList(oldRecord),
+                Collections.singletonList(record), Collections.singletonList(id),
+                bodyParams, queryParams, stateTransitionId, customButtonId, approvalTransitionId);
     }
 
     public static FacilioContext createRecord(FacilioModule module,List<ModuleBaseWithCustomFields> records) throws Exception {

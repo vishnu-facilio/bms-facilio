@@ -87,9 +87,22 @@ public class Constants {
 
     private static final String OLD_RECORD_MAP = "oldRecordMap";
     public static <T extends ModuleBaseWithCustomFields> void addToOldRecordMap (Context context, String moduleName, T record) {
+        addToOldRecordMap(context, moduleName, Collections.singletonList(record));
+    }
+
+    public static <T extends ModuleBaseWithCustomFields> void addToOldRecordMap (Context context, String moduleName, List<T> records) {
+        if (CollectionUtils.isEmpty(records)) {
+            return;
+        }
+
         Map<String, Map<Long, ? extends ModuleBaseWithCustomFields>> oldRecordsMap = (Map<String, Map<Long, ? extends ModuleBaseWithCustomFields>>) context.computeIfAbsent(OLD_RECORD_MAP, k -> new HashMap<>());
         Map<Long, T> oldRecords = (Map<Long, T>) oldRecordsMap.computeIfAbsent(moduleName, k -> new HashMap<>());
-        oldRecords.put(record.getId(), record);
+        for (T record : records) {
+            if (record == null) {
+                continue;
+            }
+            oldRecords.put(record.getId(), record);
+        }
     }
 
     public static <T extends ModuleBaseWithCustomFields> Map<Long, T> getOldRecordMap (Context context) {
