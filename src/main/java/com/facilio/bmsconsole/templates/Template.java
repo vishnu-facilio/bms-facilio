@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.templates;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.text.StringEscapeUtils;
@@ -14,6 +15,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.facilio.bmsconsole.context.TemplateFileContext;
 import com.facilio.bmsconsole.util.FreeMarkerAPI;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -26,6 +28,7 @@ public abstract class Template implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = LogManager.getLogger(Template.class.getName());
 	private static final String CUSTOM_SCRIPT_NAMESPACE = "cs";
+		
 	private long id;
 	public long getId() {
 		return id;
@@ -46,6 +49,15 @@ public abstract class Template implements Serializable {
 	public String getName() {
 		return name;
 	}
+	
+	private List<TemplateFileContext> templateFiles;
+	public List<TemplateFileContext> getTemplateFiles() {
+		return templateFiles;
+	}
+	public void setTemplateFiles(List<TemplateFileContext> templateFiles) {
+		this.templateFiles = templateFiles;
+	}
+	
 	public void setName(String name) {
 		this.name = name;
 	}

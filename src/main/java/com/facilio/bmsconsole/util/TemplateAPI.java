@@ -40,6 +40,7 @@ import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
+import com.facilio.bmsconsole.context.TemplateFileContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.templates.AssignmentTemplate;
@@ -1881,6 +1882,29 @@ public class TemplateAPI {
 			return workflow;
 		}
 		return null;
+	}
+	
+	public static List<TemplateFileContext> fetchTemplateFiles(long id) throws Exception {
+		FacilioModule module = ModuleFactory.getTemplateFileModule();
+		Collection<FacilioField> fields = FieldFactory.getTemplateFileFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("templateId"), Collections.singletonList(id), NumberOperators.EQUALS));
+
+		List<Map<String, Object>> props = selectBuilder.get();
+
+		if (props == null || props.isEmpty()) {
+			return null;
+		}
+
+		List<TemplateFileContext> result = new ArrayList<>();
+		for (Map<String, Object> prop: props) {
+			result.add(FieldUtil.getAsBeanFromMap(prop, TemplateFileContext.class));
+		}
+		return result;
 	}
 	
 }

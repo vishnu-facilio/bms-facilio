@@ -2981,6 +2981,24 @@ public class FieldFactory extends BaseFieldFactory {
 
         return fields;
     }
+    
+    public static List<FacilioField> getTemplateFileFields() {
+        FacilioModule module = ModuleFactory.getTemplateFileModule();
+
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField(module));
+        
+        FacilioField templateId = new FacilioField();
+        templateId.setName("templateId");
+        templateId.setDataType(FieldType.NUMBER);
+        templateId.setColumnName("TEMPLATE_ID");
+        templateId.setModule(module);
+        fields.add(templateId);
+        
+ 		fields.add(getField("fileId","File Id","FILE_ID",module,FieldType.NUMBER));
+
+        return fields;
+    }
 
     public static List<FacilioField> getEMailTemplateFields() {
         return getEMailTemplateFields(true);

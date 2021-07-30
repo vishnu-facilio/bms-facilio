@@ -2101,6 +2101,11 @@
 			method="getDefaultTemplate">
 			<param name="moduleName">{1}</param>
 		</action>
+		
+		<action name="fetchTemplateAttachments"
+			class="com.facilio.bmsconsole.actions.TemplateAction"
+			method="fetchTemplateAttachments">
+		</action>
 	</package>
 
 	<package name="ruleTemplateApiv2"

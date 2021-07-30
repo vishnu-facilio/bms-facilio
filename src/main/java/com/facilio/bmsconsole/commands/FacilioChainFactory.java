@@ -1195,6 +1195,12 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static FacilioChain fetchTemplateAttachmentsChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new FetchTemplateAttachmentsCommand());
+		return c;
+	}
+	
 	public static FacilioChain getAddWorkorderTemplateChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new CreateWorkorderTemplateCommand());
