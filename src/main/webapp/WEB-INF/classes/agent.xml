@@ -360,6 +360,14 @@
         <action name="disableWritable" class="com.facilio.agentv2.actions.IdsAction"
                 method="disableWritable"> <!--DONE-->
         </action>
+        <action name="exportPoints" class="com.facilio.agentv2.actions.ControllerActions" method="exportPoints">
+            <result name="success" type="stream">
+                <param name="contentType">application/octet-stream</param>
+                <param name="inputName">downloadStream</param>
+                <param name="contentDisposition">attachment;filename="${fileName}"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+        </action>
     </package>
 	
     <package name="DeviceApiV2" namespace="/api/v2/device" extends="agent">
