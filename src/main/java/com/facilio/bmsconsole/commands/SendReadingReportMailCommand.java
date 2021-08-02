@@ -53,7 +53,7 @@ public class SendReadingReportMailCommand extends FacilioCommand {
 			toList = (String) template.get("to");
 		}
 		template.replace("to", toList);
- 		FacilioFactory.getEmailClient().sendEmail(template, files);
+ 		FacilioFactory.getEmailClient().sendEmailWithActiveUserCheck(template, files);
 		
 		return false;
 	}

@@ -970,7 +970,6 @@ public class FormsAPI {
 		}
 		Map<String, FormField> formFieldMap = fields.stream().collect(Collectors.toMap(FormField::getName, Function.identity()));
 		
-		
 		List<FormField> systemFields = new ArrayList<>();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		if (form.getModule().isCustom()) {
@@ -984,18 +983,13 @@ public class FormsAPI {
 			else if (form.getAppLinkName() == null && form.getAppId() > 0) {
 				form.setAppLinkName(ApplicationApi.getApplicationForId(form.getAppId()).getLinkName());
 			}
+			
 			FacilioForm defaultForm = getDefaultForm(moduleName, form.getAppLinkName(), true);
 			if (defaultForm != null && CollectionUtils.isNotEmpty(defaultForm.getFields())) {
-				for (FormField f: defaultForm.getFields()) {	// TODO get fields from all sections
-					if (!formFieldMap.containsKey(f.getName()) && (f.getField() == null || f.getField().isDefault())) {
-						FormField formField = FieldUtil.cloneBean(f, FormField.class);
-						formField.setId(-1);
-						formField.setFormId(-1);
-						formField.setSectionId(-1);
-						systemFields.add(formField);
-					}
-				}
+				
+				setUnusedSystemFields(systemFields, defaultForm, formFieldMap);
 				addUnusedSystemFields(form, systemFields);
+				
 				for (FormField f: systemFields) {
 					if (f.getField() == null) {
 						FacilioField field = modBean.getField(f.getName(), moduleName);
@@ -1020,6 +1014,28 @@ public class FormsAPI {
 		formMap.put("systemFields", systemFields);
 		formMap.put("customFields", customFormFields);
 		return formMap;
+	}
+	
+	private static List<FormField> setUnusedSystemFields(List<FormField> systemFields, FacilioForm defaultForm, Map<String, FormField> formFieldMap) throws Exception {
+		List<FormField> fields = defaultForm.getFields(); // TODO get fields from all sections
+		FacilioModule extendedModule = defaultForm.getModule().getExtendModule();
+		if (extendedModule != null) {
+			FacilioForm extendedForm = getDefaultForm(extendedModule.getName(), defaultForm.getAppLinkName(), true);
+			if (extendedForm != null) {
+				fields.addAll(extendedForm.getFields());
+			}
+		}
+		for (FormField f: fields) {
+			if (!formFieldMap.containsKey(f.getName()) && (f.getField() == null || f.getField().isDefault())) {
+				FormField formField = FieldUtil.cloneBean(f, FormField.class);
+				formField.setId(-1);
+				formField.setFormId(-1);
+				formField.setSectionId(-1);
+				systemFields.add(formField);
+			}
+		}
+		
+		return systemFields;
 	}
 	
 	public static List<FormField> getAllFormFields(String moduleName, String appLinkName) throws Exception {

@@ -108,7 +108,17 @@ public abstract class EmailClient {
         return true;
     }
 
+    /**
+     * @deprecated
+     * Use {@link #sendEmailWithActiveUserCheck(JSONObject)} instead.
+     */
+    @Deprecated
     public abstract void sendEmail(JSONObject mailJson) throws Exception;
+    /**
+     * @deprecated
+     * Use {@link #sendEmailWithActiveUserCheck(JSONObject, Map)} instead.
+     */
+    @Deprecated
     public abstract void sendEmail(JSONObject mailJson, Map<String, String> files) throws Exception;
 
     MimeMessage getEmailMessage(JSONObject mailJson, Map<String, String> files) throws Exception {
