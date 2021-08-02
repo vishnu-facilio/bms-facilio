@@ -113,7 +113,7 @@ public static Map<String, Object> getValidDeviceCodeRow(String code) throws Exce
 	return null;
 }
 
-public static boolean markCodeAsConnected(String code, long connectedDeviceId) throws Exception {
+public static boolean markCodeAsConnected(String code, long connectedDeviceId, int dc) throws Exception {
 	//enter connected device ID in device codes table and create an entry in connected devices 
 	
 	GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
@@ -125,6 +125,7 @@ public static boolean markCodeAsConnected(String code, long connectedDeviceId) t
 
 	Map<String, Object> props = new HashMap<>();
 	props.put("connectedDeviceId", connectedDeviceId);
+	props.put("dc", dc);
 	updateBuilder.update(props);
 	
 	return true;

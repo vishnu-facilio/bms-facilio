@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.Map;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.iam.accounts.impl.IamClient;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.DeviceContext;
@@ -22,8 +23,7 @@ public class ValidateCodeAndGetDeviceMetaCommand extends FacilioCommand {
 		} else {
 			
 			String code=(String)context.get(FacilioConstants.ContextNames.DEVICE_CODE);
-			Map<String, Object> deviceCodeRow = FacilioService
-					.runAsServiceWihReturn(FacilioConstants.Services.DEFAULT_SERVICE,() -> DevicesUtil.getValidDeviceCodeRow(code));
+			Map<String, Object> deviceCodeRow = IamClient.getDeviceCodeInfo(code);
 
 			if (deviceCodeRow == null) {
 				return true;// code invalid

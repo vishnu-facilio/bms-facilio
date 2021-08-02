@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.facilio.constants.FacilioConstants;
+import com.facilio.iam.accounts.impl.IamClient;
+import com.facilio.iam.accounts.util.DCUtil;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
@@ -51,7 +53,7 @@ public class DeviceClientAction extends FacilioAction{
 public String validateCode() {
 		
 		try {
-			Map<String, Object> codeObj = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.DEFAULT_SERVICE,() ->  DevicesUtil.getDevicePasscodeRow(getCode()));
+			Map<String, Object> codeObj = IamClient.getDevicePasscode(getCode());
 			if (codeObj == null) {
 				throw new IllegalArgumentException("passcode_invalid");
 			}
@@ -71,11 +73,12 @@ public String validateCode() {
 	                cookie.setHttpOnly(true);
 	             //   cookie.setSecure(true);
 	                response.addCookie(cookie);
-	                FacilioService.runAsService(FacilioConstants.Services.DEFAULT_SERVICE,() ->  DevicesUtil.deleteDevicePasscode(getCode()));
+	                IamClient.deleteDevicePassCode(getCode());
 	                
 	                setResponseCode(0);
 					setResult("status", "connected");
 					setResult("token", jwt);
+					setResult("dc", DCUtil.getMainAppDomain(Integer.valueOf((long) codeObj.get("dc") + "")));
 	               
 					return SUCCESS;
 				}
@@ -83,7 +86,7 @@ public String validateCode() {
 					long currentTime = System.currentTimeMillis();
 					long expiryTime = (Long) codeObj.get("expiryTime");
 					if (currentTime >= expiryTime) {
-						  FacilioService.runAsService(FacilioConstants.Services.DEFAULT_SERVICE,() ->  DevicesUtil.deleteDevicePasscode(getCode()));
+						  IamClient.deleteDevicePassCode(getCode());
 			              throw new IllegalArgumentException("passcode_expired");
 					}
 					else {

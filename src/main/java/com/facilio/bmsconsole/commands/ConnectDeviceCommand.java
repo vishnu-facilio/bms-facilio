@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.commands;
 import java.util.Collections;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.iam.accounts.impl.IamClient;
+import com.facilio.iam.accounts.util.DCUtil;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -27,7 +29,7 @@ public class ConnectDeviceCommand extends FacilioCommand {
 		System.out.println("connecting device"+deviceCode+"with"+device.getId());
 		long orgId=AccountUtil.getCurrentOrg().getOrgId();
 		long connectedDeviceId=FacilioService.runAsServiceWihReturn(FacilioConstants.Services.DEFAULT_SERVICE,() ->  DevicesUtil.addConnectedDevice(device.getId(),orgId));
-		FacilioService.runAsServiceWihReturn(FacilioConstants.Services.DEFAULT_SERVICE,() ->  DevicesUtil.markCodeAsConnected(deviceCode,connectedDeviceId));
+		IamClient.markCodeAsConnected(deviceCode, connectedDeviceId, DCUtil.getCurrentDC());
 		
 		device.setIsDeviceConnected(true);
 		device.setConnectedTime(System.currentTimeMillis());

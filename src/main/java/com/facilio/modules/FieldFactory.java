@@ -8538,6 +8538,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("expiryTime", "EXPIRY_TIME", module, FieldType.NUMBER));
         fields.add(getField("connectedDeviceId", "CONNECTED_DEVICE_ID", module, FieldType.NUMBER));
         fields.add(getField("info", "INFO", module, FieldType.STRING));
+        fields.add(getField("dc", "DC", module, FieldType.NUMBER));
 
         return fields;
     }

@@ -36,6 +36,18 @@
         
         <action name="add" class="com.facilio.auth.actions.FacilioDCAction" method="addUser">
         </action>
+
+        <action name="deleteDevicePassCode" class="com.facilio.auth.actions.FacilioDCAction" method="deleteDevicePassCode">
+        </action>
+
+        <action name="markCodeAsConnected" class="com.facilio.auth.actions.FacilioDCAction" method="markCodeAsConnected">
+        </action>
+
+        <action name="getDeviceCodeInfo" class="com.facilio.auth.actions.FacilioDCAction" method="getDeviceCodeInfo">
+        </action>
+
+        <action name="getDevicePasscode" class="com.facilio.auth.actions.FacilioDCAction" method="getDevicePasscode">
+        </action>
     </package>
 
 </struts>

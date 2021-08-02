@@ -83,6 +83,73 @@ public class IamClient {
         		}
         }
     }
+
+    public static void deleteDevicePassCode(String code) throws Exception {
+        var url = FacilioProperties.getIAMURL() + "/api/v3/internal/dc/deleteDevicePassCode";
+        JSONObject params = new JSONObject();
+        params.put("deviceCode", code);
+        String response = FacilioHttpUtils.doHttpPost(getUrl(url), getSecretKeyHeader(), null, params);
+        if (StringUtils.isNotEmpty(response)) {
+            JSONObject obj = FacilioUtil.parseJson(response);
+            if (obj.containsKey("code")) {
+                int responseCode = FacilioUtil.parseInt(obj.get("code").toString());
+                if (responseCode != 0) {
+                    // Throw proper AccountException
+                }
+            }
+        }
+    }
+
+    public static void markCodeAsConnected(String code, long connectedDeviceId, int currentDC) throws Exception {
+        var url = FacilioProperties.getIAMURL() + "/api/v3/internal/dc/markCodeAsConnected";
+        JSONObject params = new JSONObject();
+        params.put("deviceCode", code);
+        params.put("connectedDeviceId", connectedDeviceId);
+        params.put("dc", currentDC);
+        String response = FacilioHttpUtils.doHttpPost(getUrl(url), getSecretKeyHeader(), null, params);
+        if (StringUtils.isNotEmpty(response)) {
+            JSONObject obj = FacilioUtil.parseJson(response);
+            if (obj.containsKey("code")) {
+                int responseCode = FacilioUtil.parseInt(obj.get("code").toString());
+                if (responseCode != 0) {
+                    // Throw proper AccountException
+                }
+            }
+        }
+    }
+
+    public static Map<String, Object> getDeviceCodeInfo(String code) throws Exception {
+        var url = FacilioProperties.getIAMURL() + "/api/v3/internal/dc/getDeviceCodeInfo";
+        JSONObject params = new JSONObject();
+        params.put("deviceCode", code);
+        String response = FacilioHttpUtils.doHttpPost(getUrl(url), getSecretKeyHeader(), null, params);
+        if (StringUtils.isNotEmpty(response)) {
+            JSONObject obj = FacilioUtil.parseJson(response);
+            if (obj.containsKey("data")) {
+                JSONObject data = (JSONObject) obj.get("data");
+                return (Map<String, Object>) data.get("deviceCodeInfo");
+            }
+        }
+        return null;
+    }
+
+
+    public static Map<String, Object> getDevicePasscode(String code) throws Exception {
+        var url = FacilioProperties.getIAMURL() + "/api/v3/internal/dc/getDevicePasscode";
+        JSONObject params = new JSONObject();
+        params.put("deviceCode", code);
+        String response = FacilioHttpUtils.doHttpPost(getUrl(url), getSecretKeyHeader(), null, params);
+        if (StringUtils.isNotEmpty(response)) {
+            JSONObject obj = FacilioUtil.parseJson(response);
+            if (obj.containsKey("data")) {
+                JSONObject data = (JSONObject) obj.get("data");
+                return (Map<String, Object>) data.get("deviceCodeInfo");
+            }
+        }
+        return null;
+    }
+
+
     
     private static String getUrl(String url) {
 		HttpServletRequest request = ActionContext.getContext() != null ? ServletActionContext.getRequest() : null;
