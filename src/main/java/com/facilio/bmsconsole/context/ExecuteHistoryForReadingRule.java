@@ -118,10 +118,6 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 				}
 			}
 		}
-
-		if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 343){
-			LOGGER.info("fields : " + fields + " , reading rule : "  + readingRule.getId() + " , " + readingRule);
-		}
 		
 		if (fields != null && !fields.isEmpty()) {
 			supportFieldsRDM = getSupportingData(fields, startTime, endTime, -1, jobStatesMap, executeReadingRuleThroughAutomatedHistory);
@@ -418,6 +414,8 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		Map<String, List<ReadingDataMeta>> supportingValues = new HashMap<>();
 		for (WorkflowFieldContext field : fields) {
+			FacilioField valField = modBean.getField(field.getFieldId());
+			field.setField(valField);
 			if (field.getAggregationEnum() == BmsAggregateOperators.SpecialAggregateOperator.LAST_VALUE) {
 				if (resourceId == -1 && field.getResourceId() == -1) {
 					continue;
@@ -426,9 +424,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 					continue;
 				}
 				long parentId = resourceId == -1? field.getResourceId() : resourceId;
-				
-				FacilioField valField = modBean.getField(field.getFieldId());
-				field.setField(valField);
+
 				String rdmKey = ReadingsAPI.getRDMKey(parentId, valField);
 				
 				if(supportingValues.containsKey(rdmKey)) {
@@ -680,12 +676,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 			if(workflowField.getResourceId() != -1) {
 				resourceId = workflowField.getResourceId();
 			}
-			if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 343l){
-				LOGGER.info("check for null reading: fields : " + fields + " , rdmcache : " + rdmCache + "  , resource id : " + resourceId + " workflow field : " + workflowField);
-				if(workflowField == null || workflowField.getField() == null){
-					LOGGER.info("check for null reading field is null : " + fields + " , rdmcache : " + rdmCache + "  , resource id : " + resourceId + " workflow field : " + workflowField);
-				}
-			}
+
 			ReadingDataMeta currentFieldRDM = rdmCache.get(ReadingsAPI.getRDMKey(resourceId, workflowField.getField()));
 			if(currentFieldRDM == null) {
 				shouldSkipCurrentReading = true;

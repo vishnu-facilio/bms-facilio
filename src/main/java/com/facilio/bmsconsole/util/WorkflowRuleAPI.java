@@ -617,10 +617,6 @@ public class WorkflowRuleAPI {
 			LOGGER.info(MessageFormat.format("Rule query : {0}", ruleBuilder.toString()));
 		}
 
-		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 393) {
-				LOGGER.info(MessageFormat.format("Rule query : {0}", ruleBuilder.toString()) + "  result : " + props);
-		}
-
 		return getWorkFlowsFromMapList(props, fetchChildren, fetchExtended);
 	}
 	

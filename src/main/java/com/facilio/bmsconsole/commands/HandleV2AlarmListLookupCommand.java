@@ -27,9 +27,6 @@ public class HandleV2AlarmListLookupCommand extends FacilioCommand {
 		List<BaseAlarmContext> alarms =  (List<BaseAlarmContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-		if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 393l){
-			LOGGER.info("HandleV2AlarmListLookupCommand: modulename : " + moduleName + " , alarms : " + alarms);
-		}
 
 		List<ReadingAlarm> readingAlarms = new ArrayList<>();
 		List<Long> ruleIds = new ArrayList<>();
@@ -51,9 +48,6 @@ public class HandleV2AlarmListLookupCommand extends FacilioCommand {
 				if (alarm instanceof ReadingAlarm) {
 					ReadingAlarm readingAlarm = (ReadingAlarm) alarm;
 					readingAlarms.add(readingAlarm);
-					if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 393l){
-						LOGGER.info("HandleV2AlarmListLookupCommand : " + readingAlarm);
-					}
 					ruleIds.add(readingAlarm.getRule().getId());
 //					readingAlarm.setRule(null);
 					readingAlarm.setSubRule(null);
@@ -65,15 +59,8 @@ public class HandleV2AlarmListLookupCommand extends FacilioCommand {
 
 			}
 
-			if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 393l){
-					LOGGER.info("HandleV2AlarmListLookupCommand: reading alarms : " + readingAlarms);
-				}
-			
 			if (!ruleIds.isEmpty()) {
 				Map<Long, WorkflowRuleContext> rules = WorkflowRuleAPI.getWorkflowRulesAsMap(ruleIds, false, false);
-				if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 393l){
-					LOGGER.info("HandleV2AlarmListLookupCommand: ruleids : " + ruleIds + "  ,  rules : " + rules);
-				}
 				for (ReadingAlarm readingAlarm : readingAlarms) {
 					if (readingAlarm.getRule() != null && readingAlarm.getRule().getId() > 0) {
 						readingAlarm.getRule().setName(rules.get(readingAlarm.getRule().getId()).getName());

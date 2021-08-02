@@ -81,9 +81,7 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 				this.context = context;
 				fetchAndExecuteRules((FacilioContext) context, false);
 				if (AccountUtil.getCurrentOrg() != null && recordMap.values() != null) {
-					if(AccountUtil.getCurrentOrg().getOrgId() == 405 || AccountUtil.getCurrentOrg().getOrgId() == 393) {
-						LOGGER.info("Time taken to Execute complete workflows for modules: " + recordMap.keySet().size() + " with moduleRecords : " + recordMap.values().size() + " is " + (System.currentTimeMillis() - startTime) + " : " + getPrintDebug());
-					}
+					LOGGER.info("Time taken to Execute complete workflows for modules: " + recordMap.keySet().size() + " with moduleRecords : " + recordMap.values().size() + " is " + (System.currentTimeMillis() - startTime) + " : " + getPrintDebug());
 				}
 			}
 		}
@@ -174,11 +172,6 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 
 					while (it.hasNext()) {
 						Object record = it.next();
-
-						if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 393l && record instanceof BaseAlarmContext){
-							LOGGER.info("execute all workflows, basealarm lastWOID: " + ((BaseAlarmContext) record).getLastWoId());
-						}
-
 						List<UpdateChangeSet> changeSet = currentChangeSet == null ? null : currentChangeSet.get( ((ModuleBaseWithCustomFields)record).getId() );
 						Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(module.getName(), record, getOrgPlaceHolders());
 						WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(workflowRules, module, record, changeSet, recordPlaceHolders, context,propagateError, workflowRuleCacheMap, false, activities);

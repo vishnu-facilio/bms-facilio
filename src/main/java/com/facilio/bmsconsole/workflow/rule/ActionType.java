@@ -689,9 +689,6 @@ public enum ActionType {
 					AlarmOccurrenceContext lastOccurrence = getAlarmOccurrenceFromAlarm(baseAlarm);
 
 					if (lastOccurrence != null) {
-						if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 393l){
-							LOGGER.info("Create work order: Last occurences : " + lastOccurrence + " , lastWOID : " + lastWoId +" base alarm : " + baseAlarm);
-						}
 						boolean createNewWO = false;
 						WorkOrderContext workOrder = null;
 						if (lastWoId == -1) {
@@ -699,17 +696,11 @@ public enum ActionType {
 						}
 						else {
 							workOrder = WorkOrderAPI.getWorkOrder(lastWoId);
-							if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 393l){
-								LOGGER.info("Create work order:  Last occurences : workorder : " + workOrder);
-							}
 							if (workOrder == null) {
 								createNewWO = true;
 							} else {
 								FacilioStatus moduleState = workOrder.getModuleState();
 								FacilioStatus status = TicketAPI.getStatus(moduleState.getId());
-								if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 393l){
-									LOGGER.info("Create work order: facilio status : " + status);
-								}
 								if (status.getType() == FacilioStatus.StatusType.CLOSED) {
 									createNewWO = true;
 								}
