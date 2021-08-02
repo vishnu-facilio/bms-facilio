@@ -890,7 +890,7 @@ public class TransactionChainFactory {
 			c.addCommand(new GenericGetModuleDataListCommand());
 			c.addCommand(new ChangeApprovalStatusForModuleDataCommand());
 			c.addCommand(new UpdateStateForModuleDataCommand());
-			c.addCommand(new ConstructEditAssetActivityCommand());
+			c.addCommand(new ConstructUpdateCustomActivityCommand());
 			c.addCommand(new ExecuteStateFlowCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));

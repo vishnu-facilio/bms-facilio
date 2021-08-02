@@ -3,11 +3,14 @@ package com.facilio.v3.commands;
 import com.facilio.activity.ActivityType;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.MultiLookupField;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -44,7 +47,20 @@ public abstract class BaseActivityForModuleCommand extends FacilioCommand {
                     JSONObject changeObj = new JSONObject();
                     changeObj.put("field", field.getName());
                     changeObj.put("displayName", field.getDisplayName());
+                    if (field instanceof LookupField && oldValue != null) {
+    					long recId = (long) oldValue;
+    					oldValue = RecordAPI.getPrimaryValue(((LookupField)field).getLookupModule().getName(), recId);
+    					info.put("recordId", recId);
+    				}
                     changeObj.put("oldValue", oldValue);
+                    if (field instanceof LookupField && newValue != null) {
+    					long recId = (long) newValue;
+    					newValue = RecordAPI.getPrimaryValue(((LookupField)field).getLookupModule().getName(), recId);
+    					info.put("recordId", recId);
+    				}
+    				else if (field instanceof MultiLookupField && newValue instanceof ArrayList && newValue != null) {
+    					newValue = CommonCommandUtil.getMultiLookupValues(newValue, field);
+    				}
                     changeObj.put("newValue", newValue);
                     changeList.add(changeObj);
                 }

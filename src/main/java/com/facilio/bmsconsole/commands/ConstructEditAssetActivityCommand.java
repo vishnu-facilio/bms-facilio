@@ -31,14 +31,12 @@ public class ConstructEditAssetActivityCommand extends FacilioCommand {
 		if (changeSet == null) {
 			return false;
 		}
-		System.out.println("123"+ changeSet);
 		if(recordIds != null && !recordIds.isEmpty()) {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<UpdateChangeSet> changeSets = changeSet.get(recordIds.get(0));
 		
 		JSONObject info = new JSONObject();
 		List<Object> changeList = new ArrayList<Object>();
-		System.out.println("123changeSets"+ changeSets);
 		for (UpdateChangeSet changeset : changeSets) {
 		    long fieldid = changeset.getFieldId();
 			Object oldValue = changeset.getOldValue();
@@ -48,13 +46,18 @@ public class ConstructEditAssetActivityCommand extends FacilioCommand {
 			JSONObject changeObj = new JSONObject();
 			changeObj.put("field", field.getName());
 			changeObj.put("displayName", field.getDisplayName());
+			if (field instanceof LookupField && oldValue != null) {
+				long recId = (long) oldValue;
+				oldValue = RecordAPI.getPrimaryValue(((LookupField)field).getLookupModule().getName(), recId);
+				info.put("recordId", recId);
+			}
 			changeObj.put("oldValue", oldValue);
-			if (field instanceof LookupField) {
+			if (field instanceof LookupField && newValue != null) {
 				long recId = (long) newValue;
 				newValue = RecordAPI.getPrimaryValue(((LookupField)field).getLookupModule().getName(), recId);
 				info.put("recordId", recId);
 			}
-			else if (!field.isDefault() && field instanceof MultiLookupField && newValue instanceof ArrayList) {
+			else if (field instanceof MultiLookupField && newValue instanceof ArrayList && newValue != null) {
 				newValue = CommonCommandUtil.getMultiLookupValues(newValue, field);
 			}
 			changeObj.put("newValue", newValue);
