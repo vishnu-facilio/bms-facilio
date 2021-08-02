@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -13,6 +12,7 @@ import com.facilio.bmsconsole.activity.CommonActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.chain.FacilioContext;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
@@ -62,7 +62,7 @@ public class ConstructUpdateCustomActivityCommand extends FacilioCommand {
 					newValue = RecordAPI.getPrimaryValue(((LookupField)field).getLookupModule().getName(), recId);
 					info.put("recordId", recId);
 				}
-				else if (field instanceof MultiLookupField && newValue instanceof ArrayList && newValue != null) {
+				else if (field instanceof MultiLookupField && newValue != null && newValue instanceof ArrayList ) {
 					newValue = CommonCommandUtil.getMultiLookupValues(newValue, field);
 				}
 				changeObj.put("newValue", newValue);
