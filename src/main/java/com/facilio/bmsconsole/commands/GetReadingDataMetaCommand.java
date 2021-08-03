@@ -1,24 +1,25 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.beans.ModuleBean;
-import com.facilio.command.FacilioCommand;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.context.ReadingDataMeta;
-import com.facilio.bmsconsole.util.ReadingsAPI;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.fields.FacilioField;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.chain.FacilioContext;
+import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.fields.FacilioField;
 
 public class GetReadingDataMetaCommand extends FacilioCommand {
 	private static final Logger LOGGER = LogManager.getLogger(GetReadingDataMetaCommand.class.getName());
@@ -33,6 +34,8 @@ public class GetReadingDataMetaCommand extends FacilioCommand {
 			Map<String, ReadingDataMeta> readingDataMeta = null;
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			List<Pair<Long, FacilioField>> rdmPairs = new ArrayList<>();
+			long parentId = -1;
+			long readingFieldId = -1;
 			for (Map.Entry<String, List<ReadingContext>> entry : readingMap.entrySet()) {
 				String moduleName = entry.getKey();
 				List<ReadingContext> readings = entry.getValue();
@@ -41,16 +44,17 @@ public class GetReadingDataMetaCommand extends FacilioCommand {
 				for(ReadingContext reading : readings) {
 					Map<String, Object> readingData = reading.getReadings();
 					if (readingData != null && !readingData.isEmpty()) {
+						parentId = reading.getParentId();
 						for (String fieldName : readingData.keySet()) {
 							FacilioField field = fieldMap.get(fieldName);
 							if (field != null) {
 								Pair<Long, FacilioField> pair = Pair.of(reading.getParentId(), field);
 								rdmPairs.add(pair);
-
 								if (rdmPairs.size() == BATCH_SIZE) {
 									readingDataMeta = fetchRDM(readingDataMeta, rdmPairs);
 									rdmPairs.clear();
 								}
+								readingFieldId = field.getFieldId();
 							}
 						}
 					}
@@ -65,7 +69,7 @@ public class GetReadingDataMetaCommand extends FacilioCommand {
 				readingDataMeta = fetchRDM(readingDataMeta, rdmPairs);
 			}
 			if ((readingDataMeta == null) || (readingDataMeta.isEmpty())) {
-				LOGGER.info(" reading data meta empty->" + readingDataMeta);
+				LOGGER.info(" reading data meta empty-> "  + ", parentId - " + parentId + ", readingFieldId - " + readingFieldId);
 			}
 			context.put(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META, readingDataMeta);
 		}
