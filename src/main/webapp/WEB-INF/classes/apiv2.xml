@@ -4758,6 +4758,7 @@
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="v2metadata">
+			<param name="translationImpl">FieldTranslation</param>
 			<param name="moduleName">{1}</param>
 		</action>
 	</package>
