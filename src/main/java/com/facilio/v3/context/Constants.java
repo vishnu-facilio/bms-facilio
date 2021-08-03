@@ -27,6 +27,7 @@ public class Constants {
     public static final String EXCLUDE_PARENT_CRITERIA = "excludeParentCriteria";
     public static final String FILTER_CRITERIA = "filterCriteria";
     public static final String BEFORE_FETCH_CRITERIA = "beforeFetchCriteria";
+    public static final String MODULE_BEAN = "moduleBean";
     public static final String WITH_COUNT = "withCount";
     public static final String BEAN_CLASS = "beanClass";
     public static final String FROM_SCRIPT = "fromScript";
@@ -87,22 +88,9 @@ public class Constants {
 
     private static final String OLD_RECORD_MAP = "oldRecordMap";
     public static <T extends ModuleBaseWithCustomFields> void addToOldRecordMap (Context context, String moduleName, T record) {
-        addToOldRecordMap(context, moduleName, Collections.singletonList(record));
-    }
-
-    public static <T extends ModuleBaseWithCustomFields> void addToOldRecordMap (Context context, String moduleName, List<T> records) {
-        if (CollectionUtils.isEmpty(records)) {
-            return;
-        }
-
         Map<String, Map<Long, ? extends ModuleBaseWithCustomFields>> oldRecordsMap = (Map<String, Map<Long, ? extends ModuleBaseWithCustomFields>>) context.computeIfAbsent(OLD_RECORD_MAP, k -> new HashMap<>());
         Map<Long, T> oldRecords = (Map<Long, T>) oldRecordsMap.computeIfAbsent(moduleName, k -> new HashMap<>());
-        for (T record : records) {
-            if (record == null) {
-                continue;
-            }
-            oldRecords.put(record.getId(), record);
-        }
+        oldRecords.put(record.getId(), record);
     }
 
     public static <T extends ModuleBaseWithCustomFields> Map<Long, T> getOldRecordMap (Context context) {
@@ -204,21 +192,6 @@ public class Constants {
         addRecordList(recordMap, moduleName, records);
     }
 
-    public static ModuleBaseWithCustomFields getRecord(FacilioContext context, long id) {
-        return getRecord(context, getModuleName(context), id);
-    }
-
-    public static ModuleBaseWithCustomFields getRecord(FacilioContext context, String moduleName, long id) {
-        List<ModuleBaseWithCustomFields> records = getRecordMap(context).get(moduleName);
-        if (CollectionUtils.isNotEmpty(records)) {
-            Optional<ModuleBaseWithCustomFields> first = records.stream().filter(record -> record.getId() == id).findFirst();
-            if (first.isPresent()) {
-                return first.get();
-            }
-        }
-        return null;
-    }
-
     private static final String EXTENDED_MODULES = "extendedModules";
     public static Set<String> getExtendedModules (Context context) {
         return (Set<String>) context.get(EXTENDED_MODULES);
@@ -255,13 +228,11 @@ public class Constants {
         return CollectionUtils.isEmpty(values) ? null : values.get(0);
     }
 
-    @Deprecated
     public static final String RECORD_ID = "recordId";
-    @Deprecated
     public static long getRecordId(Context context) {
         return (long) context.get(RECORD_ID);
     }
-    @Deprecated
+
     public static void setRecordId(Context context, long recordId) {
         context.put(RECORD_ID, recordId);
     }
@@ -446,13 +417,11 @@ public class Constants {
         context.put(HAS_MORE_RECORDS, hasMoreRecords);
     }
 
-    @Deprecated
     private static final String RECORD = FacilioConstants.ContextNames.RECORD;
-    @Deprecated
     public static ModuleBaseWithCustomFields getRecord(Context context) {
         return (ModuleBaseWithCustomFields) context.get(RECORD);
     }
-    @Deprecated
+
     public static void setRecord(Context context, ModuleBaseWithCustomFields record) {
         context.put(RECORD, record);
     }

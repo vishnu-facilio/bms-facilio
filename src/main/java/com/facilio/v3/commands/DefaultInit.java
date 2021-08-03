@@ -66,7 +66,7 @@ public class DefaultInit extends FacilioCommand {
             }
         }
 
-        ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromMap(data, beanClass);
+        ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromMap(data, beanClass);;
         setFormData(context, data, moduleName, moduleRecord);
 
         if (id != null) {
