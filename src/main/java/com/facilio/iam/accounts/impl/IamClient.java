@@ -89,6 +89,7 @@ public class IamClient {
         JSONObject params = new JSONObject();
         params.put("deviceCode", code);
         String response = FacilioHttpUtils.doHttpPost(getUrl(url), getSecretKeyHeader(), null, params);
+        LOGGER.error("[deleteDevicePassCode] " + response);
         if (StringUtils.isNotEmpty(response)) {
             JSONObject obj = FacilioUtil.parseJson(response);
             if (obj.containsKey("code")) {
@@ -107,6 +108,7 @@ public class IamClient {
         params.put("connectedDeviceId", connectedDeviceId);
         params.put("dc", currentDC);
         String response = FacilioHttpUtils.doHttpPost(getUrl(url), getSecretKeyHeader(), null, params);
+        LOGGER.error("[markCodeAsConnected] " + response);
         if (StringUtils.isNotEmpty(response)) {
             JSONObject obj = FacilioUtil.parseJson(response);
             if (obj.containsKey("code")) {
@@ -123,6 +125,7 @@ public class IamClient {
         JSONObject params = new JSONObject();
         params.put("deviceCode", code);
         String response = FacilioHttpUtils.doHttpPost(getUrl(url), getSecretKeyHeader(), null, params);
+        LOGGER.error("[getDeviceCodeInfo] " + response);
         if (StringUtils.isNotEmpty(response)) {
             JSONObject obj = FacilioUtil.parseJson(response);
             if (obj.containsKey("data")) {
@@ -139,6 +142,7 @@ public class IamClient {
         JSONObject params = new JSONObject();
         params.put("deviceCode", code);
         String response = FacilioHttpUtils.doHttpPost(getUrl(url), getSecretKeyHeader(), null, params);
+        LOGGER.error("[getDevicePasscode] " + response);
         if (StringUtils.isNotEmpty(response)) {
             JSONObject obj = FacilioUtil.parseJson(response);
             if (obj.containsKey("data")) {
