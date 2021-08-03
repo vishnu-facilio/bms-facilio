@@ -1,30 +1,27 @@
 package com.facilio.v3.commands;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.context.SubFormContext;
 import com.facilio.v3.context.V3Context;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
+import com.facilio.v3.util.ChainUtil;
+import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PatchSubFormLineItemsCommand extends ProcessSubFormLineItemsCommand {
     private List<ModuleBaseWithCustomFields> getRecord(Context context) {
@@ -43,6 +40,17 @@ public class PatchSubFormLineItemsCommand extends ProcessSubFormLineItemsCommand
         Map<String, List<ModuleBaseWithCustomFields>> recordMap = Constants.getRecordMap(context);
         String mainModuleName = Constants.getModuleName(context);
 
+        Collection<JSONObject> bulkRawInput = Constants.getBulkRawInput(context);
+        Map<Long, JSONObject> bulkRawInputMap = new HashMap<>();
+        if (CollectionUtils.isNotEmpty(bulkRawInput)) {
+            for (JSONObject jsonObject : bulkRawInput) {
+                Object idObject = jsonObject.get("id");
+                if (idObject != null && idObject instanceof Number) {
+                    bulkRawInputMap.putIfAbsent(((Number) idObject).longValue(), jsonObject);
+                }
+            }
+        }
+
         for (ModuleBaseWithCustomFields record: records) {
             V3Context v3Context = (V3Context) record;
             Map<String, List<SubFormContext>> lineItems = v3Context.getRelations();
@@ -52,13 +60,17 @@ public class PatchSubFormLineItemsCommand extends ProcessSubFormLineItemsCommand
 
             for (String moduleName : lineItems.keySet()) {
                 List<SubFormContext> subFormContextList = lineItems.get(moduleName);
-                update(mainModuleName, moduleName, subFormContextList, record.getId());
+                JSONObject jsonObject = bulkRawInputMap.get(record.getId());
+                Map<String, Object> relationRawInput = (Map<String, Object>) jsonObject.get("relations");
+                List<Map<String, Object>> relationData = (List<Map<String, Object>>) relationRawInput.get(moduleName);
+                update(mainModuleName, moduleName, subFormContextList, record.getId(), relationData);
             }
         }
         return false;
     }
 
-    private void update(String mainModuleName, String moduleName, List<SubFormContext> subFormContextList, long recordId) throws Exception {
+    private void update(String mainModuleName, String moduleName, List<SubFormContext> subFormContextList,
+                        long recordId, List<Map<String, Object>> relationData) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(moduleName);
         List<FacilioField> fields = modBean.getAllFields(moduleName);
@@ -73,32 +85,58 @@ public class PatchSubFormLineItemsCommand extends ProcessSubFormLineItemsCommand
         Map<String, Object> parentObject = new HashMap<>();
         parentObject.put("id", recordId);
 
-        for (SubFormContext subFormContext: subFormContextList) {
-            List<V3Context> recordList = subFormContext.getData();
+        List<Map<String, Object>> subFormDataList = new ArrayList<>();
+        List<Long> ids = new ArrayList<>();
+        for (Map<String, Object> relData: relationData) {
+            List<Map<String, Object>> recordList = (List<Map<String, Object>>) relData.get("data");
             if (CollectionUtils.isEmpty(recordList)) {
                 continue;
             }
 
-            FacilioField lookup = getLookupField(subFormContext, fieldMap, mainModuleName);
+            Long fieldId = (Long) relData.get("fieldId");
+
+            FacilioField lookup = getLookupField(fieldId, fieldMap, mainModuleName);
             if (lookup == null) {
                 throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid field id in relations");
             }
 
-            for (V3Context record: recordList) {
-                if (record.getId() <= 0) {
+            for (Map<String, Object> record : recordList) {
+                Object idObj = record.get("id");
+                if (!(idObj instanceof Number)) {
                     continue;
                 }
 
-                UpdateRecordBuilder<ModuleBaseWithCustomFields> updateRecordBuilder = new UpdateRecordBuilder<>()
-                        .module(module)
-                        .fields(fields)
-                        .andCondition(CriteriaAPI.getIdCondition(record.getId(), module))
-                        .andCondition(CriteriaAPI.getCondition(lookup, recordId+"", NumberOperators.EQUALS));
+                long id = ((Number) idObj).longValue();
+                if (((Number) idObj).longValue() <= 0) {
+                    continue;
+                }
 
-                Map<String, Object> properties = FieldUtil.getAsProperties(record);
-                properties.put(lookup.getName(), parentObject);
+                ids.add(id);
+                subFormDataList.add(record);
+            }
+        }
 
-                updateRecordBuilder.updateViaMap(properties);
+        if (CollectionUtils.isNotEmpty(ids)) {
+            Map<String, List<ModuleBaseWithCustomFields>> recordsForBulkPatch = V3Util.getRecordsForBulkPatch(moduleName, ids);
+            List<ModuleBaseWithCustomFields> oldRecordList = recordsForBulkPatch.get(moduleName);
+            if (CollectionUtils.isNotEmpty(oldRecordList)) {
+                Map<Long, JSONObject> idVsRecordMap = new HashMap<>();
+                for (ModuleBaseWithCustomFields record: oldRecordList) {
+                    idVsRecordMap.put(record.getId(), FieldUtil.getAsJSON(record));
+                }
+
+                for (Map<String, Object> rec: subFormDataList) {
+                    JSONObject jsonObject = idVsRecordMap.get((long) rec.get("id"));
+                    Set<String> keys = rec.keySet();
+                    for (String key : keys) {
+                        jsonObject.put(key, rec.get(key));
+                    }
+                }
+                Collection<JSONObject> values = idVsRecordMap.values();
+
+                V3Config v3Config = ChainUtil.getV3Config(module);
+                V3Util.updateBulkRecords(module, v3Config, oldRecordList, new ArrayList<>(values), ids,
+                        null, null, null, null, null);
             }
         }
     }

@@ -4,7 +4,10 @@ import java.util.*;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.FieldUtil;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
@@ -34,7 +37,20 @@ public class V3Util {
         return createRecord(module, data, null, null);
     }
 
+    /***
+     * Create record with V3 configuration. This executes all the workflows.
+     *
+     * @param module
+     * @param data, can be empty map, but should not be null
+     * @param bodyParams
+     * @param queryParams
+     * @return FacilioContext, with all parameter, or returns NULL if the data is null.
+     * @throws Exception
+     */
     public static FacilioContext createRecord(FacilioModule module, Map<String, Object> data, Map<String, Object> bodyParams, Map<String, List<Object>> queryParams) throws Exception {
+        if (data == null) {
+            return null;
+        }
         return createRecord(module, data, false, bodyParams, queryParams);
     }
 
@@ -73,7 +89,20 @@ public class V3Util {
         return contextNew;
     }
 
+    /**
+     * Bulk create records with V3 configuration. This executes all the workflows for all the records.
+     *
+     * @param module
+     * @param recordList
+     * @param bodyParams
+     * @param queryParams
+     * @return FacilioContext, that contains all the values, or returns NULL if the recordList is null or empty
+     * @throws Exception
+     */
     public static FacilioContext createRecordList(FacilioModule module, List<Map<String, Object>> recordList, Map<String, Object> bodyParams, Map<String, List<Object>> queryParams) throws Exception {
+        if (CollectionUtils.isEmpty(recordList)) {
+            return null;
+        }
         return createRecord(module, recordList, true, bodyParams, queryParams);
     }
 
@@ -145,6 +174,27 @@ public class V3Util {
         return updateRecords(module, v3Config, false, Collections.singletonList(oldRecord),
                 Collections.singletonList(record), Collections.singletonList(id),
                 bodyParams, queryParams, stateTransitionId, customButtonId, approvalTransitionId);
+    }
+
+    public static Map<String, List<ModuleBaseWithCustomFields>> getRecordsForBulkPatch(String moduleName, List<Long> ids) throws Exception {
+        FacilioChain listChain = ChainUtil.getListChain(moduleName);
+        FacilioContext context = listChain.getContext();
+        FacilioModule module = ChainUtil.getModule(moduleName);
+
+        Criteria idCriteria = new Criteria();
+        idCriteria.addAndCondition(CriteriaAPI.getIdCondition(ids, module));
+        context.put(Constants.BEFORE_FETCH_CRITERIA, idCriteria);
+
+        V3Config v3Config = ChainUtil.getV3Config(moduleName);
+
+        Constants.setModuleName(context, moduleName);
+        Constants.setV3config(context, v3Config);
+        Class beanClass = ChainUtil.getBeanClass(v3Config, module);
+        context.put(Constants.BEAN_CLASS, beanClass);
+        listChain.execute();
+
+        Map<String, List<ModuleBaseWithCustomFields>> recordMap = Constants.getRecordMap(context);
+        return recordMap;
     }
 
     public static FacilioContext createRecord(FacilioModule module,List<ModuleBaseWithCustomFields> records) throws Exception {

@@ -12,9 +12,8 @@ import java.util.Map;
 
 public abstract class ProcessSubFormLineItemsCommand extends FacilioCommand {
 
-    protected FacilioField getLookupField(SubFormContext subFormContext, Map<Long, FacilioField> fieldMap, String mainModuleName) {
-        long fieldId = subFormContext.getFieldId();
-        if (fieldId > 0) {
+    protected FacilioField getLookupField(Long fieldId, Map<Long, FacilioField> fieldMap, String mainModuleName) {
+        if (fieldId != null && fieldId > 0) {
             return fieldMap.get(fieldId);
         }
 
