@@ -40,3 +40,6 @@ translations:
 
   - name: ViewColumnTranslationV1
     translationImplClass : com.facilio.bmsconsole.localization.translationImpl.ViewColumnTransImplV1
+
+  - name: FieldTranslationV2
+    translationImplClass : com.facilio.bmsconsole.localization.translationImpl.FieldTranslationImplV2
