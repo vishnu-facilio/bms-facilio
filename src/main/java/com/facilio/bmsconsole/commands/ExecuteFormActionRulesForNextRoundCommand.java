@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
 
@@ -13,6 +12,7 @@ import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormRuleContext;
 import com.facilio.bmsconsole.util.FormRuleAPI;
 import com.facilio.chain.FacilioChain;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -34,6 +34,9 @@ public class ExecuteFormActionRulesForNextRoundCommand extends FacilioCommand {
 		if(valueFilledFields != null && !valueFilledFields.isEmpty()) {
 			
 			Map<String,Object> formData = (Map<String, Object>) facilioContext.get(FormRuleAPI.FORM_DATA);
+			if (formData == null) {	// Temp...for initial call execute call without form data..will be removed
+				formData = new HashMap<>();
+			}
 			
 			FacilioModule module = form.getModule();
 			
