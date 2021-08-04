@@ -1338,7 +1338,7 @@ public class APIv3Config {
                     .beforeSave(new AddOrUpdateSpaceLocation(), new SetSpaceRelatedContextCommand(), new AddSpaceCategoryExtendedModuleCommandV3())
                     .afterSave(new CreateSpaceAfterSave(), getSpaceReadingsChain(), new InsertReadingDataMetaForNewResourceCommand(), new ConstructAddCustomActivityCommandV3(), new AddActivitiesCommand(FacilioConstants.ContextNames.SPACE_ACTIVITY))
                 .update()
-                    .beforeSave(new AddOrUpdateSpaceLocation(), new SetSpaceRelatedContextCommand(), new AddSpaceCategoryExtendedModuleCommandV3())
+                    .beforeSave(new AddOrUpdateSpaceLocation(), new SetSpaceRelatedContextCommand())
                     .afterSave(new ConstructUpdateCustomActivityCommandV3(), new AddActivitiesCommand(FacilioConstants.ContextNames.SPACE_ACTIVITY))
                 .delete()
                 .summary().beforeFetch(new SpaceFillLookupFieldsCommand())
