@@ -53,10 +53,12 @@
 	<action name="lookup" class="com.facilio.auth.actions.FacilioAuthAction" method="lookup">
 		<param name="auth">false</param>
 		<result name="success" type="json">
-			<param name="includeProperties">jsonresponse.*</param>
+			<param name="ignoreHierarchy">false</param>
+			<param name="includeProperties">responseCode, ^jsonresponse.*</param>
 		</result>
 		<result name="error" type="json">
-			<param name="includeProperties">jsonresponse.*</param>
+			<param name="ignoreHierarchy">false</param>
+			<param name="includeProperties">responseCode, ^jsonresponse.*</param>
 		</result>
 	</action>
 	<action name="servicelookup" class="com.facilio.auth.actions.FacilioAuthAction" method="servicelookup">
@@ -72,30 +74,36 @@
     <action name="faciliosubmit" class="com.facilio.auth.actions.FacilioAuthAction" method="validateLoginv3">
 		<param name="auth">false</param>
 		<result name="success" type="json">
-				<param name="includeProperties">jsonresponse.*</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^jsonresponse.*</param>
 		</result>
 		<result name="error" type="json">
-				<param name="includeProperties">jsonresponse.*</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^jsonresponse.*</param>
 		</result>
 	</action>
 
 	<action name="loginWithUserNameAndPassword" class="com.facilio.auth.actions.FacilioAuthAction" method="loginWithUserNameAndPassword">
 		<param name="auth">false</param>
 		<result name="success" type="json">
-			<param name="includeProperties">jsonresponse.*</param>
+			<param name="ignoreHierarchy">false</param>
+			<param name="includeProperties">responseCode, ^jsonresponse.*</param>
 		</result>
 		<result name="error" type="json">
-			<param name="includeProperties">jsonresponse.*</param>
+			<param name="ignoreHierarchy">false</param>
+			<param name="includeProperties">responseCode, ^jsonresponse.*</param>
 		</result>
 	</action>
 
 	<action name="verifyTotp" class="com.facilio.auth.actions.FacilioAuthAction" method="verifyTotp">
 		<param name="auth">false</param>
 		<result name="success" type="json">
-			<param name="includeProperties">jsonresponse.*</param>
+			<param name="ignoreHierarchy">false</param>
+			<param name="includeProperties">responseCode, ^jsonresponse.*</param>
 		</result>
 		<result name="error" type="json">
-			<param name="includeProperties">jsonresponse.*</param>
+			<param name="ignoreHierarchy">false</param>
+			<param name="includeProperties">responseCode, ^jsonresponse.*</param>
 		</result>
 	</action>
 
@@ -123,29 +131,35 @@
 	<action name="loginWithPasswordAndDigest" class="com.facilio.auth.actions.FacilioAuthAction" method="loginWithPasswordAndDigest">
 		<param name="auth">false</param>
 		<result name="success" type="json">
-			<param name="includeProperties">jsonresponse.*</param>
+			<param name="ignoreHierarchy">false</param>
+			<param name="includeProperties">responseCode, ^jsonresponse.*</param>
 		</result>
 		<result name="error" type="json">
-			<param name="includeProperties">jsonresponse.*</param>
+			<param name="ignoreHierarchy">false</param>
+			<param name="includeProperties">responseCode, ^jsonresponse.*</param>
 		</result>
 	</action>
 	<action name="serviceLoginWithPasswordAndDigest" class="com.facilio.auth.actions.FacilioAuthAction" method="serviceLoginWithPasswordAndDigest">
 		<param name="auth">false</param>
 		<result name="success" type="json">
-			<param name="includeProperties">jsonresponse.*</param>
+			<param name="ignoreHierarchy">false</param>
+			<param name="includeProperties">responseCode, ^jsonresponse.*</param>
 		</result>
 		<result name="error" type="json">
-			<param name="includeProperties">jsonresponse.*</param>
+			<param name="ignoreHierarchy">false</param>
+			<param name="includeProperties">responseCode, ^jsonresponse.*</param>
 		</result>
 	</action>
 
 	<action name="assertDomainWithDigest" class="com.facilio.auth.actions.FacilioAuthAction" method="assertDomainWithDigest">
 		<param name="auth">false</param>
 		<result name="success" type="json">
-			<param name="includeProperties">jsonresponse.*</param>
+			<param name="ignoreHierarchy">false</param>
+			<param name="includeProperties">responseCode, ^jsonresponse.*</param>
 		</result>
 		<result name="error" type="json">
-			<param name="includeProperties">jsonresponse.*</param>
+			<param name="ignoreHierarchy">false</param>
+			<param name="includeProperties">responseCode, ^jsonresponse.*</param>
 		</result>
 	</action>
 

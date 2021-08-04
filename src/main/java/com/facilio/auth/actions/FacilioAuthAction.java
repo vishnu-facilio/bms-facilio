@@ -398,11 +398,13 @@ public class FacilioAuthAction extends FacilioAction {
 			String domain = IAMUserUtil.validateDigestAndDomain(getDomain(), getDigest(), groupType);
 			if (org.apache.commons.lang3.StringUtils.isEmpty(domain)) {
 				setJsonresponse("code", 2);
+				setResponseCode(2);
 			} else {
 				setJsonresponse("code", 1);
 			}
 		} catch (Exception e) {
 			setJsonresponse("code", 3);
+			setResponseCode(3);
 			return ERROR;
 		}
 		return SUCCESS;
@@ -475,6 +477,7 @@ public class FacilioAuthAction extends FacilioAction {
 			setJsonresponse(loginModes);
 		} catch (Exception e) {
 			LOGGER.log(Level.INFO, "Exception while user lookup ", e);
+			setResponseCode(2);
 			setJsonresponse("errorcode", "2");
 			return ERROR;
 		}
@@ -610,6 +613,7 @@ public class FacilioAuthAction extends FacilioAction {
 				ex = (Exception) ex.getCause();
 			}
 			setJsonresponse("errorcode", "2");
+			setResponseCode(2);
 			return ERROR;
 		}
 
@@ -704,6 +708,7 @@ public class FacilioAuthAction extends FacilioAction {
 				ex = (Exception) ex.getCause();
 			}
 			setJsonresponse("errorcode", "2");
+			setResponseCode(2);
 			return ERROR;
 		}
 		setUsername(emailFromDigest);
@@ -810,6 +815,7 @@ public class FacilioAuthAction extends FacilioAction {
 				ex = (Exception) ex.getCause();
 			}
 			setJsonresponse("errorcode", "1");
+			setResponseCode(2);
 			return ERROR;
 		}
 		return SUCCESS;
@@ -832,6 +838,7 @@ public class FacilioAuthAction extends FacilioAction {
 				}
 				ex = (Exception) ex.getCause();
 			}
+			setResponseCode(2);
 			setJsonresponse("errorcode", "2");
 			return ERROR;
 		}
@@ -995,6 +1002,7 @@ public class FacilioAuthAction extends FacilioAction {
 					ex = (Exception) ex.getCause();
 				}
 				setJsonresponse("errorcode", "1");
+				setResponseCode(2);
 				return ERROR;
 			}
 			return SUCCESS;
