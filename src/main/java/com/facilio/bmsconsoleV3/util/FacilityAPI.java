@@ -7,6 +7,7 @@ import com.facilio.bmsconsoleV3.context.facilitybooking.*;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -446,7 +447,7 @@ public class FacilityAPI {
 
 		SelectRecordsBuilder<V3FacilityBookingContext> builder = new SelectRecordsBuilder<V3FacilityBookingContext>().moduleName(facilitybooking)
 				.select(fields).beanClass(V3FacilityBookingContext.class).andCondition(CriteriaAPI.getCondition(
-						fieldsAsMap.get("facility"), StringUtils.join(facilityIds, ","), NumberOperators.EQUALS));
+						fieldsAsMap.get("facility"), StringUtils.join(facilityIds, ","), NumberOperators.EQUALS)).andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("isCancelled"),String.valueOf(false), BooleanOperators.IS));
 		List<V3FacilityBookingContext> booking = builder.get();
 		return booking;
 	}

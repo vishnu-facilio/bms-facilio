@@ -45,7 +45,10 @@ public class DesksAPI {
 			List<Long> facilityIds = new ArrayList<>();
 	    	existingFacilities.forEach(i -> facilityIds.add(i.getId()));
 	    	List<V3FacilityBookingContext> bookingsList = FacilityAPI.getFacilityBooking(facilityIds);
-	    	CancelBooking(bookingsList);
+	    	if(bookingsList != null && !bookingsList.isEmpty())
+	    	{
+	    	  CancelBooking(bookingsList);
+	    	}
 //			if(desk.getDeskType() != 3) {
 //				DeleteRecordBuilder<FacilityContext> deleteBuilder = new DeleteRecordBuilder<FacilityContext>()
 //                        .module(facilityModule)
@@ -293,8 +296,11 @@ public class DesksAPI {
                     SlotContext slot = (SlotContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.FacilityBooking.SLOTS, bookingSlot.getSlot().getId(), SlotContext.class);
                     if (slot != null) {
                         //reverting booking count in slot
+                    	if(slot.getBookingCount()!=null && booking.getNoOfAttendees()!=null) 
+                    	{
                         slot.setBookingCount(slot.getBookingCount() - booking.getNoOfAttendees());
                         V3RecordAPI.updateRecord(slot, slotModule, modBean.getAllFields(FacilioConstants.ContextNames.FacilityBooking.SLOTS));
+                    	}
                     }
                 }
             }
