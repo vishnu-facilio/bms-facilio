@@ -385,7 +385,9 @@
 
 	<package name="state" namespace="/api/v2/state" extends="v2Api">
 		<action name="list"
-			class="com.facilio.bmsconsole.actions.TicketStatusAction" method="v2StatusList" />
+			class="com.facilio.bmsconsole.actions.TicketStatusAction" method="v2StatusList">
+			<param name="translationImpl">StateFlowTranslationV2</param>
+		</action>
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.TicketStatusAction" method="v2AddStatus" />
 		<action name="update"

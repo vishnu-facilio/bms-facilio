@@ -43,3 +43,6 @@ translations:
 
   - name: FieldTranslationV2
     translationImplClass : com.facilio.bmsconsole.localization.translationImpl.FieldTranslationImplV2
+
+  - name: StateFlowTranslationV2
+    translationImplClass : com.facilio.bmsconsole.localization.translationImpl.StateFlowTranslationImplV2
