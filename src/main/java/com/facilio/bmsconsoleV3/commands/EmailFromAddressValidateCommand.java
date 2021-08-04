@@ -22,8 +22,9 @@ public class EmailFromAddressValidateCommand extends FacilioCommand {
 		List<EmailFromAddress> emailFromAddreses = Constants.getRecordList((FacilioContext) context);
 		
 		for(EmailFromAddress emailFromAddress : emailFromAddreses) {
-			
-			if(emailFromAddress.getSiteId() <= 0) {
+
+			if(emailFromAddress.getSourceType().equals(EmailFromAddress.SourceType.SUPPORT.getIndex())
+					&& emailFromAddress.getSiteId() <= 0) {
 				throw new RESTException(ErrorCode.VALIDATION_ERROR, "Site is mandatory");
 			}
 			if(!UniqueCheckUtil.checkIfUnique(emailFromAddress.getEmail(), FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME, "email")) {
