@@ -7,11 +7,14 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.V3Action;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.JSONObject;
+
+
 
 import lombok.Getter;
 import lombok.Setter;
 
-@Setter @Getter
 public class FloorplanAction extends V3Action {
 
 	private static final long serialVersionUID = 1L;
@@ -64,13 +67,6 @@ public class FloorplanAction extends V3Action {
 		this.search = search;
 	}
 	
-	private String filters;
-	public String getFilters() {
-		return filters;
-	}
-	public void setFilters(String filters) {
-		this.filters = filters;
-	}
 	
 	public String getFacilityDetails() throws Exception {
 		
@@ -111,9 +107,14 @@ public class FloorplanAction extends V3Action {
 		FacilioContext context = chain.getContext();
 		
 		context.put(FacilioConstants.ContextNames.MODULE, moduleName);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.SEARCH, search);
 		context.put(FacilioConstants.ContextNames.FLOOR, floorId);
-		context.put(FacilioConstants.ContextNames.FILTERS, filters);
+		if (getFilters() != null) {
+			JSONParser parser = new JSONParser();
+			JSONObject json = (JSONObject) parser.parse(getFilters());
+			context.put(FacilioConstants.ContextNames.FILTERS, json);
+		}
 		
 		chain.execute();
 		
@@ -122,5 +123,6 @@ public class FloorplanAction extends V3Action {
 		setData(FacilioConstants.ContextNames.SPACE, context.get(FacilioConstants.ContextNames.SPACE));
 		setData(FacilioConstants.ContextNames.LOCKERS, context.get(FacilioConstants.ContextNames.LOCKERS));
 		setData(FacilioConstants.ContextNames.PARKING_STALL, context.get(FacilioConstants.ContextNames.PARKING_STALL));
+		return SUCCESS;
 	}
 }
