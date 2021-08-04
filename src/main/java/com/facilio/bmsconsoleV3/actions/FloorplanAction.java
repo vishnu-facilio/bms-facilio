@@ -48,6 +48,30 @@ public class FloorplanAction extends V3Action {
 		this.floorId = floorId;
 	}
 	
+	private String moduleName;
+	public String getModuleName() {
+		return moduleName;
+	}
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
+	
+	private String search;
+	public String getSearch() {
+		return search;
+	}
+	public void setSearch(String search) {
+		this.search = search;
+	}
+	
+	private String filters;
+	public String getFilters() {
+		return filters;
+	}
+	public void setFilters(String filters) {
+		this.filters = filters;
+	}
+	
 	public String getFacilityDetails() throws Exception {
 		
 		FacilioChain chain = ReadOnlyChainFactoryV3.getFloorplanFacilitiesChain();
@@ -79,5 +103,24 @@ public class FloorplanAction extends V3Action {
 			setData(FacilioConstants.ContextNames.INDOOR_FLOOR_PLANS, context.get(FacilioConstants.ContextNames.INDOOR_FLOOR_PLANS));
 		}
 		return SUCCESS;
+	}
+	
+	public String floorplanListSearch() throws Exception {
+		FacilioChain chain = ReadOnlyChainFactoryV3.floorplanListSearchChain();
+		
+		FacilioContext context = chain.getContext();
+		
+		context.put(FacilioConstants.ContextNames.MODULE, moduleName);
+		context.put(FacilioConstants.ContextNames.SEARCH, search);
+		context.put(FacilioConstants.ContextNames.FLOOR, floorId);
+		context.put(FacilioConstants.ContextNames.FILTERS, filters);
+		
+		chain.execute();
+		
+		setData(FacilioConstants.ContextNames.EMPLOYEE, context.get(FacilioConstants.ContextNames.EMPLOYEE));
+		setData(FacilioConstants.ContextNames.Floorplan.DESKS, context.get(FacilioConstants.ContextNames.Floorplan.DESKS));
+		setData(FacilioConstants.ContextNames.SPACE, context.get(FacilioConstants.ContextNames.SPACE));
+		setData(FacilioConstants.ContextNames.LOCKERS, context.get(FacilioConstants.ContextNames.LOCKERS));
+		setData(FacilioConstants.ContextNames.PARKING_STALL, context.get(FacilioConstants.ContextNames.PARKING_STALL));
 	}
 }

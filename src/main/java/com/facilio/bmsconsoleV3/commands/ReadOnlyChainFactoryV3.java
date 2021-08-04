@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands;
 
+import com.facilio.bmsconsole.commands.GenerateCriteriaFromFilterCommand;
 import com.facilio.bmsconsole.commands.page.GetSummaryFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.facility.GetFacilityAvailabilityCommandV3;
 import com.facilio.bmsconsoleV3.commands.facility.GetFacilityPhotosCommand;
@@ -133,6 +134,13 @@ public class ReadOnlyChainFactoryV3 {
     public static FacilioChain getFloorplanMapByTypeChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new FetchFloorplanMapByTypeCommmand());
+        return c;
+    }
+    
+    public static FacilioChain floorplanListSearchChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GenerateCriteriaFromFilterCommand());
+        c.addCommand(new FloorplanDetailsListCommand());
         return c;
     }
 }

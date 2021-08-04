@@ -333,6 +333,10 @@
                 class="com.facilio.bmsconsoleV3.actions.FloorplanAction"
                 method="getFloorplanDetailsByType">
         </action>
+        <action name="floorplanListSearch"
+                class="com.facilio.bmsconsoleV3.actions.FloorplanAction"
+                method="floorplanListSearch">
+        </action>
     </package>
     
     <package name="bulkResourceAllocation" namespace="/api/v3/resourceAllocation" extends="v3Api">
