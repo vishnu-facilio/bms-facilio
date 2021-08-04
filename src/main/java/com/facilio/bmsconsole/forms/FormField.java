@@ -333,4 +333,15 @@ public class FormField implements Serializable {
 		}
 		this.filters.put(key, value);
 	}
+	
+	
+	private Boolean showFloorPlanConfig;
+	@JsonIgnore
+	public Boolean getShowFloorPlanConfig() {
+		return showFloorPlanConfig;
+	}
+	@JsonIgnore
+	public void setShowFloorPlanConfig(Boolean showFloorPlanConfig) {
+		this.showFloorPlanConfig = showFloorPlanConfig;
+	}
 }

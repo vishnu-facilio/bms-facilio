@@ -8,21 +8,23 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FacilioForm.FormSourceType;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.FormsAPI;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.BaseLookupField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
+import com.facilio.modules.fields.LookupField;
 
 public class HandleFormFieldsCommand extends FacilioCommand {
 	
@@ -49,6 +51,9 @@ public class HandleFormFieldsCommand extends FacilioCommand {
 				}
 				else if (!isFromBuilder) {
 					handleDefaultValue(field);
+				}
+				else {
+					handleFloorPlanConfig(field);
 				}
 				setLookupName(field, moduleName, isFromBuilder);
 				addFilters(module, field);
@@ -134,5 +139,15 @@ public class HandleFormFieldsCommand extends FacilioCommand {
 
         formField.addToFilters(type, operator);
     }
+	
+	private void handleFloorPlanConfig(FormField formField) {
+		if (formField.getField() != null && formField.getField().getDataTypeEnum() == FieldType.LOOKUP) {
+			FacilioModule module = ((LookupField)formField.getField()).getLookupModule();
+			if (module.getName().equals(ContextNames.SPACE) || 
+					(module.getExtendModule() != null && module.getExtendModule().getName().equals(ContextNames.SPACE))) {
+				formField.setShowFloorPlanConfig(true);
+			}
+		}
+	}
 	
 }
