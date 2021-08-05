@@ -10,11 +10,11 @@ public class EMailTemplate extends Template {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Long from;
-	public Long getFrom() {
+	private String from;
+	public String getFrom() {
 		return from;
 	}
-	public void setFrom(Long from) {
+	public void setFrom(String from) {
 		this.from = from;
 	}
 	
