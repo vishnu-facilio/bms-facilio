@@ -11,8 +11,10 @@ import com.facilio.v3.V3Action;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.log4j.Log4j;
 import org.json.simple.JSONObject;
 
+@Log4j
 @Getter @Setter
 public class FacilioDCAction extends V3Action {
 	
@@ -30,9 +32,14 @@ public class FacilioDCAction extends V3Action {
 	private int dc;
 	
 	public String dclookup() throws Exception {
-		int dc = IAMUserUtil.findDCForUser(userName, groupType);
-		setData("dc", dc);
-		
+		try {
+			int dc = IAMUserUtil.findDCForUser(userName, groupType);
+			setData("dc", dc);
+		} catch (Exception ex) {
+			LOGGER.error("Exception while findDCForUser ", ex);
+			throw ex;
+		}
+
 		return SUCCESS;
 	}
 	
