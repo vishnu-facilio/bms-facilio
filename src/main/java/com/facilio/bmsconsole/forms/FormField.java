@@ -344,4 +344,23 @@ public class FormField implements Serializable {
 	public void setShowFloorPlanConfig(Boolean showFloorPlanConfig) {
 		this.showFloorPlanConfig = showFloorPlanConfig;
 	}
+	
+	private JSONObject validations;
+	public JSONObject getValidations() {
+		return validations;
+	}
+	public void setValidations(JSONObject validations) {
+		this.validations = validations;
+	}
+	
+	private void addValidation(String key, Object value) {
+		if (validations == null) {
+			validations = new JSONObject();
+		}
+		validations.put(key, value);
+	}
+
+	public void setMaxLength(int maxLength) {
+		addValidation("maxLength", maxLength);
+	}
 }

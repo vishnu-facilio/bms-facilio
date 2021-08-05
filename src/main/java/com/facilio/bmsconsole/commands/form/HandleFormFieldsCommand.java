@@ -28,7 +28,6 @@ import com.facilio.modules.fields.LookupField;
 
 public class HandleFormFieldsCommand extends FacilioCommand {
 	
-	boolean isAssetModule = false;
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -44,7 +43,7 @@ public class HandleFormFieldsCommand extends FacilioCommand {
 		if (form != null) {
 			FormSourceType formSourceType = (FormSourceType) context.getOrDefault(ContextNames.FORM_SOURCE, FormSourceType.FROM_FORM);
 			boolean isFromBuilder = formSourceType == formSourceType.FROM_BUILDER;
-			isAssetModule = AssetsAPI.isAssetsModule(module);
+			boolean isAssetModule = AssetsAPI.isAssetsModule(module);
 			for(FormField field: form.getFields()) {
 				if (formSourceType == FormSourceType.FROM_BULK_FORM) {
 					field.setValue(null);
@@ -56,7 +55,8 @@ public class HandleFormFieldsCommand extends FacilioCommand {
 					handleFloorPlanConfig(field);
 				}
 				setLookupName(field, moduleName, isFromBuilder);
-				addFilters(module, field);
+				addFilters(module, field, isAssetModule);
+				setValidations(field);
 			}
 		}
 		
@@ -82,7 +82,7 @@ public class HandleFormFieldsCommand extends FacilioCommand {
 		
 	}
 	
-	private void addFilters(FacilioModule module, FormField formField) {
+	private void addFilters(FacilioModule module, FormField formField, boolean isAssetModule) {
 		if (isAssetModule) {
 			switch(formField.getName()) {
 				case "rotatingItem":
@@ -150,4 +150,23 @@ public class HandleFormFieldsCommand extends FacilioCommand {
 		}
 	}
 	
+	private void setValidations(FormField formField) {
+		setMaxLength(formField);
+	}
+	
+	private void setMaxLength(FormField formField) {
+		int maxLength = -1;
+		if (formField.getDisplayTypeEnum() == FieldDisplayType.TEXTBOX) {
+			maxLength = 255;
+		}
+		else if (formField.getField() != null && formField.getField().getDataTypeEnum() == FieldType.LARGE_TEXT) {
+			maxLength = 32000;
+		}
+		else if (formField.getDisplayTypeEnum() == FieldDisplayType.TEXTAREA) {
+			maxLength = 2000;
+		}
+		if (maxLength > 0) {
+			formField.setMaxLength(maxLength);
+		}
+	}
 }
