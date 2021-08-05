@@ -3000,6 +3000,13 @@ public class FieldFactory extends BaseFieldFactory {
         emailFrom.setModule(module);
         fields.add(emailFrom);
 
+        FacilioField emailFromAddress = new FacilioField();
+        emailFrom.setName("fromAddress");
+        emailFrom.setDataType(FieldType.ID);
+        emailFrom.setColumnName("FROM_ADDRESS");
+        emailFrom.setModule(module);
+        fields.add(emailFromAddress);
+
         FacilioField emailTo = new FacilioField();
         emailTo.setName("to");
         emailTo.setDataType(FieldType.STRING);
