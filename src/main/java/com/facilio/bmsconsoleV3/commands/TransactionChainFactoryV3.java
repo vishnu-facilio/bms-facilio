@@ -64,6 +64,7 @@ import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.trigger.command.*;
+import com.facilio.v3.commands.ConstructUpdateCustomActivityCommandV3;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -315,6 +316,8 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddTenantUserCommandV3());
         c.addCommand(new AddTenantSpaceRelationCommandV3());
+        c.addCommand(new ConstructUpdateCustomActivityCommandV3());
+        c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.TENANT_ACTIVITY));
         return c;
     }
 
