@@ -2993,18 +2993,11 @@ public class FieldFactory extends BaseFieldFactory {
             fields.add(getIdField(module));
         }
 
-        FacilioField emailFrom = new FacilioField();
-        emailFrom.setName("from");
-        emailFrom.setDataType(FieldType.STRING);
-        emailFrom.setColumnName("FROM_ADDR");
-        emailFrom.setModule(module);
-        fields.add(emailFrom);
-
         FacilioField emailFromAddress = new FacilioField();
-        emailFrom.setName("fromAddress");
-        emailFrom.setDataType(FieldType.ID);
-        emailFrom.setColumnName("FROM_ADDRESS");
-        emailFrom.setModule(module);
+        emailFromAddress.setName("fromAddress");
+        emailFromAddress.setDataType(FieldType.ID);
+        emailFromAddress.setColumnName("FROM_ADDRESS");
+        emailFromAddress.setModule(module);
         fields.add(emailFromAddress);
 
         FacilioField emailTo = new FacilioField();

@@ -435,7 +435,9 @@ public class ActionAPI {
 
 	private static void setEmailTemplate(ActionContext action) {
 		EMailTemplate emailTemplate = new EMailTemplate();
-		emailTemplate.setFrom("noreply@${org.domain}.facilio.com");
+
+		emailTemplate.setFrom((Long) action.getTemplateJson().get("fromAddr"));
+
 		String toAdresses = action.getTemplateJson().get("to").toString();
 //		toAdresses = toAdresses.substring(1, toAdresses.length()-1);
 		String ccAddress = null;
