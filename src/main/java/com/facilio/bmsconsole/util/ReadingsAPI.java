@@ -516,12 +516,7 @@ public class ReadingsAPI {
 	}
 	
 	public static String getRDMKey(long resourceId, FacilioField field) {
-		try {//TODO: shoule be delete this try/catch, debugging purpose.
-			return resourceId + "_" + field.getFieldId();
-		}catch (NullPointerException ex){
-			LOGGER.info("rdm key gen failed: resource id : " + resourceId + " , filed : " + field );
-			throw ex;
-		}
+		return resourceId + "_" + field.getFieldId();
 	}
 	
 	private static Map<String, ReadingDataMeta> getRDMMapFromProps (List<Map<String, Object>> props, Map<Long, FacilioField> fieldMap) throws Exception {

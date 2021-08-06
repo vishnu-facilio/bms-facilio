@@ -54,7 +54,7 @@ public class KafkaProcessor extends FacilioProcessor {
 
 	@Override
 	protected String getThreadName() {
-		return "kafka-" + getOrgDomainName() + "-" + partitionId + "-" + getEventType();
+		return Thread.currentThread().getName() + "-kafka-" + getOrgDomainName() + "-" + partitionId + "-" + getEventType();
 	}
 
 	@Override
