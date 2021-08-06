@@ -105,6 +105,10 @@ public class DataProcessorV2
                 throw new Exception(" publish type cant be null "+JsonUtil.getInt((payload.get(AgentConstants.PUBLISH_TYPE))));
             }
             markMetrices(agent,payload);
+
+            if ((1628237705265L < timeStamp && timeStamp < 1628259305049L) && orgId == 393) {
+                return true;
+            }
             switch (publishType) {
             	case CUSTOM:
                     JSONObject customPayload = (JSONObject) payload.clone();
@@ -130,6 +134,7 @@ public class DataProcessorV2
                             agent.getAgentType()== AgentType.WATTSENSE.getKey()) {
 
                         controllerIdVsLastTimeSeriesTimeStamp.put(timeseriesController.getId(), timeStamp);
+
                         timeSeriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, timeseriesController.getId());
                         processStatus = processTimeSeries(timeSeriesPayload, timeseriesController, true);
 
