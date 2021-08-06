@@ -110,6 +110,7 @@
         <action name="list"
                 class="com.facilio.v3.RESTAPIHandler"
                 method="list">
+            <param name="translationImpl">StateFlowTranslationV3</param>
         </action>
 
         <action name="summary"

@@ -46,3 +46,6 @@ translations:
 
   - name: StateFlowTranslationV2
     translationImplClass : com.facilio.bmsconsole.localization.translationImpl.StateFlowTranslationImplV2
+
+  - name: StateFlowTranslationV3
+    translationImplClass : com.facilio.bmsconsole.localization.translationImpl.StateFlowTranslationImplV3

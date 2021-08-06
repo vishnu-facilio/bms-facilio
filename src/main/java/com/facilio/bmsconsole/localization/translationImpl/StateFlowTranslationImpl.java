@@ -26,8 +26,8 @@ public class StateFlowTranslationImpl implements TranslationIfc {
         if(states != null && !states.isEmpty()) {
             for (int i = 0; i < states.size(); i++) {
                 JSONObject state = (JSONObject)states.get(i);
-                String key = getTranslationKey(STATE_TRANSITION,String.valueOf(currentState.get("id")));
-                currentState.put(TranslationConstants.NAME,getTranslation(translationFile,key,(String)state.get(TranslationConstants.NAME)));
+                String key = getTranslationKey(STATE_TRANSITION,String.valueOf(state.get("id")));
+                state.put(TranslationConstants.NAME,getTranslation(translationFile,key,(String)state.get(TranslationConstants.NAME)));
             }
         }
         return json;
