@@ -15,7 +15,7 @@ public class PasswordHashUtil {
     public static String cryptWithMD5(String pass) {
         if (StringUtils.isNotEmpty(pass)) {
             try {
-                md = MessageDigest.getInstance(FacilioProperties.getPasswordHasingFunction());
+                md = MessageDigest.getInstance(FacilioProperties.getPasswordHashingFunction());
                 byte[] passBytes = pass.getBytes();
                 md.reset();
                 byte[] digested = md.digest(passBytes);

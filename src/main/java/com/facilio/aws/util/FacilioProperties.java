@@ -132,7 +132,7 @@ public class FacilioProperties {
     private static String iamDCLookupUrl;
     private static String iamAddDCUserUrl;
 
-    private static String passwordHasingFunction;
+    private static String passwordHashingFunction;
 
     static {
         loadProperties();
@@ -237,7 +237,7 @@ public class FacilioProperties {
 
                 accessLog = "true".equalsIgnoreCase(PROPERTIES.getProperty("facilio.access.log", "false"));
 
-                passwordHasingFunction = PROPERTIES.getProperty("password.hashing.function");
+                passwordHashingFunction = PROPERTIES.getProperty("password.hashing.function");
                 String cookieLifespanProp = PROPERTIES.getProperty("token.cookie.lifespan");
                 if (StringUtils.isNotEmpty(cookieLifespanProp)) {
                     try {
@@ -736,14 +736,10 @@ public class FacilioProperties {
         return iamAddDCUserUrl;
     }
 
-	public static String getPasswordHasingFunction() {
-		return passwordHasingFunction;
+	public static String getPasswordHashingFunction() {
+		return passwordHashingFunction;
 	}
-
-	public static void setPasswordHasingFunction(String passwordHasingFunction) {
-		FacilioProperties.passwordHasingFunction = passwordHasingFunction;
-	}
-
+	
     public static long getBuildNumber() {
         Properties buildInfo = (Properties)ServletActionContext.getServletContext().getAttribute("buildinfo");
         return Long.parseLong(buildInfo.getProperty("build.number")); // Shouldn't be null
