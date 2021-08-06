@@ -205,7 +205,16 @@ if (buildinfo == null) {
       <div class="nav  sidebar-footer-btn  ">
       <div class="col-lg-12 col-centered build-details" style="margin:10px; font-size: 12px;">
 	    <table>
-	        <tbody><tr>
+	        <tbody>
+            <tr>
+                <td>
+                    Build Number:
+                </td>
+                <td>
+                    <%= buildinfo.get("build.number")%>
+                </td>
+            </tr>
+            <tr>
 	            <td>
 	                Build Date:
 	            </td>

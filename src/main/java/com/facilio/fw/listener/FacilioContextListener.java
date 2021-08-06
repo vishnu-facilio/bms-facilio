@@ -105,7 +105,7 @@ public class FacilioContextListener implements ServletContextListener {
 				LOGGER.info("Starting FacilioDBQueueExceptionProcessor");
 				timer.schedule(new FacilioDBQueueExceptionProcessor(), 0L, 900000L); // 30 minutes
 			}
-
+			setVersion(event);
 
 			//All these init should be moved to config
 			initDBConnectionPool();
@@ -153,7 +153,6 @@ public class FacilioContextListener implements ServletContextListener {
 			PortalAuthInterceptor.setPortalDomain(FacilioProperties.getOccupantAppDomain());// event.getServletContext().getInitParameter("SERVICEPORTAL_DOMAIN");
 			LOGGER.info("Loading the domain name as ######" + PortalAuthInterceptor.getPortalDomain());
 			initLocalHostName();
-			setVersion(event);
 
 		} catch (Exception e) {
 			sendFailureEmail(e);

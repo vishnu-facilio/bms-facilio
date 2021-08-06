@@ -744,6 +744,11 @@ public class FacilioProperties {
 		FacilioProperties.passwordHasingFunction = passwordHasingFunction;
 	}
 
+    public static long getBuildNumber() {
+        Properties buildInfo = (Properties)ServletActionContext.getServletContext().getAttribute("buildinfo");
+        return Long.parseLong(buildInfo.getProperty("build.number")); // Shouldn't be null
+    }
+
 	public static boolean isInstantJobServer(){
         return Boolean.parseBoolean(getConfig("instantJobServer"));
     }
