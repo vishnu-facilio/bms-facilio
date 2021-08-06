@@ -426,17 +426,17 @@ public class TemplateAPI {
 		switch (type) {
 			case EMAIL: {
 				List<Map<String, Object>> templates = getExtendedProps(ModuleFactory.getEMailTemplatesModule(), FieldFactory.getEMailTemplateFields(), id);
-				// Temp Fix; to be refactored later
-				long fromID = (Long) templates.get(0).get("from");
-				GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-						.select(Arrays.asList(FieldFactory.getField("EMAIL", "EMAIL", FieldType.STRING)))
-						.table("Email_From_Address")
-						.andCustomWhere("ID = ? ", fromID);
-
-				List<Map<String, Object>> resultSet = selectBuilder.get();
-				templates.get(0).put("from", resultSet.get(0).get("EMAIL"));
-
 				if(templates != null && !templates.isEmpty()) {
+					// Temp Fix; to be refactored later
+					long fromID = (Long) templates.get(0).get("from");
+					GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+							.select(Arrays.asList(FieldFactory.getField("EMAIL", "EMAIL", FieldType.STRING)))
+							.table("Email_From_Address")
+							.andCustomWhere("ID = ? ", fromID);
+
+					List<Map<String, Object>> resultSet = selectBuilder.get();
+					templates.get(0).put("from", resultSet.get(0).get("EMAIL"));
+
 					templateMap.putAll(templates.get(0));
 					template = getEMailTemplateFromMap(templateMap);
 				}
