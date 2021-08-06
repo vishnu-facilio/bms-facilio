@@ -2626,6 +2626,20 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return securityPolicyList(cr);
 	}
 
+	public SecurityPolicy fetchDefaultSecurityPolicy(long orgId) throws Exception {
+		Criteria cr = new Criteria();
+		cr.addAndCondition(CriteriaAPI.getCondition("SecurityPolicies.ORGID", "orgId", orgId+"", NumberOperators.EQUALS));
+		cr.addAndCondition(CriteriaAPI.getCondition("SecurityPolicies.IS_DEFAULT", "isDefault", "true", BooleanOperators.IS));
+
+		List<SecurityPolicy> securityPolicies = securityPolicyList(cr);
+
+		if (CollectionUtils.isEmpty(securityPolicies)) {
+			return null;
+		}
+
+		return securityPolicies.get(0);
+	}
+
 	@Override
 	public void deleteSecurityPolicy(long id, long orgId) throws Exception {
 		List<Long> userIds = new GenericSelectRecordBuilder()

@@ -198,6 +198,8 @@ public interface IAMUserBean {
 
 	List<SecurityPolicy> fetchAllSecurityPolicies(long orgId) throws Exception;
 
+	SecurityPolicy fetchDefaultSecurityPolicy(long orgId) throws Exception;
+
 	void deleteSecurityPolicy(long id, long orgId) throws Exception;
 
 }

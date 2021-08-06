@@ -28,6 +28,11 @@ public class SecurityPolicyAPI {
         return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().fetchAllSecurityPolicies(orgId));
     }
 
+    public static SecurityPolicy fetchDefaultSecurityPolicy() throws Exception {
+        long orgId = AccountUtil.getCurrentOrg().getOrgId();
+        return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().fetchDefaultSecurityPolicy(orgId));
+    }
+
 
     public static void deleteSecurityPolicy(long id) throws Exception {
         long orgId = AccountUtil.getCurrentOrg().getOrgId();
