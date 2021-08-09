@@ -427,15 +427,22 @@ public class TemplateAPI {
 			case EMAIL: {
 				List<Map<String, Object>> templates = getExtendedProps(ModuleFactory.getEMailTemplatesModule(), FieldFactory.getEMailTemplateFields(), id);
 				if(templates != null && !templates.isEmpty()) {
-					// Temp Fix; to be refactored later
-					long fromID = (Long) templates.get(0).get("from");
-					GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-							.select(Arrays.asList(FieldFactory.getField("EMAIL", "EMAIL", FieldType.STRING)))
-							.table("Email_From_Address")
-							.andCustomWhere("ID = ? ", fromID);
 
-					List<Map<String, Object>> resultSet = selectBuilder.get();
-					templates.get(0).put("from", resultSet.get(0).get("EMAIL"));
+					// Temp Fix, fail safe to add default email address; to be refactored later
+					Object fromIDStr = templates.get(0).get("from");
+					if (fromIDStr == null){
+						LOGGER.warn("fromAddress is null, to be checked.");
+						templates.get(0).put("from", "noreply@${org.domain}.facilio.com");
+					}else{
+						long fromID = (Long) fromIDStr;
+						GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+								.select(Arrays.asList(FieldFactory.getField("EMAIL", "EMAIL", FieldType.STRING)))
+								.table("Email_From_Address")
+								.andCustomWhere("ID = ? ", fromID);
+
+						List<Map<String, Object>> resultSet = selectBuilder.get();
+						templates.get(0).put("from", resultSet.get(0).get("EMAIL"));
+					}
 
 					templateMap.putAll(templates.get(0));
 					template = getEMailTemplateFromMap(templateMap);
