@@ -17,6 +17,9 @@ public class DeleteStateFlowTransition extends FacilioCommand {
 		
 		if (stateFlowId != null && transitionId != null) {
 			WorkflowRuleContext stateTransition = StateFlowRulesAPI.getStateTransition(stateFlowId, transitionId);
+			if (stateTransition == null) {
+				throw new IllegalArgumentException("Invalid state transition");
+			}
 			WorkflowRuleAPI.deleteWorkflowRule(stateTransition.getId());
 		}
 		
