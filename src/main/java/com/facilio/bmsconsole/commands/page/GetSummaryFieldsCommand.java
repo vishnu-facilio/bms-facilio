@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.util.AssetsAPI;
@@ -117,9 +118,35 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 
 		formContext.put(FacilioConstants.ContextNames.FORM_ID, formId);
 		formContext.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		String spaceForm = getSpaceForm(formId);
+		if (spaceForm != null) {
+			formContext.put(FacilioConstants.ContextNames.FORM_NAME, spaceForm);
+
+		}
 		chain.execute();
 
 		return (FacilioForm) formContext.get(FacilioConstants.ContextNames.FORM);
+	}
+	
+	// Till all forms are moved to db
+	private String getSpaceForm(long formId) {
+		String name = null;
+		if (formId == -1 && moduleName.equals(ContextNames.SPACE)) {
+			SpaceContext space = (SpaceContext) record;
+			if (space.getSpaceId1() > 0) {
+				name = "default_space_web_space";
+			}
+			else if (space.getFloorId() > 0) {
+				name = "default_space_web_floor";
+			}
+			else if (space.getBuildingId() > 0) {
+				name = "default_space_web_building";
+			}
+			else {
+				name = "default_space_web_site";
+			}
+		}
+		return name;
 	}
 
 	private List<FormField> getFieldsAsFormFields(ModuleBean modBean) throws Exception {

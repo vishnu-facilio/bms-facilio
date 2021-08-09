@@ -1,5 +1,11 @@
 package com.facilio.bmsconsole.page.factory;
 
+import static com.facilio.bmsconsole.page.factory.AssetPageFactory.addRelatedListWidget;
+
+import java.util.Arrays;
+
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
@@ -17,11 +23,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import org.json.simple.JSONObject;
-
-import java.util.Arrays;
-
-import static com.facilio.bmsconsole.page.factory.AssetPageFactory.addRelatedListWidget;
 
 public class SpaceManagementPageFactory extends PageFactory {
 	
@@ -242,7 +243,7 @@ public class SpaceManagementPageFactory extends PageFactory {
 	}
 
 	private static void addSecondaryDetailsWidget(Section section) {
-		PageWidget detailsWidget = new PageWidget(WidgetType.FIXED_DETAILS_WIDGET);
+		PageWidget detailsWidget = new PageWidget(WidgetType.SECONDARY_DETAILS_WIDGET);
 		detailsWidget.addToLayoutParams(section, 24, 4);
 		section.addWidget(detailsWidget);
 	}
