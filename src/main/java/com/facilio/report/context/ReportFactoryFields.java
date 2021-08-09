@@ -95,6 +95,7 @@ public class ReportFactoryFields {
 		Map<String, FacilioField> fields = FieldFactory.getAsMap(bean.getAllFields("workorder"));
 		Map<String, FacilioField> customFields = new HashMap<String, FacilioField>();
 		List<FacilioField> customFieldsList = bean.getAllCustomFields("workorder");
+		FacilioModule woModule = bean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
 		if(customFieldsList != null) {
 			customFields = FieldFactory.getAsMap(customFieldsList.stream().filter(field -> field.getDataTypeEnum() != null && field.getDataTypeEnum() != FieldType.MULTI_ENUM && field.getDataTypeEnum() != FieldType.MULTI_LOOKUP).collect(Collectors.toList()));
 		}
@@ -119,6 +120,7 @@ public class ReportFactoryFields {
 		selectedFields.add(fields.get("totalCost"));
 		selectedFields.add(fields.get("moduleState"));
 		selectedFields.add(fields.get("requestedBy"));
+		selectedFields.addAll(FieldFactory.getSystemPointFields(woModule));
 		
 		if(AccountUtil.isFeatureEnabled(FeatureLicense.TENANTS)) {
 			selectedFields.add(fields.get("tenant"));
