@@ -23,6 +23,7 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -67,6 +68,7 @@ public class FormRuleAPI {
 				.fields(FieldFactory.getFormRuleFields());
 		
 		Map<String, Object> props = FieldUtil.getAsProperties(formRuleContext);
+		props.put("status", true);
 		insertBuilder.addRecord(props);
 		insertBuilder.save();
 		
@@ -310,6 +312,7 @@ public static List<FormRuleTriggerFieldContext> getFormRuleTriggerFields(FormRul
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("formId"), ""+formId, NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("fieldId"), ""+StringUtils.join(formFieldId, ","), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("triggerType"), ""+triggerType.getIntVal(), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("STATUS", "status", "true", BooleanOperators.IS))
 				.orderBy("RULE_EXECUTION_ORDER");
 		
 		

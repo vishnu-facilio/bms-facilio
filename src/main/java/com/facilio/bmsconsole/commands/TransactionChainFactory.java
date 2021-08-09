@@ -4007,6 +4007,12 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static FacilioChain getChangeStatusForFormRuleChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new ChangeFormRuleStatusCommand());
+			return c;
+		}
+		
 		
 		
 		public static FacilioChain getAddHistoricalVMCalculationChain() {

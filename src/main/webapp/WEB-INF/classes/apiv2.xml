@@ -2032,6 +2032,9 @@
 		<action name="getRuleList"
 			class="com.facilio.bmsconsole.actions.FormRuleAction" method="getRuleList">
 		</action>
+		<action name="changeRuleStatus"
+			class="com.facilio.bmsconsole.actions.FormRuleAction" method="changeStatus">
+		</action>
 		<action name="executeFormActionRules" class="com.facilio.bmsconsole.actions.FormRuleAction" method="executeFormActionRules">
 		</action>
 	</package>

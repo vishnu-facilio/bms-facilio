@@ -28,6 +28,19 @@ public class FormRuleContext {
 	Form_On_Load_Rule_Type formOnLoadRuleType;
 	RuleType ruleType;
 	
+	Boolean status = true;
+	
+	public Boolean getStatus() {
+		if (status == null) {
+			return true;
+		}
+		return status;
+	}
+	
+	public void setStatus(Boolean status) {
+		this.status = status;
+	}
+	
 	public long getSiteId() {
 		return siteId;
 	}

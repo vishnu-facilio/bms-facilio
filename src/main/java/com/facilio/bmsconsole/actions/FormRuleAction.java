@@ -175,5 +175,19 @@ public class FormRuleAction extends FacilioAction {
 		setResult(FormRuleAPI.FORM_RULE_RESULT_JSON, context.get(FormRuleAPI.FORM_RULE_RESULT_JSON));
 		return SUCCESS;
 	}
+	
+	public String changeStatus() throws Exception {
+		
+		FacilioChain c = TransactionChainFactory.getChangeStatusForFormRuleChain();
+		Context context = c.getContext();
+		
+		context.put(FormRuleAPI.FORM_RULE_CONTEXT,formRuleContext);
+		
+		c.execute();
+		
+		setResult(FormRuleAPI.FORM_RULE_RESULT_JSON, formRuleContext);
+		return SUCCESS;
+		
+	}
 
 }
