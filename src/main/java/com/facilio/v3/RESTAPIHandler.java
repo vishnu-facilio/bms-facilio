@@ -115,27 +115,6 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         return list.get(0);
     }
 
-    private Map<String, List<ModuleBaseWithCustomFields>> getRecordsForBulkPatch(String moduleName, List<Long> ids) throws Exception {
-        FacilioChain listChain = ChainUtil.getListChain(moduleName);
-        FacilioContext context = listChain.getContext();
-        FacilioModule module = ChainUtil.getModule(moduleName);
-
-        Criteria idCriteria = new Criteria();
-        idCriteria.addAndCondition(CriteriaAPI.getIdCondition(ids, module));
-        context.put(Constants.BEFORE_FETCH_CRITERIA, idCriteria);
-
-        V3Config v3Config = ChainUtil.getV3Config(moduleName);
-
-        Constants.setModuleName(context, moduleName);
-        Constants.setV3config(context, v3Config);
-        Class beanClass = ChainUtil.getBeanClass(v3Config, module);
-        context.put(Constants.BEAN_CLASS, beanClass);
-        listChain.execute();
-
-        Map<String, List<ModuleBaseWithCustomFields>> recordMap = Constants.getRecordMap(context);
-        return recordMap;
-    }
-
     private void countHandler(String moduleName) throws Exception {
         FacilioChain countChain = ChainUtil.getCountChain(moduleName);
         FacilioContext context = countChain.getContext();
@@ -332,7 +311,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         for (Map<String, Object> record: rawRecords) {
             ids.add((long) record.get("id"));
         }
-        Map<String, List<ModuleBaseWithCustomFields>> recordsForBulkPatch = getRecordsForBulkPatch(moduleName, ids);
+        Map<String, List<ModuleBaseWithCustomFields>> recordsForBulkPatch = V3Util.getRecordsForBulkPatch(moduleName, ids);
         List<ModuleBaseWithCustomFields> moduleBaseWithCustomFields = recordsForBulkPatch.get(moduleName);
 
         Map<Long, JSONObject> idVsRecordMap = new HashMap<>();
@@ -379,7 +358,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
             throw new RESTException(ErrorCode.RESOURCE_NOT_FOUND);
         }
 
-        Map<String, List<ModuleBaseWithCustomFields>> fetchAfterSave = getRecordsForBulkPatch(moduleName, ids);
+        Map<String, List<ModuleBaseWithCustomFields>> fetchAfterSave = V3Util.getRecordsForBulkPatch(moduleName, ids);
         this.setData(FieldUtil.getAsJSON(fetchAfterSave));
     }
 

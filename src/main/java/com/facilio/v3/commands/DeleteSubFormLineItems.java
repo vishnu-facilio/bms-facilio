@@ -56,7 +56,7 @@ public class DeleteSubFormLineItems extends ProcessSubFormLineItemsCommand {
                         fieldMap.put(lookupField.getId(), lookupField);
                     }
 
-                    FacilioField lookupField = getLookupField(subFormContext, fieldMap, mainModuleName);
+                    FacilioField lookupField = getLookupField(subFormContext.getFieldId(), fieldMap, mainModuleName);
                     if (lookupField == null) {
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid field id in relations");
                     }

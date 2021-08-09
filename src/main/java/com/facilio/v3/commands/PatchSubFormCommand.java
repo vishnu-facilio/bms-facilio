@@ -16,6 +16,7 @@ import org.apache.commons.collections4.MapUtils;
 
 import java.util.*;
 
+@Deprecated
 public class PatchSubFormCommand extends FacilioCommand {
 
     private List<ModuleBaseWithCustomFields> getRecord(Context context) {

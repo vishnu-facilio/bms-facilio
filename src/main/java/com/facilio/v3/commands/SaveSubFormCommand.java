@@ -27,6 +27,7 @@ import com.facilio.modules.fields.LookupField;
 
 import javax.validation.constraints.NotNull;
 
+@Deprecated
 public class SaveSubFormCommand extends FacilioCommand {
 
     private List<ModuleBaseWithCustomFields> getRecord(Context context) {

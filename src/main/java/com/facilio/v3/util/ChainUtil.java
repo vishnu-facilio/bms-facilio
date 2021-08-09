@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.AddActivitiesCommandV3;
 import com.facilio.bmsconsoleV3.commands.ExecutePostTransactionWorkFlowsCommandV3;
+import com.facilio.bmsconsoleV3.commands.workorder.VerifyApprovalCommandV3;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -202,6 +203,7 @@ public class ChainUtil {
         return transactionChain;
     }
 
+    @Deprecated
     public static FacilioChain getUpdateChain(String moduleName) throws Exception {
         FacilioModule module = ChainUtil.getModule(moduleName);
         V3Config v3Config = ChainUtil.getV3Config(module);
@@ -339,7 +341,7 @@ public class ChainUtil {
         transactionChain.addCommand(new SaveSubFormCommand());
         transactionChain.addCommand(new SaveSubFormFromLineItemsCommand());
         transactionChain.addCommand(new ChangeApprovalStatusForModuleDataCommand());
-        transactionChain.addCommand(new VerifyApprovalCommand());
+        transactionChain.addCommand(new VerifyApprovalCommandV3());
         transactionChain.addCommand(new UpdateStateForModuleDataCommand());
 
         addIfNotNull(transactionChain, afterSaveCommand);
