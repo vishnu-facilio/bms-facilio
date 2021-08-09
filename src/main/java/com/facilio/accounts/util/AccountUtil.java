@@ -427,9 +427,10 @@ public class AccountUtil {
 		INDUCTION(18014398509481984l),// 2 ^ 54
 		PURCHASE(36028797018963968l, new String[] {ContextNames.PURCHASE_REQUEST, ContextNames.PURCHASE_ORDER}),
 		VENDOR(72057594037927936l, new String[] {ContextNames.VENDORS, ContextNames.VENDOR_CONTACT, ContextNames.INSURANCE}),	// 2 ^ 56
-		SECURITY_POLICY(144115188075855872L) // 2 ^ 57
+		SECURITY_POLICY(144115188075855872L), // 2 ^ 57
+		SMS(288230376151711744L) // 2 ^ 58
 		;
-    		// Last license - 2 ^ 57
+    		// Last license - 2 ^ 58
     		// Add Module name if license is added for specific module
 		
 		private long license;	
