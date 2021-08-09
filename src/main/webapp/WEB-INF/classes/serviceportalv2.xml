@@ -412,6 +412,7 @@
 		<action name="fetchDetails" class="com.facilio.bmsconsole.actions.ApplicationAction"
 			method="getApplicationDetails">
 			<param name="auth">true</param>
+			<param name="translationImpl">WebTabTranslation</param>
 		</action>
 	</package>
 	
