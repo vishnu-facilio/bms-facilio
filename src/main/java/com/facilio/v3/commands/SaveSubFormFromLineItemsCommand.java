@@ -121,11 +121,12 @@ public class SaveSubFormFromLineItemsCommand extends ProcessSubFormLineItemsComm
             }
         }
 
-        List<ModuleBaseWithCustomFields> addedRecords;
+        List<ModuleBaseWithCustomFields> addedRecords = null;
         if (CollectionUtils.isNotEmpty(subFormDataList)) {
             FacilioContext recordListContext = V3Util.createRecordList(module, subFormDataList, null, null);
             addedRecords = Constants.getRecordList(recordListContext);
-        } else {
+        }
+        if (addedRecords == null) {
             addedRecords = new ArrayList<>();
         }
         return addedRecords;
