@@ -45,7 +45,11 @@ public class MigrateSecurityPolicy {
             securityPolicy.setPwdMinNumDigits(1);
             securityPolicy.setPwdMinAge(null);
             securityPolicy.setPwdPrevPassRefusal(2);
-            SecurityPolicyAPI.createSecurityPolicy(securityPolicy);
+            securityPolicy.setId(SecurityPolicyAPI.createSecurityPolicy(securityPolicy));
+        } else {
+            securityPolicy.setPwdPrevPassRefusal(2);
+            securityPolicy.setPwdMinAge(-99);
+            SecurityPolicyAPI.updateSecurityPolicy(securityPolicy);
         }
 
         Map<String, FacilioField> accountFields = FieldFactory.getAsMap(IAMAccountConstants.getAccountsUserFields());
