@@ -47,13 +47,15 @@ public class VerifyApprovalCommandV3 extends FacilioCommand {
                         if (!skipChecking) {
                             FacilioStatus status = TicketAPI.getStatus(record.getApprovalStatus().getId());
                             if (status.isRequestedState()) {
-                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Record " + record.getId() + " of Module " + module.getDisplayName() + " is in Approval process, cannot edit meanwhile");
+//                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Record " + record.getId() + " of Module " + module.getDisplayName() + " is in Approval process, cannot edit meanwhile");
+                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Record is in Approval process, cannot edit meanwhile");
                             }
                         }
                     }
                     else if ((stateContext.isRecordLocked())) {
                         if (cannotEdit) {
-                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Record " + record.getId() + " of Module " + module.getDisplayName() + " is locked, cannot be updated");
+//                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Record " + record.getId() + " of Module " + module.getDisplayName() + " is locked, cannot be updated");
+                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Record is locked, cannot be updated");
                         }
                     }
                 }
