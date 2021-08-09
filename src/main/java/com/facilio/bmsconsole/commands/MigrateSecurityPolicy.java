@@ -26,15 +26,26 @@ public class MigrateSecurityPolicy {
         List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), appId, false, false, -1, -1);
 
         if (CollectionUtils.isEmpty(users)) {
-            LOGGER.error("No users for org: " + AccountUtil.getCurrentOrg().getOrgId());
+            LOGGER.error("[migration] No users for org: " + AccountUtil.getCurrentOrg().getOrgId());
             return;
         }
 
         SecurityPolicy securityPolicy = SecurityPolicyAPI.fetchDefaultSecurityPolicy();
-
         if (securityPolicy == null) {
-            LOGGER.error("No security policy for org: " + AccountUtil.getCurrentOrg().getOrgId());
-            return;
+            LOGGER.error("[migration] No security policy for org: " + AccountUtil.getCurrentOrg().getOrgId());
+            securityPolicy = new SecurityPolicy();
+            securityPolicy.setName("Default Policy");
+            securityPolicy.setIsDefault(true);
+            securityPolicy.setIsMFAEnabled(false);
+            securityPolicy.setIsPwdPolicyEnabled(true);
+            securityPolicy.setIsWebSessManagementEnabled(false);
+            securityPolicy.setPwdMinLength(8);
+            securityPolicy.setPwdIsMixed(true);
+            securityPolicy.setPwdMinSplChars(1);
+            securityPolicy.setPwdMinNumDigits(1);
+            securityPolicy.setPwdMinAge(null);
+            securityPolicy.setPwdPrevPassRefusal(2);
+            SecurityPolicyAPI.createSecurityPolicy(securityPolicy);
         }
 
         Map<String, FacilioField> accountFields = FieldFactory.getAsMap(IAMAccountConstants.getAccountsUserFields());
@@ -46,6 +57,7 @@ public class MigrateSecurityPolicy {
             userToBeUpdated.setUid(uid);
             userToBeUpdated.setSecurityPolicyId(securityPolicy.getId());
 
+            LOGGER.error("[migration] Migrated for orgId: " + AccountUtil.getCurrentOrg().getOrgId() + " userId: " + uid);
             FacilioService.runAsService(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().updateUserv2(userToBeUpdated, fieldsToBeUpdated));
         }
     }

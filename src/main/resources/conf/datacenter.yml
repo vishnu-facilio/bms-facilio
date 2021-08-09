@@ -15,3 +15,6 @@ datacenters:
 
   3:
     mainapp: app-eu.facilio.com
+
+  4:
+    mainapp: sg.facilio.com
