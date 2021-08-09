@@ -1,0 +1,9 @@
+pipelines:
+  custom:
+    production:
+      - step:
+          script:
+            - git fetch
+            - git checkout -b production
+            - git merge master
+            - git push -v --tags origin production:production
