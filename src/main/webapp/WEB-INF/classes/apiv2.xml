@@ -5977,7 +5977,7 @@
 		<action name="*" class="com.facilio.bmsconsole.actions.ApplicationAction"
 			method="getApplicationDetails">
 			<param name="appId">{1}</param>
-
+			<param name="translationImpl">WebTabTranslation</param>
 		</action>
 	</package>
 	<package name="webtabGroup" namespace="/api/v2/tabGroup"
