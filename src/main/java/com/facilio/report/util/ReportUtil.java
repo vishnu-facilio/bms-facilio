@@ -966,6 +966,12 @@ public class ReportUtil {
 			xField = modBean.getField((String) fieldId, module.getName());
 			if (xField == null) {
 				xField = ReportFactory.getReportField((String) fieldId);
+				if(xField == null 
+						&& FieldFactory.isSystemField((String) fieldId) 
+						&& module.getName().equalsIgnoreCase(FacilioConstants.ContextNames.WORK_ORDER)) 
+				{
+					xField = FieldFactory.getSystemField((String) fieldId, module);
+				}
 			}
 		}
 		return xField;
