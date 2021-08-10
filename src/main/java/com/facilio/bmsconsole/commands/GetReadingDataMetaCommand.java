@@ -30,9 +30,6 @@ public class GetReadingDataMetaCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
-		if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 445L && readingMap == null){
-			LOGGER.info("GetReadingDataMetaCommand - readingMap is null");
-		}
 		if (readingMap != null && !readingMap.isEmpty()) {
 			Map<String, ReadingDataMeta> readingDataMeta = null;
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -61,8 +58,6 @@ public class GetReadingDataMetaCommand extends FacilioCommand {
 									rdmPairs.clear();
 								}
 								readingFieldId = field.getFieldId();
-							}else if(field == null && AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 445L){
-								LOGGER.info("Field map is null : field name : " + fieldName + " reading data : " + readingData);
 							}
 						}
 					}
@@ -75,13 +70,9 @@ public class GetReadingDataMetaCommand extends FacilioCommand {
 			
 			if (!rdmPairs.isEmpty()) {
 				readingDataMeta = fetchRDM(readingDataMeta, rdmPairs);
-			}else{
-				if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 445L){
-					LOGGER.info("rdmPairs is empty");
-				}
 			}
 			if ((readingDataMeta == null) || (readingDataMeta.isEmpty())) {
-				LOGGER.info(" reading data meta empty-> "  + ", parentId - " + parentId + ", readingFieldId - " + readingFieldId);
+				LOGGER.info(" reading data meta empty-> "  + ", parentId - " + parentId + ", readingFieldId - " + readingFieldId + "  rdm pairs " + rdmPairs + " reading map : " + readingMap);
 			}
 			context.put(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META, readingDataMeta);
 		}

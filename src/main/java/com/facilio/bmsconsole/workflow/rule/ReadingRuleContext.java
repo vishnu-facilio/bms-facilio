@@ -1634,23 +1634,26 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 					criteria.addAndCondition(CriteriaAPI.getCondition(parentRuleField, String.valueOf(workflowRule.getId()), NumberOperators.EQUALS));
 					criteria.addAndCondition(CriteriaAPI.getCondition(onSuccessField, String.valueOf(result), BooleanOperators.IS));
 					currentWorkflows = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(workflowRule.getModule(), eventTypes, criteria, false, true, ruleTypes);
-					for(WorkflowRuleContext rule:currentWorkflows) {
-						if(rule instanceof ReadingRuleContext) {
-							ReadingRuleContext readingRule = (ReadingRuleContext)rule;
-							if(readingRule.getMatchedResources()==null) {
-								readingRule.setMatchedResources(((ReadingRuleContext)workflowRule).getMatchedResources());
-							}
-							ReadingRuleAPI.constructWorkflowAndCriteria(readingRule);
-							ReadingRuleAPI.fetchAlarmMeta(readingRule);
-						}	
+					if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 445 && currentWorkflows == null){
+						LOGGER.info("Current workflows is null, module : " + module + " , event type : " + eventTypes + " , criteria : " + criteria +", rule types : " + ruleTypes);
 					}
-					if(currentWorkflows == null) {
+					if(currentWorkflows != null) {
+						for(WorkflowRuleContext rule:currentWorkflows) {
+							if(rule instanceof ReadingRuleContext) {
+								ReadingRuleContext readingRule = (ReadingRuleContext)rule;
+								if(readingRule.getMatchedResources()==null) {
+									readingRule.setMatchedResources(((ReadingRuleContext)workflowRule).getMatchedResources());
+								}
+								ReadingRuleAPI.constructWorkflowAndCriteria(readingRule);
+								ReadingRuleAPI.fetchAlarmMeta(readingRule);
+							}
+						}
+						workflowRuleCacheMap.put(workflowRuleKey, currentWorkflows);
+					} else {
 						workflowRuleCacheMap.put(workflowRuleKey, Collections.EMPTY_LIST);
 					}
-					else {
-						workflowRuleCacheMap.put(workflowRuleKey, currentWorkflows);
-					}
-				}	
+				}
+
 				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
 					LOGGER.info("Time taken to fetch child rule alone for rule : "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for module : "+module.getName()+" is "+(System.currentTimeMillis() - startTimeToFetchChildRules));			
 				}

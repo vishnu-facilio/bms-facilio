@@ -825,6 +825,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 				alarmWorkflowRuleContext.setRuleId(alarmTriggerRule.getRuleGroupId());
 				alarmWorkflowRuleContext.setModule(module);
 				alarmWorkflowRuleContext.setRuleType(WorkflowRuleContext.RuleType.ALARM_WORKFLOW_RULE);
+				alarmWorkflowRuleContext.setParentRuleId(alarmTriggerRule.getParentRuleId());
 				WorkflowRuleAPI.addWorkflowRule(alarmWorkflowRuleContext);
 			}
 		}
