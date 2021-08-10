@@ -13,6 +13,7 @@ public class PeopleContext extends ModuleBaseWithCustomFields{
 	private String name;
 	private String email;
 	private String phone;
+	private String language;
 	
 	public String getName() {
 		return name;
@@ -31,6 +32,14 @@ public class PeopleContext extends ModuleBaseWithCustomFields{
 	}
 	public void setPhone(String phone) {
 		this.phone = phone;
+	}
+
+	public String getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(String language) {
+		this.language = language;
 	}
 
 	private PeopleType peopleType;

@@ -244,6 +244,7 @@ CREATE TABLE IF NOT EXISTS People (
       NAME				VARCHAR(500) ,
       EMAIL 			VARCHAR(500),
       PHONE 			VARCHAR(500),
+      LANGUAGE          VARCHAR(50),
       FORM_ID 			BIGINT,
       ROLE_ID           BIGINT,
       SYS_DELETED 		TINYINT,

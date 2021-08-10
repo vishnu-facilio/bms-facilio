@@ -402,6 +402,7 @@ public class V3PeopleAPI {
         user.setPeopleId(existingPeople.getId());
         user.setUserType(AccountConstants.UserType.REQUESTER.getValue());
         user.setRoleId(roleId);
+        user.setLanguage(existingPeople.getLanguage());
 
         user.setApplicationId(appId);
         user.setAppDomain(ApplicationApi.getAppDomainForApplication(appId));
@@ -553,6 +554,7 @@ public class V3PeopleAPI {
         user.setPeopleId(existingPeople.getId());
         user.setUserType(AccountConstants.UserType.USER.getValue());
         user.setRoleId(roleId);
+        user.setLanguage(existingPeople.getLanguage());
 
         user.setApplicationId(appId);
         user.setAppDomain(appDomainObj);

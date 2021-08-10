@@ -13,6 +13,7 @@ public class V3PeopleContext extends V3Context {
     private String name;
     private String email;
     private String phone;
+    private String language;
 
     public String getName() {
         return name;
@@ -31,6 +32,14 @@ public class V3PeopleContext extends V3Context {
     }
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
     }
 
     private V3PeopleContext.PeopleType peopleType;

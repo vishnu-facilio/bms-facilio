@@ -97,6 +97,7 @@ public class PeopleAPI {
 			people.setIsAppAccess(true);
 			people.setRoleId(user.getRoleId());
 			
+			people.setLanguage(user.getLanguage());
 			//special handling for signup because employee gets added even before the default module script gets executed.hence the last localid seems to be null
 			if(isSignup) {
 				people.setLocalId(1);
@@ -151,6 +152,7 @@ public class PeopleAPI {
 			people.setPeopleType(PeopleType.OCCUPANT);
 			people.setIsOccupantPortalAccess(true);
 			
+			people.setLanguage(user.getLanguage());
 			
 			RecordAPI.addRecord(true, Collections.singletonList(people), module, modBean.getAllFields(module.getName()));
 			pplId = people.getId();
@@ -576,6 +578,7 @@ public class PeopleAPI {
 		user.setPeopleId(existingPeople.getId());
 		user.setUserType(AccountConstants.UserType.USER.getValue());
 		user.setRoleId(roleId);
+		user.setLanguage(existingPeople.getLanguage());
 		
 		user.setApplicationId(appId);
 		user.setAppDomain(appDomainObj);
@@ -605,6 +608,7 @@ public class PeopleAPI {
 		user.setPeopleId(existingPeople.getId());
 		user.setUserType(AccountConstants.UserType.REQUESTER.getValue());
 		user.setRoleId(roleId);
+		user.setLanguage(existingPeople.getLanguage());
 		
 		user.setApplicationId(appId);
 		user.setAppDomain(ApplicationApi.getAppDomainForApplication(appId));
