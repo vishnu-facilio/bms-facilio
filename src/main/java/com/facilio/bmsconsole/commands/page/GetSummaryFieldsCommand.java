@@ -320,8 +320,8 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 		fieldMap.put("tenantcontact", tenantContact);
 		fieldMap.put("custom_contracts", customContracts);
 		fieldMap.put("custom_contractunits", customContractunits);
-		//fieldMap.put("custom_payment", customPayment);
-		//fieldMap.put("custom_receipts", customReceipts);
+		fieldMap.put("custom_payment", customPayment);
+		fieldMap.put("custom_receipts", customReceipts);
 		fieldMap.put("peopleannouncement", peopleAnnouncement);
 
 		return fieldMap;
@@ -366,13 +366,10 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 
 	/******* ATRE Fields.. TODO Remove *****************/
 	private static final List<String> tenantUnitAtre = Collections.unmodifiableList(Arrays.asList(new String[] {
-			"description",
-			"area",
-			"maxOccupancy",
-			"singleline_1",
-			"site",
 			"building",
-			"space"
+			"site",
+			"space",
+			"description"
 	}));
 
 	private static final List<String> tenantContact = Collections.unmodifiableList(Arrays.asList(new String[] {
@@ -409,31 +406,26 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 	}));
 
 	private static final List<String> customPayment = Collections.unmodifiableList(Arrays.asList(new String[] {
-			"number",
-			"date_1",
-			"date",
 			"date_2",
 			"singleline_2",
+			"date_1",
+			"date",
+			"number",
 			"number_3",
+			"number_1",
+			"number_2",
 			"singleline_1",
-			"date_3",
+			"contract",
 			"sysModifiedBy",
 			"sysCreatedTime",
 			"sysModifiedTime",
-			"sysCreatedBy",
-			"number_2",
-			"number_1"
+			"sysCreatedBy"
 	}));
 
 	private static final List<String> customReceipts = Collections.unmodifiableList(Arrays.asList(new String[] {
-			"singleline_2",
-			"singleline_1",
-			"date",
-			"singleline_3",
-			"singleline_4",
 			"paymentmilestone",
-			"number",
 			"date_1",
+			"number",
 			"sysModifiedBy",
 			"sysCreatedTime",
 			"sysModifiedTime",
