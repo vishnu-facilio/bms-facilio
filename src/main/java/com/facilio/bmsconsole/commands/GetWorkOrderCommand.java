@@ -84,6 +84,7 @@ public class GetWorkOrderCommand extends FacilioCommand {
 				}
 			}
 			builder.fetchSupplements(customLookupFields);
+			builder.fetchSupplement((LookupField) fieldMap.get("moduleState"));
 			builder.fetchSupplement((LookupField) fieldMap.get("client"));
 			builder.fetchSupplement((LookupField) fieldMap.get("type"));
 			
