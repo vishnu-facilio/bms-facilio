@@ -320,8 +320,8 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 		fieldMap.put("tenantcontact", tenantContact);
 		fieldMap.put("custom_contracts", customContracts);
 		fieldMap.put("custom_contractunits", customContractunits);
-		fieldMap.put("custom_payment", customPayment);
-		fieldMap.put("custom_receipts", customReceipts);
+		//fieldMap.put("custom_payment", customPayment);
+		//fieldMap.put("custom_receipts", customReceipts);
 		fieldMap.put("peopleannouncement", peopleAnnouncement);
 
 		return fieldMap;
