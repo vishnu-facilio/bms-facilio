@@ -2997,7 +2997,7 @@ public class FieldFactory extends BaseFieldFactory {
 
         FacilioField emailFromAddress = new FacilioField();
         emailFromAddress.setName("from");
-        emailFromAddress.setDataType(FieldType.ID);
+        emailFromAddress.setDataType(FieldType.NUMBER);
         emailFromAddress.setColumnName("FROM_ADDRESS");
         emailFromAddress.setModule(module);
         fields.add(emailFromAddress);
