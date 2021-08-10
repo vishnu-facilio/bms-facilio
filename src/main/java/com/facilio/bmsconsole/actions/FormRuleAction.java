@@ -151,6 +151,7 @@ public class FormRuleAction extends FacilioAction {
 		
 		Context context = chain.getContext();
 		
+		context.put(FacilioConstants.ContextNames.FORM_ID, this.getFormId());
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, this.getModuleName());
 		
 		chain.execute();

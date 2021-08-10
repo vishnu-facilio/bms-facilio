@@ -15,7 +15,8 @@ public class GetFormRuleListCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-		List<FormRuleContext> formRules = FormRuleAPI.getFormRuleContexts(moduleName);
+		Long formId = (Long) context.getOrDefault(FacilioConstants.ContextNames.FORM_ID, -1L);
+		List<FormRuleContext> formRules = FormRuleAPI.getFormRuleContexts(moduleName, formId);
 		
 		context.put(FormRuleAPI.FORM_RULE_CONTEXTS, formRules);
 		return false;

@@ -329,7 +329,7 @@ public static List<FormRuleTriggerFieldContext> getFormRuleTriggerFields(FormRul
 		return formRuleContexts;
 	}
 	
-	public static List<FormRuleContext> getFormRuleContexts(String moduleName) throws Exception {
+	public static List<FormRuleContext> getFormRuleContexts(String moduleName, Long formId) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -347,6 +347,10 @@ public static List<FormRuleTriggerFieldContext> getFormRuleTriggerFields(FormRul
 				.andCondition(CriteriaAPI.getCondition(formFieldMap.get("moduleId"), ""+module.getModuleId(), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(formRuleFieldMap.get("type"), ""+FormRuleContext.FormRuleType.FROM_RULE.getIntVal(), NumberOperators.EQUALS))
 				;
+		
+		if (formId > 0) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(formRuleFieldMap.get("formId"), ""+formId, NumberOperators.EQUALS));
+		}
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		

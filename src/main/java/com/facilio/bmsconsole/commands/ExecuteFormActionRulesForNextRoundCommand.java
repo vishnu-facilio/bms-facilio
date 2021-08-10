@@ -44,7 +44,7 @@ public class ExecuteFormActionRulesForNextRoundCommand extends FacilioCommand {
 				
 				FacilioField field = modBean.getField(fieldName, module.getName());
 				
-				if(field.isDefault()) {
+				if(field != null && field.isDefault()) {
 					formData.put(fieldName, formDataToBeAddedforNextRound.get(fieldName));
 				}
 				else {
