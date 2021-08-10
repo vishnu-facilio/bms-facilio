@@ -32,10 +32,13 @@ import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.util.*;
 
 public class PeopleAPI {
+	private static Logger LOGGER = LogManager.getLogger(PeopleAPI.class.getName());
 
 	public static boolean checkForDuplicatePeople(PeopleContext people) throws Exception {
 		PeopleContext peopleExisiting = getPeople(people.getEmail());
@@ -608,8 +611,8 @@ public class PeopleAPI {
 		user.setPeopleId(existingPeople.getId());
 		user.setUserType(AccountConstants.UserType.REQUESTER.getValue());
 		user.setRoleId(roleId);
-		user.setLanguage(existingPeople.getLanguage());
-		
+		//user.setLanguage(existingPeople.getLanguage());
+		LOGGER.info("Language -->"+existingPeople.getLanguage());
 		user.setApplicationId(appId);
 		user.setAppDomain(ApplicationApi.getAppDomainForApplication(appId));
 		
