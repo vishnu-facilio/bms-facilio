@@ -1,6 +1,7 @@
 package com.facilio.v3.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -117,8 +118,8 @@ public class PatchSubFormLineItemsCommand extends ProcessSubFormLineItemsCommand
         }
 
         if (CollectionUtils.isNotEmpty(ids)) {
-            Map<String, List<ModuleBaseWithCustomFields>> recordsForBulkPatch = V3Util.getRecordsForBulkPatch(moduleName, ids);
-            List<ModuleBaseWithCustomFields> oldRecordList = recordsForBulkPatch.get(moduleName);
+            FacilioContext summaryContext = V3Util.getSummary(moduleName, ids);
+            List<ModuleBaseWithCustomFields> oldRecordList = Constants.getRecordListFromContext(summaryContext, moduleName);
             if (CollectionUtils.isNotEmpty(oldRecordList)) {
                 Map<Long, JSONObject> idVsRecordMap = new HashMap<>();
                 for (ModuleBaseWithCustomFields record: oldRecordList) {

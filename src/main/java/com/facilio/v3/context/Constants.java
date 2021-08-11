@@ -184,14 +184,18 @@ public class Constants {
         recordMap.put(moduleName, (List<ModuleBaseWithCustomFields>) recordList);
     }
 
-    public static <E extends ModuleBaseWithCustomFields> List<E> getRecordList (Map<String, List<ModuleBaseWithCustomFields>> recordMap, String moduleName) {
+    public static <E extends ModuleBaseWithCustomFields> List<E> getRecordListFromMap(Map<String, List<ModuleBaseWithCustomFields>> recordMap, String moduleName) {
         return (List<E>) recordMap.get(moduleName);
+    }
+
+    public static <E extends ModuleBaseWithCustomFields> List<E> getRecordListFromContext(FacilioContext context, String moduleName) {
+        Map<String, List<ModuleBaseWithCustomFields>> recordMap = Constants.getRecordMap(context);
+        return recordMap == null ? null : getRecordListFromMap(recordMap, moduleName);
     }
 
     public static <E extends ModuleBaseWithCustomFields> List<E> getRecordList (FacilioContext context) {
         String moduleName = Constants.getModuleName(context);
-        Map<String, List<ModuleBaseWithCustomFields>> recordMap = Constants.getRecordMap(context);
-        return recordMap == null ? null : getRecordList(recordMap, moduleName);
+        return getRecordListFromContext(context, moduleName);
     }
 
     public static <E extends ModuleBaseWithCustomFields> void setRecordList (FacilioContext context, List<E> records) {
