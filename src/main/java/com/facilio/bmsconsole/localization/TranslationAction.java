@@ -62,7 +62,7 @@ public class TranslationAction extends FacilioAction {
         context.put(TranslationConstants.QUERY_STRING,param);
         chain.execute();
 
-        setResult("fieldList",context.get(TranslationConstants.TRANSLATION_FIELDS));
+        setResult("sections",context.get(TranslationConstants.TRANSLATION_FIELDS));
 
         return SUCCESS;
     }

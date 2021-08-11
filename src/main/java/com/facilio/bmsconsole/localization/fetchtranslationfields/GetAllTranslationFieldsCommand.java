@@ -43,7 +43,7 @@ public class GetAllTranslationFieldsCommand extends FacilioCommand {
             TranslationTypeEnum viewType = TranslationTypeEnum.getTranslationTypeModule(TranslationTypeEnum.VIEWS.name());
             jsonArray.add(viewType.getHandler().constructTranslationObject(webTab,linkName,properties));
 
-            TranslationTypeEnum viewColumnType = TranslationTypeEnum.getTranslationTypeModule(TranslationTypeEnum.VIEW_COLUMNS.name());
+            TranslationTypeEnum viewColumnType = TranslationTypeEnum.getTranslationTypeModule(TranslationTypeEnum.VIEW_FOLDER.name());
             jsonArray.add(viewColumnType.getHandler().constructTranslationObject(webTab,linkName,properties));
 
             TranslationTypeEnum formType = TranslationTypeEnum.getTranslationTypeModule(TranslationTypeEnum.FORMS.name());

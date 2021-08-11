@@ -9,16 +9,16 @@ import org.json.simple.JSONObject;
 import java.util.Properties;
 
 public class ViewTranslationImpl implements TranslationIfc {
-    private static final String VIEWS ="views";
+    public static final String VIEWS ="views";
     @Override
     public JSONObject translate ( JSONObject json,Properties translationFile ) throws Exception {
 
         JSONObject jsonObject = (JSONObject)json.get("result");
-        JSONArray gorups = (JSONArray)jsonObject.get("groupViews");
+        JSONArray groups = (JSONArray)jsonObject.get("groupViews");
         JSONArray views = (JSONArray)jsonObject.get("views");
-        if(gorups != null && !gorups.isEmpty()) {
-            for (int i=0;i< gorups.size();i++){
-                JSONObject groupViews = (JSONObject)gorups.get(i);
+        if(groups != null && !groups.isEmpty()) {
+            for (int i=0;i< groups.size();i++){
+                JSONObject groupViews = (JSONObject)groups.get(i);
                 String outerKey = getTranslationKey((String)groupViews.get(TranslationConstants.NAME));
                 groupViews.put(TranslationConstants.DISPLAY_NAME,getTranslation(translationFile,outerKey,(String)groupViews.get(TranslationConstants.DISPLAY_NAME)));
                 JSONArray jsonArray = (JSONArray)groupViews.get("views");

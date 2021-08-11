@@ -10,6 +10,7 @@ import com.facilio.util.FacilioUtil;
 import lombok.NonNull;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import java.util.List;
 import java.util.Properties;
@@ -20,7 +21,7 @@ public class GetTranslationDetailFields implements TranslationTypeInterface {
     private static final String MODULE = "module";
 
     @Override
-    public JSONArray constructTranslationObject ( @NonNull WebTabContext context,String queryString,Properties properties ) throws Exception {
+    public JSONObject constructTranslationObject ( @NonNull WebTabContext context,String queryString,Properties properties ) throws Exception {
 
         FacilioUtil.throwIllegalArgumentException(!WebTabContext.Type.MODULE.equals(WebTabContext.Type.valueOf(context.getType())),"Invalid webTab Type for fetch Module Fields");
 
@@ -38,7 +39,11 @@ public class GetTranslationDetailFields implements TranslationTypeInterface {
         String webTabKey = getTranslationKey(WEB_TAB,context.getRoute());
         jsonArray.add(TranslationsUtil.constructJSON(context.getName(),WEB_TAB,TranslationConstants.DISPLAY_NAME,context.getRoute(),webTabKey,properties));
 
-        return jsonArray;
+        JSONObject fieldObject = new JSONObject();
+        fieldObject.put("fields",jsonArray);
+        fieldObject.put("label","");
+
+        return fieldObject;
     }
 
     private String getTranslationKey ( String prefix,String key ) {

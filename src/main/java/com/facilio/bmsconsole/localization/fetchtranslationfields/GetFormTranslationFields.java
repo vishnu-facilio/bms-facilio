@@ -16,13 +16,14 @@ import com.facilio.util.FacilioUtil;
 import lombok.NonNull;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import java.util.List;
 import java.util.Properties;
 
 public class GetFormTranslationFields implements TranslationTypeInterface{
     @Override
-    public JSONArray constructTranslationObject ( @NonNull WebTabContext context,String queryString,Properties properties ) throws Exception {
+    public JSONObject constructTranslationObject ( @NonNull WebTabContext context,String queryString,Properties properties ) throws Exception {
 
         FacilioUtil.throwIllegalArgumentException(!WebTabContext.Type.MODULE.equals(WebTabContext.Type.valueOf(context.getType())),"Invalid webTab Type for fetch Module Fields");
 
@@ -49,6 +50,11 @@ public class GetFormTranslationFields implements TranslationTypeInterface{
                 }
             }
         }
-        return jsonArray;
+
+        JSONObject fieldObject = new JSONObject();
+        fieldObject.put("fields",jsonArray);
+        fieldObject.put("label","");
+
+        return fieldObject;
     }
 }
