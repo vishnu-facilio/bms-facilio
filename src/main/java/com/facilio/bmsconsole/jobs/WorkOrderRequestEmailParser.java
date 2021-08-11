@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.jobs;
 
 import com.amazonaws.services.s3.model.S3Object;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.util.SupportEmailAPI;
@@ -31,7 +32,7 @@ import java.util.StringJoiner;
 
 public class WorkOrderRequestEmailParser extends FacilioJob {
 
-	public static final String S3_BUCKET_NAME = "ses-facilio-support";
+	public static final String S3_BUCKET_NAME = FacilioProperties.getIncomingEmailS3Bucket();
 	private static final Logger LOGGER = LogManager.getLogger(WorkOrderRequestEmailParser.class.getName());
 	
 	private Map<String, Object> updateIsProcessed = new HashMap<>();

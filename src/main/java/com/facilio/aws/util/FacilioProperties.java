@@ -134,6 +134,8 @@ public class FacilioProperties {
 
     private static String passwordHashingFunction;
 
+    private static String incomingEmailS3Bucket;
+
     static {
         loadProperties();
     }
@@ -238,6 +240,8 @@ public class FacilioProperties {
                 accessLog = "true".equalsIgnoreCase(PROPERTIES.getProperty("facilio.access.log", "false"));
 
                 passwordHashingFunction = PROPERTIES.getProperty("password.hashing.function");
+                incomingEmailS3Bucket = PROPERTIES.getProperty("incoming.email.s3.name");
+
                 String cookieLifespanProp = PROPERTIES.getProperty("token.cookie.lifespan");
                 if (StringUtils.isNotEmpty(cookieLifespanProp)) {
                     try {
@@ -739,6 +743,9 @@ public class FacilioProperties {
 	public static String getPasswordHashingFunction() {
 		return passwordHashingFunction;
 	}
+	public static String getIncomingEmailS3Bucket() {
+        return incomingEmailS3Bucket;
+    }
 	
     public static long getBuildNumber() {
         Properties buildInfo = (Properties)ServletActionContext.getServletContext().getAttribute("buildinfo");
