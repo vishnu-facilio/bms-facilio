@@ -70,7 +70,7 @@ public class DesksAPI {
 			facility.setFacilityType(2);
 			facility.setUsageCapacity(1);
 			facility.setMaxSlotBookingAllowed(24L);
-			facility.setBookingAdvancePeriodInDays(1L);
+			facility.setBookingAdvancePeriodInDays(30L);
 			facility.setSlotDuration(3600L);
 
 			facilityprop.add(facility);
