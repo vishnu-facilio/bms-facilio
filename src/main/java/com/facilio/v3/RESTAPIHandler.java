@@ -2,15 +2,11 @@ package com.facilio.v3;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
-import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.Criteria;
-import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
@@ -90,26 +86,13 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
 
 
     private Object getRecord(String moduleName, long id) throws Exception {
-        FacilioChain fetchRecordChain = ChainUtil.getFetchRecordChain(moduleName);
-        FacilioContext context = fetchRecordChain.getContext();
-
-        FacilioModule module = ChainUtil.getModule(moduleName);
-        V3Config config = ChainUtil.getV3Config(moduleName);
-
-        Constants.setRecordIds(context, Collections.singletonList(id));
-        context.put(Constants.QUERY_PARAMS, getQueryParameters());
-        context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_ONLY);
-        Class beanClass = ChainUtil.getBeanClass(config, module);
-        context.put(Constants.BEAN_CLASS, beanClass);
-        Constants.setModuleName(context, moduleName);
-        Constants.setV3config(context, config);
-
-        fetchRecordChain.execute();
+        FacilioContext context = V3Util.getSummary(moduleName, Collections.singletonList(id), getQueryParameters());
 
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List list = recordMap.get(moduleName);
 
         if (CollectionUtils.isEmpty(list)) {
+            FacilioModule module = ChainUtil.getModule(moduleName);
             throw new RESTException(ErrorCode.RESOURCE_NOT_FOUND, module.getDisplayName() + " with id: " + id + " does not exist.");
         }
         return list.get(0);
@@ -311,8 +294,8 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         for (Map<String, Object> record: rawRecords) {
             ids.add((long) record.get("id"));
         }
-        Map<String, List<ModuleBaseWithCustomFields>> recordsForBulkPatch = V3Util.getRecordsForBulkPatch(moduleName, ids);
-        List<ModuleBaseWithCustomFields> moduleBaseWithCustomFields = recordsForBulkPatch.get(moduleName);
+        FacilioContext summaryContext = V3Util.getSummary(moduleName, ids);
+        List<ModuleBaseWithCustomFields> moduleBaseWithCustomFields = Constants.getRecordListFromContext(summaryContext, moduleName);
 
         Map<Long, JSONObject> idVsRecordMap = new HashMap<>();
         for (ModuleBaseWithCustomFields record: moduleBaseWithCustomFields) {
@@ -326,31 +309,13 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
                 jsonObject.put(key, rec.get(key));
             }
         }
-        Collection<JSONObject> values = idVsRecordMap.values();
-        FacilioChain patchChain = ChainUtil.getBulkPatchChain(moduleName);
+        List<JSONObject> values = new ArrayList<>(idVsRecordMap.values());
 
-        FacilioContext context = patchChain.getContext();
         FacilioModule module = ChainUtil.getModule(moduleName);
         V3Config v3Config = ChainUtil.getV3Config(moduleName);
-        Class beanClass = ChainUtil.getBeanClass(v3Config, module);
-
-        Constants.setV3config(context, v3Config);
-        Constants.setModuleName(context, moduleName);
-        Constants.setBulkRawInput(context, values);
-        Constants.setBodyParams(context, bodyParams);
-        context.put(Constants.BEAN_CLASS, beanClass);
-        context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
-        context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
-        context.put(FacilioConstants.ContextNames.TRANSITION_ID, this.getStateTransitionId());
-        context.put(FacilioConstants.ContextNames.APPROVAL_TRANSITION_ID, this.getApprovalTransitionId());
-        context.put(Constants.QUERY_PARAMS, getQueryParameters());
-
-        if (getCustomButtonId() != null && getCustomButtonId() > 0) {
-            context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_ID_LIST, Collections.singletonList(getCustomButtonId()));
-            CommonCommandUtil.addEventType(EventType.CUSTOM_BUTTON, context);
-        }
-
-        patchChain.execute();
+        FacilioContext context = V3Util.updateBulkRecords(module, v3Config, moduleBaseWithCustomFields, values,
+                ids, bodyParams, getQueryParameters(), getStateTransitionId(),
+                getCustomButtonId(), getApprovalTransitionId());
 
         Integer count = (Integer) context.get(Constants.ROWS_UPDATED);
 
@@ -358,7 +323,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
             throw new RESTException(ErrorCode.RESOURCE_NOT_FOUND);
         }
 
-        Map<String, List<ModuleBaseWithCustomFields>> fetchAfterSave = V3Util.getRecordsForBulkPatch(moduleName, ids);
+        Map<String, List<ModuleBaseWithCustomFields>> fetchAfterSave = Constants.getRecordMap(context);
         this.setData(FieldUtil.getAsJSON(fetchAfterSave));
     }
 

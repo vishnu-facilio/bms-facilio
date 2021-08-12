@@ -23,7 +23,7 @@ public class AddPagesAndQuestionsCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         String moduleName = Constants.getModuleName(context);
         Map<String, List<ModuleBaseWithCustomFields>> recordMap = Constants.getRecordMap(context);
-        List<QAndATemplateContext> list = Constants.getRecordList(recordMap, moduleName);
+        List<QAndATemplateContext> list = Constants.getRecordListFromMap(recordMap, moduleName);
 
         ModuleBean modBean = Constants.getModBean();
         FacilioField questionPageField = modBean.getField("page", FacilioConstants.QAndA.QUESTION);

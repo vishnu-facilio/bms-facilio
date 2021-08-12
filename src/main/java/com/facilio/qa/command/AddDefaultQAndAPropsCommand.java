@@ -24,7 +24,7 @@ public class AddDefaultQAndAPropsCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         String moduleName = Constants.getModuleName(context);
         Map<String, List<ModuleBaseWithCustomFields>> recordMap = Constants.getRecordMap(context);
-        List<QAndATemplateContext> list = Constants.getRecordList(recordMap, moduleName);
+        List<QAndATemplateContext> list = Constants.getRecordListFromMap(recordMap, moduleName);
 
         if (AccountUtil.getCurrentOrg().getId() == 155) {
             LOGGER.info(MessageFormat.format("Template list for module ({0}) : {1}", moduleName, list));

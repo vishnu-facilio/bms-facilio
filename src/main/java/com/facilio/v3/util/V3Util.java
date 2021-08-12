@@ -176,27 +176,52 @@ public class V3Util {
                 bodyParams, queryParams, stateTransitionId, customButtonId, approvalTransitionId);
     }
 
-    public static Map<String, List<ModuleBaseWithCustomFields>> getRecordsForBulkPatch(String moduleName, List<Long> ids) throws Exception {
-        FacilioChain listChain = ChainUtil.getListChain(moduleName);
-        FacilioContext context = listChain.getContext();
-        FacilioModule module = ChainUtil.getModule(moduleName);
+//    public static Map<String, List<ModuleBaseWithCustomFields>> getRecordsForBulkPatch(String moduleName, List<Long> ids) throws Exception {
+//        FacilioChain listChain = ChainUtil.getListChain(moduleName);
+//        FacilioContext context = listChain.getContext();
+//        FacilioModule module = ChainUtil.getModule(moduleName);
+//
+//        Criteria idCriteria = new Criteria();
+//        idCriteria.addAndCondition(CriteriaAPI.getIdCondition(ids, module));
+//        context.put(Constants.BEFORE_FETCH_CRITERIA, idCriteria);
+//
+//        V3Config v3Config = ChainUtil.getV3Config(moduleName);
+//
+//        Constants.setModuleName(context, moduleName);
+//        Constants.setV3config(context, v3Config);
+//        Class beanClass = ChainUtil.getBeanClass(v3Config, module);
+//        context.put(Constants.BEAN_CLASS, beanClass);
+//        listChain.execute();
+//
+//        Map<String, List<ModuleBaseWithCustomFields>> recordMap = Constants.getRecordMap(context);
+//        return recordMap;
+//    }
 
-        Criteria idCriteria = new Criteria();
-        idCriteria.addAndCondition(CriteriaAPI.getIdCondition(ids, module));
-        context.put(Constants.BEFORE_FETCH_CRITERIA, idCriteria);
-
-        V3Config v3Config = ChainUtil.getV3Config(moduleName);
-
-        Constants.setModuleName(context, moduleName);
-        Constants.setV3config(context, v3Config);
-        Class beanClass = ChainUtil.getBeanClass(v3Config, module);
-        context.put(Constants.BEAN_CLASS, beanClass);
-        listChain.execute();
-
-        Map<String, List<ModuleBaseWithCustomFields>> recordMap = Constants.getRecordMap(context);
-        return recordMap;
+    public static FacilioContext getSummary(String moduleName, List<Long> ids) throws Exception {
+        return getSummary(moduleName, ids, null);
     }
 
+    public static FacilioContext getSummary(String moduleName, List<Long> ids, Map<String, List<Object>> queryParams) throws Exception {
+        FacilioChain fetchRecordChain = ChainUtil.getFetchRecordChain(moduleName);
+        FacilioContext context = fetchRecordChain.getContext();
+
+        FacilioModule module = ChainUtil.getModule(moduleName);
+        V3Config config = ChainUtil.getV3Config(moduleName);
+
+        Constants.setRecordIds(context, ids);
+        context.put(Constants.QUERY_PARAMS, queryParams);
+        context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_ONLY);
+        Class beanClass = ChainUtil.getBeanClass(config, module);
+        context.put(Constants.BEAN_CLASS, beanClass);
+        Constants.setModuleName(context, moduleName);
+        Constants.setV3config(context, config);
+
+        fetchRecordChain.execute();
+
+        return context;
+    }
+
+    // Need to be changed
     public static FacilioContext createRecord(FacilioModule module,List<ModuleBaseWithCustomFields> records) throws Exception {
     	
         if(CollectionUtils.isNotEmpty(records)) {
