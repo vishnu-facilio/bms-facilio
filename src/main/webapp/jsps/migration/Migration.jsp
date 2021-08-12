@@ -1,29 +1,61 @@
-<%@page import="com.facilio.bmsconsole.util.StateFlowRulesAPI"%>
-<%@page import="com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext"%>
-<%@page import="com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext"%>
-<%@page import="com.facilio.bmsconsole.util.WorkflowRuleAPI"%>
-<%@page import="com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext"%>
-<%@page import="com.facilio.bmsconsole.util.TicketAPI"%>
-<%@page import="com.facilio.constants.FacilioConstants.TicketStatus"%>
-<%@page import="org.apache.commons.collections4.CollectionUtils"%>
-<%@page import="org.apache.log4j.Priority"%>
+
+
+
+<%@page import="com.facilio.constants.FacilioConstants.ApplicationLinkNames"%>
+<%@page import="com.facilio.bmsconsole.util.ApplicationApi"%>
+<%@page import="com.facilio.bmsconsole.context.ApplicationContext"%>
+<%@page import="java.util.stream.Collectors"%>
+<%@page import="com.facilio.bmsconsole.context.SingleSharingContext.SharingType"%>
+<%@page import="java.util.Collections"%>
+<%@page import="com.facilio.bmsconsole.util.SharingAPI"%>
+<%@page import="com.facilio.bmsconsole.context.SingleSharingContext"%>
+<%@page import="com.facilio.bmsconsole.context.SharingContext"%>
+<%@page import="com.facilio.bmsconsole.util.LookupSpecialTypeUtil"%>
+<%@page import="com.facilio.db.builder.GenericInsertRecordBuilder"%>
+<%@page import="com.facilio.db.criteria.Criteria"%>
+<%@page import="com.facilio.bmsconsole.view.ColumnFactory"%>
+<%@page import="com.facilio.bmsconsole.view.SortField"%>
+<%@page import="com.facilio.modules.fields.LookupField"%>
+<%@page import="org.apache.commons.lang3.StringUtils"%>
+<%@page import="com.facilio.bmsconsole.view.FacilioView.ViewType"%>
+<%@page import="com.facilio.bmsconsole.view.ViewFactory"%>
+<%@page import="com.facilio.bmsconsole.context.ViewField"%>
+<%@page import="com.facilio.db.builder.GenericUpdateRecordBuilder.BatchUpdateByIdContext"%>
+<%@page import="com.facilio.db.builder.GenericUpdateRecordBuilder.BatchUpdateContext"%>
+<%@page import="com.facilio.constants.FacilioConstants"%>
+<%@page import="com.facilio.db.builder.GenericUpdateRecordBuilder"%>
+<%@page import="com.facilio.bmsconsole.view.FacilioView"%>
+<%@page import="com.facilio.bmsconsole.util.ViewAPI"%>
+<%@page import="java.util.ArrayList"%>
+<%@page import="com.facilio.bmsconsole.context.ViewGroups"%>
+<%@page import="com.facilio.logging.SysOutLogger"%>
+<%@page import="com.facilio.modules.FieldUtil"%>
+<%@page import="com.facilio.accounts.dto.IAMUser"%>
+<%@page import="java.util.Map"%>
+<%@page import="com.facilio.db.criteria.CriteriaAPI"%>
+<%@page import="com.facilio.modules.FieldFactory"%>
+<%@page import="com.facilio.db.builder.GenericSelectRecordBuilder"%>
+<%@page import="com.facilio.modules.ModuleFactory"%>
+<%@page import="com.facilio.chain.FacilioContext"%>
+<%@page import="com.facilio.accounts.dto.Organization"%>
+<%@ page import="com.facilio.accounts.util.AccountUtil" %>
+<%@ page import="com.facilio.bmsconsole.util.AggregatedEnergyConsumptionUtil" %>
+<%@ page import="com.facilio.chain.FacilioChain" %>
 <%@ page import="com.facilio.command.FacilioCommand" %>
 <%@ page import="org.apache.commons.chain.Context" %>
+<%@ page import="org.apache.log4j.LogManager" %>
 <%@ page import="org.apache.log4j.Logger" %>
 <%@ page import="java.util.List" %>
 <%@ page import="org.apache.commons.collections4.CollectionUtils" %>
 <%@ page import="org.apache.commons.lang3.exception.ExceptionUtils" %>
 <%@ page import="com.facilio.beans.ModuleBean" %>
 <%@ page import="com.facilio.fw.BeanFactory" %>
-<%@ page import="com.facilio.constants.FacilioConstants" %>
-<%@ page import="com.facilio.accounts.util.AccountUtil" %>
-<%@ page import="com.facilio.accounts.dto.Organization" %>
-<%@ page import="com.facilio.chain.FacilioChain" %>
-<%@ page import="org.apache.log4j.LogManager" %>
+<%@ page import="com.facilio.modules.FacilioModule" %>
+<%@ page import="com.facilio.modules.fields.NumberField" %>
 <%@ page import="com.facilio.modules.fields.FacilioField" %>
-<%@ page import="com.facilio.modules.fields.LookupField" %>
-<%@ page import="com.facilio.modules.*" %>
-<%@ page import="com.facilio.modules.fields.SystemEnumField" %>
+<%@ page import="com.facilio.modules.FieldType" %>
+<%@ page import="com.facilio.bmsconsole.commands.FacilioChainFactory" %>
+<%@ page import="com.facilio.bmsconsole.commands.MigrationCommand" %>
 
 
 <%--
@@ -42,28 +74,15 @@
 <%
     final class OrgLevelMigrationCommand extends FacilioCommand {
         private final Logger LOGGER = LogManager.getLogger(OrgLevelMigrationCommand.class.getName());
-
         @Override
         public boolean executeCommand(Context context) throws Exception {
 
-            // Have migration commands for each org
-            // Transaction is only org level. If failed, have to continue from the last failed org and not from first
-            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            FacilioModule termsandconditions = modBean.getModule(FacilioConstants.ContextNames.TERMS_AND_CONDITIONS);
-
-            if (termsandconditions != null && termsandconditions.getModuleId() > 0) {
-                FacilioField defaultOnQuotation = FieldFactory.getField("defaultOnQuotation","DEFAULT_ON_QUOTATION",termsandconditions, FieldType.BOOLEAN);
-                defaultOnQuotation.setDisplayType(5);
-                defaultOnQuotation.setDefault(true);
-                modBean.addField(defaultOnQuotation);
-
-            }
-
-
-            LOGGER.info("Completed For -- " + AccountUtil.getCurrentOrg().getId());
-            response.getWriter().println("Completed For -- " + AccountUtil.getCurrentOrg().getId());
+            new MigrationCommand().executeCommand(context);
             return false;
         }
+
+
+
     }
 %>
 
@@ -71,14 +90,17 @@
     try {
         List<Organization> orgs = AccountUtil.getOrgBean().getOrgs();
         if (CollectionUtils.isNotEmpty(orgs)) {
-
             for (Organization org : orgs) {
-                AccountUtil.setCurrentAccount(org.getOrgId());
-                FacilioChain c = FacilioChain.getTransactionChain();
-                c.addCommand(new OrgLevelMigrationCommand());
-                c.execute();
+                if (org.getOrgId() > 0 && org.getOrgId() == 1l) {
 
-                AccountUtil.cleanCurrentAccount();
+                    AccountUtil.setCurrentAccount(org.getOrgId());
+                    FacilioChain c = FacilioChain.getTransactionChain();
+                    c.addCommand(new OrgLevelMigrationCommand());
+                    c.execute();
+
+                    AccountUtil.cleanCurrentAccount();
+
+                }
             }
         }
         response.getWriter().println("Migration done");
@@ -88,6 +110,4 @@
         response.getWriter().println(ExceptionUtils.getStackTrace(e));
         LogManager.getLogger(OrgLevelMigrationCommand.class.getName()).error("Error occurred while running migration.", e);
     }
-
-    out.println("Completed");
 %>
