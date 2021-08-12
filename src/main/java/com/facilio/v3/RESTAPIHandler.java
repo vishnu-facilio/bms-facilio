@@ -2,9 +2,7 @@ package com.facilio.v3;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
-import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -319,52 +317,13 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
                 ids, bodyParams, getQueryParameters(), getStateTransitionId(),
                 getCustomButtonId(), getApprovalTransitionId());
 
-//        Map<Long, JSONObject> idVsRecordMap = new HashMap<>();
-//        for (ModuleBaseWithCustomFields record: moduleBaseWithCustomFields) {
-//            idVsRecordMap.put(record.getId(), FieldUtil.getAsJSON(record));
-//        }
-//
-//        for (Map<String, Object> rec: rawRecords) {
-//            JSONObject jsonObject = idVsRecordMap.get((long) rec.get("id"));
-//            Set<String> keys = rec.keySet();
-//            for (String key : keys) {
-//                jsonObject.put(key, rec.get(key));
-//            }
-//        }
-//        Collection<JSONObject> values = idVsRecordMap.values();
-//        FacilioChain patchChain = ChainUtil.getBulkPatchChain(moduleName);
-//
-//        FacilioContext context = patchChain.getContext();
-//        FacilioModule module = ChainUtil.getModule(moduleName);
-//        V3Config v3Config = ChainUtil.getV3Config(moduleName);
-//        Class beanClass = ChainUtil.getBeanClass(v3Config, module);
-//
-//        Constants.setV3config(context, v3Config);
-//        Constants.setModuleName(context, moduleName);
-//        Constants.setBulkRawInput(context, values);
-//        Constants.setBodyParams(context, bodyParams);
-//        context.put(Constants.BEAN_CLASS, beanClass);
-//        context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
-//        context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
-//        context.put(FacilioConstants.ContextNames.TRANSITION_ID, this.getStateTransitionId());
-//        context.put(FacilioConstants.ContextNames.APPROVAL_TRANSITION_ID, this.getApprovalTransitionId());
-//        context.put(Constants.QUERY_PARAMS, getQueryParameters());
-//
-//        if (getCustomButtonId() != null && getCustomButtonId() > 0) {
-//            context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_ID_LIST, Collections.singletonList(getCustomButtonId()));
-//            CommonCommandUtil.addEventType(EventType.CUSTOM_BUTTON, context);
-//        }
-//
-//        patchChain.execute();
-
         Integer count = (Integer) context.get(Constants.ROWS_UPDATED);
 
         if (count == null || count <= 0) {
             throw new RESTException(ErrorCode.RESOURCE_NOT_FOUND);
         }
 
-        summaryContext = V3Util.getSummary(moduleName, ids);
-        Map<String, List<ModuleBaseWithCustomFields>> fetchAfterSave = Constants.getRecordMap(summaryContext);
+        Map<String, List<ModuleBaseWithCustomFields>> fetchAfterSave = Constants.getRecordMap(context);
         this.setData(FieldUtil.getAsJSON(fetchAfterSave));
     }
 
