@@ -298,7 +298,9 @@ public class PeopleAPI {
 						user.setApplicationId(appId);
 						user.setAppDomain(appDomain);
 						user.setRoleId(roleId);
+						user.setLanguage(person.getLanguage());
 						ApplicationApi.addUserInApp(user, false);
+						AccountUtil.getUserBean().updateUser(user);
 					}
 					else {
 						addAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, roleId);
@@ -338,7 +340,9 @@ public class PeopleAPI {
 						user.setAppDomain(appDomain);
 						user.setRoleId(roleId);
 						user.setApplicationId(appId);
+						user.setLanguage(person.getLanguage());
 						ApplicationApi.addUserInApp(user, false);
+						AccountUtil.getUserBean().updateUser(user);
 					}
 					else {
 						addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP, appDomain.getIdentifier(), roleId);
@@ -381,7 +385,9 @@ public class PeopleAPI {
 						user.setAppDomain(appDomain);
 						user.setApplicationId(appId);
 						user.setRoleId(roleId);
+						user.setLanguage(person.getLanguage());
 						ApplicationApi.addUserInApp(user, false);
+						AccountUtil.getUserBean().updateUser(user);
 					}
 					else {
 						addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP, appDomain.getIdentifier(), verifyUser, roleId);
@@ -421,7 +427,9 @@ public class PeopleAPI {
 						user.setAppDomain(appDomain);
 						user.setApplicationId(appId);
 						user.setRoleId(roleId);
+						user.setLanguage(person.getLanguage());
 						ApplicationApi.addUserInApp(user, false);
+						AccountUtil.getUserBean().updateUser(user);
 					}
 					else {
 						addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP, appDomain.getIdentifier(), roleId);
@@ -463,7 +471,9 @@ public class PeopleAPI {
 						user.setAppDomain(appDomain);
 						user.setApplicationId(appId);
 						user.setRoleId(roleId);
+						user.setLanguage(person.getLanguage());
 						ApplicationApi.addUserInApp(user, false);
+						AccountUtil.getUserBean().updateUser(user);
 					}
 					else {
 						User newUser = addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP, appDomain.getIdentifier(), roleId);
