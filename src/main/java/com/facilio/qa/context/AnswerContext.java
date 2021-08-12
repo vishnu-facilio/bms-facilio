@@ -1,5 +1,6 @@
 package com.facilio.qa.context;
 
+import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.qa.context.answers.MultiFileAnswerContext;
 import com.facilio.qa.context.questions.MCQOptionContext;
 import com.facilio.v3.context.V3Context;
@@ -18,6 +19,7 @@ public class AnswerContext extends V3Context {
     private ResponseContext response;
     private QuestionContext question;
     private String comments;
+    private List<AttachmentContext> attachmentList;
 
     private Long enumAnswer;
     private String enumOtherAnswer;

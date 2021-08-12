@@ -56,6 +56,7 @@ public class SerializeAnswersCommand extends FacilioCommand {
         clientAnswer.setFullScore(answer.getFullScore());
         clientAnswer.setScore(answer.getScore());
         clientAnswer.setScorePercent(answer.getScorePercent());
+        clientAnswer.setAttachmentList(answer.getAttachmentList());
 
         if (isSingleResponse) {
             clientAnswer.setComments(answer.getComments()); // Here not doing any check with question because comments can be disabled after few responses have been added

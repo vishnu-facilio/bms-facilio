@@ -1,6 +1,7 @@
 package com.facilio.qa.signup;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.AddSubModulesSystemFieldsCommad;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.RollUpField;
 import com.facilio.bmsconsole.util.RollUpFieldUtil;
@@ -21,6 +22,7 @@ import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class AddQAndAModules extends SignUpData {
@@ -51,9 +53,43 @@ public class AddQAndAModules extends SignUpData {
         addQuestionSubModules(question);
         addAnswerSubModules(modBean, answer);
         addRollUpFields(modBean, qAndA, response, page, question, answer);
+        
+        addAnswerAttachmentModule(answer);
     }
 
-    private FacilioModule constructQAndA() {
+    private void addAnswerAttachmentModule(FacilioModule answer) throws Exception {
+		
+    	FacilioModule module = new FacilioModule();
+    	module.setName(answer.getName() + "attachments");
+    	module.setDisplayName(answer.getDisplayName() + " Attachments");
+    	module.setTableName("Q_And_A_Answer_Attachments");
+    	module.setType(FacilioModule.ModuleType.ATTACHMENTS);
+    	
+    	List<FacilioField> fields = new ArrayList<FacilioField>();
+
+    	FacilioField attachmentCreatedTime =  FieldFactory.getField("createdTime", "Created Time", "CREATED_TIME", module, FieldType.NUMBER);
+        fields.add(attachmentCreatedTime);
+
+        FileField fileField = (FileField) FieldFactory.getField("file", "File ID", "FILE_ID", module, FieldType.FILE);
+        fileField.setDefault(true);
+        fields.add(fileField);
+
+        LookupField attachmentParentId = (LookupField) FieldFactory.getField("parent", "PARENT Id", "ANSWER_ID", module, FieldType.LOOKUP);
+        attachmentParentId.setDefault(true);
+        attachmentParentId.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+        attachmentParentId.setLookupModule(answer);
+        fields.add(attachmentParentId);
+        module.setFields(fields);
+		
+		FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
+        addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(module));
+        addModuleChain.execute();
+		
+        
+        Constants.getModBean().addSubModule(answer.getModuleId(), module.getModuleId());
+	}
+
+	private FacilioModule constructQAndA() {
         FacilioModule module = new FacilioModule(FacilioConstants.QAndA.Q_AND_A_TEMPLATE,
                                                 "Q And A Templates",
                                                 "Q_And_A_Templates",

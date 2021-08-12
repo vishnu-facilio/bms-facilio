@@ -2480,6 +2480,9 @@ public class FacilioConstants {
 		}
 
 		public static class Answers {
+			
+			public static final String ATTACHMENT = "qandaAnswerattachments";
+			
 			public static final String MULTI_FILE_ANSWER = "qandaMultiFileAnswer";
 			public static final String MCQ_MULTI_ANSWER_REL = "qandaMcqMultiAnswerRel";
 		}

@@ -74,6 +74,7 @@ public class QAndAReadOnlyChainFactory {
 
     public static FacilioChain afterAnswerFetchChain() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchAnswerAttachmentsCommand());
         c.addCommand(new SerializeAnswersCommand());
         return c;
     }
