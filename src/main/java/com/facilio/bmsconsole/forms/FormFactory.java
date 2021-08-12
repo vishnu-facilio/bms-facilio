@@ -2243,7 +2243,7 @@ public class FormFactory {
 		fields.add(new FormField("shortDesc", FieldDisplayType.TEXTAREA, "Short Description", Required.OPTIONAL, 3, 1));
 		fields.add(new FormField("longDesc", FieldDisplayType.LONG_DESC, "Long Description", Required.OPTIONAL, 4, 1));
 		fields.add(new FormField("defaultOnPo", FieldDisplayType.DECISION_BOX, "Default On PO", Required.OPTIONAL, 5, 2));
-		
+		fields.add(new FormField("defaultOnQuotation", FieldDisplayType.DECISION_BOX, "Default On Quotation", Required.OPTIONAL, 6, 2));
 		return fields;
 	}
 	

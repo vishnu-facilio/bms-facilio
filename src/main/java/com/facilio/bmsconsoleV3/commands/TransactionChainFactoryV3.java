@@ -3,6 +3,7 @@ package com.facilio.bmsconsoleV3.commands;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.bmsconsole.commands.*;
+import com.facilio.bmsconsoleV3.commands.quotation.*;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
@@ -42,10 +43,6 @@ import com.facilio.bmsconsoleV3.commands.purchaseorder.POBeforeCreateOrEditV3Com
 import com.facilio.bmsconsoleV3.commands.purchaseorder.UpdateIsPoCreatedCommand;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.PreFillAddPurchaseRequestCommand;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.PurchaseRequestTotalCostRollUpCommandV3;
-import com.facilio.bmsconsoleV3.commands.quotation.InsertQuotationLineItemsAndActivitiesCommand;
-import com.facilio.bmsconsoleV3.commands.quotation.QuotationValidationAndCostCalculationCommand;
-import com.facilio.bmsconsoleV3.commands.quotation.ReviseQuotationCommand;
-import com.facilio.bmsconsoleV3.commands.quotation.UpdateQuotationParentIdCommand;
 import com.facilio.bmsconsoleV3.commands.tenant.AddTenantSpaceRelationCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenant.AddTenantUserCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantcontact.CheckForMandatoryTenantIdCommandV3;
@@ -289,6 +286,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdateQuotationParentIdCommand());
         c.addCommand(new InsertQuotationLineItemsAndActivitiesCommand());
+        c.addCommand(new UpdateQuotationTermsAndConditionCommand());
         return c;
     }
 

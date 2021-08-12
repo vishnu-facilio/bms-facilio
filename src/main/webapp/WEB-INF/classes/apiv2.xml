@@ -5402,6 +5402,8 @@
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.TermsAndConditionsAction"
 			method="addTermsAndConditions">
+
+
 		</action>
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.TermsAndConditionsAction"

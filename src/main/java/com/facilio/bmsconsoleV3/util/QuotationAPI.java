@@ -9,9 +9,12 @@ import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.util.PreferenceAPI;
+import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsoleV3.context.BaseLineItemContext;
 import com.facilio.bmsconsoleV3.context.BaseLineItemsParentModuleContext;
 import com.facilio.bmsconsoleV3.context.V3TenantContext;
+import com.facilio.bmsconsoleV3.context.V3TermsAndConditionContext;
+import com.facilio.bmsconsoleV3.context.purchaseorder.V3PoAssociatedTermsContext;
 import com.facilio.bmsconsoleV3.context.quotation.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
@@ -574,5 +577,33 @@ public class QuotationAPI {
             }
         }
         return discountMode;
+    }
+
+    public static List<TermsAndConditionContext> fetchQuotationDefaultTerms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TERMS_AND_CONDITIONS);
+        List<FacilioField> fields = modBean.getAllFields(module.getName());
+
+        SelectRecordsBuilder<TermsAndConditionContext> builder = new SelectRecordsBuilder<TermsAndConditionContext>()
+                .module(module)
+                .beanClass(TermsAndConditionContext.class)
+                .select(fields)
+                .andCondition(CriteriaAPI.getCondition("DEFAULT_ON_QUOTATION", "defaultOnQuotation", String.valueOf(1), NumberOperators.EQUALS))
+                ;
+        ;
+        List<TermsAndConditionContext> list = builder.get();
+
+
+        return list;
+
+    }
+
+    public static void updateTermsAssociated(List<QuotationAssociatedTermsContext> associatedTerms) throws Exception {
+        if(CollectionUtils.isNotEmpty(associatedTerms)) {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.QUOTE_ASSOCIATED_TERMS);
+            List<FacilioField> fields = modBean.getAllFields(module.getName());
+            RecordAPI.addRecord(false, associatedTerms, module, fields);
+        }
     }
 }

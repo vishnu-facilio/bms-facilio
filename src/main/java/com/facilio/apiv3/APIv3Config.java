@@ -480,11 +480,19 @@ public class APIv3Config {
     @Module("purchaseorder")
     public static Supplier<V3Config> getPurchaseOrder() {
         return () -> new V3Config(V3PurchaseOrderContext.class, new ModuleCustomFieldCount30())
-                .create().beforeSave(TransactionChainFactoryV3.getPoBeforeSaveChain()).afterSave(TransactionChainFactoryV3.getPoAfterSaveChain())
-                .update().beforeSave(TransactionChainFactoryV3.getPoBeforeSaveChain()).afterSave(new POAfterCreateOrEditV3Command())
-                .list().beforeFetch(new LoadPoPrListLookupCommandV3())
-                .summary().beforeFetch(new LoadPOSummaryLookupCommandV3()).afterFetch(new FetchPODetailsCommandV3())
-                .delete().afterDelete(new DeleteReceivableByPOIdV3())
+                .create()
+                .beforeSave(TransactionChainFactoryV3.getPoBeforeSaveChain())
+                .afterSave(TransactionChainFactoryV3.getPoAfterSaveChain())
+                .update()
+                .beforeSave(TransactionChainFactoryV3.getPoBeforeSaveChain())
+                .afterSave(new POAfterCreateOrEditV3Command())
+                .list()
+                .beforeFetch(new LoadPoPrListLookupCommandV3())
+                .summary()
+                .beforeFetch(new LoadPOSummaryLookupCommandV3())
+                .afterFetch(new FetchPODetailsCommandV3())
+                .delete()
+                .afterDelete(new DeleteReceivableByPOIdV3())
                 .build();
     }
     

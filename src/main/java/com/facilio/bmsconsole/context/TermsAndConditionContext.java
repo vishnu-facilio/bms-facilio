@@ -13,6 +13,8 @@ public class TermsAndConditionContext extends ModuleBaseWithCustomFields{
 	private String shortDesc;
 	private String longDesc;
 	public Boolean isEditable;
+	public Boolean defaultOnPo;
+	public Boolean defaultOnQuotation;
 
 	public void setIsEditable(Boolean isEditable) {
 		this.isEditable = isEditable;
@@ -24,8 +26,6 @@ public class TermsAndConditionContext extends ModuleBaseWithCustomFields{
 		}
 		return false;
 	}
-	
-	public Boolean defaultOnPo;
 
 	public String getName() {
 		return name;
@@ -70,6 +70,17 @@ public class TermsAndConditionContext extends ModuleBaseWithCustomFields{
 		this.defaultOnPo = defaultOnPo;
 	}
 
-	
+
+
+	public Boolean getDefaultOnQuotation() {
+		if (defaultOnQuotation!= null) {
+			return defaultOnQuotation.booleanValue();
+		}
+		return false;
+	}
+
+	public void setDefaultOnQuotation(Boolean defaultOnQuotation) {
+		this.defaultOnQuotation = defaultOnQuotation;
+	}
 
 }
