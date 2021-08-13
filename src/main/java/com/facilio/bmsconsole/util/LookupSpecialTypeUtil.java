@@ -287,7 +287,7 @@ public class LookupSpecialTypeUtil {
 		else if (ContextNames.SLA_RULE_MODULE.equals(specialType)) {
 			return WorkflowRuleAPI.getWorkflowRule(id);
 		}
-		else if(FacilioConstants.ContextNames.PM_TRIGGER.equals(specialType)) {
+		else if(ModuleFactory.getPMTriggersModule().getName().equals(specialType)) {
 			Map<Long, List<PMTriggerContext>> pmMap = PreventiveMaintenanceAPI.getPMTriggers(Arrays.asList(id));
 			if (pmMap != null && !pmMap.isEmpty()) {
 				return pmMap.get(id).get(0);
@@ -350,7 +350,7 @@ public class LookupSpecialTypeUtil {
 		else if (ContextNames.SLA_RULE_MODULE.equals(specialType)) {
 			return WorkflowRuleAPI.getWorkflowRules(WorkflowRuleContext.RuleType.SLA_RULE, true, criteria, null, null);
 		}
-		else if (FacilioConstants.ContextNames.PM_TRIGGER.equals(specialType)) {
+		else if (ModuleFactory.getPMTriggersModule().getName().equals(specialType)) {
 			return PreventiveMaintenanceAPI.getPMTriggers(criteria);
 		}
 		return null;
@@ -399,7 +399,7 @@ public class LookupSpecialTypeUtil {
 			}
 			return null;
 		}
-		else if (FacilioConstants.ContextNames.PM_TRIGGER.equals(specialType)) {
+		else if (ModuleFactory.getPMTriggersModule().getName().equals(specialType)) {
 			List<PMTriggerContext> triggers = PreventiveMaintenanceAPI.getPMTriggersByTriggerIds(ids);
 			if (CollectionUtils.isNotEmpty(triggers)) {
 				return triggers.stream().collect(Collectors.toMap(PMTriggerContext::getId, Function.identity()));
@@ -449,7 +449,7 @@ public class LookupSpecialTypeUtil {
 		else if(EventConstants.EventContextNames.EVENT.equals(specialType)) {
 			return EventAPI.getEvents(ids);
 		}
-		else if (FacilioConstants.ContextNames.PM_TRIGGER.equals(specialType)) {
+		else if (ModuleFactory.getPMTriggersModule().getName().equals(specialType)) {
 			return PreventiveMaintenanceAPI.getPMTriggersByTriggerIds(ids);
 		}
 		else if (ContextNames.SLA_RULE_MODULE.equals(specialType)) {
@@ -510,7 +510,7 @@ public class LookupSpecialTypeUtil {
 			workflowContext.setId(id);
 			return workflowContext;
 		}
-		else if (FacilioConstants.ContextNames.PM_TRIGGER.equals(specialType)) {
+		else if (ModuleFactory.getPMTriggersModule().getName().equals(specialType)) {
 			PMTriggerContext pmTriggerContext = new PMTriggerContext();
 			pmTriggerContext.setId(id);
 			return pmTriggerContext;
@@ -561,7 +561,7 @@ public class LookupSpecialTypeUtil {
 		else if(FacilioConstants.Workflow.WORKFLOW.equals(specialType)) {
 			return ((WorkflowContext) obj).getId();
 		}
-		else if (FacilioConstants.ContextNames.PM_TRIGGER.equals(specialType)) {
+		else if (ModuleFactory.getPMTriggersModule().getName().equals(specialType)) {
 			return ((PMTriggerContext) obj).getId();
 		}
 		else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
@@ -833,9 +833,6 @@ public class LookupSpecialTypeUtil {
 		else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
             return ModuleFactory.getReadingRuleModule();
         }
-		else if(FacilioConstants.ContextNames.PM_TRIGGER.equals(specialType)) {
-			return ModuleFactory.getPMTriggersModule();
-		}
 		else if(FacilioConstants.ContextNames.CONNECTED_APPS.equals(specialType)) {
 			return ModuleFactory.getConnectedAppsModule();
 		}
@@ -962,9 +959,6 @@ public class LookupSpecialTypeUtil {
 		    return  FieldFactory.getConnectedAppWidgetsFields();
         }
 		
-		else if(FacilioConstants.ContextNames.PM_TRIGGER.equals(specialType)) {
-			return FieldFactory.getPMTriggerFields();
-		}
 		else if(FacilioConstants.ContextNames.KPI.equals(specialType)) {
 			return FieldFactory.getKPIFields();
 		}
