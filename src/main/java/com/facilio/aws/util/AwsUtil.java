@@ -246,14 +246,14 @@ public class AwsUtil
     public static AmazonS3 getAmazonS3Client() {
     	if (AWS_S3_CLIENT == null) {
     		ClientConfiguration configuration = new ClientConfiguration().withMaxConnections(200).withConnectionTimeout(30000).withMaxErrorRetry(3);
-        	AWS_S3_CLIENT = AmazonS3ClientBuilder.standard().withRegion(region).withCredentials(getAWSCredentialsProvider()).withClientConfiguration(configuration).build();
+        	AWS_S3_CLIENT = AmazonS3ClientBuilder.standard().withRegion(getRegion()).withCredentials(getAWSCredentialsProvider()).withClientConfiguration(configuration).build();
     	}
     	return AWS_S3_CLIENT;
     }
     
     public static AmazonRekognition getAmazonRekognitionClient() {
     	if (AWS_REKOGNITION_CLIENT == null) {
-    		AWS_REKOGNITION_CLIENT = AmazonRekognitionClientBuilder.standard().withRegion(region).withCredentials(getAWSCredentialsProvider()).build();
+    		AWS_REKOGNITION_CLIENT = AmazonRekognitionClientBuilder.standard().withRegion(getRegion()).withCredentials(getAWSCredentialsProvider()).build();
     	}
     	return AWS_REKOGNITION_CLIENT;
     }
