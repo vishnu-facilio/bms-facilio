@@ -12,6 +12,7 @@ import com.facilio.util.FacilioUtil;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -25,9 +26,10 @@ public class GetViewTranslationFields implements TranslationTypeInterface {
 
 
     @Override
-    public JSONObject constructTranslationObject ( @NonNull WebTabContext context,String queryParam,Properties properties ) throws Exception {
+    public JSONArray constructTranslationObject ( @NonNull WebTabContext context,String queryParam,Properties properties ) throws Exception {
 
         FacilioUtil.throwIllegalArgumentException(!WebTabContext.Type.MODULE.equals(WebTabContext.Type.valueOf(context.getType())),"Invalid webTab Type for fetch Module Fields");
+        FacilioUtil.throwIllegalArgumentException(StringUtils.isEmpty(queryParam),"view id is mandatory param for fetching view  fields");
 
         JSONArray fieldList = new JSONArray();
         long viewId = Long.parseLong(queryParam);
@@ -52,6 +54,9 @@ public class GetViewTranslationFields implements TranslationTypeInterface {
         fieldObject.put("fields",fieldList);
         fieldObject.put("label","");
 
-        return fieldObject;
+        JSONArray sectionArray = new JSONArray();
+        sectionArray.add(fieldObject);
+
+        return sectionArray;
     }
 }

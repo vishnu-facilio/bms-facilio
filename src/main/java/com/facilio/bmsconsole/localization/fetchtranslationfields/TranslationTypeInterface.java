@@ -9,5 +9,5 @@ import java.util.Properties;
 
 public interface TranslationTypeInterface {
 
-    JSONObject constructTranslationObject ( @NonNull WebTabContext context,String queryString,Properties properties ) throws Exception;
+    JSONArray constructTranslationObject ( @NonNull WebTabContext context,String queryString,Properties properties ) throws Exception;
 }

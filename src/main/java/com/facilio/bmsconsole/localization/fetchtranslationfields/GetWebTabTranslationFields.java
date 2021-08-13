@@ -19,7 +19,7 @@ import java.util.Properties;
 
 public class GetWebTabTranslationFields implements TranslationTypeInterface{
     @Override
-    public JSONObject constructTranslationObject ( @NonNull WebTabContext context,String queryString,Properties properties ) throws Exception {
+    public JSONArray constructTranslationObject ( @NonNull WebTabContext context,String queryString,Properties properties ) throws Exception {
 
         FacilioUtil.throwIllegalArgumentException(!WebTabContext.Type.MODULE.equals(WebTabContext.Type.valueOf(context.getType())),"Invalid webTab Type for fetch Module Fields");
 
@@ -41,6 +41,9 @@ public class GetWebTabTranslationFields implements TranslationTypeInterface{
         fieldObject.put("fields",jsonArray);
         fieldObject.put("label","");
 
-        return fieldObject;
+        JSONArray sectionArray = new JSONArray();
+        sectionArray.add(fieldObject);
+
+        return sectionArray;
     }
 }
