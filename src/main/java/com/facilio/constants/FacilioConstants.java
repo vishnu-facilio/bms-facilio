@@ -1998,6 +1998,7 @@ public class FacilioConstants {
 			public static final String MARKED_ZONES = "floorplanmarkedzone";
 			public static final String DESKS = "desks";
 			public static final String FETCH_ONLY_DESKS = "fetchOnlydesks";
+			public static final String BOOKED_DESKS = "bookedDesks";
 		}
 		
 		// etisalat changes

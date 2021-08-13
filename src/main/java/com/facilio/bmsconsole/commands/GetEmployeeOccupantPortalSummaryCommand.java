@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -16,6 +17,7 @@ import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsoleV3.context.InviteVisitorContextV3;
 import com.facilio.bmsconsoleV3.context.facilitybooking.V3FacilityBookingContext;
 import com.facilio.bmsconsoleV3.context.floorplan.V3DeskContext;
+import com.facilio.bmsconsoleV3.util.FacilityAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
@@ -70,6 +72,59 @@ public class GetEmployeeOccupantPortalSummaryCommand extends FacilioCommand {
 
         List<V3DeskContext> desklist = deskbuilder.get();
         context.put(FacilioConstants.ContextNames.Floorplan.DESKS, desklist);
+        
+        FacilioModule bookingModule = modBean.getModule(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
+        List<FacilioField> bookingfields = modBean.getAllFields(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
+        Map<String, FacilioField> bookingfieldsAsMap = FieldFactory.getAsMap(bookingfields);
+        FacilioModule pplModule = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
+        
+        List<SupplementRecord> fetchLookupsList = new ArrayList<>();
+        LookupField facilityField = (LookupField) bookingfieldsAsMap.get("facility");
+        LookupField reservedFor = (LookupField) bookingfieldsAsMap.get("reservedFor");
+
+        MultiLookupMeta internalAttendees = new MultiLookupMeta((MultiLookupField) bookingfieldsAsMap.get("internalAttendees"));
+        FacilioField emailField = FieldFactory.getField("email", "EMAIL", pplModule, FieldType.STRING);
+        FacilioField phoneField = FieldFactory.getField("phone", "PHONE", pplModule, FieldType.STRING);
+
+        List<FacilioField> selectFieldsList = new ArrayList<>();
+        selectFieldsList.add(emailField);
+        selectFieldsList.add(phoneField);
+
+        internalAttendees.setSelectFields(selectFieldsList);
+
+        fetchLookupsList.add(facilityField);
+        fetchLookupsList.add(reservedFor);
+        fetchLookupsList.add(internalAttendees);
+        
+        SelectRecordsBuilder<V3FacilityBookingContext> reservedDesksbuilder = new SelectRecordsBuilder<V3FacilityBookingContext>()
+                .moduleName(bookingModule.getName())
+                .select(bookingfields)
+                .beanClass(V3FacilityBookingContext.class)
+                .andCondition(CriteriaAPI.getCondition(bookingfieldsAsMap.get("bookingDate"), String.valueOf(DateTimeUtil.getDayStartTimeOf(System.currentTimeMillis())-1), DateOperators.IS_AFTER))
+                .andCondition(CriteriaAPI.getCondition(bookingfieldsAsMap.get("isCancelled"),String.valueOf(false), BooleanOperators.IS))
+                .fetchSupplements(fetchLookupsList)
+                .limit(count);
+        
+        reservedDesksbuilder
+        	.innerJoin(FacilioConstants.ContextNames.FacilityBooking.FACILITY)
+        	.on("FacilityBooking.FACILITY_ID = Facility.ID")
+        	.innerJoin(FacilioConstants.ContextNames.Floorplan.DESKS)
+        	.on("Facility.PARENT_ID = Desks.ID");
+        					
+        
+        if(recordId > -1) {
+        	reservedDesksbuilder.andCondition(CriteriaAPI.getCondition(bookingfieldsAsMap.get("reservedFor"), String.valueOf(recordId), PickListOperators.IS));
+        }
+
+        List<V3FacilityBookingContext> reservedDesks = reservedDesksbuilder.get();
+        if(CollectionUtils.isNotEmpty(reservedDesks)) {
+        	for(V3FacilityBookingContext booking : reservedDesks) {
+        		if (booking != null) {
+        			booking.setSlotList(FacilityAPI.getBookingSlots(booking.getId()));
+        		}
+        	}
+        }
+        context.put(FacilioConstants.ContextNames.Floorplan.BOOKED_DESKS, reservedDesks);
 		
         if(!fetchOnlyDesk) {
         
@@ -148,30 +203,6 @@ public class GetEmployeeOccupantPortalSummaryCommand extends FacilioCommand {
         List<InviteVisitorContextV3> invitelist = invitebuilder.get();
         context.put(FacilioConstants.ContextNames.INVITE_VISITOR, invitelist);
         
-        
-        
-        FacilioModule bookingModule = modBean.getModule(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
-        List<FacilioField> bookingfields = modBean.getAllFields(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
-        Map<String, FacilioField> bookingfieldsAsMap = FieldFactory.getAsMap(bookingfields);
-        FacilioModule pplModule = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
-        
-        List<SupplementRecord> fetchLookupsList = new ArrayList<>();
-        LookupField facilityField = (LookupField) bookingfieldsAsMap.get("facility");
-        LookupField reservedFor = (LookupField) bookingfieldsAsMap.get("reservedFor");
-
-        MultiLookupMeta internalAttendees = new MultiLookupMeta((MultiLookupField) bookingfieldsAsMap.get("internalAttendees"));
-        FacilioField emailField = FieldFactory.getField("email", "EMAIL", pplModule, FieldType.STRING);
-        FacilioField phoneField = FieldFactory.getField("phone", "PHONE", pplModule, FieldType.STRING);
-
-        List<FacilioField> selectFieldsList = new ArrayList<>();
-        selectFieldsList.add(emailField);
-        selectFieldsList.add(phoneField);
-
-        internalAttendees.setSelectFields(selectFieldsList);
-
-        fetchLookupsList.add(facilityField);
-        fetchLookupsList.add(reservedFor);
-        fetchLookupsList.add(internalAttendees);
 
         SelectRecordsBuilder<V3FacilityBookingContext> bookingbuilder = new SelectRecordsBuilder<V3FacilityBookingContext>()
                 .moduleName(bookingModule.getName())
@@ -187,13 +218,6 @@ public class GetEmployeeOccupantPortalSummaryCommand extends FacilioCommand {
         }
 
         List<V3FacilityBookingContext> bookinglist = bookingbuilder.get();
-//        if(CollectionUtils.isNotEmpty(bookinglist)) {
-//            for(V3FacilityBookingContext booking : bookinglist) {
-//                if (booking != null) {
-//                    booking.setSlotList(FacilityAPI.getBookingSlots(booking.getId()));
-//                }
-//            }
-//        }
         context.put(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING, bookinglist);
         
         }

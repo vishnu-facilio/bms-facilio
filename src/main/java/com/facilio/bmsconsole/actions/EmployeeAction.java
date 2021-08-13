@@ -285,6 +285,7 @@ public String getEmployeeOccupantPortalSummary() throws Exception {
 		setResult(FacilioConstants.ContextNames.USER, currentUser);
 		}
 		setResult(FacilioConstants.ContextNames.Floorplan.DESKS, chain.getContext().get(FacilioConstants.ContextNames.Floorplan.DESKS));
+		setResult(FacilioConstants.ContextNames.Floorplan.BOOKED_DESKS, chain.getContext().get(FacilioConstants.ContextNames.Floorplan.BOOKED_DESKS));
 		return SUCCESS;
 	}
 
