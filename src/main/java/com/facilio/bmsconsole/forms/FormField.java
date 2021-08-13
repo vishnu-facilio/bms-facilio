@@ -273,6 +273,7 @@ public class FormField implements Serializable {
 	}
 
 	private JSONObject config;
+	@JSON(serialize = false)
 	public String getConfigStr() {
 		if (config != null) {
 			return config.toJSONString();
@@ -286,6 +287,7 @@ public class FormField implements Serializable {
 	public JSONObject getConfigJSON() {
 		return getConfig();
 	}
+	@JSON(serialize = false)
 	public void setConfigStr(String config) throws ParseException {
 		if (StringUtils.isNotEmpty(config)) {
 			this.config = FacilioUtil.parseJson(config);

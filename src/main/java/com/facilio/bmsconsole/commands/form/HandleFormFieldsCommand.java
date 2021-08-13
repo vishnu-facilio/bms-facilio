@@ -11,6 +11,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FacilioForm.FormSourceType;
 import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.command.FacilioCommand;
@@ -21,13 +22,14 @@ import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
-import com.facilio.modules.fields.BaseLookupField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import com.facilio.modules.fields.LookupField;
 
 public class HandleFormFieldsCommand extends FacilioCommand {
 	
+	FormSourceType formSourceType;
+	boolean isFromBuilder;
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -41,26 +43,38 @@ public class HandleFormFieldsCommand extends FacilioCommand {
 		
 		FacilioForm form = (FacilioForm) context.get(FacilioConstants.ContextNames.FORM);
 		if (form != null) {
-			FormSourceType formSourceType = (FormSourceType) context.getOrDefault(ContextNames.FORM_SOURCE, FormSourceType.FROM_FORM);
-			boolean isFromBuilder = formSourceType == formSourceType.FROM_BUILDER;
-			boolean isAssetModule = AssetsAPI.isAssetsModule(module);
-			for(FormField field: form.getFields()) {
-				if (formSourceType == FormSourceType.FROM_BULK_FORM) {
-					field.setValue(null);
-				}
-				else if (!isFromBuilder) {
-					handleDefaultValue(field);
-				}
-				else {
-					handleFloorPlanConfig(field);
-				}
-				setLookupName(field, moduleName, isFromBuilder);
-				addFilters(module, field, isAssetModule);
-				setValidations(field);
-			}
+			formSourceType = (FormSourceType) context.getOrDefault(ContextNames.FORM_SOURCE, FormSourceType.FROM_FORM);
+			isFromBuilder = formSourceType == formSourceType.FROM_BUILDER;
+			handleFields(module, form);
 		}
 		
 		return false;
+	}
+	
+	private void handleFields(FacilioModule module, FacilioForm form) throws Exception {
+		boolean isAssetModule = AssetsAPI.isAssetsModule(module);
+		for (FormSection section : form.getSections()) {
+			if (section.getSubForm() != null) {
+				FacilioForm subForm = section.getSubForm();
+				handleFields(subForm.getModule(), subForm);
+			}
+			else {
+				for(FormField field: section.getFields()) {
+					if (formSourceType == FormSourceType.FROM_BULK_FORM) {
+						field.setValue(null);
+					}
+					else if (!isFromBuilder) {
+						handleDefaultValue(field);
+					}
+					else {
+						handleFloorPlanConfig(field);
+					}
+					setLookupName(field, module.getName(), isFromBuilder);
+					addFilters(module, field, isAssetModule);
+					setValidations(field);
+				}
+			}
+		}
 	}
 	
 	private void handleDefaultValue(FormField formField) throws Exception {
@@ -99,7 +113,7 @@ public class HandleFormFieldsCommand extends FacilioCommand {
 		FacilioField field = formField.getField();
 		boolean isLookup = formField.getDisplayTypeEnum() == FieldDisplayType.LOOKUP_SIMPLE || formField.getDisplayTypeEnum() == FieldDisplayType.MULTI_LOOKUP_SIMPLE;
 		// If its a lookup field or a special lookup form field
-		if ((field != null && field instanceof BaseLookupField && !isFromBuilder && isLookup) || isLookup) {
+		if (isLookup && (!isFromBuilder || field == null)) {
 			if (formField.getConfig() != null) {
 				JSONObject config = formField.getConfig();
 				boolean filterEnabled = (boolean) config.getOrDefault("isFiltersEnabled", false);
