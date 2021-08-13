@@ -176,27 +176,6 @@ public class V3Util {
                 bodyParams, queryParams, stateTransitionId, customButtonId, approvalTransitionId);
     }
 
-//    public static Map<String, List<ModuleBaseWithCustomFields>> getRecordsForBulkPatch(String moduleName, List<Long> ids) throws Exception {
-//        FacilioChain listChain = ChainUtil.getListChain(moduleName);
-//        FacilioContext context = listChain.getContext();
-//        FacilioModule module = ChainUtil.getModule(moduleName);
-//
-//        Criteria idCriteria = new Criteria();
-//        idCriteria.addAndCondition(CriteriaAPI.getIdCondition(ids, module));
-//        context.put(Constants.BEFORE_FETCH_CRITERIA, idCriteria);
-//
-//        V3Config v3Config = ChainUtil.getV3Config(moduleName);
-//
-//        Constants.setModuleName(context, moduleName);
-//        Constants.setV3config(context, v3Config);
-//        Class beanClass = ChainUtil.getBeanClass(v3Config, module);
-//        context.put(Constants.BEAN_CLASS, beanClass);
-//        listChain.execute();
-//
-//        Map<String, List<ModuleBaseWithCustomFields>> recordMap = Constants.getRecordMap(context);
-//        return recordMap;
-//    }
-
     public static FacilioContext getSummary(String moduleName, List<Long> ids) throws Exception {
         return getSummary(moduleName, ids, null);
     }
@@ -217,6 +196,29 @@ public class V3Util {
         Constants.setV3config(context, config);
 
         fetchRecordChain.execute();
+
+        return context;
+    }
+
+    /**
+     * Deletes module record of a particular module.
+     * @param moduleName, whose data to be deleted.
+     * @param deleteObj, moduleName as a key, with List of recordIds as value
+     * @param bodyParams, additional parameters to be sent from client
+     * @return
+     * @throws Exception
+     */
+    public static FacilioContext deleteRecords(String moduleName, Map<String, Object> deleteObj, Map<String, Object> bodyParams) throws Exception {
+        FacilioChain deleteChain = ChainUtil.getDeleteChain(moduleName);
+
+        FacilioContext context = deleteChain.getContext();
+        V3Config v3Config = ChainUtil.getV3Config(moduleName);
+        Constants.setV3config(context, v3Config);
+
+        Constants.setModuleName(context, moduleName);
+        Constants.setRawInput(context, deleteObj);
+        Constants.setBodyParams(context, bodyParams);
+        deleteChain.execute();
 
         return context;
     }
