@@ -57,6 +57,7 @@ public class GetEmployeeOccupantPortalSummaryCommand extends FacilioCommand {
         deskLookups.add(buildingField);
         LookupField floorField = (LookupField) deskfieldsAsMap.get("floor");
         deskLookups.add(floorField);
+        FacilioField deskIdField = FieldFactory.getIdField(deskModule);
         
         SelectRecordsBuilder<V3DeskContext> deskbuilder = new SelectRecordsBuilder<V3DeskContext>()
                 .moduleName(deskModule.getName())
@@ -77,6 +78,10 @@ public class GetEmployeeOccupantPortalSummaryCommand extends FacilioCommand {
         List<FacilioField> bookingfields = modBean.getAllFields(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
         Map<String, FacilioField> bookingfieldsAsMap = FieldFactory.getAsMap(bookingfields);
         FacilioModule pplModule = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
+        FacilioModule facilityModule = modBean.getModule(FacilioConstants.ContextNames.FacilityBooking.FACILITY);
+        FacilioField facilityIdField = FieldFactory.getIdField(facilityModule);
+        Map<String, FacilioField> facilityfields = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.ContextNames.FacilityBooking.FACILITY));
+        FacilioField parentIdField = facilityfields.get("parentId");
         
         List<SupplementRecord> fetchLookupsList = new ArrayList<>();
         LookupField facilityField = (LookupField) bookingfieldsAsMap.get("facility");
@@ -107,9 +112,9 @@ public class GetEmployeeOccupantPortalSummaryCommand extends FacilioCommand {
         
         reservedDesksbuilder
         	.innerJoin(FacilioConstants.ContextNames.FacilityBooking.FACILITY)
-        	.on("FacilityBooking.FACILITY_ID = Facility.ID")
+        	.on(facilityField.getCompleteColumnName() + " = " + facilityIdField.getCompleteColumnName())
         	.innerJoin(FacilioConstants.ContextNames.Floorplan.DESKS)
-        	.on("Facility.PARENT_ID = Desks.ID");
+        	.on(parentIdField.getCompleteColumnName() + " = "+ deskIdField.getCompleteColumnName());
         					
         
         if(recordId > -1) {
