@@ -429,30 +429,6 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         this.setData("attachments", FieldUtil.getAsJSON(attachmentNameVsId));
     }
 
-
-
-    private void deleteHandler(String moduleName, Map<String, Object> deleteObj, Map<String, Object> bodyParams) throws Exception {
-        FacilioChain deleteChain = ChainUtil.getDeleteChain(moduleName);
-
-        FacilioContext context = deleteChain.getContext();
-        V3Config v3Config = ChainUtil.getV3Config(moduleName);
-        Constants.setV3config(context, v3Config);
-
-        Constants.setModuleName(context, moduleName);
-        Constants.setRawInput(context, deleteObj);
-        Constants.setBodyParams(context, bodyParams);
-        deleteChain.execute();
-
-        Map<String, Integer> countMap = Constants.getCountMap(context);
-
-        if (MapUtils.isEmpty(countMap)) {
-            throw new RESTException(ErrorCode.RESOURCE_NOT_FOUND);
-        }
-
-        this.setData(FieldUtil.getAsJSON(countMap));
-    }
-
-
     public String summary() throws Exception {
         try {
             handleSummaryRequest(this.getModuleName(), this.getId());
@@ -612,7 +588,13 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
 
     public String delete() {
         try {
-            deleteHandler(this.getModuleName(), this.getData(), this.getParams());
+            FacilioContext context = V3Util.deleteRecords(getModuleName(), getData(), getParams());
+            Map<String, Integer> countMap = Constants.getCountMap(context);
+            if (MapUtils.isEmpty(countMap)) {
+                throw new RESTException(ErrorCode.RESOURCE_NOT_FOUND);
+            }
+
+            this.setData(FieldUtil.getAsJSON(countMap));
             return SUCCESS;
         } catch (Exception ex) {
             return handleException(ex);
