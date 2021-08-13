@@ -227,6 +227,14 @@ public class FormField implements Serializable {
 	public void setHideField(Boolean hideField) {
 		this.hideField = hideField;
 	}
+	@JSON(serialize = false)
+	@JsonIgnore
+	public boolean isFieldHidden() {
+		if (hideField == null) {
+			return false;
+		}
+		return hideField;
+	}
 	
 	private Boolean isDisabled;
 
@@ -273,7 +281,6 @@ public class FormField implements Serializable {
 	}
 
 	private JSONObject config;
-	@JSON(serialize = false)
 	public String getConfigStr() {
 		if (config != null) {
 			return config.toJSONString();

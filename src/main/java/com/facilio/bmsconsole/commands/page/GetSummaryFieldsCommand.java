@@ -85,7 +85,7 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 
 		if (formFields == null) {
 			Long formSectionId = widgetParams != null ? (Long) widgetParams.get("formSectionId") : null;
-			
+
 			FacilioForm form = fetchForm(formId);
 			if (form == null) {
 				formFields = getFieldsAsFormFields(modBean);
@@ -94,11 +94,12 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 				formFields = form.getFields().stream().filter(formField -> ( 
 						(formSectionId == null || formField.getSectionId() == formSectionId) &&
 						formField.getField() != null  && !formField.getField().isMainField()  &&
-						(formField.getHideField() == null || formSectionId == null || !formField.getHideField())))
+						!formField.isFieldHidden() || (formSectionId == null && isValPresent(formField.getField()) ) ))
 						.collect(Collectors.toList());
 			}
 
-			if (formSectionId == null) {	
+			// If formSectionId present, Widget will be shown based on form order and the fields in that section only
+			if (formSectionId == null) {	 
 				int count = Collections.max(formFields, Comparator.comparing(s -> s.getSequenceNumber())).getSequenceNumber();
 				List<String> existingFieldNames = formFields.stream().map(FormField::getName).collect(Collectors.toList());
 				count = addModuleAndSystemFields(modBean, formFields, existingFieldNames, count);
@@ -127,7 +128,7 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 
 		return (FacilioForm) formContext.get(FacilioConstants.ContextNames.FORM);
 	}
-	
+
 	// Till all forms are moved to db
 	private String getSpaceForm(long formId) {
 		String name = null;
@@ -184,7 +185,7 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 				additionalFields.addAll(transitionFields);
 			}
 		}
-		
+
 		boolean isSystemFieldsPresent = FieldUtil.isSystemFieldsPresent(module);
 		if (!isSystemFieldsPresent) { // For system fields in db
 			additionalFields.addAll(FieldFactory.getSystemFieldNames());
@@ -200,7 +201,7 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 		}
 		return count;
 	}
-	
+
 	private void addFieldsonBottom(ModuleBean modBean, List<FormField> formFields,List<String> existingFieldNames, int count) throws Exception {
 		List<String> additionalFields = new ArrayList<>();
 		boolean isAssetModule = AssetsAPI.isAssetsModule(module);
@@ -227,7 +228,7 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 		}
 		addAdditionalFields(additionalFields, formFields, existingFieldNames, count);
 	}
-	
+
 	private void addAdditionalFields(List<String> additionalFields, List<FormField> formFields,List<String> existingFieldNames, int count) {
 		if (!additionalFields.isEmpty()) {
 			for(FacilioField field: allFields) {
@@ -271,22 +272,27 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 			if (CollectionUtils.isNotEmpty(props)) {
 				List<Long> fieldIds = props.stream().map(prop -> (long)prop.get("fieldId")).collect(Collectors.toList());
 				List<FacilioField> fields = modBean.getFields(fieldIds);
-				return fields.stream().filter(field -> {
-					Object value = null;
-					if (field.isDefault()) {
-                        try {
-							value = PropertyUtils.getProperty(record, field.getName());
-						} catch (Exception e) {
-							LOGGER.error("Exception while getting record data", e);
-						}
-                    } else {
-                        value = record.getDatum(field.getName());
-                    }
-					return value != null;
-				}).map(prop -> prop.getName()).collect(Collectors.toList());
+				return fields.stream().filter(field -> isValPresent(field)).map(prop -> prop.getName()).collect(Collectors.toList());
 			}
 		}
 		return null;
+	}
+
+	private boolean isValPresent(FacilioField field) {
+		if (field == null) {
+			return false;
+		}
+		Object value = null;
+		if (field.isDefault()) {
+			try {
+				value = PropertyUtils.getProperty(record, field.getName());
+			} catch (Exception e) {
+				LOGGER.error("Exception while getting record data", e);
+			}
+		} else {
+			value = record.getDatum(field.getName());
+		}
+		return value != null;
 	}
 
 
@@ -346,7 +352,7 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 					"requestedBy",
 			}))
 			.build();
-	
+
 	Map<String, List<String>> bottomFields = ImmutableMap.<String, List<String>>builder()
 			.put(ContextNames.ASSET,  Arrays.asList(new String[] {
 					"geoLocation",
