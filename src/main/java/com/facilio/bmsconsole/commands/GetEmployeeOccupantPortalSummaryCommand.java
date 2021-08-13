@@ -111,9 +111,9 @@ public class GetEmployeeOccupantPortalSummaryCommand extends FacilioCommand {
                 .limit(count);
         
         reservedDesksbuilder
-        	.innerJoin(FacilioConstants.ContextNames.FacilityBooking.FACILITY)
+        	.innerJoin(facilityModule.getTableName())
         	.on(facilityField.getCompleteColumnName() + " = " + facilityIdField.getCompleteColumnName())
-        	.innerJoin(FacilioConstants.ContextNames.Floorplan.DESKS)
+        	.innerJoin(deskModule.getTableName())
         	.on(parentIdField.getCompleteColumnName() + " = "+ deskIdField.getCompleteColumnName());
         					
         
