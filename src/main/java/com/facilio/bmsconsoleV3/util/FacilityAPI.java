@@ -107,8 +107,8 @@ public class FacilityAPI {
 
                 while (startTime <= unavailability.getEndDate()) {
 
-                    long startDateTimeOfDay = getZonedTime(startTime, unavailability.getStartTimeAsLocalTime());
-                    long endDateTimeOfDay = getZonedTime(startTime, unavailability.getEndTimeAsLocalTime());
+                    long startDateTimeOfDay = getZonedTime(startTime, unavailability.getActualStartTimeAsLocalTime());
+                    long endDateTimeOfDay = getZonedTime(startTime, unavailability.getActualEndTimeAsLocalTime());
 
                     if(slotStartTime > startDateTimeOfDay && slotStartTime < endDateTimeOfDay){
                         return true;
@@ -159,8 +159,8 @@ public class FacilityAPI {
                 ZonedDateTime cal = DateTimeUtil.getDateTime(startTime);
 
                 while (startTime <= splAvailability.getEndDate()) {
-                    long startDateTimeOfDay = FacilityAPI.getZonedTime(startTime, splAvailability.getStartTimeAsLocalTime());
-                    long endDateTimeOfDay = FacilityAPI.getZonedTime(startTime, splAvailability.getEndTimeAsLocalTime());
+                    long startDateTimeOfDay = FacilityAPI.getZonedTime(startTime, splAvailability.getActualEndTimeAsLocalTime());
+                    long endDateTimeOfDay = FacilityAPI.getZonedTime(startTime, splAvailability.getActualEndTimeAsLocalTime());
 
                     while (startDateTimeOfDay <= endDateTimeOfDay && DateTimeUtil.getDayStartTimeOf(startDateTimeOfDay) <= endDateTime) {
                         SlotContext slot = new SlotContext();
@@ -195,12 +195,6 @@ public class FacilityAPI {
 
             while (startDay <= endDateTime) {
                 int day = cal.get(ChronoField.DAY_OF_WEEK);
-//                if(cal.get(ChronoField.DAY_OF_WEEK) ==  1)  {
-//                    day = 7;
-//                }
-//                else {
-//                    day = cal.get(ChronoField.DAY_OF_WEEK) - 1;
-//                }
                 if (weekDayMap.containsKey(day)) {
                         List<WeekDayAvailability> weekDaysForDay = weekDayMap.get(day);
                         if (CollectionUtils.isNotEmpty(weekDaysForDay)) {
