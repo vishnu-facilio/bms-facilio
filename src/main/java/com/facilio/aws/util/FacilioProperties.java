@@ -54,6 +54,9 @@ public class FacilioProperties {
     private static String environment;
     private static String kafkaProducer;
     private static String kafkaConsumer;
+    private static String kafkaAuthMode;
+    private static String kafkaSaslUsername;
+    private static String kafkaSaslPassword;
     private static String nodejs;
     private static String pdfjs;
     private static String anomalyTempDir;
@@ -179,6 +182,10 @@ public class FacilioProperties {
                 stageDomains = parseCommaSeparatedProps("stage.domains", PROPERTIES.getProperty("stage.domains"));
                 kafkaProducer = PROPERTIES.getProperty("kafka.producer");
                 kafkaConsumer = PROPERTIES.getProperty("kafka.consumer");
+                kafkaAuthMode = PROPERTIES.getProperty("kafka.auth.mode", "none");
+                kafkaSaslUsername = PROPERTIES.getProperty("kafka.sasl.username");
+                kafkaSaslPassword = PROPERTIES.getProperty("kafka.sasl.password");
+
                 nodejs = PROPERTIES.getProperty("nodejs");
                 isSmtp = "smtp".equalsIgnoreCase(PROPERTIES.getProperty("email.type"));
                 isServicesEnabled="enabled".equalsIgnoreCase(PROPERTIES.getProperty("services.isEnabled"));
@@ -385,7 +392,20 @@ public class FacilioProperties {
     public static String getKafkaConsumer() {
         return kafkaConsumer;
     }
-    
+
+
+    public static String getKafkaAuthMode() {
+        return kafkaAuthMode;
+    }
+
+    public static String getKafkaSaslUsername() {
+        return kafkaSaslUsername;
+    }
+
+    public static String getKafkaSaslPassword() {
+        return kafkaSaslPassword;
+    }
+
     public static String getNodeJSLocation() {
     	if (nodejs != null && !nodejs.trim().isEmpty()) {
     		return nodejs;

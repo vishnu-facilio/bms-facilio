@@ -33,6 +33,7 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
     }
 
     private Properties getConsumerProperties(String client, String consumerGroup) {
+
         Properties props = new Properties();
         props.put("bootstrap.servers", FacilioProperties.getKafkaConsumer());
         props.put("group.id", consumerGroup);
@@ -46,6 +47,15 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
         props.put("client.id", client);
         props.put("max.poll.interval.ms",3000000);
         props.put("max.poll.records", 10);
+        if (FacilioProperties.getKafkaAuthMode().equalsIgnoreCase("sasl_ssl")) {
+            String username = FacilioProperties.getKafkaSaslUsername();
+            String password = FacilioProperties.getKafkaSaslPassword();
+            String jaasTemplate = "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"%s\" password=\"%s\";";
+            String jaasCfg = String.format(jaasTemplate, username, password);
+            props.put("security.protocol", "SASL_SSL");
+            props.put("sasl.mechanism", "SCRAM-SHA-512");
+            props.put("sasl.jaas.config", jaasCfg);
+        }
         return props;
     }
 
