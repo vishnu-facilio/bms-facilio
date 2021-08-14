@@ -15,7 +15,7 @@ public class ModuleTranslationUtils {
 
     public static final String PREFIX_MODULE = "module";
     private static final String SUFFIX = "displayName";
-    private static final String PREFIX_FIELD ="field";
+    public static final String PREFIX_FIELD ="field";
 
     public static String getTranslationKey(String linkName){
         return PREFIX_MODULE+"."+linkName.trim()+"."+SUFFIX;
