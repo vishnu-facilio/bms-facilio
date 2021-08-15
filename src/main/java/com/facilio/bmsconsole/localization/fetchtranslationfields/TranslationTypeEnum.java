@@ -17,11 +17,12 @@ public enum TranslationTypeEnum {
     VIEWS(WebTabContext.Type.MODULE,new GetViewTranslationFields()),
     VIEW_FOLDER(WebTabContext.Type.MODULE,new GetViewFolderTranslationFields()),
     BUTTONS(WebTabContext.Type.MODULE, new GetButtonTranslationFields()),
-    STATE_FLOWS(WebTabContext.Type.MODULE,new GetStateFlowTranslationFields()),
+    STATES(WebTabContext.Type.MODULE,new GetStateTranslationFields()),
     FORMS(WebTabContext.Type.MODULE,new GetFormTranslationFields()),
     FORM_FIELDS(WebTabContext.Type.MODULE, new GetFormFieldTranslationFields()),
     FIELDS(WebTabContext.Type.MODULE,new GetFieldTranslationFileds()),
-    WEB_TAB(WebTabContext.Type.MODULE,new GetWebTabTranslationFields())
+    WEB_TAB(WebTabContext.Type.MODULE,new GetWebTabTranslationFields()),
+    STATE_TRANSITION(WebTabContext.Type.MODULE,new GetStateTransitionTranslationFields())
     ;
 
     private static final Map<String, TranslationTypeEnum> TRANSLATION_TYPE_ENUM_MAP = initTranslationWiseType();
