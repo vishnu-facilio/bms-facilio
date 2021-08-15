@@ -16,6 +16,7 @@ public class ModuleTranslationUtils {
     public static final String PREFIX_MODULE = "module";
     private static final String SUFFIX = "displayName";
     public static final String PREFIX_FIELD ="field";
+    public static final String PREFIX_FIELD_OPTIONS= "fieldOption";
 
     public static String getTranslationKey(String linkName){
         return PREFIX_MODULE+"."+linkName.trim()+"."+SUFFIX;
@@ -23,6 +24,11 @@ public class ModuleTranslationUtils {
     public static String getFieldTranslationKey ( String linkName ) {
         return PREFIX_FIELD+"."+linkName.trim()+"."+SUFFIX;
     }
+
+    public static String getFieldOptionsTranslationKey ( String linkName ) {
+        return PREFIX_FIELD_OPTIONS+"."+linkName.trim()+"."+SUFFIX;
+    }
+
     static JSONObject constructJSONObject ( List<FacilioField> fields,FacilioModule module,Properties translationFile ) {
         JSONObject prop = new JSONObject();
         if(translationFile != null) {

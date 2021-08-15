@@ -52,7 +52,7 @@ public class GetFieldTranslationFileds implements TranslationTypeInterface {
                             JSONArray fieldOptions = new JSONArray();
                             for (EnumFieldValue enumFieldValue : enumFieldValues) {
                                 String id = String.valueOf(enumFieldValue.getId());
-                                String optionKey = ModuleTranslationUtils.getTranslationKey(id);
+                                String optionKey = ModuleTranslationUtils.getFieldOptionsTranslationKey(id);
                                 fieldOptions.add(TranslationsUtil.constructJSON(enumFieldValue.getValue(),"fieldOption",TranslationConstants.DISPLAY_NAME,id,optionKey,properties));
                             }
                             fieldJson.put("fieldOptions",fieldOptions);
