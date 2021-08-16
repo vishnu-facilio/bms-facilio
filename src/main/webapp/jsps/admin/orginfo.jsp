@@ -295,37 +295,6 @@ function showLicense() {
 		<% } %>
 	</div>
 </div>
-<% if (org != null) { %>
-	<form action="statusLog">
- 		<div class=" col-lg-12 col-md-12">
-			<br>
-			<input type = "hidden" name = "orgid" value="<%= orgid %>" />
-			<br>
-			<br>
-			<br>
-			<label for="loggerlevel">
-				<h4>LoggerLevel:</h4>
-			</label>
-			<select name="loggerlevel" id="loggerlevel">
-				<option value="" disabled selected>Select</option>
-				<option value="<%=0%>">ALL</option>
-				<option value="<%=1%>">TRACE</option>
-				<option value="<%=2%>">DEBUG</option>
-				<option value="<%=3%>">INFO</option>
-				<option value="<%=4%>">WARN</option>
-				<option value="<%=5%>">ERROR</option>
-				<option value="<%=6%>">FATAL</option>
-				<option value="<%=7%>">OFF</option>
-				<option value="<%=-99%>">NULL</option>
-			</select>
-			<br>
-			<input type="submit" style="margin-left: 150px" name="statusLog" value="Submit" />
-			<br>
-			<br>
-			<br>
-		</div>
-	</form>
-<% } %>
 
 <style>
 .org-th {
