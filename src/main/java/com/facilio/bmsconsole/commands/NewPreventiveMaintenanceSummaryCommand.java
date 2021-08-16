@@ -69,7 +69,10 @@ public class NewPreventiveMaintenanceSummaryCommand extends FacilioCommand {
 		pm.setTriggers(PreventiveMaintenanceAPI.getPMTriggers(pm));
 
 		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
-		if (superAdmin.getOuid() == AccountUtil.getCurrentUser().getOuid()) {
+
+		// TODO: hotfix, to be worked upon and brought out as a feature - roles which could execute PM
+		if (superAdmin.getOuid() == AccountUtil.getCurrentUser().getOuid() ||
+				AccountUtil.getCurrentUser().getRole().getName().equals("Administrator")) {
 			pm.setIsAllowedToExecute(true);
 		} else {
 			pm.setIsAllowedToExecute(isAllowedToExecute(pm));
