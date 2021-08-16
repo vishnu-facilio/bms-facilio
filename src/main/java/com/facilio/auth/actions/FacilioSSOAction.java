@@ -230,6 +230,7 @@ public class FacilioSSOAction extends FacilioAction {
 			authAction.domainSSOSignIn();
 			JSONObject result = authAction.getResult();
 			if (result.containsKey("url")) {
+				LOGGER.log(Level.SEVERE, "[redirect url] " + result.get("url"));
 				response.sendRedirect((String) result.get("url"));
 				return SUCCESS;
 			}
