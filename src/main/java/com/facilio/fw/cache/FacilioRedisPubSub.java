@@ -3,6 +3,8 @@ package com.facilio.fw.cache;
 import org.apache.log4j.Logger;
 import redis.clients.jedis.JedisPubSub;
 
+import java.text.MessageFormat;
+
 public class FacilioRedisPubSub<V> extends JedisPubSub {
 
     private static final Logger LOGGER = Logger.getLogger(FacilioRedisPubSub.class.getName());
@@ -14,7 +16,7 @@ public class FacilioRedisPubSub<V> extends JedisPubSub {
     }
 
     public void onMessage(String channel, String message) {
-        LOGGER.info("Received message, " + message + " ,on " + channel);
+        LOGGER.info(MessageFormat.format("Received message, {0} ,on {1}", message, channel));
         if(message != null) {
             if (message.equals("all")) {
                 cache.clear();

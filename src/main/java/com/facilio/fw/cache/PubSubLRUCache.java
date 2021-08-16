@@ -1,5 +1,6 @@
 package com.facilio.fw.cache;
 
+import java.text.MessageFormat;
 import java.util.*;
 
 import com.facilio.aws.util.FacilioProperties;
@@ -157,9 +158,10 @@ public class PubSubLRUCache<V> implements FacilioCache<String, V>  {
             long startTime = System.currentTimeMillis();
             updateRedisDeleteCount();
             try (Jedis jedis = redis.getJedis()) {
+                LOGGER.info(MessageFormat.format("Sending message, {0} ,on {1}", redisKey, name));
                 jedis.publish(name, redisKey);
             } catch (Exception e) {
-                LOGGER.debug("Exception while removing key in Redis. ");
+                LOGGER.error("Exception while removing key in Redis. ", e);
             } finally {
                 updateRedisDeleteTime((System.currentTimeMillis()-startTime));
             }
