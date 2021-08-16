@@ -17,6 +17,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.util.FacilioUtil;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.PMPlannerSettingsContext;
 import com.facilio.bmsconsole.context.PMPlannerSettingsContext.PlannerType;
@@ -376,8 +377,8 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 					List<Map<String, Object>> titleRow = (List<Map<String, Object>>) titleData.get("data");
 					Map<String, Object> leafNode = titleRow.get(titleRow.size() - 1);
 					// TODO:: To be refactored; count is returned as int as well as long on case on case basis.
-					long count = Long.parseLong(leafNode.get("count").toString());
-
+					long count = FacilioUtil.parseLong(leafNode.get("count"));
+					
 					List<Map<String, Object>> filteredList = props.subList((int) totalCount, ((int) totalCount + (int) count));
 
 					if (showTimeMetric) {
