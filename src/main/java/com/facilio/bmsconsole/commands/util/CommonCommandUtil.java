@@ -602,7 +602,11 @@ public class CommonCommandUtil {
 				}
 			}
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-
+			if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 445) {
+				if (moduleName != null && moduleName.equalsIgnoreCase("compressorenable")) {
+					LOGGER.info("module: compressorenable, context obj : " + context);
+				}
+			}
 			if (moduleName != null && !moduleName.isEmpty() && readings != null && !readings.isEmpty()) {
 				readingMap = Collections.singletonMap(moduleName, readings);
 				context.put(FacilioConstants.ContextNames.READINGS_MAP, readingMap);

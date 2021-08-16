@@ -264,7 +264,7 @@ public class WorkflowRuleAPI {
 	}
 	
 	private static void fillExtraParamsForWorkflowV2(WorkflowContext workflow) {
-		
+
 		if(workflow.getParameters() != null && !workflow.getParameters().isEmpty()) {
 			
 			int size = workflow.getParameters().size();
@@ -1076,6 +1076,10 @@ public class WorkflowRuleAPI {
 
 		if (AccountUtil.getCurrentOrg().getId() == 393) {
 			LOGGER.info("Result of rule : "+workflowRule.getId()+" for record : "+record+" is \nSite ID : "+siteId+"\nField Change : "+fieldChangeFlag+"\nMisc Flag : "+miscFlag+"\nCriteria Flag : "+criteriaFlag+"\nWorkflow Flag : "+workflowFlag);
+		}
+
+		if (AccountUtil.getCurrentOrg().getId() == 445) {
+			LOGGER.info("Result of rule : "+result + " rule : " + workflowRule+",  for record : "+record+" is \nSite ID : "+siteId+"\nField Change : "+fieldChangeFlag+"\nMisc Flag : "+miscFlag+"\nCriteria Flag : "+criteriaFlag+"\nWorkflow Flag : "+workflowFlag);
 		}
 		
 		if ((workflowRule.getParentRuleId() == 77401l || workflowRule.getId() == 77401l) && workflowRule.getOrgId() == 324l) {

@@ -49,7 +49,7 @@ public class CalculatePostFormulaCommand extends FacilioCommand {
 			List<FormulaFieldContext> formulaFields = FormulaFieldAPI.getActiveFormulasDependingOnFields(TriggerType.POST_LIVE_READING, fieldIds);
 			LOGGER.debug("Post Formulas of modules : "+readingMap.keySet());
 			LOGGER.debug(formulaFields);
-			if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339) {
+			if (AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getId() == 339 || AccountUtil.getCurrentOrg().getId() == 405)) {
 				LOGGER.info("Post Formulas of modules : " + readingMap.keySet());
 				LOGGER.info("Post live fields " + fieldIds + " live Formulas " + formulaFields);
 			}

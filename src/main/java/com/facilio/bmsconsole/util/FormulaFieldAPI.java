@@ -374,7 +374,7 @@ public class FormulaFieldAPI {
 
 				}
 				catch (Exception e) {
-					LOGGER.log(Level.ERROR, e.getMessage(), e);
+					LOGGER.error("calculateFormulaReadings failed. resource id : " + resourceId + " , field name : " + fieldName + ", intervals : " + intervals +", workflow : " + workflow , e );
 					if (e.getMessage() == null || !(e.getMessage().contains("Division by zero") || e.getMessage().contains("Division undefined")  || e.getMessage().contains("/ by zero"))) {
 						CommonCommandUtil.emailException("FormulaFieldAPI", "Formula calculation failed for : "+fieldName+" between "+iStartTime+" and "+iEndTime, e);
 					}
@@ -562,12 +562,12 @@ public class FormulaFieldAPI {
 														.andCondition(CriteriaAPI.getCondition(frequencyField, StringUtils.join(types, ","), NumberOperators.EQUALS))
 														.andCondition(CriteriaAPI.getCondition(active, String.valueOf(true), BooleanOperators.IS))
 														;
-		
-		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339) {
-			LOGGER.info(" getActiveScheduledFormulasOfFrequencyType: " + selectBuilder.get() + " types: "+ types);
-		}
-		
-		return getFormulaFieldsFromProps(selectBuilder.get(), false);
+
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		LOGGER.info(" active schedule formula:  types: "+ types + " , qry : " + selectBuilder);
+
+		return getFormulaFieldsFromProps(props, false);
 		
 	}
 	

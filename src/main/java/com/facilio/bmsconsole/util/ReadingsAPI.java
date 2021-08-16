@@ -377,7 +377,13 @@ public class ReadingsAPI {
 													.table(module.getTableName())
 //													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCriteria(pkCriteriaList);
-		return getRDMMapFromProps(builder.get(), fieldIdMap);
+		List<Map<String, Object>>  res = builder.get();
+		if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 445) {
+			if (res == null || res.isEmpty()) {
+				LOGGER.info("rdm data is null. module : " + module + " rdm pairs: " + rdmPairs + " , query : " + builder);
+			}
+		}
+		return getRDMMapFromProps(res, fieldIdMap);
 	}
 	
 	public static long getReadingDataMetaCount(Long resourceId, boolean excludeEmptyFields, String search, ReadingInputType...inputTypes) throws Exception {
