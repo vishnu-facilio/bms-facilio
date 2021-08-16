@@ -366,34 +366,33 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 			
 			if (CollectionUtils.isNotEmpty(props)) {
 				List<Map<String, Object>> row;
-				int totalCount = 0;
+				long totalCount = 0;
 				
 				for(int i = 0, rowCount = titles.size(); i < rowCount; i++) {
 					row = new ArrayList<>();
 					datas.add(row);
-					
+
 					Map<String, Object> titleData = titles.get(i);
 					List<Map<String, Object>> titleRow = (List<Map<String, Object>>) titleData.get("data");
 					Map<String, Object> leafNode = titleRow.get(titleRow.size() - 1);
-					int count = (int)leafNode.get("count");
-					
-					List<Map<String, Object>> filteredList = props.subList(totalCount, totalCount+count);
-					
+					// TODO:: To be refactored; count is returned as int as well as long on case on case basis.
+					long count = Long.parseLong(leafNode.get("count").toString());
+
+					List<Map<String, Object>> filteredList = props.subList((int) totalCount, ((int) totalCount + (int) count));
+
 					if (showTimeMetric) {
-						for(int j = 0; j < selectedMetrics.size(); j++) {
+						for (int j = 0; j < selectedMetrics.size(); j++) {
 							String metric = selectedMetrics.get(j);
-							
+
 							if (j != 0) {
 								row = new ArrayList<>();
 								datas.add(row);
 								sort(row);
-								
+
 								i++;
 							}
-							
 							addData(row, new ArrayList<>(filteredList), metric, count, totalCount, j != 0);
 							sort(row);
-							
 						}
 					}
 					else {
@@ -501,7 +500,7 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 					prevHeader.put("rowSpan", rowSpan + rowDefaultSpan);
 				}
 				if (i + 1 == size) {
-					int count = (int)(long) prop.get(countField.getName());
+					int count = (int) (long) prop.get(countField.getName());
 					prevHeader.put("count", count);
 					totalRecordCount += count;
 				}
@@ -509,19 +508,16 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 			}
 		}
 	}
-	
-	private void addData(List<Map<String, Object>> row, List<Map<String, Object>> props, String metricField, long count, int totalCount, boolean isClone) {
-		for(int j = 0; j < props.size(); j++) {
+
+	private void addData(List<Map<String, Object>> row, List<Map<String, Object>> props, String metricField, long count, long totalCount, boolean isClone) {
+		for (int j = 0; j < props.size(); j++) {
 			Map<String, Object> prop = props.get(j);
 			if (!isClone) {
 				Map<String, Object> resource = (Map<String, Object>) prop.get("resource");
-				if(plannerType.equals(plannerType.ASSET_PLANNER))
-				{
-				prop.put("asset", resourceIdVsName.get(resource.get("id")));
-				}
-				else if(plannerType.equals(plannerType.SPACE_PLANNER))
-				{
-				prop.put("space", resourceIdVsName.get(resource.get("id")));
+				if (plannerType.equals(plannerType.ASSET_PLANNER)) {
+					prop.put("asset", resourceIdVsName.get(resource.get("id")));
+				} else if (plannerType.equals(plannerType.SPACE_PLANNER)) {
+					prop.put("space", resourceIdVsName.get(resource.get("id")));
 				}
 			}
 			prop.put("time", metricField);
