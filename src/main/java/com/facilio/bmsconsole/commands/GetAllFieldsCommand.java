@@ -184,11 +184,11 @@ public class GetAllFieldsCommand extends FacilioCommand {
 			}
 			fields.removeAll(fieldsToRemove);
 			fields.addAll(FieldFactory.getSystemPointFields(mod));
-		} else if (Arrays.asList(ContextNames.SERVICE_REQUEST, ContextNames.QUOTE, ContextNames.PURCHASE_ORDER, ContextNames.PURCHASE_REQUEST, ContextNames.SAFETY_PLAN, ContextNames.HAZARD, ContextNames.PRECAUTION, ContextNames.MOVES, ContextNames.VENDORS, ContextNames.INSURANCE).contains(mod.getName())) {
+		} else if (Arrays.asList(ContextNames.SERVICE_REQUEST, ContextNames.QUOTE, ContextNames.PURCHASE_ORDER, ContextNames.PURCHASE_REQUEST, ContextNames.SAFETY_PLAN, ContextNames.HAZARD, ContextNames.PRECAUTION, ContextNames.MOVES, ContextNames.VENDORS, ContextNames.INSURANCE, ContextNames.ASSET).contains(mod.getName())) {
 			fields.addAll(FieldFactory.getSystemPointFields(mod));
 		}
 		
-		if (moduleName.equals("workorder") || moduleName.equals("asset") || moduleName.equals("tenant")) {
+		if (Arrays.asList(ContextNames.WORK_ORDER, ContextNames.TENANT, ContextNames.ASSET, ContextNames.SERVICE_REQUEST).contains(mod.getName())) {
 			fields.add(FieldFactory.getSiteIdField());
 		}
 		
