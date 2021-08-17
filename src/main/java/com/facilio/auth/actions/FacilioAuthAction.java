@@ -864,6 +864,7 @@ public class FacilioAuthAction extends FacilioAction {
 			return SUCCESS;
 		} else {
 			Organization defaultOrg = IAMUserUtil.getDefaultOrg((long) userInfo.get("uid"));
+			setDomain(defaultOrg.getDomain());
 			var securityPolicy = IAMUserUtil.getUserSecurityPolicy(emailFromDigest, AppDomain.GroupType.FACILIO);
 			var resetRequired = false;
 			if (securityPolicy != null && securityPolicy.getIsPwdPolicyEnabled() != null && securityPolicy.getIsPwdPolicyEnabled() && securityPolicy.getPwdMinAge() != null) {
@@ -944,6 +945,7 @@ public class FacilioAuthAction extends FacilioAction {
 					List<Map<String, Object>> userData = IAMUserUtil.getUserData(getUsername(), AppDomain.GroupType.FACILIO);
 					Map<String, Object> userMap = userData.get(0);
 					Organization defaultOrg = IAMUserUtil.getDefaultOrg((long) userMap.get("uid"));
+					setDomain(defaultOrg.getDomain());
 					LOGGER.log(Level.INFO,"validateLogin() : default org id : " + defaultOrg.getOrgId());
 					securityPolicy = IAMUserUtil.getUserSecurityPolicy(getUsername(), AppDomain.GroupType.FACILIO);
 					LOGGER.log(Level.INFO,"validateLogin() : security policy is null : " + (securityPolicy == null));
@@ -1721,20 +1723,25 @@ public class FacilioAuthAction extends FacilioAction {
 		return getProtocol() + "://" + baseUrl;
 	}
 	
-	private String getBaseUrl() {
+	private String getBaseUrl() throws Exception {
 		StringBuilder baseUrl = new StringBuilder(getProtocol()).append("://");
+		Organization org = IAMOrgUtil.getOrg(getDomain());
 		if (StringUtils.isNotEmpty(getLookUpType())) {
 			baseUrl.append(getDomain()).append(".");
 			if (getLookUpType().equalsIgnoreCase("service") ) {
-				baseUrl.append(FacilioProperties.getOccupantAppDomain());
+				List<AppDomain> appDomain = IAMAppUtil.getAppDomain(AppDomainType.SERVICE_PORTAL, org.getOrgId());
+				baseUrl.append(appDomain.stream().filter(i -> i.getDomainTypeEnum() == AppDomain.DomainType.DEFAULT).findAny().get().getDomain());
 			} else if (getLookUpType().equalsIgnoreCase("tenant")) {
-				baseUrl.append(FacilioProperties.getTenantAppDomain());
+				List<AppDomain> appDomain = IAMAppUtil.getAppDomain(AppDomainType.TENANT_PORTAL, org.getOrgId());
+				baseUrl.append(appDomain.stream().filter(i -> i.getDomainTypeEnum() == AppDomain.DomainType.DEFAULT).findAny().get().getDomain());
 			} else if (getLookUpType().equalsIgnoreCase("vendor")) {
-				baseUrl.append(FacilioProperties.getVendorAppDomain());
-			} 
+				List<AppDomain> appDomain = IAMAppUtil.getAppDomain(AppDomainType.VENDOR_PORTAL, org.getOrgId());
+				baseUrl.append(appDomain.stream().filter(i -> i.getDomainTypeEnum() == AppDomain.DomainType.DEFAULT).findAny().get().getDomain());
+			}
 		}
 		else {
-			baseUrl.append(FacilioProperties.getMainAppDomain());
+			List<AppDomain> appDomain = IAMAppUtil.getAppDomain(AppDomainType.FACILIO, org.getOrgId());
+			baseUrl.append(appDomain.stream().filter(i -> i.getDomainTypeEnum() == AppDomain.DomainType.DEFAULT).findAny().get().getDomain());
 		}
 		return baseUrl.toString();
 	}
