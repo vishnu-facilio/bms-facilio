@@ -297,7 +297,7 @@ public abstract class EmailClient {
             if (!FacilioProperties.isProduction()) {
                 for (String address : FacilioUtil.splitByComma(emailAddressString)) {
                 	address = MailMessageUtil.getEmailFromPrettifiedFromAddress.apply(address);
-                    if (address.contains("@" + mailDomain) && (!checkActive || checkIfActiveUserFromEmail(address))) {
+                    if (address.contains("@facilio.com") && (!checkActive || checkIfActiveUserFromEmail(address))) {
                         emailAddress.add(address);
                     }
                 }
