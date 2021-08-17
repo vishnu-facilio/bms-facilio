@@ -38,3 +38,12 @@ translation:
 
   - prefix: fieldOption
     suffix: [displayName]
+
+  - prefix: dashboardTab
+    suffix: [displayName]
+
+  - prefix: dashboardWidget
+    suffix: [displayName]
+
+  - prefix: dashboard
+    suffix: [displayName]

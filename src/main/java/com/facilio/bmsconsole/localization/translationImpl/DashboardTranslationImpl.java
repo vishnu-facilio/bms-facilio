@@ -8,8 +8,12 @@ import org.json.simple.JSONObject;
 import java.util.Properties;
 
 public class DashboardTranslationImpl implements TranslationIfc {
+
     public static final String DASHBOARD = "dashboard";
     public static final String DASHBOARD_FOLDER="dashboardFolder";
+    public static final String DASHBOARD_TAB="dashboardTab";
+    public static final String DASHBOARD_WIDGET="dashboardWidget";
+
     @Override
     public JSONObject translate ( JSONObject json,Properties translationFile ) throws Exception {
         JSONArray array = (JSONArray)json.get("dashboardFolders");
@@ -35,5 +39,13 @@ public class DashboardTranslationImpl implements TranslationIfc {
 
     public static String getDashboardFolderKey ( String key ) {
         return DASHBOARD_FOLDER + "." + key + "." + TranslationConstants.DISPLAY_NAME;
+    }
+
+    public static String getDashboardTabKey ( String key ) {
+        return DASHBOARD_TAB + "." + key + "." + TranslationConstants.DISPLAY_NAME;
+    }
+
+    public static String getDashboardWidgetKey ( String key ) {
+        return DASHBOARD_WIDGET + "." + key + "." + TranslationConstants.DISPLAY_NAME;
     }
 }

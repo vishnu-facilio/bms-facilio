@@ -98,6 +98,7 @@ public class TranslationsUtil {
         columnVsType.put("DETAILS","DETAILS");
         columnVsType.put("FIELD_OPTIONS","FIELD OPTIONS");
         columnVsType.put("DASHBOARD_FOLDER","DASHBOARD FOLDER");
+        columnVsType.put("DASHBOARD","DASHBOARD & WIDGETS");
         return columnVsType;
     }
 }
