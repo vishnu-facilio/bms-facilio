@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.services.email.EmailClient;
 import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
@@ -31,9 +32,9 @@ public class SendReadingReportMailCommand extends FacilioCommand {
 		String emailFrom;
 		String viewName = (String) context.get(FacilioConstants.ContextNames.SUB_VIEW);
 		if (viewName != null) {
-			emailFrom = "noreply@${org.domain}.facilio.com";
+			emailFrom = EmailClient.getNoReplyFromEmail();
 		} else {
-			emailFrom = "report@${org.domain}.facilio.com";
+			emailFrom = EmailClient.getFromEmail("report");
 		}
 		EMailTemplate eMailTemplate = (EMailTemplate) context.get(FacilioConstants.Workflow.TEMPLATE);
 		eMailTemplate.setFrom(emailFrom);

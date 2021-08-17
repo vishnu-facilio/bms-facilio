@@ -1,17 +1,16 @@
 package com.facilio.bmsconsoleV3.commands;
 
-import java.util.List;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.command.FacilioCommand;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsoleV3.context.EmailFromAddress;
 import com.facilio.chain.FacilioContext;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.util.DisplayNameToLinkNameUtil;
 import com.facilio.v3.context.Constants;
+import org.apache.commons.chain.Context;
+
+import java.util.List;
 
 public class EmailFromAddressAddDefaultValuesCommand extends FacilioCommand {
 
@@ -38,8 +37,8 @@ public class EmailFromAddressAddDefaultValuesCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		
 		String domain = emailFromAddress.getEmail().split("@")[1];
-		
-		if(domain.equalsIgnoreCase(AccountUtil.getCurrentOrg().getDomain()+".facilio.com")) {
+
+		if (domain.equalsIgnoreCase(AccountUtil.getCurrentOrg().getDomain() + "." + FacilioProperties.getMailDomain())) {
 			emailFromAddress.setVerificationStatus(true);
 		}
 	}

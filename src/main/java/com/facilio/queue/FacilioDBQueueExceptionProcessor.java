@@ -7,6 +7,7 @@ import java.util.TimerTask;
 
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.services.email.EmailClient;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -46,7 +47,7 @@ public class FacilioDBQueueExceptionProcessor extends TimerTask {
         if(EXCEPTION_MESSAGES.size() > 0 ) {
         	JSONObject json = new JSONObject();
 
-            json.put("sender", "error@facilio.com");
+            json.put("sender", EmailClient.getFromEmail("error"));
             json.put("to", "error@facilio.com");
 
             for(String orgWithClass : EXCEPTION_COUNT.keySet()) {

@@ -80,6 +80,7 @@ public class FacilioProperties {
     private static HashSet<String> dbIdentifiers = new HashSet<String>();
     private static Long messageReprocessInterval;
     private static String domain;
+    private static String mailDomain;
     private static String iotUser;
     private static String iotPassword;
     private static String iotVirtualHost;
@@ -162,6 +163,12 @@ public class FacilioProperties {
                 PROPERTIES.load(stream);
                 PROPERTIES.forEach((k, v) -> PROPERTIES.put(k.toString().trim(), v.toString().trim()));
                 environment = PROPERTIES.getProperty("environment");
+
+                mailDomain = PROPERTIES.getProperty("mail.domain");
+                if (StringUtils.isEmpty(mailDomain)){
+                    mailDomain = "facilio.com";
+                }
+
                 deployment = PROPERTIES.getProperty("deployment", "facilio");
                 region = PROPERTIES.getProperty("region", "us-west-2");
                 HashMap<String, String> awsSecret = getPassword(environment +"-app.properties");
@@ -320,6 +327,9 @@ public class FacilioProperties {
         }
     }
 
+    public static String getMailDomain() {
+        return mailDomain;
+    }
     public static String getLocalFileStorePath() {
         return localFileStorePath;
     }

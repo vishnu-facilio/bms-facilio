@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBContext;
 
+import com.facilio.services.email.EmailClient;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -432,7 +433,7 @@ public class TemplateAPI {
 					Object fromIDStr = templates.get(0).get("from");
 					if (fromIDStr == null){
 						LOGGER.warn("fromAddress is null, to be checked.");
-						templates.get(0).put("from", "noreply@${org.domain}.facilio.com");
+						templates.get(0).put("from", EmailClient.getNoReplyFromEmail());
 					}else{
 						long fromID = (Long) fromIDStr;
 						GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()

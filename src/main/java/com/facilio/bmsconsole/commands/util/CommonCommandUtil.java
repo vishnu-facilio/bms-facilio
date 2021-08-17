@@ -40,6 +40,7 @@ import com.facilio.modules.fields.MultiEnumField;
 import com.facilio.modules.fields.MultiLookupField;
 import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.queue.FacilioQueueException;
+import com.facilio.services.email.EmailClient;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.unitconversion.Metric;
@@ -79,7 +80,7 @@ public class CommonCommandUtil {
 	public static final String DELIMITER = "######";
 	public static void setFwdMail(SupportEmailContext supportEmail) {
 		String actualEmail = supportEmail.getActualEmail();
-		String orgEmailDomain = "@"+AccountUtil.getCurrentOrg().getDomain()+".facilio.com";
+		String orgEmailDomain = "@" + AccountUtil.getCurrentOrg().getDomain() + "." + FacilioProperties.getMailDomain();
 
 		if(actualEmail.toLowerCase().endsWith(orgEmailDomain)) {
 			supportEmail.setFwdEmail(actualEmail);
@@ -236,7 +237,7 @@ public class CommonCommandUtil {
 
 			if (FacilioProperties.isProduction()) {
 				JSONObject json = new JSONObject();
-				json.put("sender", "alert@facilio.com");
+				json.put("sender", EmailClient.getFromEmail("alert"));
 				json.put("to", "getsmart@facilio.com");
 				json.put("subject", subject);
 
@@ -245,8 +246,7 @@ public class CommonCommandUtil {
 						.append("\n Name : ").append(name)
 						.append("\n Email : ").append(email)
 						.append("\n Locale : ").append(locale)
-						.append("\n Domain : ").append(domain)
-						;
+						.append("\n Domain : ").append(domain);
 				json.put("message", body.toString());
 
 				FacilioFactory.getEmailClient().sendEmail(json);
@@ -270,14 +270,13 @@ public class CommonCommandUtil {
 		try {
 			JSONObject json = new JSONObject();
 
-			json.put("sender", "error@facilio.com");
+			json.put("sender", EmailClient.getFromEmail("error"));
 			json.put("to", "error@facilio.com");
 			StringBuilder subject = new StringBuilder();
 			String environment = FacilioProperties.getConfig("environment");
-			if(environment == null) {
+			if (environment == null) {
 				subject.append("Local - ");
-			}
-			else {
+			} else {
 				subject.append(environment)
 						.append(" - ");
 			}

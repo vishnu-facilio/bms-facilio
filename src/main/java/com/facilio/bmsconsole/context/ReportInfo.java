@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.services.email.EmailClient;
 import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.taskengine.job.JobContext;
 
@@ -104,7 +105,7 @@ public class ReportInfo {
 	public EMailTemplate getEmailTemplate() {
 		if (emailTemplate != null) {
 			emailTemplate.setName("Report");
-			emailTemplate.setFrom("report@${org.domain}.facilio.com");
+			emailTemplate.setFrom(EmailClient.getFromEmail("report"));
 		}
 		return emailTemplate;
 	}

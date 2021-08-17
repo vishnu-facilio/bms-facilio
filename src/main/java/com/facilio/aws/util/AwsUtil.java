@@ -881,7 +881,7 @@ public class AwsUtil
 		try
 		{
 			JSONObject json = new JSONObject();
-			json.put("sender", "mlerror@facilio.com");
+			json.put("sender", EmailClient.getFromEmail("mlerror"));
 			json.put("to", "ai@facilio.com");
 			json.put("subject", orgid+" - "+ml_id);
 			

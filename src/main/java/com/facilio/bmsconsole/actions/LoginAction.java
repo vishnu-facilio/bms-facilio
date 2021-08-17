@@ -1,86 +1,29 @@
 package com.facilio.bmsconsole.actions;
 
-import java.io.File;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.KeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.zip.Inflater;
-import java.util.TreeMap;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.xml.crypto.dsig.CanonicalizationMethod;
-import javax.xml.crypto.dsig.DigestMethod;
-import javax.xml.crypto.dsig.Reference;
-import javax.xml.crypto.dsig.SignatureMethod;
-import javax.xml.crypto.dsig.SignedInfo;
-import javax.xml.crypto.dsig.Transform;
-import javax.xml.crypto.dsig.XMLSignature;
-import javax.xml.crypto.dsig.XMLSignatureFactory;
-import javax.xml.crypto.dsig.dom.DOMSignContext;
-import javax.xml.crypto.dsig.keyinfo.KeyInfo;
-import javax.xml.crypto.dsig.keyinfo.KeyInfoFactory;
-import javax.xml.crypto.dsig.keyinfo.X509Data;
-import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
-import javax.xml.crypto.dsig.spec.TransformParameterSpec;
-
-import com.facilio.accounts.sso.SSOUtil;
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.util.*;
-import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
-import com.facilio.fw.BeanFactory;
-import com.facilio.iam.accounts.context.SecurityPolicy;
-import com.facilio.modules.FacilioModule;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.apache.struts2.ServletActionContext;
-import org.json.simple.JSONObject;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
 import com.amazonaws.util.StringUtils;
-import com.facilio.accounts.dto.Account;
-import com.facilio.accounts.dto.AppDomain;
-import com.facilio.accounts.dto.Group;
-import com.facilio.accounts.dto.IAMAccount;
-import com.facilio.accounts.dto.Organization;
-import com.facilio.accounts.dto.Role;
-import com.facilio.accounts.dto.User;
+import com.facilio.accounts.dto.*;
 import com.facilio.accounts.dto.AppDomain.AppDomainType;
+import com.facilio.accounts.sso.SSOUtil;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.DeviceContext.DeviceType;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.reports.ReportsUtil;
+import com.facilio.bmsconsole.util.*;
+import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
+import com.facilio.fw.BeanFactory;
 import com.facilio.fw.auth.SAMLAttribute;
 import com.facilio.fw.auth.SAMLUtil;
+import com.facilio.iam.accounts.context.SecurityPolicy;
 import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.iam.accounts.util.IAMUserUtil;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.screen.context.ScreenContext;
@@ -89,6 +32,35 @@ import com.facilio.wms.endpoints.LiveSession.LiveSessionSource;
 import com.facilio.wms.endpoints.LiveSession.LiveSessionType;
 import com.facilio.wms.util.WmsApi;
 import com.opensymphony.xwork2.ActionContext;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
+import org.json.simple.JSONObject;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.xml.crypto.dsig.*;
+import javax.xml.crypto.dsig.dom.DOMSignContext;
+import javax.xml.crypto.dsig.keyinfo.KeyInfo;
+import javax.xml.crypto.dsig.keyinfo.KeyInfoFactory;
+import javax.xml.crypto.dsig.keyinfo.X509Data;
+import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
+import javax.xml.crypto.dsig.spec.TransformParameterSpec;
+import java.io.File;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.KeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.zip.Inflater;
 
 public class LoginAction extends FacilioAction {
 	/**
@@ -895,16 +867,18 @@ public class LoginAction extends FacilioAction {
 		appProps.put(FacilioConstants.ContextNames.ORGUNITS_LIST, CommonCommandUtil.orgUnitsList());
 		appProps.put(FacilioConstants.ContextNames.METRICS_WITH_UNITS, CommonCommandUtil.metricWithUnits());
 		account.put("appProps", appProps);
-		
+
 		Map<String, Object> config = new HashMap<>();
 		config.put("ws_endpoint", WmsApi.getWebsocketEndpoint(AccountUtil.getCurrentUser().getId(), LiveSessionType.APP, LiveSessionSource.WEB));
 		config.put("new_ws_endpoint", WmsApi.getNewWebsocketEndpoint(AccountUtil.getCurrentUser().getId(), LiveSessionType.APP, LiveSessionSource.WEB));
-		
+
 		config.put("payment_endpoint", getPaymentEndpoint());
-		Properties buildinfo = (Properties)ServletActionContext.getServletContext().getAttribute("buildinfo");
+		Properties buildinfo = (Properties) ServletActionContext.getServletContext().getAttribute("buildinfo");
 		config.put("build", buildinfo);
+
+		config.put("mailDomain", FacilioProperties.getMailDomain());
 		account.put("config", config);
-		
+
 		account.put("org", AccountUtil.getCurrentOrg());
 		account.put("user", AccountUtil.getCurrentUser());
 

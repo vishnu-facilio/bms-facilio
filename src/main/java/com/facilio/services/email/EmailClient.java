@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 public abstract class EmailClient {
 
     private static final Logger LOGGER = LogManager.getLogger(EmailClient.class.getName());
+    public static final String mailDomain = FacilioProperties.getMailDomain();
     public static final String SENDER="sender";
     public static final String MESSAGE="message";
     public static final String SUBJECT="subject";
@@ -49,10 +50,10 @@ public abstract class EmailClient {
     public static final String HTML="html";
     public static final String HOST = "host";
     public static final String TO = "to";
-    public static final String ERROR_MAIL_FROM="mlerror@facilio.com";
-    public static final String ERROR_MAIL_TO="ai@facilio.com";
-    public static final String ERROR_AT_FACILIO="error@facilio.com";
-    public static final String ERROR_AND_ALERT_AT_FACILIO="error+alert@facilio.com";
+    public static final String ERROR_MAIL_FROM="mlerror@" + mailDomain;
+    public static final String ERROR_MAIL_TO="ai@" + mailDomain;
+    public static final String ERROR_AT_FACILIO="error@" + mailDomain;
+    public static final String ERROR_AND_ALERT_AT_FACILIO="error+alert@" + mailDomain;
 
     protected abstract Session getSession();
 
@@ -138,7 +139,7 @@ public abstract class EmailClient {
         if (AccountUtil.getCurrentOrg() != null) {
             builder.append(AccountUtil.getCurrentOrg().getDomain()).append(".");
         }
-        builder.append("facilio.com");
+        builder.append(mailDomain);
 
         return builder.toString();
     }
@@ -295,7 +296,7 @@ public abstract class EmailClient {
             if (!FacilioProperties.isProduction()) {
                 for (String address : FacilioUtil.splitByComma(emailAddressString)) {
                 	address = MailMessageUtil.getEmailFromPrettifiedFromAddress.apply(address);
-                    if (address.contains("@facilio.com") && (!checkActive || checkIfActiveUserFromEmail(address))) {
+                    if (address.contains("@" + mailDomain) && (!checkActive || checkIfActiveUserFromEmail(address))) {
                         emailAddress.add(address);
                     }
                 }

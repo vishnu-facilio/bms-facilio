@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.services.email.EmailClient;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -88,8 +89,8 @@ public class DataProcessingAlertJob extends FacilioJob {
                 .append(lastProcessedTime);
         JSONObject json = new JSONObject();
         json.put("to", "agent@facilio.com");
-        json.put("sender", "noreply@facilio.com");
-        json.put("subject", "Data Missing for Org : "+orgDomain);
+        json.put("sender", EmailClient.getNoReplyFromEmail());
+        json.put("subject", "Data Missing for Org : " + orgDomain);
         json.put("message", msg.toString());
         FacilioFactory.getEmailClient().sendEmail(json);
     }

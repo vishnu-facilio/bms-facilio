@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.actions;
 import java.time.ZoneId;
 import java.util.List;
 
+import com.facilio.services.email.EmailClient;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -69,7 +70,7 @@ public class MLResponseParser extends ActionSupport
 		try
 		{
 			JSONObject json = new JSONObject();
-			json.put("sender", "mlerror@facilio.com");
+			json.put("sender", EmailClient.getFromEmail("mlerror"));
 			json.put("to", "ai@facilio.com");
 			json.put("subject", orgid+" - "+ml_id);
 			

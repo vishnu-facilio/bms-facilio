@@ -11,6 +11,7 @@ import com.facilio.bmsconsoleV3.context.EmailFromAddress;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.InsertRecordBuilder;
+import com.facilio.services.email.EmailClient;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.v3.util.V3Util;
 
@@ -29,7 +30,7 @@ public class AddEmailConversationModules extends SignUpData {
 		EmailFromAddress from1 = new EmailFromAddress();
 		from1.setName("defaultReplyMail");
 		from1.setDisplayName("Notification");
-		from1.setEmail("noreply@"+org.getDomain()+".facilio.com");
+		from1.setEmail(EmailClient.getNoReplyFromEmail());
 		from1.setActiveStatus(true);
 		from1.setVerificationStatus(true);
 		from1.setSourceType(EmailFromAddress.SourceType.NOTIFICATION.getIndex());
@@ -40,7 +41,7 @@ public class AddEmailConversationModules extends SignUpData {
 		EmailFromAddress from2 = new EmailFromAddress();
 		from2.setName("defaultSupportMail");
 		from2.setDisplayName("Support");
-		from2.setEmail("support@"+org.getDomain()+".facilio.com");
+		from2.setEmail(EmailClient.getFromEmail("support"));
 		from2.setActiveStatus(true);
 		from2.setVerificationStatus(true);
 		from2.setSourceType(EmailFromAddress.SourceType.SUPPORT.getIndex());

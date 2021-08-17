@@ -9,6 +9,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.services.email.EmailClient;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.messageQueue.MessageQueueTopic;
 import com.facilio.taskengine.job.FacilioJob;
@@ -60,7 +61,7 @@ public class DataPendingAlertJob extends FacilioJob {
                     .append(orgId);
             JSONObject json = new JSONObject();
             json.put("to", "agent@facilio.com");
-            json.put("sender", "noreply@facilio.com");
+            json.put("sender", EmailClient.getNoReplyFromEmail());
             json.put("subject", "Pending Messages");
             json.put("message", msg.toString());
             FacilioFactory.getEmailClient().sendEmail(json);

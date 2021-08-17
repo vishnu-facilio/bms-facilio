@@ -26,6 +26,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import com.facilio.bmsconsoleV3.commands.AddSignupDataCommandV3;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.qa.rules.pojo.QAndARuleType;
+import com.facilio.services.email.EmailClient;
 import com.facilio.tasker.FacilioInstantJobScheduler;
 import com.facilio.translation.TranslationConf;
 import com.facilio.v3.util.ChainUtil;
@@ -241,7 +242,7 @@ public class FacilioContextListener implements ServletContextListener {
 			return;
 		}
 		JSONObject json = new JSONObject();
-		json.put("sender", "error@facilio.com");
+		json.put("sender", EmailClient.getFromEmail("error"));
 		json.put("to", "error@facilio.com");
 		json.put("subject", "Startup Error at " + getInstanceId());
 		json.put("message", ExceptionUtils.getStackTrace(e));
